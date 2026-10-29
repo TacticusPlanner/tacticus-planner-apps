@@ -33,9 +33,17 @@ type Item = {
   count: number
 }
 
+type Row = {
+  key: string
+  title: string
+  /** The alliance emblem of an alliance-split row. */
+  titleIcon?: string
+  items: Item[]
+}
+
 /** The plan's "still missing" totals (V1's "Total Resources Missing"): what the goals need beyond
- *  the current inventory, spent in priority order — ability badges and orbs by alliance, forge
- *  badges, Machine of War components and XP books. */
+ *  the current inventory, spent in priority order — grouped into ability badges and orbs (each by
+ *  alliance), Machine of War materials (forge badges and components) and XP books. */
 export function InsightsMissing({
   missing,
 }: {
@@ -60,78 +68,109 @@ export function InsightsMissing({
         ...item(rarity),
       }))
 
-  const rows: {
+  const allianceRows = (
+    prefix: string,
+    items: (alliance: (typeof ALLIANCES)[number]) => Item[]
+  ): Row[] =>
+    ALLIANCES.map((alliance) => ({
+      key: `${prefix}:${alliance}`,
+      titleIcon: onslaughtAllianceIcon(alliance),
+      title: t(`alliances.${alliance}`),
+      items: items(alliance),
+    }))
+
+  /** One block per resource kind, so badges, orbs, Machine of War materials and XP books read apart
+   *  rather than as one run of rows. Badge and orb groups carry their total across alliances. */
+  const groups: {
     key: string
     title: string
-    /** The alliance emblem of an alliance-split row. */
-    titleIcon?: string
-    items: Item[]
+    showTotal: boolean
+    rows: Row[]
   }[] = [
-    ...ALLIANCES.map((alliance) => ({
-      key: `badges:${alliance}`,
-      titleIcon: onslaughtAllianceIcon(alliance),
-      title: t("goals.insights.missingBadges", {
-        alliance: t(`alliances.${alliance}`),
-      }),
-      items: byRarity(alliance, missing.abilityBadges[alliance], (rarity) => ({
-        icon: abilityBadgeIcon(rarity, alliance),
-        name: t("goals.resourceChips.abilityBadges", {
-          rarity: rarityName(rarity),
-        }),
-      })),
-    })),
-    ...ALLIANCES.map((alliance) => ({
-      key: `orbs:${alliance}`,
-      titleIcon: onslaughtAllianceIcon(alliance),
-      title: t("goals.insights.missingOrbs", {
-        alliance: t(`alliances.${alliance}`),
-      }),
-      items: byRarity(alliance, missing.orbs[alliance], (rarity) => ({
-        icon: orbIcon(rarity),
-        overlay: orbAllianceIcon(alliance),
-        name: t("goals.resourceChips.orbs", { rarity: rarityName(rarity) }),
-      })),
-    })),
     {
-      key: "forge",
-      title: t("goals.insights.missingForgeBadges"),
-      items: byRarity("forge", missing.forgeBadges, (rarity) => ({
-        icon: forgeBadgeIcon(rarity),
-        name: t("goals.resourceChips.forgeBadges", {
-          rarity: rarityName(rarity),
-        }),
-      })),
+      key: "badges",
+      title: t("goals.insights.missingAbilityBadges"),
+      showTotal: true,
+      rows: allianceRows("badges", (alliance) =>
+        byRarity(alliance, missing.abilityBadges[alliance], (rarity) => ({
+          icon: abilityBadgeIcon(rarity, alliance),
+          name: t("goals.resourceChips.abilityBadges", {
+            rarity: rarityName(rarity),
+          }),
+        }))
+      ),
     },
     {
-      key: "components",
-      title: t("goals.resourceChips.components"),
-      items: ALLIANCES.filter(
-        (alliance) => (missing.components[alliance] ?? 0) > 0
-      ).map((alliance) => ({
-        key: alliance,
-        icon: mowComponentIcon(alliance),
-        name: `${t("goals.resourceChips.components")} (${t(`alliances.${alliance}`)})`,
-        count: missing.components[alliance] ?? 0,
-      })),
+      key: "orbs",
+      title: t("goals.insights.missingOrbs"),
+      showTotal: true,
+      rows: allianceRows("orbs", (alliance) =>
+        byRarity(alliance, missing.orbs[alliance], (rarity) => ({
+          icon: orbIcon(rarity),
+          overlay: orbAllianceIcon(alliance),
+          name: t("goals.resourceChips.orbs", { rarity: rarityName(rarity) }),
+        }))
+      ),
+    },
+    {
+      key: "mow",
+      title: t("goals.insights.missingMachineOfWar"),
+      showTotal: false,
+      rows: [
+        {
+          key: "forge",
+          title: t("goals.insights.missingForgeBadges"),
+          items: byRarity("forge", missing.forgeBadges, (rarity) => ({
+            icon: forgeBadgeIcon(rarity),
+            name: t("goals.resourceChips.forgeBadges", {
+              rarity: rarityName(rarity),
+            }),
+          })),
+        },
+        {
+          key: "components",
+          title: t("goals.insights.missingComponents"),
+          items: ALLIANCES.filter(
+            (alliance) => (missing.components[alliance] ?? 0) > 0
+          ).map((alliance) => ({
+            key: alliance,
+            icon: mowComponentIcon(alliance),
+            name: `${t("goals.resourceChips.components")} (${t(`alliances.${alliance}`)})`,
+            count: missing.components[alliance] ?? 0,
+          })),
+        },
+      ],
     },
     {
       key: "xp",
-      title: t("goals.insights.missingXpBooks", { xp: fmt(missing.xp) }),
-      items:
-        missing.xpBooks && missing.xpBooks.count > 0
-          ? [
-              {
-                key: missing.xpBooks.rarity,
-                icon: xpBookIcon(missing.xpBooks.rarity),
-                name: t("goals.resourceChips.xpBooks", {
-                  rarity: rarityName(missing.xpBooks.rarity),
-                }),
-                count: missing.xpBooks.count,
-              },
-            ]
-          : [],
+      title: t("goals.insights.missingXpBooks"),
+      showTotal: false,
+      rows: [
+        {
+          key: "xp",
+          title: t("goals.insights.missingXp", { xp: fmt(missing.xp) }),
+          items:
+            missing.xpBooks && missing.xpBooks.count > 0
+              ? [
+                  {
+                    key: missing.xpBooks.rarity,
+                    icon: xpBookIcon(missing.xpBooks.rarity),
+                    name: t("goals.resourceChips.xpBooks", {
+                      rarity: rarityName(missing.xpBooks.rarity),
+                    }),
+                    count: missing.xpBooks.count,
+                  },
+                ]
+              : [],
+        },
+      ],
     },
-  ].filter((row) => row.items.length > 0)
+  ]
+    .map((group) => ({
+      ...group,
+      rows: group.rows.filter((row) => row.items.length > 0),
+    }))
+    .filter((group) => group.rows.length > 0)
 
   return (
     <Card data-testid="insights-missing">
@@ -142,69 +181,103 @@ export function InsightsMissing({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {rows.length === 0 ? (
+        {groups.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             {t("goals.insights.missingNone")}
           </p>
         ) : (
-          <dl className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
-            {rows.map((row) => (
-              <div
-                className="flex flex-col gap-1.5"
-                data-testid="insights-missing-row"
-                key={row.key}
-              >
-                <dt className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase">
-                  {row.titleIcon ? (
-                    <EntityIcon
-                      alt=""
-                      className="h-4 w-auto shrink-0"
-                      height={16}
-                      src={row.titleIcon}
-                      width={16}
-                    />
-                  ) : null}
-                  {row.title}
-                </dt>
-                <dd>
-                  <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
-                    {row.items.map((item) => {
-                      const label = t("goals.resourceChips.chipLabel", {
-                        name: item.name,
-                        quantity: fmt(item.count),
-                      })
-                      return (
-                        <li
-                          aria-label={label}
-                          className="flex items-center gap-1 text-sm font-medium tabular-nums"
-                          key={item.key}
-                          title={label}
-                        >
-                          <span className="relative inline-flex">
-                            <EntityIcon
-                              alt=""
-                              className="size-7"
-                              src={item.icon}
-                            />
-                            {item.overlay ? (
-                              <img
-                                alt=""
-                                className="absolute top-1/2 left-1/2 size-4 -translate-x-1/2 -translate-y-1/2 object-contain"
-                                src={item.overlay}
-                              />
-                            ) : null}
-                          </span>
-                          <span aria-hidden>{fmt(item.count)}</span>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2 xl:grid-cols-4">
+            {groups.map((group) => {
+              const total = group.rows
+                .flatMap((row) => row.items)
+                .reduce((sum, item) => sum + item.count, 0)
+              return (
+                <section
+                  aria-labelledby={`insights-missing-${group.key}`}
+                  className="flex flex-col gap-3"
+                  data-testid="insights-missing-group"
+                  key={group.key}
+                >
+                  <h3
+                    className="flex items-baseline justify-between gap-2 border-b pb-1.5 text-sm font-semibold"
+                    id={`insights-missing-${group.key}`}
+                  >
+                    <span>{group.title}</span>
+                    {group.showTotal ? (
+                      <span className="text-xs font-medium text-muted-foreground tabular-nums">
+                        {t("goals.insights.missingTotal", {
+                          total: fmt(total),
+                        })}
+                      </span>
+                    ) : null}
+                  </h3>
+                  <dl className="flex flex-col gap-3">
+                    {group.rows.map((row) => (
+                      <MissingRow fmt={fmt} key={row.key} row={row} />
+                    ))}
+                  </dl>
+                </section>
+              )
+            })}
+          </div>
         )}
       </CardContent>
     </Card>
+  )
+}
+
+function MissingRow({
+  row,
+  fmt,
+}: {
+  row: Row
+  fmt: (value: number) => string
+}) {
+  const { t } = useTranslation()
+  return (
+    <div className="flex flex-col gap-1.5" data-testid="insights-missing-row">
+      <dt className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase">
+        {row.titleIcon ? (
+          <EntityIcon
+            alt=""
+            className="h-4 w-auto shrink-0"
+            height={16}
+            src={row.titleIcon}
+            width={16}
+          />
+        ) : null}
+        {row.title}
+      </dt>
+      <dd>
+        <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
+          {row.items.map((item) => {
+            const label = t("goals.resourceChips.chipLabel", {
+              name: item.name,
+              quantity: fmt(item.count),
+            })
+            return (
+              <li
+                aria-label={label}
+                className="flex items-center gap-1 text-sm font-medium tabular-nums"
+                key={item.key}
+                title={label}
+              >
+                <span className="relative inline-flex">
+                  <EntityIcon alt="" className="size-7" src={item.icon} />
+                  {item.overlay ? (
+                    <img
+                      alt=""
+                      className="absolute top-1/2 left-1/2 size-4 -translate-x-1/2 -translate-y-1/2 object-contain"
+                      src={item.overlay}
+                    />
+                  ) : null}
+                </span>
+                <span aria-hidden>{fmt(item.count)}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </dd>
+    </div>
   )
 }
