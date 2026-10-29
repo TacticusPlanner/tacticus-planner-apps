@@ -31,7 +31,7 @@ The shop and Home Screen Event reward display SHALL resolve alliance item crates
 
 ### Requirement: Generic glyphs use the game's art
 
-Locked units, NPC power, random shop slots, raid tickets, shops, navigation sections and goal types SHALL show the game's own glyph (lock, power fist, die, raid ticket, shop glyph, menu art, rank badge or drop-table art) instead of a generic icon. Every such image SHALL be a pinned game sprite listed in `datamine/sprites.txt`.
+Locked units, NPC power, random shop slots, raid tickets, shops, navigation sections and goal types SHALL show the game's own glyph (lock, power fist, die, raid ticket, shop glyph, menu art, upgrade glyph or drop-table art) instead of a generic icon. Every such image SHALL be a pinned game sprite listed in `datamine/sprites.txt`.
 
 #### Scenario: Locked unit in a picker
 
