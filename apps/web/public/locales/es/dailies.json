@@ -162,7 +162,7 @@
     "plan": "Plan de hoy",
     "planMeta_one": "{{count}} nodo · por prioridad de objetivo",
     "planMeta_other": "{{count}} nodos · por prioridad de objetivo",
-    "summary": "{{energy}} de energía · {{raids}} intentos",
+
     "energyUsage": {
       "label": "Energía diaria usada",
       "value": "{{percent}}% de la energía diaria usada"
@@ -181,7 +181,7 @@
     "glance": {
       "label": "Hoy de un vistazo",
       "energyOver": "Límite de energía alcanzado",
-      "planned": "Previsto hoy",
+      "energyValue": "{{used}} / {{daily}}",
       "tokens_one": "{{count}} ficha",
       "tokens_other": "{{count}} fichas"
     }

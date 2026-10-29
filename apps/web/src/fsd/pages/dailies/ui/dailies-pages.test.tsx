@@ -187,7 +187,7 @@ describe("Dailies raid pages", () => {
     ).toBeInTheDocument()
   })
 
-  it("shows the real energy-usage percentage next to the title, uncapped above 100%", () => {
+  it("shows the real energy used of the daily energy, its bar's value text uncapped above 100%", () => {
     useDailyRaids.mockReturnValue(
       ready({ dailyEnergy: 100, realEnergyUsedToday: 150 })
     )
@@ -199,7 +199,9 @@ describe("Dailies raid pages", () => {
       "aria-valuetext",
       'today.energyUsage.value:{"percent":150}'
     )
-    expect(screen.getByText("150%")).toBeInTheDocument()
+    expect(
+      screen.getByText('today.glance.energyValue:{"used":150,"daily":100}')
+    ).toBeInTheDocument()
     // The bar fills to 100% while its value text keeps the real 150%.
     expect(bar).toHaveAttribute("aria-valuenow", "100")
   })
@@ -222,16 +224,22 @@ describe("Dailies raid pages", () => {
     expect(within(energyTile).getByRole("term")).toHaveTextContent(
       "today.energyUsage.label"
     )
-    expect(within(energyTile).getByText("42%")).toBeInTheDocument()
+    expect(
+      within(energyTile).getByText(
+        'today.glance.energyValue:{"used":42,"daily":100}'
+      )
+    ).toBeInTheDocument()
   })
 
-  it("shows 0% energy usage when there are no real attempts today", () => {
+  it("shows 0 energy used when there are no real attempts today", () => {
     useDailyRaids.mockReturnValue(
       ready({ dailyEnergy: 288, realEnergyUsedToday: 0 })
     )
     renderPage(<TodayPage />)
 
-    expect(screen.getByText("0%")).toBeInTheDocument()
+    expect(
+      screen.getByText('today.glance.energyValue:{"used":0,"daily":288}')
+    ).toBeInTheDocument()
   })
 
   it("shows every real attempt today in Today's Attempts with its actual numeric count", () => {

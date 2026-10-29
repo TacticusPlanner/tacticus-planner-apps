@@ -104,7 +104,12 @@ describe("buildTodayView", () => {
       { showAllBonus: false }
     )
 
-    expect(view.energy).toEqual({ percent: 0, overLimit: false })
+    expect(view.energy).toEqual({
+      used: 400,
+      daily: 0,
+      percent: 0,
+      overLimit: false,
+    })
     expect(view.selection.planEntries).toHaveLength(2)
   })
 
@@ -127,10 +132,10 @@ describe("buildTodayView", () => {
     expect(view.attempts).toEqual({ rows: 5, total: 29 })
   })
 
-  it("passes the plan totals and the location emphasis through", () => {
+  it("passes the energy used of the daily energy and the location emphasis through", () => {
     const view = buildTodayView(ready(), { showAllBonus: false })
 
-    expect(view.planned).toEqual({ energy: 42, raids: 7 })
+    expect(view.energy).toMatchObject({ used: 120, daily: 288 })
     expect(view.scheduleProps.emphasis).toBe("location")
   })
 })

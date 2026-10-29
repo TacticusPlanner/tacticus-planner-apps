@@ -53,7 +53,7 @@ export function CampaignEventTile() {
       testId="campaign-event-status"
       valueClassName="text-sm font-medium"
     >
-      <span className="flex items-start gap-2">
+      <span className="flex items-start justify-end gap-2 @[42rem]:justify-start">
         {active && icon ? (
           <EntityIcon alt="" className="size-5 shrink-0" src={icon} />
         ) : null}

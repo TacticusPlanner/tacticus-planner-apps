@@ -162,7 +162,7 @@
     "plan": "Plan du jour",
     "planMeta_one": "{{count}} nœud · par priorité d'objectif",
     "planMeta_other": "{{count}} nœuds · par priorité d'objectif",
-    "summary": "{{energy}} énergie · {{raids}} tentatives",
+
     "energyUsage": {
       "label": "Énergie quotidienne utilisée",
       "value": "{{percent}} % de l'énergie quotidienne utilisée"
@@ -181,7 +181,7 @@
     "glance": {
       "label": "Aujourd'hui en un coup d'œil",
       "energyOver": "Limite d'énergie atteinte",
-      "planned": "Prévu aujourd'hui",
+      "energyValue": "{{used}} / {{daily}}",
       "tokens_one": "{{count}} jeton",
       "tokens_other": "{{count}} jetons"
     }

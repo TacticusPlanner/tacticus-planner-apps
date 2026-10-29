@@ -162,7 +162,7 @@
     "plan": "Heutiger Plan",
     "planMeta_one": "{{count}} Knoten · nach Zielpriorität",
     "planMeta_other": "{{count}} Knoten · nach Zielpriorität",
-    "summary": "{{energy}} Energie · {{raids}} Raid-Versuche",
+
     "energyUsage": {
       "label": "Genutzte Tagesenergie",
       "value": "{{percent}}% der Tagesenergie genutzt"
@@ -181,7 +181,7 @@
     "glance": {
       "label": "Heute auf einen Blick",
       "energyOver": "Energielimit erreicht",
-      "planned": "Heute geplant",
+      "energyValue": "{{used}} / {{daily}}",
       "tokens_one": "{{count}} Marke",
       "tokens_other": "{{count}} Marken"
     }

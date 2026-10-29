@@ -162,7 +162,7 @@
     "plan": "Today's plan",
     "planMeta_one": "{{count}} node · goal priority order",
     "planMeta_other": "{{count}} nodes · goal priority order",
-    "summary": "{{energy}} energy · {{raids}} raid attempts",
+
     "energyUsage": {
       "label": "Daily energy used",
       "value": "{{percent}}% of daily energy used"
@@ -181,7 +181,7 @@
     "glance": {
       "label": "Today at a glance",
       "energyOver": "Energy limit reached",
-      "planned": "Planned today",
+      "energyValue": "{{used}} / {{daily}}",
       "tokens_one": "{{count}} token",
       "tokens_other": "{{count}} tokens"
     }

@@ -29,9 +29,8 @@ export type TodayView = {
   onslaughtRuns: ReturnType<typeof buildOnslaughtRuns>
   /** Today's whole Onslaught tokens: a token is spent whole, so the expected runs round up. */
   onslaughtTokens: number
-  /** Real energy spent today as a percentage of the daily energy, not capped at 100. */
-  energy: { percent: number; overLimit: boolean }
-  planned: { energy: number; raids: number }
+  /** Real energy spent today, of the daily energy; the percentage is not capped at 100. */
+  energy: { used: number; daily: number; percent: number; overLimit: boolean }
 }
 
 /**
@@ -128,12 +127,13 @@ export function buildTodayView(
     onslaughtRuns,
     onslaughtTokens: Math.ceil(onslaughtRunsTotal),
     energy: {
+      used: raids.realEnergyUsedToday,
+      daily: raids.dailyEnergy,
       percent:
         raids.dailyEnergy > 0
           ? (raids.realEnergyUsedToday / raids.dailyEnergy) * 100
           : 0,
       overLimit,
     },
-    planned: { energy: raids.today.energyTotal, raids: raids.today.raidsTotal },
   }
 }

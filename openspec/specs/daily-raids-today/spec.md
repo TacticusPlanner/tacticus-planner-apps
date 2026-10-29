@@ -131,7 +131,7 @@ Assumptions:
 
 - Energy spent today is the account-wide real spend from synced attempts at standing campaign nodes (Today's "Today shows real daily energy usage" requirement); it is not capped at the limit.
 - The daily energy limit is `planningSettings.dailyEnergy` (default 288 when unset).
-- Below the limit, Bonus Raids are computed from an unlimited energy budget at each node's full daily attempt cap. Once the limit is reached they are the raids left today: an unlimited energy budget with each node capped at the player's real attempts left (`live-progress.battleAttempts[].attemptsLeft`, standing and event-campaign nodes alike). The Planned today tile is replaced by the Onslaught tile at the limit (see "Today shows glance tiles").
+- Below the limit, Bonus Raids are computed from an unlimited energy budget at each node's full daily attempt cap. Once the limit is reached they are the raids left today: an unlimited energy budget with each node capped at the player's real attempts left (`live-progress.battleAttempts[].attemptsLeft`, standing and event-campaign nodes alike).
 - A node's daily attempt cap is shared by every goal and material raided there, in goal-priority order; the real attempts left lower that shared cap.
 - Upgrades already farmed today are counted through the synced inventory, so each goal's remaining need already reflects them.
 
@@ -524,7 +524,7 @@ Each location SHALL be one compact row: the material icon, the campaign icon, th
 
 ### Requirement: Today shows real daily energy usage
 
-Today SHALL show, in its Daily energy used glance tile, a progress indicator reflecting the percentage of the player's configured daily energy (`planningSettings.dailyEnergy`) actually spent today, computed from the player's real synced attempt counts (not the plan's simulated schedule) across every campaign node on the account — standing or event-campaign, including nodes unrelated to the currently selected project — each priced at that node's energy cost. This percentage SHALL NOT be capped at 100%. The bar itself fills to at most 100%, and its accessible value text SHALL state the uncapped percentage. Once the daily energy limit is reached, the tile SHALL switch to its over-limit state (see "Today shows glance tiles").
+Today SHALL show, in its Daily energy used glance tile, the energy actually spent today against the player's configured daily energy (`planningSettings.dailyEnergy`): a progress bar and the value "used / daily" (for example "396 / 938"). The energy used is computed from the player's real synced attempt counts (not the plan's simulated schedule) across every campaign node on the account — standing or event-campaign, including nodes unrelated to the currently selected project — each priced at that node's energy cost. The energy used SHALL NOT be capped at the daily energy. The bar fills to at most 100%, and its accessible value text SHALL state the uncapped percentage of the daily energy used. When the daily energy is 0 (no limit), the value SHALL be the energy used alone. Once the daily energy limit is reached, the tile SHALL switch to its over-limit state (see "Today shows glance tiles").
 
 An event-campaign attempt's energy cost is included using the same per-node pricing as a standing-campaign attempt, resolved to the correct tier (Standard vs Extremis) via the attempt record's `type`.
 
@@ -544,13 +544,19 @@ An event-campaign attempt's energy cost is included using the same per-node pric
 
 - **GIVEN** the player's real total energy cost from today's synced attempts exceeds their configured daily energy setting
 - **WHEN** Today loads
-- **THEN** the energy-usage indicator shows a percentage above 100%, uncapped, its accessible value text states that percentage, and the tile is in its over-limit state
+- **THEN** the energy-usage indicator shows the energy used above the daily energy (for example "663 / 638"), uncapped, its accessible value text states the percentage above 100%, and the tile is in its over-limit state
 
 #### Scenario: No real usage yet today
 
 - **GIVEN** the player has no recorded real attempts yet today
 - **WHEN** Today loads
-- **THEN** the energy-usage indicator shows 0%
+- **THEN** the energy-usage indicator shows 0 of the daily energy (for example "0 / 288") with an empty bar
+
+#### Scenario: No daily energy limit
+
+- **GIVEN** the player's daily energy is 0 (no limit) and they have spent 400 energy today
+- **WHEN** Today loads
+- **THEN** the energy-usage value reads "400", with no "/ 0"
 
 #### Scenario: Real usage data is part of Today's readiness gate
 
@@ -623,15 +629,15 @@ Assumptions this requirement depends on:
 - **WHEN** Today renders the Campaign event tile
 - **THEN** the detected event's campaign icon renders beside its name
 
-#### Scenario: On mobile the status block sits below the energy-usage row
+#### Scenario: On a narrow page the status is the last row of the glance card
 
-- **GIVEN** Today is viewed below the mobile breakpoint
+- **GIVEN** Today's content is narrower than 42rem
 - **WHEN** Today renders its glance tiles
-- **THEN** the Campaign event tile comes after the Daily energy used tile in reading order, as a tile of its own
+- **THEN** the Campaign event is the last row of the single glance card, after Daily energy used in reading order, with its value aligned to the end like the other rows
 
-#### Scenario: On desktop the status block takes half the header
+#### Scenario: On a wide page the status is the last tile
 
-- **GIVEN** Today is viewed at or above the mobile breakpoint
+- **GIVEN** Today's content is at least 42rem wide
 - **WHEN** Today renders its glance tiles
 - **THEN** the Campaign event tile is the last tile in the glance row, at the same size as the other tiles; there is no separate header block
 
@@ -993,34 +999,40 @@ Assumptions:
 
 ### Requirement: Today shows glance tiles
 
-Today SHALL show a row of glance tiles above the card grid, as a labelled region ("Today at a glance"). Each tile SHALL show a short label above its value, and tiles SHALL be static text, not controls. In order:
+Today SHALL show its glance tiles above the card grid, as a labelled region ("Today at a glance"). Each tile SHALL show a short label and its value, and tiles SHALL be static text, not controls. In order:
 
-1. **Daily energy used**: a progress bar and the rounded percentage from "Today shows real daily energy usage". Once the daily energy limit is reached (the same test Bonus raids uses), the label SHALL read "Energy limit reached" and the bar and tile border SHALL switch to a distinct over-limit colour.
-2. **Planned today**: the plan's energy and raid attempt totals ("638 energy · 66 raid attempts"). It SHALL be hidden when Today's plan has no entries and the energy limit is not reached. Once the energy limit is reached, this tile SHALL show the Onslaught tile's label and value instead, and tile 3 SHALL NOT be shown.
-3. **Onslaught**: today's whole tokens to spend, from "Today lists today's Onslaught runs". It SHALL be hidden when no goal needs an Onslaught run today.
-4. **Campaign event**: the status from "Today states the detected campaign event and its remaining time".
+1. **Daily energy used**: a progress bar and "used / daily" energy from "Today shows real daily energy usage". Once the daily energy limit is reached (the same test Bonus raids uses), the label SHALL read "Energy limit reached" and the bar and tile border SHALL switch to a distinct over-limit colour.
+2. **Onslaught**: today's whole tokens to spend, from "Today lists today's Onslaught runs". It SHALL be hidden when no goal needs an Onslaught run today.
+3. **Campaign event**: the status from "Today states the detected campaign event and its remaining time".
 
-Tiles SHALL take at least 12rem each and wrap onto further rows when there is not room for all of them on one. Tile values SHALL wrap rather than truncate. Tiles 1–3 SHALL render only once Today's raid data is ready. The Campaign event tile SHALL render regardless.
+There SHALL be no tile for the plan's energy and raid totals: without the daily energy beside them they say nothing on their own.
 
-Worked example: daily energy 638, real spend today 663 energy, the plan's totals 638 energy and 66 raids, and two Onslaught runs planned at 1.2 and 0.5 runs. Energy used is 663 ÷ 638 = 103.9%, shown as "104%". That is at or above 100%, so the limit is reached: tile 1 reads "Energy limit reached" with a full bar in the over-limit colour, tile 2 shows "Onslaught" with 1.2 + 0.5 = 1.7, rounded up to "2 tokens", and tile 3 is not shown. Below the limit, at a real spend of 410 energy, tile 1 shows 410 ÷ 638 = 64.3%, rounded to "64%", tile 2 shows "638 energy · 66 raid attempts", and tile 3 shows "2 tokens".
+The layout SHALL follow the width of Today's content (a container query), not the viewport:
 
-#### Scenario: Tiles in order below the limit
+- From 42rem: each tile is a card of its own with its label above its value. Tiles SHALL take at least 12rem each and wrap onto further rows when there is not room for all of them on one.
+- Below 42rem (one dashboard track, as on a phone): the tiles SHALL fold into one card, one row per tile with its label at the start and its value at the end, rows split by dividers, so Today's plan starts as high as possible.
 
-- **GIVEN** the plan has entries, a goal needs an Onslaught run, and the energy limit is not reached
+Tile values SHALL wrap rather than truncate. Tiles 1–2 SHALL render only once Today's raid data is ready. The Campaign event tile SHALL render regardless.
+
+Worked example: daily energy 638, real spend today 663 energy, and two Onslaught runs planned at 1.2 and 0.5 runs. Tile 1 reads "Energy limit reached" with "663 / 638" and a full bar in the over-limit colour (663 ÷ 638 = 103.9%, so the bar's value text says 104%). Tile 2 shows 1.2 + 0.5 = 1.7, rounded up to "2 tokens". Below the limit, at a real spend of 410 energy, tile 1 reads "Daily energy used" with "410 / 638" and a bar 64% full; tile 2 still shows "2 tokens".
+
+#### Scenario: Tiles in order
+
+- **GIVEN** a goal needs an Onslaught run
 - **WHEN** Today renders
-- **THEN** the tiles read Daily energy used, Planned today, Onslaught, Campaign event, in that order
+- **THEN** the tiles read Daily energy used, Onslaught, Campaign event, in that order
 
 #### Scenario: Over the limit
 
 - **GIVEN** today's real energy spend has reached the daily energy limit
 - **WHEN** Today renders
-- **THEN** the first tile is labelled "Energy limit reached" with a full bar in the over-limit colour, the second tile shows the Onslaught tokens, and there is no separate Onslaught tile
+- **THEN** the first tile is labelled "Energy limit reached" with a full bar in the over-limit colour, and the Onslaught tile still follows it
 
-#### Scenario: No plan
+#### Scenario: One dense card on a narrow page
 
-- **GIVEN** Today's plan has no entries and the energy limit is not reached
-- **WHEN** Today renders
-- **THEN** there is no Planned today tile
+- **GIVEN** Today's content is narrower than 42rem
+- **WHEN** Today renders its glance tiles
+- **THEN** they form one card of label / value rows split by dividers, not separate tiles
 
 #### Scenario: Raids still loading
 
