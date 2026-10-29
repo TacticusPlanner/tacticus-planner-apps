@@ -111,7 +111,7 @@
         },
         "signInAccount": {
           "label": "Données du planificateur et compte de connexion",
-          "description": "Supprime aussi le compte avec lequel vous vous connectez au planificateur. Votre compte Google n’est pas concerné. Vous pourrez vous réinscrire plus tard avec la même adresse e-mail."
+          "description": "Tente aussi de supprimer le compte avec lequel vous vous connectez au planificateur. Votre compte Google n’est pas concerné. Si cette étape échoue, vos données du planificateur sont tout de même supprimées."
         }
       },
       "purgeConfirmLabel": "Saisissez « {{word}} » pour activer la purge",

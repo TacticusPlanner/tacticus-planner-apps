@@ -111,7 +111,7 @@
         },
         "signInAccount": {
           "label": "Planner-Daten und Anmeldekonto",
-          "description": "Löscht zusätzlich das Konto, mit dem du dich beim Planner anmeldest. Dein Google-Konto selbst bleibt unberührt. Mit derselben E-Mail kannst du dich später erneut registrieren."
+          "description": "Versucht zusätzlich, das Konto zu löschen, mit dem du dich beim Planner anmeldest. Dein Google-Konto selbst bleibt unberührt. Schlägt dieser Schritt fehl, werden deine Planner-Daten trotzdem gelöscht."
         }
       },
       "purgeConfirmLabel": "Gib „{{word}}“ ein, um die Löschung zu aktivieren",

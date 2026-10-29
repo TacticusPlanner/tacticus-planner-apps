@@ -32,7 +32,7 @@
     },
     "deletion": {
       "title": "Deine Daten löschen",
-      "body": "Du kannst dein Konto in den Kontoeinstellungen im Tab „Konto“ mit „Mein Konto löschen“ entfernen. Dabei wählst du, ob nur deine Planer-Daten oder auch dein Planer-Anmeldekonto (Microsoft Entra External ID) gelöscht werden. Dein Google-Konto ist davon nicht betroffen. Das wirkt sofort und kann nicht rückgängig gemacht werden."
+      "body": "Du kannst dein Konto in den Kontoeinstellungen im Tab „Konto“ mit „Mein Konto löschen“ entfernen. Dabei wählst du, ob nur deine Planer-Daten oder auch dein Planer-Anmeldekonto (Microsoft Entra External ID) gelöscht werden. Das Löschen des Anmeldekontos wird versucht; deine Planer-Daten werden auch dann gelöscht, wenn dieser Schritt fehlschlägt. Dein Google-Konto ist davon nicht betroffen. Das wirkt sofort und kann nicht rückgängig gemacht werden."
     },
     "contact": {
       "title": "Kontakt",

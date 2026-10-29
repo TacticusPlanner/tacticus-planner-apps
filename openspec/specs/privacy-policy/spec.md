@@ -32,7 +32,7 @@ The page SHALL be localized in every supported locale and SHALL state, in plain 
 - that browsing without an account sends no analytics, and that for signed-in users, usage events and uncaught errors are sent to PostHog under a pseudonymous id, without autocapture, session replay, typed planner content, email or display name;
 - that the feedback board (UserJot) identifies a signed-in user by a signed token for their planner account and display name only when they open it through the in-app feedback entry points, and that opening the public board link (as from the public footer) sends nothing from the planner;
 - that the planner does not sell data or show ads;
-- how to delete the account (Account settings, Account tab, "Purge my account"), choosing planner data only or planner data and the sign-in account, and that the browser's local copy is deleted when the user signs out.
+- how to delete the account (Account settings, Account tab, "Purge my account"), choosing planner data only or planner data and the sign-in account (deleting the sign-in account is attempted; planner data is deleted even if that step fails), and that the browser's local copy is deleted when the user signs out.
 
 #### Scenario: Notice covers analytics
 

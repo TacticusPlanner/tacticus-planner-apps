@@ -111,7 +111,7 @@
         },
         "signInAccount": {
           "label": "Datos del planificador y cuenta de inicio de sesión",
-          "description": "También elimina la cuenta con la que inicias sesión en el planificador. Tu cuenta de Google no se ve afectada. Podrás registrarte de nuevo más adelante con el mismo correo."
+          "description": "También intenta eliminar la cuenta con la que inicias sesión en el planificador. Tu cuenta de Google no se ve afectada. Si ese paso falla, tus datos del planificador se eliminan igualmente."
         }
       },
       "purgeConfirmLabel": "Escribe «{{word}}» para habilitar la purga",

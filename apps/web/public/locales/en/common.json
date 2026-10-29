@@ -111,7 +111,7 @@
         },
         "signInAccount": {
           "label": "Planner data and sign-in account",
-          "description": "Also deletes the account you sign in to the planner with. Your Google account itself is not affected. You can sign up again later with the same email."
+          "description": "Also tries to delete the account you sign in to the planner with. Your Google account itself is not affected. If that step fails, your planner data is still deleted."
         }
       },
       "purgeConfirmLabel": "Type \"{{word}}\" to enable the purge action",

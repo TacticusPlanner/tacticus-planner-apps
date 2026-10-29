@@ -32,7 +32,7 @@
     },
     "deletion": {
       "title": "Deleting your data",
-      "body": "You can delete your account in Account settings, on the Account tab, with \"Purge my account\". You choose whether to delete only your planner data or also your planner sign-in account (Microsoft Entra External ID). Your Google account is not affected. This takes effect immediately and cannot be undone."
+      "body": "You can delete your account in Account settings, on the Account tab, with \"Purge my account\". You choose whether to delete only your planner data or also your planner sign-in account (Microsoft Entra External ID). Deleting the sign-in account is attempted, and your planner data is deleted even if that step fails. Your Google account is not affected. This takes effect immediately and cannot be undone."
     },
     "contact": {
       "title": "Contact",
