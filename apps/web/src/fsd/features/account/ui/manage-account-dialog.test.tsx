@@ -46,12 +46,15 @@ vi.mock("@azure/msal-react", () => ({
   }),
 }))
 
-vi.mock("@/shared/auth", async () => ({
-  ...(await vi.importActual<typeof import("@/shared/auth/account-identity")>(
-    "@/shared/auth/account-identity"
-  )),
-  signOut: (...args: unknown[]) => signOut(...args),
-}))
+vi.mock("@/shared/auth", async () => {
+  const { getAccountEmail, getSignInMethod } =
+    await vi.importActual<typeof import("@/shared/auth")>("@/shared/auth")
+  return {
+    getAccountEmail,
+    getSignInMethod,
+    signOut: (...args: unknown[]) => signOut(...args),
+  }
+})
 
 vi.mock("@/entities/account", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/account")>()),
