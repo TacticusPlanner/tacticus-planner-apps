@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
 
-import type { EventEntryViewModel } from "../../model/events-calendar.types"
+import type { PositionedEventEntry } from "../../model/events-calendar.types"
 import { EventAgendaRow, EventBar } from "./event-entry-card"
 
 vi.mock("react-i18next", () => ({
@@ -15,8 +15,8 @@ vi.mock("react-i18next", () => ({
 }))
 
 function baseEntry(
-  overrides: Partial<EventEntryViewModel>
-): EventEntryViewModel {
+  overrides: Partial<PositionedEventEntry>
+): PositionedEventEntry {
   return {
     key: "test",
     definitionId: "battle-pass",
@@ -27,8 +27,14 @@ function baseEntry(
     endUtc: "2026-08-16T00:00:00Z",
     parameters: null,
     isActiveNow: false,
+    isPast: false,
+    phases: [],
     derivedSeasonNumber: undefined,
     derivedEventNumber: undefined,
+    startColumn: 1,
+    span: 7,
+    barStartMs: Date.parse("2026-08-09T00:00:00Z"),
+    barEndMs: Date.parse("2026-08-16T00:00:00Z"),
     ...overrides,
   }
 }

@@ -15,6 +15,10 @@ export type EventEntryViewModel = {
   endUtc: string
   parameters: Record<string, unknown> | null
   isActiveNow: boolean
+  /** Ended before now; drawn grayed out. */
+  isPast: boolean
+  /** A Guild War season's preparation and war windows, in order; empty for every other event. */
+  phases: EventPhase[]
   /**
    * A Fixed-recurrence definition's season/event number, derived from this entry's position relative to
    * the definition's own anchor (see `deriveOrdinalFromAnchor` in events-calendar-calc.ts) — not
@@ -24,6 +28,14 @@ export type EventEntryViewModel = {
    */
   derivedSeasonNumber: number | undefined
   derivedEventNumber: number | undefined
+}
+
+export type EventPhase = {
+  kind: "preparation" | "war"
+  /** 1-based war number within the season. */
+  war: number
+  startUtc: string
+  endUtc: string
 }
 
 export type EventsCalendarDayEntry = EventEntryViewModel & {
@@ -48,6 +60,9 @@ export type PositionedEventEntry = EventEntryViewModel & {
   startColumn: number
   /** Number of day-columns this entry spans, clipped to the visible range. */
   span: number
+  /** The local-day window the bar covers (`startColumn`'s midnight to the end of its last column). */
+  barStartMs: number
+  barEndMs: number
 }
 
 export type EventLane = {

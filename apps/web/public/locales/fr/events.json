@@ -23,7 +23,8 @@
     "projected": "Prévu",
     "confirmed": "Confirmé",
     "starts": "Débute",
-    "ends": "Se termine"
+    "ends": "Se termine",
+    "break": "Pause"
   },
   "wikiLink": "Wiki",
   "agenda": {
@@ -31,13 +32,20 @@
     "endsIn": "Se termine dans {{when}}"
   },
   "details": {
-    "projectedNote": "Estimé à partir du calendrier habituel. Les dates peuvent changer."
+    "projectedNote": "Estimé à partir du calendrier habituel. Les dates peuvent changer.",
+    "phases": {
+      "title": "Guerres",
+      "preparation": "Préparation",
+      "war": "Guerre",
+      "row": "Guerre {{war}}"
+    }
   },
   "withFaction": "{{name}} : {{faction}}",
   "withCharacter": "{{name}} : {{character}}",
   "withVersion": "{{name}} {{version}}",
   "withIteration": "{{name}} (Itération {{iteration}})",
   "withSeason": "{{name}} Saison {{season}}",
+  "withSeasonShort": "{{name}} S{{season}}",
   "withNewCampaign": "{{name}} (Nouvelle Campagne)",
   "withNewMow": "{{name}} (Nouveau MoW)",
   "withEventNumber": "{{name}} {{number}}",
@@ -83,6 +91,7 @@
     "battle-pass": "Passe de combat",
     "quest": "Quête",
     "guild-raid-season": "Raid de guilde",
+    "guild-raid-break": "Pause du raid de guilde",
     "guild-war-season": "Guerre de guilde",
     "anniversary-event": "Événement Anniversaire",
     "crusade-season": "Saison de Croisade"

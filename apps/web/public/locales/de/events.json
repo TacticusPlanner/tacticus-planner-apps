@@ -23,7 +23,8 @@
     "projected": "Voraussichtlich",
     "confirmed": "Bestätigt",
     "starts": "Startet",
-    "ends": "Endet"
+    "ends": "Endet",
+    "break": "Pause"
   },
   "wikiLink": "Wiki",
   "agenda": {
@@ -31,13 +32,20 @@
     "endsIn": "Endet in {{when}}"
   },
   "details": {
-    "projectedNote": "Aus dem üblichen Zeitplan hochgerechnet. Termine können sich ändern."
+    "projectedNote": "Aus dem üblichen Zeitplan hochgerechnet. Termine können sich ändern.",
+    "phases": {
+      "title": "Kriege",
+      "preparation": "Vorbereitung",
+      "war": "Krieg",
+      "row": "Krieg {{war}}"
+    }
   },
   "withFaction": "{{name}}: {{faction}}",
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
   "withIteration": "{{name}} (Iteration {{iteration}})",
   "withSeason": "{{name}} Saison {{season}}",
+  "withSeasonShort": "{{name}} S{{season}}",
   "withNewCampaign": "{{name}} (Neue Kampagne)",
   "withNewMow": "{{name}} (Neue MoW)",
   "withEventNumber": "{{name}} {{number}}",
@@ -83,6 +91,7 @@
     "battle-pass": "Battle Pass",
     "quest": "Quest",
     "guild-raid-season": "Gilden-Überfall",
+    "guild-raid-break": "Gildenraid-Pause",
     "guild-war-season": "Gildenkrieg",
     "anniversary-event": "Jubiläums-Event",
     "crusade-season": "Kreuzzug-Saison"

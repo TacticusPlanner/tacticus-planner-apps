@@ -27,6 +27,8 @@ const entry = (
   endUtc: "2026-08-09T00:00:00Z",
   parameters: null,
   isActiveNow: false,
+  isPast: false,
+  phases: [],
   derivedSeasonNumber: undefined,
   derivedEventNumber: undefined,
   ...overrides,

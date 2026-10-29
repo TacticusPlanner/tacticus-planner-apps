@@ -6,11 +6,13 @@ import { combineReadStates, usePersistedSelection } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import {
+  addLocalDays,
   buildEventsAgenda,
   buildEventsCalendarDays,
   buildEventsCalendarLanes,
   buildEventsCalendarWeeks,
   resolveEventsCalendarRange,
+  withGuildRaidBreaks,
 } from "./events-calendar-calc"
 import type {
   EventsCalendarView,
@@ -18,6 +20,9 @@ import type {
 } from "./events-calendar.types"
 
 const EVENTS_CALENDAR_VIEW_KEY = "home.eventsCalendar.view"
+
+// Reaches back far enough to catch a season that ended just before the grid, whose break lands in it.
+const LOOKBACK_DAYS = 31
 
 const isEventsCalendarView = (value: unknown): value is EventsCalendarView =>
   value === "week" || value === "month"
@@ -42,15 +47,28 @@ export function useEventsCalendar(): EventsCalendarViewModel {
   // Both reads are cached for the session; changing range only re-selects the window (design D3).
   const selectRange = useCallback(
     (rows: EventsCalendarStorageModel[]) =>
-      selectUpcomingEvents(rows, gridStart, gridEnd),
+      selectUpcomingEvents(
+        rows,
+        addLocalDays(gridStart, -LOOKBACK_DAYS),
+        gridEnd
+      ),
     [gridStart, gridEnd]
   )
   const definitionsState = useCatalogDataset("event-definitions", toById)
   const entriesState = useCatalogDataset("events-calendar", selectRange)
-  const definitionsById =
+  const rawDefinitions =
     definitionsState.status === "ready" ? definitionsState.data : undefined
-  const entries =
+  const rawEntries =
     entriesState.status === "ready" ? entriesState.data : undefined
+  const withBreaks = useMemo(
+    () =>
+      rawEntries && rawDefinitions
+        ? withGuildRaidBreaks(rawEntries, rawDefinitions)
+        : undefined,
+    [rawEntries, rawDefinitions]
+  )
+  const entries = withBreaks?.entries
+  const definitionsById = withBreaks?.definitionsById
   const read = combineReadStates(definitionsState, entriesState)
 
   const days = useMemo(

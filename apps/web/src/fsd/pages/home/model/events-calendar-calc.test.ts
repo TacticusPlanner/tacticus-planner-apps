@@ -8,6 +8,7 @@ import {
   buildEventsCalendarWeeks,
   resolveEventsCalendarRange,
   toIsoDate,
+  withGuildRaidBreaks,
 } from "./events-calendar-calc"
 
 const noneRecurrence = {
@@ -959,5 +960,125 @@ describe("DST-crossing day boundaries", () => {
     // entry's raw 24h-later end instant is 2026-03-09T23:00 local, inside the 9th) and still pass the
     // assertion above — this negative assertion is what actually catches that.
     expect(daysWithEntry).not.toContain("2026-03-09")
+  })
+})
+
+describe("guild seasons", () => {
+  const guildDefinitions = new Map([
+    [
+      "guild-raid-season",
+      {
+        id: "guild-raid-season",
+        type: "GuildRaidSeason",
+        recurrence: {
+          kind: "Fixed" as const,
+          intervalDays: 14,
+          durationDays: 13,
+          anchorUtc: "2026-10-21T10:00:00Z",
+        },
+        config: { seasonLengthDays: 13, seasonNumberAtAnchor: 112 },
+      },
+    ],
+    [
+      "guild-war-season",
+      {
+        id: "guild-war-season",
+        type: "GuildWarSeason",
+        recurrence: {
+          kind: "Fixed" as const,
+          intervalDays: 35,
+          durationDays: 15,
+          anchorUtc: "2026-10-23T09:00:00Z",
+        },
+        config: {
+          warsPerSeason: 6,
+          preparationPhaseHours: 24,
+          activeFightingPhaseHours: 36,
+          seasonNumberAtAnchor: 28,
+        },
+      },
+    ],
+  ])
+  const raid = (startUtc: string, endUtc: string, confirmed = true) => ({
+    occurrenceId: null,
+    definitionId: "guild-raid-season",
+    confirmed,
+    startUtc,
+    endUtc,
+    parameters: null,
+  })
+
+  it("adds a break from a raid season's end until the next season starts", () => {
+    const { entries, definitionsById: withBreak } = withGuildRaidBreaks(
+      [raid("2026-10-21T10:00:00Z", "2026-11-03T10:00:00Z", false)],
+      guildDefinitions
+    )
+
+    expect(entries).toHaveLength(2)
+    expect(entries[1]).toMatchObject({
+      definitionId: "guild-raid-break",
+      confirmed: false,
+      startUtc: "2026-11-03T10:00:00Z",
+      endUtc: "2026-11-04T10:00:00.000Z",
+    })
+    expect(withBreak.get("guild-raid-break")?.type).toBe("GuildRaidBreak")
+  })
+
+  it("numbers raid seasons from the anchor and splits a war season into its phases", () => {
+    const days = buildEventsCalendarDays(
+      [
+        raid("2026-11-04T10:00:00Z", "2026-11-17T10:00:00Z"),
+        {
+          occurrenceId: "occ-gw-28",
+          definitionId: "guild-war-season",
+          confirmed: true,
+          startUtc: "2026-10-23T09:00:00Z",
+          endUtc: "2026-11-07T09:00:00Z",
+          parameters: { season: 28 },
+        },
+      ],
+      guildDefinitions,
+      new Date(2026, 10, 5),
+      new Date(2026, 10, 6),
+      new Date(2026, 10, 5)
+    )
+    const entries = days[0]?.entries ?? []
+    const raidEntry = entries.find(
+      (entry) => entry.definitionId === "guild-raid-season"
+    )
+    const war = entries.find(
+      (entry) => entry.definitionId === "guild-war-season"
+    )
+
+    expect(raidEntry?.derivedSeasonNumber).toBe(113)
+    expect(war?.derivedSeasonNumber).toBe(28)
+    expect(war?.phases).toHaveLength(12)
+    expect(war?.phases.slice(0, 2)).toEqual([
+      {
+        kind: "preparation",
+        war: 1,
+        startUtc: "2026-10-23T09:00:00.000Z",
+        endUtc: "2026-10-24T09:00:00.000Z",
+      },
+      {
+        kind: "war",
+        war: 1,
+        startUtc: "2026-10-24T09:00:00.000Z",
+        endUtc: "2026-10-25T21:00:00.000Z",
+      },
+    ])
+    expect(war?.phases.at(-1)?.endUtc).toBe("2026-11-07T09:00:00.000Z")
+  })
+
+  it("marks an entry past once it has ended", () => {
+    const days = buildEventsCalendarDays(
+      [raid("2026-10-07T10:00:00Z", "2026-10-20T10:00:00Z")],
+      guildDefinitions,
+      new Date(2026, 9, 10),
+      new Date(2026, 9, 11),
+      new Date(2026, 9, 29)
+    )
+
+    expect(days[0]?.entries[0]?.isPast).toBe(true)
   })
 })

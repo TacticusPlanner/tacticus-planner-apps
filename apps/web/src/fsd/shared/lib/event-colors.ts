@@ -13,6 +13,7 @@ const familyByDefinitionType: Record<string, EventFamily> = {
   HomeScreenEvent: "heroes",
   TournamentArena: "pvp",
   GuildRaidSeason: "guild",
+  GuildRaidBreak: "guild",
   GuildWarSeason: "guild",
   CrusadeSeason: "guild",
   BattlePass: "passes",

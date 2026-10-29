@@ -1,6 +1,7 @@
 import type {
   EventEntryViewModel,
   EventLane,
+  EventPhase,
   EventsAgenda,
   EventsCalendarDay,
   EventsCalendarDayEntry,
@@ -180,6 +181,64 @@ function deriveOrdinalFromAnchor(
   return numberAtAnchor + slotsSinceAnchor
 }
 
+function configNumber(
+  definition: RawEventDefinition | undefined,
+  key: string
+): number | undefined {
+  const config = definition?.config
+  const value =
+    config && typeof config === "object"
+      ? (config as Record<string, unknown>)[key]
+      : undefined
+  return typeof value === "number" && value > 0 ? value : undefined
+}
+
+const ONE_HOUR_MS = 60 * 60 * 1000
+
+/**
+ * A Guild War season's wars, each a preparation window then a war window, read from the definition's
+ * `warsPerSeason`, `preparationPhaseHours` and `activeFightingPhaseHours` (and `warIntervalHours` when
+ * a gap follows each war; it defaults to preparation + war). Clipped to the season's own end.
+ */
+function deriveGuildWarPhases(
+  entry: RawEventsCalendarEntry,
+  definition: RawEventDefinition | undefined
+): EventPhase[] {
+  if (definition?.type !== "GuildWarSeason") return []
+  const wars = configNumber(definition, "warsPerSeason")
+  const preparationHours = configNumber(definition, "preparationPhaseHours")
+  const warHours = configNumber(definition, "activeFightingPhaseHours")
+  if (!wars || !preparationHours || !warHours) return []
+  const intervalHours =
+    configNumber(definition, "warIntervalHours") ?? preparationHours + warHours
+
+  const seasonStartMs = Date.parse(entry.startUtc)
+  const seasonEndMs = Date.parse(entry.endUtc)
+  const phases: EventPhase[] = []
+  for (let war = 1; war <= wars; war++) {
+    const preparationStartMs =
+      seasonStartMs + (war - 1) * intervalHours * ONE_HOUR_MS
+    const warStartMs = preparationStartMs + preparationHours * ONE_HOUR_MS
+    const warEndMs = Math.min(warStartMs + warHours * ONE_HOUR_MS, seasonEndMs)
+    if (preparationStartMs >= seasonEndMs) break
+    phases.push({
+      kind: "preparation",
+      war,
+      startUtc: new Date(preparationStartMs).toISOString(),
+      endUtc: new Date(Math.min(warStartMs, seasonEndMs)).toISOString(),
+    })
+    if (warStartMs < seasonEndMs) {
+      phases.push({
+        kind: "war",
+        war,
+        startUtc: new Date(warStartMs).toISOString(),
+        endUtc: new Date(warEndMs).toISOString(),
+      })
+    }
+  }
+  return phases
+}
+
 function toViewModel(
   entry: RawEventsCalendarEntry,
   definitionsById: ReadonlyMap<string, RawEventDefinition>,
@@ -199,11 +258,14 @@ function toViewModel(
     endUtc: entry.endUtc,
     parameters: entry.parameters,
     isActiveNow: startMs <= nowMs && nowMs < endMs,
-    derivedSeasonNumber: deriveOrdinalFromAnchor(
-      entry,
-      definition,
-      "seasonNumberAtAnchor"
-    ),
+    isPast: endMs <= nowMs,
+    phases: deriveGuildWarPhases(entry, definition),
+    // An occurrence's own authored season wins over the anchor-derived one.
+    derivedSeasonNumber:
+      (typeof entry.parameters?.season === "number"
+        ? entry.parameters.season
+        : undefined) ??
+      deriveOrdinalFromAnchor(entry, definition, "seasonNumberAtAnchor"),
     derivedEventNumber: deriveOrdinalFromAnchor(
       entry,
       definition,
@@ -410,7 +472,16 @@ export function buildEventsCalendarLanes(
         }
       })
 
-      return { ...entry, startColumn, span: endColumn - startColumn }
+      return {
+        ...entry,
+        startColumn,
+        span: endColumn - startColumn,
+        barStartMs: dateRange[startColumn - 1]?.getTime() ?? 0,
+        barEndMs: addLocalDays(
+          dateRange[Math.max(endColumn - 2, 0)] ?? rangeStart,
+          1
+        ).getTime(),
+      }
     })
     // `collectVisibleEntries` and the per-day window test above use the same membership rule, so every
     // visible entry should land on exactly one day-column — this only guards against a degenerate
@@ -474,4 +545,61 @@ export function buildEventsCalendarWeeks(
     })
   }
   return weeks
+}
+
+const GUILD_RAID_BREAK_ID = "guild-raid-break"
+
+const guildRaidBreakDefinition: RawEventDefinition = {
+  id: GUILD_RAID_BREAK_ID,
+  type: "GuildRaidBreak",
+  recurrence: {
+    kind: "None",
+    intervalDays: null,
+    durationDays: null,
+    anchorUtc: null,
+  },
+  config: null,
+}
+
+/**
+ * Adds a "Guild Raid break" entry after every Guild Raid season: from the season's end until the next
+ * season starts, one `intervalDays` after this one (the gap between `durationDays` and `intervalDays`).
+ * A break is as tentative as the season it follows.
+ */
+export function withGuildRaidBreaks(
+  entries: readonly RawEventsCalendarEntry[],
+  definitionsById: ReadonlyMap<string, RawEventDefinition>
+): {
+  entries: RawEventsCalendarEntry[]
+  definitionsById: ReadonlyMap<string, RawEventDefinition>
+} {
+  const breaks: RawEventsCalendarEntry[] = []
+  for (const entry of entries) {
+    const definition = definitionsById.get(entry.definitionId)
+    if (
+      definition?.type !== "GuildRaidSeason" ||
+      definition.recurrence?.kind !== "Fixed" ||
+      !definition.recurrence.intervalDays
+    ) {
+      continue
+    }
+    const breakStartMs = Date.parse(entry.endUtc)
+    const breakEndMs =
+      Date.parse(entry.startUtc) +
+      definition.recurrence.intervalDays * ONE_DAY_MS
+    if (!(breakEndMs > breakStartMs)) continue
+    breaks.push({
+      occurrenceId: null,
+      definitionId: GUILD_RAID_BREAK_ID,
+      confirmed: entry.confirmed,
+      startUtc: entry.endUtc,
+      endUtc: new Date(breakEndMs).toISOString(),
+      parameters: null,
+    })
+  }
+  if (breaks.length === 0) return { entries: [...entries], definitionsById }
+
+  const withBreak = new Map(definitionsById)
+  withBreak.set(GUILD_RAID_BREAK_ID, guildRaidBreakDefinition)
+  return { entries: [...entries, ...breaks], definitionsById: withBreak }
 }

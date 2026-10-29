@@ -43,3 +43,28 @@ Every calendar entry SHALL show the event's game icon (falling back to its type 
 
 - **WHEN** the desktop grid renders a one-day Double XP entry
 - **THEN** the bar shows the Double XP icon with no visible text, and its accessible name and tooltip are the event name
+
+## ADDED Requirements
+
+### Requirement: Guild seasons show their breaks, numbers and war phases
+
+The calendar SHALL show a "Break" entry from each Guild Raid season's end until the next season starts. Guild Raid and Guild War seasons SHALL be labelled with a short season number ("Guild Raid S112"). A Guild War season SHALL show each war's fighting window distinctly from its preparation window on the desktop bar, and its details SHALL list every war's preparation and war times.
+
+#### Scenario: Break between raid seasons
+
+- **WHEN** a Guild Raid season ends a day before the next one starts
+- **THEN** that day shows a Guild Raid "Break" bar
+
+#### Scenario: Guild War phases
+
+- **WHEN** the user opens a Guild War season's details
+- **THEN** it lists six wars, each with a 24h preparation window followed by a 36h war window
+
+### Requirement: Past events are grayed out
+
+Entries that ended before now SHALL be drawn grayed out, so what is still to come stands out.
+
+#### Scenario: Ended season
+
+- **WHEN** the calendar shows a season that ended last week
+- **THEN** its entry is grayed out

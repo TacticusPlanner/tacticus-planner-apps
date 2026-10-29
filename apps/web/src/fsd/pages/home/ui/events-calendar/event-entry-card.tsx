@@ -20,7 +20,11 @@ import {
 } from "@/shared/lib"
 import { EventIcon } from "@/shared/ui"
 
-import type { EventEntryViewModel } from "../../model/events-calendar.types"
+import type {
+  EventEntryViewModel,
+  EventPhase,
+  PositionedEventEntry,
+} from "../../model/events-calendar.types"
 import { resolveEventDisplayName } from "../../model/resolve-event-display"
 import { resolveEventWikiUrl } from "../../model/event-wiki-links"
 
@@ -35,13 +39,16 @@ function useEventDisplayName(entry: EventEntryViewModel): string {
  *  dashed when projected, ringed (inset) while live. */
 function entrySurfaceClass(entry: EventEntryViewModel): string {
   const family = resolveEventFamily(entry.definitionType)
+  const isBreak = entry.definitionType === "GuildRaidBreak"
   return cn(
     // `relative` anchors the sr-only state text: without it, inside the Ongoing strip's scroller it
     // positions against the page and widens the document (pushing the fixed bottom nav off-screen).
     "relative border border-l-4 text-foreground transition-colors",
     "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
-    eventFamilySurfaceClass(family),
+    // A break between Guild Raid seasons keeps the guild stripe on a plain surface: nothing to raid.
+    isBreak ? "bg-muted/40 hover:bg-muted" : eventFamilySurfaceClass(family),
     eventFamilyStripeClass(family),
+    entry.isPast && "opacity-55 grayscale hover:opacity-80",
     entry.confirmed
       ? "border-y-transparent border-r-transparent"
       : "border-dashed",
@@ -118,6 +125,7 @@ function EventDetailsPopover({
             </Button>
           ) : null}
         </div>
+        {entry.phases.length > 0 ? <PhaseList phases={entry.phases} /> : null}
         {entry.confirmed ? null : (
           <p className="mt-2 text-xs text-muted-foreground">
             {t("details.projectedNote")}
@@ -128,25 +136,100 @@ function EventDetailsPopover({
   )
 }
 
+/** A Guild War season's wars in the details popover: each war's preparation and war windows. */
+function PhaseList({ phases }: { phases: EventPhase[] }) {
+  const { t, i18n } = useTranslation("events")
+  const formatter = new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  })
+  const wars = [...new Set(phases.map((phase) => phase.war))]
+
+  return (
+    <section className="mt-3" data-testid="event-phases">
+      <h4 className="mb-1 text-xs font-medium">{t("details.phases.title")}</h4>
+      <ul className="flex flex-col gap-0.5 text-xs text-muted-foreground tabular-nums">
+        {wars.map((war) => (
+          <li className="flex flex-wrap gap-x-2" key={war}>
+            <span className="font-medium text-foreground">
+              {t("details.phases.row", { war })}
+            </span>
+            {phases
+              .filter((phase) => phase.war === war)
+              .map((phase) => (
+                <span key={phase.kind}>
+                  {t(`details.phases.${phase.kind}`)}{" "}
+                  {formatter.formatRange(
+                    new Date(phase.startUtc),
+                    new Date(phase.endUtc)
+                  )}
+                </span>
+              ))}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+/** War windows drawn as darker blocks across the bar, placed by time within the bar's day window. */
+function PhaseOverlay({ entry }: { entry: PositionedEventEntry }) {
+  const { t } = useTranslation("events")
+  const windowMs = entry.barEndMs - entry.barStartMs
+  if (windowMs <= 0) return null
+
+  return (
+    <>
+      {entry.phases
+        .filter((phase) => phase.kind === "war")
+        .map((phase) => {
+          const startMs = Math.max(Date.parse(phase.startUtc), entry.barStartMs)
+          const endMs = Math.min(Date.parse(phase.endUtc), entry.barEndMs)
+          if (endMs <= startMs) return null
+          return (
+            <span
+              aria-hidden="true"
+              className="absolute inset-y-0 -z-10 bg-(--event-family-guild)/35"
+              data-testid="event-war-phase"
+              key={phase.startUtc}
+              title={t("details.phases.row", { war: phase.war })}
+              style={{
+                left: `${((startMs - entry.barStartMs) / windowMs) * 100}%`,
+                width: `${((endMs - startMs) / windowMs) * 100}%`,
+              }}
+            />
+          )
+        })}
+    </>
+  )
+}
+
 /** Desktop Gantt bar. A one-day bar shows only the game icon; its name stays for assistive tech and
- *  in the tooltip and popover. `compact` is the month grid's shorter bar. */
+ *  in the tooltip and popover. A Guild Raid break always reads "Break", with a small muted glyph.
+ *  `compact` is the month grid's shorter bar. */
 export function EventBar({
   entry,
   iconOnly = false,
   compact = false,
 }: {
-  entry: EventEntryViewModel
+  entry: PositionedEventEntry
   iconOnly?: boolean
   compact?: boolean
 }) {
+  const { t } = useTranslation("events")
   const displayName = useEventDisplayName(entry)
+  const isBreak = entry.definitionType === "GuildRaidBreak"
+  const showIconOnly = iconOnly && !isBreak
 
   return (
     <EventDetailsPopover entry={entry}>
       <button
         className={cn(
-          "flex h-full w-full min-w-0 items-center gap-1.5 rounded-md pr-2 pl-0.5 text-left text-xs font-medium",
-          iconOnly && "justify-center px-0",
+          "isolate flex h-full w-full min-w-0 items-center gap-1.5 overflow-hidden rounded-md pr-2 pl-0.5 text-left text-xs font-medium",
+          showIconOnly && "justify-center px-0",
+          isBreak && "justify-center pl-1 text-muted-foreground",
           entrySurfaceClass(entry)
         )}
         data-active={entry.isActiveNow}
@@ -155,15 +238,30 @@ export function EventBar({
         title={displayName}
         type="button"
       >
+        {entry.phases.length > 0 ? <PhaseOverlay entry={entry} /> : null}
         <EventIcon
-          className={cn("shrink-0", compact ? "size-5" : "size-7")}
+          className={cn(
+            "shrink-0",
+            isBreak ? "size-3.5" : compact ? "size-5" : "size-7"
+          )}
           definitionId={entry.definitionId}
           definitionType={entry.definitionType}
           parameters={entry.parameters}
         />
-        <span className={iconOnly ? "sr-only" : "min-w-0 flex-1 truncate"}>
-          {displayName}
-        </span>
+        {isBreak ? (
+          <>
+            <span aria-hidden="true" className="truncate">
+              {t("badges.break")}
+            </span>
+            <span className="sr-only">{displayName}</span>
+          </>
+        ) : (
+          <span
+            className={showIconOnly ? "sr-only" : "min-w-0 flex-1 truncate"}
+          >
+            {displayName}
+          </span>
+        )}
         <EntryStateText entry={entry} />
       </button>
     </EventDetailsPopover>
