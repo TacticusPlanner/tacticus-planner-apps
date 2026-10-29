@@ -3,7 +3,14 @@
   "navigation": {
     "previousWeek": "Semana anterior",
     "nextWeek": "Semana siguiente",
-    "today": "Hoy"
+    "previousMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente",
+    "today": "Hoy",
+    "view": "Vista del calendario",
+    "views": {
+      "week": "Semana",
+      "month": "Mes"
+    }
   },
   "states": {
     "loading": "Cargando eventos…",
@@ -16,7 +23,8 @@
     "projected": "Previsto",
     "confirmed": "Confirmado",
     "starts": "Empieza",
-    "ends": "Termina"
+    "ends": "Termina",
+    "break": "Descanso"
   },
   "wikiLink": "Wiki",
   "agenda": {
@@ -24,13 +32,20 @@
     "endsIn": "Termina en {{when}}"
   },
   "details": {
-    "projectedNote": "Previsto según el calendario habitual. Las fechas pueden cambiar."
+    "projectedNote": "Previsto según el calendario habitual. Las fechas pueden cambiar.",
+    "phases": {
+      "title": "Guerras",
+      "preparation": "Preparación",
+      "war": "Guerra",
+      "row": "Guerra {{war}}"
+    }
   },
   "withFaction": "{{name}}: {{faction}}",
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
   "withIteration": "{{name}} (Iteración {{iteration}})",
   "withSeason": "{{name}} Temporada {{season}}",
+  "withSeasonShort": "{{name}} T{{season}}",
   "withNewCampaign": "{{name}} (Nueva Campaña)",
   "withNewMow": "{{name}} (Nuevo MoW)",
   "withEventNumber": "{{name}} {{number}}",
@@ -76,6 +91,7 @@
     "battle-pass": "Pase de batalla",
     "quest": "Misión",
     "guild-raid-season": "Asalto de hermandad",
+    "guild-raid-break": "Descanso de incursión de hermandad",
     "guild-war-season": "Guerra de hermandades",
     "anniversary-event": "Evento de Aniversario",
     "crusade-season": "Temporada de Cruzada"
@@ -108,8 +124,8 @@
           "content": "Entra directamente en el plan de cualquier proyecto — el proyecto predeterminado siempre aparece primero."
         },
         "navigation": {
-          "title": "Explorar otras semanas",
-          "content": "Avanza o retrocede una semana, o vuelve directamente a hoy."
+          "title": "Explora otras semanas y meses",
+          "content": "Avanza o retrocede una semana o un mes, vuelve a hoy o cambia entre las vistas Semana y Mes."
         },
         "calendar": {
           "title": "Detalles del evento",

@@ -6,7 +6,7 @@ import type {
   EventLane,
   EventsCalendarDay,
 } from "../../../model/events-calendar.types"
-import { EventBar } from "../event-entry-card"
+import { EventLaneRow } from "./event-lane-row"
 
 // A Gantt-style grid, not a day-column grid: a header row of day labels, then one row per lane, each
 // entry positioned as a bar spanning the day-columns it covers (one horizontal bar per event, stacked
@@ -56,19 +56,7 @@ export function EventsCalendarDesktop({
         data-testid="events-calendar-lanes"
       >
         {lanes.map((lane, laneIndex) => (
-          <div className="grid h-10 grid-cols-7 gap-2" key={laneIndex}>
-            {lane.entries.map((entry) => (
-              <div
-                className="min-w-0"
-                key={entry.key}
-                style={{
-                  gridColumn: `${entry.startColumn} / span ${entry.span}`,
-                }}
-              >
-                <EventBar entry={entry} iconOnly={entry.span === 1} />
-              </div>
-            ))}
-          </div>
+          <EventLaneRow key={laneIndex} lane={lane} />
         ))}
       </div>
     </div>

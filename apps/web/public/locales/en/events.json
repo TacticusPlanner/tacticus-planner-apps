@@ -3,7 +3,14 @@
   "navigation": {
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
-    "today": "Today"
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "view": "Calendar view",
+    "views": {
+      "week": "Week",
+      "month": "Month"
+    }
   },
   "states": {
     "loading": "Loading events…",
@@ -16,7 +23,8 @@
     "projected": "Projected",
     "confirmed": "Confirmed",
     "starts": "Starts",
-    "ends": "Ends"
+    "ends": "Ends",
+    "break": "Break"
   },
   "wikiLink": "Wiki",
   "agenda": {
@@ -24,13 +32,20 @@
     "endsIn": "Ends in {{when}}"
   },
   "details": {
-    "projectedNote": "Projected from the usual schedule. Dates can change."
+    "projectedNote": "Projected from the usual schedule. Dates can change.",
+    "phases": {
+      "title": "Wars",
+      "preparation": "Preparation",
+      "war": "War",
+      "row": "War {{war}}"
+    }
   },
   "withFaction": "{{name}}: {{faction}}",
   "withCharacter": "{{name}}: {{character}}",
   "withVersion": "{{name}} {{version}}",
   "withIteration": "{{name}} (Iteration {{iteration}})",
   "withSeason": "{{name}} Season {{season}}",
+  "withSeasonShort": "{{name}} S{{season}}",
   "withNewCampaign": "{{name}} (New Campaign)",
   "withNewMow": "{{name}} (New MoW)",
   "withEventNumber": "{{name}} {{number}}",
@@ -76,6 +91,7 @@
     "battle-pass": "Battle Pass",
     "quest": "Quest",
     "guild-raid-season": "Guild Raid",
+    "guild-raid-break": "Guild Raid Break",
     "guild-war-season": "Guild War",
     "anniversary-event": "Anniversary Event",
     "crusade-season": "Crusade Season"
@@ -108,8 +124,8 @@
           "content": "Jump into any project's plan — the Default project always shows first."
         },
         "navigation": {
-          "title": "Browse other weeks",
-          "content": "Step forward or back a week, or jump back to today."
+          "title": "Browse other weeks and months",
+          "content": "Step back or forward a week or a month, jump back to today, or switch between the Week and Month views."
         },
         "calendar": {
           "title": "Event details",
