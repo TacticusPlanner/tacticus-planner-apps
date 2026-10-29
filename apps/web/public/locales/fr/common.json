@@ -17,7 +17,11 @@
     "signOut": "Se déconnecter",
     "userMenu": "Menu du compte",
     "preferences": "Préférences",
-    "accountSettings": "Paramètres du compte"
+    "accountSettings": "Paramètres du compte",
+    "signedInWith": {
+      "google": "Connecté avec Google",
+      "email": "Connecté avec l'e-mail"
+    }
   },
   "catalog": {
     "badge": {
@@ -90,6 +94,13 @@
       }
     },
     "account": {
+      "signInMethod": "Méthode de connexion",
+      "signInMethods": {
+        "google": "Google",
+        "email": "E-mail et mot de passe"
+      },
+      "email": "E-mail",
+      "signInMethodNote": "Chaque adresse e-mail ne fonctionne qu'avec une seule méthode de connexion : connectez-vous toujours de cette façon. Les comptes de méthodes différentes ne peuvent pas être fusionnés.",
       "purgeWarningTitle": "Purger le compte",
       "purgeWarningDescription": "Cette action supprime immédiatement et définitivement toutes vos données du planificateur. Elle est irréversible.",
       "purgeConfirmLabel": "Saisissez « {{word}} » pour activer la purge",

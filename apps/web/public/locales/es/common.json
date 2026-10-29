@@ -17,7 +17,11 @@
     "signOut": "Cerrar sesión",
     "userMenu": "Menú de la cuenta",
     "preferences": "Preferencias",
-    "accountSettings": "Ajustes de la cuenta"
+    "accountSettings": "Ajustes de la cuenta",
+    "signedInWith": {
+      "google": "Sesión iniciada con Google",
+      "email": "Sesión iniciada con correo"
+    }
   },
   "catalog": {
     "badge": {
@@ -90,6 +94,13 @@
       }
     },
     "account": {
+      "signInMethod": "Método de inicio de sesión",
+      "signInMethods": {
+        "google": "Google",
+        "email": "Correo y contraseña"
+      },
+      "email": "Correo",
+      "signInMethodNote": "Cada correo funciona con un solo método de inicio de sesión, así que inicia sesión siempre de esta forma. Las cuentas de métodos distintos no se pueden fusionar.",
       "purgeWarningTitle": "Purgar cuenta",
       "purgeWarningDescription": "Esto elimina de inmediato todos tus datos del planificador. Esta acción no se puede deshacer.",
       "purgeConfirmLabel": "Escribe «{{word}}» para habilitar la purga",

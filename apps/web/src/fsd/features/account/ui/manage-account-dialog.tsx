@@ -37,7 +37,7 @@ import {
   type CurrentUser,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
-import { signOut } from "@/shared/auth"
+import { getAccountEmail, getSignInMethod, signOut } from "@/shared/auth"
 
 import { ProfileTab } from "./profile-tab"
 
@@ -54,7 +54,8 @@ type ManageAccountDialogProps = {
 
 /**
  * "Account settings" dialog reachable from the user menu: Tacticus Integration (view masked values, update the
- * key, update/remove the user id) and Account (purge — requires typing the literal word "Confirm").
+ * key, update/remove the user id) and Account (sign-in method and
+ * email, then purge — requires typing the literal word "Confirm").
  */
 export function ManageAccountDialog({
   open,
@@ -286,6 +287,8 @@ function AccountTab({
     : null
 
   const canPurge = confirmation === PURGE_CONFIRMATION_WORD
+  const signInMethod = getSignInMethod(account)
+  const accountEmail = getAccountEmail(account)
 
   const handlePurge = () => {
     if (canPurge) purge.mutate()
@@ -293,6 +296,34 @@ function AccountTab({
 
   return (
     <div className="flex flex-col gap-4 pt-4">
+      <div className="grid gap-2 rounded-2xl border p-3 text-sm">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-muted-foreground">
+            {t("manageAccount.account.signInMethod")}
+          </span>
+          <span data-testid="manage-account-sign-in-method">
+            {t(`manageAccount.account.signInMethods.${signInMethod}`)}
+          </span>
+        </div>
+        {accountEmail ? (
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-muted-foreground">
+              {t("manageAccount.account.email")}
+            </span>
+            <span
+              className="min-w-0 truncate"
+              data-testid="manage-account-email"
+              title={accountEmail}
+            >
+              {accountEmail}
+            </span>
+          </div>
+        ) : null}
+        <p className="text-xs text-muted-foreground">
+          {t("manageAccount.account.signInMethodNote")}
+        </p>
+      </div>
+
       <div
         className="flex flex-col gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
         role="alert"

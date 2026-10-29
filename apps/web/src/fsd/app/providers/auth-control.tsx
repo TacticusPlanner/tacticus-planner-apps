@@ -38,6 +38,8 @@ import {
 } from "@/widgets/app-install"
 import { useCurrentUser } from "@/entities/account"
 import {
+  getAccountEmail,
+  getSignInMethod,
   loginRequest,
   signOut,
   useRequestApiAccessOnce,
@@ -154,7 +156,8 @@ export function AuthControl() {
   // Only the confirmed name is public identity: the provider's name/username can be email-like, so
   // it is never a fallback here.
   const accountName = currentUser?.displayName ?? t("auth.account")
-  const accountEmail = account.username
+  const accountEmail = getAccountEmail(account)
+  const signInMethod = getSignInMethod(account)
   const applicationAccountId = currentUser?.applicationUserId ?? null
 
   const dialogs = (
@@ -187,6 +190,7 @@ export function AuthControl() {
   const accountCard = (tourRow?: ReactNode) => (
     <AccountCard
       accountEmail={accountEmail}
+      signInMethod={signInMethod}
       identityPending={identityPending}
       accountName={accountName}
       applicationAccountId={applicationAccountId}
@@ -256,7 +260,9 @@ export function AuthControl() {
               {identityPending ? t("auth.accountLoading") : accountName}
             </DrawerTitle>
             <DrawerDescription className="sr-only">
-              {identityPending ? t("auth.accountLoading") : accountEmail}
+              {identityPending
+                ? t("auth.accountLoading")
+                : (accountEmail ?? t(`auth.signedInWith.${signInMethod}`))}
             </DrawerDescription>
             <div className="flex-1 overflow-y-auto px-4 py-4">
               {accountCard(

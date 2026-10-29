@@ -46,7 +46,10 @@ vi.mock("@azure/msal-react", () => ({
   }),
 }))
 
-vi.mock("@/shared/auth", () => ({
+vi.mock("@/shared/auth", async () => ({
+  ...(await vi.importActual<typeof import("@/shared/auth/account-identity")>(
+    "@/shared/auth/account-identity"
+  )),
   signOut: (...args: unknown[]) => signOut(...args),
 }))
 
@@ -276,6 +279,20 @@ describe("ManageAccountDialog", () => {
       expect(purgeAccount).toHaveBeenCalledTimes(1)
     })
     expect(signOut).toHaveBeenCalledTimes(1)
+  })
+
+  it("shows the sign-in method and email on the account tab", async () => {
+    const user = userEvent.setup()
+    render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
+
+    await user.click(screen.getByTestId("manage-account-tab-account"))
+
+    expect(
+      screen.getByTestId("manage-account-sign-in-method")
+    ).toHaveTextContent("manageAccount.account.signInMethods.email")
+    expect(screen.getByTestId("manage-account-email")).toHaveTextContent(
+      "test@example.com"
+    )
   })
 
   it("shows the masked Tacticus integration values on the integration tab", () => {
