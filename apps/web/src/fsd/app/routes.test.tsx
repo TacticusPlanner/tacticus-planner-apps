@@ -14,7 +14,10 @@ import { render, screen } from "@/test/render"
 
 vi.mock("@azure/msal-react", () => ({
   useIsAuthenticated: () => false,
-  useMsal: () => ({ inProgress: InteractionStatus.None }),
+  useMsal: () => ({
+    inProgress: InteractionStatus.None,
+    instance: { getAllAccounts: () => [] },
+  }),
 }))
 
 import { routes } from "./routes"

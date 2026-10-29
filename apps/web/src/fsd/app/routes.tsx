@@ -5,8 +5,7 @@ import { lazy, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Navigate, type RouteObject } from "react-router"
 
-import { InteractionStatus } from "@azure/msal-browser"
-import { useIsAuthenticated, useMsal } from "@azure/msal-react"
+import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
   routes as dailiesRoutes,
@@ -53,6 +52,7 @@ import { AppShell } from "./layout/app-shell"
 import { PublicLayout } from "./layout/public-layout"
 import { OnboardingGate } from "./onboarding-gate"
 import { RouteErrorBoundary } from "./route-error-boundary"
+import { useAuthPending } from "./use-auth-pending"
 
 // Everything but the landing page (the one route an unauthenticated first-time visitor always
 // hits) is lazy-loaded — each becomes its own chunk, fetched as soon as its route matches
@@ -120,9 +120,9 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 
 function NotFoundRedirect() {
   const isAuthenticated = useIsAuthenticated()
-  const { inProgress } = useMsal()
+  const authPending = useAuthPending()
 
-  if (inProgress !== InteractionStatus.None) {
+  if (authPending) {
     return <AuthResolving />
   }
 

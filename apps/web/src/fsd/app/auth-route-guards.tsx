@@ -1,15 +1,15 @@
 import type { ReactNode } from "react"
 import { Navigate, useLocation, useSearchParams } from "react-router"
-import { useTranslation } from "react-i18next"
-import { Spinner } from "@workspace/ui/components/spinner"
 
 import { InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
 import { LandingPage } from "@/pages/landing"
 
+import { BootScreen } from "./boot-screen"
 import { PublicLayout } from "./layout/public-layout"
 import { resolveNextPath } from "./resolve-next-path"
+import { useAuthPending } from "./use-auth-pending"
 
 // msal-react's MsalProvider always mounts with `accounts: []`/`inProgress: Startup`, even when the
 // underlying instance already restored an active account before the app rendered (see
@@ -18,27 +18,17 @@ import { resolveNextPath } from "./resolve-next-path"
 // `isAuthenticated`; deciding on the stale first-render value is what caused a hard refresh on a
 // protected deep link (e.g. /guild/members) to bounce to "/" before MSAL had a chance to catch up.
 export function AuthResolving() {
-  const { t } = useTranslation()
-  return (
-    <div
-      aria-label={t("common.loading")}
-      className="flex min-h-svh items-center justify-center"
-      data-testid="app-loading"
-      role="status"
-    >
-      <Spinner aria-hidden="true" className="size-8 text-primary" />
-    </div>
-  )
+  return <BootScreen />
 }
 
 // Authentication only. Split out of ProtectedRoute so the setup routes can require a signed-in user
 // without also being wrapped in the onboarding gate — which would send them to setup from setup.
 export function AuthenticatedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useIsAuthenticated()
-  const { inProgress } = useMsal()
+  const authPending = useAuthPending()
   const location = useLocation()
 
-  if (inProgress !== InteractionStatus.None) {
+  if (authPending) {
     return <AuthResolving />
   }
 
@@ -59,23 +49,23 @@ export function LandingRoute() {
   const isAuthenticated = useIsAuthenticated()
   const { inProgress } = useMsal()
   const [searchParams] = useSearchParams()
+  const next = searchParams.get("next")
 
   if (inProgress !== InteractionStatus.None) {
     return <AuthResolving />
   }
 
-  if (isAuthenticated) {
+  if (isAuthenticated && next !== null) {
     // `next` is the destination AuthenticatedRoute preserved before sending an unauthenticated
     // visitor here to sign in; allowSetupDestination because landing back on a deep-linked
     // /setup/* address is exactly the point here, unlike the onboarding gate's own use of `next`.
-    const destination = resolveNextPath(searchParams.get("next"), {
-      allowSetupDestination: true,
-    })
+    const destination = resolveNextPath(next, { allowSetupDestination: true })
     return <Navigate replace to={destination} />
   }
 
-  // Only the signed-out branch gets the public chrome, so neither the resolving spinner nor a
-  // signed-in visitor's redirect flashes the landing top bar and footer.
+  // A bare "/" is browsable signed in too (spec: landing-page): the hero and the top bar offer
+  // "Open planner" instead of sending the visitor away. The silent restore is not waited for here:
+  // the landing page renders either way and its sign-in button shows the check in progress.
   return (
     <PublicLayout>
       <LandingPage />
