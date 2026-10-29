@@ -47,7 +47,7 @@
           "src": "/shortcuts/raids.png",
           "sizes": "192x192",
           "type": "image/png",
-          "purpose": "maskable"
+          "purpose": "any maskable"
         }
       ]
     },
@@ -59,7 +59,7 @@
           "src": "/shortcuts/goals.png",
           "sizes": "192x192",
           "type": "image/png",
-          "purpose": "maskable"
+          "purpose": "any maskable"
         }
       ]
     },
@@ -72,7 +72,7 @@
           "src": "/shortcuts/legendary-events.png",
           "sizes": "192x192",
           "type": "image/png",
-          "purpose": "maskable"
+          "purpose": "any maskable"
         }
       ]
     }

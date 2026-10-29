@@ -22,7 +22,7 @@ Defines how the web app presents itself to the browser for installation and how 
 
 ### Requirement: The installed app offers shortcuts
 
-The manifest SHALL declare shortcuts to Daily raids (`/dailies/raids`), Goals (`/plan/goals`) and Legendary events (`/legendary-events`), in that order, each with a maskable icon, so Android fills its shortcut circle with it. The install guide's shortcut list SHALL match them.
+The manifest SHALL declare shortcuts to Daily raids (`/dailies/raids`), Goals (`/plan/goals`) and Legendary events (`/legendary-events`), in that order, each with an icon usable both plain and maskable (`any maskable`), so Android fills its shortcut circle with it and desktop jump lists still show it. The install guide's shortcut list SHALL match them.
 
 #### Scenario: Long-press on the app icon
 
