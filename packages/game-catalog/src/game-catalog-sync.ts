@@ -99,18 +99,22 @@ export async function syncGameCatalog(
 
   const { manifest, etag } = manifestResult
 
+  const changed = selectChangedDatasets(manifest, metadata)
   const { downloaded, removed } = await runManifestSync({
-    items: selectChangedDatasets(manifest, metadata),
+    items: changed,
     keyOf: (dataset) => dataset.key as GameCatalogDatasetKey,
     label: "catalog dataset",
+    // Nothing to download (a changed manifest whose datasets this client already holds, or one read
+    // without its ETag): report no progress, so the init loader does not flash its update overlay.
     onProgress:
-      options.onProgress &&
-      ((progress) =>
-        options.onProgress?.({
-          ...progress,
-          gameVersion: manifest.gameVersion,
-          firstTime,
-        })),
+      options.onProgress && changed.length > 0
+        ? (progress) =>
+            options.onProgress?.({
+              ...progress,
+              gameVersion: manifest.gameVersion,
+              firstTime,
+            })
+        : undefined,
     download: async (dataset) => {
       const datasetKey = dataset.key as GameCatalogDatasetKey
       const envelope = await client.getDataset(dataset)

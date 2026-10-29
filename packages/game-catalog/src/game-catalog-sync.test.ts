@@ -406,6 +406,21 @@ describe("syncGameCatalog", () => {
     )
   })
 
+  it("reports no progress when a fresh manifest has nothing new to download", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    const onProgress = vi.fn()
+
+    // A 200 for an unchanged manifest, as when the ETag could not be read back cross-origin.
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient(createManifest()),
+      { onProgress }
+    )
+
+    expect(result.status).toBe("ready")
+    expect(result.downloaded).toEqual([])
+    expect(onProgress).not.toHaveBeenCalled()
+  })
+
   it("treats a 304 with a complete cache as ready and a later sync as not first-time", async () => {
     await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
 
