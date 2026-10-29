@@ -150,6 +150,12 @@ Signing out, including the sign-out that follows an account purge, SHALL delete 
 - **WHEN** the user signs out and another account signs in on the same browser
 - **THEN** the Goals page does not show the previous account's steps
 
+#### Scenario: Other open tabs let go of the account's data
+
+- **GIVEN** the app is open in a second tab, possibly in the middle of a player-data sync
+- **WHEN** the user signs out in the first tab
+- **THEN** the second tab drops the local reads it holds, and its sync writes nothing into the player-data database
+
 #### Scenario: Preferences survive sign-out
 
 - **WHEN** the user signs out
