@@ -22,6 +22,13 @@ authenticated state without requiring any further manual action.
 - **THEN** the user is returned to the application already signed in, with no
   additional click or prompt required
 
+#### Scenario: Interactive sign-in abandoned at the identity provider
+
+- **WHEN** a user cancels or backs out of the identity provider's sign-in or
+  sign-up steps and is returned to the application with an error response
+- **THEN** the application still starts, the user is shown as signed out, and
+  signing in again starts a fresh interactive sign-in
+
 ### Requirement: Sign-in from the landing experience reaches the authenticated home experience
 
 When a user signs in starting from the unauthenticated landing page, the
@@ -118,16 +125,38 @@ When one or more callers (an API request, the player-data sync, a sign-in contro
 - **WHEN** another caller requests interactive sign-in
 - **THEN** no second redirect is started
 
-### Requirement: Token cache is tab-scoped
+### Requirement: Token cache persists on the device
 
-Identity-provider tokens SHALL be stored in tab-scoped session storage, not in storage shared across tabs or persisted after the browser closes. Only the non-secret account hint described in `silent-sign-in` SHALL persist on the device.
+Identity-provider tokens SHALL be stored in the device's local storage, shared across tabs and kept after the browser or the installed app closes, so a relaunch restores the session from the cached refresh token without a hidden identity-provider frame. Signing out SHALL remove them, together with the account hint described in `silent-sign-in`.
 
-#### Scenario: Inspecting device storage after sign-in
+#### Scenario: Relaunching the installed app
 
-- **WHEN** a user has signed in
-- **THEN** no access token, refresh token or id token is present in long-lived site storage
+- **GIVEN** a user who signed in less than 24 hours ago
+- **WHEN** they close and relaunch the installed app
+- **THEN** the session is restored from the device's token cache, with no hidden frame and no sign-in prompt
 
-#### Scenario: Browser restart
+#### Scenario: Signing out
 
-- **WHEN** the user closes the browser and reopens the app
-- **THEN** no token is read from storage, and sign-in proceeds through the silent restore path of `silent-sign-in`
+- **WHEN** the user signs out
+- **THEN** no access token, refresh token or id token remains in site storage
+
+### Requirement: Signing out removes the account's local data
+
+Signing out, including the sign-out that follows an account purge, SHALL delete the browser's local copy of the account's data before leaving for the identity provider: the game-catalog and player-data databases, the in-memory local-data cache, and every localStorage entry whose key starts with `tp.session.`. Data that belongs to the account SHALL be stored under that prefix. Per-device preferences, such as theme and language, SHALL use other keys and are kept.
+
+#### Scenario: Import leftovers do not reach the next account
+
+- **GIVEN** a V1 import left material steps waiting on the Goals page
+- **WHEN** the user signs out and another account signs in on the same browser
+- **THEN** the Goals page does not show the previous account's steps
+
+#### Scenario: Other open tabs let go of the account's data
+
+- **GIVEN** the app is open in a second tab, possibly in the middle of a player-data sync
+- **WHEN** the user signs out in the first tab
+- **THEN** the second tab drops the local reads it holds, and its sync writes nothing into the player-data database
+
+#### Scenario: Preferences survive sign-out
+
+- **WHEN** the user signs out
+- **THEN** the chosen theme and language are still applied on the signed-out pages

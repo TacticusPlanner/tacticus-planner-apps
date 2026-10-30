@@ -4,7 +4,7 @@
   "sections": {
     "signIn": {
       "title": "Anmeldung",
-      "body": "Die Anmeldung läuft über Microsoft Entra External ID. Der Planer sieht dein Passwort nie. Er speichert die Anmeldekennung, die Microsoft zurückgibt, den Planer-Namen, den du wählst, und wann du den Planer zuletzt genutzt hast."
+      "body": "Die Anmeldung läuft über Microsoft Entra External ID. Der Planer sieht dein Passwort nie. Er speichert die Anmeldekennung, die Microsoft zurückgibt, den Planer-Namen, den du wählst, und wann du den Planer zuletzt genutzt hast. Wenn du dich mit Google anmeldest, teilt Google deinen Namen und deine E-Mail-Adresse mit Microsoft, um dich anzumelden. Dein Kontomenü zeigt deine E-Mail-Adresse und die verwendete Anmeldemethode; der Planer liest sie aus deiner Anmeldung und speichert sie nicht."
     },
     "apiKey": {
       "title": "Dein Tacticus-API-Schlüssel",
@@ -32,7 +32,7 @@
     },
     "deletion": {
       "title": "Deine Daten löschen",
-      "body": "Du kannst dein Konto und alle zugehörigen Planer-Daten in den Kontoeinstellungen im Tab „Konto“ mit „Mein Konto löschen“ entfernen. Das wirkt sofort und kann nicht rückgängig gemacht werden."
+      "body": "Du kannst dein Konto in den Kontoeinstellungen im Tab „Konto“ mit „Mein Konto löschen“ entfernen. Dabei wählst du, ob nur deine Planer-Daten oder auch dein Planer-Anmeldekonto (Microsoft Entra External ID) gelöscht werden. Das Löschen des Anmeldekontos wird versucht; deine Planer-Daten werden auch dann gelöscht, wenn dieser Schritt fehlschlägt. Dein Google-Konto ist davon nicht betroffen. Das wirkt sofort und kann nicht rückgängig gemacht werden."
     },
     "contact": {
       "title": "Kontakt",

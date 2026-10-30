@@ -39,12 +39,10 @@ export function RaidSchedule({
   testId,
 }: {
   entries: RaidBreakdownEntry[]
-  // Bonus Raids continues the same masonry-column flow as `entries` instead of starting its own
-  // container below — `columns` packs items into whichever column has room, which only works if
-  // both sets of goal groups are flow items in one shared container. `bonusLabel` is rendered
-  // *inside* the first bonus group's own section (not as a separate flow item) so a column break
-  // can never separate the heading from the content it introduces; `bonusFooter` (e.g. a "Show
-  // more" control) is likewise rendered inside the last bonus group's section.
+  // Bonus Raids continues the same flow as `entries` instead of starting its own container below.
+  // `bonusLabel` is rendered *inside* the first bonus group's own section (not as a separate flow
+  // item) so the heading stays with the content it introduces; `bonusFooter` (e.g. a "Show more"
+  // control) is likewise rendered inside the last bonus group's section.
   bonusEntries?: RaidBreakdownEntry[]
   bonusLabel?: string
   bonusFooter?: ReactNode
@@ -97,18 +95,19 @@ export function RaidSchedule({
 
     // A goal group whose every resource has been fully de-duped away (every location's real
     // attempts are exhausted) renders no cards — skip the section entirely instead of leaving an
-    // empty header/grid shell that still reserves masonry-column space.
+    // empty header/grid shell.
     if (!isGroupVisible(resources)) return null
 
     return (
       <section
         key={`${keyPrefix}-${goal.goalId}`}
-        className="space-y-2 md:mb-5 md:break-inside-avoid-column md:space-y-3"
+        className="space-y-2 md:space-y-3"
       >
         {header}
         {!combinesShardIdentity ? <GoalHeader goal={goal} /> : null}
         <div
-          className="grid gap-2 md:gap-3"
+          // Never wider than the group: a dashboard track can be narrower than 20rem.
+          className="grid gap-2 md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))] md:gap-3"
           data-testid={`raid-resource-grid-${goal.goalId}`}
         >
           {resources.map(({ resourceId, entries: resourceEntries }) => (
@@ -135,14 +134,9 @@ export function RaidSchedule({
   }
 
   return (
-    // "wide" layout uses CSS multi-column (not grid-template-columns) so shorter goal groups don't
-    // get stretched to match a taller one in the same grid row — grid sizes each row to its tallest
-    // cell, which left dead space beneath short cards; columns instead pack items top-to-bottom
-    // per column, masonry-style, with no such gap.
-    <div
-      className="flex flex-col gap-4 md:block md:columns-[20rem] md:gap-5 md:gap-x-5"
-      data-testid={testId}
-    >
+    // Goal groups stack full width and each group's cards fill as many 20rem columns as fit, so a
+    // day with a single goal group still uses the whole width.
+    <div className="flex flex-col gap-4 md:gap-5" data-testid={testId}>
       {grouped.map((group) => renderGroup(group, "today"))}
       {visibleBonusGrouped.map((group, index) =>
         renderGroup(
@@ -165,10 +159,7 @@ export function RaidSchedule({
         // Every bonus goal group got de-duped away (all its locations are exhausted), but the
         // heading/footer (e.g. "Show more") must still surface — there's no visible group section
         // left to attach them to, so render them as their own flow item instead of dropping them.
-        <div
-          className="md:break-inside-avoid-column"
-          key="bonus-raids-fallback"
-        >
+        <div key="bonus-raids-fallback">
           <h3
             className="mb-2 text-sm font-semibold text-muted-foreground"
             data-testid="bonus-raids-heading"

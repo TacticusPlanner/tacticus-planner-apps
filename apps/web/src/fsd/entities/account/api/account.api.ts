@@ -2,6 +2,7 @@ import { apiClient, unwrap, type ApiSchemas } from "@/shared/api"
 
 import type { CurrentUser } from "../model/current-user"
 import { mapCurrentUserDtoToDomain } from "../model/current-user.mapper"
+import { clearSetupCompleteHint } from "../model/setup-complete-hint"
 
 // Wire shapes, generated from the API's OpenAPI document (spec: api-contract-sync); never hand-written.
 type S = ApiSchemas
@@ -76,6 +77,16 @@ export function importV1Profile(request: ImportV1ProfileRequest) {
   )
 }
 
-export async function purgeAccount() {
-  await unwrap(apiClient().DELETE("/api/v1/account"))
+/** `deleteSignInAccount` also deletes the Entra External ID user the caller signs in with; otherwise only
+ *  planner data goes and the same sign-in starts a fresh planner account. */
+export async function purgeAccount({
+  deleteSignInAccount = false,
+}: { deleteSignInAccount?: boolean } = {}) {
+  await unwrap(
+    apiClient().DELETE("/api/v1/account", {
+      params: { query: { deleteSignInAccount } },
+    })
+  )
+  // The account is gone, so the next sign-in must wait for GET /account to provision a new one.
+  clearSetupCompleteHint()
 }

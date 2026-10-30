@@ -114,20 +114,17 @@ shop rotation which refreshes at UTC midnight.
 
 ### Requirement: Distinct desktop and mobile presentations
 
-The Shops page SHALL present a desktop layout at or above the 768px breakpoint and a distinct mobile
-layout below it — not merely a responsive reflow of the same markup — consistent with this app's
-desktop/mobile convention for Dailies pages. Every label, count, cost, and control SHALL be present in
-both.
+Shop recommendations SHALL use one compact presentation at every width: shop sections and recommendation cards composed as dense rows that minimize vertical space. The Raids tab is their only home and places them in a dashboard column about 400–575px wide (see `daily-raids-today`, "Today lays out its sections as a dashboard"), so a separate multi-column desktop layout no longer applies. Every label, count, cost, and control SHALL be present at every width.
 
 #### Scenario: Mobile layout is compact
 
-- **WHEN** Shops is viewed below the 768px breakpoint
+- **WHEN** shop recommendations are viewed below the 768px breakpoint
 - **THEN** shop sections and recommendation cards are composed as dense rows that minimize vertical space while preserving every label, count, cost, and indicator
 
 #### Scenario: Desktop layout uses available width
 
-- **WHEN** Shops is viewed at or above the 768px breakpoint
-- **THEN** recommendation cards fill the available content width in as many readable columns as fit
+- **WHEN** shop recommendations are viewed at or above the 768px breakpoint
+- **THEN** they use the same dense rows as on mobile, filling the width of the Shop recommendations card, with every label, count, cost, and indicator
 
 ### Requirement: Shops is a Dailies page defaulting to all goals with an optional project filter
 
@@ -154,7 +151,7 @@ The page SHALL distinguish: still loading the project's goals or the shop data; 
 reading that data (with a retry affordance for the failed request, not presented as an empty result);
 no Active goals in scope (prompting the user to create a goal or, when a project filter is set, to clear it); and a valid scope with
 shop data where no shop offer matches an unmet need today (an explicit "nothing to buy today" empty
-state). Total game-catalog sync failure is handled globally before the page mounts and is out of
+state). The nothing-to-buy state SHALL be one line of text inside the Shop recommendations card, not a card of its own. Total game-catalog sync failure is handled globally before the page mounts and is out of
 scope for this page's own states.
 
 #### Scenario: Loading
@@ -175,17 +172,29 @@ scope for this page's own states.
 #### Scenario: Nothing to buy today
 
 - **WHEN** the Active goals in scope have needs but no daily shop offers any of those resources today
-- **THEN** the page shows an explicit empty state indicating there is nothing worth buying today
+- **THEN** the Shop recommendations card shows one line of text saying there is nothing worth buying today, with no further card or illustration
 
 ### Requirement: Shop recommendations are a section of the Raids tab
 
-The recommendations SHALL render as a "Shop recommendations" section on the Raids tab (`/dailies/raids`), after the raid lanes, in place of a separate Shops page. The section SHALL be shown whatever the raids' own state is (loading, nothing to farm, or ready). It SHALL have no project selector of its own; its scope follows "Shops is a Dailies page defaulting to all goals with an optional project filter". Its subtitle SHALL name the selected project, or say that it covers every Active goal when none is selected. Shop names and their Guaranteed/Possible groups SHALL be headings nested under the section's own h2.
+The recommendations SHALL render as a "Shop recommendations" card in the Raids tab's (`/dailies/raids`) dashboard, below Bonus raids in the same column (see `daily-raids-today`, "Today lays out its sections as a dashboard"), in place of a separate Shops page. The card SHALL be shown whatever the raids' own state is (loading, load failure, nothing to farm, or ready). It SHALL have no project selector of its own; its scope follows "Shops is a Dailies page defaulting to all goals with an optional project filter". Its subtitle SHALL name the selected project, or say that it covers every Active goal when none is selected. Shop names and their Guaranteed/Possible groups SHALL be headings nested under the card's own h2.
 
 #### Scenario: Shops show while raids have nothing to farm
 
 - **GIVEN** the raids show the nothing-to-farm state
 - **AND** a daily shop offers a resource an Active goal still needs
-- **THEN** the shop recommendations section still shows that offer
+- **THEN** the Shop recommendations card still shows that offer
+
+#### Scenario: Shops show while raids are loading
+
+- **GIVEN** Today's raid data is still loading
+- **AND** the shop data has loaded with an offer an Active goal still needs
+- **THEN** the Shop recommendations card shows that offer next to the loading Today's plan card
+
+#### Scenario: Shops move up when there are no bonus raids
+
+- **GIVEN** there are no Bonus raids entries below the energy limit
+- **WHEN** the dashboard renders with four tracks
+- **THEN** the Shop recommendations card is at the top of the third track
 
 ### Requirement: The Today tour covers the shop section
 

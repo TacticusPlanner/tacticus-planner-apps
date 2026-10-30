@@ -32,13 +32,15 @@ const groups: FactionGroup[] = [
 function renderCombobox({
   onChange = vi.fn<(id: UnitId) => void>(),
   lockedIds,
+  unitGroups = groups,
 }: {
   onChange?: ReturnType<typeof vi.fn<(id: UnitId) => void>>
   lockedIds?: ReadonlySet<UnitId>
+  unitGroups?: FactionGroup[]
 } = {}) {
   render(
     <UnitCombobox
-      groups={groups}
+      groups={unitGroups}
       onChange={onChange}
       placeholder="Select a character"
       emptyText="No character found."
@@ -95,6 +97,33 @@ describe("UnitCombobox", () => {
 
     expect(optionNames()).toEqual(["Imotekh", "Trazyn"])
   })
+
+  it.each([
+    ["amm", ["Âmmuk"]],
+    ["zka", ["Z'Kar"]],
+  ])(
+    "ignores accents and apostrophes in names when searching %s",
+    (query, expected) => {
+      renderCombobox({
+        unitGroups: [
+          {
+            factionId: factionIdSchema.parse("Necrons"),
+            factionName: "Necrons",
+            members: [
+              { id: unitIdSchema.parse("ammuk"), name: "Âmmuk" },
+              { id: unitIdSchema.parse("zkar"), name: "Z'Kar" },
+            ],
+          },
+        ],
+      })
+
+      fireEvent.change(screen.getByPlaceholderText("Select a character"), {
+        target: { value: query },
+      })
+
+      expect(optionNames()).toEqual(expected)
+    }
+  )
 
   it("shows the empty state when nothing matches", () => {
     renderCombobox()

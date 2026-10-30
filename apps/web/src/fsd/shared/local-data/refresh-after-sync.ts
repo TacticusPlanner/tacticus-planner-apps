@@ -5,6 +5,8 @@ import { localDataKeys, type LocalDataSource } from "./use-local-data"
 const channelName = "tacticus-planner-local-data"
 
 type RefreshMessage = { source: LocalDataSource; keys: string[] }
+// Sign-out in one tab: every other tab drops the reads it holds from the deleted databases.
+type ClearMessage = { cleared: true }
 
 /** The keys a sync stored (`downloaded`) or dropped (`removed`), from its result or from the
  *  error a partly failed sync rejects with (`ManifestSyncError` carries the same lists). */
@@ -61,9 +63,16 @@ export function listenForLocalDataRefresh(
 ): () => void {
   const channel = openChannel()
   if (!channel) return () => undefined
-  channel.onmessage = (event: MessageEvent<RefreshMessage>) =>
-    invalidate(queryClient, event.data)
+  channel.onmessage = (event: MessageEvent<RefreshMessage | ClearMessage>) => {
+    if ("cleared" in event.data) removeLocalReads(queryClient)
+    else invalidate(queryClient, event.data)
+  }
   return () => channel.close()
+}
+
+function removeLocalReads(queryClient: QueryClient) {
+  queryClient.removeQueries({ queryKey: localDataKeys.all })
+  queryClient.removeQueries({ queryKey: ["sync"] })
 }
 
 let appQueryClient: QueryClient | null = null
@@ -73,9 +82,11 @@ export function registerLocalDataQueryClient(queryClient: QueryClient) {
   appQueryClient = queryClient
 }
 
-/** Drops every cached local read and sync run (sign-out deletes the databases they came from), so
- *  the next account starts from an empty cache and syncs again. */
+/** Drops every cached local read and sync run (sign-out deletes the databases they came from), here
+ *  and in every other open tab, so the next account starts from an empty cache and syncs again. */
 export function clearLocalDataCache() {
-  appQueryClient?.removeQueries({ queryKey: localDataKeys.all })
-  appQueryClient?.removeQueries({ queryKey: ["sync"] })
+  if (appQueryClient) removeLocalReads(appQueryClient)
+  const channel = openChannel()
+  channel?.postMessage({ cleared: true } satisfies ClearMessage)
+  channel?.close()
 }

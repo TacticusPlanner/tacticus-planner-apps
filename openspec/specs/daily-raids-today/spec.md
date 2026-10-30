@@ -12,6 +12,8 @@ Today SHALL show the relevant unit portrait for each goal group, icons for energ
 
 When a goal's only scheduled resource is that same unit's shards, Today SHALL combine the goal identity and shard schedule into one row instead of repeating the portrait and unit name in a separate goal header and resource card.
 
+At or above the 768px breakpoint, Today's goal groups SHALL stack one below the other across the full width of their card, and each group's resource cards SHALL fill that width in as many 20rem columns as fit. A group SHALL NOT be confined to one column because it is the only group. Plan › Schedule keeps its own layout.
+
 #### Scenario: Single shard schedule avoids duplicate identity
 
 - **GIVEN** a goal whose only scheduled resource is the goal unit's shards
@@ -26,7 +28,18 @@ When a goal's only scheduled resource is that same unit's shards, Today SHALL co
 #### Scenario: Desktop schedule fills the page width
 
 - **WHEN** Today is viewed at or above the 768px desktop breakpoint
-- **THEN** goal groups auto-fill the available content width with as many readable columns as fit, keeping their resource cards compact rather than stretching a single card across the page
+- **THEN** each goal group's resource cards fill the Today's plan card's width in as many 20rem columns as fit, keeping each card compact rather than stretching a single card across the card
+
+#### Scenario: One goal group fills the plan card
+
+- **GIVEN** today's plan has a single goal group with 11 resource cards, and the Today's plan card is about 1165px wide (four tracks at 2560px)
+- **WHEN** Today renders
+- **THEN** the 11 cards are laid out in 3 columns, not stacked in one
+
+#### Scenario: Plan › Schedule is unchanged
+
+- **WHEN** the user opens Plan › Schedule
+- **THEN** its goal groups and resource cards are laid out as before this change
 
 #### Scenario: Rank goals show the goal-type icon paired with the rank icon
 
@@ -108,17 +121,17 @@ Today's raid schedule and Bonus Raids SHALL group their entries by the goal(s) t
 
 ### Requirement: Bonus Raids
 
-Below a visible separator, Today SHALL show a Bonus Raids section: upgrades or shards that receive zero raids under the real daily energy budget but would receive at least one raid if energy were unlimited. While the daily energy limit is not spent, an upgrade or shard that already receives at least one raid in the real schedule SHALL NOT appear in Bonus Raids; once it is spent, the rule below applies instead. Bonus Raids SHALL be ordered by the same goal-priority order the main schedule uses.
+Today SHALL show a Bonus raids card: upgrades or shards that receive zero raids under the real daily energy budget but would receive at least one raid if energy were unlimited. The card's header SHALL say that these raids apply if energy is left. While the daily energy limit is not spent, an upgrade or shard that already receives at least one raid in the real schedule SHALL NOT appear in Bonus Raids; once it is spent, the rule below applies instead. Bonus Raids SHALL be ordered by the same goal-priority order the main schedule uses. Below the limit, when no entry qualifies, the Bonus raids card SHALL NOT be rendered.
 
-Bonus Raids SHALL initially display only the top 3 qualifying entries in that order. When more than 3 entries qualify, Today SHALL show a "Show more" control beneath the visible entries; activating it reveals the remaining entries (still in the same order, still grouped by goal per the grouping requirement above).
+Below the limit, Bonus Raids SHALL initially display only the top 3 qualifying entries in that order. When more entries qualify than are shown, Today SHALL show a "Show N more" control beneath the visible entries, where N is the number the next activation reveals: 5, or fewer when fewer are left. Each activation reveals the next N entries in place (still in the same order, still grouped by goal per the grouping requirement above). Once more than the top 3 are shown, a "Show less" control SHALL return to the top 3. Below the limit the card SHALL also show a "Full schedule" link to Plan › Schedule. How many entries are shown SHALL NOT be stored in the URL, and SHALL return to the top 3 whenever the project, the quick filters or Raids Filters change.
 
-Once the real energy spent today (from the player's synced attempts, the same figure Today's energy-usage bar shows) reaches or exceeds the daily energy limit (`planningSettings.dailyEnergy`), Bonus Raids SHALL be the only raids list on Today: the Today's-plan lane SHALL NOT be shown, and the Bonus Raids section SHALL be shown with a short caption stating that the daily energy limit has been reached. Bonus Raids SHALL then list every raid still open today rather than only the upgrades and shards the real schedule left unraided: today's schedule recomputed with unlimited energy and with each node's raids capped at the player's real attempts left today, so an upgrade or shard the real schedule already raided keeps its remaining farming, in goal-priority order ahead of lower-priority goals. A node whose real attempts-left data is unavailable keeps its full daily attempt cap. For such a capped node, the attempts left stand in for its daily attempt cap when the row decides whether to show "N upgrades left" (Today's raid schedule shows what is left to farm). The Bonus Raids entries keep the same goal grouping, goal-priority order, exhausted-node exclusion, and top-3 truncation with a "Show more" control described above. When the limit is reached and no Bonus Raids entry remains, the Bonus Raids section SHALL still be shown, with a caption stating that the limit is reached and no bonus raids are left. Below the limit, Today's plan and Bonus Raids render unchanged. When no synced attempt data is available the energy spent is 0, so Today renders unchanged; a daily energy limit of 0 or less is treated as no limit. The Raids Plan tab is unaffected.
+Once the real energy spent today (from the player's synced attempts, the same figure Today's energy tile shows) reaches or exceeds the daily energy limit (`planningSettings.dailyEnergy`), Bonus Raids SHALL be the only raids list on Today: the Today's plan card SHALL NOT be shown, and the Bonus raids card SHALL take its place in the dashboard (the same tracks, the same card grid inside goal groups), with a short caption as the first line of its body stating that the daily energy limit has been reached. Bonus Raids SHALL then list every raid still open today rather than only the upgrades and shards the real schedule left unraided: today's schedule recomputed with unlimited energy and with each node's raids capped at the player's real attempts left today, so an upgrade or shard the real schedule already raided keeps its remaining farming, in goal-priority order ahead of lower-priority goals. A node whose real attempts-left data is unavailable keeps its full daily attempt cap. For such a capped node, the attempts left stand in for its daily attempt cap when the row decides whether to show "N upgrades left" (Today's raid schedule shows what is left to farm). The Bonus Raids entries keep the same goal grouping, goal-priority order and exhausted-node exclusion described above, and SHALL all be shown, with no top-3 truncation, no "Show N more" or "Show less" control and no Full schedule link. When the limit is reached and no Bonus Raids entry remains, the Bonus raids card SHALL still be shown, with a caption stating that the limit is reached and no bonus raids are left. Below the limit, Today's plan and Bonus Raids render unchanged, except that when Today's plan has no entries but Bonus Raids do, the Bonus raids card SHALL take the plan's place (top 3 with "Show N more" and the Full schedule link, no limit caption) instead of sitting beside an empty plan card. When no synced attempt data is available the energy spent is 0, so Today renders unchanged; a daily energy limit of 0 or less is treated as no limit. The Raids Plan tab is unaffected.
 
 Assumptions:
 
 - Energy spent today is the account-wide real spend from synced attempts at standing campaign nodes (Today's "Today shows real daily energy usage" requirement); it is not capped at the limit.
 - The daily energy limit is `planningSettings.dailyEnergy` (default 288 when unset).
-- Below the limit, Bonus Raids are computed from an unlimited energy budget at each node's full daily attempt cap. Once the limit is reached they are the raids left today: an unlimited energy budget with each node capped at the player's real attempts left (`live-progress.battleAttempts[].attemptsLeft`, standing and event-campaign nodes alike). The header's energy and raid totals keep describing the real schedule.
+- Below the limit, Bonus Raids are computed from an unlimited energy budget at each node's full daily attempt cap. Once the limit is reached they are the raids left today: an unlimited energy budget with each node capped at the player's real attempts left (`live-progress.battleAttempts[].attemptsLeft`, standing and event-campaign nodes alike).
 - A node's daily attempt cap is shared by every goal and material raided there, in goal-priority order; the real attempts left lower that shared cap.
 - Upgrades already farmed today are counted through the synced inventory, so each goal's remaining need already reflects them.
 
@@ -142,45 +155,61 @@ Assumptions:
 
 #### Scenario: Bonus Raids truncated to top 3 with a Show more control
 
-- **GIVEN** more than 3 entries qualify for Bonus Raids
+- **GIVEN** 12 entries qualify for Bonus Raids and the energy limit is not spent
 - **WHEN** Today loads
-- **THEN** only the first 3 entries (in goal-priority order) are shown, followed by a "Show more" control, and the remaining entries are not rendered until that control is activated
+- **THEN** only the first 3 entries (in goal-priority order) are shown, followed by a "Show 5 more" control and a "Full schedule" link, and the remaining entries are not rendered until that control is activated
 
-#### Scenario: Show more reveals the rest
+#### Scenario: Show more reveals 5 at a time
 
-- **GIVEN** Bonus Raids is showing its truncated top-3 view with a "Show more" control
-- **WHEN** the user activates "Show more"
-- **THEN** the remaining qualifying entries are revealed in place, in the same goal-priority order, still grouped by goal
+- **GIVEN** Bonus Raids is showing the top 3 of 12 entries
+- **WHEN** the user activates "Show 5 more"
+- **THEN** entries 4–8 are revealed in place, in the same goal-priority order, still grouped by goal, the control reads "Show 4 more", and a "Show less" control appears
+- **AND WHEN** the user activates "Show 4 more"
+- **THEN** all 12 entries are shown, there is no "Show N more" control, and "Show less" remains
+- **AND WHEN** the user activates "Show less"
+- **THEN** only the first 3 entries are shown again
+
+#### Scenario: Full schedule opens Plan › Schedule
+
+- **GIVEN** the energy limit is not spent and Bonus Raids has entries
+- **WHEN** the user activates "Full schedule"
+- **THEN** Plan › Schedule opens
 
 #### Scenario: 3 or fewer entries need no truncation
 
 - **GIVEN** 3 or fewer entries qualify for Bonus Raids
 - **WHEN** Today loads
-- **THEN** all qualifying entries are shown and no "Show more" control is displayed
+- **THEN** all qualifying entries are shown and no "Show N more" control is displayed
 
 #### Scenario: No bonus raids available
 
-- **GIVEN** no upgrade or shard qualifies for Bonus Raids (every farmable need is either fully covered by the real schedule or would still receive zero raids even with unlimited energy)
+- **GIVEN** the energy limit is not spent and no upgrade or shard qualifies for Bonus Raids (every farmable need is either fully covered by the real schedule or would still receive zero raids even with unlimited energy)
 - **WHEN** Today loads
-- **THEN** Today shows an explicit empty state for the Bonus Raids section, not a blank section
+- **THEN** no Bonus raids card is rendered, and the next card in its stack moves up
 
 #### Scenario: Bonus Raids become the only list once the energy limit is spent
 
 - **GIVEN** the daily energy limit is 288 and the player's synced attempts today have spent 288 energy, and Bonus Raids has entries at nodes with attempts left
 - **WHEN** Today loads
-- **THEN** the Today's-plan lane is not shown, and Bonus Raids is the only raids list, captioned that the daily energy limit has been reached
+- **THEN** the Today's plan card is not shown, and the Bonus raids card takes its place as the only raids list, captioned that the daily energy limit has been reached
 
 #### Scenario: Bonus Raids keep the top-3 truncation after the limit is spent
 
-- **GIVEN** the energy limit is spent and more than 3 Bonus Raids entries have a node that is not exhausted
+- **GIVEN** the energy limit is spent and 6 Bonus Raids entries have a node that is not exhausted
 - **WHEN** Today loads
-- **THEN** Bonus Raids shows the first 3 of them followed by a "Show more" control that reveals the rest
+- **THEN** the top-3 truncation no longer applies: Bonus Raids shows all 6 entries in goal-priority order, with no "Show N more" control and no Full schedule link
 
 #### Scenario: Below the energy limit nothing changes
 
 - **GIVEN** the daily energy limit is 288 and the player's synced attempts today have spent 287 energy
 - **WHEN** Today loads
 - **THEN** Today's plan and Bonus Raids are both shown as before, with no limit-reached caption
+
+#### Scenario: Empty plan below the limit
+
+- **GIVEN** the energy limit is not spent, Today's plan shows no node (it has no entries, or every plan node has no real attempts left), and 4 entries qualify for Bonus Raids
+- **WHEN** Today loads
+- **THEN** the Today's plan card is not shown, and the Bonus raids card takes its place with the top 3 entries, a "Show 1 more" control, the Full schedule link and no limit-reached caption
 
 #### Scenario: No synced attempts leave Today unchanged
 
@@ -192,7 +221,7 @@ Assumptions:
 
 - **GIVEN** the energy limit is spent and no Bonus Raids entry remains
 - **WHEN** Today loads
-- **THEN** the Today's-plan lane is not shown, and the Bonus Raids section says the daily energy limit is reached and no bonus raids are left
+- **THEN** the Today's plan card is not shown, and the Bonus raids card in its place says the daily energy limit is reached and no bonus raids are left
 
 #### Scenario: Worked example, the top goal keeps its farming after the limit
 
@@ -461,19 +490,21 @@ Assumptions this requirement depends on:
 
 ### Requirement: Today's Attempts section
 
-Today SHALL show a "Today's Attempts" section after the Bonus Raids section, listing every campaign node — standing (standard/mirror/elite/eliteMirror) or event-campaign — the player has actually raided today — real synced attempts (`live-progress.battleAttempts[].attemptsUsed > 0`), account-wide, not scoped to the current project's schedule or Bonus Raids. Each listed location SHALL show its real numeric raid count today (`attemptsUsed`), including when its real synced attempts remaining are zero. An event-campaign attempt record is matched to its battle by campaign group, `type` (Standard/Extremis), and battle index, distinguishing the two tiers rather than excluding them.
+Today SHALL show a "Today's attempts" card (see "Today lays out its sections as a dashboard"), listing every campaign node — standing (standard/mirror/elite/eliteMirror) or event-campaign — the player has actually raided today — real synced attempts (`live-progress.battleAttempts[].attemptsUsed > 0`), account-wide, not scoped to the current project's schedule or Bonus Raids. Each listed location SHALL show its real numeric raid count today (`attemptsUsed`), including when its real synced attempts remaining are zero. An event-campaign attempt record is matched to its battle by campaign group, `type` (Standard/Extremis), and battle index, distinguishing the two tiers rather than excluding them.
+
+Each location SHALL be one compact row: the material icon, the campaign icon, the campaign name and node label on one line that wraps rather than truncates, and the attempts used ("6 attempts") at the end of the row. The material's name SHALL be part of the row's accessible name. The card's header SHALL show the number of rows and the total attempts used ("5 nodes · 29").
 
 #### Scenario: An attempted location appears in Today's Attempts
 
 - **GIVEN** the player has real synced attempts today at a standing-campaign node
 - **WHEN** Today loads
-- **THEN** that location appears in the Today's Attempts section, listed after Bonus Raids, showing its real raid count today
+- **THEN** that location appears in the Today's attempts card as one row showing its real raid count today
 
 #### Scenario: An attempted event-campaign location appears in Today's Attempts
 
 - **GIVEN** the player has real synced attempts today at an event-campaign node (for example, 6 raids at a node in the "Adepta Sororitas" event campaign's Standard tier)
 - **WHEN** Today loads
-- **THEN** that location appears in the Today's Attempts section showing its real raid count today, the same as a standing-campaign location would
+- **THEN** that location appears in the Today's attempts card showing its real raid count today, the same as a standing-campaign location would
 
 #### Scenario: An exhausted location shows a numeric actual count
 
@@ -487,15 +518,21 @@ Today SHALL show a "Today's Attempts" section after the Bonus Raids section, lis
 - **WHEN** Today loads
 - **THEN** that location still appears in Today's Attempts
 
+#### Scenario: Header totals
+
+- **GIVEN** the player has raided 5 nodes today, with 6, 6, 10, 5 and 2 attempts
+- **WHEN** Today loads
+- **THEN** the Today's attempts header shows 5 nodes and 6 + 6 + 10 + 5 + 2 = 29 attempts
+
 #### Scenario: No attempts recorded yet today
 
 - **GIVEN** the player has no real synced attempts recorded yet today
 - **WHEN** Today loads
-- **THEN** Today shows an explicit empty state for the Today's Attempts section, not a blank or hidden section
+- **THEN** the Today's attempts card shows an explicit empty state, not a blank or hidden card
 
 ### Requirement: Today shows real daily energy usage
 
-Today SHALL show a progress indicator next to its title reflecting the percentage of the player's configured daily energy (`planningSettings.dailyEnergy`) actually spent today, computed from the player's real synced attempt counts (not the plan's simulated schedule) across every campaign node on the account — standing or event-campaign, including nodes unrelated to the currently selected project — each priced at that node's energy cost. This percentage SHALL NOT be capped at 100%.
+Today SHALL show, in its Daily energy used glance tile, the energy actually spent today against the player's configured daily energy (`planningSettings.dailyEnergy`): a progress bar and the value "used / daily" (for example "396 / 938"). The energy used is computed from the player's real synced attempt counts (not the plan's simulated schedule) across every campaign node on the account — standing or event-campaign, including nodes unrelated to the currently selected project — each priced at that node's energy cost. The energy used SHALL NOT be capped at the daily energy. The bar fills to at most 100%, and its accessible value text SHALL state the uncapped percentage of the daily energy used. When the daily energy is 0 (no limit), the value SHALL be the energy used alone, with no bar and no percentage. Once the daily energy limit is reached, the tile SHALL switch to its over-limit state (see "Today shows glance tiles").
 
 An event-campaign attempt's energy cost is included using the same per-node pricing as a standing-campaign attempt, resolved to the correct tier (Standard vs Extremis) via the attempt record's `type`.
 
@@ -515,23 +552,29 @@ An event-campaign attempt's energy cost is included using the same per-node pric
 
 - **GIVEN** the player's real total energy cost from today's synced attempts exceeds their configured daily energy setting
 - **WHEN** Today loads
-- **THEN** the energy-usage indicator shows a percentage above 100%, uncapped
+- **THEN** the energy-usage indicator shows the energy used above the daily energy (for example "663 / 638"), uncapped, its accessible value text states the percentage above 100%, and the tile is in its over-limit state
 
 #### Scenario: No real usage yet today
 
 - **GIVEN** the player has no recorded real attempts yet today
 - **WHEN** Today loads
-- **THEN** the energy-usage indicator shows 0%
+- **THEN** the energy-usage indicator shows 0 of the daily energy (for example "0 / 288") with an empty bar
+
+#### Scenario: No daily energy limit
+
+- **GIVEN** the player's daily energy is 0 (no limit) and they have spent 400 energy today
+- **WHEN** Today loads
+- **THEN** the energy-usage value reads "400", with no "/ 0" and no progress bar
 
 #### Scenario: Real usage data is part of Today's readiness gate
 
 - **GIVEN** the player's real synced attempt data has not yet loaded
 - **WHEN** Today would otherwise render
-- **THEN** Today defers rendering (including the energy-usage indicator) until that data is available, consistent with how Today already gates rendering on its other required data sources
+- **THEN** Today defers rendering the energy-usage indicator until that data is available, consistent with how Today already gates rendering on its other required data sources
 
 ### Requirement: Today states the detected campaign event and its remaining time
 
-Today SHALL show a campaign-event status block reporting the campaign event it has detected as active and, only when the active calendar occurrence is confirmed, how long remains until that event ends. The block SHALL carry its own heading at the same weight as the schedule's own "Today's raids" heading, with the detected event — its campaign icon, its name, and its end-time status — on the line beneath.
+Today SHALL show a campaign-event status reporting the campaign event it has detected as active and, only when the active calendar occurrence is confirmed, how long remains until that event ends. The status SHALL be a glance tile labelled "Campaign event" whose value is the detected event — its campaign icon, its name, and its end-time status. The value SHALL wrap rather than truncate.
 
 The detected campaign event SHALL be the one named by `live-progress.activeCampaignEventId`, rendered by that campaign group's localized display name. This is the same signal that governs which event-campaign nodes are farmable (see "Only the active campaign event is farmable"), so the status line and Today's schedule can never disagree about whether an event is active.
 
@@ -591,26 +634,32 @@ Assumptions this requirement depends on:
 #### Scenario: A detected event shows its campaign icon
 
 - **GIVEN** `live-progress.activeCampaignEventId` resolves to a known campaign group
-- **WHEN** Today renders the status block
+- **WHEN** Today renders the Campaign event tile
 - **THEN** the detected event's campaign icon renders beside its name
 
-#### Scenario: On mobile the status block sits below the energy-usage row
+#### Scenario: On a narrow page the status is the last row of the glance card
 
-- **GIVEN** Today is viewed below the mobile breakpoint
-- **WHEN** Today renders its header
-- **THEN** the campaign-event status block occupies its own row directly below the daily energy-usage row, and is read after it
+- **GIVEN** Today's content is narrower than 42rem
+- **WHEN** Today renders its glance tiles
+- **THEN** the Campaign event is the last row of the single glance card, after Daily energy used in reading order, with its value aligned to the end like the other rows
 
-#### Scenario: On desktop the status block takes half the header
+#### Scenario: On a wide page the status is the last tile
 
-- **GIVEN** Today is viewed at or above the mobile breakpoint
-- **WHEN** Today renders its header
-- **THEN** the header splits into two equal halves — the schedule's own heading, its energy/raid totals and the daily energy-usage indicator on the leading half, and the campaign-event status block on the trailing half — with the energy bar's percentage staying at its own half's trailing edge
+- **GIVEN** Today's content is at least 42rem wide
+- **WHEN** Today renders its glance tiles
+- **THEN** the Campaign event tile is the last tile in the glance row, at the same size as the other tiles; there is no separate header block
+
+#### Scenario: A long event status wraps
+
+- **GIVEN** the German UI and a detected event whose status does not fit on one line of its tile
+- **WHEN** Today renders the Campaign event tile
+- **THEN** the status wraps onto further lines and is shown in full
 
 #### Scenario: The status line is part of Today's guided tour
 
 - **GIVEN** a user starts Today's guided tour on either a mobile or a desktop viewport
-- **WHEN** the tour reaches the campaign-event status line
-- **THEN** it highlights that block with its own step explaining what the detected campaign event governs and why an unconfirmed end has no countdown
+- **WHEN** the tour reaches the campaign-event status
+- **THEN** it highlights the Campaign event tile with its own step explaining what the detected campaign event governs and why an unconfirmed end has no countdown
 
 ### Requirement: Today's project selector defaults to all goals
 
@@ -653,25 +702,6 @@ Today (the Raids tab) SHALL build its schedule without any Home Screen Event sco
 
 - **GIVEN** Machine Hunt is active
 - **THEN** no event UI is shown on Today
-
-### Requirement: Today lays out its groups side by side when there is room
-
-On Dailies › Raids, the Today schedule, Bonus Raids and Today's Attempts SHALL each be their own group. Where the viewport leaves at least 20rem per group they SHALL sit side by side in one row, otherwise they SHALL stack in that order. The layout SHALL NOT depend on a dedicated breakpoint beyond the app's existing desktop/mobile split.
-
-#### Scenario: Wide viewport
-
-- **WHEN** the viewport can fit three 20rem groups
-- **THEN** Today, Bonus Raids and Today's Attempts render as three columns in one row
-
-#### Scenario: Mobile viewport
-
-- **WHEN** the viewport is below the desktop breakpoint
-- **THEN** the groups stack vertically in the order Today, Bonus Raids, Today's Attempts with no horizontal scroll
-
-#### Scenario: No bonus entries
-
-- **WHEN** there are no visible Bonus Raids entries
-- **THEN** no Bonus Raids group is rendered and the remaining groups share the row
 
 ### Requirement: Today requires a populated Onslaught rewards dataset and tolerates a missing reward row
 
@@ -877,27 +907,143 @@ The chips SHALL change only Today's plan and Bonus Raids (including the raids-le
 
 ### Requirement: Today lists today's Onslaught runs
 
-The Raids tab SHALL show an "Onslaught" section after the raid lanes, listing one row per unit that today's plan spends Onslaught tokens on, with its expected runs and shards, in goal-priority order. The runs SHALL come from the same plan run as Today's raids, so tokens are shared across goals in priority order exactly as Plan > Schedule's day 1 shows them. The section header SHALL show the whole tokens to spend today: the sum of the rows' expected runs, rounded up. When no goal needs an Onslaught run today, the section SHALL NOT be shown. Raids Filters SHALL NOT affect it.
+The Raids tab SHALL show an "Onslaught" card in the dashboard (see "Today lays out its sections as a dashboard"), listing one row per unit that today's plan spends Onslaught tokens on, with its expected runs and shards, in goal-priority order. The runs SHALL come from the same plan run as Today's raids, so tokens are shared across goals in priority order exactly as Plan > Schedule's day 1 shows them. The card header SHALL show the whole tokens to spend today: the sum of the rows' expected runs, rounded up. The Onslaught glance tile SHALL show the same whole-token total. When no goal needs an Onslaught run today, neither the card nor the tile SHALL be shown. Raids Filters SHALL NOT affect it.
 
 Assumptions:
 
 - One Onslaught run costs one token, and the plan spends at most the catalog's Onslaught runs per day.
 - Expected runs are fractional because shard drops per run are an expectation, not a guarantee.
 
-Worked example: goal g1 (priority 1, Bellator) is planned 1.2 runs for 6 expected shards and goal g2 (priority 2, Aleph-Null) 0.5 runs for 2 expected shards. The rows are Bellator "≈1.2 runs · 6 shards", then Aleph-Null "≈0.5 runs · 2 shards", and the header shows 1.2 + 0.5 = 1.7, rounded up to 2 tokens.
+Worked example: goal g1 (priority 1, Bellator) is planned 1.2 runs for 6 expected shards and goal g2 (priority 2, Aleph-Null) 0.5 runs for 2 expected shards. The rows are Bellator "≈1.2 runs · 6 shards", then Aleph-Null "≈0.5 runs · 2 shards", and the header and the tile show 1.2 + 0.5 = 1.7, rounded up to 2 tokens.
 
 #### Scenario: Runs are listed in goal priority
 
 - **GIVEN** today's plan spends Onslaught tokens on two goals' units
 - **WHEN** the user opens Raids
-- **THEN** the Onslaught section lists the higher-priority goal's unit first, each row with its expected runs and shards
+- **THEN** the Onslaught card lists the higher-priority goal's unit first, each row with its expected runs and shards
 
 #### Scenario: Nothing to run
 
 - **GIVEN** no goal needs an Onslaught run today
-- **THEN** the Raids tab has no Onslaught section
+- **THEN** the Raids tab has no Onslaught card and no Onslaught tile
 
 #### Scenario: Tour step
 
-- **WHEN** the user runs the Today tour with the Onslaught section shown
-- **THEN** a localized step explains the section, on desktop and mobile
+- **WHEN** the user runs the Today tour with the Onslaught card shown
+- **THEN** a localized step explains the card, on desktop and mobile
+
+### Requirement: Today lays out its sections as a dashboard
+
+On Dailies › Raids, Today SHALL show, from top to bottom: one controls row, a row of glance tiles (see "Today shows glance tiles"), and a grid of cards: Today's plan, Bonus raids, Shop recommendations, Onslaught and Today's attempts. Each card SHALL be a named region with its own level-2 heading.
+
+The controls row SHALL hold the "Quick filters" caption and its two chips, then the project selector, the Raids Filters trigger and the Planning settings trigger, in that order. When the row is too narrow it SHALL wrap, chips first, without hiding or truncating any control. While a quick filter is on, its one-line note SHALL appear on its own line directly below the row.
+
+The card grid SHALL size its tracks from the width of the page content, not the viewport, so an open or collapsed section menu is accounted for:
+
+- at least 84rem: four equal tracks. Today's plan spans tracks 1–2, the third track stacks Bonus raids then Shop recommendations, and the fourth stacks Onslaught then Today's attempts;
+- at least 42rem: two tracks. Today's plan spans both, and the two stacks form the second row side by side in the same pairs;
+- below 42rem: one track, with every card stacked.
+
+Cards SHALL keep their own height. A card that sits under another in a stack SHALL start directly below it, and a card that is not rendered SHALL let the next card in its stack move up. The reading and keyboard focus order SHALL be Today's plan, Bonus raids, Shop recommendations, Onslaught, Today's attempts at every track count, and it SHALL match the visual order.
+
+On this page only, the content width cap SHALL be 150rem (2400px) instead of the app's default 100rem (1600px).
+
+Assumptions:
+
+- One resource card needs 20rem to stay readable, so no track is narrower than 20rem except in the one-track layout on a phone.
+- The 768px desktop/mobile breakpoint is the app's existing `useIsMobile()` split. Below it this change renders the same cards in the one-track layout; a dedicated mobile form is a separate change.
+
+#### Scenario: Four tracks on a wide monitor
+
+- **GIVEN** a 2560px-wide window with the section menu open
+- **WHEN** the user opens Dailies › Raids
+- **THEN** the content is at most 2400px wide, Today's plan spans the first two of four tracks, Bonus raids sits above Shop recommendations in the third, and Onslaught sits above Today's attempts in the fourth
+
+#### Scenario: Two tracks on a narrow desktop
+
+- **GIVEN** the page content is between 42rem and 84rem wide (for example a 1024px window with the section menu open)
+- **WHEN** Today renders
+- **THEN** Today's plan spans the full width, and below it the Bonus raids / Shop recommendations stack and the Onslaught / Today's attempts stack sit side by side
+
+#### Scenario: One track on a phone
+
+- **GIVEN** a 390px-wide viewport
+- **WHEN** Today renders
+- **THEN** the cards stack in the order Today's plan, Bonus raids, Shop recommendations, Onslaught, Today's attempts, with no horizontal scroll
+
+#### Scenario: Focus order follows the cards
+
+- **WHEN** a keyboard user tabs through Today at any width
+- **THEN** focus moves through Today's plan, then Bonus raids, then Shop recommendations, then Onslaught, then Today's attempts
+
+#### Scenario: Missing cards close up
+
+- **GIVEN** there are no Bonus raids entries below the energy limit and no goal needs an Onslaught run today
+- **WHEN** Today renders with four tracks
+- **THEN** Shop recommendations is at the top of the third track and Today's attempts is at the top of the fourth, with no empty space reserved above them
+
+#### Scenario: Wider cap applies to Raids only
+
+- **WHEN** the user opens Dailies › HSE on the same 2560px window
+- **THEN** its content is still capped at 1600px
+
+#### Scenario: Controls wrap without truncation
+
+- **GIVEN** the German UI and a page content width too narrow for the controls on one line
+- **WHEN** Today renders
+- **THEN** the controls wrap onto a second line, the chips first, and every label is shown in full
+
+#### Scenario: Quick filter note under the row
+
+- **WHEN** the player turns on Bottlenecks
+- **THEN** its one-line note appears directly below the controls row
+
+#### Scenario: Tour steps point at the cards
+
+- **WHEN** a user runs the Today tour on desktop or mobile
+- **THEN** the schedule step highlights the Today's plan area (Bonus raids in its place at the energy limit), the energy step highlights the Daily energy used tile, the campaign event step highlights the Campaign event tile, and the Today's attempts and Onslaught steps highlight their cards
+- **AND** the navigation step highlights the section menu on desktop (its reopen toggle when collapsed) and the section tabs on mobile
+- **AND** a step whose card is left out today (Onslaught, or the shop offer groups when nothing is worth buying) is dropped from the tour rather than left without a target
+
+### Requirement: Today shows glance tiles
+
+Today SHALL show its glance tiles above the card grid, as a labelled region ("Today at a glance"). Each tile SHALL show a short label and its value, and tiles SHALL be static text, not controls. In order:
+
+1. **Daily energy used**: a progress bar and "used / daily" energy from "Today shows real daily energy usage". Once the daily energy limit is reached (the same test Bonus raids uses), the label SHALL read "Energy limit reached" and the bar and tile border SHALL switch to a distinct over-limit colour.
+2. **Onslaught**: today's whole tokens to spend, from "Today lists today's Onslaught runs". It SHALL be hidden when no goal needs an Onslaught run today.
+3. **Campaign event**: the status from "Today states the detected campaign event and its remaining time".
+
+There SHALL be no tile for the plan's energy and raid totals: without the daily energy beside them they say nothing on their own.
+
+The layout SHALL follow the width of Today's content (a container query), not the viewport:
+
+- From 42rem: each tile is a card of its own with its label above its value. Tiles SHALL take at least 12rem each and wrap onto further rows when there is not room for all of them on one.
+- Below 42rem (one dashboard track, as on a phone): the tiles SHALL fold into one card, one row per tile with its label at the start and its value at the end, rows split by dividers, so Today's plan starts as high as possible.
+
+Tile values SHALL wrap rather than truncate. Tiles 1–2 SHALL render only once Today's raid data is ready. The Campaign event tile SHALL render regardless.
+
+Worked example: daily energy 638, real spend today 663 energy, and two Onslaught runs planned at 1.2 and 0.5 runs. Tile 1 reads "Energy limit reached" with "663 / 638" and a full bar in the over-limit colour (663 ÷ 638 = 103.9%, so the bar's value text says 104%). Tile 2 shows 1.2 + 0.5 = 1.7, rounded up to "2 tokens". Below the limit, at a real spend of 410 energy, tile 1 reads "Daily energy used" with "410 / 638" and a bar 64% full; tile 2 still shows "2 tokens".
+
+#### Scenario: Tiles in order
+
+- **GIVEN** a goal needs an Onslaught run
+- **WHEN** Today renders
+- **THEN** the tiles read Daily energy used, Onslaught, Campaign event, in that order
+
+#### Scenario: Over the limit
+
+- **GIVEN** today's real energy spend has reached the daily energy limit
+- **WHEN** Today renders
+- **THEN** the first tile is labelled "Energy limit reached" with a full bar in the over-limit colour, and the Onslaught tile still follows it
+
+#### Scenario: One dense card on a narrow page
+
+- **GIVEN** Today's content is narrower than 42rem
+- **WHEN** Today renders its glance tiles
+- **THEN** they form one card of label / value rows split by dividers, not separate tiles
+
+#### Scenario: Raids still loading
+
+- **GIVEN** Today's raid data is still loading
+- **WHEN** Today renders
+- **THEN** only the Campaign event tile is shown

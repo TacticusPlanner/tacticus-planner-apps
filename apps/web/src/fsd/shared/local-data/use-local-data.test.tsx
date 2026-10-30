@@ -169,6 +169,28 @@ describe("refreshLocalDataAfterSync", () => {
     otherTab.close()
     stop()
   })
+
+  it("drops every local read when another tab signs out", async () => {
+    const { queryClient } = createWrapper()
+    queryClient.setQueryData(["local", "player", "characters"], [{ id: "a" }])
+    queryClient.setQueryData(["sync", "player", "account-1"], { ok: true })
+    const stop = listenForLocalDataRefresh(queryClient)
+
+    // What clearLocalDataCache posts from the tab that signs out.
+    const otherTab = new BroadcastChannel("tacticus-planner-local-data")
+    otherTab.postMessage({ cleared: true })
+
+    await waitFor(() =>
+      expect(
+        queryClient.getQueryData(["local", "player", "characters"])
+      ).toBeUndefined()
+    )
+    expect(queryClient.getQueryData(["sync", "player", "account-1"])).toBe(
+      undefined
+    )
+    otherTab.close()
+    stop()
+  })
 })
 
 describe("writtenKeys", () => {

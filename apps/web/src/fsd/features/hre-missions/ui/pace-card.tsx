@@ -4,7 +4,9 @@ import {
   heroReleaseChestIcon,
   heroReleaseCurrencyIcon,
   heroReleaseEventResourceIcon,
+  leaderboardIcon,
 } from "@workspace/game-catalog"
+import type { Progression } from "@workspace/game-domain"
 import {
   Card,
   CardContent,
@@ -22,7 +24,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, ProgressionBadge } from "@/shared/ui"
 
 import {
   bracketRange,
@@ -32,7 +34,10 @@ import {
   type HreOwnedStep,
   type HrePace,
 } from "../model/hre-pace"
-import type { HreRarityStepId } from "../model/hre-reward-tables"
+import {
+  hreStepProgression,
+  type HreRarityStepId,
+} from "../model/hre-reward-tables"
 import type { HreRewardRules } from "../model/hre-rules"
 import type { HreProgress } from "../model/hre-progress"
 import type { HreProgressActions } from "../model/use-hre-progress"
@@ -99,6 +104,7 @@ export function PaceCard({
         <div className="grid grid-cols-2 gap-3">
           <NumberField
             id="hre-pace-points"
+            icon={heroReleaseEventResourceIcon("points")}
             label={t("pace.points")}
             min={0}
             onChange={actions.setPoints}
@@ -106,6 +112,7 @@ export function PaceCard({
           />
           <NumberField
             id="hre-pace-rank"
+            icon={leaderboardIcon()}
             label={t("pace.rank")}
             min={1}
             onChange={actions.setRank}
@@ -118,6 +125,7 @@ export function PaceCard({
           <div className="grid grid-cols-2 gap-3">
             <NumberField
               id="hre-pace-owned-currency"
+              icon={currencyIcon}
               label={t("pace.ownedCurrency")}
               min={0}
               onChange={(currency) => actions.setOwned({ currency })}
@@ -126,6 +134,7 @@ export function PaceCard({
             />
             <NumberField
               id="hre-pace-next-tier"
+              icon={chestIcon}
               label={t("pace.nextTier")}
               max={lastTier}
               min={1}
@@ -155,7 +164,10 @@ export function PaceCard({
                   <SelectItem value="none">{t("pace.stepNone")}</SelectItem>
                   {stepsFor(rules, startRarity).map((step) => (
                     <SelectItem key={step.id} value={step.id}>
-                      {stepName(step.id)}
+                      <StepLabel
+                        name={stepName(step.id)}
+                        progression={hreStepProgression(step.id)}
+                      />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -164,6 +176,7 @@ export function PaceCard({
             {ownedStep && gap === null ? null : (
               <NumberField
                 id="hre-pace-to-next"
+                icon={heroReleaseEventResourceIcon("shards")}
                 label={t("pace.toNext")}
                 max={gap === null ? undefined : gap - 1}
                 min={0}
@@ -374,7 +387,10 @@ export function PaceCard({
             <SelectContent>
               {stepsFor(rules, startRarity).map((step) => (
                 <SelectItem key={step.id} value={step.id}>
-                  {stepName(step.id)}
+                  <StepLabel
+                    name={stepName(step.id)}
+                    progression={hreStepProgression(step.id)}
+                  />
                 </SelectItem>
               ))}
             </SelectContent>
@@ -432,8 +448,28 @@ function TargetNeeds({
   )
 }
 
+/** A hero step as the game draws it (rarity badge and stars) beside its name. */
+function StepLabel({
+  name,
+  progression,
+}: {
+  name: string
+  progression: string | undefined
+}) {
+  if (!progression) return name
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span aria-hidden="true" className="inline-flex">
+        <ProgressionBadge value={progression as Progression} />
+      </span>
+      {name}
+    </span>
+  )
+}
+
 function NumberField({
   id,
+  icon,
   label,
   min,
   max,
@@ -442,6 +478,8 @@ function NumberField({
   onChange,
 }: {
   id: string
+  /** The game's glyph for the value; decorative, the label names it. */
+  icon?: string
   label: string
   min: number
   max?: number
@@ -451,7 +489,10 @@ function NumberField({
 }) {
   return (
     <div className="space-y-1">
-      <Label htmlFor={id}>{label}</Label>
+      <Label className="flex items-center gap-1.5" htmlFor={id}>
+        <EntityIcon alt="" className="size-4 shrink-0" src={icon} />
+        {label}
+      </Label>
       <Input
         data-testid={id}
         id={id}

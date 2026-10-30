@@ -5,6 +5,7 @@ import type { PlayerDataClient } from "./player-data-api"
 import {
   getChunkData,
   getChunkRecord,
+  getPlayerDataMetadata,
   hasCompletePlayerDataCache,
   playerDataDbName,
 } from "./player-data-storage"
@@ -226,6 +227,34 @@ describe("syncPlayerData", () => {
     expect(await getChunkData("characters")).toEqual([
       { unitId: "ultraTigurius", rank: "Gold1" },
     ])
+  })
+
+  it("writes nothing back when another tab's sign-out deletes the database mid-sync", async () => {
+    let releaseDownloads: () => void = () => undefined
+    const downloadsHeld = new Promise<void>((resolve) => {
+      releaseDownloads = resolve
+    })
+    let downloadStarted: () => void = () => undefined
+    const downloading = new Promise<void>((resolve) => {
+      downloadStarted = resolve
+    })
+    const client = new FakePlayerDataClient(createManifest())
+    const getChunk = client.getChunk.bind(client)
+    client.getChunk = async (chunk) => {
+      downloadStarted()
+      await downloadsHeld
+      return getChunk(chunk)
+    }
+
+    const sync = syncPlayerData(client)
+    await downloading
+    // Another tab's deletePlayerDataDb: this tab's open connection gets a versionchange.
+    await Dexie.delete(playerDataDbName)
+    releaseDownloads()
+
+    await expect(sync).rejects.toThrow()
+    expect(await getPlayerDataMetadata()).toEqual(new Map())
+    expect(await getChunkData("characters")).toBeUndefined()
   })
 
   // No "client is behind on a store added later" regression test here (unlike

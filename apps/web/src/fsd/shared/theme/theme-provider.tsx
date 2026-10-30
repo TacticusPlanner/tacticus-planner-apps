@@ -2,6 +2,8 @@
 import * as React from "react"
 import { safeStorage } from "@/shared/lib"
 
+import { applyThemeColor } from "./theme-color"
+
 export type Theme = "dark" | "light" | "system"
 type ResolvedTheme = "dark" | "light"
 
@@ -94,6 +96,7 @@ export function ThemeProvider({
 
       root.classList.remove("light", "dark")
       root.classList.add(resolvedTheme)
+      applyThemeColor(resolvedTheme)
 
       if (restoreTransitions) {
         restoreTransitions()

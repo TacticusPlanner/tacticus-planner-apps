@@ -3,6 +3,10 @@ import { datamineAssetUrl } from "./asset-path"
 // The game's own menu and tab art for its screens and modes, for places that name a mode or a
 // section rather than an event or an entity.
 const gameMenuIconFiles = {
+  home: "atlases/ui_icon_tabs_home",
+  inventory: "atlases/ui_icon_menu_inventory",
+  achievements: "atlases/ui_icon_menu_achievements",
+  battlepass: "atlases/ui_icon_menu_battlepass",
   heroes: "atlases/ui_icon_tabs_heroes",
   battle: "atlases/ui_icon_tabs_battle",
   shop: "atlases/ui_icon_tabs_shop",
@@ -52,4 +56,25 @@ export function powerIcon(): string {
 /** The game's die, for a chance or a random roll. */
 export function chanceIcon(): string {
   return datamineAssetUrl("fonts/chance.webp")
+}
+
+const battleGlyphFiles = {
+  campaignBattle: "atlases/ui_icon_tabs_battle",
+  lightningVictory: "atlases/ui_icon_lightning_victory",
+  kill: "atlases/ui_icon_dmg_prediction_skull",
+  heal: "fonts/healer",
+  summon: "fonts/summon",
+  abilityUse: "droptables/ui_icon_droptable_abilityTokensLegendary",
+} as const
+
+export type BattleGlyph = keyof typeof battleGlyphFiles
+
+/** The game's glyph for a battle outcome or action a mission objective counts. */
+export function battleGlyphIcon(glyph: BattleGlyph): string {
+  return datamineAssetUrl(`${battleGlyphFiles[glyph]}.webp`)
+}
+
+/** The game's leaderboard medal, for an event rank. */
+export function leaderboardIcon(): string {
+  return datamineAssetUrl("fonts/Gold_Medal.webp")
 }

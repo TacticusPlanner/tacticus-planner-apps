@@ -1,6 +1,9 @@
-import { Check, Lock } from "lucide-react"
+import { Check } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
+import { lockIcon } from "@workspace/game-catalog"
+
+import { EntityIcon } from "@/shared/ui"
 
 import type { HreMission, HreObjective } from "../model/hre-missions"
 import { missionStatus } from "../model/hre-progress"
@@ -15,10 +18,13 @@ export function MissionList({
   current,
   missions,
   objectiveText,
+  objectiveIcon,
 }: {
   current: number | null
   missions: readonly HreMission[]
   objectiveText: (objective: HreObjective) => string
+  /** The game glyph shown before each objective. */
+  objectiveIcon?: (objective: HreObjective) => string | undefined
 }) {
   const { t } = useTranslation("hre")
   return (
@@ -41,7 +47,15 @@ export function MissionList({
                 </span>
                 <span className="min-w-0 flex-1 text-sm">
                   {mission.objectives.map((objective) => (
-                    <span key={objective.kind} className="block">
+                    <span
+                      key={objective.kind}
+                      className="flex items-center gap-1.5"
+                    >
+                      <EntityIcon
+                        alt=""
+                        className="size-4 shrink-0"
+                        src={objectiveIcon?.(objective)}
+                      />
                       {objectiveText(objective)}
                     </span>
                   ))}
@@ -53,10 +67,10 @@ export function MissionList({
                     role="img"
                   />
                 ) : status === "locked" ? (
-                  <Lock
-                    aria-label={t("tracker.locked")}
-                    className="size-4 shrink-0 text-muted-foreground"
-                    role="img"
+                  <EntityIcon
+                    alt={t("tracker.locked")}
+                    className="size-4 shrink-0"
+                    src={lockIcon()}
                   />
                 ) : null}
               </summary>

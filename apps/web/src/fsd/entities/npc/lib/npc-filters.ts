@@ -1,3 +1,5 @@
+import { matchesSearch } from "@/shared/lib"
+
 import type { NpcFilters, NpcGroup, NpcVariation } from "../model/types"
 
 export const emptyNpcFilters: NpcFilters = {
@@ -70,8 +72,7 @@ export function matchesNpcFilters(
 }
 
 function matchesNpcSearch(displayName: string, search: string): boolean {
-  const needle = search.trim().toLowerCase()
-  return needle === "" || displayName.toLowerCase().includes(needle)
+  return matchesSearch(displayName, search)
 }
 
 /** The variations of a group that match the filters (all of them when no filter is active). */

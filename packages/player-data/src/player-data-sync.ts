@@ -5,6 +5,7 @@ import {
   getManifestMetadata,
   getPlayerDataMetadata,
   hasCompletePlayerDataCache,
+  playerDataGeneration,
   replacePlayerDataChunk,
   saveManifestMetadata,
 } from "./player-data-storage"
@@ -60,6 +61,8 @@ export async function syncPlayerData(
   client: PlayerDataClient,
   options: PlayerDataSyncOptions = {}
 ): Promise<PlayerDataSyncResult> {
+  // Writes refuse to land if sign-out (in any tab) deletes the database before they do.
+  const generation = playerDataGeneration()
   const metadata = await getPlayerDataMetadata()
   const manifestMetadata = getManifestMetadata(metadata)
   const firstTime = !manifestMetadata
@@ -75,21 +78,29 @@ export async function syncPlayerData(
       const chunkKey = chunk.key as PlayerDataChunkKey
       const envelope = await client.getChunk(chunk)
 
-      await replacePlayerDataChunk(chunkKey, envelope.data, {
-        key: chunkKey,
-        hash: envelope.chunkHash,
-        schemaVersion: envelope.schemaVersion,
-        updatedAt: new Date().toISOString(),
-        url: chunk.url,
-      })
+      await replacePlayerDataChunk(
+        chunkKey,
+        envelope.data,
+        {
+          key: chunkKey,
+          hash: envelope.chunkHash,
+          schemaVersion: envelope.schemaVersion,
+          updatedAt: new Date().toISOString(),
+          url: chunk.url,
+        },
+        generation
+      )
     },
     finalize: async () => {
-      await saveManifestMetadata({
-        key: playerDataManifestMetadataKey,
-        hash: manifest.sourceHash,
-        schemaVersion: manifest.schemaVersion,
-        updatedAt: manifest.syncedAt,
-      })
+      await saveManifestMetadata(
+        {
+          key: playerDataManifestMetadataKey,
+          hash: manifest.sourceHash,
+          schemaVersion: manifest.schemaVersion,
+          updatedAt: manifest.syncedAt,
+        },
+        generation
+      )
       return []
     },
   })

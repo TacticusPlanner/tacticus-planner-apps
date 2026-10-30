@@ -17,7 +17,11 @@
     "signOut": "Abmelden",
     "userMenu": "Kontomenü",
     "preferences": "Voreinstellungen",
-    "accountSettings": "Kontoeinstellungen"
+    "accountSettings": "Kontoeinstellungen",
+    "signedInWith": {
+      "google": "Mit Google angemeldet",
+      "email": "Mit E-Mail angemeldet"
+    }
   },
   "catalog": {
     "badge": {
@@ -90,8 +94,26 @@
       }
     },
     "account": {
+      "signInMethod": "Anmeldemethode",
+      "signInMethods": {
+        "google": "Google",
+        "email": "E-Mail und Passwort"
+      },
+      "email": "E-Mail",
+      "signInMethodNote": "Jede E-Mail-Adresse funktioniert nur mit einer Anmeldemethode, melde dich also immer auf diese Weise an. Konten verschiedener Methoden lassen sich nicht zusammenführen.",
       "purgeWarningTitle": "Konto löschen",
-      "purgeWarningDescription": "Dies löscht sofort und unwiderruflich alle deine Planner-Daten. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "purgeWarningDescription": "Dies löscht sofort und unwiderruflich die ausgewählten Daten. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "purgeScopeLabel": "Was gelöscht werden soll",
+      "purgeScopes": {
+        "plannerData": {
+          "label": "Nur Planner-Daten",
+          "description": "Löscht alles, was du im Planner gespeichert hast. Dein Anmeldekonto bleibt bestehen, sodass du bei der nächsten Anmeldung mit einem neuen, leeren Planner-Konto startest."
+        },
+        "signInAccount": {
+          "label": "Planner-Daten und Anmeldekonto",
+          "description": "Versucht zusätzlich, das Konto zu löschen, mit dem du dich beim Planner anmeldest. Dein Google-Konto selbst bleibt unberührt. Schlägt dieser Schritt fehl, werden deine Planner-Daten trotzdem gelöscht."
+        }
+      },
       "purgeConfirmLabel": "Gib „{{word}}“ ein, um die Löschung zu aktivieren",
       "purgeSubmit": "Mein Konto löschen",
       "purgeGenericError": "Beim Löschen deines Kontos ist ein Fehler aufgetreten. Bitte versuche es erneut."
@@ -1473,10 +1495,14 @@
       "missingTitle": "Noch fehlend",
       "missingDescription": "Was deine Ziele über dein aktuelles Inventar hinaus brauchen, wobei dein Bestand in Prioritätsreihenfolge verbraucht wird.",
       "missingNone": "Dein Inventar deckt die Abzeichen, Orbs, Komponenten und EP-Bücher dieser Ziele ab.",
-      "missingBadges": "{{alliance}}-Fähigkeitsabzeichen",
-      "missingOrbs": "{{alliance}}-Orbs",
+      "missingAbilityBadges": "Fähigkeitsabzeichen",
+      "missingOrbs": "Orbs",
+      "missingMachineOfWar": "Kriegsmaschinen-Materialien",
       "missingForgeBadges": "Schmiedeabzeichen",
-      "missingXpBooks": "EP-Bücher · {{xp}} EP",
+      "missingComponents": "Komponenten",
+      "missingXpBooks": "EP-Bücher",
+      "missingXp": "{{xp}} EP",
+      "missingTotal": "{{total}} insgesamt",
       "campaignsTitle": "Relevante Kampagnen",
       "eventsTitle": "Relevante Events",
       "noBenefitingGoals": "Derzeit benötigt kein Ziel in diesem Plan dies.",
@@ -1910,5 +1936,54 @@
     "terms": "Nutzungsbedingungen",
     "uiKit": "UI-Kit",
     "lastUpdated": "Zuletzt aktualisiert am {{date}}"
+  },
+  "appInstall": {
+    "menu": "App installieren",
+    "install": "Installieren",
+    "card": {
+      "title": "App installieren",
+      "body": "Füge Tacticus Planner zu deinem Startbildschirm hinzu. Er öffnet sich in einem eigenen Fenster, und langes Drücken auf das Symbol springt direkt zu Tägliche Raids, Ziele oder Legendäre Events.",
+      "howTo": "Zeig mir, wie",
+      "notNow": "Nicht jetzt",
+      "installedTitle": "Tacticus Planner ist installiert",
+      "installedBody": "Öffne ihn über deinen Startbildschirm oder deine App-Liste. Drücke lange auf das Symbol (am Desktop: Rechtsklick) für Kurzbefehle zu Tägliche Raids, Ziele und Legendäre Events.",
+      "gotIt": "Verstanden"
+    },
+    "dialog": {
+      "title": "Tacticus Planner installieren",
+      "description": "Öffne den Planner wie eine App, in einem eigenen Fenster, über Startbildschirm, Dock oder Startmenü.",
+      "stepsHeading": "So installierst du ihn",
+      "maybeInstalled": "Keine Installationsoption im Menü? Dann ist die App wahrscheinlich schon installiert: Öffne sie über deinen Startbildschirm oder deine App-Liste.",
+      "unsupported": "Dieser Browser kann keine Web-Apps installieren. Öffne den Planner in Chrome, Edge oder Safari, um ihn zu installieren.",
+      "installed": "Du verwendest die installierte App."
+    },
+    "steps": {
+      "ios": {
+        "share": "Tippe in der Safari-Symbolleiste auf Teilen (in Chrome oder Edge ist Teilen in der Adressleiste).",
+        "add": "Scrolle nach unten und tippe auf Zum Home-Bildschirm.",
+        "confirm": "Tippe auf Hinzufügen."
+      },
+      "macSafari": {
+        "addToDock": "Wähle in der Safari-Menüleiste Ablage und dann Zum Dock hinzufügen.",
+        "confirm": "Klicke auf Hinzufügen."
+      },
+      "android": {
+        "menu": "Öffne das Browsermenü (⋮).",
+        "install": "Tippe auf App installieren oder Zum Startbildschirm hinzufügen.",
+        "confirm": "Bestätige mit Installieren."
+      },
+      "desktop": {
+        "menu": "Klicke rechts in der Adressleiste auf das Installationssymbol oder öffne das Browsermenü (⋮ oder …).",
+        "install": "Wähle Tacticus Planner installieren (in Edge: Apps, dann Diese Website als App installieren).",
+        "confirm": "Klicke auf Installieren."
+      }
+    },
+    "shortcuts": {
+      "heading": "Kurzbefehle",
+      "body": "Nach der Installation drückst du lange auf das App-Symbol (am Desktop: Rechtsklick), um direkt zu springen zu:",
+      "dailyRaids": "Tägliche Raids",
+      "goals": "Ziele",
+      "legendaryEvents": "Legendäre Events"
+    }
   }
 }

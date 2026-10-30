@@ -23,10 +23,13 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
   }
 })
 vi.mock("./campaign-event-status", () => ({
-  CampaignEventStatusLine: () => null,
+  CampaignEventTile: () => null,
 }))
 vi.mock("./today-shops", () => ({ TodayShops: () => null }))
-vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
+vi.mock("@/shared/tour", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/tour")>()),
+  useTourPageSteps: vi.fn(),
+}))
 
 function Search() {
   return <span data-testid="search">{useLocation().search}</span>
@@ -111,6 +114,24 @@ describe("Today quick filters", () => {
       combineGoals: false,
     })
     expect(screen.getByTestId("search")).toHaveTextContent("")
+  })
+
+  it("reopens Bonus raids on its top 3 when a quick filter changes", async () => {
+    const user = userEvent.setup()
+    renderToday()
+
+    await user.click(screen.getByRole("button", { name: "Show 1 more" }))
+    expect(
+      screen.getByRole("button", { name: "Show less" })
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByTestId("today-quick-filter-bottlenecks"))
+    expect(
+      screen.queryByRole("button", { name: "Show less" })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Show 1 more" })
+    ).toBeInTheDocument()
   })
 
   it("restores chips from the URL and ignores unknown values", () => {

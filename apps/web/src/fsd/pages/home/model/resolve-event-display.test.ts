@@ -12,6 +12,7 @@ const templates: Record<string, string> = {
   "events:withVersion": "{{name}} {{version}}",
   "events:withIteration": "{{name}} (Iteration {{iteration}})",
   "events:withSeason": "{{name}} Season {{season}}",
+  "events:withSeasonShort": "{{name}} S{{season}}",
   "events:withNewCampaign": "{{name}} (New Campaign)",
   "events:withNewMow": "{{name}} (New MoW)",
   "events:withEventNumber": "{{name}} {{number}}",
@@ -48,6 +49,8 @@ function baseEntry(
     endUtc: "2026-08-16T00:00:00Z",
     parameters: null,
     isActiveNow: false,
+    isPast: false,
+    phases: [],
     derivedSeasonNumber: undefined,
     derivedEventNumber: undefined,
     ...overrides,
@@ -102,6 +105,19 @@ describe("resolveEventDisplayName", () => {
     )
 
     expect(name).toBe("battle-pass Season 40: darkaSternguard")
+  })
+
+  it("writes guild seasons the short way players do", () => {
+    const name = resolveEventDisplayName(
+      t,
+      baseEntry({
+        definitionId: "guild-raid-season",
+        definitionType: "GuildRaidSeason",
+        derivedSeasonNumber: 112,
+      })
+    )
+
+    expect(name).toBe("guild-raid-season S112")
   })
 
   it("puts the bare event number right after the name for a campaign event", () => {

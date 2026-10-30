@@ -90,7 +90,10 @@ vi.mock(
       useShopRecommendations(projectId),
   })
 )
-vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
+vi.mock("@/shared/tour", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/tour")>()),
+  useTourPageSteps: vi.fn(),
+}))
 vi.mock("@/features/guild-access", () => ({
   GuildAccessBoundary: () => <div data-testid="guild-unregistered" />,
 }))
@@ -155,6 +158,21 @@ describe("Dailies navigation", () => {
     expect(await findRouteContent("hse-page")).toBeInTheDocument()
     expect(screen.getByTestId("hse-status-none")).toBeInTheDocument()
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
+  })
+
+  it("widens the content cap on Raids only", async () => {
+    renderDailies("/dailies/raids")
+    await findRouteContent("dailies-no-farmable")
+    expect(screen.getByTestId("dailies-layout")).toHaveClass("max-w-[150rem]")
+  })
+
+  it("keeps the default content cap on the other Dailies tabs", async () => {
+    renderDailies("/dailies/hse")
+    await findRouteContent("hse-page")
+    expect(screen.getByTestId("dailies-layout")).not.toHaveClass(
+      "max-w-[150rem]"
+    )
+    expect(screen.getByTestId("dailies-layout")).toHaveClass("max-w-400")
   })
 
   it("routes Guild Raids to its access-aware page", async () => {

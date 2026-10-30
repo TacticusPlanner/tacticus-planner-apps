@@ -26,6 +26,8 @@ function booleanParam(
   return typeof value === "boolean" ? value : undefined
 }
 
+const COMPACT_SEASON_TYPES = new Set(["GuildRaidSeason", "GuildWarSeason"])
+
 /**
  * Every event's display name is resolved from its `definitionId` (and, for a few parameterized types,
  * a faction/character/iteration/season id carried in `parameters`, or a `derived*` field) — never from
@@ -53,7 +55,13 @@ export function resolveEventDisplayName(
     })
   }
   if (entry.derivedSeasonNumber !== undefined) {
-    name = t("events:withSeason", { name, season: entry.derivedSeasonNumber })
+    // Guild seasons read the way players write them ("Guild Raid S123"); passes keep "Season 40".
+    name = t(
+      COMPACT_SEASON_TYPES.has(entry.definitionType ?? "")
+        ? "events:withSeasonShort"
+        : "events:withSeason",
+      { name, season: entry.derivedSeasonNumber }
+    )
   }
 
   const targetFactionId = stringParam(entry.parameters, "targetFactionId")

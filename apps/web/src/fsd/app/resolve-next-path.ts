@@ -4,6 +4,8 @@ export const DEFAULT_SIGNED_IN_PATH = "/home"
 const SETUP_PATH = "/setup"
 // A scheme only counts at the very start — a colon later on is legitimate inside a query string.
 const LEADING_SCHEME = /^[a-z][a-z0-9+.-]*:/i
+// eslint-disable-next-line no-control-regex -- matching control characters is the point
+const CONTROL_CHARACTER = /[\u0000-\u001f\u007f]/
 
 /**
  * Resolves a `next` parameter to a safe same-origin destination.
@@ -29,6 +31,12 @@ export function resolveNextPath(
   // Backslashes are normalized to "/" by some browsers, so "/\evil.example" can become a
   // protocol-relative URL. Reject them outright rather than trying to model each browser.
   if (next.includes("\\")) {
+    return DEFAULT_SIGNED_IN_PATH
+  }
+
+  // URL parsers drop tabs and newlines, so "/\t/evil.example" would also become protocol-relative.
+  // No real path contains control characters; refuse them instead of relying on the router.
+  if (CONTROL_CHARACTER.test(next)) {
     return DEFAULT_SIGNED_IN_PATH
   }
 

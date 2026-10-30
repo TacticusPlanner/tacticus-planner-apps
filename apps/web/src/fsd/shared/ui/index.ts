@@ -35,7 +35,6 @@ export {
 export { closestOverlayContent } from "./overlay-content"
 export { useCommandListId } from "./command-list-id"
 export { EventIcon } from "./event-icon"
-export { EventTypeIcon } from "./event-type-icon"
 export { SortableList, type SortableRenderProps } from "./sortable-list"
 export { NumberStepper } from "./number-stepper"
 export { LevelChart } from "./level-chart"

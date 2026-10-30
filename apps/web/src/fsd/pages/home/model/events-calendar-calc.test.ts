@@ -5,6 +5,10 @@ import {
   buildEventsAgenda,
   buildEventsCalendarDays,
   buildEventsCalendarLanes,
+  buildEventsCalendarWeeks,
+  resolveEventsCalendarRange,
+  toIsoDate,
+  withGuildRaidBreaks,
 } from "./events-calendar-calc"
 
 const noneRecurrence = {
@@ -681,6 +685,82 @@ describe("buildEventsAgenda", () => {
   })
 })
 
+describe("resolveEventsCalendarRange", () => {
+  const today = new Date(2026, 9, 29, 15, 30) // Thu 29 Oct 2026, mid-afternoon local
+
+  it("keeps the week view a rolling 7 days from today, stepped by whole weeks", () => {
+    const range = resolveEventsCalendarRange("week", 1, today)
+
+    expect(toIsoDate(range.rangeStart)).toBe("2026-11-05")
+    expect(toIsoDate(range.rangeEnd)).toBe("2026-11-12")
+    expect(range.gridStart).toEqual(range.rangeStart)
+    expect(range.gridEnd).toEqual(range.rangeEnd)
+  })
+
+  it("covers the calendar month, padded out to whole Monday-to-Sunday weeks", () => {
+    const range = resolveEventsCalendarRange("month", 0, today)
+
+    expect(toIsoDate(range.rangeStart)).toBe("2026-10-01")
+    expect(toIsoDate(range.rangeEnd)).toBe("2026-11-01")
+    expect(toIsoDate(range.gridStart)).toBe("2026-09-28") // Monday
+    expect(toIsoDate(range.gridEnd)).toBe("2026-11-02") // Monday after the 31st
+  })
+
+  it("adds no padding week when the month ends on a Sunday", () => {
+    // May 2026 ends on Sunday the 31st.
+    const range = resolveEventsCalendarRange("month", -5, today)
+
+    expect(toIsoDate(range.rangeStart)).toBe("2026-05-01")
+    expect(toIsoDate(range.gridEnd)).toBe("2026-06-01")
+  })
+
+  it("steps across a year boundary", () => {
+    const range = resolveEventsCalendarRange("month", 3, today)
+
+    expect(toIsoDate(range.rangeStart)).toBe("2027-01-01")
+    expect(toIsoDate(range.rangeEnd)).toBe("2027-02-01")
+  })
+})
+
+describe("buildEventsCalendarWeeks", () => {
+  it("splits the grid into weeks and continues an event across the week boundary", () => {
+    const gridStart = new Date(2026, 6, 27) // Mon 27 Jul 2026
+    const gridEnd = new Date(2026, 7, 10) // two weeks later
+    const entries = [
+      {
+        occurrenceId: "occ-lucius",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: new Date(2026, 7, 1).toISOString(), // Sat of week 1
+        endUtc: new Date(2026, 7, 5).toISOString(), // Wed of week 2
+        parameters: null,
+      },
+    ]
+
+    const weeks = buildEventsCalendarWeeks(
+      entries,
+      definitionsById,
+      gridStart,
+      gridEnd,
+      new Date(2026, 6, 27)
+    )
+
+    expect(weeks).toHaveLength(2)
+    expect(weeks.map((week) => week.days[0]?.date)).toEqual([
+      "2026-07-27",
+      "2026-08-03",
+    ])
+    expect(weeks[0]?.lanes[0]?.entries[0]).toMatchObject({
+      startColumn: 6,
+      span: 2,
+    })
+    expect(weeks[1]?.lanes[0]?.entries[0]).toMatchObject({
+      startColumn: 1,
+      span: 2,
+    })
+  })
+})
+
 describe("buildEventsCalendarLanes", () => {
   it("positions a single-day entry at the column matching its day offset, span 1", () => {
     const rangeStart = new Date(2026, 6, 26) // 26 Jul 2026 local
@@ -880,5 +960,155 @@ describe("DST-crossing day boundaries", () => {
     // entry's raw 24h-later end instant is 2026-03-09T23:00 local, inside the 9th) and still pass the
     // assertion above — this negative assertion is what actually catches that.
     expect(daysWithEntry).not.toContain("2026-03-09")
+  })
+})
+
+describe("guild seasons", () => {
+  const guildDefinitions = new Map([
+    [
+      "guild-raid-season",
+      {
+        id: "guild-raid-season",
+        type: "GuildRaidSeason",
+        recurrence: {
+          kind: "Fixed" as const,
+          intervalDays: 14,
+          durationDays: 13,
+          anchorUtc: "2026-10-21T10:00:00Z",
+        },
+        config: { seasonLengthDays: 13, seasonNumberAtAnchor: 112 },
+      },
+    ],
+    [
+      "guild-war-season",
+      {
+        id: "guild-war-season",
+        type: "GuildWarSeason",
+        recurrence: {
+          kind: "Fixed" as const,
+          intervalDays: 35,
+          durationDays: 15,
+          anchorUtc: "2026-10-23T09:00:00Z",
+        },
+        config: {
+          warsPerSeason: 6,
+          preparationPhaseHours: 24,
+          activeFightingPhaseHours: 36,
+          seasonNumberAtAnchor: 28,
+        },
+      },
+    ],
+  ])
+  const raid = (startUtc: string, endUtc: string, confirmed = true) => ({
+    occurrenceId: null,
+    definitionId: "guild-raid-season",
+    confirmed,
+    startUtc,
+    endUtc,
+    parameters: null,
+  })
+
+  it("adds a break from a raid season's end until the next season starts", () => {
+    const { entries, definitionsById: withBreak } = withGuildRaidBreaks(
+      [raid("2026-10-21T10:00:00Z", "2026-11-03T10:00:00Z", false)],
+      guildDefinitions
+    )
+
+    expect(entries).toHaveLength(2)
+    expect(entries[1]).toMatchObject({
+      definitionId: "guild-raid-break",
+      confirmed: false,
+      startUtc: "2026-11-03T10:00:00Z",
+      endUtc: "2026-11-04T10:00:00.000Z",
+    })
+    expect(withBreak.get("guild-raid-break")?.type).toBe("GuildRaidBreak")
+  })
+
+  it("numbers raid seasons from the anchor and splits a war season into its phases", () => {
+    const days = buildEventsCalendarDays(
+      [
+        raid("2026-11-04T10:00:00Z", "2026-11-17T10:00:00Z"),
+        {
+          occurrenceId: "occ-gw-28",
+          definitionId: "guild-war-season",
+          confirmed: true,
+          startUtc: "2026-10-23T09:00:00Z",
+          endUtc: "2026-11-07T09:00:00Z",
+          parameters: { season: 28 },
+        },
+      ],
+      guildDefinitions,
+      new Date(2026, 10, 5),
+      new Date(2026, 10, 6),
+      new Date(2026, 10, 5)
+    )
+    const entries = days[0]?.entries ?? []
+    const raidEntry = entries.find(
+      (entry) => entry.definitionId === "guild-raid-season"
+    )
+    const war = entries.find(
+      (entry) => entry.definitionId === "guild-war-season"
+    )
+
+    expect(raidEntry?.derivedSeasonNumber).toBe(113)
+    expect(war?.derivedSeasonNumber).toBe(28)
+    expect(war?.phases).toHaveLength(12)
+    expect(war?.phases.slice(0, 2)).toEqual([
+      {
+        kind: "preparation",
+        war: 1,
+        startUtc: "2026-10-23T09:00:00.000Z",
+        endUtc: "2026-10-24T09:00:00.000Z",
+      },
+      {
+        kind: "war",
+        war: 1,
+        startUtc: "2026-10-24T09:00:00.000Z",
+        endUtc: "2026-10-25T21:00:00.000Z",
+      },
+    ])
+    expect(war?.phases.at(-1)?.endUtc).toBe("2026-11-07T09:00:00.000Z")
+  })
+
+  it("keeps raid seasons and their breaks on one timed row", () => {
+    const { entries, definitionsById: withBreak } = withGuildRaidBreaks(
+      [
+        raid("2026-10-21T10:00:00Z", "2026-11-03T10:00:00Z"),
+        raid("2026-11-04T10:00:00Z", "2026-11-17T10:00:00Z"),
+      ],
+      guildDefinitions
+    )
+    const rangeStart = new Date(2026, 10, 2)
+    const lanes = buildEventsCalendarLanes(
+      entries,
+      withBreak,
+      rangeStart,
+      new Date(2026, 10, 9),
+      rangeStart
+    )
+
+    expect(lanes).toHaveLength(1)
+    expect(lanes[0]?.timed).toBe(true)
+    expect(lanes[0]?.entries.map((entry) => entry.definitionId)).toEqual([
+      "guild-raid-season",
+      "guild-raid-break",
+      "guild-raid-season",
+    ])
+    const [season, gap, next] = lanes[0]?.entries ?? []
+    expect(season?.endOffset).toBeCloseTo(gap?.startOffset ?? -1)
+    expect(gap?.endOffset).toBeCloseTo(next?.startOffset ?? -1)
+    expect((gap?.endOffset ?? 0) - (gap?.startOffset ?? 0)).toBeCloseTo(1)
+  })
+
+  it("marks an entry past once it has ended", () => {
+    const days = buildEventsCalendarDays(
+      [raid("2026-10-07T10:00:00Z", "2026-10-20T10:00:00Z")],
+      guildDefinitions,
+      new Date(2026, 9, 10),
+      new Date(2026, 9, 11),
+      new Date(2026, 9, 29)
+    )
+
+    expect(days[0]?.entries[0]?.isPast).toBe(true)
   })
 })

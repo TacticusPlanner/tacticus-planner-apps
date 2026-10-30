@@ -94,7 +94,7 @@ describe("authentication", () => {
   })
 
   it("resolves the API scope only when it is accessed", () => {
-    expect(auth.loginRequest.scopes).toEqual(["api://planner/access"])
+    expect(auth.loginRequest.scopes).toEqual(["api://planner/access", "email"])
     expect(mocks.environment).toHaveBeenCalledWith("VITE_API_SCOPE")
   })
 
@@ -117,6 +117,21 @@ describe("authentication", () => {
     expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(
       loggedInAccount
     )
+  })
+
+  it("starts signed out instead of failing when the sign-in redirect returns an error", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const cancelled = new Error("access_denied: user cancelled")
+    mocks.instance.handleRedirectPromise.mockRejectedValue(cancelled)
+
+    await expect(auth.initializeAuthentication()).resolves.toBe(mocks.instance)
+
+    expect(mocks.instance.setActiveAccount).not.toHaveBeenCalled()
+    expect(warn).toHaveBeenCalledWith(
+      "[MSAL] sign-in redirect did not complete",
+      cancelled
+    )
+    warn.mockRestore()
   })
 
   it("prefers the redirect account and configures logging", async () => {
@@ -173,23 +188,19 @@ describe("authentication", () => {
     await expect(auth.acquireAccessToken()).resolves.toBe("token")
     expect(mocks.instance.acquireTokenSilent).toHaveBeenCalledWith({
       account,
-      scopes: ["api://planner/access"],
+      scopes: ["api://planner/access", "email"],
     })
 
     await auth.requestInteraction()
     expect(mocks.instance.acquireTokenRedirect).toHaveBeenCalledWith({
       account,
-      scopes: ["api://planner/access"],
+      scopes: ["api://planner/access", "email"],
     })
   })
 
   describe("token cache and account hint", () => {
-    it("keeps tokens in the tab and removes the pre-deploy localStorage cache once", async () => {
+    it("keeps tokens on the device and leaves existing storage alone", async () => {
       localStorage.setItem("msal.token.keys.client-id", "[]")
-      localStorage.setItem(
-        "home-id.tenant-login.windows.net-refreshtoken-client-id--",
-        "{}"
-      )
       localStorage.setItem("theme", "dark")
 
       await auth.initializeAuthentication()
@@ -197,8 +208,43 @@ describe("authentication", () => {
       const configuration = mocks.constructor.mock.calls.at(-1)?.[0] as {
         cache: { cacheLocation: string }
       }
-      expect(configuration.cache.cacheLocation).toBe("sessionStorage")
-      expect(Object.keys(localStorage)).toEqual(["theme"])
+      expect(configuration.cache.cacheLocation).toBe("localStorage")
+      expect(localStorage.getItem("msal.token.keys.client-id")).toBe("[]")
+      expect(localStorage.getItem("theme")).toBe("dark")
+    })
+
+    it("moves a sign-in that completed on the bare landing page on to Home", async () => {
+      window.history.replaceState(null, "", "/")
+      mocks.instance.handleRedirectPromise.mockResolvedValue({
+        account: { homeAccountId: "home-id", username: "user@example.test" },
+      })
+
+      await auth.initializeAuthentication()
+
+      expect(window.location.pathname).toBe("/home")
+      window.history.replaceState(null, "", "/")
+    })
+
+    it("keeps the address when the sign-in completed anywhere else", async () => {
+      window.history.replaceState(null, "", "/?next=%2Fplan%2Fgoals")
+      mocks.instance.handleRedirectPromise.mockResolvedValue({
+        account: { homeAccountId: "home-id", username: "user@example.test" },
+      })
+
+      await auth.initializeAuthentication()
+
+      expect(`${window.location.pathname}${window.location.search}`).toBe(
+        "/?next=%2Fplan%2Fgoals"
+      )
+      window.history.replaceState(null, "", "/")
+    })
+
+    it("keeps the bare landing page when no sign-in just completed", async () => {
+      window.history.replaceState(null, "", "/")
+
+      await auth.initializeAuthentication()
+
+      expect(window.location.pathname).toBe("/")
     })
 
     it("stores only the account hint on sign-in, never a token, and forgets it on demand", async () => {
@@ -238,7 +284,7 @@ describe("authentication", () => {
       await Promise.all([auth.requestInteraction(), auth.requestInteraction()])
 
       expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
         loginHint: "user@example.test",
       })
     })
@@ -315,7 +361,7 @@ describe("authentication", () => {
       await expect(token).resolves.toBe("fresh")
       expect(mocks.instance.acquireTokenSilent).toHaveBeenLastCalledWith({
         account,
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
       })
     })
 
@@ -337,7 +383,7 @@ describe("authentication", () => {
       expect(mocks.instance.acquireTokenSilent).toHaveBeenLastCalledWith({
         account,
         cacheLookupPolicy: 1,
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
       })
       expect(mocks.instance.ssoSilent).toHaveBeenCalledOnce()
     })
@@ -377,7 +423,7 @@ describe("authentication", () => {
       expect(mocks.instance.acquireTokenSilent).toHaveBeenCalledWith({
         account: cachedAccount,
         cacheLookupPolicy: 1,
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
       })
       expect(mocks.instance.ssoSilent).not.toHaveBeenCalled()
       expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(
@@ -398,7 +444,7 @@ describe("authentication", () => {
         auth.attemptSilentSignIn(mocks.instance as never)
       ).resolves.toBe("success")
       expect(mocks.instance.ssoSilent).toHaveBeenCalledExactlyOnceWith({
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
         loginHint: "user@example.test",
       })
       expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(restored)
@@ -424,7 +470,7 @@ describe("authentication", () => {
       ).resolves.toBe("success")
       expect(mocks.instance.ssoSilent).toHaveBeenCalledWith({
         account: cachedAccount,
-        scopes: ["api://planner/access"],
+        scopes: ["api://planner/access", "email"],
       })
       expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(
         restoredAccount

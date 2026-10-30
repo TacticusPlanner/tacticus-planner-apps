@@ -126,6 +126,8 @@ export interface NavItem {
   labelKey: NavLabelKey
   descriptionKey: NavDescriptionKey
   icon: LucideIcon
+  /** The game's own art for the section, shown in place of `icon` in the navigation menu. */
+  artSrc?: string
   anonymousAllowed: boolean
   children?: NavSubItem[]
   // Names a resolver `use-nav-items.ts` runs to prepend data-driven children (the active Legendary
@@ -147,6 +149,7 @@ export const navItems: NavItem[] = [
     labelKey: "nav.home",
     descriptionKey: "nav.homeDescription",
     icon: Home,
+    artSrc: gameMenuIcon("home"),
     anonymousAllowed: false,
     mobilePlacement: "primary",
   },
@@ -155,6 +158,7 @@ export const navItems: NavItem[] = [
     labelKey: "library:section.label",
     descriptionKey: "library:section.description",
     icon: BookOpen,
+    artSrc: gameMenuIcon("inventory"),
     anonymousAllowed: true,
     mobilePlacement: "menu",
     children: [
@@ -197,6 +201,7 @@ export const navItems: NavItem[] = [
     labelKey: "nav.goals",
     descriptionKey: "nav.goalsDescription",
     icon: ListTodo,
+    artSrc: gameMenuIcon("achievements"),
     anonymousAllowed: false,
     mobilePlacement: "primary",
     children: [
@@ -227,6 +232,7 @@ export const navItems: NavItem[] = [
     labelKey: "nav.dailies",
     descriptionKey: "nav.dailiesDescription",
     icon: CalendarCheck,
+    artSrc: gameMenuIcon("battlepass"),
     anonymousAllowed: false,
     mobilePlacement: "primary",
     liveIndicator: "events",
@@ -271,6 +277,7 @@ export const navItems: NavItem[] = [
     labelKey: "nav.myGame",
     descriptionKey: "nav.myGameDescription",
     icon: Gamepad2,
+    artSrc: gameMenuIcon("battle"),
     // Visible to everyone for its public Collection child; the other children require sign-in
     // and are filtered out for anonymous users (see filterVisibleNavItems).
     anonymousAllowed: true,
@@ -310,6 +317,7 @@ export const navItems: NavItem[] = [
     labelKey: "nav.legendaryEvents",
     descriptionKey: "nav.legendaryEventsDescription",
     icon: CalendarDays,
+    artSrc: gameMenuIcon("legendaryEvent"),
     anonymousAllowed: false,
     mobilePlacement: "menu",
     // The static children come first, then every catalog event (see use-nav-items.ts).
@@ -342,6 +350,7 @@ export const navItems: NavItem[] = [
     labelKey: "nav.guild",
     descriptionKey: "nav.guildDescription",
     icon: Users,
+    artSrc: gameMenuIcon("guild"),
     anonymousAllowed: false,
     mobilePlacement: "primary",
     children: [

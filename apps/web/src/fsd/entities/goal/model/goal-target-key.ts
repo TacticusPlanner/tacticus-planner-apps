@@ -1,4 +1,4 @@
-import type { TFunction } from "i18next"
+import type { Namespace, TFunction } from "i18next"
 
 import { rankTargetKey, rankTargetKeyLabel } from "./rank-target-key"
 import type { CreateGoalConfigRequest, GoalConfig, GoalKind } from "./types"
@@ -100,7 +100,10 @@ export function goalTargetLabel(
 }
 
 /** "Legendary Red Four Stars" for the wire progression `"Legendary:RedFourStars"`. */
-export function progressionLabel(t: TFunction, progression: string): string {
+export function progressionLabel<Ns extends Namespace>(
+  t: TFunction<Ns>,
+  progression: string
+): string {
   const [rarity = progression, stars] = progression.split(":")
   const rarityLabel = t(`rarities.${rarity}`, {
     ns: "progression",

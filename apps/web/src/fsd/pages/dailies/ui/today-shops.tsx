@@ -1,22 +1,20 @@
 import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useShopRecommendations } from "@/features/shop-recommendations"
 import type { DailiesOutletContext } from "./dailies-layout"
-import { ShopsDesktop } from "./shops/desktop/shops-desktop"
-import { ShopsMobile } from "./shops/mobile/shops-mobile"
+import { ShopList } from "./shops/shop-list"
 import { ShopsState } from "./shops/shops-state"
+import { TodayCard } from "./today/today-card"
 
 /**
- * Today's shop buys, shown on Dailies > Raids under the raid lanes (the separate Shops tab was folded
- * in here). It reads the same Dailies-wide project as the raids above it, so the Raids project
- * selector narrows both.
+ * Today's shop buys, a card in the Raids dashboard (the separate Shops tab was folded in here). It
+ * reads the same Dailies-wide project as the raids, so the Raids project selector narrows both. The
+ * card sits in a ~400-575px column, so it uses the compact shop layout at every width.
  */
 export function TodayShops() {
   const context = useOutletContext<DailiesOutletContext>()
   const { t } = useTranslation("shops")
-  const isMobile = useIsMobile()
   const recommendations = useShopRecommendations(context.projectId)
 
   const project = context.projects.find(
@@ -40,26 +38,19 @@ export function TodayShops() {
     const hasAny = recommendations.sections.some(
       (section) => section.guaranteed.length + section.possible.length > 0
     )
-    body = !hasAny ? (
-      <ShopsState state="nothing" />
-    ) : isMobile ? (
-      <ShopsMobile sections={recommendations.sections} />
+    body = hasAny ? (
+      <ShopList sections={recommendations.sections} />
     ) : (
-      <ShopsDesktop sections={recommendations.sections} />
+      <ShopsState compact state="nothing" />
     )
   }
 
   return (
-    <section className="space-y-3 md:space-y-4" data-testid="today-shops">
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold">{t("title")}</h2>
-        <p className="text-sm text-muted-foreground">
-          {project
-            ? t("subtitle", { project: project.name })
-            : t("subtitleAll")}
-        </p>
-      </div>
+    <TodayCard testId="today-shops" title={t("title")}>
+      <p className="-mt-2 text-xs text-muted-foreground">
+        {project ? t("subtitle", { project: project.name }) : t("subtitleAll")}
+      </p>
       {body}
-    </section>
+    </TodayCard>
   )
 }

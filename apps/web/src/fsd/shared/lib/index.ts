@@ -1,6 +1,9 @@
-export { type Battle, type FarmLocation } from "./battle.domain"
+export {
+  filterUnlockedBattles,
+  type Battle,
+  type FarmLocation,
+} from "./battles"
 export { characterDamageTypes } from "./character-damage-types"
-export { filterUnlockedBattles } from "./unlocked-battles"
 export {
   formatEstimateDate,
   formatEventCountdown,
@@ -15,9 +18,8 @@ export {
 } from "./stale-build"
 export {
   EVENT_FAMILIES_IN_LEGEND_ORDER,
-  eventBarClass,
   eventFamilyStripeClass,
-  eventFamilySwatchClass,
+  eventFamilySurfaceClass,
   resolveEventFamily,
   type EventFamily,
 } from "./event-colors"
@@ -31,6 +33,7 @@ export {
   type ReadState,
 } from "./use-read-state"
 export {
+  accountStoragePrefix,
   installGlobalErrorCapture,
   isMacPlatform,
   reportError,
@@ -39,3 +42,4 @@ export {
   usePersistedSelection,
   useSearchParamState,
 } from "./browser"
+export { matchesSearch, normalizeSearchText } from "./search-text"

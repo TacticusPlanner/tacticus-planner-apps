@@ -8,9 +8,12 @@ import type { DailyRaidsViewModel } from "../model/daily-raids.domain"
 export function RaidState({
   state,
   onRetry,
+  variant = "card",
 }: {
   state: Exclude<DailyRaidsViewModel["status"], "ready">
   onRetry?: () => void
+  // "inline" drops the outer card, for a host that is already a card (Today's plan card).
+  variant?: "card" | "inline"
 }) {
   const { t } = useTranslation("dailies")
   if (state === "loading") {
@@ -29,15 +32,30 @@ export function RaidState({
       : state === "error"
         ? "empty.error"
         : "empty.noGoals"
+  const content = (
+    <>
+      <p>{t(key)}</p>
+      {state === "error" && onRetry ? (
+        <Button variant="outline" onClick={onRetry}>
+          {t("empty.retry")}
+        </Button>
+      ) : null}
+    </>
+  )
+  if (variant === "inline") {
+    return (
+      <div
+        className="grid justify-items-center gap-4 py-10 text-center text-muted-foreground"
+        data-testid={`dailies-${state}`}
+      >
+        {content}
+      </div>
+    )
+  }
   return (
     <Card data-testid={`dailies-${state}`}>
       <CardContent className="grid justify-items-center gap-4 py-10 text-center text-muted-foreground">
-        <p>{t(key)}</p>
-        {state === "error" && onRetry ? (
-          <Button variant="outline" onClick={onRetry}>
-            {t("empty.retry")}
-          </Button>
-        ) : null}
+        {content}
       </CardContent>
     </Card>
   )

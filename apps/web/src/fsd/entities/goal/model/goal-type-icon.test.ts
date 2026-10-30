@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest"
 import { goalTypeIcon } from "./goal-type-icon"
 
 describe("goalTypeIcon", () => {
-  it("shows a rank badge for Rank goals", () => {
-    expect(goalTypeIcon("Rank")).toMatch(/\/fonts\/Rank_\d+\.webp$/)
+  it("returns the same icon for Rank and Upgrade goals", () => {
+    expect(goalTypeIcon("Rank")).toBe(goalTypeIcon("Upgrade"))
   })
 
   it("picks a Mow-specific icon for Ability goals on a Mow entity", () => {
@@ -14,7 +14,7 @@ describe("goalTypeIcon", () => {
   })
 
   it("returns a distinct icon per other goal kind", () => {
-    const kinds = ["Rank", "Ascension", "Unlock", "Upgrade"] as const
+    const kinds = ["Ascension", "Unlock", "Upgrade"] as const
     const icons = new Set(kinds.map((kind) => goalTypeIcon(kind)))
     expect(icons.size).toBe(kinds.length)
   })

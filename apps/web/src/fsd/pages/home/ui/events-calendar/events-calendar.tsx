@@ -9,6 +9,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useEventsCalendar } from "../../model/use-events-calendar"
 import { EventsCalendarDesktop } from "./desktop/events-calendar-desktop"
+import { EventsCalendarMonth } from "./desktop/events-calendar-month"
 import { EventsCalendarLegend } from "./events-calendar-legend"
 import { EventsCalendarMobile } from "./mobile/events-calendar-mobile"
 import { EventsCalendarNavigation } from "./events-calendar-navigation"
@@ -34,11 +35,16 @@ export function EventsCalendar() {
           <EventsCalendarState onRetry={calendar.retry} state="error" />
         ) : calendar.status === "empty" && !isMobile ? (
           // Mobile's own layout already renders its empty state per-range (see EventsCalendarMobile);
-          // desktop's 7-column grid always renders every day column, so its empty case needs the shared
+          // desktop's 7-column grids always render every day column, so its empty case needs the shared
           // full-width empty state instead of an empty-looking grid.
           <EventsCalendarState state="empty" />
         ) : isMobile ? (
           <EventsCalendarMobile agenda={calendar.agenda} />
+        ) : calendar.view === "month" ? (
+          <EventsCalendarMonth
+            month={calendar.rangeStart}
+            weeks={calendar.weeks}
+          />
         ) : (
           <EventsCalendarDesktop days={calendar.days} lanes={calendar.lanes} />
         )}

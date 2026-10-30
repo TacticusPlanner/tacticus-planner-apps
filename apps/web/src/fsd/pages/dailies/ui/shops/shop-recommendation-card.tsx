@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next"
-import { Badge } from "@workspace/ui/components/badge"
 import { chanceIcon } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon } from "@/features/shop-rewards"
@@ -56,12 +55,11 @@ function useCard(card: ShopRecommendationCardView) {
   }
 }
 
+/** One shop offer as a dense row: reward, progress, cost, availability and the goals needing it. */
 export function ShopRecommendationCard({
   card,
-  variant,
 }: {
   card: ShopRecommendationCardView
-  variant: "desktop" | "mobile"
 }) {
   const text = useCard(card)
   const testId = `shop-card-${card.shopId}-${card.rewardType}`
@@ -81,104 +79,50 @@ export function ShopRecommendationCard({
       />
     ) : null
 
-  if (variant === "mobile") {
-    return (
-      <div
-        className="flex items-center gap-3 rounded-lg border px-3 py-2"
-        data-testid={testId}
-      >
-        <EntityIcon
-          alt=""
-          className="size-9 shrink-0"
-          src={card.rewardIconUrl}
-        />
-        <div className="min-w-0 flex-1 leading-tight">
-          <div className="flex items-center gap-1.5">
-            <span className="truncate text-sm font-medium">
-              {card.rewardName}
-            </span>
-            {!card.isGuaranteed ? (
-              <EntityIcon
-                src={chanceIcon()}
-                alt={text.randomHint}
-                className="size-4 shrink-0"
-              />
-            ) : null}
-          </div>
-          <div className="flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
-            <span>{text.progress}</span>
-            <span>·</span>
-            {cost}
-            <span>{text.eachSuffix}</span>
-            {total ? (
-              <>
-                <span>·</span>
-                <span>{text.totalLabel}:</span>
-                {total}
-              </>
-            ) : null}
-          </div>
-          <div className="flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
-            <span>{text.availability}</span>
-            {text.freeOffer ? (
-              <>
-                <span>·</span>
-                <span>{text.freeOffer}</span>
-              </>
-            ) : null}
-          </div>
-          <div className="truncate text-xs text-muted-foreground">
-            {text.neededByLabel}: {text.neededBy.join(", ")}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div
-      className="flex w-full flex-col gap-2 rounded-[min(var(--radius-4xl),24px)] border bg-card p-3 text-card-foreground shadow-sm"
+      className="flex items-center gap-3 rounded-lg border px-3 py-2"
       data-testid={testId}
     >
-      <div className="flex items-start gap-2">
-        <EntityIcon
-          alt=""
-          className="size-10 shrink-0"
-          src={card.rewardIconUrl}
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-1">
-            <h4 className="truncate text-sm font-medium">{card.rewardName}</h4>
-            {!card.isGuaranteed ? (
-              <Badge
-                className="shrink-0 gap-1"
-                variant="outline"
-                title={text.randomHint}
-              >
-                <EntityIcon src={chanceIcon()} alt="" className="size-3.5" />
-              </Badge>
-            ) : null}
-          </div>
-          <p className="text-sm font-semibold text-destructive tabular-nums">
-            {text.progress}
-          </p>
+      <EntityIcon alt="" className="size-9 shrink-0" src={card.rewardIconUrl} />
+      <div className="min-w-0 flex-1 leading-tight">
+        <div className="flex items-center gap-1.5">
+          <span className="truncate text-sm font-medium">
+            {card.rewardName}
+          </span>
+          {!card.isGuaranteed ? (
+            <EntityIcon
+              src={chanceIcon()}
+              alt={text.randomHint}
+              className="size-4 shrink-0"
+            />
+          ) : null}
         </div>
-      </div>
-      <div className="text-xs text-muted-foreground">
-        <p>{text.availability}</p>
-        <p className="flex items-center gap-1">
-          {cost} <span>{text.eachSuffix}</span>
-        </p>
-        {total ? (
-          <p className="flex items-center gap-1">
-            <span>{text.totalLabel}:</span> {total}
-          </p>
-        ) : null}
-        {text.freeOffer ? <p>{text.freeOffer}</p> : null}
-      </div>
-      <div className="text-xs">
-        <span className="text-muted-foreground">{text.neededByLabel}: </span>
-        {text.neededBy.join(", ")}
+        <div className="flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
+          <span>{text.progress}</span>
+          <span>·</span>
+          {cost}
+          <span>{text.eachSuffix}</span>
+          {total ? (
+            <>
+              <span>·</span>
+              <span>{text.totalLabel}:</span>
+              {total}
+            </>
+          ) : null}
+        </div>
+        <div className="flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
+          <span>{text.availability}</span>
+          {text.freeOffer ? (
+            <>
+              <span>·</span>
+              <span>{text.freeOffer}</span>
+            </>
+          ) : null}
+        </div>
+        <div className="truncate text-xs text-muted-foreground">
+          {text.neededByLabel}: {text.neededBy.join(", ")}
+        </div>
       </div>
     </div>
   )

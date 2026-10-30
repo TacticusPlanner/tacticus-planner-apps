@@ -18,6 +18,10 @@ import {
   FieldLabel,
 } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@workspace/ui/components/radio-group"
 import { Spinner } from "@workspace/ui/components/spinner"
 import {
   Tabs,
@@ -37,11 +41,18 @@ import {
   type CurrentUser,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
-import { signOut } from "@/shared/auth"
+import { getAccountEmail, getSignInMethod, signOut } from "@/shared/auth"
 
 import { ProfileTab } from "./profile-tab"
 
 const PURGE_CONFIRMATION_WORD = "Confirm"
+
+const PURGE_SCOPES = ["plannerData", "signInAccount"] as const
+type PurgeScope = (typeof PURGE_SCOPES)[number]
+
+function isPurgeScope(value: string): value is PurgeScope {
+  return (PURGE_SCOPES as readonly string[]).includes(value)
+}
 
 export type ManageAccountTab = "integration" | "profile" | "account"
 
@@ -54,7 +65,9 @@ type ManageAccountDialogProps = {
 
 /**
  * "Account settings" dialog reachable from the user menu: Tacticus Integration (view masked values, update the
- * key, update/remove the user id) and Account (purge — requires typing the literal word "Confirm").
+ * key, update/remove the user id) and Account (sign-in method and
+ * email, then purge — planner data only, or also the sign-in account; requires typing the literal word
+ * "Confirm").
  */
 export function ManageAccountDialog({
   open,
@@ -272,9 +285,10 @@ function AccountTab({
 }) {
   const { t } = useTranslation()
   const [confirmation, setConfirmation] = useState("")
+  const [scope, setScope] = useState<PurgeScope>("plannerData")
   const purge = useMutation({
     mutationFn: async () => {
-      await purgeAccount()
+      await purgeAccount({ deleteSignInAccount: scope === "signInAccount" })
       onPurged()
       await signOut(instance, account.homeAccountId)
     },
@@ -286,6 +300,8 @@ function AccountTab({
     : null
 
   const canPurge = confirmation === PURGE_CONFIRMATION_WORD
+  const signInMethod = getSignInMethod(account)
+  const accountEmail = getAccountEmail(account)
 
   const handlePurge = () => {
     if (canPurge) purge.mutate()
@@ -293,6 +309,34 @@ function AccountTab({
 
   return (
     <div className="flex flex-col gap-4 pt-4">
+      <div className="grid gap-2 rounded-2xl border p-3 text-sm">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-muted-foreground">
+            {t("manageAccount.account.signInMethod")}
+          </span>
+          <span data-testid="manage-account-sign-in-method">
+            {t(`manageAccount.account.signInMethods.${signInMethod}`)}
+          </span>
+        </div>
+        {accountEmail ? (
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-muted-foreground">
+              {t("manageAccount.account.email")}
+            </span>
+            <span
+              className="min-w-0 truncate"
+              data-testid="manage-account-email"
+              title={accountEmail}
+            >
+              {accountEmail}
+            </span>
+          </div>
+        ) : null}
+        <p className="text-xs text-muted-foreground">
+          {t("manageAccount.account.signInMethodNote")}
+        </p>
+      </div>
+
       <div
         className="flex flex-col gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
         role="alert"
@@ -304,6 +348,34 @@ function AccountTab({
           {t("manageAccount.account.purgeWarningDescription")}
         </p>
       </div>
+
+      <RadioGroup
+        aria-label={t("manageAccount.account.purgeScopeLabel")}
+        data-testid="manage-account-purge-scope"
+        disabled={purge.isPending}
+        value={scope}
+        onValueChange={(value) => {
+          if (isPurgeScope(value)) setScope(value)
+        }}
+      >
+        {PURGE_SCOPES.map((option) => (
+          <Field key={option} orientation="horizontal">
+            <RadioGroupItem
+              data-testid={`manage-account-purge-scope-${option}`}
+              id={`manage-account-purge-scope-${option}`}
+              value={option}
+            />
+            <FieldContent>
+              <FieldLabel htmlFor={`manage-account-purge-scope-${option}`}>
+                {t(`manageAccount.account.purgeScopes.${option}.label`)}
+              </FieldLabel>
+              <FieldDescription>
+                {t(`manageAccount.account.purgeScopes.${option}.description`)}
+              </FieldDescription>
+            </FieldContent>
+          </Field>
+        ))}
+      </RadioGroup>
 
       <Field>
         <FieldLabel htmlFor="manage-account-purge-confirmation">

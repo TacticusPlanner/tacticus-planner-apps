@@ -48,6 +48,8 @@ export {
   lockIcon,
   powerIcon,
   chanceIcon,
+  battleGlyphIcon,
+  leaderboardIcon,
   equipmentPoolIcon,
   heroShardPoolIcon,
   isResourceGlyph,
@@ -81,5 +83,6 @@ export type {
   HeroReleaseEventResource,
   ChestTier,
   GameMenuIcon,
+  BattleGlyph,
   ResourceGlyph,
 } from "./icons"

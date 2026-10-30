@@ -19,6 +19,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { rarityRank, type Rarity } from "@workspace/game-domain"
 
+import { normalizeSearchText } from "@/shared/lib"
+
 import { useCommandListId } from "./command-list-id"
 import { closestOverlayContent } from "./overlay-content"
 
@@ -114,16 +116,16 @@ export function RarityCombobox<TId extends string>({
   // Same reasoning as UnitCombobox: a stable substring filter instead of cmdk's own fuzzy
   // reordering, so groups/members stay in a fixed order and only hide non-matches.
   const filteredGroups = useMemo(() => {
-    const query = search.trim().toLowerCase()
+    const query = normalizeSearchText(search)
     if (!query) return groups
 
     return groups
       .map((group) => {
-        const labelMatches = group.label.toLowerCase().includes(query)
+        const labelMatches = normalizeSearchText(group.label).includes(query)
         const members = labelMatches
           ? group.members
           : group.members.filter((item) =>
-              item.name.toLowerCase().includes(query)
+              normalizeSearchText(item.name).includes(query)
             )
         return { ...group, members }
       })
