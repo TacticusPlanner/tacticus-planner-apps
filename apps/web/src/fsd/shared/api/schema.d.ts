@@ -88,6 +88,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/feature-flags": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Lists the feature flags turned on in this environment.
+     * @description Returns only the names of enabled flags, so flags still off here are not revealed. The client hides unfinished features whose flag is not listed.
+     */
+    get: operations["TacticusPlannerApiFeaturesFeatureFlagsGetFeatureFlagsEndpoint"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/ascension-costs": {
     parameters: {
       query?: never
@@ -1853,6 +1873,9 @@ export interface components {
     /** @enum {string} */
     FarmingStrategy:
       "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
+    FeatureFlagsResponse: {
+      enabled: components["schemas"]["IReadOnlyListOfString"]
+    }
     GameCatalogAbilityPowerCurves: {
       active: components["schemas"]["IReadOnlyListOfInt32"]
       passive: components["schemas"]["IReadOnlyListOfInt32"]
@@ -4378,6 +4401,35 @@ export interface operations {
       }
       /** @description The per-profile upstream-call limit for this endpoint is exhausted; see Retry-After. */
       429: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesFeatureFlagsGetFeatureFlagsEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The enabled feature flags. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["FeatureFlagsResponse"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
         headers: {
           [name: string]: unknown
         }
