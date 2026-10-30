@@ -34,8 +34,12 @@ involved:
 - **Approval:** Settings → Environments → `production` → add required
   reviewers. Every production deploy then waits for one of them.
 - **Deployment branches:** limit `production` to `main` and `release/**`.
-- **Rulesets:** let `github-actions[bot]` create `release/**` branches and
-  `v*` tags, otherwise the Release workflow cannot push them.
+- **Rulesets:** the Release workflow pushes with the built-in `GITHUB_TOKEN`,
+  which GitHub does not accept as a ruleset bypass actor. So the `v*` tag
+  ruleset blocks only updates and deletions, not creation, which keeps
+  published tags immutable. The `release/*` branch ruleset must not require
+  linear history: a new release branch contains `main`'s older merge commits,
+  so the push would be rejected.
 - **Secrets:** `AZURE_STATIC_WEB_APPS_API_TOKEN_PROD` in the `production` environment.
 
 ### What a Release run does
