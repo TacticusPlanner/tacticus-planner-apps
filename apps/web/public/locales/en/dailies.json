@@ -530,11 +530,11 @@
     },
     "help": {
       "fewerRaids": "When several locations cost the same energy per item, raid only the ones with the highest energy per battle. Same materials for the same energy, in fewer raids. Useful when you're low on raid tickets.",
-      "combineGoals": "Combine the remaining materials of all goals (only the selected project's goals when one is picked) and plan today's raids as if they were one goal: the materials that take longest to farm come first and goal priority is ignored."
+      "combineGoals": "Combine the remaining materials of all goals (only the selected project's goals when one is picked) and plan today's raids as if they were one goal: one list without goal groups, the materials that take the most energy to farm first, and goal priority is ignored."
     },
     "note": {
       "fewerRaids": "Fewer raids: tied locations with more energy per battle are used, so the same materials take fewer raids.",
-      "combineGoals": "Combine goals: today's raids treat all goals as one, so the materials that take longest to farm come first. Plan and Goals dates still follow goal priority."
+      "combineGoals": "Combine goals: today's raids treat all goals as one list, the materials that take the most energy to farm first. Plan and Goals dates still follow goal priority."
     }
   },
   "hse": {

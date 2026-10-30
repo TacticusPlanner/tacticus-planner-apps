@@ -39,6 +39,8 @@ export { useEligibleCampaignBattles } from "./model/use-eligible-campaign-battle
 export { flattenTodayLocations } from "./model/flatten-today-locations"
 // Shared by Dailies > Today and the Home raids widget: promotes Bonus Raids into Today once the plan is done.
 export { selectTodayRaids } from "./model/select-today-raids"
+// Combine goals: Today lists one combined list in pooled-urgency order instead of goal groups.
+export { orderCombinedEntries } from "./model/combined-raids-order"
 // The rule RaidSchedule uses to drop a location whose real attempts are spent; Today counts its
 // visible nodes with it.
 export { isLocationVisible } from "./model/location-visibility"
