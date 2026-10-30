@@ -23,11 +23,11 @@ flag. A push to `main` deploys the current web application to staging.
 Production only ships published, immutable `vX.Y.Z` tags. Three workflows are
 involved:
 
-| Workflow | Trigger | What it does |
-| --- | --- | --- |
-| `CD Stage` | every push to `main` | builds the web app and deploys it to staging |
-| `Release` | by hand (Actions tab) | cuts or patches a release, tags it, publishes the GitHub Release, then calls `CD Prod` |
-| `CD Prod` | called by `Release`, or by hand | deploys an existing published release tag to production |
+| Workflow   | Trigger                         | What it does                                                                           |
+| ---------- | ------------------------------- | -------------------------------------------------------------------------------------- |
+| `CD Stage` | every push to `main`            | builds the web app and deploys it to staging                                           |
+| `Release`  | by hand (Actions tab)           | cuts or patches a release, tags it, publishes the GitHub Release, then calls `CD Prod` |
+| `CD Prod`  | called by `Release`, or by hand | deploys an existing published release tag to production                                |
 
 ### One-time setup
 
@@ -53,13 +53,14 @@ release published but not live; ship it later with `CD Prod` (see below).
 
 ### Versions
 
-| Bump | Run from | Result |
-| --- | --- | --- |
-| `major` | `main` | `v(X+1).0.0` and branch `release/(X+1).0` |
-| `minor` | `main` | `vX.(Y+1).0` and branch `release/X.(Y+1)` |
+| Bump    | Run from      | Result                                      |
+| ------- | ------------- | ------------------------------------------- |
+| `major` | `main`        | `v(X+1).0.0` and branch `release/(X+1).0`   |
+| `minor` | `main`        | `vX.(Y+1).0` and branch `release/X.(Y+1)`   |
 | `patch` | `release/X.Y` | next `vX.Y.Z` on that branch, no new branch |
 
-With no tags yet, `major` gives `v1.0.0` and `minor` gives `v0.1.0`. Use
+With no tags yet, versions count from `1.0.0`, because this rewrite ships as V2
+of Tacticus Planner: `major` gives `v2.0.0` and `minor` gives `v1.1.0`. Use
 `major` for the first production launch.
 
 ## Example: cutting a release
@@ -67,7 +68,7 @@ With no tags yet, `major` gives `v1.0.0` and `minor` gives `v0.1.0`. Use
 The latest release is `v1.3.2` and `main` has new, staging-verified work.
 
 1. Actions → **Release** → **Run workflow**.
-2. *Use workflow from:* `main`; *bump:* `minor`; leave *commit* empty.
+2. _Use workflow from:_ `main`; _bump:_ `minor`; leave _commit_ empty.
 3. The run creates `release/1.4` from the head of `main`, tags `v1.4.0`, and
    publishes the release with notes since `v1.3.2`.
 4. Open the run, click **Review deployments**, tick `production`, then
@@ -75,7 +76,7 @@ The latest release is `v1.3.2` and `main` has new, staging-verified work.
 5. `v1.4.0` is live.
 
 **Shipping an older commit.** If the head of `main` is not ready but
-`9f8e7d6` is, run the same thing with *commit* `9f8e7d6`. The commit must be on
+`9f8e7d6` is, run the same thing with _commit_ `9f8e7d6`. The commit must be on
 `main`, come after the last `vX.Y.0` cut (here `v1.3.0`), and not already be
 released.
 
@@ -96,7 +97,7 @@ released.
 
 3. Open a pull request from `backport/fix-login` into `release/1.4`, get it
    reviewed, and squash-merge it.
-4. Actions → **Release** → *Use workflow from:* `release/1.4`; *bump:*
+4. Actions → **Release** → _Use workflow from:_ `release/1.4`; _bump:_
    `patch`.
 5. The run tags `v1.4.1` with notes since `v1.4.0`. Approve the deploy.
 
@@ -105,8 +106,8 @@ after `release/1.4` was cut stays out of the patch.
 
 ## Redeploying, rolling back and failed runs
 
-- **Ship a rejected or failed deploy:** Actions → **CD Prod** → *Use workflow
-  from:* `main`; *ref:* `v1.4.1`. It refuses anything that is not a published,
+- **Ship a rejected or failed deploy:** Actions → **CD Prod** → _Use workflow
+  from:_ `main`; _ref:_ `v1.4.1`. It refuses anything that is not a published,
   non-draft `vX.Y.Z` release.
 - **Roll back:** run **CD Prod** with the previous release tag, for example
   `v1.4.0`. Apps and API roll back independently; check the API contract the older apps version expects.
