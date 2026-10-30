@@ -69,11 +69,11 @@ export type DailyRaidResourceUrgency = {
 
 export type DailyRaidLocationViewModel = {
   id: string
-  // The campaign's own display name (e.g. "Indomitus"), with no tier/difficulty/mirror qualifier —
-  // the first line of the location-primary Today/Bonus/Home rendering. Falls back to the raw battle
-  // id when the catalog has no descriptor for the battle.
+  // The campaign's display name with its mirror qualifier (e.g. "Indomitus Mirror") but no
+  // difficulty — the first line of the location-primary Today/Bonus/Home rendering. Falls back to
+  // the raw battle id when the catalog has no descriptor for the battle.
   campaignName: string
-  // Tier words + node number + a challenge node's "B" (e.g. "Elite 40", "Extremis 12B") — the
+  // Difficulty word + node number + a challenge node's "B" (e.g. "Elite 40", "Extremis 12B") — the
   // second line of that same rendering. Empty when the catalog has no descriptor, in which case
   // renderers omit the line entirely rather than inventing one.
   nodeLabel: string
@@ -84,8 +84,8 @@ export type DailyRaidLocationViewModel = {
 }
 
 /**
- * The two lines a location renders as: the campaign's own name, then its tier words + node number
- * (+ "B" for a challenge node). A battle the catalog has no descriptor for keeps its raw id on the
+ * The two lines a location renders as: the campaign's name (with "Mirror", since a mirror tier is a
+ * campaign of its own), then its difficulty word + node number (+ "B" for a challenge node). A battle the catalog has no descriptor for keeps its raw id on the
  * first line and gets no second line — a node number with no tier word identifies nothing.
  */
 export function campaignLocationLabels(
@@ -93,14 +93,14 @@ export function campaignLocationLabels(
   battle: { nodeNumber: number; challenge: boolean },
   descriptor: CampaignDescriptor | undefined,
   display: {
-    name: (descriptor: CampaignDescriptor) => string
-    tierLabel: (descriptor: CampaignDescriptor) => string
+    campaignName: (descriptor: CampaignDescriptor) => string
+    difficultyLabel: (descriptor: CampaignDescriptor) => string
   }
 ): Pick<DailyRaidLocationViewModel, "campaignName" | "nodeLabel"> {
   if (!descriptor) return { campaignName: battleId, nodeLabel: "" }
   return {
-    campaignName: display.name(descriptor),
-    nodeLabel: `${display.tierLabel(descriptor)} ${battle.nodeNumber}${
+    campaignName: display.campaignName(descriptor),
+    nodeLabel: `${display.difficultyLabel(descriptor)} ${battle.nodeNumber}${
       battle.challenge ? "B" : ""
     }`,
   }

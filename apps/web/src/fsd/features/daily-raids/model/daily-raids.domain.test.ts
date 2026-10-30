@@ -37,7 +37,7 @@ function labels(
 }
 
 describe("campaignLocationLabels", () => {
-  it("puts the bare campaign name on the first line and the tier + node on the second", () => {
+  it("puts the campaign name on the first line and the difficulty + node on the second", () => {
     expect(
       labels(
         descriptor({ nameKey: "fall-of-cadia", difficultyToken: "elite" }),
@@ -46,16 +46,20 @@ describe("campaignLocationLabels", () => {
     ).toEqual({ campaignName: "Fall of Cadia", nodeLabel: "Elite 40" })
   })
 
-  it("keeps every tier of one storyline on an identical first line", () => {
+  it("names a mirror campaign apart from its base storyline on the first line", () => {
     const standard = labels(descriptor({}), 22)
     const mirror = labels(descriptor({ isMirror: true }), 12)
-    expect(standard.campaignName).toBe("Indomitus")
-    expect(mirror.campaignName).toBe("Indomitus")
-    expect(standard.nodeLabel).toBe("Standard 22")
-    expect(mirror.nodeLabel).toBe("Mirror 12")
+    expect(standard).toEqual({
+      campaignName: "Indomitus",
+      nodeLabel: "Standard 22",
+    })
+    expect(mirror).toEqual({
+      campaignName: "Indomitus Mirror",
+      nodeLabel: "Standard 12",
+    })
   })
 
-  it("retains both qualifiers for a mirror elite node", () => {
+  it("keeps Mirror in the name and Elite on the node line for a mirror elite node", () => {
     expect(
       labels(
         descriptor({
@@ -64,8 +68,8 @@ describe("campaignLocationLabels", () => {
           difficultyToken: "elite",
         }),
         40
-      ).nodeLabel
-    ).toBe("Mirror Elite 40")
+      )
+    ).toEqual({ campaignName: "Saim-Hann Mirror", nodeLabel: "Elite 40" })
   })
 
   it("shows an event node's own tier", () => {

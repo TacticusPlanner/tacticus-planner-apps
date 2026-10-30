@@ -246,14 +246,14 @@ Assumptions:
 
 ### Requirement: Campaign locations use the Character Lookup presentation
 
-Today, Bonus Raids, and Today's Attempts SHALL render each battle as the primary element of its row: the campaign icon, the campaign's own display name, and the node's tier-and-number label, ordered ahead of the resource or material it farms — which renders as a secondary caption. Raw battle ids SHALL only be used as a fallback when catalog presentation metadata is unavailable. When a resource is scheduled at more than one location, each location SHALL render as its own row at the same visual weight as a single location would, rather than a compact list of chips. The Raids Plan tab is unaffected by this requirement and continues to render locations as compact chips secondary to the resource.
+Today, Bonus Raids, and Today's Attempts SHALL render each battle as the primary element of its row: the campaign icon, the campaign's display name, and the node's difficulty-and-number label, ordered ahead of the resource or material it farms — which renders as a secondary caption. Raw battle ids SHALL only be used as a fallback when catalog presentation metadata is unavailable. When a resource is scheduled at more than one location, each location SHALL render as its own row at the same visual weight as a single location would, rather than a compact list of chips. The Raids Plan tab is unaffected by this requirement and continues to render locations as compact chips secondary to the resource.
 
-The campaign name and the tier-and-number label SHALL be split across two lines:
+The campaign name and the difficulty-and-number label SHALL be split across two lines:
 
-1. The first line SHALL carry only the campaign's own display name, with no tier, difficulty, or mirror qualifier — so that every tier of one storyline shares an identical first line (for example, all four Indomitus tiers read "Indomitus").
-2. The second line SHALL carry every qualifier that distinguishes the node's tier, followed by the node number: "Standard 22", "Elite 40", "Mirror 12", "Mirror Elite 40", "Extremis 3". A challenge node SHALL additionally carry a "B" suffix on its node number ("Extremis 12B"), matching the suffix the Raids Plan chips already show.
+1. The first line SHALL carry the campaign's display name together with its mirror qualifier, but no difficulty: a mirror track is a campaign of its own, so "Indomitus" and "Indomitus Mirror" SHALL read differently at a glance, while the Standard and Elite tiers of one track share a first line.
+2. The second line SHALL carry the node's difficulty word, followed by the node number: "Standard 22", "Elite 40", "Standard 12" (on an "Indomitus Mirror" row), "Elite 40" (on a "Saim-Hann Mirror" row), "Extremis 3". A challenge node SHALL additionally carry a "B" suffix on its node number ("Extremis 12B"), matching the suffix the Raids Plan chips already show.
 
-The second line SHALL NOT be a generic battle-number label that omits the tier: the tier must be recoverable from the line carrying the number, because a node number alone does not identify a battle.
+The second line SHALL NOT be a generic battle-number label that omits the difficulty: the tier must be recoverable from the two lines together, because a node number alone does not identify a battle.
 
 Assumptions this requirement depends on:
 
@@ -264,25 +264,25 @@ Assumptions this requirement depends on:
 
 - **GIVEN** a scheduled battle resolves to catalog campaign metadata
 - **WHEN** Today renders the battle
-- **THEN** its row shows the campaign icon, the campaign name on the first line and the tier-and-node label on the second, ordered ahead of the resource it farms, with the resource name and progress rendered as a secondary caption
+- **THEN** its row shows the campaign icon, the campaign name on the first line and the difficulty-and-node label on the second, ordered ahead of the resource it farms, with the resource name and progress rendered as a secondary caption
 
-#### Scenario: A storyline elite node splits its tier onto the node line
+#### Scenario: A storyline elite node splits its difficulty onto the node line
 
 - **GIVEN** a scheduled battle is node 40 of the Fall of Cadia Elite campaign
 - **WHEN** Today renders the battle
 - **THEN** its first line reads "Fall of Cadia" and its second line reads "Elite 40"
 
-#### Scenario: Every tier of one storyline shares a first line
+#### Scenario: A mirror track reads as its own campaign on the first line
 
 - **GIVEN** Today's schedule includes node 22 of Indomitus Standard and node 12 of the Indomitus mirror track
 - **WHEN** Today renders both
-- **THEN** both rows' first line reads "Indomitus", and their second lines read "Standard 22" and "Mirror 12" respectively
+- **THEN** their first lines read "Indomitus" and "Indomitus Mirror", and their second lines read "Standard 22" and "Standard 12" respectively
 
-#### Scenario: A mirror elite node keeps both qualifiers on the node line
+#### Scenario: A mirror elite node keeps both qualifiers
 
 - **GIVEN** a scheduled battle is node 40 of the Saim-Hann elite mirror campaign
 - **WHEN** Today renders the battle
-- **THEN** its first line reads "Saim-Hann" and its second line reads "Mirror Elite 40", retaining both the mirror and the elite qualifier
+- **THEN** its first line reads "Saim-Hann Mirror" and its second line reads "Elite 40", retaining both the mirror and the elite qualifier
 
 #### Scenario: An event-campaign node shows its event tier
 
