@@ -315,7 +315,7 @@
         },
         "quickFilters": {
           "title": "Schnellfilter",
-          "content": "Ändere den heutigen Plan für einen Tag. Weniger Raids nutzt die Orte, die für dieselben Materialien weniger Raid-Tickets brauchen. Engpässe farmt zuerst die langsamsten Materialien aller Ziele. Daten in Plan und Ziele ändern sich nicht."
+          "content": "Ändere den heutigen Plan für einen Tag. Weniger Raids nutzt die Orte, die für dieselben Materialien weniger Raid-Tickets brauchen. Gesamtmaterialien fasst die Materialien aller Ziele zusammen und farmt sie wie ein einziges Ziel. Daten in Plan und Ziele ändern sich nicht."
         },
         "onslaught": {
           "title": "Onslaught",
@@ -520,15 +520,15 @@
     "label": "Schnellfilter",
     "chip": {
       "fewerRaids": "Weniger Raids",
-      "bottlenecks": "Engpässe"
+      "totalMaterials": "Gesamtmaterialien"
     },
     "help": {
       "fewerRaids": "Wenn mehrere Orte gleich viel Energie pro Gegenstand kosten, nur die mit der meisten Energie pro Kampf raiden. Gleiche Materialien für gleiche Energie, mit weniger Raids. Praktisch, wenn Raid-Tickets knapp sind.",
-      "bottlenecks": "Ignoriert heute die Zielpriorität: Die restlichen Materialien aller Ziele werden zusammengefasst und die langsamsten zuerst gefarmt, meist legendäre Materialien. Praktisch, um lange Farmphasen früh zu beginnen."
+      "totalMaterials": "Fasst die restlichen Materialien aller Ziele zusammen (nur die des gewählten Projekts, falls eines gewählt ist) und plant die heutigen Raids, als wären sie ein Ziel: Die Materialien mit der längsten Farmzeit kommen zuerst, die Zielpriorität wird ignoriert. Wie die Farm-Reihenfolge „Nach Gesamtmaterialien“ in V1."
     },
     "note": {
       "fewerRaids": "Weniger Raids: Gleichwertige Orte mit mehr Energie pro Kampf werden genutzt, damit dieselben Materialien weniger Raids brauchen.",
-      "bottlenecks": "Engpässe: Die heutigen Raids farmen zuerst die langsamsten Materialien aller Ziele. Daten in Plan und Ziele folgen weiter der Zielpriorität."
+      "totalMaterials": "Gesamtmaterialien: Die heutigen Raids behandeln alle Ziele als eines, die Materialien mit der längsten Farmzeit kommen zuerst. Daten in Plan und Ziele folgen weiter der Zielpriorität."
     }
   },
   "hse": {

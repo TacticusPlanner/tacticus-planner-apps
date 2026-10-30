@@ -48,9 +48,10 @@ export type EstimatePlanParams = {
   /** Today quick filter "Fewer raids": among nodes tied on least energy per item, keep only the
    *  costliest per battle. Only Today and Bonus Raids pass it. */
   fewerRaids?: boolean
-  /** Today quick filter "Bottlenecks": spend each day's energy on one pool of every goal's
-   *  remaining need (all stages), longest-to-finish first, instead of goal by goal in priority
-   *  order. Only Today and Bonus Raids pass it. */
+  /** Today switch "Total materials" (V1's "By total materials" farm order): spend each day's
+   *  energy on one pool of every goal's remaining need (all stages), longest-to-finish first, as if
+   *  every goal were one, instead of goal by goal in priority order. Only Today and Bonus Raids
+   *  pass it. */
   combineGoals?: boolean
 }
 
@@ -60,7 +61,7 @@ type StageState = {
 }
 
 /**
- * One day of the "Bottlenecks" quick filter: every pending goal's remaining need, summed per resource
+ * One day of the "Total materials" switch: every pending goal's remaining need, summed per resource
  * across all its stages, is spent as one pool by `spendDay` (longest-to-finish resource first). A
  * resource is farmed at the nodes picked for the highest-priority goal that needs it; what it yields
  * is taken off the goals' stages in priority order, and each raid entry is credited to that same

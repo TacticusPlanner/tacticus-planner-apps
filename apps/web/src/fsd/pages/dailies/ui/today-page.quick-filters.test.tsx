@@ -88,15 +88,17 @@ describe("Today quick filters", () => {
     const user = userEvent.setup()
     renderToday()
 
-    await user.click(screen.getByTestId("today-quick-filter-bottlenecks"))
+    await user.click(screen.getByTestId("today-quick-filter-totalMaterials"))
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
       combineGoals: true,
     })
     expect(
-      screen.getByTestId("today-quick-filter-note-bottlenecks")
+      screen.getByTestId("today-quick-filter-note-totalMaterials")
     ).toBeInTheDocument()
-    expect(screen.getByTestId("search")).toHaveTextContent("?quick=bottlenecks")
+    expect(screen.getByTestId("search")).toHaveTextContent(
+      "?quick=totalMaterials"
+    )
 
     await user.click(screen.getByTestId("today-quick-filter-fewerRaids"))
     expect(lastQuickFilters()).toEqual({ fewerRaids: true, combineGoals: true })
@@ -104,10 +106,10 @@ describe("Today quick filters", () => {
       screen.getByTestId("today-quick-filter-note-fewerRaids")
     ).toBeInTheDocument()
     expect(screen.getByTestId("search")).toHaveTextContent(
-      "?quick=fewerRaids%2Cbottlenecks"
+      "?quick=fewerRaids%2CtotalMaterials"
     )
 
-    await user.click(screen.getByTestId("today-quick-filter-bottlenecks"))
+    await user.click(screen.getByTestId("today-quick-filter-totalMaterials"))
     await user.click(screen.getByTestId("today-quick-filter-fewerRaids"))
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
@@ -125,7 +127,7 @@ describe("Today quick filters", () => {
       screen.getByRole("button", { name: "Show less" })
     ).toBeInTheDocument()
 
-    await user.click(screen.getByTestId("today-quick-filter-bottlenecks"))
+    await user.click(screen.getByTestId("today-quick-filter-totalMaterials"))
     expect(
       screen.queryByRole("button", { name: "Show less" })
     ).not.toBeInTheDocument()
@@ -144,5 +146,16 @@ describe("Today quick filters", () => {
       "data-state",
       "on"
     )
+  })
+
+  it("reads an old Bottlenecks link as Total materials", () => {
+    renderToday("/?quick=bottlenecks")
+    expect(lastQuickFilters()).toEqual({
+      fewerRaids: false,
+      combineGoals: true,
+    })
+    expect(
+      screen.getByTestId("today-quick-filter-totalMaterials")
+    ).toHaveAttribute("data-state", "on")
   })
 })

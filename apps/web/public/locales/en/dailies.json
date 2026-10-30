@@ -315,7 +315,7 @@
         },
         "quickFilters": {
           "title": "Quick filters",
-          "content": "Switch today's plan for a day. Fewer raids uses the locations that need fewer raid tickets for the same materials. Bottlenecks farms the slowest materials across all goals first. Plan and Goals dates are not affected."
+          "content": "Switch today's plan for a day. Fewer raids uses the locations that need fewer raid tickets for the same materials. Total materials combines all goals' materials and farms them as if they were one goal. Plan and Goals dates are not affected."
         },
         "onslaught": {
           "title": "Onslaught",
@@ -520,15 +520,15 @@
     "label": "Quick filters",
     "chip": {
       "fewerRaids": "Fewer raids",
-      "bottlenecks": "Bottlenecks"
+      "totalMaterials": "Total materials"
     },
     "help": {
       "fewerRaids": "When several locations cost the same energy per item, raid only the ones with the highest energy per battle. Same materials for the same energy, in fewer raids. Useful when you're low on raid tickets.",
-      "bottlenecks": "Ignore goal priority today: combine the remaining materials of all goals and farm the slowest ones first, usually Legendary materials. Useful for starting long farms early."
+      "totalMaterials": "Combine the remaining materials of all goals (only the selected project's goals when one is picked) and plan today's raids as if they were one goal: the materials that take longest to farm come first and goal priority is ignored. Like V1's \"By total materials\" farm order."
     },
     "note": {
       "fewerRaids": "Fewer raids: tied locations with more energy per battle are used, so the same materials take fewer raids.",
-      "bottlenecks": "Bottlenecks: today's raids farm the slowest materials across all goals first. Plan and Goals dates still follow goal priority."
+      "totalMaterials": "Total materials: today's raids treat all goals as one, so the materials that take longest to farm come first. Plan and Goals dates still follow goal priority."
     }
   },
   "hse": {
