@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@feature-sliced/steiger-plugin": "^0.6.0",
+    "@feature-sliced/steiger-plugin": "^0.8.1",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/react-table": "^8.21.3",
@@ -78,7 +78,7 @@
     "knip": "catalog:",
     "openapi-typescript": "^7.13.0",
     "prettier": "catalog:",
-    "steiger": "^0.5.13",
+    "steiger": "^0.8.1",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vite": "^8.3.5",

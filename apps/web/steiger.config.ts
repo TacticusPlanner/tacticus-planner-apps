@@ -9,4 +9,14 @@ export default defineConfig([
       "fsd/insignificant-slice": "off",
     },
   },
+  {
+    // Rule added in steiger 0.8; these segments predate it.
+    files: [
+      "./src/fsd/app/providers/**",
+      "./src/fsd/entities/legendary-event/assets/**",
+    ],
+    rules: {
+      "fsd/segments-by-purpose": "off",
+    },
+  },
 ])
