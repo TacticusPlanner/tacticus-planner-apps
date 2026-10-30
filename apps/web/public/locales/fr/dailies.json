@@ -86,8 +86,19 @@
       "missingDescription": "Vos jetons de raid apparaîtront ici une fois vos données de joueur synchronisées."
     },
     "exactMeta": {
-      "title": "Préparation Meta exacte",
-      "description": "Compositions exactes sélectionnées pour ce boss, comparées à votre effectif synchronisé. Les remplacements ne sont pas encore évalués.",
+      "title": "Préparation Meta",
+      "howScored": "Comment la préparation est-elle calculée ?",
+      "howScoredPicks": "Chaque emplacement montre le héros que vous emmèneriez : le choix recommandé si vous le possédez, sinon le meilleur remplaçant possédé que la source meta indique pour cet emplacement. Un héros n'est utilisé qu'une fois par composition. Touchez un emplacement pour voir toutes les options.",
+      "howScoredReadiness": "La préparation d'un héros est la moyenne du rang, des étoiles et du niveau de capacité, chacun comparé à l'objectif de l'étape actuelle du boss et plafonné à 100 %. Une Machine de guerre n'est évaluée que sur ses étoiles. La préparation d'équipe compte double les emplacements essentiels.",
+      "target": "Objectif à cette étape du boss :",
+      "targetAbilities": "Capacités {{level}}",
+      "noTarget": "Les pourcentages de préparation apparaîtront une fois le statut de raid en direct de votre guilde synchronisé.",
+      "sourcePrefix": "Source :",
+      "status": {
+        "ready": "Prête",
+        "substitutes": "Jouable avec remplaçants",
+        "missingEssentials": "Héros essentiels manquants"
+      },
       "kind": {
         "meta": "Meta",
         "alternate": "Alternative",
@@ -97,33 +108,9 @@
         "admech": "AdMech",
         "custodes": "Custodes"
       },
-      "readiness": {
-        "ready": "Prête",
-        "partial": "Partielle",
-        "unavailable": "Indisponible",
-        "unknown": "Préparation inconnue"
-      },
-      "missingCount_one": "{{count}} héros manquant",
-      "missingCount_other": "{{count}} héros manquants",
-      "mowLabel": "Machine de guerre",
-      "mowOwned": "Disponible",
-      "mowMissing": "Manquante",
-      "ownership": {
-        "owned": "Disponible",
-        "missing": "Manquant",
-        "unknown": "Statut de possession inconnu"
-      },
-      "compsLabel": "Comps référencées",
-      "sourceLabel": "Source : {{name}}",
       "updatedLabel": "Mise à jour {{date}}",
-      "detailsToggle": "Comps et source",
       "teamReadiness": "Préparation d'équipe : {{percent}}%",
-      "candidatesLabel": "Alternatives :",
       "efficiencyLabel": "{{value}}x",
-      "investment": {
-        "rank": "Rang {{rank}}",
-        "level": "Niveau {{level}}"
-      },
       "absentMeta": {
         "title": "Synchronisez les données Meta du Raid de guilde",
         "description": "Les recommandations Meta exactes apparaîtront ici une fois le jeu de données sélectionné synchronisé."
@@ -135,6 +122,21 @@
       "missingRoster": {
         "title": "Synchronisez vos données de joueur",
         "description": "Les compositions idéales sont affichées ci-dessous, mais la préparation nécessite votre effectif synchronisé."
+      },
+      "efficiency": "Efficacité {{value}}×",
+      "comp": "Comp {{name}}",
+      "mow": "Machine de guerre",
+      "essential": "Emplacement essentiel",
+      "forIdeal": "pour {{name}}",
+      "noFreeOption": "Aucun remplaçant libre",
+      "ideal": "Idéal",
+      "slotOptions": "Options de l'emplacement {{slot}}",
+      "slotHint": "Sélectionnez un emplacement pour comparer ses options.",
+      "optionState": {
+        "picked": "Dans cette composition",
+        "inTeam": "Utilisé à l'emplacement {{slot}}",
+        "available": "Possédé",
+        "notOwned": "Non possédé"
       }
     },
     "variantRules": {
@@ -162,7 +164,6 @@
     "plan": "Plan du jour",
     "planMeta_one": "{{count}} nœud · par priorité d'objectif",
     "planMeta_other": "{{count}} nœuds · par priorité d'objectif",
-
     "energyUsage": {
       "label": "Énergie quotidienne utilisée",
       "value": "{{percent}} % de l'énergie quotidienne utilisée"
@@ -278,12 +279,12 @@
           "content": "Vos jetons de raid et de bombe synchronisés, avec la disponibilité du prochain jeton."
         },
         "exactMetaDesktop": {
-          "title": "Préparation Meta exacte",
-          "content": "Compositions exactes sélectionnées pour le boss actif, avec le pourcentage de préparation d'investissement de chaque héros et le score combiné de l'équipe, côte à côte."
+          "title": "Préparation Meta",
+          "content": "Compositions recommandées pour le boss actif, complétées à partir de votre roster. Chaque emplacement montre le héros que vous emmèneriez et sa proximité avec l'objectif de cette étape du boss ; sélectionnez un emplacement pour comparer ses options."
         },
         "exactMetaMobile": {
-          "title": "Préparation Meta exacte",
-          "content": "Ici, la préparation d'équipe apparaît en premier : dépliez une carte pour voir les Comps et la source."
+          "title": "Préparation Meta",
+          "content": "Changez de composition avec les onglets, puis touchez un emplacement pour comparer ses options."
         }
       }
     },

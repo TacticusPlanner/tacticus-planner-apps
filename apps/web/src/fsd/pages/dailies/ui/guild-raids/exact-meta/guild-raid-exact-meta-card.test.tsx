@@ -1,11 +1,11 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
 import type {
   GuildRaidExactReadinessRecommendationView,
-  GuildRaidMetaSourcePresentation,
-  GuildRaidRecommendationReadiness,
+  GuildRaidExactReadinessSlotView,
+  GuildRaidExactReadinessUnitView,
 } from "@/entities/guild-raid-meta"
 
 import { GuildRaidExactMetaCard } from "./guild-raid-exact-meta-card"
@@ -18,10 +18,92 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 
-const source: GuildRaidMetaSourcePresentation = {
-  sourceId: "terminus-maximus-guild-raid-boss-meta",
-  name: "Terminus Maximus",
-  url: "https://terminusmaximus.com/guild-raid/boss-meta/",
+function unit(
+  id: string,
+  owned: boolean | undefined,
+  kind: "character" | "mow" = "character"
+): GuildRaidExactReadinessUnitView {
+  const name = id.replace(/^\w/, (letter) => letter.toUpperCase())
+  return owned === undefined ? { id, name, kind } : { id, name, kind, owned }
+}
+
+const signature: GuildRaidExactReadinessSlotView = {
+  kind: "hero",
+  role: { id: "signature", label: "Signature" },
+  essential: true,
+  ideal: unit("bladeChampion", true),
+  picked: unit("bladeChampion", true),
+  isSubstitute: false,
+  readiness: 90,
+  options: [
+    {
+      unit: unit("bladeChampion", true),
+      isIdeal: true,
+      state: "picked",
+      readiness: 90,
+    },
+  ],
+}
+
+const coreWithSubstitute: GuildRaidExactReadinessSlotView = {
+  kind: "hero",
+  role: { id: "core", label: "Core" },
+  essential: true,
+  ideal: unit("trajann", false),
+  picked: unit("dante", true),
+  isSubstitute: true,
+  readiness: 60,
+  options: [
+    { unit: unit("trajann", false), isIdeal: true, state: "notOwned" },
+    {
+      unit: unit("blackmane", true),
+      isIdeal: false,
+      state: "inTeam",
+      inTeamSlotIndex: 2,
+      readiness: 80,
+    },
+    {
+      unit: unit("dante", true),
+      isIdeal: false,
+      state: "picked",
+      readiness: 60,
+    },
+  ],
+}
+
+const flex: GuildRaidExactReadinessSlotView = {
+  kind: "hero",
+  role: { id: "flex", label: "Flex" },
+  essential: false,
+  ideal: unit("blackmane", true),
+  picked: unit("blackmane", true),
+  isSubstitute: false,
+  readiness: 80,
+  options: [],
+}
+
+const emptyFlex: GuildRaidExactReadinessSlotView = {
+  kind: "hero",
+  role: { id: "flex", label: "Flex" },
+  essential: false,
+  ideal: unit("helbrecht", false),
+  picked: null,
+  isSubstitute: false,
+  readiness: 0,
+  options: [
+    { unit: unit("helbrecht", false), isIdeal: true, state: "notOwned" },
+    { unit: unit("dante", true), isIdeal: false, state: "inTeam" },
+  ],
+}
+
+const mow: GuildRaidExactReadinessSlotView = {
+  kind: "mow",
+  essential: false,
+  ideal: unit("galatian", false, "mow"),
+  picked: unit("biovore", true, "mow"),
+  isSubstitute: true,
+  readiness: 60,
+  options: [],
 }
 
 function recommendation(
@@ -29,408 +111,157 @@ function recommendation(
 ): GuildRaidExactReadinessRecommendationView {
   return {
     id: "rec-1",
-    kind: "meta",
-    heroes: [
-      { id: "heroA", name: "Hero A", kind: "character", owned: true },
-      { id: "heroB", name: "Hero B", kind: "character", owned: true },
-      { id: "heroC", name: "Hero C", kind: "character", owned: false },
-      { id: "heroD", name: "Hero D", kind: "character", owned: false },
-      { id: "heroE", name: "Hero E", kind: "character", owned: false },
-    ],
-    mow: { id: "mowX", name: "Mow X", kind: "mow", owned: true },
+    kind: { id: "alternate", label: "Alternate" },
+    efficiency: 1.3,
     comps: [
       {
-        id: "comp1",
-        signature: { id: "heroA", name: "Hero A", kind: "character" },
+        id: "Custodes",
+        signature: { id: "bladeChampion", name: "Blade", kind: "character" },
       },
     ],
-    classification: "partial",
-    ...overrides,
-  }
-}
-
-function readinessFixture(
-  overrides: Partial<GuildRaidRecommendationReadiness> = {}
-): GuildRaidRecommendationReadiness {
-  const heroIds = ["heroA", "heroB", "heroC", "heroD", "heroE"]
-  return {
-    // The card never reads `recommendation` off the readiness object (it reads its own
-    // `recommendation` prop directly) — an empty stub is enough here.
-    recommendation: {} as GuildRaidRecommendationReadiness["recommendation"],
-    teamReadiness: 100,
-    heroSlots: heroIds.map((heroId, index) => ({
-      heroId,
-      roleId: index === 0 ? "signature" : "flex",
-      essential: index === 0,
-      assignment: { characterId: heroId, isIdeal: true },
-      readiness: 100,
-      candidates: [],
-    })),
-    mow: { mowId: "mowX", owned: true, readiness: 100 },
+    status: "substitutes",
+    teamReadiness: 69,
+    slots: [signature, coreWithSubstitute, flex, emptyFlex, mow],
     ...overrides,
   }
 }
 
 describe("GuildRaidExactMetaCard", () => {
-  it("shows the kind badge, classification, lineup, Comps, and source on desktop", () => {
-    render(
-      <GuildRaidExactMetaCard
-        isMobile={false}
-        recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
-      />
-    )
-
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-kind-badge")
-    ).toHaveTextContent("guildRaids.exactMeta.kind.meta")
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-classification-badge")
-    ).toHaveTextContent("guildRaids.exactMeta.readiness.partial")
-    expect(
-      screen.getAllByTestId("guild-raid-exact-meta-hero-owned")
-    ).toHaveLength(2)
-    expect(
-      screen.getAllByTestId("guild-raid-exact-meta-hero-missing")
-    ).toHaveLength(3)
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-mow-owned")
-    ).toBeInTheDocument()
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-comps")
-    ).toBeInTheDocument()
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-source")
-    ).toHaveTextContent("guildRaids.exactMeta.sourceLabel")
-  })
-
-  it("shows every classification badge variant", () => {
-    for (const classification of ["ready", "partial", "unavailable"] as const) {
-      const { unmount } = render(
+  it.each([false, true])(
+    "shows the lineup status, team readiness and efficiency (mobile: %s)",
+    (isMobile) => {
+      render(
         <GuildRaidExactMetaCard
-          isMobile={false}
-          recommendation={recommendation({ classification })}
-          source={source}
-          updatedOn="2026-07-01"
+          isMobile={isMobile}
+          recommendation={recommendation()}
         />
       )
+
       expect(
-        screen.getByTestId("guild-raid-exact-meta-classification-badge")
-      ).toHaveTextContent(`guildRaids.exactMeta.readiness.${classification}`)
-      unmount()
+        screen.getByTestId("guild-raid-exact-meta-status")
+      ).toHaveTextContent("guildRaids.exactMeta.status.substitutes")
+      expect(
+        screen.getByTestId("guild-raid-exact-meta-team-readiness")
+      ).toHaveTextContent('guildRaids.exactMeta.teamReadiness:{"percent":69}')
+      expect(
+        screen.getByText('guildRaids.exactMeta.efficiency:{"value":1.3}')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('guildRaids.exactMeta.comp:{"name":"Custodes"}')
+      ).toBeInTheDocument()
     }
-  })
+  )
 
-  it("shows a readiness-unknown badge and no owned/missing decoration when roster is unavailable", () => {
-    render(
-      <GuildRaidExactMetaCard
-        isMobile={false}
-        recommendation={recommendation({
-          classification: undefined,
-          heroes: recommendation().heroes.map((hero) => ({
-            ...hero,
-            owned: undefined,
-          })),
-          mow: { ...recommendation().mow, owned: undefined },
-        })}
-        source={source}
-        updatedOn="2026-07-01"
-      />
-    )
-
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-classification-badge")
-    ).toHaveTextContent("guildRaids.exactMeta.readiness.unknown")
-    expect(
-      screen.getAllByTestId("guild-raid-exact-meta-hero-unknown")
-    ).toHaveLength(5)
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-mow-unknown")
-    ).toBeInTheDocument()
-  })
-
-  it("preserves authored heroIds order on both desktop and mobile", () => {
-    const { unmount } = render(
-      <GuildRaidExactMetaCard
-        isMobile={false}
-        recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
-      />
-    )
-    expect(screen.getByTestId("guild-raid-exact-meta-heroes").textContent).toBe(
-      "Hero AguildRaids.exactMeta.ownership.ownedHero BguildRaids.exactMeta.ownership.ownedHero CguildRaids.exactMeta.ownership.missingHero DguildRaids.exactMeta.ownership.missingHero EguildRaids.exactMeta.ownership.missingMow XguildRaids.exactMeta.ownership.owned"
-    )
-    unmount()
-
-    render(
-      <GuildRaidExactMetaCard
-        isMobile={true}
-        recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
-      />
-    )
-    expect(screen.getByTestId("guild-raid-exact-meta-heroes").textContent).toBe(
-      "Hero AguildRaids.exactMeta.ownership.ownedHero BguildRaids.exactMeta.ownership.ownedHero CguildRaids.exactMeta.ownership.missingHero DguildRaids.exactMeta.ownership.missingHero EguildRaids.exactMeta.ownership.missingMow XguildRaids.exactMeta.ownership.owned"
-    )
-  })
-
-  it("puts classification and missing count before the lineup on mobile, with Comps/source collapsed", async () => {
-    const user = userEvent.setup()
-    render(
-      <GuildRaidExactMetaCard
-        isMobile={true}
-        recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
-      />
-    )
-
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-missing-count")
-    ).toHaveTextContent('guildRaids.exactMeta.missingCount:{"count":3}')
-    expect(
-      screen.queryByTestId("guild-raid-exact-meta-source")
-    ).not.toBeInTheDocument()
-
-    await user.click(screen.getByTestId("guild-raid-exact-meta-details-toggle"))
-
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-source")
-    ).toBeInTheDocument()
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-comps")
-    ).toBeInTheDocument()
-  })
-
-  it("shows a 100% team-readiness badge for a fully-ready recommendation", () => {
+  it("shows the hero you'd field, by name, with the readiness of that hero and who it stands in for", () => {
     render(
       <GuildRaidExactMetaCard
         isMobile={false}
         recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
-        readiness={readinessFixture()}
       />
     )
 
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-team-readiness")
-    ).toHaveTextContent('guildRaids.exactMeta.teamReadiness:{"percent":100}')
+    const slot = screen.getByTestId("guild-raid-exact-meta-slot-1")
+    expect(slot).toHaveTextContent("Core")
+    expect(slot).toHaveTextContent("Dante")
+    expect(slot).toHaveTextContent(
+      'guildRaids.exactMeta.forIdeal:{"name":"Trajann"}'
+    )
+    expect(slot).toHaveTextContent("60%")
+    expect(slot).not.toHaveTextContent("trajann")
+
+    const mowSlot = screen.getByTestId("guild-raid-exact-meta-slot-4")
+    expect(mowSlot).toHaveTextContent("guildRaids.exactMeta.mow")
+    expect(mowSlot).toHaveTextContent("Biovore")
   })
 
-  it("shows each hero's and the Machine of War's own readiness percentage badge", () => {
+  it("explains an empty slot instead of showing a percentage for an unowned hero", () => {
     render(
       <GuildRaidExactMetaCard
         isMobile={false}
         recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
-        readiness={readinessFixture({
-          heroSlots: readinessFixture().heroSlots.map((slot, index) => ({
-            ...slot,
-            readiness: [100, 60, 0, 0, 0][index]!,
-          })),
-        })}
       />
     )
 
-    const heroReadinessBadges = screen.getAllByTestId(
-      "guild-raid-exact-meta-hero-readiness"
-    )
-    expect(heroReadinessBadges.map((el) => el.textContent)).toEqual([
-      "100%",
-      "60%",
-      "0%",
-      "0%",
-      "0%",
-    ])
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-mow-readiness")
-    ).toHaveTextContent("100%")
+    const slot = screen.getByTestId("guild-raid-exact-meta-slot-3")
+    expect(slot).toHaveTextContent("Helbrecht")
+    expect(slot).toHaveTextContent("guildRaids.exactMeta.noFreeOption")
+    expect(slot).toHaveTextContent("0%")
   })
 
-  it("shows a 0% team-readiness badge for an unready recommendation without crashing", () => {
-    render(
-      <GuildRaidExactMetaCard
-        isMobile={false}
-        recommendation={recommendation({
-          heroes: recommendation().heroes.map((hero) => ({
-            ...hero,
-            owned: false,
-          })),
-          mow: { ...recommendation().mow, owned: false },
-          classification: "unavailable",
-        })}
-        source={source}
-        updatedOn="2026-07-01"
-        readiness={readinessFixture({
-          teamReadiness: 0,
-          heroSlots: readinessFixture().heroSlots.map((slot) => ({
-            ...slot,
-            assignment: null,
-            readiness: 0,
-          })),
-          mow: { mowId: "mowX", owned: false, readiness: 0 },
-        })}
-      />
-    )
-
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-team-readiness")
-    ).toHaveTextContent('guildRaids.exactMeta.teamReadiness:{"percent":0}')
-  })
-
-  it("shows every owned candidate's percentage for a flex slot, not only the selected one", () => {
-    render(
-      <GuildRaidExactMetaCard
-        isMobile={false}
-        recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
-        readiness={readinessFixture({
-          heroSlots: readinessFixture().heroSlots.map((slot, index) =>
-            index === 1
-              ? {
-                  ...slot,
-                  candidates: [
-                    {
-                      characterId: "heroB",
-                      readiness: 40,
-                      isIdeal: true,
-                      isSelected: true,
-                    },
-                    {
-                      characterId: "altB",
-                      readiness: 90,
-                      isIdeal: false,
-                      isSelected: false,
-                    },
-                  ],
-                }
-              : slot
-          ),
-        })}
-      />
-    )
-
-    const candidates = screen.getByTestId("guild-raid-exact-meta-candidates-1")
-    expect(candidates).toHaveTextContent("heroB")
-    expect(candidates).toHaveTextContent("40%")
-    expect(candidates).toHaveTextContent("altB")
-    expect(candidates).toHaveTextContent("90%")
-  })
-
-  it("shows no candidate comparison for an essential slot whose ideal hero already fills it", () => {
-    render(
-      <GuildRaidExactMetaCard
-        isMobile={false}
-        recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
-        readiness={readinessFixture({
-          heroSlots: readinessFixture().heroSlots.map((slot, index) =>
-            index === 0
-              ? {
-                  ...slot,
-                  candidates: [
-                    {
-                      characterId: "heroA",
-                      readiness: 100,
-                      isIdeal: true,
-                      isSelected: true,
-                    },
-                  ],
-                }
-              : slot
-          ),
-        })}
-      />
-    )
-
-    expect(
-      screen.queryByTestId("guild-raid-exact-meta-candidates-0")
-    ).not.toBeInTheDocument()
-  })
-
-  it("wraps heroes and candidates instead of forcing horizontal scroll below 768px", () => {
-    render(
-      <GuildRaidExactMetaCard
-        isMobile={true}
-        recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
-        readiness={readinessFixture({
-          heroSlots: readinessFixture().heroSlots.map((slot, index) =>
-            index === 1
-              ? {
-                  ...slot,
-                  candidates: [
-                    {
-                      characterId: "heroB",
-                      readiness: 40,
-                      isIdeal: true,
-                      isSelected: true,
-                    },
-                    {
-                      characterId: "altB",
-                      readiness: 90,
-                      isIdeal: false,
-                      isSelected: false,
-                    },
-                  ],
-                }
-              : slot
-          ),
-        })}
-      />
-    )
-
-    expect(screen.getByTestId("guild-raid-exact-meta-heroes")).toHaveClass(
-      "flex-wrap"
-    )
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-candidates-1")
-    ).toHaveClass("flex-wrap")
-  })
-
-  it("puts the team-readiness summary before the collapsible lineup detail on mobile, matching the modified spec's ordering", () => {
-    render(
-      <GuildRaidExactMetaCard
-        isMobile={true}
-        recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
-        readiness={readinessFixture()}
-      />
-    )
-
-    const card = screen.getByTestId("guild-raid-exact-meta-card")
-    const summaryPosition = card
-      .querySelector('[data-testid="guild-raid-exact-meta-team-readiness"]')!
-      .compareDocumentPosition(
-        screen.getByTestId("guild-raid-exact-meta-heroes")
+  it.each([false, true])(
+    "lists every option for a slot, with why it was or wasn't picked (mobile: %s)",
+    async (isMobile) => {
+      const user = userEvent.setup()
+      render(
+        <GuildRaidExactMetaCard
+          isMobile={isMobile}
+          recommendation={recommendation()}
+        />
       )
 
-    // The team-readiness badge (part of the summary block) precedes the heroes lineup in DOM order —
-    // Node.DOCUMENT_POSITION_FOLLOWING (4) on the heroes element relative to the badge confirms this.
-    expect(summaryPosition & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-  })
+      expect(
+        screen.queryByTestId("guild-raid-exact-meta-options")
+      ).not.toBeInTheDocument()
 
-  it("renders without a readiness prop, unchanged from the ownership-only display", () => {
+      const slot = screen.getByTestId("guild-raid-exact-meta-slot-1")
+      await user.click(slot)
+      expect(slot).toHaveAttribute("aria-expanded", "true")
+
+      const panel = screen.getByRole("region", {
+        name: 'guildRaids.exactMeta.slotOptions:{"slot":"Core"}',
+      })
+      const rows = within(panel).getAllByRole("listitem")
+      expect(rows.map((row) => row.textContent)).toEqual([
+        expect.stringContaining("Trajann"),
+        expect.stringContaining("Blackmane"),
+        expect.stringContaining("Dante"),
+      ])
+      expect(rows[0]).toHaveTextContent("guildRaids.exactMeta.ideal")
+      expect(rows[0]).toHaveTextContent(
+        "guildRaids.exactMeta.optionState.notOwned"
+      )
+      expect(rows[1]).toHaveTextContent(
+        'guildRaids.exactMeta.optionState.inTeam:{"slot":"Flex"}'
+      )
+      expect(rows[1]).toHaveTextContent("80%")
+      expect(rows[2]).toHaveTextContent(
+        "guildRaids.exactMeta.optionState.picked"
+      )
+
+      await user.click(slot)
+      expect(
+        screen.queryByTestId("guild-raid-exact-meta-options")
+      ).not.toBeInTheDocument()
+    }
+  )
+
+  it("shows picks without percentages or status when readiness is withheld", () => {
     render(
       <GuildRaidExactMetaCard
         isMobile={false}
-        recommendation={recommendation()}
-        source={source}
-        updatedOn="2026-07-01"
+        recommendation={recommendation({
+          status: undefined,
+          teamReadiness: undefined,
+          slots: [
+            {
+              ...signature,
+              ideal: unit("bladeChampion", undefined),
+              picked: null,
+              readiness: undefined,
+            },
+          ],
+        })}
       />
     )
 
+    expect(
+      screen.queryByTestId("guild-raid-exact-meta-status")
+    ).not.toBeInTheDocument()
     expect(
       screen.queryByTestId("guild-raid-exact-meta-team-readiness")
     ).not.toBeInTheDocument()
+    const slot = screen.getByTestId("guild-raid-exact-meta-slot-0")
+    expect(slot).toHaveTextContent("BladeChampion")
+    expect(slot).not.toHaveTextContent("%")
   })
 })

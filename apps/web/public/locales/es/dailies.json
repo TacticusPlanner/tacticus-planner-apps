@@ -86,8 +86,19 @@
       "missingDescription": "Tus fichas de incursión aparecerán aquí una vez que se sincronicen tus datos de jugador."
     },
     "exactMeta": {
-      "title": "Preparación de Meta exacta",
-      "description": "Alineaciones exactas seleccionadas para este jefe, comparadas con tu plantilla sincronizada. Las sustituciones aún no se evalúan.",
+      "title": "Preparación Meta",
+      "howScored": "¿Cómo se calcula la preparación?",
+      "howScoredPicks": "Cada puesto muestra el héroe que llevarías: la elección curada si la tienes; si no, el mejor sustituto propio que la fuente meta indica para ese puesto. Cada héroe se usa una sola vez por alineación. Toca un puesto para ver todas las opciones.",
+      "howScoredReadiness": "La preparación de un héroe es la media de rango, estrellas y nivel de habilidad, cada uno comparado con el objetivo del paso actual del jefe y limitado al 100 %. Una Máquina de Guerra se evalúa solo por estrellas. La preparación del equipo cuenta doble los puestos esenciales.",
+      "target": "Objetivo en este paso del jefe:",
+      "targetAbilities": "Habilidades {{level}}",
+      "noTarget": "Los porcentajes de preparación aparecerán cuando se sincronice el estado de incursión en vivo de tu gremio.",
+      "sourcePrefix": "Fuente:",
+      "status": {
+        "ready": "Listo",
+        "substitutes": "Jugable con sustitutos",
+        "missingEssentials": "Faltan héroes esenciales"
+      },
       "kind": {
         "meta": "Meta",
         "alternate": "Alternativa",
@@ -97,33 +108,9 @@
         "admech": "AdMech",
         "custodes": "Custodes"
       },
-      "readiness": {
-        "ready": "Lista",
-        "partial": "Parcial",
-        "unavailable": "No disponible",
-        "unknown": "Preparación desconocida"
-      },
-      "missingCount_one": "Falta {{count}} héroe",
-      "missingCount_other": "Faltan {{count}} héroes",
-      "mowLabel": "Máquina de Guerra",
-      "mowOwned": "Disponible",
-      "mowMissing": "Falta",
-      "ownership": {
-        "owned": "Disponible",
-        "missing": "Falta",
-        "unknown": "Estado de posesión desconocido"
-      },
-      "compsLabel": "Comps referenciadas",
-      "sourceLabel": "Fuente: {{name}}",
       "updatedLabel": "Actualizado {{date}}",
-      "detailsToggle": "Comps y fuente",
       "teamReadiness": "Preparación del equipo: {{percent}}%",
-      "candidatesLabel": "Alternativas:",
       "efficiencyLabel": "{{value}}x",
-      "investment": {
-        "rank": "Rango {{rank}}",
-        "level": "Nivel {{level}}"
-      },
       "absentMeta": {
         "title": "Sincroniza los datos de Meta de Incursión de gremio",
         "description": "Las recomendaciones de Meta exacta aparecerán aquí una vez que se sincronice el conjunto de datos seleccionado."
@@ -135,6 +122,21 @@
       "missingRoster": {
         "title": "Sincroniza tus datos de jugador",
         "description": "Las alineaciones ideales se muestran abajo, pero la preparación necesita tu plantilla sincronizada."
+      },
+      "efficiency": "{{value}}× eficiencia",
+      "comp": "Comp {{name}}",
+      "mow": "Máquina de Guerra",
+      "essential": "Puesto esencial",
+      "forIdeal": "por {{name}}",
+      "noFreeOption": "Sin sustituto libre",
+      "ideal": "Ideal",
+      "slotOptions": "Opciones del puesto {{slot}}",
+      "slotHint": "Selecciona un puesto para comparar sus opciones.",
+      "optionState": {
+        "picked": "En esta alineación",
+        "inTeam": "Usado en el puesto {{slot}}",
+        "available": "Disponible",
+        "notOwned": "No disponible"
       }
     },
     "variantRules": {
@@ -162,7 +164,6 @@
     "plan": "Plan de hoy",
     "planMeta_one": "{{count}} nodo · por prioridad de objetivo",
     "planMeta_other": "{{count}} nodos · por prioridad de objetivo",
-
     "energyUsage": {
       "label": "Energía diaria usada",
       "value": "{{percent}}% de la energía diaria usada"
@@ -278,12 +279,12 @@
           "content": "Tus fichas de incursión y de bomba sincronizadas, junto con la próxima disponible."
         },
         "exactMetaDesktop": {
-          "title": "Preparación de Meta exacta",
-          "content": "Alineaciones exactas seleccionadas para el jefe activo, con el porcentaje de preparación de inversión de cada héroe y la puntuación combinada del equipo, uno junto al otro."
+          "title": "Preparación Meta",
+          "content": "Alineaciones curadas para el jefe activo, completadas con tu plantilla. Cada puesto muestra el héroe que llevarías y lo cerca que está del objetivo de este paso del jefe; selecciona un puesto para comparar sus opciones."
         },
         "exactMetaMobile": {
-          "title": "Preparación de Meta exacta",
-          "content": "Aquí la preparación del equipo aparece primero: expande una tarjeta para ver las Comps y la fuente."
+          "title": "Preparación Meta",
+          "content": "Cambia de alineación con las pestañas y toca un puesto para comparar sus opciones."
         }
       }
     },

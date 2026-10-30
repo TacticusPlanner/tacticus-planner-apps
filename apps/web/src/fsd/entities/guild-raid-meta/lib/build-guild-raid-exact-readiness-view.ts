@@ -1,12 +1,17 @@
 import type { GameCatalogGuildRaidMeta } from "@workspace/game-catalog"
 import type { Progression, Rank } from "@workspace/game-domain"
 
+import type { GuildRaidInvestmentThreshold } from "./resolve-guild-raid-investment-threshold"
+import {
+  resolveGuildRaidLineup,
+  type GuildRaidLineupOptionState,
+  type GuildRaidLineupStatus,
+} from "./resolve-guild-raid-lineup"
 import type {
   GuildRaidMetaPresentationResolver,
   GuildRaidMetaSourcePresentation,
   GuildRaidMetaUnitPresentation,
 } from "./resolve-guild-raid-meta"
-import type { GuildRaidExactReadinessResult } from "./resolve-guild-raid-exact-readiness"
 
 // A superset of `GuildRaidInvestmentFacts` (adds `xpLevel`, for display) — deliberately using the same
 // field name `progression` for the same `Progression` value, not the roster schema's own confusingly-
@@ -76,111 +81,202 @@ export function buildGuildRaidRosterInvestment(roster: {
 }
 
 export type GuildRaidExactReadinessUnitView = GuildRaidMetaUnitPresentation & {
-  /** `undefined` when the player's roster is unavailable — readiness is withheld, not inferred. */
+  /** `undefined` when the player's roster is unavailable — ownership is withheld, not inferred. */
   owned?: boolean
   investment?: GuildRaidExactReadinessInvestment
 }
 
+export type GuildRaidExactReadinessOptionView = {
+  unit: GuildRaidExactReadinessUnitView
+  isIdeal: boolean
+  /** `undefined` when the player's roster is unavailable. */
+  state?: GuildRaidLineupOptionState
+  /** Index of the slot this unit fills instead, when `state` is `inTeam`. */
+  inTeamSlotIndex?: number
+  readiness?: number
+}
+
+export type GuildRaidExactReadinessSlotView = {
+  kind: "hero" | "mow"
+  /** `undefined` for the Machine of War. */
+  role?: { id: string; label: string }
+  essential: boolean
+  ideal: GuildRaidExactReadinessUnitView
+  /** The unit the player would field here; `null` when nothing owned fits or the roster is
+   * unavailable. */
+  picked: GuildRaidExactReadinessUnitView | null
+  isSubstitute: boolean
+  readiness?: number
+  options: GuildRaidExactReadinessOptionView[]
+}
+
 export type GuildRaidExactReadinessRecommendationView = {
   id: string
-  kind: string
-  heroes: GuildRaidExactReadinessUnitView[]
-  mow: GuildRaidExactReadinessUnitView
+  kind: { id: string; label: string }
+  efficiency: number
   comps: Array<{ id: string; signature: GuildRaidMetaUnitPresentation }>
   /** `undefined` when the player's roster is unavailable. */
-  classification?: "ready" | "partial" | "unavailable"
+  status?: GuildRaidLineupStatus
+  /** `undefined` when the roster or the live investment threshold is unavailable. */
+  teamReadiness?: number
+  /** Five hero slots in authored order, then the Machine of War. */
+  slots: GuildRaidExactReadinessSlotView[]
+}
+
+type GuildRaidExactReadinessPopulatedView = {
+  source: GuildRaidMetaSourcePresentation
+  updatedOn: string
+  /** The investment target every percentage is scored against; `null` without a live guild status. */
+  threshold: GuildRaidInvestmentThreshold | null
+  recommendations: GuildRaidExactReadinessRecommendationView[]
 }
 
 export type GuildRaidExactReadinessView =
   | { status: "absentMeta" }
   | { status: "noBossRecommendation" }
-  | {
-      status: "missingRoster"
-      source: GuildRaidMetaSourcePresentation
-      updatedOn: string
-      recommendations: GuildRaidExactReadinessRecommendationView[]
-    }
-  | {
-      status: "populated"
-      source: GuildRaidMetaSourcePresentation
-      updatedOn: string
-      recommendations: GuildRaidExactReadinessRecommendationView[]
-    }
+  | ({ status: "missingRoster" } & GuildRaidExactReadinessPopulatedView)
+  | ({ status: "populated" } & GuildRaidExactReadinessPopulatedView)
+
+type GuildRaidExactReadinessRoster = ReturnType<
+  typeof buildGuildRaidRosterInvestment
+>
 
 /**
- * Merges the pure readiness classification with the entity's existing id->presentation resolver and
- * synced player investment facts. This is presentation composition only: order and classification are
- * taken as-is from `resolveGuildRaidExactReadiness` and never re-derived, sorted, or scored here.
+ * Resolves the active boss's curated lineups into display-ready slot views: each slot's ideal unit,
+ * the unit the player would actually field (via `resolveGuildRaidLineup`), and every authored option
+ * with its name, portrait, ownership and readiness. Recommendations keep their authored order; nothing
+ * here sorts or ranks them. Without a roster the ideal lineups are still shown, with ownership and
+ * readiness withheld.
  */
 export function buildGuildRaidExactReadinessView(params: {
-  readiness: GuildRaidExactReadinessResult
+  bossUnitSetId: string
+  meta: GameCatalogGuildRaidMeta | null
   presentation: GuildRaidMetaPresentationResolver
-  meta: GameCatalogGuildRaidMeta
-  investmentByCharacterId: ReadonlyMap<
-    string,
-    GuildRaidExactReadinessInvestment
-  >
-  investmentByMowId: ReadonlyMap<string, GuildRaidExactReadinessInvestment>
+  roster: GuildRaidExactReadinessRoster | undefined
+  threshold: GuildRaidInvestmentThreshold | null
 }): GuildRaidExactReadinessView {
-  const {
-    readiness,
-    presentation,
-    meta,
-    investmentByCharacterId,
-    investmentByMowId,
-  } = params
+  const { bossUnitSetId, meta, presentation, roster, threshold } = params
 
-  if (readiness.status === "absentMeta") return { status: "absentMeta" }
-  if (readiness.status === "noBossRecommendation") {
+  if (!meta) return { status: "absentMeta" }
+
+  const boss = meta.bosses.find(
+    (candidate) => candidate.bossUnitSetId === bossUnitSetId
+  )
+  if (!boss || boss.recommendations.length === 0) {
     return { status: "noBossRecommendation" }
   }
 
-  const source = presentation.resolveSource(meta.sourceId)
-
-  if (readiness.status === "missingRoster") {
-    return {
-      status: "missingRoster",
-      source,
-      updatedOn: meta.updatedOn,
-      recommendations: readiness.recommendations.map((recommendation) => {
-        const resolved = presentation.resolveRecommendation(recommendation)
-        return {
-          id: recommendation.id,
-          kind: recommendation.kind,
-          heroes: resolved.heroes,
-          mow: resolved.mow,
-          comps: resolved.comps,
-        }
-      }),
-    }
+  const unitView = (
+    unit: GuildRaidMetaUnitPresentation,
+    kind: "hero" | "mow"
+  ): GuildRaidExactReadinessUnitView => {
+    if (!roster) return unit
+    const owned =
+      kind === "hero"
+        ? roster.ownedCharacterIds.has(unit.id)
+        : roster.ownedMowIds.has(unit.id)
+    const investment =
+      kind === "hero"
+        ? roster.investmentByCharacterId.get(unit.id)
+        : roster.investmentByMowId.get(unit.id)
+    return { ...unit, owned, ...(investment ? { investment } : {}) }
   }
 
-  return {
-    status: "populated",
-    source,
-    updatedOn: meta.updatedOn,
-    recommendations: readiness.recommendations.map((entry) => {
-      const resolved = presentation.resolveRecommendation(entry.recommendation)
-      const ownedByHeroId = new Map(
-        entry.heroes.map((hero) => [hero.id, hero.owned])
-      )
+  const recommendations = boss.recommendations.map(
+    (recommendation): GuildRaidExactReadinessRecommendationView => {
+      const resolved = presentation.resolveRecommendation(recommendation)
+      const base = {
+        id: recommendation.id,
+        kind: resolved.kind,
+        efficiency: recommendation.efficiency,
+        comps: resolved.comps,
+      }
+      const resolveUnit = (unitId: string, kind: "hero" | "mow") =>
+        unitView(
+          kind === "hero"
+            ? presentation.resolveCharacter(unitId)
+            : presentation.resolveMow(unitId),
+          kind
+        )
+
+      if (!roster) {
+        return {
+          ...base,
+          slots: [
+            ...resolved.heroSlots.map(
+              (slot): GuildRaidExactReadinessSlotView => ({
+                kind: "hero",
+                role: slot.role,
+                essential: slot.slot.essential,
+                ideal: slot.hero,
+                picked: null,
+                isSubstitute: false,
+                options: [slot.hero, ...slot.replacements].map(
+                  (unit, index) => ({ unit, isIdeal: index === 0 })
+                ),
+              })
+            ),
+            {
+              kind: "mow",
+              essential: false,
+              ideal: resolved.mow,
+              picked: null,
+              isSubstitute: false,
+              options: [resolved.mow, ...resolved.mowReplacements].map(
+                (unit, index) => ({ unit, isIdeal: index === 0 })
+              ),
+            },
+          ],
+        }
+      }
+
+      const lineup = resolveGuildRaidLineup({
+        recommendation,
+        roster,
+        threshold,
+      })
 
       return {
-        id: entry.recommendation.id,
-        kind: entry.recommendation.kind,
-        heroes: resolved.heroes.map((hero) => ({
-          ...hero,
-          owned: ownedByHeroId.get(hero.id) ?? false,
-          investment: investmentByCharacterId.get(hero.id),
+        ...base,
+        status: lineup.status,
+        ...(lineup.teamReadiness === undefined
+          ? {}
+          : { teamReadiness: lineup.teamReadiness }),
+        slots: lineup.slots.map((slot): GuildRaidExactReadinessSlotView => ({
+          kind: slot.kind,
+          ...(slot.roleId
+            ? { role: presentation.resolveRole(slot.roleId) }
+            : {}),
+          essential: slot.essential,
+          ideal: resolveUnit(slot.idealUnitId, slot.kind),
+          picked: slot.pickedUnitId
+            ? resolveUnit(slot.pickedUnitId, slot.kind)
+            : null,
+          isSubstitute: slot.isSubstitute,
+          ...(slot.readiness === undefined
+            ? {}
+            : { readiness: slot.readiness }),
+          options: slot.options.map((option) => ({
+            unit: resolveUnit(option.unitId, slot.kind),
+            isIdeal: option.isIdeal,
+            state: option.state,
+            ...(option.inTeamSlotIndex === undefined
+              ? {}
+              : { inTeamSlotIndex: option.inTeamSlotIndex }),
+            ...(option.readiness === undefined
+              ? {}
+              : { readiness: option.readiness }),
+          })),
         })),
-        mow: {
-          ...resolved.mow,
-          owned: entry.mowOwned,
-          investment: investmentByMowId.get(resolved.mow.id),
-        },
-        comps: resolved.comps,
-        classification: entry.classification,
       }
-    }),
+    }
+  )
+
+  return {
+    status: roster ? "populated" : "missingRoster",
+    source: presentation.resolveSource(meta.sourceId),
+    updatedOn: meta.updatedOn,
+    threshold: roster ? threshold : null,
+    recommendations,
   }
 }
