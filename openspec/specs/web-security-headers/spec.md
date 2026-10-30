@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines the baseline security response headers the static host sends with the app's documents, so content sniffing, referrer leakage and unused browser features are constrained without breaking sign-in, analytics, feedback or catalog loading. Beyond `frame-ancestors`, a Content Security Policy is out of scope until launch hardening, which writes an enforcing policy directly.
+Defines the baseline security response headers the static host sends with the app's documents, so content sniffing, referrer leakage and unused browser features are constrained without breaking sign-in, analytics, feedback or catalog loading. A full Content Security Policy is first sent report-only, so violations show up in the browser console on staging before an enforcing policy replaces it at launch hardening.
 
 ## Requirements
 
@@ -28,6 +28,20 @@ Every document response SHALL include `Content-Security-Policy: frame-ancestors 
 
 - **WHEN** the app restores a session through a hidden identity-provider frame that returns to `/redirect.html`
 - **THEN** the redirect page renders in that frame and hands the response back to the app
+
+### Requirement: A report-only Content Security Policy lists every origin the app uses
+
+Every document response SHALL include a `Content-Security-Policy-Report-Only` header that allows scripts only from the app's own origin and the UserJot CDN, and network connections and frames only to the app's own origin, the API, the sign-in authority, PostHog and UserJot. The entry document SHALL contain no inline script, so the policy needs no hash or nonce.
+
+#### Scenario: Normal use reports no violation
+
+- **WHEN** a user signs in, syncs, browses the app and opens the feedback board on staging
+- **THEN** the browser console shows no Content Security Policy report
+
+#### Scenario: Theme still applies before first paint
+
+- **WHEN** the entry document loads with a stored dark theme
+- **THEN** the dark theme is applied before the app renders, from a same-origin script file
 
 ### Requirement: Cache directives are unchanged by this policy
 
