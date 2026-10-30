@@ -4,6 +4,7 @@ export {
   isInteractionRequired,
   loginRequest,
   requestInteraction,
+  takeSignInRedirectFailure,
 } from "./authentication"
 export { useActiveAccountId } from "./use-active-account-id"
 export { useRequestApiAccessOnce } from "./use-request-api-access-once"

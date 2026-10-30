@@ -6,7 +6,9 @@ import {
   CacheLookupPolicy,
   EventType,
   InteractionRequiredAuthError,
+  InteractionType,
   LogLevel,
+  PromptValue,
   PublicClientApplication,
   type AccountInfo,
   type AuthenticationResult,
@@ -53,6 +55,20 @@ export function readAccountHint(): AccountHint | null {
 
 export function forgetAccountHint() {
   safeStorage.remove(ACCOUNT_HINT_KEY)
+}
+
+// Armed when an interactive sign-in comes back with an error (spec: redirect-authentication): the
+// identity provider may be answering from a session we can't use (in production, one whose account
+// was deleted on another device), so the next interactive flow asks for a fresh login instead.
+// Kept in localStorage like the hint, so a new tab doesn't spend another failing round trip.
+const FRESH_LOGIN_KEY = "tp.auth.freshLogin"
+
+export function forgetFreshLogin() {
+  safeStorage.remove(FRESH_LOGIN_KEY)
+}
+
+function freshLoginPrompt(): { prompt?: string } {
+  return safeStorage.get(FRESH_LOGIN_KEY) ? { prompt: PromptValue.LOGIN } : {}
 }
 
 function activateAccount(
@@ -133,6 +149,10 @@ export const loginRequest: RedirectRequest = {
   get scopes() {
     return [getRequiredEnvironmentValue("VITE_API_SCOPE"), "email"]
   },
+  // Read when a caller spreads the request (at click time), so every sign-in button picks it up.
+  get prompt() {
+    return freshLoginPrompt().prompt
+  },
 }
 
 // Sign-in from the bare landing page asks to come back to /home (see use-sign-in-redirect), but the
@@ -146,14 +166,40 @@ function returnHomeAfterLandingSignIn() {
   }
 }
 
+export type SignInRedirectFailure = "cancelled" | "failed"
+
+// Set by completeRedirect before React mounts, read once by the app layer's toast.
+let signInRedirectFailure: SignInRedirectFailure | null = null
+
+/** The outcome of a sign-in redirect that came back with an error on this page load, once. */
+export function takeSignInRedirectFailure(): SignInRedirectFailure | null {
+  const failure = signInRedirectFailure
+  signInRedirectFailure = null
+  return failure
+}
+
 // A sign-in the user abandons at the identity provider (cancelling the Google or username step,
 // backing out of sign-up) comes back as an error response, not a result. It must not stop the app
-// from starting: the user lands signed out and can try again.
+// from starting: the user lands signed out and can try again. Entra reports a deliberate cancel as
+// `access_denied`; anything else is a real failure the user is told about.
 async function completeRedirect(instance: PublicClientApplication) {
   try {
     return await instance.handleRedirectPromise()
   } catch (error) {
     console.warn("[MSAL] sign-in redirect did not complete", error)
+    signInRedirectFailure =
+      error instanceof AuthError && error.errorCode === "access_denied"
+        ? "cancelled"
+        : "failed"
+    // Either way, don't let a stale identity-provider session answer the next attempt: drop the
+    // local accounts (no logout redirect) and the hint, and ask for a fresh login.
+    try {
+      await instance.clearCache()
+    } catch (clearError) {
+      console.warn("[MSAL] could not clear the account cache", clearError)
+    }
+    forgetAccountHint()
+    safeStorage.set(FRESH_LOGIN_KEY, "1")
     return null
   }
 }
@@ -169,6 +215,14 @@ export async function initializeAuthentication() {
 
       activateAccount(msalInstance, result.account)
     }
+    // Only a completed interactive flow proves the identity provider session is good again.
+    if (
+      (event.eventType === EventType.LOGIN_SUCCESS ||
+        event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS) &&
+      event.interactionType === InteractionType.Redirect
+    ) {
+      forgetFreshLogin()
+    }
   })
 
   // The redirect bridge (apps/web/redirect.html) already caches the response and navigates back to
@@ -177,6 +231,7 @@ export async function initializeAuthentication() {
   const redirectResult = await completeRedirect(msalInstance)
 
   if (redirectResult) {
+    forgetFreshLogin()
     activateAccount(msalInstance, redirectResult.account)
     returnHomeAfterLandingSignIn()
   }
@@ -284,12 +339,14 @@ function startInteraction() {
     return instance.acquireTokenRedirect({
       account,
       scopes: loginRequest.scopes,
+      ...freshLoginPrompt(),
     })
   }
   const hint = readAccountHint()
   return instance.loginRedirect({
     scopes: loginRequest.scopes,
     ...(hint ? { loginHint: hint.username } : {}),
+    ...freshLoginPrompt(),
   })
 }
 
@@ -325,8 +382,9 @@ async function restoreSession(
   // hidden frame at all, which is the common case for a returning user within the refresh token's
   // lifetime. Only when neither is usable is the IdP session checked through a frame.
   try {
+    // Silent calls take the scopes only: the fresh-login prompt is for interactive flows.
     const result = await instance.acquireTokenSilent({
-      ...loginRequest,
+      scopes: loginRequest.scopes,
       account: cachedAccount,
       cacheLookupPolicy: CacheLookupPolicy.AccessTokenAndRefreshToken,
     })
@@ -350,7 +408,10 @@ async function checkIdentityProviderSession(
   who: { account: AccountInfo } | { loginHint: string }
 ): Promise<SilentSignInOutcome> {
   try {
-    const result = await instance.ssoSilent({ ...loginRequest, ...who })
+    const result = await instance.ssoSilent({
+      scopes: loginRequest.scopes,
+      ...who,
+    })
 
     activateAccount(instance, result.account)
 

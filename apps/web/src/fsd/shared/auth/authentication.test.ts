@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => {
     acquireTokenRedirect: vi.fn(),
     acquireTokenSilent: vi.fn(),
     addEventCallback: vi.fn(),
+    clearCache: vi.fn(),
     loginRedirect: vi.fn(),
     getActiveAccount: vi.fn(),
     getAllAccounts: vi.fn(),
@@ -66,9 +67,14 @@ vi.mock("@azure/msal-browser", () => {
       SessionStorage: "sessionStorage",
     },
     CacheLookupPolicy: { AccessTokenAndRefreshToken: 1 },
-    EventType: { LOGIN_SUCCESS: "login-success" },
+    EventType: {
+      ACQUIRE_TOKEN_SUCCESS: "acquire-token-success",
+      LOGIN_SUCCESS: "login-success",
+    },
     InteractionRequiredAuthError,
+    InteractionType: { Redirect: "redirect", Silent: "silent" },
     LogLevel: { Error: 0, Warning: 1, Info: 2, Verbose: 3 },
+    PromptValue: { CREATE: "create", LOGIN: "login" },
     PublicClientApplication,
   }
 })
@@ -91,6 +97,8 @@ describe("authentication", () => {
     mocks.instance.handleRedirectPromise.mockResolvedValue(null)
     mocks.instance.getActiveAccount.mockReturnValue(null)
     mocks.instance.getAllAccounts.mockReturnValue([])
+    mocks.instance.clearCache.mockResolvedValue(undefined)
+    localStorage.clear()
   })
 
   it("resolves the API scope only when it is accessed", () => {
@@ -132,6 +140,155 @@ describe("authentication", () => {
       cancelled
     )
     warn.mockRestore()
+  })
+
+  describe("a sign-in redirect that returns an error", () => {
+    const hint = JSON.stringify({ homeAccountId: "h", username: "u@x.test" })
+
+    beforeEach(() => {
+      vi.spyOn(console, "warn").mockImplementation(() => {})
+      localStorage.setItem("tp.auth.accountHint", hint)
+    })
+
+    it("records a deliberate cancel (access_denied) as cancelled, once", async () => {
+      mocks.instance.handleRedirectPromise.mockRejectedValue(
+        new AuthError("access_denied", "AADSTS50126 user cancelled")
+      )
+
+      await auth.initializeAuthentication()
+
+      expect(auth.takeSignInRedirectFailure()).toBe("cancelled")
+      expect(auth.takeSignInRedirectFailure()).toBeNull()
+    })
+
+    it("records any other server error as failed", async () => {
+      mocks.instance.handleRedirectPromise.mockRejectedValue(
+        new AuthError("invalid_request", "user not found")
+      )
+
+      await auth.initializeAuthentication()
+
+      expect(auth.takeSignInRedirectFailure()).toBe("failed")
+    })
+
+    it("records nothing when the redirect resolves", async () => {
+      await auth.initializeAuthentication()
+
+      expect(auth.takeSignInRedirectFailure()).toBeNull()
+    })
+
+    it.each(["access_denied", "server_error"])(
+      "after %s, clears the device's sign-in state and arms a fresh login",
+      async (code) => {
+        mocks.instance.handleRedirectPromise.mockRejectedValue(
+          new AuthError(code, "message")
+        )
+
+        await expect(auth.initializeAuthentication()).resolves.toBe(
+          mocks.instance
+        )
+
+        expect(mocks.instance.clearCache).toHaveBeenCalledOnce()
+        expect(auth.readAccountHint()).toBeNull()
+        expect(localStorage.getItem("tp.auth.freshLogin")).toBe("1")
+        expect(mocks.instance.setActiveAccount).not.toHaveBeenCalled()
+      }
+    )
+
+    it("still starts when clearing the cache fails", async () => {
+      mocks.instance.handleRedirectPromise.mockRejectedValue(new Error("x"))
+      mocks.instance.clearCache.mockRejectedValue(new Error("storage"))
+
+      await expect(auth.initializeAuthentication()).resolves.toBe(
+        mocks.instance
+      )
+      expect(localStorage.getItem("tp.auth.freshLogin")).toBe("1")
+    })
+  })
+
+  describe("fresh login after a failed redirect", () => {
+    const account = { homeAccountId: "a", username: "u@x.test" }
+    const arm = () => localStorage.setItem("tp.auth.freshLogin", "1")
+    const callback = () =>
+      mocks.instance.addEventCallback.mock.calls[0]?.[0] as (
+        event: unknown
+      ) => void
+
+    it("the login request asks for a fresh login only while armed", () => {
+      expect({ ...auth.loginRequest }.prompt).toBeUndefined()
+      arm()
+      expect({ ...auth.loginRequest }.prompt).toBe("login")
+      auth.forgetFreshLogin()
+      expect({ ...auth.loginRequest }.prompt).toBeUndefined()
+    })
+
+    it("re-authentication of a cached account asks for a fresh login", async () => {
+      arm()
+      mocks.instance.getActiveAccount.mockReturnValue(account)
+      await auth.initializeAuthentication()
+
+      await auth.requestInteraction()
+
+      expect(mocks.instance.acquireTokenRedirect).toHaveBeenCalledWith({
+        account,
+        scopes: ["api://planner/access", "email"],
+        prompt: "login",
+      })
+    })
+
+    it("sign-in without a cached account asks for a fresh login", async () => {
+      arm()
+      mocks.instance.loginRedirect.mockResolvedValue(undefined)
+      await auth.initializeAuthentication()
+
+      await auth.requestInteraction()
+
+      expect(mocks.instance.loginRedirect).toHaveBeenCalledWith({
+        scopes: ["api://planner/access", "email"],
+        prompt: "login",
+      })
+    })
+
+    it("a completed redirect sign-in ends it", async () => {
+      arm()
+      mocks.instance.handleRedirectPromise.mockResolvedValue({ account })
+
+      await auth.initializeAuthentication()
+
+      expect(localStorage.getItem("tp.auth.freshLogin")).toBeNull()
+    })
+
+    it.each(["login-success", "acquire-token-success"])(
+      "a redirect %s event ends it",
+      async (eventType) => {
+        await auth.initializeAuthentication()
+        arm()
+
+        callback()({
+          eventType,
+          interactionType: "redirect",
+          payload: { account },
+        })
+
+        expect(localStorage.getItem("tp.auth.freshLogin")).toBeNull()
+      }
+    )
+
+    it.each(["login-success", "acquire-token-success"])(
+      "a silent %s event leaves it armed",
+      async (eventType) => {
+        await auth.initializeAuthentication()
+        arm()
+
+        callback()({
+          eventType,
+          interactionType: "silent",
+          payload: { account },
+        })
+
+        expect(localStorage.getItem("tp.auth.freshLogin")).toBe("1")
+      }
+    )
   })
 
   it("prefers the redirect account and configures logging", async () => {

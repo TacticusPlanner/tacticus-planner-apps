@@ -9,8 +9,10 @@ function at<T>(xs: readonly T[] | undefined, index: number): T {
 }
 
 const forgetAccountHint = vi.fn()
+const forgetFreshLogin = vi.fn()
 vi.mock("./authentication", () => ({
   forgetAccountHint: () => forgetAccountHint(),
+  forgetFreshLogin: () => forgetFreshLogin(),
 }))
 
 import { signOut } from "./sign-out"
@@ -21,6 +23,7 @@ const databaseNames = async () =>
 describe("signOut", () => {
   beforeEach(() => {
     forgetAccountHint.mockClear()
+    forgetFreshLogin.mockClear()
   })
 
   it("deletes both IndexedDB databases before redirecting", async () => {
@@ -61,6 +64,18 @@ describe("signOut", () => {
       localStorage.getItem("tp.session.v1-import.pending-material-steps")
     ).toBeNull()
     expect(localStorage.getItem("theme")).toBe("dark")
+  })
+
+  it("disarms the fresh-login prompt before redirecting, so a later account starts clean", async () => {
+    const logoutRedirect = vi.fn().mockResolvedValue(undefined)
+    const instance = { getAllAccounts: () => [], logoutRedirect }
+
+    await signOut(instance as never, "account-1")
+
+    expect(forgetFreshLogin).toHaveBeenCalledOnce()
+    expect(forgetFreshLogin.mock.invocationCallOrder[0]).toBeLessThan(
+      at(logoutRedirect.mock.invocationCallOrder, 0)
+    )
   })
 
   it("removes the device's account hint before redirecting", async () => {
