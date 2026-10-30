@@ -52,7 +52,7 @@ import {
   type OrbGoalNeed,
 } from "./orb-potential-allocation"
 import { buildLevelPotentialProgress } from "./level-potential-progress"
-import { computeBottlenecks } from "./plan-bottlenecks"
+import { computeBottlenecks, netGoalNeeds } from "./plan-bottlenecks"
 import { createPlanMissingResources } from "./plan-missing-resources"
 import { createPlanNetResources } from "./plan-net-resources"
 import { createStandaloneEstimates } from "./plan-standalone-estimates"
@@ -117,7 +117,6 @@ export function computePlanInsights(params: {
 }): PlanInsightsResult {
   const totals: PlanInsightsTotals = {
     upgradesByRarity: {},
-    orbsByType: {},
     shards: 0,
     mythicShards: 0,
   }
@@ -129,7 +128,6 @@ export function computePlanInsights(params: {
     EstimateResourceId,
     EstimateUpgrade & { rarity: Rarity }
   >()
-  const campaignNeeds: { id: EstimateResourceId; count: number }[] = []
   const abilityCoverageByEntity = new Map<string, UnitCoverage>()
   const rankSlotsByGoalId = new Map<string, RankSlotAllocation>()
   const abilityMaterials = createAbilityMaterialsPlan(
@@ -247,35 +245,14 @@ export function computePlanInsights(params: {
 
       totals.shards += need.shards
       totals.mythicShards += need.mythicShards
-      for (const [rarity, count] of Object.entries(need.orbsByType)) {
-        totals.orbsByType[rarity as Rarity] =
-          (totals.orbsByType[rarity as Rarity] ?? 0) + (count ?? 0)
-      }
     }
 
-    const needs: UpgradeNeed[] = []
-    for (const material of need.upgrades) {
-      // `need.upgrades` only ever holds true upgrade ids (progression-cost-calc.ts's Ascension/
-      // Unlock/Shards needs never populate it; only Rank/Ability do) — `EstimateResourceId`'s wider
-      // union is a typing artifact of sharing `UpgradeNeed` with the shard-aware engine.
-      const rarity = params.upgradesById.get(material.id as UpgradeId)?.rarity
-      if (scoped) {
-        if (rarity) {
-          totals.upgradesByRarity[rarity] =
-            (totals.upgradesByRarity[rarity] ?? 0) + material.count
-        }
-        addProvenance(material.id, detail.goalId)
-        campaignNeeds.push({ id: material.id, count: material.count })
-      }
-      needs.push(material)
-    }
+    // Upgrade materials are gross of base stock here; the totals, bottlenecks and campaign insights
+    // read them after `allocatePlanInventory` below, so owned materials never count as missing.
+    const needs: UpgradeNeed[] = [...need.upgrades]
 
     if (need.shardId && (need.shards > 0 || flatSuppliers.length > 0)) {
       needs.push({ id: need.shardId, count: need.shards })
-      if (scoped) {
-        addProvenance(need.shardId, detail.goalId)
-        campaignNeeds.push({ id: need.shardId, count: need.shards })
-      }
 
       const characterView = params.charactersById.get(detail.entityId)
       if (characterView && !shardCatalogEntries.has(need.shardId)) {
@@ -356,6 +333,28 @@ export function computePlanInsights(params: {
     inventory,
   })
   const allocations = allocatePlanInventory(goalNeeds, inventory)
+
+  // What each scoped goal still farms once owned stock is spent in priority order: the upgrade totals
+  // and the campaign insights (with the goals each one helps) read this, never the gross need.
+  const campaignNeeds: { id: EstimateResourceId; count: number }[] = []
+  for (const goal of goalNeeds) {
+    if (!inScope(goal.goalId)) continue
+    const net = netGoalNeeds(
+      goal,
+      allocations.get(goal.goalId),
+      estimateResults.get(goal.goalId)
+    )
+    for (const [id, count] of net) {
+      // Only true upgrade ids carry an upgrade rarity; shard ids fall through.
+      const rarity = params.upgradesById.get(id as UpgradeId)?.rarity
+      if (rarity) {
+        totals.upgradesByRarity[rarity] =
+          (totals.upgradesByRarity[rarity] ?? 0) + count
+      }
+      addProvenance(id, goal.goalId)
+      campaignNeeds.push({ id, count })
+    }
+  }
   const orbAllocations = allocateOrbInventory(
     orbGoalNeeds,
     params.inventoryOrbs
@@ -372,6 +371,8 @@ export function computePlanInsights(params: {
     if (!inScope(detail.goalId)) continue
     missing.addOrbAllocation(orbAllocations.get(detail.goalId))
     missing.addXp(levelPotential.remainingXpByGoalId.get(detail.goalId))
+    missing.addGold(levelPotential.goldByGoalId.get(detail.goalId))
+    missing.addGold(abilityMaterials.byGoalId.get(detail.goalId)?.gold)
   }
   // What each active goal still needs once the plan's orb and shard stock is spent in priority order,
   // plus the gold to apply a Rank goal's level-up books (goal-remaining-resources).
@@ -421,12 +422,15 @@ export function computePlanInsights(params: {
   ).size
   const unestimatedGoalCount = Math.max(0, scopedGoalCount - estimatedGoalCount)
 
-  const bottlenecks = computeBottlenecks({
+  const { bottlenecks, blockers } = computeBottlenecks({
     goalNeeds: goalNeeds.filter((goal) => inScope(goal.goalId)),
+    allocations,
+    estimates: estimateResults,
     combinedUpgradesById,
     battlesById: params.battlesById,
     upgradesById: params.upgradesById,
     charactersById: params.charactersById,
+    dailyEnergy: params.dailyEnergy ?? 288,
   })
 
   const { campaignInsights, eventInsights } = computeCampaignInsights(
@@ -490,6 +494,7 @@ export function computePlanInsights(params: {
     completionDate,
     unestimatedGoalCount,
     bottlenecks,
+    blockers,
     campaignInsights,
     eventInsights,
     benefitingGoalIdsByInsightId,

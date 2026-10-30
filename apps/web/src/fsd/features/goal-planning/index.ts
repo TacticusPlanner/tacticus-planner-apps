@@ -39,6 +39,7 @@ export {
 export { computePlanInsights } from "./model/insights/plan-insights-calc"
 export { usePlanInsights } from "./model/insights/use-plan-insights"
 export {
+  type PlanInsightsBlocker,
   type PlanInsightsBottleneck,
   type PlanInsightsTotals,
   type PlanMissingResources,

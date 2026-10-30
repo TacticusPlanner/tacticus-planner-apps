@@ -10,6 +10,7 @@ const empty = {
   components: {},
   xp: 0,
   xpBooks: null,
+  gold: 0,
 }
 
 describe("InsightsMissing", () => {
@@ -27,6 +28,7 @@ describe("InsightsMissing", () => {
           components: { Imperial: 3 },
           xp: 25_000,
           xpBooks: { rarity: "Legendary", count: 2 },
+          gold: 42_000,
         }}
       />
     )
@@ -38,7 +40,7 @@ describe("InsightsMissing", () => {
       "Ability badges1,011 total",
       "Orbs12 total",
       "Machine of War materials",
-      "XP books",
+      "XP books & gold",
     ])
 
     const rowTitles = (group: HTMLElement) =>
@@ -48,7 +50,7 @@ describe("InsightsMissing", () => {
     expect(rowTitles(groups[0]!)).toEqual(["Imperial", "Xenos"])
     expect(rowTitles(groups[1]!)).toEqual(["Chaos"])
     expect(rowTitles(groups[2]!)).toEqual(["Forge badges", "Components"])
-    expect(rowTitles(groups[3]!)).toEqual(["25,000 XP"])
+    expect(rowTitles(groups[3]!)).toEqual(["25,000 XP", "Gold"])
 
     expect(
       within(groups[0]!).getByLabelText("Epic ability badges: 7")
@@ -61,6 +63,19 @@ describe("InsightsMissing", () => {
     expect(
       within(groups[3]!).getByLabelText("Legendary XP books: 2")
     ).toBeInTheDocument()
+    expect(
+      within(groups[3]!).getByLabelText("Gold: 42,000")
+    ).toBeInTheDocument()
+  })
+
+  it("names the group for gold alone when no XP books are missing", () => {
+    render(<InsightsMissing missing={{ ...empty, gold: 500 }} />)
+
+    expect(
+      screen
+        .getAllByTestId("insights-missing-group")
+        .map((group) => group.querySelector("h3 > span")?.textContent)
+    ).toEqual(["Gold"])
   })
 
   it("leaves out groups with nothing missing", () => {

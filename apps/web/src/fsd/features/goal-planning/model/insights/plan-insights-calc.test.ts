@@ -173,6 +173,107 @@ describe("computePlanInsights", () => {
     expect(result.bottlenecks[0]?.label).toBe("Material One")
   })
 
+  describe("net of inventory, with the goal's own node choice", () => {
+    const rankGoal = (overrides: Partial<GoalDetail["config"]> = {}) =>
+      goalDetail({
+        goalType: "Rank",
+        config: {
+          rank: {
+            start: rankIndex(Rank.Stone1),
+            startPointFive: false,
+            startAppliedUpgrades: 0,
+            end: rankIndex(Rank.Stone2),
+            endPointFive: false,
+            endAppliedUpgrades: 0,
+          },
+          progression: null,
+          ability: null,
+          farmingStrategy: "TotalUpgrades",
+          acquisitionSources: null,
+          farmingLocationIds: null,
+          upgrade: null,
+          ...overrides,
+        },
+      })
+
+    it("counts nothing to farm when owned base materials cover the need", () => {
+      const result = computePlanInsights({
+        levelRules,
+        ...baseParams,
+        details: [rankGoal()],
+        inventoryUpgrades: [{ upgradeId: "mat1", amount: 1 }],
+        priorityByGoalId: new Map([["goal-1", 1]]),
+      })
+
+      expect(result.totals.upgradesByRarity).toEqual({})
+      expect(result.bottlenecks).toEqual([])
+      expect(result.campaignInsights).toEqual([])
+    })
+
+    it("prices a bottleneck at the goal's pinned node, in energy and days", () => {
+      const pricey: Battle = { ...battle, nodeNumber: 2, energyCost: 20 }
+      const result = computePlanInsights({
+        levelRules,
+        ...baseParams,
+        details: [rankGoal({ farmingLocationIds: ["B2"] })],
+        upgradesById: new Map([
+          [
+            upgrade.id,
+            {
+              ...upgrade,
+              farmLocations: [
+                ...upgrade.farmLocations,
+                { ...upgrade.farmLocations[0]!, battleId: battleId("B2") },
+              ],
+            },
+          ],
+        ]),
+        battlesById: new Map([
+          [battleId("B1"), battle],
+          [battleId("B2"), pricey],
+        ]),
+        dailyEnergy: 40,
+        priorityByGoalId: new Map([["goal-1", 1]]),
+      })
+
+      expect(result.bottlenecks).toEqual([
+        {
+          id: "mat1",
+          label: "Material One",
+          count: 1,
+          // B2's 20, not the cheaper unpinned B1's 10.
+          energyToClear: 20,
+          days: 0.5,
+          goalIds: ["goal-1"],
+        },
+      ])
+    })
+
+    it("reports a material no node drops as a blocker, not a bottleneck", () => {
+      const result = computePlanInsights({
+        levelRules,
+        ...baseParams,
+        details: [rankGoal()],
+        upgradesById: new Map([
+          [upgrade.id, { ...upgrade, farmLocations: [] }],
+        ]),
+        priorityByGoalId: new Map([["goal-1", 1]]),
+      })
+
+      expect(result.bottlenecks).toEqual([])
+      expect(result.blockers).toEqual([
+        {
+          key: "NoFarmLocation:mat1",
+          reason: "NoFarmLocation",
+          resourceId: "mat1",
+          label: "Material One",
+          remaining: 1,
+          goalIds: ["goal-1"],
+        },
+      ])
+    })
+  })
+
   it("allocates a Rank goal's slots once: a later, wholly covered target adds none but stays its own goal", () => {
     const rankGoal = (goalId: string, end: number) =>
       goalDetail({

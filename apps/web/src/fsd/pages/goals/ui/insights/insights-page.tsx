@@ -10,6 +10,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { useGlobalGoalPlan } from "@/entities/goal"
+import { usePlanningSettings } from "@/entities/planning-setting"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
 import { InsightsEvents } from ".//insights-events"
@@ -26,6 +27,7 @@ import { InsightsSummary } from ".//insights-summary"
 export function InsightsPage() {
   const { t } = useTranslation()
   const projects = useProjects()
+  const { settings: planningSettings } = usePlanningSettings()
   // No selection means the whole plan; a project only narrows what is reported.
   const [projectId, setProjectId] = useState<string | undefined>(undefined)
 
@@ -104,8 +106,10 @@ export function InsightsPage() {
       ) : (
         <>
           <InsightsSummary
+            blockers={result.blockers}
             bottlenecks={result.bottlenecks}
             completionDate={result.completionDate}
+            dailyEnergy={planningSettings.dailyEnergy}
             unestimatedGoalCount={result.unestimatedGoalCount}
             energyTotal={result.energyTotal}
             onslaughtTokens={result.onslaughtTokens}

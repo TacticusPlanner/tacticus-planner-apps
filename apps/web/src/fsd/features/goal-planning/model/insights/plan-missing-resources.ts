@@ -37,7 +37,7 @@ function shortfall(
 }
 
 /** The plan-wide "still missing" totals for the Insights view (V1's "Total Resources Missing"): every
- *  scoped goal's ability badges, orbs, forge badges, MoW components and level XP left after the
+ *  scoped goal's ability badges, orbs, forge badges, MoW components, level XP and gold left after the
  *  account's stock is spent in priority order. Badges, orbs and components are split by alliance. */
 export function createPlanMissingResources() {
   const missing: PlanMissingResources = {
@@ -47,6 +47,7 @@ export function createPlanMissingResources() {
     components: {},
     xp: 0,
     xpBooks: null,
+    gold: 0,
   }
 
   const addAbilityMaterials = (
@@ -92,6 +93,10 @@ export function createPlanMissingResources() {
     missing.xp += Math.max(0, remainingXp ?? 0)
   }
 
+  const addGold = (gold: number | undefined) => {
+    missing.gold += Math.max(0, gold ?? 0)
+  }
+
   /** The totals, with the missing XP priced in books of the selected rarity. */
   const resolve = (
     levelRules: LevelRules | undefined,
@@ -108,5 +113,5 @@ export function createPlanMissingResources() {
     }
   }
 
-  return { addAbilityMaterials, addOrbAllocation, addXp, resolve }
+  return { addAbilityMaterials, addOrbAllocation, addXp, addGold, resolve }
 }

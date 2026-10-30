@@ -10,6 +10,7 @@ import {
 import {
   abilityBadgeIcon,
   forgeBadgeIcon,
+  goldIcon,
   mowComponentIcon,
   onslaughtAllianceIcon,
   orbAllianceIcon,
@@ -43,7 +44,7 @@ type Row = {
 
 /** The plan's "still missing" totals (V1's "Total Resources Missing"): what the goals need beyond
  *  the current inventory, spent in priority order — grouped into ability badges and orbs (each by
- *  alliance), Machine of War materials (forge badges and components) and XP books. */
+ *  alliance), Machine of War materials (forge badges and components), XP books and gold. */
 export function InsightsMissing({
   missing,
 }: {
@@ -143,7 +144,13 @@ export function InsightsMissing({
     },
     {
       key: "xp",
-      title: t("goals.insights.missingXpBooks"),
+      // Named for what it holds, so a plan short only on gold doesn't read as short on books.
+      title:
+        missing.gold <= 0
+          ? t("goals.insights.missingXpBooks")
+          : (missing.xpBooks?.count ?? 0) > 0
+            ? t("goals.insights.missingXpBooksAndGold")
+            : t("goals.insights.missingGold"),
       showTotal: false,
       rows: [
         {
@@ -159,6 +166,21 @@ export function InsightsMissing({
                       rarity: rarityName(missing.xpBooks.rarity),
                     }),
                     count: missing.xpBooks.count,
+                  },
+                ]
+              : [],
+        },
+        {
+          key: "gold",
+          title: t("goals.insights.missingGold"),
+          items:
+            missing.gold > 0
+              ? [
+                  {
+                    key: "gold",
+                    icon: goldIcon(),
+                    name: t("goals.resourceChips.gold"),
+                    count: missing.gold,
                   },
                 ]
               : [],
