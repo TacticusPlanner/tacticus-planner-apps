@@ -12,13 +12,11 @@ describe("TodayQuickFilterChips", () => {
     render(<TodayQuickFilterChips value={[]} onChange={onChange} />)
 
     await userEvent.click(screen.getByTestId("today-quick-filter-fewerRaids"))
-    await userEvent.click(
-      screen.getByTestId("today-quick-filter-totalMaterials")
-    )
+    await userEvent.click(screen.getByTestId("today-quick-filter-combineGoals"))
 
-    expect(onChange).toHaveBeenLastCalledWith(["fewerRaids", "totalMaterials"])
+    expect(onChange).toHaveBeenLastCalledWith(["fewerRaids", "combineGoals"])
     expect(
-      screen.getByTestId("today-quick-filter-note-totalMaterials")
+      screen.getByTestId("today-quick-filter-note-combineGoals")
     ).toBeInTheDocument()
   })
 
@@ -40,7 +38,7 @@ describe("TodayQuickFilterChips", () => {
         layout="inline"
         onChange={vi.fn()}
         trailing={<button type="button">Planning settings</button>}
-        value={["totalMaterials"]}
+        value={["combineGoals"]}
       />
     )
 
@@ -50,14 +48,14 @@ describe("TodayQuickFilterChips", () => {
       screen.getByTestId("today-quick-filter-fewerRaids")
     ).toBeInTheDocument()
     expect(
-      screen.getByTestId("today-quick-filter-totalMaterials")
+      screen.getByTestId("today-quick-filter-combineGoals")
     ).toBeInTheDocument()
 
     const row = chips.parentElement!
     expect(
       within(row).getByRole("button", { name: "Planning settings" })
     ).toBeInTheDocument()
-    const note = screen.getByTestId("today-quick-filter-note-totalMaterials")
+    const note = screen.getByTestId("today-quick-filter-note-combineGoals")
     expect(row).not.toContainElement(note)
     expect(
       row.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING

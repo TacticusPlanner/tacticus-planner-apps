@@ -91,7 +91,7 @@ export type DailyRaidsCalculationInput = {
    *  Today and Bonus Raids only; the Plan, blockers and urgency are always computed unfiltered. */
   raidsFilters?: RaidsFilters
   filterBattlesById?: ReadonlyMap<string, RaidsFilterBattle>
-  /** Today's quick filters (Fewer raids, Total materials). Like the Raids Filters they change Today and
+  /** Today's quick filters (Fewer raids, Combine goals). Like the Raids Filters they change Today and
    *  Bonus Raids only. */
   quickFilters?: TodayQuickFilterOptions
   /** The player's real attempts left today per node (none synced: every node is fresh). Only the

@@ -107,7 +107,7 @@ describe("Fewer raids quick filter", () => {
   })
 })
 
-describe("Total materials quick filter", () => {
+describe("Combine goals quick filter", () => {
   // FAST drops `quick` guaranteed; SLOW drops `slow` at 0.1 with a cap of 2 raids a day.
   const battlesById = new Map([node("FAST", 10), node("SLOW", 10, 2)])
   const upgradesById = new Map<EstimateResourceId, EstimateUpgrade>([
