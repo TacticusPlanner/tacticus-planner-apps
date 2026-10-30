@@ -12,6 +12,7 @@ import {
 } from "@/features/goal-farming/@x/goal-planning"
 import type { UpgradeWithFarmLocations } from "@/features/rank-lookup/@x/goal-planning"
 
+import { addRuns, farmingDays, type RunsByBattle } from "./plan-farming-days"
 import type {
   PlanInsightsBlocker,
   PlanInsightsBottleneck,
@@ -70,7 +71,12 @@ export function computeBottlenecks(params: {
 
   const farmable = new Map<
     EstimateResourceId,
-    { count: number; energyToClear: number; goalIds: Set<string> }
+    {
+      count: number
+      energyToClear: number
+      goalIds: Set<string>
+      runsByBattle: RunsByBattle
+    }
   >()
   const blockers = new Map<string, PlanInsightsBlocker>()
 
@@ -136,9 +142,12 @@ export function computeBottlenecks(params: {
         count: 0,
         energyToClear: 0,
         goalIds: new Set<string>(),
+        runsByBattle: new Map() as RunsByBattle,
       }
+      const runs = Math.ceil(count / best.dropRate)
       entry.count += count
-      entry.energyToClear += Math.ceil(count / best.dropRate) * best.energyCost
+      entry.energyToClear += runs * best.energyCost
+      addRuns(entry.runsByBattle, best.battleId, runs, best.dailyAttempts)
       entry.goalIds.add(goal.goalId)
       farmable.set(id, entry)
     }
@@ -150,7 +159,11 @@ export function computeBottlenecks(params: {
       label: label(id),
       count: entry.count,
       energyToClear: entry.energyToClear,
-      days: entry.energyToClear / Math.max(1, params.dailyEnergy),
+      days: farmingDays(
+        entry.energyToClear,
+        entry.runsByBattle,
+        params.dailyEnergy
+      ),
       goalIds: [...entry.goalIds],
     }))
     .filter((entry) => entry.energyToClear > 0)

@@ -1550,9 +1550,9 @@
       "missingUpgrades": "Upgrades",
       "missingShards": "Scherben",
       "upgradesOfRarity": "{{rarity}}-Upgrades",
-      "farmingSpot_one": "{{count}} Material · {{days}}",
-      "farmingSpot_other": "{{count}} Materialien · {{days}}",
-      "farmingSpotHint": "Sortiert danach, wie viel von dem, was deine Ziele noch brauchen, pro Energie dort droppt. Jede Zeile zeigt, wie viele benötigte Materialien dort droppen und wie viele Tage es bei deiner täglichen Energie dauert, sie alle dort zu farmen.",
+      "farmingSpot_one": "{{count}} Ressource · {{days}}",
+      "farmingSpot_other": "{{count}} Ressourcen · {{days}}",
+      "farmingSpotHint": "Sortiert danach, wie viel von dem, was deine Ziele noch brauchen, pro Energie dort droppt. Jede Zeile zeigt, wie viele benötigte Ressourcen dort droppen und wie viele Tage es dauert, sie alle dort zu farmen – bei deiner täglichen Energie und den täglichen Versuchen jedes Knotens.",
       "openSchedule": "Tag-für-Tag-Plan",
       "helpsGoals": "Hilft diesen Zielen"
     },

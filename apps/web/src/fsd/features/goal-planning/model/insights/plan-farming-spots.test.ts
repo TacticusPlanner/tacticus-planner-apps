@@ -75,4 +75,23 @@ describe("summarizeFarmingSpots", () => {
       days: 52 / 24,
     })
   })
+
+  it("never reports fewer days than the node's daily attempts allow", () => {
+    const insight: CampaignInsight<EstimateResourceId> = {
+      id: "campaign1:Elite",
+      label: "Campaign One Elite",
+      score: 1,
+      // 20 guaranteed runs at a 3-attempt node: 7 days, though the energy fits in one.
+      contributions: [contribution("mat1", "B1", 20, 1)],
+    }
+
+    const spot = summarizeFarmingSpots(
+      [insight],
+      new Map([[battleId("B1"), battle(6)]]),
+      288
+    ).get("campaign1:Elite")
+
+    expect(spot?.energy).toBe(120)
+    expect(spot?.days).toBeCloseTo(20 / 3)
+  })
 })

@@ -1550,9 +1550,9 @@
       "missingUpgrades": "Améliorations",
       "missingShards": "Éclats",
       "upgradesOfRarity": "Améliorations {{rarity}}",
-      "farmingSpot_one": "{{count}} matériau · {{days}}",
-      "farmingSpot_other": "{{count}} matériaux · {{days}}",
-      "farmingSpotHint": "Classé selon la part de ce dont vos objectifs ont encore besoin qui tombe par point d'énergie. Chaque ligne indique combien de matériaux nécessaires y tombent et les jours pour tous les y farmer avec votre énergie quotidienne.",
+      "farmingSpot_one": "{{count}} ressource · {{days}}",
+      "farmingSpot_other": "{{count}} ressources · {{days}}",
+      "farmingSpotHint": "Classé selon la part de ce dont vos objectifs ont encore besoin qui tombe par point d'énergie. Chaque ligne indique combien de ressources nécessaires y tombent et les jours pour toutes les y farmer, selon votre énergie quotidienne et les tentatives quotidiennes de chaque nœud.",
       "openSchedule": "Plan jour par jour",
       "helpsGoals": "Aide ces objectifs"
     },

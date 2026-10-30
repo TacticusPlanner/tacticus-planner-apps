@@ -51,7 +51,7 @@ describe("InsightsEvents", () => {
     )
 
     expect(screen.getByTestId("insights-farming-spot")).toHaveTextContent(
-      "2 materials · 3 days"
+      "2 resources · 3 days"
     )
     expect(screen.queryByText("1.23")).not.toBeInTheDocument()
     expect(

@@ -1550,9 +1550,9 @@
       "missingUpgrades": "Upgrades",
       "missingShards": "Shards",
       "upgradesOfRarity": "{{rarity}} upgrades",
-      "farmingSpot_one": "{{count}} material · {{days}}",
-      "farmingSpot_other": "{{count}} materials · {{days}}",
-      "farmingSpotHint": "Ranked by how much of what your goals still need drops per energy. Each row shows how many needed materials drop there and the days to farm them all there at your daily energy.",
+      "farmingSpot_one": "{{count}} resource · {{days}}",
+      "farmingSpot_other": "{{count}} resources · {{days}}",
+      "farmingSpotHint": "Ranked by how much of what your goals still need drops per energy. Each row shows how many needed resources drop there and the days to farm them all there, at your daily energy and each node's daily attempts.",
       "openSchedule": "Day-by-day plan",
       "helpsGoals": "Helps these goals"
     },
