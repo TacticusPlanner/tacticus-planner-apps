@@ -84,7 +84,11 @@ export function GuildTacticusUserIdCard({ onSaved }: { onSaved: () => void }) {
                     "guild.tacticusUserIdRequired.userIdPlaceholder"
                   )}
                   value={userId}
-                  onChange={(event) => setUserId(event.target.value)}
+                  onChange={(event) => {
+                    setUserId(event.target.value)
+                    // The last answer was about the id just submitted, not the one now typed.
+                    if (updateIntegration.error) updateIntegration.reset()
+                  }}
                 />
               </FieldContent>
               {errorMessage ? (

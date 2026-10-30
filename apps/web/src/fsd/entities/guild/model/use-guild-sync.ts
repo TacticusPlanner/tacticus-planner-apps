@@ -24,11 +24,14 @@ const isCooldown = (error: unknown) =>
 export function useGuildSync(onSynchronized: (guild: RegisteredGuild) => void) {
   const { t } = useTranslation()
   const [cooldownSeconds, setCooldownSeconds] = useState(0)
+  // Which 429 started the countdown: this guild's sync cooldown, or the caller's own request budget.
+  const [rateLimited, setRateLimited] = useState(false)
   const mutation = useMutation({
     mutationFn: syncMyGuild,
     onSuccess: onSynchronized,
     onError: (error) => {
       if (isCooldown(error)) {
+        setRateLimited(issueOf(error) === "rateLimited")
         setCooldownSeconds(
           (error as ApiError).retryAfterSeconds || DEFAULT_COOLDOWN_SECONDS
         )
@@ -48,7 +51,12 @@ export function useGuildSync(onSynchronized: (guild: RegisteredGuild) => void) {
 
   const error = mutation.error
   const errorMessage = coolingDown
-    ? t("guild.summary.syncCooldown", { count: cooldownSeconds })
+    ? t(
+        rateLimited
+          ? "guild.summary.syncRateLimited"
+          : "guild.summary.syncCooldown",
+        { count: cooldownSeconds }
+      )
     : !error || isCooldown(error)
       ? null
       : issueOf(error) === "forbidden"

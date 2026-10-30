@@ -14,6 +14,10 @@ vi.mock("@/shared/auth", () => ({
   useSignInRedirect: () => ({ ...signInState(), signIn }),
 }))
 
+vi.mock("@/features/account", () => ({
+  useSignInAccountKeptNotice: vi.fn(),
+}))
+
 vi.mock("@azure/msal-react", () => ({
   useIsAuthenticated: () => isAuthenticated(),
 }))

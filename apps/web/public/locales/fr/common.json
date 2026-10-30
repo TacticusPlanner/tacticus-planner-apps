@@ -118,8 +118,7 @@
       "purgeSubmit": "Purger mon compte",
       "purgeGenericError": "Une erreur s’est produite lors de la purge de votre compte. Veuillez réessayer.",
       "signInAccountKeptTitle": "Votre compte de connexion n'a pas pu être supprimé",
-      "signInAccountKeptDescription": "Vos données du planificateur ont été supprimées, mais le compte avec lequel vous vous connectez existe toujours. Une nouvelle connexion créera un compte du planificateur neuf et vide. Réessayez de le supprimer plus tard.",
-      "signOut": "Se déconnecter"
+      "signInAccountKeptDescription": "Vos données du planificateur ont été supprimées et vous avez été déconnecté, mais le compte avec lequel vous vous connectez existe toujours. Pour le supprimer, reconnectez-vous (cela crée un compte du planificateur neuf et vide) et supprimez-le depuis les paramètres du compte. Si l'échec persiste, contactez-nous via le tableau de suggestions."
     }
   },
   "accountGate": {
@@ -673,6 +672,8 @@
       "deleteGuild": "Supprimer la guilde",
       "syncCooldown_one": "Cette guilde vient d'être synchronisée. Vous pourrez la resynchroniser dans {{count}} seconde.",
       "syncCooldown_other": "Cette guilde vient d'être synchronisée. Vous pourrez la resynchroniser dans {{count}} secondes.",
+      "syncRateLimited_one": "Trop de requêtes. Réessayez dans {{count}} seconde.",
+      "syncRateLimited_other": "Trop de requêtes. Réessayez dans {{count}} secondes.",
       "syncForbidden": "Seul le chef ou le co-chef de la guilde peut la synchroniser."
     },
     "purge": {
@@ -684,7 +685,7 @@
       "genericError": "Une erreur s'est produite lors de la suppression de la guilde. Veuillez réessayer.",
       "errors": {
         "forbidden": "Seul un chef ou co-chef actuel disposant d'un ID utilisateur Tacticus peut supprimer cette guilde. Rien n'a été supprimé.",
-        "tokenRejected": "Tacticus a refusé le jeton d'API de guilde enregistré, votre rôle n'a donc pas pu être vérifié. Rien n'a été supprimé.",
+        "roleCheckFailed": "Votre rôle n'a pas pu être vérifié auprès de Tacticus : il a refusé le jeton d'API de guilde enregistré ou renvoyé des données que Planner n'a pas pu lire. Rien n'a été supprimé. Réenregistrez la guilde avec un nouveau jeton d'API de guilde, puis réessayez.",
         "upstreamUnavailable": "Tacticus est indisponible pour le moment, votre rôle n'a donc pas pu être vérifié. Rien n'a été supprimé. Veuillez réessayer plus tard.",
         "concurrency": "La liste des membres de la guilde a changé pendant la vérification. Rien n'a été supprimé. Veuillez réessayer.",
         "rateLimited": "Trop de requêtes vers Tacticus. Rien n'a été supprimé. Patientez un instant et réessayez."

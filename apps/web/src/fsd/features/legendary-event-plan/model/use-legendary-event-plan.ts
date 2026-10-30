@@ -5,7 +5,6 @@ import { useQueryClient } from "@tanstack/react-query"
 import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
-  MAX_TEAMS_PER_LANE,
   legendaryEventPlanQueries,
   updateLegendaryEventTeam,
   updateLegendaryEventTeamOrder,
@@ -17,12 +16,11 @@ import {
   type PlanMutationOutcome,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { ApiError } from "@/shared/api"
 
 import {
+  assertLaneHasRoom,
   draftOfTeam,
   isCurrentLaneOrder,
-  laneTeams,
   teamCreateRequest,
   teamUpdateRequest,
   withLaneOrder,
@@ -107,11 +105,7 @@ export function useLegendaryEventPlan({
         // A full lane is refused by the API (legendaryEventTeamLimitReached); every entry point to
         // a new team (Add, a suggestion, a leaderboard unit) lands here, so the guard is checked
         // once against the confirmed plan and the request is not sent. The queue toasts it.
-        if (laneTeams(base, laneId).length >= MAX_TEAMS_PER_LANE) {
-          throw new ApiError(400, "The lane is full.", {
-            issueCode: "legendaryEventTeamLimitReached",
-          })
-        }
+        assertLaneHasRoom(base, laneId)
         return createLegendaryEventTeam(
           eventId,
           teamCreateRequest(laneId, draft, run, base.revision)

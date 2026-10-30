@@ -125,7 +125,7 @@ describe("GuildPurgeDialog", () => {
 
   it.each([
     [403, "forbidden", "guild.purge.errors.forbidden"],
-    [400, "validation", "guild.purge.errors.tokenRejected"],
+    [400, "validation", "guild.purge.errors.roleCheckFailed"],
     [503, "upstreamUnavailable", "guild.purge.errors.upstreamUnavailable"],
     [409, "concurrency", "guild.purge.errors.concurrency"],
     [429, "rateLimited", "guild.purge.errors.rateLimited"],

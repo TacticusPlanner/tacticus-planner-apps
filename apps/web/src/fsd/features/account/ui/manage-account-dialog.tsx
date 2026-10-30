@@ -45,6 +45,7 @@ import {
 import { ApiError } from "@/shared/api"
 import { getAccountEmail, getSignInMethod, signOut } from "@/shared/auth"
 
+import { rememberSignInAccountKept } from "../model/sign-in-account-kept-notice"
 import { ProfileTab } from "./profile-tab"
 
 const PURGE_CONFIRMATION_WORD = "Confirm"
@@ -150,6 +151,11 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
       applyTacticusIntegrationResult(queryClient, result)
     },
   })
+  // The API's user-id answer was about the id just submitted, so editing the id drops it.
+  const clearUserIdAnswer = () => {
+    if (tacticusUserIdProblem(updateIntegration.error))
+      updateIntegration.reset()
+  }
   const trimmedUserId = removeUserId ? "" : userId.trim()
   const userIdFormatInvalid =
     trimmedUserId !== "" && !isTacticusUserId(trimmedUserId)
@@ -239,7 +245,10 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
             disabled={removeUserId}
             placeholder={t("manageAccount.integration.userIdPlaceholder")}
             value={userId}
-            onChange={(event) => setUserId(event.target.value)}
+            onChange={(event) => {
+              setUserId(event.target.value)
+              clearUserIdAnswer()
+            }}
           />
           {userIdProblem ? (
             <FieldError data-testid="manage-account-user-id-error">
@@ -254,7 +263,10 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
           id="manage-account-remove-user-id"
           data-testid="manage-account-remove-user-id"
           checked={removeUserId}
-          onCheckedChange={(checked) => setRemoveUserId(checked === true)}
+          onCheckedChange={(checked) => {
+            setRemoveUserId(checked === true)
+            clearUserIdAnswer()
+          }}
         />
         <FieldLabel
           className="font-normal text-muted-foreground"
@@ -302,24 +314,19 @@ function AccountTab({
   const { t } = useTranslation()
   const [confirmation, setConfirmation] = useState("")
   const [scope, setScope] = useState<PurgeScope>("plannerData")
-  // Set when the sign-in account was asked to go but is still there: the planner data is already
-  // deleted, so instead of signing out at once the tab says so and offers the sign-out itself.
-  const [signInAccountKept, setSignInAccountKept] = useState(false)
-  const leave = async () => {
-    onPurged()
-    await signOut(instance, account.homeAccountId)
-  }
   const purge = useMutation({
     mutationFn: async () => {
       const deleteSignInAccount = scope === "signInAccount"
       const { signInAccountDeleted } = await purgeAccount({
         deleteSignInAccount,
       })
+      // Sign out after any purge, even when the sign-in account was kept: staying signed in would let
+      // the next `GET /account` provision a new, empty planner account. The landing page shows the notice.
       if (deleteSignInAccount && !signInAccountDeleted) {
-        setSignInAccountKept(true)
-        return
+        rememberSignInAccountKept()
       }
-      await leave()
+      onPurged()
+      await signOut(instance, account.homeAccountId)
     },
   })
   const errorMessage = purge.error
@@ -334,31 +341,6 @@ function AccountTab({
 
   const handlePurge = () => {
     if (canPurge) purge.mutate()
-  }
-
-  if (signInAccountKept) {
-    return (
-      <div className="flex flex-col gap-4 pt-4">
-        <div
-          className="flex flex-col gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
-          data-testid="manage-account-sign-in-kept"
-          role="alert"
-        >
-          <p className="font-medium text-destructive">
-            {t("manageAccount.account.signInAccountKeptTitle")}
-          </p>
-          <p className="text-muted-foreground">
-            {t("manageAccount.account.signInAccountKeptDescription")}
-          </p>
-        </div>
-        <Button
-          data-testid="manage-account-sign-out"
-          onClick={() => void leave()}
-        >
-          {t("manageAccount.account.signOut")}
-        </Button>
-      </div>
-    )
   }
 
   return (

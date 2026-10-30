@@ -1,4 +1,5 @@
 import {
+  MAX_TEAMS_PER_LANE,
   teamDepthForRun,
   type CreateTeamRequestDto,
   type LegendaryEventLaneId,
@@ -7,6 +8,7 @@ import {
   type LegendaryEventTeam,
   type UpdateTeamRequestDto,
 } from "@/entities/legendary-event"
+import { ApiError } from "@/shared/api"
 
 /** What the team editor submits: everything a team carries except its lane, order and id. The
  *  depth is the current run's. */
@@ -26,6 +28,19 @@ export function laneTeams(
   return plan.teams
     .filter((team) => team.laneId === laneId)
     .sort((a, b) => a.sortOrder - b.sortOrder)
+}
+
+/** Refuses a new team for a full lane before any request: the API would answer 400
+ *  `legendaryEventTeamLimitReached`, so the same error is thrown and the plan write queue toasts it. */
+export function assertLaneHasRoom(
+  plan: Pick<LegendaryEventPlan, "teams">,
+  laneId: LegendaryEventLaneId
+): void {
+  if (laneTeams(plan, laneId).length >= MAX_TEAMS_PER_LANE) {
+    throw new ApiError(400, "The lane is full.", {
+      issueCode: "legendaryEventTeamLimitReached",
+    })
+  }
 }
 
 /** Whether `teamIds` is the lane's current order already (a no-op reorder is not sent). */

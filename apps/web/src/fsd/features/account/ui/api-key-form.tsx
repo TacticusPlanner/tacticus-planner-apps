@@ -116,7 +116,13 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
             aria-invalid={Boolean(userIdProblem)}
             autoComplete="off"
             value={userId}
-            onChange={(event) => setUserId(event.target.value)}
+            onChange={(event) => {
+              setUserId(event.target.value)
+              // The API's answer was about the id just submitted, not the one now typed.
+              if (tacticusUserIdProblem(updateIntegration.error)) {
+                updateIntegration.reset()
+              }
+            }}
           />
           <FieldDescription>
             {t("onboarding.signUp.userIdDescription")}

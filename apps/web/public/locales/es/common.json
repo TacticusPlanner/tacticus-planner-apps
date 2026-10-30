@@ -118,8 +118,7 @@
       "purgeSubmit": "Purgar mi cuenta",
       "purgeGenericError": "Algo salió mal al purgar tu cuenta. Inténtalo de nuevo.",
       "signInAccountKeptTitle": "No se pudo eliminar tu cuenta de inicio de sesión",
-      "signInAccountKeptDescription": "Tus datos del planificador se eliminaron, pero la cuenta con la que inicias sesión sigue existiendo. Al volver a iniciar sesión empezará una cuenta del planificador nueva y vacía. Intenta eliminarla de nuevo más tarde.",
-      "signOut": "Cerrar sesión"
+      "signInAccountKeptDescription": "Tus datos del planificador se eliminaron y se cerró tu sesión, pero la cuenta con la que inicias sesión sigue existiendo. Para eliminarla, vuelve a iniciar sesión (esto crea una cuenta del planificador nueva y vacía) y elimínala desde la configuración de la cuenta. Si sigue fallando, contáctanos a través del tablero de comentarios."
     }
   },
   "accountGate": {
@@ -673,6 +672,8 @@
       "deleteGuild": "Eliminar gremio",
       "syncCooldown_one": "Este gremio se acaba de sincronizar. Puedes volver a sincronizar en {{count}} segundo.",
       "syncCooldown_other": "Este gremio se acaba de sincronizar. Puedes volver a sincronizar en {{count}} segundos.",
+      "syncRateLimited_one": "Demasiadas solicitudes. Inténtalo de nuevo en {{count}} segundo.",
+      "syncRateLimited_other": "Demasiadas solicitudes. Inténtalo de nuevo en {{count}} segundos.",
       "syncForbidden": "Solo el líder o colíder del gremio puede sincronizarlo."
     },
     "purge": {
@@ -684,7 +685,7 @@
       "genericError": "Algo salió mal al eliminar el gremio. Inténtalo de nuevo.",
       "errors": {
         "forbidden": "Solo un líder o colíder actual con ID de usuario de Tacticus puede eliminar este gremio. No se eliminó nada.",
-        "tokenRejected": "Tacticus rechazó el token de la API del gremio guardado, así que no se pudo comprobar tu rol. No se eliminó nada.",
+        "roleCheckFailed": "No se pudo comprobar tu rol con Tacticus: rechazó el token de la API del gremio guardado o devolvió datos que Planner no pudo leer. No se eliminó nada. Vuelve a registrar el gremio con un token de la API del gremio nuevo e inténtalo de nuevo.",
         "upstreamUnavailable": "Tacticus no está disponible ahora mismo, así que no se pudo comprobar tu rol. No se eliminó nada. Inténtalo de nuevo más tarde.",
         "concurrency": "La lista de miembros del gremio cambió mientras se comprobaba. No se eliminó nada. Inténtalo de nuevo.",
         "rateLimited": "Demasiadas solicitudes a Tacticus. No se eliminó nada. Espera un momento e inténtalo de nuevo."

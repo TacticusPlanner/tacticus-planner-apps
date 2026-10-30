@@ -213,6 +213,30 @@ describe("GuildRegisteredView", () => {
     }
   })
 
+  it("counts down a rateLimited 429 with neutral copy, not the just-synchronized one", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    try {
+      const { ApiError } = await import("@/shared/api")
+      syncMyGuild.mockRejectedValue(
+        new ApiError(429, "Too many requests.", {
+          issueCode: "rateLimited",
+          retryAfterSeconds: 5,
+        })
+      )
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+
+      renderView()
+      await user.click(screen.getByTestId("guild-sync-button"))
+
+      expect(await screen.findByTestId("guild-sync-error")).toHaveTextContent(
+        'guild.summary.syncRateLimited:{"count":5}'
+      )
+      expect(screen.getByTestId("guild-sync-button")).toBeDisabled()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it("explains a 403 (no longer Leader/Co-Leader) with its own message", async () => {
     const { ApiError } = await import("@/shared/api")
     syncMyGuild.mockRejectedValue(

@@ -118,8 +118,7 @@
       "purgeSubmit": "Purge my account",
       "purgeGenericError": "Something went wrong while purging your account. Please try again.",
       "signInAccountKeptTitle": "Your sign-in account could not be removed",
-      "signInAccountKeptDescription": "Your planner data was deleted, but the account you sign in with still exists. Signing in again starts a new, empty planner account. Try deleting it again later.",
-      "signOut": "Sign out"
+      "signInAccountKeptDescription": "Your planner data was deleted and you were signed out, but the account you sign in with still exists. To remove it, sign in again (this starts a new, empty planner account) and delete it from Account settings. If it keeps failing, contact us through the feedback board."
     }
   },
   "accountGate": {
@@ -673,6 +672,8 @@
       "deleteGuild": "Delete Guild",
       "syncCooldown_one": "This guild was just synchronized. You can sync again in {{count}} second.",
       "syncCooldown_other": "This guild was just synchronized. You can sync again in {{count}} seconds.",
+      "syncRateLimited_one": "Too many requests. Try again in {{count}} second.",
+      "syncRateLimited_other": "Too many requests. Try again in {{count}} seconds.",
       "syncForbidden": "Only the guild's Leader or Co-Leader can synchronize it."
     },
     "purge": {
@@ -684,7 +685,7 @@
       "genericError": "Something went wrong while deleting the guild. Please try again.",
       "errors": {
         "forbidden": "Only a current Leader or Co-Leader with a Tacticus user ID can delete this guild. Nothing was deleted.",
-        "tokenRejected": "Tacticus rejected this guild's stored Guild API token, so your role couldn't be checked. Nothing was deleted.",
+        "roleCheckFailed": "Your role couldn't be checked against Tacticus: it rejected this guild's stored Guild API token or sent back data Planner couldn't read. Nothing was deleted. Re-register the guild with a fresh Guild API token, then try again.",
         "upstreamUnavailable": "Tacticus is unavailable right now, so your role couldn't be checked. Nothing was deleted. Please try again later.",
         "concurrency": "The guild roster changed while it was being checked. Nothing was deleted. Please try again.",
         "rateLimited": "Too many requests to Tacticus. Nothing was deleted. Please wait a moment and try again."

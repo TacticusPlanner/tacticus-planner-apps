@@ -28,7 +28,8 @@ const PURGE_CONFIRMATION_WORD = "Confirm"
  *  each refusal (nothing was deleted) gets its own translated reason. */
 const PURGE_ERROR_KEYS = {
   forbidden: "guild.purge.errors.forbidden",
-  validation: "guild.purge.errors.tokenRejected",
+  // 400 validation: Tacticus rejected the stored token, or sent guild data the API could not read.
+  validation: "guild.purge.errors.roleCheckFailed",
   upstreamUnavailable: "guild.purge.errors.upstreamUnavailable",
   concurrency: "guild.purge.errors.concurrency",
   rateLimited: "guild.purge.errors.rateLimited",

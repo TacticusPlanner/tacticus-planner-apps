@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { LegendaryEventPlan } from "@/entities/legendary-event"
+import {
+  MAX_TEAMS_PER_LANE,
+  type LegendaryEventPlan,
+} from "@/entities/legendary-event"
 
 import type { DraftTeam } from "./plan-teams"
 import { EMPTY_PLAN } from "./plan.fixtures"
@@ -125,5 +128,33 @@ describe("writeLane", () => {
         expectedRevision: 4,
       })
     )
+  })
+
+  it("refuses a new team for a full lane without sending it", async () => {
+    const full = {
+      ...PLAN,
+      teams: Array.from({ length: MAX_TEAMS_PER_LANE }, (_, index) => ({
+        ...STORED,
+        id: `team-${index}`,
+        sortOrder: index,
+        memberUnitIds: [`u${index}`],
+      })),
+    }
+    const added = draft({
+      key: "added:1",
+      storedId: null,
+      memberUnitIds: ["x", "y", "z"],
+    })
+
+    await expect(
+      writeLane(
+        "uthar",
+        full,
+        { laneId: "alpha", remove: [], update: [], create: [added] },
+        [2],
+        nameOf
+      )
+    ).rejects.toMatchObject({ issueCode: "legendaryEventTeamLimitReached" })
+    expect(api.createLegendaryEventTeam).not.toHaveBeenCalled()
   })
 })

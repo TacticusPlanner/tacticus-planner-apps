@@ -169,6 +169,33 @@ describe("GuildAccessBoundary", () => {
     expect(getMyGuild).toHaveBeenCalledTimes(2)
   })
 
+  it("drops a 409 tacticusUserIdInUse once the user edits the id", async () => {
+    getMyGuild.mockResolvedValue(response.userIdRequired)
+    const { ApiError } = await import("@/shared/api")
+    updateTacticusIntegration.mockRejectedValue(
+      new ApiError(409, "Already linked.", { issueCode: "tacticusUserIdInUse" })
+    )
+    const user = userEvent.setup()
+    renderBoundary()
+
+    const input = await screen.findByTestId("guild-tacticus-user-id-input")
+    fireEvent.change(input, {
+      target: { value: "3f2504e0-4f89-11d3-9a0c-0305e82c3301" },
+    })
+    await user.click(screen.getByTestId("guild-tacticus-user-id-submit"))
+    expect(
+      await screen.findByTestId("guild-tacticus-user-id-error")
+    ).toHaveTextContent("tacticusUserId.inUse")
+
+    fireEvent.change(input, {
+      target: { value: "3f2504e0-4f89-11d3-9a0c-0305e82c3302" },
+    })
+
+    expect(
+      screen.queryByTestId("guild-tacticus-user-id-error")
+    ).not.toBeInTheDocument()
+  })
+
   it("offers the role-unknown registration form with eligibility guidance", async () => {
     getMyGuild.mockResolvedValue(response.unregistered)
     renderBoundary()

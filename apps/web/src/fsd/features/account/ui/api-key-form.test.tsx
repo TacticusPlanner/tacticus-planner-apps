@@ -153,4 +153,29 @@ describe("ApiKeyForm", () => {
       screen.queryByTestId("account-setup-api-key-error")
     ).not.toBeInTheDocument()
   })
+
+  it("drops the API's user-id answer once the user edits the id", async () => {
+    updateTacticusIntegration.mockRejectedValue(
+      new ApiError(409, "This Tacticus user id is already linked.", {
+        issueCode: "tacticusUserIdInUse",
+      })
+    )
+    const user = userEvent.setup()
+
+    render(<ApiKeyForm onCompleted={vi.fn()} />)
+    await user.type(screen.getByTestId("account-setup-api-key-input"), "key-1")
+    const userIdInput = screen.getByTestId("account-setup-user-id-input")
+    await user.type(userIdInput, "3f2504e0-4f89-11d3-9a0c-0305e82c3301")
+    await user.click(screen.getByTestId("account-setup-api-key-submit"))
+    expect(
+      await screen.findByTestId("account-setup-user-id-error")
+    ).toHaveTextContent("tacticusUserId.inUse")
+
+    await user.clear(userIdInput)
+    await user.type(userIdInput, "3f2504e0-4f89-11d3-9a0c-0305e82c3302")
+
+    expect(
+      screen.queryByTestId("account-setup-user-id-error")
+    ).not.toBeInTheDocument()
+  })
 })

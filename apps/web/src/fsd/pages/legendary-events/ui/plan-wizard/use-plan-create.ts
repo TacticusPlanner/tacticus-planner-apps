@@ -24,6 +24,7 @@ import {
   MAX_PROJECTS,
   projectQueries,
 } from "@/entities/project"
+import { assertLaneHasRoom } from "@/features/legendary-event-plan"
 import { ApiError } from "@/shared/api"
 
 import { upgradeChainGoalSpecs } from "./farming-days"
@@ -99,6 +100,8 @@ export async function writeLane(
     ) {
       continue
     }
+    // The wizard writes past the shared editor, so it applies the editor's full-lane guard itself.
+    assertLaneHasRoom(plan, lane.laneId)
     // The first plan run reads the live estimate; later runs are left unrecorded too, so a projected
     // depth that assumed upgrades never outlives goals that slipped (design D5).
     plan = await createLegendaryEventTeam(eventId, {
