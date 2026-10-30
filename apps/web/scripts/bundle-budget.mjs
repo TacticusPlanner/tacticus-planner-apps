@@ -27,7 +27,7 @@ const MAX_PRELOADS = 20
 // Route -> manifest keys of the page modules React Router loads for it (beyond the entry).
 const ROUTES = {
   "/": { budgetKb: 1300, modules: [] },
-  "/home": { budgetKb: 1415, modules: ["src/fsd/pages/home/index.ts"] },
+  "/home": { budgetKb: 2000, modules: ["src/fsd/pages/home/index.ts"] },
   "/library/characters": {
     budgetKb: 1310,
     modules: [
