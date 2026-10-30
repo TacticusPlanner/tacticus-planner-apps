@@ -40,6 +40,7 @@ import {
 } from "./campaign-event-eligibility"
 import {
   activeProjectMembers,
+  calculateCombinedResourceUrgency,
   calculateResourceUrgency,
   calculateDailyRaids,
   type DailyRaidsCalculationInput,
@@ -226,6 +227,60 @@ describe("daily raid derivation", () => {
       days: 1,
       energyTotal: 6,
     })
+  })
+
+  it("pools every goal's remaining need per resource for Combine goals", () => {
+    const sharedId = upgradeIdSchema.parse("shared")
+    const nodeId = battleIdSchema.parse("B1")
+    const urgency = calculateCombinedResourceUrgency(
+      [
+        { goalId: "lower", priority: 2, needs: [{ id: sharedId, count: 2 }] },
+        { goalId: "higher", priority: 1, needs: [{ id: sharedId, count: 3 }] },
+      ],
+      [{ id: sharedId, count: 1 }],
+      new Map([
+        [
+          sharedId,
+          {
+            id: sharedId,
+            label: sharedId,
+            rarity: "Common",
+            stat: "health",
+            crafted: false,
+            recipe: [],
+            farmLocations: [
+              {
+                battleId: nodeId,
+                guaranteed: true,
+                effectiveRate: null,
+                numerator: null,
+                denominator: null,
+                isMythic: false,
+              },
+            ],
+          } satisfies FarmingUpgrade,
+        ],
+      ]),
+      new Map([
+        [
+          nodeId,
+          {
+            campaignGroupId: campaignIdSchema.parse("CG1"),
+            type: "Normal",
+            challenge: false,
+            nodeNumber: 1,
+            battleIndex: 0,
+            energyCost: 6,
+            dailyAttempts: 1,
+          },
+        ],
+      ]),
+      60,
+      new Date("2026-01-01T00:00:00.000Z")
+    )
+
+    // 5 needed across both goals, 1 held: 4 raids at 1 a day.
+    expect(urgency.get("shared")).toEqual({ days: 4, energyTotal: 24 })
   })
 
   it("resolves a goal's urgency for a resource with no farm locations when a flat supplier covers it (tacticus-planner-apps#103)", () => {

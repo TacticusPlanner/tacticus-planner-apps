@@ -39,6 +39,41 @@ describe("buildTodayView", () => {
     expect(all.bonusCanShowLess).toBe(true)
   })
 
+  it("with Combine goals, cuts Bonus raids from the pooled-urgency order and renders one combined list", () => {
+    const base = ready()
+    const bonusEntry = (resourceId: string) => ({
+      ...base.bonus.entries[0]!,
+      resourceId: resourceId as never,
+    })
+    const view = buildTodayView(
+      ready({
+        bonus: {
+          ...base.bonus,
+          entries: ["A", "B", "C", "D"].map(bonusEntry),
+        },
+        combineGoals: true,
+        resourceUrgencyByResource: new Map([
+          ["A", { days: 1, energyTotal: 10 }],
+          ["B", { days: 5, energyTotal: 500 }],
+          ["C", { days: 2, energyTotal: 20 }],
+          ["D", { days: 9, energyTotal: 900 }],
+        ]),
+      })
+    )
+
+    expect(view.bonusShown.map((entry) => entry.resourceId)).toEqual([
+      "D",
+      "B",
+      "C",
+    ])
+    expect(view.scheduleProps.grouping).toBe("combined")
+    // Cards read the have/need over every goal, keyed by resource alone.
+    expect(view.scheduleProps.resourceProgress.get("U1")).toEqual({
+      owned: 265,
+      target: 500,
+    })
+  })
+
   it("shows every bonus entry once the energy limit is reached, with no Show more", () => {
     const view = buildTodayView(
       ready({ dailyEnergy: 288, realEnergyUsedToday: 288 })

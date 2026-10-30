@@ -404,6 +404,17 @@ export function calculateDailyRaids(
       params.dailyEnergy,
       params.referenceDate
     ),
+    combineGoals: !!params.quickFilters?.combineGoals,
+    resourceUrgencyByResource: params.quickFilters?.combineGoals
+      ? calculateCombinedResourceUrgency(
+          goals,
+          inventory,
+          upgradesById,
+          params.battlesById,
+          params.dailyEnergy,
+          params.referenceDate
+        )
+      : new Map(),
     resourceTotals: totalResourceProgress(
       initialProgress,
       inventory,
@@ -454,5 +465,55 @@ export function calculateResourceUrgency(
     }
   }
 
+  return result
+}
+
+/**
+ * Combine goals: one urgency per resource over every goal, as if they were one goal. Each goal's
+ * remaining need (after inventory, in priority order) is summed per resource and estimated at the
+ * nodes of the highest-priority goal that needs it, the same nodes the pooled run farms it at. Today
+ * orders its single combined list by it, most energy to clear first, like Insights' bottlenecks.
+ */
+export function calculateCombinedResourceUrgency(
+  goals: readonly GoalNeed[],
+  inventory: readonly { id: EstimateResourceId; count: number }[],
+  upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
+  battlesById: ReadonlyMap<BattleId, Battle>,
+  dailyEnergy: number,
+  referenceDate?: Date
+): ReadonlyMap<string, DailyRaidResourceUrgency> {
+  const ordered = [...goals].sort((a, b) => a.priority - b.priority)
+  const allocations = allocatePlanInventory(ordered, [...inventory])
+  const pooled = new Map<
+    EstimateResourceId,
+    { count: number; owner: GoalNeed }
+  >()
+  for (const goal of ordered) {
+    for (const stage of allocations.get(goal.goalId)?.stages ?? []) {
+      for (const need of stage.remaining) {
+        const current = pooled.get(need.id)
+        if (current) current.count += need.count
+        else pooled.set(need.id, { count: need.count, owner: goal })
+      }
+    }
+  }
+
+  const result = new Map<string, DailyRaidResourceUrgency>()
+  for (const [resourceId, { count, owner }] of pooled) {
+    const outcome = estimateGoal({
+      needs: [{ id: resourceId, count }],
+      upgradesById,
+      battlesById,
+      dailyEnergy,
+      farmingLocationIds: owner.farmingLocationIds,
+      flatSuppliers: owner.flatSuppliers,
+      referenceDate,
+    })
+    if (outcome.status !== "Estimated") continue
+    result.set(resourceId, {
+      days: outcome.days,
+      energyTotal: outcome.energyTotal,
+    })
+  }
   return result
 }

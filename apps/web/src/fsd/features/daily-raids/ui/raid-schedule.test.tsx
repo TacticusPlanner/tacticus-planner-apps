@@ -72,6 +72,49 @@ function bonusEntry(
   }
 }
 
+describe("RaidSchedule combined grouping", () => {
+  it("lists every goal's resources in one list, in entry order, with no goal headers and pooled progress", () => {
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        entries={[
+          bonusEntry(b2, 1),
+          { ...entry(b1, 1), resourceId: "upgrade1" as never },
+        ]}
+        goalsById={
+          new Map([
+            ["g1", goal],
+            ["g2", bonusGoal],
+          ])
+        }
+        grouping="combined"
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Fall of Cadia", "Standard 7")],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map([["upgrade2", { owned: 3, target: 20 }]])}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    expect(screen.queryByText("Hero One")).not.toBeInTheDocument()
+    expect(screen.queryByText("Hero Two")).not.toBeInTheDocument()
+    const cards = [
+      ...screen
+        .getByTestId("schedule")
+        .querySelectorAll<HTMLElement>("[data-testid^='raid-card-']"),
+    ].map((element) => element.dataset.testid)
+    expect(cards).toEqual(["raid-card-g2-upgrade2", "raid-card-g1-upgrade1"])
+    expect(screen.getByTestId("raid-card-g2-upgrade2")).toHaveTextContent(
+      "3 / 20"
+    )
+  })
+})
+
 describe("RaidSchedule location emphasis", () => {
   it("orders resources by duration, energy, then resource identity within a goal", () => {
     const resources = [

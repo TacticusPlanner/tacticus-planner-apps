@@ -4,6 +4,7 @@ import type { BattleId } from "@workspace/game-domain"
 import {
   buildOnslaughtRuns,
   isLocationVisible,
+  orderCombinedEntries,
   selectTodayRaids,
   type DailyRaidBattleResource,
   type DailyRaidsReadyViewModel,
@@ -49,10 +50,20 @@ export function buildTodayView(
   // entry past the limit can become unreachable if the first few entries all happen to be exhausted.
   // Once today's real energy spend reaches the daily limit, the plan is dropped and Bonus Raids is
   // the only raids list, shown in full.
+  // Combine goals: one combined list, ordered by each resource's pooled urgency before Bonus Raids
+  // is cut to its top entries, so the top entries are the slowest resources across every goal.
+  const combined = raids.combineGoals ?? false
+  const ordered = (entries: RaidEntry[]) =>
+    combined
+      ? orderCombinedEntries(
+          entries,
+          raids.resourceUrgencyByResource ?? new Map()
+        )
+      : entries
   const selection = selectTodayRaids({
-    todayEntries: raids.today.entries,
-    bonusEntries: raids.bonus.entries,
-    raidsLeftTodayEntries: raids.raidsLeftToday.entries,
+    todayEntries: ordered(raids.today.entries),
+    bonusEntries: ordered(raids.bonus.entries),
+    raidsLeftTodayEntries: ordered(raids.raidsLeftToday.entries),
     attemptsLeftByBattle: raids.attemptsLeftByBattle,
     dailyEnergy: raids.dailyEnergy,
     realEnergyUsedToday: raids.realEnergyUsedToday,
@@ -114,10 +125,14 @@ export function buildTodayView(
       attemptsLeftByBattle: raids.attemptsLeftByBattle,
       attemptsUsedByBattle: combinedAttemptsUsedByBattle,
       emphasis: "location",
+      grouping: combined ? "combined" : "goal",
       goalsById: raids.goalsById,
       locationsByBattleId: raids.locationsByBattleId,
       resourceLabels: raids.resourceLabels,
-      resourceProgress: raids.resourceProgressByDay.get(1) ?? new Map(),
+      // Combined cards show the have/need over every goal, keyed by resource alone.
+      resourceProgress: combined
+        ? raids.resourceTotals
+        : (raids.resourceProgressByDay.get(1) ?? new Map()),
       resourceUrgencyByGoalAndResource: raids.resourceUrgencyByGoalAndResource,
       resourceVisuals: raids.resourceVisuals,
     },

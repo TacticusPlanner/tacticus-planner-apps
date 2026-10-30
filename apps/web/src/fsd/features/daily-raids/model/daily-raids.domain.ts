@@ -156,6 +156,10 @@ export type DailyRaidsReadyViewModel = {
     string,
     DailyRaidResourceUrgency
   >
+  /** Today's Combine goals switch is on: Today lists one combined list instead of goal groups. */
+  combineGoals?: boolean
+  /** Combine goals only (empty otherwise): urgency per resource over every goal pooled as one. */
+  resourceUrgencyByResource?: ReadonlyMap<string, DailyRaidResourceUrgency>
   /** Have/need per resource over every goal in the run: total target and what the player holds. */
   resourceTotals: ReadonlyMap<string, DailyRaidResourceProgress>
   resourceProgressByDay: ReadonlyMap<
