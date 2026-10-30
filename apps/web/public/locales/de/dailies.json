@@ -137,6 +137,11 @@
         "inTeam": "Belegt Platz {{slot}}",
         "available": "Vorhanden",
         "notOwned": "Nicht vorhanden"
+      },
+      "focus": {
+        "title": "Wo du als Nächstes investieren solltest",
+        "empty": "Platz {{slot}} ist leer: hol dir {{name}} oder einen der genannten Ersatzhelden.",
+        "weakest": "{{slot}}: {{name}} ist mit {{percent}} % dein schwächster Platz."
       }
     },
     "variantRules": {

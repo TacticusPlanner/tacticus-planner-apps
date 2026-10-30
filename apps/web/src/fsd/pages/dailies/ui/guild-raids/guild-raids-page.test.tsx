@@ -44,7 +44,8 @@ const useGuildRaidExactReadiness =
   vi.fn<
     (bossUnitSetId: string, threshold: unknown) => GuildRaidExactReadinessQuery
   >()
-vi.mock("@/entities/guild-raid-meta", () => ({
+vi.mock("@/entities/guild-raid-meta", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/guild-raid-meta")>()),
   useGuildRaidExactReadiness: (bossUnitSetId: string, threshold: unknown) =>
     useGuildRaidExactReadiness(bossUnitSetId, threshold),
 }))

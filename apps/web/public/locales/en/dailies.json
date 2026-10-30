@@ -137,6 +137,11 @@
         "inTeam": "Used in the {{slot}} slot",
         "available": "Owned",
         "notOwned": "Not owned"
+      },
+      "focus": {
+        "title": "Where to invest next",
+        "empty": "{{slot}} slot is empty: get {{name}} or one of its listed substitutes.",
+        "weakest": "{{slot}}: {{name}} is your weakest slot at {{percent}}%."
       }
     },
     "variantRules": {

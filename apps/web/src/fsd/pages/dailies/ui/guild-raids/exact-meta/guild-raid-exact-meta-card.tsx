@@ -6,11 +6,12 @@ import { Progress } from "@workspace/ui/components/progress"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, RankBadge } from "@/shared/ui"
-import type {
-  GuildRaidExactReadinessOptionView,
-  GuildRaidExactReadinessRecommendationView,
-  GuildRaidExactReadinessSlotView,
-  GuildRaidExactReadinessUnitView,
+import {
+  resolveGuildRaidLineupFocus,
+  type GuildRaidExactReadinessOptionView,
+  type GuildRaidExactReadinessRecommendationView,
+  type GuildRaidExactReadinessSlotView,
+  type GuildRaidExactReadinessUnitView,
 } from "@/entities/guild-raid-meta"
 
 const statusBadgeVariant = {
@@ -267,6 +268,68 @@ function OptionsPanel({
   )
 }
 
+/** Where to invest next: each empty slot, then the filled slot furthest below the target. Each line
+ * opens that slot's options. */
+function FocusCallout({
+  slots,
+  onSelect,
+}: {
+  slots: GuildRaidExactReadinessSlotView[]
+  onSelect: (index: number) => void
+}) {
+  const { t } = useTranslation("dailies")
+  const slotLabel = useSlotLabel()
+  const { emptySlotIndexes, weakestSlotIndex } =
+    resolveGuildRaidLineupFocus(slots)
+
+  const lines = [
+    ...emptySlotIndexes.map((index) => ({
+      index,
+      text: t("guildRaids.exactMeta.focus.empty", {
+        slot: slotLabel(slots[index]!),
+        name: slots[index]!.ideal.name,
+      }),
+    })),
+    ...(weakestSlotIndex === null
+      ? []
+      : [
+          {
+            index: weakestSlotIndex,
+            text: t("guildRaids.exactMeta.focus.weakest", {
+              slot: slotLabel(slots[weakestSlotIndex]!),
+              name: slots[weakestSlotIndex]!.picked?.name ?? "",
+              percent: slots[weakestSlotIndex]!.readiness,
+            }),
+          },
+        ]),
+  ]
+  if (lines.length === 0) return null
+
+  return (
+    <div
+      className="flex flex-col gap-1.5 rounded-xl border border-dashed px-3 py-2"
+      data-testid="guild-raid-exact-meta-focus"
+    >
+      <p className="text-xs font-medium">
+        {t("guildRaids.exactMeta.focus.title")}
+      </p>
+      <ul className="flex flex-col gap-1">
+        {lines.map((line) => (
+          <li key={line.index}>
+            <button
+              type="button"
+              onClick={() => onSelect(line.index)}
+              className="text-left text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            >
+              {line.text}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export function GuildRaidExactMetaCard({
   isMobile,
   recommendation,
@@ -282,6 +345,10 @@ export function GuildRaidExactMetaCard({
   const toggle = (index: number) =>
     setOpenSlot((current) => (current === index ? null : index))
   const openSlotView = openSlot === null ? undefined : slots[openSlot]
+  // Only once the roster is known: without it every slot reads as empty.
+  const focus = status ? (
+    <FocusCallout slots={slots} onSelect={setOpenSlot} />
+  ) : null
 
   const header = (
     <div className="flex flex-wrap items-center gap-2">
@@ -332,19 +399,25 @@ export function GuildRaidExactMetaCard({
         data-testid="guild-raid-exact-meta-slots"
       >
         {isMobile ? (
-          slots.map((slot, index) => (
-            <div key={`${slot.kind}-${index}`} className="flex flex-col gap-2">
-              <SlotTile
-                slot={slot}
-                index={index}
-                expanded={openSlot === index}
-                panelId={panelId}
-                isMobile
-                onToggle={() => toggle(index)}
-              />
-              {optionsPanel(index)}
-            </div>
-          ))
+          <>
+            {focus}
+            {slots.map((slot, index) => (
+              <div
+                key={`${slot.kind}-${index}`}
+                className="flex flex-col gap-2"
+              >
+                <SlotTile
+                  slot={slot}
+                  index={index}
+                  expanded={openSlot === index}
+                  panelId={panelId}
+                  isMobile
+                  onToggle={() => toggle(index)}
+                />
+                {optionsPanel(index)}
+              </div>
+            ))}
+          </>
         ) : (
           <>
             <div className="grid grid-cols-6 gap-2">
@@ -367,6 +440,7 @@ export function GuildRaidExactMetaCard({
             ) : (
               optionsPanel(openSlot)
             )}
+            {focus}
           </>
         )}
       </CardContent>
