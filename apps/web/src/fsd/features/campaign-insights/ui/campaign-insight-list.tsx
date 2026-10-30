@@ -35,11 +35,17 @@ export function CampaignInsightList<TId extends string>({
   insights,
   resourceById,
   renderFooter,
+  renderSummary,
+  hint,
 }: {
   label: string
   insights: CampaignInsight<TId>[]
   resourceById: ReadonlyMap<TId, CampaignInsightResource>
   renderFooter?: (insight: CampaignInsight<TId>) => ReactNode
+  /** Replaces the raw usefulness score on each row (pass `hint` to explain what it shows). */
+  renderSummary?: (insight: CampaignInsight<TId>) => ReactNode
+  /** The info tooltip; defaults to the usefulness-score explanation. */
+  hint?: string
 }) {
   const { t } = useTranslation()
   const { shortLabel, tierCode } = useCampaignDisplay()
@@ -53,14 +59,14 @@ export function CampaignInsightList<TId extends string>({
           <TooltipTrigger asChild>
             <button
               type="button"
-              aria-label={t("unitLookup.usefulnessScoreHint")}
+              aria-label={hint ?? t("unitLookup.usefulnessScoreHint")}
               className="text-muted-foreground hover:text-foreground"
             >
               <Info className="size-3.5" />
             </button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
-            {t("unitLookup.usefulnessScoreHint")}
+            {hint ?? t("unitLookup.usefulnessScoreHint")}
           </TooltipContent>
         </Tooltip>
       </div>
@@ -78,7 +84,11 @@ export function CampaignInsightList<TId extends string>({
                   className="size-6 shrink-0"
                 />
                 <span className="min-w-0 flex-1 truncate">{insight.label}</span>
-                {insight.tierScores?.length ? (
+                {renderSummary ? (
+                  <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                    {renderSummary(insight)}
+                  </span>
+                ) : insight.tierScores?.length ? (
                   <span className="flex shrink-0 gap-2 text-xs text-muted-foreground tabular-nums">
                     {insight.tierScores.map(({ tier, score }) => (
                       <span key={tier}>

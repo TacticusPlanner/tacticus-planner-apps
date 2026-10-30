@@ -1,35 +1,43 @@
+import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
-import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
 
 import type { EstimateResourceId } from "@/features/goal-farming"
-import { useGoalCatalog } from "@/features/goal-planning"
+import { useGoalCatalog, type PlanFarmingSpot } from "@/features/goal-planning"
 import {
   CampaignInsightList,
   type CampaignInsight,
 } from "@/features/campaign-insights"
 
-/** Campaign/event relevance chips annotated with which goals (entities) benefit — the "relevant
- *  campaign events... with which characters/MoW benefit from each" + "farming opportunities" piece
- *  of the Insights view (plan §16 phase 7). */
+import { GoalLink } from "./insights-goal-link"
+import { useGoalLabel, type InsightsGoalInfo } from "./insights-view"
+
+/** "Where to farm": the campaigns (or events) that drop the most of what the plan still needs, each
+ *  summarised as how many needed resources drop there and the days to clear them, and opening to the
+ *  materials, nodes and goals that benefit (plan §16 phase 7). */
 export function InsightsEvents({
   title,
   insights,
   benefitingGoalIdsByInsightId,
-  goalEntityById,
+  farmingSpotsByInsightId,
+  goalInfoById,
 }: {
   title: string
   insights: CampaignInsight<EstimateResourceId>[]
   benefitingGoalIdsByInsightId: Map<string, string[]>
-  goalEntityById: ReadonlyMap<string, { entityType: string; entityId: string }>
+  farmingSpotsByInsightId: ReadonlyMap<string, PlanFarmingSpot>
+  goalInfoById: ReadonlyMap<string, InsightsGoalInfo>
 }) {
   const { t } = useTranslation()
-  const { getEntityName, upgradesById } = useGoalCatalog()
+  const { upgradesById } = useGoalCatalog()
+  const goalLabel = useGoalLabel(goalInfoById)
 
   if (insights.length === 0) {
     return null
@@ -39,9 +47,15 @@ export function InsightsEvents({
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
+        <CardAction>
+          <Button asChild size="sm" variant="link">
+            <Link to="/plan/schedule">{t("goals.insights.openSchedule")}</Link>
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <CampaignInsightList
+          hint={t("goals.insights.farmingSpotHint")}
           label={title}
           insights={insights}
           resourceById={
@@ -57,32 +71,42 @@ export function InsightsEvents({
               ])
             )
           }
+          renderSummary={(insight) => {
+            const spot = farmingSpotsByInsightId.get(insight.id)
+            if (!spot) return null
+            return (
+              <span data-testid="insights-farming-spot">
+                {t("goals.insights.farmingSpot", {
+                  count: spot.resourceCount,
+                  days: t("goals.insights.days", {
+                    count: Math.ceil(spot.days),
+                  }),
+                })}
+              </span>
+            )
+          }}
           renderFooter={(insight) => {
             const goalIds = benefitingGoalIdsByInsightId.get(insight.id) ?? []
-            const entityNames = [
-              ...new Set(
-                goalIds
-                  .map((goalId) => goalEntityById.get(goalId))
-                  .filter((entity) => !!entity)
-                  .map((entity) =>
-                    getEntityName(entity.entityType, entity.entityId)
-                  )
-              ),
-            ]
-
             return (
               <div
-                className="mt-2 flex flex-col gap-2"
+                className="mt-2 flex flex-col gap-1"
                 data-testid="insights-event-chip"
               >
-                {entityNames.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {entityNames.map((name) => (
-                      <Badge key={name} variant="secondary">
-                        {name}
-                      </Badge>
-                    ))}
-                  </div>
+                {goalIds.length > 0 ? (
+                  <>
+                    <span className="text-xs text-muted-foreground">
+                      {t("goals.insights.helpsGoals")}
+                    </span>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                      {goalIds.map((goalId) => (
+                        <GoalLink
+                          goalId={goalId}
+                          key={goalId}
+                          label={goalLabel(goalId)}
+                        />
+                      ))}
+                    </div>
+                  </>
                 ) : (
                   <p className="text-xs text-muted-foreground">
                     {t("goals.insights.noBenefitingGoals")}

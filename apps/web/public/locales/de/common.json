@@ -1522,8 +1522,8 @@
       "missingXpBooks": "EP-Bücher",
       "missingXp": "{{xp}} EP",
       "missingTotal": "{{total}} insgesamt",
-      "campaignsTitle": "Relevante Kampagnen",
-      "eventsTitle": "Relevante Events",
+      "campaignsTitle": "Beste Kampagnen zum Farmen",
+      "eventsTitle": "Beste Events zum Farmen",
       "noBenefitingGoals": "Derzeit benötigt kein Ziel in diesem Plan dies.",
       "days_one": "{{count}} Tag",
       "days_other": "{{count}} Tage",
@@ -1549,7 +1549,12 @@
       "missingFarmed": "Gefarmte Ressourcen",
       "missingUpgrades": "Upgrades",
       "missingShards": "Scherben",
-      "upgradesOfRarity": "{{rarity}}-Upgrades"
+      "upgradesOfRarity": "{{rarity}}-Upgrades",
+      "farmingSpot_one": "{{count}} Ressource · {{days}}",
+      "farmingSpot_other": "{{count}} Ressourcen · {{days}}",
+      "farmingSpotHint": "Sortiert danach, wie viel von dem, was deine Ziele noch brauchen, pro Energie dort droppt. Jede Zeile zeigt, wie viele benötigte Ressourcen dort droppen und wie viele Tage es dauert, sie alle dort zu farmen – bei deiner täglichen Energie und den täglichen Versuchen jedes Knotens.",
+      "openSchedule": "Tag-für-Tag-Plan",
+      "helpsGoals": "Hilft diesen Zielen"
     },
     "target": {
       "title": "Ziel",

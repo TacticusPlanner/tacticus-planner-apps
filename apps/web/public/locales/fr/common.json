@@ -1522,8 +1522,8 @@
       "missingXpBooks": "Livres d'XP",
       "missingXp": "{{xp}} XP",
       "missingTotal": "{{total}} au total",
-      "campaignsTitle": "Campagnes pertinentes",
-      "eventsTitle": "Événements pertinents",
+      "campaignsTitle": "Meilleures campagnes à farmer",
+      "eventsTitle": "Meilleurs événements à farmer",
       "noBenefitingGoals": "Aucun objectif de ce plan n'en a besoin actuellement.",
       "days_one": "{{count}} jour",
       "days_other": "{{count}} jours",
@@ -1549,7 +1549,12 @@
       "missingFarmed": "Ressources farmées",
       "missingUpgrades": "Améliorations",
       "missingShards": "Éclats",
-      "upgradesOfRarity": "Améliorations {{rarity}}"
+      "upgradesOfRarity": "Améliorations {{rarity}}",
+      "farmingSpot_one": "{{count}} ressource · {{days}}",
+      "farmingSpot_other": "{{count}} ressources · {{days}}",
+      "farmingSpotHint": "Classé selon la part de ce dont vos objectifs ont encore besoin qui tombe par point d'énergie. Chaque ligne indique combien de ressources nécessaires y tombent et les jours pour toutes les y farmer, selon votre énergie quotidienne et les tentatives quotidiennes de chaque nœud.",
+      "openSchedule": "Plan jour par jour",
+      "helpsGoals": "Aide ces objectifs"
     },
     "target": {
       "title": "Objectif",
