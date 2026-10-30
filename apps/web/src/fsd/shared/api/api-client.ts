@@ -18,6 +18,8 @@ export type ApiProblem = {
   errors?: Record<string, string[]>
   /** Any other problem members a route documents (e.g. `blockedGoalIds`). */
   extensions?: Record<string, unknown>
+  /** On a 429/503: the `Retry-After` header in whole seconds, when it is a number. */
+  retryAfterSeconds?: number
 }
 
 export class ApiError extends Error {
@@ -26,6 +28,7 @@ export class ApiError extends Error {
   readonly current?: unknown
   readonly errors?: Record<string, string[]>
   readonly extensions: Record<string, unknown>
+  readonly retryAfterSeconds?: number
 
   constructor(status: number, message: string, problem: ApiProblem = {}) {
     super(message)
@@ -35,6 +38,7 @@ export class ApiError extends Error {
     this.current = problem.current
     this.errors = problem.errors
     this.extensions = problem.extensions ?? {}
+    this.retryAfterSeconds = problem.retryAfterSeconds
   }
 }
 
@@ -84,14 +88,18 @@ const PROBLEM_MEMBERS = new Set([
  */
 async function readError(response: Response): Promise<ApiError> {
   const generic = `API request failed with status ${response.status}`
+  // The API sends delta seconds only (never an HTTP date).
+  const retryAfter = Number(response.headers.get("Retry-After") ?? NaN)
+  const retryAfterSeconds =
+    Number.isFinite(retryAfter) && retryAfter >= 0 ? retryAfter : undefined
   let body: unknown
   try {
     body = await response.clone().json()
   } catch {
-    return new ApiError(response.status, generic)
+    return new ApiError(response.status, generic, { retryAfterSeconds })
   }
   if (!body || typeof body !== "object") {
-    return new ApiError(response.status, generic)
+    return new ApiError(response.status, generic, { retryAfterSeconds })
   }
   const {
     title,
@@ -115,7 +123,13 @@ async function readError(response: Response): Promise<ApiError> {
       text(detail) ??
       text(title) ??
       generic,
-    { issueCode: text(issueCode), current, errors, extensions }
+    {
+      issueCode: text(issueCode),
+      current,
+      errors,
+      extensions,
+      retryAfterSeconds,
+    }
   )
 }
 

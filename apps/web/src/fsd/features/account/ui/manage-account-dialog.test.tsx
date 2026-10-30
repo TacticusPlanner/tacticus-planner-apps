@@ -258,7 +258,7 @@ describe("ManageAccountDialog", () => {
   })
 
   it("keeps the purge action disabled until the confirmation word is typed exactly", async () => {
-    purgeAccount.mockResolvedValue(undefined)
+    purgeAccount.mockResolvedValue({ signInAccountDeleted: false })
 
     const user = userEvent.setup()
     render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
@@ -286,7 +286,7 @@ describe("ManageAccountDialog", () => {
   })
 
   it("also deletes the sign-in account when that option is chosen", async () => {
-    purgeAccount.mockResolvedValue(undefined)
+    purgeAccount.mockResolvedValue({ signInAccountDeleted: true })
 
     const user = userEvent.setup()
     render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
@@ -305,6 +305,35 @@ describe("ManageAccountDialog", () => {
       expect(purgeAccount).toHaveBeenCalledWith({ deleteSignInAccount: true })
     })
     expect(signOut).toHaveBeenCalledTimes(1)
+  })
+
+  it("says the sign-in account could not be removed, and signs out only on request", async () => {
+    purgeAccount.mockResolvedValue({ signInAccountDeleted: false })
+    const onOpenChange = vi.fn()
+
+    const user = userEvent.setup()
+    render(<ManageAccountDialog onOpenChange={onOpenChange} open />)
+
+    await user.click(screen.getByTestId("manage-account-tab-account"))
+    await user.click(
+      screen.getByTestId("manage-account-purge-scope-signInAccount")
+    )
+    fireEvent.change(
+      screen.getByTestId("manage-account-purge-confirmation-input"),
+      { target: { value: "Confirm" } }
+    )
+    await user.click(screen.getByTestId("manage-account-purge-submit"))
+
+    expect(
+      await screen.findByTestId("manage-account-sign-in-kept")
+    ).toHaveTextContent("manageAccount.account.signInAccountKeptTitle")
+    expect(signOut).not.toHaveBeenCalled()
+
+    await user.click(
+      screen.getByRole("button", { name: "manageAccount.account.signOut" })
+    )
+    await vi.waitFor(() => expect(signOut).toHaveBeenCalledTimes(1))
+    expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
   it("shows the sign-in method and email on the account tab", async () => {

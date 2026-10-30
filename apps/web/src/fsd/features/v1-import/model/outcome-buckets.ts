@@ -33,6 +33,13 @@ const CODE_BUCKETS: Record<string, OutcomeBucketKey> = {
   target_rejected: "failed",
   project_slot_conflict: "failed",
   prerequisite_rejected: "failed",
+  // The account's caps: a goal type already at 200 non-archived goals skips the goal; at 100
+  // non-archived projects the import cannot create its own project, so its goals fail.
+  goal_limit_reached: "notImported",
+  project_limit_reached: "failed",
+  // Summary lines: V1 goals past the import's 500-goal bound, and outcomes past the listed 1000.
+  too_many_goals: "notImported",
+  outcomes_truncated: "notImported",
 }
 
 export function bucketForCode(code: string): OutcomeBucketKey {
@@ -72,6 +79,10 @@ type ReasonKey =
   | "goals.v1Import.reasons.targetRejected"
   | "goals.v1Import.reasons.projectSlotConflict"
   | "goals.v1Import.reasons.prerequisiteRejected"
+  | "goals.v1Import.reasons.goalLimitReached"
+  | "goals.v1Import.reasons.projectLimitReached"
+  | "goals.v1Import.reasons.tooManyGoals"
+  | "goals.v1Import.reasons.outcomesTruncated"
   | "goals.v1Import.reasons.generic"
 
 const REASON_KEYS: Record<string, ReasonKey> = {
@@ -94,6 +105,10 @@ const REASON_KEYS: Record<string, ReasonKey> = {
   target_rejected: "goals.v1Import.reasons.targetRejected",
   project_slot_conflict: "goals.v1Import.reasons.projectSlotConflict",
   prerequisite_rejected: "goals.v1Import.reasons.prerequisiteRejected",
+  goal_limit_reached: "goals.v1Import.reasons.goalLimitReached",
+  project_limit_reached: "goals.v1Import.reasons.projectLimitReached",
+  too_many_goals: "goals.v1Import.reasons.tooManyGoals",
+  outcomes_truncated: "goals.v1Import.reasons.outcomesTruncated",
 }
 
 export function reasonKeyForCode(code: string): ReasonKey {

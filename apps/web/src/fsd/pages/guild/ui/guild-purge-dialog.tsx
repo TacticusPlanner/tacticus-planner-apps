@@ -24,6 +24,23 @@ import { ApiError } from "@/shared/api"
 
 const PURGE_CONFIRMATION_WORD = "Confirm"
 
+/** `DELETE guild` re-checks the caller's role against a fresh Tacticus roster before deleting, so
+ *  each refusal (nothing was deleted) gets its own translated reason. */
+const PURGE_ERROR_KEYS = {
+  forbidden: "guild.purge.errors.forbidden",
+  validation: "guild.purge.errors.tokenRejected",
+  upstreamUnavailable: "guild.purge.errors.upstreamUnavailable",
+  concurrency: "guild.purge.errors.concurrency",
+  rateLimited: "guild.purge.errors.rateLimited",
+} as const
+
+function purgeErrorKey(error: unknown) {
+  const code = error instanceof ApiError ? error.issueCode : undefined
+  return code && code in PURGE_ERROR_KEYS
+    ? PURGE_ERROR_KEYS[code as keyof typeof PURGE_ERROR_KEYS]
+    : null
+}
+
 type Props = {
   /** @deprecated Authentication is resolved by the shared API client. */
   account?: AccountInfo
@@ -52,11 +69,14 @@ export function GuildPurgeDialog({ open, onOpenChange, onPurged }: Props) {
     },
   })
   const submitting = purge.isPending
-  const errorMessage = purge.error
-    ? purge.error instanceof ApiError
-      ? purge.error.message
-      : t("guild.purge.genericError")
-    : null
+  const errorKey = purge.error ? purgeErrorKey(purge.error) : null
+  const errorMessage = !purge.error
+    ? null
+    : errorKey
+      ? t(errorKey)
+      : purge.error instanceof ApiError
+        ? purge.error.message
+        : t("guild.purge.genericError")
 
   const canPurge = confirmation === PURGE_CONFIRMATION_WORD
 

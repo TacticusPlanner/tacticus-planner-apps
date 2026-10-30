@@ -6,6 +6,9 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
   createProject,
+  isAtProjectLimit,
+  isProjectLimitError,
+  MAX_PROJECTS,
   updateProject,
   projectQueries,
   type ProjectSummary,
@@ -72,9 +75,11 @@ export function useProjectActions(_onChanged?: () => void) {
         })
       }
       toast.error(
-        error instanceof ApiError
-          ? error.message
-          : t("goals.toasts.actionError")
+        isProjectLimitError(error)
+          ? t("goals.limits.projectLimitReached", { max: MAX_PROJECTS })
+          : error instanceof ApiError
+            ? error.message
+            : t("goals.toasts.actionError")
       )
       return false
     } finally {
@@ -89,6 +94,14 @@ export function useProjectActions(_onChanged?: () => void) {
     target: ProjectTarget | null = null
   ) => {
     if (!isAuthenticated) return null
+    // At the cap the API refuses the create (projectLimitReached); the loaded list says so first.
+    const loaded = queryClient.getQueryData<{ projects: ProjectSummary[] }>(
+      projectQueries.list().queryKey
+    )
+    if (loaded && isAtProjectLimit(loaded.projects)) {
+      toast.error(t("goals.limits.projectLimitReached", { max: MAX_PROJECTS }))
+      return null
+    }
     let created: ProjectSummary | null = null
     const ok = await run(async () => {
       created = await createProject({ name, description, color, target })

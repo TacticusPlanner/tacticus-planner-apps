@@ -1,6 +1,5 @@
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
-import { useMutation } from "@tanstack/react-query"
 import { RefreshCw } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -13,8 +12,7 @@ import {
 } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { syncMyGuild, type RegisteredGuild } from "@/entities/guild"
-import { ApiError } from "@/shared/api"
+import { useGuildSync, type RegisteredGuild } from "@/entities/guild"
 
 type Props = {
   guild: RegisteredGuild
@@ -28,15 +26,8 @@ export function GuildSynchronizationCard({
   showGuildManagementLink,
 }: Props) {
   const { t } = useTranslation()
-  const synchronization = useMutation({
-    mutationFn: syncMyGuild,
-    onSuccess: onSynchronized,
-  })
-  const errorMessage = synchronization.error
-    ? synchronization.error instanceof ApiError
-      ? synchronization.error.message
-      : t("guild.summary.syncError")
-    : null
+  const { sync, syncing, coolingDown, errorMessage } =
+    useGuildSync(onSynchronized)
 
   return (
     <Card data-testid="guild-never-synchronized">
@@ -59,17 +50,15 @@ export function GuildSynchronizationCard({
         {guild.canSynchronize ? (
           <Button
             data-testid="guild-access-sync-button"
-            disabled={synchronization.isPending}
-            onClick={() => synchronization.mutate()}
+            disabled={syncing || coolingDown}
+            onClick={sync}
           >
-            {synchronization.isPending ? (
+            {syncing ? (
               <Spinner data-icon="inline-start" />
             ) : (
               <RefreshCw data-icon="inline-start" />
             )}
-            {synchronization.isPending
-              ? t("guild.summary.syncing")
-              : t("guild.summary.sync")}
+            {syncing ? t("guild.summary.syncing") : t("guild.summary.sync")}
           </Button>
         ) : null}
         {showGuildManagementLink ? (

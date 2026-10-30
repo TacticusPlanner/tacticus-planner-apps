@@ -13,7 +13,8 @@ vi.mock("react-i18next", async (importOriginal) => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
-vi.mock("@/entities/account", () => ({
+vi.mock("@/entities/account", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/account")>()),
   updateTacticusIntegration: (...args: unknown[]) =>
     updateTacticusIntegration(...args),
 }))
@@ -59,7 +60,10 @@ describe("ApiKeyForm", () => {
       screen.getByTestId("account-setup-api-key-input"),
       "bad-key"
     )
-    await user.type(screen.getByTestId("account-setup-user-id-input"), "user-9")
+    await user.type(
+      screen.getByTestId("account-setup-user-id-input"),
+      "3f2504e0-4f89-11d3-9a0c-0305e82c3301"
+    )
     await user.click(screen.getByTestId("account-setup-api-key-submit"))
 
     expect(
@@ -70,7 +74,7 @@ describe("ApiKeyForm", () => {
       "bad-key"
     )
     expect(screen.getByTestId("account-setup-user-id-input")).toHaveValue(
-      "user-9"
+      "3f2504e0-4f89-11d3-9a0c-0305e82c3301"
     )
   })
 
@@ -96,13 +100,57 @@ describe("ApiKeyForm", () => {
 
     render(<ApiKeyForm onCompleted={vi.fn()} />)
     await user.type(screen.getByTestId("account-setup-api-key-input"), "key-1")
-    await user.type(screen.getByTestId("account-setup-user-id-input"), " u-7 ")
+    await user.type(
+      screen.getByTestId("account-setup-user-id-input"),
+      " 3f2504e0-4f89-11d3-9a0c-0305e82c3301 "
+    )
     await user.click(screen.getByTestId("account-setup-api-key-submit"))
 
     await waitFor(() => expect(updateTacticusIntegration).toHaveBeenCalled())
     expect(updateTacticusIntegration.mock.calls[0]?.[0]).toEqual({
       tacticusApiKey: "key-1",
-      tacticusUserId: "u-7",
+      tacticusUserId: "3f2504e0-4f89-11d3-9a0c-0305e82c3301",
     })
+  })
+
+  it("flags a user id that is not a GUID under its field and does not submit", async () => {
+    const user = userEvent.setup()
+
+    render(<ApiKeyForm onCompleted={vi.fn()} />)
+    await user.type(screen.getByTestId("account-setup-api-key-input"), "key-1")
+    await user.type(
+      screen.getByTestId("account-setup-user-id-input"),
+      "player-123"
+    )
+
+    expect(screen.getByTestId("account-setup-user-id-error")).toHaveTextContent(
+      "tacticusUserId.invalid"
+    )
+    expect(screen.getByTestId("account-setup-api-key-submit")).toBeDisabled()
+    expect(updateTacticusIntegration).not.toHaveBeenCalled()
+  })
+
+  it("shows an already-linked user id (409 tacticusUserIdInUse) under the user id field", async () => {
+    updateTacticusIntegration.mockRejectedValue(
+      new ApiError(409, "This Tacticus user id is already linked.", {
+        issueCode: "tacticusUserIdInUse",
+      })
+    )
+    const user = userEvent.setup()
+
+    render(<ApiKeyForm onCompleted={vi.fn()} />)
+    await user.type(screen.getByTestId("account-setup-api-key-input"), "key-1")
+    await user.type(
+      screen.getByTestId("account-setup-user-id-input"),
+      "3f2504e0-4f89-11d3-9a0c-0305e82c3301"
+    )
+    await user.click(screen.getByTestId("account-setup-api-key-submit"))
+
+    expect(
+      await screen.findByTestId("account-setup-user-id-error")
+    ).toHaveTextContent("tacticusUserId.inUse")
+    expect(
+      screen.queryByTestId("account-setup-api-key-error")
+    ).not.toBeInTheDocument()
   })
 })

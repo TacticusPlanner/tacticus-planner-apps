@@ -2,7 +2,11 @@ import type {
   V1LegendaryEventIssue,
   V1LegendaryEventOutcome,
 } from "@/entities/account"
-import { MAX_CLOSE_SHARDS, MIN_TEAM_MEMBERS } from "@/entities/legendary-event"
+import {
+  MAX_CLOSE_SHARDS,
+  MAX_TEAMS_PER_LANE,
+  MIN_TEAM_MEMBERS,
+} from "@/entities/legendary-event"
 
 import type { OutcomeBucketKey } from "./outcome-buckets"
 
@@ -121,6 +125,8 @@ type IssueKey =
   | "goals.v1Import.legendaryEvents.issues.existing_annotations_kept"
   | "goals.v1Import.legendaryEvents.issues.unknown_objective_mark"
   | "goals.v1Import.legendaryEvents.issues.unknown_lane_mark"
+  | "goals.v1Import.legendaryEvents.issues.lane_team_limit_reached"
+  | "goals.v1Import.legendaryEvents.issues.issues_truncated"
   | "goals.v1Import.reasons.generic"
 
 const ISSUE_CODES = [
@@ -141,6 +147,8 @@ const ISSUE_CODES = [
   "existing_run_inputs_kept",
   "unknown_battle",
   "existing_annotations_kept",
+  "lane_team_limit_reached",
+  "issues_truncated",
 ] as const
 
 function issueKeyForLegendaryEventCode(code: string): IssueKey {
@@ -239,6 +247,23 @@ export function describeLegendaryEventIssue(
     }
     case "existing_run_inputs_kept":
       return { ...plain, params: { run: issue.value ?? "" }, showValue: false }
+    case "lane_team_limit_reached": {
+      // The value is the lane whose teams past the 50-team cap were dropped.
+      const name = laneKey(issue.value ?? "")
+      if (!name) return plain
+      return {
+        ...plain,
+        params: { lane: { key: name }, max: MAX_TEAMS_PER_LANE },
+        showValue: false,
+      }
+    }
+    case "issues_truncated":
+      // The value is how many further issues were not listed.
+      return {
+        ...plain,
+        params: { count: Number(issue.value ?? 0) },
+        showValue: false,
+      }
     case "existing_annotations_kept":
       return {
         ...plain,

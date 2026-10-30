@@ -23,20 +23,21 @@ vi.mock("@azure/msal-react", () => ({
   }),
 }))
 
-vi.mock("@/entities/account", () => ({
-  updateTacticusIntegration: (...args: unknown[]) =>
-    updateTacticusIntegration(...args),
-  applyTacticusIntegrationResult: (...args: unknown[]) =>
-    applyTacticusIntegrationResult(...args),
-}))
+vi.mock("@/entities/account", async (importOriginal) => {
+  const { isTacticusUserId, tacticusUserIdProblem } =
+    await importOriginal<typeof import("@/entities/account")>()
+  return {
+    isTacticusUserId,
+    tacticusUserIdProblem,
+    updateTacticusIntegration: (...args: unknown[]) =>
+      updateTacticusIntegration(...args),
+    applyTacticusIntegrationResult: (...args: unknown[]) =>
+      applyTacticusIntegrationResult(...args),
+  }
+})
 
-vi.mock("@/entities/guild", () => ({
-  guildQueries: {
-    current: () => ({
-      queryKey: ["guild", "current"],
-      queryFn: () => getMyGuild(),
-    }),
-  },
+vi.mock("@/entities/guild/api/guild.api", () => ({
+  getMyGuild: (...args: unknown[]) => getMyGuild(...args),
   registerGuild: (...args: unknown[]) => registerGuild(...args),
   syncMyGuild: (...args: unknown[]) => syncMyGuild(...args),
 }))
@@ -44,9 +45,17 @@ vi.mock("@/entities/guild", () => ({
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {
     status: number
-    constructor(status: number, message: string) {
+    issueCode?: string
+    retryAfterSeconds?: number
+    constructor(
+      status: number,
+      message: string,
+      problem: { issueCode?: string; retryAfterSeconds?: number } = {}
+    ) {
       super(message)
       this.status = status
+      this.issueCode = problem.issueCode
+      this.retryAfterSeconds = problem.retryAfterSeconds
     }
   },
 }))
@@ -139,14 +148,17 @@ describe("GuildAccessBoundary", () => {
     fireEvent.change(
       await screen.findByTestId("guild-tacticus-user-id-input"),
       {
-        target: { value: "  user-123  " },
+        target: { value: "  3f2504e0-4f89-11d3-9a0c-0305e82c3301  " },
       }
     )
     await user.click(screen.getByTestId("guild-tacticus-user-id-submit"))
 
     expect(await screen.findByTestId("guild-unregistered")).toBeInTheDocument()
     expect(updateTacticusIntegration).toHaveBeenCalledWith(
-      { tacticusApiKey: null, tacticusUserId: "user-123" },
+      {
+        tacticusApiKey: null,
+        tacticusUserId: "3f2504e0-4f89-11d3-9a0c-0305e82c3301",
+      },
       expect.anything()
     )
     // The current user is patched from the response, not refetched; the guild state is refetched.

@@ -1,7 +1,13 @@
 import { useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
 
-import { createCombinedGoals, goalQueries } from "@/entities/goal"
+import {
+  createCombinedGoals,
+  goalQueries,
+  isGoalLimitError,
+  MAX_GOALS_PER_TYPE,
+} from "@/entities/goal"
 import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
@@ -12,7 +18,12 @@ import {
   type LegendaryEventPlan,
   type LegendaryEventRun,
 } from "@/entities/legendary-event"
-import { createProject, projectQueries } from "@/entities/project"
+import {
+  createProject,
+  isProjectLimitError,
+  MAX_PROJECTS,
+  projectQueries,
+} from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
 import { upgradeChainGoalSpecs } from "./farming-days"
@@ -112,6 +123,7 @@ export async function writeLane(
  * failed ones. Nothing is rolled back.
  */
 export function usePlanCreate(eventId: string) {
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const { enqueue } = usePlanWriteQueue(eventId)
   const [items, setItems] = useState<CreateItem[]>([])
@@ -186,7 +198,18 @@ export function usePlanCreate(eventId: string) {
         setStatus(key, "done")
         return true
       } catch (error) {
-        setStatus(key, "failed", errorText(error))
+        // The account caps read as translated copy; other failures keep the server's text.
+        setStatus(
+          key,
+          "failed",
+          isGoalLimitError(error)
+            ? t("goals.limits.goalLimitReachedGeneric", {
+                max: MAX_GOALS_PER_TYPE,
+              })
+            : isProjectLimitError(error)
+              ? t("goals.limits.projectLimitReached", { max: MAX_PROJECTS })
+              : errorText(error)
+        )
         ok = false
         return false
       }

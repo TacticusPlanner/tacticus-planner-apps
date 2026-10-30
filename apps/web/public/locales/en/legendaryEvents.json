@@ -351,7 +351,8 @@
     "toasts": {
       "reloaded": "Your plan changed on another device and was reloaded. Try again.",
       "deleted": "{{name}} deleted.",
-      "error": "Your teams could not be saved."
+      "error": "Your teams could not be saved.",
+      "teamLimitReached": "A lane holds at most {{max}} teams. Delete one to add another."
     },
     "deleteConfirm": {
       "title": "Delete {{name}}?",
@@ -364,7 +365,8 @@
     "pointsLeft": "{{points}} points left · battles 1–{{depth}}",
     "pointsLeftNeedsDepth": "Set depth to see points left",
     "clearedThrough": "Already cleared through battle {{battle}}",
-    "pointsLeftCannotClear": "Can't clear battle 1 yet"
+    "pointsLeftCannotClear": "Can't clear battle 1 yet",
+    "laneFull": "This lane holds the maximum of {{max}} teams."
   },
   "objective": {
     "minHits_one": "Min {{count}} hit",

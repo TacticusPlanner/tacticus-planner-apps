@@ -8,7 +8,10 @@ import {
 } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
+import { ApiError } from "@/shared/api"
+
 import { legendaryEventPlanQueries } from "../api/legendary-event-plan.queries"
+import { MAX_TEAMS_PER_LANE } from "../lib/team-size"
 import {
   legendaryEventPlanConflict,
   type LegendaryEventPlan,
@@ -170,7 +173,11 @@ export function usePlanWriteQueue(eventId: string) {
         }
         if (state.confirmed) show(state.confirmed)
         // The server's message is English and technical: the toast stays translated.
-        toast.error(operation.errorMessage ?? t("teams.toasts.error"))
+        toast.error(
+          isTeamLimitError(error)
+            ? t("teams.toasts.teamLimitReached", { max: MAX_TEAMS_PER_LANE })
+            : (operation.errorMessage ?? t("teams.toasts.error"))
+        )
         return "error"
       } finally {
         setOutstanding(state, -1)
@@ -181,4 +188,13 @@ export function usePlanWriteQueue(eventId: string) {
   }
 
   return { query, enabled: isAuthenticated, pending, enqueue }
+}
+
+/** Whether `error` is the API's 400 `legendaryEventTeamLimitReached` (a lane holds at most
+ *  `MAX_TEAMS_PER_LANE` teams). */
+function isTeamLimitError(error: unknown): boolean {
+  return (
+    error instanceof ApiError &&
+    error.issueCode === "legendaryEventTeamLimitReached"
+  )
 }

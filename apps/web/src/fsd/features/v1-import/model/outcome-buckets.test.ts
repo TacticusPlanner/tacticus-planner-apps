@@ -52,6 +52,13 @@ describe("bucketForCode", () => {
     expect(bucketForCode("prerequisite_rejected")).toBe("failed")
   })
 
+  it("buckets the cap and truncation codes (harden-security-audit-findings)", () => {
+    expect(bucketForCode("goal_limit_reached")).toBe("notImported")
+    expect(bucketForCode("project_limit_reached")).toBe("failed")
+    expect(bucketForCode("too_many_goals")).toBe("notImported")
+    expect(bucketForCode("outcomes_truncated")).toBe("notImported")
+  })
+
   it("falls back an unrecognised code to notImported rather than hiding it as benign", () => {
     expect(bucketForCode("some_future_code")).toBe("notImported")
   })
@@ -103,6 +110,21 @@ describe("reasonKeyForCode", () => {
     )
     expect(reasonKeyForCode("prerequisite_rejected")).toBe(
       "goals.v1Import.reasons.prerequisiteRejected"
+    )
+  })
+
+  it("translates the cap and truncation codes", () => {
+    expect(reasonKeyForCode("goal_limit_reached")).toBe(
+      "goals.v1Import.reasons.goalLimitReached"
+    )
+    expect(reasonKeyForCode("project_limit_reached")).toBe(
+      "goals.v1Import.reasons.projectLimitReached"
+    )
+    expect(reasonKeyForCode("too_many_goals")).toBe(
+      "goals.v1Import.reasons.tooManyGoals"
+    )
+    expect(reasonKeyForCode("outcomes_truncated")).toBe(
+      "goals.v1Import.reasons.outcomesTruncated"
     )
   })
 

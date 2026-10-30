@@ -35,7 +35,9 @@ import { useMsal } from "@azure/msal-react"
 
 import {
   applyTacticusIntegrationResult,
+  isTacticusUserId,
   purgeAccount,
+  tacticusUserIdProblem,
   updateTacticusIntegration,
   useCurrentUser,
   type CurrentUser,
@@ -148,18 +150,26 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
       applyTacticusIntegrationResult(queryClient, result)
     },
   })
-  const errorMessage = updateIntegration.error
-    ? updateIntegration.error instanceof ApiError
-      ? updateIntegration.error.message
-      : t("manageAccount.integration.genericError")
-    : null
+  const trimmedUserId = removeUserId ? "" : userId.trim()
+  const userIdFormatInvalid =
+    trimmedUserId !== "" && !isTacticusUserId(trimmedUserId)
+  const userIdProblem = userIdFormatInvalid
+    ? "invalid"
+    : tacticusUserIdProblem(updateIntegration.error)
+  const errorMessage =
+    updateIntegration.error && !userIdProblem
+      ? updateIntegration.error instanceof ApiError
+        ? updateIntegration.error.message
+        : t("manageAccount.integration.genericError")
+      : null
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
+    if (userIdFormatInvalid) return
     updateIntegration.mutate({
       clearTacticusUserId: removeUserId,
       tacticusApiKey: apiKey.trim() || null,
-      tacticusUserId: removeUserId ? null : userId.trim() || null,
+      tacticusUserId: trimmedUserId || null,
     })
   }
 
@@ -216,7 +226,7 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
         </FieldContent>
       </Field>
 
-      <Field>
+      <Field data-invalid={Boolean(userIdProblem)}>
         <FieldLabel htmlFor="manage-account-user-id">
           {t("manageAccount.integration.userIdLabel")}
         </FieldLabel>
@@ -224,12 +234,18 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
           <Input
             id="manage-account-user-id"
             data-testid="manage-account-user-id-input"
+            aria-invalid={Boolean(userIdProblem)}
             autoComplete="off"
             disabled={removeUserId}
             placeholder={t("manageAccount.integration.userIdPlaceholder")}
             value={userId}
             onChange={(event) => setUserId(event.target.value)}
           />
+          {userIdProblem ? (
+            <FieldError data-testid="manage-account-user-id-error">
+              {t(`tacticusUserId.${userIdProblem}`)}
+            </FieldError>
+          ) : null}
         </FieldContent>
       </Field>
 
@@ -264,7 +280,7 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
 
       <Button
         data-testid="manage-account-integration-submit"
-        disabled={updateIntegration.isPending}
+        disabled={updateIntegration.isPending || userIdFormatInvalid}
         type="submit"
       >
         {updateIntegration.isPending ? <Spinner /> : null}
@@ -286,11 +302,24 @@ function AccountTab({
   const { t } = useTranslation()
   const [confirmation, setConfirmation] = useState("")
   const [scope, setScope] = useState<PurgeScope>("plannerData")
+  // Set when the sign-in account was asked to go but is still there: the planner data is already
+  // deleted, so instead of signing out at once the tab says so and offers the sign-out itself.
+  const [signInAccountKept, setSignInAccountKept] = useState(false)
+  const leave = async () => {
+    onPurged()
+    await signOut(instance, account.homeAccountId)
+  }
   const purge = useMutation({
     mutationFn: async () => {
-      await purgeAccount({ deleteSignInAccount: scope === "signInAccount" })
-      onPurged()
-      await signOut(instance, account.homeAccountId)
+      const deleteSignInAccount = scope === "signInAccount"
+      const { signInAccountDeleted } = await purgeAccount({
+        deleteSignInAccount,
+      })
+      if (deleteSignInAccount && !signInAccountDeleted) {
+        setSignInAccountKept(true)
+        return
+      }
+      await leave()
     },
   })
   const errorMessage = purge.error
@@ -305,6 +334,31 @@ function AccountTab({
 
   const handlePurge = () => {
     if (canPurge) purge.mutate()
+  }
+
+  if (signInAccountKept) {
+    return (
+      <div className="flex flex-col gap-4 pt-4">
+        <div
+          className="flex flex-col gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
+          data-testid="manage-account-sign-in-kept"
+          role="alert"
+        >
+          <p className="font-medium text-destructive">
+            {t("manageAccount.account.signInAccountKeptTitle")}
+          </p>
+          <p className="text-muted-foreground">
+            {t("manageAccount.account.signInAccountKeptDescription")}
+          </p>
+        </div>
+        <Button
+          data-testid="manage-account-sign-out"
+          onClick={() => void leave()}
+        >
+          {t("manageAccount.account.signOut")}
+        </Button>
+      </div>
+    )
   }
 
   return (

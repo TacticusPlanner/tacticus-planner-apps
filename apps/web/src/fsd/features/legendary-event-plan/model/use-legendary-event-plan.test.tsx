@@ -126,6 +126,45 @@ describe("useLegendaryEventPlan", () => {
     vi.mocked(toast.error).mockReset()
   })
 
+  it("does not send a team for a lane already holding 50, and toasts the cap", async () => {
+    const full = plan(
+      2,
+      Array.from({ length: 50 }, (_, index) => team(`t${index}`, index))
+    )
+    const { result, cached } = setup(full)
+
+    let outcome!: string
+    await act(async () => {
+      outcome = await result.current.createTeam("alpha", draft)
+    })
+
+    expect(outcome).toBe("error")
+    expect(api.create).not.toHaveBeenCalled()
+    expect(toast.error).toHaveBeenCalledOnce()
+    expect(vi.mocked(toast.error).mock.calls[0]?.[0]).toMatch(
+      /teamLimitReached|50/
+    )
+    expect(cached()).toEqual(full)
+  })
+
+  it("toasts the API's legendaryEventTeamLimitReached with its own message", async () => {
+    api.create.mockRejectedValue(
+      new ApiError(400, "Lane full.", {
+        issueCode: "legendaryEventTeamLimitReached",
+      })
+    )
+    const { result } = setup(plan(2, [team("a", 0)]))
+
+    await act(async () => {
+      await result.current.createTeam("alpha", draft)
+    })
+
+    expect(toast.error).toHaveBeenCalledOnce()
+    expect(vi.mocked(toast.error).mock.calls[0]?.[0]).toMatch(
+      /teamLimitReached|50/
+    )
+  })
+
   it("creates a team with the cached revision and the run, then adopts the returned plan", async () => {
     const saved = plan(3, [team("a", 0), team("new", 1)])
     api.create.mockResolvedValue(saved)

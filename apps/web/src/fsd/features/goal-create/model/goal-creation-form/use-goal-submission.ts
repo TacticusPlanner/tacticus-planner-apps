@@ -1,5 +1,11 @@
 import type { UnitId } from "@workspace/game-domain"
-import { goalTargetKeyOf, type ProjectMembership } from "@/entities/goal"
+import {
+  goalTargetKeyOf,
+  goalTypesOverLimit,
+  MAX_GOALS_PER_TYPE,
+  useGoalsById,
+  type ProjectMembership,
+} from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 import { useTranslation } from "react-i18next"
 import { useUnitName } from "@/shared/unit-name"
@@ -61,16 +67,27 @@ export function useGoalSubmission({
   // The in-flight slot is per account, whatever projects the goal joins. Each goal about to be created
   // conflicts only with an in-flight goal of the same unit and type at the same normalized end target —
   // distinct targets coexist (goal-target-milestones), so every spec of the request is checked.
+  const specs = buildCombinedGoalSpecs(specParams)
   const slotConflict = useGoalSlotConflict({
     entityType,
     entityId,
-    candidates: buildCombinedGoalSpecs(specParams).map((spec) => ({
+    candidates: specs.map((spec) => ({
       goalType: spec.goalType,
       targetKey: goalTargetKeyOf(spec),
     })),
   })
+  // The API caps non-archived goals per type (goalLimitReached); the loaded list holds exactly those,
+  // so a set that would pass the cap is stopped here rather than sent.
+  const { goalsById } = useGoalsById()
+  const overLimit = goalTypesOverLimit(
+    goalsById.values(),
+    specs.map((spec) => spec.goalType)
+  )
   const submissionAllowed =
-    canSubmit && !slotConflict.loading && !slotConflict.conflict
+    canSubmit &&
+    !slotConflict.loading &&
+    !slotConflict.conflict &&
+    overLimit.length === 0
 
   const { selectedProjects, perProjectEstimates, estimatedProjectIds } =
     useGoalCreationReview({
@@ -116,6 +133,18 @@ export function useGoalSubmission({
               slotConflict.conflict.entityId
             )
           ),
+        }
+      : null,
+    // Shown in the first goal type's card that is at the cap.
+    goalLimitIssue: overLimit[0]
+      ? {
+          kind: overLimit[0],
+          field: "target",
+          code: "goalLimit",
+          message: t("goals.limits.goalLimitReached", {
+            max: MAX_GOALS_PER_TYPE,
+            type: t(`goals.create.goalTypes.${overLimit[0]}`),
+          }),
         }
       : null,
     perProjectEstimates,

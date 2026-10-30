@@ -15,6 +15,12 @@ export {
   type LaunchCreateGoal,
 } from "./model/create-goal-launcher"
 export { buildCreateGoalSnapshot } from "./model/goal-snapshot-builder"
+export {
+  goalTypesOverLimit,
+  isGoalLimitError,
+  MAX_FARMING_LOCATIONS,
+  MAX_GOALS_PER_TYPE,
+} from "./model/goal-limits"
 
 export { StatusFilterSelect } from "./ui/status-filter-select"
 export { GoalTypeBadge } from "./ui/goal-type-badge"

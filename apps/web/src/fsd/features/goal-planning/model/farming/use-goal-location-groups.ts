@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import type { GoalDetail } from "@/entities/goal"
+import { MAX_FARMING_LOCATIONS, type GoalDetail } from "@/entities/goal"
 import type { UpgradeId } from "@workspace/game-domain"
 import type { useGoalCatalog } from "../shared/use-goal-catalog"
 
@@ -52,12 +52,16 @@ export function useGoalLocationGroups(
   const allLocations = [
     ...new Set(locationGroups.flatMap((group) => group.battleIds)),
   ]
+  // The API keeps at most MAX_FARMING_LOCATIONS overrides on one goal.
+  const tooManyLocations =
+    !isRank && selectedLocations.length > MAX_FARMING_LOCATIONS
   const overrideValid =
     isRank ||
     selectedLocations.length === 0 ||
-    locationGroups.every((group) =>
-      group.battleIds.some((id) => selectedLocations.includes(id))
-    )
+    (!tooManyLocations &&
+      locationGroups.every((group) =>
+        group.battleIds.some((id) => selectedLocations.includes(id))
+      ))
 
   return { isRank, isUnlock, allLocations, overrideValid }
 }

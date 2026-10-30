@@ -13,7 +13,11 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { updateTacticusIntegration } from "@/entities/account"
+import {
+  isTacticusUserId,
+  tacticusUserIdProblem,
+  updateTacticusIntegration,
+} from "@/entities/account"
 import { ApiError } from "@/shared/api"
 
 /**
@@ -34,17 +38,26 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
   })
   // Stays busy after success: the setup screen leaves once the refreshed account state arrives.
   const submitting = updateIntegration.isPending || updateIntegration.isSuccess
-  const errorMessage = updateIntegration.error
-    ? updateIntegration.error instanceof ApiError
-      ? updateIntegration.error.message
-      : t("onboarding.genericError")
-    : null
+  // A user-id problem (client-side format check, or the API's GUID/in-use answer) shows under the
+  // user-id field; anything else stays the form-level message.
+  const trimmedUserId = userId.trim()
+  const userIdFormatInvalid =
+    trimmedUserId !== "" && !isTacticusUserId(trimmedUserId)
+  const userIdProblem = userIdFormatInvalid
+    ? "invalid"
+    : tacticusUserIdProblem(updateIntegration.error)
+  const errorMessage =
+    updateIntegration.error && !userIdProblem
+      ? updateIntegration.error instanceof ApiError
+        ? updateIntegration.error.message
+        : t("onboarding.genericError")
+      : null
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
 
     const trimmedApiKey = apiKey.trim()
-    if (!trimmedApiKey) {
+    if (!trimmedApiKey || userIdFormatInvalid) {
       return
     }
 
@@ -52,7 +65,7 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
       tacticusApiKey: trimmedApiKey,
       // Null rather than empty: the API preserves an already-stored user id when the field is null,
       // and only clears it on an explicit clearTacticusUserId.
-      tacticusUserId: userId.trim() || null,
+      tacticusUserId: trimmedUserId || null,
     })
   }
 
@@ -92,7 +105,7 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
         </FieldContent>
       </Field>
 
-      <Field>
+      <Field data-invalid={Boolean(userIdProblem)}>
         <FieldLabel htmlFor="account-setup-user-id">
           {t("onboarding.signUp.userIdLabel")}
         </FieldLabel>
@@ -100,6 +113,7 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
           <Input
             id="account-setup-user-id"
             data-testid="account-setup-user-id-input"
+            aria-invalid={Boolean(userIdProblem)}
             autoComplete="off"
             value={userId}
             onChange={(event) => setUserId(event.target.value)}
@@ -107,6 +121,11 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
           <FieldDescription>
             {t("onboarding.signUp.userIdDescription")}
           </FieldDescription>
+          {userIdProblem ? (
+            <FieldError data-testid="account-setup-user-id-error">
+              {t(`tacticusUserId.${userIdProblem}`)}
+            </FieldError>
+          ) : null}
         </FieldContent>
       </Field>
 
@@ -118,7 +137,7 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
 
       <Button
         data-testid="account-setup-api-key-submit"
-        disabled={submitting || !apiKey.trim()}
+        disabled={submitting || !apiKey.trim() || userIdFormatInvalid}
         type="submit"
       >
         {submitting ? <Spinner /> : null}

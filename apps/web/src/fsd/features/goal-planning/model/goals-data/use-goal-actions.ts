@@ -8,6 +8,9 @@ import {
   deleteGoal,
   goalOrderConflict,
   goalQueries,
+  goalTypesOverLimit,
+  isGoalLimitError,
+  MAX_GOALS_PER_TYPE,
   updateGoalsStatus,
   type GoalDetail,
   type GoalListResponse,
@@ -165,9 +168,13 @@ export function useGoalActions(_onChanged?: () => void) {
         )
       : order
         ? t("goals.order.conflictTitle")
-        : error instanceof ApiError
-          ? error.message
-          : t("goals.toasts.actionError")
+        : isGoalLimitError(error)
+          ? t("goals.limits.goalLimitReachedGeneric", {
+              max: MAX_GOALS_PER_TYPE,
+            })
+          : error instanceof ApiError
+            ? error.message
+            : t("goals.toasts.actionError")
     toast.error(
       acting
         ? t("goals.toasts.statusConflict", {
@@ -196,6 +203,28 @@ export function useGoalActions(_onChanged?: () => void) {
     status: GoalStatus
   ) => {
     if (!isAuthenticated || targets.length === 0) return
+    // Leaving Archived counts toward the per-type cap (goalLimitReached): checked against the loaded
+    // non-archived list first, so a refused request is not sent.
+    if (status !== "Archived") {
+      const restoring = targets
+        .filter((target) => target.previousStatus === "Archived")
+        .flatMap((target) => cachedGoal(target.goalId)?.goalType ?? [])
+      const over = goalTypesOverLimit(
+        queryClient.getQueryData<GoalListResponse>(
+          goalQueries.list(false).queryKey
+        )?.goals ?? [],
+        restoring
+      )
+      if (over[0]) {
+        toast.error(
+          t("goals.limits.goalLimitReached", {
+            max: MAX_GOALS_PER_TYPE,
+            type: t(`goals.create.goalTypes.${over[0]}`),
+          })
+        )
+        return
+      }
+    }
     const goalIds = targets.map((target) => target.goalId)
     const optimistic = status === "Active" || status === "Paused"
     const touchesOrder =

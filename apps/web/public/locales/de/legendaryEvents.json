@@ -351,7 +351,8 @@
     "toasts": {
       "reloaded": "Dein Plan wurde auf einem anderen Gerät geändert und neu geladen. Versuche es erneut.",
       "deleted": "{{name}} gelöscht.",
-      "error": "Deine Teams konnten nicht gespeichert werden."
+      "error": "Deine Teams konnten nicht gespeichert werden.",
+      "teamLimitReached": "Eine Bahn fasst höchstens {{max}} Teams. Lösche eines, um ein weiteres hinzuzufügen."
     },
     "deleteConfirm": {
       "title": "{{name}} löschen?",
@@ -364,7 +365,8 @@
     "pointsLeft": "Noch {{points}} Punkte · Kämpfe 1–{{depth}}",
     "pointsLeftNeedsDepth": "Tiefe festlegen, um die verbleibenden Punkte zu sehen",
     "clearedThrough": "Bereits bis Kampf {{battle}} erfüllt",
-    "pointsLeftCannotClear": "Schafft Kampf 1 noch nicht"
+    "pointsLeftCannotClear": "Schafft Kampf 1 noch nicht",
+    "laneFull": "Diese Bahn enthält bereits die maximal {{max}} Teams."
   },
   "objective": {
     "minHits_one": "Mind. {{count}} Treffer",
