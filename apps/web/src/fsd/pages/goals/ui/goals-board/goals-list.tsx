@@ -53,6 +53,9 @@ function GoalsTable({
   onReorder,
   reorderEnabled = false,
   reorderPending = false,
+  menuMoves,
+  onMenuMove,
+  highlightedGoalId,
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
@@ -129,12 +132,15 @@ function GoalsTable({
                 ) : null}
                 <TableRow
                   className={cn(
-                    "h-14 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring",
+                    "h-14 transition-colors duration-700 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring data-[just-moved]:bg-accent",
                     reached && REACHED_ROW_CLASS,
                     fit && SEASON_FIT_ROW_ACCENT[fit.offset]
                   )}
                   data-dragging={sortable.isDragging || undefined}
                   data-goal-id={row.goalId}
+                  data-just-moved={
+                    highlightedGoalId === row.goalId || undefined
+                  }
                   data-reached={reached || undefined}
                   data-season-fit={fit?.offset}
                   data-testid="goal-row"
@@ -151,7 +157,9 @@ function GoalsTable({
                     levelPoolXpAvailable={levelPoolXpAvailable}
                     levelPotentialProgress={levelPotentialProgress}
                     metrics={metrics}
+                    moves={menuMoves?.get(row.goalId)}
                     onEdit={onEdit}
+                    onMenuMove={onMenuMove}
                     popoverOpen={openPopoverGoalId === row.goalId}
                     potentialProgress={potentialProgress}
                     onToggleSelected={onToggleSelected}

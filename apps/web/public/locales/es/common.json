@@ -960,8 +960,10 @@
       "pause": "Pausar",
       "resume": "Reanudar",
       "delete": "Eliminar",
+      "moveToTop": "Mover al principio",
       "moveUp": "Subir",
       "moveDown": "Bajar",
+      "movedTo": "Movido a la prioridad {{position}} de {{total}}.",
       "edit": "Editar"
     },
     "bulk": {

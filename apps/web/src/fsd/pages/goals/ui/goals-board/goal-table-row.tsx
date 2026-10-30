@@ -4,7 +4,11 @@ import { GripVertical } from "lucide-react"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { TableCell } from "@workspace/ui/components/table"
 
-import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "@/features/goal-planning"
+import {
+  NO_BLOCKERS,
+  UNKNOWN_PROGRESS,
+  type GoalMenuMoves,
+} from "@/features/goal-planning"
 import { useGoalCatalog } from "@/features/goal-planning"
 import { GoalRowActions } from ".//goal-row-actions"
 import { GoalResourceChips } from "../shared/goal-resource-chips"
@@ -53,7 +57,9 @@ type GoalRowCellsProps = Pick<
   | "cascadeContext"
   | "projectRemoval"
   | "seasonFit"
+  | "onMenuMove"
 > & {
+  moves: GoalMenuMoves | undefined
   row: NonNullable<GoalsListProps["rows"]>[number]
   selected: boolean
   reorderEnabled: boolean
@@ -81,6 +87,8 @@ export const GoalRowCells = memo(function GoalRowCells({
   cascadeContext,
   projectRemoval,
   seasonFit,
+  moves,
+  onMenuMove,
   onToggleSelected,
   selected,
   reorderEnabled,
@@ -180,6 +188,10 @@ export const GoalRowCells = memo(function GoalRowCells({
               cascadeContext={cascadeContext}
               onEdit={onEdit}
               projectRemoval={projectRemoval}
+              moves={moves}
+              onMove={(displacedGoalId) =>
+                onMenuMove?.(row.goalId, displacedGoalId)
+              }
               onOpenChange={(open) => {
                 if (open) setOpenPopoverGoalId(null)
               }}
@@ -280,8 +292,8 @@ export const GoalRowCells = memo(function GoalRowCells({
 
 /** Memo comparator: maps and `actions` are rebuilt on every page render (a pause/resume rebuilds the
  *  cascade context, estimates and `pendingIds` for the whole list), so compare only this row's slice
- *  of each. Functions other than `onToggleSelected` are omitted on purpose: `actions` and `onEdit`
- *  only act on ids/state read at call time, and `setOpenPopoverGoalId` is a state setter. */
+ *  of each. Functions other than `onToggleSelected` are omitted on purpose: `actions`, `onEdit` and
+ *  `onMenuMove` only act on ids/state read at call time (a move's target is the compared `moves`), and `setOpenPopoverGoalId` is a state setter. */
 function sameRowProps(a: GoalRowCellsProps, b: GoalRowCellsProps) {
   const id = a.row.goalId
   if (id !== b.row.goalId || a.row !== b.row) return false
@@ -293,6 +305,9 @@ function sameRowProps(a: GoalRowCellsProps, b: GoalRowCellsProps) {
     props.actions.pendingIds.has(id),
     props.onToggleSelected,
     props.dragHandle,
+    props.moves?.top,
+    props.moves?.up,
+    props.moves?.down,
   ]
   const perId = (props: GoalRowCellsProps) => [
     props.estimates?.get(id),
