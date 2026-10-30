@@ -107,10 +107,16 @@ export class PlayerDataHttpClient implements PlayerDataClient {
     path: string,
     init: RequestInit = {}
   ): Promise<Response> {
+    // Chunk paths come from the sync manifest; the token must only ever reach the API itself.
+    const url = new URL(path, this.baseUrl)
+    if (url.origin !== new URL(this.baseUrl).origin) {
+      throw new Error(`Refusing to send the access token to ${url.origin}`)
+    }
+
     const accessToken = await this.getAccessToken()
     const headers = new Headers(init.headers)
     headers.set("Authorization", `Bearer ${accessToken}`)
 
-    return fetch(new URL(path, this.baseUrl), { ...init, headers })
+    return fetch(url, { ...init, headers })
   }
 }

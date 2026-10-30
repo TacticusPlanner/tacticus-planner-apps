@@ -139,3 +139,24 @@ Identity-provider tokens SHALL be stored in the device's local storage, shared a
 
 - **WHEN** the user signs out
 - **THEN** no access token, refresh token or id token remains in site storage
+
+### Requirement: Signing out removes the account's local data
+
+Signing out, including the sign-out that follows an account purge, SHALL delete the browser's local copy of the account's data before leaving for the identity provider: the game-catalog and player-data databases, the in-memory local-data cache, and every localStorage entry whose key starts with `tp.session.`. Data that belongs to the account SHALL be stored under that prefix. Per-device preferences, such as theme and language, SHALL use other keys and are kept.
+
+#### Scenario: Import leftovers do not reach the next account
+
+- **GIVEN** a V1 import left material steps waiting on the Goals page
+- **WHEN** the user signs out and another account signs in on the same browser
+- **THEN** the Goals page does not show the previous account's steps
+
+#### Scenario: Other open tabs let go of the account's data
+
+- **GIVEN** the app is open in a second tab, possibly in the middle of a player-data sync
+- **WHEN** the user signs out in the first tab
+- **THEN** the second tab drops the local reads it holds, and its sync writes nothing into the player-data database
+
+#### Scenario: Preferences survive sign-out
+
+- **WHEN** the user signs out
+- **THEN** the chosen theme and language are still applied on the signed-out pages

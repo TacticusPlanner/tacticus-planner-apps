@@ -21,4 +21,24 @@ describe("PlayerDataHttpClient", () => {
     expect(init?.method).toBe("POST")
     expect(new Headers(init?.headers).get("Authorization")).toBe("Bearer token")
   })
+
+  it("never sends the token to a chunk URL on another origin", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+    const getAccessToken = vi.fn(async () => "token")
+    const client = new PlayerDataHttpClient(
+      "https://api.example.test",
+      getAccessToken
+    )
+
+    await expect(
+      client.getChunk({
+        key: "characters",
+        hash: "h1",
+        url: "https://evil.example.test/api/v1/player-data/characters",
+      })
+    ).rejects.toThrow("evil.example.test")
+
+    expect(getAccessToken).not.toHaveBeenCalled()
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
 })

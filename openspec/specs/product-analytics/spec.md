@@ -82,6 +82,11 @@ While a user is identified, the client SHALL report a page view (PostHog's `$pag
 - **WHEN** an identified user navigates to a route containing parameters or a query string
 - **THEN** the reported event identifies the route and its group, and does not include the parameter or query values
 
+#### Scenario: URLs the SDK adds on its own are redacted too
+
+- **WHEN** an identified user leaves or reaches a route containing parameters, or a web vitals metric is reported for it
+- **THEN** the previous-page path is reported as that page's route pattern, and every URL in the event, including those nested inside web vitals metrics, carries the route pattern or no query string, never the parameter or query values
+
 ### Requirement: Only declared events are captured
 
 The client SHALL report only events the product has explicitly declared. It SHALL NOT enable automatic capture of clicks, taps, form interactions, keystrokes, or input values, and SHALL NOT record or replay user sessions.
