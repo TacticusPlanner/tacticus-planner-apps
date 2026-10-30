@@ -47,6 +47,22 @@ describe("signOut", () => {
     expect(databasesAtRedirect).not.toContain("tacticus-planner-player-data")
   })
 
+  it("removes the account's own localStorage keys and keeps device preferences", async () => {
+    localStorage.setItem("tp.session.v1-import.pending-material-steps", "[]")
+    localStorage.setItem("theme", "dark")
+    const instance = {
+      getAllAccounts: () => [],
+      logoutRedirect: vi.fn().mockResolvedValue(undefined),
+    }
+
+    await signOut(instance as never, "account-1")
+
+    expect(
+      localStorage.getItem("tp.session.v1-import.pending-material-steps")
+    ).toBeNull()
+    expect(localStorage.getItem("theme")).toBe("dark")
+  })
+
   it("removes the device's account hint before redirecting", async () => {
     const logoutRedirect = vi.fn().mockResolvedValue(undefined)
     const instance = { getAllAccounts: () => [], logoutRedirect }

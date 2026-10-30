@@ -1,11 +1,12 @@
 import { useSyncExternalStore } from "react"
 import { z } from "zod"
 
-import { safeStorage } from "@/shared/lib"
+import { accountStoragePrefix, safeStorage } from "@/shared/lib"
 
 import type { MaterialStep } from "./outcome-buckets"
 
-const STORAGE_KEY = "v1-import.pending-material-steps"
+// The account's own import output, so sign-out removes it (accountStoragePrefix).
+const STORAGE_KEY = `${accountStoragePrefix}v1-import.pending-material-steps`
 
 const unitSchema = z.object({ entityType: z.string(), entityId: z.string() })
 const stepsSchema = z.array(

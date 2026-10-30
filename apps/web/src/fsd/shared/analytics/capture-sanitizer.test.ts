@@ -57,6 +57,79 @@ describe("sanitizeCapture", () => {
     )
   })
 
+  it("redacts the page URL nested in web vitals metrics", () => {
+    setReportedRoutePattern("/library/characters/:entityId")
+    const pageUrl =
+      "https://tacticusplanner.app/library/characters/ultraInceptorSgt?tab=2"
+
+    const { properties } = sanitizeCapture(
+      capture({
+        event: "$web_vitals",
+        properties: {
+          $current_url: pageUrl,
+          $web_vitals_LCP_event: {
+            name: "LCP",
+            $current_url: pageUrl,
+            navigationURL: pageUrl,
+          },
+        },
+      })
+    )
+
+    expect(properties.$web_vitals_LCP_event).toEqual({
+      name: "LCP",
+      $current_url: "https://tacticusplanner.app/library/characters/:entityId",
+      navigationURL: "https://tacticusplanner.app/library/characters/:entityId",
+    })
+  })
+
+  it("reports the previous page's route pattern, not its concrete path", () => {
+    setReportedRoutePattern("/legendary-events/:eventId/plan")
+    setReportedRoutePattern("/library/characters/:entityId")
+
+    const pageview = sanitizeCapture(
+      capture({
+        properties: {
+          $current_url:
+            "https://tacticusplanner.app/library/characters/ultraInceptorSgt",
+          $prev_pageview_pathname: "/legendary-events/shadowsun/plan",
+        },
+      })
+    )
+    const pageleave = sanitizeCapture(
+      capture({
+        event: "$pageleave",
+        properties: {
+          $current_url:
+            "https://tacticusplanner.app/library/characters/ultraInceptorSgt",
+          $prev_pageview_pathname: "/library/characters/ultraInceptorSgt",
+        },
+      })
+    )
+
+    expect(pageview.properties.$prev_pageview_pathname).toBe(
+      "/legendary-events/:eventId/plan"
+    )
+    expect(pageleave.properties.$prev_pageview_pathname).toBe(
+      "/library/characters/:entityId"
+    )
+  })
+
+  it("drops the previous path when no previous pattern was reported", () => {
+    setReportedRoutePattern("/home")
+
+    const { properties } = sanitizeCapture(
+      capture({
+        properties: {
+          $current_url: "https://tacticusplanner.app/home",
+          $prev_pageview_pathname: "/library/characters/ultraInceptorSgt",
+        },
+      })
+    )
+
+    expect(properties).not.toHaveProperty("$prev_pageview_pathname")
+  })
+
   it("leaves non-URL properties untouched", () => {
     const { properties } = sanitizeCapture(capture())
 
