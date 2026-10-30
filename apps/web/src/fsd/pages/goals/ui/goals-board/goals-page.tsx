@@ -32,7 +32,7 @@ import { useGoals } from "@/features/goal-planning"
 import { useGoalEditParam, useGoalsListFilters } from "@/features/goal-planning"
 import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
-import { useGoalsPageReorder } from "@/features/goal-planning"
+import { goalMenuMoves, useGoalsPageReorder } from "@/features/goal-planning"
 import { isGoalsListLoading } from "@/features/goal-planning"
 import { useProjects } from "@/entities/project"
 import { useGoalCatalog } from "@/features/goal-planning"
@@ -281,6 +281,9 @@ export function GoalsPage() {
   const {
     orderActions,
     handleReorder,
+    handleMenuMove,
+    menuMovePosition,
+    highlightedGoalId,
     reorderAvailable,
     reorderActive,
     toggleReorder,
@@ -294,6 +297,9 @@ export function GoalsPage() {
       reorderActive,
       toggleReorder,
     })
+  // Grouping is ignored on purpose: a row-menu move steps over the next goal in priority order among
+  // the rows the filters show, even one in another group.
+  const menuMoves = reorderAvailable ? goalMenuMoves(rows) : undefined
   const isLoading = isGoalsListLoading({
     goalsLoading: selectedGoals.isLoading,
     tab,
@@ -453,8 +459,11 @@ export function GoalsPage() {
                 levelChargedXp={insights.levelChargedXpByGoalId}
                 levelPoolXpAvailable={insights.levelPoolXpAvailableByGoalId}
                 levelPotentialProgress={insights.levelPotentialProgressByGoalId}
+                highlightedGoalId={highlightedGoalId}
+                menuMoves={menuMoves}
                 metrics={overviewMetrics}
                 mobileReorderActive={reorderActive}
+                onMenuMove={handleMenuMove}
                 onReorder={handleReorder}
                 onEdit={openEditGoal}
                 onSelectAllVisible={selectAllVisible}
@@ -476,6 +485,10 @@ export function GoalsPage() {
           ) : null
         )}
       </div>
+
+      <p aria-live="polite" className="sr-only" data-testid="goals-move-status">
+        {menuMovePosition ? t("goals.actions.movedTo", menuMovePosition) : null}
+      </p>
 
       <GoalsLateNotices
         hasActiveGoals={nonArchivedRows.some((row) => row.status === "Active")}

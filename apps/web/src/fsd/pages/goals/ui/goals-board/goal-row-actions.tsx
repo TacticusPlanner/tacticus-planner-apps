@@ -12,8 +12,11 @@ import {
 
 import type { GoalStatus } from "@/entities/goal"
 
-import type { useGoalActions } from "@/features/goal-planning"
-import type { GoalRow } from "@/features/goal-planning"
+import type {
+  GoalMenuMoves,
+  GoalRow,
+  useGoalActions,
+} from "@/features/goal-planning"
 import { DeleteGoalDialog } from ".//delete-goal-dialog"
 import { toggleGoalStatus, type CascadeContext } from "./goal-row-utils"
 import {
@@ -21,6 +24,14 @@ import {
   removalMovesRow,
   type ProjectRemoval,
 } from "./project-removal-flow"
+
+type MoveDirection = keyof GoalMenuMoves
+
+const MOVE_LABEL_KEYS = {
+  top: "goals.actions.moveToTop",
+  up: "goals.actions.moveUp",
+  down: "goals.actions.moveDown",
+} as const satisfies Record<MoveDirection, string>
 
 type Props = {
   row: GoalRow
@@ -40,9 +51,14 @@ type Props = {
   /** Present while the Goals page is scoped to a project: adds "Remove from this project" (or "Move to
    *  project" when it is the goal's only one) and names the project in the delete confirmation. */
   projectRemoval?: ProjectRemoval
+  /** The priority moves this row offers (`goalMenuMoves`). Absent offers none. */
+  moves?: GoalMenuMoves
+  /** Moves this goal onto the position `displacedGoalId` holds. */
+  onMove?: (displacedGoalId: string) => void
 }
 
-/** A goal row's single "…" menu, on both platforms: Edit, Pause or Resume, the scoped project's
+/** A goal row's single "…" menu, on both platforms: Edit, the priority moves (Move to top / up / down,
+ * each only where it has a target), Pause or Resume, the scoped project's
  * removal (only while the page is scoped to a project), then a destructive Delete gated behind
  * `DeleteGoalDialog`. Removal is an ordinary item that acts at once; Delete is account-wide and confirmed. Reaching a goal's target is computed automatically (see
  * `model/attainment/`), never a manual action here. */
@@ -54,6 +70,8 @@ export function GoalRowActions({
   reached = false,
   cascadeContext,
   projectRemoval,
+  moves,
+  onMove,
 }: Props) {
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -67,6 +85,16 @@ export function GoalRowActions({
       void actions.setStatus(goalId, next, row.status, [])
     }
   }
+
+  const moveItems = onMove
+    ? (
+        [
+          ["top", moves?.top],
+          ["up", moves?.up],
+          ["down", moves?.down],
+        ] as const
+      ).filter((item): item is readonly [MoveDirection, string] => !!item[1])
+    : []
 
   const canToggle =
     !reached && (row.status === "Active" || row.status === "Paused")
@@ -92,6 +120,19 @@ export function GoalRowActions({
           >
             {t("goals.actions.edit")}
           </DropdownMenuItem>
+          {moveItems.length > 0 ? <DropdownMenuSeparator /> : null}
+          {moveItems.map(([direction, displacedGoalId]) => (
+            <DropdownMenuItem
+              key={direction}
+              onSelect={() => onMove?.(displacedGoalId)}
+            >
+              {t(MOVE_LABEL_KEYS[direction])}
+            </DropdownMenuItem>
+          ))}
+          {/* Delete brings its own separator; only split the moves from items between them. */}
+          {moveItems.length > 0 && (canToggle || projectRemoval) ? (
+            <DropdownMenuSeparator />
+          ) : null}
           {canToggle && row.status === "Active" ? (
             <DropdownMenuItem
               data-testid={`goal-row-pause-${goalId}`}

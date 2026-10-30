@@ -118,9 +118,15 @@ vi.mock("./goals-list", () => ({
     reorderEnabled,
     mobileReorderActive,
     estimates,
+    menuMoves,
+    onMenuMove,
+    highlightedGoalId,
   }: {
     rows: { goalId: string }[]
     onReorder: (orderedIds: string[], movedId: string) => void
+    menuMoves?: ReadonlyMap<string, { top?: string; up?: string }>
+    onMenuMove: (goalId: string, displacedGoalId: string) => void
+    highlightedGoalId?: string | null
     reorderEnabled: boolean
     mobileReorderActive: boolean
     estimates?: ReadonlyMap<string, unknown>
@@ -133,7 +139,21 @@ vi.mock("./goals-list", () => ({
     >
       {rows.map((row, index) => (
         <span key={row.goalId}>
-          <span data-testid="plan-row">{row.goalId}</span>
+          <span
+            data-highlighted={String(highlightedGoalId === row.goalId)}
+            data-testid="plan-row"
+          >
+            {row.goalId}
+          </span>
+          {menuMoves?.get(row.goalId)?.up ? (
+            <button
+              data-testid={`menu-up-${row.goalId}`}
+              onClick={() =>
+                onMenuMove(row.goalId, menuMoves.get(row.goalId)!.up!)
+              }
+              type="button"
+            />
+          ) : null}
           {index > 0 ? (
             <button
               data-testid={`move-up-${row.goalId}`}
@@ -253,6 +273,51 @@ describe("GoalsPage reordering", () => {
       goalId: "e",
       displacedGoalId: "c",
     })
+  })
+
+  it("moves a goal up from its row menu across a group boundary (grouped by type, E's Move up displaces D)", async () => {
+    const user = userEvent.setup()
+    render(<GoalsPage />, { route: "/plan/goals" })
+    await user.click(screen.getByTestId("goals-group-by"))
+    await user.click(
+      await screen.findByRole("option", { name: "Group by type" })
+    )
+
+    fireEvent.click(screen.getByTestId("menu-up-e"))
+
+    expect(state.moveGoal).toHaveBeenCalledWith({
+      goalId: "e",
+      displacedGoalId: "d",
+    })
+    expect(
+      screen.getAllByTestId("plan-row").find((row) => row.textContent === "e")
+    ).toHaveAttribute("data-highlighted", "true")
+  })
+
+  it("moves a goal up from its row menu past goals the filter hides (visible A,C,E; E's Move up displaces C)", async () => {
+    const user = userEvent.setup()
+    render(<GoalsPage />, { route: "/plan/goals" })
+    await user.click(screen.getByTestId("goals-type-filter"))
+    await user.click(await screen.findByRole("option", { name: "Rank" }))
+
+    expect(screen.queryByTestId("menu-up-a")).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId("menu-up-e"))
+
+    expect(state.moveGoal).toHaveBeenCalledWith({
+      goalId: "e",
+      displacedGoalId: "c",
+    })
+  })
+
+  it("announces where a row-menu move put the goal", () => {
+    render(<GoalsPage />, { route: "/plan/goals" })
+
+    fireEvent.click(screen.getByTestId("menu-up-c"))
+
+    // The order stub doesn't apply the move, so the goal is announced where it still stands.
+    expect(screen.getByTestId("goals-move-status")).toHaveTextContent(
+      "Moved to priority 3 of 5."
+    )
   })
 
   it("lists goals in priority order, Active and Paused first, with no Sort control", () => {

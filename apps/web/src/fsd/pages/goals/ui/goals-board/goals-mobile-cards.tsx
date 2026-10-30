@@ -103,6 +103,9 @@ export function GoalsMobileCards({
   reorderEnabled = false,
   mobileReorderActive = false,
   reorderPending = false,
+  menuMoves,
+  onMenuMove,
+  highlightedGoalId,
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
@@ -209,10 +212,11 @@ export function GoalsMobileCards({
               ) : null}
               <li
                 className={cn(
-                  "flex flex-col gap-2 rounded-2xl border p-3 text-sm",
+                  "flex flex-col gap-2 rounded-2xl border p-3 text-sm transition-colors duration-700 data-[just-moved]:bg-accent",
                   reached && REACHED_ROW_CLASS,
                   seasonFitAccent(row.goalId)
                 )}
+                data-just-moved={highlightedGoalId === row.goalId || undefined}
                 data-reached={reached || undefined}
                 data-season-fit={seasonFit?.fits.get(row.goalId)?.offset}
                 data-testid="goal-row"
@@ -289,6 +293,10 @@ export function GoalsMobileCards({
                         onEdit={onEdit}
                         cascadeContext={cascadeContext}
                         projectRemoval={projectRemoval}
+                        moves={menuMoves?.get(row.goalId)}
+                        onMove={(displacedGoalId) =>
+                          onMenuMove?.(row.goalId, displacedGoalId)
+                        }
                         reached={reached}
                         row={row}
                       />

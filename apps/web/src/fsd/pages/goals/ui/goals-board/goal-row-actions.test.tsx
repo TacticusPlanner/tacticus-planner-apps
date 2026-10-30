@@ -34,7 +34,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 const statusResponse = { goals: [], orderRevision: 0 }
 
 import { useGoalActions } from "@/features/goal-planning"
-import type { GoalRow } from "@/features/goal-planning"
+import type { GoalMenuMoves, GoalRow } from "@/features/goal-planning"
 import type { CascadeContext } from "./goal-row-utils"
 import { GoalRowActions } from ".//goal-row-actions"
 
@@ -55,17 +55,23 @@ function Harness({
   goalRow = row(),
   reached,
   cascadeContext,
+  moves,
+  onMove,
 }: {
   goalRow?: GoalRow
   reached?: boolean
   cascadeContext?: CascadeContext
+  moves?: GoalMenuMoves
+  onMove?: (displacedGoalId: string) => void
 }) {
   const actions = useGoalActions()
   return (
     <GoalRowActions
       actions={actions}
       cascadeContext={cascadeContext}
+      moves={moves}
       onEdit={onEdit}
+      onMove={onMove}
       reached={reached}
       row={goalRow}
     />
@@ -178,6 +184,34 @@ describe("GoalRowActions", () => {
       expect(await menuItems(user)).toEqual(["edit", "delete"])
     }
   )
+
+  it("offers each priority move that has a target and moves onto it", async () => {
+    const user = userEvent.setup()
+    const onMove = vi.fn()
+    render(<Harness moves={{ top: "first", up: "prev" }} onMove={onMove} />)
+
+    await openMenu(user)
+    expect(
+      await screen.findByRole("menuitem", { name: "Move to top" })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole("menuitem", { name: "Move down" })
+    ).not.toBeInTheDocument()
+    await user.click(screen.getByRole("menuitem", { name: "Move up" }))
+
+    expect(onMove).toHaveBeenCalledExactlyOnceWith("prev")
+  })
+
+  it("offers no priority moves without any", async () => {
+    const user = userEvent.setup()
+    render(<Harness />)
+
+    await openMenu(user)
+    await screen.findByTestId("goal-row-delete-goal-1")
+    expect(
+      screen.queryByRole("menuitem", { name: /^Move/ })
+    ).not.toBeInTheDocument()
+  })
 
   it("renders no inline pause or resume icon buttons", () => {
     render(<Harness />)

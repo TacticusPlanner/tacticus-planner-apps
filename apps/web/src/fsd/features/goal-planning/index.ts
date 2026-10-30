@@ -8,6 +8,10 @@ export {
 export { isGoalsListLoading } from "./model/goals-data/goals-list-loading"
 export { useGoalsMobileModes } from "./model/goals-data/use-goals-mobile-modes"
 export { useGoalsPageReorder } from "./model/goals-data/use-goals-page-reorder"
+export {
+  goalMenuMoves,
+  type GoalMenuMoves,
+} from "./model/goal-order/menu-moves"
 export { useGoalsSelection } from "./model/goals-data/use-goals-selection"
 export {
   useGoalEditParam,

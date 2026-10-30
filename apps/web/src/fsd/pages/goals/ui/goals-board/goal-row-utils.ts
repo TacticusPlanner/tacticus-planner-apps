@@ -5,6 +5,7 @@ import type { Rarity } from "@workspace/game-domain"
 import type { GoalStatus } from "@/entities/goal"
 import type {
   ActiveSeasonFit,
+  GoalMenuMoves,
   GoalOverviewMetrics,
 } from "@/features/goal-planning"
 import {
@@ -110,6 +111,12 @@ export type GoalsListProps = {
   /** While true, the drag surface ignores drops — closes the race a second drag could otherwise
    *  cause while the previous drop's reorder mutation is still in flight. */
   reorderPending?: boolean
+  /** Row-menu priority moves per goal id (`goalMenuMoves`); a row absent from it offers none. */
+  menuMoves?: ReadonlyMap<string, GoalMenuMoves>
+  /** A row-menu move: `goalId` takes the position `displacedGoalId` holds. */
+  onMenuMove?: (goalId: string, displacedGoalId: string) => void
+  /** The goal just moved from its row menu, highlighted briefly so the move can be seen. */
+  highlightedGoalId?: string | null
   /** Opens the Edit goal dialog for a goal (the row's Edit action). */
   onEdit?: (goalId: string) => void
   /** Priority-shared plan estimate per goal id (plan §16 phase 4) — absent, or `null` for a goal
