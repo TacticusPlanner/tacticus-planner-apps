@@ -7,14 +7,13 @@ import {
   buildGuildRaidRosterInvestment,
 } from "./build-guild-raid-exact-readiness-view"
 import { createGuildRaidMetaPresentationResolver } from "./resolve-guild-raid-meta"
-import { resolveGuildRaidExactReadiness } from "./resolve-guild-raid-exact-readiness"
 
 function heroSlots(heroIds: string[]) {
   return heroIds.map((heroId) => ({
     heroId,
-    roleId: "flex",
-    essential: false,
-    replacementCharacterIds: [],
+    roleId: heroId === "heroA" ? "signature" : "flex",
+    essential: heroId === "heroA",
+    replacementCharacterIds: heroId === "heroB" ? ["heroZ"] : [],
   }))
 }
 
@@ -40,8 +39,17 @@ const meta: GameCatalogGuildRaidMeta = {
           kind: "meta",
           heroSlots: heroSlots(["heroA", "heroB", "heroC", "heroD", "heroE"]),
           mowId: "mowX",
-          mowReplacementIds: [],
+          mowReplacementIds: ["mowY"],
           compIds: ["comp1"],
+          efficiency: 1.3,
+        },
+        {
+          id: "Boss1-alternate",
+          kind: "alternate",
+          heroSlots: heroSlots(["heroE", "heroD", "heroC", "heroB", "heroA"]),
+          mowId: "mowX",
+          mowReplacementIds: [],
+          compIds: [],
           efficiency: 1,
         },
       ],
@@ -56,50 +64,72 @@ function presentation() {
     charactersById: new Map([
       ["heroA", { id: "heroA", name: "Hero A" }],
       ["heroB", { id: "heroB", name: "Hero B" }],
+      ["heroZ", { id: "heroZ", name: "Hero Z" }],
     ]),
-    mowsById: new Map([["mowX", { id: "mowX", name: "Mow X" }]]),
+    mowsById: new Map([
+      ["mowX", { id: "mowX", name: "Mow X" }],
+      ["mowY", { id: "mowY", name: "Mow Y" }],
+    ]),
     bossName: (_id, fallback) => fallback,
     roleLabel: (_id, fallback) => fallback,
     kindLabel: (_id, fallback) => fallback,
   })
 }
 
+const investment = (rank: string, progression: string) => ({
+  xpLevel: 50,
+  rank: rank as never,
+  progression: progression as never,
+  activeAbilityLevel: 12,
+  passiveAbilityLevel: 8,
+})
+
+const roster = {
+  ownedCharacterIds: new Set(["heroA", "heroC", "heroZ"]),
+  ownedMowIds: new Set(["mowY"]),
+  investmentByCharacterId: new Map([
+    ["heroA", investment("Gold2", "Rare:FourStars")],
+    ["heroC", investment("Gold2", "Rare:FourStars")],
+    ["heroZ", investment("Gold2", "Rare:FourStars")],
+  ]),
+  investmentByMowId: new Map([["mowY", investment("Stone1", "Common:None")]]),
+}
+
+const threshold = {
+  progression: "Rare:FourStars" as never,
+  requiredRank: "Gold2" as never,
+  requiredRankIndex: 1,
+  requiredProgressionIndex: 1,
+  requiredAbilityLevel: 1,
+}
+
 describe("buildGuildRaidExactReadinessView", () => {
-  it("passes through absentMeta and noBossRecommendation unchanged", () => {
-    expect(
-      buildGuildRaidExactReadinessView({
-        readiness: { status: "absentMeta" },
-        presentation: presentation(),
-        meta,
-        investmentByCharacterId: new Map(),
-        investmentByMowId: new Map(),
-      })
-    ).toEqual({ status: "absentMeta" })
+  it("separates an absent dataset from a boss without recommendations", () => {
+    const base = { presentation: presentation(), roster, threshold }
 
     expect(
       buildGuildRaidExactReadinessView({
-        readiness: { status: "noBossRecommendation" },
-        presentation: presentation(),
+        ...base,
+        bossUnitSetId: "Boss1",
+        meta: null,
+      })
+    ).toEqual({ status: "absentMeta" })
+    expect(
+      buildGuildRaidExactReadinessView({
+        ...base,
+        bossUnitSetId: "Unknown",
         meta,
-        investmentByCharacterId: new Map(),
-        investmentByMowId: new Map(),
       })
     ).toEqual({ status: "noBossRecommendation" })
   })
 
-  it("resolves ideal lineups without ownership when the roster is missing", () => {
-    const readiness = resolveGuildRaidExactReadiness({
+  it("shows ideal lineups with every authored option but no ownership when the roster is missing", () => {
+    const view = buildGuildRaidExactReadinessView({
       bossUnitSetId: "Boss1",
       meta,
-      roster: undefined,
-    })
-
-    const view = buildGuildRaidExactReadinessView({
-      readiness,
       presentation: presentation(),
-      meta,
-      investmentByCharacterId: new Map(),
-      investmentByMowId: new Map(),
+      roster: undefined,
+      threshold,
     })
 
     expect(view.status).toBe("missingRoster")
@@ -110,147 +140,110 @@ describe("buildGuildRaidExactReadinessView", () => {
       url: expect.any(String),
     })
     expect(view.updatedOn).toBe(meta.updatedOn)
-    expect(view.recommendations).toHaveLength(1)
-    expect(view.recommendations[0]!.classification).toBeUndefined()
-    expect(
-      view.recommendations[0]!.heroes.every((h) => h.owned === undefined)
-    ).toBe(true)
-    expect(view.recommendations[0]!.heroes.map((h) => h.id)).toEqual([
+    expect(view.threshold).toBeNull()
+
+    const [recommendation] = view.recommendations
+    expect(recommendation).toMatchObject({
+      kind: { id: "meta", label: "meta" },
+      efficiency: 1.3,
+    })
+    expect(recommendation!.status).toBeUndefined()
+    expect(recommendation!.teamReadiness).toBeUndefined()
+    expect(recommendation!.slots.map((slot) => slot.ideal.id)).toEqual([
       "heroA",
       "heroB",
       "heroC",
       "heroD",
       "heroE",
+      "mowX",
     ])
+    expect(recommendation!.slots.every((slot) => slot.picked === null)).toBe(
+      true
+    )
+    expect(
+      recommendation!.slots[1]!.options.map((option) => [
+        option.unit.name,
+        option.isIdeal,
+        option.state,
+      ])
+    ).toEqual([
+      ["Hero B", true, undefined],
+      ["Hero Z", false, undefined],
+    ])
+    expect(
+      recommendation!.slots[5]!.options.map((option) => option.unit.id)
+    ).toEqual(["mowX", "mowY"])
   })
 
-  it("merges owned/missing state and investment facts without reordering or scoring", () => {
-    const readiness = resolveGuildRaidExactReadiness({
+  it("resolves picks, substitutes, names and investment for every slot", () => {
+    const view = buildGuildRaidExactReadinessView({
       bossUnitSetId: "Boss1",
       meta,
-      roster: {
-        ownedCharacterIds: new Set(["heroA", "heroC"]),
-        ownedMowIds: new Set(["mowX"]),
-      },
-    })
-
-    const view = buildGuildRaidExactReadinessView({
-      readiness,
       presentation: presentation(),
-      meta,
-      investmentByCharacterId: new Map([
-        [
-          "heroA",
-          {
-            xpLevel: 50,
-            rank: "Gold2" as never,
-            progression: "Rare:FourStars" as never,
-            activeAbilityLevel: 12,
-            passiveAbilityLevel: 8,
-          },
-        ],
-      ]),
-      investmentByMowId: new Map([
-        [
-          "mowX",
-          {
-            xpLevel: 10,
-            progression: "Common:None" as never,
-            activeAbilityLevel: 1,
-            passiveAbilityLevel: 1,
-          },
-        ],
-      ]),
+      roster,
+      threshold,
     })
 
     expect(view.status).toBe("populated")
     if (view.status !== "populated") return
-    const [recommendation] = view.recommendations
-    expect(recommendation!.classification).toBe("partial")
-    expect(recommendation!.heroes.map((h) => [h.id, h.owned])).toEqual([
-      ["heroA", true],
-      ["heroB", false],
-      ["heroC", true],
-      ["heroD", false],
-      ["heroE", false],
+    expect(view.threshold).toBe(threshold)
+    // Authored order survives; nothing is ranked by readiness.
+    expect(view.recommendations.map((r) => r.id)).toEqual([
+      "Boss1-meta",
+      "Boss1-alternate",
     ])
-    expect(recommendation!.heroes[0]!.investment).toEqual({
-      xpLevel: 50,
-      rank: "Gold2",
-      progression: "Rare:FourStars",
-      activeAbilityLevel: 12,
-      passiveAbilityLevel: 8,
-    })
-    expect(recommendation!.heroes[2]!.investment).toBeUndefined()
-    expect(recommendation!.mow).toMatchObject({
-      id: "mowX",
-      owned: true,
-      investment: {
-        xpLevel: 10,
-        progression: "Common:None",
-        activeAbilityLevel: 1,
-        passiveAbilityLevel: 1,
+
+    const [recommendation] = view.recommendations
+    expect(recommendation!.status).toBe("substitutes")
+    expect(recommendation!.teamReadiness).toBeGreaterThan(0)
+    expect(
+      recommendation!.slots.map((slot) => [
+        slot.role?.id,
+        slot.essential,
+        slot.picked?.id ?? null,
+        slot.isSubstitute,
+      ])
+    ).toEqual([
+      ["signature", true, "heroA", false],
+      ["flex", false, "heroZ", true],
+      ["flex", false, "heroC", false],
+      ["flex", false, null, false],
+      ["flex", false, null, false],
+      [undefined, false, "mowY", true],
+    ])
+
+    const substituteSlot = recommendation!.slots[1]!
+    expect(substituteSlot.ideal).toMatchObject({ name: "Hero B", owned: false })
+    expect(substituteSlot.options[1]).toMatchObject({
+      unit: {
+        id: "heroZ",
+        owned: true,
+        investment: expect.objectContaining({ rank: "Gold2" }),
       },
+      state: "picked",
+      readiness: expect.any(Number),
     })
     expect(recommendation!.comps).toEqual([
       { id: "comp1", signature: expect.objectContaining({ id: "heroA" }) },
     ])
   })
 
-  it("never uses Comp membership to invent a replacement or reorder recommendations", () => {
-    const multiMeta: GameCatalogGuildRaidMeta = {
-      ...meta,
-      bosses: [
-        {
-          bossUnitSetId: "Boss1",
-          primeUnitSetIds: [],
-          recommendations: [
-            meta.bosses[0]!.recommendations[0]!,
-            {
-              id: "Boss1-alternate",
-              kind: "alternate",
-              heroSlots: heroSlots([
-                "heroE",
-                "heroD",
-                "heroC",
-                "heroB",
-                "heroA",
-              ]),
-              mowId: "mowX",
-              mowReplacementIds: [],
-              compIds: [],
-              efficiency: 1,
-            },
-          ],
-        },
-      ],
-    }
-    const readiness = resolveGuildRaidExactReadiness({
-      bossUnitSetId: "Boss1",
-      meta: multiMeta,
-      roster: {
-        ownedCharacterIds: new Set(["heroA"]),
-        ownedMowIds: new Set(),
-      },
-    })
-
+  it("keeps picks and status but withholds percentages without a threshold", () => {
     const view = buildGuildRaidExactReadinessView({
-      readiness,
+      bossUnitSetId: "Boss1",
+      meta,
       presentation: presentation(),
-      meta: multiMeta,
-      investmentByCharacterId: new Map(),
-      investmentByMowId: new Map(),
+      roster,
+      threshold: null,
     })
 
-    expect(view.status).toBe("populated")
-    if (view.status !== "populated") return
-    expect(view.recommendations.map((r) => r.kind)).toEqual([
-      "meta",
-      "alternate",
-    ])
-    expect(
-      view.recommendations.every((r) => r.classification === "partial")
-    ).toBe(true)
+    if (view.status !== "populated") throw new Error(view.status)
+    const [recommendation] = view.recommendations
+    expect(view.threshold).toBeNull()
+    expect(recommendation!.status).toBe("substitutes")
+    expect(recommendation!.teamReadiness).toBeUndefined()
+    expect(recommendation!.slots[1]!.picked?.id).toBe("heroZ")
+    expect(recommendation!.slots[1]!.readiness).toBeUndefined()
   })
 })
 

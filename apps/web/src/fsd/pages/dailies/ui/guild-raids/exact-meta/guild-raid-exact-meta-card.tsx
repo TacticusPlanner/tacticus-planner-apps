@@ -1,177 +1,268 @@
+import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@workspace/ui/components/accordion"
 import { Badge } from "@workspace/ui/components/badge"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
+import { Progress } from "@workspace/ui/components/progress"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, RankBadge } from "@/shared/ui"
 import type {
+  GuildRaidExactReadinessOptionView,
   GuildRaidExactReadinessRecommendationView,
+  GuildRaidExactReadinessSlotView,
   GuildRaidExactReadinessUnitView,
-  GuildRaidMetaSourcePresentation,
-  GuildRaidRecommendationReadiness,
-  GuildRaidSlotCandidate,
 } from "@/entities/guild-raid-meta"
 
-const classificationBadgeVariant = {
+const statusBadgeVariant = {
   ready: "default",
-  partial: "secondary",
-  unavailable: "outline",
+  substitutes: "secondary",
+  missingEssentials: "outline",
 } as const satisfies Record<
-  NonNullable<GuildRaidExactReadinessRecommendationView["classification"]>,
+  NonNullable<GuildRaidExactReadinessRecommendationView["status"]>,
   "default" | "secondary" | "outline"
 >
 
-function ReadinessBadge({
-  percent,
-  testId,
+function ReadinessBar({
+  readiness,
+  className,
 }: {
-  percent: number
-  testId: string
+  readiness: number
+  className?: string
 }) {
   return (
-    <span
-      data-testid={testId}
-      className="rounded-full bg-background px-1.5 py-0.5 text-[10px] font-semibold tabular-nums"
-    >
-      {percent}%
-    </span>
+    <div className={cn("flex w-full items-center gap-2", className)}>
+      <Progress value={readiness} className="h-1.5" aria-hidden />
+      <span className="w-9 shrink-0 text-right text-xs tabular-nums">
+        {readiness}%
+      </span>
+    </div>
   )
 }
 
-function UnitAvatar({
+function UnitPortrait({
   unit,
-  size,
-  testIdPrefix,
-  readinessPercent,
+  missing,
+  className,
 }: {
   unit: GuildRaidExactReadinessUnitView
-  size: "sm" | "md"
-  testIdPrefix: string
-  readinessPercent?: number
+  missing: boolean
+  className?: string
+}) {
+  return (
+    <EntityIcon
+      src={unit.portraitUrl}
+      alt=""
+      className={cn(
+        "shrink-0 rounded-full border",
+        missing && "border-dashed opacity-40 grayscale",
+        className
+      )}
+    />
+  )
+}
+
+function useSlotLabel() {
+  const { t } = useTranslation("dailies")
+  return (slot: GuildRaidExactReadinessSlotView) =>
+    slot.kind === "mow"
+      ? t("guildRaids.exactMeta.mow")
+      : (slot.role?.label ?? "")
+}
+
+/** The line under a slot's name: who the substitute stands in for, or why the slot is empty. */
+function SlotNote({ slot }: { slot: GuildRaidExactReadinessSlotView }) {
+  const { t } = useTranslation("dailies")
+
+  if (slot.picked && slot.isSubstitute) {
+    return <>{t("guildRaids.exactMeta.forIdeal", { name: slot.ideal.name })}</>
+  }
+  if (!slot.picked && slot.ideal.owned === false) {
+    return (
+      <>
+        {slot.options.length > 1
+          ? t("guildRaids.exactMeta.noFreeOption")
+          : t("guildRaids.exactMeta.optionState.notOwned")}
+      </>
+    )
+  }
+  return null
+}
+
+function SlotTile({
+  slot,
+  index,
+  expanded,
+  panelId,
+  isMobile,
+  onToggle,
+}: {
+  slot: GuildRaidExactReadinessSlotView
+  index: number
+  expanded: boolean
+  panelId: string
+  isMobile: boolean
+  onToggle: () => void
 }) {
   const { t } = useTranslation("dailies")
-  const ownedState =
-    unit.owned === undefined ? "unknown" : unit.owned ? "owned" : "missing"
+  const slotLabel = useSlotLabel()
+  const shown = slot.picked ?? slot.ideal
+  const empty = slot.picked === null && slot.ideal.owned === false
+
+  const role = (
+    <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+      {slotLabel(slot)}
+      {slot.essential ? (
+        <span
+          className="text-primary"
+          title={t("guildRaids.exactMeta.essential")}
+        >
+          {" "}
+          ●
+        </span>
+      ) : null}
+    </span>
+  )
+  const note = <SlotNote slot={slot} />
 
   return (
-    <div
-      className="flex w-16 flex-col items-center gap-1"
-      data-testid={`${testIdPrefix}-${ownedState}`}
+    <button
+      type="button"
+      data-testid={`guild-raid-exact-meta-slot-${index}`}
+      aria-expanded={expanded}
+      aria-controls={panelId}
+      onClick={onToggle}
+      className={cn(
+        "rounded-xl border bg-card text-left transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+        expanded && "border-primary ring-1 ring-primary",
+        empty && "border-dashed",
+        isMobile
+          ? "grid w-full grid-cols-[auto_1fr_5.5rem] items-center gap-3 px-3 py-2"
+          : "flex min-w-0 flex-col items-center gap-1.5 p-2.5 text-center"
+      )}
     >
-      <div className="relative">
-        <EntityIcon
-          src={unit.portraitUrl}
-          alt={unit.name}
+      {isMobile ? null : role}
+      <UnitPortrait
+        unit={shown}
+        missing={empty}
+        className={isMobile ? "size-9" : "size-12"}
+      />
+      <span className={cn("flex min-w-0 flex-col", !isMobile && "w-full")}>
+        {isMobile ? role : null}
+        <span
           className={cn(
-            "rounded-full border",
-            size === "sm" ? "size-8" : "size-12",
-            unit.owned === false && "opacity-40 grayscale"
+            "truncate text-sm font-medium",
+            empty && "text-muted-foreground"
           )}
-        />
-        {readinessPercent !== undefined ? (
-          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2">
-            <ReadinessBadge
-              percent={readinessPercent}
-              testId={`${testIdPrefix}-readiness`}
-            />
-          </span>
-        ) : null}
-      </div>
-      <span className="w-full truncate text-center text-xs">{unit.name}</span>
-      <span className="sr-only">
-        {t(`guildRaids.exactMeta.ownership.${ownedState}`)}
+        >
+          {shown.name}
+        </span>
+        <span className="truncate text-xs text-muted-foreground">{note}</span>
       </span>
-      {unit.owned && unit.investment?.rank ? (
-        <RankBadge
-          rank={unit.investment.rank}
-          showLabel={false}
-          className="scale-90"
-        />
-      ) : null}
-    </div>
+      {slot.readiness === undefined ? (
+        isMobile ? (
+          <span />
+        ) : null
+      ) : (
+        <ReadinessBar readiness={slot.readiness} />
+      )}
+    </button>
   )
 }
 
-function CandidateComparison({
-  slotIndex,
-  candidates,
+function OptionRow({
+  option,
+  slots,
 }: {
-  slotIndex: number
-  candidates: GuildRaidSlotCandidate[]
+  option: GuildRaidExactReadinessOptionView
+  slots: GuildRaidExactReadinessSlotView[]
 }) {
   const { t } = useTranslation("dailies")
+  const slotLabel = useSlotLabel()
+  const inTeamSlot =
+    option.inTeamSlotIndex === undefined
+      ? undefined
+      : slots[option.inTeamSlotIndex]
 
-  if (candidates.length === 0) return null
+  const stateText = !option.state
+    ? null
+    : option.state === "inTeam" && inTeamSlot
+      ? t("guildRaids.exactMeta.optionState.inTeam", {
+          slot: slotLabel(inTeamSlot),
+        })
+      : t(`guildRaids.exactMeta.optionState.${option.state}`)
+
+  return (
+    <li
+      className="grid grid-cols-[auto_1fr_auto] items-center gap-3 py-2"
+      data-testid={`guild-raid-exact-meta-option-${option.unit.id}`}
+    >
+      <UnitPortrait
+        unit={option.unit}
+        missing={option.unit.owned === false}
+        className="size-9"
+      />
+      <span className="flex min-w-0 flex-col">
+        <span className="flex flex-wrap items-center gap-1.5">
+          <span className="truncate text-sm font-medium">
+            {option.unit.name}
+          </span>
+          {option.isIdeal ? (
+            <Badge variant="outline" className="h-4 px-1.5 text-[10px]">
+              {t("guildRaids.exactMeta.ideal")}
+            </Badge>
+          ) : null}
+        </span>
+        {stateText ? (
+          <span className="text-xs text-muted-foreground">{stateText}</span>
+        ) : null}
+      </span>
+      <span className="flex w-28 items-center justify-end gap-2">
+        {option.unit.owned && option.unit.investment?.rank ? (
+          <RankBadge
+            rank={option.unit.investment.rank}
+            showLabel={false}
+            tooltip
+            iconClassName="size-4"
+          />
+        ) : null}
+        {option.readiness === undefined ? null : (
+          <ReadinessBar readiness={option.readiness} className="w-20" />
+        )}
+      </span>
+    </li>
+  )
+}
+
+function OptionsPanel({
+  id,
+  slot,
+  slots,
+}: {
+  id: string
+  slot: GuildRaidExactReadinessSlotView
+  slots: GuildRaidExactReadinessSlotView[]
+}) {
+  const { t } = useTranslation("dailies")
+  const slotLabel = useSlotLabel()
 
   return (
     <div
-      className="flex flex-wrap items-center gap-1.5 text-xs"
-      data-testid={`guild-raid-exact-meta-candidates-${slotIndex}`}
+      id={id}
+      role="region"
+      aria-label={t("guildRaids.exactMeta.slotOptions", {
+        slot: slotLabel(slot),
+      })}
+      className="rounded-xl border bg-muted/40 px-3 py-2"
+      data-testid="guild-raid-exact-meta-options"
     >
-      <span className="text-muted-foreground">
-        {t("guildRaids.exactMeta.candidatesLabel")}
-      </span>
-      {candidates.map((candidate) => (
-        <Badge
-          key={candidate.characterId}
-          variant={candidate.isSelected ? "default" : "outline"}
-          className="gap-1"
-          data-testid={`guild-raid-exact-meta-candidate-${candidate.characterId}`}
-        >
-          {candidate.characterId} · {candidate.readiness}%
-        </Badge>
-      ))}
-    </div>
-  )
-}
-
-function CompsAndSource({
-  comps,
-  source,
-  updatedOn,
-}: {
-  comps: GuildRaidExactReadinessRecommendationView["comps"]
-  source: GuildRaidMetaSourcePresentation
-  updatedOn: string
-}) {
-  const { t } = useTranslation("dailies")
-
-  return (
-    <div className="flex flex-col gap-2">
-      {comps.length > 0 ? (
-        <div
-          className="flex flex-wrap items-center gap-2"
-          data-testid="guild-raid-exact-meta-comps"
-        >
-          <span className="text-xs text-muted-foreground">
-            {t("guildRaids.exactMeta.compsLabel")}
-          </span>
-          {comps.map((comp) => (
-            <Badge key={comp.id} variant="outline" className="gap-1">
-              <EntityIcon
-                src={comp.signature.portraitUrl}
-                alt=""
-                className="size-4"
-              />
-              {comp.signature.name}
-            </Badge>
-          ))}
-        </div>
-      ) : null}
-      <p
-        className="text-xs text-muted-foreground"
-        data-testid="guild-raid-exact-meta-source"
-      >
-        {t("guildRaids.exactMeta.sourceLabel", { name: source.name })}
-        {" · "}
-        {t("guildRaids.exactMeta.updatedLabel", { date: updatedOn })}
+      <p className="pt-1 text-xs font-medium text-muted-foreground">
+        {t("guildRaids.exactMeta.slotOptions", { slot: slotLabel(slot) })}
       </p>
+      <ul className="divide-y">
+        {slot.options.map((option) => (
+          <OptionRow key={option.unit.id} option={option} slots={slots} />
+        ))}
+      </ul>
     </div>
   )
 }
@@ -179,154 +270,105 @@ function CompsAndSource({
 export function GuildRaidExactMetaCard({
   isMobile,
   recommendation,
-  source,
-  updatedOn,
-  readiness,
 }: {
   isMobile: boolean
   recommendation: GuildRaidExactReadinessRecommendationView
-  source: GuildRaidMetaSourcePresentation
-  updatedOn: string
-  /** Investment-readiness percentages for this recommendation — absent when the live current step is
-   * unavailable (see `useGuildRaidInvestmentReadiness`'s "unavailable" state), in which case the card
-   * falls back to the plain ownership display below without fabricating a percentage. */
-  readiness?: GuildRaidRecommendationReadiness
 }) {
   const { t } = useTranslation("dailies")
-  const { kind, heroes, mow, comps, classification } = recommendation
-  const missingCount = heroes.filter((hero) => hero.owned === false).length
+  const panelId = useId()
+  const [openSlot, setOpenSlot] = useState<number | null>(null)
+  const { slots, status, teamReadiness, comps, efficiency } = recommendation
 
-  const kindBadge = (
-    <Badge
-      data-testid="guild-raid-exact-meta-kind-badge"
-      variant={kind === "meta" ? "default" : "outline"}
-    >
-      {t(`guildRaids.exactMeta.kind.${kind}`, { defaultValue: kind })}
-    </Badge>
-  )
+  const toggle = (index: number) =>
+    setOpenSlot((current) => (current === index ? null : index))
+  const openSlotView = openSlot === null ? undefined : slots[openSlot]
 
-  const classificationBadge = (
-    <Badge
-      data-testid="guild-raid-exact-meta-classification-badge"
-      variant={
-        classification ? classificationBadgeVariant[classification] : "outline"
-      }
-    >
-      {t(`guildRaids.exactMeta.readiness.${classification ?? "unknown"}`)}
-    </Badge>
-  )
-
-  const teamReadinessBadge = readiness ? (
-    <Badge
-      data-testid="guild-raid-exact-meta-team-readiness"
-      variant="secondary"
-    >
-      {t("guildRaids.exactMeta.teamReadiness", {
-        percent: readiness.teamReadiness,
-      })}
-    </Badge>
-  ) : null
-
-  const heroesRow = (
-    <div
-      className="flex flex-wrap items-start gap-3"
-      data-testid="guild-raid-exact-meta-heroes"
-    >
-      {heroes.map((hero, index) => (
-        <UnitAvatar
-          key={hero.id}
-          unit={hero}
-          size={isMobile ? "sm" : "md"}
-          testIdPrefix="guild-raid-exact-meta-hero"
-          readinessPercent={readiness?.heroSlots[index]?.readiness}
-        />
+  const header = (
+    <div className="flex flex-wrap items-center gap-2">
+      {status ? (
+        <Badge
+          data-testid="guild-raid-exact-meta-status"
+          variant={statusBadgeVariant[status]}
+        >
+          {t(`guildRaids.exactMeta.status.${status}`)}
+        </Badge>
+      ) : null}
+      {teamReadiness === undefined ? null : (
+        <Badge
+          data-testid="guild-raid-exact-meta-team-readiness"
+          variant="secondary"
+        >
+          {t("guildRaids.exactMeta.teamReadiness", { percent: teamReadiness })}
+        </Badge>
+      )}
+      <Badge variant="outline">
+        {t("guildRaids.exactMeta.efficiency", { value: efficiency })}
+      </Badge>
+      {comps.map((comp) => (
+        <Badge key={comp.id} variant="outline" className="gap-1">
+          <EntityIcon
+            src={comp.signature.portraitUrl}
+            alt=""
+            className="size-4"
+          />
+          {t("guildRaids.exactMeta.comp", { name: comp.id })}
+        </Badge>
       ))}
-      <UnitAvatar
-        unit={mow}
-        size={isMobile ? "sm" : "md"}
-        testIdPrefix="guild-raid-exact-meta-mow"
-        readinessPercent={readiness?.mow.readiness}
-      />
     </div>
   )
 
-  // A flex slot, or any slot whose ideal hero is unowned, gets its full owned-candidate comparison
-  // shown — not only the matcher's selected pick (see design.md's "Flex-slot candidates show every
-  // owned option's percentage" decision).
-  const candidateRows = readiness
-    ? readiness.heroSlots
-        .map((slot, index) => ({ slot, index }))
-        .filter(
-          ({ slot }) =>
-            (!slot.essential || !slot.assignment?.isIdeal) &&
-            slot.candidates.length > 0
-        )
-        .map(({ slot, index }) => (
-          <CandidateComparison
-            key={slot.heroId}
-            slotIndex={index}
-            candidates={slot.candidates}
-          />
-        ))
-    : []
-
-  if (isMobile) {
-    return (
-      <Card data-testid="guild-raid-exact-meta-card">
-        <CardContent className="flex flex-col gap-3 p-3">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              {classificationBadge}
-              {teamReadinessBadge}
-              {classification && missingCount > 0 ? (
-                <span
-                  className="text-xs text-muted-foreground"
-                  data-testid="guild-raid-exact-meta-missing-count"
-                >
-                  {t("guildRaids.exactMeta.missingCount", {
-                    count: missingCount,
-                  })}
-                </span>
-              ) : null}
-            </div>
-            {kindBadge}
-          </div>
-          {heroesRow}
-          {candidateRows.length > 0 ? (
-            <div className="flex flex-col gap-1.5">{candidateRows}</div>
-          ) : null}
-          <Accordion type="single" collapsible>
-            <AccordionItem value="details">
-              <AccordionTrigger data-testid="guild-raid-exact-meta-details-toggle">
-                {t("guildRaids.exactMeta.detailsToggle")}
-              </AccordionTrigger>
-              <AccordionContent>
-                <CompsAndSource
-                  comps={comps}
-                  source={source}
-                  updatedOn={updatedOn}
-                />
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </CardContent>
-      </Card>
-    )
-  }
+  const optionsPanel = (index: number) =>
+    openSlot === index && openSlotView ? (
+      <OptionsPanel id={panelId} slot={openSlotView} slots={slots} />
+    ) : null
 
   return (
     <Card data-testid="guild-raid-exact-meta-card">
-      <CardHeader className="flex-row items-center gap-2">
-        {kindBadge}
-        {classificationBadge}
-        {teamReadinessBadge}
+      <CardHeader className={isMobile ? "p-3 pb-0" : undefined}>
+        {header}
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        {heroesRow}
-        {candidateRows.length > 0 ? (
-          <div className="flex flex-col gap-1.5">{candidateRows}</div>
-        ) : null}
-        <CompsAndSource comps={comps} source={source} updatedOn={updatedOn} />
+      <CardContent
+        className={cn("flex flex-col gap-3", isMobile && "p-3")}
+        data-testid="guild-raid-exact-meta-slots"
+      >
+        {isMobile ? (
+          slots.map((slot, index) => (
+            <div key={`${slot.kind}-${index}`} className="flex flex-col gap-2">
+              <SlotTile
+                slot={slot}
+                index={index}
+                expanded={openSlot === index}
+                panelId={panelId}
+                isMobile
+                onToggle={() => toggle(index)}
+              />
+              {optionsPanel(index)}
+            </div>
+          ))
+        ) : (
+          <>
+            <div className="grid grid-cols-6 gap-2">
+              {slots.map((slot, index) => (
+                <SlotTile
+                  key={`${slot.kind}-${index}`}
+                  slot={slot}
+                  index={index}
+                  expanded={openSlot === index}
+                  panelId={panelId}
+                  isMobile={false}
+                  onToggle={() => toggle(index)}
+                />
+              ))}
+            </div>
+            {openSlot === null ? (
+              <p className="text-xs text-muted-foreground">
+                {t("guildRaids.exactMeta.slotHint")}
+              </p>
+            ) : (
+              optionsPanel(openSlot)
+            )}
+          </>
+        )}
       </CardContent>
     </Card>
   )

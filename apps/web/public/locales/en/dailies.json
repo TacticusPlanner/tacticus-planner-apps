@@ -86,8 +86,19 @@
       "missingDescription": "Your raid token counts will appear here once your player data is synchronized."
     },
     "exactMeta": {
-      "title": "Exact Meta readiness",
-      "description": "Curated exact lineups for this boss, compared against your synced roster. Substitutions aren't evaluated yet.",
+      "title": "Meta readiness",
+      "howScored": "How is readiness scored?",
+      "howScoredPicks": "Each slot shows the hero you'd bring: the curated pick if you own it, otherwise the best owned substitute the meta source lists for that slot. A hero is only used once per lineup. Tap a slot to see every option.",
+      "howScoredReadiness": "A hero's readiness is the average of rank, stars and ability level, each compared with the target for the boss's current step and capped at 100%. A Machine of War is scored on stars only. Team readiness counts essential slots twice.",
+      "target": "Target at this boss step:",
+      "targetAbilities": "Abilities {{level}}",
+      "noTarget": "Readiness percentages appear once your guild's live raid status has been synced.",
+      "sourcePrefix": "Source:",
+      "status": {
+        "ready": "Ready",
+        "substitutes": "Playable with substitutes",
+        "missingEssentials": "Missing essential heroes"
+      },
       "kind": {
         "meta": "Meta",
         "alternate": "Alternate",
@@ -97,33 +108,9 @@
         "admech": "AdMech",
         "custodes": "Custodes"
       },
-      "readiness": {
-        "ready": "Ready",
-        "partial": "Partial",
-        "unavailable": "Unavailable",
-        "unknown": "Readiness unknown"
-      },
-      "missingCount_one": "{{count}} hero missing",
-      "missingCount_other": "{{count}} heroes missing",
-      "mowLabel": "Machine of War",
-      "mowOwned": "Owned",
-      "mowMissing": "Missing",
-      "ownership": {
-        "owned": "Owned",
-        "missing": "Missing",
-        "unknown": "Ownership unknown"
-      },
-      "compsLabel": "Referenced Comps",
-      "sourceLabel": "Source: {{name}}",
       "updatedLabel": "Updated {{date}}",
-      "detailsToggle": "Comps and source",
       "teamReadiness": "Team readiness: {{percent}}%",
-      "candidatesLabel": "Alternatives:",
       "efficiencyLabel": "{{value}}x",
-      "investment": {
-        "rank": "Rank {{rank}}",
-        "level": "Level {{level}}"
-      },
       "absentMeta": {
         "title": "Sync Guild Raid Meta data",
         "description": "Exact-Meta recommendations will appear here once the curated dataset is synchronized."
@@ -135,6 +122,21 @@
       "missingRoster": {
         "title": "Sync your player data",
         "description": "Ideal lineups are shown below, but readiness needs your synced roster."
+      },
+      "efficiency": "{{value}}× efficiency",
+      "comp": "{{name}} comp",
+      "mow": "Machine of War",
+      "essential": "Essential slot",
+      "forIdeal": "for {{name}}",
+      "noFreeOption": "No free substitute",
+      "ideal": "Ideal",
+      "slotOptions": "{{slot}} slot options",
+      "slotHint": "Select a slot to compare its options.",
+      "optionState": {
+        "picked": "In this lineup",
+        "inTeam": "Used in the {{slot}} slot",
+        "available": "Owned",
+        "notOwned": "Not owned"
       }
     },
     "variantRules": {
@@ -162,7 +164,6 @@
     "plan": "Today's plan",
     "planMeta_one": "{{count}} node · goal priority order",
     "planMeta_other": "{{count}} nodes · goal priority order",
-
     "energyUsage": {
       "label": "Daily energy used",
       "value": "{{percent}}% of daily energy used"
@@ -278,12 +279,12 @@
           "content": "Your synced raid and bomb tokens, with when the next one becomes available."
         },
         "exactMetaDesktop": {
-          "title": "Exact Meta readiness",
-          "content": "Curated exact lineups for the active boss, each hero's investment-readiness percentage, and the team's combined score, shown side by side."
+          "title": "Meta readiness",
+          "content": "Curated lineups for the active boss, filled from your roster. Each slot shows the hero you'd bring and how close they are to this boss step's target; select a slot to compare its options."
         },
         "exactMetaMobile": {
-          "title": "Exact Meta readiness",
-          "content": "Team readiness comes first here — expand a card for Comps and source."
+          "title": "Meta readiness",
+          "content": "Switch lineups with the tabs, then tap a slot to compare its options."
         }
       }
     },

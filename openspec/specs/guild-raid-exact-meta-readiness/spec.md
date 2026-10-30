@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Compares curated exact Guild Raid Meta lineups with the player's owned roster so ideal teams and concrete gaps are visible before substitution logic exists.
+Fills each curated Guild Raid Meta lineup from the player's owned roster, using the lineup's authored substitutes, and shows how far each picked unit is from the active boss step's investment target.
 
 ## Requirements
 
@@ -20,18 +20,51 @@ The system SHALL use the active status boss `unitSetId` to retrieve that boss's 
 - **WHEN** refreshed guild status advances to a different boss
 - **THEN** the exact readiness results are replaced with that boss's authored recommendations
 
-### Requirement: Exact readiness combines ownership and investment into a percentage
+### Requirement: Each lineup is filled from the roster with authored substitutes
 
-For each recommendation, for each of the five ordered `heroSlots` (each with
-its own `heroId`, `essential` weighting, and `replacementCharacterIds`), the
-system SHALL report a `0–100%` investment-readiness value: `0%` when the
-character is unowned; otherwise the average of three ratios, each
-independently capped at `100%`, comparing the owned character's rank,
-progression, and ability levels against a threshold derived from the boss's
-own catalog stat-progression at the guild's live current step — never an
-authored or invented minimum. The Machine of War SHALL receive its own
-`0–100%` value using its progression level alone (Machines of War carry no
-rank).
+For each recommendation, the system SHALL fill the five ordered `heroSlots`
+and the Machine of War from the owned roster. A slot whose ideal unit is owned
+SHALL keep it. Any other hero slot MAY be filled only from that slot's own
+`replacementCharacterIds`, never with a hero already used elsewhere in the same
+lineup, preferring filled essential slots, then filled slots, then higher
+readiness. A Machine of War that is not owned SHALL be replaced by the
+highest-readiness owned unit in `mowReplacementIds`. Comp membership SHALL
+never be used to substitute.
+
+Each lineup SHALL report one status: `ready` when every slot holds its ideal
+unit, `missingEssentials` when an essential hero slot has no owned option, and
+`substitutes` otherwise. The status SHALL be resolved from ownership alone when
+no investment threshold is available.
+
+#### Scenario: Substitute fills an unowned slot
+
+- **WHEN** a core slot's ideal hero is unowned and the player owns one of its
+  authored replacements that no other slot uses
+- **THEN** that replacement is shown in the slot as standing in for the ideal
+  hero and the lineup status is `substitutes`
+
+#### Scenario: Owned ideal is not taken by another slot
+
+- **WHEN** a hero is both a flex slot's owned ideal and an authored
+  replacement for another slot
+- **THEN** the hero stays in its own flex slot and is listed in the other
+  slot's options as already used in this lineup
+
+#### Scenario: Essential slot cannot be filled
+
+- **WHEN** an essential slot's ideal hero is unowned and no free authored
+  replacement is owned
+- **THEN** the lineup status is `missingEssentials`
+
+### Requirement: Readiness combines ownership and investment into a percentage
+
+Each hero slot SHALL report the `0–100%` investment readiness of the unit
+picked for it, `0%` when the slot is empty: the average of three ratios, each
+independently capped at `100%`, comparing the unit's rank, progression, and
+ability levels against a threshold derived from the boss's own catalog
+stat-progression at the guild's live current step — never an authored or
+invented minimum. The Machine of War SHALL use its progression level alone.
+Every listed option SHALL carry its own readiness the same way.
 
 The system SHALL combine the five hero values and the Machine-of-War value
 into one team readiness percentage, weighting a slot marked `essential` higher
@@ -52,10 +85,11 @@ investment against the derived threshold only.
 - **THEN** that hero's readiness reflects the shortfall and is below `100%`
   without being reported as `0%`
 
-#### Scenario: Unowned hero is not ready
+#### Scenario: Empty slot is not ready
 
-- **WHEN** an exact hero is not owned
-- **THEN** its readiness is `0%` regardless of any other unit's investment
+- **WHEN** a slot has no owned option
+- **THEN** its readiness is `0%` and no other unit's percentage is shown on
+  the unowned ideal hero
 
 #### Scenario: Essential shortfall weighs more than flex shortfall
 
@@ -65,44 +99,46 @@ investment against the derived threshold only.
 - **THEN** the recommendation with the essential-slot shortfall has the lower
   team readiness percentage
 
-### Requirement: Ideal Meta teams and roster gaps are presented together
+### Requirement: Lineups are presented slot by slot
 
-Each recommendation card SHALL show whether it is Meta or alternate, the exact
-five heroes, recommended Machine of War, referenced Comp signatures, per-hero
-and Machine-of-War investment-readiness percentages, the combined team
-readiness percentage, owned/missing state per unit, and the catalog
-source/update attribution. Investment facts MAY be compared against the
-derived threshold described above and used to compute the readiness
-percentage; they SHALL NOT be used to reorder recommendations.
+The section SHALL show the investment target (rarity and stars, rank, ability
+level) once, above the lineups, with an explanation of how readiness is
+scored, and SHALL show the catalog source and update date once.
 
-For a slot where the ideal hero is unowned or under-invested, the card SHALL
-also show the investment-readiness percentage of every owned character listed
-in that slot's `replacementCharacterIds`, so a player can compare alternatives
-without leaving the card.
+Recommendations SHALL appear as tabs in authored order, each labelled with its
+kind and team readiness; investment facts SHALL NOT reorder them. Each lineup
+SHALL show its status, team readiness, efficiency, and Comps, then one tile per
+slot with the slot's role (or Machine of War), whether it is essential, the
+picked unit's name and portrait, the ideal unit it stands in for when it is a
+substitute, and its readiness. Units SHALL always be shown by name, never by
+raw id.
 
-At or above 768px the exact lineup, readiness percentages, and summary SHALL
-remain visible together in a horizontal/card layout. Below 768px the team
-readiness summary SHALL precede a compact lineup and expandable Comp/source
-detail without horizontal scrolling.
+Selecting a slot SHALL list every option for it — the ideal unit and each
+authored replacement — with its name, portrait, readiness, and why it is or
+isn't the pick (in this lineup, used in another slot, owned, or not owned).
 
-#### Scenario: Desktop recommendation is compared at a glance
+At or above 768px the slots SHALL appear side by side with the selected slot's
+options below them. Below 768px the slots SHALL be a vertical list with the
+options expanding under the selected slot, without horizontal scrolling.
 
-- **WHEN** exact readiness is viewed at or above 768px
-- **THEN** the lineup, its per-hero readiness percentages, and the team
-  readiness percentage are visible together
+#### Scenario: Player asks what an alternative is
 
-#### Scenario: Mobile recommendation prioritizes readiness
+- **WHEN** a slot is filled by a substitute
+- **THEN** the slot names the substitute and the ideal hero it replaces, and
+  selecting the slot lists the ideal hero and every authored replacement by
+  name with their readiness
 
-- **WHEN** exact readiness is viewed below 768px
-- **THEN** the team readiness percentage and missing-unit summary appear
-  before expandable secondary details
+#### Scenario: Desktop lineup is compared at a glance
 
-#### Scenario: Flex slot shows alternative candidates
+- **WHEN** a lineup is viewed at or above 768px
+- **THEN** all six slots, their readiness, and the team readiness are visible
+  together
 
-- **WHEN** a flex slot's ideal hero is unowned and the player owns two of its
-  authored replacements
-- **THEN** the card shows the readiness percentage of both owned replacements
-  alongside the ideal hero's own state
+#### Scenario: Mobile lineup stays readable
+
+- **WHEN** a lineup is viewed below 768px
+- **THEN** the slots stack vertically and a selected slot's options open
+  directly beneath it
 
 ### Requirement: Meta and roster absence states remain distinct
 
@@ -113,8 +149,9 @@ be derived), and valid recommendations for which no team is Ready. Guild
 status SHALL remain visible in every one of these states.
 
 When no live Guild Raid status is available to derive a threshold, the system
-SHALL fall back to ownership-only Ready/Partial/Unavailable classification for
-that recommendation rather than reporting a fabricated percentage.
+SHALL still show each lineup's picks and status, resolved from ownership alone,
+and SHALL say why percentages are missing rather than reporting a fabricated
+percentage.
 
 #### Scenario: Meta data has not synchronized
 
@@ -140,8 +177,8 @@ that recommendation rather than reporting a fabricated percentage.
 
 - **WHEN** recommendations and roster exist but no live Guild Raid status has
   been observed for the guild
-- **THEN** the system falls back to ownership-only readiness for that
-  recommendation instead of computing or guessing a percentage
+- **THEN** each lineup shows its picks and status without any percentage, and
+  the section says readiness needs the live raid status
 
 #### Scenario: No exact team is ready
 

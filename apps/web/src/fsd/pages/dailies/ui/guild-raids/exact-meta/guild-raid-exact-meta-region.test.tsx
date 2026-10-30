@@ -1,7 +1,8 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen } from "@/test/render"
+import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-import type { GuildRaidExactReadinessQuery } from "@/entities/guild-raid-meta"
+import type { GuildRaidExactReadinessRecommendationView } from "@/entities/guild-raid-meta"
 
 import { GuildRaidExactMetaRegion } from "./guild-raid-exact-meta-region"
 
@@ -17,6 +18,34 @@ const source = {
   sourceId: "terminus-maximus-guild-raid-boss-meta",
   name: "Terminus Maximus",
   url: "https://terminusmaximus.com/guild-raid/boss-meta/",
+}
+
+function lineup(
+  id: string,
+  label: string,
+  teamReadiness: number | undefined
+): GuildRaidExactReadinessRecommendationView {
+  const hero = { id: "heroA", name: "Hero A", kind: "character" as const }
+  return {
+    id,
+    kind: { id: label.toLowerCase(), label },
+    efficiency: 1,
+    comps: [],
+    ...(teamReadiness === undefined
+      ? {}
+      : { status: "substitutes" as const, teamReadiness }),
+    slots: [
+      {
+        kind: "hero",
+        role: { id: "signature", label: "Signature" },
+        essential: true,
+        ideal: hero,
+        picked: teamReadiness === undefined ? null : hero,
+        isSubstitute: false,
+        options: [],
+      },
+    ],
+  }
 }
 
 describe("GuildRaidExactMetaRegion", () => {
@@ -72,152 +101,132 @@ describe("GuildRaidExactMetaRegion", () => {
   })
 
   it("shows ideal lineups with a sync prompt when the roster is missing", () => {
-    const query: GuildRaidExactReadinessQuery = {
-      status: "missingRoster",
-      source,
-      updatedOn: "2026-07-01",
-      recommendations: [
-        {
-          id: "rec-1",
-          kind: "meta",
-          heroes: [
-            { id: "heroA", name: "Hero A", kind: "character" },
-            { id: "heroB", name: "Hero B", kind: "character" },
-            { id: "heroC", name: "Hero C", kind: "character" },
-            { id: "heroD", name: "Hero D", kind: "character" },
-            { id: "heroE", name: "Hero E", kind: "character" },
-          ],
-          mow: { id: "mowX", name: "Mow X", kind: "mow" },
-          comps: [],
-        },
-      ],
-    }
-
-    render(<GuildRaidExactMetaRegion isMobile={false} query={query} />)
-
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-roster-missing")
-    ).toBeInTheDocument()
-    expect(screen.getByTestId("guild-raid-exact-meta-card")).toBeInTheDocument()
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-classification-badge")
-    ).toHaveTextContent("guildRaids.exactMeta.readiness.unknown")
-  })
-
-  it("presents the gaps — without an absence banner — when no team is fully ready", () => {
-    const query: GuildRaidExactReadinessQuery = {
-      status: "populated",
-      source,
-      updatedOn: "2026-07-01",
-      recommendations: [
-        {
-          id: "rec-1",
-          kind: "meta",
-          heroes: [
-            { id: "heroA", name: "Hero A", kind: "character", owned: true },
-            { id: "heroB", name: "Hero B", kind: "character", owned: false },
-            { id: "heroC", name: "Hero C", kind: "character", owned: false },
-            { id: "heroD", name: "Hero D", kind: "character", owned: false },
-            { id: "heroE", name: "Hero E", kind: "character", owned: false },
-          ],
-          mow: { id: "mowX", name: "Mow X", kind: "mow", owned: false },
-          comps: [],
-          classification: "partial",
-        },
-      ],
-    }
-
-    render(<GuildRaidExactMetaRegion isMobile={false} query={query} />)
-
-    expect(
-      screen.queryByTestId("guild-raid-exact-meta-absent")
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByTestId("guild-raid-exact-meta-no-boss")
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByTestId("guild-raid-exact-meta-roster-missing")
-    ).not.toBeInTheDocument()
-    expect(
-      screen.getByTestId("guild-raid-exact-meta-classification-badge")
-    ).toHaveTextContent("guildRaids.exactMeta.readiness.partial")
-  })
-
-  function threeRecommendationHero(id: string) {
-    return { id, name: id, kind: "character" as const, owned: true }
-  }
-
-  it("renders all three cards for a boss authoring three recommendations, matching readiness by id", () => {
-    const query: GuildRaidExactReadinessQuery = {
-      status: "populated",
-      source,
-      updatedOn: "2026-07-01",
-      recommendations: [
-        {
-          id: "rec-lavistodes",
-          kind: "lavistodes",
-          heroes: [1, 2, 3, 4, 5].map((n) =>
-            threeRecommendationHero(`lavistodes-hero${n}`)
-          ),
-          mow: { id: "mowX", name: "Mow X", kind: "mow", owned: true },
-          comps: [],
-          classification: "ready",
-        },
-        {
-          id: "rec-neuro",
-          kind: "neuro",
-          heroes: [1, 2, 3, 4, 5].map((n) =>
-            threeRecommendationHero(`neuro-hero${n}`)
-          ),
-          mow: { id: "mowY", name: "Mow Y", kind: "mow", owned: true },
-          comps: [],
-          classification: "ready",
-        },
-        {
-          id: "rec-battlesuit",
-          kind: "battlesuit",
-          heroes: [1, 2, 3, 4, 5].map((n) =>
-            threeRecommendationHero(`battlesuit-hero${n}`)
-          ),
-          mow: { id: "mowZ", name: "Mow Z", kind: "mow", owned: true },
-          comps: [],
-          classification: "ready",
-        },
-      ],
-    }
-
     render(
       <GuildRaidExactMetaRegion
         isMobile={false}
-        query={query}
-        readinessQuery={{
-          status: "ready",
-          byRecommendationId: new Map([
-            [
-              "rec-neuro",
-              {
-                recommendation: {} as never,
-                teamReadiness: 77,
-                heroSlots: [],
-                mow: { mowId: "mowY", owned: true, readiness: 100 },
-              },
-            ],
-          ]),
+        query={{
+          status: "missingRoster",
+          source,
+          updatedOn: "2026-07-01",
+          threshold: null,
+          recommendations: [lineup("rec-1", "Meta", undefined)],
         }}
       />
     )
 
-    expect(screen.getAllByTestId("guild-raid-exact-meta-card")).toHaveLength(3)
     expect(
-      screen.getAllByTestId("guild-raid-exact-meta-kind-badge")
-    ).toHaveLength(3)
+      screen.getByTestId("guild-raid-exact-meta-roster-missing")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("guild-raid-exact-meta-no-target")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole("link", { name: "Terminus Maximus" })
+    ).toHaveAttribute("href", source.url)
+  })
 
-    // Only the recommendation with a matching id in byRecommendationId shows a team-readiness badge.
+  it("shows the boss step's target once, above the lineups", () => {
+    render(
+      <GuildRaidExactMetaRegion
+        isMobile={false}
+        query={{
+          status: "populated",
+          source,
+          updatedOn: "2026-07-01",
+          threshold: {
+            progression: "Legendary:RedThreeStars",
+            requiredRank: "Diamond3",
+            requiredRankIndex: 18,
+            requiredProgressionIndex: 12,
+            requiredAbilityLevel: 50,
+          },
+          recommendations: [lineup("rec-1", "Meta", 41)],
+        }}
+      />
+    )
+
     expect(
-      screen.getAllByTestId("guild-raid-exact-meta-team-readiness")
-    ).toHaveLength(1)
+      screen.getByTestId("guild-raid-exact-meta-target")
+    ).toHaveTextContent('guildRaids.exactMeta.targetAbilities:{"level":50}')
+    expect(
+      screen.queryByTestId("guild-raid-exact-meta-no-target")
+    ).not.toBeInTheDocument()
+  })
+
+  it("explains missing percentages when there is no live target", () => {
+    render(
+      <GuildRaidExactMetaRegion
+        isMobile={false}
+        query={{
+          status: "populated",
+          source,
+          updatedOn: "2026-07-01",
+          threshold: null,
+          recommendations: [lineup("rec-1", "Meta", undefined)],
+        }}
+      />
+    )
+
+    expect(
+      screen.getByTestId("guild-raid-exact-meta-no-target")
+    ).toBeInTheDocument()
+  })
+
+  it("puts each authored lineup in its own tab, in authored order, with its team readiness", async () => {
+    const user = userEvent.setup()
+    render(
+      <GuildRaidExactMetaRegion
+        isMobile={false}
+        query={{
+          status: "populated",
+          source,
+          updatedOn: "2026-07-01",
+          threshold: null,
+          recommendations: [
+            lineup("rec-lav", "Lavistodes", 41),
+            lineup("rec-neuro", "Neuro", 69),
+            lineup("rec-suit", "Battlesuit", 12),
+          ],
+        }}
+      />
+    )
+
+    const tabs = screen.getAllByRole("tab")
+    expect(tabs.map((tab) => tab.textContent)).toEqual([
+      "Lavistodes41%",
+      "Neuro69%",
+      "Battlesuit12%",
+    ])
+    expect(tabs[0]).toHaveAttribute("aria-selected", "true")
+    expect(screen.getAllByTestId("guild-raid-exact-meta-card")).toHaveLength(1)
+
+    await user.click(tabs[1]!)
+    expect(tabs[1]).toHaveAttribute("aria-selected", "true")
     expect(
       screen.getByTestId("guild-raid-exact-meta-team-readiness")
-    ).toHaveTextContent('guildRaids.exactMeta.teamReadiness:{"percent":77}')
+    ).toHaveTextContent('{"percent":69}')
+  })
+
+  it("explains how readiness is scored", async () => {
+    const user = userEvent.setup()
+    render(
+      <GuildRaidExactMetaRegion
+        isMobile
+        query={{
+          status: "populated",
+          source,
+          updatedOn: "2026-07-01",
+          threshold: null,
+          recommendations: [lineup("rec-1", "Meta", undefined)],
+        }}
+      />
+    )
+
+    await user.click(
+      screen.getByRole("button", { name: "guildRaids.exactMeta.howScored" })
+    )
+    expect(
+      await screen.findByText("guildRaids.exactMeta.howScoredReadiness")
+    ).toBeInTheDocument()
   })
 })

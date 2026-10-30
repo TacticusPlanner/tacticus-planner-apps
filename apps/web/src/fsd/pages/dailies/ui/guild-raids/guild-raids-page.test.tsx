@@ -41,22 +41,20 @@ vi.mock("./use-guild-raids-view-model", () => ({
 }))
 
 const useGuildRaidExactReadiness =
-  vi.fn<(bossUnitSetId: string) => GuildRaidExactReadinessQuery>()
+  vi.fn<
+    (bossUnitSetId: string, threshold: unknown) => GuildRaidExactReadinessQuery
+  >()
 vi.mock("@/entities/guild-raid-meta", () => ({
-  useGuildRaidExactReadiness: (bossUnitSetId: string) =>
-    useGuildRaidExactReadiness(bossUnitSetId),
+  useGuildRaidExactReadiness: (bossUnitSetId: string, threshold: unknown) =>
+    useGuildRaidExactReadiness(bossUnitSetId, threshold),
 }))
 
 // The real hook composes three data sources (catalog + raid-bosses + roster) from local reads — out of
 // scope for this page-shell test, which only exercises section placement. Its own composition/fallback
 // logic is covered directly in use-guild-raid-investment-readiness's own tests.
-const useGuildRaidInvestmentReadiness = vi.fn(
-  () => ({ status: "unavailable" }) as const
-)
-vi.mock("./exact-meta/use-guild-raid-investment-readiness", () => ({
-  useGuildRaidInvestmentReadiness: (
-    ...args: Parameters<typeof useGuildRaidInvestmentReadiness>
-  ) => useGuildRaidInvestmentReadiness(...args),
+const useGuildRaidReadinessThreshold = vi.fn((): unknown => null)
+vi.mock("./exact-meta/use-guild-raid-readiness-threshold", () => ({
+  useGuildRaidReadinessThreshold: () => useGuildRaidReadinessThreshold(),
 }))
 
 import { GuildRaidsPage } from "./guild-raids-page"
@@ -104,8 +102,8 @@ describe("GuildRaidsPage", () => {
     viewModel = loadingViewModel
     useGuildRaidExactReadiness.mockClear()
     useGuildRaidExactReadiness.mockReturnValue({ status: "absentMeta" })
-    useGuildRaidInvestmentReadiness.mockClear()
-    useGuildRaidInvestmentReadiness.mockReturnValue({ status: "unavailable" })
+    useGuildRaidReadinessThreshold.mockClear()
+    useGuildRaidReadinessThreshold.mockReturnValue(null)
   })
 
   it.each([
@@ -181,7 +179,7 @@ describe("GuildRaidsPage", () => {
     viewModel = activeViewModel()
     render(<GuildRaidsPage />)
 
-    expect(useGuildRaidExactReadiness).toHaveBeenLastCalledWith("boss")
+    expect(useGuildRaidExactReadiness).toHaveBeenLastCalledWith("boss", null)
     const statusSection = screen.getByTestId("guild-raid-status-section")
     const exactMetaSection = screen.getByTestId("guild-raid-exact-meta-section")
     expect(
@@ -190,42 +188,53 @@ describe("GuildRaidsPage", () => {
     ).toBeTruthy()
   })
 
-  it("falls back to the ownership-only display with no fabricated percentage when investment readiness is unavailable", () => {
+  it("passes the live threshold through and shows no percentage without one", () => {
     viewModel = activeViewModel()
     useGuildRaidExactReadiness.mockReturnValue({
       status: "populated",
       source: { sourceId: "source", name: "Source" },
       updatedOn: "2026-07-01",
+      threshold: null,
       recommendations: [
         {
           id: "rec-1",
-          kind: "meta",
-          heroes: [
-            { id: "heroA", name: "Hero A", kind: "character", owned: true },
-            { id: "heroB", name: "Hero B", kind: "character", owned: false },
-            { id: "heroC", name: "Hero C", kind: "character", owned: false },
-            { id: "heroD", name: "Hero D", kind: "character", owned: false },
-            { id: "heroE", name: "Hero E", kind: "character", owned: false },
-          ],
-          mow: { id: "mowX", name: "Mow X", kind: "mow", owned: true },
+          kind: { id: "meta", label: "Meta" },
+          efficiency: 1,
           comps: [],
-          classification: "partial",
+          status: "substitutes",
+          slots: [
+            {
+              kind: "hero",
+              role: { id: "signature", label: "Signature" },
+              essential: true,
+              ideal: { id: "heroA", name: "Hero A", kind: "character" },
+              picked: { id: "heroA", name: "Hero A", kind: "character" },
+              isSubstitute: false,
+              options: [],
+            },
+          ],
         },
       ],
     })
-    // useGuildRaidInvestmentReadiness already returns "unavailable" via beforeEach — the live current
-    // step could not be derived (e.g. no active observation), which is the state under test here.
 
     render(<GuildRaidsPage />)
 
     expect(
-      screen.getByTestId("guild-raid-exact-meta-classification-badge")
-    ).toHaveTextContent("guildRaids.exactMeta.readiness.partial")
+      screen.getByTestId("guild-raid-exact-meta-status")
+    ).toHaveTextContent("guildRaids.exactMeta.status.substitutes")
+    expect(
+      screen.getByTestId("guild-raid-exact-meta-no-target")
+    ).toBeInTheDocument()
     expect(
       screen.queryByTestId("guild-raid-exact-meta-team-readiness")
     ).not.toBeInTheDocument()
-    expect(
-      screen.queryAllByTestId("guild-raid-exact-meta-hero-readiness")
-    ).toHaveLength(0)
+
+    const threshold = { requiredAbilityLevel: 50 }
+    useGuildRaidReadinessThreshold.mockReturnValue(threshold)
+    render(<GuildRaidsPage />)
+    expect(useGuildRaidExactReadiness).toHaveBeenLastCalledWith(
+      "boss",
+      threshold
+    )
   })
 })

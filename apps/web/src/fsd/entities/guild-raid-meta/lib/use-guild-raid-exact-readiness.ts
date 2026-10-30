@@ -8,7 +8,7 @@ import {
   buildGuildRaidRosterInvestment,
   type GuildRaidExactReadinessView,
 } from "./build-guild-raid-exact-readiness-view"
-import { resolveGuildRaidExactReadiness } from "./resolve-guild-raid-exact-readiness"
+import type { GuildRaidInvestmentThreshold } from "./resolve-guild-raid-investment-threshold"
 import { useGuildRaidMetaCatalog } from "./use-guild-raid-meta-presentation"
 
 export type GuildRaidExactReadinessQuery =
@@ -16,9 +16,12 @@ export type GuildRaidExactReadinessQuery =
   | { status: "failed"; retry: () => void }
   | GuildRaidExactReadinessView
 
-/** Reactive public entity API for exact-Meta readiness against the current player's synced roster. */
+/** Reactive public entity API for Meta lineup readiness against the current player's synced roster.
+ * `threshold` is the boss's live investment target (see `resolveGuildRaidLiveInvestmentThreshold`);
+ * `null` keeps picks and status but withholds every percentage. */
 export function useGuildRaidExactReadiness(
-  bossUnitSetId: string
+  bossUnitSetId: string,
+  threshold: GuildRaidInvestmentThreshold | null
 ): GuildRaidExactReadinessQuery {
   const catalog = useGuildRaidMetaCatalog()
   const charactersRead = usePlayerChunk("characters")
@@ -45,36 +48,18 @@ export function useGuildRaidExactReadiness(
     }
     if (roster.status === "loading") return { status: "loading" }
 
-    // An unsynced chunk reads as null: readiness is then resolved without a roster.
+    // An unsynced chunk reads as null: the lineups are then shown without a roster.
     const [characters, mows] = roster.data
-    const investment =
-      characters && mows
-        ? buildGuildRaidRosterInvestment({ characters, mows })
-        : undefined
-
-    const readinessRoster = investment
-      ? {
-          ownedCharacterIds: investment.ownedCharacterIds,
-          ownedMowIds: investment.ownedMowIds,
-        }
-      : undefined
-
-    const investmentByCharacterId =
-      investment?.investmentByCharacterId ?? new Map()
-    const investmentByMowId = investment?.investmentByMowId ?? new Map()
-
-    const readiness = resolveGuildRaidExactReadiness({
-      bossUnitSetId,
-      meta: catalog.meta,
-      roster: readinessRoster,
-    })
 
     return buildGuildRaidExactReadinessView({
-      readiness,
-      presentation: catalog.presentation,
+      bossUnitSetId,
       meta: catalog.meta,
-      investmentByCharacterId,
-      investmentByMowId,
+      presentation: catalog.presentation,
+      roster:
+        characters && mows
+          ? buildGuildRaidRosterInvestment({ characters, mows })
+          : undefined,
+      threshold,
     })
-  }, [catalog, roster, bossUnitSetId])
+  }, [catalog, roster, bossUnitSetId, threshold])
 }
