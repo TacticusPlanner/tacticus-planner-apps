@@ -116,7 +116,9 @@
       },
       "purgeConfirmLabel": "Type \"{{word}}\" to enable the purge action",
       "purgeSubmit": "Purge my account",
-      "purgeGenericError": "Something went wrong while purging your account. Please try again."
+      "purgeGenericError": "Something went wrong while purging your account. Please try again.",
+      "signInAccountKeptTitle": "Your sign-in account could not be removed",
+      "signInAccountKeptDescription": "Your planner data was deleted and you were signed out, but the account you sign in with still exists. To remove it, sign in again (this starts a new, empty planner account) and delete it from Account settings. If it keeps failing, contact us through the feedback board."
     }
   },
   "accountGate": {
@@ -667,7 +669,12 @@
       "sync": "Sync Guild",
       "syncing": "Syncing…",
       "syncError": "Something went wrong while synchronizing. Please try again.",
-      "deleteGuild": "Delete Guild"
+      "deleteGuild": "Delete Guild",
+      "syncCooldown_one": "This guild was just synchronized. You can sync again in {{count}} second.",
+      "syncCooldown_other": "This guild was just synchronized. You can sync again in {{count}} seconds.",
+      "syncRateLimited_one": "Too many requests. Try again in {{count}} second.",
+      "syncRateLimited_other": "Too many requests. Try again in {{count}} seconds.",
+      "syncForbidden": "Only the guild's Leader or Co-Leader can synchronize it."
     },
     "purge": {
       "title": "Delete guild",
@@ -675,7 +682,14 @@
       "warningDescription": "This permanently deletes this guild's Planner registration and member roster immediately. This does not affect the guild in Tacticus itself, and any current member can re-register it afterward. This action cannot be undone.",
       "confirmLabel": "Type \"{{word}}\" to enable the delete action",
       "submit": "Delete this guild",
-      "genericError": "Something went wrong while deleting the guild. Please try again."
+      "genericError": "Something went wrong while deleting the guild. Please try again.",
+      "errors": {
+        "forbidden": "Only a current Leader or Co-Leader with a Tacticus user ID can delete this guild. Nothing was deleted.",
+        "roleCheckFailed": "Your role couldn't be checked against Tacticus: it rejected this guild's stored Guild API token or sent back data Planner couldn't read. Nothing was deleted. Re-register the guild with a fresh Guild API token, then try again.",
+        "upstreamUnavailable": "Tacticus is unavailable right now, so your role couldn't be checked. Nothing was deleted. Please try again later.",
+        "concurrency": "The guild roster changed while it was being checked. Nothing was deleted. Please try again.",
+        "rateLimited": "Too many requests to Tacticus. Nothing was deleted. Please wait a moment and try again."
+      }
     },
     "tabs": {
       "members": "Members",
@@ -790,7 +804,11 @@
         "unknownUpgrade": "This upgrade material is not in the V2 Game Catalog.",
         "noUpgradeOwner": "None of your characters or Machines of War uses this upgrade material.",
         "manualStepRequired": "This material couldn't be placed automatically. Add it to an Upgrade goal on the unit shown.",
-        "generic": "This goal could not be imported."
+        "generic": "This goal could not be imported.",
+        "goalLimitReached": "Not imported: you already have the most goals of this type that are not archived.",
+        "projectLimitReached": "Not imported: you already have the most projects that are not archived, so the import couldn't create its project. Archive one and import again.",
+        "tooManyGoals": "Only your first V1 goals by priority were imported; the rest were left out.",
+        "outcomesTruncated": "More goal results were not listed."
       },
       "legendaryEvents": {
         "title": "Legendary Event teams",
@@ -846,7 +864,10 @@
           "existing_annotations_kept_one": "{{count}} mark already in the planner was kept.",
           "existing_annotations_kept_other": "{{count}} marks already in the planner were kept.",
           "unknown_objective_mark": "A mark on an unrecognised objective \"{{objective}}\" in {{lane}} was skipped.",
-          "unknown_lane_mark": "A mark on an unrecognised lane \"{{lane}}\" was skipped."
+          "unknown_lane_mark": "A mark on an unrecognised lane \"{{lane}}\" was skipped.",
+          "lane_team_limit_reached": "{{lane}} already holds {{max}} teams; the other teams were skipped.",
+          "issues_truncated_one": "{{count}} more issue was not listed.",
+          "issues_truncated_other": "{{count}} more issues were not listed."
         },
         "notInPlanner_one": "{{count}} event from V1 isn't in the planner yet",
         "notInPlanner_other": "{{count}} events from V1 aren't in the planner yet"
@@ -870,6 +891,10 @@
           "campaignEventProgress": "Campaign event progress"
         },
         "empty": "Nothing new came across. The planner already has everything from your V1 profile."
+      },
+      "partReasons": {
+        "invalidTacticusUserId": "The V1 Tacticus user ID is not a valid GUID, so it wasn't imported.",
+        "tacticusUserIdConflict": "This Tacticus user ID is already linked to another planner account, so it wasn't imported."
       }
     },
     "empty": {
@@ -1400,7 +1425,8 @@
       "projectGuidanceSummary_one": "{{count}} material still needed across this project's goals.",
       "projectGuidanceSummary_other": "{{count}} materials still needed across this project's goals.",
       "projectGuidanceNone": "Nothing outstanding to farm for this project.",
-      "farmingEmpty": "There are no locations to choose for this goal."
+      "farmingEmpty": "There are no locations to choose for this goal.",
+      "farmingTooMany": "Choose at most {{max}} locations."
     },
     "resourceChips": {
       "energy": "Energy",
@@ -1601,6 +1627,11 @@
         "noChange": "No change",
         "quickPicks": "{{track}}: quick picks"
       }
+    },
+    "limits": {
+      "goalLimitReached": "You already have {{max}} {{type}} goals that are not archived. Archive or delete some first.",
+      "goalLimitReachedGeneric": "You can have at most {{max}} goals of one type that are not archived. Archive or delete some first.",
+      "projectLimitReached": "You already have {{max}} projects that are not archived. Archive one to make room."
     }
   },
   "language": {
@@ -1985,5 +2016,9 @@
       "goals": "Goals",
       "legendaryEvents": "Legendary events"
     }
+  },
+  "tacticusUserId": {
+    "invalid": "Enter your Tacticus user ID as a GUID, for example 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
+    "inUse": "This Tacticus user ID is already linked to another planner account."
   }
 }

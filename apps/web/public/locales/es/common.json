@@ -116,7 +116,9 @@
       },
       "purgeConfirmLabel": "Escribe «{{word}}» para habilitar la purga",
       "purgeSubmit": "Purgar mi cuenta",
-      "purgeGenericError": "Algo salió mal al purgar tu cuenta. Inténtalo de nuevo."
+      "purgeGenericError": "Algo salió mal al purgar tu cuenta. Inténtalo de nuevo.",
+      "signInAccountKeptTitle": "No se pudo eliminar tu cuenta de inicio de sesión",
+      "signInAccountKeptDescription": "Tus datos del planificador se eliminaron y se cerró tu sesión, pero la cuenta con la que inicias sesión sigue existiendo. Para eliminarla, vuelve a iniciar sesión (esto crea una cuenta del planificador nueva y vacía) y elimínala desde la configuración de la cuenta. Si sigue fallando, contáctanos a través del tablero de comentarios."
     }
   },
   "accountGate": {
@@ -667,7 +669,12 @@
       "sync": "Sincronizar gremio",
       "syncing": "Sincronizando…",
       "syncError": "Algo salió mal al sincronizar. Inténtalo de nuevo.",
-      "deleteGuild": "Eliminar gremio"
+      "deleteGuild": "Eliminar gremio",
+      "syncCooldown_one": "Este gremio se acaba de sincronizar. Puedes volver a sincronizar en {{count}} segundo.",
+      "syncCooldown_other": "Este gremio se acaba de sincronizar. Puedes volver a sincronizar en {{count}} segundos.",
+      "syncRateLimited_one": "Demasiadas solicitudes. Inténtalo de nuevo en {{count}} segundo.",
+      "syncRateLimited_other": "Demasiadas solicitudes. Inténtalo de nuevo en {{count}} segundos.",
+      "syncForbidden": "Solo el líder o colíder del gremio puede sincronizarlo."
     },
     "purge": {
       "title": "Eliminar gremio",
@@ -675,7 +682,14 @@
       "warningDescription": "Esto elimina de inmediato y de forma permanente el registro de este gremio en Planner y su lista de miembros. Esto no afecta al gremio en Tacticus, y cualquier miembro actual puede volver a registrarlo después. Esta acción no se puede deshacer.",
       "confirmLabel": "Escribe \"{{word}}\" para habilitar la acción de eliminar",
       "submit": "Eliminar este gremio",
-      "genericError": "Algo salió mal al eliminar el gremio. Inténtalo de nuevo."
+      "genericError": "Algo salió mal al eliminar el gremio. Inténtalo de nuevo.",
+      "errors": {
+        "forbidden": "Solo un líder o colíder actual con ID de usuario de Tacticus puede eliminar este gremio. No se eliminó nada.",
+        "roleCheckFailed": "No se pudo comprobar tu rol con Tacticus: rechazó el token de la API del gremio guardado o devolvió datos que Planner no pudo leer. No se eliminó nada. Vuelve a registrar el gremio con un token de la API del gremio nuevo e inténtalo de nuevo.",
+        "upstreamUnavailable": "Tacticus no está disponible ahora mismo, así que no se pudo comprobar tu rol. No se eliminó nada. Inténtalo de nuevo más tarde.",
+        "concurrency": "La lista de miembros del gremio cambió mientras se comprobaba. No se eliminó nada. Inténtalo de nuevo.",
+        "rateLimited": "Demasiadas solicitudes a Tacticus. No se eliminó nada. Espera un momento e inténtalo de nuevo."
+      }
     },
     "tabs": {
       "members": "Miembros",
@@ -790,7 +804,11 @@
         "unknownUpgrade": "Este material de mejora no está en el catálogo del juego de V2.",
         "noUpgradeOwner": "Ninguno de tus personajes ni Máquinas de Guerra usa este material de mejora.",
         "manualStepRequired": "Este material no se pudo asignar automáticamente. Añádelo a un objetivo de mejora de la unidad indicada.",
-        "generic": "No se pudo importar este objetivo."
+        "generic": "No se pudo importar este objetivo.",
+        "goalLimitReached": "No importado: ya tienes el máximo de objetivos sin archivar de este tipo.",
+        "projectLimitReached": "No importado: ya tienes el máximo de proyectos sin archivar, así que la importación no pudo crear su proyecto. Archiva uno e importa de nuevo.",
+        "tooManyGoals": "Solo se importaron tus primeros objetivos de V1 por prioridad; el resto se omitió.",
+        "outcomesTruncated": "No se listaron más resultados de objetivos."
       },
       "legendaryEvents": {
         "title": "Equipos de Eventos Legendarios",
@@ -846,7 +864,10 @@
           "existing_annotations_kept_one": "Se conservó {{count}} marca que ya estaba en el planificador.",
           "existing_annotations_kept_other": "Se conservaron {{count}} marcas que ya estaban en el planificador.",
           "unknown_objective_mark": "Se omitió una marca en el objetivo no reconocido «{{objective}}» de {{lane}}.",
-          "unknown_lane_mark": "Se omitió una marca en el carril no reconocido «{{lane}}»."
+          "unknown_lane_mark": "Se omitió una marca en el carril no reconocido «{{lane}}».",
+          "lane_team_limit_reached": "{{lane}} ya tiene {{max}} equipos; los demás equipos se omitieron.",
+          "issues_truncated_one": "No se listó {{count}} incidencia más.",
+          "issues_truncated_other": "No se listaron {{count}} incidencias más."
         },
         "notInPlanner_one": "{{count}} evento de V1 aún no está en el planificador",
         "notInPlanner_other": "{{count}} eventos de V1 aún no están en el planificador"
@@ -870,6 +891,10 @@
           "campaignEventProgress": "Progreso de eventos de campaña"
         },
         "empty": "No se trajo nada nuevo. El planificador ya tiene todo lo de tu perfil de V1."
+      },
+      "partReasons": {
+        "invalidTacticusUserId": "El ID de usuario de Tacticus de V1 no es un GUID válido, así que no se importó.",
+        "tacticusUserIdConflict": "Este ID de usuario de Tacticus ya está vinculado a otra cuenta del planificador, así que no se importó."
       }
     },
     "empty": {
@@ -1400,7 +1425,8 @@
       "projectGuidanceSummary_one": "Aún se necesita {{count}} material para los objetivos de este proyecto.",
       "projectGuidanceSummary_other": "Aún se necesitan {{count}} materiales para los objetivos de este proyecto.",
       "projectGuidanceNone": "No queda nada por farmear en este proyecto.",
-      "farmingEmpty": "No hay ubicaciones que elegir para este objetivo."
+      "farmingEmpty": "No hay ubicaciones que elegir para este objetivo.",
+      "farmingTooMany": "Elige como máximo {{max}} ubicaciones."
     },
     "resourceChips": {
       "energy": "Energía",
@@ -1601,6 +1627,11 @@
         "noChange": "Sin cambios",
         "quickPicks": "{{track}}: selección rápida"
       }
+    },
+    "limits": {
+      "goalLimitReached": "Ya tienes {{max}} objetivos de tipo {{type}} sin archivar. Archiva o elimina algunos primero.",
+      "goalLimitReachedGeneric": "Puedes tener como máximo {{max}} objetivos sin archivar de un mismo tipo. Archiva o elimina algunos primero.",
+      "projectLimitReached": "Ya tienes {{max}} proyectos sin archivar. Archiva uno para hacer sitio."
     }
   },
   "language": {
@@ -1985,5 +2016,9 @@
       "goals": "Objetivos",
       "legendaryEvents": "Eventos legendarios"
     }
+  },
+  "tacticusUserId": {
+    "invalid": "Introduce tu ID de usuario de Tacticus como GUID, por ejemplo 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
+    "inUse": "Este ID de usuario de Tacticus ya está vinculado a otra cuenta del planificador."
   }
 }

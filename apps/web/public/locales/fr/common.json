@@ -116,7 +116,9 @@
       },
       "purgeConfirmLabel": "Saisissez « {{word}} » pour activer la purge",
       "purgeSubmit": "Purger mon compte",
-      "purgeGenericError": "Une erreur s’est produite lors de la purge de votre compte. Veuillez réessayer."
+      "purgeGenericError": "Une erreur s’est produite lors de la purge de votre compte. Veuillez réessayer.",
+      "signInAccountKeptTitle": "Votre compte de connexion n'a pas pu être supprimé",
+      "signInAccountKeptDescription": "Vos données du planificateur ont été supprimées et vous avez été déconnecté, mais le compte avec lequel vous vous connectez existe toujours. Pour le supprimer, reconnectez-vous (cela crée un compte du planificateur neuf et vide) et supprimez-le depuis les paramètres du compte. Si l'échec persiste, contactez-nous via le tableau de suggestions."
     }
   },
   "accountGate": {
@@ -667,7 +669,12 @@
       "sync": "Synchroniser la guilde",
       "syncing": "Synchronisation…",
       "syncError": "Une erreur s'est produite lors de la synchronisation. Veuillez réessayer.",
-      "deleteGuild": "Supprimer la guilde"
+      "deleteGuild": "Supprimer la guilde",
+      "syncCooldown_one": "Cette guilde vient d'être synchronisée. Vous pourrez la resynchroniser dans {{count}} seconde.",
+      "syncCooldown_other": "Cette guilde vient d'être synchronisée. Vous pourrez la resynchroniser dans {{count}} secondes.",
+      "syncRateLimited_one": "Trop de requêtes. Réessayez dans {{count}} seconde.",
+      "syncRateLimited_other": "Trop de requêtes. Réessayez dans {{count}} secondes.",
+      "syncForbidden": "Seul le chef ou le co-chef de la guilde peut la synchroniser."
     },
     "purge": {
       "title": "Supprimer la guilde",
@@ -675,7 +682,14 @@
       "warningDescription": "Cela supprime immédiatement et définitivement l'enregistrement Planner de cette guilde ainsi que la liste de ses membres. Cela n'affecte pas la guilde dans Tacticus elle-même, et tout membre actuel pourra la réenregistrer par la suite. Cette action est irréversible.",
       "confirmLabel": "Tapez « {{word}} » pour activer l'action de suppression",
       "submit": "Supprimer cette guilde",
-      "genericError": "Une erreur s'est produite lors de la suppression de la guilde. Veuillez réessayer."
+      "genericError": "Une erreur s'est produite lors de la suppression de la guilde. Veuillez réessayer.",
+      "errors": {
+        "forbidden": "Seul un chef ou co-chef actuel disposant d'un ID utilisateur Tacticus peut supprimer cette guilde. Rien n'a été supprimé.",
+        "roleCheckFailed": "Votre rôle n'a pas pu être vérifié auprès de Tacticus : il a refusé le jeton d'API de guilde enregistré ou renvoyé des données que Planner n'a pas pu lire. Rien n'a été supprimé. Réenregistrez la guilde avec un nouveau jeton d'API de guilde, puis réessayez.",
+        "upstreamUnavailable": "Tacticus est indisponible pour le moment, votre rôle n'a donc pas pu être vérifié. Rien n'a été supprimé. Veuillez réessayer plus tard.",
+        "concurrency": "La liste des membres de la guilde a changé pendant la vérification. Rien n'a été supprimé. Veuillez réessayer.",
+        "rateLimited": "Trop de requêtes vers Tacticus. Rien n'a été supprimé. Patientez un instant et réessayez."
+      }
     },
     "tabs": {
       "members": "Membres",
@@ -790,7 +804,11 @@
         "unknownUpgrade": "Ce matériau d'amélioration n'est pas dans le catalogue du jeu V2.",
         "noUpgradeOwner": "Aucun de vos personnages ni de vos Machines de guerre n'utilise ce matériau d'amélioration.",
         "manualStepRequired": "Ce matériau n'a pas pu être placé automatiquement. Ajoutez-le à un objectif d'amélioration de l'unité indiquée.",
-        "generic": "Cet objectif n'a pas pu être importé."
+        "generic": "Cet objectif n'a pas pu être importé.",
+        "goalLimitReached": "Non importé : vous avez déjà le maximum d'objectifs non archivés de ce type.",
+        "projectLimitReached": "Non importé : vous avez déjà le maximum de projets non archivés, l'import n'a donc pas pu créer son projet. Archivez-en un et relancez l'import.",
+        "tooManyGoals": "Seuls vos premiers objectifs V1 par priorité ont été importés ; les autres ont été ignorés.",
+        "outcomesTruncated": "D'autres résultats d'objectifs n'ont pas été listés."
       },
       "legendaryEvents": {
         "title": "Équipes des Événements Légendaires",
@@ -846,7 +864,10 @@
           "existing_annotations_kept_one": "{{count}} marque déjà présente dans le planificateur a été conservée.",
           "existing_annotations_kept_other": "{{count}} marques déjà présentes dans le planificateur ont été conservées.",
           "unknown_objective_mark": "Une marque sur l'objectif non reconnu « {{objective}} » de {{lane}} a été ignorée.",
-          "unknown_lane_mark": "Une marque sur la voie non reconnue « {{lane}} » a été ignorée."
+          "unknown_lane_mark": "Une marque sur la voie non reconnue « {{lane}} » a été ignorée.",
+          "lane_team_limit_reached": "{{lane}} contient déjà {{max}} équipes ; les autres équipes ont été ignorées.",
+          "issues_truncated_one": "{{count}} autre problème n'a pas été listé.",
+          "issues_truncated_other": "{{count}} autres problèmes n'ont pas été listés."
         },
         "notInPlanner_one": "{{count}} événement de V1 n'est pas encore dans le planificateur",
         "notInPlanner_other": "{{count}} événements de V1 ne sont pas encore dans le planificateur"
@@ -870,6 +891,10 @@
           "campaignEventProgress": "Progression des événements de campagne"
         },
         "empty": "Rien de nouveau. Le planificateur a déjà tout ce que contient votre profil V1."
+      },
+      "partReasons": {
+        "invalidTacticusUserId": "L'ID utilisateur Tacticus de V1 n'est pas un GUID valide, il n'a donc pas été importé.",
+        "tacticusUserIdConflict": "Cet ID utilisateur Tacticus est déjà lié à un autre compte du planificateur, il n'a donc pas été importé."
       }
     },
     "empty": {
@@ -1400,7 +1425,8 @@
       "projectGuidanceSummary_one": "{{count}} matériau encore nécessaire pour les objectifs de ce projet.",
       "projectGuidanceSummary_other": "{{count}} matériaux encore nécessaires pour les objectifs de ce projet.",
       "projectGuidanceNone": "Rien à farmer pour ce projet.",
-      "farmingEmpty": "Il n'y a aucun lieu à choisir pour cet objectif."
+      "farmingEmpty": "Il n'y a aucun lieu à choisir pour cet objectif.",
+      "farmingTooMany": "Choisissez au plus {{max}} emplacements."
     },
     "resourceChips": {
       "energy": "Énergie",
@@ -1601,6 +1627,11 @@
         "noChange": "Aucun changement",
         "quickPicks": "{{track}} : choix rapides"
       }
+    },
+    "limits": {
+      "goalLimitReached": "Vous avez déjà {{max}} objectifs de type {{type}} non archivés. Archivez ou supprimez-en d'abord.",
+      "goalLimitReachedGeneric": "Vous pouvez avoir au plus {{max}} objectifs non archivés d'un même type. Archivez ou supprimez-en d'abord.",
+      "projectLimitReached": "Vous avez déjà {{max}} projets non archivés. Archivez-en un pour faire de la place."
     }
   },
   "language": {
@@ -1985,5 +2016,9 @@
       "goals": "Objectifs",
       "legendaryEvents": "Événements légendaires"
     }
+  },
+  "tacticusUserId": {
+    "invalid": "Saisissez votre ID utilisateur Tacticus au format GUID, par exemple 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
+    "inUse": "Cet ID utilisateur Tacticus est déjà lié à un autre compte du planificateur."
   }
 }

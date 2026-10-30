@@ -14,3 +14,6 @@ export function isCompleteTeam(
 ): boolean {
   return team.memberUnitIds.length >= MIN_TEAM_MEMBERS
 }
+
+/** The API's cap on teams in one lane of a plan (`legendaryEventTeamLimitReached` past it). */
+export const MAX_TEAMS_PER_LANE = 50

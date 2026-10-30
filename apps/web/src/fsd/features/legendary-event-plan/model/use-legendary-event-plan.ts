@@ -18,6 +18,7 @@ import {
 import { useAnalyticsActions } from "@/shared/analytics"
 
 import {
+  assertLaneHasRoom,
   draftOfTeam,
   isCurrentLaneOrder,
   teamCreateRequest,
@@ -100,11 +101,16 @@ export function useLegendaryEventPlan({
     origin: TeamOrigin = manualOrigin
   ) =>
     enqueue({
-      send: (base) =>
-        createLegendaryEventTeam(
+      send: async (base) => {
+        // A full lane is refused by the API (legendaryEventTeamLimitReached); every entry point to
+        // a new team (Add, a suggestion, a leaderboard unit) lands here, so the guard is checked
+        // once against the confirmed plan and the request is not sent. The queue toasts it.
+        assertLaneHasRoom(base, laneId)
+        return createLegendaryEventTeam(
           eventId,
           teamCreateRequest(laneId, draft, run, base.revision)
-        ),
+        )
+      },
       onSaved: () => {
         captureEvent({
           type: "legendary_event_team_created",

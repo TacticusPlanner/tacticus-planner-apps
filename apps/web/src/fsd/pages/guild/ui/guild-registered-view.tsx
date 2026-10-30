@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { useMutation } from "@tanstack/react-query"
 import { Outlet } from "react-router"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -13,8 +12,7 @@ import {
 } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { syncMyGuild, type RegisteredGuild } from "@/entities/guild"
-import { ApiError } from "@/shared/api"
+import { useGuildSync, type RegisteredGuild } from "@/entities/guild"
 
 import { formatRelativeTime } from "@/shared/lib"
 import { GuildPurgeDialog } from "./guild-purge-dialog"
@@ -34,27 +32,11 @@ type Props = {
 export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
   const { t, i18n } = useTranslation()
   const [isPurgeDialogOpen, setIsPurgeDialogOpen] = useState(false)
-  const synchronize = useMutation({
-    mutationFn: syncMyGuild,
-    onSuccess: onSynced,
-  })
-  const syncing = synchronize.isPending
-  const errorMessage = synchronize.error
-    ? synchronize.error instanceof ApiError
-      ? synchronize.error.message
-      : t("guild.summary.syncError")
-    : null
+  const { sync, syncing, coolingDown, errorMessage } = useGuildSync(onSynced)
 
   const lastSynced = guild.lastSyncSucceededAt
     ? formatRelativeTime(Date.parse(guild.lastSyncSucceededAt), i18n.language)
     : null
-
-  const handleSync = () => {
-    // Guards against overlapping requests — the button is also disabled while syncing, but this covers
-    // any path that could otherwise re-trigger the handler mid-flight.
-    if (syncing) return
-    synchronize.mutate()
-  }
 
   return (
     <div className="flex flex-col gap-4" data-testid="guild-registered">
@@ -78,10 +60,10 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
             <div className="flex items-center gap-2">
               <Button
                 data-testid="guild-sync-button"
-                disabled={syncing}
+                disabled={syncing || coolingDown}
                 size="sm"
                 variant="outline"
-                onClick={handleSync}
+                onClick={sync}
               >
                 {syncing ? <Spinner /> : <RefreshCw data-icon="inline-start" />}
                 {syncing ? t("guild.summary.syncing") : t("guild.summary.sync")}

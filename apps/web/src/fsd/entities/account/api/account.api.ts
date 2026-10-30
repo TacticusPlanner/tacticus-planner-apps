@@ -78,15 +78,21 @@ export function importV1Profile(request: ImportV1ProfileRequest) {
 }
 
 /** `deleteSignInAccount` also deletes the Entra External ID user the caller signs in with; otherwise only
- *  planner data goes and the same sign-in starts a fresh planner account. */
+ *  planner data goes and the same sign-in starts a fresh planner account. Resolves whether the sign-in
+ *  account is actually gone (the `X-Sign-In-Account-Deleted` header): that step is best effort, so it
+ *  can be false even when asked for, while the planner data is deleted either way. */
 export async function purgeAccount({
   deleteSignInAccount = false,
-}: { deleteSignInAccount?: boolean } = {}) {
-  await unwrap(
-    apiClient().DELETE("/api/v1/account", {
-      params: { query: { deleteSignInAccount } },
-    })
-  )
+}: { deleteSignInAccount?: boolean } = {}): Promise<{
+  signInAccountDeleted: boolean
+}> {
+  const { response } = await apiClient().DELETE("/api/v1/account", {
+    params: { query: { deleteSignInAccount } },
+  })
   // The account is gone, so the next sign-in must wait for GET /account to provision a new one.
   clearSetupCompleteHint()
+  return {
+    signInAccountDeleted:
+      response.headers.get("X-Sign-In-Account-Deleted") === "true",
+  }
 }

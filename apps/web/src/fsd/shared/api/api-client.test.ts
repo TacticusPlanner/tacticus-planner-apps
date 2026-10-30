@@ -84,6 +84,32 @@ describe("API client problem bodies", () => {
     })
   })
 
+  it("reads a 429's Retry-After seconds, and leaves them unset without the header", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ title: "Too Many", issueCode: "guildSyncCooldown" }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/problem+json",
+            "Retry-After": "42",
+          },
+        }
+      )
+    )
+    fetchMock.mockResolvedValueOnce(problem(429, { issueCode: "rateLimited" }))
+
+    await expect(putGoal()).rejects.toMatchObject({
+      issueCode: "guildSyncCooldown",
+      retryAfterSeconds: 42,
+    })
+    await expect(putGoal()).rejects.toMatchObject({
+      issueCode: "rateLimited",
+      retryAfterSeconds: undefined,
+    })
+  })
+
   it("falls back to the title, then to a generic text for a non-problem body", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch")
     fetchMock.mockResolvedValueOnce(problem(403, { title: "Forbidden" }))

@@ -124,8 +124,11 @@ export function buildEditGoalRequest(
     // Upgrade/Ability goal sits beside it (add-mythic-material-shop-sources).
     const usesShardSources =
       detail.goalType === "Unlock" || detail.goalType === "Ascension"
+    // An Ascension goal takes no farming locations at all (the API rejects any): its shard sources
+    // are acquisition sources.
     const clearsLocations =
       detail.goalType === "Rank" ||
+      detail.goalType === "Ascension" ||
       (usesShardSources && draft.acquisitionSources !== null)
     request.details = {
       notes: draft.notes.trim() || null,

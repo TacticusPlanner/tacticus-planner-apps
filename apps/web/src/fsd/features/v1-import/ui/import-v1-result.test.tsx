@@ -335,6 +335,66 @@ describe("ImportResult — Legendary Event teams", () => {
     ).not.toHaveTextContent("goals.v1Import.reasons.generic")
   })
 
+  it("translates the lane team cap and issue truncation lines", () => {
+    render(
+      <ImportResult
+        result={result([
+          event({
+            issues: [
+              {
+                code: "lane_team_limit_reached",
+                teamName: null,
+                value: "beta",
+              },
+              { code: "issues_truncated", teamName: null, value: "7" },
+            ],
+          }),
+        ])}
+      />
+    )
+
+    const issues = screen.getAllByTestId("v1-import-le-issue")
+    expect(issues[0]).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.lane_team_limit_reached"
+    )
+    expect(issues[0]).toHaveTextContent("max=50")
+    expect(issues[1]).toHaveTextContent(
+      "goals.v1Import.legendaryEvents.issues.issues_truncated count=7"
+    )
+    expect(
+      screen.getByTestId("v1-import-legendary-events")
+    ).not.toHaveTextContent("goals.v1Import.reasons.generic")
+  })
+
+  it.each([
+    [
+      "invalid_tacticus_user_id",
+      "goals.v1Import.partReasons.invalidTacticusUserId",
+    ],
+    [
+      "tacticus_user_id_conflict",
+      "goals.v1Import.partReasons.tacticusUserIdConflict",
+    ],
+  ])("translates the user-id part's %s failure", (code, key) => {
+    const base = result([])
+    render(
+      <ImportResult
+        result={{
+          ...base,
+          tacticusUserId: {
+            status: "Failed",
+            code,
+            message: "Server English.",
+          },
+        }}
+      />
+    )
+
+    const report = screen.getByTestId("v1-import-result")
+    expect(report).toHaveTextContent(key)
+    expect(report).not.toHaveTextContent("Server English.")
+  })
+
   it("lists an inputs-only event as imported with its runs and marks, not as imported without teams", () => {
     render(
       <ImportResult

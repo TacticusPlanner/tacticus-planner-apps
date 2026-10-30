@@ -300,6 +300,21 @@ describe("TeamsSection", () => {
     expect(screen.getByTestId("legendary-event-add-team")).toBeInTheDocument()
   })
 
+  it("disables Add team and says so when the lane holds 50 teams", () => {
+    renderSection(
+      ready({
+        ...plan,
+        teams: Array.from({ length: 50 }, (_, index) =>
+          team(`t${index}`, `Team ${index}`, "alpha", index)
+        ),
+      })
+    )
+    expect(screen.getByTestId("legendary-event-add-team")).toBeDisabled()
+    expect(screen.getByTestId("legendary-event-lane-full")).toHaveTextContent(
+      "50"
+    )
+  })
+
   it("shows a skeleton while loading", () => {
     renderSection({ kind: "loading" })
     expect(

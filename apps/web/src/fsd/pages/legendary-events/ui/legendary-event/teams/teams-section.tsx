@@ -7,6 +7,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
   buildLanePointsModel,
+  MAX_TEAMS_PER_LANE,
   useTeamDisplayName,
   type LaneProgressView,
   type LegendaryEventLane,
@@ -118,6 +119,9 @@ export function TeamsSection({
     () => (state.kind === "ready" ? laneTeams(state.plan, laneId) : []),
     [state, laneId]
   )
+
+  // A lane holds at most MAX_TEAMS_PER_LANE teams (the API refuses one more).
+  const laneFull = savedTeams.length >= MAX_TEAMS_PER_LANE
 
   const displayName = useTeamDisplayName()
   const nameOf = (team: LegendaryEventTeam) =>
@@ -236,9 +240,18 @@ export function TeamsSection({
                 {t("suggestions.needsEstimates")}
               </span>
             )}
+            {laneFull ? (
+              <span
+                className="text-xs text-muted-foreground"
+                data-testid="legendary-event-lane-full"
+              >
+                {t("teams.laneFull", { max: MAX_TEAMS_PER_LANE })}
+              </span>
+            ) : null}
             {suggestButton("legendary-event-suggest-teams")}
             <Button
               data-testid="legendary-event-add-team"
+              disabled={laneFull}
               onClick={() => openEditor()}
               size="sm"
             >

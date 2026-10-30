@@ -12,6 +12,11 @@ const signOut = vi.fn().mockResolvedValue(undefined)
 const refetch = vi.fn()
 const applyTacticusIntegrationResult = vi.fn()
 const currentUserState = vi.fn<() => CurrentUserState>()
+const rememberSignInAccountKept = vi.fn()
+
+vi.mock("../model/sign-in-account-kept-notice", () => ({
+  rememberSignInAccountKept: () => rememberSignInAccountKept(),
+}))
 
 const successState: CurrentUserState = {
   status: "success",
@@ -82,6 +87,7 @@ describe("ManageAccountDialog", () => {
     updateDisplayName.mockReset()
     logoutRedirect.mockClear()
     signOut.mockClear()
+    rememberSignInAccountKept.mockClear()
     refetch.mockClear()
     applyTacticusIntegrationResult.mockClear()
   })
@@ -214,6 +220,34 @@ describe("ManageAccountDialog", () => {
     expect(applyTacticusIntegrationResult).not.toHaveBeenCalled()
   })
 
+  it("drops the API's user-id answer once the user edits the id", async () => {
+    const { ApiError } = await import("@/shared/api")
+    updateTacticusIntegration.mockRejectedValue(
+      Object.assign(new ApiError(409, "Already linked."), {
+        issueCode: "tacticusUserIdInUse",
+      })
+    )
+    const user = userEvent.setup()
+    render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
+
+    const input = screen.getByTestId("manage-account-user-id-input")
+    fireEvent.change(input, {
+      target: { value: "3f2504e0-4f89-11d3-9a0c-0305e82c3301" },
+    })
+    await user.click(screen.getByTestId("manage-account-integration-submit"))
+    expect(
+      await screen.findByTestId("manage-account-user-id-error")
+    ).toHaveTextContent("tacticusUserId.inUse")
+
+    fireEvent.change(input, {
+      target: { value: "3f2504e0-4f89-11d3-9a0c-0305e82c3302" },
+    })
+
+    expect(
+      screen.queryByTestId("manage-account-user-id-error")
+    ).not.toBeInTheDocument()
+  })
+
   it("disables and clears the user id field when 'remove user id' is checked, and sends clearTacticusUserId", async () => {
     updateTacticusIntegration.mockResolvedValue(undefined)
     const user = userEvent.setup()
@@ -258,7 +292,7 @@ describe("ManageAccountDialog", () => {
   })
 
   it("keeps the purge action disabled until the confirmation word is typed exactly", async () => {
-    purgeAccount.mockResolvedValue(undefined)
+    purgeAccount.mockResolvedValue({ signInAccountDeleted: false })
 
     const user = userEvent.setup()
     render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
@@ -283,10 +317,11 @@ describe("ManageAccountDialog", () => {
     })
     expect(purgeAccount).toHaveBeenCalledWith({ deleteSignInAccount: false })
     expect(signOut).toHaveBeenCalledTimes(1)
+    expect(rememberSignInAccountKept).not.toHaveBeenCalled()
   })
 
   it("also deletes the sign-in account when that option is chosen", async () => {
-    purgeAccount.mockResolvedValue(undefined)
+    purgeAccount.mockResolvedValue({ signInAccountDeleted: true })
 
     const user = userEvent.setup()
     render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
@@ -305,6 +340,33 @@ describe("ManageAccountDialog", () => {
       expect(purgeAccount).toHaveBeenCalledWith({ deleteSignInAccount: true })
     })
     expect(signOut).toHaveBeenCalledTimes(1)
+    expect(rememberSignInAccountKept).not.toHaveBeenCalled()
+  })
+
+  it("still cleans up and signs out at once when the sign-in account was kept, leaving a notice", async () => {
+    purgeAccount.mockResolvedValue({ signInAccountDeleted: false })
+    const onOpenChange = vi.fn()
+
+    const user = userEvent.setup()
+    render(<ManageAccountDialog onOpenChange={onOpenChange} open />)
+
+    await user.click(screen.getByTestId("manage-account-tab-account"))
+    await user.click(
+      screen.getByTestId("manage-account-purge-scope-signInAccount")
+    )
+    fireEvent.change(
+      screen.getByTestId("manage-account-purge-confirmation-input"),
+      { target: { value: "Confirm" } }
+    )
+    await user.click(screen.getByTestId("manage-account-purge-submit"))
+
+    await vi.waitFor(() => expect(signOut).toHaveBeenCalledTimes(1))
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(rememberSignInAccountKept).toHaveBeenCalledOnce()
+    // The notice is stored before the sign-out redirect leaves the page.
+    expect(rememberSignInAccountKept.mock.invocationCallOrder[0]).toBeLessThan(
+      signOut.mock.invocationCallOrder[0]!
+    )
   })
 
   it("shows the sign-in method and email on the account tab", async () => {

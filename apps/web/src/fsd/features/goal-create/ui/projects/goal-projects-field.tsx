@@ -17,7 +17,13 @@ import {
 } from "@workspace/ui/components/popover"
 
 import type { ProjectSummary } from "@/entities/project"
-import { isProjectNameValid, ProjectColorDot } from "@/entities/project"
+import {
+  isAtProjectLimit,
+  isProjectLimitError,
+  isProjectNameValid,
+  MAX_PROJECTS,
+  ProjectColorDot,
+} from "@/entities/project"
 import { ApiError } from "@/shared/api"
 import { useInlineProjectCreate } from "@/features/goal-planning/@x/goal-create"
 import type { ProjectRemovalUnavailableReason } from "@/features/goal-planning/@x/goal-create"
@@ -78,6 +84,13 @@ export function GoalProjectsField({
   const createAndSelect = async () => {
     if (creating || !canCreate) return
     setCreateError(null)
+    // At the cap the API refuses the create; say so without sending it.
+    if (isAtProjectLimit(projects)) {
+      setCreateError(
+        t("goals.limits.projectLimitReached", { max: MAX_PROJECTS })
+      )
+      return
+    }
     try {
       const created = await create(searched)
       onSelectionChange([...selectedProjectIds, created.projectId])
@@ -86,9 +99,11 @@ export function GoalProjectsField({
     } catch (error) {
       // The typed name and the goal draft stay as they are so the user can retry or pick another name.
       setCreateError(
-        error instanceof ApiError && error.message
-          ? error.message
-          : t("goals.project.createFailed")
+        isProjectLimitError(error)
+          ? t("goals.limits.projectLimitReached", { max: MAX_PROJECTS })
+          : error instanceof ApiError && error.message
+            ? error.message
+            : t("goals.project.createFailed")
       )
     }
   }

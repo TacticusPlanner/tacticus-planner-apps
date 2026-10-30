@@ -21,6 +21,8 @@ import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
   applyTacticusIntegrationResult,
+  isTacticusUserId,
+  tacticusUserIdProblem,
   updateTacticusIntegration,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
@@ -38,16 +40,22 @@ export function GuildTacticusUserIdCard({ onSaved }: { onSaved: () => void }) {
       onSaved()
     },
   })
-  const errorMessage = updateIntegration.error
-    ? updateIntegration.error instanceof ApiError
-      ? updateIntegration.error.message
-      : t("guild.tacticusUserIdRequired.genericError")
-    : null
+  const trimmed = userId.trim()
+  const formatInvalid = trimmed !== "" && !isTacticusUserId(trimmed)
+  const userIdProblem = formatInvalid
+    ? "invalid"
+    : tacticusUserIdProblem(updateIntegration.error)
+  const errorMessage = userIdProblem
+    ? t(`tacticusUserId.${userIdProblem}`)
+    : updateIntegration.error
+      ? updateIntegration.error instanceof ApiError
+        ? updateIntegration.error.message
+        : t("guild.tacticusUserIdRequired.genericError")
+      : null
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    const trimmed = userId.trim()
-    if (!trimmed) return
+    if (!trimmed || formatInvalid) return
     updateIntegration.mutate({ tacticusApiKey: null, tacticusUserId: trimmed })
   }
 
@@ -76,7 +84,11 @@ export function GuildTacticusUserIdCard({ onSaved }: { onSaved: () => void }) {
                     "guild.tacticusUserIdRequired.userIdPlaceholder"
                   )}
                   value={userId}
-                  onChange={(event) => setUserId(event.target.value)}
+                  onChange={(event) => {
+                    setUserId(event.target.value)
+                    // The last answer was about the id just submitted, not the one now typed.
+                    if (updateIntegration.error) updateIntegration.reset()
+                  }}
                 />
               </FieldContent>
               {errorMessage ? (
@@ -87,7 +99,9 @@ export function GuildTacticusUserIdCard({ onSaved }: { onSaved: () => void }) {
             </Field>
             <Button
               data-testid="guild-tacticus-user-id-submit"
-              disabled={updateIntegration.isPending || !userId.trim()}
+              disabled={
+                updateIntegration.isPending || !trimmed || formatInvalid
+              }
               type="submit"
             >
               {updateIntegration.isPending ? (

@@ -35,7 +35,9 @@ import { useMsal } from "@azure/msal-react"
 
 import {
   applyTacticusIntegrationResult,
+  isTacticusUserId,
   purgeAccount,
+  tacticusUserIdProblem,
   updateTacticusIntegration,
   useCurrentUser,
   type CurrentUser,
@@ -43,6 +45,7 @@ import {
 import { ApiError } from "@/shared/api"
 import { getAccountEmail, getSignInMethod, signOut } from "@/shared/auth"
 
+import { rememberSignInAccountKept } from "../model/sign-in-account-kept-notice"
 import { ProfileTab } from "./profile-tab"
 
 const PURGE_CONFIRMATION_WORD = "Confirm"
@@ -148,18 +151,31 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
       applyTacticusIntegrationResult(queryClient, result)
     },
   })
-  const errorMessage = updateIntegration.error
-    ? updateIntegration.error instanceof ApiError
-      ? updateIntegration.error.message
-      : t("manageAccount.integration.genericError")
-    : null
+  // The API's user-id answer was about the id just submitted, so editing the id drops it.
+  const clearUserIdAnswer = () => {
+    if (tacticusUserIdProblem(updateIntegration.error))
+      updateIntegration.reset()
+  }
+  const trimmedUserId = removeUserId ? "" : userId.trim()
+  const userIdFormatInvalid =
+    trimmedUserId !== "" && !isTacticusUserId(trimmedUserId)
+  const userIdProblem = userIdFormatInvalid
+    ? "invalid"
+    : tacticusUserIdProblem(updateIntegration.error)
+  const errorMessage =
+    updateIntegration.error && !userIdProblem
+      ? updateIntegration.error instanceof ApiError
+        ? updateIntegration.error.message
+        : t("manageAccount.integration.genericError")
+      : null
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
+    if (userIdFormatInvalid) return
     updateIntegration.mutate({
       clearTacticusUserId: removeUserId,
       tacticusApiKey: apiKey.trim() || null,
-      tacticusUserId: removeUserId ? null : userId.trim() || null,
+      tacticusUserId: trimmedUserId || null,
     })
   }
 
@@ -216,7 +232,7 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
         </FieldContent>
       </Field>
 
-      <Field>
+      <Field data-invalid={Boolean(userIdProblem)}>
         <FieldLabel htmlFor="manage-account-user-id">
           {t("manageAccount.integration.userIdLabel")}
         </FieldLabel>
@@ -224,12 +240,21 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
           <Input
             id="manage-account-user-id"
             data-testid="manage-account-user-id-input"
+            aria-invalid={Boolean(userIdProblem)}
             autoComplete="off"
             disabled={removeUserId}
             placeholder={t("manageAccount.integration.userIdPlaceholder")}
             value={userId}
-            onChange={(event) => setUserId(event.target.value)}
+            onChange={(event) => {
+              setUserId(event.target.value)
+              clearUserIdAnswer()
+            }}
           />
+          {userIdProblem ? (
+            <FieldError data-testid="manage-account-user-id-error">
+              {t(`tacticusUserId.${userIdProblem}`)}
+            </FieldError>
+          ) : null}
         </FieldContent>
       </Field>
 
@@ -238,7 +263,10 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
           id="manage-account-remove-user-id"
           data-testid="manage-account-remove-user-id"
           checked={removeUserId}
-          onCheckedChange={(checked) => setRemoveUserId(checked === true)}
+          onCheckedChange={(checked) => {
+            setRemoveUserId(checked === true)
+            clearUserIdAnswer()
+          }}
         />
         <FieldLabel
           className="font-normal text-muted-foreground"
@@ -264,7 +292,7 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
 
       <Button
         data-testid="manage-account-integration-submit"
-        disabled={updateIntegration.isPending}
+        disabled={updateIntegration.isPending || userIdFormatInvalid}
         type="submit"
       >
         {updateIntegration.isPending ? <Spinner /> : null}
@@ -288,7 +316,15 @@ function AccountTab({
   const [scope, setScope] = useState<PurgeScope>("plannerData")
   const purge = useMutation({
     mutationFn: async () => {
-      await purgeAccount({ deleteSignInAccount: scope === "signInAccount" })
+      const deleteSignInAccount = scope === "signInAccount"
+      const { signInAccountDeleted } = await purgeAccount({
+        deleteSignInAccount,
+      })
+      // Sign out after any purge, even when the sign-in account was kept: staying signed in would let
+      // the next `GET /account` provision a new, empty planner account. The landing page shows the notice.
+      if (deleteSignInAccount && !signInAccountDeleted) {
+        rememberSignInAccountKept()
+      }
       onPurged()
       await signOut(instance, account.homeAccountId)
     },

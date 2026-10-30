@@ -4,6 +4,7 @@ import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
 import { useIsAuthenticated } from "@azure/msal-react"
 
+import { useSignInAccountKeptNotice } from "@/features/account"
 import { useSignInRedirect } from "@/shared/auth"
 
 import {
@@ -19,6 +20,8 @@ const cardLinkClass =
 /** The public landing page, for signed-out and signed-in visitors alike: rendered inside `PublicLayout`,
  *  which owns the top bar, footer and `main`. Signed in, the hero's primary action opens the planner. */
 export function LandingPage() {
+  // Sign-out lands here, so this is where a purge that kept the sign-in account says so.
+  useSignInAccountKeptNotice()
   return (
     <div className="flex flex-col" data-testid="landing-page">
       <LandingHero />

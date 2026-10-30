@@ -23,3 +23,7 @@ export {
   validateDisplayName,
 } from "./model/display-name"
 export { useUpdateDisplayName } from "./model/use-update-display-name"
+export {
+  isTacticusUserId,
+  tacticusUserIdProblem,
+} from "./model/tacticus-user-id"
