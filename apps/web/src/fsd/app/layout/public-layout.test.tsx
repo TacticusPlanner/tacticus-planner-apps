@@ -3,6 +3,8 @@ import { MemoryRouter } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const signIn = vi.fn()
+const signUp = vi.fn()
+const signInState = vi.fn(() => ({ checkingSignIn: false, disabled: false }))
 const isAuthenticated = vi.fn(() => false)
 const isUiKitEnabled = vi.fn(() => true)
 
@@ -15,7 +17,7 @@ vi.mock("@azure/msal-react", () => ({
 }))
 
 vi.mock("@/shared/auth", () => ({
-  useSignInRedirect: () => ({ checkingSignIn: false, disabled: false, signIn }),
+  useSignInRedirect: () => ({ ...signInState(), signIn, signUp }),
 }))
 
 vi.mock("@/shared/config", () => ({
@@ -46,6 +48,8 @@ function renderLayout(pageTitle?: string) {
 describe("PublicLayout", () => {
   beforeEach(() => {
     signIn.mockClear()
+    signUp.mockClear()
+    signInState.mockReturnValue({ checkingSignIn: false, disabled: false })
     isAuthenticated.mockReturnValue(false)
     isUiKitEnabled.mockReturnValue(true)
   })
@@ -69,6 +73,30 @@ describe("PublicLayout", () => {
     ).not.toBeInTheDocument()
   })
 
+  it("offers sign-up next to sign-in to a signed-out visitor", () => {
+    renderLayout()
+
+    const signInButton = screen.getByRole("button", { name: "auth.signIn" })
+    const signUpButton = screen.getByRole("button", { name: "auth.signUp" })
+    expect(
+      signInButton.compareDocumentPosition(signUpButton) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+
+    fireEvent.click(signUpButton)
+
+    expect(signUp).toHaveBeenCalledOnce()
+    expect(signIn).not.toHaveBeenCalled()
+  })
+
+  it("disables both account actions during an MSAL interaction", () => {
+    signInState.mockReturnValue({ checkingSignIn: false, disabled: true })
+    renderLayout()
+
+    expect(screen.getByRole("button", { name: "auth.signIn" })).toBeDisabled()
+    expect(screen.getByRole("button", { name: "auth.signUp" })).toBeDisabled()
+  })
+
   it("offers the planner to a signed-in visitor instead of sign-in", () => {
     isAuthenticated.mockReturnValue(true)
     renderLayout()
@@ -76,6 +104,9 @@ describe("PublicLayout", () => {
     expect(
       screen.getByRole("link", { name: "publicSite.openPlanner" })
     ).toHaveAttribute("href", "/home")
+    expect(
+      screen.queryByRole("button", { name: "auth.signUp" })
+    ).not.toBeInTheDocument()
     expect(
       screen.queryByRole("button", { name: "auth.signIn" })
     ).not.toBeInTheDocument()

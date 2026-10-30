@@ -1,4 +1,4 @@
-import { ArrowRight, Check, LogIn } from "lucide-react"
+import { ArrowRight, Check, LogIn, UserPlus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
@@ -36,7 +36,7 @@ export function LandingPage() {
 function LandingHero() {
   const { t } = useTranslation(["landing", "common"])
   const isAuthenticated = useIsAuthenticated()
-  const { checkingSignIn, disabled, signIn } = useSignInRedirect()
+  const { checkingSignIn, disabled, signIn, signUp } = useSignInRedirect()
   const trustPoints = [
     t("hero.trust.apiKey"),
     t("hero.trust.mobile"),
@@ -78,7 +78,7 @@ function LandingHero() {
           <p className="max-w-[36ch] text-lg text-muted-foreground">
             {t("hero.subtitle")}
           </p>
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
             {isAuthenticated ? (
               <Button
                 asChild
@@ -101,6 +101,18 @@ function LandingHero() {
                 {checkingSignIn
                   ? t("common:auth.checkingSignIn")
                   : t("hero.getStarted")}
+              </Button>
+            )}
+            {isAuthenticated ? null : (
+              <Button
+                className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur"
+                data-testid="landing-sign-up"
+                disabled={disabled}
+                onClick={signUp}
+                variant="outline"
+              >
+                <UserPlus data-icon="inline-start" />
+                {t("common:auth.signUp")}
               </Button>
             )}
             <Button

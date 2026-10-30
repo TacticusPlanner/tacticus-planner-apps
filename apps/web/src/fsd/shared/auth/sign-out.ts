@@ -5,7 +5,7 @@ import { deletePlayerDataDb } from "@workspace/player-data"
 import { accountStoragePrefix, safeStorage } from "@/shared/lib"
 import { clearLocalDataCache } from "@/shared/local-data"
 
-import { forgetAccountHint } from "./authentication"
+import { forgetAccountHint, forgetFreshLogin } from "./authentication"
 
 export async function signOut(
   instance: IPublicClientApplication,
@@ -16,6 +16,7 @@ export async function signOut(
   safeStorage.removeByPrefix(accountStoragePrefix)
   // A new tab must show the signed-out experience, not try to restore this account.
   forgetAccountHint()
+  forgetFreshLogin()
   const account = instance
     .getAllAccounts()
     .find((candidate) => candidate.homeAccountId === accountId)

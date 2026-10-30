@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const signIn = vi.fn()
+const signUp = vi.fn()
 const signInState = vi.fn(() => ({ checkingSignIn: false, disabled: false }))
 const isAuthenticated = vi.fn(() => false)
 
@@ -11,7 +12,7 @@ vi.mock("react-i18next", () => ({
 }))
 
 vi.mock("@/shared/auth", () => ({
-  useSignInRedirect: () => ({ ...signInState(), signIn }),
+  useSignInRedirect: () => ({ ...signInState(), signIn, signUp }),
 }))
 
 vi.mock("@/features/account", () => ({
@@ -35,6 +36,7 @@ function renderLanding() {
 describe("LandingPage", () => {
   beforeEach(() => {
     signIn.mockClear()
+    signUp.mockClear()
     signInState.mockReturnValue({ checkingSignIn: false, disabled: false })
     isAuthenticated.mockReturnValue(false)
   })
@@ -84,6 +86,60 @@ describe("LandingPage", () => {
     expect(
       screen.queryByRole("button", { name: "hero.getStarted" })
     ).not.toBeInTheDocument()
+  })
+
+  describe("hero Sign up", () => {
+    const signUpButton = () =>
+      screen.getByRole("button", { name: "common:auth.signUp" })
+
+    it("starts account creation for a signed-out visitor", () => {
+      renderLanding()
+
+      fireEvent.click(signUpButton())
+
+      expect(signUp).toHaveBeenCalledOnce()
+      expect(signIn).not.toHaveBeenCalled()
+    })
+
+    it("sits between Get started and Browse the library", () => {
+      renderLanding()
+
+      const getStarted = screen.getByRole("button", {
+        name: "hero.getStarted",
+      })
+      const browse = screen.getByRole("link", { name: "hero.browseLibrary" })
+      expect(
+        getStarted.compareDocumentPosition(signUpButton()) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+      expect(
+        signUpButton().compareDocumentPosition(browse) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+    })
+
+    it("is not offered to a signed-in visitor", () => {
+      isAuthenticated.mockReturnValue(true)
+      renderLanding()
+
+      expect(
+        screen.queryByRole("button", { name: "common:auth.signUp" })
+      ).not.toBeInTheDocument()
+    })
+
+    it("stays available while the silent check runs", () => {
+      signInState.mockReturnValue({ checkingSignIn: true, disabled: false })
+      renderLanding()
+
+      expect(signUpButton()).toBeEnabled()
+    })
+
+    it("is disabled during an MSAL interaction", () => {
+      signInState.mockReturnValue({ checkingSignIn: false, disabled: true })
+      renderLanding()
+
+      expect(signUpButton()).toBeDisabled()
+    })
   })
 
   it("links the secondary action to the Library", () => {
