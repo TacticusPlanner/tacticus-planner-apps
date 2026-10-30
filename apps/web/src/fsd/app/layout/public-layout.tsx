@@ -1,5 +1,5 @@
 import { Suspense, useEffect, type ReactNode } from "react"
-import { ExternalLink, LogIn, Settings } from "lucide-react"
+import { ExternalLink, LogIn, Settings, UserPlus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
@@ -80,7 +80,7 @@ export function PublicLayout({
 function PublicTopBar() {
   const { t } = useTranslation(["common", "library"])
   const isAuthenticated = useIsAuthenticated()
-  const { checkingSignIn, disabled, signIn } = useSignInRedirect()
+  const { checkingSignIn, disabled, signIn, signUp } = useSignInRedirect()
 
   return (
     <header className="sticky top-0 z-30 border-b bg-topbar/85 pt-[env(safe-area-inset-top)] backdrop-blur">
@@ -129,10 +129,31 @@ function PublicTopBar() {
             <Link to="/home">{t("publicSite.openPlanner")}</Link>
           </Button>
         ) : (
-          <Button disabled={disabled} onClick={signIn} size="sm">
-            <LogIn data-icon="inline-start" />
-            {checkingSignIn ? t("auth.checkingSignIn") : t("auth.signIn")}
-          </Button>
+          <>
+            {/* min-w-0 + truncate: the long "signing you in" label must not push the row past a
+                360px screen while Sign up sits next to it. */}
+            <Button
+              className="min-w-0"
+              disabled={disabled}
+              onClick={signIn}
+              size="sm"
+              variant="ghost"
+            >
+              <LogIn data-icon="inline-start" />
+              <span className="truncate">
+                {checkingSignIn ? t("auth.checkingSignIn") : t("auth.signIn")}
+              </span>
+            </Button>
+            <Button
+              data-testid="public-sign-up"
+              disabled={disabled}
+              onClick={signUp}
+              size="sm"
+            >
+              <UserPlus data-icon="inline-start" />
+              {t("auth.signUp")}
+            </Button>
+          </>
         )}
       </div>
     </header>
