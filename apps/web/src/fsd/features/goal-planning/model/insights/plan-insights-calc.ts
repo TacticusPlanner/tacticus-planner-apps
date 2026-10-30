@@ -57,6 +57,8 @@ import { createPlanMissingResources } from "./plan-missing-resources"
 import { createPlanNetResources } from "./plan-net-resources"
 import { createStandaloneEstimates } from "./plan-standalone-estimates"
 import type {
+  PlanInsightsExcludedGoal,
+  PlanInsightsGoalOutlook,
   PlanInsightsResult,
   PlanInsightsTotals,
 } from "./use-plan-insights.domain"
@@ -402,25 +404,46 @@ export function computePlanInsights(params: {
   // estimable subset; the date was the odd one out.
   let energyTotal = 0
   let completionDate: string | null = null
-  let estimatedGoalCount = 0
+  const goalOutlook: PlanInsightsGoalOutlook[] = []
   for (const goal of goalNeeds) {
     if (!inScope(goal.goalId)) continue
     const result = estimateResults.get(goal.goalId)
     if (!result || result.status === "Blocked") continue
-    estimatedGoalCount++
+    goalOutlook.push({
+      goalId: goal.goalId,
+      date: result.date,
+      days: result.days,
+    })
     energyTotal += result.energyTotal
     if (!completionDate || result.date > completionDate) {
       completionDate = result.date
     }
   }
+  // Latest first: the head of the list is what sets the plan's date.
+  goalOutlook.sort(
+    (left, right) =>
+      right.date.localeCompare(left.date) || right.days - left.days
+  )
   // Counted against the project's own goals, not `goalNeeds`: that array is already filtered above
   // (needs-or-stages plus a resolved priority), and an orb-only Ascension goal goes to
   // `orbGoalNeeds` instead — counting skips inside the loop would silently undercount and make a
   // project of such goals indistinguishable from an empty one.
-  const scopedGoalCount = new Set(
-    params.details.filter((d) => inScope(d.goalId)).map((d) => d.goalId)
-  ).size
-  const unestimatedGoalCount = Math.max(0, scopedGoalCount - estimatedGoalCount)
+  const estimatedGoalIds = new Set(goalOutlook.map((goal) => goal.goalId))
+  const excludedGoals: PlanInsightsExcludedGoal[] = [
+    ...new Set(
+      params.details.filter((d) => inScope(d.goalId)).map((d) => d.goalId)
+    ),
+  ]
+    .filter((goalId) => !estimatedGoalIds.has(goalId))
+    .map((goalId) => {
+      const estimate = estimateResults.get(goalId)
+      return {
+        goalId,
+        reason:
+          estimate?.status === "Blocked" ? estimate.reason : "NotEstimated",
+      }
+    })
+  const unestimatedGoalCount = excludedGoals.length
 
   const { bottlenecks, blockers } = computeBottlenecks({
     goalNeeds: goalNeeds.filter((goal) => inScope(goal.goalId)),
@@ -493,6 +516,8 @@ export function computePlanInsights(params: {
     planNetByGoalId,
     completionDate,
     unestimatedGoalCount,
+    goalOutlook,
+    excludedGoals,
     bottlenecks,
     blockers,
     campaignInsights,

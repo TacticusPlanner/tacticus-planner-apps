@@ -15,6 +15,8 @@ import {
   onslaughtAllianceIcon,
   orbAllianceIcon,
   orbIcon,
+  rarityIcon,
+  shardIcon,
   xpBookIcon,
   type GameIcon,
 } from "@workspace/game-catalog"
@@ -22,7 +24,10 @@ import { rarityOrder, type Rarity } from "@workspace/game-domain"
 
 import { EntityIcon } from "@/shared/ui"
 
-import type { PlanMissingResources } from "@/features/goal-planning"
+import type {
+  PlanInsightsTotals,
+  PlanMissingResources,
+} from "@/features/goal-planning"
 
 const ALLIANCES = ["Imperial", "Xenos", "Chaos"] as const
 
@@ -42,13 +47,15 @@ type Row = {
   items: Item[]
 }
 
-/** The plan's "still missing" totals (V1's "Total Resources Missing"): what the goals need beyond
- *  the current inventory, spent in priority order — grouped into ability badges and orbs (each by
- *  alliance), Machine of War materials (forge badges and components), XP books and gold. */
+/** The plan's shopping list (V1's "Total Resources Missing"): everything the goals need beyond the
+ *  current inventory, spent in priority order — farmed upgrades and shards, ability badges and orbs
+ *  (each by alliance), Machine of War materials (forge badges and components), XP books and gold. */
 export function InsightsMissing({
   missing,
+  totals,
 }: {
   missing: PlanMissingResources
+  totals?: PlanInsightsTotals
 }) {
   const { t, i18n } = useTranslation()
   const fmt = (value: number) =>
@@ -88,6 +95,41 @@ export function InsightsMissing({
     showTotal: boolean
     rows: Row[]
   }[] = [
+    {
+      key: "farmed",
+      title: t("goals.insights.missingFarmed"),
+      showTotal: false,
+      rows: [
+        {
+          key: "upgrades",
+          title: t("goals.insights.missingUpgrades"),
+          items: byRarity("upgrades", totals?.upgradesByRarity, (rarity) => ({
+            icon: rarityIcon(rarity),
+            name: t("goals.insights.upgradesOfRarity", {
+              rarity: rarityName(rarity),
+            }),
+          })),
+        },
+        {
+          key: "shards",
+          title: t("goals.insights.missingShards"),
+          items: [
+            {
+              key: "shards",
+              icon: shardIcon("Regular"),
+              name: t("goals.resourceChips.shards"),
+              count: totals?.shards ?? 0,
+            },
+            {
+              key: "mythicShards",
+              icon: shardIcon("Mythic"),
+              name: t("goals.resourceChips.mythicShards"),
+              count: totals?.mythicShards ?? 0,
+            },
+          ].filter((item) => item.count > 0),
+        },
+      ],
+    },
     {
       key: "badges",
       title: t("goals.insights.missingAbilityBadges"),
@@ -208,7 +250,7 @@ export function InsightsMissing({
             {t("goals.insights.missingNone")}
           </p>
         ) : (
-          <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2 xl:grid-cols-3">
             {groups.map((group) => {
               const total = group.rows
                 .flatMap((row) => row.items)

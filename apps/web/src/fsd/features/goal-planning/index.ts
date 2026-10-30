@@ -41,6 +41,8 @@ export { usePlanInsights } from "./model/insights/use-plan-insights"
 export {
   type PlanInsightsBlocker,
   type PlanInsightsBottleneck,
+  type PlanInsightsExcludedGoal,
+  type PlanInsightsGoalOutlook,
   type PlanInsightsTotals,
   type PlanMissingResources,
 } from "./model/insights/use-plan-insights.domain"

@@ -60,6 +60,21 @@ export interface PlanInsightsBlocker {
   goalIds: string[]
 }
 
+/** One estimated goal's finish, for the outlook's "what sets the date" list. */
+export interface PlanInsightsGoalOutlook {
+  goalId: string
+  /** ISO `yyyy-mm-dd`, before any Onslaught token wait. */
+  date: string
+  days: number
+}
+
+/** A goal left out of the completion date, and why: the estimate's block reason, or `NotEstimated`
+ *  for a goal with no farmed need to schedule (e.g. one waiting only on orbs). */
+export interface PlanInsightsExcludedGoal {
+  goalId: string
+  reason: EstimateBlockedReason | "NotEstimated"
+}
+
 /** A goal's remaining resources after the plan spends the shared stock in priority order, overriding
  *  the goal's standalone figures. Absent (a paused goal) means the standalone need applies. */
 export interface PlanNetResources {
@@ -113,6 +128,10 @@ export interface PlanInsightsResult {
    *  filtered out before estimation. Surfaces showing the date must show this alongside it, so a
    *  partial date never reads as covering the whole plan (see the `plan-completion-outlook` spec). */
   unestimatedGoalCount: number
+  /** The scoped goals behind `completionDate`, latest finish first. */
+  goalOutlook: PlanInsightsGoalOutlook[]
+  /** The scoped goals `unestimatedGoalCount` counts, with their reason. */
+  excludedGoals: PlanInsightsExcludedGoal[]
   bottlenecks: PlanInsightsBottleneck[]
   blockers: PlanInsightsBlocker[]
   campaignInsights: CampaignInsight<EstimateResourceId>[]
@@ -147,6 +166,8 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   levelPoolXpAvailableByGoalId: new Map(),
   completionDate: null,
   unestimatedGoalCount: 0,
+  goalOutlook: [],
+  excludedGoals: [],
   bottlenecks: [],
   blockers: [],
   campaignInsights: [],
