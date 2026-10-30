@@ -53,6 +53,7 @@ import {
 } from "./orb-potential-allocation"
 import { buildLevelPotentialProgress } from "./level-potential-progress"
 import { computeBottlenecks, netGoalNeeds } from "./plan-bottlenecks"
+import { summarizeFarmingSpots } from "./plan-farming-spots"
 import { createPlanMissingResources } from "./plan-missing-resources"
 import { createPlanNetResources } from "./plan-net-resources"
 import { createStandaloneEstimates } from "./plan-standalone-estimates"
@@ -467,6 +468,12 @@ export function computePlanInsights(params: {
         : params.campaignFullLabel(descriptor)
   )
 
+  const farmingSpotsByInsightId = summarizeFarmingSpots(
+    [...campaignInsights, ...eventInsights],
+    params.battlesById,
+    params.dailyEnergy ?? 288
+  )
+
   const benefitingGoalIdsByInsightId = new Map<string, string[]>()
   for (const insight of [...campaignInsights, ...eventInsights]) {
     const goalIds = new Set<string>()
@@ -522,6 +529,7 @@ export function computePlanInsights(params: {
     blockers,
     campaignInsights,
     eventInsights,
+    farmingSpotsByInsightId,
     benefitingGoalIdsByInsightId,
   }
 }

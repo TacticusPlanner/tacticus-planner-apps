@@ -1522,8 +1522,8 @@
       "missingXpBooks": "Libros de PX",
       "missingXp": "{{xp}} PX",
       "missingTotal": "{{total}} en total",
-      "campaignsTitle": "Campañas relevantes",
-      "eventsTitle": "Eventos relevantes",
+      "campaignsTitle": "Mejores campañas para farmear",
+      "eventsTitle": "Mejores eventos para farmear",
       "noBenefitingGoals": "Ningún objetivo de este plan necesita esto actualmente.",
       "days_one": "{{count}} día",
       "days_other": "{{count}} días",
@@ -1549,7 +1549,12 @@
       "missingFarmed": "Recursos farmeados",
       "missingUpgrades": "Mejoras",
       "missingShards": "Fragmentos",
-      "upgradesOfRarity": "Mejoras {{rarity}}"
+      "upgradesOfRarity": "Mejoras {{rarity}}",
+      "farmingSpot_one": "{{count}} material · {{days}}",
+      "farmingSpot_other": "{{count}} materiales · {{days}}",
+      "farmingSpotHint": "Ordenado por cuánto de lo que aún necesitan tus objetivos cae por energía. Cada fila muestra cuántos materiales necesarios caen allí y los días para farmearlos todos allí con tu energía diaria.",
+      "openSchedule": "Plan día a día",
+      "helpsGoals": "Ayuda a estos objetivos"
     },
     "target": {
       "title": "Objetivo",

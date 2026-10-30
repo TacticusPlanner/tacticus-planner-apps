@@ -1522,8 +1522,8 @@
       "missingXpBooks": "XP books",
       "missingXp": "{{xp}} XP",
       "missingTotal": "{{total}} total",
-      "campaignsTitle": "Relevant campaigns",
-      "eventsTitle": "Relevant events",
+      "campaignsTitle": "Best campaigns to farm",
+      "eventsTitle": "Best events to farm",
       "noBenefitingGoals": "No goals in this plan currently need this.",
       "days_one": "{{count}} day",
       "days_other": "{{count}} days",
@@ -1549,7 +1549,12 @@
       "missingFarmed": "Farmed resources",
       "missingUpgrades": "Upgrades",
       "missingShards": "Shards",
-      "upgradesOfRarity": "{{rarity}} upgrades"
+      "upgradesOfRarity": "{{rarity}} upgrades",
+      "farmingSpot_one": "{{count}} material · {{days}}",
+      "farmingSpot_other": "{{count}} materials · {{days}}",
+      "farmingSpotHint": "Ranked by how much of what your goals still need drops per energy. Each row shows how many needed materials drop there and the days to farm them all there at your daily energy.",
+      "openSchedule": "Day-by-day plan",
+      "helpsGoals": "Helps these goals"
     },
     "target": {
       "title": "Target",

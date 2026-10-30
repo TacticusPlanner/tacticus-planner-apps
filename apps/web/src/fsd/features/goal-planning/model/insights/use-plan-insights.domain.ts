@@ -75,6 +75,16 @@ export interface PlanInsightsExcludedGoal {
   reason: EstimateBlockedReason | "NotEstimated"
 }
 
+/** What farming one recommended campaign/event takes for the plan's still-needed resources. */
+export interface PlanFarmingSpot {
+  /** Distinct still-needed resources that drop there. */
+  resourceCount: number
+  /** Energy to clear all of them there, each at the campaign's most efficient node for it. */
+  energy: number
+  /** `energy` at the user's daily energy. */
+  days: number
+}
+
 /** A goal's remaining resources after the plan spends the shared stock in priority order, overriding
  *  the goal's standalone figures. Absent (a paused goal) means the standalone need applies. */
 export interface PlanNetResources {
@@ -136,6 +146,8 @@ export interface PlanInsightsResult {
   blockers: PlanInsightsBlocker[]
   campaignInsights: CampaignInsight<EstimateResourceId>[]
   eventInsights: CampaignInsight<EstimateResourceId>[]
+  /** Each campaign/event insight's farming summary, by the insight's `id`. */
+  farmingSpotsByInsightId: Map<string, PlanFarmingSpot>
   /** Every goal id that contributed a resource to a given insight (by the insight's `id`) — the
    *  "which characters/MoW benefit" list (plan §16 phase 7); resolve goalId -> entity via the
    *  member list itself or `useGoalCatalog().getEntityName`. */
@@ -172,5 +184,6 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   blockers: [],
   campaignInsights: [],
   eventInsights: [],
+  farmingSpotsByInsightId: new Map(),
   benefitingGoalIdsByInsightId: new Map(),
 }

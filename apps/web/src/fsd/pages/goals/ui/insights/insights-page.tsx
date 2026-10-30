@@ -133,7 +133,8 @@ export function InsightsPage() {
                 benefitingGoalIdsByInsightId={
                   result.benefitingGoalIdsByInsightId
                 }
-                goalEntityById={goalInfoById}
+                farmingSpotsByInsightId={result.farmingSpotsByInsightId}
+                goalInfoById={goalInfoById}
                 insights={result.campaignInsights}
                 title={t("goals.insights.campaignsTitle")}
               />
@@ -141,7 +142,8 @@ export function InsightsPage() {
                 benefitingGoalIdsByInsightId={
                   result.benefitingGoalIdsByInsightId
                 }
-                goalEntityById={goalInfoById}
+                farmingSpotsByInsightId={result.farmingSpotsByInsightId}
+                goalInfoById={goalInfoById}
                 insights={result.eventInsights}
                 title={t("goals.insights.eventsTitle")}
               />
