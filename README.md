@@ -65,28 +65,28 @@ Set `VITE_API_BASE_URL` to the planner API origin and `VITE_API_SCOPE` to the
 API permission scope used by the SPA, for example
 `api://<api-application-id>/access_as_user`.
 
-For deployments, define these public configuration values under **Settings →
-Secrets and variables → Actions → Variables** in GitHub:
+Deployment configuration is committed per environment in `apps/web/.env.staging`
+and `apps/web/.env.production`; the build mode picks the file. These values are
+embedded in browser JavaScript and must not contain secrets.
 
-- `STAGE_MSAL_AUTHORITY`
-- `STAGE_API_BASE_URL`
-- `STAGE_API_SCOPE`
-- `STAGE_MSAL_CLIENT_ID`
-- `STAGE_MSAL_TENANT_ID`
-- `STAGE_API_BASE_URL`
-- `STAGE_API_SCOPE`
-- `PROD_MSAL_AUTHORITY`
-- `PROD_API_BASE_URL`
-- `PROD_API_SCOPE`
-- `PROD_MSAL_CLIENT_ID`
-- `PROD_MSAL_TENANT_ID`
-- `PROD_API_BASE_URL`
-- `PROD_API_SCOPE`
+- `CD Stage` deploys `main` to `staging.tacticusplanner.app` on every push.
+- `Release` ships to production (`new.tacticusplanner.app`), run by hand from
+  the Actions tab:
+  - From `main` with `minor` (or `major`): creates `release/X.Y` from `main`,
+    tags `vX.Y.0`, creates a GitHub release with generated notes, and deploys
+    the tag.
+  - From `release/X.Y` with `patch`: tags the next `vX.Y.Z` on that branch,
+    creates its release (notes since the previous `vX.Y.*`), and deploys it.
+    Land a fix on `main` first, then cherry-pick it into the release branch
+    with a PR (CI runs on PRs to `release/**`) before running the patch.
+- `CD Prod` deploys a release tag. `Release` calls it; run it by hand only to
+  redeploy an existing tag. It refuses to deploy while a required value in
+  `.env.production` is empty.
 
-The CD workflows pass the appropriate values into Vite before building the
-stage or production artifact. These values are embedded in browser JavaScript
-and must not contain secrets. Keep the Azure Static Web Apps deployment tokens
-in GitHub Secrets.
+Each workflow uses a GitHub environment (`stage`, `production`) holding its
+Azure Static Web Apps deployment token (`AZURE_STATIC_WEB_APPS_API_TOKEN_STAGE`,
+`AZURE_STATIC_WEB_APPS_API_TOKEN_PROD`) as a secret. Limit the `production`
+environment's deployment branches to `main` and `release/**`.
 
 ## Adding components
 

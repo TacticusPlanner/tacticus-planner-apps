@@ -18,6 +18,7 @@
     "test": "turbo test",
     "test:run": "turbo test:run",
     "test:coverage": "turbo test:coverage",
+    "test:release": "node --test \"scripts/release/*.test.mjs\"",
     "audit": "pnpm audit",
     "outdated": "pnpm outdated -r"
   },
