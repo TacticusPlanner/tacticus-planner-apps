@@ -18,6 +18,8 @@ describe("resolveNextPath", () => {
     ["javascript:alert(1)", "scheme"],
     ["/guild\\members", "embedded backslash"],
     ["guild/members", "not rooted"],
+    ["/\t/evil.example", "tab protocol-relative"],
+    ["/\n/evil.example", "newline protocol-relative"],
     ["", "empty"],
   ])("refuses %s (%s)", (next) => {
     expect(resolveNextPath(next)).toBe(DEFAULT_SIGNED_IN_PATH)

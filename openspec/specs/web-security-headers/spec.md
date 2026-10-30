@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines the baseline security response headers the static host sends with the app's documents, so content sniffing, referrer leakage and unused browser features are constrained without breaking sign-in, analytics, feedback or catalog loading. A Content Security Policy is out of scope until launch hardening, which writes an enforcing policy directly.
+Defines the baseline security response headers the static host sends with the app's documents, so content sniffing, referrer leakage and unused browser features are constrained without breaking sign-in, analytics, feedback or catalog loading. Beyond `frame-ancestors`, a Content Security Policy is out of scope until launch hardening, which writes an enforcing policy directly.
 
 ## Requirements
 
@@ -14,6 +14,20 @@ Every document response from the static host SHALL include `X-Content-Type-Optio
 
 - **WHEN** a browser requests `/` or any path the hosting fallback rewrites to the entry document
 - **THEN** the response carries all three headers with the stated values
+
+### Requirement: The app cannot be framed by another site
+
+Every document response SHALL include `Content-Security-Policy: frame-ancestors 'none'` and `X-Frame-Options: DENY`, except the MSAL redirect page (`/redirect.html`), which the app loads in a hidden same-origin frame for silent sign-in and which SHALL instead carry `frame-ancestors 'self'` and `X-Frame-Options: SAMEORIGIN`.
+
+#### Scenario: Another site embeds the app
+
+- **WHEN** a page on another origin loads the app in a frame
+- **THEN** the browser refuses to render it
+
+#### Scenario: Silent sign-in still completes
+
+- **WHEN** the app restores a session through a hidden identity-provider frame that returns to `/redirect.html`
+- **THEN** the redirect page renders in that frame and hands the response back to the app
 
 ### Requirement: Cache directives are unchanged by this policy
 
