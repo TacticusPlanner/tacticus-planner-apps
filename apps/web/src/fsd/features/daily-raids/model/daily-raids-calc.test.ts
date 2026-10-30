@@ -271,16 +271,21 @@ describe("daily raid derivation", () => {
       ],
     ])
 
+    const standing = standingProgressMap([
+      ["Octarius", "Standard", { highestCompletedBattleIndex: 1 }],
+    ])
+
     expect(
       availableCampaignBattles(
         battles,
         eventIds,
         "eventCampaign7",
-        progress
+        progress,
+        standing
       ).map((battle) => battle.id)
     ).toEqual(["standing", "active"])
     expect(
-      availableCampaignBattles(battles, eventIds, null, progress).map(
+      availableCampaignBattles(battles, eventIds, null, progress, standing).map(
         (battle) => battle.id
       )
     ).toEqual(["standing"])
@@ -304,12 +309,30 @@ describe("daily raid derivation", () => {
     ).toEqual([])
   })
 
-  it("keeps a reached standing campaign battle", () => {
+  it("excludes the frontier standing campaign battle, which may lack 3 medals", () => {
+    const battles = [
+      eventBattle({
+        id: "frontier",
+        campaignGroupId: "campaign1",
+        battleIndex: 10,
+      }),
+    ]
+    const eventIds = new Set<string>()
+    const progress = standingProgressMap([
+      ["campaign1", "Standard", { highestCompletedBattleIndex: 10 }],
+    ])
+
+    expect(
+      availableCampaignBattles(battles, eventIds, null, new Map(), progress)
+    ).toEqual([])
+  })
+
+  it("keeps a standing campaign battle before the frontier", () => {
     const battles = [
       eventBattle({
         id: "reached",
         campaignGroupId: "campaign1",
-        battleIndex: 11,
+        battleIndex: 9,
       }),
     ]
     const eventIds = new Set<string>()
@@ -328,7 +351,7 @@ describe("daily raid derivation", () => {
     ).toEqual(["reached"])
   })
 
-  it("only admits battleIndex 0 for a standing track with no progress entry", () => {
+  it("admits no battle for a standing track with no progress entry", () => {
     const battles = [
       eventBattle({
         id: "first",
@@ -353,7 +376,7 @@ describe("daily raid derivation", () => {
         new Map(),
         new Map()
       ).map((battle) => battle.id)
-    ).toEqual(["first"])
+    ).toEqual([])
   })
 
   it("gates a standing challenge battle by the same battleIndex comparison as a non-challenge one", () => {
@@ -368,7 +391,7 @@ describe("daily raid derivation", () => {
         id: "challenge-reached",
         campaignGroupId: "campaign1",
         challenge: true,
-        battleIndex: 11,
+        battleIndex: 9,
       }),
     ]
     const eventIds = new Set<string>()

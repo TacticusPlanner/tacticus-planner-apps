@@ -475,13 +475,13 @@ describe("Arjac Silver1->Gold1 (A) and Silver1->Gold2 (B): V1 vs V2 Rank plannin
 describe("campaign progress gates the farm nodes (goals-overview-v1-parity 8.5)", () => {
   it("costs more energy when the cheaper, later nodes are still locked", () => {
     const open = simulate({ rank: "Silver1", goals: [A] })
-    const partial = simulate({ rank: "Silver1", progressCap: 30, goals: [A] })
+    const partial = simulate({ rank: "Silver1", progressCap: 31, goals: [A] })
     expect(open.goals.A?.energy).toBe(2990)
     expect(partial.goals.A?.energy).toBe(3070)
   })
 
   it("blocks the goal (no energy attributed) when a needed material has no unlocked node", () => {
-    const early = simulate({ rank: "Silver1", progressCap: 10, goals: [A] })
+    const early = simulate({ rank: "Silver1", progressCap: 11, goals: [A] })
     expect(early.goals.A?.energy).toBe(0)
     expect(early.energyTotal).toBe(0)
   })

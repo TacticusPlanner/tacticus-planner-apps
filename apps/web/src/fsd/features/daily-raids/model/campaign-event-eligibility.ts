@@ -9,6 +9,7 @@ import {
   campaignEventTrackKey,
   type EffectiveCampaignEventProgress,
 } from "@/entities/player-data-override"
+import { isStandingBattleRaidable } from "@/shared/lib"
 
 export type CampaignEventProgressEntry = EffectiveCampaignEventProgress
 export const campaignEventProgressKey = campaignEventTrackKey
@@ -32,14 +33,14 @@ export function buildCampaignProgressByKey(
   )
 }
 
-// Whether the player has reached a standing-campaign battle's node, per the `campaign-progress`
-// high-water mark (already synced for the Progress page). `battleIndex` — not `nodeNumber` — is the
-// field this chunk is keyed against (see Battle's own doc comment): zero-based, assigned
-// independently within each {campaignGroupId, type} track, and covering challenge and non-challenge
-// battles alike. `campaign-progress` carries no separate completed-challenge-ids list (unlike
+// Whether a standing-campaign battle can be raided, per the `campaign-progress` high-water mark
+// (already synced for the Progress page) — the shared `isStandingBattleRaidable` rule, so Today and
+// goal estimates gate the same set. `battleIndex` — not `nodeNumber` — is the field this chunk is
+// keyed against (see Battle's own doc comment): zero-based, assigned independently within each
+// {campaignGroupId, type} track, and covering challenge and non-challenge battles alike.
+// `campaign-progress` carries no separate completed-challenge-ids list (unlike
 // `campaign-events-progress`), so a challenge battle is gated by this same comparison, not treated as
-// reachable in any order. No progress entry at all means the track hasn't been started, so only
-// battleIndex 0 is reachable.
+// reachable in any order.
 function isStandingBattleReached<
   TBattle extends {
     campaignGroupId: string
@@ -53,9 +54,10 @@ function isStandingBattleReached<
   const progress = campaignProgressByKey.get(
     campaignProgressKey(battle.campaignGroupId, battle.type)
   )
-  const highestCompletedBattleIndex =
-    progress?.highestCompletedBattleIndex ?? -1
-  return battle.battleIndex <= highestCompletedBattleIndex + 1
+  return isStandingBattleRaidable(
+    battle.battleIndex,
+    progress?.highestCompletedBattleIndex
+  )
 }
 
 // Whether the player has actually reached an event-campaign battle's node, per the

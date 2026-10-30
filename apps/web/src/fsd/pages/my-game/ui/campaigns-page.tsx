@@ -134,16 +134,10 @@ function buildModel(data: {
           (battle) => battle.type === type && !battle.challenge
         )
         const max = battles.length
-        const highestCompletedIndex = progressByKey.get(
-          `${definition.groupId}|${type}`
-        )
-        const completed = Math.max(
-          0,
-          Math.min(
-            max,
-            highestCompletedIndex === undefined ? 0 : highestCompletedIndex + 1
-          )
-        )
+        // The synced index is the frontier battle (not yet 3-medalled), so it equals the number of
+        // cleared battles before it — V1's `battles.length - 1`.
+        const frontierIndex = progressByKey.get(`${definition.groupId}|${type}`)
+        const completed = Math.max(0, Math.min(max, frontierIndex ?? 0))
         return { definition, type, max, completed }
       })
       .sort((a, b) => a.max - b.max),

@@ -68,11 +68,12 @@ const base = {
 }
 
 describe("filterUnlockedBattles", () => {
-  it("unlocks up to the high-water mark + 1, and only index 0 with no progress", () => {
+  it("unlocks only battles before the frontier (the synced high-water mark), and none with no progress", () => {
     expect([...unlocked(-1).keys()]).toEqual([])
-    expect([...unlocked(0).keys()]).toEqual(["near"])
-    expect([...unlocked(3).keys()]).toEqual(["near"])
-    expect([...unlocked(4).keys()]).toEqual(["far", "near"])
+    expect([...unlocked(1).keys()]).toEqual([])
+    expect([...unlocked(2).keys()]).toEqual(["near"])
+    expect([...unlocked(5).keys()]).toEqual(["near"])
+    expect([...unlocked(6).keys()]).toEqual(["far", "near"])
     expect([...filterUnlockedBattles(all, [], new Set()).keys()]).toEqual([])
   })
 
@@ -84,8 +85,8 @@ describe("filterUnlockedBattles", () => {
 
 describe("campaign farming considers only unlocked nodes", () => {
   it("ignores a cheaper locked node and prices the unlocked one", () => {
-    const open = estimateGoal({ ...base, battlesById: unlocked(4) })
-    const locked = estimateGoal({ ...base, battlesById: unlocked(1) })
+    const open = estimateGoal({ ...base, battlesById: unlocked(6) })
+    const locked = estimateGoal({ ...base, battlesById: unlocked(2) })
     expect(open).toMatchObject({ energyTotal: 50 }) // far: 10 raids x 5
     expect(locked).toMatchObject({ energyTotal: 100 }) // near: 10 raids x 10
   })
@@ -101,7 +102,7 @@ describe("campaign farming considers only unlocked nodes", () => {
   it("keeps a goal's pinned locations limited to the unlocked ones", () => {
     const outcome = estimateGoal({
       ...base,
-      battlesById: unlocked(1),
+      battlesById: unlocked(2),
       farmingLocationIds: ["far"],
     })
     expect(outcome).toMatchObject({
@@ -111,7 +112,7 @@ describe("campaign farming considers only unlocked nodes", () => {
   })
 
   it("agrees between the isolated estimate, the plan and today's raids", () => {
-    const battlesById = unlocked(1)
+    const battlesById = unlocked(2)
     const goalOutcome = estimateGoal({ ...base, battlesById })
     const plan = estimatePlan({
       goals: [{ goalId: "g", priority: 1, needs: base.needs }],
@@ -167,7 +168,7 @@ describe("projected Onslaught tokens", () => {
     const params = {
       needs: [{ id: shardId, count: 100 }],
       upgradesById: shardUpgrades,
-      battlesById: unlocked(4),
+      battlesById: unlocked(6),
       dailyEnergy: 100,
       referenceDate,
     }
@@ -200,7 +201,7 @@ describe("projected Onslaught tokens", () => {
   })
 
   it("is 0 without an Onslaught source", () => {
-    const outcome = estimateGoal({ ...base, battlesById: unlocked(4) })
+    const outcome = estimateGoal({ ...base, battlesById: unlocked(6) })
     expect(outcome).toMatchObject({ onslaughtTokens: 0 })
   })
 })
