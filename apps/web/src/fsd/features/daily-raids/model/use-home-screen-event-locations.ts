@@ -52,8 +52,8 @@ export function useHomeScreenEventLocations(
   rule: HseRaidRule
 ): HomeScreenEventLocationsState {
   const {
-    name: campaignDisplayName,
-    tierLabel: campaignTierLabel,
+    campaignName: campaignDisplayName,
+    difficultyLabel: campaignDifficultyLabel,
     shortLabel: campaignShortLabel,
   } = useCampaignDisplay()
   // The state has no error variant: a failed read keeps the lists loading.
@@ -96,11 +96,16 @@ export function useHomeScreenEventLocations(
   const locationsByBattleId = useMemo(
     () =>
       buildLocationsByBattleId(allBattlesById, {
-        name: campaignDisplayName,
-        tierLabel: campaignTierLabel,
+        campaignName: campaignDisplayName,
+        difficultyLabel: campaignDifficultyLabel,
         shortLabel: campaignShortLabel,
       }),
-    [allBattlesById, campaignDisplayName, campaignTierLabel, campaignShortLabel]
+    [
+      allBattlesById,
+      campaignDisplayName,
+      campaignDifficultyLabel,
+      campaignShortLabel,
+    ]
   )
   const pointsByBattleId = useMemo(() => {
     const eventGroupIds = eventCampaignGroupIds(campaignDefinitions ?? [])

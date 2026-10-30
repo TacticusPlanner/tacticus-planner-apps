@@ -13,15 +13,15 @@ import {
 } from "./daily-raids.domain"
 
 /**
- * Display view model of every catalog battle, keyed by battle id: the campaign's name, tier + node
- * label, the compact chip label and the campaign icon. Shared by the raid schedules and the Home
+ * Display view model of every catalog battle, keyed by battle id: the campaign's name, difficulty +
+ * node label, the compact chip label and the campaign icon. Shared by the raid schedules and the Home
  * Screen Event location lists so a node reads the same everywhere.
  */
 export function buildLocationsByBattleId(
   battlesById: ReadonlyMap<BattleId, Battle>,
   display: {
-    name: (descriptor: CampaignDescriptor) => string
-    tierLabel: (descriptor: CampaignDescriptor) => string
+    campaignName: (descriptor: CampaignDescriptor) => string
+    difficultyLabel: (descriptor: CampaignDescriptor) => string
     shortLabel: (descriptor: CampaignDescriptor) => {
       name: string
       code: string

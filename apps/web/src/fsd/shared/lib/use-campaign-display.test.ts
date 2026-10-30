@@ -200,3 +200,49 @@ describe("useCampaignDisplay().tierLabel", () => {
     }
   )
 })
+
+describe("useCampaignDisplay().campaignName / difficultyLabel", () => {
+  it.each([
+    [
+      "standard storyline",
+      descriptor({}),
+      "indomitus",
+      "campaigns:difficulties.standard",
+    ],
+    [
+      "elite storyline",
+      descriptor({ difficultyToken: "elite" }),
+      "indomitus",
+      "campaigns:difficulties.elite",
+    ],
+    [
+      "mirror base tier",
+      descriptor({ isMirror: true }),
+      "indomitus campaigns:difficulties.mirror",
+      "campaigns:difficulties.standard",
+    ],
+    [
+      "elite mirror",
+      descriptor({ isMirror: true, difficultyToken: "elite" }),
+      "indomitus campaigns:difficulties.mirror",
+      "campaigns:difficulties.elite",
+    ],
+    [
+      "event extremis",
+      descriptor({
+        nameKey: "adepta-sororitas-vs-death-guard",
+        isEvent: true,
+        difficultyToken: "eventExtremis",
+      }),
+      "adepta-sororitas-vs-death-guard",
+      "campaigns:difficulties.eventExtremis",
+    ],
+  ])(
+    "splits a %s into its campaign name and difficulty word",
+    (_label, d, name, difficulty) => {
+      const { result } = renderHook(() => useCampaignDisplay())
+      expect(result.current.campaignName(d)).toBe(name)
+      expect(result.current.difficultyLabel(d)).toBe(difficulty)
+    }
+  )
+})

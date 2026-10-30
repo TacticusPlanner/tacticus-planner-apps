@@ -58,6 +58,35 @@ export function useCampaignDisplay() {
   )
 
   /**
+   * The name of one storyline campaign, with "Mirror" kept on it: "Indomitus" and "Indomitus Mirror"
+   * are two different campaigns, so a location's headline has to tell them apart. Event campaigns
+   * have no mirror and read as their bare `name`.
+   */
+  const campaignName = useCallback(
+    (descriptor: CampaignDescriptor) =>
+      descriptor.isMirror && !descriptor.isEvent
+        ? `${name(descriptor)} ${t("campaigns:difficulties.mirror")}`
+        : name(descriptor),
+    [name, t]
+  )
+
+  /**
+   * Just the difficulty word of a campaign/event tier: "Standard", "Elite" or "Extremis". The
+   * counterpart of `campaignName`, which already carries "Mirror".
+   */
+  const difficultyLabel = useCallback(
+    (descriptor: CampaignDescriptor) => {
+      if (descriptor.isEvent) {
+        return t(`campaigns:difficulties.${descriptor.difficultyToken}`)
+      }
+      return descriptor.difficultyToken === "elite"
+        ? t("campaigns:difficulties.elite")
+        : t("campaigns:difficulties.standard")
+    },
+    [t]
+  )
+
+  /**
    * Full campaign label for a single campaign/event chip, e.g. "Fall of Cadia Standard",
    * "Indomitus Elite", "Indomitus Mirror", "Saim-Hann Mirror Elite", or "Death Guard Extremis"
    * for an event tier — events carry two distinct difficulty tiers (Standard/Extremis) that farm
@@ -98,5 +127,13 @@ export function useCampaignDisplay() {
     [t]
   )
 
-  return { name, tierLabel, fullLabel, shortLabel, tierCode }
+  return {
+    name,
+    tierLabel,
+    campaignName,
+    difficultyLabel,
+    fullLabel,
+    shortLabel,
+    tierCode,
+  }
 }

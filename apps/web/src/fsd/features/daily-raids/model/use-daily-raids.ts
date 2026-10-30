@@ -78,8 +78,8 @@ export function useDailyRaids(
     "progression",
   ])
   const {
-    name: campaignDisplayName,
-    tierLabel: campaignTierLabel,
+    campaignName: campaignDisplayName,
+    difficultyLabel: campaignDifficultyLabel,
     shortLabel: campaignShortLabel,
   } = useCampaignDisplay()
   const isAuthenticated = useIsAuthenticated()
@@ -196,11 +196,16 @@ export function useDailyRaids(
   const locationsByBattleId = useMemo(
     () =>
       buildLocationsByBattleId(allBattlesById, {
-        name: campaignDisplayName,
-        tierLabel: campaignTierLabel,
+        campaignName: campaignDisplayName,
+        difficultyLabel: campaignDifficultyLabel,
         shortLabel: campaignShortLabel,
       }),
-    [allBattlesById, campaignDisplayName, campaignTierLabel, campaignShortLabel]
+    [
+      allBattlesById,
+      campaignDisplayName,
+      campaignDifficultyLabel,
+      campaignShortLabel,
+    ]
   )
   // Game-data display names resolve through the id-keyed `upgrades`/`characters` namespaces — the
   // same convention Character Lookup uses — so one material can't read as two different names in two
