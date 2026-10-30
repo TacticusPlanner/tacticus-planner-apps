@@ -159,9 +159,10 @@
     "noGoals": "No tienes objetivos activos. Crea o reanuda un objetivo en Objetivos para planificar tus incursiones."
   },
   "today": {
-    "title": "Incursiones de hoy",
     "plan": "Plan de hoy",
-    "summary": "{{energy}} de energía · {{raids}} intentos",
+    "planMeta_one": "{{count}} nodo · por prioridad de objetivo",
+    "planMeta_other": "{{count}} nodos · por prioridad de objetivo",
+
     "energyUsage": {
       "label": "Energía diaria usada",
       "value": "{{percent}}% de la energía diaria usada"
@@ -176,7 +177,14 @@
       "unnamedUnconfirmed": "Activo · nombre no disponible · hora de finalización no confirmada",
       "inactive": "No activo"
     },
-    "onslaughtSummary": "Unas {{runs}} partidas de Onslaught para tus objetivos hoy"
+    "onslaughtSummary": "Unas {{runs}} partidas de Onslaught para tus objetivos hoy",
+    "glance": {
+      "label": "Hoy de un vistazo",
+      "energyOver": "Límite de energía alcanzado",
+      "energyValue": "{{used}} / {{daily}}",
+      "tokens_one": "{{count}} ficha",
+      "tokens_other": "{{count}} fichas"
+    }
   },
   "schedule": {
     "raids_one": "{{count}} intento usado",
@@ -190,13 +198,21 @@
   },
   "bonus": {
     "title": "Incursiones extra",
-    "showMore": "Mostrar más",
+    "meta": "si sobra energía",
+    "showMore": "Mostrar {{count}} más",
+    "fullSchedule": "Calendario completo",
+    "showLess": "Mostrar menos",
     "limitReached": "Límite diario de energía alcanzado: estas incursiones extra son las que aún merecen la pena.",
     "limitReachedEmpty": "Límite diario de energía alcanzado. No quedan incursiones extra hoy."
   },
   "todaysAttempts": {
     "title": "Intentos de hoy",
-    "empty": "Todavía no se ha registrado ningún intento real hoy."
+    "empty": "Todavía no se ha registrado ningún intento real hoy.",
+    "meta_one": "{{count}} nodo · {{attempts}}",
+    "meta_other": "{{count}} nodos · {{attempts}}",
+    "count_one": "{{count}} intento",
+    "count_other": "{{count}} intentos",
+    "rowLabel": "{{material}}, {{campaign}} {{node}}, {{attempts}}"
   },
   "resource": {
     "shards": "Fragmentos de {{unit}}"
@@ -279,7 +295,7 @@
         },
         "schedule": {
           "title": "Plan de hoy",
-          "content": "Ataca estos nodos con la energía de hoy — aquí también aparecen sugerencias adicionales una vez cubiertas tus necesidades presupuestadas."
+          "content": "Ataca estos nodos con la energía de hoy. Las incursiones extra de al lado muestran qué merece la pena atacar si sobra energía."
         },
         "campaignEvent": {
           "title": "Evento de campaña activo",

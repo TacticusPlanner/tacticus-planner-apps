@@ -524,8 +524,11 @@ describe("RaidSchedule location emphasis", () => {
     )
     expect(screen.getByTestId("raid-resource-grid-g1")).toBeInTheDocument()
     expect(screen.getByTestId("raid-resource-grid-g2")).toBeInTheDocument()
-    // Both goal groups are flow items of the same masonry container (not two separate schedules).
-    expect(screen.getByTestId("schedule")).toHaveClass("md:columns-[20rem]")
+    // Both goal groups are flow items of the same container (not two separate schedules).
+    expect(screen.getAllByTestId("schedule")).toHaveLength(1)
+    expect(screen.getByTestId("schedule")).toContainElement(
+      screen.getByTestId("raid-resource-grid-g2")
+    )
   })
 
   it("shows no bonus heading when there are no bonus entries", () => {
@@ -548,5 +551,37 @@ describe("RaidSchedule location emphasis", () => {
     )
 
     expect(screen.queryByTestId("bonus-raids-heading")).not.toBeInTheDocument()
+  })
+})
+
+describe("RaidSchedule card layout", () => {
+  function renderLayout() {
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[entry(b1, 3), entry(b2, 2)]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Indomitus", "Elite 5")],
+          ])
+        }
+        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+  }
+
+  it("spreads one goal group's cards over 20rem columns, never wider than the group", () => {
+    renderLayout()
+
+    expect(screen.getByTestId("schedule").className).not.toMatch(/columns-/)
+    expect(screen.getByTestId("raid-resource-grid-g1")).toHaveClass(
+      "md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))]"
+    )
   })
 })

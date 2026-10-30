@@ -29,7 +29,8 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
     useDailyRaids: () => useDailyRaids(),
   }
 })
-vi.mock("@/shared/tour", () => ({
+vi.mock("@/shared/tour", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/tour")>()),
   useTourPageSteps: (steps: unknown) => registeredTours.push(steps),
 }))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
@@ -95,7 +96,7 @@ describe("Dailies raid pages", () => {
     // only, so the grouping is verified via each goal's own resource card existing instead.
     expect(screen.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
     expect(screen.getByTestId("raid-card-g2-U1")).toBeInTheDocument()
-    const todaySchedule = within(screen.getByTestId("today-lanes"))
+    const todaySchedule = within(screen.getByTestId("today-grid"))
     // Bonus Raids is its own grouping context again (a labeled continuation, not merged data), so
     // a goal with multiple bonus resources (not eligible for the combined-shard-identity merge)
     // gets its own separate goal header there too, in addition to Today's merged card.
@@ -114,16 +115,27 @@ describe("Dailies raid pages", () => {
     expect(
       screen.getAllByRole("img", { name: "Bellator" }).length
     ).toBeGreaterThan(0)
-    expect(screen.getByTestId("today-raid-list")).toHaveClass(
-      "md:columns-[20rem]"
+    // A goal group's cards spread over the plan card's width instead of one column.
+    expect(
+      within(screen.getByTestId("today-raid-list")).getByTestId(
+        "raid-resource-grid-g1"
+      )
+    ).toHaveClass(
+      "md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))]"
     )
     expect(screen.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
-    expect(screen.getByTestId("bonus-lane")).toBeInTheDocument()
+    expect(
+      screen.getByRole("region", { name: "bonus.title" })
+    ).toBeInTheDocument()
     expect(
       screen.queryByTestId("bonus-energy-limit-reached")
     ).not.toBeInTheDocument()
-    await user.click(screen.getByRole("button", { name: "bonus.showMore" }))
+    await user.click(
+      screen.getByRole("button", { name: 'bonus.showMore:{"count":1}' })
+    )
     expect(screen.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+    await user.click(screen.getByRole("button", { name: "bonus.showLess" }))
+    expect(screen.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
     expect(registeredTours.at(-1)).toMatchObject({
       desktop: expect.any(Array),
       mobile: expect.any(Array),
@@ -165,16 +177,19 @@ describe("Dailies raid pages", () => {
     expect(screen.queryByTestId("today-onslaught")).not.toBeInTheDocument()
   })
 
-  it("renders its title as an h2 under the shell h1", () => {
+  it("starts its hierarchy at h2 under the shell h1, one per card", () => {
     renderPage(<TodayPage />)
-    // The shell header owns the page h1; the tab starts its hierarchy at h2.
+    // The shell header owns the page h1; each dashboard card starts its own hierarchy at h2.
     expect(screen.queryAllByRole("heading", { level: 1 })).toHaveLength(0)
     expect(
-      screen.getByRole("heading", { level: 2, name: "today.title" })
+      screen.getByRole("heading", { level: 2, name: "today.plan" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("region", { name: "today.plan" })
     ).toBeInTheDocument()
   })
 
-  it("shows the real energy-usage percentage next to the title, uncapped above 100%", () => {
+  it("shows the real energy used of the daily energy, its bar's value text uncapped above 100%", () => {
     useDailyRaids.mockReturnValue(
       ready({ dailyEnergy: 100, realEnergyUsedToday: 150 })
     )
@@ -186,42 +201,47 @@ describe("Dailies raid pages", () => {
       "aria-valuetext",
       'today.energyUsage.value:{"percent":150}'
     )
-    expect(screen.getByText("150%")).toBeInTheDocument()
+    expect(
+      screen.getByText('today.glance.energyValue:{"used":150,"daily":100}')
+    ).toBeInTheDocument()
+    // The bar fills to 100% while its value text keeps the real 150%.
+    expect(bar).toHaveAttribute("aria-valuenow", "100")
   })
 
-  it("splits the header into an energy half and a campaign-event half, energy first", () => {
+  it("shows the energy and the campaign event as glance tiles, energy first", () => {
     useDailyRaids.mockReturnValue(
       ready({ dailyEnergy: 100, realEnergyUsedToday: 42 })
     )
     renderPage(<TodayPage />)
 
+    const glance = screen.getByRole("region", { name: "today.glance.label" })
     const status = screen.getByTestId("campaign-event-status")
-    const energyRow = screen.getByTestId("energy-usage")
-    // One element in one DOM position: the energy half comes first, so the campaign event reads
-    // second stacked on mobile and sits right of it on desktop.
+    const energyTile = screen.getByTestId("energy-usage")
+    expect(glance).toContainElement(energyTile)
+    expect(glance).toContainElement(status)
     expect(
-      energyRow.compareDocumentPosition(status) &
+      energyTile.compareDocumentPosition(status) &
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
-    // Both halves are equal-width siblings of the same desktop flex row.
-    const half = status.previousElementSibling
-    expect(half).toContainElement(energyRow)
-    expect(half).toHaveClass("md:w-1/2")
-    expect(status).toHaveClass("md:w-1/2")
-    // The bar still leads its own row and the percentage still trails it.
-    expect(energyRow.firstElementChild).toBe(
-      screen.getByTestId("energy-usage-bar")
+    expect(within(energyTile).getByRole("term")).toHaveTextContent(
+      "today.energyUsage.label"
     )
-    expect(energyRow.lastElementChild?.textContent).toBe("42%")
+    expect(
+      within(energyTile).getByText(
+        'today.glance.energyValue:{"used":42,"daily":100}'
+      )
+    ).toBeInTheDocument()
   })
 
-  it("shows 0% energy usage when there are no real attempts today", () => {
+  it("shows 0 energy used when there are no real attempts today", () => {
     useDailyRaids.mockReturnValue(
       ready({ dailyEnergy: 288, realEnergyUsedToday: 0 })
     )
     renderPage(<TodayPage />)
 
-    expect(screen.getByText("0%")).toBeInTheDocument()
+    expect(
+      screen.getByText('today.glance.energyValue:{"used":0,"daily":288}')
+    ).toBeInTheDocument()
   })
 
   it("shows every real attempt today in Today's Attempts with its actual numeric count", () => {
@@ -238,7 +258,7 @@ describe("Dailies raid pages", () => {
     expect(todaysAttempts.getByText("Indomitus")).toBeInTheDocument()
     expect(todaysAttempts.getByText("Elite 1")).toBeInTheDocument()
     expect(
-      todaysAttempts.getByText('schedule.raids:{"count":10}')
+      todaysAttempts.getByText('todaysAttempts.count:{"count":10}')
     ).toBeInTheDocument()
     expect(
       todaysAttempts.queryByText("schedule.maxRaids")
@@ -296,10 +316,12 @@ describe("Dailies raid pages", () => {
     renderPage(<TodayPage />)
 
     const attempt = within(screen.getByTestId(`todays-attempt-${battle}`))
+    // Campaign and node share one compact line that wraps instead of truncating.
     for (const label of [campaignName, nodeLabel]) {
-      const line = attempt.getByText(label)
-      expect(line).toHaveClass("break-words")
+      const line = attempt.getByText(label).closest(".break-words")
+      expect(line).not.toBeNull()
       expect(line).not.toHaveClass("truncate")
+      expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
     }
   })
 
@@ -348,7 +370,7 @@ describe("Dailies raid pages", () => {
 
     const todaysAttempts = within(screen.getByTestId("todays-attempts"))
     expect(
-      todaysAttempts.getByText('schedule.raids:{"count":4}')
+      todaysAttempts.getByText('todaysAttempts.count:{"count":4}')
     ).toBeInTheDocument()
   })
 
@@ -366,30 +388,41 @@ describe("Dailies raid pages", () => {
     )
     renderPage(<TodayPage />)
 
-    const todaySchedule = within(screen.getByTestId("today-lanes"))
+    const todaySchedule = within(screen.getByTestId("today-grid"))
     expect(todaySchedule.queryByText("Indomitus")).not.toBeInTheDocument()
   })
 
-  it("makes Bonus Raids the only raids list once today's energy spend reaches the daily limit", async () => {
-    const user = userEvent.setup()
+  it("makes Bonus Raids the only raids list, in the plan's place, once today's energy spend reaches the daily limit", () => {
     useDailyRaids.mockReturnValue(
       ready({ dailyEnergy: 288, realEnergyUsedToday: 288 })
     )
     renderPage(<TodayPage />)
 
-    expect(screen.queryByTestId("today-lane")).not.toBeInTheDocument()
-    const bonusLane = within(screen.getByTestId("bonus-lane"))
-    // The plan's own material keeps its remaining farming, ahead of the bonus materials.
-    expect(bonusLane.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
-    expect(bonusLane.getByText("bonus.title")).toBeInTheDocument()
     expect(
-      bonusLane.getByTestId("bonus-energy-limit-reached")
-    ).toHaveTextContent("bonus.limitReached")
-    expect(bonusLane.getByTestId("raid-card-g1-B1")).toBeInTheDocument()
-    // Still capped at three until "Show more".
-    expect(bonusLane.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
-    await user.click(bonusLane.getByRole("button", { name: "bonus.showMore" }))
-    expect(bonusLane.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+      screen.queryByRole("region", { name: "today.plan" })
+    ).not.toBeInTheDocument()
+    const bonusCard = within(screen.getByTestId("today-plan-area")).getByRole(
+      "region",
+      { name: "bonus.title" }
+    )
+    expect(bonusCard).toHaveAttribute("data-limit", "reached")
+    const bonus = within(bonusCard)
+    // The plan's own material keeps its remaining farming, ahead of the bonus materials.
+    expect(bonus.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
+    expect(bonus.getByText("bonus.title")).toBeInTheDocument()
+    expect(bonus.getByTestId("bonus-energy-limit-reached")).toHaveTextContent(
+      "bonus.limitReached"
+    )
+    expect(bonus.getByTestId("raid-card-g1-B1")).toBeInTheDocument()
+    // Every raid left today is listed, with no Show more.
+    expect(bonus.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+    expect(
+      bonus.queryByRole("button", { name: /^bonus\.showMore/ })
+    ).not.toBeInTheDocument()
+    // The energy tile switches to its over-limit state.
+    expect(
+      within(screen.getByTestId("energy-usage")).getByRole("term")
+    ).toHaveTextContent("today.glance.energyOver")
   })
 
   it("keeps Today's plan one energy short of the daily limit", () => {
@@ -398,7 +431,9 @@ describe("Dailies raid pages", () => {
     )
     renderPage(<TodayPage />)
 
-    expect(screen.getByTestId("today-lane")).toBeInTheDocument()
+    expect(
+      screen.getByRole("region", { name: "today.plan" })
+    ).toBeInTheDocument()
     expect(
       screen.queryByTestId("bonus-energy-limit-reached")
     ).not.toBeInTheDocument()
@@ -415,7 +450,9 @@ describe("Dailies raid pages", () => {
     )
     renderPage(<TodayPage />)
 
-    expect(screen.queryByTestId("today-lane")).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("region", { name: "today.plan" })
+    ).not.toBeInTheDocument()
     expect(screen.getByTestId("bonus-energy-limit-reached")).toHaveTextContent(
       "bonus.limitReachedEmpty"
     )
@@ -451,6 +488,6 @@ describe("Dailies raid pages", () => {
     renderPage(<TodayPage />)
 
     expect(screen.queryByTestId("plan-blockers")).not.toBeInTheDocument()
-    expect(screen.getByTestId("today-schedule")).toBeInTheDocument()
+    expect(screen.getByTestId("today-raid-list")).toBeInTheDocument()
   })
 })

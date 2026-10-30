@@ -6,7 +6,7 @@ import { act, render, screen, waitFor } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import { availableCampaignBattles } from "@/features/daily-raids"
 
-import { CampaignEventStatusLine } from "./campaign-event-status"
+import { CampaignEventTile } from "./campaign-event-status"
 import {
   buildCampaignEventStatus,
   type CampaignEventWindow,
@@ -124,7 +124,7 @@ async function seedCampaignEvent(
   })
 }
 
-describe("CampaignEventStatusLine", () => {
+describe("CampaignEventTile", () => {
   // Returns once the local reads have settled, so a negative assertion never passes on the
   // still-loading (inactive) first render.
   async function renderWith(
@@ -132,7 +132,11 @@ describe("CampaignEventStatusLine", () => {
     campaignEventWindow: CampaignEventWindow | null
   ) {
     await seedCampaignEvent(activeCampaignEventId, campaignEventWindow)
-    render(<CampaignEventStatusLine />)
+    render(
+      <dl>
+        <CampaignEventTile />
+      </dl>
+    )
     await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
     return screen.getByTestId("campaign-event-status")
   }
@@ -140,12 +144,19 @@ describe("CampaignEventStatusLine", () => {
   const detailOf = (element: HTMLElement) =>
     element.lastElementChild?.textContent ?? ""
 
-  it("heads the block with the campaign-event label at the schedule's own heading weight", async () => {
-    const heading = (await renderWith(knownId, confirmedWindow)).querySelector(
-      "h2"
-    )
-    expect(heading?.textContent).toBe("Campaign event")
-    expect(heading).toHaveClass("text-lg", "font-semibold")
+  it("labels the tile Campaign event above its value", async () => {
+    const tile = await renderWith(knownId, confirmedWindow)
+    expect(screen.getByRole("term")).toHaveTextContent("Campaign event")
+    expect(tile.querySelector("dt")).toBe(tile.firstElementChild)
+    expect(tile.querySelector("dd")).toBe(tile.lastElementChild)
+  })
+
+  it("wraps a long status instead of truncating it", async () => {
+    const tile = await renderWith(knownId, unconfirmedWindow)
+    const text = screen.getByText(/end time not confirmed/)
+    expect(tile).toContainElement(text)
+    expect(text).toHaveClass("break-words")
+    expect(text).not.toHaveClass("truncate")
   })
 
   it("shows the detected event's campaign icon", async () => {
@@ -241,7 +252,11 @@ describe("CampaignEventStatusLine", () => {
   // no client schema change, no dependency on the (currently blocked) API companion.
   it("switches from unconfirmed text to a confirmed countdown when the catalog refreshes to an authored occurrence", async () => {
     await seedCampaignEvent(knownId, unconfirmedWindow)
-    const { queryClient } = render(<CampaignEventStatusLine />)
+    const { queryClient } = render(
+      <dl>
+        <CampaignEventTile />
+      </dl>
+    )
     const status = screen.getByTestId("campaign-event-status")
     await waitFor(() =>
       expect(detailOf(status)).toContain("end time not confirmed")
