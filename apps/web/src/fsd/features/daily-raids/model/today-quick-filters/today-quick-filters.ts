@@ -1,5 +1,5 @@
 /** Today's quick filters, in display order (daily-raids-today spec: *Today quick filters*). */
-export const TODAY_QUICK_FILTERS = ["fewerRaids", "bottlenecks"] as const
+export const TODAY_QUICK_FILTERS = ["fewerRaids", "combineGoals"] as const
 export type TodayQuickFilter = (typeof TODAY_QUICK_FILTERS)[number]
 
 /** The engine options the quick filters switch on; both off is the default schedule. */
@@ -11,11 +11,20 @@ export type TodayQuickFilterOptions = {
 export const isTodayQuickFilter = (value: string): value is TodayQuickFilter =>
   (TODAY_QUICK_FILTERS as readonly string[]).includes(value)
 
+/** Earlier `quick` values still accepted from saved links: "bottlenecks" became "combineGoals". */
+const LEGACY_QUICK_FILTERS: Readonly<Record<string, TodayQuickFilter>> = {
+  bottlenecks: "combineGoals",
+}
+
 /** The `quick` search parameter as a comma list: unknown values are dropped, display order kept. */
 export function parseTodayQuickFilters(
   value: string | null
 ): TodayQuickFilter[] {
-  const values = new Set((value ?? "").split(","))
+  const values = new Set(
+    (value ?? "")
+      .split(",")
+      .map((quick) => LEGACY_QUICK_FILTERS[quick] ?? quick)
+  )
   return TODAY_QUICK_FILTERS.filter((quick) => values.has(quick))
 }
 
@@ -32,6 +41,6 @@ export function todayQuickFilterOptions(
 ): TodayQuickFilterOptions {
   return {
     fewerRaids: filters.includes("fewerRaids"),
-    combineGoals: filters.includes("bottlenecks"),
+    combineGoals: filters.includes("combineGoals"),
   }
 }

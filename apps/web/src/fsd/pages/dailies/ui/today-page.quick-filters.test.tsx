@@ -88,15 +88,17 @@ describe("Today quick filters", () => {
     const user = userEvent.setup()
     renderToday()
 
-    await user.click(screen.getByTestId("today-quick-filter-bottlenecks"))
+    await user.click(screen.getByTestId("today-quick-filter-combineGoals"))
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
       combineGoals: true,
     })
     expect(
-      screen.getByTestId("today-quick-filter-note-bottlenecks")
+      screen.getByTestId("today-quick-filter-note-combineGoals")
     ).toBeInTheDocument()
-    expect(screen.getByTestId("search")).toHaveTextContent("?quick=bottlenecks")
+    expect(screen.getByTestId("search")).toHaveTextContent(
+      "?quick=combineGoals"
+    )
 
     await user.click(screen.getByTestId("today-quick-filter-fewerRaids"))
     expect(lastQuickFilters()).toEqual({ fewerRaids: true, combineGoals: true })
@@ -104,10 +106,10 @@ describe("Today quick filters", () => {
       screen.getByTestId("today-quick-filter-note-fewerRaids")
     ).toBeInTheDocument()
     expect(screen.getByTestId("search")).toHaveTextContent(
-      "?quick=fewerRaids%2Cbottlenecks"
+      "?quick=fewerRaids%2CcombineGoals"
     )
 
-    await user.click(screen.getByTestId("today-quick-filter-bottlenecks"))
+    await user.click(screen.getByTestId("today-quick-filter-combineGoals"))
     await user.click(screen.getByTestId("today-quick-filter-fewerRaids"))
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
@@ -125,7 +127,7 @@ describe("Today quick filters", () => {
       screen.getByRole("button", { name: "Show less" })
     ).toBeInTheDocument()
 
-    await user.click(screen.getByTestId("today-quick-filter-bottlenecks"))
+    await user.click(screen.getByTestId("today-quick-filter-combineGoals"))
     expect(
       screen.queryByRole("button", { name: "Show less" })
     ).not.toBeInTheDocument()
@@ -144,5 +146,16 @@ describe("Today quick filters", () => {
       "data-state",
       "on"
     )
+  })
+
+  it("reads an old Bottlenecks link as Combine goals", () => {
+    renderToday("/?quick=bottlenecks")
+    expect(lastQuickFilters()).toEqual({
+      fewerRaids: false,
+      combineGoals: true,
+    })
+    expect(
+      screen.getByTestId("today-quick-filter-combineGoals")
+    ).toHaveAttribute("data-state", "on")
   })
 })

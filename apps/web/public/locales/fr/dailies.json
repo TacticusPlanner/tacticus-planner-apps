@@ -315,7 +315,7 @@
         },
         "quickFilters": {
           "title": "Filtres rapides",
-          "content": "Modifiez le plan du jour pour une journée. Moins de raids utilise les lieux qui demandent moins de tickets de raid pour les mêmes matériaux. Goulots farme d'abord les matériaux les plus lents de tous les objectifs. Les dates de Plan et Objectifs ne changent pas."
+          "content": "Modifiez le plan du jour pour une journée. Moins de raids utilise les lieux qui demandent moins de tickets de raid pour les mêmes matériaux. Combiner les objectifs combine les matériaux de tous les objectifs et les farme comme un seul objectif. Les dates de Plan et Objectifs ne changent pas."
         },
         "onslaught": {
           "title": "Onslaught",
@@ -520,15 +520,15 @@
     "label": "Filtres rapides",
     "chip": {
       "fewerRaids": "Moins de raids",
-      "bottlenecks": "Goulots"
+      "combineGoals": "Combiner les objectifs"
     },
     "help": {
       "fewerRaids": "Quand plusieurs lieux coûtent la même énergie par objet, ne raider que ceux qui coûtent le plus d'énergie par combat. Mêmes matériaux pour la même énergie, en moins de raids. Utile quand il vous reste peu de tickets de raid.",
-      "bottlenecks": "Ignore aujourd'hui la priorité des objectifs : combine les matériaux restants de tous les objectifs et farme d'abord les plus lents, souvent des matériaux légendaires. Utile pour commencer tôt les longs farms."
+      "combineGoals": "Combine les matériaux restants de tous les objectifs (seulement ceux du projet sélectionné s'il y en a un) et planifie les raids du jour comme s'il s'agissait d'un seul objectif : les matériaux les plus longs à farmer passent en premier et la priorité des objectifs est ignorée."
     },
     "note": {
       "fewerRaids": "Moins de raids : les lieux à égalité qui coûtent plus d'énergie par combat sont utilisés, donc les mêmes matériaux demandent moins de raids.",
-      "bottlenecks": "Goulots : les raids du jour farment d'abord les matériaux les plus lents de tous les objectifs. Les dates de Plan et Objectifs suivent toujours la priorité des objectifs."
+      "combineGoals": "Combiner les objectifs : les raids du jour traitent tous les objectifs comme un seul, les matériaux les plus longs à farmer en premier. Les dates de Plan et Objectifs suivent toujours la priorité des objectifs."
     }
   },
   "hse": {

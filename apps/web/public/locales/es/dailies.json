@@ -315,7 +315,7 @@
         },
         "quickFilters": {
           "title": "Filtros rápidos",
-          "content": "Cambia el plan de hoy durante un día. Menos incursiones usa los lugares que necesitan menos tickets de incursión para los mismos materiales. Cuellos de botella farmea primero los materiales más lentos de todos los objetivos. Las fechas de Plan y Objetivos no cambian."
+          "content": "Cambia el plan de hoy durante un día. Menos incursiones usa los lugares que necesitan menos tickets de incursión para los mismos materiales. Combinar objetivos combina los materiales de todos los objetivos y los farmea como si fueran un solo objetivo. Las fechas de Plan y Objetivos no cambian."
         },
         "onslaught": {
           "title": "Onslaught",
@@ -520,15 +520,15 @@
     "label": "Filtros rápidos",
     "chip": {
       "fewerRaids": "Menos incursiones",
-      "bottlenecks": "Cuellos de botella"
+      "combineGoals": "Combinar objetivos"
     },
     "help": {
       "fewerRaids": "Cuando varios lugares cuestan la misma energía por objeto, incursiona solo en los de más energía por batalla. Mismos materiales con la misma energía, en menos incursiones. Útil cuando te quedan pocos tickets de incursión.",
-      "bottlenecks": "Ignora hoy la prioridad de los objetivos: combina los materiales restantes de todos los objetivos y farmea primero los más lentos, normalmente materiales legendarios. Útil para empezar pronto los farmeos largos."
+      "combineGoals": "Combina los materiales restantes de todos los objetivos (solo los del proyecto seleccionado si hay uno) y planifica las incursiones de hoy como si fueran un solo objetivo: primero los materiales que más tardan en farmearse, sin tener en cuenta la prioridad."
     },
     "note": {
       "fewerRaids": "Menos incursiones: se usan los lugares empatados con más energía por batalla, así los mismos materiales requieren menos incursiones.",
-      "bottlenecks": "Cuellos de botella: las incursiones de hoy farmean primero los materiales más lentos de todos los objetivos. Las fechas de Plan y Objetivos siguen la prioridad de los objetivos."
+      "combineGoals": "Combinar objetivos: las incursiones de hoy tratan todos los objetivos como uno solo, primero los materiales que más tardan en farmearse. Las fechas de Plan y Objetivos siguen la prioridad de los objetivos."
     }
   },
   "hse": {
