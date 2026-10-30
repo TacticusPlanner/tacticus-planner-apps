@@ -148,6 +148,9 @@ export default defineConfig(({ command }) => {
       environment: "jsdom",
       exclude: [...configDefaults.exclude, "e2e/**"],
       setupFiles: ["./src/test/setup.ts"],
+      // Pin a real TZ: `vi.unstubAllEnvs()` deletes an unset TZ, and Node on Windows then stays on the
+      // last stubbed zone, shifting local-date tests in later suites. Matches CI (UTC).
+      env: { TZ: "UTC" },
       css: true,
       coverage: {
         provider: "v8",

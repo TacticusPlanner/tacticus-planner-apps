@@ -14,14 +14,14 @@
   "dependencies": {
     "@workspace/game-domain": "workspace:*",
     "@workspace/manifest-sync": "workspace:*",
-    "dexie": "^4.4.6",
+    "dexie": "^4.4.7",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
-    "fake-indexeddb": "^6.2.5",
+    "fake-indexeddb": "^6.2.6",
     "globals": "catalog:",
     "jsdom": "catalog:",
     "knip": "catalog:",
