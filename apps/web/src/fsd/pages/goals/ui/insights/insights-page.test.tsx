@@ -245,7 +245,7 @@ describe("InsightsPage", () => {
       <TooltipProvider>
         <InsightsPage />
       </TooltipProvider>,
-      { auth: { authenticated: true } }
+      { auth: { authenticated: true }, route: "/plan/insights" }
     )
 
     expect(await screen.findByTestId("insights-page-empty")).toBeInTheDocument()
@@ -260,7 +260,7 @@ describe("InsightsPage", () => {
       <TooltipProvider>
         <InsightsPage />
       </TooltipProvider>,
-      { auth: { authenticated: true } }
+      { auth: { authenticated: true }, route: "/plan/insights" }
     )
 
     expect(await screen.findByTestId("insights-page-error")).toBeInTheDocument()
@@ -293,11 +293,11 @@ describe("InsightsPage", () => {
       <TooltipProvider>
         <InsightsPage />
       </TooltipProvider>,
-      { auth: { authenticated: true } }
+      { auth: { authenticated: true }, route: "/plan/insights" }
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId("insights-summary")).toBeInTheDocument()
+      expect(screen.getByTestId("insights-outlook")).toBeInTheDocument()
     )
     expect((await screen.findAllByText("1")).length).toBeGreaterThan(0)
     expect(getGoal).not.toHaveBeenCalled()

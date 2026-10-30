@@ -13,14 +13,16 @@ import { useGlobalGoalPlan } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
-import { InsightsEvents } from ".//insights-events"
-import { InsightsMissing } from ".//insights-missing"
-import { InsightsSummary } from ".//insights-summary"
+import { InsightsEvents } from "./insights-events"
+import { InsightsHoldingBack } from "./insights-holding-back"
+import { InsightsMissing } from "./insights-missing"
+import { InsightsOutlook } from "./insights-outlook"
+import type { InsightsGoalInfo } from "./insights-view"
 
 /**
- * The Insights view (plan §16 phase 7): aggregates a project's still-active goals into total missing
- * resources, a combined energy/completion estimate, farming bottlenecks, and campaign/event relevance
- * annotated with which entities benefit. Defaults to every Active goal in the global plan and owns
+ * The Insights view (plan §16 phase 7): when the plan is done and which goals set that date, what
+ * holds it back (blockers and farming bottlenecks), where to farm (campaign/event relevance annotated
+ * with which entities benefit), and everything still missing. Defaults to every Active goal in the global plan and owns
  * its own optional project filter rather than sharing the goals list's filter via a URL param — kept independent of
  * `GoalsPage`'s existing, separately-tested project-filter state.
  */
@@ -48,10 +50,14 @@ export function InsightsPage() {
     projectId ? scopedGoals.map((entry) => entry.goal.goalId) : null
   )
 
-  const goalEntityById = new Map(
+  const goalInfoById = new Map<string, InsightsGoalInfo>(
     scopedGoals.map((member) => [
       member.goal.goalId,
-      { entityType: member.goal.entityType, entityId: member.goal.entityId },
+      {
+        entityType: member.goal.entityType,
+        entityId: member.goal.entityId,
+        goalType: member.goal.goalType,
+      },
     ])
   )
 
@@ -105,30 +111,43 @@ export function InsightsPage() {
         </div>
       ) : (
         <>
-          <InsightsSummary
-            blockers={result.blockers}
-            bottlenecks={result.bottlenecks}
+          {/* Read top to bottom: when the plan is done, what holds it back and where to farm, then
+              everything still to get. */}
+          <InsightsOutlook
             completionDate={result.completionDate}
             dailyEnergy={planningSettings.dailyEnergy}
-            unestimatedGoalCount={result.unestimatedGoalCount}
             energyTotal={result.energyTotal}
-            onslaughtTokens={result.onslaughtTokens}
+            excludedGoals={result.excludedGoals}
+            goalInfoById={goalInfoById}
+            goalOutlook={result.goalOutlook}
             onslaughtDays={result.onslaughtDays}
-            totals={result.totals}
           />
-          <InsightsMissing missing={result.missing} />
-          <InsightsEvents
-            benefitingGoalIdsByInsightId={result.benefitingGoalIdsByInsightId}
-            goalEntityById={goalEntityById}
-            insights={result.campaignInsights}
-            title={t("goals.insights.campaignsTitle")}
-          />
-          <InsightsEvents
-            benefitingGoalIdsByInsightId={result.benefitingGoalIdsByInsightId}
-            goalEntityById={goalEntityById}
-            insights={result.eventInsights}
-            title={t("goals.insights.eventsTitle")}
-          />
+          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+            <InsightsHoldingBack
+              blockers={result.blockers}
+              bottlenecks={result.bottlenecks}
+              goalInfoById={goalInfoById}
+            />
+            <div className="flex flex-col gap-6">
+              <InsightsEvents
+                benefitingGoalIdsByInsightId={
+                  result.benefitingGoalIdsByInsightId
+                }
+                goalEntityById={goalInfoById}
+                insights={result.campaignInsights}
+                title={t("goals.insights.campaignsTitle")}
+              />
+              <InsightsEvents
+                benefitingGoalIdsByInsightId={
+                  result.benefitingGoalIdsByInsightId
+                }
+                goalEntityById={goalInfoById}
+                insights={result.eventInsights}
+                title={t("goals.insights.eventsTitle")}
+              />
+            </div>
+          </div>
+          <InsightsMissing missing={result.missing} totals={result.totals} />
         </>
       )}
     </div>

@@ -247,6 +247,14 @@ describe("computePlanInsights", () => {
           goalIds: ["goal-1"],
         },
       ])
+      expect(result.goalOutlook).toEqual([
+        {
+          goalId: "goal-1",
+          date: result.completionDate,
+          days: expect.any(Number),
+        },
+      ])
+      expect(result.excludedGoals).toEqual([])
     })
 
     it("reports a material no node drops as a blocker, not a bottleneck", () => {
@@ -271,6 +279,41 @@ describe("computePlanInsights", () => {
           goalIds: ["goal-1"],
         },
       ])
+      expect(result.goalOutlook).toEqual([])
+      expect(result.excludedGoals).toEqual([
+        { goalId: "goal-1", reason: "NoFarmLocation" },
+      ])
+      expect(result.unestimatedGoalCount).toBe(1)
+    })
+
+    it("orders the goals behind the date latest first", () => {
+      const pinned = (goalId: string, entityId: string) => ({
+        ...rankGoal(),
+        goalId,
+        entityId,
+      })
+      const result = computePlanInsights({
+        levelRules,
+        ...baseParams,
+        details: [pinned("first", "hero1"), pinned("second", "hero2")],
+        charactersById: new Map([
+          ["hero1", characterView],
+          ["hero2", { ...characterView, id: unitId("hero2") }],
+        ]),
+        getCharacter: () => character,
+        // One raid a day: the second goal finishes a day after the first.
+        dailyEnergy: 10,
+        priorityByGoalId: new Map([
+          ["first", 1],
+          ["second", 2],
+        ]),
+      })
+
+      expect(result.goalOutlook.map((goal) => goal.goalId)).toEqual([
+        "second",
+        "first",
+      ])
+      expect(result.completionDate).toBe(result.goalOutlook[0]?.date)
     })
   })
 

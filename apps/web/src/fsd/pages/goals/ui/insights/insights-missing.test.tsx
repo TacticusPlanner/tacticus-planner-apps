@@ -78,6 +78,29 @@ describe("InsightsMissing", () => {
     ).toEqual(["Gold"])
   })
 
+  it("leads with the farmed upgrades and shards still to get", () => {
+    render(
+      <InsightsMissing
+        missing={empty}
+        totals={{
+          upgradesByRarity: { Common: 4, Rare: 1_200 },
+          shards: 30,
+          mythicShards: 0,
+        }}
+      />
+    )
+
+    const [farmed] = screen.getAllByTestId("insights-missing-group")
+    expect(farmed?.querySelector("h3")?.textContent).toBe("Farmed resources")
+    expect(
+      within(farmed!).getByLabelText("Rare upgrades: 1,200")
+    ).toBeInTheDocument()
+    expect(within(farmed!).getByLabelText("Shards: 30")).toBeInTheDocument()
+    expect(
+      within(farmed!).queryByLabelText(/Mythic shards/)
+    ).not.toBeInTheDocument()
+  })
+
   it("leaves out groups with nothing missing", () => {
     render(
       <InsightsMissing missing={{ ...empty, orbs: { Xenos: { Rare: 1 } } }} />
