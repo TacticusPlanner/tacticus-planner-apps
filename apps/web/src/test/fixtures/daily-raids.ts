@@ -146,6 +146,7 @@ export function ready(
         ] as [string, { owned: number; target: number }][]),
       ])
     ),
+    hasManualRaids: false,
     locationsByBattleId: new Map([
       [
         battle,

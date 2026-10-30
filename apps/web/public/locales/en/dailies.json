@@ -526,15 +526,18 @@
     "label": "Quick filters",
     "chip": {
       "fewerRaids": "Fewer raids",
-      "combineGoals": "Combine goals"
+      "combineGoals": "Combine goals",
+      "raidableOnly": "Raidable only"
     },
     "help": {
       "fewerRaids": "When several locations cost the same energy per item, raid only the ones with the highest energy per battle. Same materials for the same energy, in fewer raids. Useful when you're low on raid tickets.",
-      "combineGoals": "Combine the remaining materials of all goals (only the selected project's goals when one is picked) and plan today's raids as if they were one goal: the materials that take longest to farm come first and goal priority is ignored."
+      "combineGoals": "Combine the remaining materials of all goals (only the selected project's goals when one is picked) and plan today's raids as if they were one goal: the materials that take longest to farm come first and goal priority is ignored.",
+      "raidableOnly": "Leave out battles you can't raid yet (fewer than 3 medals) and raid other locations for the same materials. A material with no raidable location shows as blocked."
     },
     "note": {
       "fewerRaids": "Fewer raids: tied locations with more energy per battle are used, so the same materials take fewer raids.",
-      "combineGoals": "Combine goals: today's raids treat all goals as one, so the materials that take longest to farm come first. Plan and Goals dates still follow goal priority."
+      "combineGoals": "Combine goals: today's raids treat all goals as one, so the materials that take longest to farm come first. Plan and Goals dates still follow goal priority.",
+      "raidableOnly": "Raidable only: battles that need to be played manually are replaced with raidable locations."
     }
   },
   "hse": {
@@ -795,5 +798,29 @@
         "units": "Only kills of {{units}} count."
       }
     }
+  },
+  "manualBattle": {
+    "badge": "Play manually",
+    "help": "Raids need 3 medals. Play this battle until you earn 3 medals, then you can raid it.",
+    "menu": "Location options",
+    "cantRaid": "Can't raid {{location}}?"
+  },
+  "battleProgress": {
+    "open": "Medals",
+    "title": "Battles without 3 medals",
+    "description": "Raids need 3 medals. Set the medals you have on each battle; a battle below 3 is planned as one to play manually. Your next battle in each campaign is always played manually.",
+    "campaign": "Campaign",
+    "notStarted": "You haven't reached any battle in this campaign yet.",
+    "notBeaten": "Not beaten yet",
+    "manual": "Play manually",
+    "medalsFor": "Medals on {{battle}}",
+    "medals_one": "{{count}} medal",
+    "medals_other": "{{count}} medals",
+    "save": "Save",
+    "cancel": "Cancel",
+    "conflict": "Your medals changed on another device. The latest version is loaded; make your changes again.",
+    "saveError": "Couldn't save your medals. Try again.",
+    "loadError": "Couldn't load your medals. Try again later.",
+    "signIn": "Sign in to record your battle medals."
   }
 }

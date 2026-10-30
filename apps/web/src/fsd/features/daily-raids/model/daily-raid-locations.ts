@@ -27,7 +27,8 @@ export function buildLocationsByBattleId(
       code: string
       challenge: boolean
     }
-  }
+  },
+  manualBattleIds: ReadonlySet<string> = new Set()
 ): ReadonlyMap<BattleId, DailyRaidLocationViewModel> {
   return new Map(
     [...battlesById].map(([battleId, battle]) => {
@@ -46,6 +47,7 @@ export function buildLocationsByBattleId(
             ? `${short.name} ${short.code} ${battle.nodeNumber}${short.challenge ? "B" : ""}`
             : battle.campaignGroupId,
           challenge: battle.challenge,
+          manual: manualBattleIds.has(battleId),
           icon: campaignIcon(
             battle.campaignGroupId,
             battle.type,

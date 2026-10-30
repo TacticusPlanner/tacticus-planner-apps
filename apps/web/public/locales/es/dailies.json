@@ -526,15 +526,18 @@
     "label": "Filtros rápidos",
     "chip": {
       "fewerRaids": "Menos incursiones",
-      "combineGoals": "Combinar objetivos"
+      "combineGoals": "Combinar objetivos",
+      "raidableOnly": "Solo incursionables"
     },
     "help": {
       "fewerRaids": "Cuando varios lugares cuestan la misma energía por objeto, incursiona solo en los de más energía por batalla. Mismos materiales con la misma energía, en menos incursiones. Útil cuando te quedan pocos tickets de incursión.",
-      "combineGoals": "Combina los materiales restantes de todos los objetivos (solo los del proyecto seleccionado si hay uno) y planifica las incursiones de hoy como si fueran un solo objetivo: primero los materiales que más tardan en farmearse, sin tener en cuenta la prioridad."
+      "combineGoals": "Combina los materiales restantes de todos los objetivos (solo los del proyecto seleccionado si hay uno) y planifica las incursiones de hoy como si fueran un solo objetivo: primero los materiales que más tardan en farmearse, sin tener en cuenta la prioridad.",
+      "raidableOnly": "Omite las batallas que aún no puedes incursionar (menos de 3 medallas) e incursiona otras ubicaciones para los mismos materiales. Un material sin ubicación incursionable aparece como bloqueado."
     },
     "note": {
       "fewerRaids": "Menos incursiones: se usan los lugares empatados con más energía por batalla, así los mismos materiales requieren menos incursiones.",
-      "combineGoals": "Combinar objetivos: las incursiones de hoy tratan todos los objetivos como uno solo, primero los materiales que más tardan en farmearse. Las fechas de Plan y Objetivos siguen la prioridad de los objetivos."
+      "combineGoals": "Combinar objetivos: las incursiones de hoy tratan todos los objetivos como uno solo, primero los materiales que más tardan en farmearse. Las fechas de Plan y Objetivos siguen la prioridad de los objetivos.",
+      "raidableOnly": "Solo incursionables: las batallas que hay que jugar manualmente se sustituyen por ubicaciones incursionables."
     }
   },
   "hse": {
@@ -795,5 +798,29 @@
         "units": "Solo cuentan las eliminaciones de {{units}}."
       }
     }
+  },
+  "manualBattle": {
+    "badge": "Jugar manualmente",
+    "help": "Las incursiones necesitan 3 medallas. Juega esta batalla hasta conseguir 3 medallas y luego podrás incursionarla.",
+    "menu": "Opciones de ubicación",
+    "cantRaid": "¿No puedes incursionar {{location}}?"
+  },
+  "battleProgress": {
+    "open": "Medallas",
+    "title": "Batallas sin 3 medallas",
+    "description": "Las incursiones necesitan 3 medallas. Indica las medallas de cada batalla; una batalla con menos de 3 se planifica para jugarla manualmente. Tu siguiente batalla de cada campaña siempre se juega manualmente.",
+    "campaign": "Campaña",
+    "notStarted": "Aún no has llegado a ninguna batalla de esta campaña.",
+    "notBeaten": "Aún no superada",
+    "manual": "Jugar manualmente",
+    "medalsFor": "Medallas en {{battle}}",
+    "medals_one": "{{count}} medalla",
+    "medals_other": "{{count}} medallas",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "conflict": "Tus medallas cambiaron en otro dispositivo. Se cargó la versión más reciente; vuelve a hacer tus cambios.",
+    "saveError": "No se pudieron guardar tus medallas. Inténtalo de nuevo.",
+    "loadError": "No se pudieron cargar tus medallas. Inténtalo más tarde.",
+    "signIn": "Inicia sesión para registrar tus medallas de batalla."
   }
 }

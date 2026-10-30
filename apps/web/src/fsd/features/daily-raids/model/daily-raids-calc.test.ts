@@ -309,7 +309,7 @@ describe("daily raid derivation", () => {
     ).toEqual([])
   })
 
-  it("excludes the frontier standing campaign battle, which may lack 3 medals", () => {
+  it("keeps the frontier standing campaign battle, which is played manually", () => {
     const battles = [
       eventBattle({
         id: "frontier",
@@ -323,8 +323,14 @@ describe("daily raid derivation", () => {
     ])
 
     expect(
-      availableCampaignBattles(battles, eventIds, null, new Map(), progress)
-    ).toEqual([])
+      availableCampaignBattles(
+        battles,
+        eventIds,
+        null,
+        new Map(),
+        progress
+      ).map((battle) => battle.id)
+    ).toEqual(["frontier"])
   })
 
   it("keeps a standing campaign battle before the frontier", () => {

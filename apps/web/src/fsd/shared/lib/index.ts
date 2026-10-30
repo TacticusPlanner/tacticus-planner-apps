@@ -1,6 +1,7 @@
 export {
   filterUnlockedBattles,
-  isStandingBattleRaidable,
+  isStandingBattleFrontier,
+  isStandingBattleReached,
   type Battle,
   type FarmLocation,
 } from "./battles"

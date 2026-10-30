@@ -51,3 +51,11 @@ export function progressForAlliance(
   const value = progress[key] as OnslaughtAllianceProgress | undefined
   return value?.isSet ? value : undefined
 }
+
+/** A battle's manual progress: medals earned (raids need 3), Lightning Victory, and the
+ *  campaign-event milestone tier. */
+export type BattleProgressOverride =
+  ApiSchemas["BattleProgressOverrideResponse"]
+
+export type BattleProgressOverrides =
+  ApiSchemas["BattleProgressOverridesResponse"]

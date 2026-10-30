@@ -1466,6 +1466,24 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/player-data-overrides/battle-progress": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets manual per-battle progress overrides (medals, Lightning Victory, milestones). */
+    get: operations["TacticusPlannerApiFeaturesPlayerDataOverridesGetBattleProgressEndpoint"]
+    /** Replaces manual per-battle progress overrides. */
+    put: operations["TacticusPlannerApiFeaturesPlayerDataOverridesUpdateBattleProgressEndpoint"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/player-data-overrides/campaign-events-progress": {
     parameters: {
       query?: never
@@ -1720,6 +1738,27 @@ export interface components {
       }
       /** @description The conflicting resource as its read endpoint serves it. */
       current?: unknown
+    }
+    /** @enum {string} */
+    BattleMilestone: "Bronze" | "Silver" | "Gold"
+    BattleProgressOverrideRequest: {
+      battleId: string
+      /** Format: int32 */
+      medals: number
+      lightningVictory: null | boolean
+      milestone: null | components["schemas"]["BattleMilestone"]
+    }
+    BattleProgressOverrideResponse: {
+      battleId: string
+      /** Format: int32 */
+      medals: number
+      lightningVictory: null | boolean
+      milestone: null | components["schemas"]["BattleMilestone"]
+    }
+    BattleProgressOverridesResponse: {
+      battles: components["schemas"]["IReadOnlyListOfBattleProgressOverrideResponse"]
+      /** Format: int64 */
+      revision: number
     }
     CampaignEventProgressOverrideRequest: {
       campaignGroupId: string
@@ -3373,6 +3412,8 @@ export interface components {
     IReadOnlyDictionaryOfStringAndString: {
       [key: string]: string
     }
+    IReadOnlyListOfBattleProgressOverrideRequest: components["schemas"]["BattleProgressOverrideRequest"][]
+    IReadOnlyListOfBattleProgressOverrideResponse: components["schemas"]["BattleProgressOverrideResponse"][]
     IReadOnlyListOfCampaignEventProgressOverrideRequest: components["schemas"]["CampaignEventProgressOverrideRequest"][]
     IReadOnlyListOfCampaignEventProgressOverrideResponse: components["schemas"]["CampaignEventProgressOverrideResponse"][]
     IReadOnlyListOfGameCatalogAbilityPowerModifier: components["schemas"]["GameCatalogAbilityPowerModifier"][]
@@ -3878,6 +3919,11 @@ export interface components {
       | "Adamantine1"
       | "Adamantine2"
       | "Adamantine3"
+    UpdateBattleProgressRequest: {
+      battles: components["schemas"]["IReadOnlyListOfBattleProgressOverrideRequest"]
+      /** Format: int64 */
+      revision: number
+    }
     UpdateCampaignEventProgressRequest: {
       progress: components["schemas"]["IReadOnlyListOfCampaignEventProgressOverrideRequest"]
       /** Format: int64 */
@@ -8654,6 +8700,95 @@ export interface operations {
       }
       /** @description expectedRevision is stale or another write won (issueCode legendaryEventPlanStale), or a reorder's ids are not the lane's team set (legendaryEventOrderSetMismatch). current is the plan as it stands. */
       409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesPlayerDataOverridesGetBattleProgressEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["BattleProgressOverridesResponse"]
+        }
+      }
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesPlayerDataOverridesUpdateBattleProgressEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateBattleProgressRequest"]
+      }
+    }
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["BattleProgressOverridesResponse"]
+        }
+      }
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
         headers: {
           [name: string]: unknown
         }

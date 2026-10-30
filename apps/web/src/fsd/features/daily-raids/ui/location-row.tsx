@@ -6,6 +6,7 @@ import type {
 } from "../model/daily-raids.domain"
 import type { FlattenedRaidLocation } from "../model/flatten-today-locations"
 import { plannedRaidNeed } from "../model/planned-raid-need"
+import { ManualBattleBadge } from "./manual-battle"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
 import { ResourceIconWithTooltip } from "./resource-icon"
 
@@ -41,6 +42,7 @@ export function LocationRow({
           </div>
         ) : null}
       </div>
+      {location?.manual ? <ManualBattleBadge /> : null}
       <PlannedRaidNeedBadge
         need={plannedRaidNeed({
           resourceId: entry.resourceId,

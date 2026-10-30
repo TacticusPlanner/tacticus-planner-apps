@@ -1,4 +1,5 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
+import { Medal } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
   campaignDescriptor,
@@ -10,6 +11,7 @@ import {
 import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardContent,
@@ -19,6 +21,7 @@ import {
 import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
 
+import { BattleProgressDialog } from "@/features/daily-raids"
 import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { EntityIcon, LocalReadFailure } from "@/shared/ui"
@@ -40,6 +43,7 @@ export function CampaignsPage() {
   )
   const [definitions, battles, progress, characters] =
     read.status === "ready" ? read.data : []
+  const [medalsGroupId, setMedalsGroupId] = useState<string | null>(null)
 
   // Keyed on each read's data (each referentially stable while unchanged), not on the combined tuple.
   const model = useMemo(
@@ -75,12 +79,23 @@ export function CampaignsPage() {
         <StorySection
           title={t("progress.campaigns.normal")}
           stories={model.normal}
+          onEditMedals={setMedalsGroupId}
         />
         <StorySection
           title={t("progress.campaigns.mirror")}
           stories={model.mirror}
+          onEditMedals={setMedalsGroupId}
         />
       </div>
+      {medalsGroupId ? (
+        <BattleProgressDialog
+          campaignGroupId={medalsGroupId}
+          onOpenChange={(open) => {
+            if (!open) setMedalsGroupId(null)
+          }}
+          open
+        />
+      ) : null}
     </div>
   )
 }
@@ -209,9 +224,11 @@ function Summary({
 function StorySection({
   title,
   stories,
+  onEditMedals,
 }: {
   title: string
   stories: BuiltStory[]
+  onEditMedals: (groupId: string) => void
 }) {
   return (
     <section className="space-y-3">
@@ -219,14 +236,20 @@ function StorySection({
         {title}
       </h3>
       {stories.map((story) => (
-        <StoryCard key={story.key} story={story} />
+        <StoryCard key={story.key} story={story} onEditMedals={onEditMedals} />
       ))}
     </section>
   )
 }
 
-function StoryCard({ story }: { story: BuiltStory }) {
-  const { t } = useTranslation("campaigns")
+function StoryCard({
+  story,
+  onEditMedals,
+}: {
+  story: BuiltStory
+  onEditMedals: (groupId: string) => void
+}) {
+  const { t } = useTranslation(["campaigns", "dailies"])
   const total = story.definitions.reduce((sum, track) => sum + track.max, 0)
   const done = story.definitions.reduce(
     (sum, track) => sum + track.completed,
@@ -281,6 +304,16 @@ function StoryCard({ story }: { story: BuiltStory }) {
               <Progress
                 value={track.max ? (track.completed / track.max) * 100 : 0}
               />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="-ml-2 h-7 text-xs"
+                onClick={() => onEditMedals(track.definition.groupId)}
+                data-testid={`campaign-medals-${track.definition.groupId}`}
+              >
+                <Medal aria-hidden className="size-3.5" />
+                {t("dailies:battleProgress.open")}
+              </Button>
             </div>
           ))}
         </div>

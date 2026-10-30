@@ -2,6 +2,8 @@ export { updateOnslaughtProgress } from "./api/onslaught-progress.api"
 export { onslaughtProgressQueries } from "./api/onslaught-progress.queries"
 export { updateCampaignEventProgressOverrides } from "./api/campaign-event-progress.api"
 export { campaignEventProgressQueries } from "./api/campaign-event-progress.queries"
+export { updateBattleProgressOverrides } from "./api/battle-progress.api"
+export { battleProgressQueries } from "./api/battle-progress.queries"
 export {
   onslaughtAlliances,
   onslaughtSectors,
@@ -13,6 +15,8 @@ export {
   type OnslaughtTier,
   type CampaignEventProgressOverride,
   type CampaignEventProgressOverrides,
+  type BattleProgressOverride,
+  type BattleProgressOverrides,
 } from "./model/types"
 export {
   buildEffectiveCampaignEventProgress,

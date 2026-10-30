@@ -36,6 +36,7 @@ export function RaidSchedule({
   resourceUrgencyByGoalAndResource = NO_RESOURCE_URGENCY_DATA,
   resourceVisuals,
   emphasis = "material",
+  onCantRaid,
   testId,
 }: {
   entries: RaidBreakdownEntry[]
@@ -58,6 +59,8 @@ export function RaidSchedule({
   >
   resourceVisuals: ReadonlyMap<string, DailyRaidResourceVisual>
   emphasis?: "material" | "location"
+  /** Offers "Can't raid this?" on each card, opening the battle progress dialog. */
+  onCantRaid?: (battleId: BattleId) => void
   testId: string
 }) {
   const grouped = groupEntries(
@@ -116,6 +119,7 @@ export function RaidSchedule({
               attemptsLeftByBattle={attemptsLeftByBattle}
               attemptsUsedByBattle={attemptsUsedByBattle}
               emphasis={emphasis}
+              onCantRaid={onCantRaid}
               goal={combinesShardIdentity ? goal : undefined}
               label={resourceLabels.get(resourceId) ?? resourceId}
               locationsByBattleId={locationsByBattleId}

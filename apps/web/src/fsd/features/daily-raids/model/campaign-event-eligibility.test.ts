@@ -6,7 +6,10 @@ import {
   type SyncedCampaignEventProgress,
 } from "@/entities/player-data-override"
 
-import { availableCampaignBattles } from "./campaign-event-eligibility"
+import {
+  availableCampaignBattles,
+  manualBattleIds,
+} from "./campaign-event-eligibility"
 
 // daily-raids-today, "Only the active campaign event is farmable": event node eligibility reads the
 // effective progress (manual override, else synced, else none), not the synced chunk alone.
@@ -141,5 +144,44 @@ describe("event node eligibility from effective progress", () => {
         [override("Standard", { completedChallengeBattlesIds: ["AMS7B"] })]
       )
     ).toEqual(["AMS16", "AMS7B"])
+  })
+})
+
+describe("manualBattleIds", () => {
+  const standing = (id: string, battleIndex: number) => ({
+    id,
+    campaignGroupId: "elite2",
+    type: "Elite",
+    battleIndex,
+  })
+
+  it("marks the standing frontier and battles recorded below 3 medals", () => {
+    const ids = manualBattleIds(
+      [standing("FoCE1", 0), standing("FoCE2", 1), standing("FoCE3", 2)],
+      new Set(),
+      new Map([["elite2:Elite", { highestCompletedBattleIndex: 2 }]]),
+      [
+        { battleId: "FoCE1", medals: 2 },
+        { battleId: "FoCE2", medals: 3 },
+      ]
+    )
+    expect([...ids].toSorted()).toEqual(["FoCE1", "FoCE3"])
+  })
+
+  it("never treats an event battle as a standing frontier", () => {
+    const ids = manualBattleIds(
+      [
+        {
+          id: "AMS01",
+          campaignGroupId: ACTIVE,
+          type: "Standard",
+          battleIndex: 0,
+        },
+      ],
+      eventIds,
+      new Map([[`${ACTIVE}:Standard`, { highestCompletedBattleIndex: 0 }]]),
+      []
+    )
+    expect(ids.size).toBe(0)
   })
 })

@@ -43,6 +43,12 @@ vi.mock("@/entities/project", async (importOriginal) => ({
 }))
 
 vi.mock("@/entities/player-data-override", () => ({
+  battleProgressQueries: {
+    current: () => ({
+      queryKey: ["player-data-overrides", "battle-progress"],
+      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
+    }),
+  },
   onslaughtProgressQueries: {
     all: () => ["player-data-overrides", "onslaught"],
   },

@@ -30,6 +30,12 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 let onslaughtProgressFixture: unknown = null
 vi.mock("@/entities/player-data-override", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
+  battleProgressQueries: {
+    current: () => ({
+      queryKey: ["player-data-overrides", "battle-progress"],
+      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
+    }),
+  },
   onslaughtProgressQueries: {
     all: () => ["player-data-overrides", "onslaught"],
     current: () => ({

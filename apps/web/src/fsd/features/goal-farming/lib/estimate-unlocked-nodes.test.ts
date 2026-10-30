@@ -68,12 +68,12 @@ const base = {
 }
 
 describe("filterUnlockedBattles", () => {
-  it("unlocks only battles before the frontier (the synced high-water mark), and none with no progress", () => {
+  it("unlocks battles up to and including the frontier (the synced high-water mark), and none with no progress", () => {
     expect([...unlocked(-1).keys()]).toEqual([])
-    expect([...unlocked(1).keys()]).toEqual([])
-    expect([...unlocked(2).keys()]).toEqual(["near"])
-    expect([...unlocked(5).keys()]).toEqual(["near"])
-    expect([...unlocked(6).keys()]).toEqual(["far", "near"])
+    expect([...unlocked(0).keys()]).toEqual([])
+    expect([...unlocked(1).keys()]).toEqual(["near"])
+    expect([...unlocked(4).keys()]).toEqual(["near"])
+    expect([...unlocked(5).keys()]).toEqual(["far", "near"])
     expect([...filterUnlockedBattles(all, [], new Set()).keys()]).toEqual([])
   })
 

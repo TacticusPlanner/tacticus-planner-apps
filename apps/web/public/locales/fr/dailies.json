@@ -526,15 +526,18 @@
     "label": "Filtres rapides",
     "chip": {
       "fewerRaids": "Moins de raids",
-      "combineGoals": "Combiner les objectifs"
+      "combineGoals": "Combiner les objectifs",
+      "raidableOnly": "Raidables seulement"
     },
     "help": {
       "fewerRaids": "Quand plusieurs lieux coûtent la même énergie par objet, ne raider que ceux qui coûtent le plus d'énergie par combat. Mêmes matériaux pour la même énergie, en moins de raids. Utile quand il vous reste peu de tickets de raid.",
-      "combineGoals": "Combine les matériaux restants de tous les objectifs (seulement ceux du projet sélectionné s'il y en a un) et planifie les raids du jour comme s'il s'agissait d'un seul objectif : les matériaux les plus longs à farmer passent en premier et la priorité des objectifs est ignorée."
+      "combineGoals": "Combine les matériaux restants de tous les objectifs (seulement ceux du projet sélectionné s'il y en a un) et planifie les raids du jour comme s'il s'agissait d'un seul objectif : les matériaux les plus longs à farmer passent en premier et la priorité des objectifs est ignorée.",
+      "raidableOnly": "Écarte les combats que tu ne peux pas encore raider (moins de 3 médailles) et raide d'autres lieux pour les mêmes matériaux. Un matériau sans lieu raidable apparaît comme bloqué."
     },
     "note": {
       "fewerRaids": "Moins de raids : les lieux à égalité qui coûtent plus d'énergie par combat sont utilisés, donc les mêmes matériaux demandent moins de raids.",
-      "combineGoals": "Combiner les objectifs : les raids du jour traitent tous les objectifs comme un seul, les matériaux les plus longs à farmer en premier. Les dates de Plan et Objectifs suivent toujours la priorité des objectifs."
+      "combineGoals": "Combiner les objectifs : les raids du jour traitent tous les objectifs comme un seul, les matériaux les plus longs à farmer en premier. Les dates de Plan et Objectifs suivent toujours la priorité des objectifs.",
+      "raidableOnly": "Raidables seulement : les combats à jouer manuellement sont remplacés par des lieux raidables."
     }
   },
   "hse": {
@@ -795,5 +798,29 @@
         "units": "Seules les éliminations de {{units}} comptent."
       }
     }
+  },
+  "manualBattle": {
+    "badge": "À jouer manuellement",
+    "help": "Les raids demandent 3 médailles. Joue ce combat jusqu'à obtenir 3 médailles, puis tu pourras le raider.",
+    "menu": "Options du lieu",
+    "cantRaid": "Impossible de raider {{location}} ?"
+  },
+  "battleProgress": {
+    "open": "Médailles",
+    "title": "Combats sans 3 médailles",
+    "description": "Les raids demandent 3 médailles. Indique les médailles de chaque combat ; un combat sous 3 est planifié comme à jouer manuellement. Ton prochain combat de chaque campagne se joue toujours manuellement.",
+    "campaign": "Campagne",
+    "notStarted": "Tu n'as encore atteint aucun combat de cette campagne.",
+    "notBeaten": "Pas encore vaincu",
+    "manual": "À jouer manuellement",
+    "medalsFor": "Médailles sur {{battle}}",
+    "medals_one": "{{count}} médaille",
+    "medals_other": "{{count}} médailles",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "conflict": "Tes médailles ont changé sur un autre appareil. La dernière version est chargée ; refais tes modifications.",
+    "saveError": "Impossible d'enregistrer tes médailles. Réessaie.",
+    "loadError": "Impossible de charger tes médailles. Réessaie plus tard.",
+    "signIn": "Connecte-toi pour enregistrer tes médailles de combat."
   }
 }

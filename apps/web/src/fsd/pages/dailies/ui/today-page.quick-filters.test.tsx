@@ -8,8 +8,9 @@ import { ready } from "@/test/fixtures/daily-raids"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { TodayPage } from "./today-page"
 
-const { dailyRaidsArgs } = vi.hoisted(() => ({
+const { dailyRaidsArgs, plan } = vi.hoisted(() => ({
   dailyRaidsArgs: [] as unknown[][],
+  plan: { hasManualRaids: false },
 }))
 
 vi.mock("@/features/daily-raids", async (importOriginal) => {
@@ -18,7 +19,7 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
     ...actual,
     useDailyRaids: (...args: unknown[]) => {
       dailyRaidsArgs.push(args)
-      return ready()
+      return { ...ready(), hasManualRaids: plan.hasManualRaids }
     },
   }
 })
@@ -69,6 +70,7 @@ const lastQuickFilters = () =>
 describe("Today quick filters", () => {
   beforeEach(() => {
     dailyRaidsArgs.length = 0
+    plan.hasManualRaids = false
   })
 
   it("starts with both chips off and no note", () => {
@@ -77,6 +79,7 @@ describe("Today quick filters", () => {
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
       combineGoals: false,
+      raidableOnly: false,
     })
     expect(
       screen.queryByTestId("today-quick-filter-note-fewerRaids")
@@ -92,6 +95,7 @@ describe("Today quick filters", () => {
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
       combineGoals: true,
+      raidableOnly: false,
     })
     expect(
       screen.getByTestId("today-quick-filter-note-combineGoals")
@@ -101,7 +105,11 @@ describe("Today quick filters", () => {
     )
 
     await user.click(screen.getByTestId("today-quick-filter-fewerRaids"))
-    expect(lastQuickFilters()).toEqual({ fewerRaids: true, combineGoals: true })
+    expect(lastQuickFilters()).toEqual({
+      fewerRaids: true,
+      combineGoals: true,
+      raidableOnly: false,
+    })
     expect(
       screen.getByTestId("today-quick-filter-note-fewerRaids")
     ).toBeInTheDocument()
@@ -114,6 +122,7 @@ describe("Today quick filters", () => {
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
       combineGoals: false,
+      raidableOnly: false,
     })
     expect(screen.getByTestId("search")).toHaveTextContent("")
   })
@@ -141,6 +150,7 @@ describe("Today quick filters", () => {
     expect(lastQuickFilters()).toEqual({
       fewerRaids: true,
       combineGoals: false,
+      raidableOnly: false,
     })
     expect(screen.getByTestId("today-quick-filter-fewerRaids")).toHaveAttribute(
       "data-state",
@@ -153,9 +163,41 @@ describe("Today quick filters", () => {
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
       combineGoals: true,
+      raidableOnly: false,
     })
     expect(
       screen.getByTestId("today-quick-filter-combineGoals")
+    ).toHaveAttribute("data-state", "on")
+  })
+
+  it("offers Raidable only only while today's plan raids a manual battle", async () => {
+    renderToday()
+    expect(
+      screen.queryByTestId("today-quick-filter-raidableOnly")
+    ).not.toBeInTheDocument()
+
+    plan.hasManualRaids = true
+    const user = userEvent.setup()
+    renderToday()
+    await user.click(
+      screen.getAllByTestId("today-quick-filter-raidableOnly")[0]!
+    )
+    expect(lastQuickFilters()).toEqual({
+      fewerRaids: false,
+      combineGoals: false,
+      raidableOnly: true,
+    })
+  })
+
+  it("keeps Raidable only visible while it is on, so it can be turned off", () => {
+    renderToday("/?quick=raidableOnly")
+    expect(lastQuickFilters()).toEqual({
+      fewerRaids: false,
+      combineGoals: false,
+      raidableOnly: true,
+    })
+    expect(
+      screen.getByTestId("today-quick-filter-raidableOnly")
     ).toHaveAttribute("data-state", "on")
   })
 })

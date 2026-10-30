@@ -38,6 +38,12 @@ vi.mock("@/features/goal-create/ui/goal-edit/goal-edit-dialog", () => ({
 }))
 
 vi.mock("@/entities/player-data-override", () => ({
+  battleProgressQueries: {
+    current: () => ({
+      queryKey: ["player-data-overrides", "battle-progress"],
+      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
+    }),
+  },
   campaignEventProgressQueries: {
     current: () => ({
       queryKey: ["player-data-overrides", "campaign-events"],

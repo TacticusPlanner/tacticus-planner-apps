@@ -1,11 +1,17 @@
 /** Today's quick filters, in display order (daily-raids-today spec: *Today quick filters*). */
-export const TODAY_QUICK_FILTERS = ["fewerRaids", "combineGoals"] as const
+export const TODAY_QUICK_FILTERS = [
+  "fewerRaids",
+  "combineGoals",
+  "raidableOnly",
+] as const
 export type TodayQuickFilter = (typeof TODAY_QUICK_FILTERS)[number]
 
 /** The engine options the quick filters switch on; both off is the default schedule. */
 export type TodayQuickFilterOptions = {
   fewerRaids: boolean
   combineGoals: boolean
+  /** Leave out battles that must be played manually (fewer than 3 medals). */
+  raidableOnly?: boolean
 }
 
 export const isTodayQuickFilter = (value: string): value is TodayQuickFilter =>
@@ -42,5 +48,6 @@ export function todayQuickFilterOptions(
   return {
     fewerRaids: filters.includes("fewerRaids"),
     combineGoals: filters.includes("combineGoals"),
+    raidableOnly: filters.includes("raidableOnly"),
   }
 }

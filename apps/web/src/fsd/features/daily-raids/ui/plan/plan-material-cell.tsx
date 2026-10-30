@@ -15,6 +15,7 @@ import type {
 } from "../../model/daily-raids.domain"
 import { EntityIcon } from "@/shared/ui"
 import type { PlanCell } from "../../model/plan-day-cells"
+import { ManualBattleBadge } from "../manual-battle"
 import { UnitIcon } from "../resource-card"
 
 const TOOLTIP_NODE_LIMIT = 4
@@ -99,6 +100,7 @@ export function PlanMaterialCell({
                   node: location?.nodeLabel ?? "",
                   raids: node.raidsPerformed,
                 }).trim()}
+                {location?.manual ? <ManualBattleBadge compact /> : null}
               </li>
             )
           })}
