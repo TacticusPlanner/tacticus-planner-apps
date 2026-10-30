@@ -1,11 +1,13 @@
 import { allianceRank, factionRank } from "@workspace/game-domain"
 import type { Alliance, FactionId, UnitId } from "@workspace/game-domain"
 
-import { normalizeSearchText } from "@/shared/lib"
+import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
 
 export type UnitListItem = {
   id: UnitId
   name: string
+  /** The unit's other names, matched by the search besides `name` (see `useUnitSearchNames`). */
+  searchNames?: readonly string[]
   factionId: FactionId
   factionName: string
   alliance: Alliance
@@ -24,7 +26,8 @@ export function orderUnits<Item extends UnitListItem>(
   )
 }
 
-/** Loose name search (see `normalizeSearchText`); an empty query keeps everything. */
+/** Loose name search over `name` and `searchNames` (see `normalizeSearchText`); an empty query keeps
+ *  everything. */
 export function searchUnits<Item extends UnitListItem>(
   items: readonly Item[],
   query: string,
@@ -33,6 +36,6 @@ export function searchUnits<Item extends UnitListItem>(
   const needle = normalizeSearchText(query, locale)
   if (!needle) return [...items]
   return items.filter((item) =>
-    normalizeSearchText(item.name, locale).includes(needle)
+    anyNameIncludes([item.name, ...(item.searchNames ?? [])], needle, locale)
   )
 }

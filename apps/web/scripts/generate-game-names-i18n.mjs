@@ -7,6 +7,7 @@
 //   public/locales/{en,de,es,fr}/traits.json            trait id            -> name
 //   public/locales/{en,de,es,fr}/factions.json          faction id          -> name
 //   public/locales/{en,de,es,fr}/mythicQuestTasks.json  task loca key       -> template
+//   public/locales/{en,de,es,fr}/unitSearchNames.json   character/MoW id    -> other names to search by
 //
 // Source: the pinned data-mines commit (datamine/REF, see scripts/datamine.mjs): the game config names
 // the ids, the game's language files name them. A term missing in one locale falls back to English.
@@ -143,6 +144,39 @@ if (unnamed.length > 0) {
   for (const id of unnamed) console.log(`  NO TERM   ${id}`)
   process.exit(1)
 }
+
+// ---- search names ------------------------------------------------------------------------------------
+
+// The game shows a unit by its extra short name ("Nauseous", "Gulgortz"), but players know it by its
+// short and full names too ("Nauseous Rotbone", "Boss Gulgortz", "Gulgortz Bulldoza"), the ones V1 showed.
+// Unit searches match these as well, the English ones in every locale, so a name read on Discord or in
+// V1 finds the unit whatever the language. The displayed term itself is left out: searches match it already.
+const SEARCH_NAME_SUFFIXES = ["_ShortName", "_Name"]
+const unitSearchNames = Object.fromEntries(
+  LOCALES.map((locale) => [locale, {}])
+)
+for (const namespace of ["characters", "mows"]) {
+  for (const id of Object.keys(tables[namespace].en)) {
+    for (const locale of LOCALES) {
+      const shown = tables[namespace][locale][id]
+      const names = [
+        ...new Set(
+          [locale, "en"].flatMap((source) =>
+            SEARCH_NAME_SUFFIXES.map(
+              (suffix) =>
+                // Some terms carry zero-width spaces, which would keep a duplicate apart.
+                languages[source][`Units/${id}${suffix}`]
+                  ?.replace(/[\u200B-\u200D\uFEFF]/g, "")
+                  .trim() || ""
+            )
+          )
+        ),
+      ].filter((name) => name && name !== shown)
+      if (names.length > 0) unitSearchNames[locale][id] = names
+    }
+  }
+}
+tables.unitSearchNames = unitSearchNames
 
 // ---- write -------------------------------------------------------------------------------------------
 

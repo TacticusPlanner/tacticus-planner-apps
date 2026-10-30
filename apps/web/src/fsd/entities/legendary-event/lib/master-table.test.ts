@@ -438,4 +438,18 @@ describe("sortMasterTable and filterMasterTableRows", () => {
     ).toEqual(["bloodDante"])
     expect(filterMasterTableRows(result.rows, "  ", nameOf)).toHaveLength(2)
   })
+
+  it("also matches the unit's other names", () => {
+    const searchNamesOf = (unitId: string) =>
+      unitId === "ultraCalgar" ? ["Marneus Calgar"] : []
+    expect(
+      filterMasterTableRows(
+        result.rows,
+        "marneus",
+        nameOf,
+        undefined,
+        searchNamesOf
+      ).map((row) => row.unitId)
+    ).toEqual(["ultraCalgar"])
+  })
 })

@@ -43,4 +43,8 @@ export {
   usePersistedSelection,
   useSearchParamState,
 } from "./browser"
-export { matchesSearch, normalizeSearchText } from "./search-text"
+export {
+  anyNameIncludes,
+  matchesSearch,
+  normalizeSearchText,
+} from "./search-text"

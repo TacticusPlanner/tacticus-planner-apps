@@ -19,7 +19,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import { characterIcon, lockIcon } from "@workspace/game-catalog"
 import type { FactionGroup, UnitId } from "@workspace/game-domain"
 
-import { normalizeSearchText } from "@/shared/lib"
+import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
+import { useUnitSearchNames } from "@/shared/unit-name"
 
 import { useCommandListId } from "./command-list-id"
 import { EntityIcon } from "./entity-icon"
@@ -100,6 +101,7 @@ export function UnitCombobox({
   const [open, setOpen] = useState(false)
   const [listId, listRef] = useCommandListId()
   const [search, setSearch] = useState("")
+  const searchNamesOf = useUnitSearchNames()
   const triggerRef = useRef<HTMLButtonElement>(null)
   // Radix Dialog/Sheet's scroll lock only allows wheel/touch scroll inside its own content node —
   // a popover portaled to the default `document.body` is a sibling it doesn't recognize, so every
@@ -137,12 +139,12 @@ export function UnitCombobox({
         const members = factionMatches
           ? group.members
           : group.members.filter((member) =>
-              normalizeSearchText(member.name).includes(query)
+              anyNameIncludes([member.name, ...searchNamesOf(member.id)], query)
             )
         return { ...group, members }
       })
       .filter((group) => group.members.length > 0)
-  }, [groups, search])
+  }, [groups, search, searchNamesOf])
 
   return (
     <Popover

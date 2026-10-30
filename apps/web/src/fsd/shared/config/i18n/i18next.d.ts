@@ -37,6 +37,9 @@ declare module "i18next" {
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).
       characters: Record<string, string>
       mows: Record<string, string>
+      // Character/MoW id -> the game's other names for it (short and full, English too), which unit
+      // searches match besides the displayed name; read via `useUnitSearchNames`.
+      unitSearchNames: Record<string, string[]>
       upgrades: Record<string, string>
       // Specific equipment/relic piece names (I_*/R_* ids as keys); slot labels stay in `equipment`.
       equipmentItems: Record<string, string>

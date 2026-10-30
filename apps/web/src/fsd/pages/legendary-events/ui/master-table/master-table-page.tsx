@@ -23,7 +23,7 @@ import {
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
-import { useUnitName } from "@/shared/unit-name"
+import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { MasterTableControls } from "./master-table-controls"
@@ -54,6 +54,7 @@ export function MasterTablePage() {
   const { t, i18n } = useTranslation("legendaryEvents")
   const isMobile = useIsMobile()
   const unitName = useUnitName()
+  const searchNamesOf = useUnitSearchNames()
   const { captureEvent } = useAnalyticsActions()
   const [searchParams, setSearchParams] = useSearchParams()
   const [controlsOpen, setControlsOpen] = useState(false)
@@ -211,13 +212,19 @@ export function MasterTablePage() {
     () =>
       table
         ? sortMasterTable(
-            filterMasterTableRows(table.rows, q, nameOf, i18n.language),
+            filterMasterTableRows(
+              table.rows,
+              q,
+              nameOf,
+              i18n.language,
+              searchNamesOf
+            ),
             state.sort,
             nameOf,
             i18n.language
           )
         : [],
-    [table, q, state.sort, nameOf, i18n.language]
+    [table, q, state.sort, nameOf, i18n.language, searchNamesOf]
   )
 
   // Recorded once every read the effective unit set and points mode depend on has settled, so

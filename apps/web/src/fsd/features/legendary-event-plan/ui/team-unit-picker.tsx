@@ -18,7 +18,7 @@ import {
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
-import { useUnitName } from "@/shared/unit-name"
+import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 
 import { MAX_TEAM_MEMBERS } from "../model/team-editor-draft"
 import {
@@ -90,6 +90,7 @@ export function TeamUnitPicker({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const unitName = useUnitName()
+  const searchNamesOf = useUnitSearchNames()
   const objectiveLabel = useObjectiveLabel()
   const [search, setSearch] = useState("")
   const [onlyUnlocked, setOnlyUnlocked] = useState(onlyUnlockedDefault)
@@ -162,6 +163,7 @@ export function TeamUnitPicker({
     onlyUnlocked,
     selected,
     nameOf,
+    searchNamesOf,
   })
   const objectives = [...lane.unitsRestrictions].sort(
     (a, b) => a.index - b.index

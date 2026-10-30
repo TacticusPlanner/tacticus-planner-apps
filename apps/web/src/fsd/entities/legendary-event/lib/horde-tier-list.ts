@@ -1,4 +1,4 @@
-import { normalizeSearchText } from "@/shared/lib"
+import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
 
 import type {
   LegendaryEventRosterUnit,
@@ -156,7 +156,8 @@ export function buildHordeTierList(
   roster: readonly Pick<LegendaryEventRosterUnit, "unitId">[] | undefined,
   filters: HordeTierListFilters,
   nameOf: (unitId: string) => string,
-  locale?: string
+  locale?: string,
+  searchNamesOf: (unitId: string) => readonly string[] = () => []
 ): HordeTierList | null {
   if (!tierList) return null
   const owned = roster
@@ -167,7 +168,11 @@ export function buildHordeTierList(
     (filters.alliance === "all" || character.alliance === filters.alliance) &&
     (!filters.onlyOwned || !owned || owned.has(character.id)) &&
     (!needle ||
-      normalizeSearchText(nameOf(character.id), locale).includes(needle))
+      anyNameIncludes(
+        [nameOf(character.id), ...searchNamesOf(character.id)],
+        needle,
+        locale
+      ))
   const byName = (a: { unitId: string }, b: { unitId: string }) =>
     nameOf(a.unitId).localeCompare(nameOf(b.unitId), locale)
   const ownedOf = (unitId: string) => (owned ? owned.has(unitId) : undefined)

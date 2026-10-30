@@ -16,7 +16,7 @@ import {
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { UnitKind, UnitTileUnit } from "@/entities/unit"
-import { normalizeSearchText } from "@/shared/lib"
+import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
 
 import {
   collectionShardSources,
@@ -95,6 +95,8 @@ export interface CollectionLabels {
   /** The localized unit name; `fallback` is the catalog's English name. */
   unitName: (kind: UnitKind, unitId: string, fallback: string) => string
   factionName: (factionId: string) => string
+  /** The unit's other names the search matches too (see `useUnitSearchNames`). */
+  searchNames?: (unitId: string) => readonly string[]
   locale: string
 }
 
@@ -285,7 +287,7 @@ export function buildCollectionView(
           ownership: null,
           quick: null,
         }
-  const matches = rowMatcher(effective, extras, labels.locale)
+  const matches = rowMatcher(effective, extras, labels)
 
   const groupsById = new Map<string, CollectionFactionGroup>()
   const rowsByFaction = new Map<string, CollectionRow[]>()
@@ -341,7 +343,7 @@ export function buildCollectionView(
 function rowMatcher(
   query: CollectionQuery,
   extras: CollectionExtras,
-  locale: string
+  { locale, searchNames = () => [] }: CollectionLabels
 ): (row: CollectionRow) => boolean {
   const needle = normalizeSearchText(query.search, locale)
   const factions = new Set(query.factions)
@@ -363,8 +365,11 @@ function rowMatcher(
     const isOwned = row.unit.data.state === "owned"
     if (
       needle &&
-      !normalizeSearchText(row.unit.name, locale).includes(needle) &&
-      !normalizeSearchText(row.catalogName, locale).includes(needle)
+      !anyNameIncludes(
+        [row.unit.name, row.catalogName, ...searchNames(row.unit.unitId)],
+        needle,
+        locale
+      )
     ) {
       return false
     }

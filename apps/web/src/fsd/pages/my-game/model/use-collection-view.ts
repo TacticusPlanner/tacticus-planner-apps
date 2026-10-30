@@ -16,6 +16,7 @@ import {
 } from "@/features/rank-lookup"
 import { combineReadStates, type ReadState } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import { useUnitSearchNames } from "@/shared/unit-name"
 
 import {
   collectionQuickFilters,
@@ -77,6 +78,7 @@ export function useCollectionView(
   query: CollectionQuery = defaultCollectionQuery
 ): CollectionViewState {
   const { t, i18n } = useTranslation(["factions", "characters", "mows"])
+  const searchNamesOf = useUnitSearchNames()
   const isAuthenticated = useIsAuthenticated()
   const catalogRead = combineReadStates(
     useCatalogDataset("characters"),
@@ -214,6 +216,7 @@ export function useCollectionView(
             defaultValue: fallback,
           }),
         factionName: (id) => t(`factions:${id}`, { defaultValue: id }),
+        searchNames: searchNamesOf,
         locale: i18n.language,
       },
       effectiveQuery,
@@ -223,6 +226,7 @@ export function useCollectionView(
     catalog,
     roster,
     t,
+    searchNamesOf,
     i18n.language,
     effectiveQuery,
     ladder,
