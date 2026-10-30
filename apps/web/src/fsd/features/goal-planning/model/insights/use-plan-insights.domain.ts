@@ -4,6 +4,7 @@ import type { CampaignInsight } from "@/features/campaign-insights/@x/goal-plann
 
 import type {
   AbilityMaterials,
+  EstimateBlockedReason,
   EstimateOutcome,
   EstimateResourceId,
   RankSlotAllocation,
@@ -13,8 +14,9 @@ import type {
 // separate from the calc itself — mirrors estimate.domain.ts / estimate.ts.
 
 export interface PlanInsightsTotals {
+  /** Base upgrade materials still to farm, by rarity, after the plan spends owned stock in priority
+   *  order (crafted and base alike). */
   upgradesByRarity: Partial<Record<Rarity, number>>
-  orbsByType: Partial<Record<Rarity, number>>
   shards: number
   mythicShards: number
 }
@@ -30,12 +32,32 @@ export interface PlanMissingResources {
   xp: number
   /** `xp` as whole books of the user's selected XP-book rarity; `null` without the level rules. */
   xpBooks: { rarity: Rarity; count: number } | null
+  /** Gold to apply Rank goals' level-up books plus Ability goals' level costs (V1's gold totals). */
+  gold: number
 }
 
+/** A resource the plan still farms, ranked by the energy to clear it. */
 export interface PlanInsightsBottleneck {
   id: EstimateResourceId
   label: string
+  /** Still to farm after inventory and shop/Onslaught supply. */
+  count: number
+  /** At each goal's own node choice (pinned locations, else the cheapest node). */
   energyToClear: number
+  /** `energyToClear` at the user's daily energy. */
+  days: number
+  goalIds: string[]
+}
+
+/** Something no farming can clear: a resource with no usable node, or a goal-wide block. */
+export interface PlanInsightsBlocker {
+  key: string
+  reason: EstimateBlockedReason
+  /** `null` for a goal-wide block (`SimulationLimit`, `UnsupportedCost`). */
+  resourceId: EstimateResourceId | null
+  label: string | null
+  remaining: number
+  goalIds: string[]
 }
 
 /** A goal's remaining resources after the plan spends the shared stock in priority order, overriding
@@ -92,6 +114,7 @@ export interface PlanInsightsResult {
    *  partial date never reads as covering the whole plan (see the `plan-completion-outlook` spec). */
   unestimatedGoalCount: number
   bottlenecks: PlanInsightsBottleneck[]
+  blockers: PlanInsightsBlocker[]
   campaignInsights: CampaignInsight<EstimateResourceId>[]
   eventInsights: CampaignInsight<EstimateResourceId>[]
   /** Every goal id that contributed a resource to a given insight (by the insight's `id`) — the
@@ -101,7 +124,7 @@ export interface PlanInsightsResult {
 }
 
 export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
-  totals: { upgradesByRarity: {}, orbsByType: {}, shards: 0, mythicShards: 0 },
+  totals: { upgradesByRarity: {}, shards: 0, mythicShards: 0 },
   missing: {
     abilityBadges: {},
     orbs: {},
@@ -109,6 +132,7 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
     components: {},
     xp: 0,
     xpBooks: null,
+    gold: 0,
   },
   energyTotal: 0,
   onslaughtTokens: 0,
@@ -124,6 +148,7 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   completionDate: null,
   unestimatedGoalCount: 0,
   bottlenecks: [],
+  blockers: [],
   campaignInsights: [],
   eventInsights: [],
   benefitingGoalIdsByInsightId: new Map(),

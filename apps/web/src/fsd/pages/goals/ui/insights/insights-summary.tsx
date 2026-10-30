@@ -7,16 +7,13 @@ import {
 } from "@workspace/ui/components/card"
 
 import type { Rarity } from "@workspace/game-domain"
-import {
-  curatedAssetUrl,
-  datamineAssetUrl,
-  shardIcon,
-} from "@workspace/game-catalog"
+import { curatedAssetUrl, shardIcon } from "@workspace/game-catalog"
 
 import { formatEstimateDate } from "@/shared/lib"
 import { energyIconUrl, EntityIcon, RarityIcon } from "@/shared/ui"
 
 import type {
+  PlanInsightsBlocker,
   PlanInsightsBottleneck,
   PlanInsightsTotals,
 } from "@/features/goal-planning"
@@ -33,6 +30,8 @@ export function InsightsSummary({
   completionDate,
   unestimatedGoalCount,
   bottlenecks,
+  blockers,
+  dailyEnergy,
 }: {
   totals: PlanInsightsTotals
   energyTotal: number
@@ -41,14 +40,19 @@ export function InsightsSummary({
   completionDate: string | null
   unestimatedGoalCount: number
   bottlenecks: PlanInsightsBottleneck[]
+  blockers: PlanInsightsBlocker[]
+  dailyEnergy: number
 }) {
   const { t, i18n } = useTranslation()
+  const fmt = (value: number) =>
+    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
+  const days = (value: number) =>
+    t("goals.insights.days", { count: Math.ceil(value) })
 
   const upgradeEntries = Object.entries(totals.upgradesByRarity) as [
     Rarity,
     number,
   ][]
-  const orbEntries = Object.entries(totals.orbsByType) as [Rarity, number][]
 
   return (
     <div
@@ -76,7 +80,9 @@ export function InsightsSummary({
               {upgradeEntries.map(([rarity, count]) => (
                 <li className="flex items-center gap-1.5" key={rarity}>
                   <RarityIcon className="size-5" rarity={rarity} />
-                  <span className="text-sm font-medium">{count}</span>
+                  <span className="text-sm font-medium tabular-nums">
+                    {fmt(count)}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -96,42 +102,34 @@ export function InsightsSummary({
             <span className="text-muted-foreground">
               {t("goals.insights.shards")}
             </span>
-            <span className="font-medium">{totals.shards}</span>
+            <span className="font-medium tabular-nums">
+              {fmt(totals.shards)}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">
               {t("goals.insights.onslaughtTokens")}
             </span>
-            <span className="font-medium">{onslaughtTokens}</span>
+            <span className="font-medium tabular-nums">
+              {fmt(onslaughtTokens)}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">
               {t("goals.insights.onslaughtDays")}
             </span>
-            <span className="font-medium">{onslaughtDays.toFixed(1)}</span>
+            <span className="font-medium tabular-nums">
+              {onslaughtDays > 0 ? days(onslaughtDays) : "—"}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">
               {t("goals.insights.mythicShards")}
             </span>
-            <span className="font-medium">{totals.mythicShards}</span>
+            <span className="font-medium tabular-nums">
+              {fmt(totals.mythicShards)}
+            </span>
           </div>
-          {orbEntries.length > 0 ? (
-            <div className="mt-2 flex flex-wrap gap-3">
-              {orbEntries.map(([rarity, count]) => (
-                <div className="flex items-center gap-1.5" key={rarity}>
-                  <EntityIcon
-                    alt=""
-                    className="size-7"
-                    src={datamineAssetUrl(
-                      `atlases/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
-                    )}
-                  />
-                  <span className="font-medium">{count}</span>
-                </div>
-              ))}
-            </div>
-          ) : null}
           <p className="mt-1 text-xs text-muted-foreground">
             {t("goals.insights.countOnlyDisclaimer")}
           </p>
@@ -160,7 +158,18 @@ export function InsightsSummary({
                 className="size-5 shrink-0"
                 src={energyIconUrl}
               />
-              {energyTotal}
+              {fmt(energyTotal)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">
+              {t("goals.insights.energyDays", { energy: fmt(dailyEnergy) })}
+            </span>
+            <span
+              className="font-medium tabular-nums"
+              data-testid="insights-energy-days"
+            >
+              {energyTotal > 0 ? days(energyTotal / dailyEnergy) : "—"}
             </span>
           </div>
           <div className="flex justify-between">
@@ -198,26 +207,70 @@ export function InsightsSummary({
           <CardTitle>{t("goals.insights.bottlenecksTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
-          {bottlenecks.length === 0 ? (
+          {bottlenecks.length === 0 && blockers.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               {t("goals.insights.empty")}
             </p>
           ) : (
-            <ol className="flex flex-col gap-1.5 text-sm">
-              {bottlenecks.map((bottleneck) => (
-                <li className="flex justify-between gap-2" key={bottleneck.id}>
-                  <span>{bottleneck.label}</span>
-                  <span className="flex items-center gap-1 text-muted-foreground">
-                    <EntityIcon
-                      alt=""
-                      className="size-4 shrink-0"
-                      src={energyIconUrl}
-                    />
-                    {bottleneck.energyToClear}
-                  </span>
-                </li>
-              ))}
-            </ol>
+            <div className="flex flex-col gap-3">
+              {/* What no farming clears goes first: these hold goals back indefinitely. */}
+              {blockers.length > 0 ? (
+                <ul
+                  aria-label={t("goals.insights.blockersTitle")}
+                  className="flex flex-col gap-1.5 text-sm"
+                >
+                  {blockers.map((blocker) => (
+                    <li
+                      className="flex flex-col"
+                      data-testid="insights-blocker"
+                      key={blocker.key}
+                    >
+                      <span className="font-medium text-destructive">
+                        {blocker.label ??
+                          t("goals.insights.blockerGoals", {
+                            count: blocker.goalIds.length,
+                          })}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {t(`goals.estimate.blocked.${blocker.reason}`)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {bottlenecks.length > 0 ? (
+                <ol
+                  aria-label={t("goals.insights.bottlenecksTitle")}
+                  className="flex flex-col gap-1.5 text-sm"
+                >
+                  {bottlenecks.map((bottleneck) => (
+                    <li
+                      className="flex justify-between gap-2"
+                      data-testid="insights-bottleneck"
+                      key={bottleneck.id}
+                    >
+                      <span>
+                        {bottleneck.label}
+                        <span className="text-muted-foreground tabular-nums">
+                          {" "}
+                          ×{fmt(bottleneck.count)}
+                        </span>
+                      </span>
+                      <span className="flex shrink-0 items-center gap-1 text-muted-foreground tabular-nums">
+                        <EntityIcon
+                          alt=""
+                          className="size-4 shrink-0"
+                          src={energyIconUrl}
+                        />
+                        {fmt(bottleneck.energyToClear)}
+                        <span aria-hidden>·</span>
+                        {days(bottleneck.days)}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              ) : null}
+            </div>
           )}
         </CardContent>
       </Card>
