@@ -18,9 +18,15 @@ vi.mock("@/entities/guild", () => ({
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {
     status: number
-    constructor(status: number, message: string) {
+    issueCode?: string
+    constructor(
+      status: number,
+      message: string,
+      problem: { issueCode?: string } = {}
+    ) {
       super(message)
       this.status = status
+      this.issueCode = problem.issueCode
     }
   },
 }))
@@ -116,6 +122,36 @@ describe("GuildPurgeDialog", () => {
     expect(onOpenChange).not.toHaveBeenCalled()
     expect(onPurged).not.toHaveBeenCalled()
   })
+
+  it.each([
+    [403, "forbidden", "guild.purge.errors.forbidden"],
+    [400, "validation", "guild.purge.errors.roleCheckFailed"],
+    [503, "upstreamUnavailable", "guild.purge.errors.upstreamUnavailable"],
+    [409, "concurrency", "guild.purge.errors.concurrency"],
+    [429, "rateLimited", "guild.purge.errors.rateLimited"],
+  ])(
+    "explains a %i %s refusal with its own message",
+    async (status, issueCode, key) => {
+      const { ApiError } = await import("@/shared/api")
+      purgeGuild.mockRejectedValue(
+        new ApiError(status, "server text", { issueCode })
+      )
+      const user = userEvent.setup()
+
+      render(
+        <GuildPurgeDialog onOpenChange={vi.fn()} onPurged={vi.fn()} open />
+      )
+
+      fireEvent.change(screen.getByTestId("guild-purge-confirmation-input"), {
+        target: { value: "Confirm" },
+      })
+      await user.click(screen.getByTestId("guild-purge-submit"))
+
+      expect(await screen.findByTestId("guild-purge-error")).toHaveTextContent(
+        key
+      )
+    }
+  )
 
   it("does not allow closing the dialog while a purge is in flight", async () => {
     let resolvePurge!: () => void

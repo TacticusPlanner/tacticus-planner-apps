@@ -5,21 +5,27 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const createCombinedGoals = vi.fn()
 
-vi.mock("@/entities/goal", () => ({
-  buildCreateGoalSnapshot: () => null,
-  createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
-  goalQueries: {
-    lists: () => ["goals", "list"],
-    detail: (id: string) => ({ queryKey: ["goals", "detail", id] }),
-  },
-  goalTargetLabel: (
-    _t: unknown,
-    goal: { goalType: string; config: { rank?: { end: number } | null } }
-  ) =>
-    goal.goalType === "Rank" && goal.config.rank
-      ? `Rank${goal.config.rank.end}`
-      : null,
-}))
+vi.mock("@/entities/goal", async (importOriginal) => {
+  const { isGoalLimitError, MAX_GOALS_PER_TYPE } =
+    await importOriginal<typeof import("@/entities/goal")>()
+  return {
+    isGoalLimitError,
+    MAX_GOALS_PER_TYPE,
+    buildCreateGoalSnapshot: () => null,
+    createCombinedGoals: (...args: unknown[]) => createCombinedGoals(...args),
+    goalQueries: {
+      lists: () => ["goals", "list"],
+      detail: (id: string) => ({ queryKey: ["goals", "detail", id] }),
+    },
+    goalTargetLabel: (
+      _t: unknown,
+      goal: { goalType: string; config: { rank?: { end: number } | null } }
+    ) =>
+      goal.goalType === "Rank" && goal.config.rank
+        ? `Rank${goal.config.rank.end}`
+        : null,
+  }
+})
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => (_type: string, id: string) => `Unit ${id}`,
 }))
@@ -91,6 +97,41 @@ describe("useGoalSubmit conflicts", () => {
     // Nothing was closed or reset, so the user's draft is still on screen.
     expect(onOpenChange).not.toHaveBeenCalled()
     expect(resetForm).not.toHaveBeenCalled()
+  })
+})
+
+describe("useGoalSubmit limits", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("explains the API's goalLimitReached in its own words and keeps the draft", async () => {
+    createCombinedGoals.mockRejectedValue(
+      new ApiError(400, "server text", { issueCode: "goalLimitReached" })
+    )
+    const onOpenChange = vi.fn()
+    const { result } = renderHook(
+      () =>
+        useGoalSubmit({
+          entityId: "bellator" as never,
+          entityType: "Character",
+          canSubmit: true,
+          selectedProjects: [],
+          specParams: { enabledTypes: new Set(["Rank"]) } as never,
+          startPaused: false,
+          snapshotContext: {} as never,
+          onOpenChange,
+          resetForm: vi.fn(),
+        }),
+      { wrapper }
+    )
+
+    await act(async () => {
+      await result.current.handleSubmit({ preventDefault: () => {} } as never)
+    })
+
+    await vi.waitFor(() => expect(result.current.status).toBe("error"))
+    expect(result.current.errorMessage).toContain("200")
+    expect(result.current.errorMessage).not.toContain("server text")
+    expect(onOpenChange).not.toHaveBeenCalled()
   })
 })
 

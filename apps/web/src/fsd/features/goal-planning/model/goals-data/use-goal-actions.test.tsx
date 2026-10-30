@@ -176,6 +176,38 @@ describe("useGoalActions", () => {
       expect(message).not.toContain("Proj")
     })
 
+    it("does not send an unarchive that would pass the per-type goal cap", async () => {
+      client.setQueryData(listKey, {
+        orderRevision: 7,
+        goals: Array.from({ length: 200 }, (_, index) =>
+          goal(`g${index}`, "Active", index + 1)
+        ),
+      })
+      client.setQueryData(["goals", "list", { archived: true }], {
+        orderRevision: 7,
+        goals: [goal("old", "Archived", 0)],
+      })
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+
+      await act(() => result.current.setStatus("old", "Active", "Archived"))
+
+      expect(api.updateGoalsStatus).not.toHaveBeenCalled()
+      expect(toast.error).toHaveBeenCalledOnce()
+    })
+
+    it("reports the API's goalLimitReached with its own message", async () => {
+      api.updateGoalsStatus.mockRejectedValue(
+        new ApiError(400, "server text", { issueCode: "goalLimitReached" })
+      )
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+
+      await act(() => result.current.setStatus("a", "Paused", "Active"))
+
+      expect(vi.mocked(toast.error).mock.calls[0]?.[0]).not.toContain(
+        "server text"
+      )
+    })
+
     it("offers a reload when the order went stale", async () => {
       api.updateGoalsStatus.mockRejectedValue(
         new ApiError(409, "Stale", {

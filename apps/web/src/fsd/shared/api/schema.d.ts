@@ -20,7 +20,7 @@ export interface paths {
     post?: never
     /**
      * Permanently deletes the authenticated user's planner account and all related data.
-     * @description Deletes the profile and every row it owns for the caller. This cannot be undone. With deleteSignInAccount=true it also makes a best-effort attempt to delete the caller's Microsoft Entra External ID user (see IExternalIdentityDeleter). Idempotent: repeating the request after the account is gone still succeeds.
+     * @description Deletes the profile and every row it owns for the caller. This cannot be undone. With deleteSignInAccount=true it also makes a best-effort attempt to delete the caller's Microsoft Entra External ID user (see IExternalIdentityDeleter). The X-Sign-In-Account-Deleted response header (true|false) reports whether the sign-in account was actually deleted. Idempotent: repeating the request after the account is gone still succeeds.
      */
     delete: operations["TacticusPlannerApiFeaturesAccountManagementPurgeAccountEndpoint"]
     options?: never
@@ -1196,7 +1196,7 @@ export interface paths {
     post?: never
     /**
      * Permanently deletes the caller's guild registration and roster from Planner.
-     * @description Requires the caller to be a linked Leader or Co-Leader of a registered guild. Deletes the guild and all of its member rows from Planner. This does not affect the guild in Tacticus itself, only Planner's registration of it, and cannot be undone — any current member can re-register it afterward.
+     * @description Requires a configured Tacticus User ID and the caller to be a linked Leader or Co-Leader of a registered guild, re-verified against a fresh Tacticus guild response fetched with the stored Guild API token. Nothing is deleted when that fetch fails. Deletes the guild and all of its member rows from Planner. This does not affect the guild in Tacticus itself, only Planner's registration of it, and cannot be undone — any current member can re-register it afterward.
      */
     delete: operations["TacticusPlannerApiFeaturesGuildsPurgeGuildEndpoint"]
     options?: never
@@ -1416,7 +1416,7 @@ export interface paths {
     put?: never
     /**
      * Creates a team on a lane, appended after the lane's existing teams.
-     * @description A non-null expectedBattleClears stores the depth for the given run only.
+     * @description A non-null expectedBattleClears stores the depth for the given run only. A lane holds at most 50 teams; one more is a 400 with issueCode legendaryEventTeamLimitReached.
      */
     post: operations["TacticusPlannerApiFeaturesLegendaryEventPlansCreateLegendaryEventTeamEndpoint"]
     delete?: never
@@ -4271,7 +4271,7 @@ export interface operations {
           "application/json": components["schemas"]["UpdateTacticusIntegrationResponse"]
         }
       }
-      /** @description The Tacticus API key is missing or invalid. */
+      /** @description The Tacticus API key is missing or invalid, or the Tacticus user id is not a GUID. */
       400: {
         headers: {
           [name: string]: unknown
@@ -4300,6 +4300,15 @@ export interface operations {
       }
       /** @description The authenticated user has not signed up yet. */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description tacticusUserIdInUse: the Tacticus user id is already linked to another profile. */
+      409: {
         headers: {
           [name: string]: unknown
         }
@@ -7153,7 +7162,7 @@ export interface operations {
           "application/json": components["schemas"]["CreateCombinedGoalsResponse"]
         }
       }
-      /** @description Invalid entity/goal type, a bad DependsOnIndex or DependsOnGoalIds, an unknown project, a null/per-goal startPaused, notes over the limit, or a position out of range. */
+      /** @description Invalid entity/goal type, a bad DependsOnIndex or DependsOnGoalIds, an unknown project, a null/per-goal startPaused, notes over the limit, a position out of range, or goalLimitReached: the set would put more than 200 non-archived goals of one type on the profile. */
       400: {
         headers: {
           [name: string]: unknown
@@ -7291,7 +7300,7 @@ export interface operations {
           "application/json": components["schemas"]["UpdateGoalsStatusResponse"]
         }
       }
-      /** @description goalIds empty or repeated, an unknown status, or a missing expectedOrderRevision. */
+      /** @description goalIds empty or repeated, an unknown status, a missing expectedOrderRevision, or goalLimitReached: leaving Archived would put more than 200 non-archived goals of one type on the profile. */
       400: {
         headers: {
           [name: string]: unknown
@@ -7568,6 +7577,15 @@ export interface operations {
         }
         content?: never
       }
+      /** @description The Tacticus API rejected the stored Guild API token, or returned malformed guild data. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
       /** @description The request is missing required identity claims. */
       401: {
         headers: {
@@ -7577,7 +7595,7 @@ export interface operations {
           "application/problem+json": components["schemas"]["ApiProblem"]
         }
       }
-      /** @description No linked/registered guild, or the caller is not Leader/Co-Leader. */
+      /** @description No Tacticus User ID, no linked/registered guild or stored token, or the caller is not currently Leader/Co-Leader in the fresh Tacticus roster. */
       403: {
         headers: {
           [name: string]: unknown
@@ -7588,6 +7606,33 @@ export interface operations {
       }
       /** @description The authenticated account/profile has not been provisioned. */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description A database uniqueness conflict while refreshing the roster. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The per-profile upstream-call limit for this endpoint is exhausted; see Retry-After. */
+      429: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The Tacticus API is currently unavailable. */
+      503: {
         headers: {
           [name: string]: unknown
         }
@@ -7859,7 +7904,7 @@ export interface operations {
           "application/problem+json": components["schemas"]["ApiProblem"]
         }
       }
-      /** @description No linked/registered guild, no stored token, or the caller is no longer Leader/Co-Leader. */
+      /** @description No linked/registered guild, no stored token, or the caller is not (or no longer) Leader/Co-Leader. */
       403: {
         headers: {
           [name: string]: unknown
@@ -7886,7 +7931,7 @@ export interface operations {
           "application/problem+json": components["schemas"]["ApiProblem"]
         }
       }
-      /** @description The per-profile upstream-call limit for this endpoint is exhausted; see Retry-After. */
+      /** @description The per-profile upstream-call limit for this endpoint is exhausted; see Retry-After. Also guildSyncCooldown (with Retry-After) while the guild was synchronized less than a minute ago by anyone. */
       429: {
         headers: {
           [name: string]: unknown
@@ -9006,7 +9051,7 @@ export interface operations {
           "application/json": components["schemas"]["ProjectSummaryResponse"]
         }
       }
-      /** @description A blank name or an invalid target. */
+      /** @description A blank name, an invalid target, or projectLimitReached: the profile already has 100 projects. */
       400: {
         headers: {
           [name: string]: unknown

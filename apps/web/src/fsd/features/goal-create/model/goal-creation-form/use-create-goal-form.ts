@@ -431,19 +431,20 @@ export function useCreateGoalForm({
       playerCharacter,
       currentActiveAbility,
       currentPassiveAbility,
-      missingUpgrades: snapshotUpgrades,
+      missingUpgrades: snapshotUpgrades.filter((entry) =>
+        upgradesById.has(entry.id)
+      ),
     },
     onOpenChange,
     resetForm,
   })
 
-  const { slotConflictIssue, ...submissionState } = submission
+  const { slotConflictIssue, goalLimitIssue, ...submissionState } = submission
   // Every blocking problem, in card order (goal-creation: shown inline and counted beside submit).
   const goalKinds = goalKindsForEntity(entityType)
-  const issues = [
-    ...formIssues,
-    ...(slotConflictIssue ? [slotConflictIssue] : []),
-  ].sort((a, b) => goalKinds.indexOf(a.kind) - goalKinds.indexOf(b.kind))
+  const issues = [...formIssues, slotConflictIssue, goalLimitIssue]
+    .filter((issue) => issue !== null)
+    .sort((a, b) => goalKinds.indexOf(a.kind) - goalKinds.indexOf(b.kind))
 
   return {
     charactersById,

@@ -11,6 +11,11 @@ export {
   projectMembershipConflict,
 } from "./model/project-membership-conflict"
 export { projectGoals } from "./model/project-goals"
+export {
+  isAtProjectLimit,
+  isProjectLimitError,
+  MAX_PROJECTS,
+} from "./model/project-limit"
 
 export { isProjectNameValid } from "./model/project-name"
 export { useProjects } from "./model/use-projects"

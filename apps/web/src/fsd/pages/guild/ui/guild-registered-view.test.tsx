@@ -32,16 +32,24 @@ vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({ accounts: mockAccounts, instance: mockInstance }),
 }))
 
-vi.mock("@/entities/guild", () => ({
+vi.mock("@/entities/guild/api/guild.api", () => ({
   syncMyGuild: (...args: unknown[]) => syncMyGuild(...args),
 }))
 
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {
     status: number
-    constructor(status: number, message: string) {
+    issueCode?: string
+    retryAfterSeconds?: number
+    constructor(
+      status: number,
+      message: string,
+      problem: { issueCode?: string; retryAfterSeconds?: number } = {}
+    ) {
       super(message)
       this.status = status
+      this.issueCode = problem.issueCode
+      this.retryAfterSeconds = problem.retryAfterSeconds
     }
   },
 }))
@@ -171,6 +179,76 @@ describe("GuildRegisteredView", () => {
 
     expect(await screen.findByTestId("guild-sync-error")).toHaveTextContent(
       "Only the Leader can sync."
+    )
+  })
+
+  it("counts down a guildSyncCooldown and keeps Sync disabled until it ends", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    try {
+      const { ApiError } = await import("@/shared/api")
+      syncMyGuild.mockRejectedValue(
+        new ApiError(429, "Synchronized moments ago.", {
+          issueCode: "guildSyncCooldown",
+          retryAfterSeconds: 2,
+        })
+      )
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+
+      renderView()
+      await user.click(screen.getByTestId("guild-sync-button"))
+
+      expect(await screen.findByTestId("guild-sync-error")).toHaveTextContent(
+        'guild.summary.syncCooldown:{"count":2}'
+      )
+      expect(screen.getByTestId("guild-sync-button")).toBeDisabled()
+
+      await vi.advanceTimersByTimeAsync(2000)
+
+      await vi.waitFor(() =>
+        expect(screen.getByTestId("guild-sync-button")).toBeEnabled()
+      )
+      expect(screen.queryByTestId("guild-sync-error")).not.toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("counts down a rateLimited 429 with neutral copy, not the just-synchronized one", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    try {
+      const { ApiError } = await import("@/shared/api")
+      syncMyGuild.mockRejectedValue(
+        new ApiError(429, "Too many requests.", {
+          issueCode: "rateLimited",
+          retryAfterSeconds: 5,
+        })
+      )
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+
+      renderView()
+      await user.click(screen.getByTestId("guild-sync-button"))
+
+      expect(await screen.findByTestId("guild-sync-error")).toHaveTextContent(
+        'guild.summary.syncRateLimited:{"count":5}'
+      )
+      expect(screen.getByTestId("guild-sync-button")).toBeDisabled()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("explains a 403 (no longer Leader/Co-Leader) with its own message", async () => {
+    const { ApiError } = await import("@/shared/api")
+    syncMyGuild.mockRejectedValue(
+      new ApiError(403, "Only the Leader can sync.", { issueCode: "forbidden" })
+    )
+    const user = userEvent.setup()
+
+    renderView()
+    await user.click(screen.getByTestId("guild-sync-button"))
+
+    expect(await screen.findByTestId("guild-sync-error")).toHaveTextContent(
+      "guild.summary.syncForbidden"
     )
   })
 

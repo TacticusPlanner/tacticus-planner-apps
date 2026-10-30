@@ -231,6 +231,21 @@ describe("buildEditGoalRequest", () => {
     ])
   })
 
+  it("never sends farming locations for an Ascension goal, even a stored legacy override", () => {
+    const ascension = goal("Ascension", { farmingLocationIds: ["b1"] })
+    const baseline = base(ascension)
+    const draft = { ...baseline, notes: "x" }
+
+    expect(
+      buildEditGoalRequest(
+        ascension,
+        draft,
+        goalEditChanges(baseline, draft),
+        1
+      ).details?.farmingLocationIds
+    ).toBeNull()
+  })
+
   it("sends the replacement project list", () => {
     const baseline = base(rankGoal)
     const draft = { ...baseline, projectIds: ["project-1", "project-2"] }

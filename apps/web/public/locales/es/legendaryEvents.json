@@ -351,7 +351,8 @@
     "toasts": {
       "reloaded": "Tu plan cambió en otro dispositivo y se ha recargado. Inténtalo de nuevo.",
       "deleted": "{{name}} eliminado.",
-      "error": "No se pudieron guardar tus equipos."
+      "error": "No se pudieron guardar tus equipos.",
+      "teamLimitReached": "Un carril admite como máximo {{max}} equipos. Elimina uno para añadir otro."
     },
     "deleteConfirm": {
       "title": "¿Eliminar {{name}}?",
@@ -364,7 +365,8 @@
     "pointsLeft": "Quedan {{points}} puntos · batallas 1–{{depth}}",
     "pointsLeftNeedsDepth": "Fija la profundidad para ver los puntos restantes",
     "clearedThrough": "Ya completado hasta la batalla {{battle}}",
-    "pointsLeftCannotClear": "Aún no supera la batalla 1"
+    "pointsLeftCannotClear": "Aún no supera la batalla 1",
+    "laneFull": "Este carril ya tiene el máximo de {{max}} equipos."
   },
   "objective": {
     "minHits_one": "Mín. {{count}} golpe",

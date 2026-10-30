@@ -350,8 +350,9 @@ export function buildCombinedGoalSpecs(params: {
   const mythicMaterialSources = params.mythicMaterialSources
     ? { acquisitionSources: params.mythicMaterialSources }
     : {}
+  // Distinct, ascending: the API rejects a repeated DependsOnIndex entry.
   const withUnlock = (indexes: (number | null)[]) =>
-    [unlockIndex, ...indexes]
+    [...new Set([unlockIndex, ...indexes])]
       .filter((index): index is number => index !== null)
       .sort((a, b) => a - b)
 

@@ -6,3 +6,4 @@ export {
   AccountSetupScreen,
   type AccountSetupStep,
 } from "./ui/account-setup-screen"
+export { useSignInAccountKeptNotice } from "./model/sign-in-account-kept-notice"

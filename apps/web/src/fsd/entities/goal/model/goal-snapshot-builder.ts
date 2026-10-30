@@ -1,5 +1,6 @@
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
+import { MAX_RESOURCE_ID_LENGTH, MAX_SNAPSHOT_RESOURCES } from "./goal-limits"
 import type { CombinedGoalSpec, CreateGoalSnapshotRequest } from "./types"
 
 /** The subset of a resource-requirement preview entry this builder actually reads — deliberately
@@ -27,24 +28,44 @@ export function buildCreateGoalSnapshot(params: {
   const ownsResourcePreview =
     (params.entityType === "Character" && params.spec.goalType === "Rank") ||
     (params.entityType === "Mow" && params.spec.goalType === "Ability")
+  const resources = ownsResourcePreview
+    ? boundedResources(params.missingUpgrades)
+    : []
   return {
     initialRank: params.playerCharacter?.rank ?? null,
     initialProgression: params.playerEntity?.progressionIndex ?? null,
     initialActiveAbilityLevel: params.currentActiveAbility,
     initialPassiveAbilityLevel: params.currentPassiveAbility,
-    initialRequirement: ownsResourcePreview
-      ? params.missingUpgrades.map((entry) => ({
-          resourceId: entry.id,
-          count: entry.required,
-        }))
-      : [],
-    initialInventoryContribution: ownsResourcePreview
-      ? params.missingUpgrades
-          .filter((entry) => entry.inventoryContribution > 0)
-          .map((entry) => ({
-            resourceId: entry.id,
-            count: entry.inventoryContribution,
-          }))
-      : [],
+    initialRequirement: resources.map((entry) => ({
+      resourceId: entry.id,
+      count: entry.required,
+    })),
+    initialInventoryContribution: resources
+      .filter((entry) => entry.inventoryContribution > 0)
+      .map((entry) => ({
+        resourceId: entry.id,
+        count: entry.inventoryContribution,
+      })),
   }
+}
+
+/**
+ * The resource list as the API accepts it: each id once, non-blank and at most
+ * `MAX_RESOURCE_ID_LENGTH` characters, at most `MAX_SNAPSHOT_RESOURCES` entries. The caller passes
+ * catalog upgrade ids only (the API also checks that); the preview already aggregates by id, so
+ * this only guards the contract — a whole rank ladder needs about 150 distinct materials.
+ */
+function boundedResources(
+  entries: readonly SnapshotMissingUpgradeInput[]
+): SnapshotMissingUpgradeInput[] {
+  const seen = new Set<string>()
+  const kept: SnapshotMissingUpgradeInput[] = []
+  for (const entry of entries) {
+    const id = entry.id.trim()
+    if (!id || id.length > MAX_RESOURCE_ID_LENGTH || seen.has(id)) continue
+    seen.add(id)
+    kept.push({ ...entry, id })
+  }
+  // ponytail: a list past the cap is cut, not split; no real unit comes near it.
+  return kept.slice(0, MAX_SNAPSHOT_RESOURCES)
 }

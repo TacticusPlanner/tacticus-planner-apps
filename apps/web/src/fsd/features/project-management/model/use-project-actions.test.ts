@@ -104,6 +104,47 @@ describe("useProjectActions", () => {
     expect(result.current.pending).toBe(false)
   })
 
+  it("does not send a create when the loaded list is at the project cap", async () => {
+    const { queryClient, wrapper } = createWrapper()
+    const { projectQueries } = await import("@/entities/project")
+    queryClient.setQueryData(projectQueries.list().queryKey, {
+      projects: Array.from({ length: 100 }, (_, index) => ({
+        ...created,
+        projectId: `p${index}`,
+      })),
+    } as never)
+    const { result } = renderHook(() => useProjectActions(), { wrapper })
+
+    let returned!: unknown
+    await act(async () => {
+      returned = await result.current.create("One more", null, null)
+    })
+
+    expect(returned).toBeNull()
+    expect(createProjectMock).not.toHaveBeenCalled()
+    expect(toast.error).toHaveBeenCalledWith(
+      'goals.limits.projectLimitReached:{"max":100}'
+    )
+  })
+
+  it("explains the API's projectLimitReached with its own message", async () => {
+    const { ApiError } = await import("@/shared/api")
+    createProjectMock.mockRejectedValue(
+      new ApiError(400, "server text", { issueCode: "projectLimitReached" })
+    )
+    const { result } = renderHook(() => useProjectActions(), {
+      wrapper: createWrapper().wrapper,
+    })
+
+    await act(async () => {
+      await result.current.create("One more", null, null)
+    })
+
+    expect(toast.error).toHaveBeenCalledWith(
+      'goals.limits.projectLimitReached:{"max":100}'
+    )
+  })
+
   it("offers no bulk pause/resume action", () => {
     const { result } = renderHook(() => useProjectActions(), {
       wrapper: createWrapper().wrapper,

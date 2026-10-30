@@ -145,7 +145,11 @@ export {
   type LegendaryEventRunResolution,
 } from "./lib/run-resolution"
 export { derivedTeamCoverage } from "./lib/team-coverage"
-export { MIN_TEAM_MEMBERS, isCompleteTeam } from "./lib/team-size"
+export {
+  MAX_TEAMS_PER_LANE,
+  MIN_TEAM_MEMBERS,
+  isCompleteTeam,
+} from "./lib/team-size"
 export { type NamedTeam } from "./lib/team-display-name"
 export { useTeamDisplayName } from "./model/use-team-display-name"
 export {

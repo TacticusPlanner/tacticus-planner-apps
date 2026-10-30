@@ -399,6 +399,12 @@ describe("buildCombinedGoalSpecs milestones", () => {
     expect(specs[1]?.dependsOnIndex).toEqual([0])
     expect(specs[2]?.dependsOnIndex).toEqual([0])
     expect(specs[3]?.dependsOnIndex).toEqual([1, 2])
+    // The API rejects a repeated DependsOnIndex entry.
+    for (const spec of specs) {
+      expect(new Set(spec.dependsOnIndex).size).toBe(
+        spec.dependsOnIndex?.length ?? 0
+      )
+    }
   })
 
   it("depends on an existing covering Ascension instead of a new one", () => {

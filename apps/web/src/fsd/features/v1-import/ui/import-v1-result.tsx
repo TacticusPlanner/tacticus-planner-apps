@@ -47,6 +47,13 @@ const STATUS_KEYS = {
   Failed: "goals.v1Import.status.failed",
 } as const
 
+// Part codes with translated copy; any other part keeps the server's message.
+const PART_REASON_KEYS = {
+  invalid_tacticus_user_id: "goals.v1Import.partReasons.invalidTacticusUserId",
+  tacticus_user_id_conflict:
+    "goals.v1Import.partReasons.tacticusUserIdConflict",
+} as const
+
 export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   const { t } = useTranslation()
   const getEntityName = useUnitName()
@@ -93,7 +100,14 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
         part:
           key === "legendaryEventPlans" && part.code
             ? { ...part, message: t(reasonKeyForLegendaryEventCode(part.code)) }
-            : part,
+            : part.code && part.code in PART_REASON_KEYS
+              ? {
+                  ...part,
+                  message: t(
+                    PART_REASON_KEYS[part.code as keyof typeof PART_REASON_KEYS]
+                  ),
+                }
+              : part,
       }
     })
 

@@ -2,7 +2,7 @@ import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
 import { Textarea } from "@workspace/ui/components/textarea"
-import type { GoalDetail } from "@/entities/goal"
+import { MAX_FARMING_LOCATIONS, type GoalDetail } from "@/entities/goal"
 import type { useGoalEditAcquisition } from "../../model/goal-edit/use-goal-edit-acquisition"
 import { AcquisitionSourceField } from "../create-goal/acquisition-source-field"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -165,7 +165,11 @@ function GoalLocationsField({
         ))}
       </div>
       {!overrideValid ? (
-        <p className="text-destructive">{t("goals.detail.farmingInvalid")}</p>
+        <p className="text-destructive">
+          {selectedLocations.length > MAX_FARMING_LOCATIONS
+            ? t("goals.detail.farmingTooMany", { max: MAX_FARMING_LOCATIONS })
+            : t("goals.detail.farmingInvalid")}
+        </p>
       ) : null}
     </section>
   )

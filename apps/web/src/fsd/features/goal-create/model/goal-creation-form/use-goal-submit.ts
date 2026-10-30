@@ -8,6 +8,8 @@ import {
   buildCreateGoalSnapshot,
   createCombinedGoals,
   goalQueries,
+  isGoalLimitError,
+  MAX_GOALS_PER_TYPE,
   type GoalKind,
   type ProjectMembership,
 } from "@/entities/goal"
@@ -129,9 +131,13 @@ export function useGoalSubmit({
           conflict.current,
           getUnitName(conflict.current.entityType, conflict.current.entityId)
         )
-      : error instanceof ApiError
-        ? error.message
-        : t("goals.create.genericError")
+      : isGoalLimitError(error)
+        ? t("goals.limits.goalLimitReachedGeneric", {
+            max: MAX_GOALS_PER_TYPE,
+          })
+        : error instanceof ApiError
+          ? error.message
+          : t("goals.create.genericError")
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
