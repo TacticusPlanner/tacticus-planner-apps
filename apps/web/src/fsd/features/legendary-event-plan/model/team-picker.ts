@@ -7,7 +7,7 @@ import {
   type LegendaryEventRosterUnit,
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
-import { normalizeSearchText } from "@/shared/lib"
+import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
 
 type PickerLane = Pick<
   LegendaryEventLane,
@@ -98,7 +98,8 @@ export function buildPickerTiles(
     )
 }
 
-/** The tiles matching the search (localized name, case-insensitive) and the only-unlocked switch;
+/** The tiles matching the search (localized name or another of the unit's names, see
+ *  `useUnitSearchNames`; case-insensitive) and the only-unlocked switch;
  *  a unit already in the team stays listed whatever the filters say. */
 export function filterPickerTiles(
   tiles: readonly PickerTile[],
@@ -107,18 +108,26 @@ export function filterPickerTiles(
     onlyUnlocked,
     selected,
     nameOf,
+    searchNamesOf = () => [],
   }: {
     search: string
     onlyUnlocked: boolean
     selected: ReadonlySet<string>
     nameOf: (unit: LegendaryEventUnit) => string
+    searchNamesOf?: (unitId: string) => readonly string[]
   }
 ): PickerTile[] {
   const needle = normalizeSearchText(search)
   return tiles.filter((tile) => {
     if (selected.has(tile.unit.id)) return true
     if (onlyUnlocked && tile.owned === false) return false
-    return !needle || normalizeSearchText(nameOf(tile.unit)).includes(needle)
+    return (
+      !needle ||
+      anyNameIncludes(
+        [nameOf(tile.unit), ...searchNamesOf(tile.unit.id)],
+        needle
+      )
+    )
   })
 }
 

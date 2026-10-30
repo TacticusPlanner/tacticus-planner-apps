@@ -1,0 +1,189 @@
+{
+  "adeptCanoness": ["Roswitha Esther"],
+  "adeptCelestine": [
+    "Célestine, la Sainte vivante",
+    "Celestine",
+    "Celestine, the living Saint"
+  ],
+  "adeptHospitaller": ["Isabella Mariken"],
+  "adeptRetributor": ["Sœur de Bataille Vindicta", "Battle Sister Vindicta"],
+  "admecDestroyer": ["Sy-Gex-KPH008/15.mk41", "Sy-gex-KPH008/15.mk41"],
+  "admecDominus": ["Magos Dominus Vitruvius Thannek"],
+  "admecManipulus": ["Manipulus Actus Fulgorosus"],
+  "admecRuststalker": ["Exitor-Rho-1.15/x"],
+  "astarEradicator": ["Nubari Shal'Dar"],
+  "astarLysander": ["Darnath Lysander"],
+  "astraBullgryn": ["Kut Skoden"],
+  "astraCreed": [
+    "Castellan Creed",
+    "Seigneur Castellan Ursarkar E. Creed",
+    "Lord Castellan Ursarkar E. Creed"
+  ],
+  "astraDreir": [
+    "Maréchal Dreir",
+    "Seigneur Maréchal Varnan Dreir",
+    "Marshal Dreir",
+    "Lord Marshal Varnan Dreir"
+  ],
+  "astraOrdnance": ["Thaddeus Noble"],
+  "astraPrimarisPsy": ["Sibyll Devine"],
+  "astraYarrick": [
+    "Commissaire Yarrick",
+    "Commissaire Sebastian Yarrick",
+    "Commissar Yarrick",
+    "Commissar Sebastian Yarrick"
+  ],
+  "blackAbaddon": ["Abaddon le Fléau", "Abaddon the Despoiler"],
+  "blackHaarken": ["Haarken l'Asservisseur", "Haarken Worldclaimer"],
+  "blackObliterator": [
+    "Volk, Reforgé par le warp",
+    "Volk, Reforged by the Warp"
+  ],
+  "blackPossession": ["Maître Archimatos", "Master Archimatos"],
+  "blackTerminator": ["Drakfus Angrax"],
+  "bloodDante": ["Commandeur Dante", "Commander Dante"],
+  "bloodMephiston": ["Mephiston"],
+  "bloodSanguinary": ["Nicodemus"],
+  "custoBladeChampion": ["Kariyan Helsates"],
+  "custoKyrus": ["Tyrith Shiva Kyrus"],
+  "custoTrajann": ["Trajann Valoris"],
+  "custoVexilusPraetor": ["Aesoth Koumadra"],
+  "darkaAsmodai": ["Asmodai"],
+  "darkaAzrael": ["Azrael"],
+  "darkaCompanion": ["Forcas Oathsworn"],
+  "deathBlightbringer": ["Corrodius Achebile"],
+  "deathBlightlord": ["Maladus Phlegmore"],
+  "deathPutrifier": ["Pestillian Flétripus", "Pestillian Witherpus"],
+  "deathRotbone": ["Nauseous Rotbone"],
+  "deathTyphus": [
+    "Typhus, Hôte de la Ruche du Destructeur",
+    "Typhus, Host of the Destroyer Hive"
+  ],
+  "eldarAutarch": ["Aethana Barantharal"],
+  "eldarFarseer": ["Eldryon Ynaduin"],
+  "eldarRanger": ["Calandis Tawaren"],
+  "emperExultant": [
+    "Laviscus Sentrillion, le Parfait",
+    "Laviscus Sentrillion, the Perfect"
+  ],
+  "emperFlawlessBlade": [
+    "Hascule, Épine de la Lame satinée",
+    "Hascule Thorn of the Silken Blade"
+  ],
+  "emperKakophonist": [
+    "Adamatar Xandassus, le miroitant",
+    "Adamatar Xandassus, Mirrorborn"
+  ],
+  "emperLucius": ["Lucius l'Éternel", "Lucius the Eternal"],
+  "emperNoiseMarine": [
+    "Shiron Capersi, l'Idolator",
+    "Shiron Capersi, the Idolator"
+  ],
+  "genesBiophagus": ["Hollan Baumgart"],
+  "genesKelermorph": ["Judh Lhaska"],
+  "genesMagus": ["Xybia Kheiser"],
+  "genesPatriarch": ["The Patermine"],
+  "genesPrimus": ["Isaak Starn"],
+  "necroDestroyer": [
+    "Destroyer Hexmark Imospekh",
+    "Hexmark Destroyer Imospekh"
+  ],
+  "necroOverlord": ["Tétrarque Anuphet", "Overlord Anuphet"],
+  "necroPlasmancer": ["Plasmancien Thutmose", "Plasmancer Thutmose"],
+  "necroSpyder": [
+    "Arachnyde Canoptek Aleph-Null",
+    "Canoptek Spyder Aleph-Null"
+  ],
+  "necroWarden": ["Garde Royal Makhotep", "Royal Warden Makhotep"],
+  "orksBigMek": ["Gibbascrapz, el' Spézulist", "Gibbascrapz, da Spezulist"],
+  "orksNob": ["Olog Tankrazeur", "Tanksmasha", "Olog Tanksmasha"],
+  "orksRuntherd": ["Grumbal Snotflogga"],
+  "orksWarboss": ["Boss Gulgortz", "Gulgortz Bulldoza"],
+  "orksWeirdboy": ["Grubak Zapspitta"],
+  "spaceBlackmane": ["Ragnar", "Ragnar Crinière Noire", "Ragnar Blackmane"],
+  "spaceHound": ["Tjark Wyrdslayer"],
+  "spaceRockfist": ["Arjac Rockfist"],
+  "spaceStormcaller": ["Njal Stormcaller"],
+  "spaceWolfPriest": ["Baldr Thunderbrow"],
+  "spaceWulfen": ["Ulf Frosthowl"],
+  "tauBroadside": ["Shas'vre Vior'la Tson'ji"],
+  "tauCrisis": ["Shas'vre Vior'la Re'vas"],
+  "tauDarkstrider": ["Shas'el T'au Myamoto"],
+  "tauFarsight": [
+    "Commandant Farsight",
+    "Shas'o Vior'la Shovah Kais Mont'yr",
+    "Commander Farsight"
+  ],
+  "tauMarksman": ["Shas'ui Vior'la Sho'syl"],
+  "tauShadowsun": [
+    "Commandante Shadowsun",
+    "Shas'o T'au Shaserra",
+    "Commander Shadowsun"
+  ],
+  "templAggressor": [
+    "Frère Burchard",
+    "Frère Raimund Burchard",
+    "Brother Burchard",
+    "Brother Raimund Burchard"
+  ],
+  "templAncient": [
+    "Doyen Thoread",
+    "Doyen Cantus Thoread",
+    "Ancient Thoread",
+    "Ancient Cantus Thoread"
+  ],
+  "templChampion": [
+    "Frère Jaeger",
+    "Frère Kenric Jaeger",
+    "Brother Jaeger",
+    "Brother Kenric Jaeger"
+  ],
+  "templHelbrecht": ["Grand Sénéchal Helbrecht", "High Marshal Helbrecht"],
+  "templSwordBrother": [
+    "Frère d’Épée Godswyl",
+    "Frère d’Épée Fedreus Godswyl",
+    "Sword Brother Godswyl",
+    "Sword Brother Fedreus Godswyl"
+  ],
+  "thousAhriman": ["Ahzek Ahriman"],
+  "thousInfernalMaster": ["Arkarzar Abraxas"],
+  "thousSekhetar": ["Sekhetar Robot"],
+  "thousSorcerer": ["Kairatar Thaumachus"],
+  "thousTerminator": ["Sokar Toth"],
+  "thousTzaangor": ["Yazaghor Destin Changeant", "Yazaghor Ficklefate"],
+  "tyranDeathleaper": ["Deathleaper"],
+  "tyranParasite": ["Parasite of Mortrex"],
+  "tyranTyrantGuard": ["Tyrant Guard"],
+  "tyranWingedPrime": [
+    "Tyranide Primus Ailé",
+    "Winged Prime",
+    "Winged Tyranid Prime"
+  ],
+  "ultraApothecary": ["Apothicaire Incisus", "Apothecary Incisus"],
+  "ultraCalgar": ["Marneus Calgar"],
+  "ultraEliminatorSgt": ["Sergent Certus", "Sergeant Certus"],
+  "ultraInceptorSgt": ["Sergent Bellator", "Sergeant Bellator"],
+  "ultraTigurius": ["Varro Tigurius"],
+  "ultraTitus": ["Demetrian Titus"],
+  "votanBeserk": ["Hâvyr Wârspeke"],
+  "votanChampion": ["Kîmm Skârstreng"],
+  "votanIronmaster": ["Vynn Conglahr"],
+  "votanMemnyr": ["Âmmuk Œil de lynx", "Âmmuk Keen Eye"],
+  "votanUthar": ["Ûthar le Destiné", "Ûthar the Destined"],
+  "worldEightbound": ["Azkor, l'octuple", "Azkor, the Eightfold"],
+  "worldExecutions": ["Tarvakh, l'Exécuteur", "Tarvakh, the Headsman"],
+  "worldJakhal": ["Macer Rictus sanguin", "Macer Bloodgrin"],
+  "worldKharn": ["Khârn le traître", "Khârn the Betrayer"],
+  "worldTerminator": ["Wrask, le Boucher", "Wrask, the Butcher"],
+  "astraOrdnanceBattery": ["Malleus Rocket Launcher"],
+  "blackForgefiend": ["Forgefiend"],
+  "darkaStormSpeeder": ["Storm Speeder Hailstrike"],
+  "deathCrawler": ["Plagueburst Crawler"],
+  "necroReanimator": [
+    "Réanimateur Canoptek",
+    "Reanimator",
+    "Canoptek Reanimator"
+  ],
+  "orksRukkatrukk": ["Buggy Fourre-Squigs", "Rukkatrukk Squigbuggy"],
+  "thousDaemonPrince": ["Apophitar Z'Kar"]
+}

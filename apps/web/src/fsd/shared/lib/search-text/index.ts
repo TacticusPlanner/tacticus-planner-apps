@@ -1,1 +1,5 @@
-export { matchesSearch, normalizeSearchText } from "./search-text"
+export {
+  anyNameIncludes,
+  matchesSearch,
+  normalizeSearchText,
+} from "./search-text"

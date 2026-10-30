@@ -11,6 +11,17 @@ export function normalizeSearchText(text: string, locale?: string): string {
     .replace(/[^\p{L}\p{N}]/gu, "")
 }
 
+/** Whether any of `names` contains `needle`, a query already put through {@link normalizeSearchText}. */
+export function anyNameIncludes(
+  names: readonly string[],
+  needle: string,
+  locale?: string
+): boolean {
+  return names.some((name) =>
+    normalizeSearchText(name, locale).includes(needle)
+  )
+}
+
 /** Whether `text` contains `query` under {@link normalizeSearchText}; a blank query matches. */
 export function matchesSearch(
   text: string,

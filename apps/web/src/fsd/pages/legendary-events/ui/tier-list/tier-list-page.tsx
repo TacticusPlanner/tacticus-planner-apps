@@ -17,7 +17,7 @@ import {
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
-import { useUnitName } from "@/shared/unit-name"
+import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 
 import { TierListFiltersBar, TierListFiltersRow } from "./tier-list-filters"
 import { useTierListTutorial } from "./tier-list.tutorial"
@@ -55,6 +55,7 @@ export function TierListPage() {
   const roster = useLegendaryEventRoster()
   const tiers = useHordeModeTiers()
   const unitName = useUnitName()
+  const searchNamesOf = useUnitSearchNames()
   const { captureEvent } = useAnalyticsActions()
   const [searchParams, setSearchParams] = useSearchParams()
   const filters = parseTierListFilters(searchParams)
@@ -84,7 +85,8 @@ export function TierListPage() {
           rosterData,
           filters,
           nameOf,
-          i18n.language
+          i18n.language,
+          searchNamesOf
         )
       : undefined
   // A `?owned=1` link waits for the roster (loading state) rather than flashing every character.
