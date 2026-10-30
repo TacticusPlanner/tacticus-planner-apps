@@ -137,6 +137,11 @@
         "inTeam": "Usado en el puesto {{slot}}",
         "available": "Disponible",
         "notOwned": "No disponible"
+      },
+      "focus": {
+        "title": "Dónde invertir a continuación",
+        "empty": "El puesto {{slot}} está vacío: consigue a {{name}} o a uno de sus sustitutos indicados.",
+        "weakest": "{{slot}}: {{name}} es tu puesto más débil, con un {{percent}} %."
       }
     },
     "variantRules": {

@@ -137,6 +137,11 @@
         "inTeam": "Utilisé à l'emplacement {{slot}}",
         "available": "Possédé",
         "notOwned": "Non possédé"
+      },
+      "focus": {
+        "title": "Où investir ensuite",
+        "empty": "L'emplacement {{slot}} est vide : obtenez {{name}} ou l'un de ses remplaçants indiqués.",
+        "weakest": "{{slot}} : {{name}} est votre emplacement le plus faible, à {{percent}} %."
       }
     },
     "variantRules": {

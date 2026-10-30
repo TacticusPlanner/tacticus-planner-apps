@@ -264,4 +264,40 @@ describe("GuildRaidExactMetaCard", () => {
     expect(slot).toHaveTextContent("BladeChampion")
     expect(slot).not.toHaveTextContent("%")
   })
+
+  it("points at empty slots and the weakest essential slot, and opens a slot from there", async () => {
+    const user = userEvent.setup()
+    render(
+      <GuildRaidExactMetaCard
+        isMobile={false}
+        recommendation={recommendation()}
+      />
+    )
+
+    const focus = screen.getByTestId("guild-raid-exact-meta-focus")
+    const lines = within(focus).getAllByRole("button")
+    expect(lines.map((line) => line.textContent)).toEqual([
+      'guildRaids.exactMeta.focus.empty:{"slot":"Flex","name":"Helbrecht"}',
+      'guildRaids.exactMeta.focus.weakest:{"slot":"Core","name":"Dante","percent":60}',
+    ])
+
+    await user.click(lines[1]!)
+    expect(screen.getByTestId("guild-raid-exact-meta-slot-1")).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    )
+  })
+
+  it("has no investment hint before the roster is known", () => {
+    render(
+      <GuildRaidExactMetaCard
+        isMobile
+        recommendation={recommendation({ status: undefined })}
+      />
+    )
+
+    expect(
+      screen.queryByTestId("guild-raid-exact-meta-focus")
+    ).not.toBeInTheDocument()
+  })
 })

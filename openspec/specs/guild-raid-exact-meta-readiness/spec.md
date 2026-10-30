@@ -140,6 +140,26 @@ options expanding under the selected slot, without horizontal scrolling.
 - **THEN** the slots stack vertically and a selected slot's options open
   directly beneath it
 
+### Requirement: Each lineup points at where to invest next
+
+Once the roster is known, each lineup SHALL list every empty slot (naming its
+ideal unit) and the filled slot furthest below the target, preferring an
+essential slot below `100%` over any other slot. Selecting a line SHALL open
+that slot's options. Nothing SHALL be listed when every slot is filled and at
+`100%`.
+
+#### Scenario: Weakest essential slot is named
+
+- **WHEN** a lineup's essential slots are at `90%` and `60%` and a flex slot
+  is at `40%`
+- **THEN** the lineup names the `60%` essential slot as the place to invest
+  next
+
+#### Scenario: Empty slot is named
+
+- **WHEN** a flex slot has no owned option
+- **THEN** the lineup says that slot is empty and names the ideal unit to get
+
 ### Requirement: Meta and roster absence states remain distinct
 
 The system SHALL distinguish an absent local Meta dataset, a valid Meta

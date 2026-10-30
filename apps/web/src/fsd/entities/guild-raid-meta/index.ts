@@ -18,3 +18,4 @@ export {
   resolveGuildRaidLiveInvestmentThreshold,
   type GuildRaidInvestmentThreshold,
 } from "./lib/resolve-guild-raid-investment-threshold"
+export { resolveGuildRaidLineupFocus } from "./lib/resolve-guild-raid-lineup-focus"
