@@ -20,7 +20,10 @@ vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({ inProgress: inProgress(), instance: { loginRedirect } }),
 }))
 
-vi.mock("./authentication", () => ({ loginRequest: { scopes: ["api"] } }))
+const loginRequest = vi.hoisted((): { scopes: string[]; prompt?: string } => ({
+  scopes: ["api"],
+}))
+vi.mock("./authentication", () => ({ loginRequest }))
 
 vi.mock("./silent-sign-in", () => ({
   useSilentSignInStatus: () => silentSignInStatus(),
@@ -34,6 +37,7 @@ describe("useSignInRedirect", () => {
     inProgress.mockReturnValue(InteractionStatus.None)
     silentSignInStatus.mockReturnValue("idle")
     toastError.mockReset()
+    delete loginRequest.prompt
     vi.spyOn(console, "error").mockImplementation(() => {})
   })
 
@@ -93,5 +97,55 @@ describe("useSignInRedirect", () => {
     act(() => result.current.signIn())
 
     await waitFor(() => expect(toastError).toHaveBeenCalledWith("auth.error"))
+  })
+
+  describe("signUp", () => {
+    it("opens account creation and returns to Home from the bare landing page", () => {
+      window.history.replaceState(null, "", "/")
+      const { result } = renderHook(() => useSignInRedirect())
+
+      act(() => result.current.signUp())
+
+      expect(loginRedirect).toHaveBeenCalledWith({
+        scopes: ["api"],
+        prompt: "create",
+        redirectStartPage: `${window.location.origin}/home`,
+      })
+    })
+
+    it("keeps a preserved destination", () => {
+      window.history.replaceState(null, "", "/?next=%2Fgoals")
+      const { result } = renderHook(() => useSignInRedirect())
+
+      act(() => result.current.signUp())
+
+      expect(loginRedirect).toHaveBeenCalledWith({
+        scopes: ["api"],
+        prompt: "create",
+      })
+      window.history.replaceState(null, "", "/")
+    })
+
+    it("asks for account creation even while a fresh login is armed", () => {
+      loginRequest.prompt = "login"
+      window.history.replaceState(null, "", "/privacy")
+      const { result } = renderHook(() => useSignInRedirect())
+
+      act(() => result.current.signUp())
+
+      expect(loginRedirect).toHaveBeenCalledWith({
+        scopes: ["api"],
+        prompt: "create",
+      })
+    })
+
+    it("toasts the localized error when the redirect fails", async () => {
+      loginRedirect.mockRejectedValue(new Error("blocked"))
+      const { result } = renderHook(() => useSignInRedirect())
+
+      act(() => result.current.signUp())
+
+      await waitFor(() => expect(toastError).toHaveBeenCalledWith("auth.error"))
+    })
   })
 })
