@@ -108,6 +108,25 @@ class PlayerDataDb extends Dexie {
 
 const playerDataDb = new PlayerDataDb()
 
+// Counts deletions of the database, by this tab or by another one (sign-out in any tab deletes it).
+// Dexie reopens a closed connection on its next use, recreating an empty database, so a sync that
+// started before a deletion passes the generation it started in to its writes, which refuse to run
+// in a later one instead of writing the signed-out account's data into the recreated database.
+let generation = 0
+playerDataDb.on("versionchange", (event) => {
+  if (event.newVersion === null) generation++
+})
+
+export function playerDataGeneration(): number {
+  return generation
+}
+
+function assertGeneration(expected: number | undefined) {
+  if (expected !== undefined && expected !== generation) {
+    throw new Error("Player data was deleted while syncing; write dropped")
+  }
+}
+
 export async function getPlayerDataMetadata(): Promise<
   Map<string, PlayerDataMetadataStorageModel>
 > {
@@ -140,7 +159,8 @@ export async function hasCompletePlayerDataCache(): Promise<boolean> {
 export async function replacePlayerDataChunk(
   chunkKey: PlayerDataChunkKey,
   data: unknown,
-  metadata: PlayerDataMetadataStorageModel
+  metadata: PlayerDataMetadataStorageModel,
+  expectedGeneration?: number
 ): Promise<void> {
   const table = playerDataDb.table(storeNameForChunk(chunkKey))
 
@@ -149,6 +169,7 @@ export async function replacePlayerDataChunk(
     table,
     playerDataDb.metadata,
     async () => {
+      assertGeneration(expectedGeneration)
       if (isMergedPlayerDataChunkKey(chunkKey)) {
         await table.where("id").startsWith(`${chunkKey}:`).delete()
         await table.bulkPut(decomposeMergedChunk(chunkKey, data))
@@ -163,9 +184,13 @@ export async function replacePlayerDataChunk(
 }
 
 export async function saveManifestMetadata(
-  metadata: PlayerDataMetadataStorageModel
+  metadata: PlayerDataMetadataStorageModel,
+  expectedGeneration?: number
 ): Promise<void> {
-  await playerDataDb.metadata.put(metadata)
+  await playerDataDb.transaction("rw", playerDataDb.metadata, async () => {
+    assertGeneration(expectedGeneration)
+    await playerDataDb.metadata.put(metadata)
+  })
 }
 
 /**
@@ -235,5 +260,6 @@ export async function clearPlayerDataDb(): Promise<void> {
 }
 
 export async function deletePlayerDataDb(): Promise<void> {
+  generation++
   await playerDataDb.delete()
 }
