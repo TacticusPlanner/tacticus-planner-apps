@@ -242,7 +242,8 @@ describe("CampaignEventTile", () => {
         battles,
         new Set([knownId]),
         null,
-        new Map()
+        new Map(),
+        new Map([["campaign1:Standard", { highestCompletedBattleIndex: 1 }]])
       ).map((battle) => battle.id)
     ).toEqual(["standing"])
   })

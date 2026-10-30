@@ -96,7 +96,8 @@ function eligibleBattles(activeCampaignEventId: string | null) {
             challengeSource: "synced" as const,
           },
         ],
-      ])
+      ]),
+      new Map([["CG1:Normal", { highestCompletedBattleIndex: 1 }]])
     ).map((b) => [
       b.id,
       { ...b, campaignGroupId: campaignIdSchema.parse(b.campaignGroupId) },

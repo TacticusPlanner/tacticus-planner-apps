@@ -54,12 +54,12 @@ const data = {
     {
       tacticusCampaignId: "campaign1",
       type: "Standard",
-      highestCompletedBattleIndex: 2,
+      highestCompletedBattleIndex: 3,
     },
     {
       tacticusCampaignId: "elite1",
       type: "Elite",
-      highestCompletedBattleIndex: 0,
+      highestCompletedBattleIndex: 1,
     },
   ],
   characters: [{ unitId: "unitA" }],

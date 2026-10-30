@@ -316,7 +316,7 @@ Assumptions this requirement depends on:
 
 ### Requirement: Only the active campaign event is farmable
 
-Standing campaign battles SHALL be eligible for raid calculations only once the player has reached them: a battle's `battleIndex` (the zero-based index `campaign-progress` payloads are keyed against for that battle's `{campaignGroupId, type}` track — distinct from the display-only `nodeNumber`) SHALL be at most one greater than that track's `highestCompletedBattleIndex`, per the `campaign-progress` chunk. A track with no `campaign-progress` entry yet SHALL be treated as not reached (only `battleIndex` 0 eligible). Unlike event campaigns, `campaign-progress` carries no separate completed-challenge-ids list, so a standing challenge battle SHALL be gated by the same `battleIndex` comparison as every other battle in its track, not treated as reachable in any order. An unreached standing battle SHALL be excluded from raid calculations the same way an unreached event-campaign battle already is: it SHALL NOT be scheduled a real raid, and a resource whose only farm location is such a battle SHALL have no farmable location today — the same outcome, not a distinct status or fallback presentation.
+Standing campaign battles SHALL be eligible for raid calculations only once the player has reached them: a battle's `battleIndex` (the zero-based index `campaign-progress` payloads are keyed against for that battle's `{campaignGroupId, type}` track — distinct from the display-only `nodeNumber`) SHALL be strictly less than that track's `highestCompletedBattleIndex`, per the `campaign-progress` chunk. That synced value is the highest index in the Tacticus API's `battles[]` list, which runs up to and including the frontier battle — the one not yet beaten with 3 medals, which therefore cannot be raided (the API carries no medal data; this matches V1's `nodeNumber <= battles.length - 1`). A track with no `campaign-progress` entry yet SHALL be treated as not reached (no battle eligible). Unlike event campaigns, `campaign-progress` carries no separate completed-challenge-ids list, so a standing challenge battle SHALL be gated by the same `battleIndex` comparison as every other battle in its track, not treated as reachable in any order. An unreached standing battle SHALL be excluded from raid calculations the same way an unreached event-campaign battle already is: it SHALL NOT be scheduled a real raid, and a resource whose only farm location is such a battle SHALL have no farmable location today — the same outcome, not a distinct status or fallback presentation.
 
 A battle belonging to an event campaign SHALL be eligible only when both:
 
@@ -418,21 +418,28 @@ Assumptions this requirement depends on:
 - **GIVEN** `campaign-progress` for `{campaign1, Standard}` shows `highestCompletedBattleIndex: 10`
 - **AND** the catalog's only farm location for a needed material is the Standard track's battle at `battleIndex: 13`
 - **WHEN** Today calculates the schedule
-- **THEN** that battle is excluded from eligible battles, since `13 > 10 + 1`, and that material has no farmable location today
+- **THEN** that battle is excluded from eligible battles, since `13 >= 10`, and that material has no farmable location today
 
-#### Scenario: A reached standing node remains eligible
+#### Scenario: The frontier standing node is excluded
 
 - **GIVEN** `campaign-progress` for `{campaign1, Standard}` shows `highestCompletedBattleIndex: 10`
-- **AND** a needed material's farm location is the Standard track's battle at `battleIndex: 11`
+- **AND** a needed material's only farm location is the Standard track's battle at `battleIndex: 10`
 - **WHEN** Today calculates the schedule
-- **THEN** that battle remains eligible, since `11 <= 10 + 1`
+- **THEN** that battle is excluded from eligible battles, since it is the frontier battle and may not have 3 medals yet
 
-#### Scenario: A standing track with no progress entry has only its first battle eligible
+#### Scenario: A cleared standing node remains eligible
+
+- **GIVEN** `campaign-progress` for `{campaign1, Standard}` shows `highestCompletedBattleIndex: 10`
+- **AND** a needed material's farm location is the Standard track's battle at `battleIndex: 9`
+- **WHEN** Today calculates the schedule
+- **THEN** that battle remains eligible, since `9 < 10`
+
+#### Scenario: A standing track with no progress entry has no battle eligible
 
 - **GIVEN** `campaign-progress` has no entry for `{campaign2, Elite}`
 - **AND** the Elite track's battle at `battleIndex: 0` and its battle at `battleIndex: 1` both farm a needed material
 - **WHEN** Today calculates the schedule
-- **THEN** only the `battleIndex: 0` battle is eligible
+- **THEN** neither battle is eligible
 
 #### Scenario: A real synced attempt at an unreached standing battle still counts toward Today's Attempts and real energy usage
 
