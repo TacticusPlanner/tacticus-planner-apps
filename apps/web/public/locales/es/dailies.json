@@ -808,7 +808,7 @@
   "battleProgress": {
     "open": "Medallas",
     "title": "Batallas sin 3 medallas",
-    "description": "Las incursiones necesitan 3 medallas. Indica las medallas de cada batalla; una batalla con menos de 3 se planifica para jugarla manualmente. Tu siguiente batalla de cada campaña siempre se juega manualmente.",
+    "description": "Las incursiones requieren 3 medallas. Las batallas ganadas cuentan como el mejor resultado (3 medallas, victoria relámpago, hito máximo); cambia solo las que se quedaron cortas. Una batalla con menos de 3 medallas se planifica para jugarla manualmente. Tu siguiente batalla en cada campaña siempre se juega manualmente.",
     "campaign": "Campaña",
     "notStarted": "Aún no has llegado a ninguna batalla de esta campaña.",
     "notBeaten": "Aún no superada",
@@ -832,14 +832,15 @@
       "Silver": "Plata",
       "Gold": "Oro"
     },
-    "setGold": "Oro",
-    "setGoldFor": "Marcar {{battle}} como Oro: 3 medallas y victoria relámpago",
     "unclaimedEvents": {
-      "title": "Recompensas de evento sin reclamar",
-      "description": "Recompensas únicas de medallas e hitos que aún quedan en batallas de evento que ya ganaste. Registra tus medallas e hitos para que la lista sea exacta.",
-      "battles_one": "{{count}} batalla",
-      "battles_other": "{{count}} batallas",
-      "record": "Registrar medallas"
-    }
+      "summary_one": "{{count}} batalla tiene recompensas sin reclamar",
+      "summary_other": "{{count}} batallas tienen recompensas sin reclamar",
+      "allClaimed": "Todas las recompensas únicas reclamadas"
+    },
+    "lightningVictoryFor": "Victoria relámpago en {{battle}}",
+    "setBest": "Máx.",
+    "setBestFor": "Poner {{battle}} en el mejor resultado: 3 medallas, victoria relámpago e hito máximo",
+    "edit": "Editar medallas",
+    "medalsEarned": "Medallas"
   }
 }

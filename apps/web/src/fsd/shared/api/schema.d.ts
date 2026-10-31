@@ -1760,7 +1760,7 @@ export interface components {
       current?: unknown
     }
     /** @enum {string} */
-    BattleMilestone: "Bronze" | "Silver" | "Gold"
+    BattleMilestone: "None" | "Bronze" | "Silver" | "Gold"
     BattleProgressOverrideRequest: {
       battleId: string
       /** Format: int32 */

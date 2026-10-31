@@ -516,6 +516,7 @@ atlases/ui_ability_badges_mythic.webp
 atlases/ui_ability_badges_rare.webp
 atlases/ui_ability_badges_uncommon.webp
 atlases/ui_ability_badges_xenos.webp
+atlases/ui_campaign_medal.webp
 atlases/ui_forge_badges_common.webp
 atlases/ui_forge_badges_epic.webp
 atlases/ui_forge_badges_legendary.webp
@@ -1422,6 +1423,7 @@ droptables/ui_icon_droptable_itemsUncommon_I_Booster_Block.webp
 droptables/ui_icon_droptable_itemsUncommon_I_Booster_Crit.webp
 droptables/ui_icon_droptable_itemsUncommon_I_Crit.webp
 droptables/ui_icon_droptable_itemsUncommon_I_Defensive.webp
+fonts/Bronze_Medal.webp
 fonts/ElderShop.webp
 fonts/Gold_Medal.webp
 fonts/GuildShop.webp
@@ -1462,6 +1464,7 @@ fonts/Resource_CrusadeNpc.webp
 fonts/Resource_ExpeditionSpeedUp.webp
 fonts/Resource_Intel.webp
 fonts/SE_Currency_june_26.webp
+fonts/Silver_Medal.webp
 fonts/chance.webp
 fonts/crusadeShop.webp
 fonts/healer.webp

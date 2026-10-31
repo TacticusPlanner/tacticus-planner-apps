@@ -12,7 +12,7 @@ const { saved, update } = vi.hoisted(() => ({
       battleId: string
       medals: number
       lightningVictory: boolean | null
-      milestone: "Bronze" | "Silver" | "Gold" | null
+      milestone: "None" | "Bronze" | "Silver" | "Gold" | null
     }[],
     revision: 4,
   },
@@ -193,7 +193,7 @@ describe("BattleProgressDialog", () => {
     )
   })
 
-  it("records an event battle's milestone with the Gold quick-set and lists unclaimed rewards", async () => {
+  it("defaults a beaten event battle to the best result and records what fell short", async () => {
     const user = userEvent.setup()
     render(
       <BattleProgressDialog
@@ -211,17 +211,32 @@ describe("BattleProgressDialog", () => {
     expect(
       screen.queryByTestId("battle-progress-row-AMS02")
     ).not.toBeInTheDocument()
+    expect(screen.getByTestId("battle-progress-AMS01-3")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
     expect(
-      screen.getByTestId("battle-progress-rewards-AMS01")
-    ).toBeInTheDocument()
-    expect(screen.getByTestId("battle-progress-unclaimed")).toBeInTheDocument()
-
-    await user.click(screen.getByTestId("battle-progress-AMS01-gold"))
-
+      screen.getByTestId("battle-progress-AMS01-lightning")
+    ).toHaveAttribute("data-state", "on")
+    expect(
+      screen.getByTestId("battle-progress-AMS01-milestone-Gold")
+    ).toHaveAttribute("data-state", "on")
     expect(
       screen.queryByTestId("battle-progress-rewards-AMS01")
     ).not.toBeInTheDocument()
-    expect(screen.getByTestId("battle-progress-AMS01-lightning")).toBeChecked()
+    expect(
+      screen.queryByTestId("battle-progress-AMS01-best")
+    ).not.toBeInTheDocument()
+
+    await user.click(screen.getByTestId("battle-progress-AMS01-lightning"))
+    await user.click(
+      screen.getByTestId("battle-progress-AMS01-milestone-Silver")
+    )
+
+    expect(
+      screen.getByTestId("battle-progress-rewards-AMS01")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("battle-progress-AMS01-best")).toBeInTheDocument()
     await user.click(screen.getByTestId("battle-progress-save"))
     await waitFor(() =>
       expect(update).toHaveBeenCalledWith({
@@ -229,12 +244,42 @@ describe("BattleProgressDialog", () => {
           {
             battleId: "AMS01",
             medals: 3,
-            lightningVictory: true,
-            milestone: "Gold",
+            lightningVictory: false,
+            milestone: "Silver",
           },
         ],
         revision: 4,
       })
+    )
+  })
+
+  it("restores the best result with Max", async () => {
+    saved.battles = [
+      {
+        battleId: "AMS01",
+        medals: 1,
+        lightningVictory: false,
+        milestone: "None",
+      },
+    ]
+    const user = userEvent.setup()
+    render(
+      <BattleProgressDialog
+        campaignGroupId="eventCampaign1"
+        campaignType="Standard"
+        onOpenChange={vi.fn()}
+        open
+      />,
+      { auth: { authenticated: true } }
+    )
+
+    expect(
+      await screen.findByTestId("battle-progress-AMS01-milestone-none")
+    ).toHaveAttribute("data-state", "on")
+    await user.click(screen.getByTestId("battle-progress-AMS01-best"))
+    await user.click(screen.getByTestId("battle-progress-save"))
+    await waitFor(() =>
+      expect(update).toHaveBeenCalledWith({ battles: [], revision: 4 })
     )
   })
 })

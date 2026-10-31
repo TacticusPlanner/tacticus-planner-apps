@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import userEvent from "@testing-library/user-event"
+
 import { render, screen } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
-import { UnclaimedEventRewards } from "./unclaimed-event-rewards"
+import { EventTrackMedals } from "./event-track-medals"
 
 const { saved } = vi.hoisted(() => ({
   saved: {
@@ -11,10 +13,14 @@ const { saved } = vi.hoisted(() => ({
       battleId: string
       medals: number
       lightningVictory: boolean | null
-      milestone: "Bronze" | "Silver" | "Gold" | null
+      milestone: "None" | "Bronze" | "Silver" | "Gold" | null
     }[],
     revision: 1,
   },
+}))
+
+vi.mock("@/shared/feature-flags", () => ({
+  useFeatureFlag: (flag: string) => flag === "ManualBattles",
 }))
 
 vi.mock("@/entities/player-data-override", async (importOriginal) => ({
@@ -70,37 +76,51 @@ beforeEach(async () => {
   })
 })
 
-describe("UnclaimedEventRewards", () => {
-  it("sums the unclaimed milestone rewards of the beaten event battles", async () => {
+describe("EventTrackMedals", () => {
+  it("sums the rewards of beaten battles that fell short of the best result", async () => {
     saved.battles = [
       {
         battleId: "AMS01",
         medals: 3,
-        lightningVictory: true,
-        milestone: "Gold",
+        lightningVictory: null,
+        milestone: "Silver",
       },
     ]
-    render(<UnclaimedEventRewards />, { auth: { authenticated: true } })
-
-    const track = await screen.findByTestId(
-      "unclaimed-event-rewards-eventCampaign1-Standard"
-    )
-    expect(track).toHaveTextContent("1 battle")
-    expect(screen.getByTestId("one-time-reward-gold")).toHaveTextContent("100")
-  })
-
-  it("renders nothing when every beaten battle is claimed", async () => {
-    saved.battles = ["AMS01", "AMS02"].map((battleId) => ({
-      battleId,
-      medals: 3,
-      lightningVictory: true,
-      milestone: "Gold" as const,
-    }))
-    const { container } = render(<UnclaimedEventRewards />, {
+    render(<EventTrackMedals groupId="eventCampaign1" type="Standard" />, {
       auth: { authenticated: true },
     })
 
-    await new Promise((resolve) => setTimeout(resolve, 50))
-    expect(container).toBeEmptyDOMElement()
+    expect(
+      await screen.findByTestId("event-track-medals-eventCampaign1-Standard")
+    ).toHaveTextContent("1 battle has unclaimed rewards")
+    expect(screen.getByTestId("one-time-reward-gold")).toHaveTextContent("100")
+  })
+
+  it("treats beaten battles as fully claimed by default and opens the dialog", async () => {
+    const user = userEvent.setup()
+    render(<EventTrackMedals groupId="eventCampaign1" type="Standard" />, {
+      auth: { authenticated: true },
+    })
+
+    expect(
+      await screen.findByTestId("event-track-medals-eventCampaign1-Standard")
+    ).toHaveTextContent("All one-time rewards claimed")
+    await user.click(
+      screen.getByTestId("event-track-medals-open-eventCampaign1-Standard")
+    )
+    expect(
+      await screen.findByTestId("battle-progress-row-AMS02")
+    ).toBeInTheDocument()
+  })
+
+  it("says nothing about claimed rewards on a track with no beaten battle", async () => {
+    await seedPlayerData({ "campaign-events-progress": [] })
+    render(<EventTrackMedals groupId="eventCampaign1" type="Standard" />, {
+      auth: { authenticated: true },
+    })
+
+    expect(
+      await screen.findByTestId("event-track-medals-eventCampaign1-Standard")
+    ).not.toHaveTextContent("All one-time rewards claimed")
   })
 })

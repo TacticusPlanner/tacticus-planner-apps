@@ -1,7 +1,34 @@
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
+
+const flags = vi.hoisted(() => ({ manualBattles: false }))
+vi.mock("@/shared/feature-flags", () => ({
+  useFeatureFlag: (flag: string) =>
+    flag === "ManualBattles" && flags.manualBattles,
+}))
+
+const { saved } = vi.hoisted(() => ({
+  saved: {
+    battles: [] as {
+      battleId: string
+      medals: number
+      lightningVictory: boolean | null
+      milestone: null
+    }[],
+    revision: 1,
+  },
+}))
+vi.mock("@/entities/player-data-override", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
+  battleProgressQueries: {
+    current: () => ({
+      queryKey: ["player-data-overrides", "battle-progress", "current"],
+      queryFn: () => Promise.resolve(saved),
+    }),
+  },
+}))
 
 const data = {
   definitions: [
@@ -36,6 +63,8 @@ const data = {
       campaignGroupId: "campaign1",
       type: "Standard",
       challenge: false,
+      battleIndex: index,
+      lightningVictoryTurns: 5,
     })),
     ...Array.from({ length: 2 }, (_, index) => ({
       id: `IE${index}`,
@@ -68,6 +97,8 @@ const data = {
 import { CampaignsPage } from "./campaigns-page"
 
 beforeEach(async () => {
+  flags.manualBattles = false
+  saved.battles = []
   await seedGameCatalog({
     "campaign-definitions": data.definitions,
     "campaign-battles": data.battles,
@@ -94,5 +125,20 @@ describe("CampaignsPage", () => {
 
     expect(await screen.findByAltText("unitA")).toBeInTheDocument()
     expect(screen.queryByAltText("unitB")).not.toBeInTheDocument()
+  })
+
+  it("counts medals and Lightning Victories in completion once manual battles are on", async () => {
+    flags.manualBattles = true
+    saved.battles = [
+      { battleId: "I0", medals: 1, lightningVictory: false, milestone: null },
+    ]
+    render(<CampaignsPage />, { auth: { authenticated: true } })
+
+    const medals = await screen.findByTestId("campaign-medals-campaign1")
+    // Beaten I0–I2 default to 3 medals + LV; I0 recorded at 1 medal, no LV.
+    expect(medals).toHaveTextContent("7/9")
+    expect(medals).toHaveTextContent("2/3")
+    // (7 + 2) / (9 + 3)
+    expect(screen.getAllByText("75%").length).toBeGreaterThan(0)
   })
 })
