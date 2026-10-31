@@ -50,7 +50,7 @@ import {
 import { AccountSetupLayout } from "./layout/account-setup-layout"
 import { AppShell } from "./layout/app-shell"
 import { PublicLayout } from "./layout/public-layout"
-import { OnboardingGate } from "./onboarding-gate"
+import { OnboardingGate, SetupRedirect } from "./onboarding-gate"
 import { RouteErrorBoundary } from "./route-error-boundary"
 import { useAuthPending } from "./use-auth-pending"
 
@@ -115,6 +115,17 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
     <AuthenticatedRoute>
       <OnboardingGate>{children}</OnboardingGate>
     </AuthenticatedRoute>
+  )
+}
+
+// A public page inside the shell: open to every visitor, but a signed-in account that has not
+// finished setup is still sent there (spec: onboarding-gate) without blocking the page meanwhile.
+function PublicShellRoute({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <SetupRedirect />
+      {children}
+    </>
   )
 }
 
@@ -202,7 +213,11 @@ const appRoutes: RouteObject[] = [
       },
       {
         path: "/library",
-        element: <LibraryPage />,
+        element: (
+          <PublicShellRoute>
+            <LibraryPage />
+          </PublicShellRoute>
+        ),
         children: libraryRoutes,
         loader: preloadLibraryPage,
       },
@@ -222,7 +237,10 @@ const appRoutes: RouteObject[] = [
         path: "/my-game",
         element: <MyGameLayout />,
         children: [
-          ...myGamePublicRoutes,
+          ...myGamePublicRoutes.map((route) => ({
+            ...route,
+            element: <PublicShellRoute>{route.element}</PublicShellRoute>,
+          })),
           ...[
             ...myGameProtectedRoutes,
             {

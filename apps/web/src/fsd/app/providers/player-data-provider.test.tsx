@@ -7,7 +7,7 @@ import {
   usePlayerDataProgress,
   usePlayerDataStatus,
 } from "@/shared/player-data-status"
-import { setTestAuth } from "@/test/auth"
+import { setTestAuth, testAccount } from "@/test/auth"
 import { act, render, renderHook, screen, waitFor } from "@/test/render"
 
 const sync = vi.hoisted(() => ({
@@ -39,6 +39,8 @@ function wrapper({ children }: { children: ReactNode }) {
 
 beforeEach(async () => {
   setTestAuth({ authenticated: true })
+  // This device already saw the account finish setup, so syncing is allowed without GET /account.
+  localStorage.setItem("tp.account.setupComplete", testAccount.homeAccountId)
   // Synced a minute ago: no background sync on mount.
   await replacePlayerDataChunk(
     "player-details",
@@ -57,6 +59,23 @@ afterEach(() => {
 })
 
 describe("PlayerDataProvider", () => {
+  it("does not sync an account that has not finished setup", async () => {
+    localStorage.removeItem("tp.account.setupComplete")
+    sync.run.mockClear()
+    // Never synced: an account that had finished setup would sync straight away.
+    await replacePlayerDataChunk("player-details", null, {
+      key: "__manifest",
+      hash: "manifest-none",
+      schemaVersion: 1,
+      updatedAt: "not a date",
+    })
+    const { result } = renderHook(() => usePlayerDataStatus(), { wrapper })
+
+    await waitFor(() => expect(result.current.status).toBe("idle"))
+    act(() => result.current.syncNow())
+    expect(sync.run).not.toHaveBeenCalled()
+  })
+
   it("refreshes the server reads (run records, plans, goals) once a sync completes, not before", async () => {
     let finish!: (value: unknown) => void
     sync.run.mockReturnValueOnce(new Promise((done) => (finish = done)))

@@ -52,7 +52,11 @@ vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({ instance: { id: "msal-instance" } }),
 }))
 
-import { ACCOUNT_GATE_SLOW_MS, OnboardingGate } from "./onboarding-gate"
+import {
+  ACCOUNT_GATE_SLOW_MS,
+  OnboardingGate,
+  SetupRedirect,
+} from "./onboarding-gate"
 
 function setState(state: CurrentUserState) {
   useCurrentUser.mockReturnValue({ refetch: vi.fn(), state })
@@ -251,5 +255,64 @@ describe("OnboardingGate", () => {
     await user.click(screen.getByTestId("account-gate-retry"))
 
     expect(refetch).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe("SetupRedirect", () => {
+  function renderPublicAt(initialPath: string) {
+    return render(
+      <MemoryRouter initialEntries={[initialPath]}>
+        <Routes>
+          <Route element={<SetupProbe />} path="/setup" />
+          <Route element={<SetupProbe />} path="/setup/name" />
+          <Route
+            element={
+              <>
+                <SetupRedirect />
+                <div data-testid="public-content" />
+              </>
+            }
+            path="*"
+          />
+        </Routes>
+      </MemoryRouter>
+    )
+  }
+
+  it("sends an account that signed in from a public page and has no key to setup, remembering the page", () => {
+    setState({ status: "success", user: unconfiguredUser })
+
+    renderPublicAt("/my-game/collection?sort=power")
+
+    expect(screen.getByTestId("setup-probe")).toHaveTextContent(
+      "/setup?next=%2Fmy-game%2Fcollection%3Fsort%3Dpower"
+    )
+  })
+
+  it("sends an account with a key but no confirmed name to the name step", () => {
+    setState({
+      status: "success",
+      user: { ...configuredUser, displayName: null },
+    })
+
+    renderPublicAt("/library/characters")
+
+    expect(screen.getByTestId("setup-probe")).toHaveTextContent(
+      "/setup/name?next=%2Flibrary%2Fcharacters"
+    )
+  })
+
+  it.each<CurrentUserState>([
+    { status: "idle" },
+    { status: "loading" },
+    { status: "error", error: new Error("offline") },
+    { status: "success", user: configuredUser },
+  ])("leaves the page alone while the account is $status", (state) => {
+    setState(state)
+
+    renderPublicAt("/library/characters")
+
+    expect(screen.getByTestId("public-content")).toBeInTheDocument()
+    expect(screen.queryByTestId("setup-probe")).not.toBeInTheDocument()
   })
 })
