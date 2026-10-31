@@ -25,7 +25,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => useIsMobileMock(),
 }))
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en" } }),
   initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
 const save = vi.fn()
