@@ -3004,8 +3004,12 @@ describe("CreateGoalSheet", () => {
           expect(footerButtons()).toEqual(["Back", "Next"])
 
           // Review: projects, the options above the review, and Create goal.
-          fireEvent.click(next())
+          const nextButton = next()
+          fireEvent.click(nextButton)
           expect(currentStep()).toHaveTextContent("Review")
+          // Create goal is a fresh node, never the tapped Next turned into a submit button mid-click.
+          expect(nextButton).not.toBeInTheDocument()
+          expect(nextButton).toHaveAttribute("type", "button")
           const options = screen.getByTestId("create-goal-footer-options")
           const review = screen.getByTestId("create-goal-review")
           expect(

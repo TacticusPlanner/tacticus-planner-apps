@@ -106,7 +106,9 @@ export function CreateGoalSheet({
       </ResponsiveDialogBody>
 
       {/* Below 768px the footer is one row: Close (Back after the first step), the problem count, then
-          Next or, on Review, Create goal (goal-creation: mobile step navigation keeps values). */}
+          Next or, on Review, Create goal (goal-creation: mobile step navigation keeps values).
+          Next and Create goal carry distinct keys so React mounts a fresh <button>: reusing the Next
+          node would flip it to type="submit" mid-tap, and the browser then submits the form. */}
       <ResponsiveDialogFooter className="flex-row items-center justify-end max-md:gap-2">
         {isMobile ? null : (
           <CreateGoalOptions
@@ -151,6 +153,7 @@ export function CreateGoalSheet({
           <Button
             className="flex-1"
             data-testid="create-goal-next"
+            key="next"
             disabled={nextBlocked}
             onClick={() => setMobileStep(MOBILE_CREATE_STEPS[stepIndex + 1]!)}
             type="button"
@@ -163,6 +166,7 @@ export function CreateGoalSheet({
             data-testid="create-goal-submit"
             disabled={!form.canSubmit || form.status === "submitting"}
             form="create-goal-form"
+            key="submit"
             type="submit"
           >
             {form.status === "submitting" ? <Spinner /> : null}
