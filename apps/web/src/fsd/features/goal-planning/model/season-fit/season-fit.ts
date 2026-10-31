@@ -49,16 +49,17 @@ export function seasonFitOffset(
   return Math.min(passed, 3) as SeasonFitOffset
 }
 
-/** Active, not Reached, not an Ability goal (excluded by rule, as V1's badge goals were), with a
- *  successful estimate. */
+/** Active, not Reached, not a character Ability goal (excluded by rule, as V1's badge goals were),
+ *  with a successful estimate. Machine of War Ability goals farm components with energy, so they
+ *  have a real finish date and stay eligible, as V1's MoW goals did. */
 export function isSeasonFitEligible(
-  row: Pick<GoalRow, "status" | "goalType">,
+  row: Pick<GoalRow, "status" | "goalType" | "entityType">,
   estimate: EstimateOutcome | undefined,
   reached: boolean
 ): estimate is EstimateOutcome & { date: string } {
   return (
     row.status === "Active" &&
-    row.goalType !== "Ability" &&
+    !(row.goalType === "Ability" && row.entityType !== "Mow") &&
     !reached &&
     !!estimate &&
     estimate.status !== "Blocked" &&
@@ -68,7 +69,10 @@ export function isSeasonFitEligible(
 
 /** Each eligible row's fit, keyed by goal id; ineligible rows are absent. */
 export function computeSeasonFits(
-  rows: readonly Pick<GoalRow, "goalId" | "status" | "goalType">[],
+  rows: readonly Pick<
+    GoalRow,
+    "goalId" | "status" | "goalType" | "entityType"
+  >[],
   estimates: ReadonlyMap<string, EstimateOutcome> | undefined,
   reachedByGoalId: ReadonlyMap<string, boolean> | undefined,
   windows: SeasonWindows
