@@ -821,6 +821,25 @@
     "conflict": "Vos médailles ont changé sur un autre appareil. La dernière version est chargée ; refaites vos modifications.",
     "saveError": "Impossible d'enregistrer vos médailles. Réessayez.",
     "loadError": "Impossible de charger vos médailles. Réessayez plus tard.",
-    "signIn": "Connectez-vous pour enregistrer vos médailles de combat."
+    "signIn": "Connectez-vous pour enregistrer vos médailles de combat.",
+    "challengeBattle": "{{tier}} {{node}} (défi)",
+    "unclaimed": "Récompenses uniques non réclamées dans cette campagne",
+    "lightningVictory": "Victoire éclair",
+    "milestoneFor": "Palier sur {{battle}}",
+    "milestones": {
+      "none": "Aucun",
+      "Bronze": "Bronze",
+      "Silver": "Argent",
+      "Gold": "Or"
+    },
+    "setGold": "Or",
+    "setGoldFor": "Passer {{battle}} en Or : 3 médailles et victoire éclair",
+    "unclaimedEvents": {
+      "title": "Récompenses d'événement non réclamées",
+      "description": "Récompenses uniques de médailles et de paliers encore disponibles sur les combats d'événement que vous avez gagnés. Indiquez vos médailles et paliers pour garder cette liste exacte.",
+      "battles_one": "{{count}} combat",
+      "battles_other": "{{count}} combats",
+      "record": "Indiquer les médailles"
+    }
   }
 }

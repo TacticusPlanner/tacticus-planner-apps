@@ -16,7 +16,9 @@ import {
   type CampaignEventProgressOverride,
   type CampaignEventProgressOverrides,
 } from "@/entities/player-data-override"
+import { UnclaimedEventRewards } from "@/features/daily-raids"
 import { useRevisionedDraft } from "@/shared/api"
+import { useFeatureFlag } from "@/shared/feature-flags"
 import { usePersistedSelection } from "@/shared/lib"
 import { UnsavedChangesBar, UnsavedChangesGuard } from "@/shared/ui"
 
@@ -54,6 +56,7 @@ const toPayload = (
 export function CampaignEventsPage() {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
+  const manualBattlesEnabled = useFeatureFlag("ManualBattles")
   const loaded = useCampaignEventsData()
   const catalogData = loaded.status === "ready" ? loaded.data : undefined
   const overrides = useRevisionedDraft({
@@ -147,6 +150,8 @@ export function CampaignEventsPage() {
       {views.current ? (
         <CurrentEventCard view={views.current} onPatch={patch} />
       ) : null}
+
+      {manualBattlesEnabled ? <UnclaimedEventRewards /> : null}
 
       {views.list.length > 0 ? (
         <section className="space-y-3" data-testid="campaign-events-list">

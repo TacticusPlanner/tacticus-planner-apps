@@ -821,6 +821,25 @@
     "conflict": "Your medals changed on another device. The latest version is loaded; make your changes again.",
     "saveError": "Couldn't save your medals. Try again.",
     "loadError": "Couldn't load your medals. Try again later.",
-    "signIn": "Sign in to record your battle medals."
+    "signIn": "Sign in to record your battle medals.",
+    "challengeBattle": "{{tier}} {{node}} (challenge)",
+    "unclaimed": "Unclaimed one-time rewards in this campaign",
+    "lightningVictory": "Lightning Victory",
+    "milestoneFor": "Milestone on {{battle}}",
+    "milestones": {
+      "none": "None",
+      "Bronze": "Bronze",
+      "Silver": "Silver",
+      "Gold": "Gold"
+    },
+    "setGold": "Gold",
+    "setGoldFor": "Set {{battle}} to Gold: 3 medals and Lightning Victory",
+    "unclaimedEvents": {
+      "title": "Unclaimed event rewards",
+      "description": "One-time medal and milestone rewards still waiting on event battles you've beaten. Record the medals and milestones you've earned to keep this list accurate.",
+      "battles_one": "{{count}} battle",
+      "battles_other": "{{count}} battles",
+      "record": "Record medals"
+    }
   }
 }

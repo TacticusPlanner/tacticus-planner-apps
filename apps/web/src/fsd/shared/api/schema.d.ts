@@ -1995,6 +1995,23 @@ export interface components {
       /** Format: int32 */
       max: number
     }
+    GameCatalogCampaignMedalReward: {
+      /** Format: int32 */
+      medals: number
+      id: string
+      /** Format: int32 */
+      min: number
+      /** Format: int32 */
+      max: number
+    }
+    GameCatalogCampaignMilestoneReward: {
+      milestone: string
+      id: string
+      /** Format: int32 */
+      min: number
+      /** Format: int32 */
+      max: number
+    }
     GameCatalogCampaignPotentialRewardView: {
       id: string
       chanceId: null | string
@@ -2009,6 +2026,8 @@ export interface components {
     GameCatalogCampaignRewardsView: {
       guaranteed: components["schemas"]["IReadOnlyListOfGameCatalogCampaignGuaranteedReward"]
       potential: components["schemas"]["IReadOnlyListOfGameCatalogCampaignPotentialRewardView"]
+      medals: components["schemas"]["IReadOnlyListOfGameCatalogCampaignMedalReward"]
+      milestones: components["schemas"]["IReadOnlyListOfGameCatalogCampaignMilestoneReward"]
     }
     GameCatalogCharacterAbilityCostView: {
       /** Format: int32 */
@@ -3446,6 +3465,8 @@ export interface components {
     IReadOnlyListOfGameCatalogCampaignDefinitionView: components["schemas"]["GameCatalogCampaignDefinitionView"][]
     IReadOnlyListOfGameCatalogCampaignDetailedEnemy: components["schemas"]["GameCatalogCampaignDetailedEnemy"][]
     IReadOnlyListOfGameCatalogCampaignGuaranteedReward: components["schemas"]["GameCatalogCampaignGuaranteedReward"][]
+    IReadOnlyListOfGameCatalogCampaignMedalReward: components["schemas"]["GameCatalogCampaignMedalReward"][]
+    IReadOnlyListOfGameCatalogCampaignMilestoneReward: components["schemas"]["GameCatalogCampaignMilestoneReward"][]
     IReadOnlyListOfGameCatalogCampaignPotentialRewardView: components["schemas"]["GameCatalogCampaignPotentialRewardView"][]
     IReadOnlyListOfGameCatalogCharacterAbilityCostView: components["schemas"]["GameCatalogCharacterAbilityCostView"][]
     IReadOnlyListOfGameCatalogCharacterRankUp: components["schemas"]["GameCatalogCharacterRankUp"][]

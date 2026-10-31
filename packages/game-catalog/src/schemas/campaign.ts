@@ -22,9 +22,28 @@ const campaignPotentialRewardViewSchema = z.looseObject({
   effectiveRate: z.number().nullable(),
 })
 
+// One-time reward for the first win with 1, 2 or 3 medals.
+const campaignMedalRewardSchema = z.looseObject({
+  medals: z.number().int().min(1).max(3),
+  id: z.string(),
+  min: z.number(),
+  max: z.number(),
+})
+
+// One-time campaign-event milestone reward (Extremis battles have Gold only).
+const campaignMilestoneRewardSchema = z.looseObject({
+  milestone: z.enum(["Bronze", "Silver", "Gold"]),
+  id: z.string(),
+  min: z.number(),
+  max: z.number(),
+})
+
 const campaignRewardsViewSchema = z.looseObject({
   guaranteed: z.array(campaignGuaranteedRewardSchema),
   potential: z.array(campaignPotentialRewardViewSchema),
+  // Defaulted so a catalog served before the API imported them still parses.
+  medals: z.array(campaignMedalRewardSchema).default([]),
+  milestones: z.array(campaignMilestoneRewardSchema).default([]),
 })
 
 const campaignDetailedEnemySchema = z.looseObject({
