@@ -20,7 +20,7 @@ const toPayload = (draft: Draft, saved: Saved): Saved => ({
   revision: saved.revision,
 })
 
-function setup() {
+function setup(sharedRevisionKey?: readonly unknown[]) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   })
@@ -34,14 +34,15 @@ function setup() {
         toDraft,
         toPayload,
         save,
+        sharedRevisionKey,
       }),
     { wrapper }
   )
   return { ...hook, client }
 }
 
-async function loaded() {
-  const hook = setup()
+async function loaded(sharedRevisionKey?: readonly unknown[]) {
+  const hook = setup(sharedRevisionKey)
   await waitFor(() => expect(hook.result.current.draft).toEqual({ value: 1 }))
   return hook
 }
@@ -89,6 +90,19 @@ describe("useRevisionedDraft", () => {
     expect(client.getQueryData(queryKey)).toEqual({ value: 5, revision: 4 })
     expect(result.current.draft).toEqual({ value: 5 })
     expect(result.current.isDirty).toBe(false)
+  })
+
+  it("refreshes the queries that share the revision after a save", async () => {
+    save.mockResolvedValue({ value: 5, revision: 4 })
+    const { result, client } = await loaded(["draft-test"])
+    const siblingKey = ["draft-test", "sibling"]
+    client.setQueryData(siblingKey, { revision: 3 })
+    act(() => result.current.update(() => ({ value: 5 })))
+    await act(async () => {
+      await result.current.save()
+    })
+    expect(client.getQueryState(siblingKey)?.isInvalidated).toBe(true)
+    expect(client.getQueryState(queryKey)?.isInvalidated).toBe(false)
   })
 
   it("saves against the revision the draft was built on, even after a refetch", async () => {

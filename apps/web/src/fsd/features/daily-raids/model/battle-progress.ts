@@ -9,7 +9,7 @@ export type BattleProgressRow = {
 }
 
 /**
- * The battles of one standing campaign the player has reached, in node order: every battle up to
+ * The battles of one standing campaign track the player has reached, in node order: every battle up to
  * and including the frontier (the synced `highestCompletedBattleIndex`). A track with no progress
  * has none.
  */
@@ -17,10 +17,12 @@ export function reachedBattleRows(
   battles: readonly {
     id: string
     campaignGroupId: string
+    type: string
     nodeNumber: number
     battleIndex: number
   }[],
   campaignGroupId: string,
+  type: string,
   highestCompletedBattleIndex: number | undefined
 ): BattleProgressRow[] {
   const highest = highestCompletedBattleIndex ?? -1
@@ -28,6 +30,7 @@ export function reachedBattleRows(
     .filter(
       (battle) =>
         battle.campaignGroupId === campaignGroupId &&
+        battle.type === type &&
         battle.battleIndex <= highest
     )
     .toSorted((a, b) => a.battleIndex - b.battleIndex)
