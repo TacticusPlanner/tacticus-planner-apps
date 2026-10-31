@@ -39,16 +39,19 @@ function Harness({
   goalLines,
   estimates,
   units = teamUnitList,
+  initialMembers = [],
 }: {
+  initialMembers?: string[]
   roster?: { unitId: string }[]
   units?: typeof teamUnitList
   goalsPreview?: PickerGoalsPreview
   goalLines?: (unitId: string) => readonly string[]
   estimates?: PickerEstimates
 }) {
-  const [draft, setDraft] = useState(() =>
-    initialEditorDraft(undefined, 1, context)
-  )
+  const [draft, setDraft] = useState(() => ({
+    ...initialEditorDraft(undefined, 1, context),
+    memberUnitIds: initialMembers,
+  }))
   return (
     <TeamUnitPicker
       estimates={estimates}
@@ -115,6 +118,19 @@ describe("TeamUnitPicker", () => {
     expect(tile(teamUnits.a.id)).not.toHaveAttribute("data-reserve")
     expect(tile(teamUnits.r.id)).toHaveAttribute("data-reserve", "true")
     expect(tile(teamUnits.r.id)).not.toHaveAttribute("data-selected")
+  })
+
+  it("lists a member the lane no longer allows above the grid, with a remove button", () => {
+    render(<Harness initialMembers={[teamUnits.a.id, "retiredUnit"]} />, {
+      wrapper: i18nWrapper(i18n),
+    })
+    const listed = screen.getAllByTestId("team-picker-selected-unit")
+    expect(listed.map((element) => element.dataset.unit)).toEqual([
+      "retiredUnit",
+    ])
+    fireEvent.click(within(listed[0]!).getByRole("button"))
+    expect(screen.queryByTestId("team-picker-selected")).not.toBeInTheDocument()
+    expect(tile(teamUnits.a.id)).toHaveAttribute("data-selected", "true")
   })
 
   it("searches by name and hides locked units when only unlocked is on", async () => {

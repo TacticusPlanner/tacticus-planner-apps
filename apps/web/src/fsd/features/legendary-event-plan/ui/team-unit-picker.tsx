@@ -32,6 +32,7 @@ import {
   type PickerSort,
 } from "../model/team-picker"
 import { TeamPickerObjectiveChips } from "./team-picker-objective-chips"
+import { SelectedChip } from "./team-picker-selected-chip"
 import { TeamPickerSort } from "./team-picker-sort"
 import { TeamPickerTileMarkers } from "./team-picker-tile-markers"
 import { TeamPickerUnitState } from "./team-picker-unit-state"
@@ -43,7 +44,8 @@ import { TeamPickerUnitState } from "./team-picker-unit-state"
  * left / Power sort (Power by default) that resets when the editor closes. A tap toggles membership
  * up to five; the editor refuses a sixth and pulses its count badge. A tile's secondary action
  * sets the reserve. Selected members and the reserve are marked on their tiles (a selected unit
- * stays listed whatever the filters say), so a second tap removes them. With Goals Preview
+ * stays listed whatever the filters say), so a second tap removes them; one the lane no longer
+ * allows (no tile) is listed above the grid with a remove button. With Goals Preview
  * available, a switch
  * (starting from the page's value) shows tiles at their goal targets:
  * owned state, rarity, rank, estimated clears and a preview marker. The lane's objectives sit above
@@ -167,6 +169,12 @@ export function TeamUnitPicker({
     searchNamesOf,
   })
   const dividerAt = notMatchingStart(shown, selectedObjectives)
+  // A saved member or reserve the lane no longer allows has no tile: list it with a remove button
+  // so the team can still be fixed and saved.
+  const tiled = new Set(tiles.map((tile) => tile.unit.id as string))
+  const untiledMembers = memberUnitIds.filter((unitId) => !tiled.has(unitId))
+  const untiledReserve =
+    reserveUnitId && !tiled.has(reserveUnitId) ? reserveUnitId : null
   const objectives = [...lane.unitsRestrictions].sort(
     (a, b) => a.index - b.index
   )
@@ -184,6 +192,36 @@ export function TeamUnitPicker({
 
   return (
     <div className="flex min-w-0 flex-col gap-3" data-testid="team-unit-picker">
+      {untiledMembers.length > 0 || untiledReserve ? (
+        <ul
+          className="flex min-w-0 flex-wrap gap-1.5"
+          data-testid="team-picker-selected"
+        >
+          {untiledMembers.map((unitId) => (
+            <SelectedChip
+              key={unitId}
+              label={nameOf({ id: unitId })}
+              onRemove={() => onToggleMember(unitId)}
+              removeLabel={t("teams.picker.remove", {
+                name: nameOf({ id: unitId }),
+              })}
+              unitId={unitId}
+            />
+          ))}
+          {untiledReserve ? (
+            <SelectedChip
+              key={`reserve-${untiledReserve}`}
+              label={`${nameOf({ id: untiledReserve })} · ${t("teams.reserve")}`}
+              onRemove={() => onToggleReserve(untiledReserve)}
+              removeLabel={t("teams.picker.unsetReserve", {
+                name: nameOf({ id: untiledReserve }),
+              })}
+              reserve
+              unitId={untiledReserve}
+            />
+          ) : null}
+        </ul>
+      ) : null}
       {memberUnitIds.length === MAX_TEAM_MEMBERS ? (
         <p className="text-xs text-muted-foreground">
           {t("teams.picker.full")}

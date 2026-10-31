@@ -19,13 +19,16 @@ const LANE_LETTERS: Record<LegendaryEventLaneId, string> = {
   gamma: "γ",
 }
 
+/** The longest team name the plan stores. */
+const TEAM_NAME_LIMIT = 60
+
 /** A generated team name with its lane's Greek letter in front ("α · Melee"), so the same
- *  objectives in two lanes read apart. */
+ *  objectives in two lanes read apart; cut to the stored name limit so it can be saved as is. */
 export function withLanePrefix(
   laneId: LegendaryEventLaneId,
   name: string
 ): string {
-  return `${LANE_LETTERS[laneId]} · ${name}`
+  return `${LANE_LETTERS[laneId]} · ${name}`.slice(0, TEAM_NAME_LIMIT).trim()
 }
 
 /** Whether the stored name says nothing: empty, or the lane id (case-insensitive), as the V1

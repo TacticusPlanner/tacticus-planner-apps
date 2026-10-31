@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   hasLaneDefaultName,
   teamDisplayName,
+  withLanePrefix,
   type NamedTeam,
 } from "./team-display-name"
 
@@ -67,6 +68,10 @@ describe("teamDisplayName", () => {
     expect(teamDisplayName(beta, alphaObjectives, [beta], numbered)).toBe(
       "β · Max 2 hits"
     )
+  })
+
+  it("keeps a prefixed name within the 60-character limit", () => {
+    expect(withLanePrefix("alpha", "x".repeat(57))).toHaveLength(60)
   })
 
   it("does not treat another lane's id as a default name", () => {
