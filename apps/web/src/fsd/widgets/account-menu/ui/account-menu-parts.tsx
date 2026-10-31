@@ -1,12 +1,11 @@
-import type { ReactNode } from "react"
+import type { ComponentType, ReactNode } from "react"
 import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Coffee,
   ExternalLink,
   Languages,
-  ScrollText,
-  ShieldCheck,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -14,8 +13,13 @@ import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { supportedLocales } from "@/shared/config"
+import {
+  BUY_ME_A_COFFEE_URL,
+  DISCORD_INVITE_URL,
+  supportedLocales,
+} from "@/shared/config"
 
+import { DiscordIcon } from "./discord-icon"
 import { ThemeSwitcher } from "./theme-switcher"
 import { useLanguage } from "../model/use-language"
 
@@ -24,7 +28,7 @@ export type AccountMenuView = "main" | "language"
 const menuRowClass =
   "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
 
-/** Menu row that opens an external page in a new tab (used for the public roadmap). */
+/** Menu row that opens an external page in a new tab (Roadmap, Discord, Buy Me a Coffee). */
 export function MenuLinkRow({
   href,
   icon: Icon,
@@ -32,7 +36,7 @@ export function MenuLinkRow({
   ...props
 }: Omit<React.ComponentProps<"a">, "children"> & {
   href: string
-  icon: LucideIcon
+  icon: ComponentType<{ className?: string }>
   label: string
 }) {
   return (
@@ -53,38 +57,80 @@ export function MenuLinkRow({
   )
 }
 
-/** Privacy & cookies and Terms of use rows, so the legal pages are reachable from inside the app (the
- *  public footer that links them is only on the public pages). `onNavigate` closes the surrounding menu. */
-export function LegalLinkRows({ onNavigate }: { onNavigate?: () => void }) {
+/** A labelled group of menu rows; the heading matches the Preferences one. */
+export function MenuSection({
+  children,
+  label,
+  ...props
+}: Omit<React.ComponentProps<"section">, "aria-label"> & { label: string }) {
+  return (
+    <section aria-label={label} className="flex flex-col gap-0.5" {...props}>
+      <h3 className="px-2 text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
+        {label}
+      </h3>
+      {children}
+    </section>
+  )
+}
+
+/** Community section: the Discord server and the Buy Me a Coffee page. `onNavigate` closes the surrounding menu. */
+export function CommunitySection({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation()
 
   return (
-    <>
+    <MenuSection data-testid="account-community" label={t("community.title")}>
+      <MenuLinkRow
+        data-testid="account-discord"
+        href={DISCORD_INVITE_URL}
+        icon={DiscordIcon}
+        label={t("community.discord")}
+        onClick={onNavigate}
+      />
+      <MenuLinkRow
+        data-testid="account-buy-me-a-coffee"
+        href={BUY_ME_A_COFFEE_URL}
+        icon={Coffee}
+        label={t("community.buyMeACoffee")}
+        onClick={onNavigate}
+      />
+    </MenuSection>
+  )
+}
+
+const legalLinkClass =
+  "rounded-sm outline-hidden hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+
+/** Privacy & cookies and Terms of use as a quiet footer line, so the legal pages are reachable from inside the app
+ *  (the public footer that links them is only on the public pages). `onNavigate` closes the surrounding menu. */
+export function LegalLinks({ onNavigate }: { onNavigate?: () => void }) {
+  const { t } = useTranslation()
+
+  return (
+    <nav
+      aria-label={t("community.legal")}
+      className="flex flex-wrap items-center gap-x-2 px-2 text-xs text-muted-foreground"
+    >
       <Link
-        className={menuRowClass}
+        className={legalLinkClass}
         data-testid="account-privacy"
         onClick={onNavigate}
         to="/privacy"
       >
-        <ShieldCheck className="size-4 shrink-0" />
-        <span className="min-w-0 flex-1 truncate">
-          {t("publicSite.privacy")}
-        </span>
+        {t("publicSite.privacy")}
       </Link>
+      <span aria-hidden="true">·</span>
       <Link
-        className={menuRowClass}
+        className={legalLinkClass}
         data-testid="account-terms"
         onClick={onNavigate}
         to="/terms"
       >
-        <ScrollText className="size-4 shrink-0" />
-        <span className="min-w-0 flex-1 truncate">{t("publicSite.terms")}</span>
+        {t("publicSite.terms")}
       </Link>
-    </>
+    </nav>
   )
 }
 
-/** One full-width row of the desktop account card; `chevron` marks rows that open a sub-view. */
 /** Small red dot marking unread activity, matching the feedback button's indicator. */
 export function UnreadDot({
   className,
@@ -99,6 +145,7 @@ export function UnreadDot({
   )
 }
 
+/** One full-width row of the account card; `chevron` marks rows that open a sub-view. */
 export function MenuRow({
   chevron,
   className,
@@ -147,14 +194,10 @@ export function PreferencesSection({
   const { selectedLocale } = useLanguage()
 
   return (
-    <section
-      aria-label={t("auth.preferences")}
-      className="flex flex-col gap-0.5"
+    <MenuSection
       data-testid="account-preferences"
+      label={t("auth.preferences")}
     >
-      <h3 className="px-2 text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
-        {t("auth.preferences")}
-      </h3>
       <div className="flex items-center justify-between gap-3 px-2 py-1">
         <span className="text-sm">{t("theme.label")}</span>
         <ThemeSwitcher />
@@ -167,7 +210,7 @@ export function PreferencesSection({
         onClick={onOpenLanguage}
         trailing={selectedLocale?.nativeName}
       />
-    </section>
+    </MenuSection>
   )
 }
 

@@ -23,7 +23,8 @@
     "signedInWith": {
       "google": "Connecté avec Google",
       "email": "Connecté avec l'e-mail"
-    }
+    },
+    "accountSection": "Compte"
   },
   "catalog": {
     "badge": {
@@ -1683,7 +1684,8 @@
     "button": "Commentaires",
     "send": "Envoyer un commentaire",
     "roadmap": "Feuille de route",
-    "changelog": "Nouveautés"
+    "changelog": "Nouveautés",
+    "section": "Aide et retours"
   },
   "theme": {
     "dark": "Sombre",
@@ -1998,6 +2000,14 @@
     "terms": "Conditions d'utilisation",
     "uiKit": "Kit UI",
     "lastUpdated": "Dernière mise à jour le {{date}}"
+  },
+  "community": {
+    "title": "Communauté",
+    "discord": "Discord",
+    "buyMeACoffee": "Buy Me a Coffee",
+    "discordLabel": "Rejoindre notre Discord",
+    "buyMeACoffeeLabel": "Soutenez-nous sur Buy Me a Coffee",
+    "legal": "Mentions légales"
   },
   "appInstall": {
     "menu": "Installer l'app",

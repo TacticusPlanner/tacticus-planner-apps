@@ -29,6 +29,8 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 vi.mock("@/shared/config", () => ({
+  BUY_ME_A_COFFEE_URL: "https://coffee.example",
+  DISCORD_INVITE_URL: "https://discord.example",
   getSupportedLanguage: (language: string) => language,
   supportedLocales: [
     { code: "en", nativeName: "English" },
@@ -219,7 +221,7 @@ describe("AuthControl", () => {
     expect(screen.getByTestId("auth-sign-out")).toBeVisible()
   })
 
-  it("lays out identity, preferences, account rows, sign out and catalog footer in order", () => {
+  it("lays out identity, preferences, account, help and community groups, sign out and the footer in order", () => {
     useCurrentUser.mockReturnValue({ state: confirmedState })
     renderAuthControl()
 
@@ -233,9 +235,11 @@ describe("AuthControl", () => {
       "auth-feedback",
       "auth-roadmap",
       "auth-changelog",
+      "account-discord",
+      "account-buy-me-a-coffee",
+      "auth-sign-out",
       "account-privacy",
       "account-terms",
-      "auth-sign-out",
       "catalog-sync-status-badge",
     ]
     const nodes = ids.map((id) => screen.getByTestId(id))
@@ -262,6 +266,25 @@ describe("AuthControl", () => {
     expect(roadmap).toHaveAttribute("target", "_blank")
     expect(roadmap).toHaveAttribute("rel", "noopener noreferrer")
     expect(roadmap).toHaveTextContent("feedback.roadmap")
+  })
+
+  it("links Discord and Buy Me a Coffee in new tabs and closes the desktop menu", () => {
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    for (const [id, href] of [
+      ["account-discord", "https://discord.example"],
+      ["account-buy-me-a-coffee", "https://coffee.example"],
+    ] as const) {
+      const link = screen.getByTestId(id)
+      expect(link).toHaveAttribute("href", href)
+      expect(link).toHaveAttribute("target", "_blank")
+      expect(link).toHaveAttribute("rel", "noopener noreferrer")
+    }
+    fireEvent.click(screen.getByTestId("account-discord"))
+
+    expect(screen.queryByTestId("account-discord")).not.toBeInTheDocument()
   })
 
   it("links Privacy & cookies and Terms of use and closes the desktop menu", () => {
@@ -490,7 +513,11 @@ describe("AuthControl", () => {
       "tour-button",
       "auth-roadmap",
       "auth-changelog",
+      "account-discord",
+      "account-buy-me-a-coffee",
       "auth-sign-out",
+      "account-privacy",
+      "account-terms",
       "catalog-sync-status-badge",
     ]
     const nodes = ids.map((id) => screen.getByTestId(id))
