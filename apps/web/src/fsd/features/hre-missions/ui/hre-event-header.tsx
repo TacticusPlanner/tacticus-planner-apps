@@ -6,7 +6,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { formatEventCountdown } from "@/shared/lib"
+import { formatEventCountdown, getDeviceLocale } from "@/shared/lib"
 import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import type { HreInstanceState } from "../model/use-hre-instance"
@@ -50,7 +50,7 @@ export function HreEventHeader({ state }: { state: HreInstanceState }) {
   const endMs = Date.parse(instance.entry.endUtc)
   const running = instance.status === "running"
   const formatDate = (ms: number) =>
-    new Date(ms).toLocaleDateString(i18n.language, { dateStyle: "medium" })
+    new Date(ms).toLocaleDateString(getDeviceLocale(), { dateStyle: "medium" })
   const name = hero
     ? t(`characters:${hero.id}`, { defaultValue: hero.name })
     : (instance.featuredCharacterId ?? t("hre:status.unknownHero"))

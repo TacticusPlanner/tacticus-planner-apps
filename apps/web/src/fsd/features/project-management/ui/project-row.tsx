@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { formatEstimateDate } from "@/shared/lib"
+import { formatEstimateDate, getDeviceLocale } from "@/shared/lib"
 import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../model/use-project-actions"
 import { ProjectTargetChip } from "./project-target-chip"
@@ -59,7 +59,7 @@ export function ProjectRow({
   onSelect,
   summary,
 }: Props) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const archived = project.status === "Archived"
   const archiveDisabled = actions.pending || project.isDefault
   const projectContent = (
@@ -103,7 +103,7 @@ export function ProjectRow({
                 {t("goals.project.completionSummary", {
                   date: formatEstimateDate(
                     summary.completionDate,
-                    i18n.resolvedLanguage ?? "en"
+                    getDeviceLocale()
                   ),
                 })}
               </span>

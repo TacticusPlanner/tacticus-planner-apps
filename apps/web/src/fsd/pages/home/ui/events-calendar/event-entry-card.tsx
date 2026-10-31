@@ -16,6 +16,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   eventFamilyStripeClass,
   eventFamilySurfaceClass,
+  getDeviceLocale,
   resolveEventFamily,
 } from "@/shared/lib"
 import { EventIcon } from "@/shared/ui"
@@ -83,10 +84,10 @@ function EventDetailsPopover({
   entry: EventEntryViewModel
   children: ReactNode
 }) {
-  const { t, i18n } = useTranslation("events")
+  const { t } = useTranslation("events")
   const displayName = useEventDisplayName(entry)
   const wikiUrl = resolveEventWikiUrl(entry.definitionId)
-  const range = new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+  const range = new Intl.DateTimeFormat(getDeviceLocale(), {
     dateStyle: "medium",
     timeStyle: "short",
   }).formatRange(new Date(entry.startUtc), new Date(entry.endUtc))
@@ -138,8 +139,8 @@ function EventDetailsPopover({
 
 /** A Guild War season's wars in the details popover: each war's preparation and war windows. */
 function PhaseList({ phases }: { phases: EventPhase[] }) {
-  const { t, i18n } = useTranslation("events")
-  const formatter = new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+  const { t } = useTranslation("events")
+  const formatter = new Intl.DateTimeFormat(getDeviceLocale(), {
     month: "short",
     day: "numeric",
     hour: "numeric",

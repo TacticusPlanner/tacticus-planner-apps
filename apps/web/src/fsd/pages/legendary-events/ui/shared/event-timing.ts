@@ -1,5 +1,5 @@
 import type { LegendaryEventLifecycle } from "@/entities/legendary-event"
-import { formatEventCountdown } from "@/shared/lib"
+import { formatEventCountdown, getDeviceLocale } from "@/shared/lib"
 
 export interface EventTimingText {
   /** "Ends …" / "Starts …" with the local date and time; absent for an archived event. */
@@ -10,8 +10,8 @@ export interface EventTimingText {
 }
 
 /** The local date and time of an instant in the device timezone (event windows stay UTC). */
-function formatLocalDateTime(epochMs: number, locale: string): string {
-  return new Date(epochMs).toLocaleString(locale, {
+function formatLocalDateTime(epochMs: number): string {
+  return new Date(epochMs).toLocaleString(getDeviceLocale(), {
     dateStyle: "medium",
     timeStyle: "short",
   })
@@ -29,7 +29,7 @@ export function eventTiming(
   const targetMs = active ? lifecycle.runEndMs : lifecycle.runStartMs
   return {
     atKey: active ? "hub.endsAt" : "hub.startsAt",
-    date: formatLocalDateTime(targetMs, locale),
+    date: formatLocalDateTime(targetMs),
     inKey: active ? "hub.endsIn" : "hub.startsIn",
     when: formatEventCountdown(targetMs, nowMs, locale),
   }

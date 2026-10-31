@@ -9,6 +9,7 @@ export {
   formatEstimateDate,
   formatEventCountdown,
   formatRelativeTime,
+  getDeviceLocale,
 } from "./format-time"
 export { useCampaignDisplay } from "./use-campaign-display"
 export { useDebouncedCommit } from "./use-debounced-commit"

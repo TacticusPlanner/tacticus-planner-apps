@@ -13,6 +13,7 @@ import {
 import { useUnitName } from "@/shared/unit-name"
 
 import { navItems, type DynamicNavSubItem, type NavItem } from "./nav-items"
+import { getDeviceLocale } from "@/shared/lib"
 
 const DESCRIPTION_KEY = {
   active: "legendaryEvents.tabs.activeEventDescription",
@@ -70,7 +71,7 @@ export function useNavItems(): NavItem[] {
     label: unitName("Character", event.id),
     description: [
       t(DESCRIPTION_KEY[lifecycle.state]),
-      runDate(lifecycle, i18n.language, t),
+      runDate(lifecycle, getDeviceLocale(), t),
     ]
       .filter(Boolean)
       .join(" · "),

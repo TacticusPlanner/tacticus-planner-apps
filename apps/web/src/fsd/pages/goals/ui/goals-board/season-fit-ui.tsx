@@ -12,6 +12,7 @@ import {
   seasonFitLabel,
   seasonFitTooltip,
 } from "./season-fit-copy"
+import { getDeviceLocale } from "@/shared/lib"
 
 /** The fit label beside a goal's Done By date, nothing for a goal without a fit (goal-season-fit
  *  spec: ineligible goals keep their Done By content unchanged). Same on desktop and mobile. */
@@ -22,7 +23,7 @@ export function SeasonFitLabel({
   goalId: string
   seasonFit: ActiveSeasonFit | null | undefined
 }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const fit = seasonFit?.fits.get(goalId)
   if (!seasonFit || !fit) return null
   return (
@@ -39,15 +40,15 @@ export function SeasonFitLabel({
         </button>
       </TooltipTrigger>
       <TooltipContent>
-        {seasonFitTooltip(t, i18n.resolvedLanguage ?? "en", seasonFit, fit)}
+        {seasonFitTooltip(t, getDeviceLocale(), seasonFit, fit)}
       </TooltipContent>
     </Tooltip>
   )
 }
 
 function useCutoffText(seasonFit: ActiveSeasonFit) {
-  const { t, i18n } = useTranslation()
-  return seasonCutoffText(t, i18n.resolvedLanguage ?? "en", seasonFit)
+  const { t } = useTranslation()
+  return seasonCutoffText(t, getDeviceLocale(), seasonFit)
 }
 
 /** Desktop season cut-off: a full-width row before the first goal past the season. Not a sortable

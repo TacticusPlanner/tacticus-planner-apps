@@ -8,7 +8,7 @@ import {
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { formatEventCountdown } from "@/shared/lib"
+import { formatEventCountdown, getDeviceLocale } from "@/shared/lib"
 
 import type { HomeEventRow } from "../../model/select-home-events"
 import type { HomeEventsState } from "../../model/use-home-events"
@@ -134,7 +134,7 @@ function UpcomingEventRow({
             className="block text-sm text-muted-foreground"
             data-testid="home-events-start"
           >
-            {new Date(row.startMs).toLocaleString(i18n.language, {
+            {new Date(row.startMs).toLocaleString(getDeviceLocale(), {
               dateStyle: "medium",
               timeStyle: "short",
             })}

@@ -1,9 +1,9 @@
 import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
 
 import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
 import type { EventsCalendarWeek } from "../../../model/events-calendar.types"
 import { EventLaneRow } from "./event-lane-row"
+import { getDeviceLocale } from "@/shared/lib"
 
 // The month as whole Monday-to-Sunday weeks, each row the week view's Gantt lanes in compact form: an
 // event running across a week boundary continues as a new bar on the next row. Days outside the month
@@ -16,14 +16,13 @@ export function EventsCalendarMonth({
   month: Date
   weeks: EventsCalendarWeek[]
 }) {
-  const { i18n } = useTranslation()
   const weekdayFormatter = useMemo(
-    () => new Intl.DateTimeFormat(i18n.resolvedLanguage, { weekday: "short" }),
-    [i18n.resolvedLanguage]
+    () => new Intl.DateTimeFormat(getDeviceLocale(), { weekday: "short" }),
+    []
   )
   const dayFormatter = useMemo(
-    () => new Intl.DateTimeFormat(i18n.resolvedLanguage, { day: "numeric" }),
-    [i18n.resolvedLanguage]
+    () => new Intl.DateTimeFormat(getDeviceLocale(), { day: "numeric" }),
+    []
   )
   const todayIso = toIsoDate(new Date())
   const firstWeek = weeks[0]

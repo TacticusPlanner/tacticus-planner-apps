@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 
-import { formatEstimateDate } from "@/shared/lib"
+import { formatEstimateDate, getDeviceLocale } from "@/shared/lib"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 
 import type {
@@ -43,7 +43,7 @@ export function InsightsOutlook({
   goalInfoById: ReadonlyMap<string, InsightsGoalInfo>
 }) {
   const { t, i18n } = useTranslation()
-  const locale = i18n.resolvedLanguage ?? "en"
+  const locale = getDeviceLocale()
   const fmt = (value: number) =>
     new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
   const goalLabel = useGoalLabel(goalInfoById)

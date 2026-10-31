@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useMinuteNow } from "@/entities/legendary-event"
-import { formatEventCountdown } from "@/shared/lib"
+import { formatEventCountdown, getDeviceLocale } from "@/shared/lib"
 
 import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
 import type { EventsAgenda } from "../../../model/events-calendar.types"
@@ -15,12 +15,12 @@ export function EventsCalendarMobile({ agenda }: { agenda: EventsAgenda }) {
   const { t, i18n } = useTranslation("events")
   const dayHeaderFormatter = useMemo(
     () =>
-      new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+      new Intl.DateTimeFormat(getDeviceLocale(), {
         weekday: "long",
         month: "short",
         day: "numeric",
       }),
-    [i18n.resolvedLanguage]
+    []
   )
   // Ticks each minute so the Ongoing countdowns stay current.
   const nowMs = useMinuteNow()

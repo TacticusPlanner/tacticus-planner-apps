@@ -6,7 +6,7 @@ import {
   AlertTitle,
 } from "@workspace/ui/components/alert"
 
-import { formatRelativeTime } from "@/shared/lib"
+import { formatRelativeTime, getDeviceLocale } from "@/shared/lib"
 
 import type { HomeScreenEventEntry } from "../../model/select-active-home-screen-event"
 import { useHomeScreenEventName } from "./use-home-screen-event-name"
@@ -27,7 +27,7 @@ export function EventPreviewBanner({ entry }: { entry: HomeScreenEventEntry }) {
       <AlertDescription>
         {t("dailies:hse.preview.body", {
           when: formatRelativeTime(startMs, i18n.language),
-          date: new Date(startMs).toLocaleString(i18n.language, {
+          date: new Date(startMs).toLocaleString(getDeviceLocale(), {
             dateStyle: "medium",
             timeStyle: "short",
           }),
