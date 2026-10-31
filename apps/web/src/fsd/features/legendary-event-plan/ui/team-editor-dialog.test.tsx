@@ -101,6 +101,12 @@ const chips = () =>
     .queryAllByTestId("team-editor-summary-objective-label")
     .map((label) => label.textContent)
 const nameInput = () => screen.getByTestId("team-editor-name")
+/** The member tiles' units, in grid order. */
+const memberTiles = () =>
+  screen
+    .queryAllByTestId("team-picker-tile")
+    .filter((element) => element.dataset.selected === "true")
+    .map((element) => element.dataset.unit)
 
 describe("TeamEditorDialog", () => {
   beforeAll(async () => {
@@ -122,17 +128,17 @@ describe("TeamEditorDialog", () => {
 
   it("defaults the name to the covered objectives, else Team N", () => {
     renderEditor()
-    expect(nameInput()).toHaveValue("Team 3")
+    expect(nameInput()).toHaveValue("α · Team 3")
     tap(teamUnits.a.id)
     tap(teamUnits.b.id)
-    expect(nameInput()).toHaveValue("Melee · Min 5 hits")
+    expect(nameInput()).toHaveValue("α · Melee · Min 5 hits")
   })
 
   it("opens a suggestion as a new team: members in order, coverage ticked, default name", async () => {
     const { onSubmit } = renderEditor({
       initialMemberUnitIds: [teamUnits.b.id, teamUnits.a.id, teamUnits.c.id],
     })
-    expect(nameInput()).toHaveValue("Melee · Min 5 hits")
+    expect(nameInput()).toHaveValue("α · Melee · Min 5 hits")
     expect(chips()).toEqual(["Melee", "Min 5 hits"])
     expect(onSubmit).not.toHaveBeenCalled()
 
@@ -143,7 +149,7 @@ describe("TeamEditorDialog", () => {
       expect.objectContaining({
         memberUnitIds: [teamUnits.b.id, teamUnits.a.id, teamUnits.c.id],
         objectiveIndexes: [0, 1],
-        name: "Melee · Min 5 hits",
+        name: "α · Melee · Min 5 hits",
       }),
       { estimate: null, fromEstimate: false }
     )
@@ -188,7 +194,7 @@ describe("TeamEditorDialog", () => {
     tap(teamUnits.r.id)
     expect(badge()).toHaveTextContent("5/5")
     expect(badge()).toHaveAttribute("data-pulse", "1")
-    expect(screen.getAllByTestId("team-picker-selected-unit")).toHaveLength(5)
+    expect(memberTiles()).toHaveLength(5)
   })
 
   it("keeps Save unavailable without members and saves a team covering no objective", async () => {
@@ -210,7 +216,7 @@ describe("TeamEditorDialog", () => {
 
     expect(onSubmit).toHaveBeenCalledWith(
       {
-        name: "Team 3",
+        name: "α · Team 3",
         memberUnitIds: [teamUnits.r.id, teamUnits.b.id, teamUnits.c.id],
         reserveUnitId: null,
         objectiveIndexes: [],
@@ -542,10 +548,8 @@ describe("TeamEditorDialog", () => {
         expect.anything()
       )
       expect(onOpenChange).not.toHaveBeenCalled()
-      expect(screen.queryAllByTestId("team-picker-selected-unit")).toHaveLength(
-        0
-      )
-      expect(nameInput()).toHaveValue("Team 3")
+      expect(memberTiles()).toHaveLength(0)
+      expect(nameInput()).toHaveValue("α · Team 3")
       expect(
         within(screen.getByTestId("team-editor-depth")).getByTestId(
           "number-stepper-input"
@@ -572,11 +576,9 @@ describe("TeamEditorDialog", () => {
       })
 
       expect(onOpenChange).not.toHaveBeenCalled()
-      expect(
-        screen
-          .getAllByTestId("team-picker-selected-unit")
-          .map((element) => element.dataset.unit)
-      ).toEqual([teamUnits.a.id, teamUnits.b.id, teamUnits.c.id])
+      expect(memberTiles().toSorted()).toEqual(
+        [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id].toSorted()
+      )
       expect(screen.getByTestId("team-editor-not-saved")).toHaveTextContent(
         "this team was not saved"
       )
@@ -591,9 +593,20 @@ describe("TeamEditorDialog", () => {
       await act(async () => {
         fireEvent.click(saveAnother())
       })
-      expect(screen.getAllByTestId("team-picker-selected-unit")).toHaveLength(3)
+      expect(memberTiles()).toHaveLength(3)
       expect(saveAnother()).toBeEnabled()
     })
+  })
+
+  it("does not focus the name field on opening, and prefixes the default name with the lane", () => {
+    renderEditor({ team: saved })
+    expect(nameInput()).not.toHaveFocus()
+    expect(screen.getByTestId("team-editor")).toHaveFocus()
+    renderEditor()
+    expect(screen.getAllByTestId("team-editor-name").at(-1)).toHaveAttribute(
+      "placeholder",
+      "α · Team 3"
+    )
   })
 
   describe("objective chips (spec: the picker filter composes with the other controls)", () => {
@@ -610,11 +623,7 @@ describe("TeamEditorDialog", () => {
         .find((element) => element.dataset.unit === teamUnits.r.id)!
       expect(resh).toHaveAttribute("data-dimmed", "true")
       tap(teamUnits.r.id)
-      expect(
-        screen
-          .getAllByTestId("team-picker-selected-unit")
-          .map((element) => element.dataset.unit)
-      ).toEqual([teamUnits.r.id])
+      expect(memberTiles()).toEqual([teamUnits.r.id])
       expect(chips()).not.toContain("Melee")
     })
 

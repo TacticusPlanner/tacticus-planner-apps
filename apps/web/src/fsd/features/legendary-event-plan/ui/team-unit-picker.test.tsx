@@ -111,12 +111,10 @@ describe("TeamUnitPicker", () => {
       within(tile(teamUnits.r.id)).getByTestId("team-picker-reserve")
     )
 
-    const selected = screen.getAllByTestId("team-picker-selected-unit")
-    expect(selected.map((element) => element.dataset.unit)).toEqual([
-      teamUnits.a.id,
-      teamUnits.r.id,
-    ])
-    expect(selected[1]).toHaveAttribute("data-reserve", "true")
+    expect(tile(teamUnits.a.id)).toHaveAttribute("data-selected", "true")
+    expect(tile(teamUnits.a.id)).not.toHaveAttribute("data-reserve")
+    expect(tile(teamUnits.r.id)).toHaveAttribute("data-reserve", "true")
+    expect(tile(teamUnits.r.id)).not.toHaveAttribute("data-selected")
   })
 
   it("searches by name and hides locked units when only unlocked is on", async () => {
@@ -356,11 +354,7 @@ describe("TeamUnitPicker", () => {
       await screen.findByText("Beth")
       fireEvent.click(chip("Melee"))
       tap(teamUnits.r.id)
-      expect(
-        screen
-          .getAllByTestId("team-picker-selected-unit")
-          .map((element) => element.dataset.unit)
-      ).toEqual([teamUnits.r.id])
+      expect(tile(teamUnits.r.id)).toHaveAttribute("data-selected", "true")
     })
 
     it("counts only unlocked units while Only unlocked is on", async () => {

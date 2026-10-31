@@ -32,7 +32,6 @@ import {
   type PickerSort,
 } from "../model/team-picker"
 import { TeamPickerObjectiveChips } from "./team-picker-objective-chips"
-import { SelectedChip } from "./team-picker-selected-chip"
 import { TeamPickerSort } from "./team-picker-sort"
 import { TeamPickerTileMarkers } from "./team-picker-tile-markers"
 import { TeamPickerUnitState } from "./team-picker-unit-state"
@@ -43,8 +42,9 @@ import { TeamPickerUnitState } from "./team-picker-unit-state"
  * the points it has left, locked styling), a name search, an "only unlocked" switch and a Points
  * left / Power sort (Power by default) that resets when the editor closes. A tap toggles membership
  * up to five; the editor refuses a sixth and pulses its count badge. A tile's secondary action
- * sets the reserve. The selected members (in position order) and the
- * reserve sit above the grid with remove buttons. With Goals Preview available, a switch
+ * sets the reserve. Selected members and the reserve are marked on their tiles (a selected unit
+ * stays listed whatever the filters say), so a second tap removes them. With Goals Preview
+ * available, a switch
  * (starting from the page's value) shows tiles at their goal targets:
  * owned state, rarity, rank, estimated clears and a preview marker. The lane's objectives sit above
  * the grid as multi-select chips, starting from `initialObjectives`, each with how many listed units
@@ -184,34 +184,6 @@ export function TeamUnitPicker({
 
   return (
     <div className="flex min-w-0 flex-col gap-3" data-testid="team-unit-picker">
-      <ul
-        className="flex min-w-0 flex-wrap gap-1.5"
-        data-testid="team-picker-selected"
-      >
-        {memberUnitIds.map((unitId) => (
-          <SelectedChip
-            key={unitId}
-            label={nameOf({ id: unitId })}
-            onRemove={() => onToggleMember(unitId)}
-            removeLabel={t("teams.picker.remove", {
-              name: nameOf({ id: unitId }),
-            })}
-            unitId={unitId}
-          />
-        ))}
-        {reserveUnitId ? (
-          <SelectedChip
-            key={`reserve-${reserveUnitId}`}
-            label={`${nameOf({ id: reserveUnitId })} · ${t("teams.reserve")}`}
-            onRemove={() => onToggleReserve(reserveUnitId)}
-            removeLabel={t("teams.picker.unsetReserve", {
-              name: nameOf({ id: reserveUnitId }),
-            })}
-            reserve
-            unitId={reserveUnitId}
-          />
-        ) : null}
-      </ul>
       {memberUnitIds.length === MAX_TEAM_MEMBERS ? (
         <p className="text-xs text-muted-foreground">
           {t("teams.picker.full")}
@@ -327,6 +299,7 @@ export function TeamUnitPicker({
                   data-dimmed={dimmed ? "true" : undefined}
                   data-locked={tile.owned === false ? "true" : undefined}
                   data-preview={previewed ? "true" : undefined}
+                  data-reserve={isReserve ? "true" : undefined}
                   data-selected={isMember ? "true" : undefined}
                   data-testid="team-picker-tile"
                   data-unit={id}

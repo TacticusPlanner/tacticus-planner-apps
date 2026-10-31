@@ -1,4 +1,5 @@
 import type { LegendaryEventTeam } from "../model/plan.types"
+import type { LegendaryEventLaneId } from "../model/types"
 
 /** The fields a team (a plan team or a run record's snapshot) is named from. */
 export type NamedTeam = Pick<
@@ -12,6 +13,21 @@ export interface LabelledObjective {
   label: string
 }
 
+const LANE_LETTERS: Record<LegendaryEventLaneId, string> = {
+  alpha: "α",
+  beta: "β",
+  gamma: "γ",
+}
+
+/** A generated team name with its lane's Greek letter in front ("α · Melee"), so the same
+ *  objectives in two lanes read apart. */
+export function withLanePrefix(
+  laneId: LegendaryEventLaneId,
+  name: string
+): string {
+  return `${LANE_LETTERS[laneId]} · ${name}`
+}
+
 /** Whether the stored name says nothing: empty, or the lane id (case-insensitive), as the V1
  *  import stored ("alpha"). */
 export function hasLaneDefaultName(
@@ -23,9 +39,10 @@ export function hasLaneDefaultName(
 
 /**
  * The name a team is shown by (spec: a team shows a readable name wherever it is named): the
- * stored name, unless it is empty or the lane id; then the covered objectives' labels in lane
- * objective order joined by " · ", else `numberedName` of its 1-based position in the lane
- * (`laneTeams` ordered or not; other lanes' teams are ignored). Display only: nothing is stored.
+ * stored name, unless it is empty or the lane id; then the lane's Greek letter and the covered
+ * objectives' labels in lane objective order, joined by " · ", else the letter and `numberedName`
+ * of its 1-based position in the lane (`laneTeams` ordered or not; other lanes' teams are
+ * ignored). Display only: nothing is stored.
  */
 export function teamDisplayName(
   team: NamedTeam,
@@ -39,9 +56,9 @@ export function teamDisplayName(
     .sort((a, b) => a.index - b.index)
     .filter((objective) => covered.has(objective.index))
     .map((objective) => objective.label)
-  if (labels.length > 0) return labels.join(" · ")
+  if (labels.length > 0) return withLanePrefix(team.laneId, labels.join(" · "))
   const before = laneTeams.filter(
     (other) => other.laneId === team.laneId && other.sortOrder < team.sortOrder
   ).length
-  return numberedName(before + 1)
+  return withLanePrefix(team.laneId, numberedName(before + 1))
 }

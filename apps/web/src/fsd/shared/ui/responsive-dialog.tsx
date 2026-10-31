@@ -18,6 +18,9 @@ type ResponsiveDialogProps = {
   /** Extra classes for the centered dialog only (at or above 768px), e.g. a fixed height. */
   desktopClassName?: string
   contentRef?: Ref<HTMLDivElement>
+  /** Called as the content takes focus on opening; `preventDefault()` keeps the default (the first
+   *  field) from taking it. */
+  onOpenAutoFocus?: (event: Event) => void
   "data-testid"?: string
 }
 
@@ -36,6 +39,7 @@ export function ResponsiveDialog({
   contentClassName,
   desktopClassName,
   contentRef,
+  onOpenAutoFocus,
   "data-testid": testId,
 }: ResponsiveDialogProps) {
   const isMobile = useIsMobile()
@@ -45,6 +49,7 @@ export function ResponsiveDialog({
       ? (event: Event) => event.preventDefault()
       : undefined,
     ref: contentRef,
+    onOpenAutoFocus,
   }
 
   return isMobile ? (

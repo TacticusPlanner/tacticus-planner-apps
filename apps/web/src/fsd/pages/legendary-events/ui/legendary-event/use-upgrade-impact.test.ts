@@ -42,7 +42,7 @@ describe("useImpactTeamName", () => {
     const { result } = renderHook(() => useImpactTeamName(utharEvent, plan), {
       wrapper: i18nWrapper(i18n),
     })
-    expect(result.current("imported")).toBe("Max 2 hits · Melee")
+    expect(result.current("imported")).toBe("α · Max 2 hits · Melee")
     expect(result.current("rush")).toBe("Melee rush")
     expect(result.current("gone")).toBe("gone")
   })

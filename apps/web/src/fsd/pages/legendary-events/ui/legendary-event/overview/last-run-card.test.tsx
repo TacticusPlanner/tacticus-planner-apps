@@ -543,6 +543,6 @@ describe("LastRunCard", () => {
       screen
         .getAllByTestId("last-run-team")
         .map((team) => team.querySelector("span")?.textContent)
-    ).toEqual(["Max 2 hits · Melee", "Melee"])
+    ).toEqual(["α · Max 2 hits · Melee", "Melee"])
   })
 })
