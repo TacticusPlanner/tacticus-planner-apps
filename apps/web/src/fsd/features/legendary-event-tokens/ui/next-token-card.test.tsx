@@ -267,7 +267,7 @@ describe("NextTokenCard", () => {
 
     expect(
       screen.getByRole("button", {
-        name: "Set how far Max 2 hits · Melee clears",
+        name: "Set how far α · Max 2 hits · Melee clears",
       })
     ).toBeInTheDocument()
   })
@@ -287,14 +287,14 @@ describe("NextTokenCard", () => {
     )
 
     expect(screen.getByTestId("next-token-view")).toHaveTextContent(
-      "Max 2 hits · Melee"
+      "α · Max 2 hits · Melee"
     )
     fireEvent.click(screen.getByTestId("token-plan-toggle"))
     expect(
       screen
         .getAllByTestId("token-plan-group")
         .map((group) => group.querySelector("h4")?.textContent)
-    ).toEqual(["Max 2 hits · Melee"])
+    ).toEqual(["α · Max 2 hits · Melee"])
   })
 
   it("reads the nothing-left state with the lane's points left", () => {
