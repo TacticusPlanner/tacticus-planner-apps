@@ -22,7 +22,6 @@ import { DesktopSectionHeader } from "./desktop-section-header"
 import { DesktopSectionNavigation } from "./desktop-section-navigation"
 import { DesktopTopBar } from "./desktop-top-bar"
 import { matchesNavPath } from "./find-active-child"
-import { NavItemIcon } from "./nav-child-icon"
 import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
@@ -309,9 +308,8 @@ function NavMenuItem({
           to={getEntryPath(item)}
         >
           <span className="relative flex shrink-0">
-            {/* The art's 20px glyph overhangs the button's 16px icon box by 2px a side, so it
-                keeps the rail's shared icon size and centre axis (see app-navigation spec). */}
-            <NavItemIcon className="-m-0.5 size-5" item={item} />
+            {/* Lucide, not game art: the rail matches its Create Goal, Sync and tour controls. */}
+            <item.icon />
             {compact ? <NavLiveDot corner item={item} /> : null}
           </span>
           <span>
