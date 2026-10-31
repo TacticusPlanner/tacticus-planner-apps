@@ -36,6 +36,7 @@ export function RaidSchedule({
   resourceUrgencyByGoalAndResource = NO_RESOURCE_URGENCY_DATA,
   resourceVisuals,
   emphasis = "material",
+  grouping = "goal",
   testId,
 }: {
   entries: RaidBreakdownEntry[]
@@ -58,16 +59,21 @@ export function RaidSchedule({
   >
   resourceVisuals: ReadonlyMap<string, DailyRaidResourceVisual>
   emphasis?: "material" | "location"
+  // "combined" (Today's Combine goals): one list with no goal headers, in the entries' own order,
+  // with `resourceProgress` keyed by resource alone.
+  grouping?: "goal" | "combined"
   testId: string
 }) {
-  const grouped = groupEntries(
-    entries,
-    goalsById,
-    resourceUrgencyByGoalAndResource
-  )
-  const bonusGrouped = bonusEntries
-    ? groupEntries(bonusEntries, goalsById, resourceUrgencyByGoalAndResource)
-    : []
+  const group = (groupedEntries: RaidBreakdownEntry[]) =>
+    grouping === "combined"
+      ? combineEntries(groupedEntries)
+      : groupEntries(
+          groupedEntries,
+          goalsById,
+          resourceUrgencyByGoalAndResource
+        )
+  const grouped = group(entries)
+  const bonusGrouped = bonusEntries ? group(bonusEntries) : []
 
   const isGroupVisible = (resources: GoalGroup["resources"]) =>
     emphasis !== "location" ||
@@ -91,7 +97,9 @@ export function RaidSchedule({
       ? resourceVisuals.get(onlyResource.resourceId)
       : undefined
     const combinesShardIdentity =
-      onlyVisual?.kind === "shard" && onlyVisual.unitId === goal.unitId
+      grouping === "goal" &&
+      onlyVisual?.kind === "shard" &&
+      onlyVisual.unitId === goal.unitId
 
     // A goal group whose every resource has been fully de-duped away (every location's real
     // attempts are exhausted) renders no cards — skip the section entirely instead of leaving an
@@ -104,7 +112,9 @@ export function RaidSchedule({
         className="space-y-2 md:space-y-3"
       >
         {header}
-        {!combinesShardIdentity ? <GoalHeader goal={goal} /> : null}
+        {grouping === "goal" && !combinesShardIdentity ? (
+          <GoalHeader goal={goal} />
+        ) : null}
         <div
           // Never wider than the group: a dashboard track can be narrower than 20rem.
           className="grid gap-2 md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))] md:gap-3"
@@ -120,7 +130,9 @@ export function RaidSchedule({
               label={resourceLabels.get(resourceId) ?? resourceId}
               locationsByBattleId={locationsByBattleId}
               progress={resourceProgress.get(
-                dailyRaidResourceKey(goal.goalId, resourceId)
+                grouping === "combined"
+                  ? resourceId
+                  : dailyRaidResourceKey(goal.goalId, resourceId)
               )}
               resourceEntries={resourceEntries}
               resourceId={resourceId}
@@ -185,6 +197,38 @@ function GoalHeader({ goal }: { goal: DailyRaidGoalViewModel }) {
       </div>
     </div>
   )
+}
+
+const COMBINED_GROUP: DailyRaidGoalViewModel = {
+  goalId: "combined",
+  priority: 0,
+  unitId: "combined" as never,
+  unitType: "Character",
+  unitLabel: "",
+  targetLabel: "",
+  goalKind: "Unlock",
+}
+
+/** Combine goals: every entry in one group, resources in the order they first appear. */
+function combineEntries(entries: RaidBreakdownEntry[]): GoalGroup[] {
+  const resources = new Map<string, RaidBreakdownEntry[]>()
+  for (const entry of entries) {
+    const resourceEntries = resources.get(entry.resourceId) ?? []
+    resourceEntries.push(entry)
+    resources.set(entry.resourceId, resourceEntries)
+  }
+  if (resources.size === 0) return []
+  return [
+    {
+      goal: COMBINED_GROUP,
+      resources: [...resources.entries()].map(
+        ([resourceId, resourceEntries]) => ({
+          resourceId,
+          entries: resourceEntries,
+        })
+      ),
+    },
+  ]
 }
 
 function groupEntries(
