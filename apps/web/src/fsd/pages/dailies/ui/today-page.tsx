@@ -35,10 +35,12 @@ export function TodayPage() {
     quickFilters: todayQuickFilterOptions(quickFilters),
   })
   const [raidsFilters] = useRaidsFilters()
-  // "Raidable only" is offered only when today's plan raids a manual battle, or while it is on.
+  // "Raidable only" is offered only when today's plan raids a manual battle, or while it is on,
+  // and never while manual battles are off (even from a shared `?quick=raidableOnly` link).
   const hiddenQuickFilters =
-    (raids.status === "ready" && raids.hasManualRaids) ||
-    quickFilters.includes("raidableOnly")
+    manualBattlesEnabled &&
+    ((raids.status === "ready" && raids.hasManualRaids) ||
+      quickFilters.includes("raidableOnly"))
       ? []
       : (["raidableOnly"] as const)
   useTodayTutorial()
