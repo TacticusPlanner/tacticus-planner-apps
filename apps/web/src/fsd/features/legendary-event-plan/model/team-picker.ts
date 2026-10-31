@@ -98,6 +98,18 @@ export function buildPickerTiles(
     )
 }
 
+/** Where the grid's divider goes (design D1): the position of the first tile not matching the
+ *  selected objectives (they follow the matching ones); null with no objective selected or when
+ *  every listed tile matches. */
+export function notMatchingStart(
+  tiles: readonly Pick<PickerTile, "matches">[],
+  selectedObjectives: readonly number[]
+): number | null {
+  if (selectedObjectives.length === 0) return null
+  const start = tiles.findIndex((tile) => !tile.matches)
+  return start === -1 ? null : start
+}
+
 /** The tiles matching the search (localized name or another of the unit's names, see
  *  `useUnitSearchNames`; case-insensitive) and the only-unlocked switch;
  *  a unit already in the team stays listed whatever the filters say. */

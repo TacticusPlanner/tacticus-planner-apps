@@ -149,6 +149,13 @@ describe("PlanWizard", () => {
     const options = screen.getAllByTestId("plan-wizard-target-option")
     expect(options[0]).toHaveAttribute("data-step", "unlock")
     expect(options[0]).toBeChecked()
+    // The search shows its progress while it runs, and the bar goes once it ends.
+    expect(
+      within(screen.getByTestId("plan-wizard-search-progress")).getByRole(
+        "progressbar",
+        { name: "Upgrade search progress" }
+      )
+    ).toBeInTheDocument()
     // The exploration runs in chunks; give it room on a busy runner.
     await waitFor(
       () =>
@@ -162,6 +169,9 @@ describe("PlanWizard", () => {
         .getAllByTestId("plan-wizard-verdict")
         .map((badge) => badge.textContent)
     ).not.toContain("Checking…")
+    expect(
+      screen.queryByTestId("plan-wizard-search-progress")
+    ).not.toBeInTheDocument()
   })
 
   it("shows every lane's roster potential under Why this verdict?", async () => {
@@ -488,6 +498,30 @@ describe("PlanWizard", () => {
     expect(
       within(alpha()).queryAllByTestId("plan-wizard-removed-team")
     ).toHaveLength(0)
+  })
+
+  it("opens Edit on the team's objectives, its depth estimate and the Power sort", async () => {
+    FARMING.status = "unavailable"
+    renderWizard(WITH_STORED_TEAM)
+    await next()
+    await next()
+    const stored = screen
+      .getAllByTestId("plan-wizard-team")
+      .find((team) => team.dataset.stored === "true")!
+    await userEvent.click(within(stored).getByTestId("plan-wizard-team-edit"))
+    await screen.findByTestId("team-editor-name")
+    const chips = screen.getAllByTestId("team-picker-objective-chip")
+    expect(
+      chips.map((chip) => chip.getAttribute("aria-pressed") === "true")
+    ).toEqual(chips.map((_, index) => index === 0))
+    expect(screen.getByTestId("team-picker-sort-power")).toBeEnabled()
+    expect(screen.getByTestId("team-picker-sort-power")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(
+      screen.getByTestId("team-editor-summary-depth")
+    ).not.toHaveTextContent("not set")
   })
 
   it("sends an edited stored team's name with its update", async () => {

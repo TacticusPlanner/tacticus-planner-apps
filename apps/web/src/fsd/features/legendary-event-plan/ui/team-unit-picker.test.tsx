@@ -340,6 +340,15 @@ describe("TeamUnitPicker", () => {
         within(tile(teamUnits.r.id)).getByTestId("team-picker-toggle")
       ).toHaveAccessibleDescription("Does not satisfy Melee")
       expect(tile(teamUnits.a.id)).not.toHaveAttribute("data-dimmed")
+      // A divider separates the matching units from the others.
+      const divider = screen.getByTestId("team-picker-not-matching-divider")
+      expect(divider).toHaveTextContent("Not matching the selected objectives")
+      expect(divider.previousElementSibling).toBe(tile(teamUnits.b.id))
+      expect(divider.nextElementSibling).toBe(tile(teamUnits.r.id))
+      fireEvent.click(chip("Melee"))
+      expect(
+        screen.queryByTestId("team-picker-not-matching-divider")
+      ).not.toBeInTheDocument()
     })
 
     it("keeps a dimmed unit selectable", async () => {

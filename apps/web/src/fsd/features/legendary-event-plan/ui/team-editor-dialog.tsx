@@ -66,8 +66,8 @@ import { TeamUnitPicker } from "./team-unit-picker"
  * conflict (the plan was reloaded, this save was not applied) the dialog says so.
  *
  * The body reads Name, then a Members row (the count badge, which pulses on a refused sixth
- * member, and the Clear depth field), then the picker; a suggestion's objectives start selected
- * as the picker's chips.
+ * member, and the Clear depth field), then the picker; a suggestion's (or the edited team's)
+ * objectives start selected as the picker's chips.
  *
  * The footer stays in view while the body scrolls: the member count, the covered objectives as
  * read-only chips (one already cleared in every battle 1..the draft's depth carries a cleared
@@ -119,7 +119,8 @@ export function TeamEditorDialog({
   estimateTeam?: (memberUnitIds: readonly string[]) => ClearEstimate | null
   /** A new team's members, in order (a team suggestion); ignored when editing a team. */
   initialMemberUnitIds?: readonly string[]
-  /** The picker's objective chips selected on opening (a team suggestion's objectives). */
+  /** The picker's objective chips selected on opening (a team suggestion's objectives); an edited
+   *  team's own objectives when absent. */
   initialObjectives?: readonly number[]
   goalsPreview?: PickerGoalsPreview
   /** A unit's goal badge lines; absent or empty shows no badge. */
@@ -282,7 +283,7 @@ export function TeamEditorDialog({
               estimates={estimates}
               goalLines={goalLines}
               goalsPreview={goalsPreview}
-              initialObjectives={initialObjectives}
+              initialObjectives={initialObjectives ?? team?.objectiveIndexes}
               lane={lane}
               memberUnitIds={draft.memberUnitIds}
               onToggleMember={handleToggleMember}

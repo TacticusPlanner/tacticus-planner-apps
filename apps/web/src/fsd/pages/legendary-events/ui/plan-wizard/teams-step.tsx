@@ -7,11 +7,16 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type {
-  LegendaryEventLaneId,
-  LegendaryEventTeam,
+import {
+  teamClearEstimate,
+  unitClearEstimate,
+  type LegendaryEventLaneId,
+  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
-import { TeamEditorDialog } from "@/features/legendary-event-plan"
+import {
+  TeamEditorDialog,
+  type PickerEstimates,
+} from "@/features/legendary-event-plan"
 import { EntityIcon } from "@/shared/ui"
 
 import { teamSwaps, type TeamSwap } from "./plan-evaluator"
@@ -91,10 +96,30 @@ export function TeamsStep({
     ? inputs.lanes.find((entry) => entry.laneId === editor.laneId)
     : undefined
   const firstRun = draft.runs[0] ?? 1
+  const runRoster = evaluation.rosters.get(firstRun)
   const editorRoster = useMemo(
-    () => [...(evaluation.rosters.get(firstRun)?.values() ?? [])],
-    [evaluation.rosters, firstRun]
+    () => [...(runRoster?.values() ?? [])],
+    [runRoster]
   )
+  // The editor estimates on the first run's planned roster, as the team rows do, so its depth
+  // and the picker's clears and Power sort match what the step shows.
+  const battlePowers = editorLane?.battlePowers ?? []
+  const estimateRoster = battlePowers.length > 0 ? runRoster : undefined
+  const estimateTeam = estimateRoster
+    ? (memberUnitIds: readonly string[]) =>
+        teamClearEstimate(
+          memberUnitIds,
+          battlePowers,
+          estimateRoster,
+          inputs.config
+        )
+    : undefined
+  const pickerEstimates: PickerEstimates | undefined = estimateRoster && {
+    clearsOf: (unitId) =>
+      unitClearEstimate(unitId, battlePowers, estimateRoster, inputs.config)
+        ?.depth ?? null,
+    config: inputs.config,
+  }
 
   return (
     <section className="flex flex-col gap-4" data-testid="plan-wizard-teams">
@@ -258,6 +283,8 @@ export function TeamsStep({
       </div>
       {editor && editorLane ? (
         <TeamEditorDialog
+          estimateTeam={estimateTeam}
+          estimates={pickerEstimates}
           key={editor.opening}
           lane={editorLane.lane}
           laneId={editor.laneId}
@@ -278,6 +305,7 @@ export function TeamsStep({
           }}
           onlyUnlockedDefault
           open
+          progress={editorLane.progress}
           roster={editorRoster}
           run={firstRun}
           team={editor.team ? asStoredTeam(editor.team) : undefined}

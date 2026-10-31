@@ -57,12 +57,12 @@ export interface RecommendUpgradesInput {
 }
 
 /** One step of the search: after each candidate chain (so a driver can slice the work), and after
- *  each round with the recommendations so far. */
+ *  each round with the recommendations so far. A progress step carries how far the search is
+ *  through its rounds (0..1, counting the cap): the current round's share grows as its candidate
+ *  units are scored, so a search that stops early before the cap jumps to done. */
 export type RecommendUpgradesStep =
-  | { kind: "progress" }
+  | { kind: "progress"; fraction: number; round: number; cap: number }
   | { kind: "round"; recommendations: UpgradeRecommendation[] }
-
-const PROGRESS: RecommendUpgradesStep = { kind: "progress" }
 
 export interface RecommendUpgradesResult {
   baseline: PlanEvaluation
@@ -169,7 +169,14 @@ export function* recommendUpgrades(
       stepsByUnit.get(unitId)?.at(-1)?.unit ??
       inputs.roster.find((unit) => unit.unitId === unitId)
     let best: Scored | null = null
-    for (const unitId of candidateUnits(inputs, current, lastRoster)) {
+    const candidates = candidateUnits(inputs, current, lastRoster)
+    for (const [at, unitId] of candidates.entries()) {
+      const progress: RecommendUpgradesStep = {
+        kind: "progress",
+        fraction: (recommendations.length + at / candidates.length) / cap,
+        round: recommendations.length + 1,
+        cap,
+      }
       const earlier = stepsByUnit.get(unitId) ?? []
       if (earlier.length >= MAX_STEPS_PER_UNIT) continue
       const before =
@@ -195,7 +202,7 @@ export function* recommendUpgrades(
         if (candidate && (!best || better(candidate, best, input))) {
           best = candidate
         }
-        yield PROGRESS
+        yield progress
       }
     }
     if (!best) break

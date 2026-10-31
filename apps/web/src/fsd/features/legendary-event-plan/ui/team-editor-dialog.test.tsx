@@ -627,6 +627,12 @@ describe("TeamEditorDialog", () => {
       expect(chip("Min 5 hits")).toHaveAttribute("aria-pressed", "false")
     })
 
+    it("starts from an edited team's objectives", () => {
+      renderEditor({ team: saved })
+      expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")
+      expect(chip("Min 5 hits")).toHaveAttribute("aria-pressed", "false")
+    })
+
     it("resets the selection when the editor is closed and reopened", () => {
       const { reopen } = renderEditor()
       fireEvent.click(chip("Melee"))
