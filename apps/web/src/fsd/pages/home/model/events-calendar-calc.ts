@@ -47,17 +47,18 @@ function startOfLocalDay(date: Date): Date {
   return start
 }
 
-/** Local midnight of the Monday on or before `date` (the month grid's first column). */
-function startOfLocalWeek(date: Date): Date {
+/** Local midnight of the week's first day on or before `date` (the month grid's first column).
+ *  `firstDayOfWeek` is numbered like `Date#getDay` (0 = Sunday, 1 = Monday …). */
+function startOfLocalWeek(date: Date, firstDayOfWeek: number): Date {
   const start = startOfLocalDay(date)
-  return addLocalDays(start, -((start.getDay() + 6) % 7))
+  return addLocalDays(start, -((start.getDay() - firstDayOfWeek + 7) % 7))
 }
 
 export type EventsCalendarRange = {
   /** The period the view is about: 7 days from today's offset, or one calendar month. */
   rangeStart: Date
   rangeEnd: Date
-  /** The days the grid draws: the range itself for a week, whole Monday-to-Sunday weeks for a month. */
+  /** The days the grid draws: the range itself for a week, whole weeks (from the device's first day of the week) for a month. */
   gridStart: Date
   gridEnd: Date
 }
@@ -69,7 +70,9 @@ export type EventsCalendarRange = {
 export function resolveEventsCalendarRange(
   view: EventsCalendarView,
   offset: number,
-  today: Date
+  today: Date,
+  /** The device's first day of the week, numbered like `Date#getDay`; Monday by default. */
+  firstDayOfWeek = 1
 ): EventsCalendarRange {
   if (view === "week") {
     const rangeStart = addLocalDays(startOfLocalDay(today), offset * 7)
@@ -86,9 +89,9 @@ export function resolveEventsCalendarRange(
   return {
     rangeStart,
     rangeEnd,
-    gridStart: startOfLocalWeek(rangeStart),
-    // The Monday on or after the month's end.
-    gridEnd: startOfLocalWeek(addLocalDays(rangeEnd, 6)),
+    gridStart: startOfLocalWeek(rangeStart, firstDayOfWeek),
+    // The first week day on or after the month's end.
+    gridEnd: startOfLocalWeek(addLocalDays(rangeEnd, 6), firstDayOfWeek),
   }
 }
 
@@ -545,7 +548,7 @@ export function buildEventsCalendarLanes(
   )
 }
 
-/** The month grid: one row per Monday-to-Sunday week from `gridStart`, each with its own Gantt lanes. */
+/** The month grid: one row per week from `gridStart`, each with its own Gantt lanes. */
 export function buildEventsCalendarWeeks(
   entries: readonly RawEventsCalendarEntry[],
   definitionsById: ReadonlyMap<string, RawEventDefinition>,

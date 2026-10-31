@@ -714,6 +714,20 @@ describe("resolveEventsCalendarRange", () => {
     expect(toIsoDate(range.gridEnd)).toBe("2026-06-01")
   })
 
+  it("pads the month to the device's first day of the week (Sunday)", () => {
+    const range = resolveEventsCalendarRange("month", 0, today, 0)
+
+    expect(toIsoDate(range.gridStart)).toBe("2026-09-27") // Sunday
+    expect(toIsoDate(range.gridEnd)).toBe("2026-11-01") // Sunday after the 31st (Saturday)
+  })
+
+  it("pads the month to the device's first day of the week (Saturday)", () => {
+    const range = resolveEventsCalendarRange("month", 0, today, 6)
+
+    expect(toIsoDate(range.gridStart)).toBe("2026-09-26") // Saturday
+    expect(toIsoDate(range.gridEnd)).toBe("2026-11-07") // Saturday after the 31st
+  })
+
   it("steps across a year boundary", () => {
     const range = resolveEventsCalendarRange("month", 3, today)
 

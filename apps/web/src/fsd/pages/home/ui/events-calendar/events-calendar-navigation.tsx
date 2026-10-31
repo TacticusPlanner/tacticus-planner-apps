@@ -11,6 +11,7 @@ import type {
   EventsCalendarView,
   EventsCalendarViewModel,
 } from "../../model/events-calendar.types"
+import { useDateLocale } from "@/shared/lib"
 
 const VIEWS: readonly EventsCalendarView[] = ["week", "month"]
 
@@ -32,22 +33,23 @@ export function EventsCalendarNavigation({
     | "goToToday"
   >
 }) {
-  const { t, i18n } = useTranslation("events")
+  const { t } = useTranslation("events")
+  const dateLocale = useDateLocale()
   const rangeFormatter = useMemo(
     () =>
-      new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+      new Intl.DateTimeFormat(dateLocale, {
         month: "short",
         day: "numeric",
       }),
-    [i18n.resolvedLanguage]
+    [dateLocale]
   )
   const monthFormatter = useMemo(
     () =>
-      new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+      new Intl.DateTimeFormat(dateLocale, {
         month: "long",
         year: "numeric",
       }),
-    [i18n.resolvedLanguage]
+    [dateLocale]
   )
   const lastVisibleDay = new Date(calendar.rangeEnd.getTime() - 1)
   const isMonth = calendar.view === "month"

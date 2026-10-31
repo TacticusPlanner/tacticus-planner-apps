@@ -1,5 +1,4 @@
 import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
 
 import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
 import type {
@@ -7,6 +6,7 @@ import type {
   EventsCalendarDay,
 } from "../../../model/events-calendar.types"
 import { EventLaneRow } from "./event-lane-row"
+import { useDateLocale } from "@/shared/lib"
 
 // A Gantt-style grid, not a day-column grid: a header row of day labels, then one row per lane, each
 // entry positioned as a bar spanning the day-columns it covers (one horizontal bar per event, stacked
@@ -18,14 +18,14 @@ export function EventsCalendarDesktop({
   days: EventsCalendarDay[]
   lanes: EventLane[]
 }) {
-  const { i18n } = useTranslation()
+  const dateLocale = useDateLocale()
   const weekdayFormatter = useMemo(
-    () => new Intl.DateTimeFormat(i18n.resolvedLanguage, { weekday: "short" }),
-    [i18n.resolvedLanguage]
+    () => new Intl.DateTimeFormat(dateLocale, { weekday: "short" }),
+    [dateLocale]
   )
   const dayFormatter = useMemo(
-    () => new Intl.DateTimeFormat(i18n.resolvedLanguage, { day: "numeric" }),
-    [i18n.resolvedLanguage]
+    () => new Intl.DateTimeFormat(dateLocale, { day: "numeric" }),
+    [dateLocale]
   )
   const todayIso = toIsoDate(new Date())
 

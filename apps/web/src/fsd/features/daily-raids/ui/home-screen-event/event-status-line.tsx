@@ -4,7 +4,7 @@ import { gameMenuIcon } from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { formatRelativeTime } from "@/shared/lib"
+import { formatRelativeTime, useDateLocale } from "@/shared/lib"
 import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import {
@@ -29,9 +29,10 @@ export function EventStatusLine({
   instance: HomeScreenEventInstance<HomeScreenEventEntry> | null
 }) {
   const { t, i18n } = useTranslation(["dailies"])
+  const dateLocale = useDateLocale()
   const eventName = useHomeScreenEventName()
   const formatDate = (ms: number) =>
-    new Date(ms).toLocaleString(i18n.language, {
+    new Date(ms).toLocaleString(dateLocale, {
       dateStyle: "medium",
       timeStyle: "short",
     })

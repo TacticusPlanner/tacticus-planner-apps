@@ -7,7 +7,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { formatEventCountdown } from "@/shared/lib"
+import { formatEventCountdown, useDateLocale } from "@/shared/lib"
 import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import type { QuestInstanceState } from "../model/use-quest-instance"
@@ -66,6 +66,7 @@ export function QuestHeader({
   picker: ReactNode
 }) {
   const { t, i18n } = useTranslation(["quest", "characters"])
+  const dateLocale = useDateLocale()
 
   if (state.status === "loading" && !browsing) {
     return (
@@ -105,7 +106,7 @@ export function QuestHeader({
   const icon = heroName ? characterIcon(heroId as UnitId) : undefined
   const number = new Intl.NumberFormat(i18n.language)
   const formatDate = (ms: number) =>
-    new Date(ms).toLocaleDateString(i18n.language, { dateStyle: "medium" })
+    new Date(ms).toLocaleDateString(dateLocale, { dateStyle: "medium" })
   const nowMs = state.status === "ready" ? state.nowMs : 0
 
   return (

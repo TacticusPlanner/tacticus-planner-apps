@@ -6,6 +6,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { EventTimingLines } from "../shared/event-timing-lines"
 import type { HubCardViewModel } from "./legendary-events-hub.view-model"
+import { useDateLocale } from "@/shared/lib"
 
 /** One hub row: portrait, localized name and timing, every run's date (guessed when not
  *  announced) for an unfinished event, plus the synced run, tokens and points for the active
@@ -20,11 +21,14 @@ export function LegendaryEventCard({
   testId?: string
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
+  const dateLocale = useDateLocale()
   const number = new Intl.NumberFormat(i18n.language)
   const portrait = characterIcon(card.eventId as UnitId)
   const { synced } = card
-  const short = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium" })
-  const month = new Intl.DateTimeFormat(i18n.language, {
+  const short = new Intl.DateTimeFormat(dateLocale, {
+    dateStyle: "medium",
+  })
+  const month = new Intl.DateTimeFormat(dateLocale, {
     month: "short",
     year: "numeric",
   })

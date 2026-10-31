@@ -2,7 +2,11 @@ import { useCallback, useMemo, useState } from "react"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 import { selectUpcomingEvents } from "@workspace/game-catalog/queries"
 
-import { combineReadStates, usePersistedSelection } from "@/shared/lib"
+import {
+  combineReadStates,
+  getDeviceFirstDayOfWeek,
+  usePersistedSelection,
+} from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import {
@@ -40,7 +44,13 @@ export function useEventsCalendar(): EventsCalendarViewModel {
   )
   const [offset, setOffset] = useState(0)
   const { rangeStart, rangeEnd, gridStart, gridEnd } = useMemo(
-    () => resolveEventsCalendarRange(view, offset, new Date()),
+    () =>
+      resolveEventsCalendarRange(
+        view,
+        offset,
+        new Date(),
+        getDeviceFirstDayOfWeek()
+      ),
     [view, offset]
   )
 

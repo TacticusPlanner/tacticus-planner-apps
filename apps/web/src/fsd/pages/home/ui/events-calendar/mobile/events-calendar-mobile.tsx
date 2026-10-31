@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useMinuteNow } from "@/entities/legendary-event"
-import { formatEventCountdown } from "@/shared/lib"
+import { formatEventCountdown, useDateLocale } from "@/shared/lib"
 
 import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
 import type { EventsAgenda } from "../../../model/events-calendar.types"
@@ -13,14 +13,15 @@ import { EventAgendaRow, OngoingEventTile } from "../event-entry-card"
 // events — so a week-long event appears at most twice instead of on every day it spans.
 export function EventsCalendarMobile({ agenda }: { agenda: EventsAgenda }) {
   const { t, i18n } = useTranslation("events")
+  const dateLocale = useDateLocale()
   const dayHeaderFormatter = useMemo(
     () =>
-      new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+      new Intl.DateTimeFormat(dateLocale, {
         weekday: "long",
         month: "short",
         day: "numeric",
       }),
-    [i18n.resolvedLanguage]
+    [dateLocale]
   )
   // Ticks each minute so the Ongoing countdowns stay current.
   const nowMs = useMinuteNow()
