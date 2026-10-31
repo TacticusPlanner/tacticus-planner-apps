@@ -678,7 +678,13 @@
         "untracked": "Chaque jeton compte : {{missions}}",
         "step": "{{mission}} {{total}}/{{needed}}",
         "completes": "Mission terminée · {{mission}}",
-        "none": "Aucune mission ouverte dans cette manche"
+        "none": "Aucune mission ouverte dans cette manche",
+        "tracks": {
+          "regular": "Missions normales",
+          "premium": "Missions premium"
+        },
+        "doneCount": "{{done}}/{{total}} terminées",
+        "completed": "Terminée"
       }
     },
     "forecast": {

@@ -38,6 +38,8 @@ export interface RunMissionSummary {
   missions: RunMissionStatus[]
   /** Open missions every token progresses (`anyBattle`, `winWithoutSummon`). */
   untracked: LegendaryEventMissionRef[]
+  /** Missions the player ticked Done for this run; the order never counts them. */
+  completed: LegendaryEventMissionRef[]
 }
 
 export interface MissionOrder {
@@ -54,6 +56,8 @@ export interface MissionOrderInput {
   sections: readonly Pick<RunTokenSection, "run" | "start" | "count">[]
   /** A run's open missions (`openMissions` for that run). */
   missionsOf: (run: LegendaryEventRun) => readonly LegendaryEventMissionRef[]
+  /** A run's missions ticked Done (`completedMissions` for that run). */
+  completedOf?: (run: LegendaryEventRun) => readonly LegendaryEventMissionRef[]
   membersOf: TokenMissionsInput["membersOf"]
   enemiesOf: TokenMissionsInput["enemiesOf"]
 }
@@ -140,6 +144,7 @@ export function missionOrder(input: MissionOrderInput): MissionOrder {
       untracked: open.filter((entry) =>
         UNTRACKED_MISSION_KINDS.has(entry.mission.kind)
       ),
+      completed: [...(input.completedOf?.(section.run) ?? [])],
     })
   }
 

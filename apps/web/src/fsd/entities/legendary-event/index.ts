@@ -114,6 +114,7 @@ export {
 export {
   UNTRACKED_MISSION_KINDS,
   battleEnemies,
+  completedMissions,
   eventMissions,
   openMissions,
   tokenMissionAmount,

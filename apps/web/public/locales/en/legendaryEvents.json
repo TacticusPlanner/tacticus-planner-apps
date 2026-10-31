@@ -678,7 +678,13 @@
         "untracked": "Every token counts: {{missions}}",
         "step": "{{mission}} {{total}}/{{needed}}",
         "completes": "Mission done · {{mission}}",
-        "none": "No open missions this run"
+        "none": "No open missions this run",
+        "tracks": {
+          "regular": "Regular missions",
+          "premium": "Premium missions"
+        },
+        "doneCount": "{{done}}/{{total}} done",
+        "completed": "Done"
       }
     },
     "forecast": {

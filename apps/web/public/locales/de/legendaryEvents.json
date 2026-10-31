@@ -678,7 +678,13 @@
         "untracked": "Jeder Token zählt: {{missions}}",
         "step": "{{mission}} {{total}}/{{needed}}",
         "completes": "Mission erledigt · {{mission}}",
-        "none": "Keine offenen Missionen in diesem Lauf"
+        "none": "Keine offenen Missionen in diesem Lauf",
+        "tracks": {
+          "regular": "Reguläre Missionen",
+          "premium": "Premium-Missionen"
+        },
+        "doneCount": "{{done}}/{{total}} erledigt",
+        "completed": "Erledigt"
       }
     },
     "forecast": {
