@@ -277,7 +277,7 @@ describe("DesktopShell", () => {
     ).toHaveAttribute("aria-expanded", "false")
   })
 
-  it("lists the Plan section children as text-only rows with no count badge", () => {
+  it("lists the Plan section children with an icon each and no count badge", () => {
     const planItem = navItems.find((item) => item.path === "/plan")!
     render(
       <MemoryRouter initialEntries={["/plan/goals"]}>
@@ -297,7 +297,9 @@ describe("DesktopShell", () => {
     const menu = screen.getByTestId("desktop-section-navigation")
     const links = within(menu).getAllByRole("link")
     expect(links).toHaveLength(4)
-    links.forEach((link) => expect(link.querySelector("svg")).toBeNull())
+    links.forEach((link) =>
+      expect(link.querySelector("svg, img")).not.toBeNull()
+    )
     expect(within(menu).queryByTestId("section-goals-count")).toBeNull()
     // The panel is a sibling column of the page header's column, not nested under the header.
     const header = screen.getByRole("banner")
@@ -1022,7 +1024,7 @@ describe("DesktopShell", () => {
     )
   })
 
-  it("lists Events after My Game and before Guild, entering through the section root", () => {
+  it("lists Legendary Events after Dailies and before Guild, entering through the section root", () => {
     render(
       <MemoryRouter initialEntries={["/home"]}>
         <TooltipProvider>
@@ -1037,7 +1039,7 @@ describe("DesktopShell", () => {
         .querySelectorAll<HTMLAnchorElement>('[data-testid^="desktop-nav-"]')
     ).map((link) => link.dataset.testid)
     expect(links.indexOf("desktop-nav-legendary-events")).toBe(
-      links.indexOf("desktop-nav-my-game") + 1
+      links.indexOf("desktop-nav-dailies") + 1
     )
     expect(links.indexOf("desktop-nav-guild")).toBe(
       links.indexOf("desktop-nav-legendary-events") + 1

@@ -8,7 +8,7 @@ Gives players a single `/dailies` entry point for day-to-day play activities (ra
 
 ### Requirement: Dailies primary navigation
 
-The system SHALL present a `/dailies` section with 5 primary tabs, in order Raids, HSE, HRE, Quest, Guild Raids, in section tabs, the desktop section menu and navigation search, and SHALL land the user on the Raids tab by default. Onslaught, Salvage Run, and Arena SHALL NOT appear in Dailies navigation (section tabs, desktop section menu, or navigation search).
+The system SHALL present a `/dailies` section with 5 primary tabs, in order Raids, HSE, HRE, Quests, Guild Raids, in section tabs, the desktop section menu and navigation search, and SHALL land the user on the Raids tab by default. Onslaught, Salvage Run, and Arena SHALL NOT appear in Dailies navigation (section tabs, desktop section menu, or navigation search).
 
 #### Scenario: Opening Dailies lands on Raids
 
@@ -135,7 +135,7 @@ The HRE tab SHALL show the shared live indicator while an HRE is running, in the
 
 ### Requirement: Dailies has a Quest tab
 
-The `/dailies` section SHALL include a Quest tab, labelled with the localized name of Quest Event, at `/dailies/quest`. The tab SHALL appear in section tabs, the desktop section menu and navigation search, and SHALL be shown whether or not a quest is running.
+The `/dailies` section SHALL include a Quest tab, labelled "Quests" (localized), at `/dailies/quest`. The tab SHALL appear in section tabs, the desktop section menu and navigation search, and SHALL be shown whether or not a quest is running.
 
 #### Scenario: Direct navigation
 

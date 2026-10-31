@@ -133,12 +133,19 @@ describe("filterNavigationItems", () => {
 })
 
 describe("navItems", () => {
-  it("places Legendary Events after My Game and before Guild", () => {
-    const paths = navItems.map((item) => item.path)
-    expect(paths.indexOf("/legendary-events")).toBe(
-      paths.indexOf("/my-game") + 1
-    )
-    expect(paths.indexOf("/guild")).toBe(paths.indexOf("/legendary-events") + 1)
+  it("orders the sections like V1: progress, planning, then the Library", () => {
+    const paths = navItems
+      .map((item) => item.path)
+      .filter((path) => path !== "/ui-kit")
+    expect(paths).toEqual([
+      "/home",
+      "/my-game",
+      "/plan",
+      "/dailies",
+      "/legendary-events",
+      "/guild",
+      "/library",
+    ])
   })
 
   it("lists My Game's children with Collection first", () => {

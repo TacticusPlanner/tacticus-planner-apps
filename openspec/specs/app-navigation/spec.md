@@ -457,17 +457,17 @@ At viewport widths of at least 768px, the application SHALL show a slim global b
 
 ### Requirement: Persistent desktop section menu lists the active section's child pages
 
-On desktop, a section with one or more child pages SHALL expose them in a persistent full-height column, from just under the global bar to the bottom of the viewport, beside the page content. The page header (title or breadcrumb, description, page tour) and route content SHALL sit in the content column to the right of the panel, so an expanded panel pushes the page header right instead of the header spanning above the panel; when the panel is collapsed or absent the header spans the full content width. The column's header row SHALL show the section label at the left and the collapse icon at the right, the whole row being the collapse button, with the same top padding as the page header so the section label and page title share a vertical center. Below it, child links SHALL appear in navigation order, visibly mark the active child including nested detail routes. Child rows SHALL be text-only, with no icons or counts. Clicking a child SHALL navigate directly to its route without closing the menu. Collapsing the menu SHALL remove the whole column and release its width - leaving no separate floating control - and the page header SHALL provide the reopen button (see the header title requirement). A childless destination SHALL render neither an empty section column nor any toggle. Main rail entries SHALL use label tooltips rather than child flyouts and SHALL retain existing section-entry resolution.
+On desktop, a section with one or more child pages SHALL expose them in a persistent full-height column, from just under the global bar to the bottom of the viewport, beside the page content. The page header (title or breadcrumb, description, page tour) and route content SHALL sit in the content column to the right of the panel, so an expanded panel pushes the page header right instead of the header spanning above the panel; when the panel is collapsed or absent the header spans the full content width. The column's header row SHALL show the section label at the left and the collapse icon at the right, the whole row being the collapse button, with the same top padding as the page header so the section label and page title share a vertical center. Below it, child links SHALL appear in navigation order, visibly mark the active child including nested detail routes. Each child row SHALL lead with its icon (see the navigation icons requirement) and SHALL show no counts. Clicking a child SHALL navigate directly to its route without closing the menu. Collapsing the menu SHALL remove the whole column and release its width - leaving no separate floating control - and the page header SHALL provide the reopen button (see the header title requirement). A childless destination SHALL render neither an empty section column nor any toggle. Main rail entries SHALL use label tooltips rather than child flyouts and SHALL retain existing section-entry resolution.
 
 #### Scenario: Sibling pages stay visible
 
 - **WHEN** a user visits Plan with its section menu expanded and selects Schedule
-- **THEN** Goals, Projects, Insights, and Schedule remain visible as text-only rows and Schedule becomes active
+- **THEN** Goals, Projects, Insights, and Schedule remain visible and Schedule becomes active
 
-#### Scenario: Section rows are text-only
+#### Scenario: Section rows lead with an icon
 
 - **WHEN** a signed-in user views the Plan section menu
-- **THEN** Goals, Projects, Insights, and Schedule render as plain text rows with no icons and no count badge
+- **THEN** Goals, Projects, Insights, and Schedule each render with a leading icon and no count badge
 
 #### Scenario: Rail tools sit at the top of the rail
 
@@ -594,7 +594,7 @@ Assumptions:
 
 ### Requirement: Events is a top-level authenticated section with Legendary Events as its child
 
-The navigation model SHALL include a top-level **Legendary Events** section at `/legendary-events`, authenticated-only, with `mobilePlacement: "menu"` and a calendar-style icon, in the position the Events section held (after My Game, before Guild). Its children SHALL be resolved at runtime: first the static child **All events** at `/legendary-events`, which is the landing page; then one child per catalog Legendary Event in hub order (active by run start, then upcoming, then archived alphabetically), labelled with the event unit's localized name and carrying the unit's portrait, at `/legendary-events/:eventId`, with a description naming its lifecycle (active, upcoming or archived) followed by its run date in the device timezone: "Ends <date>" for an active event (the current run's end), "Starts <date>" for an upcoming one (the next run's start), and no date for an archived event or one whose start is to be announced; the page header shows this description. While the catalog read is pending or fails only All events SHALL be listed. The old `/events`, `/events/legendary-events` and `/events/legendary-events/:eventId` routes SHALL NOT exist and SHALL NOT redirect; they fall through to the app's not-found handling. The section and its static child SHALL carry localized labels and descriptions in every supported locale, be indexed by navigation search, and follow the existing header, breadcrumb, document-title and last-visited-child rules for a section with children; a dynamic child SHALL be indexed by its localized name. The general navigation tour SHALL mention the Legendary Events section on desktop and mobile. `/legendary-events/:eventId` SHALL activate that event's child whatever its lifecycle: active-child resolution picks the matching child with the most specific path, so All events never shadows an event child.
+The navigation model SHALL include a top-level **Legendary Events** section at `/legendary-events`, authenticated-only, with `mobilePlacement: "menu"`, after Dailies and before Guild (see the section order requirement). Its children SHALL be resolved at runtime: first the static child **All Events** at `/legendary-events`, which is the landing page; then one child per catalog Legendary Event in hub order (active by run start, then upcoming, then archived alphabetically), labelled with the event unit's localized name and carrying the unit's portrait, at `/legendary-events/:eventId`, with a description naming its lifecycle (active, upcoming or archived) followed by its run date in the device timezone: "Ends <date>" for an active event (the current run's end), "Starts <date>" for an upcoming one (the next run's start), and no date for an archived event or one whose start is to be announced; the page header shows this description. While the catalog read is pending or fails only All Events SHALL be listed. The old `/events`, `/events/legendary-events` and `/events/legendary-events/:eventId` routes SHALL NOT exist and SHALL NOT redirect; they fall through to the app's not-found handling. The section and its static child SHALL carry localized labels and descriptions in every supported locale, be indexed by navigation search, and follow the existing header, breadcrumb, document-title and last-visited-child rules for a section with children; a dynamic child SHALL be indexed by its localized name. The general navigation tour SHALL mention the Legendary Events section on desktop and mobile. `/legendary-events/:eventId` SHALL activate that event's child whatever its lifecycle: active-child resolution picks the matching child with the most specific path, so All Events never shadows an event child.
 
 #### Scenario: Desktop sidebar lists Events
 
@@ -607,22 +607,22 @@ The navigation model SHALL include a top-level **Legendary Events** section at `
 - **WHEN** they activate Legendary Events in the desktop sidebar again
 - **THEN** they land on `/legendary-events/astarLysander`, per the last-visited-child rule
 
-#### Scenario: Secondary nav lists active events then All events
+#### Scenario: Secondary nav lists active events then All Events
 
 - **GIVEN** Uthar and Farsight are active, Lysander is upcoming and Dante is archived
 - **WHEN** a signed-in user opens the Legendary Events section on desktop or the mobile section tabs
-- **THEN** the children read All events, Uthar, Farsight, Lysander, Dante (each event with the unit's portrait, in hub order), with Uthar's description naming it active, Lysander's upcoming and Dante's archived
+- **THEN** the children read All Events, Uthar, Farsight, Lysander, Dante (each event with the unit's portrait, in hub order), with Uthar's description naming it active, Lysander's upcoming and Dante's archived
 
 #### Scenario: No active event
 
 - **GIVEN** no event is active and Lysander is upcoming
 - **WHEN** the section's children render
-- **THEN** the children read All events then Lysander; while the catalog read is pending or failed only All events is listed
+- **THEN** the children read All Events then Lysander; while the catalog read is pending or failed only All Events is listed
 
 #### Scenario: Mobile drawer lists Events, bottom bar does not
 
 - **WHEN** a signed-in mobile user opens the Menu drawer
-- **THEN** Legendary Events and its All events child are listed with descriptions, and the bottom bar is unchanged
+- **THEN** Legendary Events and its All Events child are listed with descriptions, and the bottom bar is unchanged
 
 #### Scenario: Anonymous users do not see Events
 
@@ -633,7 +633,7 @@ The navigation model SHALL include a top-level **Legendary Events** section at `
 
 - **GIVEN** Uthar is active and Dante is archived
 - **WHEN** a user types "uthar" or "dante" into navigation search
-- **THEN** the event appears under Legendary Events and selecting it opens its `/legendary-events/:eventId` page; typing "legendary" finds All events
+- **THEN** the event appears under Legendary Events and selecting it opens its `/legendary-events/:eventId` page; typing "legendary" finds All Events
 
 #### Scenario: Old routes are gone
 
@@ -643,7 +643,7 @@ The navigation model SHALL include a top-level **Legendary Events** section at `
 #### Scenario: Detail route keeps the child active
 
 - **WHEN** a user is on `/legendary-events/votanUthar` and Uthar is active, or on `/legendary-events/bloodDante` and Dante is archived
-- **THEN** that event's child is the active tab, and on `/legendary-events` All events is active
+- **THEN** that event's child is the active tab, and on `/legendary-events` All Events is active
 
 #### Scenario: The event header names the next run date
 
@@ -723,25 +723,25 @@ A navigation child SHALL be able to require sign-in independently of its section
 - **WHEN** they sign in
 - **THEN** My Game lists Collection, Onslaught, Campaigns and Campaign Events without a page reload
 
-### Requirement: The Legendary Events section has Master table and Tier List children
+### Requirement: The Legendary Events section has Master Table and Tier List children
 
-The Legendary Events section SHALL list two more static children, **Master table** at `/legendary-events/master-table` and **Tier List** at `/legendary-events/tier-list`, in that order directly after All events and before the per-event children, each with a localized label and description in every supported locale, an icon (table-style and ranking-style), indexing by navigation search, and the section's header, breadcrumb, document-title and last-visited-child rules. Each path SHALL activate its own child and SHALL NOT be treated as an event id. Both children SHALL be listed while the catalog read is pending or failed, like All events.
+The Legendary Events section SHALL list two more static children, **Master Table** at `/legendary-events/master-table` and **Tier List** at `/legendary-events/tier-list`, in that order directly after All Events and before the per-event children, each with a localized label and description in every supported locale, an icon (table-style and ranking-style), indexing by navigation search, and the section's header, breadcrumb, document-title and last-visited-child rules. Each path SHALL activate its own child and SHALL NOT be treated as an event id. Both children SHALL be listed while the catalog read is pending or failed, like All Events.
 
 #### Scenario: Secondary nav order
 
 - **GIVEN** Uthar active and Lysander and Farsight upcoming
 - **WHEN** the Legendary Events section renders
-- **THEN** its children read All events, Master table, Tier List, Uthar, then the upcoming events in hub order
+- **THEN** its children read All Events, Master Table, Tier List, Uthar, then the upcoming events in hub order
 
 #### Scenario: Catalog pending
 
 - **WHEN** the catalog read is pending or failed
-- **THEN** the children read All events, Master table, Tier List
+- **THEN** the children read All Events, Master Table, Tier List
 
 #### Scenario: Search finds the master table
 
 - **WHEN** the user types "master" in navigation search
-- **THEN** Master table is found and opens `/legendary-events/master-table`; typing "tier" finds Tier List
+- **THEN** Master Table is found and opens `/legendary-events/master-table`; typing "tier" finds Tier List
 
 ### Requirement: Navigation shows a live indicator for a running Hero Release Event
 
@@ -765,3 +765,31 @@ While a quest is running, the Quest navigation entry SHALL show the same live in
 
 - **GIVEN** Nubari's quest is running, and no HSE or HRE is
 - **THEN** the Quest entry and the Dailies entry show the indicator, and the HSE and HRE entries do not
+
+### Requirement: Navigation sections follow V1's order
+
+The top-level sections SHALL be ordered Home, My Game, Plan, Dailies, Legendary Events, Guild, Library (then UI Kit where it is enabled), mirroring V1's progress, planning, reference flow: Dailies, Legendary Events and Guild split out of V1's Plan menu and follow Plan, and the Library comes last. Every navigation surface (desktop rail, mobile bottom bar and drawer, navigation search) SHALL use this order; the mobile bottom bar shows only its primary sections (Home, Plan, Dailies, Guild) in that relative order.
+
+#### Scenario: Desktop rail order
+
+- **WHEN** a signed-in desktop user views the main rail
+- **THEN** the sections read Home, My Game, Plan, Dailies, Legendary Events, Guild, Library
+
+#### Scenario: Mobile drawer order
+
+- **WHEN** a signed-in mobile user opens the Menu drawer
+- **THEN** the menu-placed sections read My Game, Legendary Events, Library
+
+### Requirement: Navigation uses the game's own art for icons
+
+Every navigation surface (desktop rail, desktop section menu, mobile bottom bar, section tabs, mobile drawer and navigation search) SHALL show a section's game art, falling back to its lucide glyph only when the section has no art. Within a section, either every static child SHALL have an icon or none does: game art where the game has a fitting sprite, else a lucide glyph. A section's landing child MAY share the section's art (Plan/Goals, My Game/Collection, Legendary Events/All Events, Guild/Members); no child SHALL share art with its own section otherwise. On the compact rail the art SHALL keep the rail's shared icon size and centre axis.
+
+#### Scenario: Section art
+
+- **WHEN** a signed-in user views the navigation
+- **THEN** Home shows the home globe, My Game the heroes helmet, Plan the trophy, Dailies the daily-missions scroll, Legendary Events the Legendary Event emblem, Guild the guild banner and Library the inventory chest
+
+#### Scenario: Children without game art use a glyph
+
+- **WHEN** a signed-in user views the Plan section menu
+- **THEN** Goals shows the trophy, Insights the forge, and Projects and Schedule a lucide glyph

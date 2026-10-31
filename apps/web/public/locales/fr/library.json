@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Bibliothèque",
-    "description": "Parcourez les personnages, Machines de guerre, PNJ et boss de raid de guilde"
+    "description": "Parcourez les personnages, Machines de guerre, PNJ, boss de raid de guilde et boutiques quotidiennes"
   },
   "collections": {
     "characters": {

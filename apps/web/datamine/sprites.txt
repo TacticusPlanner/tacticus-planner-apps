@@ -615,8 +615,10 @@ atlases/ui_icon_lock.webp
 atlases/ui_icon_menu_achievements.webp
 atlases/ui_icon_menu_battle_onslaught.webp
 atlases/ui_icon_menu_battlepass.webp
+atlases/ui_icon_menu_forge.webp
 atlases/ui_icon_menu_guildboss.webp
 atlases/ui_icon_menu_inventory.webp
+atlases/ui_icon_menu_miniboss.webp
 atlases/ui_icon_menu_news.webp
 atlases/ui_icon_menu_quests.webp
 atlases/ui_icon_resource_coin_small.webp
@@ -1803,6 +1805,7 @@ ui/ui_crusade_game_mode_icon.webp
 ui/ui_gamemodeicon_ce_generic.webp
 ui/ui_homescreen_background_spacevista_01.webp
 ui/ui_homescreen_planet_01.webp
+ui/ui_icon_missions_daily.webp
 ui/ui_icon_resource_crusade_currency_large.webp
 ui/ui_icon_resource_guild_war_currency_large.webp
 ui/ui_image_background_desktop.webp

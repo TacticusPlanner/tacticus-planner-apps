@@ -553,9 +553,9 @@
   },
   "legendaryEvents": {
     "tabs": {
-      "allEvents": "All events",
+      "allEvents": "All Events",
       "allEventsDescription": "Every Legendary Event: active, upcoming and archived",
-      "masterTable": "Master table",
+      "masterTable": "Master Table",
       "masterTableDescription": "Every unit's points across the Legendary Events you pick",
       "tierList": "Tier List",
       "tierListDescription": "The horde-mode tier list behind clear estimates",
