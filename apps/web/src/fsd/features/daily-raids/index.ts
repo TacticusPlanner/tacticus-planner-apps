@@ -68,3 +68,4 @@ export { PlanBlockers } from "./ui/plan-blockers"
 // Dailies > HRE: where to raid today for the current mission's campaign objective.
 export { HreRaidsSection } from "./ui/hre-missions/hre-raids-section"
 export { BattleProgressDialog } from "./ui/battle-progress-dialog"
+export { UnclaimedEventRewards } from "./ui/unclaimed-event-rewards"

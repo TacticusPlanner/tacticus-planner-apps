@@ -821,6 +821,25 @@
     "conflict": "Deine Medaillen wurden auf einem anderen Gerät geändert. Der neueste Stand ist geladen; nimm deine Änderungen erneut vor.",
     "saveError": "Deine Medaillen konnten nicht gespeichert werden. Versuche es erneut.",
     "loadError": "Deine Medaillen konnten nicht geladen werden. Versuche es später erneut.",
-    "signIn": "Melde dich an, um deine Kampfmedaillen zu erfassen."
+    "signIn": "Melde dich an, um deine Kampfmedaillen zu erfassen.",
+    "challengeBattle": "{{tier}} {{node}} (Herausforderung)",
+    "unclaimed": "Nicht abgeholte einmalige Belohnungen in dieser Kampagne",
+    "lightningVictory": "Blitzsieg",
+    "milestoneFor": "Meilenstein bei {{battle}}",
+    "milestones": {
+      "none": "Keiner",
+      "Bronze": "Bronze",
+      "Silver": "Silber",
+      "Gold": "Gold"
+    },
+    "setGold": "Gold",
+    "setGoldFor": "{{battle}} auf Gold setzen: 3 Medaillen und Blitzsieg",
+    "unclaimedEvents": {
+      "title": "Nicht abgeholte Event-Belohnungen",
+      "description": "Einmalige Medaillen- und Meilenstein-Belohnungen, die bei geschlagenen Event-Kämpfen noch offen sind. Trage deine Medaillen und Meilensteine ein, damit die Liste stimmt.",
+      "battles_one": "{{count}} Kampf",
+      "battles_other": "{{count}} Kämpfe",
+      "record": "Medaillen eintragen"
+    }
   }
 }

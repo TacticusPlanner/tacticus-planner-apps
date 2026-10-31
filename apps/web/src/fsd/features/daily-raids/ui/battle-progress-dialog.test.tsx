@@ -12,7 +12,7 @@ const { saved, update } = vi.hoisted(() => ({
       battleId: string
       medals: number
       lightningVictory: boolean | null
-      milestone: null
+      milestone: "Bronze" | "Silver" | "Gold" | null
     }[],
     revision: 4,
   },
@@ -39,6 +39,21 @@ const battle = (id: string, campaignGroupId: string, battleIndex: number) => ({
   battleIndex,
 })
 
+const eventBattle = (id: string, battleIndex: number) => ({
+  ...battle(id, "eventCampaign1", battleIndex),
+  lightningVictoryTurns: 4,
+  rewards: {
+    guaranteed: [],
+    potential: [],
+    medals: [{ medals: 3, id: "xpCommon", min: 1, max: 1 }],
+    milestones: [
+      { milestone: "Bronze", id: "upgHpC015", min: 1, max: 1 },
+      { milestone: "Silver", id: "xpCommon", min: 2, max: 2 },
+      { milestone: "Gold", id: "gold", min: 100, max: 100 },
+    ],
+  },
+})
+
 beforeEach(async () => {
   update.mockReset()
   update.mockImplementation((body: typeof saved) =>
@@ -56,6 +71,14 @@ beforeEach(async () => {
         battleIds: [],
       },
       {
+        id: "eventCampaign1",
+        groupId: "eventCampaign1",
+        releaseType: "event",
+        types: ["Standard", "Extremis"],
+        coreCharacters: [],
+        battleIds: [],
+      },
+      {
         id: "elite2",
         groupId: "elite2",
         releaseType: "standard",
@@ -65,6 +88,8 @@ beforeEach(async () => {
       },
     ],
     "campaign-battles": [
+      eventBattle("AMS01", 0),
+      eventBattle("AMS02", 1),
       battle("I01", "campaign1", 0),
       battle("FoCE1", "elite2", 0),
       battle("FoCE2", "elite2", 1),
@@ -78,6 +103,14 @@ beforeEach(async () => {
         tacticusCampaignId: "elite2",
         type: "Elite",
         highestCompletedBattleIndex: 2,
+      },
+    ],
+    "campaign-events-progress": [
+      {
+        tacticusCampaignId: "eventCampaign1",
+        type: "Standard",
+        completedBattleCount: 1,
+        completedChallengeBattlesIds: [],
       },
     ],
   })
@@ -157,6 +190,51 @@ describe("BattleProgressDialog", () => {
 
     await waitFor(() =>
       expect(update).toHaveBeenCalledWith({ battles: [], revision: 4 })
+    )
+  })
+
+  it("records an event battle's milestone with the Gold quick-set and lists unclaimed rewards", async () => {
+    const user = userEvent.setup()
+    render(
+      <BattleProgressDialog
+        campaignGroupId="eventCampaign1"
+        campaignType="Standard"
+        onOpenChange={vi.fn()}
+        open
+      />,
+      { auth: { authenticated: true } }
+    )
+
+    expect(
+      await screen.findByTestId("battle-progress-row-AMS01")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("battle-progress-row-AMS02")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId("battle-progress-rewards-AMS01")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("battle-progress-unclaimed")).toBeInTheDocument()
+
+    await user.click(screen.getByTestId("battle-progress-AMS01-gold"))
+
+    expect(
+      screen.queryByTestId("battle-progress-rewards-AMS01")
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId("battle-progress-AMS01-lightning")).toBeChecked()
+    await user.click(screen.getByTestId("battle-progress-save"))
+    await waitFor(() =>
+      expect(update).toHaveBeenCalledWith({
+        battles: [
+          {
+            battleId: "AMS01",
+            medals: 3,
+            lightningVictory: true,
+            milestone: "Gold",
+          },
+        ],
+        revision: 4,
+      })
     )
   })
 })

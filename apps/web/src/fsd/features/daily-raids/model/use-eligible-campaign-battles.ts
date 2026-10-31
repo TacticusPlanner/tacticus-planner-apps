@@ -132,7 +132,7 @@ const NO_MANUAL_BATTLES: ReadonlySet<string> = new Set()
  * event-farm section show their error state; only the Home event tab
  * (`useHomeScreenEventLocations`), which has no error state, keeps the synced-only view.
  */
-function useEffectiveCampaignEventProgress(isAuthenticated: boolean) {
+export function useEffectiveCampaignEventProgress(isAuthenticated: boolean) {
   const synced = usePlayerChunk("campaign-events-progress")
   const syncedProgress = synced.status === "ready" ? synced.data : undefined
   const overridesQuery = useQuery({
