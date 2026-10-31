@@ -341,6 +341,7 @@
       "objectiveChip_one": "{{objective}}: {{count}} Einheit erfüllt es",
       "objectiveChip_other": "{{objective}}: {{count}} Einheiten erfüllen es",
       "doesNotSatisfy": "Erfüllt nicht: {{objectives}}",
+      "notMatchingDivider": "Erfüllt die gewählten Ziele nicht",
       "sort": "Sortieren",
       "sortPointsLeft": "Verbleibende Punkte",
       "sortPower": "Stärke",

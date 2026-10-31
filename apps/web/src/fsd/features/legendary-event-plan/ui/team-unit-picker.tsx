@@ -1,4 +1,4 @@
-import { useId, useMemo, useState, type Ref } from "react"
+import { Fragment, useId, useMemo, useState, type Ref } from "react"
 import { useTranslation } from "react-i18next"
 import { ShieldPlus } from "lucide-react"
 import { characterIcon, lockIcon } from "@workspace/game-catalog"
@@ -24,6 +24,7 @@ import { MAX_TEAM_MEMBERS } from "../model/team-editor-draft"
 import {
   buildPickerTiles,
   filterPickerTiles,
+  notMatchingStart,
   objectiveChipCounts,
   toggleObjectiveChip,
   type PickerEstimates,
@@ -48,9 +49,9 @@ import { TeamPickerUnitState } from "./team-picker-unit-state"
  * owned state, rarity, rank, estimated clears and a preview marker. The lane's objectives sit above
  * the grid as multi-select chips, starting from `initialObjectives`, each with how many listed units
  * satisfy it together with the selected ones: units
- * satisfying every selected objective come first, the others follow dimmed (still selectable, with
- * an accessible "does not satisfy" description); the selection lives as long as the picker, so it
- * resets when the editor closes and survives Save and add another. A tile's top-left corner marks
+ * satisfying every selected objective come first, the others follow dimmed below a labelled divider
+ * (still selectable, with an accessible "does not satisfy" description); the selection lives as
+ * long as the picker, so it resets when the editor closes and survives Save and add another. A tile's top-left corner marks
  * its horde-mode tier and Healer / Mechanic traits.
  */
 export function TeamUnitPicker({
@@ -165,6 +166,7 @@ export function TeamUnitPicker({
     nameOf,
     searchNamesOf,
   })
+  const dividerAt = notMatchingStart(shown, selectedObjectives)
   const objectives = [...lane.unitsRestrictions].sort(
     (a, b) => a.index - b.index
   )
@@ -273,7 +275,7 @@ export function TeamUnitPicker({
           className="grid grid-cols-3 gap-2 md:grid-cols-5"
           data-testid="team-picker-grid"
         >
-          {shown.map((tile) => {
+          {shown.map((tile, at) => {
             const id = tile.unit.id
             const isMember = memberUnitIds.includes(id)
             const isReserve = reserveUnitId === id
@@ -291,125 +293,144 @@ export function TeamUnitPicker({
               .map((entry) => entry.label)
             const missingId = `${describedByPrefix}-${id}`
             return (
-              <li
-                className={cn(
-                  "relative flex min-w-0 flex-col items-stretch rounded-xl border bg-card",
-                  isMember &&
-                    "border-primary bg-primary/15 ring-2 ring-primary",
-                  isReserve && "border-dashed border-primary bg-primary/5",
-                  // Fade the whole tile (not a background tint, which reads lighter than
-                  // `bg-card` in dark mode) so not-matching units clearly recede; hover and
-                  // focus bring a tile back so it stays readable while choosing it.
-                  dimmed &&
-                    !isMember &&
-                    !isReserve &&
-                    "opacity-45 transition-opacity focus-within:opacity-100 hover:opacity-100"
-                )}
-                data-dimmed={dimmed ? "true" : undefined}
-                data-locked={tile.owned === false ? "true" : undefined}
-                data-preview={previewed ? "true" : undefined}
-                data-selected={isMember ? "true" : undefined}
-                data-testid="team-picker-tile"
-                data-unit={id}
-                key={id}
-              >
-                <button
-                  aria-label={t(
-                    isMember ? "teams.picker.remove" : "teams.picker.add",
-                    { name }
+              <Fragment key={id}>
+                {at === dividerAt ? (
+                  <li
+                    className="col-span-full flex items-center gap-2 py-1 text-xs text-muted-foreground"
+                    data-testid="team-picker-not-matching-divider"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="h-px flex-1 bg-border"
+                    />
+                    {t("teams.picker.notMatchingDivider")}
+                    <span
+                      aria-hidden="true"
+                      className="h-px flex-1 bg-border"
+                    />
+                  </li>
+                ) : null}
+                <li
+                  className={cn(
+                    "relative flex min-w-0 flex-col items-stretch rounded-xl border bg-card",
+                    isMember &&
+                      "border-primary bg-primary/15 ring-2 ring-primary",
+                    isReserve && "border-dashed border-primary bg-primary/5",
+                    // Fade the whole tile (not a background tint, which reads lighter than
+                    // `bg-card` in dark mode) so not-matching units clearly recede; hover and
+                    // focus bring a tile back so it stays readable while choosing it.
+                    dimmed &&
+                      !isMember &&
+                      !isReserve &&
+                      "opacity-45 transition-opacity focus-within:opacity-100 hover:opacity-100"
                   )}
-                  aria-describedby={dimmed ? missingId : undefined}
-                  aria-pressed={isMember}
-                  className="flex min-w-0 flex-col items-center gap-1 p-1.5 text-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  data-testid="team-picker-toggle"
-                  onClick={() => onToggleMember(id)}
-                  type="button"
+                  data-dimmed={dimmed ? "true" : undefined}
+                  data-locked={tile.owned === false ? "true" : undefined}
+                  data-preview={previewed ? "true" : undefined}
+                  data-selected={isMember ? "true" : undefined}
+                  data-testid="team-picker-tile"
+                  data-unit={id}
                 >
-                  {dimmed ? (
-                    <span className="sr-only" id={missingId}>
-                      {t("teams.picker.doesNotSatisfy", {
-                        objectives: missing.join(", "),
+                  <button
+                    aria-label={t(
+                      isMember ? "teams.picker.remove" : "teams.picker.add",
+                      { name }
+                    )}
+                    aria-describedby={dimmed ? missingId : undefined}
+                    aria-pressed={isMember}
+                    className="flex min-w-0 flex-col items-center gap-1 p-1.5 text-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    data-testid="team-picker-toggle"
+                    onClick={() => onToggleMember(id)}
+                    type="button"
+                  >
+                    {dimmed ? (
+                      <span className="sr-only" id={missingId}>
+                        {t("teams.picker.doesNotSatisfy", {
+                          objectives: missing.join(", "),
+                        })}
+                      </span>
+                    ) : null}
+                    <span className="relative">
+                      <EntityIcon
+                        alt=""
+                        className={cn(
+                          "size-10 rounded-full",
+                          tile.owned === false && "opacity-50 grayscale"
+                        )}
+                        src={characterIcon(id)}
+                      />
+                      {tile.owned === false ? (
+                        <EntityIcon
+                          src={lockIcon()}
+                          alt={t("teams.picker.locked")}
+                          className="absolute -right-1 -bottom-1 size-3.5 rounded-full bg-background p-0.5"
+                        />
+                      ) : null}
+                    </span>
+                    <span className="flex w-full min-w-0 items-center justify-center gap-0.5">
+                      <span className="truncate text-xs font-medium">
+                        {name}
+                      </span>
+                      {lines.length > 0 ? (
+                        <UnitGoalBadge
+                          className="size-4"
+                          label={t("goalBadge.label")}
+                          lines={lines}
+                          tooltip={false}
+                        />
+                      ) : null}
+                    </span>
+                    {shownUnit ? (
+                      <TeamPickerUnitState
+                        clears={clears}
+                        previewed={Boolean(previewed)}
+                        unit={shownUnit}
+                      />
+                    ) : null}
+                    <span className="flex flex-wrap justify-center gap-0.5">
+                      {objectives.map((objective) => (
+                        <ObjectiveIcon
+                          className="size-4"
+                          icon={objectiveLabel(objective).icon}
+                          key={objective.index}
+                          muted={!tile.satisfied.includes(objective.index)}
+                        />
+                      ))}
+                    </span>
+                    <span
+                      className="text-xs text-muted-foreground tabular-nums"
+                      data-testid="team-picker-points"
+                      title={t("teams.picker.pointsScope")}
+                    >
+                      {t("teams.picker.points", {
+                        points: number.format(tile.remainingPoints),
                       })}
                     </span>
-                  ) : null}
-                  <span className="relative">
-                    <EntityIcon
-                      alt=""
-                      className={cn(
-                        "size-10 rounded-full",
-                        tile.owned === false && "opacity-50 grayscale"
-                      )}
-                      src={characterIcon(id)}
-                    />
-                    {tile.owned === false ? (
-                      <EntityIcon
-                        src={lockIcon()}
-                        alt={t("teams.picker.locked")}
-                        className="absolute -right-1 -bottom-1 size-3.5 rounded-full bg-background p-0.5"
-                      />
-                    ) : null}
-                  </span>
-                  <span className="flex w-full min-w-0 items-center justify-center gap-0.5">
-                    <span className="truncate text-xs font-medium">{name}</span>
-                    {lines.length > 0 ? (
-                      <UnitGoalBadge
-                        className="size-4"
-                        label={t("goalBadge.label")}
-                        lines={lines}
-                        tooltip={false}
-                      />
-                    ) : null}
-                  </span>
-                  {shownUnit ? (
-                    <TeamPickerUnitState
-                      clears={clears}
-                      previewed={Boolean(previewed)}
-                      unit={shownUnit}
-                    />
-                  ) : null}
-                  <span className="flex flex-wrap justify-center gap-0.5">
-                    {objectives.map((objective) => (
-                      <ObjectiveIcon
-                        className="size-4"
-                        icon={objectiveLabel(objective).icon}
-                        key={objective.index}
-                        muted={!tile.satisfied.includes(objective.index)}
-                      />
-                    ))}
-                  </span>
-                  <span
-                    className="text-xs text-muted-foreground tabular-nums"
-                    data-testid="team-picker-points"
-                    title={t("teams.picker.pointsScope")}
+                  </button>
+                  <TeamPickerTileMarkers
+                    tier={hordeTiers?.get(id) ?? null}
+                    traits={tile.unit.traits}
+                  />
+                  <Button
+                    aria-label={t(
+                      isReserve
+                        ? "teams.picker.unsetReserve"
+                        : "teams.picker.setReserve",
+                      { name }
+                    )}
+                    aria-pressed={isReserve}
+                    className="absolute top-0.5 right-0.5"
+                    data-testid="team-picker-reserve"
+                    onClick={() => onToggleReserve(id)}
+                    size="icon-xs"
+                    title={t("teams.reserve")}
+                    type="button"
+                    variant={isReserve ? "secondary" : "ghost"}
                   >
-                    {t("teams.picker.points", {
-                      points: number.format(tile.remainingPoints),
-                    })}
-                  </span>
-                </button>
-                <TeamPickerTileMarkers
-                  tier={hordeTiers?.get(id) ?? null}
-                  traits={tile.unit.traits}
-                />
-                <Button
-                  aria-label={t(
-                    isReserve
-                      ? "teams.picker.unsetReserve"
-                      : "teams.picker.setReserve",
-                    { name }
-                  )}
-                  aria-pressed={isReserve}
-                  className="absolute top-0.5 right-0.5"
-                  data-testid="team-picker-reserve"
-                  onClick={() => onToggleReserve(id)}
-                  size="icon-xs"
-                  title={t("teams.reserve")}
-                  type="button"
-                  variant={isReserve ? "secondary" : "ghost"}
-                >
-                  <ShieldPlus />
-                </Button>
-              </li>
+                    <ShieldPlus />
+                  </Button>
+                </li>
+              </Fragment>
             )
           })}
         </ul>

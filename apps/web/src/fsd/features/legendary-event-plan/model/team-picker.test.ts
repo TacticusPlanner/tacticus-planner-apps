@@ -18,6 +18,7 @@ import {
 import {
   buildPickerTiles,
   filterPickerTiles,
+  notMatchingStart,
   objectiveChipCounts,
   toggleObjectiveChip,
   type PickerTile,
@@ -204,6 +205,17 @@ describe("buildPickerTiles remaining points and sort", () => {
     expect(withChip[0]!.unit.id).toBe("bloodDante")
     const firstOther = withChip.findIndex((tile) => !tile.matches)
     expect(withChip[firstOther]!.unit.id).toBe(flyer.id)
+  })
+})
+
+describe("notMatchingStart", () => {
+  const tiles = [{ matches: true }, { matches: true }, { matches: false }]
+  it("is the first not matching tile with an objective selected", () => {
+    expect(notMatchingStart(tiles, [FLYING])).toBe(2)
+  })
+  it("is null with no objective selected or when every tile matches", () => {
+    expect(notMatchingStart(tiles, [])).toBeNull()
+    expect(notMatchingStart(tiles.slice(0, 2), [FLYING])).toBeNull()
   })
 })
 
