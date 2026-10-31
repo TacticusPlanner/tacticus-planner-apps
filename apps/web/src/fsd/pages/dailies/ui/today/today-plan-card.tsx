@@ -1,3 +1,4 @@
+import type { BattleId } from "@workspace/game-domain"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -18,9 +19,11 @@ export const INSET_CARDS_CLASS_NAME = "[&_[data-slot=card]]:bg-background"
  * holds that state, so the dashboard keeps its shape.
  */
 export function TodayPlanCard({
+  onCantRaid,
   raids,
   view,
 }: {
+  onCantRaid?: (battleId: BattleId) => void
   raids: DailyRaidsViewModel
   view: TodayView | undefined
 }) {
@@ -46,6 +49,7 @@ export function TodayPlanCard({
               <RaidSchedule
                 {...view.scheduleProps}
                 entries={view.selection.planEntries}
+                onCantRaid={onCantRaid}
                 testId="today-raid-list"
               />
             </div>

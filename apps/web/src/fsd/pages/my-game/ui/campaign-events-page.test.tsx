@@ -116,6 +116,12 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
 vi.mock("@/entities/player-data-override", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
+  battleProgressQueries: {
+    current: () => ({
+      queryKey: ["player-data-overrides", "battle-progress"],
+      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
+    }),
+  },
   campaignEventProgressQueries: {
     current: () => ({
       queryKey: ["player-data-overrides", "campaign-events", "current"],

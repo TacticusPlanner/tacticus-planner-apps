@@ -6,10 +6,11 @@ import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
-  onslaughtReward,
   onslaughtAlliances,
   onslaughtProgressQueries,
+  onslaughtReward,
   onslaughtSectors,
+  playerDataOverrideKey,
   rewardKeys,
   updateOnslaughtProgress,
   type OnslaughtAlliance,
@@ -62,6 +63,7 @@ export function OnslaughtPage() {
     toDraft,
     toPayload,
     save: updateOnslaughtProgress,
+    sharedRevisionKey: playerDataOverrideKey,
   })
   const [message, setMessage] = useState<Message | null>(null)
   const progressQuery = progressDraft.query

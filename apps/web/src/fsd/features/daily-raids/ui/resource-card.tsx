@@ -13,6 +13,7 @@ import type {
   DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
 import { isLocationVisible } from "../model/location-visibility"
+import { CantRaidMenu, ManualBattleBadge } from "./manual-battle"
 import { plannedRaidNeedForEntry } from "../model/planned-raid-need"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
 import { ResourceIcon, ResourceIconWithTooltip } from "./resource-icon"
@@ -48,6 +49,7 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
 }
 
 export function ResourceCard({
+  onCantRaid,
   attemptsLeftByBattle,
   attemptsUsedByBattle,
   emphasis,
@@ -59,6 +61,8 @@ export function ResourceCard({
   resourceId,
   visual,
 }: {
+  /** Opens the battle progress dialog for a planned location (Today's plan only). */
+  onCantRaid?: (battleId: BattleId) => void
   // Real, per-node attempts remaining today (see daily-raids-energy.ts) — the "location" emphasis
   // path de-dupes a location out of this list once it hits zero, deferring to Today's Attempts.
   attemptsLeftByBattle: ReadonlyMap<BattleId, number>
@@ -139,6 +143,7 @@ export function ResourceCard({
                         </div>
                       ) : null}
                     </div>
+                    {location?.manual ? <ManualBattleBadge /> : null}
                     <PlannedRaidNeedBadge
                       need={plannedRaidNeedForEntry(entry)}
                     />
@@ -180,11 +185,20 @@ export function ResourceCard({
                 <span className="truncate font-medium">{label}</span>
               )}
             </div>
-            {resourceEntries[0] ? (
-              <PlannedRaidNeedBadge
-                need={plannedRaidNeedForEntry(resourceEntries[0])}
-              />
-            ) : null}
+            <div className="flex shrink-0 items-center gap-1">
+              {resourceEntries[0] ? (
+                <PlannedRaidNeedBadge
+                  need={plannedRaidNeedForEntry(resourceEntries[0])}
+                />
+              ) : null}
+              {onCantRaid ? (
+                <CantRaidMenu
+                  battleIds={resourceEntries.map((entry) => entry.battleId)}
+                  locationsByBattleId={locationsByBattleId}
+                  onCantRaid={onCantRaid}
+                />
+              ) : null}
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             {!goal && progress ? (
@@ -200,6 +214,9 @@ export function ResourceCard({
                   id: `${entry.battleId}-${entry.raidsPerformed}`,
                   icon: location?.icon,
                   label: location?.shortLabel ?? entry.battleId,
+                  trailing: location?.manual ? (
+                    <ManualBattleBadge className="ml-0.5" compact />
+                  ) : undefined,
                   variant: fullyRaided
                     ? ("secondary" as const)
                     : ("outline" as const),

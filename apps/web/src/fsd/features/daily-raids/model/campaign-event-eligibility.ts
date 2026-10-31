@@ -9,7 +9,7 @@ import {
   campaignEventTrackKey,
   type EffectiveCampaignEventProgress,
 } from "@/entities/player-data-override"
-import { isStandingBattleRaidable } from "@/shared/lib"
+import { isStandingBattleFrontier, isStandingBattleReached } from "@/shared/lib"
 
 export type CampaignEventProgressEntry = EffectiveCampaignEventProgress
 export const campaignEventProgressKey = campaignEventTrackKey
@@ -33,15 +33,16 @@ export function buildCampaignProgressByKey(
   )
 }
 
-// Whether a standing-campaign battle can be raided, per the `campaign-progress` high-water mark
-// (already synced for the Progress page) — the shared `isStandingBattleRaidable` rule, so Today and
-// goal estimates gate the same set. `battleIndex` — not `nodeNumber` — is the field this chunk is
+// Whether the player has reached a standing-campaign battle, per the `campaign-progress` high-water
+// mark (already synced for the Progress page) — the shared `isStandingBattleReached` rule, so Today
+// and goal estimates gate the same set. The frontier is reached but not raidable; `manualBattleIds`
+// marks it. `battleIndex` — not `nodeNumber` — is the field this chunk is
 // keyed against (see Battle's own doc comment): zero-based, assigned independently within each
 // {campaignGroupId, type} track, and covering challenge and non-challenge battles alike.
 // `campaign-progress` carries no separate completed-challenge-ids list (unlike
 // `campaign-events-progress`), so a challenge battle is gated by this same comparison, not treated as
 // reachable in any order.
-function isStandingBattleReached<
+function isStandingTrackBattleReached<
   TBattle extends {
     campaignGroupId: string
     type: string
@@ -54,7 +55,7 @@ function isStandingBattleReached<
   const progress = campaignProgressByKey.get(
     campaignProgressKey(battle.campaignGroupId, battle.type)
   )
-  return isStandingBattleRaidable(
+  return isStandingBattleReached(
     battle.battleIndex,
     progress?.highestCompletedBattleIndex
   )
@@ -112,9 +113,48 @@ export function availableCampaignBattles<
 ) {
   return battles.filter((battle) => {
     if (!eventCampaignIds.has(battle.campaignGroupId)) {
-      return isStandingBattleReached(battle, campaignProgressByKey)
+      return isStandingTrackBattleReached(battle, campaignProgressByKey)
     }
     if (battle.campaignGroupId !== activeCampaignEventId) return false
     return isEventNodeReached(battle, campaignEventProgressByKey)
   })
+}
+
+/**
+ * The battles that must be played rather than raided, since raids need 3 medals: every standing
+ * frontier (reached but never beaten) and every battle the player's battle progress overrides record
+ * with fewer than 3 medals. They stay farmable by default; Today's "Raidable only" filter drops them.
+ */
+export function manualBattleIds<
+  TBattle extends {
+    id: string
+    campaignGroupId: string
+    type: string
+    battleIndex: number
+  },
+>(
+  battles: readonly TBattle[],
+  eventCampaignIds: ReadonlySet<string>,
+  campaignProgressByKey: ReadonlyMap<string, CampaignProgressEntry>,
+  battleOverrides: readonly { battleId: string; medals: number }[]
+): ReadonlySet<string> {
+  const ids = new Set(
+    battleOverrides
+      .filter((entry) => entry.medals < 3)
+      .map((entry) => entry.battleId)
+  )
+  for (const battle of battles) {
+    if (eventCampaignIds.has(battle.campaignGroupId)) continue
+    const progress = campaignProgressByKey.get(
+      campaignProgressKey(battle.campaignGroupId, battle.type)
+    )
+    if (
+      isStandingBattleFrontier(
+        battle.battleIndex,
+        progress?.highestCompletedBattleIndex
+      )
+    )
+      ids.add(battle.id)
+  }
+  return ids
 }

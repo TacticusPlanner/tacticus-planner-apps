@@ -1,3 +1,4 @@
+import type { BattleId } from "@workspace/game-domain"
 import { useState } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -22,7 +23,14 @@ import { TodaysAttemptsCard } from "./todays-attempts-card"
  * DOM order is each column top to bottom, columns left to right, so focus follows what is on screen
  * at every track count.
  */
-export function TodayDashboard({ raids }: { raids: DailyRaidsViewModel }) {
+export function TodayDashboard({
+  raids,
+  onCantRaid,
+}: {
+  raids: DailyRaidsViewModel
+  /** "Can't raid this?" on a planned location: opens the battle progress dialog. */
+  onCantRaid?: (battleId: BattleId) => void
+}) {
   const [bonusShownCount, setBonusShownCount] = useState(BONUS_LIMIT)
   const view =
     raids.status === "ready"
@@ -73,7 +81,7 @@ export function TodayDashboard({ raids }: { raids: DailyRaidsViewModel }) {
           {bonusInPlanArea ? (
             bonusCard(true)
           ) : (
-            <TodayPlanCard raids={raids} view={view} />
+            <TodayPlanCard onCantRaid={onCantRaid} raids={raids} view={view} />
           )}
         </div>
         <div className="flex min-w-0 flex-col gap-3.5">

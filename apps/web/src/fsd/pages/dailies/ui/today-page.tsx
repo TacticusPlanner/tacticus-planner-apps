@@ -2,11 +2,14 @@ import { useState } from "react"
 import { useOutletContext } from "react-router"
 
 import {
+  BattleProgressDialog,
   todayQuickFilterOptions,
   useDailyRaids,
   useRaidsFilters,
   useTodayQuickFilters,
 } from "@/features/daily-raids"
+import type { BattleId } from "@workspace/game-domain"
+
 import { PlanningSettingsDialog } from "@/entities/planning-setting"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { TodayControls } from "./today/today-controls"
@@ -22,11 +25,20 @@ import { useTodayTutorial } from "./today.tutorial"
 export function TodayPage() {
   const context = useOutletContext<DailiesOutletContext>()
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [cantRaidBattleId, setCantRaidBattleId] = useState<BattleId | null>(
+    null
+  )
   const [quickFilters, setQuickFilters] = useTodayQuickFilters()
   const raids = useDailyRaids(context.projectId, {
     quickFilters: todayQuickFilterOptions(quickFilters),
   })
   const [raidsFilters] = useRaidsFilters()
+  // "Raidable only" is offered only when today's plan raids a manual battle, or while it is on.
+  const hiddenQuickFilters =
+    (raids.status === "ready" && raids.hasManualRaids) ||
+    quickFilters.includes("raidableOnly")
+      ? []
+      : (["raidableOnly"] as const)
   useTodayTutorial()
   // A new project or filter set is a new Bonus raids list, so the dashboard starts over: Bonus
   // raids opens on its top 3 again instead of keeping the previous list's expansion.
@@ -41,10 +53,24 @@ export function TodayPage() {
       <TodayControls
         context={context}
         onOpenSettings={() => setSettingsOpen(true)}
+        hiddenQuickFilters={hiddenQuickFilters}
         onQuickFiltersChange={setQuickFilters}
         quickFilters={quickFilters}
       />
-      <TodayDashboard key={selectionKey} raids={raids} />
+      <TodayDashboard
+        key={selectionKey}
+        onCantRaid={setCantRaidBattleId}
+        raids={raids}
+      />
+      {cantRaidBattleId ? (
+        <BattleProgressDialog
+          battleId={cantRaidBattleId}
+          onOpenChange={(open) => {
+            if (!open) setCantRaidBattleId(null)
+          }}
+          open
+        />
+      ) : null}
       {settingsOpen ? (
         <PlanningSettingsDialog
           onOpenChange={setSettingsOpen}

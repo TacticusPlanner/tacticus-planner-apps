@@ -18,11 +18,13 @@ type QuickFilters = ReturnType<typeof useTodayQuickFilters>[0]
  */
 export function TodayControls({
   context,
+  hiddenQuickFilters,
   onOpenSettings,
   onQuickFiltersChange,
   quickFilters,
 }: {
   context: DailiesOutletContext
+  hiddenQuickFilters?: readonly QuickFilters[number][]
   onOpenSettings: () => void
   onQuickFiltersChange: (next: QuickFilters) => void
   quickFilters: QuickFilters
@@ -32,6 +34,7 @@ export function TodayControls({
   return (
     <div data-testid="today-controls">
       <TodayQuickFilterChips
+        hidden={hiddenQuickFilters}
         layout="inline"
         onChange={onQuickFiltersChange}
         trailing={

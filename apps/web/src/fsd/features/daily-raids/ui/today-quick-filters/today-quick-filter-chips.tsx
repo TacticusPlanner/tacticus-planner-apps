@@ -25,11 +25,14 @@ import {
 export function TodayQuickFilterChips({
   value,
   onChange,
+  hidden = [],
   layout = "stacked",
   trailing,
 }: {
   value: readonly TodayQuickFilter[]
   onChange: (next: TodayQuickFilter[]) => void
+  /** Chips not offered right now (e.g. "Raidable only" while today's plan has no manual battle). */
+  hidden?: readonly TodayQuickFilter[]
   layout?: "stacked" | "inline"
   trailing?: ReactNode
 }) {
@@ -62,17 +65,19 @@ export function TodayQuickFilterChips({
         onChange(next)
       }}
     >
-      {TODAY_QUICK_FILTERS.map((quick) => (
-        <ToggleGroupItem
-          key={quick}
-          value={quick}
-          className={FILTER_CHIP_CLASS_NAME}
-          title={t(`quickFilters.help.${quick}`)}
-          data-testid={`today-quick-filter-${quick}`}
-        >
-          {t(`quickFilters.chip.${quick}`)}
-        </ToggleGroupItem>
-      ))}
+      {TODAY_QUICK_FILTERS.filter((quick) => !hidden.includes(quick)).map(
+        (quick) => (
+          <ToggleGroupItem
+            key={quick}
+            value={quick}
+            className={FILTER_CHIP_CLASS_NAME}
+            title={t(`quickFilters.help.${quick}`)}
+            data-testid={`today-quick-filter-${quick}`}
+          >
+            {t(`quickFilters.chip.${quick}`)}
+          </ToggleGroupItem>
+        )
+      )}
     </ToggleGroup>
   )
   const notes = TODAY_QUICK_FILTERS.filter((quick) =>

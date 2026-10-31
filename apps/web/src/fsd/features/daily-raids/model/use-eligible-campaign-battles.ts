@@ -8,9 +8,11 @@ import { usePlayerChunk } from "@/shared/local-data"
 import {
   availableCampaignBattles,
   buildCampaignProgressByKey,
+  manualBattleIds,
 } from "./campaign-event-eligibility"
 import { useQuery } from "@tanstack/react-query"
 import {
+  battleProgressQueries,
   buildEffectiveCampaignEventProgress,
   campaignEventProgressQueries,
 } from "@/entities/player-data-override"
@@ -19,7 +21,9 @@ import {
  * The single place that reads the live-progress, campaign-events-progress (with the player's
  * manual overrides merged over it) and campaign-progress chunks and applies
  * `availableCampaignBattles`, so Today, Raids Plan and the Goals catalog choose farm nodes from the
- * same set. Until a chunk loads it counts as empty: event nodes are ineligible and only the first
+ * same set. `manualBattleIds` are the eligible battles that must be played, not raided (the standing
+ * frontiers plus the player's battle progress overrides below 3 medals); a failed override load
+ * leaves only the frontiers manual rather than blocking planning. Until a chunk loads it counts as empty: event nodes are ineligible and only the first
  * standing node of each track is reachable (no false date before hydration). `liveProgress`
  * (undefined until read, null before its first sync), `ready` and `isError` (a failed chunk read or
  * override load) let callers tell whether hydration finished.
@@ -33,6 +37,10 @@ export function useEligibleCampaignBattles(
   const campaignEventProgress =
     useEffectiveCampaignEventProgress(isAuthenticated)
   const campaignProgressRead = usePlayerChunk("campaign-progress")
+  const battleOverridesQuery = useQuery({
+    ...battleProgressQueries.current(),
+    enabled: isAuthenticated,
+  })
   const liveProgress =
     liveProgressRead.status === "ready" ? liveProgressRead.data : undefined
   const campaignProgress =
@@ -70,13 +78,28 @@ export function useEligibleCampaignBattles(
       campaignProgressByKey,
     ]
   )
+  const battleOverrides = battleOverridesQuery.data?.battles
+  const manualIds = useMemo(
+    () =>
+      manualBattleIds(
+        availableBattles,
+        eventCampaignIds,
+        campaignProgressByKey,
+        battleOverrides ?? []
+      ),
+    [availableBattles, eventCampaignIds, campaignProgressByKey, battleOverrides]
+  )
   return {
     availableBattles,
+    manualBattleIds: manualIds,
     liveProgress,
     ready:
       liveProgressRead.status === "ready" &&
       campaignProgressRead.status === "ready" &&
-      campaignEventProgress.ready,
+      campaignEventProgress.ready &&
+      (!isAuthenticated ||
+        battleOverridesQuery.isSuccess ||
+        battleOverridesQuery.isError),
     isError:
       liveProgressRead.status === "error" ||
       campaignProgressRead.status === "error" ||

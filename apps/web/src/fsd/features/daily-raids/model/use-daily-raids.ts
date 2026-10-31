@@ -71,6 +71,7 @@ export function useDailyRaids(
   const missionRequest = options?.missionRaids
   const fewerRaids = options?.quickFilters?.fewerRaids ?? false
   const combineGoals = options?.quickFilters?.combineGoals ?? false
+  const raidableOnly = options?.quickFilters?.raidableOnly ?? false
   const { t } = useTranslation([
     "dailies",
     "characters",
@@ -112,6 +113,7 @@ export function useDailyRaids(
   const campaignDefinitions = dataOf(campaignDefinitionsRead)
   const {
     availableBattles,
+    manualBattleIds,
     liveProgress,
     ready: eligibilityReady,
     isError: eligibilityError,
@@ -183,25 +185,34 @@ export function useDailyRaids(
     [battles]
   )
   // Eligibility-restricted — only this map feeds the scheduling/estimate engine (calculateDailyRaids).
+  // "Raidable only" drops the battles that must be played manually, so the plan swaps in raidable
+  // nodes for the same materials (or reports them blocked when none is left).
   const battlesById = useMemo(
     () =>
       new Map(
-        availableBattles.map((battle) => [
-          battle.id,
-          mapCampaignBattleStorageToDomain(battle),
-        ])
+        availableBattles
+          .filter((battle) => !raidableOnly || !manualBattleIds.has(battle.id))
+          .map((battle) => [
+            battle.id,
+            mapCampaignBattleStorageToDomain(battle),
+          ])
       ),
-    [availableBattles]
+    [availableBattles, manualBattleIds, raidableOnly]
   )
   const locationsByBattleId = useMemo(
     () =>
-      buildLocationsByBattleId(allBattlesById, {
-        campaignName: campaignDisplayName,
-        difficultyLabel: campaignDifficultyLabel,
-        shortLabel: campaignShortLabel,
-      }),
+      buildLocationsByBattleId(
+        allBattlesById,
+        {
+          campaignName: campaignDisplayName,
+          difficultyLabel: campaignDifficultyLabel,
+          shortLabel: campaignShortLabel,
+        },
+        manualBattleIds
+      ),
     [
       allBattlesById,
+      manualBattleIds,
       campaignDisplayName,
       campaignDifficultyLabel,
       campaignShortLabel,
@@ -386,6 +397,9 @@ export function useDailyRaids(
           ...result,
           missionRaids: planMission(result),
           locationsByBattleId,
+          hasManualRaids: result.today.entries.some((entry) =>
+            manualBattleIds.has(entry.battleId)
+          ),
           resourceByBattleId,
           realEnergyUsedToday,
           attemptsLeftByBattle,
@@ -418,6 +432,7 @@ export function useDailyRaids(
     inventoryUpgrades,
     labelResource,
     locationsByBattleId,
+    manualBattleIds,
     missionRequest,
     mowsById,
     npcsById,

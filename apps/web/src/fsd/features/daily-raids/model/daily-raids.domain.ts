@@ -80,6 +80,8 @@ export type DailyRaidLocationViewModel = {
   // Compact "{name} {code} {node}{B?}" form Raids Plan's chips still use verbatim.
   shortLabel: string
   challenge: boolean
+  /** Must be played, not raided: raids need 3 medals (see `manualBattleIds`). */
+  manual?: boolean
   icon?: string
 }
 
@@ -167,6 +169,9 @@ export type DailyRaidsReadyViewModel = {
     ReadonlyMap<string, DailyRaidResourceProgress>
   >
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
+  /** Today's schedule raids at least one battle that must be played manually — Today shows the
+   *  "Raidable only" quick filter only then (or while it is on). */
+  hasManualRaids: boolean
   // What every raidable node drops, straight from the catalog and independent of this project's
   // plan — Today's Attempts is account-wide, so it needs an icon for nodes the plan never mentions.
   resourceByBattleId: ReadonlyMap<BattleId, DailyRaidBattleResource>
@@ -192,6 +197,7 @@ export type DailyRaidsReadyViewModel = {
 export type DailyRaidsCalculationViewModel = Omit<
   DailyRaidsReadyViewModel,
   | "locationsByBattleId"
+  | "hasManualRaids"
   | "resourceByBattleId"
   | "realEnergyUsedToday"
   | "attemptsLeftByBattle"

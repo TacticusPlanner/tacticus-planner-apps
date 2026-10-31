@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { Badge } from "@workspace/ui/components/badge"
 
 import { EntityIcon } from "./entity-icon"
@@ -7,6 +8,8 @@ export type LocationViewModel = {
   label: string
   icon?: string
   variant?: "outline" | "secondary"
+  /** Rendered after the label, e.g. a status marker. */
+  trailing?: ReactNode
 }
 
 export function LocationSection({
@@ -43,6 +46,7 @@ export function LocationChips({
             <EntityIcon src={location.icon} alt="" className="size-4" />
           ) : null}
           {location.label}
+          {location.trailing}
         </Badge>
       ))}
     </div>

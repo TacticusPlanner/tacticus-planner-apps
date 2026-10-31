@@ -33,6 +33,12 @@ const savedOnslaughtProgress = {
 }
 let onslaughtProgressFixture: unknown = savedOnslaughtProgress
 vi.mock("@/entities/player-data-override", () => ({
+  battleProgressQueries: {
+    current: () => ({
+      queryKey: ["player-data-overrides", "battle-progress"],
+      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
+    }),
+  },
   campaignEventProgressQueries: {
     current: () => ({
       queryKey: ["player-data-overrides", "campaign-events"],
