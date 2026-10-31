@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
 
 import { isMacPlatform } from "@/shared/lib"
+import { CommunityHeaderLinks } from "@/widgets/account-menu"
 
 import { AuthControl } from "../providers/auth-control"
 import { UserJotFeedbackButton } from "../providers/userjot-feedback-button"
@@ -12,7 +13,7 @@ import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
 
-/** Slim global bar: app identity, navigation search (Ctrl/Cmd+K), and the account/preferences menu. */
+/** Slim global bar: app identity, navigation search (Ctrl/Cmd+K), community links, feedback, and the account/preferences menu. */
 export function DesktopTopBar({
   getEntryPath,
   isAuthenticated,
@@ -76,6 +77,7 @@ export function DesktopTopBar({
         </button>
       </div>
       <div className="flex shrink-0 items-center gap-2">
+        <CommunityHeaderLinks />
         <div data-testid="desktop-feedback">
           <UserJotFeedbackButton />
         </div>

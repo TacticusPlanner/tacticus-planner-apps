@@ -47,7 +47,7 @@ export function MobileHeader({
             isAuthenticated={isAuthenticated}
           >
             <AppLogo className="size-10" />
-            <BetaBadge className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-background" />
+            <BetaBadge className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1 bg-background" />
           </AppLogoHomeLink>
           <div className="flex min-w-0 flex-col">
             <h1
@@ -131,12 +131,13 @@ function MobileGuestSettings() {
             setOpen(false)
             openUserJot({ to: "updates" })
           }}
-        >
-          <TourButton
-            className="h-8 w-full justify-start px-2 font-normal"
-            variant="ghost"
-          />
-        </GuestPreferencesCard>
+          tourRow={
+            <TourButton
+              className="h-8 w-full justify-start px-2 font-normal"
+              variant="ghost"
+            />
+          }
+        />
       </PopoverContent>
     </Popover>
   )

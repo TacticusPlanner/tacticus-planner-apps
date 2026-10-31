@@ -38,7 +38,11 @@ vi.mock("react-i18next", () => ({
       options?.section ? `${key} ${options.section}` : key,
   }),
 }))
-vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
+vi.mock("@/shared/config", () => ({
+  BUY_ME_A_COFFEE_URL: "https://coffee.example",
+  DISCORD_INVITE_URL: "https://discord.example",
+  isUiKitEnabled: true,
+}))
 vi.mock("@azure/msal-react", () => ({ useMsal: () => ({ instance: {} }) }))
 vi.mock("@/shared/auth", () => ({
   useSignInRedirect: () => ({

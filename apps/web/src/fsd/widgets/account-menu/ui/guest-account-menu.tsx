@@ -11,21 +11,24 @@ import {
 import { USERJOT_ROADMAP_URL } from "../model/userjot-links"
 
 import {
+  CommunitySection,
   LanguagePickerView,
-  LegalLinkRows,
+  LegalLinks,
   MenuLinkRow,
   MenuRow,
+  MenuSection,
   PreferencesSection,
   type AccountMenuView,
 } from "./account-menu-parts"
 
-/** Guest Preferences (theme, language), the Roadmap and Changelog rows, and caller-supplied extra content
- *  (sign-in on desktop, the tour on mobile). Language opens an in-card picker; the view resets
- *  because popover content unmounts on close. */
+/** Guest Preferences (theme, language), Help & feedback (the tour on mobile, Roadmap, Changelog), Community,
+ *  caller-supplied extra content, and the legal links as a footer. Language opens an in-card picker; the view
+ *  resets because popover content unmounts on close. */
 export function GuestPreferencesCard({
   children,
   changelogUnavailable,
   onChangelog,
+  tourRow,
 }: {
   children?: ReactNode
   /** Why the Changelog row is disabled (the widget failed to load), or undefined when it works. */
@@ -33,6 +36,8 @@ export function GuestPreferencesCard({
   /** Opens the widget's Updates (and closes the surrounding menu), so reading there clears the unread dot.
    *  Omitted outside the app shell (public pages), where the UserJot widget is not mounted: no Changelog row. */
   onChangelog?: () => void
+  /** First Help & feedback row (the mobile header has no rail, so it adds the tour here). */
+  tourRow?: ReactNode
 }) {
   const { t } = useTranslation()
   const [view, setView] = useState<AccountMenuView>("main")
@@ -44,24 +49,28 @@ export function GuestPreferencesCard({
   return (
     <>
       <PreferencesSection onOpenLanguage={() => setView("language")} />
-      <MenuLinkRow
-        data-testid="auth-roadmap"
-        href={USERJOT_ROADMAP_URL}
-        icon={MapIcon}
-        label={t("feedback.roadmap")}
-      />
-      {onChangelog ? (
-        <MenuRow
-          data-testid="auth-changelog"
-          disabled={Boolean(changelogUnavailable)}
-          icon={Newspaper}
-          label={t("feedback.changelog")}
-          onClick={onChangelog}
-          title={changelogUnavailable}
+      <MenuSection data-testid="account-help" label={t("feedback.section")}>
+        {tourRow}
+        <MenuLinkRow
+          data-testid="auth-roadmap"
+          href={USERJOT_ROADMAP_URL}
+          icon={MapIcon}
+          label={t("feedback.roadmap")}
         />
-      ) : null}
-      <LegalLinkRows />
+        {onChangelog ? (
+          <MenuRow
+            data-testid="auth-changelog"
+            disabled={Boolean(changelogUnavailable)}
+            icon={Newspaper}
+            label={t("feedback.changelog")}
+            onClick={onChangelog}
+            title={changelogUnavailable}
+          />
+        ) : null}
+      </MenuSection>
+      <CommunitySection />
       {children}
+      <LegalLinks />
     </>
   )
 }

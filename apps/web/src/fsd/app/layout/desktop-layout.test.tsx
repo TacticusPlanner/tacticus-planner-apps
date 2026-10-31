@@ -16,7 +16,11 @@ vi.mock("react-i18next", () => ({
 // i18n setup calls `initReactI18next` at import time, which is incompatible with the plain
 // `useTranslation` mock above. `true` matches the non-production default so `navItems` keeps its
 // UI Kit entry.
-vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
+vi.mock("@/shared/config", () => ({
+  BUY_ME_A_COFFEE_URL: "https://coffee.example",
+  DISCORD_INVITE_URL: "https://discord.example",
+  isUiKitEnabled: true,
+}))
 
 vi.mock("@/widgets/account-menu/ui/player-data-sync-button", () => ({
   PlayerDataSyncButton: () => null,

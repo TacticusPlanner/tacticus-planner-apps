@@ -23,7 +23,8 @@
     "signedInWith": {
       "google": "Signed in with Google",
       "email": "Signed in with email"
-    }
+    },
+    "accountSection": "Account"
   },
   "catalog": {
     "badge": {
@@ -1686,7 +1687,8 @@
     "button": "Feedback",
     "send": "Send feedback",
     "roadmap": "Roadmap",
-    "changelog": "Changelog"
+    "changelog": "Changelog",
+    "section": "Help & feedback"
   },
   "theme": {
     "dark": "Dark",
@@ -2001,6 +2003,14 @@
     "terms": "Terms of use",
     "uiKit": "UI Kit",
     "lastUpdated": "Last updated {{date}}"
+  },
+  "community": {
+    "title": "Community",
+    "discord": "Discord",
+    "buyMeACoffee": "Buy Me a Coffee",
+    "discordLabel": "Join our Discord",
+    "buyMeACoffeeLabel": "Support us on Buy Me a Coffee",
+    "legal": "Legal"
   },
   "appInstall": {
     "menu": "Install app",
