@@ -490,6 +490,30 @@ describe("PlanWizard", () => {
     ).toHaveLength(0)
   })
 
+  it("opens Edit on the team's objectives, its depth estimate and the Power sort", async () => {
+    FARMING.status = "unavailable"
+    renderWizard(WITH_STORED_TEAM)
+    await next()
+    await next()
+    const stored = screen
+      .getAllByTestId("plan-wizard-team")
+      .find((team) => team.dataset.stored === "true")!
+    await userEvent.click(within(stored).getByTestId("plan-wizard-team-edit"))
+    await screen.findByTestId("team-editor-name")
+    const chips = screen.getAllByTestId("team-picker-objective-chip")
+    expect(
+      chips.map((chip) => chip.getAttribute("aria-pressed") === "true")
+    ).toEqual(chips.map((_, index) => index === 0))
+    expect(screen.getByTestId("team-picker-sort-power")).toBeEnabled()
+    expect(screen.getByTestId("team-picker-sort-power")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(
+      screen.getByTestId("team-editor-summary-depth")
+    ).not.toHaveTextContent("not set")
+  })
+
   it("sends an edited stored team's name with its update", async () => {
     FARMING.status = "unavailable"
     renderWizard(WITH_STORED_TEAM)
