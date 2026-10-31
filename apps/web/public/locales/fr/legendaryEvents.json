@@ -663,6 +663,22 @@
         "overflow_other": "{{count}} jetons au-delà de la réserve de la manche {{run}}",
         "overflow_unknown_one": "{{count}} jeton au-delà de la réserve de la prochaine manche",
         "overflow_unknown_other": "{{count}} jetons au-delà de la réserve de la prochaine manche"
+      },
+      "order": {
+        "label": "Ordre",
+        "points": "Points",
+        "missions": "Missions"
+      },
+      "missions": {
+        "title": "Missions de cette manche",
+        "doneAt": "terminée au jeton {{token}}",
+        "reached": "{{reached}}/{{needed}} à la fin de la manche",
+        "notReached": "non atteinte avec ce plan",
+        "estimate": "env.",
+        "untracked": "Chaque jeton compte : {{missions}}",
+        "step": "{{mission}} {{total}}/{{needed}}",
+        "completes": "Mission terminée · {{mission}}",
+        "none": "Aucune mission ouverte dans cette manche"
       }
     },
     "forecast": {

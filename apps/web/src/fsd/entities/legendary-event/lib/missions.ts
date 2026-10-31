@@ -82,6 +82,17 @@ export function openMissions({
 export interface BattleEnemies {
   factions: ReadonlySet<string>
   traits: ReadonlySet<string>
+  /** How many enemies and waves the battle holds, for mission counts; absent where only the
+   *  faction and trait sets are known. */
+  counts?: BattleEnemyCounts
+}
+
+interface BattleEnemyCounts {
+  waves: number
+  /** Every enemy across the waves, resolved through the dataset or not. */
+  enemies: number
+  byFaction: ReadonlyMap<string, number>
+  byTrait: ReadonlyMap<string, number>
 }
 
 /** Every wave's enemies of `battle`; an id the dataset cannot resolve adds nothing. */
@@ -94,15 +105,27 @@ export function battleEnemies(
 ): BattleEnemies {
   const factions = new Set<string>()
   const traits = new Set<string>()
+  const byFaction = new Map<string, number>()
+  const byTrait = new Map<string, number>()
+  let enemies = 0
   for (const wave of battle.waves) {
     for (const enemy of wave.enemies) {
+      enemies += 1
       const npc = npcsById.get(enemy.id)
       if (!npc) continue
       factions.add(npc.factionId)
-      for (const trait of npc.traits) traits.add(trait)
+      byFaction.set(npc.factionId, (byFaction.get(npc.factionId) ?? 0) + 1)
+      for (const trait of new Set(npc.traits)) {
+        traits.add(trait)
+        byTrait.set(trait, (byTrait.get(trait) ?? 0) + 1)
+      }
     }
   }
-  return { factions, traits }
+  return {
+    factions,
+    traits,
+    counts: { waves: battle.waves.length, enemies, byFaction, byTrait },
+  }
 }
 
 /**
@@ -148,6 +171,59 @@ export function tokenProgressesMission(
     default: {
       // A kind this client does not know progresses nothing rather than everything.
       return false
+    }
+  }
+}
+
+/** How far one token moves a mission (spec: a token's mission amount). `estimate` marks amounts
+ *  the planner cannot know exactly (who lands the kill, how many abilities are cast). */
+export interface MissionAmount {
+  amount: number
+  estimate: boolean
+}
+
+/**
+ * How much a won token adds to `mission`'s count, from the battle's enemy and wave counts and the
+ * team's non-reserve members; null for the untracked kinds and unknown kinds. A token that does
+ * not progress the mission (`tokenProgressesMission`) adds 0.
+ */
+export function tokenMissionAmount(
+  mission: LegendaryEventMission,
+  members: readonly LegendaryEventUnit[],
+  enemies: BattleEnemies | undefined
+): MissionAmount | null {
+  if (UNTRACKED_MISSION_KINDS.has(mission.kind)) return null
+  const progresses = tokenProgressesMission(mission, members, enemies)
+  const counts = enemies?.counts
+  switch (mission.kind) {
+    case "defeatFaction": {
+      if (!progresses || !counts) return { amount: 0, estimate: false }
+      const amount = mission.trait
+        ? (counts.byTrait.get(mission.trait) ?? 0)
+        : (counts.byFaction.get(mission.faction ?? "") ?? 0)
+      return { amount, estimate: false }
+    }
+    case "defeatWithAlliance":
+    case "defeatWithDamageType": {
+      // Every enemy, as if the matching units land every kill.
+      return { amount: progresses ? (counts?.enemies ?? 0) : 0, estimate: true }
+    }
+    case "damageType": {
+      // The waves the matching units deal that damage over.
+      return { amount: progresses ? (counts?.waves ?? 0) : 0, estimate: true }
+    }
+    case "useAbilitiesWithAlliance": {
+      // One ability per matching member per battle.
+      const amount = members.filter(
+        (unit) => unit.alliance === mission.alliance
+      ).length
+      return { amount, estimate: true }
+    }
+    case "winWithoutTrait": {
+      return { amount: progresses ? 1 : 0, estimate: false }
+    }
+    default: {
+      return null
     }
   }
 }

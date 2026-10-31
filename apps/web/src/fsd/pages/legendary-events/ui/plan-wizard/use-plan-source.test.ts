@@ -42,6 +42,9 @@ vi.mock("@/shared/unit-power", async (importOriginal) => ({
 vi.mock("@/features/legendary-event-goals", () => ({
   useLegendaryEventGoalTargets: () => FAILED_GOALS,
 }))
+vi.mock("@/entities/npc", () => ({
+  useNpcsById: () => ({ status: "loading" }),
+}))
 vi.mock("@/entities/legendary-event", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/legendary-event")>()),
   useLegendaryEvent: () => ({

@@ -663,6 +663,22 @@
         "overflow_other": "{{count}} Tokens über das Kontingent von Durchlauf {{run}} hinaus",
         "overflow_unknown_one": "{{count}} Token über das Kontingent des nächsten Durchlaufs hinaus",
         "overflow_unknown_other": "{{count}} Tokens über das Kontingent des nächsten Durchlaufs hinaus"
+      },
+      "order": {
+        "label": "Reihenfolge",
+        "points": "Punkte",
+        "missions": "Missionen"
+      },
+      "missions": {
+        "title": "Missionen in diesem Lauf",
+        "doneAt": "erledigt bei Token {{token}}",
+        "reached": "{{reached}}/{{needed}} bis Laufende",
+        "notReached": "mit diesem Plan nicht erreicht",
+        "estimate": "ca.",
+        "untracked": "Jeder Token zählt: {{missions}}",
+        "step": "{{mission}} {{total}}/{{needed}}",
+        "completes": "Mission erledigt · {{mission}}",
+        "none": "Keine offenen Missionen in diesem Lauf"
       }
     },
     "forecast": {

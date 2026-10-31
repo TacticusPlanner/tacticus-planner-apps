@@ -663,6 +663,22 @@
         "overflow_other": "{{count}} tokens beyond run {{run}}'s supply",
         "overflow_unknown_one": "{{count}} token beyond the next run's supply",
         "overflow_unknown_other": "{{count}} tokens beyond the next run's supply"
+      },
+      "order": {
+        "label": "Order",
+        "points": "Points",
+        "missions": "Missions"
+      },
+      "missions": {
+        "title": "Missions this run",
+        "doneAt": "done at token {{token}}",
+        "reached": "{{reached}}/{{needed}} by the end of the run",
+        "notReached": "not reached by this plan",
+        "estimate": "about",
+        "untracked": "Every token counts: {{missions}}",
+        "step": "{{mission}} {{total}}/{{needed}}",
+        "completes": "Mission done · {{mission}}",
+        "none": "No open missions this run"
       }
     },
     "forecast": {

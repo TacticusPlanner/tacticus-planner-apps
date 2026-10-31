@@ -27,6 +27,10 @@ import {
   type LegendaryEventRunDates,
 } from "../../lib/run-dates"
 import { useLegendaryEventGoalTargets } from "@/features/legendary-event-goals"
+import {
+  useTokenMissionsSource,
+  type TokenPlanMissionsSource,
+} from "@/features/legendary-event-tokens"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
@@ -73,6 +77,8 @@ export type PlanSource =
       masterTotal: (unitId: string) => number
       hordeMultiplier: (unitId: string) => number
       goalTargets: ReadonlyMap<string, LegendaryEventGoalTarget>
+      /** What the Runs and tokens step's Missions order reads; absent until its reads are in. */
+      missions?: TokenPlanMissionsSource
     }
 
 function useAllowedUnitIds(event: LegendaryEvent | undefined) {
@@ -126,6 +132,7 @@ export function usePlanSource(eventId: string): PlanSource {
   const unitsData = units.status === "ready" ? units.data : undefined
   const rosterData = roster.status === "ready" ? roster.data : undefined
   const battlesData = battles.status === "ready" ? battles.data : undefined
+  const missions = useTokenMissionsSource(eventData, unitsData, battlesData)
   const progressData = progress.status === "ready" ? progress.data : undefined
   const progressObservedAtMs =
     syncTimes.status === "ready" ? syncTimes.data.progressObservedAtMs : null
@@ -239,8 +246,15 @@ export function usePlanSource(eventId: string): PlanSource {
     })
   }
 
+  // The missions source lands after the freeze when the NPC dataset is slower; it only feeds the
+  // Missions order, so it joins the frozen inputs without restarting anything.
+  const frozenSource = useMemo(
+    () => (frozen && missions ? { ...frozen, missions } : frozen),
+    [frozen, missions]
+  )
+
   if (!isAuthenticated) return { status: "signedOut" }
-  if (frozen) {
+  if (frozen && frozenSource) {
     const { inputs } = frozen
     const economy = {
       runs: inputs.plan.runs ?? [],
@@ -253,7 +267,7 @@ export function usePlanSource(eventId: string): PlanSource {
         reason: inputs.event.rewards ? "fullyAscended" : "noLadder",
       }
     }
-    return frozen
+    return frozenSource
   }
   if (failed || plan.status === "error") {
     return {
@@ -285,6 +299,7 @@ export function usePlanSource(eventId: string): PlanSource {
         event: eventData,
         ...ready,
         goalTargets: NO_GOAL_TARGETS,
+        missions,
       }
     }
     return { status: "loading" }
@@ -294,5 +309,6 @@ export function usePlanSource(eventId: string): PlanSource {
     event: eventData,
     ...ready,
     goalTargets: goalTargets.byUnit,
+    missions,
   }
 }

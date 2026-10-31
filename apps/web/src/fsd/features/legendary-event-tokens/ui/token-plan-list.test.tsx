@@ -1,6 +1,7 @@
 import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { eventMissions } from "@/entities/legendary-event"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen } from "@/test/render"
@@ -242,5 +243,92 @@ describe("TokenPlanList on another page", () => {
     expect(
       Object.keys(localStorage).filter((key) => key !== "wizard.open")
     ).toEqual([])
+  })
+
+  describe("Missions order", () => {
+    // Uthar regular 2: "Defeat 75 AdMechs".
+    const admech = {
+      track: "regular" as const,
+      mission: eventMissions(utharEvent, "regular").find(
+        (mission) => mission.index === 2
+      )!,
+    }
+    const withMissionOrder = (): TokenPlanView => {
+      const view = buildTokenPlanView(workedViewInput())
+      if (view.kind !== "ready") throw new Error("worked view is not ready")
+      const count = view.plan.tokens.length
+      const tokens = [...view.plan.tokens].reverse()
+      return {
+        ...view,
+        byRun: splitPlanByRun(count, [
+          {
+            run: 1,
+            state: "now",
+            unknownRun: false,
+            free: count,
+            ad: 0,
+            bonusDelivery: 0,
+            total: count,
+          },
+        ]),
+        missionOrder: {
+          tokens,
+          markers: [],
+          steps: tokens.map((_, index) =>
+            index === 0
+              ? [
+                  {
+                    ref: admech,
+                    total: 75,
+                    needed: 75,
+                    completes: true,
+                    estimate: false,
+                  },
+                ]
+              : []
+          ),
+          runs: [
+            {
+              run: 1,
+              missions: [
+                {
+                  ref: admech,
+                  needed: 75,
+                  reached: 75,
+                  doneAt: 0,
+                  estimate: false,
+                },
+              ],
+              untracked: [],
+            },
+          ],
+        },
+      }
+    }
+
+    it("switches to the Missions order and remembers it", () => {
+      const view = withMissionOrder()
+      const { unmount } = renderList(view)
+      expand()
+
+      expect(screen.queryByText("Missions this run")).toBeNull()
+      fireEvent.click(screen.getByRole("radio", { name: "Missions" }))
+
+      expect(screen.getByText("Missions this run")).toBeInTheDocument()
+      expect(screen.getByText("done at token 1")).toBeInTheDocument()
+      const first = screen.getAllByTestId("token-plan-row")[0]!
+      expect(first).toHaveTextContent(/Mission done · Defeat 75 /)
+      unmount()
+
+      renderList(view)
+      expect(screen.getByText("Missions this run")).toBeInTheDocument()
+    })
+
+    it("has no switch without a Missions order", () => {
+      renderList(buildTokenPlanView(workedViewInput()))
+      expand()
+
+      expect(screen.queryByRole("radio", { name: "Missions" })).toBeNull()
+    })
   })
 })
