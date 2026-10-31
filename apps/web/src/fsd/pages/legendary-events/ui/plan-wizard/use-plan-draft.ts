@@ -406,10 +406,14 @@ export function usePlanDraft(
   const teamName = useDraftTeamNames(inputs, evaluation.teams)
   const tokenView = useMemo(
     () =>
-      draftTokenView(inputs, evaluation.teams, planEconomy, (team) =>
-        teamName(team.id)
+      draftTokenView(
+        inputs,
+        evaluation.teams,
+        planEconomy,
+        (team) => teamName(team.id),
+        source.missions
       ),
-    [inputs, evaluation, planEconomy, teamName]
+    [inputs, evaluation, planEconomy, teamName, source.missions]
   )
   const chains = useMemo(
     () =>

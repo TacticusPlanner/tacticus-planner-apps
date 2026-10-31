@@ -9,6 +9,7 @@ import {
 } from "@/entities/legendary-event"
 import {
   buildTokenPlanView,
+  type TokenPlanMissionsSource,
   type TokenPlanView,
 } from "@/features/legendary-event-tokens"
 
@@ -48,12 +49,14 @@ function draftPlan(
   }
 }
 
-/** The token plan, supply and forecast of the draft, each token at its run's depth. */
+/** The token plan, supply and forecast of the draft, each token at its run's depth; with
+ *  `missions`, also its Missions order. */
 export function draftTokenView(
   inputs: PlanInputs,
   teams: readonly DraftTeam[],
   economy: PlanEconomy,
-  teamName?: (team: LegendaryEventTeam) => string
+  teamName?: (team: LegendaryEventTeam) => string,
+  missions?: TokenPlanMissionsSource
 ): TokenPlanView {
   return buildTokenPlanView({
     event: inputs.event,
@@ -71,6 +74,7 @@ export function draftTokenView(
     // Every draft team carries a depth per run, so no live estimate is read.
     estimates: { kind: "hidden" },
     teamName,
+    missions,
     perRunDepths: true,
   })
 }

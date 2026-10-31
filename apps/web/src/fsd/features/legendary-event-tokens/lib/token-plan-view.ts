@@ -41,6 +41,8 @@ import {
   type TokenMissionsInput,
 } from "./token-missions"
 import { splitPlanByRun, type PlanByRun } from "./token-runs"
+import { missionOrder, type MissionOrder } from "./mission-order"
+import type { TokenMarker } from "./run-forecast"
 
 /** A lane's team estimator, as the page builds it from the Stage 5 clear estimates. */
 type LaneTeamEstimator = {
@@ -128,6 +130,9 @@ export interface TokenPlanReady {
   /** The run an upcoming event starts next (`run` null when the run is unknown); null when the
    *  event is active. */
   upcoming: { run: LegendaryEventRun | null } | null
+  /** The Missions order of the plan (spec: Missions order) with its forecast markers; null without
+   *  a missions source or a token supply. */
+  missionOrder: (MissionOrder & { markers: TokenMarker[] }) | null
   /** Tokens left over across runs while the plan is shorter than the supply, with the first lane
    *  that still has points left; null when every token has a battle to play. */
   leftover: { tokens: number; laneId: LegendaryEventLaneId | null } | null
@@ -243,25 +248,66 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     teams.map((team) => [team.id, team.memberUnitIds])
   )
   const source = input.missions
+  const membersOf = (teamId: string) =>
+    source
+      ? (membersByTeam.get(teamId) ?? []).flatMap((id) => {
+          const unit = source.unitsById.get(id)
+          return unit ? [unit] : []
+        })
+      : []
+  const missionsOf = (run: LegendaryEventRun | null) =>
+    source
+      ? openMissions({
+          event: source.event,
+          runs: plan.data!.runs,
+          currentRun: run,
+          showPaidOptions: plan.data!.showPaidOptions,
+        })
+      : []
+  // Before run 1 (or between runs) the next run's missions are the ones to plan for.
+  const missionRun = resolution.currentRun ?? resolution.nextRun
   const missions =
     next && source
       ? nextTokenMissions({
           plan: tokenPlan,
           next,
-          open: openMissions({
-            event: source.event,
-            runs: plan.data.runs,
-            currentRun: resolution.currentRun,
-            showPaidOptions: plan.data.showPaidOptions,
-          }),
-          membersOf: (teamId) =>
-            (membersByTeam.get(teamId) ?? []).flatMap((id) => {
-              const unit = source.unitsById.get(id)
-              return unit ? [unit] : []
-            }),
+          open: missionsOf(missionRun),
+          membersOf,
           enemiesOf: source.enemiesOf,
         })
       : null
+  const byRun = supply
+    ? splitPlanByRun(
+        tokenPlan.tokens.length,
+        supply,
+        input.perRunDepths
+          ? tokenPlan.tokens.map((token) => token.slot)
+          : undefined
+      )
+    : null
+  const ordered =
+    source && byRun && tokenPlan.tokens.length > 0
+      ? missionOrder({
+          tokens: tokenPlan.tokens,
+          sections: byRun.sections,
+          missionsOf,
+          membersOf,
+          enemiesOf: source.enemiesOf,
+        })
+      : null
+  const orderedMarkers =
+    ordered && supply && event.rewards
+      ? forecastRuns({
+          rewards: event.rewards,
+          ohSoCloseOffer: event.ohSoCloseOffer,
+          progress: entry,
+          supply,
+          fromStep: unitNextAscensionStep(input.eventUnit),
+          tokens: ordered.tokens,
+          runs: plan.data.runs,
+          showPaidOptions: plan.data.showPaidOptions,
+        }).markers
+      : []
 
   return {
     kind: "ready",
@@ -278,15 +324,8 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
       return figure ? [{ laneId: lane.laneId, figure }] : []
     }),
     forecast,
-    byRun: supply
-      ? splitPlanByRun(
-          tokenPlan.tokens.length,
-          supply,
-          input.perRunDepths
-            ? tokenPlan.tokens.map((token) => token.slot)
-            : undefined
-        )
-      : null,
+    byRun,
+    missionOrder: ordered ? { ...ordered, markers: orderedMarkers } : null,
     upcoming:
       lifecycle.state !== "upcoming" ? null : { run: resolution.nextRun },
     leftover:

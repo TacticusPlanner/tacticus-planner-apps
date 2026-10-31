@@ -5,10 +5,12 @@ import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 import type { LegendaryEvent } from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
 
+import type { TokenMissionStep } from "../lib/mission-order"
 import type { TokenMarker } from "../lib/run-forecast"
 import { groupTokensByTeam } from "../lib/token-groups"
 import type { TokenPlanView } from "../lib/token-plan-view"
 import type { RunTokenSection } from "../lib/token-runs"
+import { TokenMissionSteps } from "./mission-order-view"
 import { TokenObjectives } from "./token-objectives"
 
 type ReadyView = Extract<TokenPlanView, { kind: "ready" }>
@@ -78,6 +80,7 @@ export function TokenGroups({
   start,
   count,
   markers,
+  steps,
   event,
   isMobile,
 }: {
@@ -85,6 +88,8 @@ export function TokenGroups({
   start: number
   count: number
   markers: readonly (TokenMarker | undefined)[]
+  /** Per plan index, the missions each token moves (the Missions order only). */
+  steps?: readonly (readonly TokenMissionStep[])[]
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
   isMobile: boolean
 }) {
@@ -108,6 +113,7 @@ export function TokenGroups({
                   isMobile={isMobile}
                   key={index}
                   marker={markers[index]}
+                  steps={steps?.[index]}
                   token={token}
                 />
               )
@@ -124,12 +130,14 @@ function TokenRow({
   token,
   index,
   marker,
+  steps,
   isMobile,
 }: {
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
   token: PlannedTokenRow
   index: number
   marker: TokenMarker | undefined
+  steps: readonly TokenMissionStep[] | undefined
   isMobile: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
@@ -229,6 +237,7 @@ function TokenRow({
           ))}
         </ul>
       ) : null}
+      {steps ? <TokenMissionSteps steps={steps} /> : null}
     </li>
   )
 }
