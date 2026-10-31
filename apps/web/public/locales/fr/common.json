@@ -1,6 +1,7 @@
 {
   "app": {
-    "name": "Tacticus Planner"
+    "name": "Tacticus Planner",
+    "beta": "BÊTA"
   },
   "common": {
     "close": "Fermer",
@@ -629,6 +630,14 @@
     },
     "calendar": {
       "title": "Calendrier des événements"
+    },
+    "betaPromo": {
+      "title": "Cadeau de lancement de la bêta",
+      "body": "Merci d'essayer la bêta de la V2. Utilisez ce code promo dans Tacticus avant le {{date}}.",
+      "copy": "Copier le code",
+      "copied": "Copié",
+      "copyFailed": "Copie impossible",
+      "dismiss": "Masquer le code promo"
     }
   },
   "guild": {

@@ -18,7 +18,7 @@ import {
 
 import { AuthControl } from "../providers/auth-control"
 import { useUserJot } from "../providers/userjot-provider"
-import { AppLogo, AppLogoHomeLink } from "./app-logo"
+import { AppLogo, AppLogoHomeLink, BetaBadge } from "./app-logo"
 import type { NavItem } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
 import { PAGE_HEADING_ID } from "./use-focus-page-heading"
@@ -53,10 +53,11 @@ export function MobileHeader({
       <div className="flex h-20 items-center justify-between gap-3 px-4">
         <div className="flex min-w-0 items-center gap-3">
           <AppLogoHomeLink
-            className="shrink-0 rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+            className="relative shrink-0 rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
             isAuthenticated={isAuthenticated}
           >
             <AppLogo className="size-10" />
+            <BetaBadge className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-background" />
           </AppLogoHomeLink>
           <div className="flex min-w-0 flex-col">
             <h1

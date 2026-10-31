@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
+import { Badge } from "@workspace/ui/components/badge"
+import { cn } from "@workspace/ui/lib/utils"
 
 export function AppLogo({ className }: { className?: string }) {
   return (
@@ -37,5 +39,22 @@ export function AppLogoHomeLink({
     >
       {children}
     </Link>
+  )
+}
+
+/** Marks the app as a beta release wherever the logo shows. */
+export function BetaBadge({ className }: { className?: string }) {
+  const { t } = useTranslation()
+  return (
+    <Badge
+      className={cn(
+        "shrink-0 px-1.5 text-[0.625rem] tracking-wider",
+        className
+      )}
+      data-testid="app-beta-badge"
+      variant="outline"
+    >
+      {t("app.beta")}
+    </Badge>
   )
 }
