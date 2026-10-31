@@ -50,21 +50,13 @@ describe("LandingPage", () => {
     ).toBeVisible()
   })
 
-  it("starts sign-in from the primary hero action", () => {
+  it("starts account creation from the primary hero action", () => {
     renderLanding()
 
     fireEvent.click(screen.getByRole("button", { name: "hero.getStarted" }))
 
-    expect(signIn).toHaveBeenCalledOnce()
-  })
-
-  it("shows the checking label while a silent restore runs", () => {
-    signInState.mockReturnValue({ checkingSignIn: true, disabled: false })
-    renderLanding()
-
-    expect(
-      screen.getByRole("button", { name: "common:auth.checkingSignIn" })
-    ).toBeEnabled()
+    expect(signUp).toHaveBeenCalledOnce()
+    expect(signIn).not.toHaveBeenCalled()
   })
 
   it("disables the primary action during an MSAL interaction", () => {
@@ -88,17 +80,17 @@ describe("LandingPage", () => {
     ).not.toBeInTheDocument()
   })
 
-  describe("hero Sign up", () => {
-    const signUpButton = () =>
-      screen.getByRole("button", { name: "common:auth.signUp" })
+  describe("hero Sign in", () => {
+    const signInButton = () =>
+      screen.getByRole("button", { name: "common:auth.signIn" })
 
-    it("starts account creation for a signed-out visitor", () => {
+    it("signs a returning player in", () => {
       renderLanding()
 
-      fireEvent.click(signUpButton())
+      fireEvent.click(signInButton())
 
-      expect(signUp).toHaveBeenCalledOnce()
-      expect(signIn).not.toHaveBeenCalled()
+      expect(signIn).toHaveBeenCalledOnce()
+      expect(signUp).not.toHaveBeenCalled()
     })
 
     it("sits between Get started and Browse the library", () => {
@@ -109,11 +101,11 @@ describe("LandingPage", () => {
       })
       const browse = screen.getByRole("link", { name: "hero.browseLibrary" })
       expect(
-        getStarted.compareDocumentPosition(signUpButton()) &
+        getStarted.compareDocumentPosition(signInButton()) &
           Node.DOCUMENT_POSITION_FOLLOWING
       ).toBeTruthy()
       expect(
-        signUpButton().compareDocumentPosition(browse) &
+        signInButton().compareDocumentPosition(browse) &
           Node.DOCUMENT_POSITION_FOLLOWING
       ).toBeTruthy()
     })
@@ -123,22 +115,55 @@ describe("LandingPage", () => {
       renderLanding()
 
       expect(
-        screen.queryByRole("button", { name: "common:auth.signUp" })
+        screen.queryByRole("button", { name: "common:auth.signIn" })
       ).not.toBeInTheDocument()
     })
 
-    it("stays available while the silent check runs", () => {
+    it("shows the checking label, and stays available, while a silent restore runs", () => {
       signInState.mockReturnValue({ checkingSignIn: true, disabled: false })
       renderLanding()
 
-      expect(signUpButton()).toBeEnabled()
+      expect(
+        screen.getByRole("button", { name: "common:auth.checkingSignIn" })
+      ).toBeEnabled()
     })
 
     it("is disabled during an MSAL interaction", () => {
       signInState.mockReturnValue({ checkingSignIn: false, disabled: true })
       renderLanding()
 
-      expect(signUpButton()).toBeDisabled()
+      expect(signInButton()).toBeDisabled()
+    })
+  })
+
+  describe("sign-in-required notice", () => {
+    it("names the page a sign-in-only link asked for", () => {
+      render(
+        <MemoryRouter>
+          <LandingPage signInRequired={{ pageTitle: "Goals" }} />
+        </MemoryRouter>
+      )
+
+      expect(screen.getByText("signInRequired.titleNamed")).toBeInTheDocument()
+      expect(screen.getByText("signInRequired.body")).toBeInTheDocument()
+    })
+
+    it("falls back to a generic title for a page it cannot name", () => {
+      render(
+        <MemoryRouter>
+          <LandingPage signInRequired={{}} />
+        </MemoryRouter>
+      )
+
+      expect(screen.getByText("signInRequired.title")).toBeInTheDocument()
+    })
+
+    it("is absent on a plain visit", () => {
+      renderLanding()
+
+      expect(
+        screen.queryByTestId("landing-sign-in-required")
+      ).not.toBeInTheDocument()
     })
   })
 

@@ -1,1 +1,1 @@
-export { LandingPage } from "./ui/landing-page"
+export { LandingPage, type SignInRequired } from "./ui/landing-page"

@@ -5,10 +5,12 @@ import { Navigate, useLocation, useSearchParams } from "react-router"
 import { InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
-import { LandingPage } from "@/pages/landing"
+import { LandingPage, type SignInRequired } from "@/pages/landing"
 
 import { BootScreen } from "./boot-screen"
+import { navItems, subItemLabel } from "./layout/nav-items"
 import { PublicLayout } from "./layout/public-layout"
+import { resolveActiveNavigation } from "./layout/resolve-active-navigation"
 import { resolveNextPath } from "./resolve-next-path"
 import { useAuthPending } from "./use-auth-pending"
 
@@ -69,19 +71,41 @@ export function LandingRoute() {
   // the landing page renders either way and its sign-in button shows the check in progress.
   return (
     <Suspense fallback={<BootScreen />}>
-      <LandingContent />
+      <LandingContent next={next} />
     </Suspense>
   )
 }
 
 // Loads the landing namespace before the public chrome mounts, so the top bar and footer never
 // appear around an empty middle while the page's copy downloads (spec: app-startup-rendering).
-function LandingContent() {
+function LandingContent({ next }: { next: string | null }) {
   useTranslation("landing")
+  const signInRequired = useSignInRequired(next)
 
   return (
     <PublicLayout>
-      <LandingPage />
+      <LandingPage signInRequired={signInRequired} />
     </PublicLayout>
   )
+}
+
+/** A `next` on "/" means a sign-in-only address sent the visitor here; the landing page says so and
+ *  names that page when the navigation knows it (spec: landing-page). */
+function useSignInRequired(next: string | null): SignInRequired | undefined {
+  const { t } = useTranslation(["common", "dailies", "library"])
+  if (next === null) return undefined
+
+  const destination = resolveNextPath(next, { allowSetupDestination: true })
+  const pathname = destination.split(/[?#]/)[0] ?? destination
+  const { activeItem, activeChild } = resolveActiveNavigation(
+    navItems,
+    pathname
+  )
+  const pageTitle = activeChild
+    ? subItemLabel(t, activeChild)
+    : activeItem
+      ? t(activeItem.labelKey)
+      : undefined
+
+  return { pageTitle }
 }

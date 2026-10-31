@@ -288,7 +288,10 @@
       "feedbackDescription": "Open the feedback, roadmap, and updates widget",
       "feedbackUnavailable": "Feedback is unavailable right now",
       "tourDescription": "Walk through this page's features",
-      "tourRunning": "A tour is already running"
+      "tourRunning": "A tour is already running",
+      "signInDescription": "Plan goals, dailies, Legendary Events and guild raids with your own roster",
+      "signUpDescription": "Create a free account to plan with your own roster",
+      "signInBusy": "Sign-in is already in progress"
     },
     "breadcrumb": "Breadcrumb"
   },
@@ -2051,5 +2054,12 @@
   "tacticusUserId": {
     "invalid": "Enter your Tacticus user ID as a GUID, for example 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
     "inUse": "This Tacticus user ID is already linked to another planner account."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "This address doesn't match a page in the planner. The link may be mistyped or out of date.",
+    "goHome": "Go to Home",
+    "browseLibrary": "Browse the library",
+    "goToStart": "Go to the start page"
   }
 }

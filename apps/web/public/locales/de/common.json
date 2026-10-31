@@ -288,7 +288,10 @@
       "feedbackDescription": "Widget für Feedback, Roadmap und Neuigkeiten öffnen",
       "feedbackUnavailable": "Feedback ist gerade nicht verfügbar",
       "tourDescription": "Die Funktionen dieser Seite kennenlernen",
-      "tourRunning": "Eine Tour läuft bereits"
+      "tourRunning": "Eine Tour läuft bereits",
+      "signInDescription": "Plane Ziele, Dailies, Legendary Events und Gildenraids mit deinem eigenen Roster",
+      "signUpDescription": "Erstelle ein kostenloses Konto, um mit deinem eigenen Roster zu planen",
+      "signInBusy": "Die Anmeldung läuft bereits"
     },
     "breadcrumb": "Seitenpfad"
   },
@@ -2051,5 +2054,12 @@
   "tacticusUserId": {
     "invalid": "Gib deine Tacticus-Benutzer-ID als GUID ein, zum Beispiel 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
     "inUse": "Diese Tacticus-Benutzer-ID ist bereits mit einem anderen Planner-Konto verknüpft."
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Diese Adresse gehört zu keiner Seite des Planers. Der Link ist vielleicht falsch geschrieben oder veraltet.",
+    "goHome": "Zur Startseite",
+    "browseLibrary": "Bibliothek durchsuchen",
+    "goToStart": "Zur Einstiegsseite"
   }
 }

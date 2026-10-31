@@ -1,5 +1,4 @@
 {
-  "authError": "Die Authentifizierung konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
   "hero": {
     "eyebrow": "Kostenloser Fan-Planer für Tacticus",
     "title": "Wisse, was heute zu tun ist, und warum.",
@@ -67,5 +66,10 @@
       "description": "Sieh dir an, was jeder Tages-Shop an jedem Wochentag anbieten kann."
     },
     "more": "Außerdem in der Bibliothek:"
+  },
+  "signInRequired": {
+    "title": "Melde dich an, um fortzufahren",
+    "titleNamed": "Melde dich an, um {{page}} zu öffnen",
+    "body": "Diese Seite plant mit deinem eigenen Roster und braucht deshalb ein kostenloses Konto. Nach der Anmeldung geht es direkt dorthin."
   }
 }

@@ -7,8 +7,15 @@ import { App } from "@/app"
 import { AuthProvider, I18nProvider, QueryProvider } from "@/app/providers"
 import { installPreloadErrorRecovery } from "@/app/stale-build-recovery"
 import { listenForInstallPrompt } from "@/widgets/app-install"
-import { initializeAuthentication, startSilentSignInOnce } from "@/shared/auth"
-import { installGlobalErrorCapture } from "@/shared/lib"
+import {
+  claimAccountLocalData,
+  initializeAuthentication,
+  startSilentSignInOnce,
+} from "@/shared/auth"
+import {
+  installGlobalErrorCapture,
+  migrateLegacyAccountKeys,
+} from "@/shared/lib"
 import { ThemeProvider } from "@/shared/theme"
 import { TourProvider } from "@/shared/tour"
 
@@ -20,7 +27,11 @@ installGlobalErrorCapture()
 listenForInstallPrompt()
 
 async function bootstrap() {
+  // Before anything reads localStorage: account data kept under pre-prefix keys moves under it.
+  migrateLegacyAccountKeys()
   const msalInstance = await initializeAuthentication()
+  // Before anything reads the player data: a copy left by a different account is dropped.
+  await claimAccountLocalData(msalInstance.getActiveAccount()?.homeAccountId)
   // Before the first render, so the first API call (GET /account) finds the restore already in flight
   // and waits on it instead of racing a second hidden sign-in frame against it.
   startSilentSignInOnce(msalInstance)

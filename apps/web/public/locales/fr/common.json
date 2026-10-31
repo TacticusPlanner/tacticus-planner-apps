@@ -288,7 +288,10 @@
       "feedbackDescription": "Ouvrir le widget d'avis, de feuille de route et de nouveautés",
       "feedbackUnavailable": "Les avis sont indisponibles pour le moment",
       "tourDescription": "Découvrir les fonctionnalités de cette page",
-      "tourRunning": "Une visite est déjà en cours"
+      "tourRunning": "Une visite est déjà en cours",
+      "signInDescription": "Planifiez objectifs, quotidiennes, Événements légendaires et raids de guilde avec votre propre roster",
+      "signUpDescription": "Créez un compte gratuit pour planifier avec votre propre roster",
+      "signInBusy": "Une connexion est déjà en cours"
     },
     "breadcrumb": "Fil d'Ariane"
   },
@@ -2051,5 +2054,12 @@
   "tacticusUserId": {
     "invalid": "Saisissez votre ID utilisateur Tacticus au format GUID, par exemple 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
     "inUse": "Cet ID utilisateur Tacticus est déjà lié à un autre compte du planificateur."
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "Cette adresse ne correspond à aucune page du planificateur. Le lien est peut-être mal saisi ou obsolète.",
+    "goHome": "Aller à l'accueil",
+    "browseLibrary": "Parcourir la bibliothèque",
+    "goToStart": "Aller à la page de départ"
   }
 }

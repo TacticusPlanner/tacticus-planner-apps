@@ -3,7 +3,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Navigate, type RouteObject } from "react-router"
+import { type RouteObject } from "react-router"
 
 import { useIsAuthenticated } from "@azure/msal-react"
 
@@ -48,6 +48,7 @@ import {
   LandingRoute,
 } from "./auth-route-guards"
 import { AccountSetupLayout } from "./layout/account-setup-layout"
+import { NotFoundPage } from "./not-found-page"
 import { AppShell } from "./layout/app-shell"
 import { PublicLayout } from "./layout/public-layout"
 import { OnboardingGate, SetupRedirect } from "./onboarding-gate"
@@ -129,7 +130,7 @@ function PublicShellRoute({ children }: { children: ReactNode }) {
   )
 }
 
-function NotFoundRedirect() {
+function NotFoundRoute() {
   const isAuthenticated = useIsAuthenticated()
   const authPending = useAuthPending()
 
@@ -137,7 +138,7 @@ function NotFoundRedirect() {
     return <AuthResolving />
   }
 
-  return <Navigate replace to={isAuthenticated ? "/home" : "/"} />
+  return <NotFoundPage isAuthenticated={isAuthenticated} />
 }
 
 // React Router v8 data-mode route config (consumed by createBrowserRouter in app/index.tsx). Auth guards
@@ -276,7 +277,7 @@ const appRoutes: RouteObject[] = [
         loader: preloadGuildPage,
       },
       // Public component showcase for local/QA use вЂ” never registered in production (see
-      // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" redirect below)
+      // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" not-found page below)
       // there regardless of how someone reaches the URL.
       ...(isUiKitEnabled
         ? [
@@ -287,7 +288,7 @@ const appRoutes: RouteObject[] = [
             },
           ]
         : []),
-      { path: "*", element: <NotFoundRedirect /> },
+      { path: "*", element: <NotFoundRoute /> },
     ],
   },
 ]

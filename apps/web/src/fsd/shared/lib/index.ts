@@ -37,9 +37,11 @@ export {
   type ReadState,
 } from "./use-read-state"
 export {
+  accountStorageKey,
   accountStoragePrefix,
   installGlobalErrorCapture,
   isMacPlatform,
+  migrateLegacyAccountKeys,
   reportError,
   safeStorage,
   setErrorReporter,
