@@ -29,8 +29,12 @@ vi.mock("@azure/msal-react", () => ({
 const silentSignInStatus = vi.fn(() => "idle")
 
 vi.mock("@/shared/auth", () => ({
-  loginRequest: { scopes: ["api"] },
-  useSilentSignInStatus: () => silentSignInStatus(),
+  useSignInRedirect: () => ({
+    signIn: () => void loginRedirect({ scopes: ["api"] }),
+    signUp: () => void loginRedirect({ scopes: ["api"], prompt: "create" }),
+    disabled: false,
+    checkingSignIn: silentSignInStatus() === "checking",
+  }),
 }))
 
 // Mirrors desktop-layout.test.tsx's reasoning: nav-items.ts reads `isUiKitEnabled` from the real
@@ -178,7 +182,7 @@ describe("MobileHeader", () => {
 
 describe("MobileBottomNav actions", () => {
   it("renders Create Goal and Sync with Tacticus as distinct action buttons, not nav links", () => {
-    renderShell()
+    renderShell(vi.fn(), true)
 
     const createGoal = screen.getByTestId("mobile-create-goal-button")
     const sync = screen.getByTestId("mobile-sync-button")
@@ -193,8 +197,31 @@ describe("MobileBottomNav actions", () => {
     expect(sync).toHaveTextContent("nav.sync")
   })
 
-  it("renders the requested mobile navigation order", () => {
+  it("gives a guest Library, Sign up and My Game instead of actions that need an account", () => {
     renderShell()
+
+    const nav = screen.getByTestId("primary-nav")
+    expect(
+      Array.from(nav.children).map((item) => item.textContent?.trim())
+    ).toEqual([
+      "library:section.label",
+      "auth.signUp",
+      "nav.myGame",
+      "nav.menu",
+    ])
+    expect(
+      screen.queryByTestId("mobile-create-goal-button")
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId("mobile-sync-button")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("button", { name: "auth.signUp" }))
+    expect(loginRedirect).toHaveBeenCalledWith(
+      expect.objectContaining({ prompt: "create" })
+    )
+  })
+
+  it("renders the requested mobile navigation order", () => {
+    renderShell(vi.fn(), true)
 
     const nav = screen.getByTestId("primary-nav")
     expect(
@@ -210,7 +237,7 @@ describe("MobileBottomNav actions", () => {
   })
 
   it("opens a searchable navigation drawer and filters destinations", () => {
-    renderShell()
+    renderShell(vi.fn(), true)
 
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
     expect(screen.getByTestId("mobile-menu")).toBeVisible()
@@ -225,7 +252,7 @@ describe("MobileBottomNav actions", () => {
   })
 
   it("shows nested destinations and finds them by their localized label", () => {
-    renderShell()
+    renderShell(vi.fn(), true)
 
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
     const drawer = within(screen.getByTestId("mobile-menu"))
@@ -257,7 +284,7 @@ describe("MobileBottomNav actions", () => {
   })
 
   it("lists Legendary Events and its All events child, with descriptions, in the drawer only", () => {
-    renderShell()
+    renderShell(vi.fn(), true)
 
     const bar = screen.getByTestId("primary-nav")
     expect(
@@ -279,7 +306,7 @@ describe("MobileBottomNav actions", () => {
   })
 
   it("shows each item's description beneath its label, for top-level and child items", () => {
-    renderShell()
+    renderShell(vi.fn(), true)
 
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
     const drawer = within(screen.getByTestId("mobile-menu"))
@@ -291,7 +318,7 @@ describe("MobileBottomNav actions", () => {
   })
 
   it("finds an item by a query that only matches its description", () => {
-    renderShell()
+    renderShell(vi.fn(), true)
 
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
     const drawer = within(screen.getByTestId("mobile-menu"))
@@ -355,7 +382,7 @@ describe("MobileBottomNav actions", () => {
 
   it("triggers the global Create Goal action", () => {
     const onCreateGoal = vi.fn()
-    renderShell(onCreateGoal)
+    renderShell(onCreateGoal, true)
 
     fireEvent.click(screen.getByTestId("mobile-create-goal-button"))
     expect(onCreateGoal).toHaveBeenCalledTimes(1)
@@ -369,7 +396,7 @@ describe("MobileBottomNav actions", () => {
       statusText: "Up to date",
       syncNow,
     })
-    renderShell()
+    renderShell(vi.fn(), true)
 
     const syncButton = screen.getByTestId("mobile-sync-button")
     expect(syncButton).not.toBeDisabled()
@@ -386,7 +413,7 @@ describe("MobileBottomNav actions", () => {
       statusText: "SyncingР Р†Р вЂљР’В¦",
       syncNow: vi.fn(),
     })
-    renderShell()
+    renderShell(vi.fn(), true)
 
     const syncButton = screen.getByTestId("mobile-sync-button")
     expect(syncButton).toBeDisabled()

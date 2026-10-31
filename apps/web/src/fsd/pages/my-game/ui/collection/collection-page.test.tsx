@@ -67,7 +67,10 @@ vi.mock("@/features/player-data-sync", () => ({
 
 const msal = vi.hoisted(() => ({ loginRedirect: vi.fn() }))
 vi.mock("@azure/msal-react", () => ({
-  useMsal: () => ({ instance: { loginRedirect: msal.loginRedirect } }),
+  useMsal: () => ({
+    inProgress: "none",
+    instance: { loginRedirect: msal.loginRedirect },
+  }),
 }))
 
 const tour = vi.hoisted(() => ({
@@ -223,9 +226,12 @@ beforeEach(() => {
   sync.isSyncing = false
   sync.syncNow.mockReset()
   msal.loginRedirect.mockReset().mockResolvedValue(undefined)
+  // The shared sign-in request reads the API scope when a button spreads it.
+  vi.stubEnv("VITE_API_SCOPE", "api://test/access_as_user")
 })
 afterEach(() => {
   vi.unstubAllGlobals()
+  vi.unstubAllEnvs()
 })
 
 function UnitPageProbe() {

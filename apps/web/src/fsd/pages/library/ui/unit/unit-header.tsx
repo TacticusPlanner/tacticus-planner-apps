@@ -1,6 +1,5 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { useMsal } from "@azure/msal-react"
 import { factionIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
@@ -10,7 +9,7 @@ import {
 } from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { loginRequest } from "@/shared/auth"
+import { useSignInRedirect } from "@/shared/auth"
 import { EntityIcon } from "@/shared/ui"
 
 import type { UnitOwnership } from "./unit-ownership"
@@ -68,7 +67,6 @@ export function UnitHeader({
   isMobile: boolean
 }) {
   const { t } = useTranslation(["library", "factions"])
-  const { instance } = useMsal()
   const baseLabel =
     ownership === "owned"
       ? t("unit.values.yourUnit")
@@ -192,16 +190,24 @@ export function UnitHeader({
               ? t("characterUnit.header.syncBanner")
               : t("characterUnit.header.signInBanner")}
           </p>
-          {signedIn ? null : (
-            <Button
-              size="sm"
-              onClick={() => void instance.loginRedirect(loginRequest)}
-            >
-              {t("characterUnit.header.signIn")}
-            </Button>
-          )}
+          {signedIn ? null : <UnitSignInButton />}
         </div>
       ) : null}
     </div>
+  )
+}
+
+/** The banner's Sign in: the shared redirect, so a failed start shows the error toast, and the
+ *  button waits while another sign-in is running. */
+function UnitSignInButton() {
+  const { t } = useTranslation(["library", "common"])
+  const { checkingSignIn, disabled, signIn } = useSignInRedirect()
+
+  return (
+    <Button disabled={disabled} onClick={signIn} size="sm">
+      {checkingSignIn
+        ? t("common:auth.checkingSignIn")
+        : t("characterUnit.header.signIn")}
+    </Button>
   )
 }

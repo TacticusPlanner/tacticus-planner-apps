@@ -35,6 +35,16 @@ vi.mock("../providers/userjot-provider", () => ({
   useUserJot: () => userJot,
 }))
 
+const signInRedirect = vi.hoisted(() => ({
+  signIn: vi.fn(),
+  signUp: vi.fn(),
+  disabled: false,
+  checkingSignIn: false,
+}))
+vi.mock("@/shared/auth", () => ({
+  useSignInRedirect: () => signInRedirect,
+}))
+
 import { filterQuickActions, type QuickAction } from "./quick-actions"
 import { useQuickActions } from "./use-quick-actions"
 
@@ -91,6 +101,7 @@ describe("useQuickActions", () => {
     Object.assign(tour, { hasPageTour: true, isRunning: false })
     Object.assign(sync, { isSyncing: false })
     Object.assign(userJot, { status: "ready" })
+    signInRedirect.disabled = false
   })
 
   it("lists the five actions in order for a signed-in user on a page with a tour", () => {
@@ -106,11 +117,32 @@ describe("useQuickActions", () => {
     expect(result.current.actions.every((a) => !a.disabledReason)).toBe(true)
   })
 
-  it("hides authenticated actions for guests and the page tour when none is registered", () => {
+  it("gives guests Sign in and Sign up instead of account actions, and hides an absent page tour", () => {
     tour.hasPageTour = false
     const { result } = setup(false)
 
-    expect(ids(result)).toEqual(["feedback"])
+    expect(ids(result)).toEqual(["signIn", "signUp", "feedback"])
+  })
+
+  it("runs the guest's sign-in and sign-up redirects", () => {
+    const { result } = setup(false)
+
+    expect(result.current.select("signUp")).toBe(true)
+    act(() => result.current.flush())
+    expect(signInRedirect.signUp).toHaveBeenCalledOnce()
+    expect(result.current.select("signIn")).toBe(true)
+    act(() => result.current.flush())
+    expect(signInRedirect.signIn).toHaveBeenCalledOnce()
+  })
+
+  it("keeps the guest's sign-in actions visible but disabled while a sign-in is running", () => {
+    signInRedirect.disabled = true
+    const { result } = setup(false)
+
+    expect(
+      result.current.actions.find((a) => a.id === "signIn")?.disabledReason
+    ).toBe("nav.quickActions.signInBusy")
+    expect(result.current.select("signIn")).toBe(false)
   })
 
   it("disables sync with its status while syncing, and never starts a second sync", () => {
