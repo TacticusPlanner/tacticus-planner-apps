@@ -11,10 +11,12 @@ import { useAnalyticsActions } from "@/shared/analytics"
 
 import type { LaneFullClear, TokenPlanView } from "../lib/token-plan-view"
 import { useStoredOpen } from "../model/use-stored-open"
+import { RunMissionsSummary, TokenPlanOrderSwitch } from "./mission-order-view"
 import { RunSection, RunSectionHeader, TokenGroups } from "./token-plan-rows"
 
 const OPEN_KEY = "legendaryEvents.tokenPlan.open"
 const REGION_ID = "legendary-event-token-plan-list"
+const ORDER_KEY = "legendaryEvents.tokenPlan.missionsOrder"
 
 /**
  * The Overview's collapsible Token plan (spec: Token plan list): every planned token in run
@@ -43,10 +45,18 @@ export function TokenPlanList({
   const { t, i18n } = useTranslation("legendaryEvents")
   const { captureEvent } = useAnalyticsActions()
   const [open, setOpen] = useStoredOpen(openKey, defaultOpen)
+  // Remembered per device, shared by the event page and the plan wizard.
+  const [byMissions, setByMissions] = useStoredOpen(ORDER_KEY, false)
   if (view.kind !== "ready" || view.plan.tokens.length === 0) return null
   const number = new Intl.NumberFormat(i18n.language)
-  const { plan } = view
-  const markers = view.forecast?.markers ?? []
+  const missionOrder = byMissions ? view.missionOrder : null
+  const plan = missionOrder
+    ? { ...view.plan, tokens: missionOrder.tokens }
+    : view.plan
+  const markers = missionOrder
+    ? missionOrder.markers
+    : (view.forecast?.markers ?? [])
+  const steps = missionOrder?.steps
 
   const toggle = () => {
     if (!open && trackExpand) {
@@ -100,14 +110,25 @@ export function TokenPlanList({
       </h2>
       {open ? (
         <div className="flex min-w-0 flex-col gap-3" id={REGION_ID}>
+          {view.missionOrder ? (
+            <TokenPlanOrderSwitch
+              onChange={(order) => setByMissions(order === "missions")}
+              order={missionOrder ? "missions" : "points"}
+            />
+          ) : null}
           {view.byRun ? (
             <ol className="flex min-w-0 flex-col gap-4">
-              {view.byRun.sections.map((section) => (
+              {view.byRun.sections.map((section, sectionIndex) => (
                 <RunSection
                   header={<RunSectionHeader plan={plan} section={section} />}
                   key={`run${section.run}`}
                   testId="token-plan-run-section"
                 >
+                  {missionOrder?.runs[sectionIndex] ? (
+                    <RunMissionsSummary
+                      summary={missionOrder.runs[sectionIndex]}
+                    />
+                  ) : null}
                   {section.count === 0 ? (
                     <p
                       className="text-sm text-muted-foreground"
@@ -124,6 +145,7 @@ export function TokenPlanList({
                       isMobile={isMobile}
                       markers={markers}
                       start={section.start}
+                      steps={steps}
                       tokens={plan.tokens}
                     />
                   )}

@@ -663,6 +663,22 @@
         "overflow_other": "{{count}} fichas más allá de las disponibles en la ronda {{run}}",
         "overflow_unknown_one": "{{count}} ficha más allá de las disponibles en la próxima ronda",
         "overflow_unknown_other": "{{count}} fichas más allá de las disponibles en la próxima ronda"
+      },
+      "order": {
+        "label": "Orden",
+        "points": "Puntos",
+        "missions": "Misiones"
+      },
+      "missions": {
+        "title": "Misiones de esta ronda",
+        "doneAt": "completada en el token {{token}}",
+        "reached": "{{reached}}/{{needed}} al final de la ronda",
+        "notReached": "no se alcanza con este plan",
+        "estimate": "aprox.",
+        "untracked": "Cada token cuenta: {{missions}}",
+        "step": "{{mission}} {{total}}/{{needed}}",
+        "completes": "Misión completada · {{mission}}",
+        "none": "No hay misiones abiertas en esta ronda"
       }
     },
     "forecast": {

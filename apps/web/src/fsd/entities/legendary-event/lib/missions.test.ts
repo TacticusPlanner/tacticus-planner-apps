@@ -12,6 +12,7 @@ import {
   battleEnemies,
   eventMissions,
   openMissions,
+  tokenMissionAmount,
   tokenProgressesMission,
   type LegendaryEventMission,
 } from "./missions"
@@ -190,5 +191,50 @@ describe("tokenProgressesMission", () => {
         undefined
       )
     ).toBe(false)
+  })
+})
+
+describe("tokenMissionAmount", () => {
+  const imperial = [
+    fixtureCharacter("astarCyrus"),
+    fixtureCharacter("astarEradicator"),
+  ]
+
+  it("counts a faction mission's enemies across the battle's waves", () => {
+    const battle = enemiesOf("astarLysander-alpha-4")
+    const orks = battle.counts!.byFaction.get("Orks") ?? 0
+    expect(orks).toBeGreaterThan(0)
+    expect(tokenMissionAmount(regular(1), imperial, battle)).toEqual({
+      amount: orks,
+      estimate: false,
+    })
+    expect(
+      tokenMissionAmount(
+        regular(1),
+        imperial,
+        enemiesOf("astarLysander-beta-4")
+      )
+    ).toEqual({ amount: 0, estimate: false })
+  })
+
+  it("estimates alliance kills as every enemy of the battle", () => {
+    const battle = enemiesOf("astarLysander-alpha-4")
+    const withAlliance = (alliance: string) =>
+      mission({ kind: "defeatWithAlliance", alliance, count: 75 })
+    expect(
+      tokenMissionAmount(withAlliance("Imperial"), imperial, battle)
+    ).toEqual({ amount: battle.counts!.enemies, estimate: true })
+    expect(tokenMissionAmount(withAlliance("Chaos"), imperial, battle)).toEqual(
+      { amount: 0, estimate: true }
+    )
+  })
+
+  it("counts one win without a trait, and leaves untracked kinds out", () => {
+    expect(tokenMissionAmount(premium(4), imperial, undefined)).toEqual({
+      amount: 1,
+      estimate: false,
+    })
+    expect(tokenMissionAmount(regular(0), imperial, undefined)).toBeNull()
+    expect(tokenMissionAmount(premium(0), imperial, undefined)).toBeNull()
   })
 })
