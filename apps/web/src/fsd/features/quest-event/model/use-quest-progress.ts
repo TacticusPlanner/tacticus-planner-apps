@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
 
-import { safeStorage } from "@/shared/lib"
+import { accountStorageKey, safeStorage } from "@/shared/lib"
 
 import {
   EMPTY_QUEST_PROGRESS,
@@ -19,7 +19,10 @@ import type { QuestTokens } from "./quest-token-plan"
 
 // Design D4: one entry per quest occurrence, per browser. Every storage access is guarded, so a
 // private window or blocked site data degrades to in-memory progress, and the tab says so.
-const QUEST_PROGRESS_STORAGE_KEY = "tp.dailies.quest.progress.v1"
+// Account data: kept under the account prefix, so sign-out removes it.
+const QUEST_PROGRESS_STORAGE_KEY = accountStorageKey(
+  "dailies.quest.progress.v1"
+)
 
 function readAll(): Record<string, QuestProgress> {
   try {

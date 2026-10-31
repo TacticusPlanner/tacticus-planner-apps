@@ -26,7 +26,7 @@ describe("signOut", () => {
     forgetFreshLogin.mockClear()
   })
 
-  it("deletes both IndexedDB databases before redirecting", async () => {
+  it("deletes the player-data database before redirecting, and keeps the public game catalog", async () => {
     await seedGameCatalog({ characters: [{ id: "ultraCalgar" }] })
     await seedPlayerData({ characters: [{ unitId: "ultraCalgar" }] })
     expect(await databaseNames()).toEqual(
@@ -46,12 +46,13 @@ describe("signOut", () => {
     await signOut(instance as never, account.homeAccountId)
 
     expect(logoutRedirect).toHaveBeenCalledWith({ account })
-    expect(databasesAtRedirect).not.toContain("tacticus-planner-game-catalog")
+    expect(databasesAtRedirect).toContain("tacticus-planner-game-catalog")
     expect(databasesAtRedirect).not.toContain("tacticus-planner-player-data")
   })
 
   it("removes the account's own localStorage keys and keeps device preferences", async () => {
     localStorage.setItem("tp.session.v1-import.pending-material-steps", "[]")
+    localStorage.setItem("tp.session.dailies.hse.progress.v2", "{}")
     localStorage.setItem("theme", "dark")
     const instance = {
       getAllAccounts: () => [],
@@ -62,6 +63,9 @@ describe("signOut", () => {
 
     expect(
       localStorage.getItem("tp.session.v1-import.pending-material-steps")
+    ).toBeNull()
+    expect(
+      localStorage.getItem("tp.session.dailies.hse.progress.v2")
     ).toBeNull()
     expect(localStorage.getItem("theme")).toBe("dark")
   })

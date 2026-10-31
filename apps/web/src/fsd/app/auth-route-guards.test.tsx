@@ -212,6 +212,39 @@ describe("LandingRoute", () => {
     expect(screen.getByTestId("probe")).toHaveTextContent("/home")
   })
 
+  it("tells a signed-out visitor which sign-in-only page sent them here", async () => {
+    useIsAuthenticatedMock.mockReturnValue(false)
+
+    render(
+      <MemoryRouter initialEntries={["/?next=%2Fplan%2Fgoals"]}>
+        <Routes>
+          <Route element={<LandingRoute />} path="/" />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    expect(
+      await screen.findByTestId("landing-sign-in-required")
+    ).toHaveTextContent("Sign in to open Goals")
+  })
+
+  it("shows no sign-in notice on a plain visit", async () => {
+    useIsAuthenticatedMock.mockReturnValue(false)
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route element={<LandingRoute />} path="/" />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    expect(await screen.findByTestId("landing-page")).toBeVisible()
+    expect(
+      screen.queryByTestId("landing-sign-in-required")
+    ).not.toBeInTheDocument()
+  })
+
   it("shows the landing page to a signed-in visitor on a bare /", () => {
     useIsAuthenticatedMock.mockReturnValue(true)
 

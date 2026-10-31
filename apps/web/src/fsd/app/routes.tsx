@@ -3,7 +3,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Navigate, type RouteObject } from "react-router"
+import { type RouteObject } from "react-router"
 
 import { useIsAuthenticated } from "@azure/msal-react"
 
@@ -48,9 +48,10 @@ import {
   LandingRoute,
 } from "./auth-route-guards"
 import { AccountSetupLayout } from "./layout/account-setup-layout"
+import { NotFoundPage } from "./not-found-page"
 import { AppShell } from "./layout/app-shell"
 import { PublicLayout } from "./layout/public-layout"
-import { OnboardingGate } from "./onboarding-gate"
+import { OnboardingGate, SetupRedirect } from "./onboarding-gate"
 import { RouteErrorBoundary } from "./route-error-boundary"
 import { useAuthPending } from "./use-auth-pending"
 
@@ -118,7 +119,18 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   )
 }
 
-function NotFoundRedirect() {
+// A public page inside the shell: open to every visitor, but a signed-in account that has not
+// finished setup is still sent there (spec: onboarding-gate) without blocking the page meanwhile.
+function PublicShellRoute({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <SetupRedirect />
+      {children}
+    </>
+  )
+}
+
+function NotFoundRoute() {
   const isAuthenticated = useIsAuthenticated()
   const authPending = useAuthPending()
 
@@ -126,7 +138,7 @@ function NotFoundRedirect() {
     return <AuthResolving />
   }
 
-  return <Navigate replace to={isAuthenticated ? "/home" : "/"} />
+  return <NotFoundPage isAuthenticated={isAuthenticated} />
 }
 
 // React Router v8 data-mode route config (consumed by createBrowserRouter in app/index.tsx). Auth guards
@@ -202,7 +214,11 @@ const appRoutes: RouteObject[] = [
       },
       {
         path: "/library",
-        element: <LibraryPage />,
+        element: (
+          <PublicShellRoute>
+            <LibraryPage />
+          </PublicShellRoute>
+        ),
         children: libraryRoutes,
         loader: preloadLibraryPage,
       },
@@ -222,7 +238,10 @@ const appRoutes: RouteObject[] = [
         path: "/my-game",
         element: <MyGameLayout />,
         children: [
-          ...myGamePublicRoutes,
+          ...myGamePublicRoutes.map((route) => ({
+            ...route,
+            element: <PublicShellRoute>{route.element}</PublicShellRoute>,
+          })),
           ...[
             ...myGameProtectedRoutes,
             {
@@ -258,7 +277,7 @@ const appRoutes: RouteObject[] = [
         loader: preloadGuildPage,
       },
       // Public component showcase for local/QA use вЂ” never registered in production (see
-      // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" redirect below)
+      // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" not-found page below)
       // there regardless of how someone reaches the URL.
       ...(isUiKitEnabled
         ? [
@@ -269,7 +288,7 @@ const appRoutes: RouteObject[] = [
             },
           ]
         : []),
-      { path: "*", element: <NotFoundRedirect /> },
+      { path: "*", element: <NotFoundRoute /> },
     ],
   },
 ]

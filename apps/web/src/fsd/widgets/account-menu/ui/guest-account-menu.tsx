@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react"
-import { LogIn, MapIcon, Newspaper, Settings } from "lucide-react"
+import { MapIcon, Newspaper, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -8,7 +8,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
-import { Separator } from "@workspace/ui/components/separator"
 import { USERJOT_ROADMAP_URL } from "../model/userjot-links"
 
 import {
@@ -23,8 +22,8 @@ import {
 } from "./account-menu-parts"
 
 /** Guest Preferences (theme, language), Help & feedback (the tour on mobile, Roadmap, Changelog), Community,
- *  caller-supplied extra content (sign-in on desktop), and the legal links as a footer. Language opens an in-card
- *  picker; the view resets because popover content unmounts on close. */
+ *  caller-supplied extra content, and the legal links as a footer. Language opens an in-card picker; the view
+ *  resets because popover content unmounts on close. */
 export function GuestPreferencesCard({
   children,
   changelogUnavailable,
@@ -76,21 +75,17 @@ export function GuestPreferencesCard({
   )
 }
 
+/** Signed-out desktop preferences behind the top bar's gear. Sign in and Sign up sit beside it in the
+ *  bar (`GuestAuthButtons`), not inside, so a guest never has to open Settings to find them. */
 export function GuestAccountMenu({
   changelogUnavailable,
-  checkingSignIn,
-  disabled,
   onChangelog,
   onOpenChange,
-  onSignIn,
   open,
 }: {
   changelogUnavailable?: string
-  checkingSignIn: boolean
-  disabled: boolean
   onChangelog: () => void
   onOpenChange: (open: boolean) => void
-  onSignIn: () => void
   open: boolean
 }) {
   const { t } = useTranslation()
@@ -122,18 +117,7 @@ export function GuestAccountMenu({
               onOpenChange(false)
               onChangelog()
             }}
-          >
-            <Separator />
-            <Button
-              data-testid="auth-sign-in"
-              disabled={disabled}
-              onClick={onSignIn}
-              size="sm"
-            >
-              <LogIn data-icon="inline-start" />
-              {checkingSignIn ? t("auth.checkingSignIn") : t("auth.signIn")}
-            </Button>
-          </GuestPreferencesCard>
+          />
         </PopoverContent>
       </Popover>
     </div>

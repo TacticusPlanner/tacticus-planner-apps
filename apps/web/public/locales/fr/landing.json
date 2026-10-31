@@ -1,5 +1,4 @@
 {
-  "authError": "L'authentification n'a pas pu aboutir. Veuillez réessayer.",
   "hero": {
     "eyebrow": "Planificateur gratuit fait par des fans pour Tacticus",
     "title": "Sachez quoi faire aujourd'hui, et pourquoi.",
@@ -67,5 +66,10 @@
       "description": "Découvrez ce que propose chaque boutique quotidienne, selon le jour de la semaine."
     },
     "more": "Aussi dans la bibliothèque :"
+  },
+  "signInRequired": {
+    "title": "Connectez-vous pour continuer",
+    "titleNamed": "Connectez-vous pour ouvrir {{page}}",
+    "body": "Cette page planifie avec votre propre roster, elle nécessite donc un compte gratuit. Vous y serez redirigé dès la connexion."
   }
 }

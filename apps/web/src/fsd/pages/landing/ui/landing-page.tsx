@@ -1,4 +1,4 @@
-import { ArrowRight, Check, LogIn, UserPlus } from "lucide-react"
+import { ArrowRight, Check, Lock, LogIn, UserPlus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
@@ -17,14 +17,22 @@ import {
 const cardLinkClass =
   "group flex h-full flex-col gap-3 rounded-xl border bg-card p-5 text-left text-card-foreground transition-colors hover:border-primary/50 hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 
+/** Why a signed-out visitor is here instead of the page they asked for: a sign-in-only address sent
+ *  them (spec: landing-page). `pageTitle` names that page when the app knows it. */
+export type SignInRequired = { pageTitle?: string }
+
 /** The public landing page, for signed-out and signed-in visitors alike: rendered inside `PublicLayout`,
  *  which owns the top bar, footer and `main`. Signed in, the hero's primary action opens the planner. */
-export function LandingPage() {
+export function LandingPage({
+  signInRequired,
+}: {
+  signInRequired?: SignInRequired
+}) {
   // Sign-out lands here, so this is where a purge that kept the sign-in account says so.
   useSignInAccountKeptNotice()
   return (
     <div className="flex flex-col" data-testid="landing-page">
-      <LandingHero />
+      <LandingHero signInRequired={signInRequired} />
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-14 md:px-6">
         <FeaturesSection />
         <LibrarySection />
@@ -33,7 +41,11 @@ export function LandingPage() {
   )
 }
 
-function LandingHero() {
+function LandingHero({
+  signInRequired,
+}: {
+  signInRequired: SignInRequired | undefined
+}) {
   const { t } = useTranslation(["landing", "common"])
   const isAuthenticated = useIsAuthenticated()
   const { checkingSignIn, disabled, signIn, signUp } = useSignInRedirect()
@@ -66,6 +78,27 @@ function LandingHero() {
       />
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-12 pb-16 md:grid-cols-[1.1fr_0.9fr] md:px-6 md:pt-20 md:pb-20">
         <div className="flex flex-col items-start gap-5">
+          {signInRequired && !isAuthenticated ? (
+            <div
+              className="flex w-full max-w-xl items-start gap-3 rounded-lg border border-ring bg-card/80 p-4 text-card-foreground backdrop-blur"
+              data-testid="landing-sign-in-required"
+              role="status"
+            >
+              <Lock aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+              <div className="flex flex-col gap-1">
+                <p className="font-semibold">
+                  {signInRequired.pageTitle
+                    ? t("signInRequired.titleNamed", {
+                        page: signInRequired.pageTitle,
+                      })
+                    : t("signInRequired.title")}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {t("signInRequired.body")}
+                </p>
+              </div>
+            </div>
+          ) : null}
           <p className="text-xs font-semibold tracking-[0.12em] text-chart-4 uppercase">
             {t("hero.eyebrow")}
           </p>
@@ -91,28 +124,30 @@ function LandingHero() {
                 </Link>
               </Button>
             ) : (
+              // A first-time visitor's next step is an account, so the primary action creates one;
+              // returning players have Sign in right beside it.
               <Button
                 className="h-11 rounded-full px-6 text-base"
                 data-testid="landing-get-started"
                 disabled={disabled}
-                onClick={signIn}
+                onClick={signUp}
               >
-                <LogIn data-icon="inline-start" />
-                {checkingSignIn
-                  ? t("common:auth.checkingSignIn")
-                  : t("hero.getStarted")}
+                <UserPlus data-icon="inline-start" />
+                {t("hero.getStarted")}
               </Button>
             )}
             {isAuthenticated ? null : (
               <Button
                 className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur"
-                data-testid="landing-sign-up"
+                data-testid="landing-sign-in"
                 disabled={disabled}
-                onClick={signUp}
+                onClick={signIn}
                 variant="outline"
               >
-                <UserPlus data-icon="inline-start" />
-                {t("common:auth.signUp")}
+                <LogIn data-icon="inline-start" />
+                {checkingSignIn
+                  ? t("common:auth.checkingSignIn")
+                  : t("common:auth.signIn")}
               </Button>
             )}
             <Button

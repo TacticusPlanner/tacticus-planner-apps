@@ -45,8 +45,12 @@ vi.mock("@/shared/config", () => ({
 }))
 vi.mock("@azure/msal-react", () => ({ useMsal: () => ({ instance: {} }) }))
 vi.mock("@/shared/auth", () => ({
-  loginRequest: { scopes: ["api"] },
-  useSilentSignInStatus: () => "idle",
+  useSignInRedirect: () => ({
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    disabled: false,
+    checkingSignIn: false,
+  }),
 }))
 vi.mock("@/widgets/account-menu/ui/player-data-sync-button", () => ({
   PlayerDataSyncButton: () => null,

@@ -52,3 +52,30 @@ export const safeStorage = {
     }
   },
 }
+
+// Dailies progress predates the prefix rule, so it sat under plain keys that sign-out kept and the
+// next account on the browser inherited. Each now lives at the same name under the prefix.
+const LEGACY_ACCOUNT_KEYS = [
+  "tp.dailies.hse.averages.v1",
+  "tp.dailies.hse.progress.v2",
+  "tp.dailies.hse.tokens.v1",
+  "tp.dailies.hre.progress.v1",
+  "tp.dailies.quest.progress.v1",
+] as const
+
+/** The prefixed key a legacy `tp.<name>` account key moved to. */
+export function accountStorageKey(name: string): string {
+  return `${accountStoragePrefix}${name}`
+}
+
+/** Moves account data stored under a pre-prefix key to its prefixed name, once, before the app reads
+ *  it. A value already at the new name wins; the legacy key is removed either way. */
+export function migrateLegacyAccountKeys(): void {
+  for (const legacy of LEGACY_ACCOUNT_KEYS) {
+    const value = safeStorage.get(legacy)
+    if (value === null) continue
+    const next = accountStorageKey(legacy.slice("tp.".length))
+    if (safeStorage.get(next) === null) safeStorage.set(next, value)
+    safeStorage.remove(legacy)
+  }
+}

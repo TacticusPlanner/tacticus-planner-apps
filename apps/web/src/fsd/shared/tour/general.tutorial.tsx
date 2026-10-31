@@ -114,12 +114,16 @@ export function useDesktopTutorialSteps(): Step[] {
       {
         target: '[data-testid="desktop-create-goal-button"]',
         placement: "right",
+        // Signed-in only: a guest's rail has neither, so the step is dropped at tour start.
+        data: { optional: true },
         title: t("tour.steps.bottomNavigation.addGoal.title"),
         content: t("tour.steps.bottomNavigation.addGoal.content"),
       },
       {
         target: '[data-testid="player-data-sync-button"]',
         placement: "right",
+        // Signed-in only: a guest's rail has neither, so the step is dropped at tour start.
+        data: { optional: true },
         title: t("tour.steps.bottomNavigation.sync.title"),
         content: t("tour.steps.bottomNavigation.sync.content"),
       },

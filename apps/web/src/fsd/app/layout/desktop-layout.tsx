@@ -116,6 +116,7 @@ export function DesktopShell({
         style={{ "--sidebar-width-icon": "3.5rem" } as React.CSSProperties}
       >
         <AppSidebar
+          isAuthenticated={isAuthenticated}
           visibleItems={visibleItems}
           onCreateGoal={onCreateGoal}
           getEntryPath={getEntryPath}
@@ -173,10 +174,12 @@ export function DesktopShell({
 }
 
 function AppSidebar({
+  isAuthenticated,
   visibleItems,
   onCreateGoal,
   getEntryPath,
 }: {
+  isAuthenticated: boolean
   visibleItems: NavItem[]
   onCreateGoal: () => void
   getEntryPath: (item: NavItem) => string
@@ -188,6 +191,8 @@ function AppSidebar({
     isMacPlatform() ? `⌘${key}` : `Ctrl+${key}`
 
   useEffect(() => {
+    // Goals need an account: a guest's Ctrl/Cmd+G keeps the browser's own meaning.
+    if (!isAuthenticated) return
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat) return
       if (!(event.metaKey || event.ctrlKey)) return
@@ -203,7 +208,7 @@ function AppSidebar({
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
     }
-  }, [onCreateGoal])
+  }, [isAuthenticated, onCreateGoal])
 
   return (
     <Sidebar className="top-12! h-[calc(100svh-3rem)]" collapsible="icon">
@@ -219,27 +224,31 @@ function AppSidebar({
             iconOnly={compact}
           />
         </div>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-              data-testid="desktop-create-goal-button"
-              onClick={onCreateGoal}
-              tooltip={t("nav.createGoal")}
-            >
-              <PlusCircle />
-              <span>{t("nav.createGoal")}</span>
-              {compact ? null : (
-                <CommandShortcut className="text-primary-foreground/90">
-                  {shortcutHint("G")}
-                </CommandShortcut>
-              )}
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <PlayerDataSyncButton />
-          </SidebarMenuItem>
-        </SidebarMenu>
+        {/* Goals and sync need an account, so a guest's rail has neither (they would do nothing); the
+            top bar offers Sign in and Sign up instead. */}
+        {isAuthenticated ? (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                data-testid="desktop-create-goal-button"
+                onClick={onCreateGoal}
+                tooltip={t("nav.createGoal")}
+              >
+                <PlusCircle />
+                <span>{t("nav.createGoal")}</span>
+                {compact ? null : (
+                  <CommandShortcut className="text-primary-foreground/90">
+                    {shortcutHint("G")}
+                  </CommandShortcut>
+                )}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <PlayerDataSyncButton />
+            </SidebarMenuItem>
+          </SidebarMenu>
+        ) : null}
       </SidebarHeader>
 
       <SidebarContent data-testid="primary-nav">

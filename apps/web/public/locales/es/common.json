@@ -289,7 +289,10 @@
       "feedbackDescription": "Abrir el widget de comentarios, hoja de ruta y novedades",
       "feedbackUnavailable": "Los comentarios no están disponibles ahora mismo",
       "tourDescription": "Recorrer las funciones de esta página",
-      "tourRunning": "Ya hay un recorrido en curso"
+      "tourRunning": "Ya hay un recorrido en curso",
+      "signInDescription": "Planifica objetivos, diarias, Eventos Legendarios e incursiones de gremio con tu propio roster",
+      "signUpDescription": "Crea una cuenta gratuita para planificar con tu propio roster",
+      "signInBusy": "Ya hay un inicio de sesión en curso"
     },
     "breadcrumb": "Ruta de navegación"
   },
@@ -2061,5 +2064,12 @@
   "tacticusUserId": {
     "invalid": "Introduce tu ID de usuario de Tacticus como GUID, por ejemplo 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
     "inUse": "Este ID de usuario de Tacticus ya está vinculado a otra cuenta del planificador."
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "Esta dirección no corresponde a ninguna página del planificador. Puede que el enlace esté mal escrito o desactualizado.",
+    "goHome": "Ir a Inicio",
+    "browseLibrary": "Explorar la biblioteca",
+    "goToStart": "Ir a la página principal"
   }
 }

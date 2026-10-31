@@ -85,9 +85,17 @@ vi.mock("@/shared/auth", async () => {
   return {
     getAccountEmail: identity.getAccountEmail,
     getSignInMethod: identity.getSignInMethod,
-    loginRequest: { scopes: ["api"] },
     signOut: (...args: unknown[]) => signOut(...args),
-    useSilentSignInStatus: () => silentSignInStatus(),
+    // The real hook's surface over this file's MSAL doubles: what the guest buttons read and call.
+    useSignInRedirect: () => ({
+      signIn: () => void loginRedirect({ scopes: ["api"] }).catch(() => {}),
+      signUp: () =>
+        void loginRedirect({ scopes: ["api"], prompt: "create" }).catch(
+          () => {}
+        ),
+      disabled: inProgress() !== InteractionStatus.None,
+      checkingSignIn: silentSignInStatus() === "checking",
+    }),
     // The real hook, re-expressed over this file's `isInteractionRequired` / `requestApiAccess`
     // doubles so the existing once-per-error assertions below keep exercising AuthControl.
     useRequestApiAccessOnce: (
@@ -668,39 +676,36 @@ describe("AuthControl", () => {
     )
   })
 
-  it("offers theme selection and sign-in from a guest preferences menu when unauthenticated", () => {
+  it("offers Sign in and Sign up in the bar and theme selection in a guest preferences menu", () => {
     useIsAuthenticated.mockReturnValue(false)
     renderAuthControl()
 
-    expect(screen.queryByTestId("auth-sign-in")).not.toBeInTheDocument()
+    expect(screen.getByTestId("auth-sign-in")).not.toBeDisabled()
+    expect(screen.getByTestId("auth-sign-up")).not.toBeDisabled()
 
     fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
 
     expect(screen.getByTestId("theme-switcher")).toBeVisible()
     expect(screen.getByTestId("account-language-row")).toBeVisible()
-    expect(screen.getByTestId("auth-sign-in")).not.toBeDisabled()
     // No authenticated identity or account-only actions.
     expect(screen.queryByTestId("auth-sign-out")).not.toBeInTheDocument()
     expect(screen.queryByTestId("auth-manage-account")).not.toBeInTheDocument()
     expect(screen.queryByTestId("auth-account-trigger")).not.toBeInTheDocument()
   })
 
-  it("disables sign-in while an MSAL interaction is already in progress", () => {
+  it("disables sign-in and sign-up while an MSAL interaction is already in progress", () => {
     inProgress.mockReturnValue(InteractionStatus.Startup)
     useIsAuthenticated.mockReturnValue(false)
     renderAuthControl()
 
-    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
-
     expect(screen.getByTestId("auth-sign-in")).toBeDisabled()
+    expect(screen.getByTestId("auth-sign-up")).toBeDisabled()
   })
 
   it("shows a 'checking' label while a silent restore is in progress", () => {
     useIsAuthenticated.mockReturnValue(false)
     silentSignInStatus.mockReturnValue("checking")
     renderAuthControl()
-
-    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
 
     expect(
       screen.getByRole("button", { name: "auth.checkingSignIn" })
@@ -712,7 +717,6 @@ describe("AuthControl", () => {
     silentSignInStatus.mockReturnValue("checking")
     renderAuthControl()
 
-    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
     fireEvent.click(screen.getByRole("button", { name: "auth.checkingSignIn" }))
 
     await vi.waitFor(() => {
@@ -720,16 +724,16 @@ describe("AuthControl", () => {
     })
   })
 
-  it("signs in on click and toasts on a failed sign-in redirect", async () => {
+  it("opens the create-account step from Sign up", async () => {
     useIsAuthenticated.mockReturnValue(false)
-    loginRedirect.mockRejectedValue(new Error("network down"))
     renderAuthControl()
 
-    fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
-    fireEvent.click(screen.getByTestId("auth-sign-in"))
+    fireEvent.click(screen.getByTestId("auth-sign-up"))
 
     await vi.waitFor(() => {
-      expect(loginRedirect).toHaveBeenCalledTimes(1)
+      expect(loginRedirect).toHaveBeenCalledWith(
+        expect.objectContaining({ prompt: "create" })
+      )
     })
   })
 

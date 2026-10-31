@@ -1,5 +1,4 @@
 {
-  "authError": "No se pudo completar la autenticación. Inténtalo de nuevo.",
   "hero": {
     "eyebrow": "Planificador gratuito hecho por fans para Tacticus",
     "title": "Sabe qué hacer hoy, y por qué importa.",
@@ -67,5 +66,10 @@
       "description": "Consulta lo que cada tienda diaria puede ofrecer en cualquier día de la semana."
     },
     "more": "También en la biblioteca:"
+  },
+  "signInRequired": {
+    "title": "Inicia sesión para continuar",
+    "titleNamed": "Inicia sesión para abrir {{page}}",
+    "body": "Esa página planifica con tu propio roster, así que necesita una cuenta gratuita. Irás directamente allí después de iniciar sesión."
   }
 }

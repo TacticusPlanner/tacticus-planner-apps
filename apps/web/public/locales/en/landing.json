@@ -1,5 +1,4 @@
 {
-  "authError": "Authentication could not be completed. Please try again.",
   "hero": {
     "eyebrow": "Free fan-made planner for Tacticus",
     "title": "Know what to do today, and why it matters.",
@@ -67,5 +66,10 @@
       "description": "See what each daily shop offers, any day of the week."
     },
     "more": "Also in the library:"
+  },
+  "signInRequired": {
+    "title": "Sign in to continue",
+    "titleNamed": "Sign in to open {{page}}",
+    "body": "That page plans with your own roster, so it needs a free account. You'll go straight there after signing in."
   }
 }

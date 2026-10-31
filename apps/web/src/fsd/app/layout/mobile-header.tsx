@@ -6,10 +6,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
-import { useMsal } from "@azure/msal-react"
 
 import { GuestPreferencesCard } from "@/widgets/account-menu"
-import { loginRequest, useSilentSignInStatus } from "@/shared/auth"
+import { useSignInRedirect } from "@/shared/auth"
 import {
   PageTourButton,
   TourButton,
@@ -35,15 +34,6 @@ export function MobileHeader({
   pageTitle: string | undefined
 }) {
   const { t } = useTranslation()
-  const { instance } = useMsal()
-  const isCheckingSilentSignIn = useSilentSignInStatus() === "checking"
-  const signInLabel = isCheckingSilentSignIn
-    ? t("auth.checkingSignIn")
-    : t("auth.signIn")
-
-  const handleSignIn = () => {
-    void instance.loginRedirect(loginRequest)
-  }
 
   return (
     <header
@@ -80,10 +70,7 @@ export function MobileHeader({
           <PageTourButton iconOnly />
           {!isAuthenticated ? (
             <>
-              <Button size="sm" onClick={handleSignIn}>
-                <LogIn />
-                {signInLabel}
-              </Button>
+              <MobileGuestSignIn />
               <MobileGuestSettings />
             </>
           ) : (
@@ -97,6 +84,18 @@ export function MobileHeader({
         </div>
       ) : null}
     </header>
+  )
+}
+
+function MobileGuestSignIn() {
+  const { t } = useTranslation()
+  const { checkingSignIn, disabled, signIn } = useSignInRedirect()
+
+  return (
+    <Button disabled={disabled} onClick={signIn} size="sm">
+      <LogIn />
+      {checkingSignIn ? t("auth.checkingSignIn") : t("auth.signIn")}
+    </Button>
   )
 }
 

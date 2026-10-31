@@ -1,13 +1,16 @@
 import { createElement, useEffect, useRef } from "react"
 import {
   HelpCircle,
+  LogIn,
   MessageSquareText,
   PlusCircle,
   FolderPlus,
   RefreshCw,
+  UserPlus,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
+import { useSignInRedirect } from "@/shared/auth"
 import { usePlayerDataStatus } from "@/shared/player-data-status"
 import { useTour } from "@/shared/tour"
 
@@ -39,8 +42,39 @@ export function useQuickActions({
   const sync = usePlayerDataStatus()
   const { hasPageTour, isRunning, startPageTour } = useTour()
   const { open: openFeedback, status: feedbackStatus } = useUserJot()
+  const signInRedirect = useSignInRedirect()
 
   const entries: { action: QuickAction; run: () => void }[] = []
+  if (!isAuthenticated) {
+    // A guest's navigation lists only the public sections, so these say what an account opens up.
+    const busy = signInRedirect.disabled
+      ? t("nav.quickActions.signInBusy")
+      : undefined
+    entries.push(
+      {
+        action: {
+          id: "signIn",
+          icon: LogIn,
+          label: t("auth.signIn"),
+          description: t("nav.quickActions.signInDescription"),
+          keywords: ["log in", "account", "goals", "dailies", "guild"],
+          disabledReason: busy,
+        },
+        run: signInRedirect.signIn,
+      },
+      {
+        action: {
+          id: "signUp",
+          icon: UserPlus,
+          label: t("auth.signUp"),
+          description: t("nav.quickActions.signUpDescription"),
+          keywords: ["register", "create account"],
+          disabledReason: busy,
+        },
+        run: signInRedirect.signUp,
+      }
+    )
+  }
   if (isAuthenticated) {
     entries.push(
       {

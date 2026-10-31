@@ -9,6 +9,7 @@ import {
   Menu,
   PlusCircle,
   RefreshCw,
+  UserPlus,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -26,6 +27,7 @@ import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import { useSignInRedirect } from "@/shared/auth"
 import { NavItemIcon } from "./nav-child-icon"
 import { matchesNavPath } from "./find-active-child"
 import { MobileDrawerSubItem } from "./mobile-drawer-sub-item"
@@ -90,6 +92,7 @@ export function MobileShell({
       </main>
       <ScrollToTopButton />
       <MobileBottomNav
+        isAuthenticated={isAuthenticated}
         items={visibleItems}
         onCreateGoal={onCreateGoal}
         quickActions={quickActions}
@@ -174,11 +177,35 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
   )
 }
 
+/** A guest's centre action: goals and sync need an account, so the bar offers to create one (the
+ *  header already carries Sign in). */
+function MobileGuestNavAction() {
+  const { t } = useTranslation()
+  const { disabled, signUp } = useSignInRedirect()
+
+  return (
+    <button
+      type="button"
+      className="flex flex-1 flex-col items-center justify-center gap-1 text-[0.65rem] font-semibold text-primary disabled:cursor-not-allowed disabled:opacity-50"
+      data-testid="mobile-sign-up-button"
+      disabled={disabled}
+      onClick={signUp}
+    >
+      <span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
+        <UserPlus aria-hidden="true" className="size-6" />
+      </span>
+      <span>{t("auth.signUp")}</span>
+    </button>
+  )
+}
+
 function MobileBottomNav({
+  isAuthenticated,
   items,
   onCreateGoal,
   quickActions,
 }: {
+  isAuthenticated: boolean
   items: NavItem[]
   onCreateGoal: () => void
   quickActions: QuickActionsController
@@ -201,13 +228,18 @@ function MobileBottomNav({
   const homeItem = items.find((item) => item.path === "/home")
   const goalsItem = items.find((item) => item.path === "/plan")
   const dailiesItem = items.find((item) => item.path === "/dailies")
+  // A guest has no Home, Goals or Dailies; the two sections open to them take those slots instead.
+  const libraryItem = items.find((item) => item.path === "/library")
+  const myGameItem = items.find((item) => item.path === "/my-game")
+  const barPaths = isAuthenticated
+    ? ["/home", "/plan", "/dailies"]
+    : ["/library", "/my-game"]
   const filteredItems = filterNavigationItems(items, search, t)
   const filteredActions = filterQuickActions(quickActions.actions, search)
   const isSearching = search.trim() !== ""
   const isMenuItemActive = items.some(
     (item) =>
-      !["/home", "/plan", "/dailies"].includes(item.path) &&
-      matchesNavPath(pathname, item.path)
+      !barPaths.includes(item.path) && matchesNavPath(pathname, item.path)
   )
 
   return (
@@ -215,14 +247,30 @@ function MobileBottomNav({
       className="fixed inset-x-0 bottom-0 z-40 flex h-(--mobile-nav-height) border-t bg-topbar pb-[env(safe-area-inset-bottom)]"
       data-testid="primary-nav"
     >
-      {homeItem ? <MobileNavLink item={homeItem} pathname={pathname} /> : null}
-      {goalsItem ? (
-        <MobileNavLink item={goalsItem} pathname={pathname} />
-      ) : null}
-      <MobileNavActions onCreateGoal={onCreateGoal} />
-      {dailiesItem ? (
-        <MobileNavLink item={dailiesItem} pathname={pathname} />
-      ) : null}
+      {isAuthenticated ? (
+        <>
+          {homeItem ? (
+            <MobileNavLink item={homeItem} pathname={pathname} />
+          ) : null}
+          {goalsItem ? (
+            <MobileNavLink item={goalsItem} pathname={pathname} />
+          ) : null}
+          <MobileNavActions onCreateGoal={onCreateGoal} />
+          {dailiesItem ? (
+            <MobileNavLink item={dailiesItem} pathname={pathname} />
+          ) : null}
+        </>
+      ) : (
+        <>
+          {libraryItem ? (
+            <MobileNavLink item={libraryItem} pathname={pathname} />
+          ) : null}
+          <MobileGuestNavAction />
+          {myGameItem ? (
+            <MobileNavLink item={myGameItem} pathname={pathname} />
+          ) : null}
+        </>
+      )}
       <Drawer
         direction="bottom"
         onOpenChange={(open) => {

@@ -1,9 +1,6 @@
 import { useMemo } from "react"
 import { AlertTriangle, LogIn, RefreshCw, SearchX, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
-import { AuthError } from "@azure/msal-browser"
-import { useMsal } from "@azure/msal-react"
 import { factionIcon } from "@workspace/game-catalog"
 import {
   Alert,
@@ -20,7 +17,7 @@ import {
   type UnitKind,
 } from "@/entities/unit"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
-import { loginRequest } from "@/shared/auth"
+import { useSignInRedirect } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
 import { EntityIcon } from "@/shared/ui"
 
@@ -349,24 +346,19 @@ function RosterPrompt({
 }
 
 function SignInButton() {
-  const { t } = useTranslation(["common", "landing"])
-  const { instance } = useMsal()
-
-  const signIn = () => {
-    void instance.loginRedirect(loginRequest).catch((error: unknown) => {
-      console.error(
-        "[MSAL] sign-in failed",
-        error instanceof AuthError
-          ? { errorCode: error.errorCode, message: error.message }
-          : error
-      )
-      toast.error(t("landing:authError"))
-    })
-  }
+  const { t } = useTranslation("common")
+  const { checkingSignIn, disabled, signIn } = useSignInRedirect()
 
   return (
-    <Button size="sm" onClick={signIn} data-testid="collection-sign-in">
-      {t("myGame.collection.signIn")}
+    <Button
+      data-testid="collection-sign-in"
+      disabled={disabled}
+      onClick={signIn}
+      size="sm"
+    >
+      {checkingSignIn
+        ? t("auth.checkingSignIn")
+        : t("myGame.collection.signIn")}
     </Button>
   )
 }

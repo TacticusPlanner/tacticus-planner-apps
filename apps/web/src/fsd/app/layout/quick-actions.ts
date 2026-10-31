@@ -2,7 +2,13 @@ import type { ReactNode } from "react"
 import type { LucideIcon } from "lucide-react"
 
 export type QuickActionId =
-  "createGoal" | "createProject" | "sync" | "feedback" | "tourPage"
+  | "signIn"
+  | "signUp"
+  | "createGoal"
+  | "createProject"
+  | "sync"
+  | "feedback"
+  | "tourPage"
 
 export type QuickAction = {
   id: QuickActionId

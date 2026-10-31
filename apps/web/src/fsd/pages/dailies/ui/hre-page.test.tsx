@@ -195,7 +195,7 @@ function renderHre(projectId?: string) {
 
 const seed = (progress: Record<string, unknown>) =>
   window.localStorage.setItem(
-    "tp.dailies.hre.progress.v1",
+    "tp.session.dailies.hre.progress.v1",
     JSON.stringify({ "occ-zapspitta": progress })
   )
 
@@ -907,7 +907,8 @@ describe("HRE tab", () => {
         "total=438"
       )
       const stored = JSON.parse(
-        window.localStorage.getItem("tp.dailies.hre.progress.v1") ?? "{}"
+        window.localStorage.getItem("tp.session.dailies.hre.progress.v1") ??
+          "{}"
       ) as Record<string, { owned: unknown }>
       expect(stored["occ-zapspitta"]?.owned).toEqual(day8.owned)
     })

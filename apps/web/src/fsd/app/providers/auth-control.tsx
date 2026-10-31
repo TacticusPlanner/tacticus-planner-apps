@@ -28,6 +28,7 @@ import {
   AccountAvatar,
   AccountCard,
   GuestAccountMenu,
+  GuestAuthButtons,
   UnreadDot,
 } from "@/widgets/account-menu"
 import { ManageAccountDialog, type ManageAccountTab } from "@/features/account"
@@ -40,16 +41,14 @@ import { useCurrentUser } from "@/entities/account"
 import {
   getAccountEmail,
   getSignInMethod,
-  loginRequest,
   signOut,
   useRequestApiAccessOnce,
-  useSilentSignInStatus,
 } from "@/shared/auth"
 import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { useUserJot } from "./userjot-provider"
 
-type AuthOperation = "api-access" | "sign-in" | "sign-out"
+type AuthOperation = "api-access" | "sign-out"
 
 function logAuthenticationError(operation: AuthOperation, error: unknown) {
   const message = `[MSAL] ${operation} failed`
@@ -103,16 +102,6 @@ export function AuthControl() {
   const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
   const install = useAppInstall()
   const installGuide = useInstallGuide("accountMenu", install)
-  const silentSignInStatus = useSilentSignInStatus()
-  const isCheckingSilentSignIn = silentSignInStatus === "checking"
-
-  const handleSignIn = () => {
-    void instance.loginRedirect(loginRequest).catch((error: unknown) => {
-      logAuthenticationError("sign-in", error)
-      toast.error(t("auth.error"))
-    })
-  }
-
   const handleSignOut = () => {
     if (!account) return
     void signOut(instance, account.homeAccountId).catch((error: unknown) => {
@@ -139,15 +128,15 @@ export function AuthControl() {
 
   if (!isAuthenticated || !account) {
     return (
-      <GuestAccountMenu
-        changelogUnavailable={feedbackUnavailable}
-        checkingSignIn={isCheckingSilentSignIn}
-        disabled={isInteractionInProgress}
-        onChangelog={() => openUserJot({ to: "updates" })}
-        onOpenChange={setMenuOpen}
-        onSignIn={handleSignIn}
-        open={menuOpen}
-      />
+      <div className="flex min-w-0 items-center gap-2">
+        <GuestAccountMenu
+          changelogUnavailable={feedbackUnavailable}
+          onChangelog={() => openUserJot({ to: "updates" })}
+          onOpenChange={setMenuOpen}
+          open={menuOpen}
+        />
+        <GuestAuthButtons />
+      </div>
     )
   }
 

@@ -18,6 +18,11 @@ import {
   type PlayerDataSyncResult,
 } from "@workspace/player-data"
 
+import {
+  isAccountSetupComplete,
+  readSetupCompleteHint,
+  useCurrentUser,
+} from "@/entities/account"
 import { refreshServerReadsAfterSync } from "@/features/player-data-sync"
 import { reportError } from "@/shared/lib"
 import {
@@ -115,8 +120,16 @@ export function PlayerDataProvider({
   const hasRequestedApiAccess = useRef(false)
   const queryClient = useQueryClient()
 
-  // The account to sync for, or null while signed out.
-  const syncAccountId = isAuthenticated ? accountId : null
+  // An account that has not finished setup has no Tacticus key yet, so a sync could only fail (400,
+  // or 404 before GET /account provisions it) and leave a "sync failed" badge where setup belongs.
+  // It waits until the account is known to be set up: the device's hint, or GET /account's answer.
+  const { state: userState } = useCurrentUser()
+  const setupComplete =
+    readSetupCompleteHint(accountId) ||
+    (userState.status === "success" && isAccountSetupComplete(userState.user))
+
+  // The account to sync for, or null while signed out or not set up yet.
+  const syncAccountId = isAuthenticated && setupComplete ? accountId : null
 
   const runSync = useCallback(
     async (activeAccountId: string) => {

@@ -49,34 +49,48 @@ The footer SHALL state that Tacticus Planner is an unofficial fan project not af
 - **WHEN** the landing page renders in a production build
 - **THEN** the footer has no UI Kit link
 
-### Requirement: The landing hero explains the product and offers sign-in
+### Requirement: The landing hero explains the product and offers sign-up and sign-in
 
-The landing page SHALL open with a hero over datamined space art containing, in order: an eyebrow naming the planner as free and fan-made, a single `h1` headline, one sentence describing what the planner does, a primary "Get started, it's free" button that starts the same sign-in redirect as the top bar, a Sign up button that starts the same create-account redirect as the top bar's Sign up, a secondary "Browse the library" link to `/library/characters`, and three short trust points: syncs with a Tacticus API key, works on phone, open source. For a signed-in visitor the primary button SHALL instead be an "Open planner" link to `/home` and the Sign up button SHALL NOT be shown. While a sign-in interaction is in progress the primary button and the Sign up button SHALL be disabled; while a silent sign-in check is running the primary button SHALL read the existing "Account detected — signing you in…" text. A failed sign-in or sign-up redirect SHALL show the existing localized authentication error toast. The `next` destination preserved by the route guard SHALL be honoured exactly as today (see `redirect-authentication`), and sign-in or sign-up started from a bare `/` SHALL return to `/home`.
-
-#### Scenario: Visitor starts sign-in from the hero
-
-- **WHEN** a signed-out visitor activates "Get started, it's free"
-- **THEN** the sign-in redirect starts with the app's login request and returns to `/home` once complete
+The landing page SHALL open with a hero over datamined space art containing, in order: an eyebrow naming the planner as free and fan-made, a single `h1` headline, one sentence describing what the planner does, a primary "Get started, it's free" button that starts the same create-account redirect as the top bar's Sign up, a Sign in button that starts the same sign-in redirect as the top bar's Sign in, a secondary "Browse the library" link to `/library/characters`, and three short trust points: syncs with a Tacticus API key, works on phone, open source. For a signed-in visitor the primary button SHALL instead be an "Open planner" link to `/home` and the Sign in button SHALL NOT be shown. While a sign-in interaction is in progress both buttons SHALL be disabled; while a silent sign-in check is running the Sign in button SHALL read the existing "Account detected — signing you in…" text and stay available. A failed sign-in or sign-up redirect SHALL show the existing localized authentication error toast. The `next` destination preserved by the route guard SHALL be honoured exactly as today (see `redirect-authentication`), and sign-in or sign-up started from a bare `/` SHALL return to `/home`.
 
 #### Scenario: Visitor starts sign-up from the hero
 
-- **WHEN** a signed-out visitor activates the hero's Sign up
+- **WHEN** a signed-out visitor activates "Get started, it's free"
 - **THEN** the create-account redirect starts and returns to `/home` once complete
+
+#### Scenario: Returning player signs in from the hero
+
+- **WHEN** a signed-out visitor activates the hero's Sign in
+- **THEN** the sign-in redirect starts with the app's login request and returns to `/home` once complete
 
 #### Scenario: Signed-in visitor
 
 - **WHEN** a signed-in visitor views the landing page
-- **THEN** the primary action is an "Open planner" link to `/home` and no Sign up button is shown
+- **THEN** the primary action is an "Open planner" link to `/home` and no Sign in button is shown
 
 #### Scenario: Silent sign-in in progress
 
 - **WHEN** the silent sign-in check is running as the landing page renders
-- **THEN** the primary button reads "Account detected — signing you in…" and the Sign up button stays available
+- **THEN** the Sign in button reads "Account detected — signing you in…" and stays available
 
 #### Scenario: Mobile hero keeps the call to action above the fold
 
 - **WHEN** a signed-out visitor opens `/` at a 390 x 844 viewport
-- **THEN** the headline, the primary button and the Sign up button are visible without scrolling and no content touches the top edge of the viewport
+- **THEN** the headline, the primary button and the Sign in button are visible without scrolling and no content touches the top edge of the viewport
+
+### Requirement: A sign-in-only link explains why the visitor sees the landing page
+
+When the route guard sends a signed-out visitor to `/` with a `next` destination, the hero SHALL show, above the eyebrow, a notice that the page needs an account and that the visitor goes straight there after signing in. The notice SHALL name the page when the navigation knows it ("Sign in to open Goals") and otherwise read "Sign in to continue". A plain visit to `/` SHALL show no notice.
+
+#### Scenario: Shared link to Goals
+
+- **WHEN** a signed-out visitor opens `/plan/goals`
+- **THEN** they land on `/?next=%2Fplan%2Fgoals` and the hero says "Sign in to open Goals"
+
+#### Scenario: Setup link
+
+- **WHEN** a signed-out visitor opens `/setup`
+- **THEN** the hero says "Sign in to continue"
 
 ### Requirement: Desktop shows a static example plan
 

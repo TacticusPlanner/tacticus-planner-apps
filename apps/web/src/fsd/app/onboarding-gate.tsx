@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Navigate, useLocation } from "react-router"
+import { Navigate, useLocation, type Location } from "react-router"
 import { Button } from "@workspace/ui/components/button"
 import { useMsal } from "@azure/msal-react"
 
@@ -9,6 +9,7 @@ import {
   readSetupCompleteHint,
   rememberSetupState,
   useCurrentUser,
+  type CurrentUser,
 } from "@/entities/account"
 import {
   signOut,
@@ -22,6 +23,37 @@ import { useDelayedFlag } from "./use-delayed-flag"
 
 // A healthy /account answers in well under a second; past this, say so rather than look frozen.
 export const ACCOUNT_GATE_SLOW_MS = 5000
+
+/** The setup step an unfinished account owes, remembering the page it was on as `next`. */
+function setupRedirectTarget(
+  user: CurrentUser,
+  location: Pick<Location, "pathname" | "search">
+): string {
+  const next = `${location.pathname}${location.search}`
+  // A user who already has a key only owes the name step; anyone else starts from the beginning.
+  const setupPath = user.hasCompletedOnboarding
+    ? SETUP_STEP_PATHS.name
+    : SETUP_STEP_PATHS.choose
+  return `${setupPath}?next=${encodeURIComponent(next)}`
+}
+
+/**
+ * The public pages inside the shell (Library, My Game › Collection) skip the onboarding gate, so a
+ * first sign-in started from one of them would otherwise come back to a page that cannot sync, with
+ * nothing pointing at setup. Once GET /account answers that the signed-in account has not finished
+ * setup, this sends it there and remembers the page. It never blocks: while the answer is pending,
+ * on an error, or signed out, it renders nothing and the page shows as usual.
+ */
+export function SetupRedirect() {
+  const { state } = useCurrentUser()
+  const location = useLocation()
+
+  if (state.status !== "success" || isAccountSetupComplete(state.user)) {
+    return null
+  }
+
+  return <Navigate replace to={setupRedirectTarget(state.user, location)} />
+}
 
 function logApiAccessError(error: unknown) {
   console.error("[MSAL] api-access failed", error)
@@ -91,14 +123,7 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
   }
 
   if (state.status === "success" && !isAccountSetupComplete(state.user)) {
-    const next = `${location.pathname}${location.search}`
-    // A user who already has a key only owes the name step; anyone else starts from the beginning.
-    const setupPath = state.user.hasCompletedOnboarding
-      ? SETUP_STEP_PATHS.name
-      : SETUP_STEP_PATHS.choose
-    return (
-      <Navigate replace to={`${setupPath}?next=${encodeURIComponent(next)}`} />
-    )
+    return <Navigate replace to={setupRedirectTarget(state.user, location)} />
   }
 
   if (state.status === "error") {

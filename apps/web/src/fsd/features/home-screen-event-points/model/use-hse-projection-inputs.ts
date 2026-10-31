@@ -10,17 +10,22 @@ import {
   type HseManualTokenMode,
   type HseTokenMode,
 } from "../lib/hse-token-supply"
-import { safeStorage } from "@/shared/lib"
+import { accountStorageKey, safeStorage } from "@/shared/lib"
 
-// Design D5: averages persist per browser by (definition, mode), milestone progress by instance. Both are
+// Design D5: averages persist per browser by (definition, mode), milestone progress by instance,
+// under the account prefix so sign-out removes them. Both are
 // this tab's own keys (no other Dailies tab reads them) and every storage access is guarded, so a
 // private window or blocked site data degrades to in-memory values.
-export const HSE_AVERAGES_STORAGE_KEY = "tp.dailies.hse.averages.v1"
+export const HSE_AVERAGES_STORAGE_KEY = accountStorageKey(
+  "dailies.hse.averages.v1"
+)
 // v2 holds milestones done and points in the current one (the game restarts at 0 per milestone);
 // v1's cumulative totals are no longer read.
-export const HSE_PROGRESS_STORAGE_KEY = "tp.dailies.hse.progress.v2"
+export const HSE_PROGRESS_STORAGE_KEY = accountStorageKey(
+  "dailies.hse.progress.v2"
+)
 // Tokens of the modes the API does not sync (Tournament Arena), by instance: each event has its own.
-export const HSE_TOKENS_STORAGE_KEY = "tp.dailies.hse.tokens.v1"
+export const HSE_TOKENS_STORAGE_KEY = accountStorageKey("dailies.hse.tokens.v1")
 
 /** Edited averages of one definition: a number, or null for an input the player cleared. */
 type HseAverages = Partial<Record<HseTokenMode, number | null>>

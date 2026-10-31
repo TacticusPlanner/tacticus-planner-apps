@@ -51,7 +51,8 @@ function identityEntryPath(item: NavItem) {
   return item.path
 }
 
-// Holds the menu state the way `ShellContent` does, so tests exercise the controlled shell.
+// Holds the menu state the way `ShellContent` does, so tests exercise the controlled shell. Signed in
+// unless a test says otherwise.
 function DesktopShell(
   props: Omit<
     ComponentProps<typeof ControlledDesktopShell>,
@@ -68,6 +69,7 @@ function DesktopShell(
 
   return (
     <ControlledDesktopShell
+      isAuthenticated
       quickActions={noQuickActions}
       {...props}
       onPrimaryExpandedChange={setPrimaryExpanded}
@@ -219,6 +221,34 @@ describe("DesktopShell", () => {
       tools.compareDocumentPosition(create) & Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
     expect(screen.queryByTestId("desktop-sidebar-footer")).toBeNull()
+  })
+
+  it("gives a guest no Create Goal, Sync or Ctrl/Cmd+G, since both need an account", () => {
+    const onCreateGoal = vi.fn()
+    render(
+      <MemoryRouter>
+        <TooltipProvider>
+          <DesktopShell
+            isAuthenticated={false}
+            visibleItems={navItems}
+            activeSection={lookupItem}
+            pageDescription="Characters"
+            sectionTitle="Library"
+            onCreateGoal={onCreateGoal}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+
+    expect(
+      screen.queryByTestId("desktop-create-goal-button")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("player-data-sync-button")
+    ).not.toBeInTheDocument()
+    expect(fireEvent.keyDown(window, { ctrlKey: true, key: "g" })).toBe(true)
+    expect(onCreateGoal).not.toHaveBeenCalled()
   })
 
   it("shows just the child title (no breadcrumb) while the section menu is expanded", () => {
