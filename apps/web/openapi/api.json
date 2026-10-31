@@ -6319,7 +6319,7 @@
         "description": "RFC 7807 problem details. issueCode names the failure; errors maps fields to messages on a validation failure; current carries the conflicting resource in its read shape on a 409."
       },
       "BattleMilestone": {
-        "enum": ["Bronze", "Silver", "Gold"],
+        "enum": ["None", "Bronze", "Silver", "Gold"],
         "type": "string"
       },
       "BattleProgressOverrideRequest": {

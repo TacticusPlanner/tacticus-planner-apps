@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Medal } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
   campaignDescriptor,
@@ -21,7 +21,15 @@ import {
 import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { BattleProgressDialog } from "@/features/daily-raids"
+import {
+  BattleProgressDialog,
+  lightningVictoryIcon,
+  medalIcon,
+  medalCompletion,
+  trackMedalStats,
+  useSavedBattleProgress,
+  type TrackMedalStats,
+} from "@/features/daily-raids"
 import { useFeatureFlag } from "@/shared/feature-flags"
 import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
@@ -48,14 +56,15 @@ export function CampaignsPage() {
   const onEditMedals = useFeatureFlag("ManualBattles")
     ? setMedalsGroupId
     : undefined
+  const overrides = useSavedBattleProgress()
 
   // Keyed on each read's data (each referentially stable while unchanged), not on the combined tuple.
   const model = useMemo(
     () =>
       definitions && battles && progress
-        ? buildModel({ definitions, battles, progress, characters })
+        ? buildModel({ definitions, battles, progress, characters, overrides })
         : null,
-    [definitions, battles, progress, characters]
+    [definitions, battles, progress, characters, overrides]
   )
   if (read.status === "loading") return <Loading />
   if (read.status === "error") return <LocalReadFailure retry={read.retry} />
@@ -109,6 +118,8 @@ function buildModel(data: {
   battles: CampaignBattleStorageModel[]
   progress: PlayerDataChunkDto<"campaign-progress">
   characters: PlayerDataChunkDto<"characters"> | null | undefined
+  /** Saved battle progress; absent while manual battles are off or it hasn't loaded. */
+  overrides?: Parameters<typeof trackMedalStats>[2]
 }) {
   const battlesByGroup = new Map<string, CampaignBattleStorageModel[]>()
   for (const battle of data.battles) {
@@ -157,7 +168,10 @@ function buildModel(data: {
         // cleared battles before it — V1's `battles.length - 1`.
         const frontierIndex = progressByKey.get(`${definition.groupId}|${type}`)
         const completed = Math.max(0, Math.min(max, frontierIndex ?? 0))
-        return { definition, type, max, completed }
+        const medals = data.overrides
+          ? trackMedalStats(battles, frontierIndex, data.overrides)
+          : undefined
+        return { definition, type, max, completed, medals }
       })
       .sort((a, b) => a.max - b.max),
     coreCharacters: [
@@ -177,11 +191,30 @@ function buildModel(data: {
   }
 }
 
+/** A track's completion: medals and Lightning Victories when recorded, else battles cleared. */
+const completionOf = (track: BuiltTrack) =>
+  track.medals
+    ? medalCompletion(track.medals)
+    : { done: track.completed, total: track.max }
+
+const completionOfTracks = (tracks: readonly BuiltTrack[]) =>
+  tracks.map(completionOf).reduce(
+    (sum, part) => ({
+      done: sum.done + part.done,
+      total: sum.total + part.total,
+    }),
+    { done: 0, total: 0 }
+  )
+
+const percent = ({ done, total }: { done: number; total: number }) =>
+  total ? (done / total) * 100 : 0
+
 type BuiltTrack = {
   definition: CampaignDefinitionStorageModel
   type: string
   max: number
   completed: number
+  medals: TrackMedalStats | undefined
 }
 
 type BuiltStory = Omit<Story, "definitions"> & {
@@ -193,25 +226,83 @@ function summarize(stories: BuiltStory[]) {
   const tracks = stories.flatMap((story) => story.definitions)
   const done = tracks.reduce((sum, track) => sum + track.completed, 0)
   const total = tracks.reduce((sum, track) => sum + track.max, 0)
+  const completion = completionOfTracks(tracks)
+  const withMedals = tracks.flatMap((track) => track.medals ?? [])
   return {
     done,
     total,
+    percent: Math.round(percent(completion)),
     cleared: tracks.filter((track) => track.completed >= track.max).length,
+    medals:
+      withMedals.length > 0
+        ? withMedals.reduce(
+            (sum, stats) => ({
+              medals: sum.medals + stats.medals,
+              maxMedals: sum.maxMedals + stats.maxMedals,
+              lightningVictories:
+                sum.lightningVictories + stats.lightningVictories,
+              maxLightningVictories:
+                sum.maxLightningVictories + stats.maxLightningVictories,
+            }),
+            {
+              medals: 0,
+              maxMedals: 0,
+              lightningVictories: 0,
+              maxLightningVictories: 0,
+            }
+          )
+        : undefined,
   }
+}
+
+/** Medals and Lightning Victories earned against the maximum, with the game's icons. */
+function MedalStats({ stats }: { stats: TrackMedalStats }) {
+  const { t } = useTranslation("dailies")
+  return (
+    <span className="inline-flex items-center gap-3 text-xs tabular-nums">
+      <span
+        className="inline-flex items-center gap-1"
+        title={t("battleProgress.medalsEarned")}
+      >
+        <EntityIcon
+          alt={t("battleProgress.medalsEarned")}
+          src={medalIcon}
+          className="size-4"
+        />
+        {stats.medals}/{stats.maxMedals}
+      </span>
+      {stats.maxLightningVictories > 0 ? (
+        <span
+          className="inline-flex items-center gap-1"
+          title={t("battleProgress.lightningVictory")}
+        >
+          <EntityIcon
+            alt={t("battleProgress.lightningVictory")}
+            src={lightningVictoryIcon}
+            className="size-4"
+          />
+          {stats.lightningVictories}/{stats.maxLightningVictories}
+        </span>
+      ) : null}
+    </span>
+  )
 }
 
 function Summary({
   label,
   done,
   total,
+  percent: pct,
   cleared,
+  medals,
 }: {
   label: string
   done: number
   total: number
+  percent: number
   cleared: number
+  medals: TrackMedalStats | undefined
 }) {
-  const pct = total ? Math.round((done / total) * 100) : 0
   return (
     <div>
       <p className="text-xs font-semibold text-muted-foreground uppercase">
@@ -221,6 +312,11 @@ function Summary({
       <p className="text-xs text-muted-foreground">
         {done}/{total} · {cleared} cleared
       </p>
+      {medals ? (
+        <p className="mt-1 text-muted-foreground">
+          <MedalStats stats={medals} />
+        </p>
+      ) : null}
     </div>
   )
 }
@@ -255,11 +351,7 @@ function StoryCard({
   onEditMedals?: (groupId: string) => void
 }) {
   const { t } = useTranslation(["campaigns", "dailies"])
-  const total = story.definitions.reduce((sum, track) => sum + track.max, 0)
-  const done = story.definitions.reduce(
-    (sum, track) => sum + track.completed,
-    0
-  )
+  const storyPercent = percent(completionOfTracks(story.definitions))
   const first = story.definitions[0]
   return (
     <Card>
@@ -273,10 +365,10 @@ function StoryCard({
           <CardTitle>
             {t(`names.${story.nameKey}`, { defaultValue: story.nameKey })}
           </CardTitle>
-          <Progress className="mt-2" value={total ? (done / total) * 100 : 0} />
+          <Progress className="mt-2" value={storyPercent} />
         </div>
         <span className="font-semibold tabular-nums">
-          {total ? Math.round((done / total) * 100) : 0}%
+          {Math.round(storyPercent)}%
         </span>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -306,19 +398,24 @@ function StoryCard({
                   {track.completed}/{track.max}
                 </strong>
               </div>
-              <Progress
-                value={track.max ? (track.completed / track.max) * 100 : 0}
-              />
+              <Progress value={percent(completionOf(track))} />
               {onEditMedals ? (
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="-ml-2 h-7 text-xs"
+                  className="w-full justify-between"
                   onClick={() => onEditMedals(track.definition.groupId)}
                   data-testid={`campaign-medals-${track.definition.groupId}`}
                 >
-                  <Medal aria-hidden className="size-3.5" />
-                  {t("dailies:battleProgress.open")}
+                  {track.medals ? (
+                    <MedalStats stats={track.medals} />
+                  ) : (
+                    <EntityIcon alt="" src={medalIcon} className="size-4" />
+                  )}
+                  <span className="inline-flex items-center gap-1">
+                    {t("dailies:battleProgress.edit")}
+                    <ChevronRight aria-hidden className="size-4" />
+                  </span>
                 </Button>
               ) : null}
             </div>

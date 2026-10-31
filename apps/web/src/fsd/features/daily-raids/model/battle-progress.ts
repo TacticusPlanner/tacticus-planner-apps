@@ -87,7 +87,11 @@ export function beatenEventBattleRows(
     }))
 }
 
-export type BattleMilestone = NonNullable<BattleProgressOverride["milestone"]>
+/** A milestone tier a battle can award. */
+export type BattleMilestone = Exclude<
+  NonNullable<BattleProgressOverride["milestone"]>,
+  "None"
+>
 
 /** Milestone tiers, lowest first. Earning one also meets the conditions of every lower tier. */
 export const MILESTONES: readonly BattleMilestone[] = [
@@ -99,7 +103,34 @@ export const MILESTONES: readonly BattleMilestone[] = [
 const milestoneRank = (milestone: BattleMilestone | null) =>
   milestone === null ? -1 : MILESTONES.indexOf(milestone)
 
-/** A battle's recorded progress, with the defaults for a battle that has no entry. */
+/** What a battle can award beyond medals: a Lightning Victory and, on event battles, milestones. */
+export type BattleTraits = {
+  lightningVictoryTurns: number | null
+  /** The milestone tiers it awards (Extremis: Gold only; none outside campaign events). */
+  milestones: readonly BattleMilestone[]
+}
+
+/** The traits of a catalog battle; a battle missing from the catalog has none. */
+export function battleTraits(
+  battle:
+    | {
+        lightningVictoryTurns?: number | null
+        rewards?: { milestones: readonly { milestone: BattleMilestone }[] }
+      }
+    | undefined
+): BattleTraits {
+  return {
+    lightningVictoryTurns: battle?.lightningVictoryTurns ?? null,
+    milestones: (battle?.rewards?.milestones ?? []).map(
+      (reward) => reward.milestone
+    ),
+  }
+}
+
+const bestMilestone = (traits: BattleTraits): BattleMilestone | null =>
+  MILESTONES.findLast((tier) => traits.milestones.includes(tier)) ?? null
+
+/** A beaten battle's progress. */
 export type BattleProgress = {
   medals: number
   lightningVictory: boolean
@@ -107,18 +138,26 @@ export type BattleProgress = {
 }
 
 /**
- * A battle's recorded progress. A battle with no entry counts as 3 medals (raidable), with no
- * Lightning Victory and no milestone recorded.
+ * A beaten battle's progress. Whatever has no entry is the best result: 3 medals, a Lightning
+ * Victory where the battle has one and its best milestone. An entry records only what fell short.
  */
 export function progressOf(
   overrides: readonly BattleProgressOverride[],
-  battleId: string
+  battleId: string,
+  traits: BattleTraits
 ): BattleProgress {
   const entry = overrides.find((candidate) => candidate.battleId === battleId)
+  const milestone = entry?.milestone ?? null
   return {
     medals: entry?.medals ?? 3,
-    lightningVictory: entry?.lightningVictory === true,
-    milestone: entry?.milestone ?? null,
+    lightningVictory:
+      entry?.lightningVictory ?? traits.lightningVictoryTurns !== null,
+    milestone:
+      milestone === null
+        ? bestMilestone(traits)
+        : milestone === "None"
+          ? null
+          : milestone,
   }
 }
 
@@ -127,57 +166,63 @@ export function medalsOf(
   overrides: readonly BattleProgressOverride[],
   battleId: string
 ): number {
-  return progressOf(overrides, battleId).medals
+  return overrides.find((entry) => entry.battleId === battleId)?.medals ?? 3
+}
+
+/** Whether a battle's progress is the best it allows, which needs no entry. */
+export function isBestProgress(progress: BattleProgress, traits: BattleTraits) {
+  return (
+    progress.medals === 3 &&
+    progress.lightningVictory === (traits.lightningVictoryTurns !== null) &&
+    progress.milestone === bestMilestone(traits)
+  )
 }
 
 /**
- * Updates a battle's progress. An entry at 3 medals with nothing else recorded is dropped, so the
- * saved list only holds what differs from the default.
+ * Updates a battle's progress. Only what falls short of the best result is stored (null means
+ * best), and an entry with nothing short is dropped.
  */
 export function withBattleProgress(
   overrides: readonly BattleProgressOverride[],
   battleId: string,
+  traits: BattleTraits,
   patch: Partial<BattleProgress>
 ): BattleProgressOverride[] {
-  const next = { ...progressOf(overrides, battleId), ...patch }
+  const next = { ...progressOf(overrides, battleId, traits), ...patch }
   const others = overrides.filter((entry) => entry.battleId !== battleId)
-  const isDefault =
-    next.medals === 3 && !next.lightningVictory && next.milestone === null
-  return isDefault
-    ? others
-    : [
-        ...others,
-        {
-          battleId,
-          medals: next.medals,
-          lightningVictory: next.lightningVictory ? true : null,
-          milestone: next.milestone,
-        },
-      ]
+  if (isBestProgress(next, traits)) return others
+  const hasLightning = traits.lightningVictoryTurns !== null
+  return [
+    ...others,
+    {
+      battleId,
+      medals: next.medals,
+      lightningVictory:
+        next.lightningVictory === hasLightning ? null : next.lightningVictory,
+      milestone:
+        next.milestone === bestMilestone(traits)
+          ? null
+          : (next.milestone ?? "None"),
+    },
+  ]
 }
 
 /** Sets a battle's medals, keeping its Lightning Victory and milestone. */
 export function withMedals(
   overrides: readonly BattleProgressOverride[],
   battleId: string,
+  traits: BattleTraits,
   medals: number
 ): BattleProgressOverride[] {
-  return withBattleProgress(overrides, battleId, { medals })
+  return withBattleProgress(overrides, battleId, traits, { medals })
 }
 
-/**
- * Records a Gold milestone, which needs a Lightning Victory with no borrowed characters and no
- * deaths, so it also means 3 medals and a Lightning Victory.
- */
-export function withGold(
+/** Resets a battle to the best result: 3 medals, Lightning Victory and its best milestone. */
+export function withBest(
   overrides: readonly BattleProgressOverride[],
   battleId: string
 ): BattleProgressOverride[] {
-  return withBattleProgress(overrides, battleId, {
-    medals: 3,
-    lightningVictory: true,
-    milestone: "Gold",
-  })
+  return overrides.filter((entry) => entry.battleId !== battleId)
 }
 
 /** A one-time reward amount: a fixed amount when `min === max`, else a range. */
@@ -197,6 +242,23 @@ export function unclaimedMilestoneRewards<
   return rewards.filter(
     (reward) => milestoneRank(reward.milestone) > milestoneRank(milestone)
   )
+}
+
+/** The medal and milestone rewards a beaten battle still holds, given its progress. */
+export function unclaimedRewardsOf(
+  rewards:
+    | {
+        medals: readonly (OneTimeReward & { medals: number })[]
+        milestones: readonly (OneTimeReward & { milestone: BattleMilestone })[]
+      }
+    | undefined,
+  progress: BattleProgress
+): OneTimeReward[] {
+  if (!rewards) return []
+  return [
+    ...unclaimedMedalRewards(rewards.medals, progress.medals),
+    ...unclaimedMilestoneRewards(rewards.milestones, progress.milestone),
+  ]
 }
 
 /** Sums rewards by id, keeping the first-seen order. */
@@ -240,6 +302,7 @@ export function unclaimedEventRewardTracks<TGroupId extends string>(
     types: readonly string[]
   }[],
   battles: readonly (Parameters<typeof beatenEventBattleRows>[0][number] & {
+    lightningVictoryTurns: number | null
     rewards: {
       medals: readonly (OneTimeReward & { medals: number })[]
       milestones: readonly (OneTimeReward & { milestone: BattleMilestone })[]
@@ -261,17 +324,11 @@ export function unclaimedEventRewardTracks<TGroupId extends string>(
           type,
           trackProgress(definition.groupId, type)
         ).map((row) => {
-          const rewards = battlesById.get(row.battleId)?.rewards
-          const current = progressOf(overrides, row.battleId)
-          return rewards
-            ? [
-                ...unclaimedMedalRewards(rewards.medals, current.medals),
-                ...unclaimedMilestoneRewards(
-                  rewards.milestones,
-                  current.milestone
-                ),
-              ]
-            : []
+          const battle = battlesById.get(row.battleId)
+          return unclaimedRewardsOf(
+            battle?.rewards,
+            progressOf(overrides, row.battleId, battleTraits(battle))
+          )
         })
         return {
           groupId: definition.groupId,
@@ -282,4 +339,55 @@ export function unclaimedEventRewardTracks<TGroupId extends string>(
       })
     )
     .filter((track) => track.battleCount > 0)
+}
+
+/** Medals and Lightning Victories earned on one campaign track, against what it offers. */
+export type TrackMedalStats = {
+  medals: number
+  maxMedals: number
+  lightningVictories: number
+  maxLightningVictories: number
+}
+
+/**
+ * Medal and Lightning Victory completion of one standing campaign track: every beaten battle (below
+ * the frontier) counts its recorded progress, which defaults to the best; the frontier and unreached
+ * battles count nothing.
+ */
+export function trackMedalStats(
+  battles: readonly {
+    id: string
+    battleIndex: number
+    lightningVictoryTurns: number | null
+  }[],
+  highestCompletedBattleIndex: number | undefined,
+  overrides: readonly BattleProgressOverride[]
+): TrackMedalStats {
+  const highest = highestCompletedBattleIndex ?? -1
+  const stats: TrackMedalStats = {
+    medals: 0,
+    maxMedals: battles.length * 3,
+    lightningVictories: 0,
+    maxLightningVictories: battles.filter(
+      (battle) => battle.lightningVictoryTurns !== null
+    ).length,
+  }
+  for (const battle of battles) {
+    if (battle.battleIndex >= highest) continue
+    const progress = progressOf(overrides, battle.id, battleTraits(battle))
+    stats.medals += progress.medals
+    if (progress.lightningVictory) stats.lightningVictories += 1
+  }
+  return stats
+}
+
+/** Completion counted in medals and Lightning Victories: each earned one against all on offer. */
+export function medalCompletion(stats: TrackMedalStats): {
+  done: number
+  total: number
+} {
+  return {
+    done: stats.medals + stats.lightningVictories,
+    total: stats.maxMedals + stats.maxLightningVictories,
+  }
 }

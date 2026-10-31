@@ -808,7 +808,7 @@
   "battleProgress": {
     "open": "Médailles",
     "title": "Combats sans 3 médailles",
-    "description": "Les raids demandent 3 médailles. Indiquez les médailles de chaque combat ; un combat sous 3 est planifié comme à jouer manuellement. Votre prochain combat de chaque campagne se joue toujours manuellement.",
+    "description": "Les raids nécessitent 3 médailles. Les combats gagnés comptent comme le meilleur résultat (3 médailles, victoire éclair, palier maximal) ; modifiez seulement ceux qui n'y sont pas. Un combat sous 3 médailles est prévu en jeu manuel. Votre prochain combat de chaque campagne se joue toujours manuellement.",
     "campaign": "Campagne",
     "notStarted": "Vous n'avez encore atteint aucun combat de cette campagne.",
     "notBeaten": "Pas encore vaincu",
@@ -832,14 +832,15 @@
       "Silver": "Argent",
       "Gold": "Or"
     },
-    "setGold": "Or",
-    "setGoldFor": "Passer {{battle}} en Or : 3 médailles et victoire éclair",
     "unclaimedEvents": {
-      "title": "Récompenses d'événement non réclamées",
-      "description": "Récompenses uniques de médailles et de paliers encore disponibles sur les combats d'événement que vous avez gagnés. Indiquez vos médailles et paliers pour garder cette liste exacte.",
-      "battles_one": "{{count}} combat",
-      "battles_other": "{{count}} combats",
-      "record": "Indiquer les médailles"
-    }
+      "summary_one": "{{count}} combat a des récompenses non réclamées",
+      "summary_other": "{{count}} combats ont des récompenses non réclamées",
+      "allClaimed": "Toutes les récompenses uniques réclamées"
+    },
+    "lightningVictoryFor": "Victoire éclair sur {{battle}}",
+    "setBest": "Max",
+    "setBestFor": "Mettre {{battle}} au meilleur résultat : 3 médailles, victoire éclair et palier maximal",
+    "edit": "Modifier les médailles",
+    "medalsEarned": "Médailles"
   }
 }

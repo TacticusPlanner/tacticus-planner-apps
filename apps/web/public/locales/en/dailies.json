@@ -808,7 +808,7 @@
   "battleProgress": {
     "open": "Medals",
     "title": "Battles without 3 medals",
-    "description": "Raids need 3 medals. Set the medals you have on each battle; a battle below 3 is planned as one to play manually. Your next battle in each campaign is always played manually.",
+    "description": "Raids need 3 medals. Beaten battles count as the best result (3 medals, Lightning Victory, top milestone); change only the ones that fell short. A battle below 3 medals is planned as one to play manually. Your next battle in each campaign is always played manually.",
     "campaign": "Campaign",
     "notStarted": "You haven't reached any battle in this campaign yet.",
     "notBeaten": "Not beaten yet",
@@ -832,14 +832,15 @@
       "Silver": "Silver",
       "Gold": "Gold"
     },
-    "setGold": "Gold",
-    "setGoldFor": "Set {{battle}} to Gold: 3 medals and Lightning Victory",
     "unclaimedEvents": {
-      "title": "Unclaimed event rewards",
-      "description": "One-time medal and milestone rewards still waiting on event battles you've beaten. Record the medals and milestones you've earned to keep this list accurate.",
-      "battles_one": "{{count}} battle",
-      "battles_other": "{{count}} battles",
-      "record": "Record medals"
-    }
+      "summary_one": "{{count}} battle has unclaimed rewards",
+      "summary_other": "{{count}} battles have unclaimed rewards",
+      "allClaimed": "All one-time rewards claimed"
+    },
+    "lightningVictoryFor": "Lightning Victory on {{battle}}",
+    "setBest": "Max",
+    "setBestFor": "Set {{battle}} to the best result: 3 medals, Lightning Victory and top milestone",
+    "edit": "Edit medals",
+    "medalsEarned": "Medals"
   }
 }

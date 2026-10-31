@@ -808,7 +808,7 @@
   "battleProgress": {
     "open": "Medaillen",
     "title": "Kämpfe ohne 3 Medaillen",
-    "description": "Raids brauchen 3 Medaillen. Lege die Medaillen für jeden Kampf fest; ein Kampf unter 3 wird als manuell zu spielen eingeplant. Dein nächster Kampf in jeder Kampagne wird immer manuell gespielt.",
+    "description": "Raids benötigen 3 Medaillen. Geschlagene Kämpfe zählen als bestes Ergebnis (3 Medaillen, Blitzsieg, höchster Meilenstein); ändere nur die, die darunter liegen. Ein Kampf unter 3 Medaillen wird als manueller Kampf geplant. Dein nächster Kampf in jeder Kampagne wird immer manuell gespielt.",
     "campaign": "Kampagne",
     "notStarted": "Du hast in dieser Kampagne noch keinen Kampf erreicht.",
     "notBeaten": "Noch nicht besiegt",
@@ -832,14 +832,15 @@
       "Silver": "Silber",
       "Gold": "Gold"
     },
-    "setGold": "Gold",
-    "setGoldFor": "{{battle}} auf Gold setzen: 3 Medaillen und Blitzsieg",
     "unclaimedEvents": {
-      "title": "Nicht abgeholte Event-Belohnungen",
-      "description": "Einmalige Medaillen- und Meilenstein-Belohnungen, die bei geschlagenen Event-Kämpfen noch offen sind. Trage deine Medaillen und Meilensteine ein, damit die Liste stimmt.",
-      "battles_one": "{{count}} Kampf",
-      "battles_other": "{{count}} Kämpfe",
-      "record": "Medaillen eintragen"
-    }
+      "summary_one": "{{count}} Kampf hat nicht abgeholte Belohnungen",
+      "summary_other": "{{count}} Kämpfe haben nicht abgeholte Belohnungen",
+      "allClaimed": "Alle einmaligen Belohnungen abgeholt"
+    },
+    "lightningVictoryFor": "Blitzsieg in {{battle}}",
+    "setBest": "Max",
+    "setBestFor": "{{battle}} auf bestes Ergebnis setzen: 3 Medaillen, Blitzsieg und höchster Meilenstein",
+    "edit": "Medaillen bearbeiten",
+    "medalsEarned": "Medaillen"
   }
 }

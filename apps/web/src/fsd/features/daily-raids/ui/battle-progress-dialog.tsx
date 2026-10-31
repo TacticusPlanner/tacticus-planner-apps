@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next"
 import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
 import {
   Select,
@@ -42,17 +41,25 @@ import {
 import {
   beatenEventBattleRows,
   MILESTONES,
+  battleTraits,
+  isBestProgress,
   progressOf,
   reachedBattleRows,
   sumRewards,
-  unclaimedMedalRewards,
-  unclaimedMilestoneRewards,
+  unclaimedRewardsOf,
   withBattleProgress,
-  withGold,
+  withBest,
   withMedals,
   type BattleMilestone,
+  type BattleProgress,
   type BattleProgressRow,
+  type BattleTraits,
 } from "../model/battle-progress"
+import {
+  lightningVictoryIcon,
+  medalIcon,
+  milestoneIcons,
+} from "../lib/battle-progress-icons"
 import { campaignEventProgressKey } from "../model/campaign-event-eligibility"
 import { useEffectiveCampaignEventProgress } from "../model/use-eligible-campaign-battles"
 import { OneTimeRewards } from "./one-time-rewards"
@@ -237,18 +244,15 @@ function BattleProgressEditor({
     row.challenge
       ? t("battleProgress.challengeBattle", { tier, node: row.nodeNumber })
       : `${tier} ${row.nodeNumber}`
-  const unclaimedFor = (row: BattleProgressRow) => {
-    const rewards = battlesById.get(row.battleId)?.rewards
-    if (!rewards) return []
-    const current = progressOf(draft, row.battleId)
-    const medals = row.frontier ? 0 : current.medals
-    return [
-      ...unclaimedMedalRewards(rewards.medals, medals),
-      ...(selected.isEvent
-        ? unclaimedMilestoneRewards(rewards.milestones, current.milestone)
-        : []),
-    ]
-  }
+  // The frontier was never beaten, so it holds every reward; beaten battles default to the best.
+  const progressFor = (row: BattleProgressRow): BattleProgress =>
+    row.frontier
+      ? { medals: 0, lightningVictory: false, milestone: null }
+      : progressOf(draft, row.battleId, traitsFor(row))
+  const traitsFor = (row: BattleProgressRow) =>
+    battleTraits(battlesById.get(row.battleId))
+  const unclaimedFor = (row: BattleProgressRow) =>
+    unclaimedRewardsOf(battlesById.get(row.battleId)?.rewards, progressFor(row))
   const unclaimedTotal = sumRewards(rows.flatMap(unclaimedFor))
   const update = (
     change: (
@@ -349,15 +353,9 @@ function BattleProgressEditor({
           ) : null}
           <ul className="my-3 divide-y rounded-lg border">
             {rows.map((row) => {
-              const battle = battlesById.get(row.battleId)
-              const current = progressOf(draft, row.battleId)
-              const medals = row.frontier ? 0 : current.medals
+              const traits = traitsFor(row)
+              const current = progressFor(row)
               const label = battleLabel(row)
-              const milestones = selected.isEvent
-                ? (battle?.rewards.milestones ?? []).map(
-                    (reward) => reward.milestone
-                  )
-                : []
               return (
                 <li
                   key={row.battleId}
@@ -370,7 +368,7 @@ function BattleProgressEditor({
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-sm">
                       {label}
-                      {medals < 3 ? (
+                      {current.medals < 3 ? (
                         <span className="ml-2 text-xs text-muted-foreground">
                           {row.frontier
                             ? t("battleProgress.notBeaten")
@@ -378,54 +376,58 @@ function BattleProgressEditor({
                         </span>
                       ) : null}
                     </span>
-                    <ToggleGroup
-                      type="single"
-                      variant="outline"
-                      size="sm"
-                      disabled={row.frontier}
-                      aria-label={t("battleProgress.medalsFor", {
-                        battle: label,
-                      })}
-                      value={String(medals)}
-                      onValueChange={(value) => {
-                        if (!value) return
-                        update((list) =>
-                          withMedals(list, row.battleId, Number(value))
-                        )
-                      }}
-                    >
-                      {MEDALS.map((count) => (
-                        <ToggleGroupItem
-                          key={count}
-                          value={String(count)}
-                          aria-label={t("battleProgress.medals", { count })}
-                          data-testid={`battle-progress-${row.battleId}-${count}`}
-                        >
-                          {count}
-                        </ToggleGroupItem>
-                      ))}
-                    </ToggleGroup>
+                    <div className="flex items-center gap-1.5">
+                      <EntityIcon alt="" src={medalIcon} className="size-5" />
+                      <ToggleGroup
+                        type="single"
+                        variant="outline"
+                        size="sm"
+                        disabled={row.frontier}
+                        aria-label={t("battleProgress.medalsFor", {
+                          battle: label,
+                        })}
+                        value={String(current.medals)}
+                        onValueChange={(value) => {
+                          if (!value) return
+                          update((list) =>
+                            withMedals(
+                              list,
+                              row.battleId,
+                              traits,
+                              Number(value)
+                            )
+                          )
+                        }}
+                      >
+                        {MEDALS.map((count) => (
+                          <ToggleGroupItem
+                            key={count}
+                            value={String(count)}
+                            aria-label={t("battleProgress.medals", { count })}
+                            data-testid={`battle-progress-${row.battleId}-${count}`}
+                          >
+                            {count}
+                          </ToggleGroupItem>
+                        ))}
+                      </ToggleGroup>
+                    </div>
                   </div>
-                  {selected.isEvent && milestones.length > 0 ? (
-                    <EventControls
+                  {row.frontier ? null : (
+                    <ExtraControls
                       battleId={row.battleId}
                       label={label}
-                      hasLightningVictory={
-                        battle?.lightningVictoryTurns != null
-                      }
-                      lightningVictory={current.lightningVictory}
-                      milestone={current.milestone}
-                      milestones={milestones}
+                      traits={traits}
+                      progress={current}
                       onChange={(patch) =>
                         update((list) =>
-                          withBattleProgress(list, row.battleId, patch)
+                          withBattleProgress(list, row.battleId, traits, patch)
                         )
                       }
-                      onGold={() =>
-                        update((list) => withGold(list, row.battleId))
+                      onBest={() =>
+                        update((list) => withBest(list, row.battleId))
                       }
                     />
-                  ) : null}
+                  )}
                   <OneTimeRewards
                     rewards={unclaimedFor(row)}
                     data-testid={`battle-progress-rewards-${row.battleId}`}
@@ -440,92 +442,112 @@ function BattleProgressEditor({
   )
 }
 
-/** Lightning Victory, the milestone tier and the Gold quick-set for one campaign-event battle. */
-function EventControls({
+/**
+ * A beaten battle's Lightning Victory toggle, its milestone tier (campaign events only) and, once
+ * anything falls short of the best result, a Max button that restores it.
+ */
+function ExtraControls({
   battleId,
   label,
-  hasLightningVictory,
-  lightningVictory,
-  milestone,
-  milestones,
+  traits,
+  progress,
   onChange,
-  onGold,
+  onBest,
 }: {
   battleId: string
   label: string
-  hasLightningVictory: boolean
-  lightningVictory: boolean
-  milestone: BattleMilestone | null
-  /** The tiers this battle awards (Extremis: Gold only). */
-  milestones: readonly BattleMilestone[]
-  onChange: (patch: {
-    lightningVictory?: boolean
-    milestone?: BattleMilestone | null
-  }) => void
-  onGold: () => void
+  traits: BattleTraits
+  progress: BattleProgress
+  onChange: (patch: Partial<BattleProgress>) => void
+  onBest: () => void
 }) {
   const { t } = useTranslation("dailies")
-  const lightningId = useId()
+  const hasLightningVictory = traits.lightningVictoryTurns !== null
+  const tiers = MILESTONES.filter((tier) => traits.milestones.includes(tier))
+  if (!hasLightningVictory && tiers.length === 0) return null
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
-      {hasLightningVictory ? (
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id={lightningId}
-            checked={lightningVictory}
-            onCheckedChange={(checked) =>
-              onChange({ lightningVictory: checked === true })
-            }
-            data-testid={`battle-progress-${battleId}-lightning`}
-          />
-          <Label htmlFor={lightningId} className="text-xs">
-            {t("battleProgress.lightningVictory")}
-          </Label>
-        </div>
-      ) : (
-        <span />
-      )}
       <div className="flex flex-wrap items-center gap-2">
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          aria-label={t("battleProgress.milestoneFor", { battle: label })}
-          value={milestone ?? NO_MILESTONE}
-          onValueChange={(value) => {
-            if (!value) return
-            onChange({
-              milestone:
-                value === NO_MILESTONE ? null : (value as BattleMilestone),
-            })
-          }}
-        >
-          {[
-            NO_MILESTONE,
-            ...MILESTONES.filter((tier) => milestones.includes(tier)),
-          ].map((tier) => (
+        {hasLightningVictory ? (
+          <ToggleGroup
+            type="multiple"
+            variant="outline"
+            size="sm"
+            value={progress.lightningVictory ? ["lightning"] : []}
+            onValueChange={(value) =>
+              onChange({ lightningVictory: value.includes("lightning") })
+            }
+          >
             <ToggleGroupItem
-              key={tier}
-              value={tier}
-              data-testid={`battle-progress-${battleId}-milestone-${tier}`}
+              value="lightning"
+              aria-label={t("battleProgress.lightningVictoryFor", {
+                battle: label,
+              })}
+              title={t("battleProgress.lightningVictory")}
+              className="data-[state=off]:opacity-40 data-[state=off]:grayscale"
+              data-testid={`battle-progress-${battleId}-lightning`}
             >
-              {t(
-                `battleProgress.milestones.${tier as BattleMilestone | typeof NO_MILESTONE}`
-              )}
+              <EntityIcon
+                alt=""
+                src={lightningVictoryIcon}
+                className="size-5"
+              />
             </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={milestone === "Gold" && lightningVictory}
-          onClick={onGold}
-          aria-label={t("battleProgress.setGoldFor", { battle: label })}
-          data-testid={`battle-progress-${battleId}-gold`}
-        >
-          {t("battleProgress.setGold")}
-        </Button>
+          </ToggleGroup>
+        ) : null}
+        {tiers.length > 0 ? (
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            size="sm"
+            aria-label={t("battleProgress.milestoneFor", { battle: label })}
+            value={progress.milestone ?? NO_MILESTONE}
+            onValueChange={(value) => {
+              if (!value) return
+              onChange({
+                milestone:
+                  value === NO_MILESTONE ? null : (value as BattleMilestone),
+              })
+            }}
+          >
+            <ToggleGroupItem
+              value={NO_MILESTONE}
+              className="text-xs"
+              data-testid={`battle-progress-${battleId}-milestone-${NO_MILESTONE}`}
+            >
+              {t("battleProgress.milestones.none")}
+            </ToggleGroupItem>
+            {tiers.map((tier) => (
+              <ToggleGroupItem
+                key={tier}
+                value={tier}
+                aria-label={t(`battleProgress.milestones.${tier}`)}
+                title={t(`battleProgress.milestones.${tier}`)}
+                className="data-[state=off]:opacity-40 data-[state=off]:grayscale"
+                data-testid={`battle-progress-${battleId}-milestone-${tier}`}
+              >
+                <EntityIcon
+                  alt=""
+                  src={milestoneIcons[tier]}
+                  className="size-5"
+                />
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        ) : null}
       </div>
+      {isBestProgress(progress, traits) ? null : (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 text-xs"
+          onClick={onBest}
+          aria-label={t("battleProgress.setBestFor", { battle: label })}
+          data-testid={`battle-progress-${battleId}-best`}
+        >
+          {t("battleProgress.setBest")}
+        </Button>
+      )}
     </div>
   )
 }
