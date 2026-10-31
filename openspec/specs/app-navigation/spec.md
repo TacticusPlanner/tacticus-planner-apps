@@ -55,7 +55,7 @@ On desktop, pressing Ctrl+K (or Cmd+K on macOS) from anywhere in the app SHALL o
 
 ### Requirement: A desktop keyboard shortcut triggers Create Goal
 
-On desktop, pressing Ctrl+G (or Cmd+G on macOS) from anywhere in the app SHALL trigger the same Create Goal action as clicking the sidebar's Create Goal button, regardless of which element has focus at the time. The desktop sidebar's Create Goal button SHALL display the platform-appropriate shortcut hint. This requirement is desktop-only; there is no mobile equivalent.
+On desktop, for a signed-in user, pressing Ctrl+G (or Cmd+G on macOS) from anywhere in the app SHALL trigger the same Create Goal action as clicking the sidebar's Create Goal button, regardless of which element has focus at the time. The desktop sidebar's Create Goal button SHALL display the platform-appropriate shortcut hint. This requirement is desktop-only; there is no mobile equivalent.
 
 #### Scenario: Shortcut opens the Create Goal sheet
 
@@ -69,7 +69,7 @@ On desktop, pressing Ctrl+G (or Cmd+G on macOS) from anywhere in the app SHALL t
 
 ### Requirement: A desktop keyboard shortcut triggers Sync with Tacticus
 
-On desktop, pressing Ctrl+Shift+S (or Cmd+Shift+S on macOS) from anywhere in the app SHALL trigger the same Sync with Tacticus action as clicking the sidebar's Sync button, regardless of which element has focus at the time, subject to the same disabled-while-syncing guard the button itself already has. The desktop sidebar's Sync button SHALL display the platform-appropriate shortcut hint. This requirement is desktop-only; there is no mobile equivalent.
+On desktop, for a signed-in user, pressing Ctrl+Shift+S (or Cmd+Shift+S on macOS) from anywhere in the app SHALL trigger the same Sync with Tacticus action as clicking the sidebar's Sync button, regardless of which element has focus at the time, subject to the same disabled-while-syncing guard the button itself already has. The desktop sidebar's Sync button SHALL display the platform-appropriate shortcut hint. This requirement is desktop-only; there is no mobile equivalent.
 
 #### Scenario: Shortcut starts a sync
 
@@ -306,12 +306,12 @@ Desktop navigation search and mobile Menu search SHALL include a Quick actions g
 
 ### Requirement: Quick actions follow current availability
 
-Create Goal, Create Project, and Sync with Tacticus SHALL be hidden for signed-out users. Feedback SHALL be available to signed-in and anonymous users when the widget is ready, otherwise visible but disabled with an unavailable explanation. Tour this page SHALL be hidden without a registered page tour and disabled with an explanation while a tour is running. Sync SHALL remain visible but disabled while syncing and expose current progress/status. Eligibility SHALL be checked again at activation; stale results MUST NOT bypass authentication or running-state guards. Disabled actions SHALL NOT close search or execute.
+Create Goal, Create Project, and Sync with Tacticus SHALL be hidden for signed-out users, who SHALL instead get Sign in and Sign up actions first, described by what an account opens up and disabled with an explanation while a sign-in interaction is running. Feedback SHALL be available to signed-in and anonymous users when the widget is ready, otherwise visible but disabled with an unavailable explanation. Tour this page SHALL be hidden without a registered page tour and disabled with an explanation while a tour is running. Sync SHALL remain visible but disabled while syncing and expose current progress/status. Eligibility SHALL be checked again at activation; stale results MUST NOT bypass authentication or running-state guards. Disabled actions SHALL NOT close search or execute.
 
 #### Scenario: Guest search
 
 - **WHEN** an anonymous Library user opens search
-- **THEN** creation/sync actions are absent, feedback is present, and page tour appears only if that page has a tour
+- **THEN** creation/sync actions are absent, Sign in and Sign up come first, feedback is present, and page tour appears only if that page has a tour
 
 #### Scenario: Sync in progress
 
@@ -798,3 +798,31 @@ The desktop rail and the mobile bottom bar SHALL show each section's lucide glyp
 
 - **WHEN** a signed-in user views the Plan section menu
 - **THEN** Goals shows the trophy, Insights the forge, and Projects and Schedule a lucide glyph
+
+### Requirement: Signed-out visitors get working entry points instead of account-only controls
+
+Goals and sync need an account, so a signed-out visitor SHALL NOT see Create Goal or Sync with Tacticus anywhere in the shell, and the Create Goal and Sync keyboard shortcuts SHALL do nothing for them. On desktop the global bar SHALL show Sign in and Sign up buttons beside the preferences menu, which holds only preferences, the Roadmap and Changelog rows and the legal links. On mobile the header SHALL keep its Sign in button, and the bottom bar SHALL show Library, a central Sign up action, My Game and Menu. Every sign-in and sign-up control SHALL use the shared redirect: disabled while an interaction is running, the "checking" label on Sign in while the silent restore runs, and the localized error toast when the redirect cannot start.
+
+#### Scenario: Guest on desktop
+
+- **WHEN** a signed-out visitor opens the Library on desktop
+- **THEN** the rail shows no Create Goal or Sync, Ctrl/Cmd+G does nothing, and Sign in and Sign up are visible in the global bar
+
+#### Scenario: Guest on mobile
+
+- **WHEN** a signed-out visitor opens My Game › Collection on a phone
+- **THEN** the bottom bar reads Library, Sign up, My Game, Menu
+
+#### Scenario: Sign-in cannot start
+
+- **WHEN** a guest activates any Sign in button and the redirect fails to start
+- **THEN** the authentication error toast is shown
+
+### Requirement: An unknown address shows a not-found page
+
+An address the app does not serve SHALL render a not-found page inside the shell, saying the link may be mistyped or out of date, instead of redirecting silently. It SHALL offer Home to a signed-in user, and the Library and the start page to a guest. While the sign-in state is still resolving, the boot screen SHALL show first.
+
+#### Scenario: Guest follows a stale link
+
+- **WHEN** a signed-out visitor opens `/does-not-exist`
+- **THEN** the not-found page shows with links to the Library and the start page

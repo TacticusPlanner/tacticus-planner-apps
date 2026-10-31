@@ -82,3 +82,18 @@ When the account status answers that setup is complete, the client SHALL remembe
 - **GIVEN** no remembered account, or a different one
 - **WHEN** the gate mounts and the account check is loading
 - **THEN** the gate waits on the boot screen as before
+
+### Requirement: Public pages send an unfinished signed-in account to setup
+
+The public pages inside the app shell (the Library and My Game › Collection) SHALL stay open to every visitor without the gate's loading screen. When the visitor is signed in and the account status answers that setup is incomplete, the page SHALL redirect to setup the same way the gate does (the name step for an account that already has a key, otherwise the start), carrying the current page as `next`. While the status is loading or failed, the page SHALL render as usual. Player-data sync SHALL NOT start for an account until it is known to have finished setup, either from the device's remembered account or from the account status.
+
+#### Scenario: First sign-in from the Library
+
+- **GIVEN** a first-time visitor on `/library/characters` signs in and has no Tacticus key yet
+- **WHEN** the account status answers
+- **THEN** they are sent to `/setup?next=%2Flibrary%2Fcharacters`, and no player-data sync was attempted
+
+#### Scenario: Configured account on a public page
+
+- **WHEN** a signed-in account that finished setup opens My Game › Collection
+- **THEN** the page renders without a redirect and the background sync runs as usual
