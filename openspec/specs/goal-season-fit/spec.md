@@ -65,11 +65,11 @@ Assumptions:
 
 ### Requirement: Each eligible goal shows its season fit
 
-With a mode on, a goal SHALL be **eligible** when it is Active, not Reached, not an Ability goal, and has a successful estimate with a Done By date. For an eligible goal the client SHALL compute its **completion instant** as the start of the day after its Done By date (00:00 UTC of Done By + 1 day), because Done By is an inclusive day. Its **offset** SHALL be the number of cycle boundaries strictly before the completion instant, counting from the current deadline: 0 when completion is at or before the deadline, 1 when at or before the next boundary, 2 for the one after, 3 or more otherwise. When fewer boundaries are known than the offset needs (non-`Fixed` definitions), an instant past the last known boundary SHALL count as 3 or more.
+With a mode on, a goal SHALL be **eligible** when it is Active, not Reached, not a character Ability goal, and has a successful estimate with a Done By date. For an eligible goal the client SHALL compute its **completion instant** as the start of the day after its Done By date (00:00 UTC of Done By + 1 day), because Done By is an inclusive day. Its **offset** SHALL be the number of cycle boundaries strictly before the completion instant, counting from the current deadline: 0 when completion is at or before the deadline, 1 when at or before the next boundary, 2 for the one after, 3 or more otherwise. When fewer boundaries are known than the offset needs (non-`Fixed` definitions), an instant past the last known boundary SHALL count as 3 or more.
 
 The offset SHALL be shown as a label beside the Done By date: 0 "This season", 1 "Next season", 2 "In 2 seasons", 3+ "Later". The label's tooltip SHALL name the deadline, e.g. "Done by Nov 14, before Battle Pass season 42 ends on Nov 15" (Battle Pass, Guild Raid) or "Done by Nov 3, before Guild War season 29 starts on Nov 28" (Guild War). The row (desktop) or card (mobile) SHALL also carry a left accent in the offset's colour (on track, caution, urgent, none for 3+). The label text SHALL meet the 4.5:1 contrast target and the accent 3:1 against its background in both themes (`goal-visual-accessibility`). Desktop and mobile SHALL show the same label and accent.
 
-Ineligible goals (Ability, Paused, Reached, Blocked, unestimated) SHALL show no label and no accent; their existing Done By content is unchanged. The fit SHALL use the global-plan Done By date in project scope too, matching the Done By cell there.
+Ineligible goals (character Ability, Paused, Reached, Blocked, unestimated) SHALL show no label and no accent; their existing Done By content is unchanged. The fit SHALL use the global-plan Done By date in project scope too, matching the Done By cell there.
 
 Assumptions:
 
@@ -85,10 +85,16 @@ Assumptions:
 - **AND** their offsets are 0 (at the deadline), 1 (after Nov 15, before Dec 20), 2 (after Dec 20, before Jan 24) and 3
 - **AND** their labels read "This season", "Next season", "In 2 seasons" and "Later"
 
-#### Scenario: Ability goals are ignored
+#### Scenario: Character Ability goals are ignored
 
-- **WHEN** mode is Guild War and an Active Ability goal has Done By 2026-11-01
+- **WHEN** mode is Guild War and an Active character Ability goal has Done By 2026-11-01
 - **THEN** that goal shows no label and no accent
+
+#### Scenario: Machine of War Ability goals get a fit
+
+- **GIVEN** mode Battle Pass with deadline 2026-11-15T00:00Z
+- **WHEN** an Active Machine of War Ability goal (primary/secondary upgrade) has Done By 2026-11-22
+- **THEN** it shows "Next season" and the caution accent, like any other estimated goal
 
 #### Scenario: Blocked goal
 

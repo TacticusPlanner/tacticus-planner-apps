@@ -34,12 +34,17 @@ const blocked: EstimateOutcome = {
 
 function row(
   goalId: string,
-  overrides: Partial<{ status: "Active" | "Paused"; goalType: string }> = {}
+  overrides: Partial<{
+    status: "Active" | "Paused"
+    goalType: string
+    entityType: string
+  }> = {}
 ) {
   return {
     goalId,
     status: overrides.status ?? "Active",
     goalType: (overrides.goalType ?? "Rank") as "Rank",
+    entityType: overrides.entityType ?? "Character",
   }
 }
 
@@ -86,8 +91,23 @@ describe("isSeasonFitEligible", () => {
     expect(isSeasonFitEligible(row("a"), estimate, false)).toBe(true)
   })
 
+  it("accepts a Machine of War Ability goal", () => {
+    expect(
+      isSeasonFitEligible(
+        row("a", { goalType: "Ability", entityType: "Mow" }),
+        estimate,
+        false
+      )
+    ).toBe(true)
+  })
+
   it.each([
-    ["an Ability goal", row("a", { goalType: "Ability" }), estimate, false],
+    [
+      "a character Ability goal",
+      row("a", { goalType: "Ability" }),
+      estimate,
+      false,
+    ],
     ["a Paused goal", row("a", { status: "Paused" }), estimate, false],
     ["a Reached goal", row("a"), estimate, true],
     ["a Blocked goal", row("a"), blocked, false],
@@ -100,11 +120,17 @@ describe("isSeasonFitEligible", () => {
 describe("computeSeasonFits", () => {
   it("keys each eligible goal's fit and skips the rest", () => {
     const fits = computeSeasonFits(
-      [row("a"), row("b", { goalType: "Ability" }), row("c")],
+      [
+        row("a"),
+        row("b", { goalType: "Ability" }),
+        row("c"),
+        row("d", { goalType: "Ability", entityType: "Mow" }),
+      ],
       new Map([
         ["a", estimated("2026-11-10")],
         ["b", estimated("2026-11-10")],
         ["c", estimated("2026-12-01")],
+        ["d", estimated("2026-12-01")],
       ]),
       new Map(),
       BATTLE_PASS
@@ -113,6 +139,7 @@ describe("computeSeasonFits", () => {
     expect([...fits]).toEqual([
       ["a", { offset: 0, date: "2026-11-10" }],
       ["c", { offset: 1, date: "2026-12-01" }],
+      ["d", { offset: 1, date: "2026-12-01" }],
     ])
   })
 })
