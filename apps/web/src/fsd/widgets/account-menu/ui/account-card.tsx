@@ -18,10 +18,12 @@ import type { SignInMethod } from "@/shared/auth"
 
 import { AccountAvatar } from "./account-avatar"
 import {
+  CommunitySection,
   LanguagePickerView,
-  LegalLinkRows,
+  LegalLinks,
   MenuLinkRow,
   MenuRow,
+  MenuSection,
   PreferencesSection,
   UnreadDot,
   type AccountMenuView,
@@ -30,8 +32,9 @@ import { CatalogSyncStatusBadge } from "./catalog-sync-status-badge"
 import { EditDisplayNameButton } from "./edit-display-name-button"
 import { USERJOT_ROADMAP_URL } from "../model/userjot-links"
 
-/** Signed-in account card, shared by the desktop popover and the mobile drawer: identity header, preferences, account/import/feedback rows,
- *  sign out, and the game catalog status as a quiet footer. Language opens an
+/** Signed-in account card, shared by the desktop popover and the mobile drawer: identity header, then labelled
+ *  Preferences, Account, Help & feedback and Community groups, sign out, and the legal links and game catalog
+ *  status as a quiet footer. Language opens an
  *  in-card sub-view; the view resets because the card unmounts whenever the popover closes. */
 export function AccountCard({
   accountEmail,
@@ -74,7 +77,7 @@ export function AccountCard({
   /** Opens the install guide; the row is left out where the app is installed or cannot be. */
   onInstallApp?: () => void
   onOpenAccountSettings: () => void
-  /** Closes the menu when a row leaves it (Roadmap, Privacy & cookies, Terms of use). */
+  /** Closes the menu when a row leaves it (Roadmap, Discord, Buy Me a Coffee, Privacy & cookies, Terms of use). */
   onExternalLink?: () => void
   onSignOut: () => void
   signInMethod: SignInMethod
@@ -141,7 +144,10 @@ export function AccountCard({
       <Separator />
       <PreferencesSection onOpenLanguage={() => setView("language")} />
       <Separator />
-      <div className="flex flex-col gap-0.5">
+      <MenuSection
+        data-testid="account-section"
+        label={t("auth.accountSection")}
+      >
         <MenuRow
           data-testid="auth-manage-account"
           icon={User}
@@ -162,6 +168,9 @@ export function AccountCard({
             onClick={onInstallApp}
           />
         ) : null}
+      </MenuSection>
+      <Separator />
+      <MenuSection data-testid="account-help" label={t("feedback.section")}>
         <MenuRow
           data-testid="auth-feedback"
           disabled={Boolean(feedbackUnavailable)}
@@ -191,8 +200,9 @@ export function AccountCard({
             ) : undefined
           }
         />
-        <LegalLinkRows onNavigate={onExternalLink} />
-      </div>
+      </MenuSection>
+      <Separator />
+      <CommunitySection onNavigate={onExternalLink} />
       <Separator />
       <MenuRow
         className="text-destructive hover:text-destructive"
@@ -202,6 +212,7 @@ export function AccountCard({
         label={t("auth.signOut")}
         onClick={onSignOut}
       />
+      <LegalLinks onNavigate={onExternalLink} />
       <CatalogSyncStatusBadge plain />
     </div>
   )

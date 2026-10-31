@@ -1,5 +1,6 @@
 export { AccountAvatar } from "./ui/account-avatar"
 export { AccountCard } from "./ui/account-card"
+export { CommunityHeaderLinks } from "./ui/community-header-links"
 
 export { GuestAccountMenu, GuestPreferencesCard } from "./ui/guest-account-menu"
 export { PlayerDataSyncButton } from "./ui/player-data-sync-button"
