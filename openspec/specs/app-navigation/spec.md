@@ -782,11 +782,16 @@ The top-level sections SHALL be ordered Home, My Game, Plan, Dailies, Legendary 
 
 ### Requirement: Navigation uses the game's own art for icons
 
-Every navigation surface (desktop rail, desktop section menu, mobile bottom bar, section tabs, mobile drawer and navigation search) SHALL show a section's game art, falling back to its lucide glyph only when the section has no art. Within a section, either every static child SHALL have an icon or none does: game art where the game has a fitting sprite, else a lucide glyph. A section's landing child MAY share the section's art (Plan/Goals, My Game/Collection, Legendary Events/All Events, Guild/Members); no child SHALL share art with its own section otherwise. On the compact rail the art SHALL keep the rail's shared icon size and centre axis.
+The desktop rail and the mobile bottom bar SHALL show each section's lucide glyph, matching the rail's other controls. The mobile drawer and navigation search SHALL show a section's game art, falling back to its lucide glyph when it has no art. Within a section, either every static child SHALL have an icon or none does: game art where the game has a fitting sprite, else a lucide glyph. A section's landing child MAY share the section's art (Plan/Goals, My Game/Collection, Legendary Events/All Events, Guild/Members); no child SHALL share art with its own section otherwise.
 
-#### Scenario: Section art
+#### Scenario: Rail and bottom bar keep lucide glyphs
 
-- **WHEN** a signed-in user views the navigation
+- **WHEN** a signed-in user views the desktop rail or the mobile bottom bar
+- **THEN** each section shows its lucide glyph, not game art
+
+#### Scenario: Section art in the drawer
+
+- **WHEN** a signed-in mobile user opens the Menu drawer
 - **THEN** Home shows the home globe, My Game the heroes helmet, Plan the trophy, Dailies the daily-missions scroll, Legendary Events the Legendary Event emblem, Guild the guild banner and Library the inventory chest
 
 #### Scenario: Children without game art use a glyph

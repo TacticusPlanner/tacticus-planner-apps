@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { matchesNavPath } from "./find-active-child"
-import { NavItemIcon } from "./nav-child-icon"
 import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 
@@ -33,7 +32,7 @@ export function MobileNavLink({
       to={item.path}
     >
       <span className="relative flex">
-        <NavItemIcon item={item} />
+        <item.icon className="size-5" />
         <NavLiveDot corner item={item} />
       </span>
       <span>{t(item.labelKey)}</span>
