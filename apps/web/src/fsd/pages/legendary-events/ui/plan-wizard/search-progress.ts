@@ -1,12 +1,12 @@
 import type { RecommendUpgradesStep } from "./plan-upgrades"
 
 /** How often the progress bar may re-render while the search runs. */
-export const SEARCH_PROGRESS_THROTTLE_MS = 250
+const SEARCH_PROGRESS_THROTTLE_MS = 250
 /** Below this share of the search, the time left is not estimated (too little to go on). */
 const MIN_ESTIMATE_FRACTION = 0.03
 
 /** How far the upgrade search is (spec: the search shows its progress). */
-export interface SearchProgress {
+interface SearchProgress {
   /** 0..1 through the search's rounds, counting the cap. */
   fraction: number
   /** The round being searched (1-based): the upgrade being looked for. */
