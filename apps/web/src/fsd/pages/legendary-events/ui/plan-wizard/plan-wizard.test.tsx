@@ -149,6 +149,13 @@ describe("PlanWizard", () => {
     const options = screen.getAllByTestId("plan-wizard-target-option")
     expect(options[0]).toHaveAttribute("data-step", "unlock")
     expect(options[0]).toBeChecked()
+    // The search shows its progress while it runs, and the bar goes once it ends.
+    expect(
+      within(screen.getByTestId("plan-wizard-search-progress")).getByRole(
+        "progressbar",
+        { name: "Upgrade search progress" }
+      )
+    ).toBeInTheDocument()
     // The exploration runs in chunks; give it room on a busy runner.
     await waitFor(
       () =>
@@ -162,6 +169,9 @@ describe("PlanWizard", () => {
         .getAllByTestId("plan-wizard-verdict")
         .map((badge) => badge.textContent)
     ).not.toContain("Checking…")
+    expect(
+      screen.queryByTestId("plan-wizard-search-progress")
+    ).not.toBeInTheDocument()
   })
 
   it("shows every lane's roster potential under Why this verdict?", async () => {

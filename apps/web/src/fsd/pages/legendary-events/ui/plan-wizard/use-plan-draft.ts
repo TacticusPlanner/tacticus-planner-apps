@@ -40,6 +40,10 @@ import {
   type UpgradeRecommendation,
 } from "./plan-upgrades"
 import { browserSliceClock, runSliced, type SlicedRun } from "./run-sliced"
+import {
+  createSearchProgressTracker,
+  type SearchProgressStore,
+} from "./search-progress"
 import type { PlanSource } from "./use-plan-source"
 import { useDebouncedValue } from "./use-debounced-value"
 import { useUpgradeFarmingDays } from "./use-upgrade-farming-days"
@@ -78,7 +82,11 @@ function useRecommendations(
   source: ReadySource,
   evaluator: PlanEvaluator,
   syncedCeiling: number | null
-): { state: RecommendationsState; lowerPriority: () => void } {
+): {
+  state: RecommendationsState
+  lowerPriority: () => void
+  progress: SearchProgressStore
+} {
   const farming = useUpgradeFarmingDays()
   const { inputs, goalTargets, masterTotal, hordeMultiplier } = source
   const job = useMemo(() => {
@@ -117,11 +125,15 @@ function useRecommendations(
     state: RecommendationsState
   } | null>(null)
   const run = useRef<SlicedRun | null>(null)
+  const [tracker] = useState(() => createSearchProgressTracker())
   useEffect(() => {
     if (!job) return undefined
+    const clock = browserSliceClock()
+    tracker.start(clock.now())
     const sliced = runSliced(job.start(), {
-      clock: browserSliceClock(),
+      clock,
       onYield: (step) => {
+        tracker.report(step, clock.now())
         if (step.kind !== "round") return
         setProgress({
           job,
@@ -133,7 +145,8 @@ function useRecommendations(
           },
         })
       },
-      onDone: (result) =>
+      onDone: (result) => {
+        tracker.stop()
         setProgress({
           job,
           state: {
@@ -141,14 +154,16 @@ function useRecommendations(
             recommendations: result.recommendations,
             upgradedCeiling: result.final.ceiling ?? job.syncedCeiling,
           },
-        }),
+        })
+      },
     })
     run.current = sliced
     return () => {
       sliced.cancel()
+      tracker.stop()
       if (run.current === sliced) run.current = null
     }
-  }, [job])
+  }, [job, tracker])
   const lowerPriority = useCallback(() => run.current?.lowerPriority(), [])
 
   const farmingStatus = farming.status
@@ -166,7 +181,7 @@ function useRecommendations(
       upgradedCeiling: job.syncedCeiling,
     }
   }, [job, progress, farmingStatus])
-  return { state, lowerPriority }
+  return { state, lowerPriority, progress: tracker }
 }
 
 /** Whether the chosen target's recommendations are final (spec: a step's recommendations are final
@@ -294,11 +309,11 @@ export function usePlanDraft(
     () => evaluator.evaluate([]).ceiling,
     [evaluator]
   )
-  const { state: recommendations, lowerPriority } = useRecommendations(
-    source,
-    evaluator,
-    syncedCeiling
-  )
+  const {
+    state: recommendations,
+    lowerPriority,
+    progress: searchProgress,
+  } = useRecommendations(source, evaluator, syncedCeiling)
   const targets = useMemo(
     () => stepTargets(inputs, planEconomy, horizon),
     [inputs, planEconomy, horizon]
@@ -450,6 +465,8 @@ export function usePlanDraft(
     chosenTarget,
     syncedCeiling,
     recommendations,
+    /** The upgrade search's progress while it runs (spec: the search shows its progress). */
+    searchProgress,
     ticked: tickedSet,
     chains,
     adjustments,

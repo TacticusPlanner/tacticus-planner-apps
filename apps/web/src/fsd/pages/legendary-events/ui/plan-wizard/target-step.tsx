@@ -24,6 +24,7 @@ import { legendaryEventRunWindow } from "../../lib/run-dates"
 import { RosterPotentialMap } from "../legendary-event/roster-potential-map"
 import { planPotentials } from "./plan-potential"
 import { TargetCard } from "./target-card"
+import { SearchProgressBar } from "./search-progress-bar"
 import { runAssumptions } from "./target-step.model"
 import type { PlanDraft } from "./use-plan-draft"
 import type { PlanSource } from "./use-plan-source"
@@ -231,6 +232,9 @@ export function TargetStep({
             {t("planWizard.target.horizonNote")}
           </p>
         </div>
+      ) : null}
+      {busy && options.length > 0 ? (
+        <SearchProgressBar store={draft.searchProgress} />
       ) : null}
       {options.length === 0 ? (
         <p className="text-sm text-muted-foreground">
