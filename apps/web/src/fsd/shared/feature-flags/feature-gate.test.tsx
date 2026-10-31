@@ -9,7 +9,7 @@ import { render, screen } from "@/test/render"
 import type { FeatureFlag } from "./feature-flags"
 import { FeatureGate } from "./feature-gate"
 
-// No real flag exists while nothing is behind one; the gate only compares names.
+// A name outside the union: the gate only compares names.
 const preview = "Preview" as FeatureFlag
 
 const respondWith = (enabled: string[]) =>

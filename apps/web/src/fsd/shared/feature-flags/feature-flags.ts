@@ -5,4 +5,6 @@
  * environment's Azure App Configuration store (`appcs-tp-stg`,
  * `appcs-tp-prod`). Delete it once the feature has shipped everywhere.
  */
-export type FeatureFlag = never
+export type FeatureFlag =
+  /** Manual battles: "Play manually" markers, battle medals and "Raidable only". */
+  "ManualBattles"

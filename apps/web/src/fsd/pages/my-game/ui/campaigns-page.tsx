@@ -22,6 +22,7 @@ import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import { BattleProgressDialog } from "@/features/daily-raids"
+import { useFeatureFlag } from "@/shared/feature-flags"
 import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { EntityIcon, LocalReadFailure } from "@/shared/ui"
@@ -44,6 +45,9 @@ export function CampaignsPage() {
   const [definitions, battles, progress, characters] =
     read.status === "ready" ? read.data : []
   const [medalsGroupId, setMedalsGroupId] = useState<string | null>(null)
+  const onEditMedals = useFeatureFlag("ManualBattles")
+    ? setMedalsGroupId
+    : undefined
 
   // Keyed on each read's data (each referentially stable while unchanged), not on the combined tuple.
   const model = useMemo(
@@ -79,12 +83,12 @@ export function CampaignsPage() {
         <StorySection
           title={t("progress.campaigns.normal")}
           stories={model.normal}
-          onEditMedals={setMedalsGroupId}
+          onEditMedals={onEditMedals}
         />
         <StorySection
           title={t("progress.campaigns.mirror")}
           stories={model.mirror}
-          onEditMedals={setMedalsGroupId}
+          onEditMedals={onEditMedals}
         />
       </div>
       {medalsGroupId ? (
@@ -228,7 +232,8 @@ function StorySection({
 }: {
   title: string
   stories: BuiltStory[]
-  onEditMedals: (groupId: string) => void
+  /** Offers a Medals button on each track; absent while manual battles are off. */
+  onEditMedals?: (groupId: string) => void
 }) {
   return (
     <section className="space-y-3">
@@ -247,7 +252,7 @@ function StoryCard({
   onEditMedals,
 }: {
   story: BuiltStory
-  onEditMedals: (groupId: string) => void
+  onEditMedals?: (groupId: string) => void
 }) {
   const { t } = useTranslation(["campaigns", "dailies"])
   const total = story.definitions.reduce((sum, track) => sum + track.max, 0)
@@ -304,16 +309,18 @@ function StoryCard({
               <Progress
                 value={track.max ? (track.completed / track.max) * 100 : 0}
               />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="-ml-2 h-7 text-xs"
-                onClick={() => onEditMedals(track.definition.groupId)}
-                data-testid={`campaign-medals-${track.definition.groupId}`}
-              >
-                <Medal aria-hidden className="size-3.5" />
-                {t("dailies:battleProgress.open")}
-              </Button>
+              {onEditMedals ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="-ml-2 h-7 text-xs"
+                  onClick={() => onEditMedals(track.definition.groupId)}
+                  data-testid={`campaign-medals-${track.definition.groupId}`}
+                >
+                  <Medal aria-hidden className="size-3.5" />
+                  {t("dailies:battleProgress.open")}
+                </Button>
+              ) : null}
             </div>
           ))}
         </div>
