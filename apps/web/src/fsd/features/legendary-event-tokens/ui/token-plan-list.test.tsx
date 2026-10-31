@@ -253,6 +253,20 @@ describe("TokenPlanList on another page", () => {
         (mission) => mission.index === 2
       )!,
     }
+    // Uthar regular 1 "Defeat 30 Necrons" (ticked Done) and premium 1 "Defeat 30 enemies with
+    // Chaos units".
+    const necrons = {
+      track: "regular" as const,
+      mission: eventMissions(utharEvent, "regular").find(
+        (mission) => mission.index === 1
+      )!,
+    }
+    const chaos = {
+      track: "premium" as const,
+      mission: eventMissions(utharEvent, "premium").find(
+        (mission) => mission.index === 1
+      )!,
+    }
     const withMissionOrder = (): TokenPlanView => {
       const view = buildTokenPlanView(workedViewInput())
       if (view.kind !== "ready") throw new Error("worked view is not ready")
@@ -298,8 +312,16 @@ describe("TokenPlanList on another page", () => {
                   doneAt: 0,
                   estimate: false,
                 },
+                {
+                  ref: chaos,
+                  needed: 30,
+                  reached: 0,
+                  doneAt: null,
+                  estimate: true,
+                },
               ],
               untracked: [],
+              completed: [necrons],
             },
           ],
         },
@@ -316,6 +338,12 @@ describe("TokenPlanList on another page", () => {
 
       expect(screen.getByText("Missions this run")).toBeInTheDocument()
       expect(screen.getByText("done at token 1")).toBeInTheDocument()
+      const regular = screen.getByRole("region", { name: /Regular missions/ })
+      expect(regular).toHaveTextContent("1/2 done")
+      expect(regular).toHaveTextContent(/Defeat 30 Necrons\s*Done/)
+      const premium = screen.getByRole("region", { name: /Premium missions/ })
+      expect(premium).toHaveTextContent("about not reached by this plan")
+      expect(premium).not.toHaveTextContent("(premium)")
       const first = screen.getAllByTestId("token-plan-row")[0]!
       expect(first).toHaveTextContent(/Mission done · Defeat 75 /)
       unmount()

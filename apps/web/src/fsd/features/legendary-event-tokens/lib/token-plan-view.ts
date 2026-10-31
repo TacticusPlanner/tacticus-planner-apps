@@ -2,6 +2,7 @@ import {
   LEGENDARY_EVENT_LANE_IDS,
   applicableAnnotations,
   buildLanePointsModel,
+  completedMissions,
   currentLegendaryEventRun,
   isCompleteTeam,
   openMissions,
@@ -291,6 +292,13 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
           tokens: tokenPlan.tokens,
           sections: byRun.sections,
           missionsOf,
+          completedOf: (run) =>
+            completedMissions({
+              event: source.event,
+              runs: plan.data!.runs,
+              currentRun: run,
+              showPaidOptions: plan.data!.showPaidOptions,
+            }),
           membersOf,
           enemiesOf: source.enemiesOf,
         })

@@ -78,6 +78,38 @@ export function openMissions({
   ]
 }
 
+/**
+ * The missions of `run` ticked Done in its run inputs (the player's progress): regular ones, and
+ * premium ones under the same rule as `openMissions`. None without a run.
+ */
+export function completedMissions({
+  event,
+  runs,
+  currentRun,
+  showPaidOptions,
+}: {
+  event: Pick<LegendaryEvent, "regularMissions" | "premiumMissions">
+  runs: readonly LegendaryEventRunInputs[] | undefined
+  currentRun: LegendaryEventRun | null
+  showPaidOptions: boolean
+}): LegendaryEventMissionRef[] {
+  if (currentRun === null) return []
+  const values = runInputValues(runs, currentRun)
+  const done = (
+    track: LegendaryEventMissionTrack,
+    indexes: readonly number[]
+  ): LegendaryEventMissionRef[] =>
+    eventMissions(event, track)
+      .filter((mission) => indexes.includes(mission.index))
+      .map((mission) => ({ track, mission }))
+  return [
+    ...done("regular", values.completedRegularMissions),
+    ...(showPaidOptions && values.premiumMissions > 0
+      ? done("premium", values.completedPremiumMissions)
+      : []),
+  ]
+}
+
 /** The factions and traits of a battle's enemies, resolved through the `npcs` dataset. */
 export interface BattleEnemies {
   factions: ReadonlySet<string>

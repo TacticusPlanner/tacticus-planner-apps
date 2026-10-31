@@ -107,6 +107,7 @@ describe("missionOrder", () => {
           { ref: ADMECH, needed: 75, reached: 75, doneAt: 1, estimate: false },
         ],
         untracked: [ANY_BATTLE],
+        completed: [],
       },
     ])
   })

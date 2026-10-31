@@ -58,16 +58,25 @@ function useRefLabel() {
       : missionLabel(entry.mission)
 }
 
-/** A run's open missions and the token that finishes each, at the top of its section. */
+/** A run's missions by track (Regular, then Premium when paid options are on): the token that
+ *  finishes each open one, the untracked ones, and the ones ticked Done. */
 export function RunMissionsSummary({
   summary,
 }: {
   summary: RunMissionSummary
 }) {
-  const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
-  const label = useRefLabel()
-  if (summary.missions.length === 0 && summary.untracked.length === 0) {
+  const { t } = useTranslation("legendaryEvents")
+  const tracks = MISSION_TRACKS.flatMap((track) => {
+    const missions = summary.missions.filter(
+      (entry) => entry.ref.track === track
+    )
+    const untracked = summary.untracked.filter((entry) => entry.track === track)
+    const completed = summary.completed.filter((entry) => entry.track === track)
+    return missions.length + untracked.length + completed.length > 0
+      ? [{ track, missions, untracked, completed }]
+      : []
+  })
+  if (tracks.length === 0) {
     return (
       <p className="text-xs text-muted-foreground">
         {t("tokenPlan.plan.missions.none")}
@@ -77,11 +86,53 @@ export function RunMissionsSummary({
   return (
     <section
       aria-label={t("tokenPlan.plan.missions.title")}
-      className="flex flex-col gap-1 rounded-lg bg-muted/50 p-2 text-xs"
+      className="flex flex-col gap-2 rounded-lg bg-muted/50 p-2 text-xs"
     >
       <h4 className="font-semibold">{t("tokenPlan.plan.missions.title")}</h4>
+      {tracks.map((group) => (
+        <TrackMissions key={group.track} {...group} />
+      ))}
+    </section>
+  )
+}
+
+const MISSION_TRACKS = ["regular", "premium"] as const
+
+function TrackMissions({
+  track,
+  missions,
+  untracked,
+  completed,
+}: {
+  track: (typeof MISSION_TRACKS)[number]
+  missions: RunMissionSummary["missions"]
+  untracked: readonly LegendaryEventMissionRef[]
+  completed: readonly LegendaryEventMissionRef[]
+}) {
+  const { t, i18n } = useTranslation("legendaryEvents")
+  const number = new Intl.NumberFormat(i18n.language)
+  const missionLabel = useMissionLabel()
+  const total = missions.length + untracked.length + completed.length
+  const headingId = `token-plan-missions-${track}`
+  return (
+    <section
+      aria-labelledby={headingId}
+      className="flex flex-col gap-0.5"
+      data-track={track}
+    >
+      <h5 className="flex flex-wrap justify-between gap-x-3" id={headingId}>
+        <span className="font-medium">
+          {t(`tokenPlan.plan.missions.tracks.${track}`)}
+        </span>
+        <span className="text-muted-foreground tabular-nums">
+          {t("tokenPlan.plan.missions.doneCount", {
+            done: number.format(completed.length),
+            total: number.format(total),
+          })}
+        </span>
+      </h5>
       <ul className="flex flex-col gap-0.5">
-        {summary.missions.map((entry) => {
+        {missions.map((entry) => {
           const status =
             entry.doneAt === null
               ? entry.reached === 0
@@ -96,9 +147,9 @@ export function RunMissionsSummary({
           return (
             <li
               className="flex flex-wrap justify-between gap-x-3"
-              key={`${entry.ref.track}${entry.ref.mission.index}`}
+              key={entry.ref.mission.index}
             >
-              <span>{label(entry.ref)}</span>
+              <span>{missionLabel(entry.ref.mission)}</span>
               <span
                 className={cn(
                   "tabular-nums",
@@ -114,11 +165,23 @@ export function RunMissionsSummary({
             </li>
           )
         })}
+        {completed.map((ref) => (
+          <li
+            className="flex flex-wrap justify-between gap-x-3 text-muted-foreground"
+            data-completed=""
+            key={`done${ref.mission.index}`}
+          >
+            <span className="line-through">{missionLabel(ref.mission)}</span>
+            <span>{t("tokenPlan.plan.missions.completed")}</span>
+          </li>
+        ))}
       </ul>
-      {summary.untracked.length > 0 ? (
+      {untracked.length > 0 ? (
         <p className="text-muted-foreground">
           {t("tokenPlan.plan.missions.untracked", {
-            missions: summary.untracked.map(label).join(" · "),
+            missions: untracked
+              .map((ref) => missionLabel(ref.mission))
+              .join(" · "),
           })}
         </p>
       ) : null}
