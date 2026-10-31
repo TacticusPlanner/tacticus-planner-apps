@@ -19,6 +19,7 @@ import { CountdownChip, HomeEventVisual } from "../events/home-event-visual"
 import { LegendaryEventPlanButton } from "../events/legendary-event-plan-button"
 import { useHomeEventName } from "../events/use-home-event-name"
 import { TokenAvailability } from "../token-availability/token-availability"
+import { BetaPromoTile } from "./beta-promo-tile"
 
 /** Home's first card: token status and whatever event is live, the two things a glance at Home is
  *  for. Upcoming events live in their own card further down. */
@@ -31,6 +32,7 @@ export function RightNow({ events }: { events: HomeEventsState }) {
         <CardTitle>{t("home.rightNow.title")}</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4 lg:grid-cols-2 lg:items-start">
+        <BetaPromoTile />
         <TokenAvailability />
         <LiveEvents events={events} />
       </CardContent>
