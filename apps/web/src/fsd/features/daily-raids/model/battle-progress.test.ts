@@ -5,10 +5,12 @@ import { medalsOf, reachedBattleRows, withMedals } from "./battle-progress"
 const battle = (
   id: string,
   battleIndex: number,
-  campaignGroupId = "elite2"
+  campaignGroupId = "elite2",
+  type = "Elite"
 ) => ({
   id,
   campaignGroupId,
+  type,
   nodeNumber: battleIndex + 1,
   battleIndex,
 })
@@ -20,10 +22,11 @@ describe("reachedBattleRows", () => {
     battle("FoCE2", 1),
     battle("FoCE4", 3),
     battle("IE1", 0, "elite1"),
+    battle("FoCX1", 0, "elite2", "Mirror"),
   ]
 
-  it("lists the campaign's battles up to the frontier, in node order", () => {
-    expect(reachedBattleRows(battles, "elite2", 2)).toEqual([
+  it("lists the track's battles up to the frontier, in node order", () => {
+    expect(reachedBattleRows(battles, "elite2", "Elite", 2)).toEqual([
       { battleId: "FoCE1", nodeNumber: 1, frontier: false },
       { battleId: "FoCE2", nodeNumber: 2, frontier: false },
       { battleId: "FoCE3", nodeNumber: 3, frontier: true },
@@ -31,7 +34,7 @@ describe("reachedBattleRows", () => {
   })
 
   it("lists nothing for a track with no progress", () => {
-    expect(reachedBattleRows(battles, "elite2", undefined)).toEqual([])
+    expect(reachedBattleRows(battles, "elite2", "Elite", undefined)).toEqual([])
   })
 })
 

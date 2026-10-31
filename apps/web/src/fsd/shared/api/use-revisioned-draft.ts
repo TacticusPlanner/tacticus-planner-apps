@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
 import {
+  hashKey,
   useMutation,
   useQuery,
   useQueryClient,
@@ -33,6 +34,12 @@ export type UseRevisionedDraftOptions<
   toPayload: (draft: TDraft, saved: TSaved) => TSaved
   save: (payload: TSaved) => Promise<TSaved>
   isEqual?: (a: TDraft, b: TDraft) => boolean
+  /**
+   * Key of the queries that share this resource's revision (e.g. sibling endpoints over one
+   * revisioned row). A save or conflict refreshes them, so their next save carries the current
+   * revision instead of getting a 409.
+   */
+  sharedRevisionKey?: QueryKey
 }
 
 /**
@@ -51,6 +58,7 @@ export function useRevisionedDraft<
   toPayload,
   save: saveFn,
   isEqual = structurallyEqual,
+  sharedRevisionKey,
 }: UseRevisionedDraftOptions<TSaved, TDraft, TKey>) {
   const queryClient = useQueryClient()
   const query = useQuery({ ...queryOptions, enabled })
@@ -87,6 +95,15 @@ export function useRevisionedDraft<
 
   const discard = useCallback(() => setEdited(null), [])
 
+  const refreshSharedRevision = () => {
+    if (!sharedRevisionKey) return
+    const ownHash = hashKey(queryOptions.queryKey)
+    void queryClient.invalidateQueries({
+      queryKey: sharedRevisionKey,
+      predicate: (query) => query.queryHash !== ownHash,
+    })
+  }
+
   const save = async (): Promise<RevisionedDraftSaveOutcome> => {
     const base = edited?.base ?? query.data
     if (!base || draft === undefined) return "error"
@@ -97,6 +114,7 @@ export function useRevisionedDraft<
     try {
       const saved = await mutation.mutateAsync(toPayload(draft, base))
       queryClient.setQueryData<TSaved>(queryOptions.queryKey, saved)
+      refreshSharedRevision()
       setEdited((current) =>
         current === submitted || current === null
           ? null
@@ -111,12 +129,14 @@ export function useRevisionedDraft<
             queryOptions.queryKey,
             error.current as TSaved
           )
+          refreshSharedRevision()
           setEdited(null)
           mutation.reset()
           return "conflict"
         }
         try {
           await queryClient.fetchQuery({ ...queryOptions, staleTime: 0 })
+          refreshSharedRevision()
           setEdited(null)
           mutation.reset()
           return "conflict"

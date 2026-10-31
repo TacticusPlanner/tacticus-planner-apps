@@ -11,6 +11,7 @@ import { Switch } from "@workspace/ui/components/switch"
 import {
   buildEffectiveCampaignEventProgress,
   campaignEventProgressQueries,
+  playerDataOverrideKey,
   updateCampaignEventProgressOverrides,
   type CampaignEventProgressOverride,
   type CampaignEventProgressOverrides,
@@ -61,6 +62,7 @@ export function CampaignEventsPage() {
     toDraft,
     toPayload,
     save: updateCampaignEventProgressOverrides,
+    sharedRevisionKey: playerDataOverrideKey,
   })
   const [message, setMessage] = useState<Message | null>(null)
   const [hideCompleted, setHideCompleted] = usePersistedSelection(

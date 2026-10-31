@@ -21,6 +21,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   battleProgressQueries,
+  playerDataOverrideKey,
   updateBattleProgressOverrides,
   type BattleProgressOverride,
   type BattleProgressOverrides,
@@ -117,6 +118,7 @@ function BattleProgressEditor({
     toDraft,
     toPayload,
     save: updateBattleProgressOverrides,
+    sharedRevisionKey: playerDataOverrideKey,
   })
   const [message, setMessage] = useState<Message | null>(null)
 
@@ -147,7 +149,7 @@ function BattleProgressEditor({
       entry.type === selected.type
   )?.highestCompletedBattleIndex
   const rows = selected
-    ? reachedBattleRows(battles ?? [], selected.groupId, highest)
+    ? reachedBattleRows(battles ?? [], selected.groupId, selected.type, highest)
     : []
 
   if (!isAuthenticated) {
