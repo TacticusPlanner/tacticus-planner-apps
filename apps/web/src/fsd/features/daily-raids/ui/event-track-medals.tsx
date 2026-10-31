@@ -8,7 +8,10 @@ import { useCatalogDataset } from "@/shared/local-data"
 import { EntityIcon } from "@/shared/ui"
 
 import { medalIcon } from "../lib/battle-progress-icons"
-import { unclaimedEventRewardTracks } from "../model/battle-progress"
+import {
+  beatenEventBattleRows,
+  unclaimedEventRewardTracks,
+} from "../model/battle-progress"
 import { campaignEventProgressKey } from "../model/campaign-event-eligibility"
 import { useEffectiveCampaignEventProgress } from "../model/use-eligible-campaign-battles"
 import { useSavedBattleProgress } from "../model/use-saved-battle-progress"
@@ -41,6 +44,11 @@ export function EventTrackMedals({
     return null
   }
   const [definitions, battles] = read.data
+  const progress = eventProgress.byKey.get(
+    campaignEventProgressKey(groupId, type)
+  )
+  const hasBeaten =
+    beatenEventBattleRows(battles, groupId, type, progress).length > 0
   const track = unclaimedEventRewardTracks(
     definitions
       .filter((definition) => definition.groupId === groupId)
@@ -69,7 +77,7 @@ export function EventTrackMedals({
         </details>
       ) : (
         <span className="flex-1 text-xs text-muted-foreground">
-          {t("battleProgress.unclaimedEvents.allClaimed")}
+          {hasBeaten ? t("battleProgress.unclaimedEvents.allClaimed") : null}
         </span>
       )}
       <Button

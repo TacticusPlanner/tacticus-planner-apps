@@ -112,4 +112,15 @@ describe("EventTrackMedals", () => {
       await screen.findByTestId("battle-progress-row-AMS02")
     ).toBeInTheDocument()
   })
+
+  it("says nothing about claimed rewards on a track with no beaten battle", async () => {
+    await seedPlayerData({ "campaign-events-progress": [] })
+    render(<EventTrackMedals groupId="eventCampaign1" type="Standard" />, {
+      auth: { authenticated: true },
+    })
+
+    expect(
+      await screen.findByTestId("event-track-medals-eventCampaign1-Standard")
+    ).not.toHaveTextContent("All one-time rewards claimed")
+  })
 })
