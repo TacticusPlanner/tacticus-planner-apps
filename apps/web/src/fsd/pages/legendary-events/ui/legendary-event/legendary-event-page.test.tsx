@@ -702,7 +702,8 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     }
     const editorMembers = () =>
       within(screen.getByTestId("team-editor"))
-        .getAllByTestId("team-picker-selected-unit")
+        .getAllByTestId("team-picker-tile")
+        .filter((element) => element.dataset.selected === "true")
         .map((element) => element.dataset.unit)
 
     it("opens the editor from the Overview leaderboard on the chosen lane", async () => {

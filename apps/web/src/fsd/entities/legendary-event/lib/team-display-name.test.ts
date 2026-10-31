@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   hasLaneDefaultName,
   teamDisplayName,
+  withLanePrefix,
   type NamedTeam,
 } from "./team-display-name"
 
@@ -27,7 +28,7 @@ describe("teamDisplayName", () => {
     const imported = team({ objectiveIndexes: [2, 0] })
     expect(
       teamDisplayName(imported, alphaObjectives, [imported], numbered)
-    ).toBe("Max 2 hits · Melee")
+    ).toBe("α · Max 2 hits · Melee")
   })
 
   it("keeps a chosen name", () => {
@@ -48,7 +49,7 @@ describe("teamDisplayName", () => {
         [otherLane, second, first],
         numbered
       )
-    ).toBe("Team 2")
+    ).toBe("α · Team 2")
   })
 
   it("matches the lane id case-insensitively and treats an empty name as unnamed", () => {
@@ -56,10 +57,21 @@ describe("teamDisplayName", () => {
     const blank = team({ name: "  ", objectiveIndexes: [1] })
     expect(
       teamDisplayName(capitalised, alphaObjectives, [capitalised], numbered)
-    ).toBe("Max 2 hits")
+    ).toBe("α · Max 2 hits")
     expect(teamDisplayName(blank, alphaObjectives, [blank], numbered)).toBe(
-      "No Psykers"
+      "α · No Psykers"
     )
+  })
+
+  it("prefixes the lane's Greek letter", () => {
+    const beta = team({ laneId: "beta", name: "", objectiveIndexes: [0] })
+    expect(teamDisplayName(beta, alphaObjectives, [beta], numbered)).toBe(
+      "β · Max 2 hits"
+    )
+  })
+
+  it("keeps a prefixed name within the 60-character limit", () => {
+    expect(withLanePrefix("alpha", "x".repeat(57))).toHaveLength(60)
   })
 
   it("does not treat another lane's id as a default name", () => {

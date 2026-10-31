@@ -149,6 +149,7 @@ export function TeamEditorDialog({
   )
   const checked = checkedObjectives(draft)
   const defaultName = defaultTeamName(
+    laneId,
     objectives
       .filter((objective) => checked.includes(objective.index))
       .map((objective) => objectiveLabel(objective).label),
@@ -211,6 +212,14 @@ export function TeamEditorDialog({
   return (
     <ResponsiveDialog
       data-testid="team-editor"
+      onOpenAutoFocus={(event) => {
+        // The generated name is usually kept: focus the dialog itself, not the name field (which
+        // would also raise the keyboard on a phone).
+        event.preventDefault()
+        if (event.currentTarget instanceof HTMLElement) {
+          event.currentTarget.focus()
+        }
+      }}
       onOpenChange={(next) => {
         if (!saving) onOpenChange(next)
       }}

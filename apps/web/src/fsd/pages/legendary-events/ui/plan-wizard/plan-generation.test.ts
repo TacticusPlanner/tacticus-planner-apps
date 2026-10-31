@@ -12,6 +12,7 @@ import {
 import {
   NO_TEAM_ADJUSTMENTS,
   createPlanEvaluator,
+  coversObjectives,
   teamSwaps,
 } from "./plan-evaluator"
 import { MAX_PLAN_TEAMS_PER_LANE, storedDrafts } from "./plan-teams"
@@ -184,6 +185,20 @@ describe("kept teams", () => {
     expect(teamSwaps(inputs, economy, NO_TEAM_ADJUSTMENTS, evaluation)).toEqual(
       []
     )
+  })
+})
+
+describe("coversObjectives", () => {
+  it("needs a replacement covering every objective the kept team covers", () => {
+    const kept = { objectiveIndexes: [0, 3] }
+    expect(coversObjectives(kept, [{ objectiveIndexes: [0, 1, 3] }])).toBe(true)
+    expect(
+      coversObjectives(kept, [
+        { objectiveIndexes: [1] },
+        { objectiveIndexes: [0] },
+      ])
+    ).toBe(false)
+    expect(coversObjectives(kept, [])).toBe(false)
   })
 })
 

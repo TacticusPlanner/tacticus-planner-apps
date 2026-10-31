@@ -2,7 +2,9 @@ import {
   MIN_TEAM_MEMBERS,
   derivedTeamCoverage,
   teamDepthForRun,
+  withLanePrefix,
   type LegendaryEventLane,
+  type LegendaryEventLaneId,
   type LegendaryEventRun,
   type LegendaryEventTeam,
   type LegendaryEventUnit,
@@ -148,14 +150,17 @@ export function toggleReserve(
   return { ...base, reserveUnitId: unitId }
 }
 
-/** The default name: the checked objectives' labels joined by " · " (cut to the name limit), or
- *  the fallback ("Team N") when nothing is checked. */
+/** The default name: the lane's Greek letter, then the checked objectives' labels joined by
+ *  " · ", or the fallback ("Team N") when nothing is checked (cut to the name limit). */
 export function defaultTeamName(
+  laneId: LegendaryEventLaneId,
   checkedLabels: readonly string[],
   fallback: string
 ): string {
   const joined = checkedLabels.join(" · ")
-  return (joined || fallback).slice(0, TEAM_NAME_MAX_LENGTH).trim()
+  return withLanePrefix(laneId, joined || fallback)
+    .slice(0, TEAM_NAME_MAX_LENGTH)
+    .trim()
 }
 
 /** The name that would be saved: the typed one, else (untouched or emptied) the default. */

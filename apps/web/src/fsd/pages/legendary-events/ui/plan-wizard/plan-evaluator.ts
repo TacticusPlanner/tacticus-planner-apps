@@ -136,10 +136,24 @@ export interface TeamSwap {
   gain: number
 }
 
+/** Whether a replacement takes the kept team's place: one of them covers every objective the kept
+ *  team covers, so the offer reads as the same slot done better rather than another team. */
+export function coversObjectives(
+  team: Pick<DraftTeam, "objectiveIndexes">,
+  replacements: readonly Pick<DraftTeam, "objectiveIndexes">[]
+): boolean {
+  return replacements.some((replacement) =>
+    team.objectiveIndexes.every((index) =>
+      replacement.objectiveIndexes.includes(index)
+    )
+  )
+}
+
 /**
  * The swaps worth suggesting on an evaluation: for each kept, unedited team of the user's, the
- * lane is regenerated without it on the same rosters, and the swap is offered when the new teams
- * raise the ceiling. Accepting one is removing the team.
+ * lane is regenerated without it on the same rosters, and the swap is offered when a new team
+ * covers the kept team's objectives (`coversObjectives`) and the new teams raise the ceiling.
+ * Accepting one is removing the team.
  */
 export function teamSwaps(
   inputs: PlanInputs,
@@ -165,7 +179,7 @@ export function teamSwaps(
       excluded: removed,
     })
     const replacements = laneTeams.filter((entry) => !present.has(entry.key))
-    if (replacements.length === 0) return []
+    if (!coversObjectives(team, replacements)) return []
     const teams = [
       ...evaluation.teams.filter((entry) => entry.laneId !== team.laneId),
       ...laneTeams,

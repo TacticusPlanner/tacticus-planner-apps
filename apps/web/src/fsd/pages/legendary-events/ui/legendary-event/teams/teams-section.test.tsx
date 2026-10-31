@@ -428,9 +428,9 @@ describe("TeamsSection", () => {
     )
     expect(screen.getByTestId("team-editor")).toBeInTheDocument()
     expect(
-      within(screen.getByTestId("team-editor")).queryAllByTestId(
-        "team-picker-selected-unit"
-      )
+      within(screen.getByTestId("team-editor"))
+        .getAllByTestId("team-picker-tile")
+        .filter((element) => element.dataset.selected === "true")
     ).toHaveLength(0)
     expect(cardNames()).toEqual(["Melee", "Flyers", "Melee · Min 5 hits"])
   })
@@ -463,9 +463,11 @@ describe("TeamsSection", () => {
     const editor = await screen.findByTestId("team-editor")
     expect(
       within(editor)
-        .getAllByTestId("team-picker-selected-unit")
+        .getAllByTestId("team-picker-tile")
+        .filter((element) => element.dataset.selected === "true")
         .map((element) => element.dataset.unit)
-    ).toEqual(members)
+        .toSorted()
+    ).toEqual(members.toSorted())
     // The picker's chips start from the proposal's objective subset (one or two objectives).
     const pressed = within(editor)
       .getAllByTestId("team-picker-objective-chip")
@@ -522,9 +524,11 @@ describe("TeamsSection", () => {
     const editor = await screen.findByTestId("team-editor")
     expect(
       within(editor)
-        .getAllByTestId("team-picker-selected-unit")
+        .getAllByTestId("team-picker-tile")
+        .filter((element) => element.dataset.selected === "true")
         .map((element) => element.dataset.unit)
-    ).toEqual([teamUnits.a.id, teamUnits.b.id])
+        .toSorted()
+    ).toEqual([teamUnits.a.id, teamUnits.b.id].toSorted())
     expect(within(editor).getByTestId("team-editor-save")).toBeDisabled()
 
     const tile = within(editor)
@@ -576,10 +580,10 @@ describe("TeamsSection", () => {
 
     it("shows them by their covered objectives or Team N, and sends no write", () => {
       const actions = renderSection(ready(importedPlan))
-      expect(cardNames()).toEqual(["Melee · Min 5 hits", "Team 2"])
+      expect(cardNames()).toEqual(["α · Melee · Min 5 hits", "α · Team 2"])
       expect(screen.getAllByTestId("team-card-name")[0]).toHaveAttribute(
         "title",
-        "Melee · Min 5 hits"
+        "α · Melee · Min 5 hits"
       )
       for (const action of [
         actions.createTeam,
@@ -600,13 +604,13 @@ describe("TeamsSection", () => {
       await user.click(await screen.findByTestId("team-card-edit"))
       const editor = await screen.findByTestId("team-editor")
       expect(within(editor).getByTestId("team-editor-name")).toHaveValue(
-        "Melee · Min 5 hits"
+        "α · Melee · Min 5 hits"
       )
       actions.updateTeam.mockResolvedValue("saved")
       await user.click(within(editor).getByTestId("team-editor-save"))
       expect(actions.updateTeam).toHaveBeenCalledWith(
         imported,
-        expect.objectContaining({ name: "Melee · Min 5 hits" }),
+        expect.objectContaining({ name: "α · Melee · Min 5 hits" }),
         expect.anything()
       )
     })
@@ -617,10 +621,10 @@ describe("TeamsSection", () => {
       await user.click(screen.getAllByTestId("team-card-menu")[1]!)
       await user.click(await screen.findByTestId("team-card-delete"))
       expect(screen.getByTestId("confirmation-dialog")).toHaveTextContent(
-        "Team 2"
+        "α · Team 2"
       )
       await user.click(screen.getByTestId("confirmation-dialog-confirm"))
-      expect(actions.deleteTeam).toHaveBeenCalledWith(bare, "Team 2")
+      expect(actions.deleteTeam).toHaveBeenCalledWith(bare, "α · Team 2")
     })
   })
 })
