@@ -695,7 +695,7 @@
     }
   },
   "masterTable": {
-    "title": "Master table",
+    "title": "Master Table",
     "subtitle": "Every unit's points across the Legendary Events you pick.",
     "loading": "Loading the master table",
     "error": "The Legendary Events could not be loaded.",

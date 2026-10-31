@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Library",
-    "description": "Browse characters, Machines of War, NPCs, and Guild Raid Bosses"
+    "description": "Browse characters, Machines of War, NPCs, Guild Raid Bosses, and Daily Shops"
   },
   "collections": {
     "characters": {

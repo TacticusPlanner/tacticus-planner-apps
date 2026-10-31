@@ -80,7 +80,7 @@ describe("navItems landing pages", () => {
           .map((child) => child.path) ?? []
     )
 
-    expect(flagged).toEqual(["/library/raid-bosses", "/legendary-events"])
+    expect(flagged).toEqual(["/legendary-events", "/library/raid-bosses"])
   })
 })
 

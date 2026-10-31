@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Bibliothek",
-    "description": "Durchsuche Charaktere, Kriegsmaschinen, NPCs und Gildenraid-Bosse"
+    "description": "Durchsuche Charaktere, Kriegsmaschinen, NPCs, Gildenraid-Bosse und Tages-Shops"
   },
   "collections": {
     "characters": {
