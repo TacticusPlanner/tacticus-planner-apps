@@ -5,7 +5,8 @@
     "src/fsd/shared/config/i18n/i18next.d.ts",
     "scripts/*.mjs",
     "public/theme-init.js",
-    "e2e/**/*.ts"
+    "e2e/**/*.ts",
+    "src/fsd/shared/feature-flags/index.ts"
   ],
   "tags": ["-knipignore"],
   "ignore": ["src/fsd/shared/api/schema.d.ts"]

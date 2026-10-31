@@ -531,12 +531,12 @@
     },
     "help": {
       "fewerRaids": "Cuando varios lugares cuestan la misma energía por objeto, incursiona solo en los de más energía por batalla. Mismos materiales con la misma energía, en menos incursiones. Útil cuando te quedan pocos tickets de incursión.",
-      "combineGoals": "Combina los materiales restantes de todos los objetivos (solo los del proyecto seleccionado si hay uno) y planifica las incursiones de hoy como si fueran un solo objetivo: primero los materiales que más tardan en farmearse, sin tener en cuenta la prioridad.",
+      "combineGoals": "Combina los materiales restantes de todos los objetivos (solo los del proyecto seleccionado si hay uno) y planifica las incursiones de hoy como si fueran un solo objetivo: una lista sin grupos por objetivo, primero los materiales que más energía necesitan, sin tener en cuenta la prioridad.",
       "raidableOnly": "Omite las batallas que aún no puedes incursionar (menos de 3 medallas) e incursiona otras ubicaciones para los mismos materiales. Un material sin ubicación incursionable aparece como bloqueado."
     },
     "note": {
       "fewerRaids": "Menos incursiones: se usan los lugares empatados con más energía por batalla, así los mismos materiales requieren menos incursiones.",
-      "combineGoals": "Combinar objetivos: las incursiones de hoy tratan todos los objetivos como uno solo, primero los materiales que más tardan en farmearse. Las fechas de Plan y Objetivos siguen la prioridad de los objetivos.",
+      "combineGoals": "Combinar objetivos: las incursiones de hoy tratan todos los objetivos como una sola lista, primero los materiales que más energía necesitan. Las fechas de Plan y Objetivos siguen la prioridad de los objetivos.",
       "raidableOnly": "Solo incursionables: las batallas que hay que jugar manualmente se sustituyen por ubicaciones incursionables."
     }
   },
