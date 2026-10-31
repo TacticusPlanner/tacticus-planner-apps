@@ -6,7 +6,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { formatEventCountdown, getDeviceLocale } from "@/shared/lib"
+import { formatEventCountdown, useDateLocale } from "@/shared/lib"
 import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import type { HreInstanceState } from "../model/use-hre-instance"
@@ -18,6 +18,7 @@ import type { HreInstanceState } from "../model/use-hre-instance"
  */
 export function HreEventHeader({ state }: { state: HreInstanceState }) {
   const { t, i18n } = useTranslation(["hre", "common", "characters"])
+  const dateLocale = useDateLocale()
 
   if (state.status === "loading") {
     return <Skeleton className="h-14 w-full" data-testid="hre-header-loading" />
@@ -50,7 +51,7 @@ export function HreEventHeader({ state }: { state: HreInstanceState }) {
   const endMs = Date.parse(instance.entry.endUtc)
   const running = instance.status === "running"
   const formatDate = (ms: number) =>
-    new Date(ms).toLocaleDateString(getDeviceLocale(), { dateStyle: "medium" })
+    new Date(ms).toLocaleDateString(dateLocale, { dateStyle: "medium" })
   const name = hero
     ? t(`characters:${hero.id}`, { defaultValue: hero.name })
     : (instance.featuredCharacterId ?? t("hre:status.unknownHero"))

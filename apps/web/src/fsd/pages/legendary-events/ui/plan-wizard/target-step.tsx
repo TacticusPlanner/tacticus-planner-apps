@@ -18,7 +18,7 @@ import type {
 } from "@/entities/legendary-event"
 import { RunInputsForm } from "@/features/legendary-event-plan"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { getDeviceLocale, safeStorage } from "@/shared/lib"
+import { useDateLocale, safeStorage } from "@/shared/lib"
 
 import { legendaryEventRunWindow } from "../../lib/run-dates"
 import { RosterPotentialMap } from "../legendary-event/roster-potential-map"
@@ -44,15 +44,16 @@ export function TargetStep({
   source: Extract<PlanSource, { status: "ready" }>
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
+  const dateLocale = useDateLocale()
   const number = new Intl.NumberFormat(i18n.language)
-  const date = new Intl.DateTimeFormat(getDeviceLocale(), {
+  const date = new Intl.DateTimeFormat(dateLocale, {
     dateStyle: "medium",
   })
-  const short = new Intl.DateTimeFormat(getDeviceLocale(), {
+  const short = new Intl.DateTimeFormat(dateLocale, {
     month: "short",
     day: "numeric",
   })
-  const month = new Intl.DateTimeFormat(getDeviceLocale(), {
+  const month = new Intl.DateTimeFormat(dateLocale, {
     month: "short",
     year: "numeric",
   })

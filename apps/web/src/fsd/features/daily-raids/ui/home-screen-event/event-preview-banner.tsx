@@ -6,7 +6,7 @@ import {
   AlertTitle,
 } from "@workspace/ui/components/alert"
 
-import { formatRelativeTime, getDeviceLocale } from "@/shared/lib"
+import { formatRelativeTime, useDateLocale } from "@/shared/lib"
 
 import type { HomeScreenEventEntry } from "../../model/select-active-home-screen-event"
 import { useHomeScreenEventName } from "./use-home-screen-event-name"
@@ -16,6 +16,7 @@ import { useHomeScreenEventName } from "./use-home-screen-event-name"
  * energy left today, so nobody mistakes them for points that can be earned right now. */
 export function EventPreviewBanner({ entry }: { entry: HomeScreenEventEntry }) {
   const { t, i18n } = useTranslation(["dailies"])
+  const dateLocale = useDateLocale()
   const eventName = useHomeScreenEventName()
   const startMs = Date.parse(entry.startUtc)
   return (
@@ -27,7 +28,7 @@ export function EventPreviewBanner({ entry }: { entry: HomeScreenEventEntry }) {
       <AlertDescription>
         {t("dailies:hse.preview.body", {
           when: formatRelativeTime(startMs, i18n.language),
-          date: new Date(startMs).toLocaleString(getDeviceLocale(), {
+          date: new Date(startMs).toLocaleString(dateLocale, {
             dateStyle: "medium",
             timeStyle: "short",
           }),

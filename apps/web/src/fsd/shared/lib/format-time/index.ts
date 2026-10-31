@@ -1,4 +1,4 @@
-export { getDeviceLocale } from "./device-locale"
+export { getDeviceFirstDayOfWeek, useDateLocale } from "./date-locale"
 export { formatEstimateDate } from "./format-estimate-date"
 export { formatEventCountdown } from "./format-event-countdown"
 export { formatRelativeTime } from "./format-relative-time"

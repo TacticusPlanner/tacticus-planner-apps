@@ -10,7 +10,7 @@ import { UnitIcon } from "../resource-card"
 import { PlanMaterialCell } from "./plan-material-cell"
 import { PlanOnslaughtRuns } from "./plan-onslaught-runs"
 import { PlanShopPurchases } from "./plan-shop-purchases"
-import { getDeviceLocale } from "@/shared/lib"
+import { useDateLocale } from "@/shared/lib"
 
 // V1's threshold for calling a day's energy budget "full".
 const FULL_ENERGY_RATIO = 0.95
@@ -29,6 +29,7 @@ export function PlanDayCard({
   selectedUnitId: string | undefined
 }) {
   const { t } = useTranslation("dailies")
+  const dateLocale = useDateLocale()
   const ratio = raids.dailyEnergy > 0 ? day.energyTotal / raids.dailyEnergy : 0
   const date = new Date()
   date.setDate(date.getDate() + day.day - 1)
@@ -64,7 +65,7 @@ export function PlanDayCard({
             {day.day === 1 ? t("plan.today") : t("plan.day", { day: day.day })}
           </h2>
           <span className="text-xs text-muted-foreground">
-            {new Intl.DateTimeFormat(getDeviceLocale(), {
+            {new Intl.DateTimeFormat(dateLocale, {
               day: "numeric",
               month: "long",
             }).format(date)}

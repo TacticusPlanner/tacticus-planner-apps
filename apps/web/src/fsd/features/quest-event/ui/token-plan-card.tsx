@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { NumberStepper } from "@/shared/ui"
 
 import type { QuestTokenPlan, QuestTokens } from "../model/quest-token-plan"
-import { getDeviceLocale } from "@/shared/lib"
+import { useDateLocale } from "@/shared/lib"
 
 /**
  * The attempts left against the battles still below their maximum (spec: quest-event-token-plan),
@@ -21,9 +21,10 @@ export function TokenPlanCard({
   onTokensChange: ((count: number | null) => void) | null
 }) {
   const { t, i18n } = useTranslation("quest")
+  const dateLocale = useDateLocale()
   const number = new Intl.NumberFormat(i18n.language)
   const time = (ms: number) =>
-    new Date(ms).toLocaleTimeString(getDeviceLocale(), { timeStyle: "short" })
+    new Date(ms).toLocaleTimeString(dateLocale, { timeStyle: "short" })
   return (
     <section
       aria-labelledby="quest-tokens-title"

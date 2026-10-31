@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import { formatEstimateDate, getDeviceLocale } from "@/shared/lib"
+import { formatEstimateDate, useDateLocale } from "@/shared/lib"
 
 import type { EstimateOutcome } from "@/features/goal-farming"
 import type { GoalRow } from "@/features/goal-planning"
@@ -25,13 +25,14 @@ export function EstimateCell({
   estimate: EstimateOutcome | undefined
 }) {
   const { t } = useTranslation()
+  const dateLocale = useDateLocale()
   if (!estimate) return null
   // A Blocked estimate has no date; its reasons and materials live in the Blocked badge's tooltip.
   if (estimate.status === "Blocked") return null
   // Shared with the project surfaces, which render the same date from the features layer and so
   // cannot import it from here — see `shared/lib/format-time/format-estimate-date`, which also documents the
   // UTC parsing this value needs.
-  const formattedDate = formatEstimateDate(estimate.date, getDeviceLocale())
+  const formattedDate = formatEstimateDate(estimate.date, dateLocale)
   return (
     <span
       className="flex items-center gap-1 text-xs text-muted-foreground"

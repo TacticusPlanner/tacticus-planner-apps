@@ -26,7 +26,7 @@ import {
   formatHomeScreenEventDates,
   useHomeScreenEventName,
 } from "./use-home-screen-event-name"
-import { getDeviceLocale } from "@/shared/lib"
+import { useDateLocale } from "@/shared/lib"
 
 const GROUPS = ["running", "upcoming", "past"] as const
 
@@ -49,6 +49,7 @@ export function EventSwitcher({
   className?: string
 }) {
   const { t } = useTranslation("dailies")
+  const dateLocale = useDateLocale()
   const eventName = useHomeScreenEventName()
   const groups = groupHomeScreenEventInstances(instances)
   const { previous, next } = adjacentHomeScreenEventKeys(instances, selectedKey)
@@ -108,7 +109,7 @@ export function EventSwitcher({
                       name: eventName(instance.entry),
                       dates: formatHomeScreenEventDates(
                         instance.entry,
-                        getDeviceLocale()
+                        dateLocale
                       ),
                     })}
                   </SelectItem>

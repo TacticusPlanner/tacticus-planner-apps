@@ -2,7 +2,7 @@ import { ExternalLink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { DISCORD_INVITE_URL, GITHUB_ORG_URL } from "@/shared/config"
-import { getDeviceLocale } from "@/shared/lib"
+import { useDateLocale } from "@/shared/lib"
 
 interface LegalDocumentSection {
   id: string
@@ -29,7 +29,8 @@ export function LegalDocument({
   title: string
 }) {
   const { t } = useTranslation()
-  const lastUpdatedLabel = new Intl.DateTimeFormat(getDeviceLocale(), {
+  const dateLocale = useDateLocale()
+  const lastUpdatedLabel = new Intl.DateTimeFormat(dateLocale, {
     dateStyle: "long",
     timeZone: "UTC",
   }).format(lastUpdated)
