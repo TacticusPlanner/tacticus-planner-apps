@@ -5435,7 +5435,7 @@
     "/api/v1/player-data-overrides/incursions-progress": {
       "get": {
         "tags": ["Player-Data-Overrides"],
-        "summary": "Gets the current profile's manual Incursion progress.",
+        "summary": "Gets the current profile's manual Incursion battle progress.",
         "operationId": "TacticusPlannerApiFeaturesPlayerDataOverridesGetIncursionProgressEndpoint",
         "responses": {
           "200": {
@@ -5477,7 +5477,7 @@
       },
       "put": {
         "tags": ["Player-Data-Overrides"],
-        "summary": "Replaces the current profile's manual Incursion progress.",
+        "summary": "Replaces the current profile's manual Incursion battle progress.",
         "operationId": "TacticusPlannerApiFeaturesPlayerDataOverridesUpdateIncursionProgressEndpoint",
         "requestBody": {
           "content": {
@@ -12511,38 +12511,52 @@
           }
         }
       },
-      "IncursionProgressOverrideRequest": {
-        "required": ["mowId", "tiersCleared"],
+      "IncursionBattleProgressOverrideRequest": {
+        "required": ["mowId", "tierIndex", "battleId", "stars"],
         "type": "object",
         "properties": {
           "mowId": {
             "type": "string"
           },
-          "tiersCleared": {
+          "tierIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "battleId": {
+            "type": "string"
+          },
+          "stars": {
             "type": "integer",
             "format": "int32"
           }
         }
       },
-      "IncursionProgressOverrideResponse": {
-        "required": ["mowId", "tiersCleared"],
+      "IncursionBattleProgressOverrideResponse": {
+        "required": ["mowId", "tierIndex", "battleId", "stars"],
         "type": "object",
         "properties": {
           "mowId": {
             "type": "string"
           },
-          "tiersCleared": {
+          "tierIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "battleId": {
+            "type": "string"
+          },
+          "stars": {
             "type": "integer",
             "format": "int32"
           }
         }
       },
       "IncursionProgressOverridesResponse": {
-        "required": ["progress", "revision"],
+        "required": ["battles", "revision"],
         "type": "object",
         "properties": {
-          "progress": {
-            "$ref": "#/components/schemas/IReadOnlyListOfIncursionProgressOverrideResponse"
+          "battles": {
+            "$ref": "#/components/schemas/IReadOnlyListOfIncursionBattleProgressOverrideResponse"
           },
           "revision": {
             "type": "integer",
@@ -13215,16 +13229,16 @@
           "$ref": "#/components/schemas/GuildRaidPrimeStatusResponse"
         }
       },
-      "IReadOnlyListOfIncursionProgressOverrideRequest": {
+      "IReadOnlyListOfIncursionBattleProgressOverrideRequest": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/IncursionProgressOverrideRequest"
+          "$ref": "#/components/schemas/IncursionBattleProgressOverrideRequest"
         }
       },
-      "IReadOnlyListOfIncursionProgressOverrideResponse": {
+      "IReadOnlyListOfIncursionBattleProgressOverrideResponse": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/IncursionProgressOverrideResponse"
+          "$ref": "#/components/schemas/IncursionBattleProgressOverrideResponse"
         }
       },
       "IReadOnlyListOfInt32": {
@@ -14650,11 +14664,11 @@
         }
       },
       "UpdateIncursionProgressRequest": {
-        "required": ["progress", "revision"],
+        "required": ["battles", "revision"],
         "type": "object",
         "properties": {
-          "progress": {
-            "$ref": "#/components/schemas/IReadOnlyListOfIncursionProgressOverrideRequest"
+          "battles": {
+            "$ref": "#/components/schemas/IReadOnlyListOfIncursionBattleProgressOverrideRequest"
           },
           "revision": {
             "minimum": 0,

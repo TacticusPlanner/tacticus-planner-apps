@@ -1563,9 +1563,9 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /** Gets the current profile's manual Incursion progress. */
+    /** Gets the current profile's manual Incursion battle progress. */
     get: operations["TacticusPlannerApiFeaturesPlayerDataOverridesGetIncursionProgressEndpoint"]
-    /** Replaces the current profile's manual Incursion progress. */
+    /** Replaces the current profile's manual Incursion battle progress. */
     put: operations["TacticusPlannerApiFeaturesPlayerDataOverridesUpdateIncursionProgressEndpoint"]
     post?: never
     delete?: never
@@ -3577,18 +3577,24 @@ export interface components {
       /** @default false */
       legendaryEventPlans?: boolean
     }
-    IncursionProgressOverrideRequest: {
+    IncursionBattleProgressOverrideRequest: {
       mowId: string
       /** Format: int32 */
-      tiersCleared: number
+      tierIndex: number
+      battleId: string
+      /** Format: int32 */
+      stars: number
     }
-    IncursionProgressOverrideResponse: {
+    IncursionBattleProgressOverrideResponse: {
       mowId: string
       /** Format: int32 */
-      tiersCleared: number
+      tierIndex: number
+      battleId: string
+      /** Format: int32 */
+      stars: number
     }
     IncursionProgressOverridesResponse: {
-      progress: components["schemas"]["IReadOnlyListOfIncursionProgressOverrideResponse"]
+      battles: components["schemas"]["IReadOnlyListOfIncursionBattleProgressOverrideResponse"]
       /** Format: int64 */
       revision: number
     }
@@ -3717,8 +3723,8 @@ export interface components {
     IReadOnlyListOfGuildMemberSummary: components["schemas"]["GuildMemberSummary"][]
     IReadOnlyListOfGuildRaidModifierStatusResponse: components["schemas"]["GuildRaidModifierStatusResponse"][]
     IReadOnlyListOfGuildRaidPrimeStatusResponse: components["schemas"]["GuildRaidPrimeStatusResponse"][]
-    IReadOnlyListOfIncursionProgressOverrideRequest: components["schemas"]["IncursionProgressOverrideRequest"][]
-    IReadOnlyListOfIncursionProgressOverrideResponse: components["schemas"]["IncursionProgressOverrideResponse"][]
+    IReadOnlyListOfIncursionBattleProgressOverrideRequest: components["schemas"]["IncursionBattleProgressOverrideRequest"][]
+    IReadOnlyListOfIncursionBattleProgressOverrideResponse: components["schemas"]["IncursionBattleProgressOverrideResponse"][]
     IReadOnlyListOfInt32: number[]
     IReadOnlyListOfInt64: number[]
     IReadOnlyListOfIReadOnlyListOfInt32: components["schemas"]["IReadOnlyListOfInt32"][]
@@ -4174,7 +4180,7 @@ export interface components {
       target: components["schemas"]["GoalTargetEditRequest"]
     }
     UpdateIncursionProgressRequest: {
-      progress: components["schemas"]["IReadOnlyListOfIncursionProgressOverrideRequest"]
+      battles: components["schemas"]["IReadOnlyListOfIncursionBattleProgressOverrideRequest"]
       /** Format: int64 */
       revision: number
     }

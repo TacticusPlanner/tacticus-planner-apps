@@ -21,7 +21,9 @@ import { useRevisionedDraft } from "@/shared/api"
 import { UnsavedChangesBar, UnsavedChangesGuard } from "@/shared/ui"
 
 import {
+  battleKey,
   sameIncursionProgress,
+  starsFor,
   toIncursionProgressDraft,
   toIncursionProgressPayload,
 } from "../model/incursion-progress.model"
@@ -39,8 +41,9 @@ type Message = {
 /**
  * The Incursion page: the event's rules, then one row per Machine of War (newest first) with its
  * allowed factions and, per tier, the run map with every battle's enemies and rewards, straight from
- * the `incursions` catalog dataset. A signed-in player also records the tiers cleared per MoW (a
- * manual player-data override, since the game API does not sync it) and sees the shards left.
+ * the `incursions` catalog dataset. A signed-in player also records the stars earned on each battle
+ * (a manual player-data override, since the game API does not sync it) and sees the tiers cleared,
+ * the one-time shards left and, for cleared tiers, what a replay pays.
  */
 export function IncursionsPage() {
   const { t } = useTranslation("incursions")
@@ -136,6 +139,7 @@ export function IncursionsPage() {
                 })}
               </li>
               <li>{t("rules.progress")}</li>
+              <li>{t("rules.replay")}</li>
             </ul>
           </CardContent>
         </Card>
@@ -155,11 +159,12 @@ export function IncursionsPage() {
               progress={
                 progress
                   ? {
-                      tiersCleared: progress[incursion.mowId] ?? 0,
-                      onChange: (tiersCleared) => {
+                      stars: starsFor(progress, incursion.mowId),
+                      onStarsChange: (tierIndex, battleId, stars) => {
                         progressDraft.update((current) => ({
                           ...current,
-                          [incursion.mowId]: tiersCleared,
+                          [battleKey(incursion.mowId, tierIndex, battleId)]:
+                            stars,
                         }))
                         setMessage(null)
                       },

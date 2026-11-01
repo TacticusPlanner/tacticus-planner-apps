@@ -11,24 +11,45 @@ import {
 } from "@workspace/ui/components/select"
 
 import {
+  tierChestRewards,
+  tierCleared,
+  tierUnclaimedRewards,
+  type TierStars,
+} from "../../model/incursion-progress.model"
+import {
   runSteps,
+  shardYield,
   tierSummary,
   type Incursion,
+  type IncursionNode,
 } from "../../model/incursions.model"
 import { IncursionNodeCard } from "./incursion-node-card"
+import { IncursionRewards } from "./incursion-rewards"
 import { useTierName } from "./use-tier-name"
 
-/** The tier picker, the chosen tier's totals and its run map, step by step. */
+/** The player's stars on this MoW's battles and how to change one; absent while signed out. */
+export type TierProgress = {
+  stars: TierStars
+  onStarsChange: (tierIndex: number, battleId: string, stars: number) => void
+}
+
+/**
+ * The tier picker, the chosen tier's totals and its run map, step by step. With progress, a cleared
+ * tier shows what a replay pays (its chests; star rewards are paid once) and an open tier shows the
+ * one-time shards it still holds.
+ */
 export function IncursionTierView({
   incursion,
   tierIndex,
   onTierChange,
   npcsById,
+  progress,
 }: {
   incursion: Incursion
   tierIndex: number
   onTierChange: (index: number) => void
   npcsById: ReadonlyMap<string, NpcStorageModel>
+  progress?: TierProgress
 }) {
   const { t } = useTranslation("incursions")
   const id = useId()
@@ -55,6 +76,19 @@ export function IncursionTierView({
   if (!tier || !view) return null
 
   const { summary } = view
+  const battleProgress = (node: IncursionNode) => {
+    const battleId = node.kind === "battle" ? node.battleId : undefined
+    if (!progress || !battleId) return undefined
+    return {
+      stars: progress.stars(tier.index, battleId),
+      onChange: (stars: number) =>
+        progress.onStarsChange(tier.index, battleId, stars),
+    }
+  }
+  const cleared = progress ? tierCleared(tier, progress.stars) : false
+  const oneTimeLeft = progress
+    ? shardYield(incursion.mowId, tierUnclaimedRewards(tier, progress.stars))
+    : undefined
 
   return (
     <div className="space-y-4" data-testid="incursion-tier">
@@ -98,18 +132,39 @@ export function IncursionTierView({
           <li>{t("summary.enhancements", { count: summary.enhancements })}</li>
         </ul>
       </div>
-      <p
-        className="text-sm font-medium"
-        title={t("summary.bestPathHint")}
-        data-testid="incursion-best-path"
-      >
-        {summary.bestPath.mythicShards > 0
-          ? t("summary.bestPathMythic", summary.bestPath)
-          : t("summary.bestPath", { shards: summary.bestPath.shards })}
-        <span className="block text-xs font-normal text-muted-foreground">
-          {t("summary.bestPathHint")}
-        </span>
-      </p>
+      {cleared ? (
+        <div className="space-y-1.5" data-testid="incursion-replay-rewards">
+          <p className="text-sm font-medium">{t("progress.replayTitle")}</p>
+          <IncursionRewards rewards={tierChestRewards(tier)} />
+          <p className="text-xs text-muted-foreground">
+            {t("progress.replayHint")}
+          </p>
+        </div>
+      ) : (
+        <p
+          className="text-sm font-medium"
+          title={t("summary.bestPathHint")}
+          data-testid="incursion-best-path"
+        >
+          {summary.bestPath.mythicShards > 0
+            ? t("summary.bestPathMythic", summary.bestPath)
+            : t("summary.bestPath", { shards: summary.bestPath.shards })}
+          <span className="block text-xs font-normal text-muted-foreground">
+            {t("summary.bestPathHint")}
+          </span>
+        </p>
+      )}
+      {oneTimeLeft &&
+      (oneTimeLeft.shards > 0 || oneTimeLeft.mythicShards > 0) ? (
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="incursion-tier-one-time"
+        >
+          {oneTimeLeft.mythicShards > 0
+            ? t("progress.tierOneTimeMythic", oneTimeLeft)
+            : t("progress.tierOneTime", { shards: oneTimeLeft.shards })}
+        </p>
+      ) : null}
 
       <section className="space-y-3" aria-label={t("map.title")}>
         <h4 className="text-sm font-semibold">{t("map.title")}</h4>
@@ -140,6 +195,7 @@ export function IncursionTierView({
                       incursion={incursion}
                       battlesById={view.battlesById}
                       npcsById={npcsById}
+                      progress={battleProgress(node)}
                       after={
                         branched && node.unlockedBy.length > 0
                           ? node.unlockedBy

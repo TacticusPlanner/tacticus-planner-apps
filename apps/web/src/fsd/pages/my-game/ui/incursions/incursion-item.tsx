@@ -13,16 +13,13 @@ import { Badge } from "@workspace/ui/components/badge"
 import { useDateLocale } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
-import { nextTierIndex } from "../../model/incursion-progress.model"
+import {
+  clearedTierCount,
+  nextTierIndex,
+} from "../../model/incursion-progress.model"
 import type { Incursion } from "../../model/incursions.model"
 import { IncursionProgressControl } from "./incursion-progress-control"
-import { IncursionTierView } from "./incursion-tier-view"
-
-/** The player's saved tiers for this MoW and how to change them; absent while signed out. */
-export type IncursionItemProgress = {
-  tiersCleared: number
-  onChange: (tiersCleared: number) => void
-}
+import { IncursionTierView, type TierProgress } from "./incursion-tier-view"
 
 /**
  * One MoW's Incursion as an accordion row: its header, the player's progress, allowed factions and
@@ -37,13 +34,13 @@ export function IncursionItem({
   incursion: Incursion
   owned: boolean
   npcsById: ReadonlyMap<string, NpcStorageModel>
-  progress?: IncursionItemProgress
+  progress?: TierProgress
 }) {
   const { t } = useTranslation(["incursions", "mows", "factions"])
   const dateLocale = useDateLocale()
   const [pickedTier, setPickedTier] = useState<number | null>(null)
   const tierIndex =
-    pickedTier ?? nextTierIndex(incursion, progress?.tiersCleared ?? 0)
+    pickedTier ?? nextTierIndex(incursion, progress?.stars ?? (() => 0))
   const testId = `incursion-${incursion.mowId}`
   const name = t(`mows:${incursion.mowId}`, { defaultValue: incursion.mowId })
   const firstRun = new Date(incursion.availableFromUtc).toLocaleDateString(
@@ -84,7 +81,7 @@ export function IncursionItem({
                   data-testid={`${testId}-cleared`}
                 >
                   {t("progress.badge", {
-                    cleared: progress.tiersCleared,
+                    cleared: clearedTierCount(incursion, progress.stars),
                     total: incursion.tiers.length,
                   })}
                 </Badge>
@@ -100,8 +97,7 @@ export function IncursionItem({
         {progress ? (
           <IncursionProgressControl
             incursion={incursion}
-            tiersCleared={progress.tiersCleared}
-            onChange={progress.onChange}
+            stars={progress.stars}
           />
         ) : null}
         <div className="space-y-2">
@@ -129,6 +125,7 @@ export function IncursionItem({
           tierIndex={tierIndex}
           onTierChange={setPickedTier}
           npcsById={npcsById}
+          progress={progress}
         />
       </AccordionContent>
     </AccordionItem>

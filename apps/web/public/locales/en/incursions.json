@@ -6,7 +6,8 @@
     "title": "How Incursions work",
     "tokens": "You start with {{start}} run tokens and hold up to {{max}}; one more arrives every {{hours}} hours. Starting a run costs {{cost}}.",
     "team": "Only heroes from the MoW's allowed factions can join; bring at least {{count}}.",
-    "progress": "Each tier is a run map: battles, enhancement picks and chests. Once you pick a branch, the others close for that run."
+    "progress": "Each tier is a run map: battles, enhancement picks and chests. Once you pick a branch, the others close for that run.",
+    "replay": "Tiers can be played in any order. Damage your heroes take carries over from battle to battle and only resets when the run ends. A cleared tier can be replayed: 3-star battles can be raided, star rewards are paid only once, and chests pay out every run."
   },
   "card": {
     "firstRun": "First run {{date}}",
@@ -44,7 +45,8 @@
     "lightningVictory": "Lightning Victory: {{turns}} turns",
     "enemies": "Enemies",
     "everyWin": "Every win",
-    "stars": "{{count}}★"
+    "stars": "{{count}}★",
+    "starsClaimed": "{{count}}★ (claimed)"
   },
   "enhancement": {
     "title": "Enhancement",
@@ -80,13 +82,23 @@
     }
   },
   "progress": {
-    "clearedThrough": "Cleared through",
-    "none": "None yet",
     "badge": "{{cleared}}/{{total}} cleared",
-    "remaining": "{{shards}} shards left in the tiers you haven't cleared",
-    "remainingMythic": "{{shards}} shards and {{mythicShards}} mythic shards left in the tiers you haven't cleared",
-    "allCleared": "All tiers cleared",
-    "signIn": "Sign in to save which tiers you've cleared.",
+    "tiersCleared": "{{cleared}} of {{total}} tiers cleared",
+    "remaining": "{{shards}} shards left to earn from battle stars",
+    "remainingMythic": "{{shards}} shards and {{mythicShards}} mythic shards left to earn from battle stars",
+    "allClaimed": "Every battle star reward claimed",
+    "howTo": "Set the stars you've earned on each battle in the run map. A tier counts as cleared once you've won a battle on its last step.",
+    "starsEarned": "Your stars",
+    "starsFor": "Stars earned on {{battle}}",
+    "stars_one": "{{count}} star",
+    "stars_other": "{{count}} stars",
+    "raidable": "Raidable",
+    "raidableHint": "Cleared with 3 stars, so later runs can raid it.",
+    "replayTitle": "Each replay pays",
+    "replayHint": "You've cleared this tier, so replays pay only its chests; star rewards are paid once.",
+    "tierOneTime": "{{shards}} one-time shards left in this tier",
+    "tierOneTimeMythic": "{{shards}} shards and {{mythicShards}} mythic shards left in this tier, one time only",
+    "signIn": "Sign in to save the stars you've earned on each battle.",
     "loadError": "Couldn't load your Incursion progress.",
     "saved": "Incursion progress saved.",
     "conflict": "Incursion progress changed elsewhere. Latest values loaded; apply your change again.",

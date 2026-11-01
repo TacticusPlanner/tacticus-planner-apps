@@ -6,6 +6,10 @@ import {
   type NpcStorageModel,
 } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { NpcLevelBadge, NpcPortrait, useNpcLabels } from "@/entities/npc"
@@ -18,6 +22,7 @@ import {
   type IncursionBattle,
   type IncursionNode,
 } from "../../model/incursions.model"
+import { MAX_STARS } from "../../model/incursion-progress.model"
 import { IncursionRewards } from "./incursion-rewards"
 
 const CHEST_TIERS: Record<string, ChestTier> = {
@@ -28,13 +33,63 @@ const CHEST_TIERS: Record<string, ChestTier> = {
 }
 
 const STARS = [1, 2, 3] as const
+const STAR_CHOICES = [0, 1, 2, 3] as const
+
+/** The player's stars on a battle and how to change them; absent while signed out. */
+export type BattleStarsProgress = {
+  stars: number
+  onChange: (stars: number) => void
+}
+
+function StarsPicker({
+  label,
+  testId,
+  progress,
+}: {
+  label: string
+  testId: string
+  progress: BattleStarsProgress
+}) {
+  const { t } = useTranslation("incursions")
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-xs text-muted-foreground">
+        {t("progress.starsEarned")}
+      </span>
+      <ToggleGroup
+        type="single"
+        variant="outline"
+        size="sm"
+        aria-label={t("progress.starsFor", { battle: label })}
+        value={String(progress.stars)}
+        onValueChange={(value) => {
+          if (value) progress.onChange(Number(value))
+        }}
+      >
+        {STAR_CHOICES.map((count) => (
+          <ToggleGroupItem
+            key={count}
+            value={String(count)}
+            aria-label={t("progress.stars", { count })}
+            data-testid={`${testId}-stars-${count}`}
+          >
+            {count}
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
+    </div>
+  )
+}
 
 function BattleBody({
   battle,
   npcsById,
+  stars,
 }: {
   battle: IncursionBattle
   npcsById: ReadonlyMap<string, NpcStorageModel>
+  /** Stars already earned, whose one-time rewards are shown as claimed. */
+  stars: number
 }) {
   const { t } = useTranslation("incursions")
   const { variationName } = useNpcLabels()
@@ -92,9 +147,15 @@ function BattleBody({
           </>
         ) : null}
         {STARS.map((count, at) => (
-          <div key={count} className="contents">
+          <div
+            key={count}
+            className={cn("contents", count <= stars && "[&>*]:opacity-50")}
+            data-claimed={count <= stars || undefined}
+          >
             <dt className="text-xs text-muted-foreground">
-              {t("battle.stars", { count })}
+              {count <= stars
+                ? t("battle.starsClaimed", { count })
+                : t("battle.stars", { count })}
             </dt>
             <dd>
               <IncursionRewards rewards={[battle.starRewards[at] ?? ""]} />
@@ -113,6 +174,7 @@ export function IncursionNodeCard({
   battlesById,
   npcsById,
   after,
+  progress,
 }: {
   node: IncursionNode
   incursion: Incursion
@@ -120,6 +182,8 @@ export function IncursionNodeCard({
   npcsById: ReadonlyMap<string, NpcStorageModel>
   /** The names of the nodes this one follows, when the previous step branches. */
   after?: string
+  /** The player's stars, for a battle node while signed in. */
+  progress?: BattleStarsProgress
 }) {
   const { t } = useTranslation(["incursions", "traits"])
   const battle = node.battleId ? battlesById.get(node.battleId) : undefined
@@ -131,7 +195,22 @@ export function IncursionNodeCard({
   let body: ReactNode = null
   if (node.kind === "battle" && battle) {
     title = t("battle.name", { name: node.name })
-    body = <BattleBody battle={battle} npcsById={npcsById} />
+    body = (
+      <>
+        {progress ? (
+          <StarsPicker
+            label={title}
+            testId={`incursion-node-${node.index}`}
+            progress={progress}
+          />
+        ) : null}
+        <BattleBody
+          battle={battle}
+          npcsById={npcsById}
+          stars={progress?.stars ?? 0}
+        />
+      </>
+    )
   } else if (node.kind === "enhancement" && enhancement) {
     const subject = enhancementSubject(enhancement)
     title = t(`enhancement.type.${enhancement.type}` as never, {
@@ -176,6 +255,15 @@ export function IncursionNodeCard({
           <Badge variant="secondary">{t("enhancement.stacks")}</Badge>
         ) : null}
         {battle?.challenge ? <Badge>{t("battle.challenge")}</Badge> : null}
+        {battle && progress && progress.stars >= MAX_STARS ? (
+          <Badge
+            variant="secondary"
+            title={t("progress.raidableHint")}
+            data-testid={`incursion-node-${node.index}-raidable`}
+          >
+            {t("progress.raidable")}
+          </Badge>
+        ) : null}
         {after ? (
           <span className="text-xs text-muted-foreground">
             {t("map.after", { names: after })}
