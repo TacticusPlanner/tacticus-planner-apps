@@ -21,6 +21,7 @@ const sdk = vi.hoisted(() => {
     opt_out_capturing: vi.fn(),
     reset: vi.fn(),
     capture: vi.fn(),
+    captureException: vi.fn(),
     get_distinct_id: vi.fn(() => "anonymous-id"),
     has_opted_out_capturing: vi.fn(() => true),
   }
@@ -541,6 +542,39 @@ describe("useAnalyticsActions", () => {
       "legendary_event_tier_list_unit_opened",
       { unit_id: "custoBladeChampion", tier: "S" }
     )
+  })
+
+  it("sends a client_error to Error Tracking as an exception with only the declared properties", async () => {
+    const hook = await renderReady()
+
+    act(() =>
+      hook.result.current.captureEvent({
+        type: "client_error",
+        name: "TypeError",
+        message: "x is undefined",
+        stack:
+          "TypeError: x is undefined\n    at https://app.example.test/assets/main.js:2:3",
+        context: "window.error",
+        routeGroup: "/plan",
+        appVersion: "1.2.3",
+      })
+    )
+
+    expect(sdk.client.capture).not.toHaveBeenCalled()
+    expect(sdk.client.captureException).toHaveBeenCalledOnce()
+    const [error, properties] = at(sdk.client.captureException.mock.calls, 0)
+    expect(error).toBeInstanceOf(Error)
+    expect(error).toMatchObject({
+      name: "TypeError",
+      message: "x is undefined",
+      stack:
+        "TypeError: x is undefined\n    at https://app.example.test/assets/main.js:2:3",
+    })
+    expect(properties).toEqual({
+      context: "window.error",
+      route_group: "/plan",
+      app_version: "1.2.3",
+    })
   })
 
   it("captures the app install events", async () => {

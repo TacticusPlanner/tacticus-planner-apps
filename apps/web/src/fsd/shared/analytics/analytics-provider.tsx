@@ -352,15 +352,19 @@ export function useAnalyticsActions() {
         case "app_install_card_dismissed":
           client.capture(event.type, { platform: event.platform })
           break
-        case "client_error":
-          client.capture(event.type, {
-            message: event.message,
-            stack: event.stack,
+        case "client_error": {
+          // Rebuilt from the already-sanitised text, so Error Tracking parses the stack into frames
+          // (resolved through the uploaded source maps) without seeing the original query strings.
+          const error = new Error(event.message)
+          error.name = event.name
+          error.stack = event.stack ?? undefined
+          client.captureException(error, {
             context: event.context,
             route_group: event.routeGroup,
             app_version: event.appVersion,
           })
           break
+        }
       }
     },
     [client]

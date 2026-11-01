@@ -349,8 +349,9 @@ describe("PostHogProvider error reporting", () => {
 
     expect(captureEvent).toHaveBeenCalledExactlyOnceWith({
       type: "client_error",
+      name: "Error",
       message: "Failed to fetch https://api.example.test/api/v1/goals",
-      stack: "Error: at https://app.example.test/assets/main.js",
+      stack: "Error: at https://app.example.test/assets/main.js:2:3",
       context: "sync",
       routeGroup: "/plan",
       appVersion: "1.2.3",

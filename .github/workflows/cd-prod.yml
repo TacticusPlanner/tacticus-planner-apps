@@ -74,6 +74,9 @@ jobs:
       upload-artifact: true
       ref: refs/tags/${{ inputs.ref }}
       vite-mode: production
+      upload-source-maps: true
+    secrets:
+      POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
 
   deploy:
     name: Deploy Production

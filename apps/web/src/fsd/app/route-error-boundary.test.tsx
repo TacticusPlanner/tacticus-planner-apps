@@ -7,6 +7,8 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
+import { setErrorReporter } from "@/shared/lib"
+
 import { RouteErrorBoundary } from "./route-error-boundary"
 
 function Throwing({ error }: { error: unknown }): null {
@@ -107,8 +109,35 @@ describe("RouteErrorBoundary", () => {
     expect(screen.getByTestId("app-error-reload")).toHaveFocus()
     expect(page).not.toHaveTextContent("Cannot read properties")
     expect(page).not.toHaveTextContent("at ")
-    expect(consoleError).toHaveBeenCalledWith("Route rendering failed", error)
+    expect(consoleError).toHaveBeenCalledWith(
+      "Unhandled error (route render)",
+      error
+    )
     expect(reload).not.toHaveBeenCalled()
+  })
+
+  it("reports a render error once to the registered reporter, and never a stale-build reload", async () => {
+    const reporter = vi.fn()
+    setErrorReporter(reporter)
+    try {
+      const error = new Error("page exploded")
+      renderRouter("/dailies", error)
+      await screen.findByTestId("app-error-page")
+      expect(reporter).toHaveBeenCalledExactlyOnceWith(error, "route render")
+
+      reporter.mockClear()
+      window.sessionStorage.clear()
+      renderRouter(
+        "/dailies",
+        new TypeError(
+          "Failed to fetch dynamically imported module: /assets/y.js"
+        )
+      )
+      await waitFor(() => expect(reload).toHaveBeenCalled())
+      expect(reporter).not.toHaveBeenCalled()
+    } finally {
+      setErrorReporter(null)
+    }
   })
 
   it("catches a landing/shell error with the top-level boundary", async () => {

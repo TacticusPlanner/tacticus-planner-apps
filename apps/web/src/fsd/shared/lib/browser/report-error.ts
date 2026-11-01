@@ -3,6 +3,17 @@ export type ErrorReporter = (error: unknown, context?: string) => void
 
 let reporter: ErrorReporter | null = null
 
+// The same error object can reach reportError twice (a route boundary reporting while rendering,
+// which Strict Mode repeats in dev; an error rethrown to window). It is logged and reported once.
+const reported = new WeakSet<object>()
+
+function alreadyReported(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false
+  if (reported.has(error)) return true
+  reported.add(error)
+  return false
+}
+
 /** Registers (or clears, with `null`) where errors are reported. The analytics identity owner
  *  registers one while the user is identified, so anonymous errors are only ever logged. */
 export function setErrorReporter(next: ErrorReporter | null) {
@@ -14,6 +25,7 @@ export function setErrorReporter(next: ErrorReporter | null) {
  * reported when a reporter is registered. Never throws, even when reporting does.
  */
 export function reportError(error: unknown, context?: string) {
+  if (alreadyReported(error)) return
   console.error(
     context ? `Unhandled error (${context})` : "Unhandled error",
     error

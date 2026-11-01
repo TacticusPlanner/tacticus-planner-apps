@@ -34,6 +34,7 @@ catalog:
   vitest: ^4.1.12
 
 allowBuilds:
+  "@posthog/cli": false
   core-js: true
   esbuild: true
   lefthook: true

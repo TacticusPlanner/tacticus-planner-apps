@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useNavigate, useRouteError } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
-import { isStaleBuildError, reloadOnceForStaleBuild } from "@/shared/lib"
+import {
+  isStaleBuildError,
+  reloadOnceForStaleBuild,
+  reportError,
+} from "@/shared/lib"
 
 /**
  * `errorElement` for the root route set and the AppShell route. A stale-build failure (chunk deleted
@@ -18,13 +22,16 @@ export function RouteErrorBoundary() {
   // Decided once per mount, in the state initializer: React uses the first call's result (Strict
   // Mode's second dev-only call sees the session marker already set and is discarded), so the
   // reload fires exactly once and the fallback never flashes before it.
-  const [reloading] = useState(
-    () => isStaleBuildError(error) && reloadOnceForStaleBuild()
-  )
-
-  useEffect(() => {
-    if (!reloading) console.error("Route rendering failed", error)
-  }, [error, reloading])
+  //
+  // Any other error is reported here, while rendering, rather than in an effect: a page error
+  // replaces the AppShell route element, and the shell's analytics provider unregisters its error
+  // reporter before this boundary's effects would run. React caught the error, so it never reaches
+  // the window listeners (spec: client-error-reporting).
+  const [reloading] = useState(() => {
+    if (isStaleBuildError(error) && reloadOnceForStaleBuild()) return true
+    reportError(error, "route render")
+    return false
+  })
 
   if (reloading) return null
 

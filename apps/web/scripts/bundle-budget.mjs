@@ -64,11 +64,20 @@ function staticGraph(keys) {
   return seen
 }
 
+// The production build's PostHog source-map plugin (vite.config.ts) prepends a ~0.4 KB chunk-id
+// snippet and appends a `//# chunkId=` comment to every chunk. That is fixed per-chunk overhead,
+// not app code, so it is left out: the budget measures the same thing with or without the upload.
+const POSTHOG_CHUNK_ID =
+  /!function\(\)\{try\{var e="undefined"!=typeof window[^\n]*?_posthogChunkIds\[n\]=[^\n]*?\}catch\(e\)\{\}\}\(\);|\n\/\/# chunkId=[^\n]*/g
+
 const bytesOf = (keys) =>
-  [...keys].reduce(
-    (sum, key) => sum + statSync(path.join(dist, manifest[key].file)).size,
-    0
-  )
+  [...keys].reduce((sum, key) => {
+    const file = path.join(dist, manifest[key].file)
+    const injected = readFileSync(file, "utf8")
+      .match(POSTHOG_CHUNK_ID)
+      ?.reduce((bytes, match) => bytes + Buffer.byteLength(match), 0)
+    return sum + statSync(file).size - (injected ?? 0)
+  }, 0)
 const kb = (bytes) => Math.round(bytes / 1024)
 
 const failures = []

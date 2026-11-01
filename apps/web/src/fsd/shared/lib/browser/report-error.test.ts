@@ -32,6 +32,19 @@ describe("reportError", () => {
     expect(report).toHaveBeenCalledExactlyOnceWith(error, "sync")
   })
 
+  it("logs and reports the same error object only once", () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {})
+    const report = vi.fn()
+    setErrorReporter(report)
+    const error = new Error("boom")
+
+    reportError(error, "route render")
+    reportError(error, "window.error")
+
+    expect(log).toHaveBeenCalledOnce()
+    expect(report).toHaveBeenCalledExactlyOnceWith(error, "route render")
+  })
+
   it("swallows a reporter that throws", () => {
     vi.spyOn(console, "error").mockImplementation(() => {})
     setErrorReporter(() => {

@@ -1,5 +1,6 @@
 import { execFileSync } from "child_process"
 import path from "path"
+import posthogSourceMaps from "@posthog/rollup-plugin"
 import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig, type Plugin } from "vite"
@@ -92,6 +93,31 @@ function gitRevision(rev: string): string {
   }
 }
 
+// Uploads hidden source maps to PostHog error tracking so `client_error` stacks are readable, then
+// deletes them from dist so they are never deployed. Only CI's production build carries the
+// credentials (.github/workflows/_build-web.yml); every other build skips it. A failed upload fails
+// the build, which keeps the maps out of any deploy.
+function posthogSourceMapUpload(): Plugin[] {
+  const personalApiKey = process.env.POSTHOG_PERSONAL_API_KEY
+  const projectId = process.env.POSTHOG_PROJECT_ID
+  if (!personalApiKey || !projectId) return []
+  // A Rollup plugin (it also carries Vite's `config` hook); Vite runs it as-is, but its typings
+  // follow Rollup's plugin context rather than Rolldown's.
+  const plugin = posthogSourceMaps({
+    personalApiKey,
+    projectId,
+    host: process.env.POSTHOG_API_HOST || "https://us.posthog.com",
+    // Defaults to the @posthog/cli shim, which downloads its binary on first use.
+    cliBinaryPath: process.env.POSTHOG_CLI_PATH || undefined,
+    sourcemaps: {
+      releaseName: "tacticus-planner-web",
+      releaseVersion: process.env.VITE_APP_VERSION,
+      deleteAfterUpload: true,
+    },
+  }) as unknown as Plugin
+  return [plugin]
+}
+
 const aspirePort = process.env.PORT ? Number(process.env.PORT) : undefined
 
 // https://vite.dev/config/
@@ -103,7 +129,13 @@ export default defineConfig(({ command }) => {
     )
   }
   return {
-    plugins: [react(), tailwindcss(), chunkPackages(), capModulePreloads()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      chunkPackages(),
+      capModulePreloads(),
+      ...posthogSourceMapUpload(),
+    ],
     server: aspirePort
       ? {
           port: aspirePort,
