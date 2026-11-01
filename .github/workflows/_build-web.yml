@@ -204,11 +204,17 @@ jobs:
       - name: Bundle budget
         run: pnpm --filter web bundle:budget
 
-      - name: Check no source maps are deployed
+      # The PostHog plugin ends every chunk it uploads maps for with a `//# chunkId=` line. None means the
+      # plugin never ran (e.g. turbo.json not passing the POSTHOG_* variables through to the build).
+      - name: Check source maps were uploaded and not deployed
         if: ${{ inputs.upload-source-maps }}
         run: |
           if find apps/web/dist -name '*.map' | grep -q .; then
             echo "::error::Source maps were left in apps/web/dist after upload."
+            exit 1
+          fi
+          if [ -n "${POSTHOG_PERSONAL_API_KEY:-}" ] && ! grep -lq '^//# chunkId=' apps/web/dist/assets/*.js; then
+            echo "::error::The PostHog source map plugin did not run: no chunk ids in apps/web/dist."
             exit 1
           fi
 
