@@ -78,5 +78,29 @@
       "Gold": "Gold",
       "Diamond": "Diamond"
     }
+  },
+  "progress": {
+    "clearedThrough": "Cleared through",
+    "none": "None yet",
+    "badge": "{{cleared}}/{{total}} cleared",
+    "remaining": "{{shards}} shards left in the tiers you haven't cleared",
+    "remainingMythic": "{{shards}} shards and {{mythicShards}} mythic shards left in the tiers you haven't cleared",
+    "allCleared": "All tiers cleared",
+    "signIn": "Sign in to save which tiers you've cleared.",
+    "loadError": "Couldn't load your Incursion progress.",
+    "saved": "Incursion progress saved.",
+    "conflict": "Incursion progress changed elsewhere. Latest values loaded; apply your change again.",
+    "saveError": "Couldn't save Incursion progress. Your changes are still here; try again.",
+    "unsaved": {
+      "message": "You have unsaved changes",
+      "save": "Save",
+      "discard": "Discard"
+    },
+    "leave": {
+      "title": "Leave without saving?",
+      "description": "Your Incursion progress changes haven't been saved and will be lost.",
+      "stay": "Stay",
+      "leave": "Leave"
+    }
   }
 }

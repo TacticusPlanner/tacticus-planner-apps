@@ -59,3 +59,6 @@ export type BattleProgressOverride =
 
 export type BattleProgressOverrides =
   ApiSchemas["BattleProgressOverridesResponse"]
+
+export type IncursionProgressOverrides =
+  ApiSchemas["IncursionProgressOverridesResponse"]

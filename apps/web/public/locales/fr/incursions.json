@@ -78,5 +78,29 @@
       "Gold": "d'or",
       "Diamond": "de diamant"
     }
+  },
+  "progress": {
+    "clearedThrough": "Terminé jusqu'à",
+    "none": "Aucun pour l'instant",
+    "badge": "{{cleared}}/{{total}} terminés",
+    "remaining": "{{shards}} éclats restants dans les paliers non terminés",
+    "remainingMythic": "{{shards}} éclats et {{mythicShards}} éclats mythiques restants dans les paliers non terminés",
+    "allCleared": "Tous les paliers terminés",
+    "signIn": "Connectez-vous pour enregistrer les paliers terminés.",
+    "loadError": "Impossible de charger votre progression d'Incursion.",
+    "saved": "Progression d'Incursion enregistrée.",
+    "conflict": "La progression d'Incursion a changé ailleurs. Les dernières valeurs ont été chargées ; réappliquez votre modification.",
+    "saveError": "Impossible d'enregistrer la progression d'Incursion. Vos modifications sont conservées ; réessayez.",
+    "unsaved": {
+      "message": "Vous avez des modifications non enregistrées",
+      "save": "Enregistrer",
+      "discard": "Annuler"
+    },
+    "leave": {
+      "title": "Quitter sans enregistrer ?",
+      "description": "Vos modifications de la progression d'Incursion n'ont pas été enregistrées et seront perdues.",
+      "stay": "Rester",
+      "leave": "Quitter"
+    }
   }
 }
