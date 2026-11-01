@@ -113,7 +113,7 @@ describe("GoalsList", () => {
     expect(estimateCells[0]).toHaveAttribute("title", "2026-01-06")
   })
 
-  it("renders the formatted completion date and day-count caption identically on desktop and mobile", async () => {
+  it("renders the formatted completion date and day-count caption on desktop (stacked, in its own column) and mobile (one line)", async () => {
     const estimates = new Map([
       [
         "goal-1",
@@ -134,6 +134,9 @@ describe("GoalsList", () => {
     const desktopCell = screen.getAllByTestId("goal-row-estimate")[0]!
     expect(desktopCell).toHaveTextContent("Sep 28")
     expect(desktopCell).toHaveTextContent("in 12 days")
+    // Desktop: the date and the day count are two separate lines in the Done by column.
+    expect(desktopCell.children).toHaveLength(2)
+    expect(desktopCell.closest("td")?.cellIndex).toBe(5)
     desktop.unmount()
 
     useIsMobileMock.mockReturnValue(true)
@@ -149,7 +152,7 @@ describe("GoalsList", () => {
     const mobileCell = screen.getAllByTestId("goal-row-estimate")[0]!
     expect(mobileCell).toHaveTextContent("Sep 28")
     expect(mobileCell).toHaveTextContent("in 12 days")
-    expect(mobileCell.innerHTML).toBe(desktopCell.innerHTML)
+    expect(mobileCell).toHaveTextContent("Sep 28 · in 12 days")
   })
 
   it.each([false, true])(
@@ -452,12 +455,12 @@ describe("GoalsList", () => {
       await screen.findByText("Hero One")
 
       expect(numbers()).toEqual(["Priority 1", "Priority 3", "Priority 5"])
-      // The number sits in the same leading cell as the drag handle, not in a data column (Character, Projects, Goal, Progress, Status, Remaining).
+      // The number sits in the same leading cell as the drag handle, not in a data column (Character, Projects, Goal, Status, Done by, Remaining, Progress).
       const cell = screen.getAllByTestId("goal-row-priority")[0]!.closest("td")!
       expect(cell).toContainElement(
         screen.getAllByTestId("goal-row-drag-handle")[0]!
       )
-      expect(screen.getAllByRole("columnheader")).toHaveLength(7)
+      expect(screen.getAllByRole("columnheader")).toHaveLength(8)
     })
 
     it("shows the number for a Paused row and none for Reached, Completed, Archived or position-less rows", async () => {
@@ -728,20 +731,21 @@ describe("GoalsList reached rows and column layout", () => {
       "Character",
       "Projects",
       "Goal",
-      "Progress",
-      "Status · Done by",
+      "Status",
+      "Done by",
       "Remaining",
+      "Progress",
     ])
     const [first, second] = screen.getAllByTestId("goal-row")
     const cells = first!.querySelectorAll("td")
-    expect(cells).toHaveLength(7)
+    expect(cells).toHaveLength(8)
     expect(cells[1]).not.toContainElement(
       screen.getAllByTestId("goal-project-memberships")[0]!
     )
     expect(cells[2]).toHaveTextContent("My Goals")
     expect(cells[2]).toHaveTextContent("Neuro")
     // A goal in no project: empty cell, same alignment.
-    expect(second!.querySelectorAll("td")).toHaveLength(7)
+    expect(second!.querySelectorAll("td")).toHaveLength(8)
     expect(second!.querySelectorAll("td")[2]!.textContent).toBe("")
   })
 

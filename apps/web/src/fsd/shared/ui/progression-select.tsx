@@ -57,8 +57,16 @@ export function ProgressionSelect({
 // around a promotion boundary, e.g. "Common:TwoStars" then "Uncommon:TwoStars"). Stars match V1's
 // stars.icon.tsx (repeated gold/red/blue star images, or a single wings image at the max step) —
 // except "None", which has nothing to show an icon for and stays as plain text.
-export function ProgressionBadge({ value }: { value: Progression }) {
+export function ProgressionBadge({
+  value,
+  size = "md",
+}: {
+  value: Progression
+  /** `lg` enlarges the icons for scan-first lists (the Goals table's Goal column). */
+  size?: "md" | "lg"
+}) {
   const { t } = useTranslation(["progression"])
+  const large = size === "lg"
   const rarity = progressionRarity(value)
   const stars = value.slice(value.indexOf(":") + 1)
   const visual = progressionVisual(value)
@@ -66,11 +74,15 @@ export function ProgressionBadge({ value }: { value: Progression }) {
 
   return (
     <span className="inline-flex items-center gap-1.5">
-      <RarityIcon rarity={rarity} className="size-4" />
+      <RarityIcon rarity={rarity} className={large ? "size-6" : "size-4"} />
       {visual.kind === "none" ? (
         <span className="text-sm">{starsLabel}</span>
       ) : visual.kind === "wings" ? (
-        <EntityIcon src={visual.icon} alt={starsLabel} className="h-4 w-auto" />
+        <EntityIcon
+          src={visual.icon}
+          alt={starsLabel}
+          className={large ? "h-6 w-auto" : "h-4 w-auto"}
+        />
       ) : (
         <span className="inline-flex items-center gap-0.5">
           {Array.from({ length: visual.count }, (_, index) => (
@@ -78,7 +90,7 @@ export function ProgressionBadge({ value }: { value: Progression }) {
               key={index}
               src={visual.icon}
               alt={index === 0 ? starsLabel : ""}
-              className="size-3.5"
+              className={large ? "size-5" : "size-3.5"}
             />
           ))}
         </span>

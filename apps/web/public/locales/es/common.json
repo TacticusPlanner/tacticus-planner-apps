@@ -942,7 +942,8 @@
       "goal": "Objetivo",
       "progress": "Progreso",
       "remaining": "Restante",
-      "status": "Estado · Fecha fin",
+      "status": "Estado",
+      "doneBy": "Fecha fin",
       "reorder": "Reordenar",
       "reorderHandle": "Arrastrar {{entity}} para reordenar",
       "priority": "Prioridad"

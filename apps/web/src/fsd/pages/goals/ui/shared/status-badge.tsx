@@ -6,6 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { cn } from "@workspace/ui/lib/utils"
 
 import type { GoalStatus } from "@/entities/goal"
 import {
@@ -36,9 +37,12 @@ export function StatusBadge({
   reached = false,
   onToggle,
   disabled = false,
+  className,
 }: {
   status: GoalStatus
   reached?: boolean
+  /** Extra classes for the chip (the desktop table's standalone Status column draws it larger). */
+  className?: string
   /** When given, an Active/Paused chip becomes a one-click Pause/Resume toggle (no extra space). */
   onToggle?: (next: "Active" | "Paused") => void
   disabled?: boolean
@@ -48,7 +52,10 @@ export function StatusBadge({
   if (reached) {
     return (
       <Badge
-        className="gap-1 border-transparent bg-success text-success-foreground"
+        className={cn(
+          "gap-1 border-transparent bg-success text-success-foreground",
+          className
+        )}
         data-testid="goal-status-badge"
         variant="outline"
       >
@@ -66,6 +73,7 @@ export function StatusBadge({
         <TooltipTrigger asChild>
           <Badge
             asChild
+            className={className}
             data-testid="goal-status-badge"
             variant={VARIANT_BY_STATUS[status]}
           >
@@ -91,7 +99,11 @@ export function StatusBadge({
   }
 
   return (
-    <Badge data-testid="goal-status-badge" variant={VARIANT_BY_STATUS[status]}>
+    <Badge
+      className={className}
+      data-testid="goal-status-badge"
+      variant={VARIANT_BY_STATUS[status]}
+    >
       {t(`goals.status.${status}`)}
     </Badge>
   )
@@ -118,8 +130,11 @@ export function BlockedIndicator({
   blockers,
   progress,
   estimate,
+  className,
 }: {
   blockers: GoalBlockers
+  /** Extra classes for the chip, matching `StatusBadge`'s `className` beside it. */
+  className?: string
   progress?: GoalProgress
   /** A Blocked estimate's unavailable-materials rows are appended to the tooltip. */
   estimate?: EstimateOutcome
@@ -159,7 +174,10 @@ export function BlockedIndicator({
         <TooltipTrigger asChild>
           <Badge
             asChild
-            className="gap-1 border-transparent bg-amber-400 text-amber-950"
+            className={cn(
+              "gap-1 border-transparent bg-amber-400 text-amber-950",
+              className
+            )}
             data-testid="goal-restricted-indicator"
             variant="outline"
           >
@@ -184,7 +202,7 @@ export function BlockedIndicator({
       <TooltipTrigger asChild>
         <Badge
           asChild
-          className="gap-1 text-amber-800 dark:text-amber-400"
+          className={cn("gap-1 text-amber-800 dark:text-amber-400", className)}
           data-testid="goal-blocked-indicator"
           variant="outline"
         >

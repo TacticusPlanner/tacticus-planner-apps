@@ -942,7 +942,8 @@
       "goal": "Goal",
       "progress": "Progress",
       "remaining": "Remaining",
-      "status": "Status · Done by",
+      "status": "Status",
+      "doneBy": "Done by",
       "reorder": "Reorder",
       "reorderHandle": "Drag {{entity}} to reorder",
       "priority": "Priority"
