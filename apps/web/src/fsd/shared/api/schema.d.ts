@@ -1667,7 +1667,11 @@ export interface paths {
      */
     put: operations["TacticusPlannerApiFeaturesProjectsUpdateProjectEndpoint"]
     post?: never
-    delete?: never
+    /**
+     * Permanently deletes a project.
+     * @description A goal whose only project this was moves to the Default project, or with deleteGoals=true is permanently deleted. Goals that belong to another project are never deleted. Moved goals keep their status, target and global priority.
+     */
+    delete: operations["TacticusPlannerApiFeaturesProjectsDeleteProjectEndpoint"]
     options?: never
     head?: never
     patch?: never
@@ -9697,6 +9701,64 @@ export interface operations {
         }
       }
       /** @description projectRevisionStale or defaultProjectCannotBeArchived; current is the project as it stands. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesProjectsDeleteProjectEndpoint: {
+    parameters: {
+      query?: {
+        deleteGoals?: null | boolean
+      }
+      header?: never
+      path: {
+        projectId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The project was deleted. */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description No matching project owned by the caller. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description defaultProjectCannotBeDeleted; current is the project as it stands. */
       409: {
         headers: {
           [name: string]: unknown
