@@ -4,7 +4,7 @@ import * as React from "react"
 
 import type { Step } from "react-joyride"
 
-import { safeStorage } from "@/shared/lib"
+import { isStaleBuildError, reportError, safeStorage } from "@/shared/lib"
 
 /** Steps a page registers for its own tour, split by platform since the same target selectors
  *  don't always exist (or make sense) on both - `mobile` falls back to `desktop` when omitted. */
@@ -16,9 +16,21 @@ export type TourPageSteps = {
 /** Which tour is running//requested: the app-wide navigation tutorial, or the current page's own. */
 export type TourKind = "general" | "page"
 
-// The react-joyride runtime, loaded only once a tour is first requested.
+// The react-joyride runtime, loaded only once a tour is first requested. TourProvider sits above the
+// router, so no route boundary catches a failed download: the tour is optional, so a failure renders
+// nothing instead of taking the whole app down. A stale-build failure needs no report: the
+// `vite:preloadError` listener has already started the reload.
+function NoTour() {
+  return null
+}
 const TourRunner = React.lazy(() =>
-  import("./tour-runner").then((m) => ({ default: m.TourRunner }))
+  import("./tour-runner").then(
+    (m) => ({ default: m.TourRunner }),
+    (error: unknown) => {
+      if (!isStaleBuildError(error)) reportError(error, "tour runner load")
+      return { default: NoTour }
+    }
+  )
 )
 
 type TourContextValue = {
