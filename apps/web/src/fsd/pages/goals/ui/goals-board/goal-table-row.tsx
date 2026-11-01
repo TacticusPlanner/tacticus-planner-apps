@@ -316,6 +316,7 @@ function sameRowProps(a: GoalRowCellsProps, b: GoalRowCellsProps) {
     props.moves?.top,
     props.moves?.up,
     props.moves?.down,
+    props.moves?.priorityOrder,
   ]
   const perId = (props: GoalRowCellsProps) => [
     props.estimates?.get(id),

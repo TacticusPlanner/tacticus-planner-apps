@@ -286,6 +286,7 @@ export function GoalsPage() {
     handleReorder,
     handleMenuMove,
     menuMovePosition,
+    priorityOrder,
     highlightedGoalId,
     reorderAvailable,
     reorderActive,
@@ -302,7 +303,9 @@ export function GoalsPage() {
     })
   // Grouping is ignored on purpose: a row-menu move steps over the next goal in priority order among
   // the rows the filters show, even one in another group.
-  const menuMoves = reorderAvailable ? goalMenuMoves(rows) : undefined
+  const menuMoves = reorderAvailable
+    ? goalMenuMoves(rows, priorityOrder)
+    : undefined
   const isLoading = isGoalsListLoading({
     goalsLoading: selectedGoals.isLoading,
     tab,

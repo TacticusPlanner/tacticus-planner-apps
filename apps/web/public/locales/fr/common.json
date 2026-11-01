@@ -980,6 +980,12 @@
       "moveToTop": "Placer en premier",
       "moveUp": "Monter",
       "moveDown": "Descendre",
+      "moveToPriority": "Déplacer à la priorité…",
+      "moveToPriorityTitle": "Déplacer à la priorité",
+      "moveToPriorityLabel": "Priorité (1–{{total}})",
+      "moveToPriorityDescription": "Saisissez la priorité que cet objectif doit prendre, de 1 à {{total}}.",
+      "moveToPriorityConfirm": "Déplacer",
+      "moveToPriorityCancel": "Annuler",
       "movedTo": "Déplacé en priorité {{position}} sur {{total}}.",
       "edit": "Modifier"
     },

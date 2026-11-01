@@ -76,6 +76,8 @@ export function useGoalsPageReorder(allRows: readonly GoalRow[]) {
     orderActions,
     handleReorder,
     handleMenuMove,
+    /** The complete in-flight order (priority N is index N - 1), for `goalMenuMoves`. */
+    priorityOrder: fullInFlightIds,
     menuMovePosition:
       lastMovedGoalId && fullInFlightIds.includes(lastMovedGoalId)
         ? {
