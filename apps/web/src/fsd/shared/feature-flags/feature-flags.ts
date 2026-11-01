@@ -10,3 +10,5 @@ export type FeatureFlag =
   | "ManualBattles"
   /** The My Game Incursion page (each MoW's tiers, run map, battles and rewards). */
   | "Incursion"
+  /** The Legendary Event Overview's Event board (all lanes' objectives and teams at once). */
+  | "LreEventBoard"

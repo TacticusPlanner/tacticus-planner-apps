@@ -19,6 +19,7 @@ import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-mo
 import { LegendaryEventPlanEntry } from "./legendary-event-plan-entry"
 import { LegendaryEventTabs } from "./legendary-event-tabs"
 import { CrossLaneLeaderboard } from "./overview/cross-lane-leaderboard"
+import { EventBoard } from "./overview/event-board"
 import { LaneSummary } from "./overview/lane-summary"
 import { LastRunCard } from "./overview/last-run-card"
 import { ProgressSection } from "./progress/progress-section"
@@ -82,6 +83,17 @@ export function LegendaryEventPageView({
             view={tokens.view}
           />
           <RunStatusCard {...props} isMobile={isMobile} />
+          {props.showEventBoard ? (
+            <EventBoard
+              event={props.event}
+              onOpenLane={props.onSelectTab}
+              onOpenTeam={(laneId, team) =>
+                props.teamEditor.openTeamEditor({ laneId, team })
+              }
+              progressGrid={props.progressGrid}
+              teams={props.teams.state}
+            />
+          ) : null}
           <LastRunCard
             isMobile={isMobile}
             lastRun={props.lastRun.state}

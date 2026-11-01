@@ -111,6 +111,17 @@
     "label": "Sections de l'événement",
     "overview": "Aperçu"
   },
+  "eventBoard": {
+    "title": "Tableau de l'événement",
+    "description": "Les objectifs et équipes enregistrées de toutes les voies d'un coup d'œil. Choisissez une équipe pour la modifier, ou une voie pour ouvrir son onglet.",
+    "openLane": "Ouvrir l'onglet {{lane}}",
+    "teams_one": "{{count}} équipe",
+    "teams_other": "{{count}} équipes",
+    "noTeams": "Aucune équipe pour l'instant.",
+    "noTeam": "Aucune équipe",
+    "cleared": "Rempli dans {{cleared}} combats sur {{total}}",
+    "editTeam": "Modifier {{name}}"
+  },
   "laneSummary": {
     "title": "Résumé des voies",
     "battles": "{{cleared}} / {{total}} combats entièrement terminés",
