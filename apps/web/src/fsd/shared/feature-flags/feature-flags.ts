@@ -12,3 +12,5 @@ export type FeatureFlag =
   | "Incursion"
   /** The Legendary Event Overview's Event board (all lanes' objectives and teams at once). */
   | "LreEventBoard"
+  /** Copying a tester's production data into their staging account (account dialog, Staging tab). */
+  | "StagingTransfer"

@@ -48,6 +48,46 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/account/import-from-production": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Replaces this staging account's planner data with a copy from production.
+     * @description Staging only (404 elsewhere, and while the StagingTransfer flag is off). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
+     */
+    post: operations["TacticusPlannerApiFeaturesStagingTransferImportFromProductionEndpoint"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/account/staging-transfer-code": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Creates a short-lived code that copies this account's planner data into staging.
+     * @description Production only (404 elsewhere, and while the StagingTransfer flag is off). The code is valid for 10 minutes and is redeemed on staging with POST account/import-from-production. It carries no data itself.
+     */
+    post: operations["TacticusPlannerApiFeaturesStagingTransferCreateStagingTransferCodeEndpoint"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/account/tacticus-integration": {
     parameters: {
       query?: never
@@ -1922,6 +1962,11 @@ export interface components {
       color: null | string
       target?: null | components["schemas"]["ProjectTargetDto"]
     }
+    CreateStagingTransferCodeResponse: {
+      code: string
+      /** Format: date-time */
+      expiresAt: string
+    }
     CurrentUserResponse: {
       /** Format: uuid */
       applicationUserId: string
@@ -3532,6 +3577,21 @@ export interface components {
     }
     /** @enum {string} */
     GuildRole: "Member" | "Officer" | "CoLeader" | "Leader"
+    ImportFromProductionRequest: {
+      code: string
+    }
+    ImportFromProductionResponse: {
+      /** Format: int32 */
+      goals: number
+      /** Format: int32 */
+      projects: number
+      /** Format: int32 */
+      legendaryEventPlans: number
+      /** Format: int32 */
+      legendaryEventRunRecords: number
+      settings: boolean
+      overrides: boolean
+    }
     ImportPartResult: {
       status: components["schemas"]["ImportPartStatus"]
       code: null | string
@@ -4506,6 +4566,122 @@ export interface operations {
         }
       }
       /** @description The authenticated user has not signed up yet. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesStagingTransferImportFromProductionEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ImportFromProductionRequest"]
+      }
+    }
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ImportFromProductionResponse"]
+        }
+      }
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The per-profile upstream-call limit for this endpoint is exhausted; see Retry-After. */
+      429: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Production could not be reached or refused the request. */
+      502: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesStagingTransferCreateStagingTransferCodeEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CreateStagingTransferCodeResponse"]
+        }
+      }
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Not available in this environment, or no profile. */
       404: {
         headers: {
           [name: string]: unknown

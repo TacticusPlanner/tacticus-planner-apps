@@ -52,7 +52,8 @@
     "tabs": {
       "integration": "Intégration Tacticus",
       "profile": "Profil",
-      "account": "Compte"
+      "account": "Compte",
+      "staging": "Staging"
     },
     "integration": {
       "currentApiKey": "Clé API Tacticus",
@@ -122,6 +123,26 @@
       "purgeGenericError": "Une erreur s’est produite lors de la purge de votre compte. Veuillez réessayer.",
       "signInAccountKeptTitle": "Votre compte de connexion n'a pas pu être supprimé",
       "signInAccountKeptDescription": "Vos données du planificateur ont été supprimées et vous avez été déconnecté, mais le compte avec lequel vous vous connectez existe toujours. Pour le supprimer, reconnectez-vous (cela crée un compte du planificateur neuf et vide) et supprimez-le depuis les paramètres du compte. Si l'échec persiste, contactez-nous via le tableau de suggestions."
+    },
+    "staging": {
+      "exportDescription": "Copiez vos objectifs, projets, plans d'Événements Légendaires, réglages et corrections de progression vers votre compte staging. Créez un code ici, puis collez-le sur staging dans Paramètres du compte → Staging. Votre clé API n'est pas copiée.",
+      "codeLabel": "Code de transfert",
+      "copy": "Copier",
+      "copied": "Copié",
+      "copyFailed": "Copie impossible. Sélectionnez le code et copiez-le vous-même.",
+      "codeExpires_one": "Valable encore {{count}} minute.",
+      "codeExpires_other": "Valable encore {{count}} minutes.",
+      "create": "Créer un code de transfert",
+      "createAnother": "Créer un nouveau code",
+      "openStaging": "Ouvrir staging",
+      "genericError": "Une erreur s'est produite. Veuillez réessayer.",
+      "importDescription": "Collez un code de transfert créé en production (Paramètres du compte → Staging) pour copier vos données de planification de production dans ce compte staging.",
+      "codePlaceholder": "TP1-…",
+      "replaceWarningTitle": "Cela remplace vos données staging",
+      "replaceWarningDescription": "Vos objectifs, projets, plans d'Événements Légendaires, réglages et corrections de progression sur staging sont supprimés et remplacés par la copie de production. Votre clé API, vos données de joueur et votre guilde restent inchangées.",
+      "confirm": "Je comprends que mes données de planification staging seront remplacées",
+      "imported": "{{goals}} objectifs, {{projects}} projets et {{plans}} plans d'Événements Légendaires copiés depuis la production.",
+      "import": "Copier depuis la production"
     }
   },
   "accountGate": {
@@ -199,7 +220,8 @@
         "title": "Choisissez votre nom dans le planificateur",
         "description": "C'est ainsi que vous apparaîtrez dans le planificateur."
       }
-    }
+    },
+    "stagingTransferHint": "Vous testez sur staging ? Connectez d'abord votre clé API, puis copiez vos objectifs, plans et réglages de production depuis Paramètres du compte → Staging."
   },
   "unitLookup": {
     "subtitle": "Choisissez une plage de rangs pour voir les améliorations requises et où les farmer.",

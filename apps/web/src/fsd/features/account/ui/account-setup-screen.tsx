@@ -6,6 +6,8 @@ import { Card, CardContent } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import { useCurrentUser } from "@/entities/account"
+import { appEnvironment } from "@/shared/config"
+import { useFeatureFlag } from "@/shared/feature-flags"
 
 import { ApiKeyForm } from "./api-key-form"
 import { DisplayNameForm } from "./display-name-form"
@@ -221,10 +223,19 @@ function Steps({
   | "onKeyImported"
 > & { onCompleted: () => void }) {
   const { t } = useTranslation()
+  const stagingTransferOn = useFeatureFlag("StagingTransfer")
 
   if (step === "choose") {
     return (
       <div className="flex flex-col gap-3" data-testid="account-setup-choice">
+        {appEnvironment === "staging" && stagingTransferOn ? (
+          <p
+            className="rounded-xl border border-primary/40 bg-primary/5 p-3 text-sm"
+            data-testid="account-setup-staging-transfer-hint"
+          >
+            {t("onboarding.stagingTransferHint")}
+          </p>
+        ) : null}
         <PathCard
           badge={t("onboarding.paths.apiKeyBadge")}
           description={t("onboarding.paths.apiKeyDescription")}

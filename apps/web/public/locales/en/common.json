@@ -52,7 +52,8 @@
     "tabs": {
       "integration": "Tacticus Integration",
       "profile": "Profile",
-      "account": "Account"
+      "account": "Account",
+      "staging": "Staging"
     },
     "integration": {
       "currentApiKey": "Tacticus API key",
@@ -122,6 +123,26 @@
       "purgeGenericError": "Something went wrong while purging your account. Please try again.",
       "signInAccountKeptTitle": "Your sign-in account could not be removed",
       "signInAccountKeptDescription": "Your planner data was deleted and you were signed out, but the account you sign in with still exists. To remove it, sign in again (this starts a new, empty planner account) and delete it from Account settings. If it keeps failing, contact us through the feedback board."
+    },
+    "staging": {
+      "exportDescription": "Copy your goals, projects, Legendary Event plans, settings and progress overrides into your staging account. Create a code here, then paste it on staging under Account settings → Staging. Your API key is not copied.",
+      "codeLabel": "Transfer code",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyFailed": "Couldn't copy. Select the code and copy it yourself.",
+      "codeExpires_one": "Valid for {{count}} more minute.",
+      "codeExpires_other": "Valid for {{count}} more minutes.",
+      "create": "Create transfer code",
+      "createAnother": "Create a new code",
+      "openStaging": "Open staging",
+      "genericError": "Something went wrong. Please try again.",
+      "importDescription": "Paste a transfer code created in production (Account settings → Staging) to copy your production planner data into this staging account.",
+      "codePlaceholder": "TP1-…",
+      "replaceWarningTitle": "This replaces your staging data",
+      "replaceWarningDescription": "Your staging goals, projects, Legendary Event plans, settings and progress overrides are deleted and replaced with the production copy. Your API key, player data and guild stay as they are.",
+      "confirm": "I understand my staging planner data will be replaced",
+      "imported": "Copied {{goals}} goals, {{projects}} projects and {{plans}} Legendary Event plans from production.",
+      "import": "Copy from production"
     }
   },
   "accountGate": {
@@ -199,7 +220,8 @@
         "title": "Choose your planner name",
         "description": "This is how you'll appear in the planner."
       }
-    }
+    },
+    "stagingTransferHint": "Testing on staging? Connect your API key first, then copy your production goals, plans and settings here from Account settings → Staging."
   },
   "unitLookup": {
     "subtitle": "Pick a rank range to see the required upgrades and where to farm them.",

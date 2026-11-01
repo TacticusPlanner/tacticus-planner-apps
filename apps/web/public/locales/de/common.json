@@ -52,7 +52,8 @@
     "tabs": {
       "integration": "Tacticus-Integration",
       "profile": "Profil",
-      "account": "Konto"
+      "account": "Konto",
+      "staging": "Staging"
     },
     "integration": {
       "currentApiKey": "Tacticus-API-Schlüssel",
@@ -122,6 +123,26 @@
       "purgeGenericError": "Beim Löschen deines Kontos ist ein Fehler aufgetreten. Bitte versuche es erneut.",
       "signInAccountKeptTitle": "Dein Anmeldekonto konnte nicht entfernt werden",
       "signInAccountKeptDescription": "Deine Planner-Daten wurden gelöscht und du wurdest abgemeldet, aber das Konto, mit dem du dich anmeldest, besteht noch. Um es zu entfernen, melde dich erneut an (dabei beginnt ein neues, leeres Planner-Konto) und lösche es in den Kontoeinstellungen. Wenn es weiterhin fehlschlägt, kontaktiere uns über das Feedback-Board."
+    },
+    "staging": {
+      "exportDescription": "Kopiere deine Ziele, Projekte, Legendary-Event-Pläne, Einstellungen und Fortschrittskorrekturen in dein Staging-Konto. Erstelle hier einen Code und füge ihn auf Staging unter Kontoeinstellungen → Staging ein. Dein API-Schlüssel wird nicht kopiert.",
+      "codeLabel": "Übertragungscode",
+      "copy": "Kopieren",
+      "copied": "Kopiert",
+      "copyFailed": "Kopieren fehlgeschlagen. Markiere den Code und kopiere ihn selbst.",
+      "codeExpires_one": "Noch {{count}} Minute gültig.",
+      "codeExpires_other": "Noch {{count}} Minuten gültig.",
+      "create": "Übertragungscode erstellen",
+      "createAnother": "Neuen Code erstellen",
+      "openStaging": "Staging öffnen",
+      "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+      "importDescription": "Füge einen in der Produktion erstellten Übertragungscode ein (Kontoeinstellungen → Staging), um deine Planerdaten aus der Produktion in dieses Staging-Konto zu kopieren.",
+      "codePlaceholder": "TP1-…",
+      "replaceWarningTitle": "Das ersetzt deine Staging-Daten",
+      "replaceWarningDescription": "Deine Staging-Ziele, -Projekte, Legendary-Event-Pläne, Einstellungen und Fortschrittskorrekturen werden gelöscht und durch die Kopie aus der Produktion ersetzt. API-Schlüssel, Spielerdaten und Gilde bleiben unverändert.",
+      "confirm": "Ich verstehe, dass meine Staging-Planerdaten ersetzt werden",
+      "imported": "{{goals}} Ziele, {{projects}} Projekte und {{plans}} Legendary-Event-Pläne aus der Produktion kopiert.",
+      "import": "Aus der Produktion kopieren"
     }
   },
   "accountGate": {
@@ -199,7 +220,8 @@
         "title": "Planernamen wählen",
         "description": "So wirst du im Planer angezeigt."
       }
-    }
+    },
+    "stagingTransferHint": "Testest du auf Staging? Verbinde zuerst deinen API-Schlüssel und kopiere dann deine Ziele, Pläne und Einstellungen aus der Produktion unter Kontoeinstellungen → Staging."
   },
   "unitLookup": {
     "subtitle": "Wähle einen Rangbereich, um die nötigen Verbesserungen und Farm-Orte zu sehen.",
