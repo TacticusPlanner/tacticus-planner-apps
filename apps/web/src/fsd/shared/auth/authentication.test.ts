@@ -421,6 +421,7 @@ describe("authentication", () => {
       expect(JSON.parse(localStorage.getItem("tp.auth.accountHint")!)).toEqual({
         homeAccountId: "home-id",
         username: "user@example.test",
+        signInMethod: "email",
       })
       expect(Object.values(localStorage).join()).not.toMatch(/secret/)
 
@@ -443,6 +444,78 @@ describe("authentication", () => {
       expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
         scopes: ["api://planner/access", "email"],
         loginHint: "user@example.test",
+      })
+    })
+
+    describe("for a Google account", () => {
+      const googleAccount = {
+        homeAccountId: "g",
+        username: "e4e360d1-0535-41be-8587-beaac444f7ee@tacticusplanner.test",
+        idTokenClaims: { idp: "google.com" },
+      }
+
+      it("goes straight to Google instead of hinting the generated username", async () => {
+        mocks.instance.getActiveAccount.mockReturnValue(googleAccount)
+        mocks.instance.loginRedirect.mockResolvedValue(undefined)
+        await auth.initializeAuthentication()
+
+        await auth.requestInteraction()
+
+        expect(mocks.instance.acquireTokenRedirect).not.toHaveBeenCalled()
+        // MSAL would otherwise attach the active account, and its username as login_hint.
+        expect(mocks.instance.setActiveAccount).toHaveBeenLastCalledWith(null)
+        expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
+          scopes: ["api://planner/access", "email"],
+          domainHint: "google",
+        })
+      })
+
+      it("puts the account back when the redirect cannot start", async () => {
+        mocks.instance.getActiveAccount.mockReturnValue(googleAccount)
+        mocks.instance.loginRedirect.mockRejectedValue(new Error("blocked"))
+        await auth.initializeAuthentication()
+
+        await expect(auth.requestInteraction()).rejects.toThrow("blocked")
+
+        expect(mocks.instance.setActiveAccount).toHaveBeenLastCalledWith(
+          googleAccount
+        )
+      })
+
+      it("remembers the method in the hint and uses it once the tab holds no account", async () => {
+        mocks.instance.handleRedirectPromise.mockResolvedValue({
+          account: googleAccount,
+        })
+        mocks.instance.loginRedirect.mockResolvedValue(undefined)
+        await auth.initializeAuthentication()
+        expect(auth.readAccountHint()?.signInMethod).toBe("google")
+        mocks.instance.getActiveAccount.mockReturnValue(null)
+
+        await auth.requestInteraction()
+
+        expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
+          scopes: ["api://planner/access", "email"],
+          domainHint: "google",
+        })
+      })
+
+      it("recognizes a hint stored before the method was recorded by its generated username", async () => {
+        localStorage.setItem(
+          "tp.auth.accountHint",
+          JSON.stringify({
+            homeAccountId: "g",
+            username: googleAccount.username,
+          })
+        )
+        mocks.instance.loginRedirect.mockResolvedValue(undefined)
+        await auth.initializeAuthentication()
+
+        await auth.requestInteraction()
+
+        expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
+          scopes: ["api://planner/access", "email"],
+          domainHint: "google",
+        })
       })
     })
 

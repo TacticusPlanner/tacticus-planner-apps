@@ -1,5 +1,6 @@
 export {
   acquireAccessToken,
+  hasAccountHint,
   initializeAuthentication,
   isInteractionRequired,
   requestInteraction,

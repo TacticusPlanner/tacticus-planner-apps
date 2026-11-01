@@ -19,6 +19,7 @@ import {
 } from "@azure/msal-browser"
 
 import { getRequiredEnvironmentValue } from "../config/environment"
+import { getSignInMethod, type SignInMethod } from "./account-identity"
 import { safeStorage } from "@/shared/lib"
 
 let authentication: PublicClientApplication | undefined
@@ -35,7 +36,12 @@ export const SILENT_FRAME_TIMEOUT_MS = 6000
 // restore, kept apart from MSAL's own token cache so it survives that cache being cleared.
 const ACCOUNT_HINT_KEY = "tp.auth.accountHint"
 
-type AccountHint = { homeAccountId: string; username: string }
+// `signInMethod` is absent on hints written before it existed; those are treated as unknown.
+type AccountHint = {
+  homeAccountId: string
+  username: string
+  signInMethod?: SignInMethod
+}
 
 export function readAccountHint(): AccountHint | null {
   try {
@@ -51,6 +57,21 @@ export function readAccountHint(): AccountHint | null {
   } catch {
     return null
   }
+}
+
+export function hasAccountHint() {
+  return readAccountHint() !== null
+}
+
+// Entra names a federated user `<object id>@<tenant domain>`; a local account's username is the
+// address they typed. Used for hints stored before `signInMethod` was recorded.
+const GENERATED_USERNAME = /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}@/i
+
+function hintSignInMethod(hint: AccountHint): SignInMethod {
+  return (
+    hint.signInMethod ??
+    (GENERATED_USERNAME.test(hint.username) ? "google" : "email")
+  )
 }
 
 export function forgetAccountHint() {
@@ -80,6 +101,7 @@ function activateAccount(
     const hint: AccountHint = {
       homeAccountId: account.homeAccountId,
       username: account.username,
+      signInMethod: getSignInMethod(account),
     }
     safeStorage.set(ACCOUNT_HINT_KEY, JSON.stringify(hint))
   }
@@ -332,10 +354,40 @@ export function requestInteraction(): Promise<void> {
   return request
 }
 
+// Entra External ID's issuer acceleration value for Google: the sign-in page hands straight over to
+// Google instead of asking for an email first (docs: concept-authentication-methods-customers).
+export const GOOGLE_DOMAIN_HINT = "google"
+
+/** Redirects a Google user straight to Google. Their `username` is a generated
+ *  `<oid>@<tenant domain>` address, and MSAL sends `username` as the login_hint whenever a request
+ *  carries an account — and it attaches the active account itself when the request names none. That
+ *  hint made Entra ask for a password for the generated address, which no Google user has. So the
+ *  active account is let go for the redirect (the response sets it again) and the domain hint picks
+ *  the provider instead. If the redirect cannot start, the account is put back. */
+async function redirectToGoogle(
+  instance: PublicClientApplication,
+  account: AccountInfo | null
+) {
+  instance.setActiveAccount(null)
+  try {
+    await instance.loginRedirect({
+      scopes: loginRequest.scopes,
+      domainHint: GOOGLE_DOMAIN_HINT,
+      ...freshLoginPrompt(),
+    })
+  } catch (error) {
+    if (account) instance.setActiveAccount(account)
+    throw error
+  }
+}
+
 function startInteraction() {
   const instance = getAuthentication()
   const account = instance.getActiveAccount() ?? instance.getAllAccounts()[0]
   if (account) {
+    if (getSignInMethod(account) === "google") {
+      return redirectToGoogle(instance, account)
+    }
     return instance.acquireTokenRedirect({
       account,
       scopes: loginRequest.scopes,
@@ -343,6 +395,9 @@ function startInteraction() {
     })
   }
   const hint = readAccountHint()
+  if (hint && hintSignInMethod(hint) === "google") {
+    return redirectToGoogle(instance, null)
+  }
   return instance.loginRedirect({
     scopes: loginRequest.scopes,
     ...(hint ? { loginHint: hint.username } : {}),

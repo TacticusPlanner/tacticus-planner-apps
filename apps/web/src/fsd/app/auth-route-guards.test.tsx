@@ -247,6 +247,7 @@ describe("LandingRoute", () => {
 
   it("shows the landing page to a signed-in visitor on a bare /", () => {
     useIsAuthenticatedMock.mockReturnValue(true)
+    getAllAccountsMock.mockReturnValue([{ homeAccountId: "a" }])
 
     render(
       <MemoryRouter initialEntries={["/"]}>
@@ -259,6 +260,37 @@ describe("LandingRoute", () => {
 
     expect(screen.getByTestId("landing-page")).toBeVisible()
     expect(screen.queryByTestId("probe")).not.toBeInTheDocument()
+    getAllAccountsMock.mockReturnValue([])
+  })
+
+  it("moves a visitor who signs in elsewhere during the visit on to Home", async () => {
+    useIsAuthenticatedMock.mockReturnValue(false)
+
+    const { rerender } = render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route element={<LandingRoute />} path="/" />
+          <Route element={<Probe />} path="/home" />
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(await screen.findByTestId("landing-page")).toBeVisible()
+
+    // The sign-in completed in another browsing context; MSAL picks the account up from the
+    // shared token cache and msal-react reports it.
+    getAllAccountsMock.mockReturnValue([{ homeAccountId: "a" }])
+    useIsAuthenticatedMock.mockReturnValue(true)
+    rerender(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route element={<LandingRoute />} path="/" />
+          <Route element={<Probe />} path="/home" />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByTestId("probe")).toHaveTextContent("/home")
+    getAllAccountsMock.mockReturnValue([])
   })
 
   it("waits for MSAL interaction to resolve before deciding", () => {
