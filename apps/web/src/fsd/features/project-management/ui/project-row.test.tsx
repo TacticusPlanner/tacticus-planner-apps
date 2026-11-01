@@ -46,6 +46,7 @@ function actionsHarness(overrides: Partial<Record<string, unknown>> = {}) {
   return {
     create: vi.fn(),
     pending: false,
+    remove: vi.fn(),
     reorder: vi.fn(),
     save: vi.fn(),
     ...overrides,
@@ -370,7 +371,7 @@ describe("ProjectRow", () => {
     expect(screen.getByText("Other plan")).toBeInTheDocument()
   })
 
-  it("lists Create goal, Manage goals, Edit, Archive in that order on a live row, and no bulk pause/resume", async () => {
+  it("lists Create goal, Manage goals, Edit, Archive, Delete in that order on a live row, and no bulk pause/resume", async () => {
     const user = userEvent.setup()
     const onCreateGoal = vi.fn()
     const onManageGoals = vi.fn()
@@ -393,6 +394,7 @@ describe("ProjectRow", () => {
       "goals.project.addGoalsTrigger",
       "goals.project.edit",
       "goals.project.archive",
+      "goals.project.delete",
     ])
     expect(screen.queryByText("goals.project.pauseAllGoals")).toBeNull()
     expect(screen.queryByText("goals.project.resumeAllGoals")).toBeNull()
@@ -408,7 +410,7 @@ describe("ProjectRow", () => {
     expect(onCreateGoal).toHaveBeenCalledWith(otherProject)
   })
 
-  it("offers only Edit and Restore on an archived row", async () => {
+  it("offers only Edit, Restore and Delete on an archived row", async () => {
     const user = userEvent.setup()
     render(
       <ul>
@@ -425,6 +427,84 @@ describe("ProjectRow", () => {
     await openActions(user, archivedProject.projectId)
     expect(
       screen.getAllByRole("menuitem").map((item) => item.textContent)
-    ).toEqual(["goals.project.edit", "goals.project.restore"])
+    ).toEqual([
+      "goals.project.edit",
+      "goals.project.restore",
+      "goals.project.delete",
+    ])
+  })
+
+  it("offers no Delete for the default project", async () => {
+    const user = userEvent.setup()
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness()}
+          onEdit={vi.fn()}
+          project={defaultProject}
+        />
+      </ul>
+    )
+    await openActions(user, defaultProject.projectId)
+    expect(
+      screen.queryByRole("menuitem", { name: "goals.project.delete" })
+    ).toBeNull()
+  })
+
+  it("deletes a project only after the confirmation", async () => {
+    const user = userEvent.setup()
+    const remove = vi.fn().mockResolvedValue(true)
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness({ remove })}
+          onEdit={vi.fn()}
+          project={archivedProject}
+        />
+      </ul>
+    )
+
+    await openActions(user, archivedProject.projectId)
+    await user.click(
+      screen.getByRole("menuitem", { name: "goals.project.delete" })
+    )
+    const dialog = screen.getByRole("dialog")
+    expect(
+      within(dialog).getByText("goals.project.deleteDescription")
+    ).toBeInTheDocument()
+    expect(remove).not.toHaveBeenCalled()
+
+    await user.click(
+      within(dialog).getByRole("button", {
+        name: "goals.project.deleteConfirm",
+      })
+    )
+    expect(remove).toHaveBeenCalledWith(archivedProject)
+  })
+
+  it("keeps the project when the confirmation is cancelled", async () => {
+    const user = userEvent.setup()
+    const remove = vi.fn()
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness({ remove })}
+          onEdit={vi.fn()}
+          project={otherProject}
+        />
+      </ul>
+    )
+
+    await openActions(user, otherProject.projectId)
+    await user.click(
+      screen.getByRole("menuitem", { name: "goals.project.delete" })
+    )
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: "goals.project.cancel",
+      })
+    )
+    expect(remove).not.toHaveBeenCalled()
+    expect(screen.queryByRole("dialog")).toBeNull()
   })
 })

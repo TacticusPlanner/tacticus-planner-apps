@@ -6,6 +6,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
   createProject,
+  deleteProject,
   isAtProjectLimit,
   isProjectLimitError,
   MAX_PROJECTS,
@@ -14,10 +15,11 @@ import {
   type ProjectSummary,
   type ProjectTarget,
 } from "@/entities/project"
+import { goalQueries } from "@/entities/goal"
 import { ApiError, apiIssue } from "@/shared/api"
 
 /**
- * Project-level mutations: create and save (name/description/color/status/target). Reordering goals is a
+ * Project-level mutations: create, save (name/description/color/status/target) and delete. Reordering goals is a
  * move on the account-wide order and lives in `features/goal-planning`; there is no bulk pause/resume
  * (project-management: "No bulk pause/resume on Projects"). Response-first (spec: client-data-freshness):
  * the returned project is written into the cached project list; nothing about goals changes, so no goal
@@ -134,5 +136,40 @@ export function useProjectActions(_onChanged?: () => void) {
     return ok
   }
 
-  return { create, save, pending }
+  /** Permanently deletes a custom project. Goals left in no other project move to the Default project
+   *  server-side, so the project list (Default's `goalIds`) and the goals (`projectIds`) are refetched. */
+  const remove = async (project: ProjectSummary) => {
+    if (!isAuthenticated) return false
+    setPendingCount((count) => count + 1)
+    try {
+      await mutation.mutateAsync(() => deleteProject(project.projectId))
+      queryClient.setQueryData(
+        projectQueries.list().queryKey,
+        (current: { projects: ProjectSummary[] } | undefined) =>
+          current && {
+            ...current,
+            projects: current.projects.filter(
+              (entry) => entry.projectId !== project.projectId
+            ),
+          }
+      )
+      toast.success(t("goals.toasts.projectDeleted"))
+      return true
+    } catch (error) {
+      toast.error(
+        error instanceof ApiError
+          ? error.message
+          : t("goals.toasts.actionError")
+      )
+      return false
+    } finally {
+      void queryClient.invalidateQueries({
+        queryKey: projectQueries.all(),
+      })
+      void queryClient.invalidateQueries({ queryKey: goalQueries.all() })
+      setPendingCount((count) => Math.max(0, count - 1))
+    }
+  }
+
+  return { create, save, remove, pending }
 }
