@@ -53,7 +53,11 @@ type ReadySource = Extract<PlanSource, { status: "ready" }>
 /** What the team editor sets on a draft team. */
 export type TeamValues = Pick<
   DraftTeam,
-  "name" | "memberUnitIds" | "reserveUnitId" | "objectiveIndexes"
+  | "name"
+  | "memberUnitIds"
+  | "reserveUnitId"
+  | "objectiveIndexes"
+  | "depthOverride"
 >
 
 export interface RemovedTeam {

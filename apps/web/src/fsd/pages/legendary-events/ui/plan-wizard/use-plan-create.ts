@@ -11,12 +11,14 @@ import {
 import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
+  teamDepthForRun,
   updateLegendaryEventPlan,
   updateLegendaryEventTeam,
   updateLegendaryEventRunInputs,
   usePlanWriteQueue,
   type LegendaryEventPlan,
   type LegendaryEventRun,
+  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import {
   createProject,
@@ -49,6 +51,52 @@ const errorText = (error: unknown) =>
 const sortedObjectives = (indexes: readonly number[]) =>
   [...indexes].sort((a, b) => a - b)
 
+/** The first plan run's depth fields of a team write: the depth the user set, else none. */
+function firstRunDepth(team: DraftTeam, runs: readonly LegendaryEventRun[]) {
+  const depth = team.depthOverride ?? null
+  return {
+    run: runs[0] ?? 1,
+    expectedBattleClears: depth,
+    expectedBattleClearsSource: depth === null ? null : ("manual" as const),
+  }
+}
+
+/** Saves the depth the user set in the wizard as the manual depth of every plan run that does not
+ *  hold it yet (a retry skips the runs already written). */
+async function writeDepthOverride(
+  eventId: string,
+  base: LegendaryEventPlan,
+  teamId: string,
+  team: DraftTeam,
+  runs: readonly LegendaryEventRun[]
+): Promise<LegendaryEventPlan> {
+  const depth = team.depthOverride
+  if (depth == null) return base
+  let plan = base
+  for (const run of runs) {
+    const stored = plan.teams.find((entry) => entry.id === teamId)
+    if (!stored) return plan
+    const recorded = teamDepthForRun(stored, run)
+    if (
+      recorded?.expectedBattleClears === depth &&
+      recorded.expectedBattleClearsSource === "manual"
+    ) {
+      continue
+    }
+    plan = await updateLegendaryEventTeam(eventId, teamId, {
+      name: stored.name,
+      memberUnitIds: stored.memberUnitIds,
+      reserveUnitId: stored.reserveUnitId,
+      objectiveIndexes: stored.objectiveIndexes,
+      expectedRevision: plan.revision,
+      run,
+      expectedBattleClears: depth,
+      expectedBattleClearsSource: "manual",
+    })
+  }
+  return plan
+}
+
 /** Sends one lane's removals, updates and new teams in order, each on the revision the previous
  *  returned. */
 export async function writeLane(
@@ -68,53 +116,50 @@ export async function writeLane(
     const name = teamName(team)
     const objectives = sortedObjectives(team.objectiveIndexes)
     const stored = plan.teams.find((entry) => entry.id === team.storedId)
+    if (!stored) continue
     if (
-      !stored ||
-      (stored.name === name &&
-        memberKey(stored.memberUnitIds) === memberKey(team.memberUnitIds) &&
-        stored.reserveUnitId === team.reserveUnitId &&
-        stored.objectiveIndexes.join() === objectives.join())
+      stored.name !== name ||
+      memberKey(stored.memberUnitIds) !== memberKey(team.memberUnitIds) ||
+      stored.reserveUnitId !== team.reserveUnitId ||
+      stored.objectiveIndexes.join() !== objectives.join()
     ) {
-      continue
+      // New members make the stored depth stale: it is left to the live estimate, like a new team,
+      // unless the user set the depth in the wizard.
+      plan = await updateLegendaryEventTeam(eventId, stored.id, {
+        name,
+        memberUnitIds: team.memberUnitIds,
+        reserveUnitId: team.reserveUnitId,
+        objectiveIndexes: objectives,
+        expectedRevision: plan.revision,
+        ...firstRunDepth(team, runs),
+      })
     }
-    // New members make the stored depth stale: it is left to the live estimate, like a new team.
-    plan = await updateLegendaryEventTeam(eventId, stored.id, {
-      name,
-      memberUnitIds: team.memberUnitIds,
-      reserveUnitId: team.reserveUnitId,
-      objectiveIndexes: objectives,
-      expectedRevision: plan.revision,
-      run: runs[0] ?? 1,
-      expectedBattleClears: null,
-      expectedBattleClearsSource: null,
-    })
+    plan = await writeDepthOverride(eventId, plan, stored.id, team, runs)
   }
   for (const team of lane.create) {
     const members = memberKey(team.memberUnitIds)
-    if (
-      plan.teams.some(
-        (entry) =>
-          entry.laneId === lane.laneId &&
-          memberKey(entry.memberUnitIds) === members
-      )
-    ) {
-      continue
+    const sameMembers = (entry: LegendaryEventTeam) =>
+      entry.laneId === lane.laneId && memberKey(entry.memberUnitIds) === members
+    if (!plan.teams.some(sameMembers)) {
+      // The wizard writes past the shared editor, so it applies the editor's full-lane guard itself.
+      assertLaneHasRoom(plan, lane.laneId)
+      // The first plan run reads the live estimate; later runs are left unrecorded too, so a
+      // projected depth that assumed upgrades never outlives goals that slipped (design D5). A depth
+      // the user set in the wizard is saved for every plan run instead.
+      plan = await createLegendaryEventTeam(eventId, {
+        name: teamName(team),
+        memberUnitIds: team.memberUnitIds,
+        reserveUnitId: team.reserveUnitId,
+        objectiveIndexes: sortedObjectives(team.objectiveIndexes),
+        expectedRevision: plan.revision,
+        laneId: lane.laneId,
+        ...firstRunDepth(team, runs),
+      })
     }
-    // The wizard writes past the shared editor, so it applies the editor's full-lane guard itself.
-    assertLaneHasRoom(plan, lane.laneId)
-    // The first plan run reads the live estimate; later runs are left unrecorded too, so a projected
-    // depth that assumed upgrades never outlives goals that slipped (design D5).
-    plan = await createLegendaryEventTeam(eventId, {
-      name: teamName(team),
-      memberUnitIds: team.memberUnitIds,
-      reserveUnitId: team.reserveUnitId,
-      objectiveIndexes: sortedObjectives(team.objectiveIndexes),
-      expectedRevision: plan.revision,
-      laneId: lane.laneId,
-      run: runs[0] ?? 1,
-      expectedBattleClears: null,
-      expectedBattleClearsSource: null,
-    })
+    const created = plan.teams.find(sameMembers)
+    if (created) {
+      plan = await writeDepthOverride(eventId, plan, created.id, team, runs)
+    }
   }
   return plan
 }

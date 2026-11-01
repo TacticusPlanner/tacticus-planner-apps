@@ -12,6 +12,7 @@ import {
   unitClearEstimate,
   useObjectiveLabel,
   type LegendaryEventLaneId,
+  type LegendaryEventRun,
   type LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import {
@@ -29,8 +30,11 @@ import { PLAN_LANE_IDS } from "./plan-inputs"
 import { memberKey, type DraftTeam } from "./plan-teams"
 import type { PlanDraft } from "./use-plan-draft"
 
-/** The team editor's view of a draft team. */
-const asStoredTeam = (team: DraftTeam): LegendaryEventTeam => ({
+/** The team editor's view of a draft team: the depth the user set shows as the run's manual depth. */
+const asStoredTeam = (
+  team: DraftTeam,
+  run: LegendaryEventRun
+): LegendaryEventTeam => ({
   id: team.storedId ?? team.key,
   laneId: team.laneId,
   name: team.name,
@@ -38,7 +42,17 @@ const asStoredTeam = (team: DraftTeam): LegendaryEventTeam => ({
   memberUnitIds: team.memberUnitIds,
   reserveUnitId: team.reserveUnitId,
   objectiveIndexes: team.objectiveIndexes,
-  runDepths: [],
+  runDepths:
+    team.depthOverride == null
+      ? []
+      : [
+          {
+            run,
+            expectedBattleClears: team.depthOverride,
+            expectedBattleClearsSource: "manual",
+            recordedAt: "",
+          },
+        ],
 })
 
 /**
@@ -302,6 +316,7 @@ export function TeamsStep({
               memberUnitIds: values.memberUnitIds,
               reserveUnitId: values.reserveUnitId,
               objectiveIndexes: values.objectiveIndexes,
+              depthOverride: values.expectedBattleClears,
             }
             if (editor.team) draft.editTeam(editor.team, team)
             else draft.addTeam(editor.laneId, team)
@@ -313,7 +328,7 @@ export function TeamsStep({
           progress={editorLane.progress}
           roster={editorRoster}
           run={firstRun}
-          team={editor.team ? asStoredTeam(editor.team) : undefined}
+          team={editor.team ? asStoredTeam(editor.team, firstRun) : undefined}
           teamName={editor.team ? draft.teamName(editor.team.key) : undefined}
           teamNumber={
             evaluation.teams.filter((team) => team.laneId === editor.laneId)

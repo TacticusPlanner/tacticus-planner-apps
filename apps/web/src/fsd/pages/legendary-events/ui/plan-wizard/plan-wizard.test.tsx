@@ -553,6 +553,47 @@ describe("PlanWizard", () => {
     expect(call.teamName(update[0])).toBe("Renamed")
   })
 
+  it("keeps a depth lowered in Edit on every run and sends it with the update", async () => {
+    FARMING.status = "unavailable"
+    renderWizard(WITH_STORED_TEAM)
+    await next()
+    await next()
+    const stored = () =>
+      screen
+        .getAllByTestId("plan-wizard-team")
+        .find((team) => team.dataset.stored === "true")!
+    await userEvent.click(within(stored()).getByTestId("plan-wizard-team-edit"))
+    const depth = await screen.findByTestId("team-editor-depth")
+    const estimate = Number(
+      (within(depth).getByTestId("number-stepper-input") as HTMLInputElement)
+        .value
+    )
+    expect(estimate).toBeGreaterThan(1)
+    await userEvent.click(within(depth).getByTestId("number-stepper-decrease"))
+    await userEvent.click(screen.getByTestId("team-editor-save"))
+    const rows = within(stored()).getByTestId("plan-wizard-team-depth")
+    for (const row of within(rows).getAllByRole("listitem")) {
+      expect(row).toHaveTextContent(`${estimate - 1}`)
+    }
+    await userEvent.click(within(stored()).getByTestId("plan-wizard-team-edit"))
+    const reopened = await screen.findByTestId("team-editor-depth")
+    expect(within(reopened).getByTestId("number-stepper-input")).toHaveValue(
+      estimate - 1
+    )
+    await userEvent.click(screen.getByTestId("team-editor-save"))
+    await next()
+    await next()
+    await waitFor(() =>
+      expect(screen.getByTestId("plan-wizard-create")).toBeEnabled()
+    )
+    await userEvent.click(screen.getByTestId("plan-wizard-create"))
+    const call = run.mock.calls[0]![0]
+    const update = call.writes.lanes.flatMap(
+      (lane: { update: { depthOverride?: number | null }[] }) => lane.update
+    )
+    expect(update[0].depthOverride).toBe(estimate - 1)
+  })
+
   it("names every removed team on Review in destructive styling", async () => {
     FARMING.status = "unavailable"
     renderWizard(WITH_STORED_TEAM)
