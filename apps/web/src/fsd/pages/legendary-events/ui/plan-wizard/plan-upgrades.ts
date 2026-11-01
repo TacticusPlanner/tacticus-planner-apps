@@ -149,7 +149,7 @@ export function* recommendUpgrades(
   const runs = planRuns(inputs.resolution)
   const runStarts = runs.flatMap((run) => {
     const startMs =
-      inputs.runStarts.find((start) => start.run === run)?.startMs ?? null
+      inputs.runStarts.find((start) => start.run === run)?.guessMs ?? null
     return startMs === null ? [] : [{ run, startMs }]
   })
   const baseline = evaluator.evaluate([])

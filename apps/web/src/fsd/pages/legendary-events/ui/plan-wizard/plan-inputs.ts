@@ -117,7 +117,7 @@ export function projectedRosters(
   >()
   for (const run of planRuns(inputs.resolution)) {
     const startMs =
-      inputs.runStarts.find((start) => start.run === run)?.startMs ?? null
+      inputs.runStarts.find((start) => start.run === run)?.guessMs ?? null
     const roster = new Map(base)
     if (startMs !== null) {
       for (const upgrade of chosen) {
