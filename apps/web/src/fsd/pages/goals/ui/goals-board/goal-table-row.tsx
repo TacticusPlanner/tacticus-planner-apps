@@ -160,6 +160,7 @@ export const GoalRowCells = memo(function GoalRowCells({
       <TableCell className="font-medium">
         <div className="flex items-center gap-3">
           <GoalUnitIcon
+            className="size-12"
             entityId={row.entityId}
             entityType={row.entityType}
             name={getEntityName(row.entityType, row.entityId)}
@@ -212,11 +213,62 @@ export const GoalRowCells = memo(function GoalRowCells({
         </div>
       </TableCell>
       <TableCell>
-        <GoalTargetDisplay entityType={row.entityType} progress={progress} />
+        <GoalTargetDisplay
+          entityType={row.entityType}
+          progress={progress}
+          size="lg"
+        />
         <CoveredByNote coveredBy={metrics?.get(row.goalId)?.coveredBy} />
       </TableCell>
+      <TableCell>
+        <div className="flex flex-wrap items-center gap-1">
+          <StatusBadge
+            className="px-2.5 py-1 text-sm"
+            disabled={actions.pendingIds.has(row.goalId)}
+            onToggle={(next) =>
+              void toggleGoalStatus(actions, row, next, cascadeContext)
+            }
+            reached={reached}
+            status={row.status}
+          />
+          <BlockedIndicator
+            className="px-2.5 py-1 text-sm"
+            blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
+            estimate={estimates?.get(row.goalId)}
+            progress={progress}
+          />
+        </div>
+      </TableCell>
+      <TableCell>
+        {reached ? (
+          <ReachedDash />
+        ) : estimates ? (
+          <div className="grid gap-0.5">
+            <EstimateCell estimate={estimates.get(row.goalId)} stacked />
+            <SeasonFitLabel goalId={row.goalId} seasonFit={seasonFit} />
+          </div>
+        ) : null}
+      </TableCell>
+      <TableCell className="min-w-[220px]">
+        {reached ? (
+          <ReachedDash />
+        ) : (
+          <div data-testid="goal-remaining-column">
+            <GoalResourceChips
+              onslaughtTokens={onslaughtTokens}
+              shopSpend={shopSpend}
+              energy={energy}
+              entityType={row.entityType}
+              goalType={row.goalType}
+              remaining={remaining}
+            />
+          </div>
+        )}
+      </TableCell>
+      {/* Last and narrow: the bar is the least scannable figure in the row (UserJot "V2 goals page
+          is harder to scan"); the date, days and energy columns come first. */}
       <TableCell
-        className="min-w-[220px]"
+        className="w-40 min-w-40"
         onClick={stopRowNavigation}
         onKeyDown={stopRowNavigation}
       >
@@ -240,50 +292,6 @@ export const GoalRowCells = memo(function GoalRowCells({
               xpBooks={xpBooks}
             />
           </>
-        )}
-      </TableCell>
-      <TableCell>
-        <div className="grid gap-1">
-          <div className="flex flex-wrap items-center gap-1">
-            <StatusBadge
-              disabled={actions.pendingIds.has(row.goalId)}
-              onToggle={(next) =>
-                void toggleGoalStatus(actions, row, next, cascadeContext)
-              }
-              reached={reached}
-              status={row.status}
-            />
-            <BlockedIndicator
-              blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
-              estimate={estimates?.get(row.goalId)}
-              progress={progress}
-            />
-          </div>
-          {reached ? (
-            <ReachedDash />
-          ) : estimates ? (
-            // Fixed slot: a Paused goal has no estimate and must not collapse the row.
-            <div className="flex min-h-4 flex-wrap items-center gap-x-2">
-              <EstimateCell estimate={estimates.get(row.goalId)} />
-              <SeasonFitLabel goalId={row.goalId} seasonFit={seasonFit} />
-            </div>
-          ) : null}
-        </div>
-      </TableCell>
-      <TableCell className="min-w-[260px]">
-        {reached ? (
-          <ReachedDash />
-        ) : (
-          <div data-testid="goal-remaining-column">
-            <GoalResourceChips
-              onslaughtTokens={onslaughtTokens}
-              shopSpend={shopSpend}
-              energy={energy}
-              entityType={row.entityType}
-              goalType={row.goalType}
-              remaining={remaining}
-            />
-          </div>
         )}
       </TableCell>
     </>

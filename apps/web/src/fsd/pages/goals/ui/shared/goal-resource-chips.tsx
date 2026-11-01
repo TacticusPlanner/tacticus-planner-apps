@@ -256,7 +256,7 @@ ${chip.hint}`
       : label(chip)
   return (
     <ul
-      className="flex flex-wrap gap-x-2 gap-y-1 text-xs"
+      className="flex flex-wrap gap-x-2.5 gap-y-1 text-sm"
       data-testid="goal-resource-chips"
     >
       {chips.map((chip) => (
@@ -268,11 +268,11 @@ ${chip.hint}`
             title={tooltip(chip)}
           >
             <span className="relative inline-flex">
-              <EntityIcon alt="" className="size-5" src={chip.icon} />
+              <EntityIcon alt="" className="size-6" src={chip.icon} />
               {chip.overlay ? (
                 <img
                   alt=""
-                  className="absolute top-1/2 left-1/2 size-3 -translate-x-1/2 -translate-y-1/2 object-contain"
+                  className="absolute top-1/2 left-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 object-contain"
                   src={chip.overlay}
                 />
               ) : null}

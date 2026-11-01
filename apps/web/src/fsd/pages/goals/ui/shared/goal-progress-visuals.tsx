@@ -116,22 +116,38 @@ function ProgressSwatch({ variant }: { variant: "actual" | "potential" }) {
 export function GoalTargetDisplay({
   progress,
   entityType,
+  size = "md",
 }: {
   progress: GoalProgress
   /** Picks the Ability track labels (Machine of War: Primary/Secondary; otherwise Active/Passive). */
   entityType?: string
+  /** `lg` (desktop table) enlarges the rank and rarity emblems so the target reads at a glance. */
+  size?: "md" | "lg"
 }) {
   const { t } = useTranslation()
+  const large = size === "lg"
+  const rankIconClass = large ? "size-8" : undefined
+  const arrowClass = cn("text-muted-foreground", large ? "size-4" : "size-3.5")
 
   if (progress.kind === "Unknown") return null
 
   return progress.kind === "Rank" ? (
     <span className="flex items-center gap-1.5">
-      <RankBadge rank={progress.current} showLabel={false} tooltip />
-      <ArrowRight className="size-3.5 text-muted-foreground" />
+      <RankBadge
+        iconClassName={rankIconClass}
+        rank={progress.current}
+        showLabel={false}
+        tooltip
+      />
+      <ArrowRight className={arrowClass} />
       {/* Emblems only: the rank name is each emblem's tooltip and accessible name. The `(n/6)` marker
           below is a target modifier, so it stays. */}
-      <RankBadge rank={progress.target} showLabel={false} tooltip />
+      <RankBadge
+        iconClassName={rankIconClass}
+        rank={progress.target}
+        showLabel={false}
+        tooltip
+      />
       {progress.targetSlots > 0 ? (
         <span className="text-xs text-muted-foreground">
           ({progress.targetSlots}/6)
@@ -140,9 +156,9 @@ export function GoalTargetDisplay({
     </span>
   ) : progress.kind === "Ascension" ? (
     <span className="flex items-center gap-1.5">
-      <ProgressionBadge value={progress.current} />
-      <ArrowRight className="size-3.5 text-muted-foreground" />
-      <ProgressionBadge value={progress.target} />
+      <ProgressionBadge size={size} value={progress.current} />
+      <ArrowRight className={arrowClass} />
+      <ProgressionBadge size={size} value={progress.target} />
     </span>
   ) : progress.kind === "Ability" ? (
     <AbilityTargetPills entityType={entityType} progress={progress} />

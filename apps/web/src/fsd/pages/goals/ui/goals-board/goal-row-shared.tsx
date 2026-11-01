@@ -17,12 +17,15 @@ import { isInFlightStatus } from "./goal-row-utils"
  * there's no entry for this goal (no project selected, non-Rank goal type) or the farm is blocked —
  * `BlockedIndicator` (rendered alongside `StatusBadge` in the same cell/card) already surfaces that
  * state, with a tooltip naming the specific reason; repeating a second "Blocked" label here duplicated
- * it. Identical rendering on the desktop table and the mobile card (goal-list-estimate-display spec:
- * no compact mobile variant). */
+ * it. The desktop table's own Done by column stacks the date over the day count (`stacked`); the
+ * mobile card header keeps the one-line caption. */
 export function EstimateCell({
   estimate,
+  stacked = false,
 }: {
   estimate: EstimateOutcome | undefined
+  /** Date on its own line above the day count (the desktop table's dedicated Done by column). */
+  stacked?: boolean
 }) {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
@@ -33,14 +36,33 @@ export function EstimateCell({
   // cannot import it from here — see `shared/lib/format-time/format-estimate-date`, which also documents the
   // UTC parsing this value needs.
   const formattedDate = formatEstimateDate(estimate.date, dateLocale)
+  const days = t("goals.estimate.days", { days: estimate.days })
+  if (stacked) {
+    // Desktop "Done by" column: the date is the row's headline figure, the day count sits beneath.
+    return (
+      <span
+        className="grid gap-0.5 whitespace-nowrap"
+        data-testid="goal-row-estimate"
+        title={estimate.date}
+      >
+        <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+          <Calendar className="size-4 shrink-0 text-muted-foreground" />
+          {formattedDate}
+        </span>
+        <span className="text-xs text-muted-foreground">{days}</span>
+      </span>
+    )
+  }
   return (
     <span
-      className="flex items-center gap-1 text-xs text-muted-foreground"
+      className="flex items-center gap-1 text-sm text-muted-foreground"
       data-testid="goal-row-estimate"
       title={estimate.date}
     >
       <Calendar className="size-3.5 shrink-0" />
-      {formattedDate} · {t("goals.estimate.days", { days: estimate.days })}
+      <span className="font-medium text-foreground">
+        {formattedDate}
+      </span> · {days}
     </span>
   )
 }

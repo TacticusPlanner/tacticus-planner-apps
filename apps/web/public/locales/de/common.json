@@ -942,7 +942,8 @@
       "goal": "Ziel",
       "progress": "Fortschritt",
       "remaining": "Verbleibend",
-      "status": "Status · Fertig am",
+      "status": "Status",
+      "doneBy": "Fertig am",
       "reorder": "Neu anordnen",
       "reorderHandle": "{{entity}} ziehen, um neu zu priorisieren",
       "priority": "Priorität"

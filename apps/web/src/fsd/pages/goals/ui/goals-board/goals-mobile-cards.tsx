@@ -241,7 +241,7 @@ export function GoalsMobileCards({
                     ) : null}
                     <GoalPriorityNumber row={row} />
                     <GoalUnitIcon
-                      className="size-8"
+                      className="size-11"
                       entityId={row.entityId}
                       entityType={row.entityType}
                       name={getEntityName(row.entityType, row.entityId)}
@@ -307,6 +307,7 @@ export function GoalsMobileCards({
                   <GoalTargetDisplay
                     entityType={row.entityType}
                     progress={progress}
+                    size="lg"
                   />
                 </div>
                 <CoveredByNote

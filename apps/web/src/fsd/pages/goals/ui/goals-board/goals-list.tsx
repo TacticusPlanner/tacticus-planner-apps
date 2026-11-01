@@ -41,7 +41,7 @@ export function GoalsList(props: GoalsListProps) {
 
 const EMPTY_SELECTION: ReadonlySet<string> = new Set()
 /** Header columns in `GoalsTable`, spanned by the season cut-off row. */
-const COLUMN_COUNT = 7
+const COLUMN_COUNT = 8
 
 function GoalsTable({
   rows,
@@ -104,9 +104,10 @@ function GoalsTable({
           <TableHead>{t("goals.columns.entity")}</TableHead>
           <TableHead>{t("goals.columns.projects")}</TableHead>
           <TableHead>{t("goals.columns.goal")}</TableHead>
-          <TableHead>{t("goals.columns.progress")}</TableHead>
           <TableHead>{t("goals.columns.status")}</TableHead>
+          <TableHead>{t("goals.columns.doneBy")}</TableHead>
           <TableHead>{t("goals.columns.remaining")}</TableHead>
+          <TableHead>{t("goals.columns.progress")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -132,7 +133,7 @@ function GoalsTable({
                 ) : null}
                 <TableRow
                   className={cn(
-                    "h-14 transition-colors duration-700 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring data-[just-moved]:bg-accent",
+                    "h-16 transition-colors duration-700 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring data-[just-moved]:bg-accent",
                     reached && REACHED_ROW_CLASS,
                     fit && SEASON_FIT_ROW_ACCENT[fit.offset]
                   )}
