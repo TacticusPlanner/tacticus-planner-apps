@@ -1,0 +1,74 @@
+{
+  "loadError": "Die Incursion-Daten konnten nicht geladen werden.",
+  "retry": "Erneut versuchen",
+  "empty": "Noch keine Incursion-Daten. Sie erscheinen nach dem nächsten Spieldaten-Update.",
+  "rules": {
+    "title": "So funktionieren Incursions",
+    "tokens": "Du startest mit {{start}} Lauf-Token und kannst bis zu {{max}} halten; alle {{hours}} Stunden kommt eines hinzu. Ein Lauf kostet {{cost}}.",
+    "team": "Nur Helden aus den erlaubten Fraktionen der Kriegsmaschine können teilnehmen; bring mindestens {{count}} mit.",
+    "progress": "Jede Stufe ist eine Laufkarte aus Kämpfen, Verstärkungen und Truhen. Wählst du einen Zweig, schließen sich die anderen für diesen Lauf."
+  },
+  "card": {
+    "firstRun": "Erster Lauf {{date}}",
+    "new": "Neu",
+    "revamped": "Überarbeitet",
+    "owned": "Im Besitz",
+    "notOwned": "Nicht im Besitz",
+    "allowedFactions": "Erlaubte Fraktionen",
+    "tier": "Stufe",
+    "tierOption": "{{rarity}} {{number}}"
+  },
+  "summary": {
+    "battles_one": "{{count}} Kampf",
+    "battles_other": "{{count}} Kämpfe",
+    "challenges_one": "{{count}} Herausforderungskampf",
+    "challenges_other": "{{count}} Herausforderungskämpfe",
+    "chests_one": "{{count}} Truhe",
+    "chests_other": "{{count}} Truhen",
+    "enhancements_one": "{{count}} Verstärkung zur Wahl",
+    "enhancements_other": "{{count}} Verstärkungen zur Wahl",
+    "bestPath": "Bis zu {{shards}} Splitter pro Abschluss",
+    "bestPathMythic": "Bis zu {{shards}} Splitter und {{mythicShards}} mythische Splitter pro Abschluss",
+    "bestPathHint": "Kriegsmaschinen-Splitter aus 3-Sterne-Siegen und Truhen auf dem ertragreichsten Weg dieser Stufe."
+  },
+  "map": {
+    "title": "Laufkarte",
+    "step": "Schritt {{number}}",
+    "pickOne": "Eins wählen",
+    "after": "Nach {{names}}"
+  },
+  "battle": {
+    "name": "Kampf {{name}}",
+    "challenge": "Herausforderung",
+    "difficulty": "Schwierigkeit {{value}} %",
+    "lightningVictory": "Blitzsieg: {{turns}} Züge",
+    "enemies": "Gegner",
+    "everyWin": "Jeder Sieg",
+    "stars": "{{count}}★"
+  },
+  "enhancement": {
+    "title": "Verstärkung",
+    "stacks": "Stapelbar",
+    "type": {
+      "Heal": "{{units}} Einheiten heilen",
+      "Resurrect": "{{units}} Einheit wiederbeleben",
+      "LifeSteal": "Lebensraub für {{units}} Einheit",
+      "HitBoost": "Zusätzlicher Treffer für {{units}} Einheit",
+      "Regeneration": "Regeneration",
+      "Summons": "{{subject}} beschwören",
+      "AddTrait": "Eigenschaft {{subject}} für {{units}} Einheit",
+      "DamageBoost": "Schadensbonus für {{units}} Einheit",
+      "PierceBoost": "Durchschlagsbonus für {{units}} Einheit",
+      "CritBoost": "Kritischer Bonus für {{units}} Einheit"
+    }
+  },
+  "chest": {
+    "title": "{{type}}truhe",
+    "type": {
+      "Bronze": "Bronze",
+      "Silver": "Silber",
+      "Gold": "Gold",
+      "Diamond": "Diamant"
+    }
+  }
+}

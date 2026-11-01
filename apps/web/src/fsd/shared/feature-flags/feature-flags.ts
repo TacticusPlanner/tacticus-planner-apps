@@ -7,4 +7,6 @@
  */
 export type FeatureFlag =
   /** Manual battles: "Play manually" markers, battle medals and "Raidable only". */
-  "ManualBattles"
+  | "ManualBattles"
+  /** The My Game Incursion page (each MoW's tiers, run map, battles and rewards). */
+  | "Incursion"

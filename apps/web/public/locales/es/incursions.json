@@ -1,0 +1,74 @@
+{
+  "loadError": "No se pudieron cargar los datos de la Incursión.",
+  "retry": "Reintentar",
+  "empty": "Aún no hay datos de Incursión. Aparecerán tras la próxima actualización de datos del juego.",
+  "rules": {
+    "title": "Cómo funcionan las Incursiones",
+    "tokens": "Empiezas con {{start}} fichas de partida y puedes tener hasta {{max}}; llega una más cada {{hours}} horas. Empezar una partida cuesta {{cost}}.",
+    "team": "Solo pueden participar héroes de las facciones permitidas de la Máquina de Guerra; lleva al menos {{count}}.",
+    "progress": "Cada nivel es un mapa de partida: batallas, mejoras a elegir y cofres. Al elegir una rama, las demás se cierran en esa partida."
+  },
+  "card": {
+    "firstRun": "Primera partida el {{date}}",
+    "new": "Nueva",
+    "revamped": "Renovada",
+    "owned": "En posesión",
+    "notOwned": "No la tienes",
+    "allowedFactions": "Facciones permitidas",
+    "tier": "Nivel",
+    "tierOption": "{{rarity}} {{number}}"
+  },
+  "summary": {
+    "battles_one": "{{count}} batalla",
+    "battles_other": "{{count}} batallas",
+    "challenges_one": "{{count}} batalla de desafío",
+    "challenges_other": "{{count}} batallas de desafío",
+    "chests_one": "{{count}} cofre",
+    "chests_other": "{{count}} cofres",
+    "enhancements_one": "{{count}} mejora a elegir",
+    "enhancements_other": "{{count}} mejoras a elegir",
+    "bestPath": "Hasta {{shards}} fragmentos por recorrido",
+    "bestPathMythic": "Hasta {{shards}} fragmentos y {{mythicShards}} fragmentos míticos por recorrido",
+    "bestPathHint": "Fragmentos de la Máquina de Guerra de victorias de 3 estrellas y cofres en el camino más rentable de este nivel."
+  },
+  "map": {
+    "title": "Mapa de partida",
+    "step": "Paso {{number}}",
+    "pickOne": "Elige uno",
+    "after": "Tras {{names}}"
+  },
+  "battle": {
+    "name": "Batalla {{name}}",
+    "challenge": "Desafío",
+    "difficulty": "Dificultad {{value}} %",
+    "lightningVictory": "Victoria relámpago: {{turns}} turnos",
+    "enemies": "Enemigos",
+    "everyWin": "Cada victoria",
+    "stars": "{{count}}★"
+  },
+  "enhancement": {
+    "title": "Mejora",
+    "stacks": "Acumulable",
+    "type": {
+      "Heal": "Cura {{units}} unidades",
+      "Resurrect": "Revive {{units}} unidad",
+      "LifeSteal": "Robo de vida para {{units}} unidad",
+      "HitBoost": "Golpe extra para {{units}} unidad",
+      "Regeneration": "Regeneración",
+      "Summons": "Invoca {{subject}}",
+      "AddTrait": "Añade el rasgo {{subject}} a {{units}} unidad",
+      "DamageBoost": "Aumento de daño para {{units}} unidad",
+      "PierceBoost": "Aumento de perforación para {{units}} unidad",
+      "CritBoost": "Aumento de crítico para {{units}} unidad"
+    }
+  },
+  "chest": {
+    "title": "Cofre {{type}}",
+    "type": {
+      "Bronze": "de bronce",
+      "Silver": "de plata",
+      "Gold": "de oro",
+      "Diamond": "de diamante"
+    }
+  }
+}

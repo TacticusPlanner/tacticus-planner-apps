@@ -355,7 +355,9 @@
       "campaigns": "Kampagnen",
       "campaignsDescription": "Dein Kampagnenfortschritt wird über die Tacticus-API synchronisiert und kann hier nicht bearbeitet werden.",
       "campaign-events": "Kampagnen-Events",
-      "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis."
+      "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis.",
+      "incursions": "Incursions",
+      "incursionsDescription": "Die Incursion jeder Kriegsmaschine: Laufkarte, Kämpfe, Gegner und Belohnungen jeder Stufe, mit den meisten Splittern, die ein Abschluss bringt."
     },
     "collection": {
       "loading": "Deine Sammlung wird geladen …",

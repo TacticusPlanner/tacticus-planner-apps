@@ -155,6 +155,7 @@ describe("navItems", () => {
       "/my-game/onslaught",
       "/my-game/campaigns",
       "/my-game/campaign-events",
+      "/my-game/incursions",
     ])
   })
 
@@ -178,7 +179,7 @@ describe("filterVisibleNavItems", () => {
   it("returns the whole tree for a signed-in user", () => {
     const visible = filterVisibleNavItems(navItems, true)
     expect(visible).toBe(navItems)
-    expect(myGameChildren(visible)).toHaveLength(4)
+    expect(myGameChildren(visible)).toHaveLength(5)
   })
 
   it("keeps only My Game's anonymous children for a signed-out user", () => {

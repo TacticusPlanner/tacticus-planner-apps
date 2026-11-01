@@ -355,7 +355,9 @@
       "campaigns": "Campañas",
       "campaignsDescription": "Tu progreso de campaña se sincroniza desde la API de Tacticus y no se puede editar aquí.",
       "campaign-events": "Eventos de campaña",
-      "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia."
+      "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia.",
+      "incursions": "Incursiones",
+      "incursionsDescription": "La Incursión de cada Máquina de Guerra: mapa, batallas, enemigos y recompensas de cada nivel, con el máximo de fragmentos por recorrido."
     },
     "collection": {
       "loading": "Cargando tu colección…",

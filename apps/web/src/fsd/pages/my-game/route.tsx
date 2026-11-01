@@ -4,6 +4,7 @@
 import { lazy } from "react"
 import { Navigate, type RouteObject } from "react-router"
 
+import { FeatureGate } from "@/shared/feature-flags"
 import { preloadOnMatch } from "@/shared/lib"
 
 // The section layout, lazy-loaded by app/routes.tsx (exported from here so the page's public API
@@ -26,6 +27,11 @@ const loadCampaignEventsPage = () =>
     default: m.CampaignEventsPage,
   }))
 const CampaignEventsPage = lazy(loadCampaignEventsPage)
+const loadIncursionsPage = () =>
+  import("./ui/incursions-page").then((m) => ({
+    default: m.IncursionsPage,
+  }))
+const IncursionsPage = lazy(loadIncursionsPage)
 
 // Nested under "/my-game" — see app/routes.tsx, which owns the top-level path and the layout
 // element. My Game mixes a public page with sign-in-only ones, so the routes come in two lists:
@@ -52,5 +58,18 @@ export const protectedRoutes: RouteObject[] = [
     path: "campaign-events",
     element: <CampaignEventsPage />,
     loader: preloadOnMatch(loadCampaignEventsPage),
+  },
+  // Behind the Incursion feature flag: while it is off the path falls back to Collection.
+  {
+    path: "incursions",
+    element: (
+      <FeatureGate
+        flag="Incursion"
+        fallback={<Navigate replace to="/my-game/collection" />}
+      >
+        <IncursionsPage />
+      </FeatureGate>
+    ),
+    loader: preloadOnMatch(loadIncursionsPage),
   },
 ]

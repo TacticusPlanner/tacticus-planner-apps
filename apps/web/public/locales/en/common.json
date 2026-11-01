@@ -355,7 +355,9 @@
       "campaigns": "Campaigns",
       "campaignsDescription": "Your campaign progress is synchronized from the Tacticus API and cannot be edited here.",
       "campaign-events": "Campaign Events",
-      "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline."
+      "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline.",
+      "incursions": "Incursions",
+      "incursionsDescription": "Each Machine of War's Incursion: every tier's run map, battles, enemies and rewards, with the most shards one clear can pay."
     },
     "collection": {
       "loading": "Loading your collection…",

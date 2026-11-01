@@ -1,0 +1,74 @@
+{
+  "loadError": "Incursion data could not be loaded.",
+  "retry": "Retry",
+  "empty": "No Incursion data yet. It appears after the next game data update.",
+  "rules": {
+    "title": "How Incursions work",
+    "tokens": "You start with {{start}} run tokens and hold up to {{max}}; one more arrives every {{hours}} hours. Starting a run costs {{cost}}.",
+    "team": "Only heroes from the MoW's allowed factions can join; bring at least {{count}}.",
+    "progress": "Each tier is a run map: battles, enhancement picks and chests. Once you pick a branch, the others close for that run."
+  },
+  "card": {
+    "firstRun": "First run {{date}}",
+    "new": "New",
+    "revamped": "Revamped",
+    "owned": "Owned",
+    "notOwned": "Not owned",
+    "allowedFactions": "Allowed factions",
+    "tier": "Tier",
+    "tierOption": "{{rarity}} {{number}}"
+  },
+  "summary": {
+    "battles_one": "{{count}} battle",
+    "battles_other": "{{count}} battles",
+    "challenges_one": "{{count}} challenge battle",
+    "challenges_other": "{{count}} challenge battles",
+    "chests_one": "{{count}} chest",
+    "chests_other": "{{count}} chests",
+    "enhancements_one": "{{count}} enhancement pick",
+    "enhancements_other": "{{count}} enhancement picks",
+    "bestPath": "Up to {{shards}} shards per clear",
+    "bestPathMythic": "Up to {{shards}} shards and {{mythicShards}} mythic shards per clear",
+    "bestPathHint": "MoW shards from 3-star wins and chests along the richest path through this tier."
+  },
+  "map": {
+    "title": "Run map",
+    "step": "Step {{number}}",
+    "pickOne": "Pick one",
+    "after": "After {{names}}"
+  },
+  "battle": {
+    "name": "Battle {{name}}",
+    "challenge": "Challenge",
+    "difficulty": "Difficulty {{value}}%",
+    "lightningVictory": "Lightning Victory: {{turns}} turns",
+    "enemies": "Enemies",
+    "everyWin": "Every win",
+    "stars": "{{count}}★"
+  },
+  "enhancement": {
+    "title": "Enhancement",
+    "stacks": "Stacks",
+    "type": {
+      "Heal": "Heal {{units}} units",
+      "Resurrect": "Revive {{units}} unit",
+      "LifeSteal": "Life steal for {{units}} unit",
+      "HitBoost": "Extra hit for {{units}} unit",
+      "Regeneration": "Regeneration",
+      "Summons": "Summon {{subject}}",
+      "AddTrait": "Add trait {{subject}} to {{units}} unit",
+      "DamageBoost": "Damage boost for {{units}} unit",
+      "PierceBoost": "Pierce boost for {{units}} unit",
+      "CritBoost": "Critical boost for {{units}} unit"
+    }
+  },
+  "chest": {
+    "title": "{{type}} chest",
+    "type": {
+      "Bronze": "Bronze",
+      "Silver": "Silver",
+      "Gold": "Gold",
+      "Diamond": "Diamond"
+    }
+  }
+}
