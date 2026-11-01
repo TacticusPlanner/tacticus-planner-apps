@@ -214,6 +214,36 @@ describe("usePlanDraft team edits", () => {
     expect(alpha.update[0]!.memberUnitIds).toContain("ultraTigurius")
   })
 
+  it("uses the depth set in the editor on every plan run and sends it with the update", () => {
+    const { result } = renderHook(() => usePlanDraft(source, null))
+    const team = result.current.evaluation.teams.find(
+      (entry) => entry.storedId === "melee"
+    )!
+    act(() =>
+      result.current.editTeam(team, {
+        name: team.name,
+        memberUnitIds: team.memberUnitIds,
+        reserveUnitId: team.reserveUnitId,
+        objectiveIndexes: team.objectiveIndexes,
+        depthOverride: 1,
+      })
+    )
+    const edited = result.current.evaluation.teams.find(
+      (entry) => entry.storedId === "melee"
+    )!
+    expect(Object.keys(edited.depthByRun).length).toBeGreaterThan(0)
+    expect(Object.values(edited.depthByRun).every((depth) => depth === 1)).toBe(
+      true
+    )
+    const alpha = writesOf(result.current).lanes.find(
+      (lane) => lane.laneId === "alpha"
+    )!
+    expect(alpha.update[0]).toMatchObject({
+      storedId: "melee",
+      depthOverride: 1,
+    })
+  })
+
   it("creates an added team", () => {
     const { result } = renderHook(() => usePlanDraft(source, null))
     act(() =>

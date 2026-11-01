@@ -35,6 +35,9 @@ export interface DraftTeam {
   objectiveIndexes: number[]
   /** The depth each plan run reaches (the estimate on that run's roster, or a deeper stored one). */
   depthByRun: Partial<Record<LegendaryEventRun, number>>
+  /** The depth the user set in the wizard's team editor: every plan run uses it instead of the
+   *  estimate, and Create saves it as the manual depth of each plan run. */
+  depthOverride?: number | null
   /** The members, reserve or name differ from the stored team. */
   edited: boolean
 }
@@ -80,8 +83,9 @@ export function storedDrafts(
     })
 }
 
-/** A team's depth on one run: its estimate on that run's roster, or the stored depth of an unedited
- *  stored team when that is deeper (the planned upgrades can only help a kept team). */
+/** A team's depth on one run: the depth the user set in the wizard, else its estimate on that run's
+ *  roster, or the stored depth of an unedited stored team when that is deeper (the planned upgrades
+ *  can only help a kept team). */
 function depthOn(
   team: DraftTeam,
   run: LegendaryEventRun,
@@ -90,6 +94,7 @@ function depthOn(
   roster: ReadonlyMap<string, LegendaryEventRosterUnit>,
   inputs: Pick<PlanInputs, "config">
 ): number {
+  if (team.depthOverride != null) return team.depthOverride
   const storedTeam =
     team.storedId && !team.edited ? stored.get(team.storedId) : undefined
   const storedDepth = storedTeam
@@ -159,7 +164,8 @@ function bestSuggestion(
  * roster): for each run in order, the kept and earlier generated teams are re-estimated on that
  * run's roster, then the suggestion adding the most reachable points is added until none gains or
  * the lane holds `cap` teams. Every team's depth per run is its estimate on that run's roster (or a
- * kept, unedited team's stored depth when deeper).
+ * kept, unedited team's stored depth when deeper), unless the user set the team's depth in the
+ * wizard, which every run then uses.
  */
 export function generateLaneTeams(input: LaneGenerationInput): DraftTeam[] {
   const { planLane, rosters, runs } = input
