@@ -59,13 +59,14 @@ export const protectedRoutes: RouteObject[] = [
     element: <CampaignEventsPage />,
     loader: preloadOnMatch(loadCampaignEventsPage),
   },
-  // Behind the Incursion feature flag: while it is off the path falls back to Collection.
+  // Behind the Incursion feature flag: once the flags fetch settles with it off, the path falls back to Collection.
   {
     path: "incursions",
     element: (
       <FeatureGate
         flag="Incursion"
         fallback={<Navigate replace to="/my-game/collection" />}
+        pending={null}
       >
         <IncursionsPage />
       </FeatureGate>

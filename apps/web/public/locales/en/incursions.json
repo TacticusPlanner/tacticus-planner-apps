@@ -50,16 +50,24 @@
     "title": "Enhancement",
     "stacks": "Stacks",
     "type": {
-      "Heal": "Heal {{units}} units",
-      "Resurrect": "Revive {{units}} unit",
-      "LifeSteal": "Life steal for {{units}} unit",
-      "HitBoost": "Extra hit for {{units}} unit",
+      "Heal_one": "Heal {{units}} unit",
+      "Heal_other": "Heal {{units}} units",
+      "Resurrect_one": "Revive {{units}} unit",
+      "Resurrect_other": "Revive {{units}} units",
+      "LifeSteal_one": "Life steal for {{units}} unit",
+      "LifeSteal_other": "Life steal for {{units}} units",
+      "HitBoost_one": "Extra hit for {{units}} unit",
+      "HitBoost_other": "Extra hit for {{units}} units",
       "Regeneration": "Regeneration",
       "Summons": "Summon {{subject}}",
-      "AddTrait": "Add trait {{subject}} to {{units}} unit",
-      "DamageBoost": "Damage boost for {{units}} unit",
-      "PierceBoost": "Pierce boost for {{units}} unit",
-      "CritBoost": "Critical boost for {{units}} unit"
+      "AddTrait_one": "Add trait {{subject}} to {{units}} unit",
+      "AddTrait_other": "Add trait {{subject}} to {{units}} units",
+      "DamageBoost_one": "Damage boost for {{units}} unit",
+      "DamageBoost_other": "Damage boost for {{units}} units",
+      "PierceBoost_one": "Pierce boost for {{units}} unit",
+      "PierceBoost_other": "Pierce boost for {{units}} units",
+      "CritBoost_one": "Critical boost for {{units}} unit",
+      "CritBoost_other": "Critical boost for {{units}} units"
     }
   },
   "chest": {

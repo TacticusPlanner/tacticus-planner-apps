@@ -50,16 +50,24 @@
     "title": "Verstärkung",
     "stacks": "Stapelbar",
     "type": {
-      "Heal": "{{units}} Einheiten heilen",
-      "Resurrect": "{{units}} Einheit wiederbeleben",
-      "LifeSteal": "Lebensraub für {{units}} Einheit",
-      "HitBoost": "Zusätzlicher Treffer für {{units}} Einheit",
+      "Heal_one": "{{units}} Einheit heilen",
+      "Heal_other": "{{units}} Einheiten heilen",
+      "Resurrect_one": "{{units}} Einheit wiederbeleben",
+      "Resurrect_other": "{{units}} Einheiten wiederbeleben",
+      "LifeSteal_one": "Lebensraub für {{units}} Einheit",
+      "LifeSteal_other": "Lebensraub für {{units}} Einheiten",
+      "HitBoost_one": "Zusätzlicher Treffer für {{units}} Einheit",
+      "HitBoost_other": "Zusätzlicher Treffer für {{units}} Einheiten",
       "Regeneration": "Regeneration",
       "Summons": "{{subject}} beschwören",
-      "AddTrait": "Eigenschaft {{subject}} für {{units}} Einheit",
-      "DamageBoost": "Schadensbonus für {{units}} Einheit",
-      "PierceBoost": "Durchschlagsbonus für {{units}} Einheit",
-      "CritBoost": "Kritischer Bonus für {{units}} Einheit"
+      "AddTrait_one": "Eigenschaft {{subject}} für {{units}} Einheit",
+      "AddTrait_other": "Eigenschaft {{subject}} für {{units}} Einheiten",
+      "DamageBoost_one": "Schadensbonus für {{units}} Einheit",
+      "DamageBoost_other": "Schadensbonus für {{units}} Einheiten",
+      "PierceBoost_one": "Durchschlagsbonus für {{units}} Einheit",
+      "PierceBoost_other": "Durchschlagsbonus für {{units}} Einheiten",
+      "CritBoost_one": "Kritischer Bonus für {{units}} Einheit",
+      "CritBoost_other": "Kritischer Bonus für {{units}} Einheiten"
     }
   },
   "chest": {

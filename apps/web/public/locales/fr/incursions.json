@@ -50,16 +50,24 @@
     "title": "Amélioration",
     "stacks": "Cumulable",
     "type": {
-      "Heal": "Soigne {{units}} unités",
-      "Resurrect": "Ranime {{units}} unité",
-      "LifeSteal": "Vol de vie pour {{units}} unité",
-      "HitBoost": "Coup supplémentaire pour {{units}} unité",
+      "Heal_one": "Soigne {{units}} unité",
+      "Heal_other": "Soigne {{units}} unités",
+      "Resurrect_one": "Ranime {{units}} unité",
+      "Resurrect_other": "Ranime {{units}} unités",
+      "LifeSteal_one": "Vol de vie pour {{units}} unité",
+      "LifeSteal_other": "Vol de vie pour {{units}} unités",
+      "HitBoost_one": "Coup supplémentaire pour {{units}} unité",
+      "HitBoost_other": "Coup supplémentaire pour {{units}} unités",
       "Regeneration": "Régénération",
       "Summons": "Invoque {{subject}}",
-      "AddTrait": "Ajoute le trait {{subject}} à {{units}} unité",
-      "DamageBoost": "Bonus de dégâts pour {{units}} unité",
-      "PierceBoost": "Bonus de perforation pour {{units}} unité",
-      "CritBoost": "Bonus critique pour {{units}} unité"
+      "AddTrait_one": "Ajoute le trait {{subject}} à {{units}} unité",
+      "AddTrait_other": "Ajoute le trait {{subject}} à {{units}} unités",
+      "DamageBoost_one": "Bonus de dégâts pour {{units}} unité",
+      "DamageBoost_other": "Bonus de dégâts pour {{units}} unités",
+      "PierceBoost_one": "Bonus de perforation pour {{units}} unité",
+      "PierceBoost_other": "Bonus de perforation pour {{units}} unités",
+      "CritBoost_one": "Bonus critique pour {{units}} unité",
+      "CritBoost_other": "Bonus critique pour {{units}} unités"
     }
   },
   "chest": {

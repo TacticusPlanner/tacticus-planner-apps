@@ -64,6 +64,29 @@ describe("FeatureGate", () => {
     expect(screen.getByText("Preview feature")).toBeInTheDocument()
   })
 
+  it("renders the pending element until the first fetch settles", async () => {
+    let resolve: (response: Response) => void = () => {}
+    vi.spyOn(globalThis, "fetch").mockReturnValue(
+      new Promise((done) => {
+        resolve = done
+      })
+    )
+
+    render(
+      <FeatureGate
+        flag={preview}
+        fallback={<p>Coming soon</p>}
+        pending={<p>Loading</p>}
+      >
+        <p>Preview feature</p>
+      </FeatureGate>
+    )
+
+    expect(screen.getByText("Loading")).toBeInTheDocument()
+    resolve(Response.json({ enabled: ["Other"] }, { status: 200 }))
+    expect(await screen.findByText("Coming soon")).toBeInTheDocument()
+  })
+
   it("remembers the flags for the next visit", async () => {
     respondWith(["Preview"])
 

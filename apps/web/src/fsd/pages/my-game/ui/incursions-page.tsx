@@ -66,8 +66,9 @@ export function IncursionsPage() {
                   start: rules.tokens.start,
                   max: rules.tokens.max,
                   hours: Math.round(
-                    (rules.tokens.regenSeconds / SECONDS_PER_HOUR) *
-                      rules.tokens.regenAmount
+                    rules.tokens.regenSeconds /
+                      rules.tokens.regenAmount /
+                      SECONDS_PER_HOUR
                   ),
                   cost: rules.tokens.costPerRun,
                 })}

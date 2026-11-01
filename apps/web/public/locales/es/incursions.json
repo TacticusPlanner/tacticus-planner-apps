@@ -50,16 +50,24 @@
     "title": "Mejora",
     "stacks": "Acumulable",
     "type": {
-      "Heal": "Cura {{units}} unidades",
-      "Resurrect": "Revive {{units}} unidad",
-      "LifeSteal": "Robo de vida para {{units}} unidad",
-      "HitBoost": "Golpe extra para {{units}} unidad",
+      "Heal_one": "Cura {{units}} unidad",
+      "Heal_other": "Cura {{units}} unidades",
+      "Resurrect_one": "Revive {{units}} unidad",
+      "Resurrect_other": "Revive {{units}} unidades",
+      "LifeSteal_one": "Robo de vida para {{units}} unidad",
+      "LifeSteal_other": "Robo de vida para {{units}} unidades",
+      "HitBoost_one": "Golpe extra para {{units}} unidad",
+      "HitBoost_other": "Golpe extra para {{units}} unidades",
       "Regeneration": "Regeneración",
       "Summons": "Invoca {{subject}}",
-      "AddTrait": "Añade el rasgo {{subject}} a {{units}} unidad",
-      "DamageBoost": "Aumento de daño para {{units}} unidad",
-      "PierceBoost": "Aumento de perforación para {{units}} unidad",
-      "CritBoost": "Aumento de crítico para {{units}} unidad"
+      "AddTrait_one": "Añade el rasgo {{subject}} a {{units}} unidad",
+      "AddTrait_other": "Añade el rasgo {{subject}} a {{units}} unidades",
+      "DamageBoost_one": "Aumento de daño para {{units}} unidad",
+      "DamageBoost_other": "Aumento de daño para {{units}} unidades",
+      "PierceBoost_one": "Aumento de perforación para {{units}} unidad",
+      "PierceBoost_other": "Aumento de perforación para {{units}} unidades",
+      "CritBoost_one": "Aumento de crítico para {{units}} unidad",
+      "CritBoost_other": "Aumento de crítico para {{units}} unidades"
     }
   },
   "chest": {

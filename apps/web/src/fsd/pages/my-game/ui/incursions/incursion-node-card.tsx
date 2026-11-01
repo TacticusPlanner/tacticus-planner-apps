@@ -136,6 +136,7 @@ export function IncursionNodeCard({
     const subject = enhancementSubject(enhancement)
     title = t(`enhancement.type.${enhancement.type}` as never, {
       defaultValue: enhancement.type,
+      count: enhancement.unitAmount ?? 1,
       units: enhancement.unitAmount ?? 1,
       subject: subject ? t(`traits:${subject}`, { defaultValue: subject }) : "",
     })
