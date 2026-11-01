@@ -111,6 +111,17 @@
     "label": "Bereiche des Events",
     "overview": "Übersicht"
   },
+  "eventBoard": {
+    "title": "Eventübersicht",
+    "description": "Ziele und gespeicherte Teams aller Bahnen auf einen Blick. Wähle ein Team zum Bearbeiten oder eine Bahn, um ihren Tab zu öffnen.",
+    "openLane": "Tab {{lane}} öffnen",
+    "teams_one": "{{count}} Team",
+    "teams_other": "{{count}} Teams",
+    "noTeams": "Noch keine Teams.",
+    "noTeam": "Kein Team",
+    "cleared": "In {{cleared}} von {{total}} Kämpfen erfüllt",
+    "editTeam": "{{name}} bearbeiten"
+  },
   "laneSummary": {
     "title": "Lane-Zusammenfassung",
     "battles": "{{cleared}} / {{total}} Kämpfe vollständig abgeschlossen",

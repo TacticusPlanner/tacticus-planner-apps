@@ -124,6 +124,8 @@ export interface LegendaryEventPageViewModel {
   lastRun: LastRunSectionViewModel
   /** Every lane's roster potential map (lane overview) and reach line (Overview lane summary). */
   potentials: LanePotentialsViewModel
+  /** The Overview's Event board (`LreEventBoard` flag); off when absent. */
+  showEventBoard?: boolean
 }
 
 /** The Last run card's state and its analytics callbacks (design D9). */

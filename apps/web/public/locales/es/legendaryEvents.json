@@ -111,6 +111,17 @@
     "label": "Secciones del evento",
     "overview": "Resumen"
   },
+  "eventBoard": {
+    "title": "Tablero del evento",
+    "description": "Los objetivos y equipos guardados de todas las pistas a la vez. Elige un equipo para editarlo o una pista para abrir su pestaña.",
+    "openLane": "Abrir la pestaña {{lane}}",
+    "teams_one": "{{count}} equipo",
+    "teams_other": "{{count}} equipos",
+    "noTeams": "Aún no hay equipos.",
+    "noTeam": "Sin equipo",
+    "cleared": "Cumplido en {{cleared}} de {{total}} batallas",
+    "editTeam": "Editar {{name}}"
+  },
   "laneSummary": {
     "title": "Resumen de carriles",
     "battles": "{{cleared}} / {{total}} batallas superadas por completo",

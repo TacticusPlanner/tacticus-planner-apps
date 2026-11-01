@@ -111,6 +111,17 @@
     "label": "Event sections",
     "overview": "Overview"
   },
+  "eventBoard": {
+    "title": "Event board",
+    "description": "Every lane's objectives and saved teams at once. Pick a team to edit it, or a lane to open its tab.",
+    "openLane": "Open the {{lane}} tab",
+    "teams_one": "{{count}} team",
+    "teams_other": "{{count}} teams",
+    "noTeams": "No teams yet.",
+    "noTeam": "No team",
+    "cleared": "Cleared in {{cleared}} of {{total}} battles",
+    "editTeam": "Edit {{name}}"
+  },
   "laneSummary": {
     "title": "Lane summary",
     "battles": "{{cleared}} / {{total}} battles fully cleared",
