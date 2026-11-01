@@ -525,6 +525,7 @@
     }
   },
   "estimates": {
+    "disclaimer": "Alle Schätzungen vergleichen nur die reine Stärke. Echte Kampfergebnisse können abweichen.",
     "estimated": "geschätzt",
     "uncalibrated": "Unkalibriert: Das Stärkeverhältnis der Schätzung wurde noch nicht an echten Ergebnissen ausgerichtet, nimm sie also nur als grobe Orientierung.",
     "howItWorks": "Geschätzt aus der Stärke deines synchronisierten Kaders, Ausrüstung eingeschlossen, im Vergleich zur Stärke jedes Kampfes. Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",

@@ -525,6 +525,7 @@
     }
   },
   "estimates": {
+    "disclaimer": "Toutes les estimations comparent uniquement la puissance brute. Les résultats réels des combats peuvent différer.",
     "estimated": "estimé",
     "uncalibrated": "Non calibré : le rapport de puissance de l'estimation n'a pas encore été ajusté sur de vrais résultats, considérez-la comme une indication approximative.",
     "howItWorks": "Estimé à partir de la puissance de votre effectif synchronisé, équipement compris, comparée à la puissance de chaque combat. Les synergies et les objectifs difficiles ne sont pas pris en compte ; définissez une profondeur pour la remplacer.",

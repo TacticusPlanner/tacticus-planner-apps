@@ -525,6 +525,7 @@
     }
   },
   "estimates": {
+    "disclaimer": "Todas las estimaciones comparan solo el poder bruto. Los resultados reales de las batallas pueden variar.",
     "estimated": "estimado",
     "uncalibrated": "Sin calibrar: la proporción de poder de la estimación aún no se ha ajustado con resultados reales, así que tómala como una guía aproximada.",
     "howItWorks": "Estimado a partir del poder de tu plantilla sincronizada, con el equipo incluido, frente al poder de cada batalla. No se tienen en cuenta las sinergias ni los objetivos difíciles; fija una profundidad para sustituirla.",
