@@ -155,7 +155,7 @@ export function usePlanSource(eventId: string): PlanSource {
     const synced = typeof progressData === "object" ? progressData : undefined
     const rosterUnits = rosterData ?? []
     const resolution = resolveLegendaryEventRunsAt(eventData, synced, nowMs)
-    const runDates = legendaryEventRunDates(eventData)
+    const runDates = legendaryEventRunDates(eventData, eventsData)
     const unitsById = new Map(unitsData.map((unit) => [unit.id, unit]))
     const inputs: PlanInputs = {
       event: eventData,

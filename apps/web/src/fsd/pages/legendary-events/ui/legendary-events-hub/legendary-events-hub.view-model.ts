@@ -42,10 +42,11 @@ export interface HubCardViewModel {
 /** The dates of each run of an unfinished event (spec: guessed run dates on the hub). */
 function hubRuns(
   event: LegendaryEvent,
-  lifecycle: LegendaryEventLifecycle
+  lifecycle: LegendaryEventLifecycle,
+  events: readonly LegendaryEvent[]
 ): HubCardRun[] {
   if (lifecycle.state === "archived") return []
-  return legendaryEventRunDates(event).starts.map((start) => {
+  return legendaryEventRunDates(event, events).starts.map((start) => {
     const window = legendaryEventRunWindow(start)
     return {
       run: start.run,
@@ -106,7 +107,7 @@ export function buildHubViewModel(
       name: nameOf(event.id),
       lifecycle,
       synced: withSync ? syncedFor(event.id, progress) : { kind: "none" },
-      runs: hubRuns(event, lifecycle),
+      runs: hubRuns(event, lifecycle, events),
     })
   return {
     active: groups.active.map(toCard(true)),

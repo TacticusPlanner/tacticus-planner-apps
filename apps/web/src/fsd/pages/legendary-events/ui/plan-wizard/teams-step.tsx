@@ -10,6 +10,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   teamClearEstimate,
   unitClearEstimate,
+  useObjectiveLabel,
   type LegendaryEventLaneId,
   type LegendaryEventTeam,
 } from "@/entities/legendary-event"
@@ -19,7 +20,11 @@ import {
 } from "@/features/legendary-event-plan"
 import { EntityIcon } from "@/shared/ui"
 
-import { teamSwaps, type TeamSwap } from "./plan-evaluator"
+import {
+  objectivesAddedBySameUnits,
+  teamSwaps,
+  type TeamSwap,
+} from "./plan-evaluator"
 import { PLAN_LANE_IDS } from "./plan-inputs"
 import { memberKey, type DraftTeam } from "./plan-teams"
 import type { PlanDraft } from "./use-plan-draft"
@@ -338,7 +343,19 @@ function TeamRow({
   onEdit: () => void
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
+  const objectiveLabel = useObjectiveLabel()
   const name = draft.teamName(team.key)
+  const points = swap
+    ? new Intl.NumberFormat(i18n.language).format(Math.round(swap.gain))
+    : ""
+  const addedObjectives = swap
+    ? objectivesAddedBySameUnits(team, swap.replacements).flatMap((index) => {
+        const objective = draft.inputs.event[
+          team.laneId
+        ].unitsRestrictions.find((entry) => entry.index === index)
+        return objective ? [objectiveLabel(objective).label] : []
+      })
+    : []
   return (
     <li
       className="flex flex-col gap-2 rounded-xl border p-3"
@@ -410,34 +427,34 @@ function TeamRow({
           data-testid="plan-wizard-swap"
         >
           <p>
-            {t(
-              // The same units credited with more objectives, or other units.
-              swap.replacements.some(
-                (replacement) =>
-                  memberKey(replacement.memberUnitIds) ===
-                  memberKey(team.memberUnitIds)
-              )
-                ? "planWizard.teams.swapSame"
-                : "planWizard.teams.swap",
-              {
-                points: new Intl.NumberFormat(i18n.language).format(
-                  Math.round(swap.gain)
-                ),
-              }
-            )}
+            {addedObjectives.length > 0
+              ? t("planWizard.teams.swapSame", {
+                  objectives: new Intl.ListFormat(i18n.language, {
+                    type: "conjunction",
+                  }).format(addedObjectives),
+                  points,
+                })
+              : t("planWizard.teams.swap", { points })}
           </p>
-          {swap.replacements.map((replacement) => (
-            <div className="flex flex-wrap gap-1" key={replacement.key}>
-              {replacement.memberUnitIds.map((unitId) => (
-                <EntityIcon
-                  alt={draft.inputs.nameOf(unitId)}
-                  className="size-7 rounded-full"
-                  key={unitId}
-                  src={characterIcon(unitId as UnitId)}
-                />
-              ))}
-            </div>
-          ))}
+          {swap.replacements
+            .filter(
+              // The kept team's own units are already shown above.
+              (replacement) =>
+                memberKey(replacement.memberUnitIds) !==
+                memberKey(team.memberUnitIds)
+            )
+            .map((replacement) => (
+              <div className="flex flex-wrap gap-1" key={replacement.key}>
+                {replacement.memberUnitIds.map((unitId) => (
+                  <EntityIcon
+                    alt={draft.inputs.nameOf(unitId)}
+                    className="size-7 rounded-full"
+                    key={unitId}
+                    src={characterIcon(unitId as UnitId)}
+                  />
+                ))}
+              </div>
+            ))}
           <div className="flex gap-2">
             <Button
               data-testid="plan-wizard-swap-accept"

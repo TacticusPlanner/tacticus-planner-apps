@@ -53,15 +53,40 @@ const LEGENDARY_EVENT_MIN_CYCLE_DAYS = 315
 const LEGENDARY_EVENT_TYPICAL_RUN_GAP_DAYS = 175
 
 /**
+ * The gap between consecutive legendary events (any character): one event every five weeks
+ * (Lysander 30 Aug, Uthar 4 Oct and Bile 8 Nov 2026). Events never overlap and are announced in
+ * order, so a run not yet announced comes at least this long after the latest announced run.
+ */
+const LEGENDARY_EVENT_CADENCE_DAYS = 35
+
+/** The latest announced run start across the given events; null when none is announced. */
+function latestAnnouncedStart(
+  events: readonly LegendaryEventSchedule[]
+): number | null {
+  let latest: number | null = null
+  for (const event of events) {
+    for (const start of announcedStarts(event)) {
+      if (start !== null && (latest === null || start > latest)) latest = start
+    }
+  }
+  return latest
+}
+
+/**
  * Each run's start and the deadline (spec: unannounced runs get an estimated start). An unannounced
  * run starts at the earliest the history allows: the previous run's start plus the minimum gap,
- * and run 3 no sooner than the minimum cycle after run 1. Planning to the earliest plausible
- * deadline keeps the goals in time if the runs come early.
+ * run 3 no sooner than the minimum cycle after run 1, and never before the event cadence after the
+ * latest announced run of `events` (the catalog, so another event's announced run counts). Planning
+ * to the earliest plausible deadline keeps the goals in time if the runs come early.
  */
 export function legendaryEventRunDates(
-  event: LegendaryEventSchedule
+  event: LegendaryEventSchedule,
+  events: readonly LegendaryEventSchedule[] = []
 ): LegendaryEventRunDates {
   const announced = announcedStarts(event)
+  const latest = latestAnnouncedStart([event, ...events])
+  const notBefore =
+    latest === null ? null : latest + LEGENDARY_EVENT_CADENCE_DAYS * DAY_MS
   const starts: LegendaryEventRunStart[] = []
   for (const [index, start] of announced.entries()) {
     const run = (index + 1) as LegendaryEventRun
@@ -81,6 +106,9 @@ export function legendaryEventRunDates(
         startMs,
         first + LEGENDARY_EVENT_MIN_CYCLE_DAYS * DAY_MS
       )
+    }
+    if (startMs !== null && notBefore !== null) {
+      startMs = Math.max(startMs, notBefore)
     }
     const guessMs =
       previousGuess === null || startMs === null

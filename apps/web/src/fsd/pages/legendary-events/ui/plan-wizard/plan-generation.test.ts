@@ -13,6 +13,7 @@ import {
   NO_TEAM_ADJUSTMENTS,
   createPlanEvaluator,
   coversObjectives,
+  objectivesAddedBySameUnits,
   teamSwaps,
 } from "./plan-evaluator"
 import { MAX_PLAN_TEAMS_PER_LANE, storedDrafts } from "./plan-teams"
@@ -199,6 +200,32 @@ describe("coversObjectives", () => {
       ])
     ).toBe(false)
     expect(coversObjectives(kept, [])).toBe(false)
+  })
+})
+
+describe("objectivesAddedBySameUnits", () => {
+  const kept = { memberUnitIds: ["a", "b"], objectiveIndexes: [2] }
+
+  it("lists what a replacement with the same members covers beyond the kept team", () => {
+    expect(
+      objectivesAddedBySameUnits(kept, [
+        { memberUnitIds: ["c", "d"], objectiveIndexes: [0] },
+        { memberUnitIds: ["b", "a"], objectiveIndexes: [4, 2, 1] },
+      ])
+    ).toEqual([1, 4])
+  })
+
+  it("is empty when the swap brings other units or the same coverage", () => {
+    expect(
+      objectivesAddedBySameUnits(kept, [
+        { memberUnitIds: ["a", "c"], objectiveIndexes: [1, 2] },
+      ])
+    ).toEqual([])
+    expect(
+      objectivesAddedBySameUnits(kept, [
+        { memberUnitIds: ["a", "b"], objectiveIndexes: [2] },
+      ])
+    ).toEqual([])
   })
 })
 
