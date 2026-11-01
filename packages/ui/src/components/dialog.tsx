@@ -1,14 +1,23 @@
 import * as React from "react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
+import { useBackClosableOpenState } from "@workspace/ui/hooks/use-close-on-back"
 import { cn } from "@workspace/ui/lib/utils"
 import { Button } from "@workspace/ui/components/button"
 import { XIcon } from "lucide-react"
 
 function Dialog({
+  open,
+  defaultOpen,
+  onOpenChange,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
+  const openState = useBackClosableOpenState({
+    open,
+    defaultOpen,
+    onOpenChange,
+  })
+  return <DialogPrimitive.Root data-slot="dialog" {...props} {...openState} />
 }
 
 function DialogTrigger({
