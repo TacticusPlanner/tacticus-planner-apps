@@ -136,13 +136,15 @@ export function useProjectActions(_onChanged?: () => void) {
     return ok
   }
 
-  /** Permanently deletes a custom project. Goals left in no other project move to the Default project
-   *  server-side, so the project list (Default's `goalIds`) and the goals (`projectIds`) are refetched. */
-  const remove = async (project: ProjectSummary) => {
+  /** Permanently deletes a custom project. Goals left in no other project move to the Default project, or are
+   *  deleted with `deleteGoals`, server-side, so the project list and the goals are refetched. */
+  const remove = async (project: ProjectSummary, deleteGoals = false) => {
     if (!isAuthenticated) return false
     setPendingCount((count) => count + 1)
     try {
-      await mutation.mutateAsync(() => deleteProject(project.projectId))
+      await mutation.mutateAsync(() =>
+        deleteProject(project.projectId, deleteGoals)
+      )
       queryClient.setQueryData(
         projectQueries.list().queryKey,
         (current: { projects: ProjectSummary[] } | undefined) =>

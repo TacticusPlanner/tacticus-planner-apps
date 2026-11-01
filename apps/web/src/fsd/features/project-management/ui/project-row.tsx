@@ -241,8 +241,8 @@ export function ProjectRow({
         </DropdownMenu>
         {project.isDefault ? null : (
           <DeleteProjectDialog
-            onConfirm={() =>
-              void actions.remove(project).then((ok) => {
+            onConfirm={(deleteGoals) =>
+              void actions.remove(project, deleteGoals).then((ok) => {
                 if (ok) setDeleteOpen(false)
               })
             }

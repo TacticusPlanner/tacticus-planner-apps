@@ -7,7 +7,7 @@
 ## 2. UI
 
 - [x] 2.1 `useProjectActions().remove`: delete, drop the project from the cached list, refetch projects and goals, toast.
-- [x] 2.2 `DeleteProjectDialog` and a destructive Delete item last in every non-Default row's menu.
+- [x] 2.2 `DeleteProjectDialog` (move-to-Default / delete-goals choice) and a destructive Delete item last in every non-Default row's menu.
 - [x] 2.3 Strings in en/de/es/fr.
 
 ## 3. Tests

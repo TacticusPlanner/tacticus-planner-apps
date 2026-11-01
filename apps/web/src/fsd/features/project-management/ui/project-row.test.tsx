@@ -479,7 +479,43 @@ describe("ProjectRow", () => {
         name: "goals.project.deleteConfirm",
       })
     )
-    expect(remove).toHaveBeenCalledWith(archivedProject)
+    expect(remove).toHaveBeenCalledWith(archivedProject, false)
+  })
+
+  it("deletes the project's goals too when the user chooses so", async () => {
+    const user = userEvent.setup()
+    const remove = vi.fn().mockResolvedValue(true)
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness({ remove })}
+          onEdit={vi.fn()}
+          project={otherProject}
+        />
+      </ul>
+    )
+
+    await openActions(user, otherProject.projectId)
+    await user.click(
+      screen.getByRole("menuitem", { name: "goals.project.delete" })
+    )
+    const dialog = screen.getByRole("dialog")
+    expect(
+      within(dialog).getByRole("radio", {
+        name: "goals.project.deleteGoalsMove",
+      })
+    ).toBeChecked()
+    await user.click(
+      within(dialog).getByRole("radio", {
+        name: "goals.project.deleteGoalsDelete",
+      })
+    )
+    await user.click(
+      within(dialog).getByRole("button", {
+        name: "goals.project.deleteConfirm",
+      })
+    )
+    expect(remove).toHaveBeenCalledWith(otherProject, true)
   })
 
   it("keeps the project when the confirmation is cancelled", async () => {

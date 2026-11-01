@@ -2,7 +2,7 @@
 
 ### Requirement: Project lifecycle actions are Edit and Archive/Restore in an overflow menu
 
-Project actions SHALL NOT render as an always-visible inline icon cluster. Edit, Archive/Restore and Delete SHALL appear in an accessible overflow menu. Archive SHALL be unavailable with explanatory text for the Default project, which is permanent (see "The Default project is permanent"), and Delete SHALL NOT be offered for it. Delete SHALL permanently remove a custom project, archived or not, only after an explicit confirmation that names the project and states that its goals are kept, with any goal in no other project moving to the Default project.
+Project actions SHALL NOT render as an always-visible inline icon cluster. Edit, Archive/Restore and Delete SHALL appear in an accessible overflow menu. Archive SHALL be unavailable with explanatory text for the Default project, which is permanent (see "The Default project is permanent"), and Delete SHALL NOT be offered for it. Delete SHALL permanently remove a custom project, archived or not, only after an explicit confirmation that names the project and asks what happens to the goals that are in no other project: move them to the Default project (preselected) or delete them permanently. Goals that are also in another project SHALL always be kept there.
 
 #### Scenario: Secondary actions are labeled
 
@@ -24,8 +24,14 @@ Project actions SHALL NOT render as an always-visible inline icon cluster. Edit,
 #### Scenario: Deleting a project
 
 - **GIVEN** a custom project, archived or not
-- **WHEN** the user activates Delete from its action menu and confirms
+- **WHEN** the user activates Delete from its action menu and confirms with the preselected "move to the Default project" choice
 - **THEN** the project is removed from every project list, and its goals remain, those in no other project now in the Default project
+
+#### Scenario: Deleting a project with its goals
+
+- **GIVEN** a custom project with one goal only in it and one goal also in another project
+- **WHEN** the user activates Delete, chooses to delete the goals, and confirms
+- **THEN** the project and the first goal are gone, and the second goal remains in its other project
 
 #### Scenario: Cancelling a delete
 

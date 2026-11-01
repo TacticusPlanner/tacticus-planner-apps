@@ -1651,7 +1651,7 @@ export interface paths {
     post?: never
     /**
      * Permanently deletes a project.
-     * @description Goals are never deleted: a goal whose only project this was moves to the Default project. Never changes any goal's status, target or global priority.
+     * @description A goal whose only project this was moves to the Default project, or with deleteGoals=true is permanently deleted. Goals that belong to another project are never deleted. Moved goals keep their status, target and global priority.
      */
     delete: operations["TacticusPlannerApiFeaturesProjectsDeleteProjectEndpoint"]
     options?: never
@@ -9584,7 +9584,9 @@ export interface operations {
   }
   TacticusPlannerApiFeaturesProjectsDeleteProjectEndpoint: {
     parameters: {
-      query?: never
+      query?: {
+        deleteGoals?: null | boolean
+      }
       header?: never
       path: {
         projectId: string

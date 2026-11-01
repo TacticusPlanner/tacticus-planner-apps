@@ -47,10 +47,15 @@ describe("project API", () => {
       )
 
     await deleteProject("project-1")
-
     expect(await lastRequest(fetch)).toMatchObject({
       method: "DELETE",
       url: "https://api.example/api/v1/projects/project-1",
+    })
+
+    await deleteProject("project-1", true)
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "DELETE",
+      url: "https://api.example/api/v1/projects/project-1?deleteGoals=true",
     })
   })
 
