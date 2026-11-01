@@ -14,6 +14,8 @@ import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
+import { watchCloseRequest } from "@workspace/ui/hooks/use-close-on-back"
+
 import { accountQueries, useCurrentUser } from "@/entities/account"
 import { useTheme, type Theme } from "@/shared/theme"
 
@@ -23,6 +25,8 @@ type UserJotOpenTarget = {
 
 type UserJotSdk = {
   open: (target?: UserJotOpenTarget) => void
+  /** Undocumented in what we pin; called only when present (see the Back watcher below). */
+  close?: () => void
   identify: (
     payload: { token: string } | null
   ) => Promise<{ identityTrust: "signed" | "unsigned" }>
@@ -122,6 +126,26 @@ function onSdkEvent(event: string, handler: (payload?: unknown) => void) {
 // open broke the page the widget was loading (the "We couldn't load this page." error on first open).
 const REIDENTIFY_AFTER_MS = 50 * 60 * 1000
 
+// The widget is the SDK's own overlay, outside React, so the Dialog/Sheet/Drawer Back handling
+// does not cover it: while it is open, Android Back closes it instead of leaving the page (or
+// closing the installed app). Watched only when the loaded SDK has a `close` to call; `open` fires
+// from the real SDK, so the queueing stub (which answers any method name) is gone by then.
+let releaseBackWatcher: (() => void) | undefined
+
+function stopWatchingBack() {
+  releaseBackWatcher?.()
+  releaseBackWatcher = undefined
+}
+
+function watchBackWhileOpen() {
+  stopWatchingBack()
+  if (typeof window.uj?.close !== "function") return
+  releaseBackWatcher = watchCloseRequest(() => {
+    releaseBackWatcher = undefined
+    window.uj?.close?.()
+  })
+}
+
 const themeToUserJot: Record<Theme, "auto" | "light" | "dark"> = {
   system: "auto",
   light: "light",
@@ -212,7 +236,8 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   }, [identify])
 
   useEffect(() => {
-    return onSdkEvent("open", () => {
+    const off = onSdkEvent("open", () => {
+      watchBackWhileOpen()
       const identifiedAt = identifiedAtRef.current
       if (
         identifiedAt !== null &&
@@ -222,6 +247,10 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
       }
       void identifyRef.current()
     })
+    return () => {
+      off()
+      stopWatchingBack()
+    }
   }, [])
 
   useEffect(() => {
@@ -243,6 +272,7 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   // even if the SDK settled the count without emitting a fresh `unread` event.
   useEffect(() => {
     return onSdkEvent("close", (state) => {
+      stopWatchingBack()
       const count = (state as { unreadCount?: number | null } | undefined)
         ?.unreadCount
       if (typeof count === "number") setUnreadCount(count)

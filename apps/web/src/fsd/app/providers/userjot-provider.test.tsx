@@ -437,4 +437,60 @@ describe("UserJotProvider", () => {
     })
     expect(screen.getByTestId("consumer")).toHaveTextContent("2")
   })
+
+  describe("Android Back", () => {
+    // A stand-in for the browser's CloseWatcher: Back runs the newest live watcher's onclose.
+    let watchers: { onclose: (() => void) | null; destroyed: boolean }[]
+
+    beforeEach(() => {
+      watchers = []
+      vi.stubGlobal(
+        "CloseWatcher",
+        class {
+          onclose: (() => void) | null = null
+          destroyed = false
+          constructor() {
+            watchers.push(this)
+          }
+          destroy() {
+            this.destroyed = true
+          }
+        }
+      )
+    })
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    const live = () => watchers.filter((watcher) => !watcher.destroyed)
+
+    it("closes the open widget instead of leaving the page", () => {
+      const close = vi.fn()
+      window.uj = { ...window.uj!, close }
+      renderProvider()
+
+      act(() => listeners.get("open")?.())
+      expect(live()).toHaveLength(1)
+
+      live()[0]?.onclose?.()
+      expect(close).toHaveBeenCalledOnce()
+    })
+
+    it("stops watching Back once the widget closes itself", () => {
+      window.uj = { ...window.uj!, close: vi.fn() }
+      renderProvider()
+
+      act(() => listeners.get("open")?.())
+      act(() => listeners.get("close")?.({ unreadCount: 0 }))
+      expect(live()).toHaveLength(0)
+    })
+
+    it("leaves Back alone when the SDK has no close to call", () => {
+      renderProvider()
+
+      act(() => listeners.get("open")?.())
+      expect(watchers).toHaveLength(0)
+    })
+  })
 })

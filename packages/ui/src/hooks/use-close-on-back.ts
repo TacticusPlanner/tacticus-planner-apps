@@ -16,11 +16,33 @@ function getCloseWatcher(): CloseWatcherConstructor | undefined {
 }
 
 /**
- * While `open`, the Android Back button (and any other platform close request) calls `onClose`
- * instead of leaving the page - or, in the installed app with nothing behind it, closing the app.
- * Watchers stack, so Back closes the overlay opened last. Escape is unaffected: Radix handles it
- * and cancels the key, which keeps the watcher from firing for it. Browsers without CloseWatcher
- * keep their default Back behaviour.
+ * Until the returned release function runs, the Android Back button (and any other platform close
+ * request) calls `onClose` instead of leaving the page - or, in the installed app with nothing
+ * behind it, closing the app. Watchers stack, so Back closes the overlay opened last. Returns
+ * undefined, leaving Back alone, where the browser has no CloseWatcher. For overlays React does
+ * not render (a third-party widget); React overlays use the `Dialog`/`Sheet`/`Drawer` roots.
+ */
+export function watchCloseRequest(onClose: () => void) {
+  const CloseWatcher = getCloseWatcher()
+  if (!CloseWatcher) return undefined
+
+  let watcher: CloseWatcherLike
+  try {
+    watcher = new CloseWatcher()
+  } catch {
+    // Throws when the document is not fully active; Back just keeps its default then.
+    return undefined
+  }
+  watcher.onclose = onClose
+  return () => {
+    watcher.onclose = null
+    watcher.destroy()
+  }
+}
+
+/**
+ * While `open`, Back calls `onClose` (see `watchCloseRequest`). Escape is unaffected: Radix handles
+ * it and cancels the key, which keeps the watcher from firing for it.
  */
 function useCloseOnBack(open: boolean, onClose: () => void) {
   const onCloseRef = React.useRef(onClose)
@@ -30,21 +52,8 @@ function useCloseOnBack(open: boolean, onClose: () => void) {
   }, [onClose])
 
   React.useEffect(() => {
-    const CloseWatcher = getCloseWatcher()
-    if (!open || !CloseWatcher) return
-
-    let watcher: CloseWatcherLike
-    try {
-      watcher = new CloseWatcher()
-    } catch {
-      // Throws when the document is not fully active; Back just keeps its default then.
-      return
-    }
-    watcher.onclose = () => onCloseRef.current()
-    return () => {
-      watcher.onclose = null
-      watcher.destroy()
-    }
+    if (!open) return
+    return watchCloseRequest(() => onCloseRef.current())
   }, [open])
 }
 
