@@ -114,5 +114,24 @@
       "stay": "Quedarme",
       "leave": "Salir"
     }
+  },
+  "team": {
+    "title": "Equipo sugerido",
+    "power": "Poder {{power}}",
+    "sustain": "Con sanador",
+    "sustainHint": "El daño se mantiene entre batallas, así que un sanador (o un mecánico con un aliado mecánico) sustituye al miembro más débil si los héroes más fuertes no tienen uno.",
+    "clearable_one": "Se estima que completa {{count}} de {{total}} niveles, hasta {{tier}}",
+    "clearable_other": "Se estima que completa {{count}} de {{total}} niveles, hasta {{tier}}",
+    "clearableNone": "Aún no se estima que complete ningún nivel.",
+    "hint": "Estimación sin calibrar a partir de tu plantilla sincronizada: los héroes más fuertes de las facciones permitidas contra el camino más fácil de cada nivel, con la salud que se mantiene de una batalla a otra.",
+    "tooFew_one": "Necesitas al menos {{count}} héroe de las facciones permitidas.",
+    "tooFew_other": "Necesitas al menos {{count}} héroes de las facciones permitidas.",
+    "unsynced": "Sincroniza tu plantilla para ver un equipo sugerido y qué niveles puede completar.",
+    "noPower": "Las estimaciones de poder no están disponibles ahora."
+  },
+  "estimate": {
+    "clears": "Equipo sugerido: se estima que completa con un {{hp}} % de salud restante",
+    "stops": "Equipo sugerido: se estima que cae en la batalla {{battle}} de {{total}}",
+    "hint": "El daño se mantiene entre batallas hasta que termina la partida."
   }
 }

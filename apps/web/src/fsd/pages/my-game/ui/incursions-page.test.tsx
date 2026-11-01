@@ -76,6 +76,21 @@ describe("IncursionsPage", () => {
     ).toHaveTextContent("Not owned")
   })
 
+  it("asks for a roster sync before suggesting a team", async () => {
+    const user = userEvent.setup()
+    await renderPage()
+
+    await user.click(
+      await screen.findByTestId("incursion-tauBroadside-trigger")
+    )
+    expect(
+      await screen.findByTestId("incursion-tauBroadside-team")
+    ).toHaveTextContent("Sync your roster to see a suggested team")
+    expect(
+      screen.queryByTestId("incursion-tier-estimate")
+    ).not.toBeInTheDocument()
+  })
+
   it("shows a tier's totals and run map, and switches tiers", async () => {
     const user = userEvent.setup()
     getProgress.mockResolvedValue({ battles: [], revision: 0 })

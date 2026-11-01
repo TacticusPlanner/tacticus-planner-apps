@@ -148,6 +148,7 @@ export {
   type LegendaryEventRunResolution,
 } from "./lib/run-resolution"
 export { derivedTeamCoverage } from "./lib/team-coverage"
+export { withSupport } from "./lib/team-support"
 export {
   MAX_TEAMS_PER_LANE,
   MIN_TEAM_MEMBERS,

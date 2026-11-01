@@ -114,5 +114,24 @@
       "stay": "Bleiben",
       "leave": "Verlassen"
     }
+  },
+  "team": {
+    "title": "Teamvorschlag",
+    "power": "Macht {{power}}",
+    "sustain": "Mit Heiler",
+    "sustainHint": "Schaden bleibt zwischen Kämpfen bestehen, daher ersetzt ein Heiler (oder ein Mechaniker mit mechanischem Verbündeten) das schwächste Mitglied, wenn die stärksten Helden keinen haben.",
+    "clearable_one": "Schafft voraussichtlich {{count}} von {{total}} Stufen, bis {{tier}}",
+    "clearable_other": "Schafft voraussichtlich {{count}} von {{total}} Stufen, bis {{tier}}",
+    "clearableNone": "Schafft voraussichtlich noch keine Stufe.",
+    "hint": "Unkalibrierte Schätzung aus deinem synchronisierten Kader: die stärksten Helden der erlaubten Fraktionen gegen den leichtesten Weg durch jede Stufe, wobei LP von Kampf zu Kampf erhalten bleiben.",
+    "tooFew_one": "Du brauchst mindestens {{count}} Helden aus den erlaubten Fraktionen.",
+    "tooFew_other": "Du brauchst mindestens {{count}} Helden aus den erlaubten Fraktionen.",
+    "unsynced": "Synchronisiere deinen Kader, um einen Teamvorschlag und die schaffbaren Stufen zu sehen.",
+    "noPower": "Machtschätzungen sind gerade nicht verfügbar."
+  },
+  "estimate": {
+    "clears": "Teamvorschlag: voraussichtlich geschafft mit etwa {{hp}} % LP übrig",
+    "stops": "Teamvorschlag: scheitert voraussichtlich in Kampf {{battle}} von {{total}}",
+    "hint": "Schaden bleibt zwischen Kämpfen bestehen, bis der Lauf endet."
   }
 }

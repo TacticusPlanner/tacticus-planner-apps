@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
+import type { TierRunEstimate } from "../../model/incursion-plan.model"
 import {
   tierChestRewards,
   tierCleared,
@@ -44,12 +45,15 @@ export function IncursionTierView({
   onTierChange,
   npcsById,
   progress,
+  estimates,
 }: {
   incursion: Incursion
   tierIndex: number
   onTierChange: (index: number) => void
   npcsById: ReadonlyMap<string, NpcStorageModel>
   progress?: TierProgress
+  /** The suggested team's estimated run per tier index. */
+  estimates?: ReadonlyMap<number, TierRunEstimate>
 }) {
   const { t } = useTranslation("incursions")
   const id = useId()
@@ -76,6 +80,7 @@ export function IncursionTierView({
   if (!tier || !view) return null
 
   const { summary } = view
+  const estimate = estimates?.get(tier.index)
   const battleProgress = (node: IncursionNode) => {
     const battleId = node.kind === "battle" ? node.battleId : undefined
     if (!progress || !battleId) return undefined
@@ -115,6 +120,7 @@ export function IncursionTierView({
                   value={String(candidate.index)}
                 >
                   {tierName(candidate.index)}
+                  {estimates?.get(candidate.index)?.cleared ? " ✓" : ""}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -132,6 +138,24 @@ export function IncursionTierView({
           <li>{t("summary.enhancements", { count: summary.enhancements })}</li>
         </ul>
       </div>
+      {estimate ? (
+        <p
+          className={
+            estimate.cleared
+              ? "text-sm text-emerald-700 dark:text-emerald-400"
+              : "text-sm text-amber-700 dark:text-amber-400"
+          }
+          title={t("estimate.hint")}
+          data-testid="incursion-tier-estimate"
+        >
+          {estimate.cleared
+            ? t("estimate.clears", { hp: estimate.hpLeftPct })
+            : t("estimate.stops", {
+                battle: estimate.wins + 1,
+                total: estimate.battles,
+              })}
+        </p>
+      ) : null}
       {cleared ? (
         <div className="space-y-1.5" data-testid="incursion-replay-rewards">
           <p className="text-sm font-medium">{t("progress.replayTitle")}</p>

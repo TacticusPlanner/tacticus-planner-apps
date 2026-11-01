@@ -28,6 +28,7 @@ import {
   toIncursionProgressPayload,
 } from "../model/incursion-progress.model"
 import { orderIncursions } from "../model/incursions.model"
+import { useIncursionPlans } from "../model/use-incursion-plans"
 import { useIncursionsData } from "../model/use-incursions-data"
 import { IncursionItem } from "./incursions/incursion-item"
 
@@ -65,6 +66,7 @@ export function IncursionsPage() {
     () => (data ? orderIncursions(data.incursions) : []),
     [data]
   )
+  const plans = useIncursionPlans(incursions, data?.npcsById)
 
   if (loaded.status === "error") {
     return (
@@ -156,6 +158,7 @@ export function IncursionsPage() {
               incursion={incursion}
               owned={data.ownedMowIds.has(incursion.mowId)}
               npcsById={data.npcsById}
+              plans={plans}
               progress={
                 progress
                   ? {

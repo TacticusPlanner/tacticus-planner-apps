@@ -114,5 +114,24 @@
       "stay": "Stay",
       "leave": "Leave"
     }
+  },
+  "team": {
+    "title": "Suggested team",
+    "power": "Power {{power}}",
+    "sustain": "Healer included",
+    "sustainHint": "Damage carries over between battles, so a Healer (or a Mechanic with a Mechanical ally) is swapped in for the weakest member when the strongest heroes have none.",
+    "clearable_one": "Estimated to clear {{count}} of {{total}} tiers, up to {{tier}}",
+    "clearable_other": "Estimated to clear {{count}} of {{total}} tiers, up to {{tier}}",
+    "clearableNone": "Not estimated to clear any tier yet.",
+    "hint": "Uncalibrated estimate from your synced roster: the strongest heroes of the allowed factions against the lightest path through each tier, with HP carried over from battle to battle.",
+    "tooFew_one": "You need at least {{count}} hero from the allowed factions.",
+    "tooFew_other": "You need at least {{count}} heroes from the allowed factions.",
+    "unsynced": "Sync your roster to see a suggested team and which tiers it can clear.",
+    "noPower": "Power estimates are unavailable right now."
+  },
+  "estimate": {
+    "clears": "Suggested team: estimated clear with about {{hp}}% HP left",
+    "stops": "Suggested team: estimated to fall at battle {{battle}} of {{total}}",
+    "hint": "Damage carries over between battles until the run ends."
   }
 }

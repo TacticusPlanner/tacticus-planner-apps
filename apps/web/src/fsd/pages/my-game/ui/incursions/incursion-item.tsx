@@ -18,23 +18,28 @@ import {
   nextTierIndex,
 } from "../../model/incursion-progress.model"
 import type { Incursion } from "../../model/incursions.model"
+import type { IncursionPlans } from "../../model/use-incursion-plans"
 import { IncursionProgressControl } from "./incursion-progress-control"
+import { IncursionTeam } from "./incursion-team"
 import { IncursionTierView, type TierProgress } from "./incursion-tier-view"
 
 /**
- * One MoW's Incursion as an accordion row: its header, the player's progress, allowed factions and
- * tier explorer. The explorer opens on the next tier to play until the player picks another.
+ * One MoW's Incursion as an accordion row: its header, the player's progress, allowed factions, the
+ * suggested team and the tier explorer. The explorer opens on the next tier to play until the player picks another.
  */
 export function IncursionItem({
   incursion,
   owned,
   npcsById,
   progress,
+  plans,
 }: {
   incursion: Incursion
   owned: boolean
   npcsById: ReadonlyMap<string, NpcStorageModel>
   progress?: TierProgress
+  /** Suggested teams and tier estimates for every MoW. */
+  plans: IncursionPlans
 }) {
   const { t } = useTranslation(["incursions", "mows", "factions"])
   const dateLocale = useDateLocale()
@@ -120,12 +125,18 @@ export function IncursionItem({
             })}
           </ul>
         </div>
+        <IncursionTeam incursion={incursion} plans={plans} />
         <IncursionTierView
           incursion={incursion}
           tierIndex={tierIndex}
           onTierChange={setPickedTier}
           npcsById={npcsById}
           progress={progress}
+          estimates={
+            plans.status === "ready"
+              ? plans.plans.get(incursion.mowId)?.tiers
+              : undefined
+          }
         />
       </AccordionContent>
     </AccordionItem>

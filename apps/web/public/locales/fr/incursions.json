@@ -114,5 +114,24 @@
       "stay": "Rester",
       "leave": "Quitter"
     }
+  },
+  "team": {
+    "title": "Équipe suggérée",
+    "power": "Puissance {{power}}",
+    "sustain": "Avec soigneur",
+    "sustainHint": "Les dégâts sont conservés entre les combats : un soigneur (ou un mécanicien avec un allié mécanique) remplace le membre le plus faible si les héros les plus forts n'en ont pas.",
+    "clearable_one": "Devrait terminer {{count}} palier sur {{total}}, jusqu'à {{tier}}",
+    "clearable_other": "Devrait terminer {{count}} paliers sur {{total}}, jusqu'à {{tier}}",
+    "clearableNone": "Ne devrait encore terminer aucun palier.",
+    "hint": "Estimation non calibrée à partir de votre roster synchronisé : les héros les plus forts des factions autorisées contre le chemin le plus facile de chaque palier, les PV étant conservés d'un combat à l'autre.",
+    "tooFew_one": "Il vous faut au moins {{count}} héros des factions autorisées.",
+    "tooFew_other": "Il vous faut au moins {{count}} héros des factions autorisées.",
+    "unsynced": "Synchronisez votre roster pour voir une équipe suggérée et les paliers qu'elle peut terminer.",
+    "noPower": "Les estimations de puissance sont indisponibles pour le moment."
+  },
+  "estimate": {
+    "clears": "Équipe suggérée : devrait terminer avec environ {{hp}} % de PV restants",
+    "stops": "Équipe suggérée : devrait tomber au combat {{battle}} sur {{total}}",
+    "hint": "Les dégâts sont conservés entre les combats jusqu'à la fin de la course."
   }
 }
