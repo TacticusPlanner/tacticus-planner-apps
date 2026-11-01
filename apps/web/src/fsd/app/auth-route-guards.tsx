@@ -13,6 +13,7 @@ import { PublicLayout } from "./layout/public-layout"
 import { resolveActiveNavigation } from "./layout/resolve-active-navigation"
 import { resolveNextPath } from "./resolve-next-path"
 import { useAuthPending } from "./use-auth-pending"
+import { useSignedInDuringVisit } from "./use-signed-in-during-visit"
 
 // msal-react's MsalProvider always mounts with `accounts: []`/`inProgress: Startup`, even when the
 // underlying instance already restored an active account before the app rendered (see
@@ -53,6 +54,7 @@ export function LandingRoute() {
   const { inProgress } = useMsal()
   const [searchParams] = useSearchParams()
   const next = searchParams.get("next")
+  const signedInDuringVisit = useSignedInDuringVisit()
 
   if (inProgress !== InteractionStatus.None) {
     return <AuthResolving />
@@ -64,6 +66,10 @@ export function LandingRoute() {
     // /setup/* address is exactly the point here, unlike the onboarding gate's own use of `next`.
     const destination = resolveNextPath(next, { allowSetupDestination: true })
     return <Navigate replace to={destination} />
+  }
+
+  if (isAuthenticated && signedInDuringVisit) {
+    return <Navigate replace to="/home" />
   }
 
   // A bare "/" is browsable signed in too (spec: landing-page): the hero and the top bar offer

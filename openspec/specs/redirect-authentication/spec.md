@@ -39,6 +39,16 @@ authenticated state without requiring any further manual action.
 - **THEN** the application still starts, the user is shown as signed out, and
   the localized authentication error toast is shown once
 
+#### Scenario: Re-authenticating a Google account
+
+- **GIVEN** a user who signs in with Google, whose identity-provider username
+  is a generated address they never type
+- **WHEN** their session needs an interactive re-authentication (for example,
+  the refresh token expired)
+- **THEN** the identity provider is asked to go straight to Google, and is not
+  given the generated address as a login hint, so the user is never asked for
+  a password for it
+
 ### Requirement: Sign-in from the landing experience reaches the authenticated home experience
 
 When a user signs in starting from the unauthenticated landing page, the
@@ -50,6 +60,14 @@ completes.
 - **WHEN** a user triggers sign-in from the unauthenticated landing page and
   completes it at the identity provider
 - **THEN** the user lands on the authenticated home experience
+
+#### Scenario: Sign-in completes in another tab or browsing context
+
+- **GIVEN** a visitor on the landing page with no session on the device
+- **WHEN** a sign-in completes elsewhere (another tab, or the installed app's
+  in-app browser) and the account appears in the shared token cache
+- **THEN** the landing page moves the visitor on to the authenticated home
+  experience (or the preserved `next` destination)
 
 ### Requirement: Re-authentication from within the application returns the user to the same page
 
