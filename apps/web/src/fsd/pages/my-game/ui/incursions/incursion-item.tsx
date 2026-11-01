@@ -46,6 +46,14 @@ export function IncursionItem({
   const [pickedTier, setPickedTier] = useState<number | null>(null)
   const tierIndex =
     pickedTier ?? nextTierIndex(incursion, progress?.stars ?? (() => 0))
+  // Editing stars pins the tier, so clearing it doesn't switch the explorer to the next one.
+  const tierProgress: TierProgress | undefined = progress && {
+    stars: progress.stars,
+    onStarsChange: (tier, battleId, stars) => {
+      setPickedTier(tier)
+      progress.onStarsChange(tier, battleId, stars)
+    },
+  }
   const testId = `incursion-${incursion.mowId}`
   const name = t(`mows:${incursion.mowId}`, { defaultValue: incursion.mowId })
   const firstRun = new Date(incursion.availableFromUtc).toLocaleDateString(
@@ -131,7 +139,7 @@ export function IncursionItem({
           tierIndex={tierIndex}
           onTierChange={setPickedTier}
           npcsById={npcsById}
-          progress={progress}
+          progress={tierProgress}
           estimates={
             plans.status === "ready"
               ? plans.plans.get(incursion.mowId)?.tiers

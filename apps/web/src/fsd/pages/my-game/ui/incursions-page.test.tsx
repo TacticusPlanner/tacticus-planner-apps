@@ -186,6 +186,24 @@ describe("IncursionsPage", () => {
     )
   })
 
+  it("keeps the open tier while its stars are edited", async () => {
+    const user = userEvent.setup()
+    getProgress.mockResolvedValue({ battles: [], revision: 0 })
+    await renderPage()
+
+    await user.click(
+      await screen.findByTestId("incursion-tauBroadside-trigger")
+    )
+    const item = within(screen.getByTestId("incursion-tauBroadside"))
+    // Winning battle 12 clears Common 1; the explorer stays on it rather than jumping to Mythic 1.
+    await user.click(item.getByTestId("incursion-node-24-stars-1"))
+    expect(item.getByTestId("incursion-replay-rewards")).toBeInTheDocument()
+    expect(item.getByTestId("incursion-node-24")).toBeInTheDocument()
+    expect(item.getByTestId("incursion-tier-select")).toHaveTextContent(
+      "Common 1"
+    )
+  })
+
   it("asks a signed-out visitor to sign in instead of showing progress", async () => {
     await renderPage(incursionsFixture, false)
 
