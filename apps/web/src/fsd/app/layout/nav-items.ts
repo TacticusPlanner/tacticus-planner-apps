@@ -14,9 +14,10 @@ import {
   Users,
 } from "lucide-react"
 
-import { gameMenuIcon } from "@workspace/game-catalog"
+import { eventIcon, gameMenuIcon } from "@workspace/game-catalog"
 
 import { isUiKitEnabled } from "@/shared/config"
+import type { FeatureFlag } from "@/shared/feature-flags"
 
 type NavLabelKey =
   | "nav.home"
@@ -40,6 +41,7 @@ type NavLabelKey =
   | "myGame.tabs.onslaught"
   | "myGame.tabs.campaigns"
   | "myGame.tabs.campaign-events"
+  | "myGame.tabs.incursions"
   | "legendaryEvents.tabs.allEvents"
   | "legendaryEvents.tabs.masterTable"
   | "legendaryEvents.tabs.tierList"
@@ -94,6 +96,8 @@ interface NavSubItemBase {
   // It can only narrow: `filterVisibleNavItems` drops a sign-in-only section before looking at its
   // children, so `true` under such a section does nothing.
   anonymousAllowed?: boolean
+  // Hides this child until the named feature flag is on (resolved by `use-nav-items.ts`).
+  featureFlag?: FeatureFlag
 }
 
 /** A static child, labelled through i18n keys like its section, with an optional icon: the game's
@@ -192,6 +196,14 @@ export const navItems: NavItem[] = [
         labelKey: "myGame.tabs.campaign-events",
         descriptionKey: "myGame.tabs.campaign-eventsDescription",
         anonymousAllowed: false,
+      },
+      {
+        path: "/my-game/incursions",
+        artSrc: eventIcon("incursion", "Incursion"),
+        labelKey: "myGame.tabs.incursions",
+        descriptionKey: "myGame.tabs.incursionsDescription",
+        anonymousAllowed: false,
+        featureFlag: "Incursion",
       },
     ],
   },

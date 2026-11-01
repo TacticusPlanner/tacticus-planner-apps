@@ -4,6 +4,7 @@ import type { BattleId, FactionId } from "@workspace/game-domain"
 import globalValues from "./schemas/global-values.fixture.json"
 import progressionRules from "./schemas/progression-rules.fixture.json"
 import hre from "./schemas/hre.fixture.json"
+import incursions from "./schemas/incursions.fixture.json"
 import questCrates from "./schemas/quest-crates.fixture.json"
 import questEvents from "./schemas/quest-events.fixture.json"
 import {
@@ -1011,6 +1012,46 @@ describe("hre schema", () => {
         {
           ...weirdboy,
           missions: [{ ...weirdboy!.missions[0], tasks: [] }],
+        },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("incursions schema", () => {
+  it("parses the served records", () => {
+    const [broadside] = datasetPayloadSchemas.incursions.parse(incursions)
+    expect(broadside?.mowId).toBe("tauBroadside")
+    expect(broadside?.tokens).toEqual({
+      start: 2,
+      max: 3,
+      regenSeconds: 72001,
+      regenAmount: 1,
+      costPerRun: 1,
+    })
+    expect(broadside?.tiers[0]?.battles[0]?.starRewards).toEqual([
+      "shards_tauBroadside:2",
+      "upgArmC005:2",
+      "upgDmgC015:3",
+    ])
+    expect(broadside?.tiers[0]?.nodes[7]?.chest?.id).toBe(
+      "mowe_tauBroadside_00_01"
+    )
+  })
+
+  it("rejects a battle without three star rewards", () => {
+    const [broadside] = incursions
+    const tier = broadside!.tiers[0]!
+    expect(
+      datasetPayloadSchemas.incursions.safeParse([
+        {
+          ...broadside,
+          tiers: [
+            {
+              ...tier,
+              battles: [{ ...tier.battles[0], starRewards: ["gold:1"] }],
+            },
+          ],
         },
       ]).success
     ).toBe(false)

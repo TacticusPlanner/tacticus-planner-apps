@@ -584,6 +584,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/incursions": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the Machine of War Incursions. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogIncursionsEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/incursions/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the Machine of War Incursions. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogIncursionsEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/lre-battles": {
     parameters: {
       query?: never
@@ -2234,6 +2268,15 @@ export interface components {
       datasetHash: string
       data: null | components["schemas"]["IReadOnlyListOfGameCatalogHre"]
     }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogIncursion: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data: null | components["schemas"]["IReadOnlyListOfGameCatalogIncursion"]
+    }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogLreBattleView: {
       version: string
       schemaHash: string
@@ -2654,6 +2697,82 @@ export interface components {
       pvpScorePointsDifficultyMultiplier: number
       scorePointsEnemyPowerTable: components["schemas"]["IReadOnlyListOfInt64"]
       guildBossScorePointsDamageTableByRarity: components["schemas"]["IReadOnlyDictionaryOfStringAndIReadOnlyListOfInt32"]
+    }
+    GameCatalogIncursion: {
+      mowId: string
+      availableFromUtc: string
+      new: boolean
+      updated: boolean
+      allowedFactions: components["schemas"]["IReadOnlyListOfString"]
+      tokens: components["schemas"]["GameCatalogIncursionTokens"]
+      /** Format: int32 */
+      minUnitsOfGrandAllianceNeeded: number
+      ohSoCloseOffer: components["schemas"]["GameCatalogOhSoCloseOffer"]
+      enhancements: components["schemas"]["IReadOnlyDictionaryOfStringAndGameCatalogIncursionEnhancement"]
+      tiers: components["schemas"]["IReadOnlyListOfGameCatalogIncursionTier"]
+    }
+    GameCatalogIncursionBattle: {
+      id: string
+      boardId: string
+      challenge: boolean
+      /** Format: int32 */
+      difficultyMultiplier: number
+      /** Format: int32 */
+      lightningVictoryTurns: null | number
+      baseRewards: components["schemas"]["IReadOnlyListOfString"]
+      starRewards: components["schemas"]["IReadOnlyListOfString"]
+      enemies: components["schemas"]["IReadOnlyListOfGameCatalogIncursionEnemy"]
+    }
+    GameCatalogIncursionChest: {
+      id: string
+      type: string
+      rewards: components["schemas"]["IReadOnlyListOfString"]
+    }
+    GameCatalogIncursionEnemy: {
+      npcId: string
+      /** Format: int32 */
+      level: number
+      /** Format: int32 */
+      count: number
+    }
+    GameCatalogIncursionEnhancement: {
+      type: string
+      abilityId: null | string
+      /** Format: int32 */
+      unitAmount: null | number
+      stacks: boolean
+    }
+    GameCatalogIncursionNode: {
+      /** Format: int32 */
+      index: number
+      /** Format: int32 */
+      depth: number
+      kind: string
+      name: string
+      battleId: null | string
+      enhancementId: null | string
+      chest: null | components["schemas"]["GameCatalogIncursionChest"]
+      unlockedBy: components["schemas"]["IReadOnlyListOfInt32"]
+      exclusiveWith: components["schemas"]["IReadOnlyListOfInt32"]
+    }
+    GameCatalogIncursionTier: {
+      /** Format: int32 */
+      index: number
+      rarity: string
+      battles: components["schemas"]["IReadOnlyListOfGameCatalogIncursionBattle"]
+      nodes: components["schemas"]["IReadOnlyListOfGameCatalogIncursionNode"]
+    }
+    GameCatalogIncursionTokens: {
+      /** Format: int32 */
+      start: number
+      /** Format: int32 */
+      max: number
+      /** Format: int32 */
+      regenSeconds: number
+      /** Format: int32 */
+      regenAmount: number
+      /** Format: int32 */
+      costPerRun: number
     }
     GameCatalogLreBattleView: {
       id: string
@@ -3436,6 +3555,9 @@ export interface components {
       /** @default false */
       legendaryEventPlans?: boolean
     }
+    IReadOnlyDictionaryOfStringAndGameCatalogIncursionEnhancement: {
+      [key: string]: components["schemas"]["GameCatalogIncursionEnhancement"]
+    }
     IReadOnlyDictionaryOfStringAndGameCatalogRaidBossSeasonView: {
       [key: string]: components["schemas"]["GameCatalogRaidBossSeasonView"]
     }
@@ -3501,6 +3623,11 @@ export interface components {
     IReadOnlyListOfGameCatalogHreMissionTask: components["schemas"]["GameCatalogHreMissionTask"][]
     IReadOnlyListOfGameCatalogHrePhase: components["schemas"]["GameCatalogHrePhase"][]
     IReadOnlyListOfGameCatalogHrePhaseChest: components["schemas"]["GameCatalogHrePhaseChest"][]
+    IReadOnlyListOfGameCatalogIncursion: components["schemas"]["GameCatalogIncursion"][]
+    IReadOnlyListOfGameCatalogIncursionBattle: components["schemas"]["GameCatalogIncursionBattle"][]
+    IReadOnlyListOfGameCatalogIncursionEnemy: components["schemas"]["GameCatalogIncursionEnemy"][]
+    IReadOnlyListOfGameCatalogIncursionNode: components["schemas"]["GameCatalogIncursionNode"][]
+    IReadOnlyListOfGameCatalogIncursionTier: components["schemas"]["GameCatalogIncursionTier"][]
     IReadOnlyListOfGameCatalogLreBattleView: components["schemas"]["GameCatalogLreBattleView"][]
     IReadOnlyListOfGameCatalogLreChestsMilestone: components["schemas"]["GameCatalogLreChestsMilestone"][]
     IReadOnlyListOfGameCatalogLreEnemy: components["schemas"]["GameCatalogLreEnemy"][]
@@ -5765,6 +5892,98 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHre"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogIncursionsEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per Machine of War Incursion, named as the game names it: first availability, the hero factions a run may bring, the run tokens, the Oh So Close offer pricing, the enhancements its run maps use, and per difficulty tier its battles (board, challenge flag, difficulty, Lightning Victory turns, base and 1-3 star rewards, enemies by npc and level) and run-map nodes (battle, enhancement or chest with its rewards; unlockedBy and exclusiveWith node indices). */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogIncursion"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogIncursionsEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per Machine of War Incursion, named as the game names it: first availability, the hero factions a run may bring, the run tokens, the Oh So Close offer pricing, the enhancements its run maps use, and per difficulty tier its battles (board, challenge flag, difficulty, Lightning Victory turns, base and 1-3 star rewards, enemies by npc and level) and run-map nodes (battle, enhancement or chest with its rewards; unlockedBy and exclusiveWith node indices). */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogIncursion"]
         }
       }
       /** @description The dataset has not changed. */

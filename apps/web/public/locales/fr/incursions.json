@@ -1,0 +1,82 @@
+{
+  "loadError": "Impossible de charger les données d'Incursion.",
+  "retry": "Réessayer",
+  "empty": "Pas encore de données d'Incursion. Elles apparaîtront après la prochaine mise à jour des données du jeu.",
+  "rules": {
+    "title": "Fonctionnement des Incursions",
+    "tokens": "Vous commencez avec {{start}} jetons de course et pouvez en garder {{max}} ; un nouveau arrive toutes les {{hours}} heures. Lancer une course coûte {{cost}}.",
+    "team": "Seuls les héros des factions autorisées de la Machine de guerre peuvent participer ; amenez-en au moins {{count}}.",
+    "progress": "Chaque palier est une carte de course : combats, choix d'améliorations et coffres. Une fois une branche choisie, les autres se ferment pour cette course."
+  },
+  "card": {
+    "firstRun": "Première course le {{date}}",
+    "new": "Nouveau",
+    "revamped": "Remanié",
+    "owned": "Possédée",
+    "notOwned": "Non possédée",
+    "allowedFactions": "Factions autorisées",
+    "tier": "Palier",
+    "tierOption": "{{rarity}} {{number}}"
+  },
+  "summary": {
+    "battles_one": "{{count}} combat",
+    "battles_other": "{{count}} combats",
+    "challenges_one": "{{count}} combat de défi",
+    "challenges_other": "{{count}} combats de défi",
+    "chests_one": "{{count}} coffre",
+    "chests_other": "{{count}} coffres",
+    "enhancements_one": "{{count}} choix d'amélioration",
+    "enhancements_other": "{{count}} choix d'amélioration",
+    "bestPath": "Jusqu'à {{shards}} éclats par parcours",
+    "bestPathMythic": "Jusqu'à {{shards}} éclats et {{mythicShards}} éclats mythiques par parcours",
+    "bestPathHint": "Éclats de Machine de guerre des victoires 3 étoiles et des coffres sur le chemin le plus rentable de ce palier."
+  },
+  "map": {
+    "title": "Carte de course",
+    "step": "Étape {{number}}",
+    "pickOne": "Choisissez-en un",
+    "after": "Après {{names}}"
+  },
+  "battle": {
+    "name": "Combat {{name}}",
+    "challenge": "Défi",
+    "difficulty": "Difficulté {{value}} %",
+    "lightningVictory": "Victoire éclair : {{turns}} tours",
+    "enemies": "Ennemis",
+    "everyWin": "Chaque victoire",
+    "stars": "{{count}}★"
+  },
+  "enhancement": {
+    "title": "Amélioration",
+    "stacks": "Cumulable",
+    "type": {
+      "Heal_one": "Soigne {{units}} unité",
+      "Heal_other": "Soigne {{units}} unités",
+      "Resurrect_one": "Ranime {{units}} unité",
+      "Resurrect_other": "Ranime {{units}} unités",
+      "LifeSteal_one": "Vol de vie pour {{units}} unité",
+      "LifeSteal_other": "Vol de vie pour {{units}} unités",
+      "HitBoost_one": "Coup supplémentaire pour {{units}} unité",
+      "HitBoost_other": "Coup supplémentaire pour {{units}} unités",
+      "Regeneration": "Régénération",
+      "Summons": "Invoque {{subject}}",
+      "AddTrait_one": "Ajoute le trait {{subject}} à {{units}} unité",
+      "AddTrait_other": "Ajoute le trait {{subject}} à {{units}} unités",
+      "DamageBoost_one": "Bonus de dégâts pour {{units}} unité",
+      "DamageBoost_other": "Bonus de dégâts pour {{units}} unités",
+      "PierceBoost_one": "Bonus de perforation pour {{units}} unité",
+      "PierceBoost_other": "Bonus de perforation pour {{units}} unités",
+      "CritBoost_one": "Bonus critique pour {{units}} unité",
+      "CritBoost_other": "Bonus critique pour {{units}} unités"
+    }
+  },
+  "chest": {
+    "title": "Coffre {{type}}",
+    "type": {
+      "Bronze": "de bronze",
+      "Silver": "d'argent",
+      "Gold": "d'or",
+      "Diamond": "de diamant"
+    }
+  }
+}

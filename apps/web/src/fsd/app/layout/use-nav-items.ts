@@ -10,6 +10,7 @@ import {
   type LegendaryEventLifecycle,
   type LegendaryEventLifecycleState,
 } from "@/entities/legendary-event"
+import { useEnabledFeatureFlags } from "@/shared/feature-flags"
 import { useUnitName } from "@/shared/unit-name"
 
 import { navItems, type DynamicNavSubItem, type NavItem } from "./nav-items"
@@ -46,6 +47,7 @@ function runDate(
  * the static All events child comes first, then every catalog event in hub order (active,
  * upcoming, archived), each described by its lifecycle; while the catalog read is pending or
  * failed only the static children remain, so every nav surface keeps working without the data.
+ * A child naming a `featureFlag` is dropped while that flag is off.
  */
 export function useNavItems(): NavItem[] {
   const { t, i18n } = useTranslation("common")
@@ -79,15 +81,23 @@ export function useNavItems(): NavItem[] {
     iconSrc: characterIcon(event.id as UnitId),
   }))
   const signature = JSON.stringify(eventChildren)
+  const enabledFlags = useEnabledFeatureFlags()
 
   return useMemo(
     () =>
-      navItems.map((item) =>
-        item.dynamicChildren === "legendaryEvents"
-          ? { ...item, children: [...(item.children ?? []), ...eventChildren] }
-          : item
-      ),
+      navItems.map((item) => {
+        const children = item.children?.filter(
+          (child) =>
+            child.featureFlag === undefined ||
+            enabledFlags.includes(child.featureFlag)
+        )
+        return item.dynamicChildren === "legendaryEvents"
+          ? { ...item, children: [...(children ?? []), ...eventChildren] }
+          : children && children.length !== item.children?.length
+            ? { ...item, children }
+            : item
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by the serialized children
-    [signature]
+    [signature, enabledFlags]
   )
 }

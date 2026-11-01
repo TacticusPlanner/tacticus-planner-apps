@@ -1,0 +1,2333 @@
+[
+  {
+    "mowId": "tauBroadside",
+    "availableFromUtc": "2024-12-02T08:00:00Z",
+    "new": false,
+    "updated": true,
+    "allowedFactions": [
+      "Ultramarines",
+      "Sisterhood",
+      "AstraMilitarum",
+      "BlackTemplars",
+      "SpaceWolves",
+      "DarkAngels",
+      "AdeptusMechanicus",
+      "BloodAngels",
+      "Custodes",
+      "AdeptusAstartes"
+    ],
+    "tokens": {
+      "start": 2,
+      "max": 3,
+      "regenSeconds": 72001,
+      "regenAmount": 1,
+      "costPerRun": 1
+    },
+    "minUnitsOfGrandAllianceNeeded": 3,
+    "ohSoCloseOffer": {
+      "unlock": {
+        "base": 200,
+        "multiplier": 50
+      },
+      "ascension": {
+        "base": 200,
+        "multiplier": 50
+      }
+    },
+    "enhancements": {
+      "AddTrait_04": {
+        "type": "AddTrait",
+        "abilityId": "EnhancementAddTrait:Infiltrate",
+        "unitAmount": 1,
+        "stacks": false
+      },
+      "DamageBoost_01": {
+        "type": "DamageBoost",
+        "abilityId": "EnhancementDamageBoost",
+        "unitAmount": 1,
+        "stacks": true
+      },
+      "Heal_01": {
+        "type": "Heal",
+        "abilityId": null,
+        "unitAmount": 3,
+        "stacks": false
+      },
+      "PierceBoost_01": {
+        "type": "PierceBoost",
+        "abilityId": "EnhancementPierceBoost",
+        "unitAmount": 1,
+        "stacks": true
+      },
+      "Summons_07": {
+        "type": "Summons",
+        "abilityId": "EnhancementSummon:Inceptor",
+        "unitAmount": null,
+        "stacks": true
+      }
+    },
+    "tiers": [
+      {
+        "index": 0,
+        "rarity": "Common",
+        "battles": [
+          {
+            "id": "1",
+            "boardId": "EC3_11",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "shards_tauBroadside:2",
+              "upgArmC005:2",
+              "upgDmgC015:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 4,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 3,
+                "count": 5
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 3,
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "2",
+            "boardId": "MC3_27",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "shards_tauBroadside:2",
+              "upgArmC011:2",
+              "upgArmC005:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 3,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 2,
+                "count": 5
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 2,
+                "count": 3
+              }
+            ]
+          },
+          {
+            "id": "3",
+            "boardId": "C3_44",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "machinesOfWarToken_Xenos:2",
+              "upgDmgC001:2",
+              "upgArmC011:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauBossDarkstriderInc",
+                "level": 5,
+                "count": 1
+              },
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 3,
+                "count": 4
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 2,
+                "count": 3
+              }
+            ]
+          },
+          {
+            "id": "4",
+            "boardId": "MC3_32",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "shards_tauBroadside:2",
+              "upgHpC002:2",
+              "upgDmgC001:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 1,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 1,
+                "count": 3
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 1,
+                "count": 4
+              }
+            ]
+          },
+          {
+            "id": "5",
+            "boardId": "C3_45",
+            "challenge": true,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "upgDmgC005",
+              "shards_tauBroadside:2",
+              "upgHpC002:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 5,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 5,
+                "count": 3
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 5,
+                "count": 5
+              }
+            ]
+          },
+          {
+            "id": "6",
+            "boardId": "EC3_09",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 2,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "upgDmgC007",
+              "upgDmgC005:2",
+              "machinesOfWarToken_Xenos:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 4,
+                "count": 4
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 4,
+                "count": 6
+              }
+            ]
+          },
+          {
+            "id": "7",
+            "boardId": "MC3_53",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 2,
+            "baseRewards": ["gold:40-50"],
+            "starRewards": [
+              "upgDmgC008",
+              "shards_tauBroadside:2",
+              "shards_tauBroadside:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 3,
+                "count": 6
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 4,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 4,
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "8",
+            "boardId": "EC3_04",
+            "challenge": true,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "abilityTokenCommon_Xenos",
+              "abilityTokenCommon_Xenos",
+              "abilityTokenCommon_Xenos"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauBossMarksmanInc",
+                "level": 5,
+                "count": 1
+              },
+              {
+                "npcId": "tauNpc2DroneSniper",
+                "level": 2,
+                "count": 3
+              },
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 4,
+                "count": 1
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 4,
+                "count": 1
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 4,
+                "count": 4
+              }
+            ]
+          },
+          {
+            "id": "9",
+            "boardId": "C2_02",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "machinesOfWarToken_Xenos:3",
+              "upgArmC012:2",
+              "upgDmgC008:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 4,
+                "count": 5
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 5,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 2,
+                "count": 4
+              }
+            ]
+          },
+          {
+            "id": "10",
+            "boardId": "EMC2_02",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "shards_tauBroadside:3",
+              "upgHpC014:2",
+              "upgArmC012:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 5,
+                "count": 4
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 5,
+                "count": 4
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 6,
+                "count": 4
+              }
+            ]
+          },
+          {
+            "id": "11",
+            "boardId": "MC2_75",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "shards_tauBroadside:3",
+              "upgHpC017:2",
+              "upgHpC014:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 5,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 5,
+                "count": 6
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 6,
+                "count": 4
+              }
+            ]
+          },
+          {
+            "id": "12",
+            "boardId": "C2_21",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "machinesOfWarAmmo:10",
+              "upgHpC006:2",
+              "upgHpC017:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 6,
+                "count": 6
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 6,
+                "count": 3
+              }
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "index": 0,
+            "depth": 0,
+            "kind": "battle",
+            "name": "1",
+            "battleId": "1",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [],
+            "exclusiveWith": []
+          },
+          {
+            "index": 1,
+            "depth": 1,
+            "kind": "battle",
+            "name": "2",
+            "battleId": "2",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [0],
+            "exclusiveWith": [2]
+          },
+          {
+            "index": 2,
+            "depth": 1,
+            "kind": "enhancement",
+            "name": "E",
+            "battleId": null,
+            "enhancementId": "Heal_01",
+            "chest": null,
+            "unlockedBy": [0],
+            "exclusiveWith": [1]
+          },
+          {
+            "index": 3,
+            "depth": 2,
+            "kind": "battle",
+            "name": "3",
+            "battleId": "3",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [1, 2],
+            "exclusiveWith": []
+          },
+          {
+            "index": 4,
+            "depth": 3,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "Summons_07",
+            "chest": null,
+            "unlockedBy": [3],
+            "exclusiveWith": [5, 6]
+          },
+          {
+            "index": 5,
+            "depth": 3,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "PierceBoost_01",
+            "chest": null,
+            "unlockedBy": [3],
+            "exclusiveWith": [4, 6]
+          },
+          {
+            "index": 6,
+            "depth": 3,
+            "kind": "enhancement",
+            "name": "E3",
+            "battleId": null,
+            "enhancementId": "AddTrait_04",
+            "chest": null,
+            "unlockedBy": [3],
+            "exclusiveWith": [4, 5]
+          },
+          {
+            "index": 7,
+            "depth": 4,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_tauBroadside_00_01",
+              "type": "Bronze",
+              "rewards": [
+                "machinesOfWarToken_Xenos:2",
+                "abilityTokenCommon_Xenos",
+                "shards_tauBroadside:2"
+              ]
+            },
+            "unlockedBy": [4, 5, 6],
+            "exclusiveWith": []
+          },
+          {
+            "index": 8,
+            "depth": 5,
+            "kind": "battle",
+            "name": "4",
+            "battleId": "4",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [7],
+            "exclusiveWith": [9]
+          },
+          {
+            "index": 9,
+            "depth": 5,
+            "kind": "battle",
+            "name": "4B",
+            "battleId": "5",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [7],
+            "exclusiveWith": [8]
+          },
+          {
+            "index": 10,
+            "depth": 6,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "DamageBoost_01",
+            "chest": null,
+            "unlockedBy": [8],
+            "exclusiveWith": [11, 12]
+          },
+          {
+            "index": 11,
+            "depth": 6,
+            "kind": "battle",
+            "name": "5",
+            "battleId": "6",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [8, 9],
+            "exclusiveWith": [10, 12]
+          },
+          {
+            "index": 12,
+            "depth": 6,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "Summons_07",
+            "chest": null,
+            "unlockedBy": [9],
+            "exclusiveWith": [10, 11]
+          },
+          {
+            "index": 13,
+            "depth": 7,
+            "kind": "battle",
+            "name": "6",
+            "battleId": "7",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [10, 11, 12],
+            "exclusiveWith": []
+          },
+          {
+            "index": 14,
+            "depth": 8,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "PierceBoost_01",
+            "chest": null,
+            "unlockedBy": [13],
+            "exclusiveWith": [15, 16]
+          },
+          {
+            "index": 15,
+            "depth": 8,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "Heal_01",
+            "chest": null,
+            "unlockedBy": [13],
+            "exclusiveWith": [14, 16]
+          },
+          {
+            "index": 16,
+            "depth": 8,
+            "kind": "enhancement",
+            "name": "E3",
+            "battleId": null,
+            "enhancementId": "AddTrait_04",
+            "chest": null,
+            "unlockedBy": [13],
+            "exclusiveWith": [14, 15]
+          },
+          {
+            "index": 17,
+            "depth": 9,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_tauBroadside_00_02",
+              "type": "Silver",
+              "rewards": [
+                "machinesOfWarToken_Xenos:2",
+                "abilityTokenCommon_Xenos",
+                "dust:25"
+              ]
+            },
+            "unlockedBy": [14, 15, 16],
+            "exclusiveWith": []
+          },
+          {
+            "index": 18,
+            "depth": 10,
+            "kind": "battle",
+            "name": "7B",
+            "battleId": "8",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [17],
+            "exclusiveWith": [19]
+          },
+          {
+            "index": 19,
+            "depth": 10,
+            "kind": "battle",
+            "name": "8",
+            "battleId": "9",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [17],
+            "exclusiveWith": [18]
+          },
+          {
+            "index": 20,
+            "depth": 11,
+            "kind": "battle",
+            "name": "9",
+            "battleId": "10",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [18, 19],
+            "exclusiveWith": []
+          },
+          {
+            "index": 21,
+            "depth": 12,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_tauBroadside_00_03",
+              "type": "Bronze",
+              "rewards": [
+                "machinesOfWarToken_Xenos:2",
+                "abilityTokenCommon_Xenos",
+                "shards_tauBroadside:5"
+              ]
+            },
+            "unlockedBy": [20],
+            "exclusiveWith": []
+          },
+          {
+            "index": 22,
+            "depth": 13,
+            "kind": "battle",
+            "name": "10",
+            "battleId": "11",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [21],
+            "exclusiveWith": [23]
+          },
+          {
+            "index": 23,
+            "depth": 13,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "DamageBoost_01",
+            "chest": null,
+            "unlockedBy": [21],
+            "exclusiveWith": [22]
+          },
+          {
+            "index": 24,
+            "depth": 14,
+            "kind": "battle",
+            "name": "11",
+            "battleId": "12",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [22, 23],
+            "exclusiveWith": []
+          },
+          {
+            "index": 25,
+            "depth": 15,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_tauBroadside_00_04",
+              "type": "Gold",
+              "rewards": [
+                "machinesOfWarToken_Xenos:2",
+                "abilityTokenCommon_Xenos",
+                "shards_tauBroadside:8"
+              ]
+            },
+            "unlockedBy": [24],
+            "exclusiveWith": []
+          }
+        ]
+      },
+      {
+        "index": 12,
+        "rarity": "Mythic",
+        "battles": [
+          {
+            "id": "1",
+            "boardId": "EC3_11",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": ["machinesOfWarAmmo:3", "upgDmgL204", "upgHpM003"],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 32,
+                "count": 4
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 30,
+                "count": 8
+              }
+            ]
+          },
+          {
+            "id": "2",
+            "boardId": "MC3_27",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": [
+              "upgDmgE004",
+              "machinesOfWarToken_Xenos:4",
+              "upgHpM004"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 33,
+                "count": 6
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 32,
+                "count": 3
+              }
+            ]
+          },
+          {
+            "id": "3",
+            "boardId": "C3_44",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": ["upgHpE012", "upgArmL204", "shards_tauBroadside:2"],
+            "enemies": [
+              {
+                "npcId": "tauBossDarkstriderInc",
+                "level": 18,
+                "count": 1
+              },
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 33,
+                "count": 6
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 29,
+                "count": 3
+              },
+              {
+                "npcId": "tauNpc2DroneSniper",
+                "level": 33,
+                "count": 1
+              }
+            ]
+          },
+          {
+            "id": "4",
+            "boardId": "MC3_32",
+            "challenge": false,
+            "difficultyMultiplier": 60,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": ["shards_tauBroadside:2", "upgArmL203", "upgHpM004"],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 33,
+                "count": 3
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 34,
+                "count": 9
+              }
+            ]
+          },
+          {
+            "id": "5",
+            "boardId": "C3_45",
+            "challenge": true,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": [
+              "shards_tauBroadside:2",
+              "shards_tauBroadside:3",
+              "machinesOfWarToken_Xenos:10"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauBossMarksmanInc",
+                "level": 18,
+                "count": 1
+              },
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 36,
+                "count": 5
+              },
+              {
+                "npcId": "tauNpc5StealthSuit",
+                "level": 35,
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "6",
+            "boardId": "EC3_09",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": ["shards_tauBroadside", "upgDmgL204", "upgHpM003"],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 33,
+                "count": 4
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 35,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc5StealthSuit",
+                "level": 33,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 35,
+                "count": 1
+              }
+            ]
+          },
+          {
+            "id": "7",
+            "boardId": "MC3_53",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:260-310"],
+            "starRewards": [
+              "upgDmgE004",
+              "upgDmgL003",
+              "shards_tauBroadside:2"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc5StealthSuit",
+                "level": 33,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 34,
+                "count": 3
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 32,
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "8",
+            "boardId": "EC3_04",
+            "challenge": true,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": [
+              "shards_tauBroadside:2",
+              "heroAscensionOrbLegendary_Xenos",
+              "heroAscensionOrbLegendary_Xenos"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauBossFarsightInc",
+                "level": 18,
+                "count": 1
+              },
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 37,
+                "count": 6
+              },
+              {
+                "npcId": "tauNpc5StealthSuit",
+                "level": 35,
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "9",
+            "boardId": "C2_02",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": ["upgArmE010", "shards_tauBroadside:2", "upgHpM004"],
+            "enemies": [
+              {
+                "npcId": "tauBossAunShiInc",
+                "level": 18,
+                "count": 1
+              },
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 33,
+                "count": 4
+              },
+              {
+                "npcId": "tauNpc5StealthSuit",
+                "level": 32,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 34,
+                "count": 5
+              }
+            ]
+          },
+          {
+            "id": "10",
+            "boardId": "EMC2_02",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": [
+              "upgHpE017",
+              "upgDmgL204",
+              "machinesOfWarToken_Xenos:5"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 32,
+                "count": 9
+              }
+            ]
+          },
+          {
+            "id": "11",
+            "boardId": "MC2_75",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": ["shards_tauBroadside:3", "upgDmgL003", "upgHpM003"],
+            "enemies": [
+              {
+                "npcId": "tauNpc5StealthSuit",
+                "level": 32,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 33,
+                "count": 5
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 34,
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "12",
+            "boardId": "C2_21",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": [
+              "upgHpE012",
+              "upgHpL107",
+              "abilityTokenMythic_Xenos"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 33,
+                "count": 4
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 33,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 34,
+                "count": 3
+              },
+              {
+                "npcId": "tauNpc5StealthSuit",
+                "level": 32,
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "13",
+            "boardId": "MC2_30",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": ["shards_tauBroadside:3", "upgDmgL204", "upgHpM003"],
+            "enemies": [
+              {
+                "npcId": "tauNpc5StealthSuit",
+                "level": 32,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 33,
+                "count": 5
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 33,
+                "count": 3
+              }
+            ]
+          },
+          {
+            "id": "14",
+            "boardId": "C2_32",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": [
+              "machinesOfWarToken_Xenos:6",
+              "upgHpL107",
+              "upgHpM004"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 33,
+                "count": 4
+              },
+              {
+                "npcId": "tauNpc6Carnivore",
+                "level": 34,
+                "count": 5
+              },
+              {
+                "npcId": "tauNpc5StealthSuit",
+                "level": 32,
+                "count": 1
+              }
+            ]
+          },
+          {
+            "id": "15",
+            "boardId": "C2_60",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:130-155"],
+            "starRewards": [
+              "upgHpE012",
+              "upgHpL107",
+              "heroAscensionOrbMythic_Xenos"
+            ],
+            "enemies": [
+              {
+                "npcId": "tauBossShadowsunInc",
+                "level": 18,
+                "count": 1
+              },
+              {
+                "npcId": "tauBossCrisisInc",
+                "level": 18,
+                "count": 1
+              },
+              {
+                "npcId": "tauBossAunShiInc",
+                "level": 18,
+                "count": 1
+              },
+              {
+                "npcId": "tauNpc5StealthSuit",
+                "level": 33,
+                "count": 3
+              },
+              {
+                "npcId": "tauNpc1FireWarrior",
+                "level": 35,
+                "count": 2
+              },
+              {
+                "npcId": "tauNpc3DroneShield",
+                "level": 35,
+                "count": 4
+              }
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "index": 0,
+            "depth": 0,
+            "kind": "battle",
+            "name": "1",
+            "battleId": "1",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [],
+            "exclusiveWith": []
+          },
+          {
+            "index": 1,
+            "depth": 1,
+            "kind": "battle",
+            "name": "2",
+            "battleId": "2",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [0],
+            "exclusiveWith": [2]
+          },
+          {
+            "index": 2,
+            "depth": 1,
+            "kind": "enhancement",
+            "name": "E",
+            "battleId": null,
+            "enhancementId": "DamageBoost_01",
+            "chest": null,
+            "unlockedBy": [0],
+            "exclusiveWith": [1]
+          },
+          {
+            "index": 3,
+            "depth": 2,
+            "kind": "battle",
+            "name": "3",
+            "battleId": "3",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [1, 2],
+            "exclusiveWith": []
+          },
+          {
+            "index": 4,
+            "depth": 3,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "Summons_07",
+            "chest": null,
+            "unlockedBy": [3],
+            "exclusiveWith": [5, 6]
+          },
+          {
+            "index": 5,
+            "depth": 3,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "PierceBoost_01",
+            "chest": null,
+            "unlockedBy": [3],
+            "exclusiveWith": [4, 6]
+          },
+          {
+            "index": 6,
+            "depth": 3,
+            "kind": "enhancement",
+            "name": "E3",
+            "battleId": null,
+            "enhancementId": "AddTrait_04",
+            "chest": null,
+            "unlockedBy": [3],
+            "exclusiveWith": [4, 5]
+          },
+          {
+            "index": 7,
+            "depth": 4,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_tauBroadside_12_01",
+              "type": "Bronze",
+              "rewards": [
+                "machinesOfWarToken_Xenos:4",
+                "abilityTokenLegendary_Xenos",
+                "mythicShards_tauBroadside:1"
+              ]
+            },
+            "unlockedBy": [4, 5, 6],
+            "exclusiveWith": []
+          },
+          {
+            "index": 8,
+            "depth": 5,
+            "kind": "battle",
+            "name": "4",
+            "battleId": "4",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [7],
+            "exclusiveWith": [9]
+          },
+          {
+            "index": 9,
+            "depth": 5,
+            "kind": "battle",
+            "name": "4B",
+            "battleId": "5",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [7],
+            "exclusiveWith": [8]
+          },
+          {
+            "index": 10,
+            "depth": 6,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "AddTrait_04",
+            "chest": null,
+            "unlockedBy": [8],
+            "exclusiveWith": [11, 12]
+          },
+          {
+            "index": 11,
+            "depth": 6,
+            "kind": "battle",
+            "name": "5",
+            "battleId": "6",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [8, 9],
+            "exclusiveWith": [10, 12]
+          },
+          {
+            "index": 12,
+            "depth": 6,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "DamageBoost_01",
+            "chest": null,
+            "unlockedBy": [9],
+            "exclusiveWith": [10, 11]
+          },
+          {
+            "index": 13,
+            "depth": 7,
+            "kind": "battle",
+            "name": "6",
+            "battleId": "7",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [10, 11, 12],
+            "exclusiveWith": []
+          },
+          {
+            "index": 14,
+            "depth": 8,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "Summons_07",
+            "chest": null,
+            "unlockedBy": [13],
+            "exclusiveWith": [15]
+          },
+          {
+            "index": 15,
+            "depth": 8,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "Heal_01",
+            "chest": null,
+            "unlockedBy": [13],
+            "exclusiveWith": [14]
+          },
+          {
+            "index": 16,
+            "depth": 9,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_tauBroadside_12_02",
+              "type": "Silver",
+              "rewards": [
+                "machinesOfWarToken_Xenos:4",
+                "abilityTokenLegendary_Xenos",
+                "mythicDust:5"
+              ]
+            },
+            "unlockedBy": [14, 15],
+            "exclusiveWith": []
+          },
+          {
+            "index": 17,
+            "depth": 10,
+            "kind": "battle",
+            "name": "7B",
+            "battleId": "8",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [16],
+            "exclusiveWith": [18]
+          },
+          {
+            "index": 18,
+            "depth": 10,
+            "kind": "battle",
+            "name": "7",
+            "battleId": "9",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [16],
+            "exclusiveWith": [17]
+          },
+          {
+            "index": 19,
+            "depth": 11,
+            "kind": "battle",
+            "name": "8",
+            "battleId": "10",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [17, 18],
+            "exclusiveWith": []
+          },
+          {
+            "index": 20,
+            "depth": 12,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_tauBroadside_12_03",
+              "type": "Gold",
+              "rewards": [
+                "machinesOfWarToken_Xenos:4",
+                "itemAscensionResource_Legendary",
+                "mythicShards_tauBroadside:2"
+              ]
+            },
+            "unlockedBy": [19],
+            "exclusiveWith": []
+          },
+          {
+            "index": 21,
+            "depth": 13,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "DamageBoost_01",
+            "chest": null,
+            "unlockedBy": [20],
+            "exclusiveWith": [22, 23]
+          },
+          {
+            "index": 22,
+            "depth": 13,
+            "kind": "battle",
+            "name": "9",
+            "battleId": "11",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [20],
+            "exclusiveWith": [21, 23]
+          },
+          {
+            "index": 23,
+            "depth": 13,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "AddTrait_04",
+            "chest": null,
+            "unlockedBy": [20],
+            "exclusiveWith": [21, 22]
+          },
+          {
+            "index": 24,
+            "depth": 14,
+            "kind": "battle",
+            "name": "10",
+            "battleId": "12",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [21, 22, 23],
+            "exclusiveWith": []
+          },
+          {
+            "index": 25,
+            "depth": 15,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_tauBroadside_12_04",
+              "type": "Silver",
+              "rewards": [
+                "machinesOfWarToken_Xenos:5",
+                "abilityTokenMythic_Xenos",
+                "mythicDust:5"
+              ]
+            },
+            "unlockedBy": [24],
+            "exclusiveWith": []
+          },
+          {
+            "index": 26,
+            "depth": 16,
+            "kind": "battle",
+            "name": "11",
+            "battleId": "13",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [25],
+            "exclusiveWith": [27]
+          },
+          {
+            "index": 27,
+            "depth": 16,
+            "kind": "enhancement",
+            "name": "E",
+            "battleId": null,
+            "enhancementId": "DamageBoost_01",
+            "chest": null,
+            "unlockedBy": [25],
+            "exclusiveWith": [26]
+          },
+          {
+            "index": 28,
+            "depth": 17,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "PierceBoost_01",
+            "chest": null,
+            "unlockedBy": [26],
+            "exclusiveWith": [29, 30]
+          },
+          {
+            "index": 29,
+            "depth": 17,
+            "kind": "battle",
+            "name": "12",
+            "battleId": "14",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [26, 27],
+            "exclusiveWith": [28, 30]
+          },
+          {
+            "index": 30,
+            "depth": 17,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "Summons_07",
+            "chest": null,
+            "unlockedBy": [27],
+            "exclusiveWith": [28, 29]
+          },
+          {
+            "index": 31,
+            "depth": 18,
+            "kind": "battle",
+            "name": "13",
+            "battleId": "15",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [28, 29, 30],
+            "exclusiveWith": []
+          },
+          {
+            "index": 32,
+            "depth": 19,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_tauBroadside_12_05",
+              "type": "Diamond",
+              "rewards": [
+                "machinesOfWarToken_Xenos:6",
+                "itemAscensionResource_Mythic",
+                "mythicShards_tauBroadside:3"
+              ]
+            },
+            "unlockedBy": [31],
+            "exclusiveWith": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mowId": "necroReanimator",
+    "availableFromUtc": "2026-06-15T08:00:00Z",
+    "new": false,
+    "updated": false,
+    "allowedFactions": [
+      "BlackLegion",
+      "DeathGuard",
+      "ThousandSons",
+      "WorldEaters",
+      "EmperorsChildren",
+      "TheLostAndTheDamned"
+    ],
+    "tokens": {
+      "start": 2,
+      "max": 3,
+      "regenSeconds": 72001,
+      "regenAmount": 1,
+      "costPerRun": 1
+    },
+    "minUnitsOfGrandAllianceNeeded": 3,
+    "ohSoCloseOffer": {
+      "unlock": {
+        "base": 200,
+        "multiplier": 50
+      },
+      "ascension": {
+        "base": 200,
+        "multiplier": 50
+      }
+    },
+    "enhancements": {
+      "AddTrait_02": {
+        "type": "AddTrait",
+        "abilityId": "EnhancementAddTrait:RapidAssault",
+        "unitAmount": 1,
+        "stacks": false
+      },
+      "CritBoost_01": {
+        "type": "CritBoost",
+        "abilityId": "EnhancementCritBoost",
+        "unitAmount": 1,
+        "stacks": false
+      },
+      "HitBoost_01": {
+        "type": "HitBoost",
+        "abilityId": "EnhancementHitBoost",
+        "unitAmount": 1,
+        "stacks": false
+      },
+      "LifeSteal_01": {
+        "type": "LifeSteal",
+        "abilityId": "EnhancementLifeSteal",
+        "unitAmount": 1,
+        "stacks": false
+      },
+      "Regeneration_01": {
+        "type": "Regeneration",
+        "abilityId": "EnhancementRegeneration",
+        "unitAmount": null,
+        "stacks": true
+      }
+    },
+    "tiers": [
+      {
+        "index": 0,
+        "rarity": "Common",
+        "battles": [
+          {
+            "id": "1",
+            "boardId": "MC1_63",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 2,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "shards_necroReanimator:2",
+              "upgHpC009:2",
+              "upgDmgC015:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpc1Warrior",
+                "level": 2,
+                "count": 6
+              }
+            ]
+          },
+          {
+            "id": "2",
+            "boardId": "EMC1_07",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "shards_necroReanimator:2",
+              "upgDmgC007:2",
+              "upgHpC009:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpc1Warrior",
+                "level": 2,
+                "count": 8
+              }
+            ]
+          },
+          {
+            "id": "3",
+            "boardId": "EC1_03",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "machinesOfWarToken_Xenos:2",
+              "upgArmC005:2",
+              "upgDmgC007:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpc1Warrior",
+                "level": 4,
+                "count": 4
+              },
+              {
+                "npcId": "necroNpc5Swarm",
+                "level": 3,
+                "count": 3
+              }
+            ]
+          },
+          {
+            "id": "4",
+            "boardId": "EMC1_03",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "shards_necroReanimator:2",
+              "upgArmC012:2",
+              "upgArmC005:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpc1Warrior",
+                "level": 4,
+                "count": 3
+              },
+              {
+                "npcId": "necroNpc2FlayedOne",
+                "level": 3,
+                "count": 4
+              }
+            ]
+          },
+          {
+            "id": "5",
+            "boardId": "MC1_14",
+            "challenge": true,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "upgArmC003",
+              "shards_necroReanimator:2",
+              "upgArmC012:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpc3Deathmark",
+                "level": 6,
+                "count": 3
+              },
+              {
+                "npcId": "necroNpc2FlayedOne",
+                "level": 5,
+                "count": 4
+              }
+            ]
+          },
+          {
+            "id": "6",
+            "boardId": "MC1_56",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "upgDmgC005",
+              "upgArmC003:2",
+              "machinesOfWarToken_Xenos:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpc1Warrior",
+                "level": 4,
+                "count": 3
+              },
+              {
+                "npcId": "necroNpc2FlayedOne",
+                "level": 4,
+                "count": 4
+              }
+            ]
+          },
+          {
+            "id": "7",
+            "boardId": "MC1_61",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:40-50"],
+            "starRewards": [
+              "upgHpC017",
+              "shards_necroReanimator:2",
+              "shards_necroReanimator:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpc5Swarm",
+                "level": 3,
+                "count": 4
+              },
+              {
+                "npcId": "necroNpc1Warrior",
+                "level": 4,
+                "count": 3
+              }
+            ]
+          },
+          {
+            "id": "8",
+            "boardId": "C1_74",
+            "challenge": true,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "abilityTokenCommon_Xenos",
+              "abilityTokenCommon_Xenos",
+              "abilityTokenCommon_Xenos"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpcSpyder",
+                "level": 2,
+                "count": 1
+              },
+              {
+                "npcId": "necroNpc2FlayedOne",
+                "level": 5,
+                "count": 2
+              },
+              {
+                "npcId": "necroNpc1Warrior",
+                "level": 5,
+                "count": 3
+              },
+              {
+                "npcId": "necroNpc3Deathmark",
+                "level": 5,
+                "count": 2
+              },
+              {
+                "npcId": "necroNpc5Swarm",
+                "level": 4,
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "9",
+            "boardId": "MC1_73",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "machinesOfWarToken_Xenos:3",
+              "upgDmgC008:2",
+              "upgHpC017:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpcWarden",
+                "level": 2,
+                "count": 1
+              },
+              {
+                "npcId": "necroNpc2FlayedOne",
+                "level": 4,
+                "count": 5
+              },
+              {
+                "npcId": "necroNpc1Warrior",
+                "level": 4,
+                "count": 4
+              },
+              {
+                "npcId": "necroNpc5Swarm",
+                "level": 4,
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "10",
+            "boardId": "MC1_70",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 3,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "shards_necroReanimator:3",
+              "upgHpC014:2",
+              "upgDmgC008:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpc2FlayedOne",
+                "level": 4,
+                "count": 5
+              },
+              {
+                "npcId": "necroNpc3Deathmark",
+                "level": 5,
+                "count": 4
+              }
+            ]
+          },
+          {
+            "id": "11",
+            "boardId": "EC1_10",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 4,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "shards_necroReanimator:3",
+              "upgDmgC001:2",
+              "upgHpC014:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpc1Warrior",
+                "level": 4,
+                "count": 3
+              },
+              {
+                "npcId": "necroNpc3Deathmark",
+                "level": 5,
+                "count": 2
+              },
+              {
+                "npcId": "necroNpc5Swarm",
+                "level": 4,
+                "count": 3
+              },
+              {
+                "npcId": "necroNpc2FlayedOne",
+                "level": 4,
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "12",
+            "boardId": "C1_44",
+            "challenge": false,
+            "difficultyMultiplier": 100,
+            "lightningVictoryTurns": 5,
+            "baseRewards": ["gold:20-25"],
+            "starRewards": [
+              "machinesOfWarAmmo:10",
+              "upgDmgC009:2",
+              "upgDmgC001:3"
+            ],
+            "enemies": [
+              {
+                "npcId": "necroNpcOverlord",
+                "level": 2,
+                "count": 1
+              },
+              {
+                "npcId": "necroNpc3Deathmark",
+                "level": 6,
+                "count": 3
+              },
+              {
+                "npcId": "necroNpc1Warrior",
+                "level": 6,
+                "count": 2
+              },
+              {
+                "npcId": "necroNpc5Swarm",
+                "level": 4,
+                "count": 2
+              },
+              {
+                "npcId": "necroNpc2FlayedOne",
+                "level": 4,
+                "count": 2
+              }
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "index": 0,
+            "depth": 0,
+            "kind": "battle",
+            "name": "1",
+            "battleId": "1",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [],
+            "exclusiveWith": []
+          },
+          {
+            "index": 1,
+            "depth": 1,
+            "kind": "battle",
+            "name": "2",
+            "battleId": "2",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [0],
+            "exclusiveWith": [2]
+          },
+          {
+            "index": 2,
+            "depth": 1,
+            "kind": "enhancement",
+            "name": "E",
+            "battleId": null,
+            "enhancementId": "CritBoost_01",
+            "chest": null,
+            "unlockedBy": [0],
+            "exclusiveWith": [1]
+          },
+          {
+            "index": 3,
+            "depth": 2,
+            "kind": "battle",
+            "name": "3",
+            "battleId": "3",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [1, 2],
+            "exclusiveWith": []
+          },
+          {
+            "index": 4,
+            "depth": 3,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "Regeneration_01",
+            "chest": null,
+            "unlockedBy": [3],
+            "exclusiveWith": [5, 6]
+          },
+          {
+            "index": 5,
+            "depth": 3,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "HitBoost_01",
+            "chest": null,
+            "unlockedBy": [3],
+            "exclusiveWith": [4, 6]
+          },
+          {
+            "index": 6,
+            "depth": 3,
+            "kind": "enhancement",
+            "name": "E3",
+            "battleId": null,
+            "enhancementId": "AddTrait_02",
+            "chest": null,
+            "unlockedBy": [3],
+            "exclusiveWith": [4, 5]
+          },
+          {
+            "index": 7,
+            "depth": 4,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_necroReanimator_00_01",
+              "type": "Bronze",
+              "rewards": [
+                "machinesOfWarToken_Xenos:2",
+                "abilityTokenCommon_Xenos",
+                "shards_necroReanimator:2"
+              ]
+            },
+            "unlockedBy": [4, 5, 6],
+            "exclusiveWith": []
+          },
+          {
+            "index": 8,
+            "depth": 5,
+            "kind": "battle",
+            "name": "4",
+            "battleId": "4",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [7],
+            "exclusiveWith": [9]
+          },
+          {
+            "index": 9,
+            "depth": 5,
+            "kind": "battle",
+            "name": "4B",
+            "battleId": "5",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [7],
+            "exclusiveWith": [8]
+          },
+          {
+            "index": 10,
+            "depth": 6,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "LifeSteal_01",
+            "chest": null,
+            "unlockedBy": [8],
+            "exclusiveWith": [11, 12]
+          },
+          {
+            "index": 11,
+            "depth": 6,
+            "kind": "battle",
+            "name": "5",
+            "battleId": "6",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [8, 9],
+            "exclusiveWith": [10, 12]
+          },
+          {
+            "index": 12,
+            "depth": 6,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "HitBoost_01",
+            "chest": null,
+            "unlockedBy": [9],
+            "exclusiveWith": [10, 11]
+          },
+          {
+            "index": 13,
+            "depth": 7,
+            "kind": "battle",
+            "name": "6",
+            "battleId": "7",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [10, 11, 12],
+            "exclusiveWith": []
+          },
+          {
+            "index": 14,
+            "depth": 8,
+            "kind": "enhancement",
+            "name": "E1",
+            "battleId": null,
+            "enhancementId": "HitBoost_01",
+            "chest": null,
+            "unlockedBy": [13],
+            "exclusiveWith": [15, 16]
+          },
+          {
+            "index": 15,
+            "depth": 8,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "CritBoost_01",
+            "chest": null,
+            "unlockedBy": [13],
+            "exclusiveWith": [14, 16]
+          },
+          {
+            "index": 16,
+            "depth": 8,
+            "kind": "enhancement",
+            "name": "E3",
+            "battleId": null,
+            "enhancementId": "AddTrait_02",
+            "chest": null,
+            "unlockedBy": [13],
+            "exclusiveWith": [14, 15]
+          },
+          {
+            "index": 17,
+            "depth": 9,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_necroReanimator_00_02",
+              "type": "Silver",
+              "rewards": [
+                "machinesOfWarToken_Xenos:2",
+                "abilityTokenCommon_Xenos",
+                "dust:25"
+              ]
+            },
+            "unlockedBy": [14, 15, 16],
+            "exclusiveWith": []
+          },
+          {
+            "index": 18,
+            "depth": 10,
+            "kind": "battle",
+            "name": "7B",
+            "battleId": "8",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [17],
+            "exclusiveWith": [19]
+          },
+          {
+            "index": 19,
+            "depth": 10,
+            "kind": "battle",
+            "name": "8",
+            "battleId": "9",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [17],
+            "exclusiveWith": [18]
+          },
+          {
+            "index": 20,
+            "depth": 11,
+            "kind": "battle",
+            "name": "9",
+            "battleId": "10",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [18, 19],
+            "exclusiveWith": []
+          },
+          {
+            "index": 21,
+            "depth": 12,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_necroReanimator_00_03",
+              "type": "Bronze",
+              "rewards": [
+                "machinesOfWarToken_Xenos:2",
+                "abilityTokenCommon_Xenos",
+                "shards_necroReanimator:5"
+              ]
+            },
+            "unlockedBy": [20],
+            "exclusiveWith": []
+          },
+          {
+            "index": 22,
+            "depth": 13,
+            "kind": "battle",
+            "name": "10",
+            "battleId": "11",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [21],
+            "exclusiveWith": [23]
+          },
+          {
+            "index": 23,
+            "depth": 13,
+            "kind": "enhancement",
+            "name": "E2",
+            "battleId": null,
+            "enhancementId": "LifeSteal_01",
+            "chest": null,
+            "unlockedBy": [21],
+            "exclusiveWith": [22]
+          },
+          {
+            "index": 24,
+            "depth": 14,
+            "kind": "battle",
+            "name": "11",
+            "battleId": "12",
+            "enhancementId": null,
+            "chest": null,
+            "unlockedBy": [22, 23],
+            "exclusiveWith": []
+          },
+          {
+            "index": 25,
+            "depth": 15,
+            "kind": "chest",
+            "name": "C",
+            "battleId": null,
+            "enhancementId": null,
+            "chest": {
+              "id": "mowe_necroReanimator_00_04",
+              "type": "Gold",
+              "rewards": [
+                "machinesOfWarToken_Xenos:2",
+                "abilityTokenCommon_Xenos",
+                "shards_necroReanimator:8"
+              ]
+            },
+            "unlockedBy": [24],
+            "exclusiveWith": []
+          }
+        ]
+      }
+    ]
+  }
+]

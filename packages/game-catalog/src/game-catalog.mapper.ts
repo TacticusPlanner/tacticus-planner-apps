@@ -54,6 +54,11 @@ function byUnitId(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.unitId, ...row }))
 }
 
+// incursions has one record per MoW, so the MoW id doubles as the store id.
+function byMowId(data: unknown): Record<string, unknown>[] {
+  return asArray(data).map((row) => ({ id: row.mowId, ...row }))
+}
+
 // quest-events has one record per featured hero, so the hero id doubles as the store id.
 function byFeaturedCharacterId(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.featuredCharacterId, ...row }))
@@ -114,6 +119,7 @@ export const datasetToStorageModels: Record<
   "global-values": (data) => asFixedIdRow("global-values", data),
   "progression-rules": (data) => asFixedIdRow("progression-rules", data),
   hre: asArray,
+  incursions: byMowId,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

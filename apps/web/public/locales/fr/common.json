@@ -355,7 +355,9 @@
       "campaigns": "Campagnes",
       "campaignsDescription": "Votre progression de campagne est synchronisée depuis l'API Tacticus et ne peut pas être modifiée ici.",
       "campaign-events": "Événements de campagne",
-      "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence."
+      "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence.",
+      "incursions": "Incursions",
+      "incursionsDescription": "L'Incursion de chaque Machine de guerre : carte de course, combats, ennemis et récompenses de chaque palier, avec le maximum d'éclats d'un parcours."
     },
     "collection": {
       "loading": "Chargement de votre collection…",
