@@ -46,6 +46,9 @@ export function watchCloseRequest(onClose: () => void) {
  */
 function useCloseOnBack(open: boolean, onClose: () => void) {
   const onCloseRef = React.useRef(onClose)
+  // A watcher fires once. Bumped on each Back so an owner that keeps the overlay open (a dirty
+  // form asking to confirm first) gets a fresh watcher for the next Back press.
+  const [armed, setArmed] = React.useState(0)
 
   React.useEffect(() => {
     onCloseRef.current = onClose
@@ -53,8 +56,11 @@ function useCloseOnBack(open: boolean, onClose: () => void) {
 
   React.useEffect(() => {
     if (!open) return
-    return watchCloseRequest(() => onCloseRef.current())
-  }, [open])
+    return watchCloseRequest(() => {
+      onCloseRef.current()
+      setArmed((count) => count + 1)
+    })
+  }, [open, armed])
 }
 
 /**

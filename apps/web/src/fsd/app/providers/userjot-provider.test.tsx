@@ -501,6 +501,32 @@ describe("UserJotProvider", () => {
       host.remove()
     })
 
+    it("picks up a widget that stayed open while the provider was unmounted", async () => {
+      vi.resetModules()
+      const module = await import("./userjot-provider")
+      const { unmount } = render(
+        <module.UserJotProvider>
+          <Consumer use={module.useUserJot} />
+        </module.UserJotProvider>
+      )
+      await act(async () => {
+        sdkScript()?.dispatchEvent(new Event("load"))
+      })
+      unmount()
+
+      window.uj = {
+        ...window.uj!,
+        close: vi.fn(),
+        getState: () => ({ widget: { open: true } }),
+      }
+      render(
+        <module.UserJotProvider>
+          <Consumer use={module.useUserJot} />
+        </module.UserJotProvider>
+      )
+      expect(live()).toHaveLength(1)
+    })
+
     it("stops watching Back once the widget closes itself", () => {
       window.uj = { ...window.uj!, close: vi.fn() }
       renderProvider()

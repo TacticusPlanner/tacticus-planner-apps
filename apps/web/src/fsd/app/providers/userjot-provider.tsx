@@ -36,6 +36,7 @@ type UserJotSdk = {
   setTheme: (theme: "auto" | "light" | "dark") => void
   setLocale: (locale: string) => Promise<void>
   on: (event: string, handler: (payload?: unknown) => void) => () => void
+  getState?: () => { widget?: { open?: boolean } } | undefined
 }
 
 declare global {
@@ -248,6 +249,11 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   }, [identify])
 
   useEffect(() => {
+    // A widget left open while the shell was unmounted (a trip to a public page) emits no new
+    // `open`, so pick it up here. Only the loaded SDK is asked: the stub would queue the call.
+    if (sdkStatus === "ready" && window.uj?.getState?.()?.widget?.open) {
+      watchBackWhileOpen()
+    }
     const off = onSdkEvent("open", () => {
       watchBackWhileOpen()
       const identifiedAt = identifiedAtRef.current

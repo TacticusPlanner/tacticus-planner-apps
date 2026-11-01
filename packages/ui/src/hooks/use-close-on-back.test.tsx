@@ -97,6 +97,22 @@ describe("Back closes overlays", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
   })
 
+  it("keeps watching Back when the owner keeps the overlay open", () => {
+    const onOpenChange = vi.fn()
+    render(
+      <Dialog open onOpenChange={onOpenChange}>
+        <DialogContent>
+          <DialogTitle>Unsaved</DialogTitle>
+        </DialogContent>
+      </Dialog>
+    )
+
+    pressBack()
+    expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false)
+    expect(screen.getByRole("dialog", { name: "Unsaved" })).toBeInTheDocument()
+    expect(FakeCloseWatcher.live).toHaveLength(1)
+  })
+
   it("closes only the overlay opened last", () => {
     render(
       <Dialog defaultOpen>
