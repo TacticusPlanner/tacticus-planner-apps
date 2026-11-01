@@ -19,6 +19,8 @@ import { watchCloseRequest } from "@workspace/ui/hooks/use-close-on-back"
 import { accountQueries, useCurrentUser } from "@/entities/account"
 import { useTheme, type Theme } from "@/shared/theme"
 
+import { findWidgetBackButton } from "./userjot-back"
+
 type UserJotOpenTarget = {
   to?: "home" | "feedback" | "roadmap" | "updates"
 }
@@ -127,10 +129,10 @@ function onSdkEvent(event: string, handler: (payload?: unknown) => void) {
 const REIDENTIFY_AFTER_MS = 50 * 60 * 1000
 
 // The widget is the SDK's own overlay, outside React, so the Dialog/Sheet/Drawer Back handling
-// does not cover it: while it is open, Android Back closes it instead of leaving the page (or
-// closing the installed app). Watched only when the loaded SDK has a `close` to call, as a guard
-// against the unpinned v3 build dropping it; `open` fires from the real SDK, so the queueing stub
-// (which answers any method name) is gone by then.
+// does not cover it: while it is open, Android Back steps back through its screens and then closes
+// it, instead of leaving the page (or closing the installed app). Watched only when the loaded SDK
+// has a `close` to call, as a guard against the unpinned v3 build dropping it; `open` fires from
+// the real SDK, so the queueing stub (which answers any method name) is gone by then.
 let releaseBackWatcher: (() => void) | undefined
 
 function stopWatchingBack() {
@@ -138,12 +140,21 @@ function stopWatchingBack() {
   releaseBackWatcher = undefined
 }
 
+// Each Back press steps the widget back one screen while its screen has a Back button, and closes
+// it from a screen without one. A watcher fires once, so a press that only stepped back sets up
+// the next one.
 function watchBackWhileOpen() {
   stopWatchingBack()
   if (typeof window.uj?.close !== "function") return
   releaseBackWatcher = watchCloseRequest(() => {
     releaseBackWatcher = undefined
-    window.uj?.close?.()
+    const back = findWidgetBackButton()
+    if (back) {
+      back.click()
+      watchBackWhileOpen()
+    } else {
+      window.uj?.close?.()
+    }
   })
 }
 

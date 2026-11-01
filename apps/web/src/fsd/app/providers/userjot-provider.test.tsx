@@ -477,6 +477,30 @@ describe("UserJotProvider", () => {
       expect(close).toHaveBeenCalledOnce()
     })
 
+    it("steps the widget back a screen before closing it", () => {
+      const close = vi.fn()
+      window.uj = { ...window.uj!, close }
+      const host = document.createElement("div")
+      host.id = "userjot-engage-root"
+      document.body.append(host)
+      const back = document.createElement("button")
+      back.setAttribute("aria-label", "Back")
+      const onBack = vi.fn(() => back.remove())
+      back.addEventListener("click", onBack)
+      host.attachShadow({ mode: "open" }).append(back)
+      renderProvider()
+
+      act(() => listeners.get("open")?.())
+      live().at(-1)?.onclose?.()
+      expect(onBack).toHaveBeenCalledOnce()
+      expect(close).not.toHaveBeenCalled()
+
+      // The press used up its watcher; the next one is already armed and closes the root screen.
+      live().at(-1)?.onclose?.()
+      expect(close).toHaveBeenCalledOnce()
+      host.remove()
+    })
+
     it("stops watching Back once the widget closes itself", () => {
       window.uj = { ...window.uj!, close: vi.fn() }
       renderProvider()
