@@ -25,7 +25,7 @@ type UserJotOpenTarget = {
 
 type UserJotSdk = {
   open: (target?: UserJotOpenTarget) => void
-  /** Undocumented in what we pin; called only when present (see the Back watcher below). */
+  /** Closes the widget (v3 SDK; `toggle` uses it). Optional so a build without it leaves Back alone. */
   close?: () => void
   identify: (
     payload: { token: string } | null
@@ -128,8 +128,9 @@ const REIDENTIFY_AFTER_MS = 50 * 60 * 1000
 
 // The widget is the SDK's own overlay, outside React, so the Dialog/Sheet/Drawer Back handling
 // does not cover it: while it is open, Android Back closes it instead of leaving the page (or
-// closing the installed app). Watched only when the loaded SDK has a `close` to call; `open` fires
-// from the real SDK, so the queueing stub (which answers any method name) is gone by then.
+// closing the installed app). Watched only when the loaded SDK has a `close` to call, as a guard
+// against the unpinned v3 build dropping it; `open` fires from the real SDK, so the queueing stub
+// (which answers any method name) is gone by then.
 let releaseBackWatcher: (() => void) | undefined
 
 function stopWatchingBack() {
