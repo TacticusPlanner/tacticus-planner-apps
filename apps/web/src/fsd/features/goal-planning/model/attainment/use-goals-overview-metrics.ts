@@ -103,6 +103,7 @@ function useComputedGoalsOverviewMetrics(
     mowUpgradeCostsByLevel,
     characterAbilityCostsByLevel,
     getCharacter,
+    getMow,
     getEntityName,
     loading: catalogLoading,
   } = useGoalCatalog()
@@ -153,7 +154,8 @@ function useComputedGoalsOverviewMetrics(
     // Upgrade goals targeting the same material share one stock, in priority order.
     const upgradeStock = allocateUpgradeGoalStock(
       goals.goalsById.values(),
-      inventoryUpgrades
+      inventoryUpgrades,
+      { getCharacter, getMow, playerCharacterById, playerMowById }
     )
     const prerequisiteGoals = [...goals.goalsById.values()].filter(
       (goal) => goal.goalType === "Ascension" || goal.goalType === "Unlock"
@@ -357,6 +359,7 @@ function useComputedGoalsOverviewMetrics(
     mowUpgradeCostsByLevel,
     characterAbilityCostsByLevel,
     getCharacter,
+    getMow,
     getEntityName,
     estimatesByGoalId,
     rankSlotsByGoalId,

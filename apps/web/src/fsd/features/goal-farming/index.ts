@@ -21,6 +21,7 @@ export {
   type UnitCoverage,
 } from "./lib/goal-requirements"
 export {
+  rankGoalSlotItems,
   rankSlotAllocation,
   resourceLabel,
   type RankSlotAllocation,
@@ -102,3 +103,8 @@ export {
   type RaidPlanSummary,
   type UpgradeNeed,
 } from "./model/estimate.domain"
+export {
+  mowAbilityGoalSlotItems,
+  upgradeGoalRangeSlotItems,
+  type GoalSlotItem,
+} from "./lib/upgrade-goal-need"
