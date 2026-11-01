@@ -454,7 +454,7 @@ describe("authentication", () => {
         idTokenClaims: { idp: "google.com" },
       }
 
-      it("goes straight to Google instead of hinting the generated username", async () => {
+      it("shows the sign-in page instead of hinting the generated username, with no domain hint", async () => {
         mocks.instance.getActiveAccount.mockReturnValue(googleAccount)
         mocks.instance.loginRedirect.mockResolvedValue(undefined)
         await auth.initializeAuthentication()
@@ -466,7 +466,6 @@ describe("authentication", () => {
         expect(mocks.instance.setActiveAccount).toHaveBeenLastCalledWith(null)
         expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
           scopes: ["api://planner/access", "email"],
-          domainHint: "google",
         })
       })
 
@@ -495,7 +494,6 @@ describe("authentication", () => {
 
         expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
           scopes: ["api://planner/access", "email"],
-          domainHint: "google",
         })
       })
 
@@ -514,7 +512,6 @@ describe("authentication", () => {
 
         expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
           scopes: ["api://planner/access", "email"],
-          domainHint: "google",
         })
       })
     })
