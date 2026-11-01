@@ -1,5 +1,6 @@
 export {
   createProject,
+  deleteProject,
   updateProject,
   moveProjectGoal,
   updateProjectGoals,

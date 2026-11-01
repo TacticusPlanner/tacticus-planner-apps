@@ -13,7 +13,12 @@ import {
   type PlanEconomy,
   type PlanInputs,
 } from "./plan-inputs"
-import { generateLaneTeams, storedDrafts, type DraftTeam } from "./plan-teams"
+import {
+  generateLaneTeams,
+  memberKey,
+  storedDrafts,
+  type DraftTeam,
+} from "./plan-teams"
 
 /** The user's Teams-step changes the generation keeps (spec: keep the user's edits where they
  *  still apply). */
@@ -147,6 +152,24 @@ export function coversObjectives(
       replacement.objectiveIndexes.includes(index)
     )
   )
+}
+
+/** The objectives a swap adds to the kept team's own units: the indexes a replacement with the same
+ *  members covers beyond the kept team, in order; empty when no replacement has the same members
+ *  (or it covers nothing more), so the swap brings other units. */
+export function objectivesAddedBySameUnits(
+  team: Pick<DraftTeam, "memberUnitIds" | "objectiveIndexes">,
+  replacements: readonly Pick<DraftTeam, "memberUnitIds" | "objectiveIndexes">[]
+): number[] {
+  const members = memberKey(team.memberUnitIds)
+  const same = replacements.find(
+    (replacement) => memberKey(replacement.memberUnitIds) === members
+  )
+  if (!same) return []
+  const covered = new Set(team.objectiveIndexes)
+  return same.objectiveIndexes
+    .filter((index) => !covered.has(index))
+    .toSorted((a, b) => a - b)
 }
 
 /**

@@ -1000,7 +1000,7 @@
       "removed_one": "{{count}} équipe retirée",
       "removed_other": "{{count}} équipes retirées",
       "swap": "Une équipe plus forte pourrait prendre cette place : +{{points}} points",
-      "swapSame": "Ces unités peuvent remplir plus d’objectifs dans une nouvelle équipe : +{{points}} points",
+      "swapSame": "Mêmes unités, qui remplissent aussi {{objectives}} : +{{points}} points",
       "swapAccept": "Échanger",
       "swapSkip": "Garder la mienne",
       "keepCount_one": "Garder mon équipe ({{count}})",

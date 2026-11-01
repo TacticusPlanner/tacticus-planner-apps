@@ -41,6 +41,7 @@ const actionsMock = () => ({
   create: vi.fn().mockResolvedValue({ ...project, projectId: "new" }),
   pending: false,
   save: vi.fn().mockResolvedValue(true),
+  remove: vi.fn(),
 })
 
 function renderSheet(

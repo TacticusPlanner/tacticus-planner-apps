@@ -71,3 +71,30 @@ describe("legendaryEventRunDates", () => {
     ).toBeNull()
   })
 })
+
+describe("legendaryEventRunDates with the catalog", () => {
+  const farsight = {
+    eventStageStartDatesUtc: ["2025-12-28T00:00:00Z", "2026-06-21T00:00:00Z"],
+  }
+
+  it("starts an unannounced run no sooner than the cadence after the latest announced run", () => {
+    // The gap and cycle floors both land on 8 Nov 2026, Bile's announced start: Farsight's run 3
+    // comes five weeks after it.
+    expect(day(legendaryEventRunDates(farsight).starts[2]!.startMs)).toBe(
+      "2026-11-08"
+    )
+    const dates = legendaryEventRunDates(farsight, [uthar, bile, farsight])
+    expect(day(dates.starts[2]!.startMs)).toBe("2026-12-13")
+    expect(day(dates.starts[2]!.guessMs)).toBe("2026-12-13")
+    expect(day(dates.deadlineMs)).toBe("2026-12-20")
+  })
+
+  it("leaves announced runs and later estimates alone", () => {
+    const dates = legendaryEventRunDates(uthar, [uthar, bile, farsight])
+    expect(dates.starts.map((start) => day(start.startMs))).toEqual([
+      "2026-03-08",
+      "2026-10-04",
+      "2027-02-21",
+    ])
+  })
+})

@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   Archive,
@@ -6,6 +7,7 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
+  Trash2,
 } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -19,6 +21,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { formatEstimateDate, useDateLocale } from "@/shared/lib"
 import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../model/use-project-actions"
+import { DeleteProjectDialog } from "./delete-project-dialog"
 import { ProjectTargetChip } from "./project-target-chip"
 
 type Props = {
@@ -63,6 +66,7 @@ export function ProjectRow({
   const dateLocale = useDateLocale()
   const archived = project.status === "Archived"
   const archiveDisabled = actions.pending || project.isDefault
+  const [deleteOpen, setDeleteOpen] = useState(false)
   const projectContent = (
     <>
       <ProjectColorDot color={project.color} />
@@ -222,8 +226,32 @@ export function ProjectRow({
                   : t("goals.project.archive")}
               </DropdownMenuItem>
             )}
+            {/* The Default project is permanent: no delete action exists for it. */}
+            {project.isDefault ? null : (
+              <DropdownMenuItem
+                disabled={actions.pending}
+                onSelect={() => setDeleteOpen(true)}
+                variant="destructive"
+              >
+                <Trash2 />
+                {t("goals.project.delete")}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
+        {project.isDefault ? null : (
+          <DeleteProjectDialog
+            onConfirm={(deleteGoals) =>
+              void actions.remove(project, deleteGoals).then((ok) => {
+                if (ok) setDeleteOpen(false)
+              })
+            }
+            onOpenChange={setDeleteOpen}
+            open={deleteOpen}
+            pending={actions.pending}
+            projectName={project.name}
+          />
+        )}
       </div>
     </li>
   )

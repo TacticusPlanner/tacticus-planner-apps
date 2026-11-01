@@ -11,6 +11,7 @@ import { lastRequest } from "@/test/last-request"
 
 import {
   createProject,
+  deleteProject,
   listProjects,
   moveProjectGoal,
   updateProject,
@@ -35,6 +36,26 @@ describe("project API", () => {
     expect(await lastRequest(fetch)).toMatchObject({
       method: "GET",
       url: "https://api.example/api/v1/projects",
+    })
+  })
+
+  it("maps a project delete to its endpoint", async () => {
+    const fetch = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(() =>
+        Promise.resolve(new Response(null, { status: 204 }))
+      )
+
+    await deleteProject("project-1")
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "DELETE",
+      url: "https://api.example/api/v1/projects/project-1",
+    })
+
+    await deleteProject("project-1", true)
+    expect(await lastRequest(fetch)).toMatchObject({
+      method: "DELETE",
+      url: "https://api.example/api/v1/projects/project-1?deleteGoals=true",
     })
   })
 

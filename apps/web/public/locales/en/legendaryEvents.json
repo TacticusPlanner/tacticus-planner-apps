@@ -1000,7 +1000,7 @@
       "removed_one": "{{count}} team removed",
       "removed_other": "{{count}} teams removed",
       "swap": "A stronger team could take this slot: +{{points}} points",
-      "swapSame": "These units can score more objectives as a new team: +{{points}} points",
+      "swapSame": "Same units, also scoring {{objectives}}: +{{points}} points",
       "swapAccept": "Swap",
       "swapSkip": "Keep mine",
       "keepCount_one": "Keep my team ({{count}})",

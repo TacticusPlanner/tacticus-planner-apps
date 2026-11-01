@@ -27,6 +27,20 @@ export function updateProject(
   )
 }
 
+/** Permanently deletes a custom project. A goal whose only project this was moves to the Default project, or
+ *  with `deleteGoals` is permanently deleted; goals in another project are always kept. The Default project
+ *  itself is a 409 `defaultProjectCannotBeDeleted`. */
+export function deleteProject(projectId: string, deleteGoals = false) {
+  return unwrap(
+    apiClient().DELETE("/api/v1/projects/{projectId}", {
+      params: {
+        path: { projectId },
+        query: deleteGoals ? { deleteGoals } : undefined,
+      },
+    })
+  )
+}
+
 /** Atomically replaces a project's membership. `request.expectedGoalIds` is the membership the user
  * reviewed: a mismatch is a 409 `projectMembershipStale` (see `projectMembershipStaleDetails`); a removal
  * that would leave a goal in no project is a 400 `lastProjectMembership`. Never reorders anything. */
