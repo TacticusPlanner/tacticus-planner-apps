@@ -979,6 +979,12 @@
       "moveToTop": "Move to top",
       "moveUp": "Move up",
       "moveDown": "Move down",
+      "moveToPriority": "Move to priority…",
+      "moveToPriorityTitle": "Move to priority",
+      "moveToPriorityLabel": "Priority (1–{{total}})",
+      "moveToPriorityDescription": "Enter the priority this goal should take, from 1 to {{total}}.",
+      "moveToPriorityConfirm": "Move",
+      "moveToPriorityCancel": "Cancel",
       "movedTo": "Moved to priority {{position}} of {{total}}.",
       "edit": "Edit"
     },

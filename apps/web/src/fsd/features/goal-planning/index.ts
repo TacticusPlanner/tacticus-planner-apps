@@ -9,6 +9,7 @@ export { isGoalsListLoading } from "./model/goals-data/goals-list-loading"
 export { useGoalsMobileModes } from "./model/goals-data/use-goals-mobile-modes"
 export { useGoalsPageReorder } from "./model/goals-data/use-goals-page-reorder"
 export {
+  displacedForPriority,
   goalMenuMoves,
   type GoalMenuMoves,
 } from "./model/goal-order/menu-moves"

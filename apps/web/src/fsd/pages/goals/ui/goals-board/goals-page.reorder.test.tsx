@@ -154,6 +154,11 @@ vi.mock("./goals-list", () => ({
               type="button"
             />
           ) : null}
+          {menuMoves?.get(row.goalId)?.priorityOrder ? (
+            <span data-testid={`menu-priority-order-${row.goalId}`}>
+              {menuMoves.get(row.goalId)!.priorityOrder!.join(",")}
+            </span>
+          ) : null}
           {index > 0 ? (
             <button
               data-testid={`move-up-${row.goalId}`}
@@ -307,6 +312,17 @@ describe("GoalsPage reordering", () => {
       goalId: "e",
       displacedGoalId: "c",
     })
+  })
+
+  it("offers Move to priority over the whole order, even past goals the filter hides", async () => {
+    const user = userEvent.setup()
+    render(<GoalsPage />, { route: "/plan/goals" })
+    await user.click(screen.getByTestId("goals-type-filter"))
+    await user.click(await screen.findByRole("option", { name: "Rank" }))
+
+    expect(screen.getByTestId("menu-priority-order-e")).toHaveTextContent(
+      "a,b,c,d,e"
+    )
   })
 
   it("announces where a row-menu move put the goal", () => {

@@ -18,6 +18,7 @@ import type {
   useGoalActions,
 } from "@/features/goal-planning"
 import { DeleteGoalDialog } from ".//delete-goal-dialog"
+import { MoveToPriorityDialog } from "./move-to-priority-dialog"
 import { toggleGoalStatus, type CascadeContext } from "./goal-row-utils"
 import {
   canRemoveFromProject,
@@ -58,7 +59,8 @@ type Props = {
 }
 
 /** A goal row's single "…" menu, on both platforms: Edit, the priority moves (Move to top / up / down,
- * each only where it has a target), Pause or Resume, the scoped project's
+ * each only where it has a target, then "Move to priority…", which asks for the number in a small
+ * dialog), Pause or Resume, the scoped project's
  * removal (only while the page is scoped to a project), then a destructive Delete gated behind
  * `DeleteGoalDialog`. Removal is an ordinary item that acts at once; Delete is account-wide and confirmed. Reaching a goal's target is computed automatically (see
  * `model/attainment/`), never a manual action here. */
@@ -75,6 +77,7 @@ export function GoalRowActions({
 }: Props) {
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [priorityOpen, setPriorityOpen] = useState(false)
   const goalId = row.goalId
   const pending = actions.pendingIds.has(goalId)
 
@@ -95,6 +98,9 @@ export function GoalRowActions({
         ] as const
       ).filter((item): item is readonly [MoveDirection, string] => !!item[1])
     : []
+
+  const priorityOrder = onMove ? moves?.priorityOrder : undefined
+  const hasMoves = moveItems.length > 0 || !!priorityOrder
 
   const canToggle =
     !reached && (row.status === "Active" || row.status === "Paused")
@@ -120,7 +126,7 @@ export function GoalRowActions({
           >
             {t("goals.actions.edit")}
           </DropdownMenuItem>
-          {moveItems.length > 0 ? <DropdownMenuSeparator /> : null}
+          {hasMoves ? <DropdownMenuSeparator /> : null}
           {moveItems.map(([direction, displacedGoalId]) => (
             <DropdownMenuItem
               key={direction}
@@ -129,8 +135,13 @@ export function GoalRowActions({
               {t(MOVE_LABEL_KEYS[direction])}
             </DropdownMenuItem>
           ))}
+          {priorityOrder ? (
+            <DropdownMenuItem onSelect={() => setPriorityOpen(true)}>
+              {t("goals.actions.moveToPriority")}
+            </DropdownMenuItem>
+          ) : null}
           {/* Delete brings its own separator; only split the moves from items between them. */}
-          {moveItems.length > 0 && (canToggle || projectRemoval) ? (
+          {hasMoves && (canToggle || projectRemoval) ? (
             <DropdownMenuSeparator />
           ) : null}
           {canToggle && row.status === "Active" ? (
@@ -174,6 +185,16 @@ export function GoalRowActions({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {priorityOrder ? (
+        <MoveToPriorityDialog
+          goalId={goalId}
+          onMove={(displacedGoalId) => onMove?.(displacedGoalId)}
+          onOpenChange={setPriorityOpen}
+          open={priorityOpen}
+          priorityOrder={priorityOrder}
+        />
+      ) : null}
 
       <DeleteGoalDialog
         count={1}

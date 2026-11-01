@@ -979,6 +979,12 @@
       "moveToTop": "Ganz nach oben",
       "moveUp": "Nach oben verschieben",
       "moveDown": "Nach unten verschieben",
+      "moveToPriority": "Auf Priorität verschieben…",
+      "moveToPriorityTitle": "Auf Priorität verschieben",
+      "moveToPriorityLabel": "Priorität (1–{{total}})",
+      "moveToPriorityDescription": "Gib die Priorität ein, die dieses Ziel erhalten soll, von 1 bis {{total}}.",
+      "moveToPriorityConfirm": "Verschieben",
+      "moveToPriorityCancel": "Abbrechen",
       "movedTo": "Auf Priorität {{position}} von {{total}} verschoben.",
       "edit": "Bearbeiten"
     },

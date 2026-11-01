@@ -202,6 +202,42 @@ describe("GoalRowActions", () => {
     expect(onMove).toHaveBeenCalledExactlyOnceWith("prev")
   })
 
+  it("moves to a typed priority from the Move to priority dialog", async () => {
+    const user = userEvent.setup()
+    const onMove = vi.fn()
+    render(
+      <Harness
+        moves={{ priorityOrder: ["a", "b", "goal-1", "d"] }}
+        onMove={onMove}
+      />
+    )
+
+    await openMenu(user)
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Move to priority…" })
+    )
+    const dialog = await screen.findByRole("dialog", {
+      name: "Move to priority",
+    })
+    const field = within(dialog).getByRole("spinbutton", {
+      name: "Priority (1–4)",
+    })
+    const move = within(dialog).getByRole("button", { name: "Move" })
+    // Prefilled with the current priority, which is not a move.
+    expect(field).toHaveValue(3)
+    expect(move).toBeDisabled()
+
+    await user.clear(field)
+    await user.type(field, "9")
+    expect(move).toBeDisabled()
+
+    await user.clear(field)
+    await user.type(field, "1{Enter}")
+
+    expect(onMove).toHaveBeenCalledExactlyOnceWith("a")
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+  })
+
   it("offers no priority moves without any", async () => {
     const user = userEvent.setup()
     render(<Harness />)
