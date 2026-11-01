@@ -6,7 +6,8 @@
     "title": "So funktionieren Incursions",
     "tokens": "Du startest mit {{start}} Lauf-Token und kannst bis zu {{max}} halten; alle {{hours}} Stunden kommt eines hinzu. Ein Lauf kostet {{cost}}.",
     "team": "Nur Helden aus den erlaubten Fraktionen der Kriegsmaschine können teilnehmen; bring mindestens {{count}} mit.",
-    "progress": "Jede Stufe ist eine Laufkarte aus Kämpfen, Verstärkungen und Truhen. Wählst du einen Zweig, schließen sich die anderen für diesen Lauf."
+    "progress": "Jede Stufe ist eine Laufkarte aus Kämpfen, Verstärkungen und Truhen. Wählst du einen Zweig, schließen sich die anderen für diesen Lauf.",
+    "replay": "Stufen lassen sich in beliebiger Reihenfolge spielen. Schaden, den deine Helden erleiden, bleibt von Kampf zu Kampf bestehen und wird erst am Ende des Laufs zurückgesetzt. Abgeschlossene Stufen kannst du erneut spielen: 3-Sterne-Kämpfe lassen sich überfallen, Sternbelohnungen gibt es nur einmal, Truhen bei jedem Lauf."
   },
   "card": {
     "firstRun": "Erster Lauf {{date}}",
@@ -44,7 +45,8 @@
     "lightningVictory": "Blitzsieg: {{turns}} Züge",
     "enemies": "Gegner",
     "everyWin": "Jeder Sieg",
-    "stars": "{{count}}★"
+    "stars": "{{count}}★",
+    "starsClaimed": "{{count}}★ (erhalten)"
   },
   "enhancement": {
     "title": "Verstärkung",
@@ -80,13 +82,23 @@
     }
   },
   "progress": {
-    "clearedThrough": "Abgeschlossen bis",
-    "none": "Noch keine",
     "badge": "{{cleared}}/{{total}} abgeschlossen",
-    "remaining": "Noch {{shards}} Splitter in den Stufen, die du nicht abgeschlossen hast",
-    "remainingMythic": "Noch {{shards}} Splitter und {{mythicShards}} mythische Splitter in den Stufen, die du nicht abgeschlossen hast",
-    "allCleared": "Alle Stufen abgeschlossen",
-    "signIn": "Melde dich an, um zu speichern, welche Stufen du abgeschlossen hast.",
+    "tiersCleared": "{{cleared}} von {{total}} Stufen abgeschlossen",
+    "remaining": "Noch {{shards}} Splitter aus Kampfsternen zu verdienen",
+    "remainingMythic": "Noch {{shards}} Splitter und {{mythicShards}} mythische Splitter aus Kampfsternen zu verdienen",
+    "allClaimed": "Alle Sternbelohnungen erhalten",
+    "howTo": "Trage auf der Laufkarte die Sterne ein, die du in jedem Kampf verdient hast. Eine Stufe gilt als abgeschlossen, sobald du einen Kampf ihres letzten Schritts gewonnen hast.",
+    "starsEarned": "Deine Sterne",
+    "starsFor": "Verdiente Sterne für {{battle}}",
+    "stars_one": "{{count}} Stern",
+    "stars_other": "{{count}} Sterne",
+    "raidable": "Überfallbar",
+    "raidableHint": "Mit 3 Sternen abgeschlossen, spätere Läufe können ihn überfallen.",
+    "replayTitle": "Jede Wiederholung bringt",
+    "replayHint": "Du hast diese Stufe abgeschlossen, Wiederholungen bringen nur noch die Truhen; Sternbelohnungen gibt es nur einmal.",
+    "tierOneTime": "Noch {{shards}} einmalige Splitter in dieser Stufe",
+    "tierOneTimeMythic": "Noch {{shards}} Splitter und {{mythicShards}} mythische Splitter in dieser Stufe, nur einmal",
+    "signIn": "Melde dich an, um die Sterne jedes Kampfes zu speichern.",
     "loadError": "Dein Incursion-Fortschritt konnte nicht geladen werden.",
     "saved": "Incursion-Fortschritt gespeichert.",
     "conflict": "Der Incursion-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen; wende deine Änderung erneut an.",
@@ -102,5 +114,24 @@
       "stay": "Bleiben",
       "leave": "Verlassen"
     }
+  },
+  "team": {
+    "title": "Teamvorschlag",
+    "power": "Macht {{power}}",
+    "sustain": "Mit Heiler",
+    "sustainHint": "Schaden bleibt zwischen Kämpfen bestehen, daher ersetzt ein Heiler (oder ein Mechaniker mit mechanischem Verbündeten) das schwächste Mitglied, wenn die stärksten Helden keinen haben.",
+    "clearable_one": "Schafft voraussichtlich {{count}} von {{total}} Stufen, bis {{tier}}",
+    "clearable_other": "Schafft voraussichtlich {{count}} von {{total}} Stufen, bis {{tier}}",
+    "clearableNone": "Schafft voraussichtlich noch keine Stufe.",
+    "hint": "Unkalibrierte Schätzung aus deinem synchronisierten Kader: die stärksten Helden der erlaubten Fraktionen gegen den leichtesten Weg durch jede Stufe, wobei LP von Kampf zu Kampf erhalten bleiben.",
+    "tooFew_one": "Du brauchst mindestens {{count}} Helden aus den erlaubten Fraktionen.",
+    "tooFew_other": "Du brauchst mindestens {{count}} Helden aus den erlaubten Fraktionen.",
+    "unsynced": "Synchronisiere deinen Kader, um einen Teamvorschlag und die schaffbaren Stufen zu sehen.",
+    "noPower": "Machtschätzungen sind gerade nicht verfügbar."
+  },
+  "estimate": {
+    "clears": "Teamvorschlag: voraussichtlich geschafft mit etwa {{hp}} % LP übrig",
+    "stops": "Teamvorschlag: scheitert voraussichtlich in Kampf {{battle}} von {{total}}",
+    "hint": "Schaden bleibt zwischen Kämpfen bestehen, bis der Lauf endet."
   }
 }

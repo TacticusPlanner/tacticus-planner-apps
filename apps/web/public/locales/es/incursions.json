@@ -6,7 +6,8 @@
     "title": "Cómo funcionan las Incursiones",
     "tokens": "Empiezas con {{start}} fichas de partida y puedes tener hasta {{max}}; llega una más cada {{hours}} horas. Empezar una partida cuesta {{cost}}.",
     "team": "Solo pueden participar héroes de las facciones permitidas de la Máquina de Guerra; lleva al menos {{count}}.",
-    "progress": "Cada nivel es un mapa de partida: batallas, mejoras a elegir y cofres. Al elegir una rama, las demás se cierran en esa partida."
+    "progress": "Cada nivel es un mapa de partida: batallas, mejoras a elegir y cofres. Al elegir una rama, las demás se cierran en esa partida.",
+    "replay": "Los niveles se pueden jugar en cualquier orden. El daño que reciben tus héroes se mantiene de una batalla a otra y solo se restablece al terminar la partida. Un nivel completado se puede repetir: las batallas de 3 estrellas se pueden asaltar, las recompensas de estrellas se pagan una sola vez y los cofres en cada partida."
   },
   "card": {
     "firstRun": "Primera partida el {{date}}",
@@ -44,7 +45,8 @@
     "lightningVictory": "Victoria relámpago: {{turns}} turnos",
     "enemies": "Enemigos",
     "everyWin": "Cada victoria",
-    "stars": "{{count}}★"
+    "stars": "{{count}}★",
+    "starsClaimed": "{{count}}★ (obtenida)"
   },
   "enhancement": {
     "title": "Mejora",
@@ -80,13 +82,23 @@
     }
   },
   "progress": {
-    "clearedThrough": "Completado hasta",
-    "none": "Ninguno aún",
     "badge": "{{cleared}}/{{total}} completados",
-    "remaining": "Quedan {{shards}} fragmentos en los niveles que no has completado",
-    "remainingMythic": "Quedan {{shards}} fragmentos y {{mythicShards}} fragmentos míticos en los niveles que no has completado",
-    "allCleared": "Todos los niveles completados",
-    "signIn": "Inicia sesión para guardar qué niveles has completado.",
+    "tiersCleared": "{{cleared}} de {{total}} niveles completados",
+    "remaining": "Quedan {{shards}} fragmentos por ganar con estrellas de batalla",
+    "remainingMythic": "Quedan {{shards}} fragmentos y {{mythicShards}} fragmentos míticos por ganar con estrellas de batalla",
+    "allClaimed": "Todas las recompensas de estrellas obtenidas",
+    "howTo": "Marca en el mapa de partida las estrellas que ganaste en cada batalla. Un nivel cuenta como completado cuando ganas una batalla de su último paso.",
+    "starsEarned": "Tus estrellas",
+    "starsFor": "Estrellas ganadas en {{battle}}",
+    "stars_one": "{{count}} estrella",
+    "stars_other": "{{count}} estrellas",
+    "raidable": "Asaltable",
+    "raidableHint": "Completada con 3 estrellas: las partidas siguientes pueden asaltarla.",
+    "replayTitle": "Cada repetición da",
+    "replayHint": "Completaste este nivel: las repeticiones solo dan sus cofres; las recompensas de estrellas se pagan una vez.",
+    "tierOneTime": "Quedan {{shards}} fragmentos únicos en este nivel",
+    "tierOneTimeMythic": "Quedan {{shards}} fragmentos y {{mythicShards}} fragmentos míticos en este nivel, una sola vez",
+    "signIn": "Inicia sesión para guardar las estrellas de cada batalla.",
     "loadError": "No se pudo cargar tu progreso de Incursión.",
     "saved": "Progreso de Incursión guardado.",
     "conflict": "El progreso de Incursión cambió en otro lugar. Se cargaron los valores más recientes; aplica tu cambio de nuevo.",
@@ -102,5 +114,24 @@
       "stay": "Quedarme",
       "leave": "Salir"
     }
+  },
+  "team": {
+    "title": "Equipo sugerido",
+    "power": "Poder {{power}}",
+    "sustain": "Con sanador",
+    "sustainHint": "El daño se mantiene entre batallas, así que un sanador (o un mecánico con un aliado mecánico) sustituye al miembro más débil si los héroes más fuertes no tienen uno.",
+    "clearable_one": "Se estima que completa {{count}} de {{total}} niveles, hasta {{tier}}",
+    "clearable_other": "Se estima que completa {{count}} de {{total}} niveles, hasta {{tier}}",
+    "clearableNone": "Aún no se estima que complete ningún nivel.",
+    "hint": "Estimación sin calibrar a partir de tu plantilla sincronizada: los héroes más fuertes de las facciones permitidas contra el camino más fácil de cada nivel, con la salud que se mantiene de una batalla a otra.",
+    "tooFew_one": "Necesitas al menos {{count}} héroe de las facciones permitidas.",
+    "tooFew_other": "Necesitas al menos {{count}} héroes de las facciones permitidas.",
+    "unsynced": "Sincroniza tu plantilla para ver un equipo sugerido y qué niveles puede completar.",
+    "noPower": "Las estimaciones de poder no están disponibles ahora."
+  },
+  "estimate": {
+    "clears": "Equipo sugerido: se estima que completa con un {{hp}} % de salud restante",
+    "stops": "Equipo sugerido: se estima que cae en la batalla {{battle}} de {{total}}",
+    "hint": "El daño se mantiene entre batallas hasta que termina la partida."
   }
 }

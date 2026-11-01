@@ -41,7 +41,11 @@ async function renderPage(
 describe("IncursionsPage", () => {
   beforeEach(() => {
     getProgress.mockReset().mockResolvedValue({
-      progress: [{ mowId: "tauBroadside", tiersCleared: 1 }],
+      // Common 1 cleared (battle 12 is its last step); battle 1 of Mythic 1 at 3 stars.
+      battles: [
+        { mowId: "tauBroadside", tierIndex: 0, battleId: "12", stars: 1 },
+        { mowId: "tauBroadside", tierIndex: 12, battleId: "1", stars: 3 },
+      ],
       revision: 4,
     })
     saveProgress
@@ -72,9 +76,24 @@ describe("IncursionsPage", () => {
     ).toHaveTextContent("Not owned")
   })
 
+  it("asks for a roster sync before suggesting a team", async () => {
+    const user = userEvent.setup()
+    await renderPage()
+
+    await user.click(
+      await screen.findByTestId("incursion-tauBroadside-trigger")
+    )
+    expect(
+      await screen.findByTestId("incursion-tauBroadside-team")
+    ).toHaveTextContent("Sync your roster to see a suggested team")
+    expect(
+      screen.queryByTestId("incursion-tier-estimate")
+    ).not.toBeInTheDocument()
+  })
+
   it("shows a tier's totals and run map, and switches tiers", async () => {
     const user = userEvent.setup()
-    getProgress.mockResolvedValue({ progress: [], revision: 0 })
+    getProgress.mockResolvedValue({ battles: [], revision: 0 })
     await renderPage()
 
     await user.click(
@@ -108,7 +127,7 @@ describe("IncursionsPage", () => {
     expect(await screen.findByTestId("incursions-empty")).toBeInTheDocument()
   })
 
-  it("opens on the next tier, shows what's left and saves the tiers cleared", async () => {
+  it("opens on the next tier, shows what's left and saves battle stars", async () => {
     const user = userEvent.setup()
     await renderPage()
 
@@ -120,25 +139,68 @@ describe("IncursionsPage", () => {
     ).toHaveTextContent("0/1 cleared")
     await user.click(screen.getByTestId("incursion-tauBroadside-trigger"))
     const item = within(screen.getByTestId("incursion-tauBroadside"))
+    expect(item.getByTestId("incursion-progress-tiers")).toHaveTextContent(
+      "1 of 2 tiers cleared"
+    )
+    // 41 star-reward shards in all, less battle 12 of Common 1 (none) and battle 1 of Mythic 1 (none).
+    expect(item.getByTestId("incursion-progress-remaining")).toHaveTextContent(
+      "41 shards left to earn from battle stars"
+    )
+    // Opens on Mythic 1, the first tier not cleared; its battle 1 is raidable.
     expect(item.getByTestId("incursion-best-path")).toHaveTextContent(
       "Up to 18 shards and 6 mythic shards per clear"
     )
-    expect(item.getByTestId("incursion-progress-remaining")).toHaveTextContent(
-      "18 shards and 6 mythic shards left in the tiers you haven't cleared"
+    expect(item.getByTestId("incursion-node-0-raidable")).toBeInTheDocument()
+    expect(item.getByTestId("incursion-tier-one-time")).toHaveTextContent(
+      "22 one-time shards left in this tier"
     )
 
-    await user.click(item.getByTestId("incursion-progress-select"))
-    await user.click(await screen.findByRole("option", { name: "None yet" }))
+    // Common 1 is cleared, so a replay pays only its chests.
+    await user.click(item.getByTestId("incursion-tier-select"))
+    await user.click(await screen.findByRole("option", { name: "Common 1" }))
+    expect(item.getByTestId("incursion-replay-rewards")).toBeInTheDocument()
+    expect(item.queryByTestId("incursion-best-path")).not.toBeInTheDocument()
+
+    await user.click(item.getByTestId("incursion-node-24-stars-0"))
+    expect(item.getByTestId("incursion-progress-tiers")).toHaveTextContent(
+      "0 of 2 tiers cleared"
+    )
+    expect(item.getByTestId("incursion-best-path")).toBeInTheDocument()
+    await user.click(item.getByTestId("incursion-node-0-stars-3"))
     expect(item.getByTestId("incursion-progress-remaining")).toHaveTextContent(
-      "50 shards and 6 mythic shards left"
+      "39 shards left"
     )
     await user.click(await screen.findByRole("button", { name: "Save" }))
 
     await waitFor(() =>
-      expect(saveProgress).toHaveBeenCalledWith({ progress: [], revision: 4 })
+      expect(saveProgress).toHaveBeenCalledWith({
+        battles: [
+          { mowId: "tauBroadside", tierIndex: 12, battleId: "1", stars: 3 },
+          { mowId: "tauBroadside", tierIndex: 0, battleId: "1", stars: 3 },
+        ],
+        revision: 4,
+      })
     )
     expect(await screen.findByTestId("incursions-message")).toHaveTextContent(
       "Incursion progress saved."
+    )
+  })
+
+  it("keeps the open tier while its stars are edited", async () => {
+    const user = userEvent.setup()
+    getProgress.mockResolvedValue({ battles: [], revision: 0 })
+    await renderPage()
+
+    await user.click(
+      await screen.findByTestId("incursion-tauBroadside-trigger")
+    )
+    const item = within(screen.getByTestId("incursion-tauBroadside"))
+    // Winning battle 12 clears Common 1; the explorer stays on it rather than jumping to Mythic 1.
+    await user.click(item.getByTestId("incursion-node-24-stars-1"))
+    expect(item.getByTestId("incursion-replay-rewards")).toBeInTheDocument()
+    expect(item.getByTestId("incursion-node-24")).toBeInTheDocument()
+    expect(item.getByTestId("incursion-tier-select")).toHaveTextContent(
+      "Common 1"
     )
   })
 

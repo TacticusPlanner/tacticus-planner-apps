@@ -6,7 +6,8 @@
     "title": "Fonctionnement des Incursions",
     "tokens": "Vous commencez avec {{start}} jetons de course et pouvez en garder {{max}} ; un nouveau arrive toutes les {{hours}} heures. Lancer une course coûte {{cost}}.",
     "team": "Seuls les héros des factions autorisées de la Machine de guerre peuvent participer ; amenez-en au moins {{count}}.",
-    "progress": "Chaque palier est une carte de course : combats, choix d'améliorations et coffres. Une fois une branche choisie, les autres se ferment pour cette course."
+    "progress": "Chaque palier est une carte de course : combats, choix d'améliorations et coffres. Une fois une branche choisie, les autres se ferment pour cette course.",
+    "replay": "Les paliers se jouent dans n'importe quel ordre. Les dégâts subis par vos héros sont conservés d'un combat à l'autre et ne sont réinitialisés qu'à la fin de la course. Un palier terminé peut être rejoué : les combats à 3 étoiles peuvent être raidés, les récompenses d'étoiles ne sont versées qu'une fois et les coffres à chaque course."
   },
   "card": {
     "firstRun": "Première course le {{date}}",
@@ -44,7 +45,8 @@
     "lightningVictory": "Victoire éclair : {{turns}} tours",
     "enemies": "Ennemis",
     "everyWin": "Chaque victoire",
-    "stars": "{{count}}★"
+    "stars": "{{count}}★",
+    "starsClaimed": "{{count}}★ (obtenu)"
   },
   "enhancement": {
     "title": "Amélioration",
@@ -80,13 +82,23 @@
     }
   },
   "progress": {
-    "clearedThrough": "Terminé jusqu'à",
-    "none": "Aucun pour l'instant",
     "badge": "{{cleared}}/{{total}} terminés",
-    "remaining": "{{shards}} éclats restants dans les paliers non terminés",
-    "remainingMythic": "{{shards}} éclats et {{mythicShards}} éclats mythiques restants dans les paliers non terminés",
-    "allCleared": "Tous les paliers terminés",
-    "signIn": "Connectez-vous pour enregistrer les paliers terminés.",
+    "tiersCleared": "{{cleared}} paliers terminés sur {{total}}",
+    "remaining": "{{shards}} éclats restant à gagner via les étoiles de combat",
+    "remainingMythic": "{{shards}} éclats et {{mythicShards}} éclats mythiques restant à gagner via les étoiles de combat",
+    "allClaimed": "Toutes les récompenses d'étoiles obtenues",
+    "howTo": "Indiquez sur la carte de course les étoiles obtenues dans chaque combat. Un palier est terminé dès que vous avez gagné un combat de sa dernière étape.",
+    "starsEarned": "Vos étoiles",
+    "starsFor": "Étoiles obtenues sur {{battle}}",
+    "stars_one": "{{count}} étoile",
+    "stars_other": "{{count}} étoiles",
+    "raidable": "Raidable",
+    "raidableHint": "Terminé avec 3 étoiles : les courses suivantes peuvent le raider.",
+    "replayTitle": "Chaque nouvelle course rapporte",
+    "replayHint": "Vous avez terminé ce palier : les nouvelles courses ne rapportent que ses coffres ; les récompenses d'étoiles ne sont versées qu'une fois.",
+    "tierOneTime": "{{shards}} éclats uniques restants dans ce palier",
+    "tierOneTimeMythic": "{{shards}} éclats et {{mythicShards}} éclats mythiques restants dans ce palier, une seule fois",
+    "signIn": "Connectez-vous pour enregistrer les étoiles obtenues dans chaque combat.",
     "loadError": "Impossible de charger votre progression d'Incursion.",
     "saved": "Progression d'Incursion enregistrée.",
     "conflict": "La progression d'Incursion a changé ailleurs. Les dernières valeurs ont été chargées ; réappliquez votre modification.",
@@ -102,5 +114,24 @@
       "stay": "Rester",
       "leave": "Quitter"
     }
+  },
+  "team": {
+    "title": "Équipe suggérée",
+    "power": "Puissance {{power}}",
+    "sustain": "Avec soigneur",
+    "sustainHint": "Les dégâts sont conservés entre les combats : un soigneur (ou un mécanicien avec un allié mécanique) remplace le membre le plus faible si les héros les plus forts n'en ont pas.",
+    "clearable_one": "Devrait terminer {{count}} palier sur {{total}}, jusqu'à {{tier}}",
+    "clearable_other": "Devrait terminer {{count}} paliers sur {{total}}, jusqu'à {{tier}}",
+    "clearableNone": "Ne devrait encore terminer aucun palier.",
+    "hint": "Estimation non calibrée à partir de votre roster synchronisé : les héros les plus forts des factions autorisées contre le chemin le plus facile de chaque palier, les PV étant conservés d'un combat à l'autre.",
+    "tooFew_one": "Il vous faut au moins {{count}} héros des factions autorisées.",
+    "tooFew_other": "Il vous faut au moins {{count}} héros des factions autorisées.",
+    "unsynced": "Synchronisez votre roster pour voir une équipe suggérée et les paliers qu'elle peut terminer.",
+    "noPower": "Les estimations de puissance sont indisponibles pour le moment."
+  },
+  "estimate": {
+    "clears": "Équipe suggérée : devrait terminer avec environ {{hp}} % de PV restants",
+    "stops": "Équipe suggérée : devrait tomber au combat {{battle}} sur {{total}}",
+    "hint": "Les dégâts sont conservés entre les combats jusqu'à la fin de la course."
   }
 }

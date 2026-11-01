@@ -13,37 +13,47 @@ import { Badge } from "@workspace/ui/components/badge"
 import { useDateLocale } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
-import { nextTierIndex } from "../../model/incursion-progress.model"
+import {
+  clearedTierCount,
+  nextTierIndex,
+} from "../../model/incursion-progress.model"
 import type { Incursion } from "../../model/incursions.model"
+import type { IncursionPlans } from "../../model/use-incursion-plans"
 import { IncursionProgressControl } from "./incursion-progress-control"
-import { IncursionTierView } from "./incursion-tier-view"
-
-/** The player's saved tiers for this MoW and how to change them; absent while signed out. */
-export type IncursionItemProgress = {
-  tiersCleared: number
-  onChange: (tiersCleared: number) => void
-}
+import { IncursionTeam } from "./incursion-team"
+import { IncursionTierView, type TierProgress } from "./incursion-tier-view"
 
 /**
- * One MoW's Incursion as an accordion row: its header, the player's progress, allowed factions and
- * tier explorer. The explorer opens on the next tier to play until the player picks another.
+ * One MoW's Incursion as an accordion row: its header, the player's progress, allowed factions, the
+ * suggested team and the tier explorer. The explorer opens on the next tier to play until the player picks another.
  */
 export function IncursionItem({
   incursion,
   owned,
   npcsById,
   progress,
+  plans,
 }: {
   incursion: Incursion
   owned: boolean
   npcsById: ReadonlyMap<string, NpcStorageModel>
-  progress?: IncursionItemProgress
+  progress?: TierProgress
+  /** Suggested teams and tier estimates for every MoW. */
+  plans: IncursionPlans
 }) {
   const { t } = useTranslation(["incursions", "mows", "factions"])
   const dateLocale = useDateLocale()
   const [pickedTier, setPickedTier] = useState<number | null>(null)
   const tierIndex =
-    pickedTier ?? nextTierIndex(incursion, progress?.tiersCleared ?? 0)
+    pickedTier ?? nextTierIndex(incursion, progress?.stars ?? (() => 0))
+  // Editing stars pins the tier, so clearing it doesn't switch the explorer to the next one.
+  const tierProgress: TierProgress | undefined = progress && {
+    stars: progress.stars,
+    onStarsChange: (tier, battleId, stars) => {
+      setPickedTier(tier)
+      progress.onStarsChange(tier, battleId, stars)
+    },
+  }
   const testId = `incursion-${incursion.mowId}`
   const name = t(`mows:${incursion.mowId}`, { defaultValue: incursion.mowId })
   const firstRun = new Date(incursion.availableFromUtc).toLocaleDateString(
@@ -84,7 +94,7 @@ export function IncursionItem({
                   data-testid={`${testId}-cleared`}
                 >
                   {t("progress.badge", {
-                    cleared: progress.tiersCleared,
+                    cleared: clearedTierCount(incursion, progress.stars),
                     total: incursion.tiers.length,
                   })}
                 </Badge>
@@ -100,8 +110,7 @@ export function IncursionItem({
         {progress ? (
           <IncursionProgressControl
             incursion={incursion}
-            tiersCleared={progress.tiersCleared}
-            onChange={progress.onChange}
+            stars={progress.stars}
           />
         ) : null}
         <div className="space-y-2">
@@ -124,11 +133,18 @@ export function IncursionItem({
             })}
           </ul>
         </div>
+        <IncursionTeam incursion={incursion} plans={plans} />
         <IncursionTierView
           incursion={incursion}
           tierIndex={tierIndex}
           onTierChange={setPickedTier}
           npcsById={npcsById}
+          progress={tierProgress}
+          estimates={
+            plans.status === "ready"
+              ? plans.plans.get(incursion.mowId)?.tiers
+              : undefined
+          }
         />
       </AccordionContent>
     </AccordionItem>

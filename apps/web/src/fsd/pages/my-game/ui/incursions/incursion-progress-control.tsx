@@ -1,74 +1,50 @@
-import { useId } from "react"
 import { useTranslation } from "react-i18next"
-import { Label } from "@workspace/ui/components/label"
+
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
-
-import { remainingShards } from "../../model/incursion-progress.model"
+  clearedTierCount,
+  remainingShards,
+  type TierStars,
+} from "../../model/incursion-progress.model"
 import type { Incursion } from "../../model/incursions.model"
-import { useTierName } from "./use-tier-name"
 
-/** "Cleared through" picker for one MoW and the shards its uncleared tiers still pay. */
+/**
+ * One MoW's progress at a glance: tiers cleared and the one-time star-reward shards still on offer.
+ * Stars are set on each battle in the run map below.
+ */
 export function IncursionProgressControl({
   incursion,
-  tiersCleared,
-  onChange,
+  stars,
 }: {
   incursion: Incursion
-  tiersCleared: number
-  onChange: (tiersCleared: number) => void
+  stars: TierStars
 }) {
   const { t } = useTranslation("incursions")
-  const id = useId()
-  const tierName = useTierName(incursion)
-  const left = remainingShards(incursion, tiersCleared)
-  const allCleared = tiersCleared >= incursion.tiers.length
+  const left = remainingShards(incursion, stars)
+  const cleared = clearedTierCount(incursion, stars)
+  const nothingLeft = left.shards === 0 && left.mythicShards === 0
 
   return (
     <div
-      className="flex flex-wrap items-end gap-x-6 gap-y-2 rounded-lg border bg-muted/30 p-3"
+      className="space-y-1 rounded-lg border bg-muted/30 p-3"
       data-testid="incursion-progress"
     >
-      <div className="grid gap-1.5">
-        <Label htmlFor={id} className="text-xs text-muted-foreground">
-          {t("progress.clearedThrough")}
-        </Label>
-        <Select
-          value={String(tiersCleared)}
-          onValueChange={(value) => onChange(Number(value))}
-        >
-          <SelectTrigger
-            id={id}
-            className="w-44"
-            data-testid="incursion-progress-select"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">{t("progress.none")}</SelectItem>
-            {incursion.tiers.map((tier, position) => (
-              <SelectItem key={tier.index} value={String(position + 1)}>
-                {tierName(tier.index)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <p className="text-sm font-medium" data-testid="incursion-progress-tiers">
+        {t("progress.tiersCleared", {
+          cleared,
+          total: incursion.tiers.length,
+        })}
+      </p>
       <p
         className="text-sm text-muted-foreground"
         data-testid="incursion-progress-remaining"
       >
-        {allCleared
-          ? t("progress.allCleared")
+        {nothingLeft
+          ? t("progress.allClaimed")
           : left.mythicShards > 0
             ? t("progress.remainingMythic", left)
             : t("progress.remaining", { shards: left.shards })}
       </p>
+      <p className="text-xs text-muted-foreground">{t("progress.howTo")}</p>
     </div>
   )
 }
