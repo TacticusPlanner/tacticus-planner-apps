@@ -61,6 +61,20 @@ describe("installGlobalErrorCapture", () => {
     vi.restoreAllMocks()
   })
 
+  it("ignores the detail-less error a cross-origin script raises", () => {
+    const target = new EventTarget() as Window
+    installGlobalErrorCapture(target)
+    const log = vi.spyOn(console, "error").mockImplementation(() => {})
+
+    target.dispatchEvent(new ErrorEvent("error", { message: "Script error." }))
+    target.dispatchEvent(new ErrorEvent("error", { message: "boom" }))
+
+    expect(log).toHaveBeenCalledExactlyOnceWith(
+      "Unhandled error (window.error)",
+      "boom"
+    )
+  })
+
   it("logs an unhandled rejection exactly once and survives a throwing capture", () => {
     const target = new EventTarget() as Window
     installGlobalErrorCapture(target)

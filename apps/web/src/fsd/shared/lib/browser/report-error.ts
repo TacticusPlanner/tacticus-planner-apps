@@ -39,9 +39,12 @@ export function reportError(error: unknown, context?: string) {
 
 /** Routes every uncaught error and unhandled rejection to `reportError`; installed once at boot. */
 export function installGlobalErrorCapture(target: Window = window) {
-  target.addEventListener("error", (event) =>
+  target.addEventListener("error", (event) => {
+    // A cross-origin script (an extension, a page translator) throwing reaches us as a bare
+    // "Script error." with no error object: nothing to diagnose, and not our code (ours is same-origin).
+    if (!event.error && event.message === "Script error.") return
     reportError(event.error ?? event.message, "window.error")
-  )
+  })
   target.addEventListener("unhandledrejection", (event) =>
     reportError(event.reason, "unhandledrejection")
   )
