@@ -77,6 +77,54 @@ export function uncoveredRankSlots(params: {
   )
 }
 
+/** Every slot of a Rank goal's range from the rank it actually starts at (its start, or the character's
+ *  current rank once past it), applied or not. `null` without a rank target or catalog entry, or for an
+ *  empty range. */
+function rankGoalOccurrences(params: {
+  detail: GoalDetail
+  character: FarmingCharacter | undefined
+  playerCharacter: PlayerCharacter | undefined
+}): { occurrences: RankSlotOccurrence[]; effectiveStart: number } | null {
+  const rankTarget = params.detail.config.rank
+  if (!rankTarget || !params.character) return null
+
+  const effectiveStart = Math.max(
+    rankTarget.start,
+    params.playerCharacter
+      ? rankIndex(params.playerCharacter.rank)
+      : rankTarget.start
+  )
+  const rankEnd = rankAt(rankTarget.end)
+  const additionalTarget = additionalTargetSelection(
+    additionalTargetFromWire(rankEnd, rankTarget)
+  )
+  const occurrences = rankUpSlotOccurrences(
+    params.character,
+    rankAt(effectiveStart),
+    rankEnd,
+    rankTarget.endPointFive,
+    additionalTarget.appliedUpgrades,
+    additionalTarget.topRowCount
+  )
+  return occurrences.length === 0 ? null : { occurrences, effectiveStart }
+}
+
+/** A Rank goal's unapplied slots as `{ key, id }` (key `${rank}:${slot}`), ignoring other goals: what the
+ *  goal would draw from loose stock, one piece per slot. Empty when the goal has no range. */
+export function rankGoalSlotItems(params: {
+  detail: GoalDetail
+  character: FarmingCharacter | undefined
+  playerCharacter: PlayerCharacter | undefined
+}): RankSlotOccurrence[] {
+  const range = rankGoalOccurrences(params)
+  if (!range) return []
+  return uncoveredRankSlots({
+    ...range,
+    playerCharacter: params.playerCharacter,
+    coveredRankSlots: undefined,
+  })
+}
+
 /**
  * A Rank goal's raw material demand net of only what's permanently applied — a direct copy of
  * `usePlanEstimate`'s `toGoalNeed` netting logic (loose inventory stays un-netted here; it's a pool
@@ -100,29 +148,9 @@ export function rankResourceNeed(params: {
    */
   coveredRankSlots?: Set<string>
 }): UpgradeNeed[] | null {
-  const rankTarget = params.detail.config.rank
-  if (!rankTarget || !params.character) return null
-
-  const effectiveStart = Math.max(
-    rankTarget.start,
-    params.playerCharacter
-      ? rankIndex(params.playerCharacter.rank)
-      : rankTarget.start
-  )
-  const rankStart = rankAt(effectiveStart)
-  const rankEnd = rankAt(rankTarget.end)
-  const additionalTarget = additionalTargetSelection(
-    additionalTargetFromWire(rankEnd, rankTarget)
-  )
-  const occurrences = rankUpSlotOccurrences(
-    params.character,
-    rankStart,
-    rankEnd,
-    rankTarget.endPointFive,
-    additionalTarget.appliedUpgrades,
-    additionalTarget.topRowCount
-  )
-  if (occurrences.length === 0) return null
+  const range = rankGoalOccurrences(params)
+  if (!range) return null
+  const { occurrences, effectiveStart } = range
   // Each slot is charged once: not if the player already applied it, and not if a higher-priority Rank
   // goal for this character already claimed it. Claim what is charged here so the next goal sees it.
   const uncovered = uncoveredRankSlots({
@@ -161,27 +189,9 @@ export function rankSlotsRemaining(params: {
    *  `rankResourceNeed` claims this goal's slots, or they'd all read as covered). */
   coveredRankSlots?: ReadonlySet<string>
 }): number | null {
-  const rankTarget = params.detail.config.rank
-  if (!rankTarget || !params.character) return null
-
-  const currentRankIndex = params.playerCharacter
-    ? rankIndex(params.playerCharacter.rank)
-    : rankTarget.start
-  const effectiveStart = Math.max(rankTarget.start, currentRankIndex)
-  const rankStart = rankAt(effectiveStart)
-  const rankEnd = rankAt(rankTarget.end)
-  const additionalTarget = additionalTargetSelection(
-    additionalTargetFromWire(rankEnd, rankTarget)
-  )
-  const occurrences = rankUpSlotOccurrences(
-    params.character,
-    rankStart,
-    rankEnd,
-    rankTarget.endPointFive,
-    additionalTarget.appliedUpgrades,
-    additionalTarget.topRowCount
-  )
-  if (occurrences.length === 0) return null
+  const range = rankGoalOccurrences(params)
+  if (!range) return null
+  const { occurrences, effectiveStart } = range
 
   // Same netting as `rankResourceNeed`: applied slots (only of the character's current rank — see
   // `uncoveredRankSlots`) and slots an earlier goal already claimed don't count.

@@ -24,6 +24,7 @@ import type {
 import { useStableIds } from "../shared/use-stable-ids"
 import { useStableMap } from "../shared/use-stable-map"
 import { useGoalsFor } from "./use-goals-for"
+import { allocateUpgradeGoalStock } from "./upgrade-goal-stock"
 import { withStandaloneAvailable } from "../insights/plan-ability-materials"
 import type { PlanNetResources } from "../insights/use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
@@ -102,6 +103,7 @@ function useComputedGoalsOverviewMetrics(
     mowUpgradeCostsByLevel,
     characterAbilityCostsByLevel,
     getCharacter,
+    getMow,
     getEntityName,
     loading: catalogLoading,
   } = useGoalCatalog()
@@ -149,6 +151,12 @@ function useComputedGoalsOverviewMetrics(
   // (a toggle elsewhere on the page, a sync progress tick) skips the per-goal resource maths.
   return useMemo(() => {
     const details = goalIds.map((goalId) => goals.goalsById.get(goalId))
+    // Upgrade goals targeting the same material share one stock, in priority order.
+    const upgradeStock = allocateUpgradeGoalStock(
+      goals.goalsById.values(),
+      inventoryUpgrades,
+      { getCharacter, getMow, playerCharacterById, playerMowById }
+    )
     const prerequisiteGoals = [...goals.goalsById.values()].filter(
       (goal) => goal.goalType === "Ascension" || goal.goalType === "Unlock"
     )
@@ -174,7 +182,8 @@ function useComputedGoalsOverviewMetrics(
           detail: dependencyDetail,
           playerCharacter: playerCharacterById.get(dependencyUnitId),
           playerMow: playerMowById.get(dependencyUnitId),
-          inventoryUpgrades,
+          inventoryUpgrades:
+            upgradeStock.get(dependencyGoalId) ?? inventoryUpgrades,
           inventoryItems,
         }).reached
       )
@@ -196,6 +205,7 @@ function useComputedGoalsOverviewMetrics(
       // Distinguishes "roster not loaded yet" from "loaded and this unit just isn't in it" — the split
       // the missing-Unlock reason and the narrowed player-data-unavailable reason both need (see
       // `implicit-prerequisite-blockers.ts` and `goal-attainment.ts#isPlayerDataUnavailable`).
+      const goalUpgradeStock = upgradeStock.get(goalId) ?? inventoryUpgrades
       const rosterLoaded =
         detail.entityType === "Mow"
           ? playerMows !== undefined
@@ -205,7 +215,7 @@ function useComputedGoalsOverviewMetrics(
         detail,
         playerCharacter,
         playerMow,
-        inventoryUpgrades,
+        inventoryUpgrades: goalUpgradeStock,
         inventoryItems,
       })
 
@@ -215,7 +225,7 @@ function useComputedGoalsOverviewMetrics(
         detail,
         playerCharacter,
         playerMow,
-        inventoryUpgrades,
+        inventoryUpgrades: goalUpgradeStock,
         inventoryItems,
         initialRarity: charactersById?.get(detail.entityId)?.initialRarity,
         unlockShardCostsById: unlockShardCostsById ?? new Map(),
@@ -349,6 +359,7 @@ function useComputedGoalsOverviewMetrics(
     mowUpgradeCostsByLevel,
     characterAbilityCostsByLevel,
     getCharacter,
+    getMow,
     getEntityName,
     estimatesByGoalId,
     rankSlotsByGoalId,

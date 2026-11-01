@@ -145,3 +145,96 @@ function mowRangeSlots(
     for (const id of recipes[level - 1] ?? []) slots.push({ id, key: level })
   return slots
 }
+
+/** A slot item a goal would fill: a Character rank slot (`${rank}:${slot}`) or one recipe entry of a
+ *  MoW ability transition (`${track}:${level}:${index}`), with the upgrade it takes. */
+export type GoalSlotItem = { key: string; id: UpgradeId }
+
+/** One MoW track's transitions from `max(start, current)` to `end`, one item per recipe entry. */
+function mowTrackItems(
+  mow: MowStorageModel,
+  playerMow: PlayerMow | undefined,
+  track: MowAbilityTrack,
+  start: number,
+  end: number
+): GoalSlotItem[] {
+  const recipes =
+    track === "primary"
+      ? mow.primaryAbility.recipes
+      : mow.secondaryAbility.recipes
+  const items: GoalSlotItem[] = []
+  for (
+    let level = Math.max(start, mowAbilityTrackLevel(playerMow, track));
+    level < end;
+    level++
+  )
+    (recipes[level - 1] ?? []).forEach((id, index) => {
+      items.push({ key: `${track}:${level}:${index}`, id })
+    })
+  return items
+}
+
+/** A MoW Ability goal's still-unapplied transition items, ignoring other goals. Empty for a Character
+ *  Ability goal (its materials are badges, not upgrades) or without catalog data. */
+export function mowAbilityGoalSlotItems(params: {
+  detail: GoalDetail
+  mow: MowStorageModel | undefined
+  playerMow: PlayerMow | undefined
+}): GoalSlotItem[] {
+  const target = params.detail.config.ability
+  if (params.detail.entityType !== "Mow" || !target || !params.mow) return []
+  return [
+    ...mowTrackItems(
+      params.mow,
+      params.playerMow,
+      "primary",
+      target.activeStart,
+      target.activeEnd
+    ),
+    ...mowTrackItems(
+      params.mow,
+      params.playerMow,
+      "secondary",
+      target.passiveStart,
+      target.passiveEnd
+    ),
+  ]
+}
+
+/** The unapplied slot items of an Upgrade goal's ranges (its Character rank range and MoW track
+ *  ranges), keyed like {@link mowAbilityGoalSlotItems} and the Rank goal's slots, so a Rank or Ability
+ *  goal on the same unit can be matched slot for slot. Empty for a goal without a range. */
+export function upgradeGoalRangeSlotItems(params: {
+  detail: GoalDetail
+  character: FarmingCharacter | undefined
+  mow: MowStorageModel | undefined
+  playerCharacter: PlayerCharacter | undefined
+  playerMow: PlayerMow | undefined
+}): GoalSlotItem[] {
+  const upgrade = params.detail.config.upgrade
+  if (!upgrade) return []
+  const items: GoalSlotItem[] = [...characterRangeSlots(params)]
+  if (params.mow) {
+    if (upgrade.activeRange)
+      items.push(
+        ...mowTrackItems(
+          params.mow,
+          params.playerMow,
+          "primary",
+          upgrade.activeRange.start,
+          upgrade.activeRange.end
+        )
+      )
+    if (upgrade.passiveRange)
+      items.push(
+        ...mowTrackItems(
+          params.mow,
+          params.playerMow,
+          "secondary",
+          upgrade.passiveRange.start,
+          upgrade.passiveRange.end
+        )
+      )
+  }
+  return items
+}
