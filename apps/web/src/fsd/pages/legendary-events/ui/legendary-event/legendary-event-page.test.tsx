@@ -350,6 +350,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     )
     expect(page).toContainElement(runStatus)
     expect(follows(tabs, runStatus)).toBe(true)
+    const disclaimer = screen.getByTestId(
+      "legendary-event-estimates-disclaimer"
+    )
+    expect(disclaimer).toHaveTextContent(/raw power/i)
+    expect(follows(tabs, disclaimer)).toBe(true)
+    expect(follows(disclaimer, runStatus)).toBe(true)
     expect(follows(runStatus, summary)).toBe(true)
     expect(follows(summary, leaderboard)).toBe(true)
     // No lane section renders on Overview.

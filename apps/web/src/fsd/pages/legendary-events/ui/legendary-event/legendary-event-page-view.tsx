@@ -11,6 +11,7 @@ import {
 import { useUnitName } from "@/shared/unit-name"
 
 import { BattlesSection } from "./battles/battles-section"
+import { EstimatesDisclaimer } from "./estimates-disclaimer"
 import { LaneOverview } from "./lane-overview"
 import { LeaderboardSection } from "./leaderboard/leaderboard-section"
 import { LegendaryEventHeader } from "./legendary-event-header"
@@ -66,6 +67,7 @@ export function LegendaryEventPageView({
         onSelectTab={props.onSelectTab}
         selectedTab={selectedTab}
       />
+      <EstimatesDisclaimer />
       {selectedTab === "overview" ? (
         <div
           className="flex min-w-0 flex-col gap-6"

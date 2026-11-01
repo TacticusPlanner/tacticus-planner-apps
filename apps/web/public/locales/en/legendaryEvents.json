@@ -525,6 +525,7 @@
     }
   },
   "estimates": {
+    "disclaimer": "All estimates compare raw power only. Real battle results may differ.",
     "estimated": "estimated",
     "uncalibrated": "Uncalibrated: the estimate's power ratio has not been fitted to real clears yet, so treat it as a rough guide.",
     "howItWorks": "Estimated from your synced roster's power, equipment included, against each battle's power. Synergy and hard objectives aren't modelled; set a depth to override it.",
