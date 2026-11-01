@@ -266,6 +266,49 @@ describe("aggregateShopNeeds", () => {
     })
   })
 
+  it("keeps owned shards a later Unlock goal supplies after an Ascension goal for the same unit", () => {
+    const needs = aggregateShopNeeds(
+      baseParams({
+        members: [
+          member("g1", heroId, "Ascension", "Active"),
+          member("g2", heroId, "Unlock", "Active"),
+        ],
+        details: [
+          detail("g1", heroId, "Ascension", {
+            progression: {
+              start: "Common:None",
+              end: "Common:OneStar",
+            } as never,
+          }),
+          detail("g2", heroId, "Unlock"),
+        ],
+        charactersById: new Map([
+          [
+            heroId,
+            { id: heroId, name: "Farseer", initialRarity: "Rare" } as never,
+          ],
+        ]),
+        ascensionCostsById: new Map([
+          ["Common:OneStar", { shards: 20, mythicShards: 0, orbs: 0 } as never],
+        ]),
+        unlockShardCostsById: new Map([
+          ["Rare", { rarity: "Rare", shards: 130 } as never],
+        ]),
+        inventoryShardById: new Map([[heroId, { amount: 30 } as never]]),
+      })
+    )
+
+    // Ascension (20, seeded with 0 owned) + Unlock (130 less the 30 inventory shards).
+    expect(needs.get("shards_eldarFarseer")).toEqual({
+      acquired: 30,
+      required: 150,
+      neededBy: [
+        { unitId: heroId, unitName: "Farseer", count: 20 },
+        { unitId: heroId, unitName: "Farseer", count: 100 },
+      ],
+    })
+  })
+
   it("ignores goals that are not Active", () => {
     const needs = aggregateShopNeeds(
       baseParams({

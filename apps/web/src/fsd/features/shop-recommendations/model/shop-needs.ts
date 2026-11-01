@@ -86,8 +86,9 @@ export function aggregateShopNeeds(
 
   const abilityCoverageByEntity = new Map<string, UnitCoverage>()
 
-  // Owned stock is one pool per resource, so it seeds `acquired` (and, for a net need, `required`) only
-  // when the resource is first seen; each further goal adds just its own count.
+  // Owned stock is one pool per resource, so it counts once, never once per goal. Goals can read it from
+  // different sources (an Unlock goal's inventory shards vs an Ascension goal's character shards), so
+  // the largest value seen wins; a net need also carries that stock in `required`, a gross need does not.
   const add = (
     key: string,
     owned: number,
@@ -96,17 +97,16 @@ export function aggregateShopNeeds(
     unit: ShopNeedUnitEntry
   ) => {
     if (count <= 0) return
-    let current = aggregate.get(key)
-    if (!current) {
-      current = {
-        acquired: owned,
-        required: kind === "net" ? owned : 0,
-        neededBy: [],
-      }
-      aggregate.set(key, current)
+    const current = aggregate.get(key) ?? {
+      acquired: 0,
+      required: 0,
+      neededBy: [],
     }
-    current.required += count
+    const addedOwned = Math.max(0, owned - current.acquired)
+    current.acquired += addedOwned
+    current.required += count + (kind === "net" ? addedOwned : 0)
     current.neededBy.push(unit)
+    aggregate.set(key, current)
   }
 
   const countedGoalIds = new Set<string>()
