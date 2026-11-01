@@ -34,6 +34,7 @@ describe("isGoalsListLoading", () => {
   })
 
   it.each([
+    ["all", true],
     ["toReach", true],
     ["reached", true],
     ["active", false],

@@ -9,6 +9,7 @@ vi.mock("react-i18next", () => ({
 import { StatusFilterSelect } from "./status-filter-select"
 
 const baseCounts = {
+  all: 2,
   toReach: 2,
   reached: 0,
   active: 2,
@@ -43,6 +44,27 @@ describe("StatusFilterSelect", () => {
     expect(
       screen.getByRole("option", { name: "goals.tabs.paused (0)" })
     ).toBeInTheDocument()
+  })
+
+  it("offers All statuses first, with its count, and names the control", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <StatusFilterSelect
+        counts={{ ...baseCounts, all: 3 }}
+        onValueChange={onValueChange}
+        value="toReach"
+      />
+    )
+
+    await user.click(
+      screen.getByRole("combobox", { name: "goals.filters.statusFilterLabel" })
+    )
+    const options = screen.getAllByRole("option")
+    expect(options[0]).toHaveAccessibleName("goals.tabs.all (3)")
+    await user.click(options[0]!)
+
+    expect(onValueChange).toHaveBeenCalledWith("all")
   })
 
   it("shows the Blocked option without a count", async () => {
@@ -138,6 +160,7 @@ describe("StatusFilterSelect", () => {
     render(
       <StatusFilterSelect
         counts={{
+          all: 0,
           toReach: 0,
           reached: 0,
           active: 0,

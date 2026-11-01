@@ -22,12 +22,12 @@ The Plan section SHALL render its Planning Settings entry point on the Goals sub
 
 ### Requirement: Shared status filter control
 
-Goals SHALL present the status filter — Unfulfilled, Reached, Blocked, Active, Paused — as a single select control defaulting to Unfulfilled, whether or not a project scope is selected. There SHALL be no "Archived" option. Each option except Blocked SHALL show its count of matching goals within the current project scope. The Reached option lists Reached goals in the same list presentation as every other option; Reached goals SHALL NOT be omitted from any option they otherwise match (see `goal-list-layout` for how a Reached row renders).
+Goals SHALL present the status filter — All statuses, Unfulfilled, Reached, Blocked, Active, Paused — as a single select control defaulting to All statuses, whether or not a project scope is selected. The control SHALL carry the accessible name "Goal status filter". "All statuses" SHALL list every non-archived goal in scope regardless of attainment or status, and is labelled so it is not confused with the project scope's "All goals". There SHALL be no "Archived" option. Each option except Blocked SHALL show its count of matching goals within the current project scope. The Reached option lists Reached goals in the same list presentation as every other option; Reached goals SHALL NOT be omitted from any option they otherwise match (see `goal-list-layout` for how a Reached row renders).
 
-#### Scenario: Status filter defaults to Unfulfilled
+#### Scenario: Status filter defaults to All statuses
 
 - **WHEN** the user opens Goals, with or without a project scope
-- **THEN** the status filter shows "Unfulfilled" as the selected value and the goal list reflects only unfulfilled goals in that scope
+- **THEN** the status filter shows "All statuses" as the selected value and the goal list shows every non-archived goal in that scope, reached or not
 
 #### Scenario: Selecting a status filters the goal list
 
@@ -37,7 +37,13 @@ Goals SHALL present the status filter — Unfulfilled, Reached, Blocked, Active,
 #### Scenario: No Archived option
 
 - **WHEN** the user opens the status filter
-- **THEN** the options are Unfulfilled, Reached, Blocked, Active and Paused, and no "Archived" option is offered
+- **THEN** the options are All statuses, Unfulfilled, Reached, Blocked, Active and Paused, and no "Archived" option is offered
+
+#### Scenario: All statuses shows reached and unreached goals together
+
+- **GIVEN** an Active unfulfilled goal, a Paused goal, and a reached goal
+- **WHEN** the user selects "All statuses" from the status filter
+- **THEN** all three goals are listed, the option shows a count of 3, and the URL carries `status=all`
 
 #### Scenario: Counts follow the scope
 
@@ -230,7 +236,7 @@ Goals SHALL render, as the only row above its control row, a single horizontally
 
 ### Requirement: Switching project scope preserves list controls
 
-The status filter, Type filter, and Group selections SHALL persist unchanged when the user switches project scope, so a chosen way of reading goals carries across projects. The Group selection SHALL be persisted per browser under one key regardless of scope, defaulting to no grouping; the status filter SHALL default to Unfulfilled and the Type filter to all types on a fresh load, whatever the scope.
+The status filter, Type filter, and Group selections SHALL persist unchanged when the user switches project scope, so a chosen way of reading goals carries across projects. The Group selection SHALL be persisted per browser under one key regardless of scope, defaulting to no grouping; the status filter SHALL default to All statuses and the Type filter to all types on a fresh load, whatever the scope.
 
 #### Scenario: Group selection carries across scopes
 
@@ -247,7 +253,7 @@ The status filter, Type filter, and Group selections SHALL persist unchanged whe
 #### Scenario: Fresh load defaults do not depend on scope
 
 - **WHEN** the user opens `/plan/goals?project={id}` in a browser that has no persisted Group selection
-- **THEN** the status filter reads Unfulfilled, the Type filter all types, and the list is ungrouped
+- **THEN** the status filter reads All statuses, the Type filter all types, and the list is ungrouped
 
 ### Requirement: Scoped Goals adjusts contextual actions and copy
 
@@ -337,7 +343,7 @@ At or above the 768px desktop breakpoint, Goals SHALL render, directly beneath t
 
 ### Requirement: Goals list controls are URL state
 
-The Goals status filter and Type filter SHALL be the `status` and `type` query parameters of `/plan/goals`, written by replacing the current history entry. A missing parameter means the control's default (status Unfulfilled, all types); an unrecognized value is treated as the default and dropped from the URL. The Group selection stays persisted per browser, not in the URL.
+The Goals status filter and Type filter SHALL be the `status` and `type` query parameters of `/plan/goals`, written by replacing the current history entry. A missing parameter means the control's default (status All statuses, all types); an unrecognized value is treated as the default and dropped from the URL. The Group selection stays persisted per browser, not in the URL.
 
 #### Scenario: Reload keeps the filters
 
@@ -359,9 +365,9 @@ The Goals status filter and Type filter SHALL be the `status` and `type` query p
 #### Scenario: Unknown filter value falls back to the default
 
 - **WHEN** the user opens `/plan/goals?status=nope`
-- **THEN** the status filter reads Unfulfilled, the list shows Unfulfilled goals, and the URL is replaced without the `status` parameter
+- **THEN** the status filter reads All statuses, the list shows every non-archived goal, and the URL is replaced without the `status` parameter
 
 #### Scenario: Fresh load without parameters uses the defaults
 
 - **WHEN** the user opens `/plan/goals` with no `status` or `type` parameter
-- **THEN** the status filter reads Unfulfilled and the Type filter all types
+- **THEN** the status filter reads All statuses and the Type filter all types

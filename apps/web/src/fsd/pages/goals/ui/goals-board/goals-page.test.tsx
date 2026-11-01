@@ -496,6 +496,42 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
+  it("lists every goal, reached or not, Active or Paused, under All statuses", async () => {
+    const reachedGoal = {
+      ...activeGoal,
+      goalId: "goal-reached",
+      config: {
+        rank: {
+          start: 0,
+          startPointFive: false,
+          startAppliedUpgrades: 0,
+          end: 0,
+          endPointFive: false,
+          endAppliedUpgrades: 0,
+        },
+      },
+    }
+    listGoals.mockResolvedValue({
+      goals: [activeGoal, pausedGoal, reachedGoal],
+    })
+    await seedPlayerData({ characters: [ownedHero()] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(
+      screen.getByRole("combobox", { name: "Goal status filter" })
+    )
+    await user.click(
+      await screen.findByRole("option", { name: "All statuses (3)" })
+    )
+
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(3)
+    )
+  })
+
   it("filters to only the Paused goal when switching to the Paused status", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal, pausedGoal] })
     const user = userEvent.setup()
@@ -548,7 +584,7 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
-  it("holds the Unfulfilled list in its loading state until every goal's attainment is known", async () => {
+  it("holds the default All statuses list in its loading state until every goal's attainment is known", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     const releasePlayerData = await holdPlayerData()
     renderPage()
@@ -616,7 +652,7 @@ describe("GoalsPage", () => {
     })
     await seedPlayerData({ characters: [ownedHero()] })
     const user = userEvent.setup()
-    renderPage()
+    renderPage("/plan/goals?status=toReach")
 
     // Unfulfilled holds its loading state until attainment is known, so the reached goal never
     // flashes there before dropping out: the tab goes straight to its filtered-empty state.
@@ -1349,7 +1385,7 @@ describe("GoalsPage", () => {
 
       await screen.findByTestId("goals-list-table")
       expect(screen.getByTestId("goals-status-filter")).toHaveTextContent(
-        /^Unfulfilled/
+        /^All statuses/
       )
       expect(
         document.getElementById("goals-type-filter-value")
@@ -1364,7 +1400,7 @@ describe("GoalsPage", () => {
 
       await screen.findByTestId("goals-list-table")
       expect(screen.getByTestId("goals-status-filter")).toHaveTextContent(
-        /^Unfulfilled/
+        /^All statuses/
       )
       expect(
         document.getElementById("goals-type-filter-value")
