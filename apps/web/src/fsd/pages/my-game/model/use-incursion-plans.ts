@@ -24,7 +24,7 @@ import {
 import { enemyStatRow, type Incursion } from "./incursions.model"
 
 /** One MoW's suggested team and how far it is estimated to get in each tier. */
-export type IncursionPlan = {
+type IncursionPlan = {
   team: IncursionCandidate[]
   teamPower: number
   /** The team has a useful Healer or Mechanic, so it loses less HP per battle. */

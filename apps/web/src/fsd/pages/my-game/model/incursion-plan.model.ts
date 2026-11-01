@@ -3,7 +3,7 @@ import { withSupport } from "@/entities/legendary-event"
 import type { IncursionBattle, IncursionTier } from "./incursions.model"
 
 /** Heroes a run brings (the MoW comes on top). */
-export const INCURSION_TEAM_SIZE = 5
+const INCURSION_TEAM_SIZE = 5
 
 /**
  * The share of the team's HP a battle as strong as the team costs. Damage carries over from battle
@@ -13,7 +13,7 @@ export const INCURSION_TEAM_SIZE = 5
 export const DAMAGE_SHARE = 0.3
 
 /** How much less damage a team with a useful Healer (or a Mechanic with a Mechanical ally) keeps. */
-export const SUPPORT_SUSTAIN = 0.25
+const SUPPORT_SUSTAIN = 0.25
 
 /** The power a battle needs: every enemy's power × its count, scaled by the battle's difficulty. */
 export function incursionBattlePower(
