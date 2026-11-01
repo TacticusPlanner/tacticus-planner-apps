@@ -8,12 +8,13 @@ import type {
 } from "@/entities/legendary-event"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { act, fireEvent, render, screen, within } from "@/test/render"
+import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
 
 import { RunInputsDrawer } from "./run-inputs-drawer"
 
 const api = vi.hoisted(() => ({
   plan: undefined as unknown,
+  settings: undefined as unknown,
   put: vi.fn(),
 }))
 
@@ -25,7 +26,9 @@ vi.mock("@/shared/api", async (importOriginal) => {
     apiClient: fakeApiClient((call) =>
       call.method === "PUT"
         ? api.put({ path: call.path, params: call.params, body: call.body })
-        : api.plan
+        : call.path === "/api/v1/settings"
+          ? api.settings
+          : api.plan
     ),
   }
 })
@@ -61,6 +64,13 @@ const plan = (
 
 let i18n: I18n
 
+const SETTINGS = {
+  dailyEnergy: 288,
+  xpBookRarity: "Legendary",
+  watchAds: true,
+  revision: 4,
+}
+
 const RUN_2_ACTIVE: LegendaryEventRunResolution = {
   kind: "known",
   endedRuns: 1,
@@ -95,6 +105,7 @@ describe("RunInputsDrawer", () => {
   })
   beforeEach(() => {
     api.plan = plan()
+    api.settings = SETTINGS
     api.put.mockReset()
   })
 
@@ -198,6 +209,31 @@ describe("RunInputsDrawer", () => {
         within(block).getByTestId("run-inputs-close-shards")
       ).toBeInTheDocument()
     }
+  })
+
+  it("turns Watch daily ads off in the account settings", async () => {
+    api.put.mockResolvedValue({ ...SETTINGS, watchAds: false, revision: 5 })
+    const drawer = await openDrawer()
+    const ads = await within(drawer).findByRole("switch", {
+      name: "Watch daily ads",
+    })
+    expect(ads).toBeChecked()
+
+    await act(async () => {
+      fireEvent.click(ads)
+    })
+
+    expect(api.put).toHaveBeenCalledWith({
+      path: "/api/v1/settings",
+      params: undefined,
+      body: { ...SETTINGS, watchAds: false },
+    })
+    // The switch follows the saved settings.
+    await waitFor(() =>
+      expect(
+        within(drawer).getByRole("switch", { name: "Watch daily ads" })
+      ).not.toBeChecked()
+    )
   })
 
   it("holds missions and Oh So Close shards at their bounds", async () => {

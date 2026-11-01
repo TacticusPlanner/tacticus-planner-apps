@@ -11,6 +11,7 @@ export type PlanningSettings = ApiSchemas["UserSettingsResponse"]
 export const defaultPlanningSettings: PlanningSettings = {
   dailyEnergy: 288,
   xpBookRarity: "Legendary",
+  watchAds: true,
   revision: 0,
 }
 

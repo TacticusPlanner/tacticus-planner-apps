@@ -69,6 +69,7 @@ export function PlanningSettingsDialog({
       await save({
         dailyEnergy,
         xpBookRarity,
+        watchAds: settings.watchAds,
         revision: settings.revision,
       })
       onOpenChange(false)

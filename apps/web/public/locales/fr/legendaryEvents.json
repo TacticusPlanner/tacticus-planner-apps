@@ -58,6 +58,8 @@
     "bundle": "Pack de 300 de monnaie acheté",
     "closeShards": "Fragments « Oh So Close »",
     "showPaidOptions": "Afficher les options payantes",
+    "watchAds": "Regarder les pubs quotidiennes",
+    "watchAdsHint": "Désactivé : planifier sans le jeton pub quotidien (61 au lieu de 68 jetons par manche). S'applique à tous les événements.",
     "fieldLabel": "{{field}}, manche {{run}}",
     "decrease": "Diminuer {{field}}, manche {{run}}",
     "increase": "Augmenter {{field}}, manche {{run}}",
