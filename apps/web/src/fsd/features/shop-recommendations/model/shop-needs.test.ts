@@ -41,6 +41,15 @@ const rankCharacter: FarmingCharacter = {
   ],
 }
 
+const stoneOneToTwo = {
+  start: 0,
+  startPointFive: false,
+  startAppliedUpgrades: 0,
+  end: 1,
+  endPointFive: false,
+  endAppliedUpgrades: 0,
+}
+
 function member(
   goalId: string,
   entityId: string,
@@ -204,9 +213,57 @@ describe("aggregateShopNeeds", () => {
       })
     )
 
+    // The rank need is gross (6 slots), so owned stock counts toward it rather than on top of it.
+    expect(needs.get("upgHpM001")).toEqual({
+      acquired: 2,
+      required: 6,
+      neededBy: [{ unitId: heroId, unitName: "Farseer", count: 6 }],
+    })
+  })
+
+  it("reads a mythic-material need as met when owned stock covers it", () => {
+    const needs = aggregateShopNeeds(
+      baseParams({
+        members: [member("g2", heroId, "Rank", "Active")],
+        details: [detail("g2", heroId, "Rank", { rank: stoneOneToTwo })],
+        getCharacter: () => rankCharacter,
+        upgradesById: new Map([[mythicMatId, mythicMaterial]]),
+        inventoryUpgradeAmountById: new Map([["upgHpM001", 6]]),
+      })
+    )
+
     const need = needs.get("upgHpM001")!
-    expect(need.acquired).toBe(2)
-    expect(need.required).toBe(need.acquired + need.neededBy[0]!.count)
+    expect(need.acquired).toBe(6)
+    expect(need.required).toBe(6)
+  })
+
+  it("counts owned mythic-material stock once across goals for different units", () => {
+    const otherCharacter: FarmingCharacter = { ...rankCharacter, id: otherId }
+    const needs = aggregateShopNeeds(
+      baseParams({
+        members: [
+          member("g1", heroId, "Rank", "Active"),
+          member("g2", otherId, "Rank", "Active"),
+        ],
+        details: [
+          detail("g1", heroId, "Rank", { rank: stoneOneToTwo }),
+          detail("g2", otherId, "Rank", { rank: stoneOneToTwo }),
+        ],
+        getCharacter: (unitId) =>
+          unitId === heroId ? rankCharacter : otherCharacter,
+        upgradesById: new Map([[mythicMatId, mythicMaterial]]),
+        inventoryUpgradeAmountById: new Map([["upgHpM001", 6]]),
+      })
+    )
+
+    expect(needs.get("upgHpM001")).toEqual({
+      acquired: 6,
+      required: 12,
+      neededBy: [
+        { unitId: heroId, unitName: "Farseer", count: 6 },
+        { unitId: otherId, unitName: "Autarch", count: 6 },
+      ],
+    })
   })
 
   it("ignores goals that are not Active", () => {
