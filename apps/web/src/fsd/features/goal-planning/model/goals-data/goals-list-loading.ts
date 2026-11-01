@@ -17,7 +17,9 @@ export function isGoalsListLoading(input: {
 }): boolean {
   const scopePending = !!input.requestedProjectId && input.projectsLoading
   const attainmentGatesList =
-    (input.tab === "toReach" || input.tab === "reached") &&
+    (input.tab === "all" ||
+      input.tab === "toReach" ||
+      input.tab === "reached") &&
     input.attainmentPending &&
     input.hasCandidateGoals
   return input.goalsLoading || scopePending || attainmentGatesList

@@ -584,7 +584,7 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
-  it("holds the Unfulfilled list in its loading state until every goal's attainment is known", async () => {
+  it("holds the default All statuses list in its loading state until every goal's attainment is known", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     const releasePlayerData = await holdPlayerData()
     renderPage()
@@ -652,7 +652,7 @@ describe("GoalsPage", () => {
     })
     await seedPlayerData({ characters: [ownedHero()] })
     const user = userEvent.setup()
-    renderPage()
+    renderPage("/plan/goals?status=toReach")
 
     // Unfulfilled holds its loading state until attainment is known, so the reached goal never
     // flashes there before dropping out: the tab goes straight to its filtered-empty state.
@@ -1385,7 +1385,7 @@ describe("GoalsPage", () => {
 
       await screen.findByTestId("goals-list-table")
       expect(screen.getByTestId("goals-status-filter")).toHaveTextContent(
-        /^Unfulfilled/
+        /^All statuses/
       )
       expect(
         document.getElementById("goals-type-filter-value")
@@ -1400,7 +1400,7 @@ describe("GoalsPage", () => {
 
       await screen.findByTestId("goals-list-table")
       expect(screen.getByTestId("goals-status-filter")).toHaveTextContent(
-        /^Unfulfilled/
+        /^All statuses/
       )
       expect(
         document.getElementById("goals-type-filter-value")

@@ -333,7 +333,7 @@ A Rank or Ability goal whose character is below its required level SHALL additio
 
 ### Requirement: The list stays in its loading state until row membership is known
 
-The Goals list SHALL show its loading skeleton, and no goal rows, "filters match nothing" line, or empty-project card, until the rows it shows are decided: the goal list (which carries every goal's configuration and project memberships); for a requested project scope, the project list as well; and, on Unfulfilled and Reached, the player-data tables attainment reads. No per-goal or per-project read SHALL be awaited. A failed request or a never-synced table SHALL count as decided. Active, Paused, and Blocked do not wait on attainment.
+The Goals list SHALL show its loading skeleton, and no goal rows, "filters match nothing" line, or empty-project card, until the rows it shows are decided: the goal list (which carries every goal's configuration and project memberships); for a requested project scope, the project list as well; and, on All statuses, Unfulfilled and Reached, the player-data tables attainment reads. No per-goal or per-project read SHALL be awaited. A failed request or a never-synced table SHALL count as decided. Active, Paused, and Blocked do not wait on attainment.
 
 #### Scenario: Reached goals never flash on Unfulfilled
 

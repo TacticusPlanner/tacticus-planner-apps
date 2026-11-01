@@ -35,7 +35,7 @@ export type GoalStatusFilterCounts = Record<
 /**
  * Shared All statuses/Unfulfilled/Reached/Blocked/Active/Paused status filter (goals-navigation spec) — replaces the
  * near-identical `TabsList` previously duplicated on Overview and Projects. Defaults to whatever
- * `value` the caller passes in (both current callers default their own state to "toReach"). Shows a
+ * `value` the caller passes in (the Goals page defaults to "all"). Shows a
  * small indicator on the trigger when there's at least one Reached goal and the current selection
  * isn't already "Reached", so a status filtered away from Reached doesn't hide the fact that goals
  * are waiting there.

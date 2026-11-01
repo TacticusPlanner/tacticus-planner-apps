@@ -19,7 +19,7 @@ export function useGoalsListFilters() {
   const [tab, setTab] = useSearchParamState<GoalStatusFilterValue>(
     "status",
     isGoalStatusFilterValue,
-    "toReach"
+    "all"
   )
   const [goalType, setGoalType] = useSearchParamState<GoalTypeFilterValue>(
     "type",
