@@ -35,8 +35,9 @@ export interface ShopNeedUnitEntry {
 interface ShopResourceNeed {
   /** How much of the resource the player already has toward the aggregated requirement. */
   acquired: number
-  /** Total needed (owned + still-outstanding), summed across contributing goals — matches V1's
-   *  `acquiredCount`/`requiredCount` aggregation, which likewise sums the owned side per goal. */
+  /** Total needed across contributing goals. Owned stock is counted once per resource, never once per
+   *  goal: a gross need (Mythic materials) sums the goals' full counts, and a net need (shards, already
+   *  netted against owned) is owned + the goals' summed outstanding counts. */
   required: number
   neededBy: ShopNeedUnitEntry[]
 }
@@ -85,20 +86,25 @@ export function aggregateShopNeeds(
 
   const abilityCoverageByEntity = new Map<string, UnitCoverage>()
 
+  // Owned stock is one pool per resource, so it counts once, never once per goal. Goals can read it from
+  // different sources (an Unlock goal's inventory shards vs an Ascension goal's character shards), so
+  // the largest value seen wins; a net need also carries that stock in `required`, a gross need does not.
   const add = (
     key: string,
     owned: number,
-    outstanding: number,
+    count: number,
+    kind: "gross" | "net",
     unit: ShopNeedUnitEntry
   ) => {
-    if (outstanding <= 0) return
+    if (count <= 0) return
     const current = aggregate.get(key) ?? {
       acquired: 0,
       required: 0,
       neededBy: [],
     }
-    current.acquired += owned
-    current.required += owned + outstanding
+    const addedOwned = Math.max(0, owned - current.acquired)
+    current.acquired += addedOwned
+    current.required += count + (kind === "net" ? addedOwned : 0)
     current.neededBy.push(unit)
     aggregate.set(key, current)
   }
@@ -153,7 +159,10 @@ export function aggregateShopNeeds(
       add(
         materialId,
         params.inventoryUpgradeAmountById.get(materialId) ?? 0,
+        // The rank need is the full material count for the goal's unapplied slots, not netted
+        // against inventory, so owned stock must not be added on top of it.
         count,
+        "gross",
         {
           unitId: entityId,
           unitName,
@@ -170,7 +179,7 @@ export function aggregateShopNeeds(
         detail.goalType === "Unlock"
           ? (params.inventoryShardById.get(detail.entityId)?.amount ?? 0)
           : (params.playerCharacterById.get(detail.entityId)?.shards ?? 0)
-      add(`shards_${entityId}`, ownedShards, need.shards, {
+      add(`shards_${entityId}`, ownedShards, need.shards, "net", {
         unitId: entityId,
         unitName,
         count: need.shards,
@@ -186,6 +195,7 @@ export function aggregateShopNeeds(
         `mythicShards_${entityId}`,
         owned?.mythicShards ?? 0,
         need.mythicShards,
+        "net",
         {
           unitId: entityId,
           unitName,

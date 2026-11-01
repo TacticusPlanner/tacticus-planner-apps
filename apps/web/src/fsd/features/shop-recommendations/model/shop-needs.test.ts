@@ -41,6 +41,15 @@ const rankCharacter: FarmingCharacter = {
   ],
 }
 
+const stoneOneToTwo = {
+  start: 0,
+  startPointFive: false,
+  startAppliedUpgrades: 0,
+  end: 1,
+  endPointFive: false,
+  endAppliedUpgrades: 0,
+}
+
 function member(
   goalId: string,
   entityId: string,
@@ -204,9 +213,100 @@ describe("aggregateShopNeeds", () => {
       })
     )
 
+    // The rank need is gross (6 slots), so owned stock counts toward it rather than on top of it.
+    expect(needs.get("upgHpM001")).toEqual({
+      acquired: 2,
+      required: 6,
+      neededBy: [{ unitId: heroId, unitName: "Farseer", count: 6 }],
+    })
+  })
+
+  it("reads a mythic-material need as met when owned stock covers it", () => {
+    const needs = aggregateShopNeeds(
+      baseParams({
+        members: [member("g2", heroId, "Rank", "Active")],
+        details: [detail("g2", heroId, "Rank", { rank: stoneOneToTwo })],
+        getCharacter: () => rankCharacter,
+        upgradesById: new Map([[mythicMatId, mythicMaterial]]),
+        inventoryUpgradeAmountById: new Map([["upgHpM001", 6]]),
+      })
+    )
+
     const need = needs.get("upgHpM001")!
-    expect(need.acquired).toBe(2)
-    expect(need.required).toBe(need.acquired + need.neededBy[0]!.count)
+    expect(need.acquired).toBe(6)
+    expect(need.required).toBe(6)
+  })
+
+  it("counts owned mythic-material stock once across goals for different units", () => {
+    const otherCharacter: FarmingCharacter = { ...rankCharacter, id: otherId }
+    const needs = aggregateShopNeeds(
+      baseParams({
+        members: [
+          member("g1", heroId, "Rank", "Active"),
+          member("g2", otherId, "Rank", "Active"),
+        ],
+        details: [
+          detail("g1", heroId, "Rank", { rank: stoneOneToTwo }),
+          detail("g2", otherId, "Rank", { rank: stoneOneToTwo }),
+        ],
+        getCharacter: (unitId) =>
+          unitId === heroId ? rankCharacter : otherCharacter,
+        upgradesById: new Map([[mythicMatId, mythicMaterial]]),
+        inventoryUpgradeAmountById: new Map([["upgHpM001", 6]]),
+      })
+    )
+
+    expect(needs.get("upgHpM001")).toEqual({
+      acquired: 6,
+      required: 12,
+      neededBy: [
+        { unitId: heroId, unitName: "Farseer", count: 6 },
+        { unitId: otherId, unitName: "Autarch", count: 6 },
+      ],
+    })
+  })
+
+  it("keeps owned shards a later Unlock goal supplies after an Ascension goal for the same unit", () => {
+    const needs = aggregateShopNeeds(
+      baseParams({
+        members: [
+          member("g1", heroId, "Ascension", "Active"),
+          member("g2", heroId, "Unlock", "Active"),
+        ],
+        details: [
+          detail("g1", heroId, "Ascension", {
+            progression: {
+              start: "Common:None",
+              end: "Common:OneStar",
+            } as never,
+          }),
+          detail("g2", heroId, "Unlock"),
+        ],
+        charactersById: new Map([
+          [
+            heroId,
+            { id: heroId, name: "Farseer", initialRarity: "Rare" } as never,
+          ],
+        ]),
+        ascensionCostsById: new Map([
+          ["Common:OneStar", { shards: 20, mythicShards: 0, orbs: 0 } as never],
+        ]),
+        unlockShardCostsById: new Map([
+          ["Rare", { rarity: "Rare", shards: 130 } as never],
+        ]),
+        inventoryShardById: new Map([[heroId, { amount: 30 } as never]]),
+      })
+    )
+
+    // Ascension (20, seeded with 0 owned) + Unlock (130 less the 30 inventory shards).
+    expect(needs.get("shards_eldarFarseer")).toEqual({
+      acquired: 30,
+      required: 150,
+      neededBy: [
+        { unitId: heroId, unitName: "Farseer", count: 20 },
+        { unitId: heroId, unitName: "Farseer", count: 100 },
+      ],
+    })
   })
 
   it("ignores goals that are not Active", () => {
