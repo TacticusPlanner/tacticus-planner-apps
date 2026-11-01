@@ -26,7 +26,7 @@ import {
   type ProjectRemoval,
 } from "./project-removal-flow"
 
-type MoveDirection = keyof GoalMenuMoves
+type MoveDirection = Exclude<keyof GoalMenuMoves, "priorityOrder">
 
 const MOVE_LABEL_KEYS = {
   top: "goals.actions.moveToTop",

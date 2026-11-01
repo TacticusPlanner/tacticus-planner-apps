@@ -124,7 +124,14 @@ vi.mock("./goals-list", () => ({
   }: {
     rows: { goalId: string }[]
     onReorder: (orderedIds: string[], movedId: string) => void
-    menuMoves?: ReadonlyMap<string, { top?: string; up?: string }>
+    menuMoves?: ReadonlyMap<
+      string,
+      {
+        top?: string
+        up?: string
+        priorityOrder?: readonly string[]
+      }
+    >
     onMenuMove: (goalId: string, displacedGoalId: string) => void
     highlightedGoalId?: string | null
     reorderEnabled: boolean
