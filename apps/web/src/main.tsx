@@ -5,6 +5,7 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import "@workspace/ui/globals.css"
 import { App } from "@/app"
 import { AuthProvider, I18nProvider, QueryProvider } from "@/app/providers"
+import { installForeignDomGuard } from "@/app/foreign-dom-guard"
 import { installPreloadErrorRecovery } from "@/app/stale-build-recovery"
 import { listenForInstallPrompt } from "@/widgets/app-install"
 import {
@@ -23,6 +24,8 @@ import { TourProvider } from "@/shared/tour"
 installPreloadErrorRecovery()
 // Every error nothing else caught is logged once and reported (spec: client-error-reporting).
 installGlobalErrorCapture()
+// Before React mounts: a page translator moving React's text nodes must not unmount the app.
+installForeignDomGuard()
 // Chromium offers its install prompt early, often before React mounts: hold it for the Install button.
 listenForInstallPrompt()
 
