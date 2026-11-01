@@ -10,11 +10,12 @@ const DAY_MS = 24 * 60 * 60 * 1000
 /** One run's start: announced by the catalog, or estimated from the run gap. */
 export interface LegendaryEventRunStart {
   run: LegendaryEventRun
-  /** The earliest the run can start (planning keeps goals in time); null when neither announced
-   *  nor estimable. */
+  /** The earliest the run can start (the floor for `guessMs`); null when neither announced nor
+   *  estimable. */
   startMs: number | null
-  /** The likeliest start, from the typical run gap (shown to users as a guess); the announced
-   *  start when there is one, null when not estimable. */
+  /** The likeliest start, from the typical run gap (shown to users as a "maybe" date, and the
+   *  date the plan wizard plans to); the announced start when there is one, null when not
+   *  estimable. */
   guessMs: number | null
   estimated: boolean
 }
@@ -76,8 +77,9 @@ function latestAnnouncedStart(
  * Each run's start and the deadline (spec: unannounced runs get an estimated start). An unannounced
  * run starts at the earliest the history allows: the previous run's start plus the minimum gap,
  * run 3 no sooner than the minimum cycle after run 1, and never before the event cadence after the
- * latest announced run of `events` (the catalog, so another event's announced run counts). Planning
- * to the earliest plausible deadline keeps the goals in time if the runs come early.
+ * latest announced run of `events` (the catalog, so another event's announced run counts). The guess
+ * (the "maybe" date users see, which planning targets) is the typical gap after the previous
+ * guess, never before that earliest start.
  */
 export function legendaryEventRunDates(
   event: LegendaryEventSchedule,

@@ -22,6 +22,7 @@ import {
   recommendUpgrades,
   recommendUpgradesNow,
 } from "./plan-upgrades"
+import { projectedRosters } from "./plan-inputs"
 import { runSliced, type SliceClock } from "./run-sliced"
 import { EMPTY_PLAN, NOW_MS, RUN_3_START_MS, planInputs } from "./plan.fixtures"
 import type { LegendaryEventTeam } from "@/entities/legendary-event"
@@ -200,6 +201,34 @@ describe("coversObjectives", () => {
       ])
     ).toBe(false)
     expect(coversObjectives(kept, [])).toBe(false)
+  })
+})
+
+describe("projectedRosters", () => {
+  it("counts an upgrade ready by an unannounced run's maybe date, past its earliest start", () => {
+    const base = planInputs()
+    const unit = base.roster[0]!
+    const upgraded = { ...unit, rank: "Adamantine2" as const }
+    const inputs = planInputs({
+      runStarts: base.runStarts.map((start) =>
+        start.run === 3
+          ? {
+              ...start,
+              startMs: RUN_3_START_MS,
+              guessMs: RUN_3_START_MS + 35 * DAY_MS,
+            }
+          : start
+      ),
+    })
+    const rosters = projectedRosters(inputs, [
+      {
+        unitId: unit.unitId,
+        step: { kind: "unlock", unit: upgraded },
+        readyMs: RUN_3_START_MS + 7 * DAY_MS,
+      },
+    ])
+    expect(rosters.get(3)!.get(unit.unitId)).toBe(upgraded)
+    expect(rosters.get(2)!.get(unit.unitId)).toBe(unit)
   })
 })
 
