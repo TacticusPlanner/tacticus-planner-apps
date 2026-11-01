@@ -58,6 +58,8 @@
     "bundle": "Compré el pack de 300 de moneda",
     "closeShards": "Fragmentos de «Oh So Close»",
     "showPaidOptions": "Mostrar opciones de pago",
+    "watchAds": "Ver anuncios diarios",
+    "watchAdsHint": "Desactivado: planifica sin la ficha diaria por anuncio (61 en lugar de 68 fichas por ronda). Se aplica a todos los eventos.",
     "fieldLabel": "{{field}}, ronda {{run}}",
     "decrease": "Reducir {{field}}, ronda {{run}}",
     "increase": "Aumentar {{field}}, ronda {{run}}",

@@ -58,6 +58,8 @@
     "bundle": "Paket mit 300 Währung gekauft",
     "closeShards": "„Oh So Close“-Splitter",
     "showPaidOptions": "Kostenpflichtige Optionen anzeigen",
+    "watchAds": "Tägliche Werbung ansehen",
+    "watchAdsHint": "Aus: ohne den kostenlosen Werbe-Token pro Tag planen (61 statt 68 Tokens pro Lauf). Gilt für alle Events.",
     "fieldLabel": "{{field}}, Durchlauf {{run}}",
     "decrease": "{{field}} verringern, Durchlauf {{run}}",
     "increase": "{{field}} erhöhen, Durchlauf {{run}}",

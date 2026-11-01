@@ -58,6 +58,8 @@
     "bundle": "Bought the 300 currency bundle",
     "closeShards": "Oh So Close shards",
     "showPaidOptions": "Show paid options",
+    "watchAds": "Watch daily ads",
+    "watchAdsHint": "Off: plan without the free ad token each day (61 instead of 68 tokens a run). Applies to every event.",
     "fieldLabel": "{{field}}, run {{run}}",
     "decrease": "Decrease {{field}}, run {{run}}",
     "increase": "Increase {{field}}, run {{run}}",
