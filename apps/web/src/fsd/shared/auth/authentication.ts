@@ -354,16 +354,14 @@ export function requestInteraction(): Promise<void> {
   return request
 }
 
-// Entra External ID's issuer acceleration value for Google: the sign-in page hands straight over to
-// Google instead of asking for an email first (docs: concept-authentication-methods-customers).
-export const GOOGLE_DOMAIN_HINT = "google"
-
-/** Redirects a Google user straight to Google. Their `username` is a generated
- *  `<oid>@<tenant domain>` address, and MSAL sends `username` as the login_hint whenever a request
- *  carries an account — and it attaches the active account itself when the request names none. That
- *  hint made Entra ask for a password for the generated address, which no Google user has. So the
- *  active account is let go for the redirect (the response sets it again) and the domain hint picks
- *  the provider instead. If the redirect cannot start, the account is put back. */
+/** Re-authenticates a Google user. Their `username` is a generated `<oid>@<tenant domain>` address,
+ *  and MSAL sends `username` as the login_hint whenever a request carries an account — and it
+ *  attaches the active account itself when the request names none. That hint made Entra ask for a
+ *  password for the generated address, which no Google user has. So the active account is let go
+ *  for the redirect (the response sets it again) and Entra's own sign-in page is shown, where the
+ *  user picks Google. No domain_hint: this tenant rejects `domain_hint=google` with AADSTS90023
+ *  ("'google' pair is not an external identity provider"). If the redirect cannot start, the
+ *  account is put back. */
 async function redirectToGoogle(
   instance: PublicClientApplication,
   account: AccountInfo | null
@@ -372,7 +370,6 @@ async function redirectToGoogle(
   try {
     await instance.loginRedirect({
       scopes: loginRequest.scopes,
-      domainHint: GOOGLE_DOMAIN_HINT,
       ...freshLoginPrompt(),
     })
   } catch (error) {

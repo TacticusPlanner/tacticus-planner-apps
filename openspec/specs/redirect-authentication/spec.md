@@ -45,9 +45,10 @@ authenticated state without requiring any further manual action.
   is a generated address they never type
 - **WHEN** their session needs an interactive re-authentication (for example,
   the refresh token expired)
-- **THEN** the identity provider is asked to go straight to Google, and is not
-  given the generated address as a login hint, so the user is never asked for
-  a password for it
+- **THEN** the identity provider's sign-in page is shown without the generated
+  address as a login hint (and without a `domain_hint`, which the tenant
+  rejects), so the user is never asked for a password for it and can choose
+  Google
 
 ### Requirement: Sign-in from the landing experience reaches the authenticated home experience
 
