@@ -43,3 +43,4 @@ export type DamageTypeStorageModel = StorageModel<"damage-types">
 export type GlobalValuesStorageModel = StorageModel<"global-values">
 export type ProgressionRulesStorageModel = StorageModel<"progression-rules">
 export type HreStorageModel = StorageModel<"hre">
+export type IncursionStorageModel = StorageModel<"incursions">

@@ -22,3 +22,6 @@ export { progressionRulesFixture } from "./progression-rules.fixtures"
 
 // The served `hre` records (both Hero Release Events), parsed through the catalog schema.
 export { hreFixture } from "./hre.fixtures"
+
+// Served `incursions` records (trimmed tiers), parsed through the catalog schema and keyed by MoW id.
+export { incursionsFixture } from "./incursions.fixtures"

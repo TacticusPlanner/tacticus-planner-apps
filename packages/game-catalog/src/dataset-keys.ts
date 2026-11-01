@@ -30,6 +30,7 @@ export const servedDatasetKeys = [
   "global-values",
   "progression-rules",
   "hre",
+  "incursions",
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
@@ -41,6 +42,8 @@ export const optionalDatasetKeys: readonly GameCatalogDatasetKey[] = [
   "unit-power",
   "quest-events",
   "quest-crates",
+  // Served once the API ships the dataset; the Incursion page reads it behind its feature flag.
+  "incursions",
 ]
 
 // Metadata-store key for the manifest sync metadata (etag/version) used for delta sync.

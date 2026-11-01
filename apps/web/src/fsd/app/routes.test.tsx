@@ -93,6 +93,7 @@ describe("app routes", () => {
       "collection",
       "campaigns",
       "campaign-events",
+      "incursions",
       "onslaught",
     ])
     expect(findRoute(routes, "/progress")).toBeUndefined()

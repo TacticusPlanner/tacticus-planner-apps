@@ -11,6 +11,10 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/legendary-event")>()),
   useLegendaryEvents: () => events.state,
 }))
+const flags = vi.hoisted(() => ({ enabled: [] as string[] }))
+vi.mock("@/shared/feature-flags", () => ({
+  useEnabledFeatureFlags: () => flags.enabled,
+}))
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => (_type: string, id: string) =>
     ({ astarLysander: "Lysander", votanUthar: "Uthar" })[id] ?? id,
@@ -50,6 +54,7 @@ const STATIC_CHILDREN = [
 describe("useNavItems", () => {
   beforeEach(() => {
     events.state = { status: "loading", retry: vi.fn(), nowMs: NOW }
+    flags.enabled = []
   })
 
   it("lists All events, Master table and Tier List, then two active events by run start", async () => {
@@ -136,6 +141,23 @@ describe("useNavItems", () => {
         (child) => child.path
       )
     ).toEqual(STATIC_CHILDREN)
+  })
+
+  it("shows My Game's Incursions child only while its feature flag is on", async () => {
+    const myGameChildren = (
+      items: Awaited<ReturnType<typeof renderNavItems>>
+    ) =>
+      items
+        .find((item) => item.path === "/my-game")
+        ?.children?.map((child) => child.path)
+
+    expect(myGameChildren(await renderNavItems())).not.toContain(
+      "/my-game/incursions"
+    )
+    flags.enabled = ["Incursion"]
+    expect(myGameChildren(await renderNavItems())).toContain(
+      "/my-game/incursions"
+    )
   })
 
   it("leaves every other section untouched", async () => {
