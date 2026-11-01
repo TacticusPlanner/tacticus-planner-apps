@@ -208,7 +208,7 @@ describe("PlanWizard", () => {
     await next()
     await next()
     const swap = await screen.findByTestId("plan-wizard-swap")
-    expect(swap).toHaveTextContent("These units can score more objectives")
+    expect(swap).toHaveTextContent(/Same units, also scoring .+: \+/)
     await userEvent.click(within(swap).getByTestId("plan-wizard-swap-accept"))
     expect(screen.queryByTestId("plan-wizard-swap")).not.toBeInTheDocument()
     expect(screen.getByText("1 team removed")).toBeInTheDocument()

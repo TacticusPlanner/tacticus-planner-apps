@@ -1000,7 +1000,7 @@
       "removed_one": "{{count}} equipo quitado",
       "removed_other": "{{count}} equipos quitados",
       "swap": "Un equipo más fuerte podría ocupar este puesto: +{{points}} puntos",
-      "swapSame": "Estas unidades pueden cumplir más objetivos como un equipo nuevo: +{{points}} puntos",
+      "swapSame": "Mismas unidades, cumpliendo también {{objectives}}: +{{points}} puntos",
       "swapAccept": "Cambiar",
       "swapSkip": "Mantener el mío",
       "keepCount_one": "Mantener mi equipo ({{count}})",
