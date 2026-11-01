@@ -13,22 +13,37 @@ import { Badge } from "@workspace/ui/components/badge"
 import { useDateLocale } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
+import { nextTierIndex } from "../../model/incursion-progress.model"
 import type { Incursion } from "../../model/incursions.model"
+import { IncursionProgressControl } from "./incursion-progress-control"
 import { IncursionTierView } from "./incursion-tier-view"
 
-/** One MoW's Incursion as an accordion row: its header, allowed factions and tier explorer. */
+/** The player's saved tiers for this MoW and how to change them; absent while signed out. */
+export type IncursionItemProgress = {
+  tiersCleared: number
+  onChange: (tiersCleared: number) => void
+}
+
+/**
+ * One MoW's Incursion as an accordion row: its header, the player's progress, allowed factions and
+ * tier explorer. The explorer opens on the next tier to play until the player picks another.
+ */
 export function IncursionItem({
   incursion,
   owned,
   npcsById,
+  progress,
 }: {
   incursion: Incursion
   owned: boolean
   npcsById: ReadonlyMap<string, NpcStorageModel>
+  progress?: IncursionItemProgress
 }) {
   const { t } = useTranslation(["incursions", "mows", "factions"])
   const dateLocale = useDateLocale()
-  const [tierIndex, setTierIndex] = useState(0)
+  const [pickedTier, setPickedTier] = useState<number | null>(null)
+  const tierIndex =
+    pickedTier ?? nextTierIndex(incursion, progress?.tiersCleared ?? 0)
   const testId = `incursion-${incursion.mowId}`
   const name = t(`mows:${incursion.mowId}`, { defaultValue: incursion.mowId })
   const firstRun = new Date(incursion.availableFromUtc).toLocaleDateString(
@@ -62,6 +77,18 @@ export function IncursionItem({
               >
                 {owned ? t("card.owned") : t("card.notOwned")}
               </Badge>
+              {progress ? (
+                <Badge
+                  variant="outline"
+                  className="tabular-nums"
+                  data-testid={`${testId}-cleared`}
+                >
+                  {t("progress.badge", {
+                    cleared: progress.tiersCleared,
+                    total: incursion.tiers.length,
+                  })}
+                </Badge>
+              ) : null}
             </div>
             <p className="text-sm text-muted-foreground">
               {t("card.firstRun", { date: firstRun })}
@@ -70,6 +97,13 @@ export function IncursionItem({
         </div>
       </AccordionTrigger>
       <AccordionContent className="space-y-4">
+        {progress ? (
+          <IncursionProgressControl
+            incursion={incursion}
+            tiersCleared={progress.tiersCleared}
+            onChange={progress.onChange}
+          />
+        ) : null}
         <div className="space-y-2">
           <h4 className="text-sm font-medium">{t("card.allowedFactions")}</h4>
           <ul
@@ -93,7 +127,7 @@ export function IncursionItem({
         <IncursionTierView
           incursion={incursion}
           tierIndex={tierIndex}
-          onTierChange={setTierIndex}
+          onTierChange={setPickedTier}
           npcsById={npcsById}
         />
       </AccordionContent>

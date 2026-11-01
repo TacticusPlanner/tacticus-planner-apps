@@ -78,5 +78,29 @@
       "Gold": "de oro",
       "Diamond": "de diamante"
     }
+  },
+  "progress": {
+    "clearedThrough": "Completado hasta",
+    "none": "Ninguno aún",
+    "badge": "{{cleared}}/{{total}} completados",
+    "remaining": "Quedan {{shards}} fragmentos en los niveles que no has completado",
+    "remainingMythic": "Quedan {{shards}} fragmentos y {{mythicShards}} fragmentos míticos en los niveles que no has completado",
+    "allCleared": "Todos los niveles completados",
+    "signIn": "Inicia sesión para guardar qué niveles has completado.",
+    "loadError": "No se pudo cargar tu progreso de Incursión.",
+    "saved": "Progreso de Incursión guardado.",
+    "conflict": "El progreso de Incursión cambió en otro lugar. Se cargaron los valores más recientes; aplica tu cambio de nuevo.",
+    "saveError": "No se pudo guardar el progreso de Incursión. Tus cambios siguen aquí; inténtalo de nuevo.",
+    "unsaved": {
+      "message": "Tienes cambios sin guardar",
+      "save": "Guardar",
+      "discard": "Descartar"
+    },
+    "leave": {
+      "title": "¿Salir sin guardar?",
+      "description": "Tus cambios en el progreso de Incursión no se han guardado y se perderán.",
+      "stay": "Quedarme",
+      "leave": "Salir"
+    }
   }
 }

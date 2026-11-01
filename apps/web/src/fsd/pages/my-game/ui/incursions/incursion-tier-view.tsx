@@ -12,11 +12,11 @@ import {
 
 import {
   runSteps,
-  tierLabels,
   tierSummary,
   type Incursion,
 } from "../../model/incursions.model"
 import { IncursionNodeCard } from "./incursion-node-card"
+import { useTierName } from "./use-tier-name"
 
 /** The tier picker, the chosen tier's totals and its run map, step by step. */
 export function IncursionTierView({
@@ -30,9 +30,9 @@ export function IncursionTierView({
   onTierChange: (index: number) => void
   npcsById: ReadonlyMap<string, NpcStorageModel>
 }) {
-  const { t } = useTranslation(["incursions", "progression"])
+  const { t } = useTranslation("incursions")
   const id = useId()
-  const labels = useMemo(() => tierLabels(incursion.tiers), [incursion.tiers])
+  const tierName = useTierName(incursion)
   const tier =
     incursion.tiers.find((candidate) => candidate.index === tierIndex) ??
     incursion.tiers[0]
@@ -54,17 +54,6 @@ export function IncursionTierView({
   )
   if (!tier || !view) return null
 
-  const tierName = (index: number) => {
-    const label = labels.get(index)
-    return label
-      ? t("card.tierOption", {
-          rarity: t(`progression:rarities.${label.rarity}` as never, {
-            defaultValue: label.rarity,
-          }),
-          number: label.number,
-        })
-      : String(index + 1)
-  }
   const { summary } = view
 
   return (

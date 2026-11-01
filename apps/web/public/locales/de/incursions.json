@@ -78,5 +78,29 @@
       "Gold": "Gold",
       "Diamond": "Diamant"
     }
+  },
+  "progress": {
+    "clearedThrough": "Abgeschlossen bis",
+    "none": "Noch keine",
+    "badge": "{{cleared}}/{{total}} abgeschlossen",
+    "remaining": "Noch {{shards}} Splitter in den Stufen, die du nicht abgeschlossen hast",
+    "remainingMythic": "Noch {{shards}} Splitter und {{mythicShards}} mythische Splitter in den Stufen, die du nicht abgeschlossen hast",
+    "allCleared": "Alle Stufen abgeschlossen",
+    "signIn": "Melde dich an, um zu speichern, welche Stufen du abgeschlossen hast.",
+    "loadError": "Dein Incursion-Fortschritt konnte nicht geladen werden.",
+    "saved": "Incursion-Fortschritt gespeichert.",
+    "conflict": "Der Incursion-Fortschritt wurde anderswo geändert. Die neuesten Werte wurden geladen; wende deine Änderung erneut an.",
+    "saveError": "Incursion-Fortschritt konnte nicht gespeichert werden. Deine Änderungen sind noch da; versuche es erneut.",
+    "unsaved": {
+      "message": "Du hast ungespeicherte Änderungen",
+      "save": "Speichern",
+      "discard": "Verwerfen"
+    },
+    "leave": {
+      "title": "Ohne Speichern verlassen?",
+      "description": "Deine Änderungen am Incursion-Fortschritt wurden nicht gespeichert und gehen verloren.",
+      "stay": "Bleiben",
+      "leave": "Verlassen"
+    }
   }
 }
