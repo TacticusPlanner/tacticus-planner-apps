@@ -1,12 +1,21 @@
 import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
 
+import { useBackClosableOpenState } from "@workspace/ui/hooks/use-close-on-back"
 import { cn } from "@workspace/ui/lib/utils"
 
 function Drawer({
+  open,
+  defaultOpen,
+  onOpenChange,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />
+  const openState = useBackClosableOpenState({
+    open,
+    defaultOpen,
+    onOpenChange,
+  })
+  return <DrawerPrimitive.Root data-slot="drawer" {...props} {...openState} />
 }
 
 function DrawerTrigger({
