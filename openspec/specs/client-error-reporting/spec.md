@@ -8,7 +8,7 @@ Defines what happens to an error that no component, request handler or backgroun
 
 ### Requirement: Uncaught errors and rejections are captured once
 
-The app SHALL capture every uncaught exception and unhandled promise rejection raised in the page, including failures of the background game-catalog and player-data sync loops, and every error that a route's error page catches while rendering, through a single capture path. A stale-build failure that the error page answers with a reload is not captured. The app SHALL write each error to the browser console exactly once with its message and stack, and SHALL report the same error object at most once. The listeners do not cancel the events, so the browser's own default report of an uncaught error may also appear; that report is not counted as the app's log.
+The app SHALL capture every uncaught exception and unhandled promise rejection raised in the page, including failures of the background game-catalog and player-data sync loops, and every error that a route's error page catches while rendering, through a single capture path. A stale-build failure that the error page answers with a reload is not captured. The app SHALL write each error to the browser console exactly once with its message and stack, and SHALL report the same error object at most once. The listeners do not cancel the events, so the browser's own default report of an uncaught error may also appear; that report is not counted as the app's log. An error the browser reports only as `Script error.` with no error object (one raised by a cross-origin script such as a browser extension or page translator, whose details the browser withholds) is not captured.
 
 #### Scenario: Background sync loop fails
 
@@ -19,6 +19,11 @@ The app SHALL capture every uncaught exception and unhandled promise rejection r
 
 - **WHEN** a page throws while rendering and the branded error page replaces it
 - **THEN** the error is logged once and captured, even though React caught it before it reached the window
+
+#### Scenario: Cross-origin script throws
+
+- **WHEN** a script injected by a browser extension throws and the page receives only `Script error.` with no error object
+- **THEN** nothing is logged or reported
 
 #### Scenario: Promise rejected outside React
 
