@@ -44,6 +44,7 @@ function actionsHarness(overrides: Partial<Record<string, unknown>> = {}) {
     pending: false,
     reorder: vi.fn(),
     save: vi.fn(),
+    remove: vi.fn(),
     ...overrides,
   }
 }

@@ -31,6 +31,7 @@ describe("ManageProjectsSheet", () => {
       pending: false,
       reorder: vi.fn(),
       save: vi.fn(),
+      remove: vi.fn(),
     }
 
     render(
@@ -86,6 +87,7 @@ describe("ManageProjectsSheet", () => {
       pending: false,
       reorder: vi.fn(),
       save: vi.fn(),
+      remove: vi.fn(),
     }
 
     render(
@@ -113,6 +115,7 @@ describe("ManageProjectsSheet", () => {
       pending: false,
       reorder: vi.fn(),
       save: vi.fn().mockResolvedValue(true),
+      remove: vi.fn(),
     }
 
     render(
@@ -149,6 +152,7 @@ describe("ManageProjectsSheet", () => {
       pending: false,
       reorder: vi.fn(),
       save: vi.fn().mockResolvedValue(false),
+      remove: vi.fn(),
     }
 
     render(
@@ -171,6 +175,7 @@ describe("ManageProjectsSheet", () => {
       pending: true,
       reorder: vi.fn(),
       save: vi.fn(),
+      remove: vi.fn(),
     }
 
     render(
@@ -191,6 +196,7 @@ describe("ManageProjectsSheet", () => {
       pending: false,
       reorder: vi.fn(),
       save: vi.fn(),
+      remove: vi.fn(),
     }
 
     const { rerender } = render(
