@@ -31,8 +31,12 @@ function toRoutePattern(pathname: string, params: Params): string {
 }
 
 // Error text can carry request URLs; their query strings may hold ids or tokens, so they are cut.
+// A stack frame's trailing `:line:column` is kept: Error Tracking needs it to apply the source map.
 function withoutQueryStrings(text: string): string {
-  return text.replace(/(https?:\/\/[^\s?#)]+)[?#][^\s)]*/g, "$1")
+  return text.replace(
+    /(https?:\/\/[^\s?#)]+)[?#][^\s)]*?((?::\d+){1,2})?(?=[\s)]|$)/g,
+    "$1$2"
+  )
 }
 
 export function PostHogProvider({
@@ -84,6 +88,7 @@ function PostHogIdentity({
       const asError = error instanceof Error ? error : null
       captureEvent({
         type: "client_error",
+        name: asError?.name ?? "Error",
         message: withoutQueryStrings(asError?.message ?? String(error)),
         stack: asError?.stack ? withoutQueryStrings(asError.stack) : null,
         context: context ?? null,

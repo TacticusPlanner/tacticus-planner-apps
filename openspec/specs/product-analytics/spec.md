@@ -131,12 +131,12 @@ When a staging-specific analytics token is configured, the staging deployment SH
 
 ### Requirement: Client errors are a declared event
 
-`client_error` (see `client-error-reporting`) SHALL be the only error-derived event the client reports, and it SHALL follow every privacy rule of this capability: identified users only, pseudonymous identity, no input values, no route parameters or query strings.
+A client error (see `client-error-reporting`) SHALL be the only error-derived event the client reports. It is sent as the analytics SDK's exception event (`$exception`) so it appears in the destination's error tracking, and it SHALL follow every privacy rule of this capability: identified users only, pseudonymous identity, no input values, no route parameters or query strings. The SDK's own exception autocapture SHALL stay off, so every reported error goes through the one capture path.
 
 #### Scenario: Error while editing a goal
 
 - **WHEN** an identified user has typed into a goal form and an uncaught error occurs
-- **THEN** the reported `client_error` carries the message, stack, route group and app version, and none of the typed values
+- **THEN** the reported exception carries the message, stack, route group and app version, and none of the typed values
 
 ### Requirement: Analytics code is loaded only once a user is identified
 

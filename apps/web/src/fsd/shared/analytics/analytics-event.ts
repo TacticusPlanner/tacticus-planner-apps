@@ -241,10 +241,12 @@ type AppInstallCardDismissedEvent = {
   platform: AppInstallPlatform
 }
 
-/** An error nothing else handled (spec: client-error-reporting). Message and stack have URL query
- *  strings removed; the route is reported as its nav section, never the URL. */
+/** An error nothing else handled (spec: client-error-reporting), sent as PostHog's `$exception` so
+ *  it lands in Error Tracking. Message and stack have URL query strings removed; the route is
+ *  reported as its nav section, never the URL. */
 type ClientErrorEvent = {
   type: "client_error"
+  name: string
   message: string
   stack: string | null
   context: string | null

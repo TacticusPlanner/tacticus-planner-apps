@@ -53,6 +53,15 @@ on:
         required: false
         type: string
         default: ""
+      upload-source-maps:
+        description: Upload hidden source maps to PostHog error tracking and strip them from dist. Skipped with a warning until the POSTHOG_PERSONAL_API_KEY secret and the POSTHOG_PROJECT_ID repository variable are set.
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      POSTHOG_PERSONAL_API_KEY:
+        description: PostHog personal API key with error-tracking write access, used to upload source maps.
+        required: false
 
 jobs:
   build:
@@ -111,6 +120,25 @@ jobs:
           set_if_present VITE_MSAL_AUTHORITY "${{ inputs.vite-msal-authority }}"
           set_if_present VITE_MSAL_CLIENT_ID "${{ inputs.vite-msal-client-id }}"
           set_if_present VITE_MSAL_TENANT_ID "${{ inputs.vite-msal-tenant-id }}"
+
+      # Source maps go to PostHog error tracking only (spec: client-error-reporting); the Vite plugin
+      # uploads them during the build and deletes them from dist, so they are never deployed. Its
+      # posthog-cli binary is downloaded on first use (pnpm-workspace.yaml skips the postinstall
+      # download, so local installs never need releases.posthog.com).
+      - name: Set up PostHog source map upload
+        if: ${{ inputs.upload-source-maps }}
+        env:
+          POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+          POSTHOG_PROJECT_ID: ${{ vars.POSTHOG_PROJECT_ID }}
+        shell: bash
+        run: |
+          if [ -z "$POSTHOG_PERSONAL_API_KEY" ] || [ -z "$POSTHOG_PROJECT_ID" ]; then
+            # Not configured yet: build without source maps rather than block the deploy.
+            echo "::warning::Skipping source map upload: set the POSTHOG_PERSONAL_API_KEY secret and the POSTHOG_PROJECT_ID variable."
+            exit 0
+          fi
+          echo "POSTHOG_PERSONAL_API_KEY=$POSTHOG_PERSONAL_API_KEY" >> "$GITHUB_ENV"
+          echo "POSTHOG_PROJECT_ID=$POSTHOG_PROJECT_ID" >> "$GITHUB_ENV"
 
       # API types come from the committed copy of the API's OpenAPI document (spec: api-contract-sync).
       - name: Check API types are current
@@ -175,6 +203,14 @@ jobs:
       # Startup-JS budget (openspec change trim-startup-bundle): fails the build on a regression.
       - name: Bundle budget
         run: pnpm --filter web bundle:budget
+
+      - name: Check no source maps are deployed
+        if: ${{ inputs.upload-source-maps }}
+        run: |
+          if find apps/web/dist -name '*.map' | grep -q .; then
+            echo "::error::Source maps were left in apps/web/dist after upload."
+            exit 1
+          fi
 
       - name: Upload web artifact
         if: ${{ inputs.upload-artifact }}
