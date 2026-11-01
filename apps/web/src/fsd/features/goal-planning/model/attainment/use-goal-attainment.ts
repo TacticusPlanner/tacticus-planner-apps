@@ -9,6 +9,7 @@ import {
   type GoalAttainment,
 } from "./goal-attainment"
 import { useGoalsFor } from "./use-goals-for"
+import { allocateUpgradeGoalStock } from "./upgrade-goal-stock"
 import { useStableIds } from "../shared/use-stable-ids"
 import { chunkOrUndefined, readyData } from "../shared/read-data"
 
@@ -57,6 +58,10 @@ export function useGoalAttainmentState(
   )
 
   const byGoalId = useMemo(() => {
+    const upgradeStock = allocateUpgradeGoalStock(
+      goals.goalsById.values(),
+      inventoryUpgrades
+    )
     const result = new Map<string, GoalAttainment>()
     goalIds.forEach((goalId) => {
       const detail = goals.goalsById.get(goalId)
@@ -71,7 +76,7 @@ export function useGoalAttainmentState(
           detail,
           playerCharacter: playerCharacterById.get(unitId),
           playerMow: playerMowById.get(unitId),
-          inventoryUpgrades,
+          inventoryUpgrades: upgradeStock.get(goalId) ?? inventoryUpgrades,
           inventoryItems,
         })
       )
