@@ -1556,6 +1556,24 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/player-data-overrides/incursions-progress": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the current profile's manual Incursion progress. */
+    get: operations["TacticusPlannerApiFeaturesPlayerDataOverridesGetIncursionProgressEndpoint"]
+    /** Replaces the current profile's manual Incursion progress. */
+    put: operations["TacticusPlannerApiFeaturesPlayerDataOverridesUpdateIncursionProgressEndpoint"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/player-data-overrides/onslaught-progress": {
     parameters: {
       query?: never
@@ -3559,6 +3577,21 @@ export interface components {
       /** @default false */
       legendaryEventPlans?: boolean
     }
+    IncursionProgressOverrideRequest: {
+      mowId: string
+      /** Format: int32 */
+      tiersCleared: number
+    }
+    IncursionProgressOverrideResponse: {
+      mowId: string
+      /** Format: int32 */
+      tiersCleared: number
+    }
+    IncursionProgressOverridesResponse: {
+      progress: components["schemas"]["IReadOnlyListOfIncursionProgressOverrideResponse"]
+      /** Format: int64 */
+      revision: number
+    }
     IReadOnlyDictionaryOfStringAndGameCatalogIncursionEnhancement: {
       [key: string]: components["schemas"]["GameCatalogIncursionEnhancement"]
     }
@@ -3684,6 +3717,8 @@ export interface components {
     IReadOnlyListOfGuildMemberSummary: components["schemas"]["GuildMemberSummary"][]
     IReadOnlyListOfGuildRaidModifierStatusResponse: components["schemas"]["GuildRaidModifierStatusResponse"][]
     IReadOnlyListOfGuildRaidPrimeStatusResponse: components["schemas"]["GuildRaidPrimeStatusResponse"][]
+    IReadOnlyListOfIncursionProgressOverrideRequest: components["schemas"]["IncursionProgressOverrideRequest"][]
+    IReadOnlyListOfIncursionProgressOverrideResponse: components["schemas"]["IncursionProgressOverrideResponse"][]
     IReadOnlyListOfInt32: number[]
     IReadOnlyListOfInt64: number[]
     IReadOnlyListOfIReadOnlyListOfInt32: components["schemas"]["IReadOnlyListOfInt32"][]
@@ -4137,6 +4172,11 @@ export interface components {
       /** Format: int64 */
       expectedRevision: number
       target: components["schemas"]["GoalTargetEditRequest"]
+    }
+    UpdateIncursionProgressRequest: {
+      progress: components["schemas"]["IReadOnlyListOfIncursionProgressOverrideRequest"]
+      /** Format: int64 */
+      revision: number
     }
     UpdateLegendaryEventAnnotationsRequest: {
       /** Format: int64 */
@@ -9152,6 +9192,95 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["CampaignEventProgressOverridesResponse"]
+        }
+      }
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesPlayerDataOverridesGetIncursionProgressEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["IncursionProgressOverridesResponse"]
+        }
+      }
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesPlayerDataOverridesUpdateIncursionProgressEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateIncursionProgressRequest"]
+      }
+    }
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["IncursionProgressOverridesResponse"]
         }
       }
       /** @description Bad Request */
