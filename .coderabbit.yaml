@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+reviews:
+  auto_review:
+    # One review when a PR opens or leaves draft; re-run on demand with `@coderabbitai review`.
+    # Reviewing every agent push burned the hourly rate limit, so most PRs got no review at all.
+    auto_incremental_review: false
+  path_filters:
+    - "!pnpm-lock.yaml"
+    - "!apps/web/public/game_catalog/**"
+    - "!apps/web/datamine/**"
+    - "!apps/web/openapi/**"
+    - "!apps/web/public/locales/*/npcAbilityText/**"
+    - "!apps/web/public/locales/*/raidBossAbilityText/**"
+  path_instructions:
+    - path: "apps/web/src/fsd/**"
+      instructions: >-
+        Check Feature-Sliced Design layer boundaries and slice public APIs as described in AGENTS.md.
+        V2 is pre-production: breaking changes to routes, stores and API contracts are allowed.
+    - path: "**/*.test.{ts,tsx}"
+      instructions: >-
+        Flag weakened or removed assertions, skipped tests, and tests that only cover the happy path.
+    - path: ".github/workflows/**"
+      instructions: >-
+        Flag lowered coverage thresholds, removed or skipped checks, and new permissions or secrets
+        reaching jobs that run pull request code.
+knowledge_base:
+  code_guidelines:
+    filePatterns:
+      - "AGENTS.md"
