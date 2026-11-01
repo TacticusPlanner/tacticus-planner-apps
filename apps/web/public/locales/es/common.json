@@ -927,6 +927,7 @@
       "insightsDescription": "Recomendaciones de mejoras y campañas",
       "schedule": "Calendario",
       "scheduleDescription": "Plan de incursiones día a día para tus objetivos activos, desde hoy hasta completarlos.",
+      "all": "Todos los estados",
       "toReach": "No cumplidos",
       "reached": "Alcanzados",
       "blocked": "Bloqueado",
@@ -1395,7 +1396,8 @@
       "groupNone": "Sin agrupar",
       "groupByType": "Agrupar por tipo",
       "groupByUnit": "Agrupar por unidad",
-      "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos"
+      "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos",
+      "statusFilterLabel": "Filtro de estado de objetivos"
     },
     "seasonFit": {
       "label": "Ajuste a temporada",

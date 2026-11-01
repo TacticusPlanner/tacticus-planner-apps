@@ -14,10 +14,11 @@ import { STATUS_VALUES } from "../model/types"
 // straight from `row.status`). "blocked" is neither: it's the same additive, cross-cutting signal
 // `BlockedIndicator` shows (a goal keeps its Active/Paused status while blocked - see
 // `goal-blockers.ts`), surfaced here as its own selectable filter rather than folded into Unfulfilled.
+// "all" is no filter at all: every non-archived goal in scope, whatever its attainment or status.
 // Shared here (goals-navigation spec) so Overview and Projects present the exact same enum, labels,
 // and reached-indicator behavior instead of each maintaining its own near-identical `TabsList`.
 export type GoalStatusFilterValue =
-  "toReach" | "reached" | "blocked" | "active" | "paused"
+  "all" | "toReach" | "reached" | "blocked" | "active" | "paused"
 
 // "blocked" has no count here on purpose: unlike the others, knowing how many goals are blocked
 // requires each goal's computed blockers (`GoalOverviewMetrics.blockers`), which - to avoid fetching
@@ -32,7 +33,7 @@ export type GoalStatusFilterCounts = Record<
 >
 
 /**
- * Shared Unfulfilled/Reached/Blocked/Active/Paused status filter (goals-navigation spec) — replaces the
+ * Shared All statuses/Unfulfilled/Reached/Blocked/Active/Paused status filter (goals-navigation spec) — replaces the
  * near-identical `TabsList` previously duplicated on Overview and Projects. Defaults to whatever
  * `value` the caller passes in (both current callers default their own state to "toReach"). Shows a
  * small indicator on the trigger when there's at least one Reached goal and the current selection
@@ -61,6 +62,7 @@ export function StatusFilterSelect({
         value={value}
       >
         <SelectTrigger
+          aria-label={t("goals.filters.statusFilterLabel")}
           aria-describedby={showReachedIndicator ? hintId : undefined}
           data-testid={testId}
         >

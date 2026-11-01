@@ -927,6 +927,7 @@
       "insightsDescription": "Recommandations d'améliorations et de campagnes",
       "schedule": "Calendrier",
       "scheduleDescription": "Plan de raids jour par jour pour vos objectifs actifs, d'aujourd'hui jusqu'à leur achèvement.",
+      "all": "Tous les statuts",
       "toReach": "Non atteints",
       "reached": "Atteints",
       "blocked": "Bloqué",
@@ -1395,7 +1396,8 @@
       "groupNone": "Aucun regroupement",
       "groupByType": "Regrouper par type",
       "groupByUnit": "Regrouper par unité",
-      "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés"
+      "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés",
+      "statusFilterLabel": "Filtre de statut des objectifs"
     },
     "seasonFit": {
       "label": "Calage sur la saison",

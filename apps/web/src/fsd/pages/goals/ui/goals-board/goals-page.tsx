@@ -209,15 +209,17 @@ export function GoalsPage() {
   // full non-archived candidate set instead, then filters afterward (see the comment on
   // `GoalStatusFilterCounts` for why this tab has no live count in the dropdown).
   const candidateRows =
-    tab === "active"
-      ? filteredNonArchivedRows.filter((row) => row.status === "Active")
-      : tab === "paused"
-        ? filteredNonArchivedRows.filter((row) => row.status === "Paused")
-        : tab === "blocked"
-          ? filteredNonArchivedRows
-          : filteredNonArchivedRows.filter(
-              (row) => isReached(row.goalId) === (tab === "reached")
-            )
+    tab === "all"
+      ? filteredNonArchivedRows
+      : tab === "active"
+        ? filteredNonArchivedRows.filter((row) => row.status === "Active")
+        : tab === "paused"
+          ? filteredNonArchivedRows.filter((row) => row.status === "Paused")
+          : tab === "blocked"
+            ? filteredNonArchivedRows
+            : filteredNonArchivedRows.filter(
+                (row) => isReached(row.goalId) === (tab === "reached")
+              )
   // Progress bar + remaining-resource summary per visible row (plan §2) — scoped to only the rows
   // actually shown so switching tabs/filters doesn't keep fetching every goal's detail forever.
   const overviewMetrics = useGoalsOverviewMetrics(
@@ -236,6 +238,7 @@ export function GoalsPage() {
 
   const rows = orderRowsByGlobalPriority(baseRows)
   const tabCounts = {
+    all: filteredNonArchivedRows.length,
     toReach: filteredNonArchivedRows.filter((row) => !isReached(row.goalId))
       .length,
     reached: filteredNonArchivedRows.filter((row) => isReached(row.goalId))
@@ -317,7 +320,7 @@ export function GoalsPage() {
   // combination has no rows, which can also happen when every goal has already been reached or the
   // type filter excludes everything.
   const showPristineEmptyState =
-    tab === "toReach" &&
+    (tab === "toReach" || tab === "all") &&
     !isLoading &&
     !fetchError &&
     nonArchivedGoals.fetchState.status === "success" &&

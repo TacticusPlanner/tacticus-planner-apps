@@ -927,6 +927,7 @@
       "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen",
       "schedule": "Zeitplan",
       "scheduleDescription": "Tag-für-Tag-Raidplan für deine aktiven Ziele – von heute bis sie erreicht sind.",
+      "all": "Alle Status",
       "toReach": "Unerfüllt",
       "reached": "Erreicht",
       "blocked": "Blockiert",
@@ -1395,7 +1396,8 @@
       "groupNone": "Keine Gruppierung",
       "groupByType": "Nach Typ gruppieren",
       "groupByUnit": "Nach Einheit gruppieren",
-      "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden"
+      "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden",
+      "statusFilterLabel": "Zielstatus-Filter"
     },
     "seasonFit": {
       "label": "Saison-Passung",

@@ -10,6 +10,7 @@ export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
 }
 
 export const STATUS_VALUES: readonly GoalStatusFilterValue[] = [
+  "all",
   "toReach",
   "reached",
   "blocked",

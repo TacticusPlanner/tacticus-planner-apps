@@ -496,6 +496,42 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
+  it("lists every goal, reached or not, Active or Paused, under All statuses", async () => {
+    const reachedGoal = {
+      ...activeGoal,
+      goalId: "goal-reached",
+      config: {
+        rank: {
+          start: 0,
+          startPointFive: false,
+          startAppliedUpgrades: 0,
+          end: 0,
+          endPointFive: false,
+          endAppliedUpgrades: 0,
+        },
+      },
+    }
+    listGoals.mockResolvedValue({
+      goals: [activeGoal, pausedGoal, reachedGoal],
+    })
+    await seedPlayerData({ characters: [ownedHero()] })
+    const user = userEvent.setup()
+    renderPage()
+
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(
+      screen.getByRole("combobox", { name: "Goal status filter" })
+    )
+    await user.click(
+      await screen.findByRole("option", { name: "All statuses (3)" })
+    )
+
+    await vi.waitFor(() =>
+      expect(screen.getAllByTestId("goal-row")).toHaveLength(3)
+    )
+  })
+
   it("filters to only the Paused goal when switching to the Paused status", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal, pausedGoal] })
     const user = userEvent.setup()

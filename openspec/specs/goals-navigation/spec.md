@@ -22,7 +22,7 @@ The Plan section SHALL render its Planning Settings entry point on the Goals sub
 
 ### Requirement: Shared status filter control
 
-Goals SHALL present the status filter — Unfulfilled, Reached, Blocked, Active, Paused — as a single select control defaulting to Unfulfilled, whether or not a project scope is selected. There SHALL be no "Archived" option. Each option except Blocked SHALL show its count of matching goals within the current project scope. The Reached option lists Reached goals in the same list presentation as every other option; Reached goals SHALL NOT be omitted from any option they otherwise match (see `goal-list-layout` for how a Reached row renders).
+Goals SHALL present the status filter — All statuses, Unfulfilled, Reached, Blocked, Active, Paused — as a single select control defaulting to Unfulfilled, whether or not a project scope is selected. The control SHALL carry the accessible name "Goal status filter". "All statuses" SHALL list every non-archived goal in scope regardless of attainment or status, and is labelled so it is not confused with the project scope's "All goals". There SHALL be no "Archived" option. Each option except Blocked SHALL show its count of matching goals within the current project scope. The Reached option lists Reached goals in the same list presentation as every other option; Reached goals SHALL NOT be omitted from any option they otherwise match (see `goal-list-layout` for how a Reached row renders).
 
 #### Scenario: Status filter defaults to Unfulfilled
 
@@ -37,7 +37,13 @@ Goals SHALL present the status filter — Unfulfilled, Reached, Blocked, Active,
 #### Scenario: No Archived option
 
 - **WHEN** the user opens the status filter
-- **THEN** the options are Unfulfilled, Reached, Blocked, Active and Paused, and no "Archived" option is offered
+- **THEN** the options are All statuses, Unfulfilled, Reached, Blocked, Active and Paused, and no "Archived" option is offered
+
+#### Scenario: All statuses shows reached and unreached goals together
+
+- **GIVEN** an Active unfulfilled goal, a Paused goal, and a reached goal
+- **WHEN** the user selects "All statuses" from the status filter
+- **THEN** all three goals are listed, the option shows a count of 3, and the URL carries `status=all`
 
 #### Scenario: Counts follow the scope
 
