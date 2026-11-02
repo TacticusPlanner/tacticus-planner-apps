@@ -125,7 +125,7 @@ jobs:
     name: Publish coverage
     needs: coverage
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15 # three uploads, each may wait up to 160 s for processing
     permissions:
       contents: read
       code-quality: write
