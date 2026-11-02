@@ -16,7 +16,6 @@
     "owned": "En posesión",
     "notOwned": "No la tienes",
     "allowedFactions": "Facciones permitidas",
-    "tier": "Nivel",
     "tierOption": "{{rarity}} {{number}}"
   },
   "summary": {
@@ -87,7 +86,7 @@
     "remaining": "Quedan {{shards}} fragmentos por ganar con estrellas de batalla",
     "remainingMythic": "Quedan {{shards}} fragmentos y {{mythicShards}} fragmentos míticos por ganar con estrellas de batalla",
     "allClaimed": "Todas las recompensas de estrellas obtenidas",
-    "howTo": "Marca en el mapa de partida las estrellas que ganaste en cada batalla. Un nivel cuenta como completado cuando ganas una batalla de su último paso.",
+    "howTo": "Abre un nivel para marcar las estrellas que ganaste en cada batalla, o marca todo el nivel con 3 estrellas. Un nivel cuenta como superado cuando ganas una batalla de su último paso.",
     "starsEarned": "Tus estrellas",
     "starsFor": "Estrellas ganadas en {{battle}}",
     "stars_one": "{{count}} estrella",
@@ -123,7 +122,7 @@
     "clearable_one": "Se estima que completa {{count}} de {{total}} niveles, hasta {{tier}}",
     "clearable_other": "Se estima que completa {{count}} de {{total}} niveles, hasta {{tier}}",
     "clearableNone": "Aún no se estima que complete ningún nivel.",
-    "hint": "Estimación sin calibrar a partir de tu plantilla sincronizada: los héroes más fuertes de las facciones permitidas contra el camino más fácil de cada nivel, con la salud que se mantiene de una batalla a otra.",
+    "hint": "Estimación sin calibrar a partir de tu plantilla sincronizada: los héroes más fuertes de las facciones permitidas contra el camino más fácil de cada nivel, con la vida perdida acumulándose de batalla en batalla. Se asume que un equipo vence batallas de hasta 5 veces su propio poder, ya que el poder de una batalla suma a todos los enemigos.",
     "tooFew_one": "Necesitas al menos {{count}} héroe de las facciones permitidas.",
     "tooFew_other": "Necesitas al menos {{count}} héroes de las facciones permitidas.",
     "unsynced": "Sincroniza tu plantilla para ver un equipo sugerido y qué niveles puede completar.",
@@ -133,5 +132,27 @@
     "clears": "Equipo sugerido: se estima que completa con un {{hp}} % de salud restante",
     "stops": "Equipo sugerido: se estima que cae en la batalla {{battle}} de {{total}}",
     "hint": "El daño se mantiene entre batallas hasta que termina la partida."
+  },
+  "nav": {
+    "label": "Navegación de Incursiones",
+    "overview": "Incursiones",
+    "backTo": "Volver a {{label}}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "previousItem": "Anterior: {{name}}",
+    "nextItem": "Siguiente: {{name}}",
+    "position": "{{index}} de {{total}}"
+  },
+  "tier": {
+    "title": "Nivel {{number}}",
+    "list": "Niveles",
+    "preview": "Vista previa",
+    "starsLabel": "{{earned}} de {{max}} estrellas",
+    "peakPowerHint": "Poder enemigo de la batalla más dura en el camino más fácil por este nivel.",
+    "estimateClears": "Superable",
+    "estimateStops": "Cae en {{battle}}/{{total}}",
+    "markCleared": "Todo a 3★",
+    "reset": "Restablecer",
+    "markHint": "Ajusta todas las batallas de este nivel a la vez. Guarda para conservar el cambio."
   }
 }

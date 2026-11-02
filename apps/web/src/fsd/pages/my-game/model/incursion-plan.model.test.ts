@@ -4,6 +4,7 @@ import { incursionsFixture } from "@workspace/game-catalog/testing"
 import {
   DAMAGE_SHARE,
   estimateTierRun,
+  INCURSION_POWER_RATIO,
   hasSustain,
   incursionBattlePower,
   lightestPath,
@@ -60,24 +61,34 @@ describe("estimateTierRun", () => {
   }))
 
   it("carries damage over, so a team that wins each battle alone can run out of HP", () => {
-    // Each battle costs DAMAGE_SHARE × 100 / 100 = 30% of the HP.
-    expect(DAMAGE_SHARE).toBe(0.3)
-    expect(estimateTierRun(100, path, false)).toEqual({
-      wins: 1,
-      battles: 4,
-      cleared: false,
-      hpLeftPct: 70,
-    })
-    expect(estimateTierRun(500, path, false)).toEqual({
+    // A 20-power team fights at 100, so each battle costs DAMAGE_SHARE × 100 / 100 = 20% of the HP.
+    expect(INCURSION_POWER_RATIO).toBe(5)
+    expect(DAMAGE_SHARE).toBe(0.2)
+    expect(estimateTierRun(20, path, false)).toEqual({
       wins: 4,
       battles: 4,
       cleared: true,
-      hpLeftPct: 76,
+      hpLeftPct: 20,
+      peakPower: 100,
+    })
+    // Six 90-power battles cost 18% each: five leave 10%, too little for the sixth.
+    const longer = Array.from({ length: 6 }, (_, at) => ({
+      battleId: String(at + 1),
+      power: 90,
+    }))
+    expect(estimateTierRun(20, longer, false)).toMatchObject({
+      wins: 5,
+      battles: 6,
+      cleared: false,
     })
   })
 
+  it("loses a battle stronger than the team's effective power", () => {
+    expect(estimateTierRun(19, path, false).wins).toBe(0)
+  })
+
   it("loses less HP with support", () => {
-    expect(estimateTierRun(500, path, true).hpLeftPct).toBe(82)
+    expect(estimateTierRun(20, path, true).hpLeftPct).toBe(40)
   })
 
   it("estimates nothing without power", () => {

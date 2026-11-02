@@ -120,3 +120,45 @@ export function nextTierIndex(incursion: Incursion, stars: TierStars): number {
   const open = incursion.tiers.find((tier) => !tierCleared(tier, stars))
   return (open ?? incursion.tiers.at(-1))?.index ?? 0
 }
+
+/** Stars earned across every battle of a tier, out of 3 per battle (the game's "38/45" bar). */
+export function tierStarCount(
+  tier: IncursionTier,
+  stars: TierStars
+): { earned: number; max: number } {
+  return {
+    earned: tier.battles.reduce(
+      (sum, battle) => sum + Math.min(MAX_STARS, stars(tier.index, battle.id)),
+      0
+    ),
+    max: tier.battles.length * MAX_STARS,
+  }
+}
+
+/** The draft entries that set every battle of one tier to `stars` (3 marks it fully cleared, 0 resets it). */
+export function tierStarsPatch(
+  mowId: string,
+  tier: IncursionTier,
+  stars: number
+): IncursionProgressDraft {
+  return Object.fromEntries(
+    tier.battles.map((battle) => [
+      battleKey(mowId, tier.index, battle.id),
+      stars,
+    ])
+  )
+}
+
+/** Stars earned across every tier of one MoW's Incursion. */
+export function incursionStarCount(
+  incursion: Incursion,
+  stars: TierStars
+): { earned: number; max: number } {
+  return incursion.tiers.reduce(
+    (sum, tier) => {
+      const count = tierStarCount(tier, stars)
+      return { earned: sum.earned + count.earned, max: sum.max + count.max }
+    },
+    { earned: 0, max: 0 }
+  )
+}

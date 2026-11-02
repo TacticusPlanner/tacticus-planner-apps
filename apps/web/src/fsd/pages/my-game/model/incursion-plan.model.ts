@@ -6,11 +6,19 @@ import type { IncursionBattle, IncursionTier } from "./incursions.model"
 const INCURSION_TEAM_SIZE = 5
 
 /**
- * The share of the team's HP a battle as strong as the team costs. Damage carries over from battle
- * to battle until the run ends, so a team that wins each battle on its own can still run out of HP.
- * A web constant, not catalog data: uncalibrated, like the LRE power ratio.
+ * How many times its own power in enemy power a team can beat in one battle. Hero power counts one
+ * unit while a battle's power adds up every enemy on the board, so a team routinely wins battles
+ * several times its power. Calibrated on one clear: a 1.3M team cleared a Mythic tier whose battles
+ * reach 6.2M. A web constant, not catalog data, like the LRE power ratio.
  */
-export const DAMAGE_SHARE = 0.3
+export const INCURSION_POWER_RATIO = 5
+
+/**
+ * The share of the team's HP a battle as strong as the team's effective power costs. Damage carries
+ * over from battle to battle until the run ends, so a team that wins each battle on its own can
+ * still run out of HP.
+ */
+export const DAMAGE_SHARE = 0.2
 
 /** How much less damage a team with a useful Healer (or a Mechanic with a Mechanical ally) keeps. */
 const SUPPORT_SUSTAIN = 0.25
@@ -87,12 +95,14 @@ export type TierRunEstimate = {
   cleared: boolean
   /** The team's HP left after the last battle won, in whole percent. */
   hpLeftPct: number
+  /** The strongest battle on the path, in enemy power. */
+  peakPower: number
 }
 
 /**
- * Plays the path in order with HP that carries over: before each battle the team fights at its
- * power × the HP it has left, which must reach the battle's power; the battle then costs
- * `DAMAGE_SHARE` × its power ÷ the team's power of the HP, less `SUPPORT_SUSTAIN` with support.
+ * Plays the path in order with HP that carries over. The team fights at its power ×
+ * `INCURSION_POWER_RATIO`, which must reach each battle's power; a battle then costs
+ * `DAMAGE_SHARE` × its power ÷ that effective power of the HP, less `SUPPORT_SUSTAIN` with support.
  * A battle that would take the last of the HP is lost.
  */
 export function estimateTierRun(
@@ -100,13 +110,14 @@ export function estimateTierRun(
   path: readonly PathBattle[],
   sustained: boolean
 ): TierRunEstimate {
+  const effective = teamPower * INCURSION_POWER_RATIO
   let hp = 1
   let wins = 0
-  if (teamPower > 0) {
+  if (effective > 0) {
     for (const { power } of path) {
-      if (teamPower * hp < power) break
+      if (effective < power) break
       const cost =
-        ((DAMAGE_SHARE * power) / teamPower) *
+        ((DAMAGE_SHARE * power) / effective) *
         (sustained ? 1 - SUPPORT_SUSTAIN : 1)
       if (cost >= hp) break
       hp -= cost
@@ -118,6 +129,7 @@ export function estimateTierRun(
     battles: path.length,
     cleared: wins === path.length,
     hpLeftPct: wins > 0 ? Math.round(hp * 100) : 100,
+    peakPower: Math.max(0, ...path.map((battle) => battle.power)),
   }
 }
 

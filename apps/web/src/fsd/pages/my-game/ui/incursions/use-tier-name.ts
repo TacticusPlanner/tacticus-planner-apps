@@ -4,9 +4,10 @@ import { useTranslation } from "react-i18next"
 import { tierLabels, type Incursion } from "../../model/incursions.model"
 
 /** A tier's display name by index, e.g. "Epic 2"; falls back to its 1-based position. */
-export function useTierName(incursion: Incursion) {
+export function useTierName(incursion: Incursion | undefined) {
   const { t } = useTranslation(["incursions", "progression"])
-  const labels = useMemo(() => tierLabels(incursion.tiers), [incursion.tiers])
+  const tiers = incursion?.tiers
+  const labels = useMemo(() => tierLabels(tiers ?? []), [tiers])
   return useCallback(
     (index: number) => {
       const label = labels.get(index)

@@ -4,12 +4,15 @@ import { incursionsFixture } from "@workspace/game-catalog/testing"
 import {
   battleKey,
   clearedTierCount,
+  incursionStarCount,
   nextTierIndex,
   remainingShards,
   sameIncursionProgress,
   starsFor,
   tierChestRewards,
   tierCleared,
+  tierStarCount,
+  tierStarsPatch,
   tierUnclaimedRewards,
   toIncursionProgressDraft,
   toIncursionProgressPayload,
@@ -106,5 +109,35 @@ describe("one-time rewards", () => {
   it("lists the chests a replay pays again", () => {
     expect(tierChestRewards(mythic1)).toContain("mythicShards_tauBroadside:3")
     expect(tierChestRewards(common1)).toHaveLength(12)
+  })
+})
+
+describe("whole-tier stars", () => {
+  it("counts a tier's stars out of 3 per battle", () => {
+    const some = starsOf({
+      [battleKey("tauBroadside", 0, "1")]: 3,
+      [battleKey("tauBroadside", 0, "2")]: 1,
+    })
+    expect(tierStarCount(common1, some)).toEqual({ earned: 4, max: 36 })
+    expect(tierStarCount(mythic1, some)).toEqual({ earned: 0, max: 45 })
+    expect(incursionStarCount(broadside, some)).toEqual({
+      earned: 4,
+      max: 81,
+    })
+  })
+
+  it("sets every battle of a tier at once, clearing it at 3 stars", () => {
+    const patch = tierStarsPatch("tauBroadside", common1, 3)
+    expect(Object.keys(patch)).toHaveLength(12)
+    expect(patch[battleKey("tauBroadside", 0, "12")]).toBe(3)
+    const full = starsOf(patch)
+    expect(tierCleared(common1, full)).toBe(true)
+    expect(tierStarCount(common1, full)).toEqual({ earned: 36, max: 36 })
+    expect(
+      tierStarCount(
+        common1,
+        starsOf(tierStarsPatch("tauBroadside", common1, 0))
+      ).earned
+    ).toBe(0)
   })
 })

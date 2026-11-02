@@ -184,14 +184,14 @@ export function enhancementSubject(
 }
 
 /**
- * The stat row an enemy level points at, read the way campaign battles read it: a boss's level is
- * 1-based, any other npc's 0-based, both capped at the last row. `undefined` without stats.
+ * The stat row an Incursion enemy level points at. Unlike campaign battles, every Incursion level is
+ * 1-based: levels run up to exactly the npc's row count, and with 1-based rows the battle powers
+ * match the tier power the game shows. Capped at both ends; `undefined` without stats.
  */
 export function enemyStatRow<T>(
-  npc: { id: string; stats: readonly T[] },
+  npc: { stats: readonly T[] },
   level: number
 ): T | undefined {
   if (npc.stats.length === 0) return undefined
-  const index = npc.id.includes("Boss") ? level - 1 : level
-  return npc.stats[Math.max(0, Math.min(index, npc.stats.length - 1))]
+  return npc.stats[Math.max(0, Math.min(level - 1, npc.stats.length - 1))]
 }

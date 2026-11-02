@@ -578,6 +578,16 @@ atlases/ui_icon_consumable_xp_book_3.webp
 atlases/ui_icon_consumable_xp_book_4.webp
 atlases/ui_icon_consumable_xp_book_5.webp
 atlases/ui_icon_dmg_prediction_skull.webp
+atlases/ui_icon_enhancement_add_trait_01.webp
+atlases/ui_icon_enhancement_critboost_01.webp
+atlases/ui_icon_enhancement_damage_boost_01.webp
+atlases/ui_icon_enhancement_heal_01.webp
+atlases/ui_icon_enhancement_hitboost_01.webp
+atlases/ui_icon_enhancement_lifesteal_01.webp
+atlases/ui_icon_enhancement_pierce_boost_01.webp
+atlases/ui_icon_enhancement_regeneration_01.webp
+atlases/ui_icon_enhancement_resurrect_01.webp
+atlases/ui_icon_enhancement_summon_01.webp
 atlases/ui_icon_event_HRE.webp
 atlases/ui_icon_event_lhe.webp
 atlases/ui_icon_faction_adeptas_01.webp
@@ -1757,6 +1767,7 @@ liveevents/ui_gamemodeicon_trait_boost_psyker.webp
 liveevents/ui_gamemodeicon_trait_boost_rapid_assault.webp
 liveevents/ui_gamemodeicon_trait_boost_terminator_armour.webp
 liveevents/ui_gamemodeicon_warpsurge.webp
+liveevents/ui_icon_battle_token_mow.webp
 liveevents/ui_icon_requisition_blood_june_2026.webp
 liveevents/ui_icon_requisition_orkss_june_2026.webp
 liveevents/ui_icon_resource_event_11th_edition.webp

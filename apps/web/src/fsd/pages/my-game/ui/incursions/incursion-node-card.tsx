@@ -2,6 +2,8 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
   chestIcon,
+  heroStarIcon,
+  incursionEnhancementIcon,
   type ChestTier,
   type NpcStorageModel,
 } from "@workspace/game-catalog"
@@ -167,6 +169,45 @@ function BattleBody({
   )
 }
 
+/**
+ * A battle's run-map marker as the game draws it: its number on a dark disc (ringed for a challenge
+ * battle) under the stars earned.
+ */
+function BattleMarker({
+  name,
+  challenge,
+  stars,
+}: {
+  name: string
+  challenge: boolean
+  stars?: number
+}) {
+  return (
+    <span className="flex shrink-0 flex-col items-center" aria-hidden="true">
+      {stars === undefined ? null : (
+        <span className="flex h-3 items-end">
+          {STARS.map((count) => (
+            <EntityIcon
+              key={count}
+              src={heroStarIcon()}
+              alt=""
+              className={cn("size-3", count > stars && "opacity-25 grayscale")}
+            />
+          ))}
+        </span>
+      )}
+      <span
+        className={cn(
+          "flex size-9 items-center justify-center rounded-full border-2 bg-zinc-900 text-sm font-bold text-zinc-50 tabular-nums",
+          challenge ? "border-orange-500" : "border-amber-700/70"
+        )}
+      >
+        {name}
+      </span>
+    </span>
+  )
+}
+
 /** One run-map node: a battle with its enemies and rewards, an enhancement pick or a chest. */
 export function IncursionNodeCard({
   node,
@@ -240,11 +281,25 @@ export function IncursionNodeCard({
       data-kind={node.kind}
     >
       <div className="flex flex-wrap items-center gap-2">
+        {node.kind === "battle" && battle ? (
+          <BattleMarker
+            name={node.name}
+            challenge={battle.challenge}
+            stars={progress?.stars}
+          />
+        ) : null}
+        {node.kind === "enhancement" && enhancement ? (
+          <EntityIcon
+            src={incursionEnhancementIcon(enhancement.type)}
+            alt=""
+            className="size-9 shrink-0"
+          />
+        ) : null}
         {node.kind === "chest" && node.chest ? (
           <EntityIcon
             src={chestIcon(CHEST_TIERS[node.chest.type] ?? "bronze")}
             alt=""
-            className="size-6"
+            className="size-9 shrink-0"
           />
         ) : null}
         <span className="text-sm font-medium">{title}</span>

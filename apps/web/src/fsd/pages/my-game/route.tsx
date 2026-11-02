@@ -32,6 +32,21 @@ const loadIncursionsPage = () =>
     default: m.IncursionsPage,
   }))
 const IncursionsPage = lazy(loadIncursionsPage)
+const loadIncursionsOverview = () =>
+  import("./ui/incursions/incursions-overview").then((m) => ({
+    default: m.IncursionsOverview,
+  }))
+const IncursionsOverview = lazy(loadIncursionsOverview)
+const loadIncursionMowPage = () =>
+  import("./ui/incursions/incursion-mow-page").then((m) => ({
+    default: m.IncursionMowPage,
+  }))
+const IncursionMowPage = lazy(loadIncursionMowPage)
+const loadIncursionTierPage = () =>
+  import("./ui/incursions/incursion-tier-page").then((m) => ({
+    default: m.IncursionTierPage,
+  }))
+const IncursionTierPage = lazy(loadIncursionTierPage)
 
 // Nested under "/my-game" — see app/routes.tsx, which owns the top-level path and the layout
 // element. My Game mixes a public page with sign-in-only ones, so the routes come in two lists:
@@ -72,5 +87,23 @@ export const protectedRoutes: RouteObject[] = [
       </FeatureGate>
     ),
     loader: preloadOnMatch(loadIncursionsPage),
+    // The section loads its data once; its pages share it (and unsaved stars) through the outlet.
+    children: [
+      {
+        index: true,
+        element: <IncursionsOverview />,
+        loader: preloadOnMatch(loadIncursionsOverview),
+      },
+      {
+        path: ":mowId",
+        element: <IncursionMowPage />,
+        loader: preloadOnMatch(loadIncursionMowPage),
+      },
+      {
+        path: ":mowId/:tier",
+        element: <IncursionTierPage />,
+        loader: preloadOnMatch(loadIncursionTierPage),
+      },
+    ],
   },
 ]

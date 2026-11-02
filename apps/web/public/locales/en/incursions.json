@@ -16,7 +16,6 @@
     "owned": "Owned",
     "notOwned": "Not owned",
     "allowedFactions": "Allowed factions",
-    "tier": "Tier",
     "tierOption": "{{rarity}} {{number}}"
   },
   "summary": {
@@ -87,7 +86,7 @@
     "remaining": "{{shards}} shards left to earn from battle stars",
     "remainingMythic": "{{shards}} shards and {{mythicShards}} mythic shards left to earn from battle stars",
     "allClaimed": "Every battle star reward claimed",
-    "howTo": "Set the stars you've earned on each battle in the run map. A tier counts as cleared once you've won a battle on its last step.",
+    "howTo": "Open a tier to set the stars you've earned on each battle, or mark the whole tier at 3 stars. A tier counts as cleared once you've won a battle on its last step.",
     "starsEarned": "Your stars",
     "starsFor": "Stars earned on {{battle}}",
     "stars_one": "{{count}} star",
@@ -123,7 +122,7 @@
     "clearable_one": "Estimated to clear {{count}} of {{total}} tiers, up to {{tier}}",
     "clearable_other": "Estimated to clear {{count}} of {{total}} tiers, up to {{tier}}",
     "clearableNone": "Not estimated to clear any tier yet.",
-    "hint": "Uncalibrated estimate from your synced roster: the strongest heroes of the allowed factions against the lightest path through each tier, with HP carried over from battle to battle.",
+    "hint": "Uncalibrated estimate from your synced roster: the strongest heroes of the allowed factions against the easiest path through each tier, with HP carried over from battle to battle. A team is assumed to beat battles up to 5× its own power, since a battle's power adds up every enemy.",
     "tooFew_one": "You need at least {{count}} hero from the allowed factions.",
     "tooFew_other": "You need at least {{count}} heroes from the allowed factions.",
     "unsynced": "Sync your roster to see a suggested team and which tiers it can clear.",
@@ -133,5 +132,27 @@
     "clears": "Suggested team: estimated clear with about {{hp}}% HP left",
     "stops": "Suggested team: estimated to fall at battle {{battle}} of {{total}}",
     "hint": "Damage carries over between battles until the run ends."
+  },
+  "nav": {
+    "label": "Incursion navigation",
+    "overview": "Incursions",
+    "backTo": "Back to {{label}}",
+    "previous": "Previous",
+    "next": "Next",
+    "previousItem": "Previous: {{name}}",
+    "nextItem": "Next: {{name}}",
+    "position": "{{index}} of {{total}}"
+  },
+  "tier": {
+    "title": "Tier {{number}}",
+    "list": "Tiers",
+    "preview": "Preview",
+    "starsLabel": "{{earned}} of {{max}} stars",
+    "peakPowerHint": "Enemy power of the toughest battle on the easiest path through this tier.",
+    "estimateClears": "Clearable",
+    "estimateStops": "Falls at {{battle}}/{{total}}",
+    "markCleared": "Mark all 3★",
+    "reset": "Reset",
+    "markHint": "Sets every battle in this tier at once. Save to keep the change."
   }
 }
