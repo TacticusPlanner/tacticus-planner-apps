@@ -78,4 +78,4 @@ export {
   type TrackMedalStats,
 } from "./model/battle-progress"
 export { MedalStats } from "./ui/medal-stats"
-export { lightningVictoryIcon, medalIcon } from "./lib/battle-progress-icons"
+export { medalIcon } from "./lib/battle-progress-icons"
