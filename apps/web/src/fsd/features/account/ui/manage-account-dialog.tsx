@@ -45,7 +45,6 @@ import {
 import { ApiError } from "@/shared/api"
 import { getAccountEmail, getSignInMethod, signOut } from "@/shared/auth"
 import { appEnvironment } from "@/shared/config"
-import { useFeatureFlag } from "@/shared/feature-flags"
 
 import { rememberSignInAccountKept } from "../model/sign-in-account-kept-notice"
 import { stagingTransferMode } from "../model/staging-transfer"
@@ -86,10 +85,7 @@ export function ManageAccountDialog({
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
   const { state } = useCurrentUser()
-  const stagingMode = stagingTransferMode(
-    appEnvironment,
-    useFeatureFlag("StagingTransfer")
-  )
+  const stagingMode = stagingTransferMode(appEnvironment)
 
   if (!account || state.status !== "success") {
     return null

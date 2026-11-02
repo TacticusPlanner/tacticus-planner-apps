@@ -1,16 +1,14 @@
 import type { AppEnvironment } from "@/shared/config"
 
 /**
- * What the account dialog's Staging tab offers here: production mints a code ("export"), staging
- * redeems one ("import"). Nothing locally or while the `StagingTransfer` flag is off.
+ * What the account dialog's Transfer tab offers here: production mints a code ("export"), staging
+ * redeems one ("import"). Nothing locally.
  */
 export type StagingTransferMode = "export" | "import"
 
 export function stagingTransferMode(
-  environment: AppEnvironment,
-  enabled: boolean
+  environment: AppEnvironment
 ): StagingTransferMode | null {
-  if (!enabled) return null
   if (environment === "production") return "export"
   if (environment === "staging") return "import"
   return null

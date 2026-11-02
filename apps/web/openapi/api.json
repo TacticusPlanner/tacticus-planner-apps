@@ -174,7 +174,7 @@
       "post": {
         "tags": ["Account"],
         "summary": "Replaces this staging account's planner data with a copy from production.",
-        "description": "Staging only (404 elsewhere, and while the StagingTransfer flag is off). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.",
+        "description": "Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.",
         "operationId": "TacticusPlannerApiFeaturesStagingTransferImportFromProductionEndpoint",
         "requestBody": {
           "content": {
@@ -227,6 +227,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not available in this environment, or no profile.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
           "429": {
             "description": "The per-profile upstream-call limit for this endpoint is exhausted; see Retry-After.",
             "content": {
@@ -259,7 +269,7 @@
       "post": {
         "tags": ["Account"],
         "summary": "Creates a short-lived code that copies this account's planner data into staging.",
-        "description": "Production only (404 elsewhere, and while the StagingTransfer flag is off). The code is valid for 10 minutes and is redeemed on staging with POST account/import-from-production. It carries no data itself.",
+        "description": "Production only (404 elsewhere). The code is valid for 10 minutes and is redeemed on staging with POST account/import-from-production. It carries no data itself.",
         "operationId": "TacticusPlannerApiFeaturesStagingTransferCreateStagingTransferCodeEndpoint",
         "responses": {
           "200": {
