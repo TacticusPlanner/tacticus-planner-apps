@@ -79,6 +79,7 @@
       "statusError": "Sync failed",
       "lastSynced": "Last synced {{time}}",
       "neverSynced": "Never synced",
+      "nextAutoSync": "Next auto sync {{time}}",
       "syncProgress": "Syncing {{downloaded}} / {{total}}…",
       "retrySync": "Sync failed — try again",
       "reauthRequired": "Sign-in expired — tap to sign in",

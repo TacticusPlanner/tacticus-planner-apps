@@ -13,7 +13,8 @@ const { usePlayerDataStatusMock } = vi.hoisted(() => ({
   usePlayerDataStatusMock: vi.fn(),
 }))
 
-vi.mock("@/shared/player-data-status", () => ({
+vi.mock("@/shared/player-data-status", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/player-data-status")>()),
   usePlayerDataStatus: () => usePlayerDataStatusMock(),
   usePlayerDataProgress: () => usePlayerDataStatusMock().progress,
 }))

@@ -79,6 +79,7 @@
       "statusError": "Échec de la synchronisation",
       "lastSynced": "Dernière synchronisation {{time}}",
       "neverSynced": "Jamais synchronisé",
+      "nextAutoSync": "Prochaine synchronisation automatique {{time}}",
       "syncProgress": "Synchronisation {{downloaded}} / {{total}}…",
       "retrySync": "Échec de la synchronisation — réessayer",
       "reauthRequired": "Connexion expirée — appuyez pour vous connecter",

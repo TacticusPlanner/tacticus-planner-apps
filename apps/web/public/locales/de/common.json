@@ -79,6 +79,7 @@
       "statusError": "Synchronisierung fehlgeschlagen",
       "lastSynced": "Zuletzt synchronisiert {{time}}",
       "neverSynced": "Noch nie synchronisiert",
+      "nextAutoSync": "Nächste automatische Synchronisierung {{time}}",
       "syncProgress": "Synchronisierung {{downloaded}} / {{total}}…",
       "retrySync": "Synchronisierung fehlgeschlagen — erneut versuchen",
       "reauthRequired": "Anmeldung abgelaufen — zum Anmelden tippen",

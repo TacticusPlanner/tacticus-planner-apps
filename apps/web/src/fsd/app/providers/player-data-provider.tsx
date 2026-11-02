@@ -37,17 +37,13 @@ import {
   useActiveAccountId,
 } from "@/shared/auth"
 import {
+  autoSyncCheckIntervalMs,
+  autoSyncIntervalMs,
   PlayerDataContext,
   PlayerDataProgressContext,
   type PlayerDataContextValue,
   type PlayerDataStatus,
 } from "@/shared/player-data-status"
-
-// A background sync is due once the last successful sync is more than an hour old — matches the
-// "sync at most hourly, but always up to date within an hour" requirement. Re-checked periodically
-// while the app stays open (not just on mount/account-change), so a long-lived tab still syncs.
-const staleAfterMs = 60 * 60 * 1000
-const staleCheckIntervalMs = 5 * 60 * 1000
 
 const progressStore = createProgressStore<PlayerDataSyncProgress>()
 
@@ -205,7 +201,7 @@ export function PlayerDataProvider({
         ? Date.parse(manifestMetadata.updatedAt)
         : NaN
       const due =
-        Number.isNaN(lastSynced) || Date.now() - lastSynced > staleAfterMs
+        Number.isNaN(lastSynced) || Date.now() - lastSynced > autoSyncIntervalMs
 
       if (!active) {
         return
@@ -231,7 +227,7 @@ export function PlayerDataProvider({
 
     const interval = setInterval(() => {
       void check()
-    }, staleCheckIntervalMs)
+    }, autoSyncCheckIntervalMs)
 
     return () => {
       active = false
