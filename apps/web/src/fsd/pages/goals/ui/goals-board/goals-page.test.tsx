@@ -790,10 +790,10 @@ describe("GoalsPage", () => {
 
     await screen.findByTestId(`goal-row-menu-${activeGoal.goalId}`)
     expect(
-      screen.queryByRole("heading", { name: "Rank" })
+      screen.queryByRole("heading", { name: /^Rank/ })
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByRole("heading", { name: "Ability" })
+      screen.queryByRole("heading", { name: /^Ability/ })
     ).not.toBeInTheDocument()
   })
 
@@ -812,11 +812,49 @@ describe("GoalsPage", () => {
     )
 
     expect(
-      await screen.findByRole("heading", { name: "Rank" })
+      await screen.findByRole("heading", { name: /^Rank/ })
     ).toBeInTheDocument()
     expect(
-      await screen.findByRole("heading", { name: "Ability" })
+      await screen.findByRole("heading", { name: /^Ability/ })
     ).toBeInTheDocument()
+  })
+
+  it("collapses a goal type section and remembers it", async () => {
+    window.localStorage.setItem("goals.overview.group", "type")
+    listGoals.mockResolvedValue({
+      goals: [
+        activeGoal,
+        { ...activeGoal, goalId: "goal-2", goalType: "Ability" },
+      ],
+    })
+    const user = userEvent.setup()
+    const { unmount } = renderPage()
+
+    const rankToggle = await screen.findByRole("button", {
+      name: "Rank 1 goal",
+    })
+    expect(rankToggle).toHaveAttribute("aria-expanded", "true")
+    expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+
+    await user.click(rankToggle)
+
+    expect(rankToggle).toHaveAttribute("aria-expanded", "false")
+    expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
+    expect(
+      screen.queryByTestId(`goal-row-menu-${activeGoal.goalId}`)
+    ).not.toBeInTheDocument()
+    // Select-all only reaches the sections still open.
+    await user.click(screen.getByTestId("goals-select-all"))
+    expect(screen.getByTestId("goals-select-all")).toBeChecked()
+
+    unmount()
+    renderPage()
+    expect(
+      await screen.findByRole("button", { name: "Rank 1 goal" })
+    ).toHaveAttribute("aria-expanded", "false")
+
+    window.localStorage.removeItem("goals.overview.group")
+    window.localStorage.removeItem("goals.overview.collapsedGroups")
   })
 
   it("shows project membership without a project switcher", async () => {
@@ -932,10 +970,10 @@ describe("GoalsPage", () => {
       expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     )
     expect(screen.getByTestId("goal-row")).toHaveTextContent("hero2")
-    expect(screen.getByRole("heading", { name: "Rank" })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /^Rank/ })).toBeInTheDocument()
 
     await user.click(screen.getByTestId("goals-type-filter"))
-    await user.click(await screen.findByRole("option", { name: "Rank" }))
+    await user.click(await screen.findByRole("option", { name: /^Rank/ }))
     await user.click(screen.getByTestId("goals-status-filter"))
     expect(
       await screen.findByRole("option", { name: "Unfulfilled (1)" })
@@ -946,7 +984,7 @@ describe("GoalsPage", () => {
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
-    expect(screen.getByRole("heading", { name: "Rank" })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /^Rank/ })).toBeInTheDocument()
     expect(
       document.getElementById("goals-type-filter-value")
     ).toHaveTextContent("Rank")

@@ -21,7 +21,12 @@ import { useGoalAttainmentState } from "@/features/goal-planning"
 import { useGoalsOverviewMetrics } from "@/features/goal-planning"
 import { usePlanInsights } from "@/features/goal-planning"
 import { orderRowsByGlobalPriority } from "@/features/goal-planning"
-import { groupRows } from "@/features/goal-planning"
+import {
+  expandedRows,
+  groupRows,
+  rowGroupId,
+  useCollapsedGroups,
+} from "@/features/goal-planning"
 import { goalRowFromSummary, type GoalRow } from "@/features/goal-planning"
 import { useProjectsByGoalId } from "@/features/goal-planning"
 import { useStableMap } from "@/features/goal-planning"
@@ -37,6 +42,7 @@ import { isGoalsListLoading } from "@/features/goal-planning"
 import { useProjects } from "@/entities/project"
 import { useGoalCatalog } from "@/features/goal-planning"
 import { GoalsList } from ".//goals-list"
+import { GoalGroupSection } from "./goal-group-section"
 import { GoalsBulkControls } from "./goals-bulk-controls"
 import { useProjectRemovalFlow } from "./project-removal-flow"
 import { GoalsCreateButton } from "./goals-create-button"
@@ -249,6 +255,9 @@ export function GoalsPage() {
       .length,
   }
   const rowGroups = groupRows(rows, group)
+  const { collapsed, toggleCollapsed } = useCollapsedGroups()
+  // Folded sections are out of view, so select-all and the bulk actions only reach expanded rows.
+  const shownRows = expandedRows(rowGroups, collapsed)
   const seasonFit = useSeasonFit(
     seasonFitMode,
     nonArchivedRows,
@@ -273,7 +282,10 @@ export function GoalsPage() {
     onToggleSelected,
     selectAllVisible,
     clearSelection,
-  } = useGoalsSelection(rows, [tab, goalType, scopeId, group].join("|"))
+  } = useGoalsSelection(
+    shownRows,
+    [tab, goalType, scopeId, group, [...collapsed].join(",")].join("|")
+  )
   // Built from every account-wide row (both fetched queries, not the filtered `rows`), so a
   // prerequisite's status and dependent count are known regardless of the current tab/filter.
   const cascadeContext = useMemo(
@@ -445,51 +457,64 @@ export function GoalsPage() {
         ref={listRef}
         tabIndex={-1}
       >
-        {(isLoading ? [] : rowGroups).map((rowGroup) =>
-          rowGroup.rows.length > 0 ? (
-            <section className="grid gap-2" key={rowGroup.key}>
-              {rowGroup.dimension !== "none" ? (
-                <h2 className="text-lg font-semibold">
-                  {rowGroup.dimension === "type"
-                    ? t(`goals.create.goalTypes.${rowGroup.rows[0]!.goalType}`)
-                    : getEntityName(
-                        rowGroup.rows[0]!.entityType,
-                        rowGroup.rows[0]!.entityId
-                      )}
-                </h2>
-              ) : null}
-              <GoalsList
-                actions={goalActions}
-                cascadeContext={cascadeContext}
-                estimates={stableEstimates}
-                levelChargedXp={insights.levelChargedXpByGoalId}
-                levelPoolXpAvailable={insights.levelPoolXpAvailableByGoalId}
-                levelPotentialProgress={insights.levelPotentialProgressByGoalId}
-                highlightedGoalId={highlightedGoalId}
-                menuMoves={menuMoves}
-                metrics={overviewMetrics}
-                mobileReorderActive={reorderActive}
-                onMenuMove={handleMenuMove}
-                onReorder={handleReorder}
-                onEdit={openEditGoal}
-                onSelectAllVisible={selectAllVisible}
-                onToggleSelected={onToggleSelected}
-                potentialProgress={insights.potentialProgressByGoalId}
-                projectRemoval={projectRemoval}
-                reachedByGoalId={reachedByGoalId}
-                reorderEnabled={reorderAvailable}
-                reorderPending={orderActions.pending}
-                rows={rowGroup.rows}
-                seasonCutoffGoalId={cutoffGoalId}
-                seasonFit={activeSeasonFit}
-                selectActive={selectActive}
-                selection={selection}
-                visibleIds={visibleIds}
-                xpBook={xpBook}
-              />
-            </section>
-          ) : null
-        )}
+        {(isLoading ? [] : rowGroups).map((rowGroup) => {
+          if (rowGroup.rows.length === 0) return null
+          const list = (
+            <GoalsList
+              actions={goalActions}
+              cascadeContext={cascadeContext}
+              estimates={stableEstimates}
+              levelChargedXp={insights.levelChargedXpByGoalId}
+              levelPoolXpAvailable={insights.levelPoolXpAvailableByGoalId}
+              levelPotentialProgress={insights.levelPotentialProgressByGoalId}
+              highlightedGoalId={highlightedGoalId}
+              menuMoves={menuMoves}
+              metrics={overviewMetrics}
+              mobileReorderActive={reorderActive}
+              onMenuMove={handleMenuMove}
+              onReorder={handleReorder}
+              onEdit={openEditGoal}
+              onSelectAllVisible={selectAllVisible}
+              onToggleSelected={onToggleSelected}
+              potentialProgress={insights.potentialProgressByGoalId}
+              projectRemoval={projectRemoval}
+              reachedByGoalId={reachedByGoalId}
+              reorderEnabled={reorderAvailable}
+              reorderPending={orderActions.pending}
+              rows={rowGroup.rows}
+              seasonCutoffGoalId={cutoffGoalId}
+              seasonFit={activeSeasonFit}
+              selectActive={selectActive}
+              selection={selection}
+              visibleIds={visibleIds}
+              xpBook={xpBook}
+            />
+          )
+          if (rowGroup.dimension === "none") {
+            return (
+              <section className="grid gap-2" key={rowGroup.key}>
+                {list}
+              </section>
+            )
+          }
+          const firstRow = rowGroup.rows[0]!
+          const groupId = rowGroupId(rowGroup)
+          return (
+            <GoalGroupSection
+              collapsed={collapsed.has(groupId)}
+              count={rowGroup.rows.length}
+              key={rowGroup.key}
+              onToggle={() => toggleCollapsed(groupId)}
+              title={
+                rowGroup.dimension === "type"
+                  ? t(`goals.create.goalTypes.${firstRow.goalType}`)
+                  : getEntityName(firstRow.entityType, firstRow.entityId)
+              }
+            >
+              {list}
+            </GoalGroupSection>
+          )
+        })}
       </div>
 
       <p aria-live="polite" className="sr-only" data-testid="goals-move-status">
