@@ -833,11 +833,10 @@
       "Gold": "Oro"
     },
     "unclaimedEvents": {
-      "summary_one": "{{count}} batalla tiene recompensas sin reclamar",
-      "summary_other": "{{count}} batallas tienen recompensas sin reclamar",
-      "allClaimed": "Todas las recompensas únicas reclamadas",
-      "notBeaten_one": "{{count}} batalla aún sin superar",
-      "notBeaten_other": "{{count}} batallas aún sin superar"
+      "title": "Recompensas únicas sin reclamar",
+      "battles_one": "{{count}} batalla",
+      "battles_other": "{{count}} batallas",
+      "allClaimed": "Todas las recompensas únicas reclamadas"
     },
     "lightningVictoryFor": "Victoria relámpago en {{battle}}",
     "setBest": "Máx.",

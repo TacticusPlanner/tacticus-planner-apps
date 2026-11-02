@@ -282,63 +282,47 @@ export function sumRewards(rewards: readonly OneTimeReward[]): OneTimeReward[] {
 
 type EventTrackProgress = Parameters<typeof beatenEventBattleRows>[3]
 
-/** One campaign-event track's unclaimed one-time rewards, summed over its beaten battles. */
-export type UnclaimedEventRewardTrack<TGroupId extends string = string> = {
-  groupId: TGroupId
-  type: string
-  /** Beaten battles still holding a medal or milestone reward. */
+/** One track's one-time rewards still to claim, summed over its battles. */
+export type UnclaimedTrackRewards = {
+  /** Battles still holding a medal or milestone reward. */
   battleCount: number
   rewards: OneTimeReward[]
 }
 
+const NOTHING_EARNED: BattleProgress = {
+  medals: 0,
+  lightningVictory: false,
+  milestone: null,
+}
+
 /**
- * Per campaign-event track the player has beaten battles on, the medal and milestone rewards those
- * battles still hold. Tracks with nothing left to claim are left out.
+ * The medal and milestone rewards one track's battles still hold: a beaten battle keeps those above
+ * its recorded progress (none when it has no entry), an unbeaten battle keeps all of them.
  */
-export function unclaimedEventRewardTracks<TGroupId extends string>(
-  definitions: readonly {
-    groupId: TGroupId
-    releaseType: string
-    types: readonly string[]
-  }[],
-  battles: readonly (Parameters<typeof beatenEventBattleRows>[0][number] & {
+export function unclaimedTrackRewards(
+  battles: readonly {
+    id: string
     lightningVictoryTurns: number | null
     rewards: {
       medals: readonly (OneTimeReward & { medals: number })[]
       milestones: readonly (OneTimeReward & { milestone: BattleMilestone })[]
     }
-  })[],
-  trackProgress: (groupId: string, type: string) => EventTrackProgress,
+  }[],
+  isBeaten: (battleId: string) => boolean,
   overrides: readonly BattleProgressOverride[]
-): UnclaimedEventRewardTrack<TGroupId>[] {
-  const battlesById = new Map<string, (typeof battles)[number]>(
-    battles.map((battle) => [battle.id, battle])
-  )
-  return definitions
-    .filter((definition) => definition.releaseType === "event")
-    .flatMap((definition) =>
-      definition.types.map((type) => {
-        const perBattle = beatenEventBattleRows(
-          battles,
-          definition.groupId,
-          type,
-          trackProgress(definition.groupId, type)
-        ).map((row) => {
-          const battle = battlesById.get(row.battleId)
-          return unclaimedRewardsOf(
-            battle?.rewards,
-            progressOf(overrides, row.battleId, battleTraits(battle))
-          )
-        })
-        return {
-          groupId: definition.groupId,
-          type,
-          battleCount: perBattle.filter((rewards) => rewards.length > 0).length,
-          rewards: sumRewards(perBattle.flat()),
-        }
-      })
+): UnclaimedTrackRewards {
+  const perBattle = battles.map((battle) =>
+    unclaimedRewardsOf(
+      battle.rewards,
+      isBeaten(battle.id)
+        ? progressOf(overrides, battle.id, battleTraits(battle))
+        : NOTHING_EARNED
     )
-    .filter((track) => track.battleCount > 0)
+  )
+  return {
+    battleCount: perBattle.filter((rewards) => rewards.length > 0).length,
+    rewards: sumRewards(perBattle.flat()),
+  }
 }
 
 /** Medals and Lightning Victories earned on one campaign track, against what it offers. */

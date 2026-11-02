@@ -11,7 +11,7 @@ import { EntityIcon } from "@/shared/ui"
 import { medalIcon } from "../lib/battle-progress-icons"
 import {
   beatenEventBattleRows,
-  unclaimedEventRewardTracks,
+  unclaimedTrackRewards,
   type TrackMedalStats,
 } from "../model/battle-progress"
 import { campaignEventProgressKey } from "../model/campaign-event-eligibility"
@@ -19,14 +19,13 @@ import { useEffectiveCampaignEventProgress } from "../model/use-eligible-campaig
 import { useSavedBattleProgress } from "../model/use-saved-battle-progress"
 import { BattleProgressDialog } from "./battle-progress-dialog"
 import { MedalStats } from "./medal-stats"
-import { OneTimeRewards } from "./one-time-rewards"
+import { UnclaimedRewardsDetails } from "./unclaimed-rewards-details"
 
 /**
- * One campaign-event track's medals line: the one-time medal and milestone rewards its beaten
- * battles still hold (collapsed), and a button into the battle progress dialog for that track,
- * showing the track's medal stats when given. "All claimed" needs every battle of the track
- * (challenges included) beaten: an unbeaten battle still holds all of its one-time rewards.
- * Renders nothing while signed out or loading.
+ * One campaign-event track's medals line: a button into the battle progress dialog for that track
+ * (showing the track's medal stats when given) and, below it, the one-time medal and milestone
+ * rewards the track still holds (collapsed): what beaten battles fell short of plus everything on
+ * unbeaten battles, challenges included. Renders nothing while signed out or loading.
  */
 export function EventTrackMedals({
   groupId,
@@ -50,56 +49,32 @@ export function EventTrackMedals({
   if (read.status !== "ready" || !eventProgress.ready || !overrides) {
     return null
   }
-  const [definitions, battles] = read.data
+  const [, battles] = read.data
   const progress = eventProgress.byKey.get(
     campaignEventProgressKey(groupId, type)
   )
-  const beaten = beatenEventBattleRows(battles, groupId, type, progress).length
-  const unbeaten =
+  const beaten = new Set(
+    beatenEventBattleRows(battles, groupId, type, progress).map(
+      (row) => row.battleId
+    )
+  )
+  const unclaimed = unclaimedTrackRewards(
     battles.filter(
       (battle) => battle.campaignGroupId === groupId && battle.type === type
-    ).length - beaten
-  const track = unclaimedEventRewardTracks(
-    definitions
-      .filter((definition) => definition.groupId === groupId)
-      .map((definition) => ({ ...definition, types: [type] })),
-    battles,
-    (trackGroupId, trackType) =>
-      eventProgress.byKey.get(
-        campaignEventProgressKey(trackGroupId, trackType)
-      ),
+    ),
+    (battleId) => beaten.has(battleId),
     overrides
-  )[0]
+  )
 
   return (
     <div
-      className="flex flex-wrap items-start justify-between gap-2 border-t pt-3"
+      className="flex flex-col items-stretch gap-2 border-t pt-3"
       data-testid={`event-track-medals-${groupId}-${type}`}
     >
-      {track ? (
-        <details className="min-w-0 flex-1">
-          <summary className="cursor-pointer text-xs text-muted-foreground">
-            {t("battleProgress.unclaimedEvents.summary", {
-              count: track.battleCount,
-            })}
-          </summary>
-          <OneTimeRewards rewards={track.rewards} className="mt-2" />
-        </details>
-      ) : (
-        <span className="flex-1 text-xs text-muted-foreground">
-          {unbeaten > 0
-            ? beaten > 0
-              ? t("battleProgress.unclaimedEvents.notBeaten", {
-                  count: unbeaten,
-                })
-              : null
-            : t("battleProgress.unclaimedEvents.allClaimed")}
-        </span>
-      )}
       <Button
         variant="outline"
         size="sm"
-        className={stats ? "w-full justify-between" : undefined}
+        className={stats ? "w-full justify-between" : "self-end"}
         onClick={() => setOpen(true)}
         data-testid={`event-track-medals-open-${groupId}-${type}`}
       >
@@ -118,6 +93,10 @@ export function EventTrackMedals({
           </>
         )}
       </Button>
+      <UnclaimedRewardsDetails
+        unclaimed={unclaimed}
+        data-testid={`event-track-unclaimed-${groupId}-${type}`}
+      />
       {open ? (
         <BattleProgressDialog
           open
