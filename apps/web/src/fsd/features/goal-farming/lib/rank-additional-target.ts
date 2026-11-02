@@ -40,11 +40,7 @@ export function rowLevel(
  * in the game's column-major order). Below Diamond3 the whole top row unlocks at the rank's own
  * level, so a "rank and a half" target needs no extra levels; from Diamond3 on each top-row slot is
  * one level further. */
-export function topRowLevel(
-  rank: RankType,
-  count: number,
-  rules: LevelRules
-): number {
+function topRowLevel(rank: RankType, count: number, rules: LevelRules): number {
   const topRow = rules.slotLevels[rank].filter((_, index) => index % 2 === 0)
   return nthSlotLevel(topRow, count)
 }
