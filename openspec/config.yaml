@@ -19,7 +19,7 @@ context: |
   `useTourPageSteps` from `@/shared/tour`. Steps target `data-testid`
   selectors; step title/content come from i18n
   (`tour.<page>.steps.<step>.title`/`.content`). See
-  `apps/web/src/fsd/pages/lookup/ui/character/character-lookup.tutorial.tsx`
+  `apps/web/src/fsd/pages/home/ui/home-page.tutorial.tsx`
   for the reference pattern, `apps/web/src/fsd/shared/tour/general.tutorial.tsx`
   for the shared nav/shell tour, and the `react-joyride` skill.
 
