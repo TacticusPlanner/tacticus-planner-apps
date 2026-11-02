@@ -190,7 +190,7 @@ function trackView(
       completedChallenges,
     total: battles.regular.length + battles.challenges.length,
   }
-  const medals = overrides
+  const stats = overrides
     ? eventTrackMedalStats(
         [...battles.regular, ...battles.challenges],
         groupId,
@@ -199,6 +199,11 @@ function trackView(
         overrides
       )
     : undefined
+  const medals =
+    // Extremis always ends at Gold, so only Standard tracks Gold milestones.
+    stats && type !== "Standard"
+      ? { ...stats, goldMilestones: undefined, maxGoldMilestones: undefined }
+      : stats
   return {
     battles,
     progress,

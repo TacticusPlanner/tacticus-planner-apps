@@ -402,6 +402,14 @@ describe("summarizeEventType", () => {
     ].map((entry) => ({
       ...entry,
       lightningVictoryTurns: entry.challenge ? null : 5,
+      rewards: {
+        guaranteed: [],
+        potential: [],
+        medals: [],
+        milestones: entry.challenge
+          ? []
+          : [{ milestone: "Gold", id: "gold", min: 1, max: 1 }],
+      },
     })),
     characters: [],
   })
@@ -437,7 +445,7 @@ describe("summarizeEventType", () => {
           battleId: "eventCampaign1-Standard-1",
           medals: 2,
           lightningVictory: false,
-          milestone: null,
+          milestone: "Silver",
         },
       ])
     )
@@ -448,7 +456,14 @@ describe("summarizeEventType", () => {
       maxMedals: 27,
       lightningVictories: 5,
       maxLightningVictories: 8,
+      // 6 beaten regular battles award Gold, one recorded at Silver.
+      goldMilestones: 5,
+      maxGoldMilestones: 8,
     })
     expect(summary.percent).toBe(Math.round((25 / 35) * 100))
+    // Extremis always ends at Gold, so it doesn't track Gold milestones.
+    expect(
+      summarizeEventType(views, "Extremis").medals?.maxGoldMilestones
+    ).toBeUndefined()
   })
 })

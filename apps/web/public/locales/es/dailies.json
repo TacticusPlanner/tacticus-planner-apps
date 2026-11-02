@@ -843,6 +843,7 @@
     "setBest": "Máx.",
     "setBestFor": "Poner {{battle}} en el mejor resultado: 3 medallas, victoria relámpago e hito máximo",
     "edit": "Editar medallas",
-    "medalsEarned": "Medallas"
+    "medalsEarned": "Medallas",
+    "goldMilestones": "Hitos de oro"
   }
 }

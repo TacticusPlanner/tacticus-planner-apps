@@ -843,6 +843,7 @@
     "setBest": "Max",
     "setBestFor": "Mettre {{battle}} au meilleur résultat : 3 médailles, victoire éclair et palier maximal",
     "edit": "Modifier les médailles",
-    "medalsEarned": "Médailles"
+    "medalsEarned": "Médailles",
+    "goldMilestones": "Paliers d'or"
   }
 }

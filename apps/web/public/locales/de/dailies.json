@@ -843,6 +843,7 @@
     "setBest": "Max",
     "setBestFor": "{{battle}} auf bestes Ergebnis setzen: 3 Medaillen, Blitzsieg und höchster Meilenstein",
     "edit": "Medaillen bearbeiten",
-    "medalsEarned": "Medaillen"
+    "medalsEarned": "Medaillen",
+    "goldMilestones": "Gold-Meilensteine"
   }
 }

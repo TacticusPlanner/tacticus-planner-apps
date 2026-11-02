@@ -843,6 +843,7 @@
     "setBest": "Max",
     "setBestFor": "Set {{battle}} to the best result: 3 medals, Lightning Victory and top milestone",
     "edit": "Edit medals",
-    "medalsEarned": "Medals"
+    "medalsEarned": "Medals",
+    "goldMilestones": "Gold milestones"
   }
 }
