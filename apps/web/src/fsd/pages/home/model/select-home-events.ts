@@ -4,6 +4,8 @@ import {
   type LegendaryEventProgress,
 } from "@/entities/legendary-event"
 
+import type { CalendarWindow } from "./calendar-window"
+
 /** The fields the rows read from a Home Screen Event calendar entry. */
 export interface HomeScreenEventEntry {
   /** Set on an authored occurrence; with the start it keys the HSE tab's `event` parameter. */
@@ -44,13 +46,18 @@ export type HomeEventRow =
       runNumber?: number | null
       points?: number
     })
+  | (HomeEventRowBase & {
+      type: "campaignEvent"
+      /** The running campaign from the sync, for a live Campaign Event; the calendar names none. */
+      campaignId: string | null
+    })
   | (HomeEventRowBase & { type: "incursion" })
 
 /** Upcoming rows on Home, the pinned Legendary Event included. */
 const UPCOMING_ROW_LIMIT = 3
 
 export interface HomeEvents {
-  /** Running now: the live Home Screen Event, then the live Legendary Event, then Incursion. */
+  /** Running now: the live Home Screen Event, Legendary Event, Campaign Event, then Incursion. */
   live: HomeEventRow[]
   /** Not started yet, by start, at most three. */
   upcoming: HomeEventRow[]
@@ -61,12 +68,14 @@ export interface HomeEvents {
  * what starts next (UTC instants decide; the device timezone only changes the displayed text). The
  * Legendary Event is pinned: when none is live, the next one with a known start always takes an
  * upcoming slot, replacing the latest of the three, so earlier Home Screen Events never push it off
- * Home. Either source may be `null` when its read failed or is pending. Incursion (`null` while its
- * calendar is pending or has none) is live like any event, else competes for an upcoming slot by start.
+ * Home. Either source may be `null` when its read failed or is pending. The Campaign Event and
+ * Incursion (`null` while the calendar is pending or has none) are live like any event, else
+ * compete for an upcoming slot by start.
  */
 export function selectHomeEvents({
   homeScreen,
   legendary,
+  campaignEvent = null,
   incursion = null,
   nowMs,
   limit = UPCOMING_ROW_LIMIT,
@@ -79,11 +88,8 @@ export function selectHomeEvents({
     events: readonly LegendaryEventEntry[]
     progress: readonly LegendaryEventProgress[]
   } | null
-  incursion?: {
-    status: "live" | "upcoming"
-    startMs: number
-    endMs: number
-  } | null
+  campaignEvent?: (CalendarWindow & { campaignId: string | null }) | null
+  incursion?: CalendarWindow | null
   nowMs: number
   limit?: number
 }): HomeEvents {
@@ -132,18 +138,30 @@ export function selectHomeEvents({
     else upcoming.push(row)
   }
 
+  const windowRows: HomeEventRow[] = []
+  if (campaignEvent) {
+    const isLive = campaignEvent.status === "live"
+    windowRows.push({
+      type: "campaignEvent",
+      key: `campaign-event:${campaignEvent.startMs}`,
+      campaignId: isLive ? campaignEvent.campaignId : null,
+      live: isLive,
+      startMs: campaignEvent.startMs,
+      endMs: campaignEvent.endMs,
+      destination: "/my-game/campaign-events",
+    })
+  }
   if (incursion) {
-    const row: HomeEventRow = {
+    windowRows.push({
       type: "incursion",
       key: `incursion:${incursion.startMs}`,
       live: incursion.status === "live",
       startMs: incursion.startMs,
       endMs: incursion.endMs,
       destination: "/my-game/incursions",
-    }
-    if (row.live) live.push(row)
-    else upcoming.push(row)
+    })
   }
+  for (const row of windowRows) (row.live ? live : upcoming).push(row)
 
   upcoming.sort((a, b) => a.startMs - b.startMs)
   const shown = upcoming.slice(0, limit)

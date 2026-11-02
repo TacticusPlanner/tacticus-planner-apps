@@ -16,7 +16,7 @@ import { CountdownChip, HomeEventVisual } from "./home-event-visual"
 import { LegendaryEventPlanButton } from "./legendary-event-plan-button"
 import { useHomeEventName } from "./use-home-event-name"
 
-/** Home's "Upcoming events" card: the next Home Screen Events, Legendary Events and Incursion by start, three
+/** Home's "Upcoming events" card: the next Home Screen Events, Legendary Events, Campaign Event and Incursion by start, three
  *  rows at most, the next Legendary Event always among them unless one is live (then it is in Right
  *  now). Distinct from the Events calendar. Each row links to its own destination. */
 export function UpcomingEvents({ events }: { events: HomeEventsState }) {

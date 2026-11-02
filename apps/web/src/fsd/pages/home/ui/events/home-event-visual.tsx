@@ -1,17 +1,20 @@
 import {
+  campaignIcon,
   characterIcon,
   countdownIcon,
   eventIcon,
+  gameMenuIcon,
 } from "@workspace/game-catalog"
-import type { UnitId } from "@workspace/game-domain"
+import type { CampaignId, UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import type { HomeEventRow } from "../../model/select-home-events"
 
-/** A Home event's picture: the featured hero's portrait for a Legendary Event, Incursion's icon,
- *  else the Home Screen Event's game medallion. Decorative; the row names the event. */
+/** A Home event's picture: the featured hero's portrait for a Legendary Event, the running
+ *  campaign's icon (else the Campaign Events menu icon) for a Campaign Event, Incursion's icon, else
+ *  the Home Screen Event's game medallion. Decorative; the row names the event. */
 export function HomeEventVisual({
   row,
   className,
@@ -28,6 +31,19 @@ export function HomeEventVisual({
           className
         )}
         src={characterIcon(row.unitId as UnitId)}
+      />
+    )
+  }
+  if (row.type === "campaignEvent") {
+    return (
+      <EntityIcon
+        alt=""
+        className={cn("shrink-0", className)}
+        src={
+          row.campaignId
+            ? campaignIcon(row.campaignId as CampaignId, "Standard")
+            : gameMenuIcon("campaignEvent")
+        }
       />
     )
   }

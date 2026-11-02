@@ -166,6 +166,51 @@ describe("selectHomeEvents", () => {
     expect(events.upcoming).toEqual([])
   })
 
+  it("lists a live Campaign Event with the synced campaign, before Incursion", () => {
+    const window = {
+      status: "live" as const,
+      startMs: Date.parse("2026-10-02T00:00:00Z"),
+      endMs: Date.parse("2026-10-05T00:00:00Z"),
+    }
+    const events = selectHomeEvents({
+      homeScreen: null,
+      legendary: null,
+      campaignEvent: { ...window, campaignId: "eventCampaign1" },
+      incursion: window,
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(summary(events.live)).toEqual([
+      ["campaignEvent", true],
+      ["incursion", true],
+    ])
+    expect(events.live[0]).toMatchObject({
+      campaignId: "eventCampaign1",
+      destination: "/my-game/campaign-events",
+    })
+  })
+
+  it("lists an upcoming Campaign Event by start, without a campaign", () => {
+    const events = selectHomeEvents({
+      homeScreen: { active: null, upcoming: [trainingRush] },
+      legendary: null,
+      campaignEvent: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-06T00:00:00Z"),
+        endMs: Date.parse("2026-10-09T00:00:00Z"),
+        // A stale sync names the previous event; it is not this one.
+        campaignId: "eventCampaign1",
+      },
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(summary(events.upcoming)).toEqual([
+      ["campaignEvent", false],
+      ["hse-training-rush", false],
+    ])
+    expect(events.upcoming[0]).toMatchObject({ campaignId: null })
+  })
+
   it("gives an upcoming Incursion a slot by start, only when one is free", () => {
     const incursion = {
       status: "upcoming" as const,
