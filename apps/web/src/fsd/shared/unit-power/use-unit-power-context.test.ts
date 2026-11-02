@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { replaceGameCatalogDataset } from "@workspace/game-catalog/testing"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
