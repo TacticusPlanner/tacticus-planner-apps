@@ -4,22 +4,26 @@ import { eventIcon, mowIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 
+import { useIncursionWindow } from "@/entities/incursion"
+import { formatEventCountdown } from "@/shared/lib"
 import { useCatalogDataset } from "@/shared/local-data"
 import { useUnitName } from "@/shared/unit-name"
 import { EntityIcon } from "@/shared/ui"
 
 import { homeIncursion } from "../../model/home-incursion"
+import { CountdownChip } from "../events/home-event-visual"
 
 const INCURSIONS_PATH = "/my-game/incursions"
 
 /**
- * Incursion never ends, so Right now always lists it: its newest MoW (or the one about to arrive)
- * and a nudge to track progress, the whole tile opening the Incursions page.
+ * Right now always lists Incursion: live with the time left, else when the next one starts; its
+ * newest MoW and a nudge to track progress, the whole tile opening the Incursions page.
  */
 export function IncursionTile({ nowMs }: { nowMs: number }) {
   const { t, i18n } = useTranslation("common")
   const incursions = useCatalogDataset("incursions")
   const unitName = useUnitName()
+  const run = useIncursionWindow(nowMs)
   const featured =
     incursions.status === "ready" ? homeIncursion(incursions.data, nowMs) : null
   const mowName = featured ? unitName("Mow", featured.mowId) : ""
@@ -38,7 +42,9 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
       <span className="min-w-0 flex-1 space-y-1">
         <span className="flex flex-wrap items-center gap-2 font-semibold">
           {t("home.incursion.title")}
-          <Badge>{t("home.events.live")}</Badge>
+          {run?.status === "live" ? (
+            <Badge>{t("home.events.live")}</Badge>
+          ) : null}
         </span>
         {featured ? (
           <span
@@ -64,6 +70,25 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
           {t("home.incursion.track")}
         </span>
       </span>
+      {run ? (
+        <span className="self-start" data-testid="home-incursion-countdown">
+          <CountdownChip
+            text={t(
+              run.status === "live"
+                ? "home.events.endsIn"
+                : "home.events.startsIn",
+              {
+                when: formatEventCountdown(
+                  run.status === "live" ? run.endMs : run.startMs,
+                  nowMs,
+                  i18n.language,
+                  { withHours: true }
+                ),
+              }
+            )}
+          />
+        </span>
+      ) : null}
     </Link>
   )
 }

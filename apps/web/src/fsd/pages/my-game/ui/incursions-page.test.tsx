@@ -169,6 +169,14 @@ describe("IncursionsPage", () => {
       "data-kind",
       "chest"
     )
+    // Previous/Next skip chests and picks: from the chest they land on battles.
+    await user.click(screen.getByTestId("incursion-node-next"))
+    expect(
+      screen
+        .getByTestId("incursion-node-previous")
+        .closest("section")!
+        .querySelector("[data-kind]")
+    ).toHaveAttribute("data-kind", "battle")
     expect(screen.getByTestId("incursion-nav-previous")).toBeDisabled()
 
     await user.click(screen.getByTestId("incursion-nav-next"))
