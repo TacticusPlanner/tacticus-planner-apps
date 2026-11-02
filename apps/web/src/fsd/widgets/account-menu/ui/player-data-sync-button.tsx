@@ -14,7 +14,10 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { isMacPlatform } from "@/shared/lib"
 
-import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import {
+  AutoSyncFill,
+  usePlayerDataSyncStatus,
+} from "@/features/player-data-sync"
 import type { PlayerDataStatus } from "@/shared/player-data-status"
 
 const statusIcons: Record<PlayerDataStatus, typeof CheckCircle2> = {
@@ -45,13 +48,22 @@ const statusClasses: Record<PlayerDataStatus, string> = {
  */
 export function PlayerDataSyncButton() {
   const { t } = useTranslation()
-  const { errorText, isSyncing, requiresReauth, status, statusText, syncNow } =
-    usePlayerDataSyncStatus()
+  const {
+    autoSyncProgress,
+    errorText,
+    isSyncing,
+    nextAutoSyncText,
+    requiresReauth,
+    status,
+    statusText,
+    syncNow,
+  } = usePlayerDataSyncStatus()
   const Icon =
     status === "error" && requiresReauth ? LogIn : statusIcons[status]
   // A raw MSAL/network error message isn't actionable for the user — once it's a sign-in issue, the
   // friendly statusText ("Sign-in expired…") replaces it instead of surfacing errorText verbatim.
-  const tooltip = `${t("nav.syncWithTacticus")} — ${requiresReauth ? statusText : (errorText ?? statusText)}`
+  const syncStatusText = requiresReauth ? statusText : (errorText ?? statusText)
+  const tooltip = `${t("nav.syncWithTacticus")} — ${nextAutoSyncText ? `${syncStatusText} · ${nextAutoSyncText}` : syncStatusText}`
   const shortcutHint = isMacPlatform() ? "⌘⇧S" : "Ctrl+Shift+S"
 
   useEffect(() => {
@@ -85,10 +97,24 @@ export function PlayerDataSyncButton() {
       size="lg"
       tooltip={tooltip}
     >
-      <span className="relative flex shrink-0 items-center justify-center">
+      <span
+        className={cn(
+          "relative flex shrink-0 items-center justify-center",
+          // The countdown badge: a dimmed accent track the fill sweeps over towards the next auto sync.
+          autoSyncProgress && "size-7 rounded-full bg-accent/30"
+        )}
+      >
+        {autoSyncProgress ? (
+          <AutoSyncFill fraction={autoSyncProgress.fraction} />
+        ) : null}
         <Icon
           aria-hidden="true"
-          className={isSyncing ? "motion-safe:animate-spin" : undefined}
+          className={cn(
+            "relative",
+            // A solid disc behind the icon keeps it legible over the partly filled track.
+            autoSyncProgress && "rounded-full bg-accent text-accent-foreground",
+            isSyncing && "motion-safe:animate-spin"
+          )}
         />
         {status === "stale" ? (
           <span

@@ -79,7 +79,8 @@ const { usePlayerDataSyncStatusMock } = vi.hoisted(() => ({
   })),
 }))
 
-vi.mock("@/features/player-data-sync", () => ({
+vi.mock("@/features/player-data-sync", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/player-data-sync")>()),
   usePlayerDataSyncStatus: () => usePlayerDataSyncStatusMock(),
 }))
 
@@ -419,6 +420,41 @@ describe("MobileBottomNav actions", () => {
     expect(syncButton).toBeDisabled()
     expect(syncButton.querySelector("svg")).toHaveClass(
       "motion-safe:animate-spin"
+    )
+  })
+
+  it("fills the sync button with the elapsed share of the auto-sync interval and names the next sync", () => {
+    usePlayerDataSyncStatusMock.mockReturnValue({
+      status: "ready",
+      isSyncing: false,
+      statusText: "Last synced 15 minutes ago",
+      autoSyncProgress: { fraction: 0.25, nextSyncAt: 0 },
+      nextAutoSyncText: "Next auto sync in 45 minutes",
+      syncNow: vi.fn(),
+    } as unknown as ReturnType<typeof usePlayerDataSyncStatusMock>)
+    renderShell(vi.fn(), true)
+
+    expect(screen.getByTestId("mobile-sync-button")).toHaveAccessibleName(
+      "nav.syncWithTacticus — Last synced 15 minutes ago · Next auto sync in 45 minutes"
+    )
+    expect(screen.getByTestId("auto-sync-fill")).toHaveAttribute(
+      "data-progress",
+      "25"
+    )
+  })
+
+  it("shows no auto-sync fill when there is no countdown (never synced, syncing or failed)", () => {
+    usePlayerDataSyncStatusMock.mockReturnValue({
+      status: "idle",
+      isSyncing: false,
+      statusText: "Never synced",
+      syncNow: vi.fn(),
+    })
+    renderShell(vi.fn(), true)
+
+    expect(screen.queryByTestId("auto-sync-fill")).not.toBeInTheDocument()
+    expect(screen.getByTestId("mobile-sync-button")).toHaveAccessibleName(
+      "nav.syncWithTacticus — Never synced"
     )
   })
 })

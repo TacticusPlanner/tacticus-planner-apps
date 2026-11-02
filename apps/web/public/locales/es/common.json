@@ -79,6 +79,7 @@
       "statusError": "Error de sincronización",
       "lastSynced": "Última sincronización {{time}}",
       "neverSynced": "Nunca sincronizado",
+      "nextAutoSync": "Próxima sincronización automática {{time}}",
       "syncProgress": "Sincronizando {{downloaded}} / {{total}}…",
       "retrySync": "Error de sincronización — reintentar",
       "reauthRequired": "Sesión expirada — toca para iniciar sesión",

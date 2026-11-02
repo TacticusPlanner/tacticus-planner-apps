@@ -20,7 +20,8 @@ const sync = vi.hoisted(() => ({
 vi.mock("@/features/player-data-sync", () => ({
   usePlayerDataSyncStatus: () => sync,
 }))
-vi.mock("@/shared/player-data-status", () => ({
+vi.mock("@/shared/player-data-status", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/player-data-status")>()),
   usePlayerDataStatus: () => ({
     status: sync.isSyncing ? "syncing" : "ready",
     syncNow: sync.syncNow,
