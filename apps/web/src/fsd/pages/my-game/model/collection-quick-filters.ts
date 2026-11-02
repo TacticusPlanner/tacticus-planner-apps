@@ -90,13 +90,28 @@ export function needToLevel(unit: QuickFilterUnit): boolean {
   )
 }
 
-/** An owned character with an equipment slot left empty. */
+/** The step that unlocks a character's third item slot (the game's
+ *  `trinketUnlockProgressionRequirement`, 6 = Rare 4 stars); below it only two slots are open. */
+const thirdSlotProgression: Progression = "Rare:FourStars"
+const slotsBeforeThirdUnlock = 2
+
+/** The item slots a character can fill at its current progression. */
+function openEquipmentSlots(
+  progression: Progression,
+  equipmentSlots: number
+): number {
+  return progressionIndex(progression) >= progressionIndex(thirdSlotProgression)
+    ? equipmentSlots
+    : Math.min(equipmentSlots, slotsBeforeThirdUnlock)
+}
+
+/** An owned character with an unlocked equipment slot left empty. */
 export function missingEquipment(unit: QuickFilterUnit): boolean {
   return (
     unit.kind === "character" &&
     unit.equipped !== undefined &&
     unit.equipmentSlots !== undefined &&
-    unit.equipped < unit.equipmentSlots
+    unit.equipped < openEquipmentSlots(unit.progression, unit.equipmentSlots)
   )
 }
 
