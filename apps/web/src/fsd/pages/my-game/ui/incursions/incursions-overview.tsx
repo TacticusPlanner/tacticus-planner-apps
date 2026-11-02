@@ -20,11 +20,9 @@ import { useMinuteNow } from "@/entities/legendary-event"
 import { formatEventCountdown } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
-import {
-  clearedTierCount,
-  incursionStarCount,
-} from "../../model/incursion-progress.model"
+import { incursionStarCount } from "../../model/incursion-progress.model"
 import { IncursionStarsBar } from "./incursion-stars-bar"
+import { IncursionTierStrip } from "./incursion-tier-strip"
 import { incursionPath, useIncursionsOutlet } from "./incursions-outlet"
 
 const SECONDS_PER_HOUR = 3600
@@ -148,19 +146,14 @@ export function IncursionsOverview() {
                     >
                       {owned ? t("card.owned") : t("card.notOwned")}
                     </Badge>
-                    {stars ? (
-                      <Badge
-                        variant="outline"
-                        className="tabular-nums"
-                        data-testid={`${testId}-cleared`}
-                      >
-                        {t("progress.badge", {
-                          cleared: clearedTierCount(incursion, stars),
-                          total: incursion.tiers.length,
-                        })}
-                      </Badge>
-                    ) : null}
                   </div>
+                  {stars ? (
+                    <IncursionTierStrip
+                      incursion={incursion}
+                      stars={stars}
+                      data-testid={`${testId}-cleared`}
+                    />
+                  ) : null}
                   {total ? (
                     <IncursionStarsBar
                       earned={total.earned}

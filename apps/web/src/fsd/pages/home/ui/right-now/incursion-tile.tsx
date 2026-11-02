@@ -29,7 +29,7 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
 
   return (
     <Link
-      className="flex h-full min-h-24 items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="flex h-full items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
       data-testid="home-incursion"
       to={INCURSIONS_PATH}
     >
@@ -39,10 +39,31 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
         src={eventIcon("incursion", "Incursion")}
       />
       <span className="min-w-0 flex-1 space-y-1">
-        <span className="flex flex-wrap items-center gap-2 font-semibold">
-          {t("home.incursion.title")}
-          {run?.status === "live" ? (
-            <Badge>{t("home.events.live")}</Badge>
+        <span className="flex flex-wrap items-center justify-between gap-2">
+          <span className="flex items-center gap-2 font-semibold">
+            {t("home.incursion.title")}
+            {run?.status === "live" ? (
+              <Badge>{t("home.events.live")}</Badge>
+            ) : null}
+          </span>
+          {run ? (
+            <span className="shrink-0" data-testid="home-incursion-countdown">
+              <CountdownChip
+                text={t(
+                  run.status === "live"
+                    ? "home.events.endsIn"
+                    : "home.events.startsIn",
+                  {
+                    when: formatEventCountdown(
+                      run.status === "live" ? run.endMs : run.startMs,
+                      nowMs,
+                      i18n.language,
+                      { withHours: true }
+                    ),
+                  }
+                )}
+              />
+            </span>
           ) : null}
         </span>
         {featured ? (
@@ -69,25 +90,6 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
           {t("home.incursion.track")}
         </span>
       </span>
-      {run ? (
-        <span className="self-start" data-testid="home-incursion-countdown">
-          <CountdownChip
-            text={t(
-              run.status === "live"
-                ? "home.events.endsIn"
-                : "home.events.startsIn",
-              {
-                when: formatEventCountdown(
-                  run.status === "live" ? run.endMs : run.startMs,
-                  nowMs,
-                  i18n.language,
-                  { withHours: true }
-                ),
-              }
-            )}
-          />
-        </span>
-      ) : null}
     </Link>
   )
 }

@@ -34,3 +34,21 @@ export function groupRows(rows: GoalRow[], group: GoalGroupValue): RowGroup[] {
     rows: rows.filter((row) => groupKey(row, group) === key),
   }))
 }
+
+/** Identifies a group across dimensions, so collapsing "Rank" under Group by type never collapses a
+ * unit section that happens to share its key. */
+export const rowGroupId = (rowGroup: Pick<RowGroup, "dimension" | "key">) =>
+  `${rowGroup.dimension}:${rowGroup.key}`
+
+/** Rows of the groups the player has not collapsed, in order. Grouping off has a single,
+ * header-less group that can never be collapsed. */
+export function expandedRows(
+  rowGroups: readonly RowGroup[],
+  collapsed: ReadonlySet<string>
+): GoalRow[] {
+  return rowGroups.flatMap((rowGroup) =>
+    rowGroup.dimension !== "none" && collapsed.has(rowGroupId(rowGroup))
+      ? []
+      : rowGroup.rows
+  )
+}

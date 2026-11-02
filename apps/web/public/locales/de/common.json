@@ -1441,7 +1441,9 @@
       "groupByType": "Nach Typ gruppieren",
       "groupByUnit": "Nach Einheit gruppieren",
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden",
-      "statusFilterLabel": "Zielstatus-Filter"
+      "statusFilterLabel": "Zielstatus-Filter",
+      "groupCount_one": "{{count}} Ziel",
+      "groupCount_other": "{{count}} Ziele"
     },
     "seasonFit": {
       "label": "Saison-Passung",

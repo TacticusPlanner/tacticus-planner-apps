@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { groupRows } from "./row-groups"
+import { expandedRows, groupRows, rowGroupId } from "./row-groups"
 import type { GoalRow } from "./types"
 
 const row = (overrides: Partial<GoalRow> = {}): GoalRow => ({
@@ -75,5 +75,37 @@ describe("groupRows", () => {
       "b-older",
       "a-newer",
     ])
+  })
+})
+
+describe("expandedRows", () => {
+  const rank = row({ goalId: "goal-1" })
+  const ability = row({ goalId: "goal-2", goalType: "Ability" })
+
+  it("drops the rows of collapsed groups only", () => {
+    const groups = groupRows([rank, ability], "type")
+
+    expect(expandedRows(groups, new Set(["type:Rank"]))).toEqual([ability])
+    expect(expandedRows(groups, new Set())).toEqual([rank, ability])
+  })
+
+  it("never collapses a group from another dimension", () => {
+    expect(
+      expandedRows(groupRows([rank, ability], "unit"), new Set(["type:Rank"]))
+    ).toEqual([rank, ability])
+  })
+
+  it("ignores collapsed ids when grouping is off", () => {
+    expect(
+      expandedRows(groupRows([rank], "none"), new Set(["none:all"]))
+    ).toEqual([rank])
+  })
+})
+
+describe("rowGroupId", () => {
+  it("prefixes the key with its dimension", () => {
+    expect(rowGroupId({ dimension: "unit", key: "Character:hero1" })).toBe(
+      "unit:Character:hero1"
+    )
   })
 })

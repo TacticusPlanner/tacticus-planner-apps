@@ -66,7 +66,8 @@ export {
   type SeasonFitState,
 } from "./model/season-fit/use-season-fit"
 export { orderRowsByGlobalPriority } from "./model/shared/goal-row-order"
-export { groupRows } from "./model/shared/row-groups"
+export { expandedRows, groupRows, rowGroupId } from "./model/shared/row-groups"
+export { useCollapsedGroups } from "./model/shared/use-collapsed-groups"
 export { goalRowFromSummary, type GoalRow } from "./model/shared/types"
 export { useGoalCatalog } from "./model/shared/use-goal-catalog"
 export { useStableMap } from "./model/shared/use-stable-map"
