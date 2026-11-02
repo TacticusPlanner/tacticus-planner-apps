@@ -77,7 +77,7 @@ The goal row's own project-removal action, offered from within a specific projec
 
 ### Requirement: Archived memberships remain visible and relocatable
 
-An existing archived membership SHALL remain visible and marked Archived, but archived projects SHALL not be addable. Removing an archived membership in the membership editor SHALL follow the same last-membership behavior as any other membership there: when it is the goal's only membership, the goal SHALL relocate to the Default project, which can never itself be archived. Removing an archived membership via the goal row's own project-removal action instead follows that action's chosen-destination behavior.
+An existing archived membership SHALL remain visible and marked Archived in the membership editor (goal list rows show only non-archived projects, see `goal-list-layout`), but archived projects SHALL not be addable. Removing an archived membership in the membership editor SHALL follow the same last-membership behavior as any other membership there: when it is the goal's only membership, the goal SHALL relocate to the Default project, which can never itself be archived. Removing an archived membership via the goal row's own project-removal action instead follows that action's chosen-destination behavior.
 
 #### Scenario: Archived membership remains visible
 

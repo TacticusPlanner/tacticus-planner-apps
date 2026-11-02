@@ -210,6 +210,8 @@ The Goal cell (desktop) and goal line (mobile card) SHALL identify the goal kind
 
 On the desktop table, a goal's project memberships SHALL render only in the standalone Projects column between Character and Goal, never inside the Character cell. A goal's notes SHALL render in the Character cell on one line directly beneath the unit name (the position the goal-type caption used to occupy), truncated after one line, and SHALL NOT render as an extra line below the cell's other content. The Projects column SHALL appear on the Goals page and on a project's detail route alike. The mobile card is unchanged by this requirement: it keeps its existing notes line and project badges in the card body.
 
+A goal row (desktop Projects cell and mobile card badges alike) SHALL show only the goal's non-archived projects. A membership in an archived project SHALL NOT render as a badge in the list; it stays visible, marked Archived, in the goal's membership editor (`goal-project-membership`).
+
 #### Scenario: Project badges move to their own column
 
 - **GIVEN** a goal that belongs to the projects "My Goals" and "Neuro"
@@ -227,6 +229,12 @@ On the desktop table, a goal's project memberships SHALL render only in the stan
 - **GIVEN** a goal whose notes are longer than the Character cell's width
 - **WHEN** the desktop table renders its row
 - **THEN** the notes show on one line ending in an ellipsis, and the full text is available as a tooltip
+
+#### Scenario: Archived projects are not shown on the row
+
+- **GIVEN** a goal that belongs to the archived project "V1 Tacticus" and the project "Neuro"
+- **WHEN** the goal's row renders on the desktop table or as a mobile card
+- **THEN** only the "Neuro" badge renders, and no "V1 Tacticus" badge
 
 #### Scenario: A goal in no project
 
