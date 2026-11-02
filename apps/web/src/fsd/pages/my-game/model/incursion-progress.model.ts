@@ -115,6 +115,14 @@ export function remainingShards(
 export const clearedTierCount = (incursion: Incursion, stars: TierStars) =>
   incursion.tiers.filter((tier) => tierCleared(tier, stars)).length
 
+/** Each tier in order with its rarity and whether it's cleared, for a per-tier progress strip. */
+export const tierClearance = (incursion: Incursion, stars: TierStars) =>
+  incursion.tiers.map((tier) => ({
+    index: tier.index,
+    rarity: tier.rarity,
+    cleared: tierCleared(tier, stars),
+  }))
+
 /** The tier to open first: the first one not yet cleared, or the last once all are. */
 export function nextTierIndex(incursion: Incursion, stars: TierStars): number {
   const open = incursion.tiers.find((tier) => !tierCleared(tier, stars))

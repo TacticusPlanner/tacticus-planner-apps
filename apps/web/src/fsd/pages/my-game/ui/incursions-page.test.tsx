@@ -95,9 +95,10 @@ describe("IncursionsPage", () => {
     expect(
       screen.getByTestId("incursion-necroReanimator-owned")
     ).toHaveTextContent("Not owned")
-    expect(
-      await screen.findByTestId("incursion-tauBroadside-cleared")
-    ).toHaveTextContent("1/2 cleared")
+    const tiers = await screen.findByTestId("incursion-tauBroadside-cleared")
+    expect(tiers).toHaveAccessibleName("1/2 cleared")
+    expect(tiers).toHaveTextContent("1/2")
+    expect(tiers.querySelectorAll("[data-cleared]")).toHaveLength(1)
     expect(
       screen.getByTestId("incursion-tauBroadside-stars")
     ).toHaveTextContent("4/81")
