@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, Copy, ExternalLink } from "lucide-react"
+import { Check, Copy } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -19,14 +19,16 @@ import {
   importFromProduction,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
-import { STAGING_APP_URL } from "@/shared/config"
 
 import {
   minutesUntil,
   type StagingTransferMode,
 } from "../model/staging-transfer"
 
-/** The account dialog's Staging tab: mint a code in production, or redeem one on staging. */
+/**
+ * The account dialog's Transfer tab: mint a code in production, or redeem one on staging. Deliberately
+ * terse — it does not say what the code is for or where it goes; early testers are told out of band.
+ */
 export function StagingTransferTab({ mode }: { mode: StagingTransferMode }) {
   return mode === "export" ? <ExportPanel /> : <ImportPanel />
 }
@@ -56,10 +58,6 @@ function ExportPanel() {
 
   return (
     <div className="flex flex-col gap-4 pt-4">
-      <p className="text-sm text-muted-foreground">
-        {t("manageAccount.staging.exportDescription")}
-      </p>
-
       {create.data ? (
         <Field>
           <FieldLabel htmlFor="manage-account-staging-code">
@@ -107,26 +105,19 @@ function ExportPanel() {
         </FieldError>
       ) : null}
 
-      <div className="flex flex-wrap gap-2">
-        <Button
-          data-testid="manage-account-staging-create"
-          disabled={create.isPending}
-          type="button"
-          variant={create.data ? "outline" : "default"}
-          onClick={() => create.mutate()}
-        >
-          {create.isPending ? <Spinner /> : null}
-          {create.data
-            ? t("manageAccount.staging.createAnother")
-            : t("manageAccount.staging.create")}
-        </Button>
-        <Button asChild variant="ghost">
-          <a href={STAGING_APP_URL} rel="noopener noreferrer" target="_blank">
-            {t("manageAccount.staging.openStaging")}
-            <ExternalLink data-icon="inline-end" />
-          </a>
-        </Button>
-      </div>
+      <Button
+        className="self-start"
+        data-testid="manage-account-staging-create"
+        disabled={create.isPending}
+        type="button"
+        variant={create.data ? "outline" : "default"}
+        onClick={() => create.mutate()}
+      >
+        {create.isPending ? <Spinner /> : null}
+        {create.data
+          ? t("manageAccount.staging.createAnother")
+          : t("manageAccount.staging.create")}
+      </Button>
     </div>
   )
 }
@@ -155,10 +146,6 @@ function ImportPanel() {
 
   return (
     <form className="flex flex-col gap-4 pt-4" onSubmit={handleSubmit}>
-      <p className="text-sm text-muted-foreground">
-        {t("manageAccount.staging.importDescription")}
-      </p>
-
       <Field data-invalid={Boolean(importData.error)}>
         <FieldLabel htmlFor="manage-account-staging-import-code">
           {t("manageAccount.staging.codeLabel")}
@@ -169,7 +156,6 @@ function ImportPanel() {
             className="font-mono text-xs"
             data-testid="manage-account-staging-import-code"
             id="manage-account-staging-import-code"
-            placeholder={t("manageAccount.staging.codePlaceholder")}
             value={code}
             onChange={(event) => {
               setCode(event.target.value)
@@ -186,17 +172,9 @@ function ImportPanel() {
         </FieldContent>
       </Field>
 
-      <div
-        className="flex flex-col gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
-        role="alert"
-      >
-        <p className="font-medium text-destructive">
-          {t("manageAccount.staging.replaceWarningTitle")}
-        </p>
-        <p className="text-muted-foreground">
-          {t("manageAccount.staging.replaceWarningDescription")}
-        </p>
-      </div>
+      <p className="text-sm text-muted-foreground">
+        {t("manageAccount.staging.replaceWarning")}
+      </p>
 
       <Field orientation="horizontal">
         <Checkbox
@@ -218,11 +196,7 @@ function ImportPanel() {
           className="text-sm text-primary"
           data-testid="manage-account-staging-import-success"
         >
-          {t("manageAccount.staging.imported", {
-            goals: importData.data.goals,
-            projects: importData.data.projects,
-            plans: importData.data.legendaryEventPlans,
-          })}
+          {t("manageAccount.staging.applied")}
         </p>
       ) : null}
 
@@ -232,7 +206,7 @@ function ImportPanel() {
         type="submit"
       >
         {importData.isPending ? <Spinner /> : null}
-        {t("manageAccount.staging.import")}
+        {t("manageAccount.staging.apply")}
       </Button>
     </form>
   )

@@ -4,7 +4,6 @@ export {
   appEnvironment,
   getRequiredEnvironmentValue,
   isUiKitEnabled,
-  STAGING_APP_URL,
   type AppEnvironment,
 } from "./environment"
 export {

@@ -29,8 +29,5 @@ function getAppEnvironment(): AppEnvironment {
 
 export const appEnvironment: AppEnvironment = getAppEnvironment()
 
-/** Where testers copy their production data to (see the account dialog's Staging tab). */
-export const STAGING_APP_URL = "https://staging.tacticusplanner.app"
-
 // The UI Kit showcase page is a dev/QA aid — available locally and on staging, hidden in production.
 export const isUiKitEnabled = getAppEnvironment() !== "production"

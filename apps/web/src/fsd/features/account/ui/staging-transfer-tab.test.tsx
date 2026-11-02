@@ -74,7 +74,7 @@ describe("StagingTransferTab", () => {
     expect(importFromProduction).toHaveBeenCalledWith("TP1-abc")
     expect(
       await screen.findByTestId("manage-account-staging-import-success")
-    ).toHaveTextContent('"goals":3')
+    ).toHaveTextContent("manageAccount.staging.applied")
   })
 
   it("shows the API's message when a code is refused", async () => {
