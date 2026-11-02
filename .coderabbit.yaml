@@ -15,7 +15,8 @@ reviews:
     - path: "apps/web/src/fsd/**"
       instructions: >-
         Check Feature-Sliced Design layer boundaries and slice public APIs as described in AGENTS.md.
-        V2 is pre-production: breaking changes to routes, stores and API contracts are allowed.
+        V2 is in production: flag breaking changes to routes, persisted storage formats and API
+        contracts that lack a backward-compatible path for existing users and data.
     - path: "**/*.test.{ts,tsx}"
       instructions: >-
         Flag weakened or removed assertions, skipped tests, and tests that only cover the happy path.
