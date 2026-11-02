@@ -662,6 +662,12 @@
       "copied": "Kopiert",
       "copyFailed": "Kopieren fehlgeschlagen",
       "dismiss": "Promo-Code ausblenden"
+    },
+    "incursion": {
+      "title": "Incursion",
+      "latest": "Neueste: {{mow}}",
+      "arrives": "{{mow}} kommt am {{date}}",
+      "track": "Verfolge deinen Fortschritt: markiere geschaffte Stufen und sieh, wie viele Splitter noch warten."
     }
   },
   "guild": {

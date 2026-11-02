@@ -259,10 +259,10 @@ export function IncursionMowPage() {
         </ul>
       </div>
 
+      <IncursionTeam incursion={incursion} plans={plans} />
       {stars ? (
         <IncursionProgressControl incursion={incursion} stars={stars} />
       ) : null}
-      <IncursionTeam incursion={incursion} plans={plans} />
 
       <section
         className="space-y-4"

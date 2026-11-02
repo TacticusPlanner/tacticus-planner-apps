@@ -12,6 +12,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { NpcLevelBadge, NpcPortrait, useNpcLabels } from "@/entities/npc"
+import { EntityIcon } from "@/shared/ui"
 
 import {
   enemyStatRow,
@@ -19,11 +20,13 @@ import {
   type Incursion,
   type IncursionBattle,
   type IncursionNode,
+  nodeName,
 } from "../../model/incursions.model"
 import { MAX_STARS } from "../../model/incursion-progress.model"
 import { IncursionNodeMarker } from "./incursion-node-marker"
 import { IncursionPower } from "./incursion-power"
 import { IncursionRewards } from "./incursion-rewards"
+import { medalIcon } from "./medal-icon"
 
 const STARS = [1, 2, 3] as const
 const STAR_CHOICES = [0, 1, 2, 3] as const
@@ -65,12 +68,25 @@ function StarsPicker({
             value={String(count)}
             aria-label={t("progress.stars", { count })}
             data-testid={`${testId}-stars-${count}`}
+            className="gap-1 tabular-nums"
           >
             {count}
+            <EntityIcon src={medalIcon} alt="" className="size-4" />
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
     </div>
+  )
+}
+
+/** `count` of the game's campaign medals in a row. */
+function Medals({ count }: { count: number }) {
+  return (
+    <span className="flex" aria-hidden="true">
+      {Array.from({ length: count }, (_, at) => (
+        <EntityIcon key={at} src={medalIcon} alt="" className="size-4" />
+      ))}
+    </span>
   )
 }
 
@@ -164,10 +180,13 @@ function BattleBody({
             className={cn("contents", count <= stars && "[&>*]:opacity-50")}
             data-claimed={count <= stars || undefined}
           >
-            <dt className="text-xs text-muted-foreground">
-              {count <= stars
-                ? t("battle.starsClaimed", { count })
-                : t("battle.stars", { count })}
+            <dt className="flex items-center text-xs text-muted-foreground">
+              <Medals count={count} />
+              <span className="sr-only">
+                {count <= stars
+                  ? t("battle.medalsClaimed", { count })
+                  : t("battle.medals", { count })}
+              </span>
             </dt>
             <dd>
               <IncursionRewards rewards={[battle.starRewards[at] ?? ""]} />
@@ -211,7 +230,7 @@ export function IncursionNodeCard({
   let title: string
   let body: ReactNode = null
   if (node.kind === "battle" && battle) {
-    title = t("battle.name", { name: node.name })
+    title = t("battle.name", { name: nodeName(node) })
     body = (
       <>
         {progress ? (

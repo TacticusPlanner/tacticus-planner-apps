@@ -1,13 +1,69 @@
 import { useTranslation } from "react-i18next"
+import { shardIcon } from "@workspace/game-catalog"
+import type { UpgradeId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { shopRewardDisplay } from "@/features/shop-rewards"
+import { shopRewardDisplay, type ShopRewardKind } from "@/features/shop-rewards"
 import { toById, useCatalogDataset } from "@/shared/local-data"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 
 import { sumRewards } from "../../model/incursions.model"
 
 const NO_UNITS = new Map<string, { name: string }>()
+
+/**
+ * A reward's icon as the game frames it: an upgrade on its rarity frame, a unit's shards as its
+ * portrait with a shard (or mythic shard) badge, anything else as its plain icon.
+ */
+function RewardIcon({
+  id,
+  kind,
+  iconUrl,
+  upgrade,
+}: {
+  id: string
+  kind: ShopRewardKind
+  iconUrl: NonNullable<ReturnType<typeof shopRewardDisplay>["iconUrl"]>
+  upgrade?: {
+    rarity: Parameters<typeof UpgradeIcon>[0]["rarity"]
+    craftable: boolean
+  }
+}) {
+  if (kind === "upgrade") {
+    return (
+      <UpgradeIcon
+        id={id as UpgradeId}
+        rarity={upgrade?.rarity}
+        crafted={upgrade?.craftable}
+        className="size-6"
+      />
+    )
+  }
+  if (kind === "shard" || kind === "mythicShard") {
+    const mythic = kind === "mythicShard"
+    return (
+      <span
+        className="relative inline-block size-6 shrink-0"
+        data-shard={mythic ? "mythic" : "regular"}
+      >
+        <EntityIcon
+          alt=""
+          src={iconUrl}
+          className={cn(
+            "size-full rounded border",
+            mythic ? "border-(--rarity-mythic)" : "border-(--rarity-legendary)"
+          )}
+        />
+        <EntityIcon
+          alt=""
+          src={shardIcon(mythic ? "Mythic" : "Regular")}
+          className="absolute -right-1 -bottom-1 size-3.5"
+        />
+      </span>
+    )
+  }
+  return <EntityIcon alt="" src={iconUrl} className="size-5" />
+}
 
 /** Game reward strings as compact icon + amount chips, summed by id, each named by its tooltip. */
 export function IncursionRewards({
@@ -27,6 +83,7 @@ export function IncursionRewards({
   ])
   const characters = useCatalogDataset("characters", toById)
   const mows = useCatalogDataset("mows", toById)
+  const upgrades = useCatalogDataset("upgrades", toById)
   if (rewards.length === 0) return null
   const context = {
     t,
@@ -56,7 +113,16 @@ export function IncursionRewards({
             data-reward={reward.id}
           >
             {display.iconUrl ? (
-              <EntityIcon alt="" src={display.iconUrl} className="size-5" />
+              <RewardIcon
+                id={reward.id}
+                kind={display.kind}
+                iconUrl={display.iconUrl}
+                upgrade={
+                  upgrades.status === "ready"
+                    ? upgrades.data.get(reward.id)
+                    : undefined
+                }
+              />
             ) : (
               <span aria-hidden>{display.label}</span>
             )}

@@ -662,6 +662,12 @@
       "copied": "Copiado",
       "copyFailed": "No se pudo copiar",
       "dismiss": "Descartar código promocional"
+    },
+    "incursion": {
+      "title": "Incursión",
+      "latest": "Más reciente: {{mow}}",
+      "arrives": "{{mow}} llega el {{date}}",
+      "track": "Sigue tu progreso: marca los niveles completados para ver los fragmentos que quedan por ganar."
     }
   },
   "guild": {
