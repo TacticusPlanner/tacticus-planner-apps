@@ -1,15 +1,9 @@
-import { useMemo, useState } from "react"
+import { Suspense, useMemo, useState } from "react"
+import { Outlet } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { Accordion } from "@workspace/ui/components/accordion"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
@@ -24,15 +18,24 @@ import {
   battleKey,
   sameIncursionProgress,
   starsFor,
+  tierStarsPatch,
   toIncursionProgressDraft,
   toIncursionProgressPayload,
 } from "../model/incursion-progress.model"
 import { orderIncursions } from "../model/incursions.model"
 import { useIncursionPlans } from "../model/use-incursion-plans"
 import { useIncursionsData } from "../model/use-incursions-data"
-import { IncursionItem } from "./incursions/incursion-item"
+import {
+  INCURSIONS_PATH,
+  type IncursionProgress,
+  type IncursionsOutlet,
+} from "./incursions/incursions-outlet"
 
-const SECONDS_PER_HOUR = 3600
+const Loading = () => (
+  <div className="flex min-h-64 items-center justify-center">
+    <Spinner className="size-8" />
+  </div>
+)
 
 type Message = {
   tone: "success" | "info" | "error"
@@ -40,11 +43,10 @@ type Message = {
 }
 
 /**
- * The Incursion page: the event's rules, then one row per Machine of War (newest first) with its
- * allowed factions and, per tier, the run map with every battle's enemies and rewards, straight from
- * the `incursions` catalog dataset. A signed-in player also records the stars earned on each battle
- * (a manual player-data override, since the game API does not sync it) and sees the tiers cleared,
- * the one-time shards left and, for cleared tiers, what a replay pays.
+ * The Incursion section: loads the `incursions` catalog dataset, the suggested teams and the
+ * player's battle stars once, and hands them to its pages (the MoW list, a MoW's tiers, one tier's
+ * run map) through the outlet. Stars are a manual player-data override, since the game API does not
+ * sync them; unsaved edits carry across the section's pages and are saved from the bar here.
  */
 export function IncursionsPage() {
   const { t } = useTranslation("incursions")
@@ -59,7 +61,7 @@ export function IncursionsPage() {
     sharedRevisionKey: playerDataOverrideKey,
   })
   const [message, setMessage] = useState<Message | null>(null)
-  const progress = isAuthenticated ? progressDraft.draft : undefined
+  const draft = isAuthenticated ? progressDraft.draft : undefined
   const loaded = useIncursionsData()
   const data = loaded.status === "ready" ? loaded.data : undefined
   const incursions = useMemo(
@@ -67,6 +69,21 @@ export function IncursionsPage() {
     [data]
   )
   const plans = useIncursionPlans(incursions, data?.npcsById)
+  const update = progressDraft.update
+  const progress: IncursionProgress | undefined = useMemo(() => {
+    if (!draft) return undefined
+    const patch = (entries: Record<string, number>) => {
+      update((current) => ({ ...current, ...entries }))
+      setMessage(null)
+    }
+    return {
+      starsOf: (mowId) => starsFor(draft, mowId),
+      setBattleStars: (mowId, tierIndex, battleId, stars) =>
+        patch({ [battleKey(mowId, tierIndex, battleId)]: stars }),
+      setTierStars: (mowId, tier, stars) =>
+        patch(tierStarsPatch(mowId, tier, stars)),
+    }
+  }, [draft, update])
 
   if (loaded.status === "error") {
     return (
@@ -80,15 +97,7 @@ export function IncursionsPage() {
       </Alert>
     )
   }
-  if (!data) {
-    return (
-      <div className="flex min-h-64 items-center justify-center">
-        <Spinner className="size-8" />
-      </div>
-    )
-  }
-  const rules = incursions[0]
-
+  if (!data) return <Loading />
   const save = async () => {
     setMessage(null)
     const outcome = await progressDraft.save()
@@ -116,68 +125,19 @@ export function IncursionsPage() {
           <AlertDescription>{t("progress.loadError")}</AlertDescription>
         </Alert>
       ) : null}
-      {rules ? (
-        <Card data-testid="incursions-rules">
-          <CardHeader>
-            <CardTitle>{t("rules.title")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-              <li>
-                {t("rules.tokens", {
-                  start: rules.tokens.start,
-                  max: rules.tokens.max,
-                  hours: Math.round(
-                    rules.tokens.regenSeconds /
-                      rules.tokens.regenAmount /
-                      SECONDS_PER_HOUR
-                  ),
-                  cost: rules.tokens.costPerRun,
-                })}
-              </li>
-              <li>
-                {t("rules.team", {
-                  count: rules.minUnitsOfGrandAllianceNeeded,
-                })}
-              </li>
-              <li>{t("rules.progress")}</li>
-              <li>{t("rules.replay")}</li>
-            </ul>
-          </CardContent>
-        </Card>
-      ) : (
-        <p className="text-muted-foreground" data-testid="incursions-empty">
-          {t("empty")}
-        </p>
-      )}
-      {incursions.length > 0 ? (
-        <Accordion type="multiple" data-testid="incursions-list">
-          {incursions.map((incursion) => (
-            <IncursionItem
-              key={incursion.mowId}
-              incursion={incursion}
-              owned={data.ownedMowIds.has(incursion.mowId)}
-              npcsById={data.npcsById}
-              plans={plans}
-              progress={
-                progress
-                  ? {
-                      stars: starsFor(progress, incursion.mowId),
-                      onStarsChange: (tierIndex, battleId, stars) => {
-                        progressDraft.update((current) => ({
-                          ...current,
-                          [battleKey(incursion.mowId, tierIndex, battleId)]:
-                            stars,
-                        }))
-                        setMessage(null)
-                      },
-                    }
-                  : undefined
-              }
-            />
-          ))}
-        </Accordion>
-      ) : null}
+      <Suspense fallback={<Loading />}>
+        <Outlet
+          context={
+            {
+              incursions,
+              npcsById: data.npcsById,
+              ownedMowIds: data.ownedMowIds,
+              plans,
+              progress,
+            } satisfies IncursionsOutlet
+          }
+        />
+      </Suspense>
       {isAuthenticated ? null : (
         <p
           className="text-sm text-muted-foreground"
@@ -205,6 +165,7 @@ export function IncursionsPage() {
         description={t("progress.leave.description")}
         stayLabel={t("progress.leave.stay")}
         leaveLabel={t("progress.leave.leave")}
+        scope={INCURSIONS_PATH}
       />
     </div>
   )

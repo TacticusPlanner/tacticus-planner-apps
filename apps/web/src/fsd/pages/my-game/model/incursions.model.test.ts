@@ -178,14 +178,13 @@ function node(
 
 describe("enemyStatRow", () => {
   const stats = ["a", "b", "c"]
-  it("reads a regular npc's level as 0-based, capped at the last row", () => {
-    expect(enemyStatRow({ id: "tauNpc1FireWarrior", stats }, 1)).toBe("b")
-    expect(enemyStatRow({ id: "tauNpc1FireWarrior", stats }, 9)).toBe("c")
-  })
-  it("reads a boss's level as 1-based", () => {
-    expect(enemyStatRow({ id: "tauNpcBossX", stats }, 1)).toBe("a")
+  it("reads every level as 1-based, capped at both ends", () => {
+    expect(enemyStatRow({ stats }, 1)).toBe("a")
+    expect(enemyStatRow({ stats }, 3)).toBe("c")
+    expect(enemyStatRow({ stats }, 9)).toBe("c")
+    expect(enemyStatRow({ stats }, 0)).toBe("a")
   })
   it("has no row without stats", () => {
-    expect(enemyStatRow({ id: "x", stats: [] }, 0)).toBeUndefined()
+    expect(enemyStatRow({ stats: [] }, 1)).toBeUndefined()
   })
 })

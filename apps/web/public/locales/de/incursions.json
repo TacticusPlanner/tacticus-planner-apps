@@ -16,7 +16,6 @@
     "owned": "Im Besitz",
     "notOwned": "Nicht im Besitz",
     "allowedFactions": "Erlaubte Fraktionen",
-    "tier": "Stufe",
     "tierOption": "{{rarity}} {{number}}"
   },
   "summary": {
@@ -87,7 +86,7 @@
     "remaining": "Noch {{shards}} Splitter aus Kampfsternen zu verdienen",
     "remainingMythic": "Noch {{shards}} Splitter und {{mythicShards}} mythische Splitter aus Kampfsternen zu verdienen",
     "allClaimed": "Alle Sternbelohnungen erhalten",
-    "howTo": "Trage auf der Laufkarte die Sterne ein, die du in jedem Kampf verdient hast. Eine Stufe gilt als abgeschlossen, sobald du einen Kampf ihres letzten Schritts gewonnen hast.",
+    "howTo": "Öffne eine Stufe, um die Sterne jedes Kampfes einzutragen, oder setze die ganze Stufe auf 3 Sterne. Eine Stufe gilt als geschafft, sobald du einen Kampf ihres letzten Schritts gewonnen hast.",
     "starsEarned": "Deine Sterne",
     "starsFor": "Verdiente Sterne für {{battle}}",
     "stars_one": "{{count}} Stern",
@@ -123,7 +122,7 @@
     "clearable_one": "Schafft voraussichtlich {{count}} von {{total}} Stufen, bis {{tier}}",
     "clearable_other": "Schafft voraussichtlich {{count}} von {{total}} Stufen, bis {{tier}}",
     "clearableNone": "Schafft voraussichtlich noch keine Stufe.",
-    "hint": "Unkalibrierte Schätzung aus deinem synchronisierten Kader: die stärksten Helden der erlaubten Fraktionen gegen den leichtesten Weg durch jede Stufe, wobei LP von Kampf zu Kampf erhalten bleiben.",
+    "hint": "Unkalibrierte Schätzung aus deinem synchronisierten Kader: die stärksten Helden der erlaubten Fraktionen gegen den leichtesten Weg durch jede Stufe, wobei verlorene LP von Kampf zu Kampf erhalten bleiben. Ein Team schafft annahmegemäß Kämpfe bis zum 5-Fachen seiner eigenen Macht, da sich die Macht eines Kampfes aus allen Gegnern addiert.",
     "tooFew_one": "Du brauchst mindestens {{count}} Helden aus den erlaubten Fraktionen.",
     "tooFew_other": "Du brauchst mindestens {{count}} Helden aus den erlaubten Fraktionen.",
     "unsynced": "Synchronisiere deinen Kader, um einen Teamvorschlag und die schaffbaren Stufen zu sehen.",
@@ -133,5 +132,27 @@
     "clears": "Teamvorschlag: voraussichtlich geschafft mit etwa {{hp}} % LP übrig",
     "stops": "Teamvorschlag: scheitert voraussichtlich in Kampf {{battle}} von {{total}}",
     "hint": "Schaden bleibt zwischen Kämpfen bestehen, bis der Lauf endet."
+  },
+  "nav": {
+    "label": "Incursion-Navigation",
+    "overview": "Incursions",
+    "backTo": "Zurück zu {{label}}",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "previousItem": "Zurück: {{name}}",
+    "nextItem": "Weiter: {{name}}",
+    "position": "{{index}} von {{total}}"
+  },
+  "tier": {
+    "title": "Stufe {{number}}",
+    "list": "Stufen",
+    "preview": "Vorschau",
+    "starsLabel": "{{earned}} von {{max}} Sternen",
+    "peakPowerHint": "Gegnermacht des schwersten Kampfes auf dem leichtesten Weg durch diese Stufe.",
+    "estimateClears": "Schaffbar",
+    "estimateStops": "Scheitert bei {{battle}}/{{total}}",
+    "markCleared": "Alle auf 3★",
+    "reset": "Zurücksetzen",
+    "markHint": "Setzt alle Kämpfe dieser Stufe auf einmal. Speichere, um die Änderung zu behalten."
   }
 }

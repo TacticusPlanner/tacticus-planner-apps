@@ -9,11 +9,16 @@ export type UnsavedChangesGuardProps = {
   description: ReactNode
   stayLabel: ReactNode
   leaveLabel: ReactNode
+  /** A path prefix whose pages share the unsaved changes, so moving between them doesn't ask. */
+  scope?: string
 }
+
+const within = (pathname: string, scope: string) =>
+  pathname === scope || pathname.startsWith(`${scope}/`)
 
 /**
  * While `when` is true, asks before leaving the page: in-app navigation to another path opens a
- * Stay/Leave confirmation, and closing or reloading the tab triggers the browser's own prompt.
+ * Stay/Leave confirmation (unless it stays within `scope`), and closing or reloading the tab triggers the browser's own prompt.
  * Requires a data router (`createBrowserRouter`/`createMemoryRouter`).
  */
 export function UnsavedChangesGuard({
@@ -22,10 +27,13 @@ export function UnsavedChangesGuard({
   description,
   stayLabel,
   leaveLabel,
+  scope,
 }: UnsavedChangesGuardProps) {
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      when && currentLocation.pathname !== nextLocation.pathname
+      when &&
+      currentLocation.pathname !== nextLocation.pathname &&
+      !(scope && within(nextLocation.pathname, scope))
   )
 
   useEffect(() => {

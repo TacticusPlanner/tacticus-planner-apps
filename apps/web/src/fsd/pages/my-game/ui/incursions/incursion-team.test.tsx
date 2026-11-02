@@ -32,8 +32,26 @@ describe("IncursionTeam", () => {
             teamPower: 12_345,
             sustained: true,
             tiers: new Map([
-              [0, { wins: 12, battles: 12, cleared: true, hpLeftPct: 40 }],
-              [12, { wins: 3, battles: 15, cleared: false, hpLeftPct: 5 }],
+              [
+                0,
+                {
+                  wins: 12,
+                  battles: 12,
+                  cleared: true,
+                  hpLeftPct: 40,
+                  peakPower: 900,
+                },
+              ],
+              [
+                12,
+                {
+                  wins: 3,
+                  battles: 15,
+                  cleared: false,
+                  hpLeftPct: 5,
+                  peakPower: 9000,
+                },
+              ],
             ]),
           },
         ],

@@ -57,6 +57,35 @@ describe("UnsavedChangesGuard", () => {
     expect(await screen.findByTestId("other")).toBeInTheDocument()
   })
 
+  it("lets a dirty page move within its scope without asking", async () => {
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/editor/a",
+          element: (
+            <>
+              <Link to="/editor/b">next page</Link>
+              <UnsavedChangesGuard
+                when
+                scope="/editor"
+                title="Leave this page?"
+                description="Unsaved changes will be lost."
+                stayLabel="Stay"
+                leaveLabel="Leave"
+              />
+            </>
+          ),
+        },
+        { path: "/editor/b", element: <div data-testid="b">b</div> },
+      ],
+      { initialEntries: ["/editor/a"] }
+    )
+    render(<RouterProvider router={router} />)
+    await userEvent.click(screen.getByRole("link", { name: "next page" }))
+    expect(await screen.findByTestId("b")).toBeInTheDocument()
+    expect(screen.queryByText("Leave this page?")).toBeNull()
+  })
+
   it("does not interrupt navigation while clean", async () => {
     renderGuard(false)
     await userEvent.click(screen.getByRole("link", { name: "go elsewhere" }))

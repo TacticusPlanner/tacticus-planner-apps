@@ -16,7 +16,6 @@
     "owned": "Possédée",
     "notOwned": "Non possédée",
     "allowedFactions": "Factions autorisées",
-    "tier": "Palier",
     "tierOption": "{{rarity}} {{number}}"
   },
   "summary": {
@@ -87,7 +86,7 @@
     "remaining": "{{shards}} éclats restant à gagner via les étoiles de combat",
     "remainingMythic": "{{shards}} éclats et {{mythicShards}} éclats mythiques restant à gagner via les étoiles de combat",
     "allClaimed": "Toutes les récompenses d'étoiles obtenues",
-    "howTo": "Indiquez sur la carte de course les étoiles obtenues dans chaque combat. Un palier est terminé dès que vous avez gagné un combat de sa dernière étape.",
+    "howTo": "Ouvrez un palier pour indiquer les étoiles obtenues dans chaque combat, ou mettez tout le palier à 3 étoiles. Un palier compte comme terminé dès que vous avez gagné un combat de sa dernière étape.",
     "starsEarned": "Vos étoiles",
     "starsFor": "Étoiles obtenues sur {{battle}}",
     "stars_one": "{{count}} étoile",
@@ -123,7 +122,7 @@
     "clearable_one": "Devrait terminer {{count}} palier sur {{total}}, jusqu'à {{tier}}",
     "clearable_other": "Devrait terminer {{count}} paliers sur {{total}}, jusqu'à {{tier}}",
     "clearableNone": "Ne devrait encore terminer aucun palier.",
-    "hint": "Estimation non calibrée à partir de votre roster synchronisé : les héros les plus forts des factions autorisées contre le chemin le plus facile de chaque palier, les PV étant conservés d'un combat à l'autre.",
+    "hint": "Estimation non calibrée d'après votre effectif synchronisé : les héros les plus forts des factions autorisées face au chemin le plus facile de chaque palier, les PV perdus étant conservés d'un combat à l'autre. Une équipe est censée battre des combats jusqu'à 5× sa propre puissance, car la puissance d'un combat additionne tous les ennemis.",
     "tooFew_one": "Il vous faut au moins {{count}} héros des factions autorisées.",
     "tooFew_other": "Il vous faut au moins {{count}} héros des factions autorisées.",
     "unsynced": "Synchronisez votre roster pour voir une équipe suggérée et les paliers qu'elle peut terminer.",
@@ -133,5 +132,27 @@
     "clears": "Équipe suggérée : devrait terminer avec environ {{hp}} % de PV restants",
     "stops": "Équipe suggérée : devrait tomber au combat {{battle}} sur {{total}}",
     "hint": "Les dégâts sont conservés entre les combats jusqu'à la fin de la course."
+  },
+  "nav": {
+    "label": "Navigation des Incursions",
+    "overview": "Incursions",
+    "backTo": "Retour à {{label}}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "previousItem": "Précédent : {{name}}",
+    "nextItem": "Suivant : {{name}}",
+    "position": "{{index}} sur {{total}}"
+  },
+  "tier": {
+    "title": "Palier {{number}}",
+    "list": "Paliers",
+    "preview": "Aperçu",
+    "starsLabel": "{{earned}} étoiles sur {{max}}",
+    "peakPowerHint": "Puissance ennemie du combat le plus dur sur le chemin le plus facile de ce palier.",
+    "estimateClears": "Faisable",
+    "estimateStops": "Échoue au combat {{battle}}/{{total}}",
+    "markCleared": "Tout à 3★",
+    "reset": "Réinitialiser",
+    "markHint": "Règle tous les combats de ce palier d'un coup. Enregistrez pour conserver la modification."
   }
 }
