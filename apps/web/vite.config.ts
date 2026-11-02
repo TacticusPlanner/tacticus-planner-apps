@@ -179,6 +179,11 @@ export default defineConfig(({ command }) => {
     test: {
       exclude: [...configDefaults.exclude, "e2e/**"],
       setupFiles: ["./src/test/setup.ts"],
+      // setup.ts loads setup-dom.ts dynamically, so it is not a setup file Vitest knows to rerun on.
+      forceRerunTriggers: [
+        ...configDefaults.forceRerunTriggers,
+        "**/src/test/setup-dom.ts",
+      ],
       // `.test.ts` files run in node, which skips jsdom and the DOM setup per file; a `.test.ts`
       // that needs the DOM opts in with a `// @vitest-environment jsdom` first line.
       projects: [
