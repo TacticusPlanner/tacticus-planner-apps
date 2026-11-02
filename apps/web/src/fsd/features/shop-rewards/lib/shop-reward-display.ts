@@ -253,6 +253,32 @@ export function shopRewardDisplay(
     }
   }
 
+  // An alliance's MoW upgrade tokens (machinesOfWarToken_Chaos), as the game's alliance token art.
+  const mowTokenAlliance = /^machinesOfWarToken_(Chaos|Imperial|Xenos)$/.exec(
+    rewardType
+  )?.[1]
+  if (mowTokenAlliance) {
+    return {
+      kind: "mowToken",
+      iconUrl: datamineAssetUrl(
+        `atlases/ui_machines_of_war_tokens_${mowTokenAlliance.toLowerCase()}.webp`
+      ),
+      label: t("shops:reward.mowToken", {
+        alliance: t(`shops:reward.alliance.${mowTokenAlliance}`, {
+          defaultValue: mowTokenAlliance,
+        }),
+      }),
+    }
+  }
+  if (rewardType === "machinesOfWarAmmo") {
+    return {
+      kind: "mowToken",
+      iconUrl: datamineAssetUrl(
+        "atlases/ui_icon_resource_machines_of_war_ammo_small.webp"
+      ),
+      label: t("shops:reward.mowAmmo"),
+    }
+  }
   if (
     rewardType === "draft_machinesOfWarTokens" ||
     rewardType.startsWith("mowComponent_")

@@ -44,7 +44,13 @@
     "equipmentPool": "Objet {{type}} {{rarity}}",
     "seasonalEventCurrency": "Monnaie d'événement",
     "energy": "Énergie",
-    "generic": "{{name}}"
+    "generic": "{{name}}",
+    "mowAmmo": "Munitions de machine de guerre",
+    "alliance": {
+      "Chaos": "Chaos",
+      "Imperial": "Impérium",
+      "Xenos": "Xenos"
+    }
   },
   "state": {
     "loading": "Chargement des recommandations de boutique…",

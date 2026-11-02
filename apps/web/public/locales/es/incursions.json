@@ -32,7 +32,7 @@
     "bestPathHint": "Fragmentos de la Máquina de Guerra de victorias de 3 estrellas y cofres en el camino más rentable de este nivel."
   },
   "map": {
-    "title": "Mapa de partida",
+    "title": "Diseño del intento",
     "step": "Paso {{number}}",
     "pickOne": "Elige uno",
     "after": "Tras {{names}}",
@@ -171,8 +171,12 @@
   "estimate": {
     "clears_one": "Se completa en 1 intento",
     "clears_other": "Se completa en {{count}} intentos",
-    "stuck": "Atascado en la batalla {{battle}} de {{battles}}",
-    "firstRun": "El primer intento gana {{wins}} de {{battles}} batallas con tu equipo limitado a este nivel ({{power}} de poder).",
+    "stuck": "Atascado en la batalla {{battle}}",
+    "firstRun": "El primer intento gana {{wins}} de las {{battles}} batallas de la ruta más fácil, con tu equipo limitado a este nivel ({{power}} de poder).",
     "hint": "Estimación: tu equipo sugerido con cada héroe limitado a la rareza de este nivel ({{power}} de poder). Una batalla se gana mientras poder × PV restantes alcance una quinta parte del poder enemigo; cada victoria cuesta PV en proporción (menos con un Sanador). Las batallas ganadas se mantienen, así que el siguiente intento empieza con PV completos donde terminó el anterior."
+  },
+  "event": {
+    "endsIn": "La Incursión termina en {{when}}",
+    "startsIn": "La próxima Incursión empieza en {{when}}"
   }
 }

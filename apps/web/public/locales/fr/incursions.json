@@ -32,7 +32,7 @@
     "bestPathHint": "Éclats de Machine de guerre des victoires 3 étoiles et des coffres sur le chemin le plus rentable de ce palier."
   },
   "map": {
-    "title": "Carte de course",
+    "title": "Disposition du run",
     "step": "Étape {{number}}",
     "pickOne": "Choisissez-en un",
     "after": "Après {{names}}",
@@ -171,8 +171,12 @@
   "estimate": {
     "clears_one": "Terminé en 1 run",
     "clears_other": "Terminé en {{count}} runs",
-    "stuck": "Bloqué au combat {{battle}} sur {{battles}}",
-    "firstRun": "Le premier run gagne {{wins}} combats sur {{battles}} avec votre équipe plafonnée à ce palier ({{power}} de puissance).",
+    "stuck": "Bloqué au combat {{battle}}",
+    "firstRun": "Le premier run gagne {{wins}} des {{battles}} combats du chemin le plus facile, avec votre équipe plafonnée à ce palier ({{power}} de puissance).",
     "hint": "Estimation : votre équipe suggérée, chaque héros plafonné à la rareté de ce palier ({{power}} de puissance). Un combat est gagné tant que puissance × PV restants atteint un cinquième de la puissance ennemie ; chaque victoire coûte des PV en proportion (moins avec un Soigneur). Les combats gagnés le restent : le run suivant repart à PV pleins là où le dernier s'est arrêté."
+  },
+  "event": {
+    "endsIn": "L'Incursion se termine dans {{when}}",
+    "startsIn": "Prochaine Incursion dans {{when}}"
   }
 }

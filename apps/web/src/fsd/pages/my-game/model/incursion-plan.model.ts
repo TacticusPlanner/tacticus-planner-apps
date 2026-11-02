@@ -1,3 +1,5 @@
+import type { Progression, Rank } from "@workspace/game-domain"
+
 import { withSupport } from "@/entities/legendary-event"
 
 import type { IncursionBattle, IncursionTier } from "./incursions.model"
@@ -131,8 +133,8 @@ const SUPPORT_SUSTAIN = 0.25
 export type TierRunsEstimate =
   /** `runs` runs clear the tier; the first run wins `firstRunWins` battles. */
   | { status: "clears"; runs: number; firstRunWins: number; battles: number }
-  /** Even a fresh run loses battle `battle` (1-based on the path). */
-  | { status: "stuck"; battle: number; firstRunWins: number; battles: number }
+  /** Even a fresh run loses the battle numbered `battle` (the game's battle number). */
+  | { status: "stuck"; battle: string; firstRunWins: number; battles: number }
 
 /**
  * Plays the path run by run. In a run the team starts at full HP and fights each battle at its
@@ -166,7 +168,12 @@ export function estimateTierRuns(
     }
     if (runs === 1) firstRunWins = at
     if (at === start) {
-      return { status: "stuck", battle: at + 1, firstRunWins, battles }
+      return {
+        status: "stuck",
+        battle: path[at]?.battleId ?? String(at + 1),
+        firstRunWins,
+        battles,
+      }
     }
   }
   return { status: "clears", runs: Math.max(1, runs), firstRunWins, battles }
@@ -178,6 +185,9 @@ export type IncursionCandidate = {
   faction: string
   traits: readonly string[]
   power: number
+  /** The hero's synced rank and rarity/stars, for display. */
+  rank?: Rank
+  progression?: Progression
 }
 
 const has = (unit: IncursionCandidate, trait: string) =>

@@ -1,7 +1,11 @@
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { ChevronRight } from "lucide-react"
-import { incursionTokenIcon, mowIcon } from "@workspace/game-catalog"
+import {
+  countdownIcon,
+  incursionTokenIcon,
+  mowIcon,
+} from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import {
@@ -11,6 +15,9 @@ import {
   AccordionTrigger,
 } from "@workspace/ui/components/accordion"
 
+import { useIncursionWindow } from "@/entities/incursion"
+import { useMinuteNow } from "@/entities/legendary-event"
+import { formatEventCountdown } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
 import {
@@ -24,8 +31,10 @@ const SECONDS_PER_HOUR = 3600
 
 /** The Incursion landing page: the event's rules, then a card per Machine of War, newest first. */
 export function IncursionsOverview() {
-  const { t } = useTranslation(["incursions", "mows"])
+  const { t, i18n } = useTranslation(["incursions", "mows"])
   const { incursions, ownedMowIds, progress } = useIncursionsOutlet()
+  const nowMs = useMinuteNow()
+  const run = useIncursionWindow(nowMs)
   const rules = incursions[0]
 
   if (!rules) {
@@ -38,6 +47,23 @@ export function IncursionsOverview() {
 
   return (
     <div className="flex flex-col gap-6">
+      {run ? (
+        <p
+          className="flex items-center gap-1.5 text-sm font-medium tabular-nums"
+          data-testid="incursions-countdown"
+          data-status={run.status}
+        >
+          <EntityIcon alt="" className="size-5" src={countdownIcon()} />
+          {t(run.status === "live" ? "event.endsIn" : "event.startsIn", {
+            when: formatEventCountdown(
+              run.status === "live" ? run.endMs : run.startMs,
+              nowMs,
+              i18n.language,
+              { withHours: true }
+            ),
+          })}
+        </p>
+      ) : null}
       <Accordion
         type="single"
         collapsible

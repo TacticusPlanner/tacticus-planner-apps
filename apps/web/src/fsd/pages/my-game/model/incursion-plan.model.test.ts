@@ -172,13 +172,13 @@ describe("estimateTierRuns", () => {
   it("is stuck at a battle even a fresh team can't win", () => {
     expect(estimateTierRuns(100, path(250, 501), false)).toEqual({
       status: "stuck",
-      battle: 2,
+      battle: "2",
       firstRunWins: 1,
       battles: 2,
     })
     expect(estimateTierRuns(0, path(1), false)).toMatchObject({
       status: "stuck",
-      battle: 1,
+      battle: "1",
     })
   })
 })

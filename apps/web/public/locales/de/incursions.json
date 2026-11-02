@@ -32,7 +32,7 @@
     "bestPathHint": "Kriegsmaschinen-Splitter aus 3-Sterne-Siegen und Truhen auf dem ertragreichsten Weg dieser Stufe."
   },
   "map": {
-    "title": "Laufkarte",
+    "title": "Lauf-Layout",
     "step": "Schritt {{number}}",
     "pickOne": "Eins wählen",
     "after": "Nach {{names}}",
@@ -171,8 +171,12 @@
   "estimate": {
     "clears_one": "In 1 Lauf geschafft",
     "clears_other": "In {{count}} Läufen geschafft",
-    "stuck": "Hängt bei Kampf {{battle}} von {{battles}}",
-    "firstRun": "Der erste Lauf gewinnt {{wins}} von {{battles}} Kämpfen mit deinem auf diese Stufe begrenzten Team ({{power}} Macht).",
+    "stuck": "Hängt bei Kampf {{battle}}",
+    "firstRun": "Der erste Lauf gewinnt {{wins}} der {{battles}} Kämpfe auf dem leichtesten Weg, mit deinem auf diese Stufe begrenzten Team ({{power}} Macht).",
     "hint": "Schätzung: dein vorgeschlagenes Team, jeder Held auf die Seltenheit dieser Stufe begrenzt ({{power}} Macht). Ein Kampf wird gewonnen, solange Macht × verbleibende LP ein Fünftel der Gegnermacht erreicht; jeder Sieg kostet anteilig LP (weniger mit Heiler). Gewonnene Kämpfe bleiben gewonnen, der nächste Lauf beginnt mit vollen LP dort, wo der letzte endete."
+  },
+  "event": {
+    "endsIn": "Incursion endet in {{when}}",
+    "startsIn": "Nächste Incursion beginnt in {{when}}"
   }
 }

@@ -23,4 +23,28 @@ describe("IncursionTile", () => {
       "Newest:"
     )
   })
+
+  it("counts down to the end of the running Incursion", async () => {
+    const run = {
+      occurrenceId: "occ-incursion",
+      definitionId: "incursion",
+      confirmed: true,
+      startUtc: "2026-10-02T08:00:00Z",
+      endUtc: "2026-10-07T08:00:00Z",
+      parameters: null,
+    }
+    await seedGameCatalog({
+      incursions: incursionsFixture as unknown,
+      "events-calendar": { "2026-10-02": [run] },
+    })
+    render(
+      <MemoryRouter>
+        <IncursionTile nowMs={Date.parse("2026-10-03T12:00:00Z")} />
+      </MemoryRouter>
+    )
+
+    expect(
+      await screen.findByTestId("home-incursion-countdown")
+    ).toHaveTextContent("Ends in 3 days 20 hr")
+  })
 })

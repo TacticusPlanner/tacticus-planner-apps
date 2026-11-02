@@ -81,6 +81,17 @@ describe("shopRewardDisplay", () => {
     )
   })
 
+  it("maps an alliance's MoW tokens and MoW ammo to the game's icons", () => {
+    const tokens = shopRewardDisplay("machinesOfWarToken_Chaos", undefined, ctx)
+    expect(tokens.kind).toBe("mowToken")
+    expect(tokens.iconUrl).toBe(
+      "/game_catalog/datamines/atlases/ui_machines_of_war_tokens_chaos.webp"
+    )
+    expect(shopRewardDisplay("machinesOfWarAmmo", undefined, ctx).iconUrl).toBe(
+      "/game_catalog/datamines/atlases/ui_icon_resource_machines_of_war_ammo_small.webp"
+    )
+  })
+
   it("maps an ability-token draft to the V1 droptable badge asset", () => {
     const display = shopRewardDisplay(
       "draft_abilityTokensMythic",

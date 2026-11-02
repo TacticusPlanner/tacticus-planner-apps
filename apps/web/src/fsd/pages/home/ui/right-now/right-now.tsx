@@ -45,7 +45,7 @@ export function RightNow({ events }: { events: HomeEventsState }) {
 
 function LiveEvents({ events }: { events: HomeEventsState }) {
   const { t } = useTranslation("common")
-  // Incursion never ends, so with it on there is always something live.
+  // With Incursion on, its tile is always listed (live, or when the next one starts).
   const incursion = useFeatureFlag("Incursion")
   const minuteNowMs = useMinuteNow()
 

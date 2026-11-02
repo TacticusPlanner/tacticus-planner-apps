@@ -1,12 +1,20 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { characterIcon, factionIcon, traitIcon } from "@workspace/game-catalog"
+import { Check } from "lucide-react"
+import {
+  characterIcon,
+  factionIcon,
+  powerIcon,
+  traitIcon,
+} from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
   EntityIcon,
+  ProgressionBadge,
+  RankBadge,
   ResponsiveDialog,
   ResponsiveDialogBody,
   ResponsiveDialogFooter,
@@ -84,19 +92,44 @@ export function IncursionEligibleDialog({
                   }
                   className={cn(
                     "flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                    selected && "border-(--primary) bg-accent"
+                    selected && "border-(--primary)/60 bg-(--primary)/10"
                   )}
                   data-testid={`incursion-eligible-${unit.id}`}
                 >
-                  <span className="w-6 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
-                    {at + 1}
+                  <span className="flex w-6 shrink-0 justify-end text-xs text-muted-foreground tabular-nums">
+                    {selected ? (
+                      <Check
+                        className="size-4 text-(--primary)"
+                        aria-hidden="true"
+                        data-testid="incursion-eligible-selected"
+                      />
+                    ) : (
+                      at + 1
+                    )}
                   </span>
                   <EntityIcon
                     src={characterIcon(unit.id as UnitId)}
                     alt=""
                     className="size-8 shrink-0 rounded"
                   />
-                  <span className="min-w-0 flex-1 truncate">{name}</span>
+                  <span className="min-w-0 flex-1 space-y-0.5">
+                    <span className="block truncate">{name}</span>
+                    {unit.progression || unit.rank ? (
+                      <span className="flex items-center gap-2">
+                        {unit.progression ? (
+                          <ProgressionBadge value={unit.progression} />
+                        ) : null}
+                        {unit.rank ? (
+                          <RankBadge
+                            rank={unit.rank}
+                            showLabel={false}
+                            tooltip
+                            iconClassName="size-4"
+                          />
+                        ) : null}
+                      </span>
+                    ) : null}
+                  </span>
                   {SUPPORT_TRAITS.filter((trait) =>
                     unit.traits.includes(trait)
                   ).map((trait) => (
@@ -114,7 +147,8 @@ export function IncursionEligibleDialog({
                     })}
                     className="size-5 shrink-0"
                   />
-                  <span className="w-20 shrink-0 text-right tabular-nums">
+                  <span className="flex w-24 shrink-0 items-center justify-end gap-1 tabular-nums">
+                    <EntityIcon src={powerIcon()} alt="" className="size-4" />
                     {number.format(Math.round(unit.power))}
                   </span>
                 </button>

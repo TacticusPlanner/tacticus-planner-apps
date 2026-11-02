@@ -32,7 +32,7 @@
     "bestPathHint": "MoW shards from 3-star wins and chests along the richest path through this tier."
   },
   "map": {
-    "title": "Run map",
+    "title": "Run Layout",
     "step": "Step {{number}}",
     "pickOne": "Pick one",
     "after": "After {{names}}",
@@ -171,8 +171,12 @@
   "estimate": {
     "clears_one": "Clears in 1 run",
     "clears_other": "Clears in {{count}} runs",
-    "stuck": "Stuck at battle {{battle}} of {{battles}}",
-    "firstRun": "First run wins {{wins}} of {{battles}} battles with your team capped to this tier ({{power}} power).",
+    "stuck": "Stuck at battle {{battle}}",
+    "firstRun": "First run wins {{wins}} of the {{battles}} battles on the easiest route, with your team capped to this tier ({{power}} power).",
     "hint": "Estimate: your suggested team with every hero capped to this tier's rarity ({{power}} power). A battle is won while your power × HP left reaches a fifth of the enemy power; each win costs HP in proportion (less with a Healer). Battles won stay won, so the next run starts at full HP where the last one stopped."
+  },
+  "event": {
+    "endsIn": "Incursion ends in {{when}}",
+    "startsIn": "Next Incursion starts in {{when}}"
   }
 }

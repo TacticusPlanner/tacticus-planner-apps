@@ -119,6 +119,8 @@ export function useIncursionPlans(
                 faction: character.faction,
                 traits: character.traits,
                 power,
+                rank: unit.rank,
+                progression: unit.progressionIndex,
               },
             ]
           : []
