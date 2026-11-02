@@ -75,6 +75,8 @@ export interface TokenPlanViewInput {
   /** The event's synced entry, `undefined` without one, or the read's pending / failed status. */
   progress: LegendaryEventProgress | undefined | "loading" | "error"
   progressObservedAtMs: number | null
+  /** The account's Watch daily ads setting; false plans no ad tokens (default true). */
+  watchAds?: boolean
   plan: {
     enabled: boolean
     status: "pending" | "error" | "success"
@@ -218,6 +220,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     nowMs: input.nowMs,
     runs: plan.data.runs,
     showPaidOptions: plan.data.showPaidOptions,
+    watchAds: input.watchAds,
   })
   const tokenPlan = planTokens({
     lanes,

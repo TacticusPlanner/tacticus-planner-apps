@@ -166,6 +166,21 @@ describe("runTokenSupply", () => {
     expect(now?.ad).toBe(3)
   })
 
+  it("counts no ad tokens in any run when the player does not watch ads", () => {
+    const supply = runTokenSupply(worked({ watchAds: false }))
+
+    expect(supply?.[1]?.ad).toBe(0)
+    expect(supply?.[2]).toMatchObject({ free: 61, ad: 0, total: 61 })
+  })
+
+  it("plans an unknown run of 61 when the player does not watch ads", () => {
+    const supply = runTokenSupply(
+      worked({ ...between([], 12_530), watchAds: false })
+    )
+
+    expect(supply?.[0]).toMatchObject({ free: 61, ad: 0, total: 61 })
+  })
+
   it("regenerates from now every 3 hours with a null bucket", () => {
     const base = worked()
     const now = runTokenSupply({

@@ -34,6 +34,7 @@ import { NumberStepper } from "@/shared/ui"
 
 import { missionTickPatch, runInputsPhase } from "../model/run-inputs-patches"
 import { useRunInputs, type RunInputsActions } from "../model/use-run-inputs"
+import { useWatchAds } from "../model/use-watch-ads"
 import { MissionChecklist } from "./mission-checklist"
 
 const RUNS: readonly LegendaryEventRun[] = [1, 2, 3]
@@ -59,7 +60,10 @@ export function RunInputsDrawer({
   trigger?: ReactElement
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const inputs = useRunInputs(event.id)
+  const inputs: RunInputsFormSource = {
+    ...useRunInputs(event.id),
+    ...useWatchAds(),
+  }
   const trigger = customTrigger ?? (
     <Button
       data-testid="legendary-event-run-inputs"
@@ -115,7 +119,12 @@ export function RunInputsDrawer({
 export type RunInputsFormSource = Pick<
   RunInputsActions,
   "loading" | "failed" | "showPaidOptions" | "values" | "change"
-> & { setShowPaidOptions: (on: boolean) => unknown }
+> & {
+  setShowPaidOptions: (on: boolean) => unknown
+  /** The account's Watch daily ads; the wizard's draft leaves both out (no switch shown). */
+  watchAds?: boolean
+  setWatchAds?: (on: boolean) => unknown
+}
 
 /** Runs 1–3 with each run's missions, and the paid fields while Show paid options is on. */
 export function RunInputsForm({
@@ -171,6 +180,12 @@ export function RunInputsForm({
           onCheckedChange={(on) => void inputs.setShowPaidOptions(on)}
         />
       </div>
+      {inputs.setWatchAds ? (
+        <AdsSwitch
+          onChange={inputs.setWatchAds}
+          watchAds={inputs.watchAds ?? true}
+        />
+      ) : null}
       {RUNS.map((run) => {
         const values = inputs.values(run)
         const phase = runInputsPhase(run, runs)
@@ -308,6 +323,36 @@ function BundleSwitch({
         data-testid="run-inputs-bundle"
         id={id}
         onCheckedChange={onChange}
+      />
+    </div>
+  )
+}
+
+/** Watch daily ads (an account setting, on by default): off plans no ad tokens in any event. */
+function AdsSwitch({
+  watchAds,
+  onChange,
+}: {
+  watchAds: boolean
+  onChange: (on: boolean) => unknown
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  const id = useId()
+  const hintId = useId()
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-xl border p-3">
+      <div className="flex flex-col gap-0.5">
+        <Label htmlFor={id}>{t("runInputs.watchAds")}</Label>
+        <p className="text-xs text-muted-foreground" id={hintId}>
+          {t("runInputs.watchAdsHint")}
+        </p>
+      </div>
+      <Switch
+        aria-describedby={hintId}
+        checked={watchAds}
+        data-testid="run-inputs-ads-switch"
+        id={id}
+        onCheckedChange={(on) => void onChange(on)}
       />
     </div>
   )

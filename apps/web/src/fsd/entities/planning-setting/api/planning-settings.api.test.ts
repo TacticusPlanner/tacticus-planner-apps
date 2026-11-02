@@ -38,6 +38,7 @@ describe("planning settings API", () => {
     const settings = {
       dailyEnergy: 288,
       xpBookRarity: "Epic" as const,
+      watchAds: true,
       revision: 1,
     }
     const fetch = respond({ ...settings, revision: 2 })

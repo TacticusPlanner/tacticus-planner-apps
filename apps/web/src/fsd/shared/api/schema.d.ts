@@ -4286,6 +4286,7 @@ export interface components {
       xpBookRarity: components["schemas"]["XpBookRarity"]
       /** Format: int64 */
       revision: number
+      watchAds?: null | boolean
     }
     UpgradeMaterialTargetRequest: {
       upgradeId: string
@@ -4328,6 +4329,7 @@ export interface components {
       /** Format: int32 */
       dailyEnergy: number
       xpBookRarity: components["schemas"]["XpBookRarity"]
+      watchAds: boolean
       /** Format: int64 */
       revision: number
     }
