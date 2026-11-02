@@ -12,7 +12,6 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useMinuteNow } from "@/entities/legendary-event"
-import { useFeatureFlag } from "@/shared/feature-flags"
 import { formatEventCountdown } from "@/shared/lib"
 
 import type { HomeEventRow } from "../../model/select-home-events"
@@ -45,8 +44,6 @@ export function RightNow({ events }: { events: HomeEventsState }) {
 
 function LiveEvents({ events }: { events: HomeEventsState }) {
   const { t } = useTranslation("common")
-  // With Incursion on, its tile is always listed (live, or when the next one starts).
-  const incursion = useFeatureFlag("Incursion")
   const minuteNowMs = useMinuteNow()
 
   if (events.status === "loading") {
@@ -63,7 +60,7 @@ function LiveEvents({ events }: { events: HomeEventsState }) {
   const live = events.status === "ready" ? events.live : []
   const nowMs = events.status === "ready" ? events.nowMs : minuteNowMs
   // Read failures are reported once, in Upcoming events.
-  if (!incursion && live.length === 0) {
+  if (live.length === 0) {
     return (
       <p
         className="self-center text-sm text-muted-foreground"
@@ -78,14 +75,13 @@ function LiveEvents({ events }: { events: HomeEventsState }) {
     <ul className="grid gap-2 sm:grid-cols-2" data-testid="home-live-events">
       {live.map((row) => (
         <li key={row.key}>
-          <LiveEventTile nowMs={nowMs} row={row} />
+          {row.type === "incursion" ? (
+            <IncursionTile nowMs={nowMs} />
+          ) : (
+            <LiveEventTile nowMs={nowMs} row={row} />
+          )}
         </li>
       ))}
-      {incursion ? (
-        <li>
-          <IncursionTile nowMs={nowMs} />
-        </li>
-      ) : null}
     </ul>
   )
 }

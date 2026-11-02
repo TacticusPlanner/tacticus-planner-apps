@@ -562,10 +562,10 @@ describe("CampaignEventsPage", () => {
 
     it("reloads the saved progress after a revision conflict", async () => {
       const user = userEvent.setup()
-      getOverrides
-        .mockReset()
-        .mockResolvedValueOnce({ progress: [], revision: 4 })
-        .mockResolvedValueOnce({
+      // The reload only sees the newer state once the save has been rejected (the page reads the
+      // overrides more than once before that).
+      saveOverrides.mockImplementationOnce(() => {
+        getOverrides.mockResolvedValue({
           progress: [
             {
               campaignGroupId: "eventCampaign1",
@@ -576,7 +576,8 @@ describe("CampaignEventsPage", () => {
           ],
           revision: 9,
         })
-      saveOverrides.mockRejectedValueOnce(new ApiError(409, "stale"))
+        return Promise.reject(new ApiError(409, "stale"))
+      })
       await renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)
@@ -589,16 +590,14 @@ describe("CampaignEventsPage", () => {
       ).toBeInTheDocument()
       expect(count("current-event", "Standard")).toHaveTextContent("4/5")
       expect(screen.queryByTestId("unsaved-changes-bar")).toBeNull()
-      expect(getOverrides).toHaveBeenCalledTimes(2)
     })
 
     it("keeps the editors and edits when the reload after a conflict fails", async () => {
       const user = userEvent.setup()
-      getOverrides
-        .mockReset()
-        .mockResolvedValueOnce({ progress: [], revision: 4 })
-        .mockRejectedValueOnce(new Error("offline"))
-      saveOverrides.mockRejectedValueOnce(new ApiError(409, "stale"))
+      saveOverrides.mockImplementationOnce(() => {
+        getOverrides.mockRejectedValue(new Error("offline"))
+        return Promise.reject(new ApiError(409, "stale"))
+      })
       await renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)

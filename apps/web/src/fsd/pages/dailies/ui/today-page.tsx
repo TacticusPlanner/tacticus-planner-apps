@@ -11,7 +11,6 @@ import {
 import type { BattleId } from "@workspace/game-domain"
 
 import { PlanningSettingsDialog } from "@/entities/planning-setting"
-import { useFeatureFlag } from "@/shared/feature-flags"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { TodayControls } from "./today/today-controls"
 import { TodayDashboard } from "./today/today-dashboard"
@@ -30,17 +29,14 @@ export function TodayPage() {
     null
   )
   const [quickFilters, setQuickFilters] = useTodayQuickFilters()
-  const manualBattlesEnabled = useFeatureFlag("ManualBattles")
   const raids = useDailyRaids(context.projectId, {
     quickFilters: todayQuickFilterOptions(quickFilters),
   })
   const [raidsFilters] = useRaidsFilters()
-  // "Raidable only" is offered only when today's plan raids a manual battle, or while it is on,
-  // and never while manual battles are off (even from a shared `?quick=raidableOnly` link).
+  // "Raidable only" is offered only when today's plan raids a manual battle, or while it is on.
   const hiddenQuickFilters =
-    manualBattlesEnabled &&
-    ((raids.status === "ready" && raids.hasManualRaids) ||
-      quickFilters.includes("raidableOnly"))
+    (raids.status === "ready" && raids.hasManualRaids) ||
+    quickFilters.includes("raidableOnly")
       ? []
       : (["raidableOnly"] as const)
   useTodayTutorial()
@@ -63,7 +59,7 @@ export function TodayPage() {
       />
       <TodayDashboard
         key={selectionKey}
-        onCantRaid={manualBattlesEnabled ? setCantRaidBattleId : undefined}
+        onCantRaid={setCantRaidBattleId}
         raids={raids}
       />
       {cantRaidBattleId ? (

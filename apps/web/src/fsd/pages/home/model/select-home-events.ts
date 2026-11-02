@@ -44,12 +44,13 @@ export type HomeEventRow =
       runNumber?: number | null
       points?: number
     })
+  | (HomeEventRowBase & { type: "incursion" })
 
 /** Upcoming rows on Home, the pinned Legendary Event included. */
 const UPCOMING_ROW_LIMIT = 3
 
 export interface HomeEvents {
-  /** Running now: the live Home Screen Event, then the live Legendary Event. */
+  /** Running now: the live Home Screen Event, then the live Legendary Event, then Incursion. */
   live: HomeEventRow[]
   /** Not started yet, by start, at most three. */
   upcoming: HomeEventRow[]
@@ -60,11 +61,13 @@ export interface HomeEvents {
  * what starts next (UTC instants decide; the device timezone only changes the displayed text). The
  * Legendary Event is pinned: when none is live, the next one with a known start always takes an
  * upcoming slot, replacing the latest of the three, so earlier Home Screen Events never push it off
- * Home. Either source may be `null` when its read failed or is pending.
+ * Home. Either source may be `null` when its read failed or is pending. Incursion (`null` while its
+ * calendar is pending or has none) is live like any event, else competes for an upcoming slot by start.
  */
 export function selectHomeEvents({
   homeScreen,
   legendary,
+  incursion = null,
   nowMs,
   limit = UPCOMING_ROW_LIMIT,
 }: {
@@ -75,6 +78,11 @@ export function selectHomeEvents({
   legendary: {
     events: readonly LegendaryEventEntry[]
     progress: readonly LegendaryEventProgress[]
+  } | null
+  incursion?: {
+    status: "live" | "upcoming"
+    startMs: number
+    endMs: number
   } | null
   nowMs: number
   limit?: number
@@ -121,6 +129,19 @@ export function selectHomeEvents({
         : {}),
     }
     if (isLive) live.push(row)
+    else upcoming.push(row)
+  }
+
+  if (incursion) {
+    const row: HomeEventRow = {
+      type: "incursion",
+      key: `incursion:${incursion.startMs}`,
+      live: incursion.status === "live",
+      startMs: incursion.startMs,
+      endMs: incursion.endMs,
+      destination: "/my-game/incursions",
+    }
+    if (row.live) live.push(row)
     else upcoming.push(row)
   }
 

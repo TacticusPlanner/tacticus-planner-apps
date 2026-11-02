@@ -19,10 +19,6 @@ const { saved } = vi.hoisted(() => ({
   },
 }))
 
-vi.mock("@/shared/feature-flags", () => ({
-  useFeatureFlag: (flag: string) => flag === "ManualBattles",
-}))
-
 vi.mock("@/entities/player-data-override", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
   battleProgressQueries: {

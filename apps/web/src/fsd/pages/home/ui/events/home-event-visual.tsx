@@ -1,4 +1,8 @@
-import { characterIcon, countdownIcon } from "@workspace/game-catalog"
+import {
+  characterIcon,
+  countdownIcon,
+  eventIcon,
+} from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -6,8 +10,8 @@ import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import type { HomeEventRow } from "../../model/select-home-events"
 
-/** A Home event's picture: the featured hero's portrait for a Legendary Event, else the Home
- *  Screen Event's game medallion. Decorative; the row names the event. */
+/** A Home event's picture: the featured hero's portrait for a Legendary Event, Incursion's icon,
+ *  else the Home Screen Event's game medallion. Decorative; the row names the event. */
 export function HomeEventVisual({
   row,
   className,
@@ -24,6 +28,15 @@ export function HomeEventVisual({
           className
         )}
         src={characterIcon(row.unitId as UnitId)}
+      />
+    )
+  }
+  if (row.type === "incursion") {
+    return (
+      <EntityIcon
+        alt=""
+        className={cn("shrink-0", className)}
+        src={eventIcon("incursion", "Incursion")}
       />
     )
   }
