@@ -16,6 +16,7 @@ import {
   type CampaignEventProgressOverride,
   type CampaignEventProgressOverrides,
 } from "@/entities/player-data-override"
+import { useSavedBattleProgress } from "@/features/daily-raids"
 import { useRevisionedDraft } from "@/shared/api"
 import { usePersistedSelection } from "@/shared/lib"
 import { UnsavedChangesBar, UnsavedChangesGuard } from "@/shared/ui"
@@ -25,11 +26,13 @@ import {
   buildEventViews,
   buildEvents,
   normalizeOverrides,
+  summarizeEventType,
 } from "../model/campaign-events.model"
 import { useCampaignEventsData } from "../model/use-campaign-events-data"
 import { useCampaignEventsTutorial } from "./campaign-events-page.tutorial"
 import { CurrentEventCard, EventListItem } from "./event-card"
 import type { PatchTrack } from "./event-track-editor"
+import { ProgressSummary } from "./progress-summary"
 
 type Message = { tone: "success" | "info" | "error"; key: MessageKey }
 type MessageKey =
@@ -64,6 +67,7 @@ export function CampaignEventsPage() {
     save: updateCampaignEventProgressOverrides,
     sharedRevisionKey: playerDataOverrideKey,
   })
+  const battleProgress = useSavedBattleProgress()
   const [message, setMessage] = useState<Message | null>(null)
   const [hideCompleted, setHideCompleted] = usePersistedSelection(
     HIDE_COMPLETED_KEY,
@@ -85,10 +89,16 @@ export function CampaignEventsPage() {
           catalogData?.synced ?? [],
           overrides.draft ?? []
         ),
-        catalogData?.liveProgress?.activeCampaignEventId
+        catalogData?.liveProgress?.activeCampaignEventId,
+        battleProgress
       ),
-    [events, catalogData, overrides.draft]
+    [events, catalogData, overrides.draft, battleProgress]
   )
+  const allViews = views.current ? [views.current, ...views.list] : views.list
+  const summaries = {
+    standard: summarizeEventType(allViews, "Standard"),
+    extremis: summarizeEventType(allViews, "Extremis"),
+  }
   const listed =
     hideCompleted === "on"
       ? views.list.filter((view) => !view.completed)
@@ -142,6 +152,24 @@ export function CampaignEventsPage() {
         >
           {t("progress.events.noEvents")}
         </p>
+      ) : null}
+
+      {events.length > 0 ? (
+        <div
+          className="flex flex-wrap gap-8"
+          data-testid="campaign-events-summary"
+        >
+          <ProgressSummary
+            label={t("progress.events.summary.standard")}
+            testId="campaign-events-summary-Standard"
+            {...summaries.standard}
+          />
+          <ProgressSummary
+            label={t("progress.events.summary.extremis")}
+            testId="campaign-events-summary-Extremis"
+            {...summaries.extremis}
+          />
+        </div>
       ) : null}
 
       {views.current ? (

@@ -835,7 +835,9 @@
     "unclaimedEvents": {
       "summary_one": "{{count}} combat a des récompenses non réclamées",
       "summary_other": "{{count}} combats ont des récompenses non réclamées",
-      "allClaimed": "Toutes les récompenses uniques réclamées"
+      "allClaimed": "Toutes les récompenses uniques réclamées",
+      "notBeaten_one": "{{count}} combat pas encore remporté",
+      "notBeaten_other": "{{count}} combats pas encore remportés"
     },
     "lightningVictoryFor": "Victoire éclair sur {{battle}}",
     "setBest": "Max",

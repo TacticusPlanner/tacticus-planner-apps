@@ -540,7 +540,9 @@
       "completed": "Terminé",
       "summary": {
         "track": "{{label}} {{done}}/{{total}}",
-        "challenges": "Défis"
+        "challenges": "Défis",
+        "standard": "Événements standard",
+        "extremis": "Événements Extremis"
       },
       "unsaved": {
         "message": "Vous avez des modifications non enregistrées",

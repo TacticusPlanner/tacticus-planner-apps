@@ -8,9 +8,16 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import {
   campaignEventTrackKey,
   resolveCampaignEventProgress,
+  type BattleProgressOverride,
   type CampaignEventProgressOverride,
   type EffectiveCampaignEventProgress,
 } from "@/entities/player-data-override"
+import {
+  eventTrackMedalStats,
+  medalCompletion,
+  sumMedalStats,
+  type TrackMedalStats,
+} from "@/features/daily-raids"
 
 export const eventTypes = ["Standard", "Extremis"] as const
 export type EventType = (typeof eventTypes)[number]
@@ -135,12 +142,22 @@ export type TrackView = {
   progress: EffectiveCampaignEventProgress
   /** Completed challenges of this track (ids outside the track's catalog are ignored). */
   completedChallenges: number
+  /** Beaten battles (regular and challenge) against all of the track's battles. */
+  battleCount: Completion
+  /** Medal stats of the beaten battles; absent while saved battle progress isn't available. */
+  medals: TrackMedalStats | undefined
+  /** Medals and Lightning Victories when recorded, else beaten battles. */
+  completion: Completion
 }
+
+type Completion = { done: number; total: number }
 
 export type EventView = {
   event: EventModel
   tracks: Record<EventType, TrackView>
   completed: boolean
+  /** Completion of both tracks together, 0–100. */
+  percent: number
   summary: {
     standard: { done: number; total: number }
     extremis: { done: number; total: number }
@@ -155,20 +172,54 @@ export type EventView = {
 const NO_PROGRESS = resolveCampaignEventProgress(undefined, undefined)
 
 function trackView(
+  groupId: string,
+  type: EventType,
   battles: TrackBattles,
-  progress: EffectiveCampaignEventProgress
+  progress: EffectiveCampaignEventProgress,
+  overrides: readonly BattleProgressOverride[] | undefined
 ): TrackView {
   const challengeIds = new Set<string>(
     battles.challenges.map((battle) => battle.id)
   )
+  const completedChallenges = progress.completedChallengeBattlesIds.filter(
+    (id) => challengeIds.has(id)
+  ).length
+  const battleCount = {
+    done:
+      Math.min(progress.completedBattleCount, battles.regular.length) +
+      completedChallenges,
+    total: battles.regular.length + battles.challenges.length,
+  }
+  const medals = overrides
+    ? eventTrackMedalStats(
+        [...battles.regular, ...battles.challenges],
+        groupId,
+        type,
+        progress,
+        overrides
+      )
+    : undefined
   return {
     battles,
     progress,
-    completedChallenges: progress.completedChallengeBattlesIds.filter((id) =>
-      challengeIds.has(id)
-    ).length,
+    completedChallenges,
+    battleCount,
+    medals,
+    completion: medals ? medalCompletion(medals) : battleCount,
   }
 }
+
+const addCompletion = (parts: readonly Completion[]): Completion =>
+  parts.reduce(
+    (sum, part) => ({
+      done: sum.done + part.done,
+      total: sum.total + part.total,
+    }),
+    { done: 0, total: 0 }
+  )
+
+const percentOf = ({ done, total }: Completion) =>
+  total ? (done / total) * 100 : 0
 
 const isTrackCompleted = (track: TrackView) =>
   track.progress.completedBattleCount >= track.battles.regular.length &&
@@ -176,15 +227,19 @@ const isTrackCompleted = (track: TrackView) =>
 
 export function toEventView(
   event: EventModel,
-  effective: ReadonlyMap<string, EffectiveCampaignEventProgress>
+  effective: ReadonlyMap<string, EffectiveCampaignEventProgress>,
+  overrides?: readonly BattleProgressOverride[]
 ): EventView {
   const tracks = Object.fromEntries(
     eventTypes.map((type) => [
       type,
       trackView(
+        event.definition.groupId,
+        type,
         event.tracks[type],
         effective.get(campaignEventTrackKey(event.definition.groupId, type)) ??
-          NO_PROGRESS
+          NO_PROGRESS,
+        overrides
       ),
     ])
   ) as Record<EventType, TrackView>
@@ -207,6 +262,9 @@ export function toEventView(
     event,
     tracks,
     completed: eventTypes.every((type) => isTrackCompleted(tracks[type])),
+    percent: percentOf(
+      addCompletion(eventTypes.map((type) => tracks[type].completion))
+    ),
     summary: {
       standard: {
         done: done(tracks.Standard),
@@ -237,9 +295,10 @@ export function toEventView(
 export function buildEventViews(
   events: readonly EventModel[],
   effective: ReadonlyMap<string, EffectiveCampaignEventProgress>,
-  activeCampaignEventId: string | null | undefined
+  activeCampaignEventId: string | null | undefined,
+  overrides?: readonly BattleProgressOverride[]
 ): { current: EventView | undefined; list: EventView[] } {
-  const views = events.map((event) => toEventView(event, effective))
+  const views = events.map((event) => toEventView(event, effective, overrides))
   const current = views.find(
     (view) => view.event.definition.groupId === activeCampaignEventId
   )
@@ -250,5 +309,36 @@ export function buildEventViews(
       ...rest.filter((view) => !view.completed),
       ...rest.filter((view) => view.completed),
     ],
+  }
+}
+
+/** One difficulty's progress across every campaign event, as the page header shows it. */
+export type EventTypeSummary = {
+  /** Beaten battles, challenges included. */
+  done: number
+  total: number
+  /** Medals and Lightning Victories when recorded, else beaten battles; rounded 0–100. */
+  percent: number
+  /** Events whose track of this difficulty is fully beaten. */
+  cleared: number
+  medals: TrackMedalStats | undefined
+}
+
+/** Sums one difficulty's tracks over all events (tracks without battles are left out). */
+export function summarizeEventType(
+  views: readonly EventView[],
+  type: EventType
+): EventTypeSummary {
+  const tracks = views
+    .map((view) => view.tracks[type])
+    .filter((track) => track.battleCount.total > 0)
+  const battles = addCompletion(tracks.map((track) => track.battleCount))
+  return {
+    ...battles,
+    percent: Math.round(
+      percentOf(addCompletion(tracks.map((track) => track.completion)))
+    ),
+    cleared: tracks.filter(isTrackCompleted).length,
+    medals: sumMedalStats(tracks.flatMap((track) => track.medals ?? [])),
   }
 }

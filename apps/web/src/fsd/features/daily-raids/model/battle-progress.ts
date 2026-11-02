@@ -381,6 +381,61 @@ export function trackMedalStats(
   return stats
 }
 
+/**
+ * Medal and Lightning Victory completion of one campaign-event track, challenges included: every
+ * beaten battle (regular nodes up to the completed count, challenges recorded as completed) counts
+ * its recorded progress, which defaults to the best; unbeaten battles count nothing.
+ */
+export function eventTrackMedalStats(
+  battles: readonly (Parameters<typeof beatenEventBattleRows>[0][number] & {
+    lightningVictoryTurns: number | null
+  })[],
+  campaignGroupId: string,
+  type: string,
+  progress: EventTrackProgress,
+  overrides: readonly BattleProgressOverride[]
+): TrackMedalStats {
+  const trackBattles = battles.filter(
+    (battle) =>
+      battle.campaignGroupId === campaignGroupId && battle.type === type
+  )
+  const stats: TrackMedalStats = {
+    medals: 0,
+    maxMedals: trackBattles.length * 3,
+    lightningVictories: 0,
+    maxLightningVictories: trackBattles.filter(
+      (battle) => battle.lightningVictoryTurns !== null
+    ).length,
+  }
+  const byId = new Map(trackBattles.map((battle) => [battle.id, battle]))
+  for (const row of beatenEventBattleRows(
+    trackBattles,
+    campaignGroupId,
+    type,
+    progress
+  )) {
+    const battle = byId.get(row.battleId)
+    const result = progressOf(overrides, row.battleId, battleTraits(battle))
+    stats.medals += result.medals
+    if (result.lightningVictory) stats.lightningVictories += 1
+  }
+  return stats
+}
+
+/** Adds up medal stats of several tracks; undefined when there are none. */
+export function sumMedalStats(
+  stats: readonly TrackMedalStats[]
+): TrackMedalStats | undefined {
+  if (stats.length === 0) return undefined
+  return stats.reduce((sum, part) => ({
+    medals: sum.medals + part.medals,
+    maxMedals: sum.maxMedals + part.maxMedals,
+    lightningVictories: sum.lightningVictories + part.lightningVictories,
+    maxLightningVictories:
+      sum.maxLightningVictories + part.maxLightningVictories,
+  }))
+}
+
 /** Completion counted in medals and Lightning Victories: each earned one against all on offer. */
 export function medalCompletion(stats: TrackMedalStats): {
   done: number

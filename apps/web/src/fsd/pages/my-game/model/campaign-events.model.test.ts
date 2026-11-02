@@ -15,6 +15,7 @@ import {
   buildEventViews,
   buildEvents,
   normalizeOverrides,
+  summarizeEventType,
   toEventView,
 } from "./campaign-events.model"
 
@@ -389,5 +390,65 @@ describe("buildEventViews", () => {
         (view) => view.event.definition.groupId
       )
     ).toEqual(["eventA", "eventC", "eventB"])
+  })
+})
+
+describe("summarizeEventType", () => {
+  const events = buildEvents({
+    definitions: [definition("eventCampaign1"), definition("eventCampaign2")],
+    battles: [
+      ...eventBattles("eventCampaign1", 4, { Standard: [2], Extremis: [] }),
+      ...eventBattles("eventCampaign2", 4, { Standard: [], Extremis: [] }),
+    ].map((entry) => ({
+      ...entry,
+      lightningVictoryTurns: entry.challenge ? null : 5,
+    })),
+    characters: [],
+  })
+  const effective = buildEffectiveCampaignEventProgress(
+    [
+      synced("eventCampaign1", "Standard", 4, ["eventCampaign1-Standard-2B"]),
+      synced("eventCampaign2", "Standard", 2),
+    ],
+    []
+  )
+
+  it("counts beaten battles, challenges included, and cleared tracks", () => {
+    const views = events.map((event) => toEventView(event, effective))
+    expect(summarizeEventType(views, "Standard")).toEqual({
+      done: 7,
+      total: 9,
+      percent: 78,
+      cleared: 1,
+      medals: undefined,
+    })
+    expect(summarizeEventType(views, "Extremis")).toMatchObject({
+      done: 0,
+      total: 8,
+      percent: 0,
+      cleared: 0,
+    })
+  })
+
+  it("counts medals and Lightning Victories of beaten battles when recorded", () => {
+    const views = events.map((event) =>
+      toEventView(event, effective, [
+        {
+          battleId: "eventCampaign1-Standard-1",
+          medals: 2,
+          lightningVictory: false,
+          milestone: null,
+        },
+      ])
+    )
+    const summary = summarizeEventType(views, "Standard")
+    // 7 beaten battles at 3 medals, one recorded at 2 without its Lightning Victory: 5 of 8.
+    expect(summary.medals).toEqual({
+      medals: 20,
+      maxMedals: 27,
+      lightningVictories: 5,
+      maxLightningVictories: 8,
+    })
+    expect(summary.percent).toBe(Math.round((25 / 35) * 100))
   })
 })

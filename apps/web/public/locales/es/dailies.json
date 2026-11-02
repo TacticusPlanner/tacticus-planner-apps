@@ -835,7 +835,9 @@
     "unclaimedEvents": {
       "summary_one": "{{count}} batalla tiene recompensas sin reclamar",
       "summary_other": "{{count}} batallas tienen recompensas sin reclamar",
-      "allClaimed": "Todas las recompensas únicas reclamadas"
+      "allClaimed": "Todas las recompensas únicas reclamadas",
+      "notBeaten_one": "{{count}} batalla aún sin superar",
+      "notBeaten_other": "{{count}} batallas aún sin superar"
     },
     "lightningVictoryFor": "Victoria relámpago en {{battle}}",
     "setBest": "Máx.",

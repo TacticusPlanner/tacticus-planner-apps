@@ -540,7 +540,9 @@
       "completed": "Completed",
       "summary": {
         "track": "{{label}} {{done}}/{{total}}",
-        "challenges": "Challenges"
+        "challenges": "Challenges",
+        "standard": "Standard events",
+        "extremis": "Extremis events"
       },
       "unsaved": {
         "message": "You have unsaved changes",
