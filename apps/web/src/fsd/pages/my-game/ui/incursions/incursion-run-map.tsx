@@ -13,6 +13,7 @@ import {
   type IncursionNode,
   type IncursionTier,
   type RunStep,
+  nodeName,
 } from "../../model/incursions.model"
 import { IncursionNodeCard } from "./incursion-node-card"
 import { IncursionNodeMarker } from "./incursion-node-marker"
@@ -46,7 +47,8 @@ export function IncursionRunMap({
 }) {
   const { t } = useTranslation(["incursions", "traits"])
   const nodeLabel = (node: IncursionNode) => {
-    if (node.kind === "battle") return t("battle.name", { name: node.name })
+    if (node.kind === "battle")
+      return t("battle.name", { name: nodeName(node) })
     if (node.kind === "chest") {
       const type = node.chest?.type ?? ""
       return t("chest.title", {
@@ -78,7 +80,9 @@ export function IncursionRunMap({
   const onSelect = (node: IncursionNode) => setPickedIndex(node.index)
   const at = selected ? nodes.indexOf(selected) : -1
   const { previous, next } = neighbours(nodes, at)
-  const namesByIndex = new Map(nodes.map((node) => [node.index, node.name]))
+  const namesByIndex = new Map(
+    nodes.map((node) => [node.index, nodeName(node)])
+  )
   const starsOf = (node: IncursionNode) =>
     stars && node.kind === "battle" && node.battleId
       ? stars(tier.index, node.battleId)

@@ -1,10 +1,13 @@
 import userEvent from "@testing-library/user-event"
 import { createMemoryRouter, RouterProvider } from "react-router"
+import { toast } from "sonner"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { incursionsFixture } from "@workspace/game-catalog/testing"
 
 import { render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
+
+vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 
 const getProgress = vi.fn()
 const saveProgress = vi.fn()
@@ -158,6 +161,9 @@ describe("IncursionsPage", () => {
     expect(
       screen.getAllByTestId("incursion-step-choice").length
     ).toBeGreaterThan(0)
+    expect(screen.getByTestId("incursion-map-node-9")).toHaveAccessibleName(
+      "Battle 5"
+    )
     await user.click(screen.getByTestId("incursion-map-node-7"))
     expect(screen.getByTestId("incursion-node-7")).toHaveAttribute(
       "data-kind",
@@ -231,9 +237,10 @@ describe("IncursionsPage", () => {
         revision: 4,
       })
     )
-    expect(await screen.findByTestId("incursions-message")).toHaveTextContent(
-      "Incursion progress saved."
+    await waitFor(() =>
+      expect(toast.success).toHaveBeenCalledWith("Incursion progress saved.")
     )
+    expect(screen.queryByTestId("incursions-message")).toBeNull()
   })
 
   it("marks a whole tier at 3 stars and resets it", async () => {
@@ -279,6 +286,11 @@ describe("IncursionsPage", () => {
     expect(
       await screen.findByTestId("incursion-tier-0-rewards-popover")
     ).toBeInTheDocument()
+    expect(
+      screen
+        .getByTestId("incursion-tier-0-rewards-shards")
+        .querySelector("[data-shard='regular']")
+    ).not.toBeNull()
   })
 
   it("asks a signed-out visitor to sign in instead of showing progress", async () => {
