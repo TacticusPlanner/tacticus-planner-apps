@@ -1032,3 +1032,68 @@ describe("shop offers shared across goals (add-mythic-material-shop-sources)", (
     expect(result.outcomes.get("b")).toMatchObject({ days: 2 })
   })
 })
+
+describe("day 1 honours today's real attempts and energy", () => {
+  // The bug report: the top goal (Baldr) still needs a material whose only node was raided out
+  // today. Planning day 1 as a fresh day put Baldr's raids on that exhausted node, which Today and
+  // the Plan then hid as already raided, so Baldr was never planned on any day.
+  const baldrAndDreir = {
+    goals: [
+      {
+        goalId: "baldr",
+        priority: 1,
+        needs: [{ id: upgradeId("U1"), count: 4 }],
+      },
+      {
+        goalId: "dreir",
+        priority: 2,
+        needs: [{ id: upgradeId("U2"), count: 20 }],
+      },
+    ],
+    upgradesById: resources(["U1", "B1"], ["U2", "B2"]),
+    battlesById: new Map([battle("B1", 6), battle("B2", 10)]),
+    dailyEnergy: 100,
+    inventory: [],
+    referenceDate,
+  }
+  const today = {
+    ...baldrAndDreir,
+    attemptsLeftByBattle: new Map([[battleId("B1"), 0]]),
+    energyUsedToday: 60,
+  }
+
+  it("moves a need whose node is raided out today to tomorrow", () => {
+    const plan = estimatePlanSchedule(today)
+
+    expect(
+      plan.days[0]?.entries.map((entry) => [entry.goalId, entry.battleId])
+    ).toEqual([["dreir", battleId("B2")]])
+    expect(
+      plan.days[1]?.entries.find((entry) => entry.goalId === "baldr")
+    ).toMatchObject({ battleId: battleId("B1"), raidsPerformed: 4 })
+    expect(plan.outcomes.get("baldr")).toMatchObject({
+      status: "Estimated",
+      days: 2,
+    })
+  })
+
+  it("spends only the energy left today on day 1", () => {
+    const day = estimateTodaySchedule(today)
+
+    expect(day.energyTotal).toBe(40)
+    expect(day.entries).toEqual([
+      expect.objectContaining({ goalId: "dreir", raidsPerformed: 4 }),
+    ])
+  })
+
+  it("plans day 1 fresh without synced attempts", () => {
+    const day = estimateTodaySchedule(baldrAndDreir)
+
+    expect(
+      day.entries.map((entry) => [entry.goalId, entry.raidsPerformed])
+    ).toEqual([
+      ["baldr", 4],
+      ["dreir", 6],
+    ])
+  })
+})

@@ -21,6 +21,8 @@ import type {
 import {
   additionalTargetFromWire,
   additionalTargetSelection,
+  additionalTargetSlots,
+  rankTargetReached,
   type RankAdditionalTarget,
 } from "@/features/goal-farming/@x/goal-create"
 
@@ -162,13 +164,32 @@ export function isGoalTargetDraftChanged(
   return !stored || JSON.stringify(stored) !== JSON.stringify(draft)
 }
 
+/** True when a Rank draft does not reach past the goal's stored start (rank plus applied slots). */
+function rankTargetNotAboveStart(
+  rank: NonNullable<GoalDetail["config"]["rank"]>,
+  draft: { end: Rank; additional: RankAdditionalTarget }
+): boolean {
+  const startRank = rankAt(rank.start)
+  const startSlots = additionalTargetSlots(
+    additionalTargetFromWire(startRank, {
+      endPointFive: rank.startPointFive,
+      endAppliedUpgrades: rank.startAppliedUpgrades,
+    })
+  )
+  return rankTargetReached(
+    { rank: startRank, appliedSlots: startSlots },
+    draft.end,
+    draft.additional
+  )
+}
+
 /**
  * The first reason `draft` is not a valid target for `detail`, or null. These are the target-shape rules
  * creation applies (`getGoalValidationIssue`) evaluated against the goal's *stored start* rather than the
  * unit's live progress — so a target the unit has already reached is valid (it just needs nothing more),
- * exactly as the server treats an edit. Rank/Ascension "above the start" is compared by ladder position,
- * so a partial-slot target on the same rank as the start is still a target above it only when the rank
- * itself is higher (the server's rule).
+ * exactly as the server treats an edit. Rank/Ascension "above the start" is compared by ladder position;
+ * a Rank target on the start's own rank is above it only when it names a slot the start doesn't (e.g.
+ * Diamond3 to Diamond3 + top row).
  */
 export function getGoalTargetIssue(
   detail: GoalDetail,
@@ -177,7 +198,7 @@ export function getGoalTargetIssue(
   const { config } = detail
   switch (draft.kind) {
     case "Rank":
-      return config.rank && rankIndex(draft.end) <= config.rank.start
+      return config.rank && rankTargetNotAboveStart(config.rank, draft)
         ? "rankNotAboveStart"
         : null
     case "Ascension":

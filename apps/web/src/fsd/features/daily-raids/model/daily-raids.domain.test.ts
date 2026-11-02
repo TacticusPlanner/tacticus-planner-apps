@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from "vitest"
 import type { BattleId } from "@workspace/game-domain"
 import type { CampaignDescriptor } from "@workspace/game-catalog"

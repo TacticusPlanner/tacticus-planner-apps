@@ -8,7 +8,7 @@ under `apps/web/src/fsd` — see the `feature-sliced-design` skill before adding
 files there.
 
 - `apps/web`: the runnable React/Vite application. Source lives in
-  `apps/web/src`, with `App.tsx`, `main.tsx`, the FSD tree (`src/fsd/`), and
+  `apps/web/src`, with `main.tsx`, the FSD tree (`src/fsd/`), and
   app-level config. Translations live in `apps/web/public/locales`.
 - `packages/ui`: shared shadcn/Radix UI package exported as `@workspace/ui`.
   Components live in `packages/ui/src/components`, hooks in `src/hooks`,
@@ -19,12 +19,14 @@ files there.
   progression rules) used across the app and `game-catalog`.
 - `packages/player-data`: player-specific data models and persistence
   (IndexedDB/Dexie-backed storage).
+- `packages/manifest-sync`: shared manifest-driven download loop (changed items,
+  progress, removals) used by `game-catalog` and `player-data` sync.
 - `.agents/skills` (canonical) / `.claude/skills` (generated mirror, kept in
   sync manually or via `skills-lock.json`): local agent skill docs — FSD,
   shadcn, naming conventions, i18n, tanstack-query, vitest, joyride tours,
   and `vulnerabilities-scan` (pnpm audit + fix process for this repo).
   Read the relevant skill before touching an area it covers. The V1→V2 page
-  migration workflow (`reimplement-v1-page`) lives in the `tacticus-planner-dev`
+  migration workflow (`tp-reimplement-v1-page`) lives in the `tacticus-planner-dev`
   orchestration workspace instead, since it spans this repo, `tacticusplanner`,
   and `tacticus-planner-docs`.
 - `.design-sync`: generated shadcn/ui component reference docs and previews
@@ -150,6 +152,13 @@ are colocated with the code they cover, named `Component.test.tsx` or
 `packages/*/src/**/*.test.ts` for examples). See the `vitest` skill for
 mocking, fixtures, and filtering conventions. Add new tests using the same
 colocated pattern.
+
+**Pick the extension by environment.** In `apps/web`, `*.test.ts` files run in
+node (no jsdom, no DOM setup: much cheaper per file) and `*.test.tsx` files run
+in jsdom; other names (`.spec.ts`, `.test.mts`) are not collected. Logic tests
+go in `.test.ts`. A `.test.ts` that needs `window`,
+`document`, web storage or `renderHook` starts with
+`// @vitest-environment jsdom`.
 
 **Query by role first.** In new tests, find elements with `getByRole` (with
 `name`), then `getByLabelText` / `getByText`. Use `getByTestId` only when the

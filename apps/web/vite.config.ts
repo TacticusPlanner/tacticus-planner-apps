@@ -177,9 +177,33 @@ export default defineConfig(({ command }) => {
       },
     },
     test: {
-      environment: "jsdom",
       exclude: [...configDefaults.exclude, "e2e/**"],
       setupFiles: ["./src/test/setup.ts"],
+      // setup.ts loads setup-dom.ts dynamically, so it is not a setup file Vitest knows to rerun on.
+      forceRerunTriggers: [
+        ...configDefaults.forceRerunTriggers,
+        "**/src/test/setup-dom.ts",
+      ],
+      // `.test.ts` files run in node, which skips jsdom and the DOM setup per file; a `.test.ts`
+      // that needs the DOM opts in with a `// @vitest-environment jsdom` first line.
+      projects: [
+        {
+          extends: true,
+          test: {
+            name: "node",
+            environment: "node",
+            include: ["src/**/*.test.ts"],
+          },
+        },
+        {
+          extends: true,
+          test: {
+            name: "dom",
+            environment: "jsdom",
+            include: ["src/**/*.test.tsx"],
+          },
+        },
+      ],
       // Pin a real TZ: `vi.unstubAllEnvs()` deletes an unset TZ, and Node on Windows then stays on the
       // last stubbed zone, shifting local-date tests in later suites. Matches CI (UTC).
       env: { TZ: "UTC" },

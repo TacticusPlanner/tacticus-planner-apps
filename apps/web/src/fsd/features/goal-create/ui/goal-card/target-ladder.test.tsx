@@ -12,11 +12,13 @@ function RankLadder({
   start,
   initial,
   taken = [],
+  startSelectable,
   onChange,
 }: {
   start: string
   initial: string
   taken?: string[]
+  startSelectable?: boolean
   onChange?: (key: string) => void
 }) {
   const { t } = useTranslation()
@@ -29,6 +31,7 @@ function RankLadder({
         onChange?.(key)
       }}
       startKey={start}
+      startSelectable={startSelectable}
       steps={rankLadderSteps(t)}
       takenKeys={new Set(taken)}
       testId="ladder"
@@ -44,6 +47,13 @@ const radio = (name: string) =>
   )
 
 describe("TargetLadder", () => {
+  it("lets the Current step be chosen when the start is selectable", () => {
+    render(<RankLadder initial="Gold3" start="Gold2" startSelectable />)
+
+    expect(radio("Gold II, Current")).not.toHaveAttribute("aria-disabled")
+    expect(radio("Gold I")).toHaveAttribute("aria-disabled", "true")
+  })
+
   it("marks Incisus' Current step, the taken steps, the selection and the range between", () => {
     render(
       <RankLadder

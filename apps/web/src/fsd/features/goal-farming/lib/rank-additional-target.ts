@@ -19,14 +19,30 @@ function usesNumberedUpgradeTargets(rank: RankType): boolean {
   return rankIndex(rank) >= rankIndex(Rank.Adamantine1)
 }
 
-/** The XP-level label for a numbered partial-upgrade count at `rank` — ported from V1's
- * `mythicLevelLabel`. */
+/** The XP level the `count`-th cheapest of `slots` needs (1-based, clamped to the slots there are). */
+function nthSlotLevel(slots: readonly number[], count: number): number {
+  const sorted = slots.toSorted((a, b) => a - b)
+  return sorted[Math.min(Math.max(count, 1), sorted.length) - 1] ?? 0
+}
+
+/** The XP level needed to apply `count` of `rank`'s 6 upgrade slots (cheapest first), read from the
+ * game's per-slot requirements — the label of a numbered partial-upgrade target (V1's
+ * `mythicLevelLabel`). */
 export function rowLevel(
   rank: RankType,
   count: number,
   rules: LevelRules
 ): number {
-  return rules.rankToLevel[rank] + count - 1
+  return nthSlotLevel(rules.slotLevels[rank], count)
+}
+
+/** The XP level needed to apply `count` (1-3) of `rank`'s top-row upgrade slots (slot indices 0/2/4
+ * in the game's column-major order). Below Diamond3 the whole top row unlocks at the rank's own
+ * level, so a "rank and a half" target needs no extra levels; from Diamond3 on each top-row slot is
+ * one level further. */
+function topRowLevel(rank: RankType, count: number, rules: LevelRules): number {
+  const topRow = rules.slotLevels[rank].filter((_, index) => index % 2 === 0)
+  return nthSlotLevel(topRow, count)
 }
 
 /**
@@ -118,11 +134,11 @@ export function requiredLevelForRankTarget(
     case "None":
       return rules.rankToLevel[rank]
     case "TopRow1":
-      return rowLevel(rank, 1, rules)
+      return topRowLevel(rank, 1, rules)
     case "TopRow2":
-      return rowLevel(rank, 2, rules)
+      return topRowLevel(rank, 2, rules)
     case "TopRow":
-      return rowLevel(rank, 3, rules)
+      return topRowLevel(rank, 3, rules)
     default:
       return rowLevel(rank, rowCount(additionalTarget) ?? 1, rules)
   }
@@ -194,4 +210,35 @@ export function additionalTargetFromWire(
   if (wire.endAppliedUpgrades === 2) return "TopRow2"
   if (wire.endAppliedUpgrades === 1) return "TopRow1"
   return "None"
+}
+
+const topRowSlots: readonly number[] = [0, 2, 4]
+
+/** The end rank's slot indices an Additional target applies — the same slots `rankUpSlotOccurrences`
+ * charges for it: the first N top-row slots (0/2/4) below Adamantine1, the first N raw slots from
+ * Adamantine1 on, and none for a clean rank boundary. */
+export function additionalTargetSlots(
+  value: RankAdditionalTarget
+): readonly number[] {
+  const { pointFive, appliedUpgrades, topRowCount } =
+    additionalTargetSelection(value)
+  if (topRowCount > 0) return topRowSlots.slice(0, topRowCount)
+  if (appliedUpgrades > 0)
+    return Array.from({ length: appliedUpgrades }, (_, slot) => slot)
+  return pointFive ? topRowSlots : []
+}
+
+/** True when a character at `current.rank` with `current.appliedSlots` of that rank applied already
+ * holds `end` with `additional` — so a same-rank target (e.g. Diamond3 to Diamond3 + top row) is
+ * reached only once every slot it names is applied. */
+export function rankTargetReached(
+  current: { rank: RankType; appliedSlots: readonly number[] },
+  end: RankType,
+  additional: RankAdditionalTarget
+): boolean {
+  const difference = rankIndex(end) - rankIndex(current.rank)
+  if (difference !== 0) return difference < 0
+  return additionalTargetSlots(additional).every((slot) =>
+    current.appliedSlots.includes(slot)
+  )
 }
