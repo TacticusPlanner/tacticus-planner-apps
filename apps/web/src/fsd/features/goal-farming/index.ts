@@ -40,6 +40,8 @@ export {
   additionalTargetFromWire,
   additionalTargetSelection,
   additionalTargetOptions,
+  additionalTargetSlots,
+  rankTargetReached,
   reachableRankProgress,
   requiredLevelForRankTarget,
   rowCount,

@@ -3,6 +3,8 @@ export {
   additionalTargetFromWire,
   additionalTargetOptions,
   additionalTargetSelection,
+  additionalTargetSlots,
+  rankTargetReached,
   ascensionResourceNeed,
   type Battle,
   computeLevelGoalCost,

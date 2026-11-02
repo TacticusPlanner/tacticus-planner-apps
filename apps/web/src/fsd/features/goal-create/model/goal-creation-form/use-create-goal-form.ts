@@ -377,8 +377,7 @@ export function useCreateGoalForm({
     playerEntity,
     playerCharacter,
     playerMow,
-    rankStart,
-    rankEnd,
+    ...rankFields.state,
     progressionStart,
     progressionEnd,
     abilityActiveStart,
@@ -662,7 +661,7 @@ export function useRankFields(taken: ReadonlySet<string> = NO_TAKEN_TARGETS) {
     useState<RankAdditionalTarget>("None")
 
   const rankEnd =
-    picked && rankIndex(picked) > rankIndex(rankStart)
+    picked && rankIndex(picked) >= rankIndex(rankStart)
       ? picked
       : firstFreeTarget("Rank", rankStart, taken)
   const rankEndOptions = useMemo(

@@ -114,6 +114,36 @@ describe("getGoalValidationIssue", () => {
   })
 })
 
+describe("same-rank partial Rank targets", () => {
+  const rank = {
+    ...base,
+    enabledTypes: new Set(["Rank"] as const),
+    currentRank: Rank.Diamond3,
+    rankEnd: Rank.Diamond3,
+  }
+
+  it("accepts the current rank plus top-row slots not yet applied", () => {
+    expect(
+      getGoalValidationIssue({
+        ...rank,
+        rankAdditionalTarget: "TopRow",
+        currentAppliedSlots: [0],
+      })
+    ).toBeNull()
+  })
+
+  it("rejects the current rank alone or with every named slot already applied", () => {
+    expect(getGoalValidationIssue(rank)).toBe("rankAlreadyReached")
+    expect(
+      getGoalValidationIssue({
+        ...rank,
+        rankAdditionalTarget: "TopRow",
+        currentAppliedSlots: [0, 2, 4],
+      })
+    ).toBe("rankAlreadyReached")
+  })
+})
+
 describe("getGoalValidationIssues", () => {
   it("reports every enabled type's problem together, in card order", () => {
     expect(
