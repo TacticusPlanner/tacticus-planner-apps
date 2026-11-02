@@ -401,6 +401,14 @@
           "abilities": "Fähigkeiten",
           "shards": "Scherben"
         },
+        "view": "Ansicht",
+        "views": {
+          "cards": "Karten",
+          "roster": "Liste"
+        },
+        "groupByFaction": "Nach Fraktion gruppieren",
+        "hideUnowned": "Nicht freigeschaltete ausblenden",
+        "hideUnownedNeedsRoster": "Zum Ausblenden nicht freigeschalteter Einheiten braucht es einen synchronisierten Kader.",
         "filters": "Filter",
         "filtersCount_one": "Filter ({{count}})",
         "filtersCount_other": "Filter ({{count}})",
@@ -421,15 +429,11 @@
         "clearRankTo": "Höchsten Rang entfernen",
         "searchRanks": "Ränge suchen",
         "noRanks": "Kein passender Rang",
-        "ownership": "Besitz",
-        "ownershipAll": "Alle Einheiten",
-        "owned": "Im Besitz",
-        "unowned": "Nicht im Besitz",
         "kind": "Einheitentyp",
         "kindAll": "Alle Einheitentypen",
         "character": "Charaktere",
         "mow": "Kriegsmaschinen",
-        "needsRoster": "Rang-, Sterne- und Besitzfilter brauchen einen synchronisierten Kader.",
+        "needsRoster": "Rang- und Sternefilter brauchen einen synchronisierten Kader.",
         "quickFilters": "Schnellfilter",
         "quick": {
           "readyToRankUp": "Bereit zum Rangaufstieg",
@@ -506,6 +510,16 @@
         "body": "Ändere die Filter oder setze sie zurück, um mehr Einheiten zu sehen."
       }
     }
+  },
+  "unitRow": {
+    "level": "St. {{level}}",
+    "active": "Aktiv",
+    "passive": "Passiv",
+    "primary": "Primär",
+    "secondary": "Sekundär",
+    "equipment": "Ausrüstung",
+    "shards": "Scherben",
+    "open": "{{name}} öffnen"
   },
   "unitTile": {
     "characterAbilities": "Aktive Fähigkeit Stufe {{first}}, passive Fähigkeit Stufe {{second}}",
@@ -1939,6 +1953,30 @@
         "quickFilters": {
           "title": "Schnellfilter",
           "content": "Ein Tipp zeigt die Einheiten, an denen du als Nächstes arbeiten kannst: bereit zum Rangaufstieg, Aufstieg nötig, Aufstieg möglich, Stufe erhöhen oder bereit für den blauen Stern. Wähle einen Chip erneut, um ihn zu entfernen."
+        },
+        "view": {
+          "title": "Karten oder Liste",
+          "content": "Wechsle zwischen den Fraktionskarten und der Liste, einer dichteren Ansicht mit einer Zeile pro Einheit. Deine Wahl wird gespeichert. Schalte „Nach Fraktion gruppieren“ aus, um alle Einheiten zusammen in deiner Sortierung zu sehen, und „Nicht freigeschaltete ausblenden“, um nur deine eigenen Einheiten zu zeigen."
+        },
+        "factionRoster": {
+          "title": "Nach Fraktion gruppiert",
+          "content": "Jeder Abschnitt enthält die Charaktere und Kriegsmaschinen einer Fraktion – deine eigenen Einheiten zuerst."
+        },
+        "ownedRoster": {
+          "title": "Eine Einheit in deinem Besitz",
+          "content": "Jede Zeile zeigt das Porträt mit einem Ring in der Farbe der Seltenheit, dann Rang, Sterne, EP-Stufe, Fähigkeitsstufen und Ausrüstung. Wähle eine Zeile aus, um ihre Details in der Bibliothek zu öffnen."
+        },
+        "ownedRosterMobile": {
+          "title": "Eine Einheit in deinem Besitz",
+          "content": "Jede Zeile zeigt Porträt, Rang, Sterne und EP-Stufe. Tippe auf eine Zeile, um Fähigkeitsstufen, Ausrüstung und Scherben zu sehen, und öffne von dort ihre Details in der Bibliothek."
+        },
+        "unownedRoster": {
+          "title": "Noch nicht freigeschaltet",
+          "content": "Ausgegraute Zeilen sind nicht in deinem Kader. Der Balken zeigt, wie nah du an der Freischaltung bist. Wähle eine Zeile aus, um ihre Details in der Bibliothek zu öffnen."
+        },
+        "unownedRosterMobile": {
+          "title": "Noch nicht freigeschaltet",
+          "content": "Ausgegraute Zeilen sind nicht in deinem Kader. Tippe auf eine Zeile, um zu sehen, wie nah du an der Freischaltung bist, und öffne von dort ihre Details in der Bibliothek."
         }
       }
     },

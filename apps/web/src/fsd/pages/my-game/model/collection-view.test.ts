@@ -465,6 +465,63 @@ describe("buildCollectionView with a query", () => {
     ])
   })
 
+  it("lists every unit across factions by the sort for the ungrouped view", () => {
+    const unowned = characters.find(
+      (unit) =>
+        unit.faction === "Ultramarines" &&
+        unit.id !== "ultraTitus" &&
+        unit.id !== "ultraCalgar"
+    )!.id
+    const view = buildCollectionView(
+      catalog,
+      signedIn({
+        characters: [
+          character("ultraTitus", { rank: "Gold1" }),
+          character("ultraCalgar", { rank: "Diamond1" }),
+          character("blackHaarken", { rank: "Gold3" }),
+        ],
+        mows: [],
+        shards: [{ unitId: unowned, amount: 200, mythicAmount: 0 }],
+      }),
+      labels,
+      query({ sort: "rank", group: "none" })
+    )
+
+    // Owned by rank across factions, then the unowned unit nearest to unlock.
+    expect(view.units.slice(0, 4).map((entry) => entry.unit.unitId)).toEqual([
+      "ultraCalgar",
+      "blackHaarken",
+      "ultraTitus",
+      unowned,
+    ])
+    expect(view.units[1]).toMatchObject({
+      factionId: "BlackLegion",
+      factionName: "BlackLegion",
+    })
+    // The same units as the groups, and the counts do not change.
+    expect(view.units).toHaveLength(view.total)
+    expect(new Set(view.units.map((entry) => entry.unit.unitId))).toEqual(
+      new Set(view.groups.flatMap((group) => group.units.map((u) => u.unitId)))
+    )
+  })
+
+  it("orders the ungrouped list nearest to unlock first without a roster", () => {
+    const view = buildCollectionView(
+      catalog,
+      { state: "anonymous" },
+      labels,
+      query({ group: "none" })
+    )
+
+    expect(view.units).toHaveLength(view.total)
+    expect(
+      view.units.every((entry) => entry.unit.data.state === "unowned")
+    ).toBe(true)
+    // No shard data: every unit ties on progress, so the order is by name.
+    const names = view.units.map((entry) => entry.unit.name)
+    expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, "en")))
+  })
+
   it("sorts by ability sum, breaking ties by progression", () => {
     const view = buildCollectionView(
       catalog,
@@ -703,29 +760,32 @@ describe("buildCollectionView with a query", () => {
     })
   })
 
-  it("filters by ownership", () => {
+  it("hides unowned units but keeps them in the counts", () => {
     const roster = signedIn({
       characters: [character("ultraTitus")],
       mows: [],
       shards: [],
     })
 
-    expect(
-      buildCollectionView(
-        catalog,
-        roster,
-        labels,
-        query({ ownership: "owned" })
-      ).total
-    ).toBe(1)
-    expect(
-      buildCollectionView(
-        catalog,
-        roster,
-        labels,
-        query({ ownership: "unowned" })
-      ).total
-    ).toBe(119)
+    // Hide unowned lists only owned units but keeps every unit in the counts, and is no filter.
+    const hidden = buildCollectionView(
+      catalog,
+      roster,
+      labels,
+      query({ ownership: "owned" })
+    )
+    expect(hidden.units.map((entry) => entry.unit.unitId)).toEqual([
+      "ultraTitus",
+    ])
+    expect(hidden.groups.map((group) => group.factionId)).toEqual([
+      "Ultramarines",
+    ])
+    expect(hidden.total).toBe(120)
+    expect(hidden.owned).toBe(1)
+    expect(hidden.filtered).toBe(false)
+    expect(hidden.groups[0]!.total).toBeGreaterThan(
+      hidden.groups[0]!.units.length
+    )
   })
 
   it("ignores rank range, ownership and quick filters without a roster", () => {

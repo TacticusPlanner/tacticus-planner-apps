@@ -401,6 +401,14 @@
           "abilities": "Habilidades",
           "shards": "Fragmentos"
         },
+        "view": "Vista",
+        "views": {
+          "cards": "Tarjetas",
+          "roster": "Lista"
+        },
+        "groupByFaction": "Agrupar por facción",
+        "hideUnowned": "Ocultar no desbloqueadas",
+        "hideUnownedNeedsRoster": "Para ocultar las unidades no desbloqueadas hace falta una plantilla sincronizada.",
         "filters": "Filtros",
         "filtersCount_one": "Filtros ({{count}})",
         "filtersCount_other": "Filtros ({{count}})",
@@ -421,15 +429,11 @@
         "clearRankTo": "Quitar rango máximo",
         "searchRanks": "Buscar rangos",
         "noRanks": "Ningún rango coincide",
-        "ownership": "Posesión",
-        "ownershipAll": "Todas las unidades",
-        "owned": "En tu poder",
-        "unowned": "Sin desbloquear",
         "kind": "Tipo de unidad",
         "kindAll": "Todos los tipos",
         "character": "Personajes",
         "mow": "Máquinas de Guerra",
-        "needsRoster": "Los filtros de rango, estrellas y posesión necesitan una plantilla sincronizada.",
+        "needsRoster": "Los filtros de rango y estrellas necesitan una plantilla sincronizada.",
         "quickFilters": "Filtros rápidos",
         "quick": {
           "readyToRankUp": "Lista para subir de rango",
@@ -506,6 +510,16 @@
         "body": "Cambia o borra los filtros para ver más unidades."
       }
     }
+  },
+  "unitRow": {
+    "level": "Nv. {{level}}",
+    "active": "Activa",
+    "passive": "Pasiva",
+    "primary": "Primaria",
+    "secondary": "Secundaria",
+    "equipment": "Equipo",
+    "shards": "Fragmentos",
+    "open": "Abrir {{name}}"
   },
   "unitTile": {
     "characterAbilities": "Habilidad activa nivel {{first}}, habilidad pasiva nivel {{second}}",
@@ -1939,6 +1953,30 @@
         "quickFilters": {
           "title": "Filtros rápidos",
           "content": "Con un toque ves las unidades en las que trabajar a continuación: lista para subir de rango, necesita ascender, puede ascender, necesita subir de nivel o lista para la estrella azul. Vuelve a seleccionar un filtro para quitarlo."
+        },
+        "view": {
+          "title": "Tarjetas o lista",
+          "content": "Cambia entre las tarjetas de facción y la lista, una vista más compacta con una fila por unidad. Tu elección se recuerda. Desactiva «Agrupar por facción» para ver todas las unidades juntas en tu orden, y usa «Ocultar no desbloqueadas» para ver solo las que tienes."
+        },
+        "factionRoster": {
+          "title": "Agrupadas por facción",
+          "content": "Cada sección reúne los personajes y Máquinas de Guerra de una facción; las unidades que tienes van primero."
+        },
+        "ownedRoster": {
+          "title": "Una unidad que tienes",
+          "content": "Cada fila muestra el retrato con un anillo del color de su rareza y, después, su rango, estrellas, nivel de PX, niveles de habilidad y equipo. Selecciona una fila para abrir sus detalles en la Biblioteca."
+        },
+        "ownedRosterMobile": {
+          "title": "Una unidad que tienes",
+          "content": "Cada fila muestra el retrato, el rango, las estrellas y el nivel de PX. Toca una fila para ver sus niveles de habilidad, equipo y fragmentos, y abre desde ahí sus detalles en la Biblioteca."
+        },
+        "unownedRoster": {
+          "title": "Aún no desbloqueada",
+          "content": "Las filas en gris no están en tu plantilla. La barra muestra lo cerca que estás de desbloquearlas. Selecciona una fila para abrir sus detalles en la Biblioteca."
+        },
+        "unownedRosterMobile": {
+          "title": "Aún no desbloqueada",
+          "content": "Las filas en gris no están en tu plantilla. Toca una fila para ver lo cerca que estás de desbloquearla y abre desde ahí sus detalles en la Biblioteca."
         }
       }
     },
