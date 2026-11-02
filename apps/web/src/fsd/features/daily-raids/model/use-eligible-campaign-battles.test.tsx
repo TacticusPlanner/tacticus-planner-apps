@@ -1,16 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 import type { CampaignBattleStorageModel } from "@workspace/game-catalog"
 
 import { renderHook, waitFor } from "@/test/render"
 import { seedPlayerData } from "@/test/seed"
 
 import { useEligibleCampaignBattles } from "./use-eligible-campaign-battles"
-
-const flags = vi.hoisted(() => ({ manualBattles: false }))
-vi.mock("@/shared/feature-flags", () => ({
-  useFeatureFlag: (flag: string) =>
-    flag === "ManualBattles" && flags.manualBattles,
-}))
 
 const battle = (id: string, battleIndex: number) =>
   ({
@@ -29,7 +23,6 @@ function renderEligible() {
 }
 
 beforeEach(async () => {
-  flags.manualBattles = false
   await seedPlayerData({
     "live-progress": { battleAttempts: [], activeCampaignEventId: null },
     "campaign-events-progress": [],
@@ -44,19 +37,8 @@ beforeEach(async () => {
   })
 })
 
-describe("useEligibleCampaignBattles — ManualBattles flag", () => {
-  it("keeps the frontier locked and marks nothing manual while the flag is off", async () => {
-    const { result } = renderEligible()
-
-    await waitFor(() => expect(result.current.ready).toBe(true))
-    expect(result.current.availableBattles.map(({ id }) => id)).toEqual([
-      "FoCE1",
-    ])
-    expect(result.current.manualBattleIds.size).toBe(0)
-  })
-
-  it("offers the frontier as a manual battle while the flag is on", async () => {
-    flags.manualBattles = true
+describe("useEligibleCampaignBattles", () => {
+  it("offers the frontier as a manual battle", async () => {
     const { result } = renderEligible()
 
     await waitFor(() => expect(result.current.ready).toBe(true))

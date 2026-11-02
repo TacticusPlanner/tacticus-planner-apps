@@ -5,16 +5,17 @@ import {
   battleProgressQueries,
   type BattleProgressOverride,
 } from "@/entities/player-data-override"
-import { useFeatureFlag } from "@/shared/feature-flags"
 
 /**
- * The player's saved battle progress overrides while manual battles are on and they're signed in,
- * else undefined (also while loading or after a failed load).
+ * The player's saved battle progress overrides while they're signed in, else undefined (also while
+ * loading or after a failed load).
  */
 export function useSavedBattleProgress():
   readonly BattleProgressOverride[] | undefined {
   const isAuthenticated = useIsAuthenticated()
-  const enabled = useFeatureFlag("ManualBattles") && isAuthenticated
-  const query = useQuery({ ...battleProgressQueries.current(), enabled })
-  return enabled ? query.data?.battles : undefined
+  const query = useQuery({
+    ...battleProgressQueries.current(),
+    enabled: isAuthenticated,
+  })
+  return isAuthenticated ? query.data?.battles : undefined
 }

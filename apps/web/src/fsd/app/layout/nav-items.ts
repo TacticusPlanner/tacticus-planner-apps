@@ -203,7 +203,6 @@ export const navItems: NavItem[] = [
         labelKey: "myGame.tabs.incursions",
         descriptionKey: "myGame.tabs.incursionsDescription",
         anonymousAllowed: false,
-        featureFlag: "Incursion",
       },
     ],
   },

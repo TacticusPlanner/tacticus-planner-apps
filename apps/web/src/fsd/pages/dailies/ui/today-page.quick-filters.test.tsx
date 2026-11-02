@@ -8,15 +8,9 @@ import { ready } from "@/test/fixtures/daily-raids"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { TodayPage } from "./today-page"
 
-const { dailyRaidsArgs, plan, flags } = vi.hoisted(() => ({
+const { dailyRaidsArgs, plan } = vi.hoisted(() => ({
   dailyRaidsArgs: [] as unknown[][],
   plan: { hasManualRaids: false },
-  flags: { manualBattles: true },
-}))
-
-vi.mock("@/shared/feature-flags", () => ({
-  useFeatureFlag: (flag: string) =>
-    flag === "ManualBattles" && flags.manualBattles,
 }))
 
 vi.mock("@/features/daily-raids", async (importOriginal) => {
@@ -77,7 +71,6 @@ describe("Today quick filters", () => {
   beforeEach(() => {
     dailyRaidsArgs.length = 0
     plan.hasManualRaids = false
-    flags.manualBattles = true
   })
 
   it("starts with both chips off and no note", () => {
@@ -206,14 +199,5 @@ describe("Today quick filters", () => {
     expect(
       screen.getByTestId("today-quick-filter-raidableOnly")
     ).toHaveAttribute("data-state", "on")
-  })
-
-  it("never offers Raidable only while manual battles are off", () => {
-    flags.manualBattles = false
-    plan.hasManualRaids = true
-    renderToday("/?quick=raidableOnly")
-    expect(
-      screen.queryByTestId("today-quick-filter-raidableOnly")
-    ).not.toBeInTheDocument()
   })
 })

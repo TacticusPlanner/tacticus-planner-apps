@@ -34,7 +34,6 @@ import {
   type TrackMedalStats,
   type UnclaimedTrackRewards,
 } from "@/features/daily-raids"
-import { useFeatureFlag } from "@/shared/feature-flags"
 import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { EntityIcon, LocalReadFailure } from "@/shared/ui"
@@ -59,9 +58,6 @@ export function CampaignsPage() {
   const [definitions, battles, progress, characters] =
     read.status === "ready" ? read.data : []
   const [medalsGroupId, setMedalsGroupId] = useState<string | null>(null)
-  const onEditMedals = useFeatureFlag("ManualBattles")
-    ? setMedalsGroupId
-    : undefined
   const overrides = useSavedBattleProgress()
 
   // Keyed on each read's data (each referentially stable while unchanged), not on the combined tuple.
@@ -98,12 +94,12 @@ export function CampaignsPage() {
         <StorySection
           title={t("progress.campaigns.normal")}
           stories={model.normal}
-          onEditMedals={onEditMedals}
+          onEditMedals={setMedalsGroupId}
         />
         <StorySection
           title={t("progress.campaigns.mirror")}
           stories={model.mirror}
-          onEditMedals={onEditMedals}
+          onEditMedals={setMedalsGroupId}
         />
       </div>
       {medalsGroupId ? (
@@ -124,7 +120,7 @@ function buildModel(data: {
   battles: CampaignBattleStorageModel[]
   progress: PlayerDataChunkDto<"campaign-progress">
   characters: PlayerDataChunkDto<"characters"> | null | undefined
-  /** Saved battle progress; absent while manual battles are off or it hasn't loaded. */
+  /** Saved battle progress; absent while signed out or before it has loaded. */
   overrides?: Parameters<typeof trackMedalStats>[2]
 }) {
   const battlesByGroup = new Map<string, CampaignBattleStorageModel[]>()
@@ -265,7 +261,7 @@ function StorySection({
   title: string
   stories: BuiltStory[]
   /** Offers a Medals button on each track; absent while manual battles are off. */
-  onEditMedals?: (groupId: string) => void
+  onEditMedals: (groupId: string) => void
 }) {
   return (
     <section className="space-y-3">
@@ -284,7 +280,7 @@ function StoryCard({
   onEditMedals,
 }: {
   story: BuiltStory
-  onEditMedals?: (groupId: string) => void
+  onEditMedals: (groupId: string) => void
 }) {
   const { t } = useTranslation(["campaigns", "dailies"])
   const storyPercent = percent(completionOfTracks(story.definitions))
@@ -335,25 +331,23 @@ function StoryCard({
                 </strong>
               </div>
               <Progress value={percent(completionOf(track))} />
-              {onEditMedals ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-between"
-                  onClick={() => onEditMedals(track.definition.groupId)}
-                  data-testid={`campaign-medals-${track.definition.groupId}`}
-                >
-                  {track.medals ? (
-                    <MedalStats stats={track.medals} />
-                  ) : (
-                    <EntityIcon alt="" src={medalIcon} className="size-4" />
-                  )}
-                  <span className="inline-flex items-center gap-1">
-                    {t("dailies:battleProgress.edit")}
-                    <ChevronRight aria-hidden className="size-4" />
-                  </span>
-                </Button>
-              ) : null}
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-between"
+                onClick={() => onEditMedals(track.definition.groupId)}
+                data-testid={`campaign-medals-${track.definition.groupId}`}
+              >
+                {track.medals ? (
+                  <MedalStats stats={track.medals} />
+                ) : (
+                  <EntityIcon alt="" src={medalIcon} className="size-4" />
+                )}
+                <span className="inline-flex items-center gap-1">
+                  {t("dailies:battleProgress.edit")}
+                  <ChevronRight aria-hidden className="size-4" />
+                </span>
+              </Button>
               {track.unclaimed ? (
                 <UnclaimedRewardsDetails
                   unclaimed={track.unclaimed}

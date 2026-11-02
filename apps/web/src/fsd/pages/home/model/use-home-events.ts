@@ -3,6 +3,7 @@ import {
   useLegendaryEventsProgress,
   useMinuteNow,
 } from "@/entities/legendary-event"
+import { useIncursionWindow } from "@/entities/incursion"
 import { useHomeScreenEventCalendar } from "@/features/daily-raids"
 
 import { selectHomeEvents, type HomeEventRow } from "./select-home-events"
@@ -28,6 +29,7 @@ export function useHomeEvents(): HomeEventsState {
   const progress = useLegendaryEventsProgress()
   // The rows count down; `legendary` re-renders only on a lifecycle flip.
   const minuteNowMs = useMinuteNow()
+  const incursion = useIncursionWindow(minuteNowMs)
 
   if (homeScreen.status === "loading" || legendary.status === "loading") {
     return { status: "loading" }
@@ -48,6 +50,7 @@ export function useHomeEvents(): HomeEventsState {
             progress: progress.status === "ready" ? progress.data : [],
           }
         : null,
+    incursion,
     nowMs,
   })
 

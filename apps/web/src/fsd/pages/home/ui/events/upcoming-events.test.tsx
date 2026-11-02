@@ -13,9 +13,9 @@ const {
   hseMock,
   legendaryMock,
   progressMock,
-  incursionFlagMock,
+  incursionWindowMock,
 } = vi.hoisted(() => ({
-  incursionFlagMock: vi.fn(() => false),
+  incursionWindowMock: vi.fn((): unknown => null),
   eventProjectsMock: vi.fn(),
   hseMock: vi.fn(),
   legendaryMock: vi.fn(),
@@ -56,16 +56,9 @@ vi.mock("@/features/project-management", async (importOriginal) => {
     useEventProjects: (eventId: string) => eventProjectsMock(eventId),
   }
 })
-vi.mock("@/shared/feature-flags", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/shared/feature-flags")>()
-  return {
-    ...actual,
-    useFeatureFlag: (flag: string) =>
-      flag === "Incursion"
-        ? incursionFlagMock()
-        : actual.useFeatureFlag(flag as never),
-  }
-})
+vi.mock("@/entities/incursion", () => ({
+  useIncursionWindow: () => incursionWindowMock(),
+}))
 vi.mock("../right-now/incursion-tile", () => ({
   IncursionTile: () => <span data-testid="home-incursion" />,
 }))
@@ -238,15 +231,37 @@ describe("Home events (Right now + Upcoming events)", () => {
     expect(within(lysanderTile).queryByTestId("home-events-synced")).toBeNull()
   })
 
-  it("always lists Incursion in Right now while its flag is on", () => {
-    incursionFlagMock.mockReturnValue(true)
+  it("lists a live Incursion in Right now", () => {
+    incursionWindowMock.mockReturnValue({
+      status: "live",
+      startMs: Date.parse("2026-10-02T00:00:00Z"),
+      endMs: Date.parse("2026-10-05T00:00:00Z"),
+    })
     hseMock.mockReturnValue(hseReady(null, [rush]))
     legendaryMock.mockReturnValue(legendaryReady([uthar]))
     renderWidget()
 
     expect(screen.getByTestId("home-incursion")).toBeInTheDocument()
     expect(screen.queryByTestId("home-live-none")).toBeNull()
-    incursionFlagMock.mockReturnValue(false)
+    incursionWindowMock.mockReturnValue(null)
+  })
+
+  it("lists an upcoming Incursion in Upcoming events, not Right now", () => {
+    incursionWindowMock.mockReturnValue({
+      status: "upcoming",
+      startMs: Date.parse("2026-10-07T00:00:00Z"),
+      endMs: Date.parse("2026-10-10T00:00:00Z"),
+    })
+    hseMock.mockReturnValue(hseReady(null, [rush]))
+    legendaryMock.mockReturnValue(legendaryReady([uthar]))
+    renderWidget()
+
+    expect(screen.queryByTestId("home-incursion")).toBeNull()
+    expect(screen.getByTestId("home-live-none")).toBeInTheDocument()
+    expect(
+      screen.getAllByTestId("home-events-row").map((row) => row.dataset.type)
+    ).toEqual(["incursion", "homeScreen", "legendaryEvent"])
+    incursionWindowMock.mockReturnValue(null)
   })
 
   it("shows the nothing-live note when no event is running", () => {

@@ -15,7 +15,6 @@ import {
 
 import type { CampaignEventProgressSource } from "@/entities/player-data-override"
 import { EventTrackMedals } from "@/features/daily-raids"
-import { useFeatureFlag } from "@/shared/feature-flags"
 import { EntityIcon } from "@/shared/ui"
 
 import type {
@@ -64,7 +63,6 @@ export function EventTrackEditor({
   testIdPrefix: string
 }) {
   const { t } = useTranslation(["common", "campaigns"])
-  const manualBattlesEnabled = useFeatureFlag("ManualBattles")
   const typeLabel = t(`campaigns:difficulties.event${type}`)
   const { battles, progress } = track
   const total = battles.regular.length
@@ -245,7 +243,7 @@ export function EventTrackEditor({
           ) : null}
         </div>
       ) : null}
-      {manualBattlesEnabled && !empty ? (
+      {!empty ? (
         <EventTrackMedals groupId={groupId} type={type} stats={track.medals} />
       ) : null}
     </section>

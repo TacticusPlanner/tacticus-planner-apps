@@ -16,8 +16,7 @@ import { CountdownChip } from "../events/home-event-visual"
 const INCURSIONS_PATH = "/my-game/incursions"
 
 /**
- * Right now always lists Incursion: live with the time left, else when the next one starts; its
- * newest MoW and a nudge to track progress, the whole tile opening the Incursions page.
+ * Incursion in Right now while it is live: the time left, its newest MoW and a nudge to track progress, the whole tile opening the Incursions page.
  */
 export function IncursionTile({ nowMs }: { nowMs: number }) {
   const { t, i18n } = useTranslation("common")
