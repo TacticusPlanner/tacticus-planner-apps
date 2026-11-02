@@ -26,7 +26,10 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import {
+  AutoSyncFill,
+  usePlayerDataSyncStatus,
+} from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
 import { NavItemIcon } from "./nav-child-icon"
 import { matchesNavPath } from "./find-active-child"
@@ -101,13 +104,6 @@ export function MobileShell({
   )
 }
 
-/** Fills the Sync button clockwise from 12 o'clock as the next background sync approaches. */
-function autoSyncFillStyle(fraction: number) {
-  return {
-    background: `conic-gradient(var(--accent) ${fraction * 360}deg, transparent 0deg)`,
-  }
-}
-
 function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
   const { t } = useTranslation()
   const {
@@ -177,19 +173,9 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
             // The countdown track: the unfilled part of the ring reads as a dimmed accent.
             autoSyncProgress && "bg-accent/30"
           )}
-          data-testid="mobile-sync-auto-progress"
-          data-progress={
-            autoSyncProgress
-              ? Math.round(autoSyncProgress.fraction * 100)
-              : undefined
-          }
         >
           {autoSyncProgress ? (
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 rounded-full"
-              style={autoSyncFillStyle(autoSyncProgress.fraction)}
-            />
+            <AutoSyncFill fraction={autoSyncProgress.fraction} />
           ) : null}
           <SyncIcon
             aria-hidden="true"

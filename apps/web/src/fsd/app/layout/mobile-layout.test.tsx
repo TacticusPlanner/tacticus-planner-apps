@@ -79,7 +79,8 @@ const { usePlayerDataSyncStatusMock } = vi.hoisted(() => ({
   })),
 }))
 
-vi.mock("@/features/player-data-sync", () => ({
+vi.mock("@/features/player-data-sync", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/player-data-sync")>()),
   usePlayerDataSyncStatus: () => usePlayerDataSyncStatusMock(),
 }))
 
@@ -436,7 +437,7 @@ describe("MobileBottomNav actions", () => {
     expect(screen.getByTestId("mobile-sync-button")).toHaveAccessibleName(
       "nav.syncWithTacticus — Last synced 15 minutes ago · Next auto sync in 45 minutes"
     )
-    expect(screen.getByTestId("mobile-sync-auto-progress")).toHaveAttribute(
+    expect(screen.getByTestId("auto-sync-fill")).toHaveAttribute(
       "data-progress",
       "25"
     )
@@ -451,9 +452,7 @@ describe("MobileBottomNav actions", () => {
     })
     renderShell(vi.fn(), true)
 
-    expect(screen.getByTestId("mobile-sync-auto-progress")).not.toHaveAttribute(
-      "data-progress"
-    )
+    expect(screen.queryByTestId("auto-sync-fill")).not.toBeInTheDocument()
     expect(screen.getByTestId("mobile-sync-button")).toHaveAccessibleName(
       "nav.syncWithTacticus — Never synced"
     )
