@@ -4,6 +4,7 @@ import { incursionsFixture } from "@workspace/game-catalog/testing"
 import {
   battleKey,
   clearedTierCount,
+  tierClearance,
   incursionStarCount,
   nextTierIndex,
   remainingShards,
@@ -66,6 +67,10 @@ describe("tierCleared", () => {
     expect(tierCleared(mythic1, lastOnly)).toBe(true)
     expect(tierCleared(common1, lastOnly)).toBe(false)
     expect(clearedTierCount(broadside, lastOnly)).toBe(1)
+    expect(tierClearance(broadside, lastOnly)).toEqual([
+      { index: 0, rarity: common1.rarity, cleared: false },
+      { index: 12, rarity: mythic1.rarity, cleared: true },
+    ])
     expect(nextTierIndex(broadside, lastOnly)).toBe(0)
 
     const midOnly = starsOf({ [battleKey("tauBroadside", 0, "11")]: 3 })
