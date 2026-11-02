@@ -383,6 +383,7 @@ export function useDailyRaids(
       filterBattlesById,
       quickFilters: { fewerRaids, combineGoals },
       attemptsLeftByBattle,
+      energyUsedToday: realEnergyUsedToday,
       eventFarm: farm
         ? {
             pointsByBattleId: farm,
