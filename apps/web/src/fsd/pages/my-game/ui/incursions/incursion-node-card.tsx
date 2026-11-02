@@ -12,7 +12,6 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { NpcLevelBadge, NpcPortrait, useNpcLabels } from "@/entities/npc"
-import { medalIcon } from "@/features/daily-raids"
 import { EntityIcon } from "@/shared/ui"
 
 import {
@@ -27,6 +26,7 @@ import { MAX_STARS } from "../../model/incursion-progress.model"
 import { IncursionNodeMarker } from "./incursion-node-marker"
 import { IncursionPower } from "./incursion-power"
 import { IncursionRewards } from "./incursion-rewards"
+import { medalIcon } from "./medal-icon"
 
 const STARS = [1, 2, 3] as const
 const STAR_CHOICES = [0, 1, 2, 3] as const

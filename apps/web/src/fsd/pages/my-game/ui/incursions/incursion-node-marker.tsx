@@ -5,7 +5,6 @@ import {
 } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { medalIcon } from "@/features/daily-raids"
 import { EntityIcon } from "@/shared/ui"
 
 import {
@@ -13,6 +12,7 @@ import {
   type Incursion,
   type IncursionNode,
 } from "../../model/incursions.model"
+import { medalIcon } from "./medal-icon"
 
 const CHEST_TIERS: Record<string, ChestTier> = {
   Bronze: "bronze",
