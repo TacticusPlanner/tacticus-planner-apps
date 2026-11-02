@@ -662,6 +662,12 @@
       "copied": "Copied",
       "copyFailed": "Couldn't copy",
       "dismiss": "Dismiss promo code"
+    },
+    "incursion": {
+      "title": "Incursion",
+      "latest": "Newest: {{mow}}",
+      "arrives": "{{mow}} arrives {{date}}",
+      "track": "Track your progress: mark the tiers you've cleared to see the shards still to earn."
     }
   },
   "guild": {

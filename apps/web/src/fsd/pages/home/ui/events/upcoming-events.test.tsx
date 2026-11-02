@@ -8,14 +8,19 @@ import { useHomeEvents } from "../../model/use-home-events"
 import { RightNow } from "../right-now/right-now"
 import { UpcomingEvents } from "./upcoming-events"
 
-const { eventProjectsMock, hseMock, legendaryMock, progressMock } = vi.hoisted(
-  () => ({
-    eventProjectsMock: vi.fn(),
-    hseMock: vi.fn(),
-    legendaryMock: vi.fn(),
-    progressMock: vi.fn(),
-  })
-)
+const {
+  eventProjectsMock,
+  hseMock,
+  legendaryMock,
+  progressMock,
+  incursionFlagMock,
+} = vi.hoisted(() => ({
+  incursionFlagMock: vi.fn(() => false),
+  eventProjectsMock: vi.fn(),
+  hseMock: vi.fn(),
+  legendaryMock: vi.fn(),
+  progressMock: vi.fn(),
+}))
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: vi.fn() },
@@ -51,6 +56,19 @@ vi.mock("@/features/project-management", async (importOriginal) => {
     useEventProjects: (eventId: string) => eventProjectsMock(eventId),
   }
 })
+vi.mock("@/shared/feature-flags", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/shared/feature-flags")>()
+  return {
+    ...actual,
+    useFeatureFlag: (flag: string) =>
+      flag === "Incursion"
+        ? incursionFlagMock()
+        : actual.useFeatureFlag(flag as never),
+  }
+})
+vi.mock("../right-now/incursion-tile", () => ({
+  IncursionTile: () => <span data-testid="home-incursion" />,
+}))
 // Tokens have their own tests; this file covers the events half of Right now.
 vi.mock("../token-availability/token-availability", () => ({
   TokenAvailability: () => null,
@@ -218,6 +236,17 @@ describe("Home events (Right now + Upcoming events)", () => {
     const lysanderTile = liveTiles()[1]!
     expect(lysanderTile).toHaveTextContent("Lysander")
     expect(within(lysanderTile).queryByTestId("home-events-synced")).toBeNull()
+  })
+
+  it("always lists Incursion in Right now while its flag is on", () => {
+    incursionFlagMock.mockReturnValue(true)
+    hseMock.mockReturnValue(hseReady(null, [rush]))
+    legendaryMock.mockReturnValue(legendaryReady([uthar]))
+    renderWidget()
+
+    expect(screen.getByTestId("home-incursion")).toBeInTheDocument()
+    expect(screen.queryByTestId("home-live-none")).toBeNull()
+    incursionFlagMock.mockReturnValue(false)
   })
 
   it("shows the nothing-live note when no event is running", () => {
