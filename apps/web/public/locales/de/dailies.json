@@ -835,12 +835,15 @@
     "unclaimedEvents": {
       "summary_one": "{{count}} Kampf hat nicht abgeholte Belohnungen",
       "summary_other": "{{count}} Kämpfe haben nicht abgeholte Belohnungen",
-      "allClaimed": "Alle einmaligen Belohnungen abgeholt"
+      "allClaimed": "Alle einmaligen Belohnungen abgeholt",
+      "notBeaten_one": "{{count}} Kampf noch nicht gewonnen",
+      "notBeaten_other": "{{count}} Kämpfe noch nicht gewonnen"
     },
     "lightningVictoryFor": "Blitzsieg in {{battle}}",
     "setBest": "Max",
     "setBestFor": "{{battle}} auf bestes Ergebnis setzen: 3 Medaillen, Blitzsieg und höchster Meilenstein",
     "edit": "Medaillen bearbeiten",
-    "medalsEarned": "Medaillen"
+    "medalsEarned": "Medaillen",
+    "goldMilestones": "Gold-Meilensteine"
   }
 }

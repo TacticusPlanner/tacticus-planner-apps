@@ -259,10 +259,22 @@ describe("CampaignEventsPage", () => {
       )
     })
 
+    it("shows Standard and Extremis summaries above the events", async () => {
+      await renderPage()
+      expect(
+        await screen.findByTestId("campaign-events-summary-Standard")
+      ).toHaveTextContent("Standard events")
+      expect(
+        screen.getByTestId("campaign-events-summary-Extremis")
+      ).toHaveTextContent("Extremis events")
+    })
+
     it("labels core characters and marks unowned ones", async () => {
       await renderPage()
       const core = await screen.findByTestId("current-event-core")
-      expect(core).toHaveTextContent("Core characters")
+      expect(
+        within(core).getByRole("list", { name: "Core characters" })
+      ).toBeInTheDocument()
       // Fixture unit ids have no icon asset, so assert on the labelled list items.
       const [owned, unowned] = within(core).getAllByRole("listitem")
       expect(owned).toHaveAttribute("title", "unitA")

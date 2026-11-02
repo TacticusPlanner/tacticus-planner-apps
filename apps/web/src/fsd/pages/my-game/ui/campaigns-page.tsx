@@ -23,9 +23,10 @@ import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
   BattleProgressDialog,
-  lightningVictoryIcon,
+  MedalStats,
   medalIcon,
   medalCompletion,
+  sumMedalStats,
   trackMedalStats,
   useSavedBattleProgress,
   type TrackMedalStats,
@@ -34,6 +35,8 @@ import { useFeatureFlag } from "@/shared/feature-flags"
 import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { EntityIcon, LocalReadFailure } from "@/shared/ui"
+
+import { ProgressSummary } from "./progress-summary"
 
 type Story = {
   key: string
@@ -79,11 +82,11 @@ export function CampaignsPage() {
   return (
     <div className="space-y-8" data-testid="campaigns-page">
       <div className="flex flex-wrap gap-8">
-        <Summary
+        <ProgressSummary
           label={t("progress.campaigns.normal")}
           {...model.normalSummary}
         />
-        <Summary
+        <ProgressSummary
           label={t("progress.campaigns.mirror")}
           {...model.mirrorSummary}
         />
@@ -227,98 +230,13 @@ function summarize(stories: BuiltStory[]) {
   const done = tracks.reduce((sum, track) => sum + track.completed, 0)
   const total = tracks.reduce((sum, track) => sum + track.max, 0)
   const completion = completionOfTracks(tracks)
-  const withMedals = tracks.flatMap((track) => track.medals ?? [])
   return {
     done,
     total,
     percent: Math.round(percent(completion)),
     cleared: tracks.filter((track) => track.completed >= track.max).length,
-    medals:
-      withMedals.length > 0
-        ? withMedals.reduce(
-            (sum, stats) => ({
-              medals: sum.medals + stats.medals,
-              maxMedals: sum.maxMedals + stats.maxMedals,
-              lightningVictories:
-                sum.lightningVictories + stats.lightningVictories,
-              maxLightningVictories:
-                sum.maxLightningVictories + stats.maxLightningVictories,
-            }),
-            {
-              medals: 0,
-              maxMedals: 0,
-              lightningVictories: 0,
-              maxLightningVictories: 0,
-            }
-          )
-        : undefined,
+    medals: sumMedalStats(tracks.flatMap((track) => track.medals ?? [])),
   }
-}
-
-/** Medals and Lightning Victories earned against the maximum, with the game's icons. */
-function MedalStats({ stats }: { stats: TrackMedalStats }) {
-  const { t } = useTranslation("dailies")
-  return (
-    <span className="inline-flex items-center gap-3 text-xs tabular-nums">
-      <span
-        className="inline-flex items-center gap-1"
-        title={t("battleProgress.medalsEarned")}
-      >
-        <EntityIcon
-          alt={t("battleProgress.medalsEarned")}
-          src={medalIcon}
-          className="size-4"
-        />
-        {stats.medals}/{stats.maxMedals}
-      </span>
-      {stats.maxLightningVictories > 0 ? (
-        <span
-          className="inline-flex items-center gap-1"
-          title={t("battleProgress.lightningVictory")}
-        >
-          <EntityIcon
-            alt={t("battleProgress.lightningVictory")}
-            src={lightningVictoryIcon}
-            className="size-4"
-          />
-          {stats.lightningVictories}/{stats.maxLightningVictories}
-        </span>
-      ) : null}
-    </span>
-  )
-}
-
-function Summary({
-  label,
-  done,
-  total,
-  percent: pct,
-  cleared,
-  medals,
-}: {
-  label: string
-  done: number
-  total: number
-  percent: number
-  cleared: number
-  medals: TrackMedalStats | undefined
-}) {
-  return (
-    <div>
-      <p className="text-xs font-semibold text-muted-foreground uppercase">
-        {label}
-      </p>
-      <p className="text-3xl font-bold tabular-nums">{pct}%</p>
-      <p className="text-xs text-muted-foreground">
-        {done}/{total} · {cleared} cleared
-      </p>
-      {medals ? (
-        <p className="mt-1 text-muted-foreground">
-          <MedalStats stats={medals} />
-        </p>
-      ) : null}
-    </div>
-  )
 }
 
 function StorySection({

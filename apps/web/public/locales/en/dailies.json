@@ -835,12 +835,15 @@
     "unclaimedEvents": {
       "summary_one": "{{count}} battle has unclaimed rewards",
       "summary_other": "{{count}} battles have unclaimed rewards",
-      "allClaimed": "All one-time rewards claimed"
+      "allClaimed": "All one-time rewards claimed",
+      "notBeaten_one": "{{count}} battle not yet beaten",
+      "notBeaten_other": "{{count}} battles not yet beaten"
     },
     "lightningVictoryFor": "Lightning Victory on {{battle}}",
     "setBest": "Max",
     "setBestFor": "Set {{battle}} to the best result: 3 medals, Lightning Victory and top milestone",
     "edit": "Edit medals",
-    "medalsEarned": "Medals"
+    "medalsEarned": "Medals",
+    "goldMilestones": "Gold milestones"
   }
 }

@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { Progress } from "@workspace/ui/components/progress"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -68,6 +69,7 @@ function EventSummary({ view }: { view: EventView }) {
             </Badge>
           ) : null}
         </div>
+        <Progress value={view.percent} aria-label={name} />
         <ul
           className="flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-muted-foreground tabular-nums"
           data-testid="event-summary"
@@ -79,6 +81,12 @@ function EventSummary({ view }: { view: EventView }) {
           ))}
         </ul>
       </div>
+      <span
+        className="shrink-0 font-semibold tabular-nums"
+        data-testid="event-percent"
+      >
+        {Math.round(view.percent)}%
+      </span>
     </div>
   )
 }
@@ -98,11 +106,11 @@ function EventDetails({
   return (
     <div className="space-y-4">
       {event.coreCharacters.length > 0 ? (
-        <div className="space-y-2" data-testid={`${testIdPrefix}-core`}>
-          <h4 className="text-sm font-medium">
-            {t("progress.events.coreCharacters")}
-          </h4>
-          <ul className="flex flex-wrap gap-1.5">
+        <div data-testid={`${testIdPrefix}-core`}>
+          <ul
+            className="flex flex-wrap gap-2"
+            aria-label={t("progress.events.coreCharacters")}
+          >
             {event.coreCharacters.map(({ id, owned }) => {
               const name = t(`characters:${id}`, { defaultValue: id })
               const label = owned

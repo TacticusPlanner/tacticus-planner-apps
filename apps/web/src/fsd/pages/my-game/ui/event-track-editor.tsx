@@ -5,6 +5,7 @@ import { campaignIcon } from "@workspace/game-catalog"
 import type { CampaignId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import { Progress } from "@workspace/ui/components/progress"
 import { Slider } from "@workspace/ui/components/slider"
 import {
   Tooltip,
@@ -91,8 +92,26 @@ export function EventTrackEditor({
           alt=""
           className="size-8"
         />
-        <h3 className="font-semibold">{typeLabel}</h3>
+        <h3 className="flex-1 font-semibold">{typeLabel}</h3>
+        {empty ? null : (
+          <strong
+            className="text-sm tabular-nums"
+            data-testid={`${testIdPrefix}-${type}-total`}
+          >
+            {track.battleCount.done}/{track.battleCount.total}
+          </strong>
+        )}
       </div>
+      {empty ? null : (
+        <Progress
+          value={
+            track.completion.total
+              ? (track.completion.done / track.completion.total) * 100
+              : 0
+          }
+          aria-label={typeLabel}
+        />
+      )}
 
       {empty ? (
         <p className="text-sm text-muted-foreground">
@@ -227,7 +246,7 @@ export function EventTrackEditor({
         </div>
       ) : null}
       {manualBattlesEnabled && !empty ? (
-        <EventTrackMedals groupId={groupId} type={type} />
+        <EventTrackMedals groupId={groupId} type={type} stats={track.medals} />
       ) : null}
     </section>
   )

@@ -71,8 +71,11 @@ export { BattleProgressDialog } from "./ui/battle-progress-dialog"
 export { EventTrackMedals } from "./ui/event-track-medals"
 export { useSavedBattleProgress } from "./model/use-saved-battle-progress"
 export {
+  eventTrackMedalStats,
   medalCompletion,
+  sumMedalStats,
   trackMedalStats,
   type TrackMedalStats,
 } from "./model/battle-progress"
-export { lightningVictoryIcon, medalIcon } from "./lib/battle-progress-icons"
+export { MedalStats } from "./ui/medal-stats"
+export { medalIcon } from "./lib/battle-progress-icons"

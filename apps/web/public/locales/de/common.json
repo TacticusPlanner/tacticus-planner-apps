@@ -556,7 +556,9 @@
       "completed": "Abgeschlossen",
       "summary": {
         "track": "{{label}} {{done}}/{{total}}",
-        "challenges": "Herausforderungen"
+        "challenges": "Herausforderungen",
+        "standard": "Standard-Events",
+        "extremis": "Extremis-Events"
       },
       "unsaved": {
         "message": "Du hast ungespeicherte Änderungen",

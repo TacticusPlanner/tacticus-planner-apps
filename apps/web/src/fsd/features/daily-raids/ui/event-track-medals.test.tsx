@@ -123,4 +123,46 @@ describe("EventTrackMedals", () => {
       await screen.findByTestId("event-track-medals-eventCampaign1-Standard")
     ).not.toHaveTextContent("All one-time rewards claimed")
   })
+
+  it("doesn't call rewards claimed while a challenge is still unbeaten", async () => {
+    await seedGameCatalog({
+      "campaign-battles": [
+        eventBattle("AMS01", 1),
+        eventBattle("AMS02", 2),
+        { ...eventBattle("AMSC01", 2), challenge: true, battleIndex: 2 },
+      ],
+    })
+    render(<EventTrackMedals groupId="eventCampaign1" type="Standard" />, {
+      auth: { authenticated: true },
+    })
+
+    const line = await screen.findByTestId(
+      "event-track-medals-eventCampaign1-Standard"
+    )
+    expect(line).toHaveTextContent("1 battle not yet beaten")
+    expect(line).not.toHaveTextContent("All one-time rewards claimed")
+  })
+
+  it("shows the track's medal stats on the button when given", async () => {
+    render(
+      <EventTrackMedals
+        groupId="eventCampaign1"
+        type="Standard"
+        stats={{
+          medals: 5,
+          maxMedals: 6,
+          lightningVictories: 1,
+          maxLightningVictories: 2,
+        }}
+      />,
+      { auth: { authenticated: true } }
+    )
+
+    const button = await screen.findByTestId(
+      "event-track-medals-open-eventCampaign1-Standard"
+    )
+    expect(button).toHaveTextContent("5/6")
+    expect(button).toHaveTextContent("1/2")
+    expect(button).toHaveTextContent("Edit medals")
+  })
 })
