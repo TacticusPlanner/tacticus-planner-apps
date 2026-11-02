@@ -94,9 +94,13 @@ export type DailyRaidsCalculationInput = {
   /** Today's quick filters (Fewer raids, Combine goals). Like the Raids Filters they change Today and
    *  Bonus Raids only. */
   quickFilters?: TodayQuickFilterOptions
-  /** The player's real attempts left today per node (none synced: every node is fresh). Only the
-   *  raids left today read it. */
+  /** The player's real attempts left today per node (none synced: every node is fresh). Today,
+   *  Bonus Raids and the Plan's day 1 cap each node at it, so a need whose nodes were raided out
+   *  today moves to tomorrow instead of being planned again at an exhausted node. */
   attemptsLeftByBattle?: ReadonlyMap<BattleId, number>
+  /** Real energy already spent today (synced attempts; 0 when none). Today and the Plan's day 1
+   *  spend only what is left of `dailyEnergy`. */
+  energyUsedToday?: number
   /** The Dailies > HSE farm list inputs: event points per eligible battle, real attempts left today
    *  and the energy left today. Without them no `eventFarm` is returned; Today, Bonus and the Plan
    *  never read them. */
@@ -332,6 +336,8 @@ export function calculateDailyRaids(
     dailyEnergy: params.dailyEnergy,
     inventory,
     referenceDate: params.referenceDate,
+    attemptsLeftByBattle: params.attemptsLeftByBattle,
+    energyUsedToday: params.energyUsedToday,
   }
   const nodeFilter =
     params.raidsFilters && params.filterBattlesById

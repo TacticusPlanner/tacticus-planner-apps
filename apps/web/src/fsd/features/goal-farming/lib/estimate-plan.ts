@@ -42,9 +42,14 @@ export type EstimatePlanParams = {
   /** Restricts the farm nodes picked per material (Raids Filters). Only Today and Bonus Raids pass
    *  it; every other caller of this engine stays unfiltered. */
   nodeFilter?: FarmNodeFilter
-  /** The player's real attempts left today per node. Only `estimateRaidsLeftToday` passes it; it
-   *  caps day 1's raids at each node to what is left (later days start fresh). */
+  /** The player's real attempts left today per node: caps day 1's raids at each node to what is
+   *  left (later days start fresh). Without it every node starts today fresh. */
   attemptsLeftByBattle?: ReadonlyMap<BattleId, number>
+  /** Real energy already spent today (synced attempts): day 1 only spends what is left of
+   *  `dailyEnergy` (later days start with the full budget). Paired with `attemptsLeftByBattle`, so
+   *  a need whose nodes were raided out today moves to the next day instead of being "farmed" again
+   *  at an exhausted node. */
+  energyUsedToday?: number
   /** Today quick filter "Fewer raids": among nodes tied on least energy per item, keep only the
    *  costliest per battle. Only Today and Bonus Raids pass it. */
   fewerRaids?: boolean
@@ -140,6 +145,7 @@ function runPlanSchedule(
     referenceDate = new Date(),
     nodeFilter,
     attemptsLeftByBattle,
+    energyUsedToday = 0,
     fewerRaids = false,
     combineGoals = false,
   }: EstimatePlanParams,
@@ -238,6 +244,8 @@ function runPlanSchedule(
     ordered.map((goal) => [goal.goalId, goal.flatSuppliers])
   )
   const scheduleDays: RaidDaySchedule[] = []
+  // Each day's energy budget (day 1 is what is left today), for the unused-energy count.
+  const dayBudgets: number[] = []
 
   const addGoalTotals = (
     goalId: string,
@@ -288,7 +296,10 @@ function runPlanSchedule(
 
   while (pending.size > 0 && days < maxDays) {
     days++
-    let energy = dailyEnergy
+    const dayBudget =
+      days === 1 ? Math.max(0, dailyEnergy - energyUsedToday) : dailyEnergy
+    let energy = dayBudget
+    dayBudgets.push(dayBudget)
     const attemptsUsedByBattle = new Map<BattleId, number>()
     // Shop offers' daily caps and Onslaught tokens are per account: goals draw on them in priority
     // order (spec: *A shop offer's daily capacity is shared across goals in priority order*, *Onslaught
@@ -412,7 +423,7 @@ function runPlanSchedule(
       shopEntries,
       onslaughtEntries,
       attemptsUsedByBattle: new Map(attemptsUsedByBattle),
-      energyTotal: dailyEnergy - energy,
+      energyTotal: dayBudget - energy,
       raidsTotal: entries.reduce(
         (total, entry) => total + entry.raidsPerformed,
         0
@@ -459,7 +470,9 @@ function runPlanSchedule(
       totalEnergy,
       totalRaids,
       daysWithUnusedEnergy: scheduleDays.filter(
-        (day) => dailyEnergy - day.energyTotal > UNUSED_ENERGY_THRESHOLD
+        (day, index) =>
+          (dayBudgets[index] ?? dailyEnergy) - day.energyTotal >
+          UNUSED_ENERGY_THRESHOLD
       ).length,
       completionDate: completes
         ? formatDate(
@@ -520,6 +533,7 @@ export function estimateBonusRaids(
   const unlimited = estimateTodaySchedule({
     ...params,
     dailyEnergy: UNLIMITED_DAILY_ENERGY,
+    energyUsedToday: 0,
   })
   const raidedResourceIds = new Set(
     real.entries.map((entry) => entry.resourceId)
@@ -545,6 +559,7 @@ export function estimateRaidsLeftToday(
   return estimateTodaySchedule({
     ...params,
     dailyEnergy: UNLIMITED_DAILY_ENERGY,
+    energyUsedToday: 0,
   })
 }
 
