@@ -153,6 +153,13 @@ are colocated with the code they cover, named `Component.test.tsx` or
 mocking, fixtures, and filtering conventions. Add new tests using the same
 colocated pattern.
 
+**Pick the extension by environment.** In `apps/web`, `*.test.ts` files run in
+node (no jsdom, no DOM setup: much cheaper per file) and `*.test.tsx` files run
+in jsdom; other names (`.spec.ts`, `.test.mts`) are not collected. Logic tests
+go in `.test.ts`. A `.test.ts` that needs `window`,
+`document`, web storage or `renderHook` starts with
+`// @vitest-environment jsdom`.
+
 **Query by role first.** In new tests, find elements with `getByRole` (with
 `name`), then `getByLabelText` / `getByText`. Use `getByTestId` only when the
 element has no accessible role or name a user could find it by (e.g. a

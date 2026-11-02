@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { renderHook } from "@testing-library/react"
 import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it } from "vitest"
