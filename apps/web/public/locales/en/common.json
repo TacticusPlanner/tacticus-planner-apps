@@ -52,7 +52,8 @@
     "tabs": {
       "integration": "Tacticus Integration",
       "profile": "Profile",
-      "account": "Account"
+      "account": "Account",
+      "staging": "Transfer"
     },
     "integration": {
       "currentApiKey": "Tacticus API key",
@@ -122,6 +123,21 @@
       "purgeGenericError": "Something went wrong while purging your account. Please try again.",
       "signInAccountKeptTitle": "Your sign-in account could not be removed",
       "signInAccountKeptDescription": "Your planner data was deleted and you were signed out, but the account you sign in with still exists. To remove it, sign in again (this starts a new, empty planner account) and delete it from Account settings. If it keeps failing, contact us through the feedback board."
+    },
+    "staging": {
+      "codeLabel": "Code",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyFailed": "Couldn't copy. Select the code and copy it yourself.",
+      "codeExpires_one": "Expires in {{count}} minute.",
+      "codeExpires_other": "Expires in {{count}} minutes.",
+      "create": "Generate code",
+      "createAnother": "Generate a new code",
+      "genericError": "Something went wrong. Please try again.",
+      "replaceWarning": "Applying a code replaces your current goals, plans and settings.",
+      "confirm": "I understand",
+      "applied": "Code applied.",
+      "apply": "Apply code"
     }
   },
   "accountGate": {

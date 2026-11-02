@@ -44,9 +44,12 @@ import {
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 import { getAccountEmail, getSignInMethod, signOut } from "@/shared/auth"
+import { appEnvironment } from "@/shared/config"
 
 import { rememberSignInAccountKept } from "../model/sign-in-account-kept-notice"
+import { stagingTransferMode } from "../model/staging-transfer"
 import { ProfileTab } from "./profile-tab"
+import { StagingTransferTab } from "./staging-transfer-tab"
 
 const PURGE_CONFIRMATION_WORD = "Confirm"
 
@@ -57,7 +60,7 @@ function isPurgeScope(value: string): value is PurgeScope {
   return (PURGE_SCOPES as readonly string[]).includes(value)
 }
 
-export type ManageAccountTab = "integration" | "profile" | "account"
+export type ManageAccountTab = "integration" | "profile" | "account" | "staging"
 
 type ManageAccountDialogProps = {
   open: boolean
@@ -70,7 +73,8 @@ type ManageAccountDialogProps = {
  * "Account settings" dialog reachable from the user menu: Tacticus Integration (view masked values, update the
  * key, update/remove the user id) and Account (sign-in method and
  * email, then purge — planner data only, or also the sign-in account; requires typing the literal word
- * "Confirm").
+ * "Confirm"). In production and staging builds, a Transfer tab copies production data into staging: it
+ * mints a transfer code in production and redeems one on staging.
  */
 export function ManageAccountDialog({
   open,
@@ -81,6 +85,7 @@ export function ManageAccountDialog({
   const { instance, accounts } = useMsal()
   const account = instance.getActiveAccount() ?? accounts[0]
   const { state } = useCurrentUser()
+  const stagingMode = stagingTransferMode(appEnvironment)
 
   if (!account || state.status !== "success") {
     return null
@@ -115,6 +120,14 @@ export function ManageAccountDialog({
             >
               {t("manageAccount.tabs.account")}
             </TabsTrigger>
+            {stagingMode ? (
+              <TabsTrigger
+                data-testid="manage-account-tab-staging"
+                value="staging"
+              >
+                {t("manageAccount.tabs.staging")}
+              </TabsTrigger>
+            ) : null}
           </TabsList>
           <TabsContent value="integration">
             <TacticusIntegrationTab user={state.user} />
@@ -129,6 +142,11 @@ export function ManageAccountDialog({
               onPurged={() => onOpenChange(false)}
             />
           </TabsContent>
+          {stagingMode ? (
+            <TabsContent value="staging">
+              <StagingTransferTab mode={stagingMode} />
+            </TabsContent>
+          ) : null}
         </Tabs>
       </DialogContent>
     </Dialog>

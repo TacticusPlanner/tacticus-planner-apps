@@ -52,7 +52,8 @@
     "tabs": {
       "integration": "Integración con Tacticus",
       "profile": "Perfil",
-      "account": "Cuenta"
+      "account": "Cuenta",
+      "staging": "Transferencia"
     },
     "integration": {
       "currentApiKey": "Clave de API de Tacticus",
@@ -122,6 +123,21 @@
       "purgeGenericError": "Algo salió mal al purgar tu cuenta. Inténtalo de nuevo.",
       "signInAccountKeptTitle": "No se pudo eliminar tu cuenta de inicio de sesión",
       "signInAccountKeptDescription": "Tus datos del planificador se eliminaron y se cerró tu sesión, pero la cuenta con la que inicias sesión sigue existiendo. Para eliminarla, vuelve a iniciar sesión (esto crea una cuenta del planificador nueva y vacía) y elimínala desde la configuración de la cuenta. Si sigue fallando, contáctanos a través del tablero de comentarios."
+    },
+    "staging": {
+      "codeLabel": "Código",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "copyFailed": "No se pudo copiar. Selecciona el código y cópialo tú.",
+      "codeExpires_one": "Caduca en {{count}} minuto.",
+      "codeExpires_other": "Caduca en {{count}} minutos.",
+      "create": "Generar código",
+      "createAnother": "Generar un código nuevo",
+      "genericError": "Algo salió mal. Inténtalo de nuevo.",
+      "replaceWarning": "Aplicar un código reemplaza tus objetivos, planes y ajustes actuales.",
+      "confirm": "Entendido",
+      "applied": "Código aplicado.",
+      "apply": "Aplicar código"
     }
   },
   "accountGate": {

@@ -96,3 +96,18 @@ export async function purgeAccount({
       response.headers.get("X-Sign-In-Account-Deleted") === "true",
   }
 }
+
+/** Production: a 10-minute code that copies this account's planner data into staging. */
+export function createStagingTransferCode() {
+  return unwrap(apiClient().POST("/api/v1/account/staging-transfer-code"))
+}
+
+/** Staging: replaces this account's goals, projects, Legendary Event plans, settings and progress
+ *  overrides with the production account's, via a code from `createStagingTransferCode`. */
+export function importFromProduction(code: string) {
+  return unwrap(
+    apiClient().POST("/api/v1/account/import-from-production", {
+      body: { code },
+    })
+  )
+}
