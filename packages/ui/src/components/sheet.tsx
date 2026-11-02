@@ -4,10 +4,21 @@ import { Dialog as SheetPrimitive } from "radix-ui"
 
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { useBackClosableOpenState } from "@workspace/ui/hooks/use-close-on-back"
 import { cn } from "@workspace/ui/lib/utils"
 
-function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />
+function Sheet({
+  open,
+  defaultOpen,
+  onOpenChange,
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Root>) {
+  const openState = useBackClosableOpenState({
+    open,
+    defaultOpen,
+    onOpenChange,
+  })
+  return <SheetPrimitive.Root data-slot="sheet" {...props} {...openState} />
 }
 
 function SheetTrigger({

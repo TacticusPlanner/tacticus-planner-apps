@@ -437,4 +437,110 @@ describe("UserJotProvider", () => {
     })
     expect(screen.getByTestId("consumer")).toHaveTextContent("2")
   })
+
+  describe("Android Back", () => {
+    // A stand-in for the browser's CloseWatcher: Back runs the newest live watcher's onclose.
+    let watchers: { onclose: (() => void) | null; destroyed: boolean }[]
+
+    beforeEach(() => {
+      watchers = []
+      vi.stubGlobal(
+        "CloseWatcher",
+        class {
+          onclose: (() => void) | null = null
+          destroyed = false
+          constructor() {
+            watchers.push(this)
+          }
+          destroy() {
+            this.destroyed = true
+          }
+        }
+      )
+    })
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    const live = () => watchers.filter((watcher) => !watcher.destroyed)
+
+    it("closes the open widget instead of leaving the page", () => {
+      const close = vi.fn()
+      window.uj = { ...window.uj!, close }
+      renderProvider()
+
+      act(() => listeners.get("open")?.())
+      expect(live()).toHaveLength(1)
+
+      live()[0]?.onclose?.()
+      expect(close).toHaveBeenCalledOnce()
+    })
+
+    it("steps the widget back a screen before closing it", () => {
+      const close = vi.fn()
+      window.uj = { ...window.uj!, close }
+      const host = document.createElement("div")
+      host.id = "userjot-engage-root"
+      document.body.append(host)
+      const back = document.createElement("button")
+      back.setAttribute("aria-label", "Back")
+      const onBack = vi.fn(() => back.remove())
+      back.addEventListener("click", onBack)
+      host.attachShadow({ mode: "open" }).append(back)
+      renderProvider()
+
+      act(() => listeners.get("open")?.())
+      live().at(-1)?.onclose?.()
+      expect(onBack).toHaveBeenCalledOnce()
+      expect(close).not.toHaveBeenCalled()
+
+      // The press used up its watcher; the next one is already armed and closes the root screen.
+      live().at(-1)?.onclose?.()
+      expect(close).toHaveBeenCalledOnce()
+      host.remove()
+    })
+
+    it("picks up a widget that stayed open while the provider was unmounted", async () => {
+      vi.resetModules()
+      const module = await import("./userjot-provider")
+      const { unmount } = render(
+        <module.UserJotProvider>
+          <Consumer use={module.useUserJot} />
+        </module.UserJotProvider>
+      )
+      await act(async () => {
+        sdkScript()?.dispatchEvent(new Event("load"))
+      })
+      unmount()
+
+      window.uj = {
+        ...window.uj!,
+        close: vi.fn(),
+        getState: () => ({ widget: { open: true } }),
+      }
+      render(
+        <module.UserJotProvider>
+          <Consumer use={module.useUserJot} />
+        </module.UserJotProvider>
+      )
+      expect(live()).toHaveLength(1)
+    })
+
+    it("stops watching Back once the widget closes itself", () => {
+      window.uj = { ...window.uj!, close: vi.fn() }
+      renderProvider()
+
+      act(() => listeners.get("open")?.())
+      act(() => listeners.get("close")?.({ unreadCount: 0 }))
+      expect(live()).toHaveLength(0)
+    })
+
+    it("leaves Back alone when the SDK has no close to call", () => {
+      renderProvider()
+
+      act(() => listeners.get("open")?.())
+      expect(watchers).toHaveLength(0)
+    })
+  })
 })

@@ -15245,6 +15245,9 @@
             "minimum": 0,
             "type": "integer",
             "format": "int64"
+          },
+          "watchAds": {
+            "type": ["null", "boolean"]
           }
         }
       },
@@ -15390,7 +15393,7 @@
         }
       },
       "UserSettingsResponse": {
-        "required": ["dailyEnergy", "xpBookRarity", "revision"],
+        "required": ["dailyEnergy", "xpBookRarity", "watchAds", "revision"],
         "type": "object",
         "properties": {
           "dailyEnergy": {
@@ -15399,6 +15402,9 @@
           },
           "xpBookRarity": {
             "$ref": "#/components/schemas/XpBookRarity"
+          },
+          "watchAds": {
+            "type": "boolean"
           },
           "revision": {
             "type": "integer",

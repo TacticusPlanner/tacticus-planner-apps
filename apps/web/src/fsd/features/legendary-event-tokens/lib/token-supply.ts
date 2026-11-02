@@ -69,6 +69,8 @@ export interface TokenSupplyInput {
   nowMs: number
   runs: readonly LegendaryEventRunInputs[] | undefined
   showPaidOptions: boolean
+  /** The account's Watch daily ads setting (default true): false counts no ad token in any run. */
+  watchAds?: boolean
 }
 
 const premiumPlanned = (
@@ -120,7 +122,7 @@ function currentRunSupply(
       bank.regenAmount
   const remainingMs = runEndMs - nowMs - 1
   const ad =
-    remainingMs <= 0
+    input.watchAds === false || remainingMs <= 0
       ? 0
       : Math.floor(remainingMs / DAY_MS) +
         (progress?.hasUsedAdForExtraTokenToday === true ? 0 : 1)
@@ -142,18 +144,19 @@ export function runTokenSupply(input: TokenSupplyInput): RunSupply[] | null {
   const { bank, lifecycle, resolution, runs, showPaidOptions } = input
   if (lifecycle.state === "archived") return null
   const fullRunFree = fullRunFreeTokens(bank)
+  const fullRunAd = input.watchAds === false ? 0 : FULL_RUN_AD_TOKENS
 
   const planned = (run: LegendaryEventRun, state: RunSupplyState) =>
     supply(
       run,
       state,
       fullRunFree,
-      FULL_RUN_AD_TOKENS,
+      fullRunAd,
       premiumPlanned(runs, run, showPaidOptions) ? BONUS_DELIVERY_TOKENS : 0
     )
 
   if (resolution.kind === "unknown") {
-    return [supply(1, "next", fullRunFree, FULL_RUN_AD_TOKENS, 0, true)]
+    return [supply(1, "next", fullRunFree, fullRunAd, 0, true)]
   }
 
   if (lifecycle.state === "active") {

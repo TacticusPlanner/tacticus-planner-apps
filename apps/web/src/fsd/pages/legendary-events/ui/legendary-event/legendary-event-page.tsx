@@ -26,6 +26,7 @@ import {
   useTokenMissionsSource,
   useTokenPlan,
 } from "@/features/legendary-event-tokens"
+import { usePlanningSettings } from "@/entities/planning-setting"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useFeatureFlag } from "@/shared/feature-flags"
 import { useSearchParamState } from "@/shared/lib"
@@ -236,12 +237,14 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     Array.isArray(units) ? units : undefined,
     Array.isArray(battles) ? battles : undefined
   )
+  const { settings: accountSettings } = usePlanningSettings()
   const tokenPlan = useTokenPlan({
     event: eventData,
     lifecycle: event.lifecycle,
     nowMs,
     progress: progressValue,
     progressObservedAtMs,
+    watchAds: accountSettings.watchAds,
     plan: {
       enabled: plan.enabled,
       status: plan.query.status,
