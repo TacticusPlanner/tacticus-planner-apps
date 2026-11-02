@@ -14,7 +14,10 @@ import type { GoalKind } from "@/entities/goal"
 
 import { milestoneOrderIssue, type GoalMilestones } from "./goal-milestones"
 
-import { mowAbilityTrackLevel } from "@/features/goal-farming/@x/goal-create"
+import {
+  mowAbilityTrackLevel,
+  type RankAdditionalTarget,
+} from "@/features/goal-farming/@x/goal-create"
 import {
   getGoalValidationIssues,
   isAtMaxAbility,
@@ -38,6 +41,7 @@ export function useGoalValidationState({
   playerMow,
   rankStart,
   rankEnd,
+  rankAdditionalTarget,
   progressionStart,
   progressionEnd,
   abilityActiveStart,
@@ -58,6 +62,7 @@ export function useGoalValidationState({
   playerMow: PlayerDataChunkDto<"mows">[number] | undefined
   rankStart: Rank
   rankEnd: Rank
+  rankAdditionalTarget: RankAdditionalTarget
   progressionStart: Progression
   progressionEnd: Progression
   abilityActiveStart: number
@@ -109,7 +114,9 @@ export function useGoalValidationState({
     enabledTypes,
     isOwned,
     currentRank: playerCharacter?.rank,
+    currentAppliedSlots: playerCharacter?.appliedUpgradeSlots,
     rankEnd,
+    rankAdditionalTarget,
     currentProgression: playerEntity?.progressionIndex,
     progressionEnd,
     abilityActiveStart,
@@ -173,7 +180,9 @@ export function useGoalValidationState({
     !!entityId &&
     enabledTypes.size > 0 &&
     issues.length === 0 &&
-    (!enabledTypes.has("Rank") || rankIndex(rankStart) < rankIndex(rankEnd)) &&
+    (!enabledTypes.has("Rank") ||
+      rankIndex(rankStart) < rankIndex(rankEnd) ||
+      (rankStart === rankEnd && rankAdditionalTarget !== "None")) &&
     (!enabledTypes.has("Ascension") ||
       progressionIndex(progressionStart) < progressionIndex(progressionEnd))
 

@@ -12,6 +12,10 @@ import {
 } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
+import {
+  rankTargetReached,
+  type RankAdditionalTarget,
+} from "@/features/goal-farming/@x/goal-planning"
 
 /** The rarity ability caps (see `abilityCapByRarity` in `@workspace/game-domain`, which mirrors
  * the backend's `AbilityCaps` table) paired with their rarity tier, in rarity order — used to
@@ -96,7 +100,12 @@ type GoalValidationParams = {
   enabledTypes: ReadonlySet<GoalKind>
   isOwned: boolean
   currentRank: Rank | undefined
+  /** The slots of `currentRank` the character has already applied (empty when unknown). */
+  currentAppliedSlots?: readonly number[]
   rankEnd: Rank
+  /** The Rank target's partial slots past `rankEnd` (default `"None"`), so a same-rank target such
+   *  as Diamond3 to Diamond3 + top row counts as above the current rank. */
+  rankAdditionalTarget?: RankAdditionalTarget
   currentProgression: Progression | undefined
   progressionEnd: Progression
   abilityActiveStart: number
@@ -148,7 +157,14 @@ export function getGoalValidationIssues(
   if (
     params.enabledTypes.has("Rank") &&
     params.currentRank &&
-    rankIndex(params.rankEnd) <= rankIndex(params.currentRank)
+    rankTargetReached(
+      {
+        rank: params.currentRank,
+        appliedSlots: params.currentAppliedSlots ?? [],
+      },
+      params.rankEnd,
+      params.rankAdditionalTarget ?? "None"
+    )
   ) {
     add("Rank", "target", "rankAlreadyReached")
   }

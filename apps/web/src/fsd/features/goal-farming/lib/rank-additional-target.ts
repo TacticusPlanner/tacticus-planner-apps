@@ -211,3 +211,34 @@ export function additionalTargetFromWire(
   if (wire.endAppliedUpgrades === 1) return "TopRow1"
   return "None"
 }
+
+const topRowSlots: readonly number[] = [0, 2, 4]
+
+/** The end rank's slot indices an Additional target applies — the same slots `rankUpSlotOccurrences`
+ * charges for it: the first N top-row slots (0/2/4) below Adamantine1, the first N raw slots from
+ * Adamantine1 on, and none for a clean rank boundary. */
+export function additionalTargetSlots(
+  value: RankAdditionalTarget
+): readonly number[] {
+  const { pointFive, appliedUpgrades, topRowCount } =
+    additionalTargetSelection(value)
+  if (topRowCount > 0) return topRowSlots.slice(0, topRowCount)
+  if (appliedUpgrades > 0)
+    return Array.from({ length: appliedUpgrades }, (_, slot) => slot)
+  return pointFive ? topRowSlots : []
+}
+
+/** True when a character at `current.rank` with `current.appliedSlots` of that rank applied already
+ * holds `end` with `additional` — so a same-rank target (e.g. Diamond3 to Diamond3 + top row) is
+ * reached only once every slot it names is applied. */
+export function rankTargetReached(
+  current: { rank: RankType; appliedSlots: readonly number[] },
+  end: RankType,
+  additional: RankAdditionalTarget
+): boolean {
+  const difference = rankIndex(end) - rankIndex(current.rank)
+  if (difference !== 0) return difference < 0
+  return additionalTargetSlots(additional).every((slot) =>
+    current.appliedSlots.includes(slot)
+  )
+}

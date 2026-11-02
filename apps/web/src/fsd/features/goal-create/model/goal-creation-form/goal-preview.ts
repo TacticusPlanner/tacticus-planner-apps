@@ -89,7 +89,11 @@ export function computeCreationPreview(params: {
     params.entityType === "Mow" ? !!params.mow : !!params.character
   const rankRangeValid =
     params.entityType !== "Character" ||
-    rankIndex(params.rankStart) < rankIndex(params.rankEnd)
+    rankIndex(params.rankStart) < rankIndex(params.rankEnd) ||
+    (params.rankStart === params.rankEnd &&
+      (params.rankEndPointFive ||
+        (params.rankEndAppliedUpgrades ?? 0) > 0 ||
+        (params.rankEndTopRowCount ?? 0) > 0))
 
   const estimatePreview =
     previewEnabled && hasEntity && rankRangeValid

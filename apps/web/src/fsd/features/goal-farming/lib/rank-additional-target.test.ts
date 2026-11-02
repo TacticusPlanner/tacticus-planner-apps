@@ -4,6 +4,8 @@ import {
   additionalTargetFromWire,
   additionalTargetOptions,
   additionalTargetSelection,
+  additionalTargetSlots,
+  rankTargetReached,
   reachableRankProgress,
   rowCount,
   requiredLevelForRankTarget,
@@ -183,6 +185,30 @@ describe("requiredLevelForRankTarget", () => {
     expect(requiredLevelForRankTarget("Adamantine1", "Row5", levelRules)).toBe(
       59
     )
+  })
+})
+
+describe("additionalTargetSlots", () => {
+  it("names the top-row slots for TopRow targets and the first N for RowN", () => {
+    expect(additionalTargetSlots("None")).toEqual([])
+    expect(additionalTargetSlots("TopRow1")).toEqual([0])
+    expect(additionalTargetSlots("TopRow")).toEqual([0, 2, 4])
+    expect(additionalTargetSlots("Row3")).toEqual([0, 1, 2])
+  })
+})
+
+describe("rankTargetReached", () => {
+  const current = { rank: "Diamond3" as const, appliedSlots: [0, 2] }
+
+  it("compares different ranks by ladder position", () => {
+    expect(rankTargetReached(current, "Diamond2", "TopRow")).toBe(true)
+    expect(rankTargetReached(current, "Adamantine1", "None")).toBe(false)
+  })
+
+  it("is reached on the same rank only once every named slot is applied", () => {
+    expect(rankTargetReached(current, "Diamond3", "None")).toBe(true)
+    expect(rankTargetReached(current, "Diamond3", "TopRow2")).toBe(true)
+    expect(rankTargetReached(current, "Diamond3", "TopRow")).toBe(false)
   })
 })
 
