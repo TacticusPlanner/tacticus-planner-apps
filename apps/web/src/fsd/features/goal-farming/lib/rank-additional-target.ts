@@ -19,14 +19,34 @@ function usesNumberedUpgradeTargets(rank: RankType): boolean {
   return rankIndex(rank) >= rankIndex(Rank.Adamantine1)
 }
 
-/** The XP-level label for a numbered partial-upgrade count at `rank` — ported from V1's
- * `mythicLevelLabel`. */
+/** The XP level the `count`-th cheapest of `slots` needs (1-based, clamped to the slots there are). */
+function nthSlotLevel(slots: readonly number[], count: number): number {
+  const sorted = slots.toSorted((a, b) => a - b)
+  return sorted[Math.min(Math.max(count, 1), sorted.length) - 1] ?? 0
+}
+
+/** The XP level needed to apply `count` of `rank`'s 6 upgrade slots (cheapest first), read from the
+ * game's per-slot requirements — the label of a numbered partial-upgrade target (V1's
+ * `mythicLevelLabel`). */
 export function rowLevel(
   rank: RankType,
   count: number,
   rules: LevelRules
 ): number {
-  return rules.rankToLevel[rank] + count - 1
+  return nthSlotLevel(rules.slotLevels[rank], count)
+}
+
+/** The XP level needed to apply `count` (1-3) of `rank`'s top-row upgrade slots (slot indices 0/2/4
+ * in the game's column-major order). Below Diamond3 the whole top row unlocks at the rank's own
+ * level, so a "rank and a half" target needs no extra levels; from Diamond3 on each top-row slot is
+ * one level further. */
+export function topRowLevel(
+  rank: RankType,
+  count: number,
+  rules: LevelRules
+): number {
+  const topRow = rules.slotLevels[rank].filter((_, index) => index % 2 === 0)
+  return nthSlotLevel(topRow, count)
 }
 
 /**
@@ -118,11 +138,11 @@ export function requiredLevelForRankTarget(
     case "None":
       return rules.rankToLevel[rank]
     case "TopRow1":
-      return rowLevel(rank, 1, rules)
+      return topRowLevel(rank, 1, rules)
     case "TopRow2":
-      return rowLevel(rank, 2, rules)
+      return topRowLevel(rank, 2, rules)
     case "TopRow":
-      return rowLevel(rank, 3, rules)
+      return topRowLevel(rank, 3, rules)
     default:
       return rowLevel(rank, rowCount(additionalTarget) ?? 1, rules)
   }
