@@ -35,7 +35,8 @@
     "title": "Carte de course",
     "step": "Étape {{number}}",
     "pickOne": "Choisissez-en un",
-    "after": "Après {{names}}"
+    "after": "Après {{names}}",
+    "or": "ou"
   },
   "battle": {
     "name": "Combat {{name}}",
@@ -45,7 +46,8 @@
     "enemies": "Ennemis",
     "everyWin": "Chaque victoire",
     "stars": "{{count}}★",
-    "starsClaimed": "{{count}}★ (obtenu)"
+    "starsClaimed": "{{count}}★ (obtenu)",
+    "board": "Plateau de combat"
   },
   "enhancement": {
     "title": "Amélioration",
@@ -119,19 +121,13 @@
     "power": "Puissance {{power}}",
     "sustain": "Avec soigneur",
     "sustainHint": "Les dégâts sont conservés entre les combats : un soigneur (ou un mécanicien avec un allié mécanique) remplace le membre le plus faible si les héros les plus forts n'en ont pas.",
-    "clearable_one": "Devrait terminer {{count}} palier sur {{total}}, jusqu'à {{tier}}",
-    "clearable_other": "Devrait terminer {{count}} paliers sur {{total}}, jusqu'à {{tier}}",
-    "clearableNone": "Ne devrait encore terminer aucun palier.",
-    "hint": "Estimation non calibrée d'après votre effectif synchronisé : les héros les plus forts des factions autorisées face au chemin le plus facile de chaque palier, les PV perdus étant conservés d'un combat à l'autre. Une équipe est censée battre des combats jusqu'à 5× sa propre puissance, car la puissance d'un combat additionne tous les ennemis.",
+    "hint": "D'après votre effectif synchronisé : les héros les plus forts des factions autorisées, avec un Soigneur. Chaque palier plafonne les héros à sa rareté, donc son estimation utilise l'équipe plafonnée. La puissance ennemie est colorée pour cette équipe : vert confortable, ambre gagnable à PV pleins, rouge hors de portée.",
     "tooFew_one": "Il vous faut au moins {{count}} héros des factions autorisées.",
     "tooFew_other": "Il vous faut au moins {{count}} héros des factions autorisées.",
     "unsynced": "Synchronisez votre roster pour voir une équipe suggérée et les paliers qu'elle peut terminer.",
-    "noPower": "Les estimations de puissance sont indisponibles pour le moment."
-  },
-  "estimate": {
-    "clears": "Équipe suggérée : devrait terminer avec environ {{hp}} % de PV restants",
-    "stops": "Équipe suggérée : devrait tomber au combat {{battle}} sur {{total}}",
-    "hint": "Les dégâts sont conservés entre les combats jusqu'à la fin de la course."
+    "noPower": "Les estimations de puissance sont indisponibles pour le moment.",
+    "eligible_one": "{{count}} héros éligible",
+    "eligible_other": "Les {{count}} héros éligibles"
   },
   "nav": {
     "label": "Navigation des Incursions",
@@ -148,11 +144,33 @@
     "list": "Paliers",
     "preview": "Aperçu",
     "starsLabel": "{{earned}} étoiles sur {{max}}",
-    "peakPowerHint": "Puissance ennemie du combat le plus dur sur le chemin le plus facile de ce palier.",
-    "estimateClears": "Faisable",
-    "estimateStops": "Échoue au combat {{battle}}/{{total}}",
     "markCleared": "Tout à 3★",
     "reset": "Réinitialiser",
-    "markHint": "Règle tous les combats de ce palier d'un coup. Enregistrez pour conserver la modification."
+    "markHint": "Règle tous les combats de ce palier d'un coup. Enregistrez pour conserver la modification.",
+    "markTier": "Mettre tous les combats du {{tier}} à 3 étoiles",
+    "resetTier": "Réinitialiser les étoiles du {{tier}}"
+  },
+  "power": {
+    "enemy": "Puissance ennemie : la puissance de tous les ennemis additionnée",
+    "vsTeam": "Puissance ennemie : {{ratio}}× la puissance de votre équipe à ce palier"
+  },
+  "rewards": {
+    "all": "Toutes les récompenses de ce palier",
+    "hint": "Les coffres paient à chaque course ; les récompenses d'étoiles pas encore obtenues sont payées une fois."
+  },
+  "eligible": {
+    "title": "Héros pour {{mow}}",
+    "hint": "Tous les héros des factions autorisées, du plus fort au plus faible. Touchez des héros pour essayer une équipe de 5 au plus ; rien n'est enregistré.",
+    "selected_one": "{{count}} héros · puissance {{power}}",
+    "selected_other": "{{count}} héros · puissance {{power}}",
+    "reset": "Revenir à la suggestion",
+    "close": "Fermer"
+  },
+  "estimate": {
+    "clears_one": "Terminé en 1 run",
+    "clears_other": "Terminé en {{count}} runs",
+    "stuck": "Bloqué au combat {{battle}} sur {{battles}}",
+    "firstRun": "Le premier run gagne {{wins}} combats sur {{battles}} avec votre équipe plafonnée à ce palier ({{power}} de puissance).",
+    "hint": "Estimation : votre équipe suggérée, chaque héros plafonné à la rareté de ce palier ({{power}} de puissance). Un combat est gagné tant que puissance × PV restants atteint un cinquième de la puissance ennemie ; chaque victoire coûte des PV en proportion (moins avec un Soigneur). Les combats gagnés le restent : le run suivant repart à PV pleins là où le dernier s'est arrêté."
   }
 }

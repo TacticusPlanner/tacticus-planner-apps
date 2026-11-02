@@ -1,51 +1,87 @@
 import { useMemo } from "react"
-import type { NpcStorageModel } from "@workspace/game-catalog"
+import type {
+  EquipmentStorageModel,
+  NpcStorageModel,
+} from "@workspace/game-catalog"
+import type { Rarity } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { isBoardPickup } from "@/features/quest-event"
+import {
+  capUnitState,
+  isBoardPickup,
+  questTierCap,
+} from "@/features/quest-event"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
+  characterPowerAt,
   npcPowerAt,
   rosterCharacterPower,
   useUnitPowerContext,
+  type UnitPowerContext,
 } from "@/shared/unit-power"
 
 import {
-  estimateTierRun,
+  eligibleCandidates,
+  estimateTierRuns,
   hasSustain,
   incursionBattlePower,
-  lightestPath,
   suggestIncursionTeam,
   teamPowerOf,
+  tierPower,
   type IncursionCandidate,
-  type TierRunEstimate,
+  type TierPower,
+  type TierRunsEstimate,
 } from "./incursion-plan.model"
 import { enemyStatRow, type Incursion } from "./incursions.model"
 
-/** One MoW's suggested team and how far it is estimated to get in each tier. */
-type IncursionPlan = {
-  team: IncursionCandidate[]
-  teamPower: number
-  /** The team has a useful Healer or Mechanic, so it loses less HP per battle. */
+/** The suggested team from the synced roster, or why there is none. */
+type IncursionTeamPlan =
+  | {
+      status: "ready"
+      team: IncursionCandidate[]
+      teamPower: number
+      /** The team has a useful Healer or Mechanic, so it loses less HP per battle. */
+      sustained: boolean
+      /** Every hero of the allowed factions, strongest first. */
+      eligible: IncursionCandidate[]
+    }
+  | { status: "unsynced" }
+  /** Fewer heroes of the allowed factions than a run needs. */
+  | { status: "tooFew"; eligible: IncursionCandidate[] }
+
+/** A tier's suggested team with every hero capped to the tier's rarity, and how it fares. */
+export type CappedTierTeam = {
+  members: readonly IncursionCandidate[]
+  power: number
   sustained: boolean
+  estimate: TierRunsEstimate
+}
+
+/** One tier's enemy power and, from a synced roster with enough heroes, its capped team. */
+export type IncursionTierPlan = TierPower & { team?: CappedTierTeam }
+
+/** One MoW's plan per tier and the player's suggested team (uncapped). */
+type IncursionPlan = {
   /** By tier index; a tier whose enemy power is unknown is missing. */
-  tiers: ReadonlyMap<number, TierRunEstimate>
+  tiers: ReadonlyMap<number, IncursionTierPlan>
+  team: IncursionTeamPlan
 }
 
 export type IncursionPlans =
-  | { status: "loading" }
-  /** No synced roster, or no power data: nothing to estimate from. */
-  | { status: "unavailable"; reason: "unsynced" | "noPower" }
-  /** By MoW id; null when the roster has too few heroes of the allowed factions. */
-  | { status: "ready"; plans: ReadonlyMap<string, IncursionPlan | null> }
+  /** `unsynced`: the roster is known to be empty while enemy power still loads. */
+  | { status: "loading"; unsynced?: boolean }
+  /** No power data: nothing to compare. */
+  | { status: "unavailable" }
+  /** By MoW id. */
+  | { status: "ready"; plans: ReadonlyMap<string, IncursionPlan> }
 
 const toRoster = (roster: PlayerDataChunkDto<"characters"> | null) =>
   roster ?? []
 
 /**
- * Per MoW, the suggested team from the synced roster and its estimated run through each tier,
- * enemies taken at their battle levels. Recomputed live and never stored.
+ * Per MoW, every battle's enemy power (enemies taken at their battle levels) and the suggested team
+ * from the synced roster. Recomputed live and never stored.
  */
 export function useIncursionPlans(
   incursions: readonly Incursion[],
@@ -53,6 +89,7 @@ export function useIncursionPlans(
 ): IncursionPlans {
   const roster = usePlayerChunk("characters", toRoster)
   const characters = useCatalogDataset("characters", toById)
+  const equipment = useCatalogDataset("equipment")
   const unitPower = useUnitPowerContext()
   const read = useMemo(
     () => combineReadStates(roster, characters),
@@ -61,31 +98,45 @@ export function useIncursionPlans(
 
   return useMemo((): IncursionPlans => {
     if (read.status === "loading") return { status: "loading" }
-    if (read.status === "error") {
-      return { status: "unavailable", reason: "noPower" }
-    }
+    if (read.status === "error") return { status: "unavailable" }
     const [units, catalog] = read.data
-    if (units.length === 0) return { status: "unavailable", reason: "unsynced" }
     if (unitPower.status === "loading" || !npcsById) {
-      return { status: "loading" }
+      return { status: "loading", unsynced: units.length === 0 }
     }
     const context = unitPower.status === "ready" ? unitPower.data : null
-    if (!context) return { status: "unavailable", reason: "noPower" }
+    if (!context) return { status: "unavailable" }
 
-    const candidates = units.flatMap((unit): IncursionCandidate[] => {
-      const character = catalog.get(unit.unitId)
-      const power = rosterCharacterPower(unit, context)
-      return character && power
-        ? [
-            {
-              id: unit.unitId,
-              faction: character.faction,
-              traits: character.traits,
-              power,
-            },
-          ]
-        : []
-    })
+    const candidatesAt = (
+      powerOf: (unit: (typeof units)[number]) => number | null
+    ) =>
+      units.flatMap((unit): IncursionCandidate[] => {
+        const character = catalog.get(unit.unitId)
+        const power = powerOf(unit)
+        return character && power
+          ? [
+              {
+                id: unit.unitId,
+                faction: character.faction,
+                traits: character.traits,
+                power,
+              },
+            ]
+          : []
+      })
+    const candidates = candidatesAt((unit) =>
+      rosterCharacterPower(unit, context)
+    )
+    const equipmentList =
+      equipment.status === "ready" ? equipment.data : undefined
+    const cappedByRarity = new Map<string, IncursionCandidate[]>()
+    const cappedCandidates = (rarity: string) => {
+      let list = cappedByRarity.get(rarity)
+      if (!list) {
+        list = cappedPool(rarity, equipmentList, context, candidatesAt)
+        cappedByRarity.set(rarity, list)
+      }
+      return list
+    }
     const enemyPower = (npcId: string, level: number) => {
       const npc = npcsById.get(npcId)
       if (isBoardPickup(npcId, npc)) return 0
@@ -93,30 +144,76 @@ export function useIncursionPlans(
       return row ? npcPowerAt(npcId, row, context) : null
     }
 
-    const plans = new Map<string, IncursionPlan | null>()
+    const plans = new Map<string, IncursionPlan>()
     for (const incursion of incursions) {
-      const team = suggestIncursionTeam(
-        candidates,
-        incursion.allowedFactions,
-        incursion.minUnitsOfGrandAllianceNeeded
-      )
-      if (!team) {
-        plans.set(incursion.mowId, null)
-        continue
-      }
-      const teamPower = teamPowerOf(team)
-      const sustained = hasSustain(team)
-      const tiers = new Map<number, TierRunEstimate>()
+      const tiers = new Map<number, IncursionTierPlan>()
       for (const tier of incursion.tiers) {
-        const path = lightestPath(tier, (battle) =>
+        const power = tierPower(tier, (battle) =>
           incursionBattlePower(battle, enemyPower)
         )
-        if (path) {
-          tiers.set(tier.index, estimateTierRun(teamPower, path, sustained))
+        if (!power) continue
+        const members = suggestIncursionTeam(
+          eligibleCandidates(
+            cappedCandidates(tier.rarity),
+            incursion.allowedFactions
+          ),
+          incursion.minUnitsOfGrandAllianceNeeded
+        )
+        if (!members) {
+          tiers.set(tier.index, power)
+          continue
         }
+        const teamPower = teamPowerOf(members)
+        const sustained = hasSustain(members)
+        tiers.set(tier.index, {
+          ...power,
+          team: {
+            members,
+            power: teamPower,
+            sustained,
+            estimate: estimateTierRuns(teamPower, power.path, sustained),
+          },
+        })
       }
-      plans.set(incursion.mowId, { team, teamPower, sustained, tiers })
+      plans.set(incursion.mowId, {
+        tiers,
+        team: teamPlan(candidates, units.length > 0, incursion),
+      })
     }
     return { status: "ready", plans }
-  }, [read, unitPower, npcsById, incursions])
+  }, [read, unitPower, npcsById, incursions, equipment])
+}
+
+/** The roster as candidates with every hero capped to `rarity` (stars, rank, abilities, items). */
+function cappedPool<Unit extends Parameters<typeof capUnitState>[0]>(
+  rarity: string,
+  equipment: readonly EquipmentStorageModel[] | undefined,
+  context: UnitPowerContext,
+  candidatesAt: (powerOf: (unit: Unit) => number | null) => IncursionCandidate[]
+): IncursionCandidate[] {
+  const cap = questTierCap(rarity as Rarity, equipment)
+  return candidatesAt((unit) =>
+    characterPowerAt(unit.unitId, capUnitState(unit, cap).values, context)
+  )
+}
+
+function teamPlan(
+  candidates: readonly IncursionCandidate[],
+  synced: boolean,
+  incursion: Incursion
+): IncursionTeamPlan {
+  if (!synced) return { status: "unsynced" }
+  const eligible = eligibleCandidates(candidates, incursion.allowedFactions)
+  const team = suggestIncursionTeam(
+    eligible,
+    incursion.minUnitsOfGrandAllianceNeeded
+  )
+  if (!team) return { status: "tooFew", eligible }
+  return {
+    status: "ready",
+    team,
+    teamPower: teamPowerOf(team),
+    sustained: hasSustain(team),
+    eligible,
+  }
 }

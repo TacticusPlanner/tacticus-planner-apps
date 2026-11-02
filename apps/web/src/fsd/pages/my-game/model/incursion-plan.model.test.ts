@@ -2,13 +2,17 @@ import { describe, expect, it } from "vitest"
 import { incursionsFixture } from "@workspace/game-catalog/testing"
 
 import {
-  DAMAGE_SHARE,
-  estimateTierRun,
-  INCURSION_POWER_RATIO,
+  ENEMY_POWER_DIVISOR,
+  HP_LOSS_SHARE,
+  eligibleCandidates,
+  estimateTierRuns,
   hasSustain,
   incursionBattlePower,
   lightestPath,
+  powerStanding,
   suggestIncursionTeam,
+  tierPower,
+  toggleTeamMember,
   type IncursionCandidate,
 } from "./incursion-plan.model"
 
@@ -54,45 +58,24 @@ describe("lightestPath", () => {
   })
 })
 
-describe("estimateTierRun", () => {
-  const path = [100, 100, 100, 100].map((power, at) => ({
-    battleId: String(at + 1),
-    power,
-  }))
-
-  it("carries damage over, so a team that wins each battle alone can run out of HP", () => {
-    // A 20-power team fights at 100, so each battle costs DAMAGE_SHARE × 100 / 100 = 20% of the HP.
-    expect(INCURSION_POWER_RATIO).toBe(5)
-    expect(DAMAGE_SHARE).toBe(0.2)
-    expect(estimateTierRun(20, path, false)).toEqual({
-      wins: 4,
-      battles: 4,
-      cleared: true,
-      hpLeftPct: 20,
-      peakPower: 100,
-    })
-    // Six 90-power battles cost 18% each: five leave 10%, too little for the sixth.
-    const longer = Array.from({ length: 6 }, (_, at) => ({
-      battleId: String(at + 1),
-      power: 90,
-    }))
-    expect(estimateTierRun(20, longer, false)).toMatchObject({
-      wins: 5,
-      battles: 6,
-      cleared: false,
-    })
+describe("tierPower", () => {
+  it("keeps every battle's power and the easiest path's toughest battle", () => {
+    // Battle 4 is heavy but avoidable; battle 12 is on every path.
+    const power = tierPower(common1, (battle) =>
+      battle.id === "4" ? 1000 : battle.id === "12" ? 300 : 100
+    )!
+    expect(power.battles.get("4")).toBe(1000)
+    expect(power.battles.size).toBe(common1.battles.length)
+    expect(power.peakPower).toBe(300)
+    expect(tierPower(common1, () => null)).toBeNull()
   })
+})
 
-  it("loses a battle stronger than the team's effective power", () => {
-    expect(estimateTierRun(19, path, false).wins).toBe(0)
-  })
-
-  it("loses less HP with support", () => {
-    expect(estimateTierRun(20, path, true).hpLeftPct).toBe(40)
-  })
-
-  it("estimates nothing without power", () => {
-    expect(estimateTierRun(0, path, false).wins).toBe(0)
+describe("powerStanding", () => {
+  it("compares a battle's power with the team's", () => {
+    expect(powerStanding(250, 100)).toBe("even")
+    expect(powerStanding(500, 100)).toBe("harder")
+    expect(powerStanding(501, 100)).toBe("hard")
   })
 })
 
@@ -114,15 +97,25 @@ describe("suggestIncursionTeam", () => {
     hero("ork", 5000, [], "Orks"),
   ]
 
+  it("lists the allowed heroes strongest first", () => {
+    expect(
+      eligibleCandidates(roster, ["Ultramarines"]).map((unit) => unit.id)
+    ).toEqual(["a", "b", "c", "d", "e", "medic"])
+  })
+
   it("takes the strongest allowed heroes and swaps in a Healer for the weakest", () => {
-    const team = suggestIncursionTeam(roster, ["Ultramarines"], 3)!
+    const team = suggestIncursionTeam(
+      eligibleCandidates(roster, ["Ultramarines"]),
+      3
+    )!
     expect(team.map((unit) => unit.id)).toEqual(["a", "b", "c", "d", "medic"])
     expect(hasSustain(team)).toBe(true)
   })
 
   it("needs the minimum number of allowed heroes", () => {
-    expect(suggestIncursionTeam(roster, ["Orks"], 3)).toBeNull()
-    expect(suggestIncursionTeam(roster, ["Orks"], 1)).toHaveLength(1)
+    const orks = eligibleCandidates(roster, ["Orks"])
+    expect(suggestIncursionTeam(orks, 3)).toBeNull()
+    expect(suggestIncursionTeam(orks, 1)).toHaveLength(1)
   })
 
   it("counts a Mechanic only with a Mechanical ally", () => {
@@ -130,5 +123,62 @@ describe("suggestIncursionTeam", () => {
     expect(
       hasSustain([hero("m", 1, ["Mechanic"]), hero("x", 1, ["Mechanical"])])
     ).toBe(true)
+  })
+})
+
+describe("toggleTeamMember", () => {
+  it("adds and removes heroes, up to a full team", () => {
+    expect(toggleTeamMember(["a"], "b")).toEqual(["a", "b"])
+    expect(toggleTeamMember(["a", "b"], "a")).toEqual(["b"])
+    const full = ["a", "b", "c", "d", "e"]
+    expect(toggleTeamMember(full, "f")).toEqual(full)
+  })
+})
+
+describe("estimateTierRuns", () => {
+  const path = (...powers: number[]) =>
+    powers.map((power, at) => ({ battleId: String(at + 1), power }))
+  const fives = (count: number) => path(...Array<number>(count).fill(250))
+
+  it("clears in one run while the HP lasts, the team weakening as it loses HP", () => {
+    // A 100-power team faces 250 / 5 = 50 per battle, which needs half its HP; each win costs
+    // 30% × 50 / 100 = 15%, so four wins leave 40%.
+    expect(ENEMY_POWER_DIVISOR).toBe(5)
+    expect(HP_LOSS_SHARE).toBe(0.3)
+    expect(estimateTierRuns(100, fives(4), false)).toEqual({
+      status: "clears",
+      runs: 1,
+      firstRunWins: 4,
+      battles: 4,
+    })
+  })
+
+  it("takes more runs once the HP runs low, keeping the battles won", () => {
+    expect(estimateTierRuns(100, fives(5), false)).toEqual({
+      status: "clears",
+      runs: 2,
+      firstRunWins: 4,
+      battles: 5,
+    })
+  })
+
+  it("loses less HP with support", () => {
+    expect(estimateTierRuns(100, fives(5), true)).toMatchObject({
+      runs: 1,
+      firstRunWins: 5,
+    })
+  })
+
+  it("is stuck at a battle even a fresh team can't win", () => {
+    expect(estimateTierRuns(100, path(250, 501), false)).toEqual({
+      status: "stuck",
+      battle: 2,
+      firstRunWins: 1,
+      battles: 2,
+    })
+    expect(estimateTierRuns(0, path(1), false)).toMatchObject({
+      status: "stuck",
+      battle: 1,
+    })
   })
 })

@@ -162,3 +162,11 @@ export function incursionStarCount(
     { earned: 0, max: 0 }
   )
 }
+
+/**
+ * What finishing a tier still pays: its chests (paid every run) plus the one-time star rewards not
+ * yet earned. A tier with every battle at 3 stars pays only its chests.
+ */
+export function tierRewards(tier: IncursionTier, stars: TierStars): string[] {
+  return [...tierChestRewards(tier), ...tierUnclaimedRewards(tier, stars)]
+}

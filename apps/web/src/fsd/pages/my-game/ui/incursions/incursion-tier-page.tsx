@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { Navigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { RotateCcw } from "lucide-react"
-import { heroStarIcon, powerIcon } from "@workspace/game-catalog"
+import { heroStarIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 
 import { EntityIcon } from "@/shared/ui"
@@ -11,18 +11,17 @@ import {
   MAX_STARS,
   tierChestRewards,
   tierCleared,
+  tierRewards,
   tierStarCount,
   tierUnclaimedRewards,
 } from "../../model/incursion-progress.model"
-import {
-  runSteps,
-  shardYield,
-  tierSummary,
-  type IncursionNode,
-} from "../../model/incursions.model"
+import { runSteps, shardYield, tierSummary } from "../../model/incursions.model"
+import { IncursionEstimate } from "./incursion-estimate"
 import { IncursionNavBar } from "./incursion-nav-bar"
-import { IncursionNodeCard } from "./incursion-node-card"
+import { IncursionPower } from "./incursion-power"
 import { IncursionRewards } from "./incursion-rewards"
+import { IncursionRunMap } from "./incursion-run-map"
+import { IncursionTierRewards } from "./incursion-tier-rewards"
 import { IncursionStarsBar } from "./incursion-stars-bar"
 import {
   INCURSIONS_PATH,
@@ -41,7 +40,7 @@ import { useTierName } from "./use-tier-name"
  */
 export function IncursionTierPage() {
   const { mowId, tier: tierNumber } = useParams()
-  const { t, i18n } = useTranslation(["incursions", "mows"])
+  const { t } = useTranslation(["incursions", "mows"])
   const { incursions, npcsById, plans, progress } = useIncursionsOutlet()
   const incursion = incursions.find((candidate) => candidate.mowId === mowId)
   const tierName = useTierName(incursion)
@@ -55,9 +54,6 @@ export function IncursionTierPage() {
             battlesById: new Map(
               tier.battles.map((battle) => [battle.id, battle])
             ),
-            namesByIndex: new Map(
-              tier.nodes.map((node) => [node.index, node.name])
-            ),
           }
         : undefined,
     [incursion, tier]
@@ -68,19 +64,10 @@ export function IncursionTierPage() {
 
   const { summary } = view
   const stars = progress?.starsOf(incursion.mowId)
-  const estimate =
-    plans.status === "ready"
-      ? plans.plans.get(incursion.mowId)?.tiers.get(tier.index)
-      : undefined
-  const battleProgress = (node: IncursionNode) => {
-    const battleId = node.kind === "battle" ? node.battleId : undefined
-    if (!progress || !stars || !battleId) return undefined
-    return {
-      stars: stars(tier.index, battleId),
-      onChange: (value: number) =>
-        progress.setBattleStars(incursion.mowId, tier.index, battleId, value),
-    }
-  }
+  const plan =
+    plans.status === "ready" ? plans.plans.get(incursion.mowId) : undefined
+  const power = plan?.tiers.get(tier.index)
+  const teamPower = power?.team?.power
   const cleared = stars ? tierCleared(tier, stars) : false
   const count = stars ? tierStarCount(tier, stars) : undefined
   const oneTimeLeft = stars
@@ -97,7 +84,6 @@ export function IncursionTierPage() {
       to: incursionTierPath(incursion.mowId, target.index),
       name: t("tier.title", { number: target.index + 1 }),
     }
-  const number = new Intl.NumberFormat(i18n.language)
 
   return (
     <div className="flex flex-col gap-4" data-testid="incursion-tier">
@@ -123,16 +109,18 @@ export function IncursionTierPage() {
             {tierName(tier.index)}
           </p>
         </div>
-        {estimate ? (
-          <span
-            className="flex items-center gap-1 tabular-nums"
-            title={t("tier.peakPowerHint")}
+        {power ? (
+          <IncursionPower
+            power={power.peakPower}
+            teamPower={teamPower}
             data-testid="incursion-tier-power"
-          >
-            <EntityIcon src={powerIcon()} alt="" className="size-5" />
-            {number.format(Math.round(estimate.peakPower))}
-          </span>
+          />
         ) : null}
+        <IncursionTierRewards
+          mowId={incursion.mowId}
+          rewards={tierRewards(tier, stars ?? (() => 0))}
+          data-testid="incursion-tier-rewards"
+        />
         <ul
           className="flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-muted-foreground tabular-nums"
           data-testid="incursion-tier-summary"
@@ -145,6 +133,13 @@ export function IncursionTierPage() {
           <li>{t("summary.enhancements", { count: summary.enhancements })}</li>
         </ul>
       </header>
+      {power?.team && !cleared ? (
+        <IncursionEstimate
+          team={power.team}
+          detailed
+          data-testid="incursion-tier-estimate"
+        />
+      ) : null}
       {progress && count ? (
         <div
           className="flex flex-wrap items-center gap-3 rounded-lg border bg-muted/30 p-3"
@@ -184,24 +179,6 @@ export function IncursionTierPage() {
           </p>
         </div>
       ) : null}
-      {estimate ? (
-        <p
-          className={
-            estimate.cleared
-              ? "text-sm text-emerald-700 dark:text-emerald-400"
-              : "text-sm text-amber-700 dark:text-amber-400"
-          }
-          title={t("estimate.hint")}
-          data-testid="incursion-tier-estimate"
-        >
-          {estimate.cleared
-            ? t("estimate.clears", { hp: estimate.hpLeftPct })
-            : t("estimate.stops", {
-                battle: estimate.wins + 1,
-                total: estimate.battles,
-              })}
-        </p>
-      ) : null}
       {cleared ? (
         <div className="space-y-1.5" data-testid="incursion-replay-rewards">
           <p className="text-sm font-medium">{t("progress.replayTitle")}</p>
@@ -236,52 +213,28 @@ export function IncursionTierPage() {
         </p>
       ) : null}
 
-      <section className="space-y-3" aria-label={t("map.title")}>
-        <h3 className="text-sm font-semibold">{t("map.title")}</h3>
-        <ol className="space-y-3">
-          {view.steps.map((step, at) => {
-            const branched = (view.steps[at - 1]?.nodes.length ?? 0) > 1
-            return (
-              <li
-                key={step.depth}
-                className="space-y-2"
-                data-testid={`incursion-step-${step.depth}`}
-              >
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="font-medium">
-                    {t("map.step", { number: at + 1 })}
-                  </span>
-                  {step.choice ? (
-                    <span data-testid="incursion-step-choice">
-                      · {t("map.pickOne")}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-                  {step.nodes.map((node) => (
-                    <IncursionNodeCard
-                      key={node.index}
-                      node={node}
-                      incursion={incursion}
-                      battlesById={view.battlesById}
-                      npcsById={npcsById}
-                      progress={battleProgress(node)}
-                      after={
-                        branched && node.unlockedBy.length > 0
-                          ? node.unlockedBy
-                              .map((parent) => view.namesByIndex.get(parent))
-                              .filter(Boolean)
-                              .join(", ")
-                          : undefined
-                      }
-                    />
-                  ))}
-                </div>
-              </li>
-            )
-          })}
-        </ol>
-      </section>
+      <IncursionRunMap
+        key={tier.index}
+        incursion={incursion}
+        tier={tier}
+        steps={view.steps}
+        battlesById={view.battlesById}
+        npcsById={npcsById}
+        stars={stars}
+        onStarsChange={
+          progress
+            ? (battleId, value) =>
+                progress.setBattleStars(
+                  incursion.mowId,
+                  tier.index,
+                  battleId,
+                  value
+                )
+            : undefined
+        }
+        battlePowers={power?.battles}
+        teamPower={teamPower}
+      />
     </div>
   )
 }

@@ -35,7 +35,8 @@
     "title": "Laufkarte",
     "step": "Schritt {{number}}",
     "pickOne": "Eins wählen",
-    "after": "Nach {{names}}"
+    "after": "Nach {{names}}",
+    "or": "oder"
   },
   "battle": {
     "name": "Kampf {{name}}",
@@ -45,7 +46,8 @@
     "enemies": "Gegner",
     "everyWin": "Jeder Sieg",
     "stars": "{{count}}★",
-    "starsClaimed": "{{count}}★ (erhalten)"
+    "starsClaimed": "{{count}}★ (erhalten)",
+    "board": "Schlachtfeld"
   },
   "enhancement": {
     "title": "Verstärkung",
@@ -119,19 +121,13 @@
     "power": "Macht {{power}}",
     "sustain": "Mit Heiler",
     "sustainHint": "Schaden bleibt zwischen Kämpfen bestehen, daher ersetzt ein Heiler (oder ein Mechaniker mit mechanischem Verbündeten) das schwächste Mitglied, wenn die stärksten Helden keinen haben.",
-    "clearable_one": "Schafft voraussichtlich {{count}} von {{total}} Stufen, bis {{tier}}",
-    "clearable_other": "Schafft voraussichtlich {{count}} von {{total}} Stufen, bis {{tier}}",
-    "clearableNone": "Schafft voraussichtlich noch keine Stufe.",
-    "hint": "Unkalibrierte Schätzung aus deinem synchronisierten Kader: die stärksten Helden der erlaubten Fraktionen gegen den leichtesten Weg durch jede Stufe, wobei verlorene LP von Kampf zu Kampf erhalten bleiben. Ein Team schafft annahmegemäß Kämpfe bis zum 5-Fachen seiner eigenen Macht, da sich die Macht eines Kampfes aus allen Gegnern addiert.",
+    "hint": "Aus deinem synchronisierten Kader: die stärksten Helden der erlaubten Fraktionen, mit einem Heiler. Jede Stufe begrenzt Helden auf ihre Seltenheit, daher nutzt ihre Schätzung das begrenzte Team. Gegnermacht ist für dieses Team gefärbt: grün ist bequem, gelb mit vollen LP schaffbar, rot außer Reichweite.",
     "tooFew_one": "Du brauchst mindestens {{count}} Helden aus den erlaubten Fraktionen.",
     "tooFew_other": "Du brauchst mindestens {{count}} Helden aus den erlaubten Fraktionen.",
     "unsynced": "Synchronisiere deinen Kader, um einen Teamvorschlag und die schaffbaren Stufen zu sehen.",
-    "noPower": "Machtschätzungen sind gerade nicht verfügbar."
-  },
-  "estimate": {
-    "clears": "Teamvorschlag: voraussichtlich geschafft mit etwa {{hp}} % LP übrig",
-    "stops": "Teamvorschlag: scheitert voraussichtlich in Kampf {{battle}} von {{total}}",
-    "hint": "Schaden bleibt zwischen Kämpfen bestehen, bis der Lauf endet."
+    "noPower": "Machtschätzungen sind gerade nicht verfügbar.",
+    "eligible_one": "{{count}} geeigneter Held",
+    "eligible_other": "Alle {{count}} geeigneten Helden"
   },
   "nav": {
     "label": "Incursion-Navigation",
@@ -148,11 +144,33 @@
     "list": "Stufen",
     "preview": "Vorschau",
     "starsLabel": "{{earned}} von {{max}} Sternen",
-    "peakPowerHint": "Gegnermacht des schwersten Kampfes auf dem leichtesten Weg durch diese Stufe.",
-    "estimateClears": "Schaffbar",
-    "estimateStops": "Scheitert bei {{battle}}/{{total}}",
     "markCleared": "Alle auf 3★",
     "reset": "Zurücksetzen",
-    "markHint": "Setzt alle Kämpfe dieser Stufe auf einmal. Speichere, um die Änderung zu behalten."
+    "markHint": "Setzt alle Kämpfe dieser Stufe auf einmal. Speichere, um die Änderung zu behalten.",
+    "markTier": "Alle Kämpfe von {{tier}} auf 3 Sterne setzen",
+    "resetTier": "Sterne von {{tier}} zurücksetzen"
+  },
+  "power": {
+    "enemy": "Gegnermacht: die Macht aller Gegner zusammen",
+    "vsTeam": "Gegnermacht: {{ratio}}× die Macht deines Teams auf dieser Stufe"
+  },
+  "rewards": {
+    "all": "Alle Belohnungen für diese Stufe",
+    "hint": "Truhen zahlen jeden Lauf; noch nicht verdiente Sternbelohnungen gibt es einmal."
+  },
+  "eligible": {
+    "title": "Helden für {{mow}}",
+    "hint": "Alle Helden der erlaubten Fraktionen, die stärksten zuerst. Tippe Helden an, um ein Team aus bis zu 5 zu testen; nichts wird gespeichert.",
+    "selected_one": "{{count}} Held · Macht {{power}}",
+    "selected_other": "{{count}} Helden · Macht {{power}}",
+    "reset": "Zurück zum Vorschlag",
+    "close": "Schließen"
+  },
+  "estimate": {
+    "clears_one": "In 1 Lauf geschafft",
+    "clears_other": "In {{count}} Läufen geschafft",
+    "stuck": "Hängt bei Kampf {{battle}} von {{battles}}",
+    "firstRun": "Der erste Lauf gewinnt {{wins}} von {{battles}} Kämpfen mit deinem auf diese Stufe begrenzten Team ({{power}} Macht).",
+    "hint": "Schätzung: dein vorgeschlagenes Team, jeder Held auf die Seltenheit dieser Stufe begrenzt ({{power}} Macht). Ein Kampf wird gewonnen, solange Macht × verbleibende LP ein Fünftel der Gegnermacht erreicht; jeder Sieg kostet anteilig LP (weniger mit Heiler). Gewonnene Kämpfe bleiben gewonnen, der nächste Lauf beginnt mit vollen LP dort, wo der letzte endete."
   }
 }

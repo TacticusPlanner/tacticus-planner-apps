@@ -219,6 +219,7 @@ export {
   type BattleGlyph,
   type ResourceGlyph,
   abilityIcon,
+  incursionBoardImage,
   incursionEnhancementIcon,
   incursionTokenIcon,
   raidBossPortrait,
