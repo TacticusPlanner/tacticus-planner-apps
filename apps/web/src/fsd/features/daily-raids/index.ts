@@ -75,7 +75,10 @@ export {
   medalCompletion,
   sumMedalStats,
   trackMedalStats,
+  unclaimedTrackRewards,
   type TrackMedalStats,
+  type UnclaimedTrackRewards,
 } from "./model/battle-progress"
+export { UnclaimedRewardsDetails } from "./ui/unclaimed-rewards-details"
 export { MedalStats } from "./ui/medal-stats"
 export { medalIcon } from "./lib/battle-progress-icons"

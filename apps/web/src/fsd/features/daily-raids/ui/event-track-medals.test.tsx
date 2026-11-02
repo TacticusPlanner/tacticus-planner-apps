@@ -92,7 +92,7 @@ describe("EventTrackMedals", () => {
 
     expect(
       await screen.findByTestId("event-track-medals-eventCampaign1-Standard")
-    ).toHaveTextContent("1 battle has unclaimed rewards")
+    ).toHaveTextContent("Unclaimed one-time rewards · 1 battle")
     expect(screen.getByTestId("one-time-reward-gold")).toHaveTextContent("100")
   })
 
@@ -113,7 +113,7 @@ describe("EventTrackMedals", () => {
     ).toBeInTheDocument()
   })
 
-  it("says nothing about claimed rewards on a track with no beaten battle", async () => {
+  it("lists every battle's rewards on a track with no beaten battle", async () => {
     await seedPlayerData({ "campaign-events-progress": [] })
     render(<EventTrackMedals groupId="eventCampaign1" type="Standard" />, {
       auth: { authenticated: true },
@@ -121,7 +121,7 @@ describe("EventTrackMedals", () => {
 
     expect(
       await screen.findByTestId("event-track-medals-eventCampaign1-Standard")
-    ).not.toHaveTextContent("All one-time rewards claimed")
+    ).toHaveTextContent("Unclaimed one-time rewards · 2 battles")
   })
 
   it("doesn't call rewards claimed while a challenge is still unbeaten", async () => {
@@ -139,8 +139,10 @@ describe("EventTrackMedals", () => {
     const line = await screen.findByTestId(
       "event-track-medals-eventCampaign1-Standard"
     )
-    expect(line).toHaveTextContent("1 battle not yet beaten")
+    // The unbeaten challenge still holds its medal and milestone rewards.
+    expect(line).toHaveTextContent("Unclaimed one-time rewards · 1 battle")
     expect(line).not.toHaveTextContent("All one-time rewards claimed")
+    expect(screen.getByTestId("one-time-reward-gold")).toHaveTextContent("100")
   })
 
   it("shows the track's medal stats on the button when given", async () => {

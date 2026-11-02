@@ -8,7 +8,7 @@ import {
   reachedBattleRows,
   sumRewards,
   unclaimedMedalRewards,
-  unclaimedEventRewardTracks,
+  unclaimedTrackRewards,
   unclaimedMilestoneRewards,
   trackMedalStats,
   withBattleProgress,
@@ -260,7 +260,7 @@ describe("unclaimed rewards", () => {
   })
 })
 
-describe("unclaimedEventRewardTracks", () => {
+describe("unclaimedTrackRewards", () => {
   const rewards = {
     medals: [{ medals: 3, id: "shards_necroWarden", min: 5, max: 5 }],
     milestones: [
@@ -268,52 +268,35 @@ describe("unclaimedEventRewardTracks", () => {
       { milestone: "Gold" as const, id: "gold", min: 100, max: 100 },
     ],
   }
-  const eventBattle = (id: string, nodeNumber: number, type = "Standard") => ({
+  const trackBattle = (id: string) => ({
     id,
-    campaignGroupId: "eventCampaign1",
-    type,
-    challenge: false,
-    nodeNumber,
-    battleIndex: nodeNumber - 1,
     lightningVictoryTurns: 5,
     rewards,
   })
-  const definitions = [
-    { groupId: "campaign1", releaseType: "standard", types: ["Standard"] },
-    {
-      groupId: "eventCampaign1",
-      releaseType: "event",
-      types: ["Standard", "Extremis"],
-    },
-  ]
-  const battles = [
-    eventBattle("AMS01", 1),
-    eventBattle("AMS02", 2),
-    eventBattle("AME01", 1, "Extremis"),
-  ]
-  const progress = (_groupId: string, type: string) =>
-    type === "Standard"
-      ? { completedBattleCount: 2, completedChallengeBattlesIds: [] }
-      : undefined
+  const battles = [trackBattle("A1"), trackBattle("A2"), trackBattle("A3")]
+  const beaten = new Set(["A1", "A2"])
 
-  it("sums each beaten event track's unclaimed rewards and skips claimed battles", () => {
-    const overrides = withBattleProgress([], "AMS02", event, {
+  it("keeps what beaten battles fell short of and everything unbeaten battles hold", () => {
+    const overrides = withBattleProgress([], "A2", event, {
       medals: 2,
       milestone: "Bronze",
     })
     expect(
-      unclaimedEventRewardTracks(definitions, battles, progress, overrides)
-    ).toEqual([
-      {
-        groupId: "eventCampaign1",
-        type: "Standard",
-        battleCount: 1,
-        rewards: [
-          { id: "shards_necroWarden", min: 5, max: 5 },
-          { id: "xpCommon", min: 2, max: 2 },
-          { id: "gold", min: 100, max: 100 },
-        ],
-      },
-    ])
+      unclaimedTrackRewards(battles, (id) => beaten.has(id), overrides)
+    ).toEqual({
+      battleCount: 2,
+      rewards: [
+        { id: "shards_necroWarden", min: 10, max: 10 },
+        { id: "xpCommon", min: 4, max: 4 },
+        { id: "gold", min: 200, max: 200 },
+      ],
+    })
+  })
+
+  it("has nothing left once every battle is beaten at its best", () => {
+    expect(unclaimedTrackRewards(battles, () => true, [])).toEqual({
+      battleCount: 0,
+      rewards: [],
+    })
   })
 })

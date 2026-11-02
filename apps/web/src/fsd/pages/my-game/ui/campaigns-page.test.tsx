@@ -65,6 +65,12 @@ const data = {
       challenge: false,
       battleIndex: index,
       lightningVictoryTurns: 5,
+      rewards: {
+        guaranteed: [],
+        potential: [],
+        medals: [{ medals: 3, id: "gold", min: 10, max: 10 }],
+        milestones: [],
+      },
     })),
     ...Array.from({ length: 2 }, (_, index) => ({
       id: `IE${index}`,
@@ -140,5 +146,18 @@ describe("CampaignsPage", () => {
     expect(medals).toHaveTextContent("2/3")
     // (7 + 2) / (9 + 3)
     expect(screen.getAllByText("75%").length).toBeGreaterThan(0)
+  })
+
+  it("lists the one-time rewards still to claim below the medals", async () => {
+    flags.manualBattles = true
+    saved.battles = [
+      { battleId: "I0", medals: 1, lightningVictory: false, milestone: null },
+    ]
+    render(<CampaignsPage />, { auth: { authenticated: true } })
+
+    const unclaimed = await screen.findByTestId("campaign-unclaimed-campaign1")
+    // Only I0 fell short of 3 medals; I1 and I2 are beaten at their best.
+    expect(unclaimed).toHaveTextContent("Unclaimed one-time rewards · 1 battle")
+    expect(screen.getByTestId("one-time-reward-gold")).toHaveTextContent("10")
   })
 })

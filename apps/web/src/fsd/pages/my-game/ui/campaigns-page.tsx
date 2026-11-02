@@ -28,8 +28,11 @@ import {
   medalCompletion,
   sumMedalStats,
   trackMedalStats,
+  unclaimedTrackRewards,
+  UnclaimedRewardsDetails,
   useSavedBattleProgress,
   type TrackMedalStats,
+  type UnclaimedTrackRewards,
 } from "@/features/daily-raids"
 import { useFeatureFlag } from "@/shared/feature-flags"
 import { combineReadStates } from "@/shared/lib"
@@ -174,7 +177,20 @@ function buildModel(data: {
         const medals = data.overrides
           ? trackMedalStats(battles, frontierIndex, data.overrides)
           : undefined
-        return { definition, type, max, completed, medals }
+        // Battles before the frontier are beaten, matching trackMedalStats.
+        const beaten = new Set<string>(
+          battles
+            .filter((battle) => battle.battleIndex < (frontierIndex ?? -1))
+            .map((battle) => battle.id)
+        )
+        const unclaimed = data.overrides
+          ? unclaimedTrackRewards(
+              battles,
+              (battleId) => beaten.has(battleId),
+              data.overrides
+            )
+          : undefined
+        return { definition, type, max, completed, medals, unclaimed }
       })
       .sort((a, b) => a.max - b.max),
     coreCharacters: [
@@ -218,6 +234,8 @@ type BuiltTrack = {
   max: number
   completed: number
   medals: TrackMedalStats | undefined
+  /** One-time rewards still to claim; absent while saved battle progress isn't available. */
+  unclaimed: UnclaimedTrackRewards | undefined
 }
 
 type BuiltStory = Omit<Story, "definitions"> & {
@@ -335,6 +353,12 @@ function StoryCard({
                     <ChevronRight aria-hidden className="size-4" />
                   </span>
                 </Button>
+              ) : null}
+              {track.unclaimed ? (
+                <UnclaimedRewardsDetails
+                  unclaimed={track.unclaimed}
+                  data-testid={`campaign-unclaimed-${track.definition.groupId}`}
+                />
               ) : null}
             </div>
           ))}
