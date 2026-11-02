@@ -1,10 +1,7 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
-  chestIcon,
-  heroStarIcon,
-  incursionEnhancementIcon,
-  type ChestTier,
+  incursionBoardImage,
   type NpcStorageModel,
 } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
@@ -15,7 +12,6 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { NpcLevelBadge, NpcPortrait, useNpcLabels } from "@/entities/npc"
-import { EntityIcon } from "@/shared/ui"
 
 import {
   enemyStatRow,
@@ -25,14 +21,9 @@ import {
   type IncursionNode,
 } from "../../model/incursions.model"
 import { MAX_STARS } from "../../model/incursion-progress.model"
+import { IncursionNodeMarker } from "./incursion-node-marker"
+import { IncursionPower } from "./incursion-power"
 import { IncursionRewards } from "./incursion-rewards"
-
-const CHEST_TIERS: Record<string, ChestTier> = {
-  Bronze: "bronze",
-  Silver: "silver",
-  Gold: "gold",
-  Diamond: "diamond",
-}
 
 const STARS = [1, 2, 3] as const
 const STAR_CHOICES = [0, 1, 2, 3] as const
@@ -87,17 +78,29 @@ function BattleBody({
   battle,
   npcsById,
   stars,
+  power,
+  teamPower,
 }: {
   battle: IncursionBattle
   npcsById: ReadonlyMap<string, NpcStorageModel>
   /** Stars already earned, whose one-time rewards are shown as claimed. */
   stars: number
+  power?: number
+  teamPower?: number
 }) {
   const { t } = useTranslation("incursions")
   const { variationName } = useNpcLabels()
   return (
     <div className="space-y-2">
-      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+        {power === undefined ? null : (
+          <IncursionPower
+            power={power}
+            teamPower={teamPower}
+            className="text-sm"
+            data-testid="incursion-battle-power"
+          />
+        )}
         {battle.difficultyMultiplier !== 100 ? (
           <span>
             {t("battle.difficulty", { value: battle.difficultyMultiplier })}
@@ -137,6 +140,13 @@ function BattleBody({
           )
         })}
       </ul>
+      <img
+        src={incursionBoardImage(battle.boardId)}
+        alt={t("battle.board")}
+        loading="lazy"
+        className="w-full max-w-60 rounded-md border"
+        data-testid="incursion-battle-board"
+      />
       <dl className="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-1">
         {battle.baseRewards.length > 0 ? (
           <>
@@ -169,45 +179,6 @@ function BattleBody({
   )
 }
 
-/**
- * A battle's run-map marker as the game draws it: its number on a dark disc (ringed for a challenge
- * battle) under the stars earned.
- */
-function BattleMarker({
-  name,
-  challenge,
-  stars,
-}: {
-  name: string
-  challenge: boolean
-  stars?: number
-}) {
-  return (
-    <span className="flex shrink-0 flex-col items-center" aria-hidden="true">
-      {stars === undefined ? null : (
-        <span className="flex h-3 items-end">
-          {STARS.map((count) => (
-            <EntityIcon
-              key={count}
-              src={heroStarIcon()}
-              alt=""
-              className={cn("size-3", count > stars && "opacity-25 grayscale")}
-            />
-          ))}
-        </span>
-      )}
-      <span
-        className={cn(
-          "flex size-9 items-center justify-center rounded-full border-2 bg-zinc-900 text-sm font-bold text-zinc-50 tabular-nums",
-          challenge ? "border-orange-500" : "border-amber-700/70"
-        )}
-      >
-        {name}
-      </span>
-    </span>
-  )
-}
-
 /** One run-map node: a battle with its enemies and rewards, an enhancement pick or a chest. */
 export function IncursionNodeCard({
   node,
@@ -216,6 +187,8 @@ export function IncursionNodeCard({
   npcsById,
   after,
   progress,
+  power,
+  teamPower,
 }: {
   node: IncursionNode
   incursion: Incursion
@@ -225,6 +198,9 @@ export function IncursionNodeCard({
   after?: string
   /** The player's stars, for a battle node while signed in. */
   progress?: BattleStarsProgress
+  /** The battle's enemy power, and the suggested team's to compare it with. */
+  power?: number
+  teamPower?: number
 }) {
   const { t } = useTranslation(["incursions", "traits"])
   const battle = node.battleId ? battlesById.get(node.battleId) : undefined
@@ -249,6 +225,8 @@ export function IncursionNodeCard({
           battle={battle}
           npcsById={npcsById}
           stars={progress?.stars ?? 0}
+          power={power}
+          teamPower={teamPower}
         />
       </>
     )
@@ -281,27 +259,12 @@ export function IncursionNodeCard({
       data-kind={node.kind}
     >
       <div className="flex flex-wrap items-center gap-2">
-        {node.kind === "battle" && battle ? (
-          <BattleMarker
-            name={node.name}
-            challenge={battle.challenge}
-            stars={progress?.stars}
-          />
-        ) : null}
-        {node.kind === "enhancement" && enhancement ? (
-          <EntityIcon
-            src={incursionEnhancementIcon(enhancement.type)}
-            alt=""
-            className="size-9 shrink-0"
-          />
-        ) : null}
-        {node.kind === "chest" && node.chest ? (
-          <EntityIcon
-            src={chestIcon(CHEST_TIERS[node.chest.type] ?? "bronze")}
-            alt=""
-            className="size-9 shrink-0"
-          />
-        ) : null}
+        <IncursionNodeMarker
+          node={node}
+          incursion={incursion}
+          challenge={battle?.challenge ?? false}
+          stars={progress?.stars}
+        />
         <span className="text-sm font-medium">{title}</span>
         {node.kind === "enhancement" ? (
           <Badge variant="outline">{t("enhancement.title")}</Badge>

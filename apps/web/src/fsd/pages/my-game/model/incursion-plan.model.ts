@@ -5,24 +5,6 @@ import type { IncursionBattle, IncursionTier } from "./incursions.model"
 /** Heroes a run brings (the MoW comes on top). */
 const INCURSION_TEAM_SIZE = 5
 
-/**
- * How many times its own power in enemy power a team can beat in one battle. Hero power counts one
- * unit while a battle's power adds up every enemy on the board, so a team routinely wins battles
- * several times its power. Calibrated on one clear: a 1.3M team cleared a Mythic tier whose battles
- * reach 6.2M. A web constant, not catalog data, like the LRE power ratio.
- */
-export const INCURSION_POWER_RATIO = 5
-
-/**
- * The share of the team's HP a battle as strong as the team's effective power costs. Damage carries
- * over from battle to battle until the run ends, so a team that wins each battle on its own can
- * still run out of HP.
- */
-export const DAMAGE_SHARE = 0.2
-
-/** How much less damage a team with a useful Healer (or a Mechanic with a Mechanical ally) keeps. */
-const SUPPORT_SUSTAIN = 0.25
-
 /** The power a battle needs: every enemy's power × its count, scaled by the battle's difficulty. */
 export function incursionBattlePower(
   battle: Pick<IncursionBattle, "enemies" | "difficultyMultiplier">,
@@ -87,50 +69,107 @@ export function lightestPath(
   )
 }
 
-/** How far a team is estimated to get through a tier's run. */
-export type TierRunEstimate = {
-  /** Battles won in a row from the first. */
-  wins: number
-  battles: number
-  cleared: boolean
-  /** The team's HP left after the last battle won, in whole percent. */
-  hpLeftPct: number
-  /** The strongest battle on the path, in enemy power. */
+/** A tier's enemy power: every battle's, and the toughest on the easiest path through it. */
+export type TierPower = {
+  battles: ReadonlyMap<string, number>
+  /** The path through the map that faces the least enemy power in all, in order. */
+  path: readonly PathBattle[]
+  /** The strongest battle on the path that faces the least enemy power in all. */
   peakPower: number
 }
 
+/** Every battle's power and the easiest path's toughest battle; null while a power is unknown. */
+export function tierPower(
+  tier: IncursionTier,
+  powerOf: (battle: IncursionBattle) => number | null
+): TierPower | null {
+  const battles = new Map<string, number>()
+  for (const battle of tier.battles) {
+    const power = powerOf(battle)
+    if (power === null) return null
+    battles.set(battle.id, power)
+  }
+  const path = lightestPath(tier, (battle) => battles.get(battle.id) ?? null)
+  if (!path) return null
+  return {
+    battles,
+    path,
+    peakPower: Math.max(0, ...path.map((step) => step.power)),
+  }
+}
+
+/** How hard one battle is for a team, as a colour guide. */
+export type PowerStanding = "even" | "harder" | "hard"
+
 /**
- * Plays the path in order with HP that carries over. The team fights at its power ×
- * `INCURSION_POWER_RATIO`, which must reach each battle's power; a battle then costs
- * `DAMAGE_SHARE` × its power ÷ that effective power of the HP, less `SUPPORT_SUSTAIN` with support.
- * A battle that would take the last of the HP is lost.
+ * How a battle compares with a team, on the estimate's scale: "even" up to half of what a fresh team
+ * can win, "harder" up to that, "hard" beyond (lost even at full HP).
  */
-export function estimateTierRun(
+export function powerStanding(
+  battlePower: number,
+  teamPower: number
+): PowerStanding {
+  const need = battlePower / ENEMY_POWER_DIVISOR
+  if (need <= teamPower / 2) return "even"
+  return need <= teamPower ? "harder" : "hard"
+}
+
+/**
+ * How much summed enemy power one unit of hero power stands up to: a battle's power adds up every
+ * enemy on the board, so the team faces `E / ENEMY_POWER_DIVISOR`. Tuned on a reported Tier 13 clear
+ * (three runs at about 1.3M against battles up to 6.2M); a web constant, retuned here.
+ */
+export const ENEMY_POWER_DIVISOR = 5
+
+/** The share of the team's HP a battle as strong as the team costs; damage carries over in a run. */
+export const HP_LOSS_SHARE = 0.3
+
+/** How much less HP a team with a useful Healer (or a Mechanic with a Mechanical ally) loses. */
+const SUPPORT_SUSTAIN = 0.25
+
+/** How a team is estimated to fare in a tier over as many runs as it takes. */
+export type TierRunsEstimate =
+  /** `runs` runs clear the tier; the first run wins `firstRunWins` battles. */
+  | { status: "clears"; runs: number; firstRunWins: number; battles: number }
+  /** Even a fresh run loses battle `battle` (1-based on the path). */
+  | { status: "stuck"; battle: number; firstRunWins: number; battles: number }
+
+/**
+ * Plays the path run by run. In a run the team starts at full HP and fights each battle at its
+ * power × the HP left, which must reach the battle's power ÷ `ENEMY_POWER_DIVISOR`; a win costs
+ * `HP_LOSS_SHARE` × that ÷ the team's power of the HP (less `SUPPORT_SUSTAIN` with support), and a
+ * battle that would take the last of it is lost. Battles won stay won, so the next run starts at the
+ * battle lost, with full HP.
+ */
+export function estimateTierRuns(
   teamPower: number,
   path: readonly PathBattle[],
   sustained: boolean
-): TierRunEstimate {
-  const effective = teamPower * INCURSION_POWER_RATIO
-  let hp = 1
-  let wins = 0
-  if (effective > 0) {
-    for (const { power } of path) {
-      if (effective < power) break
+): TierRunsEstimate {
+  const battles = path.length
+  let at = 0
+  let runs = 0
+  let firstRunWins = 0
+  while (at < battles) {
+    runs++
+    let hp = 1
+    const start = at
+    while (at < battles) {
+      const need = path[at]!.power / ENEMY_POWER_DIVISOR
+      if (teamPower <= 0 || teamPower * hp < need) break
       const cost =
-        ((DAMAGE_SHARE * power) / effective) *
+        ((HP_LOSS_SHARE * need) / teamPower) *
         (sustained ? 1 - SUPPORT_SUSTAIN : 1)
       if (cost >= hp) break
       hp -= cost
-      wins++
+      at++
+    }
+    if (runs === 1) firstRunWins = at
+    if (at === start) {
+      return { status: "stuck", battle: at + 1, firstRunWins, battles }
     }
   }
-  return {
-    wins,
-    battles: path.length,
-    cleared: wins === path.length,
-    hpLeftPct: wins > 0 ? Math.round(hp * 100) : 100,
-    peakPower: Math.max(0, ...path.map((battle) => battle.power)),
-  }
+  return { status: "clears", runs: Math.max(1, runs), firstRunWins, battles }
 }
 
 /** A hero the team suggestion can pick. */
@@ -155,20 +194,26 @@ export function hasSustain(team: readonly IncursionCandidate[]): boolean {
   )
 }
 
+/** The heroes of the allowed factions with a known power, strongest first. */
+export function eligibleCandidates(
+  candidates: readonly IncursionCandidate[],
+  allowedFactions: readonly string[]
+): IncursionCandidate[] {
+  const allowed = new Set(allowedFactions)
+  return candidates
+    .filter((unit) => allowed.has(unit.faction) && unit.power > 0)
+    .toSorted((a, b) => b.power - a.power || a.id.localeCompare(b.id))
+}
+
 /**
- * The suggested team: the strongest heroes of the allowed factions, with a Healer (then a Mechanic)
+ * The suggested team (from `eligibleCandidates`): the strongest heroes of the allowed factions, with a Healer (then a Mechanic)
  * swapped in for the weakest plain member when the team has none, since HP carries over between
  * battles (the LRE support rule). Null when the roster holds fewer heroes than a run needs.
  */
 export function suggestIncursionTeam(
-  candidates: readonly IncursionCandidate[],
-  allowedFactions: readonly string[],
+  pool: readonly IncursionCandidate[],
   minMembers: number
 ): IncursionCandidate[] | null {
-  const allowed = new Set(allowedFactions)
-  const pool = candidates
-    .filter((unit) => allowed.has(unit.faction) && unit.power > 0)
-    .toSorted((a, b) => b.power - a.power || a.id.localeCompare(b.id))
   if (pool.length === 0 || pool.length < minMembers) return null
   return withSupport(
     pool.slice(0, INCURSION_TEAM_SIZE),
@@ -179,3 +224,12 @@ export function suggestIncursionTeam(
 
 export const teamPowerOf = (team: readonly IncursionCandidate[]) =>
   team.reduce((sum, unit) => sum + unit.power, 0)
+
+/** Adds or removes a hero from a team being tried out; a full team ignores more additions. */
+export function toggleTeamMember(
+  team: readonly string[],
+  id: string
+): string[] {
+  if (team.includes(id)) return team.filter((member) => member !== id)
+  return team.length >= INCURSION_TEAM_SIZE ? [...team] : [...team, id]
+}

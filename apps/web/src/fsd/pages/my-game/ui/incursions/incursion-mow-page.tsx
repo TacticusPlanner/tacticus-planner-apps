@@ -1,30 +1,36 @@
 import { Link, Navigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
-import { Check, ChevronRight, X } from "lucide-react"
+import { ChevronRight, RotateCcw } from "lucide-react"
 import {
   factionIcon,
+  heroStarIcon,
   mowIcon,
-  powerIcon,
   rarityIcon,
 } from "@workspace/game-catalog"
 import type { Rarity, UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useDateLocale } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
-import type { TierRunEstimate } from "../../model/incursion-plan.model"
 import {
+  MAX_STARS,
   tierCleared,
+  tierRewards,
   tierStarCount,
   type TierStars,
 } from "../../model/incursion-progress.model"
 import type { Incursion, IncursionTier } from "../../model/incursions.model"
+import type { IncursionTierPlan } from "../../model/use-incursion-plans"
+import { IncursionEstimate } from "./incursion-estimate"
 import { IncursionNavBar } from "./incursion-nav-bar"
+import { IncursionPower } from "./incursion-power"
 import { IncursionProgressControl } from "./incursion-progress-control"
 import { IncursionStarsBar } from "./incursion-stars-bar"
 import { IncursionTeam } from "./incursion-team"
+import { IncursionTierRewards } from "./incursion-tier-rewards"
 import {
   INCURSIONS_PATH,
   incursionPath,
@@ -32,105 +38,124 @@ import {
   neighbours,
   tierGroups,
   useIncursionsOutlet,
+  type IncursionProgress,
 } from "./incursions-outlet"
+import { RARITY_BORDER, RARITY_TEXT } from "./rarity-classes"
 import { useTierName } from "./use-tier-name"
 
-const RARITY_FRAME: Record<string, string> = {
-  Common: "border-zinc-400/60",
-  Uncommon: "border-emerald-500/60",
-  Rare: "border-sky-500/60",
-  Epic: "border-violet-500/60",
-  Legendary: "border-amber-500/60",
-  Mythic: "border-rose-500/60",
-}
+const NO_STARS: TierStars = () => 0
 
-/** One tier as the game lists it: its number, the power it takes, the stars earned, and a link in. */
+/**
+ * One tier as the game lists it: its number, its toughest battle's power against the team's, what
+ * finishing it still pays, the stars earned with mark-all and reset, and a link to its run map.
+ */
 function TierCard({
   incursion,
   tier,
-  stars,
-  estimate,
+  progress,
+  power,
 }: {
   incursion: Incursion
   tier: IncursionTier
-  stars?: TierStars
-  estimate?: TierRunEstimate
+  progress?: IncursionProgress
+  power?: IncursionTierPlan
 }) {
-  const { t, i18n } = useTranslation("incursions")
+  const { t } = useTranslation("incursions")
   const tierName = useTierName(incursion)
-  const number = new Intl.NumberFormat(i18n.language)
+  const stars = progress?.starsOf(incursion.mowId)
   const count = stars ? tierStarCount(tier, stars) : undefined
   const cleared = stars ? tierCleared(tier, stars) : false
   const testId = `incursion-tier-${tier.index}`
+  const to = incursionTierPath(incursion.mowId, tier.index)
   return (
-    <li data-testid={testId}>
-      <Link
-        to={incursionTierPath(incursion.mowId, tier.index)}
-        className={cn(
-          "flex items-center gap-3 rounded-lg border-2 bg-card px-3 py-2.5 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-          RARITY_FRAME[tier.rarity]
-        )}
-        data-testid={`${testId}-open`}
-        data-cleared={cleared || undefined}
-      >
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
-            <span className="font-semibold tracking-wide uppercase">
-              {t("tier.title", { number: tier.index + 1 })}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {tierName(tier.index)}
-            </span>
-            {estimate ? (
-              <span
-                className="flex items-center gap-1 text-sm tabular-nums"
-                title={t("tier.peakPowerHint")}
-                data-testid={`${testId}-power`}
-              >
-                <EntityIcon src={powerIcon()} alt="" className="size-4" />
-                {number.format(Math.round(estimate.peakPower))}
-              </span>
-            ) : null}
-          </div>
-          {count ? (
-            <IncursionStarsBar
-              earned={count.earned}
-              max={count.max}
-              className="max-w-64"
-              data-testid={`${testId}-stars`}
+    <li
+      className={cn(
+        "flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border-2 bg-card px-3 py-2.5",
+        RARITY_BORDER[tier.rarity]
+      )}
+      data-testid={testId}
+      data-cleared={cleared || undefined}
+    >
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
+          <Link
+            to={to}
+            className="font-semibold tracking-wide uppercase hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            data-testid={`${testId}-open`}
+          >
+            {t("tier.title", { number: tier.index + 1 })}
+          </Link>
+          <span className="text-xs text-muted-foreground">
+            {tierName(tier.index)}
+          </span>
+          {power ? (
+            <IncursionPower
+              power={power.peakPower}
+              teamPower={power.team?.power}
+              className="text-sm"
+              data-testid={`${testId}-power`}
             />
           ) : null}
+          {power?.team && !cleared ? (
+            <IncursionEstimate
+              team={power.team}
+              data-testid={`${testId}-estimate`}
+            />
+          ) : null}
+          <IncursionTierRewards
+            mowId={incursion.mowId}
+            rewards={tierRewards(tier, stars ?? NO_STARS)}
+            data-testid={`${testId}-rewards`}
+          />
         </div>
-        {estimate ? (
-          <Badge
-            variant="outline"
-            className={cn(
-              "shrink-0 gap-1",
-              estimate.cleared
-                ? "text-emerald-700 dark:text-emerald-400"
-                : "text-amber-700 dark:text-amber-400"
-            )}
-            title={t("estimate.hint")}
-            data-testid={`${testId}-estimate`}
-          >
-            {estimate.cleared ? (
-              <Check className="size-3" aria-hidden="true" />
-            ) : (
-              <X className="size-3" aria-hidden="true" />
-            )}
-            {estimate.cleared
-              ? t("tier.estimateClears")
-              : t("tier.estimateStops", {
-                  battle: estimate.wins + 1,
-                  total: estimate.battles,
-                })}
-          </Badge>
+        {count ? (
+          <IncursionStarsBar
+            earned={count.earned}
+            max={count.max}
+            className="max-w-64"
+            data-testid={`${testId}-stars`}
+          />
         ) : null}
-        <span className="flex shrink-0 items-center gap-0.5 text-sm font-medium text-muted-foreground">
-          <span className="max-sm:sr-only">{t("tier.preview")}</span>
-          <ChevronRight className="size-4" aria-hidden="true" />
-        </span>
-      </Link>
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5">
+        {progress && count ? (
+          count.earned >= count.max ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => progress.setTierStars(incursion.mowId, tier, 0)}
+              aria-label={t("tier.resetTier", {
+                tier: t("tier.title", { number: tier.index + 1 }),
+              })}
+              data-testid={`${testId}-reset`}
+            >
+              <RotateCcw aria-hidden="true" />
+              <span className="max-sm:sr-only">{t("tier.reset")}</span>
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() =>
+                progress.setTierStars(incursion.mowId, tier, MAX_STARS)
+              }
+              aria-label={t("tier.markTier", {
+                tier: t("tier.title", { number: tier.index + 1 }),
+              })}
+              data-testid={`${testId}-mark-cleared`}
+            >
+              <EntityIcon src={heroStarIcon()} alt="" className="size-4" />
+              <span className="max-sm:sr-only">{t("tier.markCleared")}</span>
+            </Button>
+          )
+        ) : null}
+        <Button asChild size="sm" variant="ghost">
+          <Link to={to} tabIndex={-1} aria-hidden="true">
+            <span className="max-sm:sr-only">{t("tier.preview")}</span>
+            <ChevronRight aria-hidden="true" />
+          </Link>
+        </Button>
+      </div>
     </li>
   )
 }
@@ -158,10 +183,8 @@ export function IncursionMowPage() {
   const { previous, next } = neighbours(incursions, at)
   const owned = ownedMowIds.has(incursion.mowId)
   const stars = progress?.starsOf(incursion.mowId)
-  const estimates =
-    plans.status === "ready"
-      ? plans.plans.get(incursion.mowId)?.tiers
-      : undefined
+  const plan =
+    plans.status === "ready" ? plans.plans.get(incursion.mowId) : undefined
   const firstRun = new Date(incursion.availableFromUtc).toLocaleDateString(
     dateLocale,
     { dateStyle: "medium" }
@@ -248,7 +271,12 @@ export function IncursionMowPage() {
       >
         {tierGroups(incursion.tiers).map((group) => (
           <div key={group.rarity} className="space-y-2">
-            <h3 className="flex items-center gap-2 text-sm font-semibold tracking-wide uppercase">
+            <h3
+              className={cn(
+                "flex items-center gap-2 text-sm font-semibold tracking-wide uppercase",
+                RARITY_TEXT[group.rarity]
+              )}
+            >
               <EntityIcon
                 src={rarityIcon(group.rarity as Rarity)}
                 alt=""
@@ -264,8 +292,8 @@ export function IncursionMowPage() {
                   key={tier.index}
                   incursion={incursion}
                   tier={tier}
-                  stars={stars}
-                  estimate={estimates?.get(tier.index)}
+                  progress={progress}
+                  power={plan?.tiers.get(tier.index)}
                 />
               ))}
             </ul>

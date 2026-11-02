@@ -69,9 +69,14 @@ describe("IncursionsPage", () => {
   })
 
   it("lists every MoW newest first with the event rules, ownership and stars", async () => {
+    const user = userEvent.setup()
     await renderPage()
 
-    expect(await screen.findByTestId("incursions-rules")).toHaveTextContent(
+    expect(await screen.findByTestId("incursions-rules")).not.toHaveTextContent(
+      "run tokens"
+    )
+    await user.click(screen.getByTestId("incursions-rules-toggle"))
+    expect(screen.getByTestId("incursions-rules")).toHaveTextContent(
       "You start with 2 run tokens and hold up to 3; one more arrives every 20 hours. Starting a run costs 1."
     )
     const rows = within(screen.getByTestId("incursions-list"))
@@ -153,6 +158,7 @@ describe("IncursionsPage", () => {
     expect(
       screen.getAllByTestId("incursion-step-choice").length
     ).toBeGreaterThan(0)
+    await user.click(screen.getByTestId("incursion-map-node-7"))
     expect(screen.getByTestId("incursion-node-7")).toHaveAttribute(
       "data-kind",
       "chest"
@@ -189,9 +195,8 @@ describe("IncursionsPage", () => {
     await renderPage({ at: "/my-game/incursions/tauBroadside/13" })
 
     // Mythic 1: battle 1 is raidable and 22 one-time shards remain.
-    expect(
-      await screen.findByTestId("incursion-node-0-raidable")
-    ).toBeInTheDocument()
+    await user.click(await screen.findByTestId("incursion-map-node-0"))
+    expect(screen.getByTestId("incursion-node-0-raidable")).toBeInTheDocument()
     expect(screen.getByTestId("incursion-tier-one-time")).toHaveTextContent(
       "22 one-time shards left in this tier"
     )
@@ -204,8 +209,10 @@ describe("IncursionsPage", () => {
     ).toBeInTheDocument()
     expect(screen.queryByTestId("incursion-best-path")).not.toBeInTheDocument()
 
+    await user.click(screen.getByTestId("incursion-map-node-24"))
     await user.click(screen.getByTestId("incursion-node-24-stars-0"))
     expect(screen.getByTestId("incursion-best-path")).toBeInTheDocument()
+    await user.click(screen.getByTestId("incursion-map-node-0"))
     await user.click(screen.getByTestId("incursion-node-0-stars-3"))
     // Moving between tiers keeps the unsaved stars without asking.
     await user.click(screen.getByTestId("incursion-nav-back"))
@@ -245,6 +252,33 @@ describe("IncursionsPage", () => {
     await user.click(screen.getByTestId("incursion-tier-reset"))
     expect(screen.getByTestId("incursion-tier-stars")).toHaveTextContent("0/36")
     expect(screen.getByTestId("incursion-best-path")).toBeInTheDocument()
+  })
+
+  it("marks and resets a tier from the tier list, and shows its rewards", async () => {
+    const user = userEvent.setup()
+    getProgress.mockResolvedValue({ battles: [], revision: 0 })
+    await renderPage({ at: "/my-game/incursions/tauBroadside" })
+
+    await user.click(await screen.findByTestId("incursion-tier-0-mark-cleared"))
+    expect(screen.getByTestId("incursion-tier-0-stars")).toHaveTextContent(
+      "36/36"
+    )
+    expect(screen.getByTestId("incursion-tier-0")).toHaveAttribute(
+      "data-cleared",
+      "true"
+    )
+    await user.click(screen.getByTestId("incursion-tier-0-reset"))
+    expect(screen.getByTestId("incursion-tier-0-stars")).toHaveTextContent(
+      "0/36"
+    )
+
+    expect(
+      screen.getByTestId("incursion-tier-0-rewards-shards")
+    ).toBeInTheDocument()
+    await user.click(screen.getByTestId("incursion-tier-0-rewards-all"))
+    expect(
+      await screen.findByTestId("incursion-tier-0-rewards-popover")
+    ).toBeInTheDocument()
   })
 
   it("asks a signed-out visitor to sign in instead of showing progress", async () => {

@@ -60,7 +60,11 @@ export {
   type ResourceGlyph,
 } from "./reward"
 export { abilityIcon } from "./ability"
-export { incursionEnhancementIcon, incursionTokenIcon } from "./incursion"
+export {
+  incursionBoardImage,
+  incursionEnhancementIcon,
+  incursionTokenIcon,
+} from "./incursion"
 export {
   raidBossPortrait,
   fieldNpcIcon,

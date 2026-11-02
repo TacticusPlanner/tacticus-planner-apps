@@ -12,6 +12,7 @@ import {
   tierSummary,
   enhancementSubject,
   enemyStatRow,
+  isShardReward,
 } from "./incursions.model"
 
 const broadside = incursionsFixture.find(
@@ -52,6 +53,19 @@ describe("shardYield", () => {
         "shards_tauBroadside",
       ])
     ).toEqual({ shards: 3, mythicShards: 4 })
+  })
+})
+
+describe("isShardReward", () => {
+  it("matches only the MoW's own shards and mythic shards", () => {
+    expect(isShardReward("tauBroadside", "shards_tauBroadside:2")).toBe(true)
+    expect(isShardReward("tauBroadside", "mythicShards_tauBroadside")).toBe(
+      true
+    )
+    expect(isShardReward("tauBroadside", "shards_necroReanimator:5")).toBe(
+      false
+    )
+    expect(isShardReward("tauBroadside", "gold:100")).toBe(false)
   })
 })
 

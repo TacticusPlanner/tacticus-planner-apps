@@ -35,7 +35,8 @@
     "title": "Run map",
     "step": "Step {{number}}",
     "pickOne": "Pick one",
-    "after": "After {{names}}"
+    "after": "After {{names}}",
+    "or": "or"
   },
   "battle": {
     "name": "Battle {{name}}",
@@ -45,7 +46,8 @@
     "enemies": "Enemies",
     "everyWin": "Every win",
     "stars": "{{count}}★",
-    "starsClaimed": "{{count}}★ (claimed)"
+    "starsClaimed": "{{count}}★ (claimed)",
+    "board": "Battle board"
   },
   "enhancement": {
     "title": "Enhancement",
@@ -119,19 +121,13 @@
     "power": "Power {{power}}",
     "sustain": "Healer included",
     "sustainHint": "Damage carries over between battles, so a Healer (or a Mechanic with a Mechanical ally) is swapped in for the weakest member when the strongest heroes have none.",
-    "clearable_one": "Estimated to clear {{count}} of {{total}} tiers, up to {{tier}}",
-    "clearable_other": "Estimated to clear {{count}} of {{total}} tiers, up to {{tier}}",
-    "clearableNone": "Not estimated to clear any tier yet.",
-    "hint": "Uncalibrated estimate from your synced roster: the strongest heroes of the allowed factions against the easiest path through each tier, with HP carried over from battle to battle. A team is assumed to beat battles up to 5× its own power, since a battle's power adds up every enemy.",
+    "hint": "From your synced roster: the strongest heroes of the allowed factions, with a Healer swapped in. Each tier caps heroes to its rarity, so its estimate uses the capped team. Enemy power is coloured for that team: green is comfortable, amber is winnable at full HP, red is out of reach.",
     "tooFew_one": "You need at least {{count}} hero from the allowed factions.",
     "tooFew_other": "You need at least {{count}} heroes from the allowed factions.",
     "unsynced": "Sync your roster to see a suggested team and which tiers it can clear.",
-    "noPower": "Power estimates are unavailable right now."
-  },
-  "estimate": {
-    "clears": "Suggested team: estimated clear with about {{hp}}% HP left",
-    "stops": "Suggested team: estimated to fall at battle {{battle}} of {{total}}",
-    "hint": "Damage carries over between battles until the run ends."
+    "noPower": "Power estimates are unavailable right now.",
+    "eligible_one": "{{count}} eligible hero",
+    "eligible_other": "All {{count}} eligible heroes"
   },
   "nav": {
     "label": "Incursion navigation",
@@ -148,11 +144,33 @@
     "list": "Tiers",
     "preview": "Preview",
     "starsLabel": "{{earned}} of {{max}} stars",
-    "peakPowerHint": "Enemy power of the toughest battle on the easiest path through this tier.",
-    "estimateClears": "Clearable",
-    "estimateStops": "Falls at {{battle}}/{{total}}",
     "markCleared": "Mark all 3★",
     "reset": "Reset",
-    "markHint": "Sets every battle in this tier at once. Save to keep the change."
+    "markHint": "Sets every battle in this tier at once. Save to keep the change.",
+    "markTier": "Mark every battle of {{tier}} at 3 stars",
+    "resetTier": "Reset the stars of {{tier}}"
+  },
+  "power": {
+    "enemy": "Enemy power: every enemy's power added up",
+    "vsTeam": "Enemy power: {{ratio}}× your team's power at this tier"
+  },
+  "rewards": {
+    "all": "All rewards for finishing this tier",
+    "hint": "Chests pay every run; star rewards you haven't earned yet are paid once."
+  },
+  "eligible": {
+    "title": "Heroes for {{mow}}",
+    "hint": "Every hero of the allowed factions, strongest first. Tap heroes to try a team of up to 5; nothing is saved.",
+    "selected_one": "{{count}} hero · power {{power}}",
+    "selected_other": "{{count}} heroes · power {{power}}",
+    "reset": "Back to suggested",
+    "close": "Close"
+  },
+  "estimate": {
+    "clears_one": "Clears in 1 run",
+    "clears_other": "Clears in {{count}} runs",
+    "stuck": "Stuck at battle {{battle}} of {{battles}}",
+    "firstRun": "First run wins {{wins}} of {{battles}} battles with your team capped to this tier ({{power}} power).",
+    "hint": "Estimate: your suggested team with every hero capped to this tier's rarity ({{power}} power). A battle is won while your power × HP left reaches a fifth of the enemy power; each win costs HP in proportion (less with a Healer). Battles won stay won, so the next run starts at full HP where the last one stopped."
   }
 }

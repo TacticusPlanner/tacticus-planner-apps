@@ -44,6 +44,12 @@ export type ShardYield = { shards: number; mythicShards: number }
 
 const NO_SHARDS: ShardYield = { shards: 0, mythicShards: 0 }
 
+/** Whether a reward string pays the MoW's own shards or mythic shards. */
+export function isShardReward(mowId: string, reward: string): boolean {
+  const { id } = parseReward(reward)
+  return id === `shards_${mowId}` || id === `mythicShards_${mowId}`
+}
+
 /** The MoW's own shards and mythic shards among `rewards` (the minimum of any range). */
 export function shardYield(
   mowId: string,

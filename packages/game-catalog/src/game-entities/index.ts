@@ -57,6 +57,7 @@ export {
   resourceGlyphIcon,
   seasonalEventCurrencyIcon,
   abilityIcon,
+  incursionBoardImage,
   incursionEnhancementIcon,
   incursionTokenIcon,
   raidBossPortrait,

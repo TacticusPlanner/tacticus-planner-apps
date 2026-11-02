@@ -11,6 +11,7 @@ import {
   starsFor,
   tierChestRewards,
   tierCleared,
+  tierRewards,
   tierStarCount,
   tierStarsPatch,
   tierUnclaimedRewards,
@@ -104,6 +105,15 @@ describe("one-time rewards", () => {
       shards: 0,
       mythicShards: 0,
     })
+  })
+
+  it("adds the unearned one-time rewards to the chests, and only chests once fully starred", () => {
+    const none = () => 0
+    expect(tierRewards(common1, none)).toEqual([
+      ...tierChestRewards(common1),
+      ...tierUnclaimedRewards(common1, none),
+    ])
+    expect(tierRewards(common1, () => 3)).toEqual(tierChestRewards(common1))
   })
 
   it("lists the chests a replay pays again", () => {

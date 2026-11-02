@@ -1,4 +1,5 @@
-import { datamineAssetUrl } from "./asset-path"
+import { curatedAssetUrl, datamineAssetUrl } from "./asset-path"
+import { battleBoardImage } from "./battle-board"
 
 // The run-map enhancement icons, keyed by the `type` an Incursion enhancement carries.
 const enhancementIconFiles: Record<string, string> = {
@@ -25,4 +26,15 @@ export function incursionEnhancementIcon(type: string): string | undefined {
 /** The Machines of War event's run token. */
 export function incursionTokenIcon(): string {
   return datamineAssetUrl("liveevents/ui_icon_battle_token_mow.webp")
+}
+
+/**
+ * An Incursion battle's board: the annotated board (spawn zones marked) when one ships, else the
+ * game's plain board art, downscaled into curated/incursion_boards for every board Incursions use.
+ */
+export function incursionBoardImage(boardId: string): string {
+  return (
+    battleBoardImage(boardId) ??
+    curatedAssetUrl(`incursion_boards/${boardId}.webp`)
+  )
 }
