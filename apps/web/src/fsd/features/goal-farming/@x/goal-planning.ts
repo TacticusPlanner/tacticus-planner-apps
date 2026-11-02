@@ -29,6 +29,8 @@ export {
   mowAbilityGoalSlotItems,
   mowAbilityTrackLevel,
   rankGoalSlotItems,
+  type RankAdditionalTarget,
+  rankTargetReached,
   rankSlotAllocation,
   type RankSlotAllocation,
   reachableRankProgress,

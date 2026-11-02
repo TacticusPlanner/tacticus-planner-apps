@@ -37,6 +37,7 @@ export function TargetLadder({
   takenKeys,
   onChange,
   label,
+  startSelectable = false,
   testId,
   fieldProps,
 }: {
@@ -46,6 +47,8 @@ export function TargetLadder({
   takenKeys: ReadonlySet<string>
   onChange: (key: string) => void
   label: string
+  /** The start step is itself a valid target (a Rank goal's partial slots on the current rank). */
+  startSelectable?: boolean
   testId: string
   /** `id`, `aria-invalid` and `aria-describedby` from the card's issues. */
   fieldProps?: {
@@ -68,7 +71,10 @@ export function TargetLadder({
       selected: index === valueIndex,
       inRange:
         valueIndex > startIndex && index >= startIndex && index <= valueIndex,
-      disabled: index <= startIndex || taken,
+      disabled:
+        index < startIndex ||
+        (index === startIndex && !startSelectable) ||
+        taken,
     }
   })
   const selectable = states.filter((state) => !state.disabled)

@@ -235,6 +235,17 @@ describe("getGoalTargetIssue", () => {
     ).toBe("rankNotAboveStart")
   })
 
+  it("accepts a partial-slot target on the stored start's own rank", () => {
+    const detail = rankGoal(rankIndex(Rank.Gold1))
+    expect(
+      getGoalTargetIssue(detail, {
+        kind: "Rank",
+        end: Rank.Silver1,
+        additional: "TopRow",
+      })
+    ).toBeNull()
+  })
+
   it("keeps Ability tracks independent and requires one to advance", () => {
     const detail = goal("Ability", {
       ability: { activeStart: 5, activeEnd: 8, passiveStart: 4, passiveEnd: 6 },

@@ -4,8 +4,11 @@ import {
   additionalTargetFromWire,
   additionalTargetOptions,
   additionalTargetSelection,
+  additionalTargetSlots,
+  rankTargetReached,
   reachableRankProgress,
   rowCount,
+  requiredLevelForRankTarget,
   rowLevel,
 } from "./rank-additional-target"
 import { levelRules } from "@/test/fixtures/level-rules"
@@ -135,10 +138,77 @@ describe("rowCount", () => {
 })
 
 describe("rowLevel", () => {
-  it("adds count-1 to the rank's base XP level", () => {
+  it("reads the level of the count-th cheapest upgrade slot from the game data", () => {
+    expect(rowLevel("Adamantine1", 1, levelRules)).toBe(55)
+    expect(rowLevel("Adamantine1", 5, levelRules)).toBe(59)
     expect(rowLevel("Diamond3", 1, levelRules)).toBe(50)
     expect(rowLevel("Diamond3", 5, levelRules)).toBe(54)
-    expect(rowLevel("Stone1", 2, levelRules)).toBe(2)
+    expect(rowLevel("Stone1", 2, levelRules)).toBe(1)
+  })
+})
+
+describe("requiredLevelForRankTarget", () => {
+  it("needs only the rank's own level for a clean rank", () => {
+    expect(requiredLevelForRankTarget("Silver1", "None", levelRules)).toBe(26)
+    expect(requiredLevelForRankTarget("Gold1", "None", levelRules)).toBe(35)
+  })
+
+  it("needs no extra levels for a rank and a half below Diamond3", () => {
+    expect(requiredLevelForRankTarget("Silver1", "TopRow", levelRules)).toBe(26)
+    expect(requiredLevelForRankTarget("Gold1", "TopRow", levelRules)).toBe(35)
+    expect(requiredLevelForRankTarget("Gold1", "TopRow1", levelRules)).toBe(35)
+    expect(requiredLevelForRankTarget("Gold1", "TopRow2", levelRules)).toBe(35)
+    expect(requiredLevelForRankTarget("Diamond2", "TopRow", levelRules)).toBe(
+      47
+    )
+  })
+
+  it("needs one level per top-row slot from Diamond3 on", () => {
+    expect(requiredLevelForRankTarget("Diamond3", "TopRow1", levelRules)).toBe(
+      50
+    )
+    expect(requiredLevelForRankTarget("Diamond3", "TopRow2", levelRules)).toBe(
+      51
+    )
+    expect(requiredLevelForRankTarget("Diamond3", "TopRow", levelRules)).toBe(
+      52
+    )
+  })
+
+  it("needs one level per numbered slot at an Adamantine rank", () => {
+    expect(requiredLevelForRankTarget("Adamantine1", "Row1", levelRules)).toBe(
+      55
+    )
+    expect(requiredLevelForRankTarget("Adamantine1", "Row3", levelRules)).toBe(
+      57
+    )
+    expect(requiredLevelForRankTarget("Adamantine1", "Row5", levelRules)).toBe(
+      59
+    )
+  })
+})
+
+describe("additionalTargetSlots", () => {
+  it("names the top-row slots for TopRow targets and the first N for RowN", () => {
+    expect(additionalTargetSlots("None")).toEqual([])
+    expect(additionalTargetSlots("TopRow1")).toEqual([0])
+    expect(additionalTargetSlots("TopRow")).toEqual([0, 2, 4])
+    expect(additionalTargetSlots("Row3")).toEqual([0, 1, 2])
+  })
+})
+
+describe("rankTargetReached", () => {
+  const current = { rank: "Diamond3" as const, appliedSlots: [0, 2] }
+
+  it("compares different ranks by ladder position", () => {
+    expect(rankTargetReached(current, "Diamond2", "TopRow")).toBe(true)
+    expect(rankTargetReached(current, "Adamantine1", "None")).toBe(false)
+  })
+
+  it("is reached on the same rank only once every named slot is applied", () => {
+    expect(rankTargetReached(current, "Diamond3", "None")).toBe(true)
+    expect(rankTargetReached(current, "Diamond3", "TopRow2")).toBe(true)
+    expect(rankTargetReached(current, "Diamond3", "TopRow")).toBe(false)
   })
 })
 

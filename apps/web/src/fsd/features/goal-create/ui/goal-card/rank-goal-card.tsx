@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { rankOrder, type Rank } from "@workspace/game-domain"
+import { lastRank, rankOrder, type Rank } from "@workspace/game-domain"
 
 import type { FarmingStrategy } from "@/entities/goal"
 import type { RankAdditionalTarget } from "@/features/goal-farming/@x/goal-create"
@@ -105,6 +105,7 @@ export function RankGoalCard({
           label={t("goals.create.rank.target")}
           onChange={(key) => onChange({ ...value, end: key as Rank })}
           startKey={start}
+          startSelectable={start !== lastRank}
           steps={steps}
           takenKeys={takenRanks}
           testId="create-goal-rank-end"
