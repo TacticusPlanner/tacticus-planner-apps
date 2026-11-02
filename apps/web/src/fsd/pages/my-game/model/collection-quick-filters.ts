@@ -96,7 +96,7 @@ const thirdSlotProgression: Progression = "Rare:FourStars"
 const slotsBeforeThirdUnlock = 2
 
 /** The item slots a character can fill at its current progression. */
-export function openEquipmentSlots(
+function openEquipmentSlots(
   progression: Progression,
   equipmentSlots: number
 ): number {
