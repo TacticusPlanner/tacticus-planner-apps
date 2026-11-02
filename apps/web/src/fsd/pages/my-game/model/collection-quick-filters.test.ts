@@ -254,6 +254,24 @@ describe("missingEquipment and abilitiesBehindLevel", () => {
     expect(abilitiesBehindLevel(done)).toBe(false)
   })
 
+  it("does not count the third slot before Rare 4 stars unlocks it", () => {
+    for (const progression of [
+      "Common:None",
+      "Uncommon:TwoStars",
+      "Uncommon:FourStars",
+    ] as const) {
+      expect(missingEquipment({ ...owned, progression, equipped: 2 })).toBe(
+        false
+      )
+      expect(missingEquipment({ ...owned, progression, equipped: 1 })).toBe(
+        true
+      )
+    }
+    expect(
+      missingEquipment({ ...owned, progression: "Rare:FourStars", equipped: 2 })
+    ).toBe(true)
+  })
+
   it("never lists a Machine of War", () => {
     const mow: QuickFilterUnit = {
       kind: "mow",
