@@ -142,8 +142,9 @@ jobs:
           file: apps/web/coverage/cobertura-coverage.xml
           language: TypeScript
           label: coverage/web
-          # Upload is rejected for some branch names (HTTP 400); a publishing hiccup must not fail the PR.
-          fail-on-error: false
+          # Upload is rejected for some PR branch names (HTTP 400); that must not fail the PR, but a
+          # failed upload of the main baseline still fails the run.
+          fail-on-error: ${{ github.event_name != 'pull_request' }}
 
       - name: Upload ui coverage
         uses: actions/upload-code-coverage@v1
@@ -151,8 +152,9 @@ jobs:
           file: packages/ui/coverage/cobertura-coverage.xml
           language: TypeScript
           label: coverage/ui
-          # Upload is rejected for some branch names (HTTP 400); a publishing hiccup must not fail the PR.
-          fail-on-error: false
+          # Upload is rejected for some PR branch names (HTTP 400); that must not fail the PR, but a
+          # failed upload of the main baseline still fails the run.
+          fail-on-error: ${{ github.event_name != 'pull_request' }}
 
       - name: Upload game-catalog coverage
         uses: actions/upload-code-coverage@v1
@@ -160,5 +162,6 @@ jobs:
           file: packages/game-catalog/coverage/cobertura-coverage.xml
           language: TypeScript
           label: coverage/game-catalog
-          # Upload is rejected for some branch names (HTTP 400); a publishing hiccup must not fail the PR.
-          fail-on-error: false
+          # Upload is rejected for some PR branch names (HTTP 400); that must not fail the PR, but a
+          # failed upload of the main baseline still fails the run.
+          fail-on-error: ${{ github.event_name != 'pull_request' }}
