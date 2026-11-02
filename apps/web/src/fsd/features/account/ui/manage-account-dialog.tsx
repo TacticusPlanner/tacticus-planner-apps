@@ -73,7 +73,7 @@ type ManageAccountDialogProps = {
  * "Account settings" dialog reachable from the user menu: Tacticus Integration (view masked values, update the
  * key, update/remove the user id) and Account (sign-in method and
  * email, then purge — planner data only, or also the sign-in account; requires typing the literal word
- * "Confirm"). With the `StagingTransfer` flag on, a Staging tab copies production data into staging: it
+ * "Confirm"). In production and staging builds, a Transfer tab copies production data into staging: it
  * mints a transfer code in production and redeems one on staging.
  */
 export function ManageAccountDialog({
