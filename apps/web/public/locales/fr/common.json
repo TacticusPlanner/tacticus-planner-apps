@@ -1441,7 +1441,9 @@
       "groupByType": "Regrouper par type",
       "groupByUnit": "Regrouper par unité",
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés",
-      "statusFilterLabel": "Filtre de statut des objectifs"
+      "statusFilterLabel": "Filtre de statut des objectifs",
+      "groupCount_one": "{{count}} objectif",
+      "groupCount_other": "{{count}} objectifs"
     },
     "seasonFit": {
       "label": "Calage sur la saison",
