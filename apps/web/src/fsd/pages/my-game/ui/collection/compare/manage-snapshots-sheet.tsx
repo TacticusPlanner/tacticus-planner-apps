@@ -303,7 +303,11 @@ function SnapshotRow({
         variant="ghost"
         size="icon"
         aria-label={t("myGame.collection.snapshots.rename")}
-        onClick={() => setEditing(true)}
+        onClick={() => {
+          // From the current name, which may have changed since the row mounted.
+          setDraft(snapshot.name)
+          setEditing(true)
+        }}
         disabled={editing || rename.isPending}
         data-testid="manage-snapshot-rename"
       >

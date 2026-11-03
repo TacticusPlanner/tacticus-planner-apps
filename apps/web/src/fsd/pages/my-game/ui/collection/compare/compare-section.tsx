@@ -137,9 +137,9 @@ function ReadyCompare({
   const toKind = to?.kind ?? "current"
   useEffect(() => {
     captureEvent({ type: "roster_compare_opened", fromKind: from.kind, toKind })
-    // One event per pair of sources compared.
+    // One event per pair of sources compared; captureEvent changes once, when the client loads.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fromId, to?.id])
+  }, [fromId, to?.id, captureEvent])
 
   const label = (source: typeof from) =>
     sourceLabel(source, i18n.language, labels)

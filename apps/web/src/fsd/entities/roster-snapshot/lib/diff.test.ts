@@ -241,6 +241,29 @@ describe("diffRosters", () => {
     )
     expect(diff?.power).toBeNull()
   })
+
+  it("has no shard comparison when the source lacks the shards field", () => {
+    const [diff] = diffRosters(
+      { characters: [{ ...calgarFrom, shards: undefined }] },
+      { characters: [calgarTo] },
+      context
+    )
+    expect(diff?.shards).toBeNull()
+  })
+
+  it("skips the progression change and step costs for an unknown progression", () => {
+    const [diff] = diffRosters(
+      { characters: [calgarFrom] },
+      {
+        characters: [
+          { ...calgarTo, progressionIndex: "Future:Stars" as Progression },
+        ],
+      },
+      context
+    )
+    expect(diff?.progression).toBeNull()
+    expect(diff?.shards?.spent).toBe(0)
+  })
 })
 
 describe("diffRosters with a V1 import", () => {

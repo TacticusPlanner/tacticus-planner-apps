@@ -35,10 +35,16 @@ import {
 /**
  * Whether a quick filter can be offered: `needsRoster` without a synced roster, `needsInventory`
  * while the inventory it reads has not synced or could not be read, `failed` when its catalog data
- * could not be loaded, `loading` while either is still being read.
+ * could not be loaded, `loading` while either is still being read, `currentOnly` while a stored
+ * roster is listed (its ranks and slots are not the synced roster and inventory the filter reads).
  */
 export type QuickFilterAvailability =
-  "available" | "loading" | "needsRoster" | "needsInventory" | "failed"
+  | "available"
+  | "loading"
+  | "needsRoster"
+  | "needsInventory"
+  | "currentOnly"
+  | "failed"
 
 export type CollectionViewState =
   | { status: "loading" }
@@ -146,6 +152,7 @@ export function useCollectionView(
     roster.characters !== undefined &&
     roster.mows !== undefined
 
+  const overridden = rosterOverride !== undefined
   const quickFilters = useMemo(() => {
     const progression = availability(rosterAvailable, ladderRead, inventoryRead)
     const rankUp = availability(
@@ -160,12 +167,15 @@ export function useCollectionView(
           ? rosterAvailable
             ? "available"
             : "needsRoster"
-          : quick === "readyToRankUp"
-            ? rankUp
-            : progression,
+          : overridden
+            ? "currentOnly"
+            : quick === "readyToRankUp"
+              ? rankUp
+              : progression,
       ])
     ) as Record<CollectionQuickFilter, QuickFilterAvailability>
   }, [
+    overridden,
     rosterAvailable,
     ladderRead,
     inventoryRead,

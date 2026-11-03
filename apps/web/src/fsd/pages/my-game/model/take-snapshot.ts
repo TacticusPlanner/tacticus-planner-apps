@@ -21,8 +21,9 @@ export type TakeFailure =
   | { kind: "limitReached"; canFallBack: false }
   | { kind: "notSynced"; canFallBack: false }
   | { kind: "rateLimited"; canFallBack: true; retryAfterSeconds?: number }
-  /** The sync failed (Tacticus unavailable, rejected key, network). */
-  | { kind: "syncFailed"; canFallBack: true }
+  /** The sync failed (Tacticus unavailable, rejected key, network); a 401/403 fails the same way
+   *  from the last sync, so it offers no fallback. */
+  | { kind: "syncFailed"; canFallBack: boolean }
 
 /** How the take dialog presents a failed `POST me/roster-snapshots`. */
 export function takeFailure(error: unknown): TakeFailure {
@@ -39,5 +40,7 @@ export function takeFailure(error: unknown): TakeFailure {
       retryAfterSeconds: error.retryAfterSeconds,
     }
   }
-  return { kind: "syncFailed", canFallBack: true }
+  const unauthorized =
+    error instanceof ApiError && (error.status === 401 || error.status === 403)
+  return { kind: "syncFailed", canFallBack: !unauthorized }
 }

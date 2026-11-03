@@ -24,7 +24,10 @@ import {
   UnitTile,
   type UnitKind,
 } from "@/entities/unit"
-import { useRosterSnapshots } from "@/entities/roster-snapshot"
+import {
+  formatRosterSourceId,
+  useRosterSnapshots,
+} from "@/entities/roster-snapshot"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
@@ -40,7 +43,7 @@ import {
 } from "../../model/use-collection-options"
 import { useCollectionQuery } from "../../model/use-collection-query"
 import { useCollectionView } from "../../model/use-collection-view"
-import { COMPARE_CURRENT, COMPARE_LATEST } from "../../model/compare-query"
+import { COMPARE_CURRENT } from "../../model/compare-query"
 import { useCollectionCompare } from "../../model/use-collection-compare"
 import { useCompareQuery } from "../../model/use-compare-query"
 import { useCollectionTutorial } from "./collection.tutorial"
@@ -86,8 +89,17 @@ export function CollectionPage() {
   const snapshots = useRosterSnapshots(isAuthenticated)
   const [takeOpen, setTakeOpen] = useState(false)
   const [manageOpen, setManageOpen] = useState(false)
-  const state = useCollectionView(query, toRoster)
   const comparing = compare.mode !== "off" && compare.mode !== "guest"
+  // Compare's non-gain orders are Collection sorts on the "to" state, so they sort the list.
+  const compareOrder = compareQuery.query.order
+  const viewQuery = useMemo(
+    () =>
+      comparing && compareOrder !== "gain"
+        ? { ...query, sort: compareOrder }
+        : query,
+    [comparing, compareOrder, query]
+  )
+  const state = useCollectionView(viewQuery, toRoster)
   const hasGroups =
     !comparing && state.status === "ready" && state.view.groups.length > 0
   const hasSummary = hasGroups && state.view.rosterState === "available"
@@ -201,9 +213,12 @@ export function CollectionPage() {
             onOpenChange={setTakeOpen}
             count={usage?.count ?? 0}
             limit={usage?.limit ?? 0}
-            onCompare={() =>
+            onCompare={(snapshot) =>
               compareQuery.update({
-                compare: COMPARE_LATEST,
+                compare: formatRosterSourceId({
+                  kind: "snapshot",
+                  snapshotId: snapshot.id,
+                }),
                 to: COMPARE_CURRENT,
               })
             }

@@ -452,6 +452,7 @@
         },
         "quickNeedsRoster": "Les filtres rapides nécessitent un effectif synchronisé.",
         "quickNeedsInventory": "{{filters}} : nécessite votre inventaire synchronisé.",
+        "quickCurrentOnly": "{{filters}} : lit votre roster et votre inventaire actuels, donc il est désactivé pendant la comparaison avec un instantané.",
         "quickFailed": "{{filters}} : ses données de jeu n'ont pas pu être chargées.",
         "rankRange": "Plage de rangs",
         "groupUnit": "Unité",

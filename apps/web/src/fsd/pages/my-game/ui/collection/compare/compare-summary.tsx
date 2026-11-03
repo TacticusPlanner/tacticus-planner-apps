@@ -39,13 +39,16 @@ export function CompareSummary({
       : new Intl.NumberFormat(i18n.language).format(summary[metric])
 
   const chips = rosterDiffMetrics.map((metric) => {
-    const enabled = summary[metric] !== 0
+    // A Power selection lists only gains, so a loss leaves nothing to show.
+    const enabled =
+      metric === "power" ? summary.power > 0 : summary[metric] !== 0
     const active = selected === metric
     return (
       <button
         key={metric}
         type="button"
-        disabled={!enabled}
+        // A selection that no longer matches stays clickable so it can be cleared.
+        disabled={!enabled && !active}
         aria-pressed={active}
         onClick={() => onSelect(active ? null : metric)}
         className={cn(
