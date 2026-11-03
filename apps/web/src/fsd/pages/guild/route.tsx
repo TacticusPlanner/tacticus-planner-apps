@@ -19,6 +19,12 @@ const loadGuildMembersRoute = () =>
   }))
 const GuildMembersRoute = lazy(loadGuildMembersRoute)
 
+const loadGuildSettingsRoute = () =>
+  import("./ui/guild-settings-route").then((m) => ({
+    default: m.GuildSettingsRoute,
+  }))
+const GuildSettingsRoute = lazy(loadGuildSettingsRoute)
+
 // Nested under "/guild" — see app/routes.tsx, which owns the top-level path, the layout element,
 // and the ProtectedRoute wrapping, and just splices this array in as `children`.
 export const routes: RouteObject[] = [
@@ -27,5 +33,10 @@ export const routes: RouteObject[] = [
     path: "members",
     element: <GuildMembersRoute />,
     loader: preloadOnMatch(loadGuildMembersRoute),
+  },
+  {
+    path: "settings",
+    element: <GuildSettingsRoute />,
+    loader: preloadOnMatch(loadGuildSettingsRoute),
   },
 ]

@@ -24,6 +24,8 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { registerGuild, type RegisteredGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
 
+import { GuildApiKeySteps } from "./guild-api-key-steps"
+
 type Props = {
   onRegistered: (guild: RegisteredGuild) => void
   showGuildManagementLink: boolean
@@ -65,11 +67,13 @@ export function GuildRegistrationForm({
         <CardDescription className="flex flex-col gap-2">
           <p>{t("guild.unregistered.description")}</p>
           <p>{t("guild.unregistered.leaderPrompt")}</p>
+          <p>{t("guild.unregistered.memberNote")}</p>
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form data-testid="guild-registration-form" onSubmit={handleSubmit}>
           <FieldGroup>
+            <GuildApiKeySteps />
             <Field data-invalid={Boolean(errorMessage)}>
               <FieldLabel htmlFor="guild-api-token">
                 {t("guild.unregistered.tokenLabel")}

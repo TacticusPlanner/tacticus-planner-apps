@@ -10,6 +10,7 @@ import {
   LayoutGrid,
   ListOrdered,
   ListTodo,
+  Settings,
   Table2,
   Users,
 } from "lucide-react"
@@ -46,6 +47,7 @@ type NavLabelKey =
   | "legendaryEvents.tabs.masterTable"
   | "legendaryEvents.tabs.tierList"
   | "guild.tabs.members"
+  | "guild.tabs.settings"
   // Namespace-prefixed ("dailies:...") rather than living in `common.json` like every other
   // section's tab keys: `dailies` is its own long-standing i18n namespace/file, and duplicating
   // its content into `common.json` is an explicitly disallowed regression (see
@@ -333,6 +335,12 @@ export const navItems: NavItem[] = [
         artSrc: gameMenuIcon("guild"),
         labelKey: "guild.tabs.members",
         descriptionKey: "guild.tabs.membersDescription",
+      },
+      {
+        path: "/guild/settings",
+        icon: Settings,
+        labelKey: "guild.tabs.settings",
+        descriptionKey: "guild.tabs.settingsDescription",
       },
     ],
   },

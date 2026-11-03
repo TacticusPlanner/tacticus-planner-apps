@@ -686,6 +686,7 @@
       "description": "A Tacticus User ID is needed to match you against guild data before you can view or register a guild.",
       "userIdLabel": "Tacticus user ID",
       "userIdPlaceholder": "Enter your Tacticus user ID",
+      "userIdHint": "You'll find it at the bottom of the user settings screen in the game.",
       "save": "Save",
       "saving": "Saving…",
       "saved": "Tacticus user ID saved.",
@@ -693,15 +694,36 @@
     },
     "unregistered": {
       "title": "No guild registered yet",
-      "description": "A guild must first be registered by a Guild Leader or Co-Leader.",
-      "leaderPrompt": "Are you the Guild Leader or Co-Leader? Use the input below to paste a Guild API Token with Guild and GuildRaids scope.",
+      "description": "A Guild Leader or Co-Leader registers the guild once. After that, every member can use guild features with just their Tacticus user ID.",
+      "leaderPrompt": "Are you the Guild Leader or Co-Leader? Create a Guild API key and paste it below.",
+      "memberNote": "Not a Leader or Co-Leader? You don't need a key. Ask your Leader or Co-Leader to register the guild here.",
       "eligibility": "Registration is authorized by Tacticus and is available only to the current Leader or a Co-Leader.",
-      "handoff": "Ask your current Leader or Co-Leader to complete guild registration with an authorized token.",
-      "tokenLabel": "Guild API token",
-      "tokenPlaceholder": "Paste your Guild API token",
+      "handoff": "Ask your current Leader or Co-Leader to register the guild with their own Guild API key.",
+      "tokenLabel": "Guild API key",
+      "tokenPlaceholder": "Paste your Guild API key",
       "register": "Register Guild",
       "registering": "Registering…",
       "genericError": "Something went wrong. Please try again."
+    },
+    "apiKeySteps": {
+      "title": "How to get a Guild API key",
+      "signIn": "Sign in at api.tacticusgame.com with your Tacticus account.",
+      "create": "Create an API key with the Guild and Guild Raid scopes.",
+      "paste": "Copy the key and paste it here.",
+      "getKey": "Get a key at api.tacticusgame.com"
+    },
+    "settings": {
+      "apiKey": {
+        "title": "Guild API key",
+        "description": "Planner uses this key to sync your guild's members and raid data. Replace it if you regenerated or revoked the key on api.tacticusgame.com, or if Planner says Tacticus rejected it.",
+        "label": "New Guild API key",
+        "placeholder": "Paste your Guild API key",
+        "replace": "Replace key",
+        "replacing": "Replacing…",
+        "replaced": "Guild API key replaced and guild synced.",
+        "leadersOnly": "Only your guild's Leader or Co-Leader can replace the Guild API key.",
+        "genericError": "Something went wrong. Please try again."
+      }
     },
     "summary": {
       "level": "Level {{level}}",
@@ -726,7 +748,7 @@
       "genericError": "Something went wrong while deleting the guild. Please try again.",
       "errors": {
         "forbidden": "Only a current Leader or Co-Leader with a Tacticus user ID can delete this guild. Nothing was deleted.",
-        "roleCheckFailed": "Your role couldn't be checked against Tacticus: it rejected this guild's stored Guild API token or sent back data Planner couldn't read. Nothing was deleted. Re-register the guild with a fresh Guild API token, then try again.",
+        "roleCheckFailed": "Your role couldn't be checked against Tacticus: it rejected this guild's stored Guild API key or sent back data Planner couldn't read. Nothing was deleted. Replace the Guild API key in Guild > Settings, then try again.",
         "upstreamUnavailable": "Tacticus is unavailable right now, so your role couldn't be checked. Nothing was deleted. Please try again later.",
         "concurrency": "The guild roster changed while it was being checked. Nothing was deleted. Please try again.",
         "rateLimited": "Too many requests to Tacticus. Nothing was deleted. Please wait a moment and try again."
@@ -734,7 +756,9 @@
     },
     "tabs": {
       "members": "Members",
-      "membersDescription": "View your guild's member roster"
+      "membersDescription": "View your guild's member roster",
+      "settings": "Settings",
+      "settingsDescription": "Manage your guild's planner settings"
     },
     "members": {
       "empty": "No members found.",
@@ -785,7 +809,7 @@
       "parts": {
         "personalKey": "Personal Tacticus API key",
         "userId": "Tacticus user ID",
-        "guildKey": "Guild API token",
+        "guildKey": "Guild API key",
         "goals": "Goals",
         "onslaughtProgress": "Onslaught progress",
         "campaignEventProgress": "Campaign event progress",
@@ -927,7 +951,7 @@
         "parts": {
           "personalTacticusApiKey": "API key",
           "tacticusUserId": "Tacticus user ID",
-          "guildApiToken": "Guild API token",
+          "guildApiToken": "Guild API key",
           "onslaughtProgress": "Onslaught progress",
           "campaignEventProgress": "Campaign event progress"
         },

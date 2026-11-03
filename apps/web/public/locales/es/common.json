@@ -686,6 +686,7 @@
       "description": "Se necesita un ID de usuario de Tacticus para identificarte en los datos del gremio antes de poder verlo o registrarlo.",
       "userIdLabel": "ID de usuario de Tacticus",
       "userIdPlaceholder": "Introduce tu ID de usuario de Tacticus",
+      "userIdHint": "Lo encontrarás al final de la pantalla de ajustes de usuario del juego.",
       "save": "Guardar",
       "saving": "Guardando…",
       "saved": "ID de usuario de Tacticus guardado.",
@@ -693,15 +694,36 @@
     },
     "unregistered": {
       "title": "Aún no hay ningún gremio registrado",
-      "description": "Un gremio debe ser registrado primero por un líder o colíder del gremio.",
-      "leaderPrompt": "¿Eres el líder o colíder del gremio? Usa el campo de abajo para pegar un token de API de gremio con alcance Guild y GuildRaids.",
+      "description": "Un líder o colíder registra el gremio una sola vez. Después, cada miembro puede usar las funciones del gremio solo con su ID de usuario de Tacticus.",
+      "leaderPrompt": "¿Eres el líder o colíder del gremio? Crea una clave de API de gremio y pégala abajo.",
+      "memberNote": "¿No eres líder ni colíder? No necesitas una clave. Pide a tu líder o colíder que registre el gremio aquí.",
       "eligibility": "Tacticus autoriza el registro, que solo está disponible para el líder actual o un colíder.",
-      "handoff": "Pide al líder o colíder actual que complete el registro del gremio con un token autorizado.",
-      "tokenLabel": "Token de API del gremio",
-      "tokenPlaceholder": "Pega tu token de API del gremio",
+      "handoff": "Pide al líder o colíder actual que registre el gremio con su propia clave de API de gremio.",
+      "tokenLabel": "Clave de API del gremio",
+      "tokenPlaceholder": "Pega tu clave de API del gremio",
       "register": "Registrar gremio",
       "registering": "Registrando…",
       "genericError": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "apiKeySteps": {
+      "title": "Cómo obtener una clave de API del gremio",
+      "signIn": "Inicia sesión en api.tacticusgame.com con tu cuenta de Tacticus.",
+      "create": "Crea una clave de API con los alcances Guild y Guild Raid.",
+      "paste": "Copia la clave y pégala aquí.",
+      "getKey": "Obtén una clave en api.tacticusgame.com"
+    },
+    "settings": {
+      "apiKey": {
+        "title": "Clave de API del gremio",
+        "description": "Planner usa esta clave para sincronizar los miembros y los datos de asalto de tu gremio. Reemplázala si regeneraste o revocaste la clave en api.tacticusgame.com, o si Planner indica que Tacticus la rechazó.",
+        "label": "Nueva clave de API del gremio",
+        "placeholder": "Pega tu clave de API del gremio",
+        "replace": "Reemplazar clave",
+        "replacing": "Reemplazando…",
+        "replaced": "Clave de API del gremio reemplazada y gremio sincronizado.",
+        "leadersOnly": "Solo el líder o un colíder de tu gremio puede reemplazar la clave de API del gremio.",
+        "genericError": "Algo salió mal. Inténtalo de nuevo."
+      }
     },
     "summary": {
       "level": "Nivel {{level}}",
@@ -726,7 +748,7 @@
       "genericError": "Algo salió mal al eliminar el gremio. Inténtalo de nuevo.",
       "errors": {
         "forbidden": "Solo un líder o colíder actual con ID de usuario de Tacticus puede eliminar este gremio. No se eliminó nada.",
-        "roleCheckFailed": "No se pudo comprobar tu rol con Tacticus: rechazó el token de la API del gremio guardado o devolvió datos que Planner no pudo leer. No se eliminó nada. Vuelve a registrar el gremio con un token de la API del gremio nuevo e inténtalo de nuevo.",
+        "roleCheckFailed": "No se pudo comprobar tu rol con Tacticus: rechazó la clave de API del gremio guardada o devolvió datos que Planner no pudo leer. No se eliminó nada. Reemplaza la clave de API del gremio en Gremio > Ajustes e inténtalo de nuevo.",
         "upstreamUnavailable": "Tacticus no está disponible ahora mismo, así que no se pudo comprobar tu rol. No se eliminó nada. Inténtalo de nuevo más tarde.",
         "concurrency": "La lista de miembros del gremio cambió mientras se comprobaba. No se eliminó nada. Inténtalo de nuevo.",
         "rateLimited": "Demasiadas solicitudes a Tacticus. No se eliminó nada. Espera un momento e inténtalo de nuevo."
@@ -734,7 +756,9 @@
     },
     "tabs": {
       "members": "Miembros",
-      "membersDescription": "Consulta el plantel de miembros de tu gremio"
+      "membersDescription": "Consulta el plantel de miembros de tu gremio",
+      "settings": "Ajustes",
+      "settingsDescription": "Gestiona los ajustes del planificador de tu gremio"
     },
     "members": {
       "empty": "No se encontraron miembros.",
@@ -785,7 +809,7 @@
       "parts": {
         "personalKey": "Clave de API personal de Tacticus",
         "userId": "ID de usuario de Tacticus",
-        "guildKey": "Token de API del gremio",
+        "guildKey": "Clave de API del gremio",
         "goals": "Objetivos",
         "onslaughtProgress": "Progreso de Onslaught",
         "campaignEventProgress": "Progreso de eventos de campaña",
@@ -927,7 +951,7 @@
         "parts": {
           "personalTacticusApiKey": "Clave de API",
           "tacticusUserId": "ID de usuario de Tacticus",
-          "guildApiToken": "Token de API del gremio",
+          "guildApiToken": "Clave de API del gremio",
           "onslaughtProgress": "Progreso de Onslaught",
           "campaignEventProgress": "Progreso de eventos de campaña"
         },

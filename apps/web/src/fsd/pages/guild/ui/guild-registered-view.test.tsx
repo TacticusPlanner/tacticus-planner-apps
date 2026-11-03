@@ -64,6 +64,7 @@ vi.mock("./guild-purge-dialog", () => ({
   ),
 }))
 
+import type { GuildOutletContext } from "./guild-outlet-context"
 import { GuildRegisteredView } from "./guild-registered-view"
 
 beforeEach(() => {
@@ -98,8 +99,8 @@ const baseGuild: RegisteredGuild = {
 }
 
 function MembersProbe() {
-  const members = useOutletContext<GuildMemberSummary[]>()
-  return <div data-testid="members-probe">{members.length} member(s)</div>
+  const { guild } = useOutletContext<GuildOutletContext>()
+  return <div data-testid="members-probe">{guild.members.length} member(s)</div>
 }
 
 function renderView(
@@ -127,7 +128,7 @@ function renderView(
 }
 
 describe("GuildRegisteredView", () => {
-  it("renders the guild summary and passes members to the routed outlet", () => {
+  it("renders the guild summary and passes the guild to the routed outlet", () => {
     renderView()
 
     expect(screen.getByTestId("guild-summary")).toHaveTextContent("My Guild")
