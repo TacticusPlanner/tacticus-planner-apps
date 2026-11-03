@@ -214,6 +214,8 @@ export function useCreateGoalForm({
     battlesById,
     dailyEnergy: planningSettings.dailyEnergy,
     shopOffers,
+    // Onslaught is Character-Ascension-only (server-rejected for MoWs); Unlock filters it out itself.
+    defaultOnslaughtEnabled: entityType === "Character",
   })
   const {
     shardLocationIds,
