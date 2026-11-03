@@ -5,16 +5,32 @@ import type { CaptureResult, Properties } from "posthog-js"
 let reportedRoutePattern: string | null = null
 // The pattern before the latest one: a $pageview's $prev_pageview_pathname is the page it left.
 let previousRoutePattern: string | null = null
+// The pattern of every concrete path reported this page load. Web vitals are sent up to 5 s after
+// they are measured, often after the user has moved on, so their URLs are matched to the pattern
+// of their own path rather than the current one. One short entry per path visited.
+const patternByPath = new Map<string, string>()
 
-export function setReportedRoutePattern(routePattern: string) {
+export function setReportedRoutePattern(
+  routePattern: string,
+  pathname?: string
+) {
   previousRoutePattern = reportedRoutePattern
   reportedRoutePattern = routePattern
+  if (pathname) patternByPath.set(pathname, routePattern)
 }
 
 /** Test-only: forget the reported route patterns between tests. */
 export function resetReportedRoutePattern() {
   reportedRoutePattern = null
   previousRoutePattern = null
+  patternByPath.clear()
+}
+
+// The route pattern for a page URL: its own path's pattern when that path was reported, otherwise
+// the current one.
+function patternFor(url: string): string | null {
+  if (!URL.canParse(url)) return reportedRoutePattern
+  return patternByPath.get(new URL(url).pathname) ?? reportedRoutePattern
 }
 
 // Properties holding the page's own URL, which get the route pattern instead of the concrete path.
@@ -26,19 +42,17 @@ function withoutQueryOrHash(url: string): string {
 }
 
 // Walks nested objects too: the SDK's own features (web vitals) put full URLs below the top level.
-function redactUrls(
-  properties: Properties | undefined,
-  pattern: string | null
-) {
+function redactUrls(properties: Properties | undefined, usePatterns: boolean) {
   if (!properties) return
   for (const [key, value] of Object.entries(properties)) {
     if (typeof value === "string" && /^https?:\/\//.test(value)) {
-      properties[key] =
-        pattern && pageUrlKeys.has(key)
-          ? new URL(pattern, value).toString()
-          : withoutQueryOrHash(value)
+      const pattern =
+        usePatterns && pageUrlKeys.has(key) ? patternFor(value) : null
+      properties[key] = pattern
+        ? new URL(pattern, value).toString()
+        : withoutQueryOrHash(value)
     } else if (value && typeof value === "object") {
-      redactUrls(value as Properties, pattern)
+      redactUrls(value as Properties, usePatterns)
     }
   }
 }
@@ -47,18 +61,20 @@ function redactUrls(
  * `before_send` hook. posthog-js attaches the full browser URL to every event on its own, which
  * would report the ids and query strings the declared events deliberately leave out. Query
  * strings and hashes are cut from every URL-valued property at any depth, and the page's URL and
- * paths are rewritten to the reported route pattern (so Web analytics groups pages by screen).
+ * paths are rewritten to the route pattern of that page (so Web analytics groups pages by screen).
  */
 export function sanitizeCapture(result: CaptureResult): CaptureResult {
-  const pattern = reportedRoutePattern
-  redactUrls(result.properties, pattern)
-  redactUrls(result.$set, null)
-  redactUrls(result.$set_once, null)
-
   const { properties } = result
-  if (pattern && typeof properties.$current_url === "string") {
-    properties.$pathname = pattern
-  }
+  const pattern = reportedRoutePattern
+  const pagePattern =
+    typeof properties.$current_url === "string"
+      ? patternFor(properties.$current_url)
+      : null
+  redactUrls(properties, true)
+  redactUrls(result.$set, false)
+  redactUrls(result.$set_once, false)
+
+  if (pagePattern) properties.$pathname = pagePattern
   if ("$prev_pageview_pathname" in properties) {
     const previous =
       result.event === "$pageview" ? previousRoutePattern : pattern
