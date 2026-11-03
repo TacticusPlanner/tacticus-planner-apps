@@ -37,7 +37,8 @@ for (const [proto, method] of [
   [Number.prototype, "toLocaleString"],
   [BigInt.prototype, "toLocaleString"],
 ] as const) {
-  const original = proto[method] as (
+  // Indexing the union of prototypes directly does not type-check (no shared toLocaleDateString).
+  const original = (proto as unknown as Record<string, unknown>)[method] as (
     this: unknown,
     locales?: unknown,
     options?: unknown
