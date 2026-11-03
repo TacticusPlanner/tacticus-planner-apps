@@ -1028,7 +1028,7 @@ The layout SHALL follow the width of Today's content (a container query), not th
 - From 42rem: each tile is a card of its own with its label above its value. Tiles SHALL take at least 12rem each and wrap onto further rows when there is not room for all of them on one.
 - Below 42rem (one dashboard track, as on a phone): the tiles SHALL fold into one card, one row per tile with its label at the start and its value at the end, rows split by dividers, so Today's plan starts as high as possible.
 
-Tile values SHALL wrap rather than truncate. Tiles 1–2 SHALL render only once Today's raid data is ready. The Campaign event tile SHALL render regardless.
+Tile values SHALL wrap rather than truncate. Tiles 1–2 SHALL render only once Today's raid data is ready; while it loads, a placeholder SHALL hold the Daily energy used tile's place, with its label and a loading value, so the tile does not push the tiles and cards below it down when it arrives. The Campaign event tile SHALL render regardless.
 
 Worked example: daily energy 638, real spend today 663 energy, and two Onslaught runs planned at 1.2 and 0.5 runs. Tile 1 reads "Energy limit reached" with "663 / 638" and a full bar in the over-limit colour (663 ÷ 638 = 103.9%, so the bar's value text says 104%). Tile 2 shows 1.2 + 0.5 = 1.7, rounded up to "2 tokens". Below the limit, at a real spend of 410 energy, tile 1 reads "Daily energy used" with "410 / 638" and a bar 64% full; tile 2 still shows "2 tokens".
 
@@ -1054,7 +1054,7 @@ Worked example: daily energy 638, real spend today 663 energy, and two Onslaught
 
 - **GIVEN** Today's raid data is still loading
 - **WHEN** Today renders
-- **THEN** only the Campaign event tile is shown
+- **THEN** a Daily energy used placeholder with a loading value holds the first tile's place, followed by the Campaign event tile, and no Onslaught tile is shown
 
 ### Requirement: Today's plan is what is left to raid today
 
@@ -1065,3 +1065,13 @@ Today's plan SHALL be planned from the player's real state today: each node's ra
 - **GIVEN** the priority 1 goal needs a material whose only node has 0 attempts left today, the priority 2 goal has nodes with attempts left, and energy is left today
 - **WHEN** Today renders
 - **THEN** Today's plan lists the priority 2 goal's raids within the energy left, and the Raids Plan schedules the priority 1 goal's material on Day 2
+
+### Requirement: Opening a raids page paints before the plan is calculated
+
+Every page that shows daily raids (Dailies › Raids, HSE, HRE and Quests, Home's raids widget, Plan › Schedule) SHALL first render its loading state when it mounts, even when all of its data is already available, and SHALL calculate the plan in a lower-priority render right after that. The tap or click that opened the page SHALL be followed by a paint without waiting for the plan calculation.
+
+#### Scenario: Opening Dailies with every dataset already loaded
+
+- **GIVEN** the player's data and the game catalog are already loaded
+- **WHEN** the player taps Dailies
+- **THEN** the Raids page is painted in its loading state first, and Today's plan appears once it has been calculated
