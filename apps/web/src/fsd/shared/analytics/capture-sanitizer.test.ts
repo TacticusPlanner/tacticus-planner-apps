@@ -83,6 +83,65 @@ describe("sanitizeCapture", () => {
     })
   })
 
+  it("labels a web vitals metric with the route it was measured on", () => {
+    setReportedRoutePattern(
+      "/library/characters/:entityId",
+      "/library/characters/ultraInceptorSgt"
+    )
+    // The user moved on before the metric was sent.
+    setReportedRoutePattern("/home", "/home")
+    const measuredOn =
+      "https://tacticusplanner.app/library/characters/ultraInceptorSgt"
+
+    const { properties } = sanitizeCapture(
+      capture({
+        event: "$web_vitals",
+        properties: {
+          $current_url: measuredOn,
+          $web_vitals_LCP_event: {
+            name: "LCP",
+            $current_url: measuredOn,
+            attribution: {
+              target: "main>div.grid>img",
+              url: "https://tacticusplanner.app/game_catalog/x.webp?v=1",
+            },
+          },
+        },
+      })
+    )
+
+    expect(properties.$pathname).toBe("/library/characters/:entityId")
+    expect(properties.$current_url).toBe(
+      "https://tacticusplanner.app/library/characters/:entityId"
+    )
+    expect(properties.$web_vitals_LCP_event).toEqual({
+      name: "LCP",
+      $current_url: "https://tacticusplanner.app/library/characters/:entityId",
+      attribution: {
+        target: "main>div.grid>img",
+        url: "https://tacticusplanner.app/game_catalog/x.webp",
+      },
+    })
+  })
+
+  it("falls back to the current pattern for a path never reported", () => {
+    setReportedRoutePattern("/legendary-events/:eventId", "/legendary-events/1")
+
+    const { properties } = sanitizeCapture(
+      capture({
+        event: "$web_vitals",
+        properties: {
+          $current_url: "https://tacticusplanner.app/legendary-events/2?x=1",
+        },
+      })
+    )
+
+    expect(properties.$pathname).toBe("/legendary-events/:eventId")
+    expect(properties.$current_url).toBe(
+      "https://tacticusplanner.app/legendary-events/:eventId"
+    )
+  })
+
   it("reports the previous page's route pattern, not its concrete path", () => {
     setReportedRoutePattern("/legendary-events/:eventId/plan")
     setReportedRoutePattern("/library/characters/:entityId")
