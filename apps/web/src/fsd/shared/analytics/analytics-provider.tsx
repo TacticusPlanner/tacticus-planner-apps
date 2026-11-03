@@ -222,6 +222,12 @@ export function useAnalyticsActions() {
         case "legendary_event_paid_options_toggled":
           client.capture(event.type, { event_id: event.eventId, on: event.on })
           break
+        case "legendary_event_notes_saved":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            length: event.length,
+          })
+          break
         case "legendary_event_plan_wizard_opened":
           client.capture(event.type, {
             event_id: event.eventId,

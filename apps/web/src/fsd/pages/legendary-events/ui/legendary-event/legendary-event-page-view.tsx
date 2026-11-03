@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
 import { UpgradeImpactSection } from "@/features/legendary-event-goals"
-import { RunInputsDrawer } from "@/features/legendary-event-plan"
+import { PlanNotesCard, RunInputsDrawer } from "@/features/legendary-event-plan"
 import {
   NextTokenCard,
   RunForecastSection,
@@ -29,7 +29,7 @@ import { TeamsSection } from "./teams/teams-section"
 
 /**
  * The event page on both forms (design D3): header (with the linked projects and the plan wizard
- * button), the tab strip, then the Overview tab (Next token, Run status, Last run, Token plan, Run forecast, lane summary, cross-lane leaderboard) or a lane tab
+ * button), the tab strip, then the Overview tab (Next token, Run status, Notes, Last run, Token plan, Run forecast, lane summary, cross-lane leaderboard) or a lane tab
  * (lane overview, Teams, Upgrade impact, synced progress, Battles, then the lane's leaderboard). The forms
  * differ only in the strip's stickiness and in the table-versus-cards rendering of the leaderboard
  * and grid. The team editor is mounted once here (design D4), so the Teams section and both
@@ -83,6 +83,9 @@ export function LegendaryEventPageView({
             view={tokens.view}
           />
           <RunStatusCard {...props} isMobile={isMobile} />
+          {props.runInputs.enabled ? (
+            <PlanNotesCard eventId={props.event.id} />
+          ) : null}
           {props.showEventBoard ? (
             <EventBoard
               event={props.event}
