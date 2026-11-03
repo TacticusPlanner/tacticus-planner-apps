@@ -10,7 +10,13 @@ export {
   type RosterDiffMetric,
   type RosterDiffSummary,
   type UnitDiff,
+  V1_IMPORT_CATALOG_VERSION,
 } from "./lib/diff"
+export {
+  formatSnapshotDate,
+  hasDefaultName,
+  snapshotLabel,
+} from "./model/label"
 export { formatRosterSourceId, parseRosterSourceId } from "./model/source"
 export {
   rosterSnapshotIssues,
@@ -21,6 +27,7 @@ export {
 export {
   useCreateRosterSnapshot,
   useDeleteRosterSnapshot,
+  useKeepRosterSnapshot,
   useRenameRosterSnapshot,
   useRosterSnapshots,
 } from "./model/use-roster-snapshots"

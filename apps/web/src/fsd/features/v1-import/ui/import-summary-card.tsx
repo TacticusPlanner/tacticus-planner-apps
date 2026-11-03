@@ -43,6 +43,11 @@ export function ImportSummaryCard({
           count: summary.legendaryEvents,
         })
       : null,
+    summary.rosterSnapshots > 0
+      ? t("goals.v1Import.summary.rosterSnapshots", {
+          count: summary.rosterSnapshots,
+        })
+      : null,
     ...summary.parts.map((key) => t(PART_KEYS[key])),
   ].filter((line) => line !== null)
 

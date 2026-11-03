@@ -1,5 +1,11 @@
 import type { Progression } from "@workspace/game-domain"
 
+import {
+  formatSnapshotDate,
+  hasDefaultName,
+  snapshotLabel,
+} from "@/entities/roster-snapshot"
+
 import type { CompareSource } from "./use-compare-data"
 
 /** The stars part of a progression ("Legendary:RedFiveStars" → "RedFiveStars"). */
@@ -24,34 +30,30 @@ export function formatSigned(value: number, locale: string): string {
   return formatted
 }
 
-/** A source's date, e.g. "Oct 12, 2026". */
-export function formatSourceDate(takenAt: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(
-    new Date(takenAt)
-  )
+/** The copy a source label is built from. */
+export interface SourceLabels {
+  runRecord: (values: { event: string; run: number; date: string }) => string
+  auto: (date: string) => string
+  v1Import: (name: string) => string
 }
 
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
-
-/** What a picker shows for a source: the snapshot's name, or "<event> · run <n> · <date>". */
+/** What a picker shows for a source: "<event> · run <n> · <date>" for a run record; for a personal
+ *  snapshot its label (`snapshotLabel`), with the date alongside unless the label already is one. */
 export function sourceLabel(
   source: CompareSource,
   locale: string,
-  runRecordLabel: (values: {
-    event: string
-    run: number
-    date: string
-  }) => string
+  labels: SourceLabels
 ): string {
   if (source.kind === "snapshot") {
-    // The default name is the ISO date already; any other name gets the date alongside.
-    return ISO_DATE.test(source.name)
-      ? source.name
-      : `${source.name} · ${formatSourceDate(source.takenAt, locale)}`
+    const label = snapshotLabel(source, locale, labels)
+    // An automatic or default-named snapshot's label is its date already.
+    return source.source === "auto" || hasDefaultName(source)
+      ? label
+      : `${label} · ${formatSnapshotDate(source.takenAt, locale)}`
   }
-  return runRecordLabel({
+  return labels.runRecord({
     event: source.eventName,
     run: source.run,
-    date: formatSourceDate(source.takenAt, locale),
+    date: formatSnapshotDate(source.takenAt, locale),
   })
 }

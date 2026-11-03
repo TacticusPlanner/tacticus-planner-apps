@@ -381,7 +381,11 @@ export function useAnalyticsActions() {
           break
         case "roster_snapshot_renamed":
         case "roster_snapshot_deleted":
+        case "roster_snapshot_kept":
           client.capture(event.type)
+          break
+        case "roster_auto_snapshots_toggled":
+          client.capture(event.type, { enabled: event.enabled })
           break
         case "client_error": {
           // Rebuilt from the already-sanitised text, so Error Tracking parses the stack into frames

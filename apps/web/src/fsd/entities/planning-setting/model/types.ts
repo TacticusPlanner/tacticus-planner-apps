@@ -8,10 +8,15 @@ import type { ApiSchemas } from "@/shared/api"
  *  the same way (see `normalizeXpBookRarity`). */
 export type PlanningSettings = ApiSchemas["UserSettingsResponse"]
 
+/** The write shape: `watchAds` and `autoRosterSnapshots` are optional and keep their stored values
+ *  when left out, so each caller sends only the settings it edits. */
+export type PlanningSettingsUpdate = ApiSchemas["UpdateUserSettingsRequest"]
+
 export const defaultPlanningSettings: PlanningSettings = {
   dailyEnergy: 288,
   xpBookRarity: "Legendary",
   watchAds: true,
+  autoRosterSnapshots: true,
   revision: 0,
 }
 

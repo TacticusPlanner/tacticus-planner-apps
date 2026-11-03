@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   createRosterSnapshot,
   deleteRosterSnapshot,
+  keepRosterSnapshot,
   renameRosterSnapshot,
 } from "../api/roster-snapshot.api"
 import { rosterSnapshotQueries } from "../api/roster-snapshot.queries"
@@ -46,6 +47,18 @@ export function useDeleteRosterSnapshot() {
         queryKey: rosterSnapshotQueries.detail(snapshotId).queryKey,
       })
     },
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: rosterSnapshotQueries.list().queryKey,
+      }),
+  })
+}
+
+/** Keeps an automatic snapshot as a manual one and refreshes the list. */
+export function useKeepRosterSnapshot() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (snapshotId: string) => keepRosterSnapshot(snapshotId),
     onSettled: () =>
       queryClient.invalidateQueries({
         queryKey: rosterSnapshotQueries.list().queryKey,

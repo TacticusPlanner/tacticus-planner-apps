@@ -42,6 +42,7 @@ import {
 } from "../../../model/compare-query"
 import { compareFields, type CompareField } from "../../../model/compare-view"
 import { sourceLabel } from "../../../model/compare-labels"
+import { useSourceLabels } from "../../../model/use-source-labels"
 import type { CompareSource } from "../../../model/use-compare-data"
 
 /** The snapshot actions above the toolbar: the Compare switch, Take snapshot and Manage. */
@@ -200,10 +201,9 @@ function CompareFields({
     order: useId(),
     unchanged: useId(),
   }
+  const labels = useSourceLabels()
   const label = (source: CompareSource) =>
-    sourceLabel(source, i18n.language, (values) =>
-      t("myGame.collection.compare.runRecordLabel", values)
-    )
+    sourceLabel(source, i18n.language, labels)
   const from = sources.find((source) => source.id === fromId)
   const newer = from
     ? sources.filter(

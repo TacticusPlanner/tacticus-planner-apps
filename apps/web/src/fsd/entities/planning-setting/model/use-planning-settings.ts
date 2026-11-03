@@ -3,7 +3,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import { planningSettingsQueries } from "../api/planning-settings.queries"
 import { updatePlanningSettings } from "../api/planning-settings.api"
-import { defaultPlanningSettings, type PlanningSettings } from "./types"
+import { defaultPlanningSettings, type PlanningSettingsUpdate } from "./types"
 
 export function usePlanningSettings() {
   const isAuthenticated = useIsAuthenticated()
@@ -22,7 +22,7 @@ export function usePlanningSettings() {
   return {
     settings: query.data ?? defaultPlanningSettings,
     loading: isAuthenticated && query.isPending,
-    save: async (settings: PlanningSettings) => {
+    save: async (settings: PlanningSettingsUpdate) => {
       await mutation.mutateAsync(settings)
     },
   }

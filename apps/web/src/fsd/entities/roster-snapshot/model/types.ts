@@ -12,8 +12,9 @@ export type RosterSnapshotSource = S["RosterSnapshotSource"]
 /** A stored roster: a personal snapshot's body or a Legendary Event run record's roster. */
 export type RosterSnapshotBody = S["RosterSnapshotResponse"]
 
-/** The issue codes `POST me/roster-snapshots` answers with on a 409. */
+/** The issue codes the snapshot endpoints answer with on a 409. */
 export const rosterSnapshotIssues = {
   limitReached: "rosterSnapshotLimitReached",
   notSynced: "playerDataNotSynced",
+  notAutomatic: "rosterSnapshotNotAutomatic",
 } as const

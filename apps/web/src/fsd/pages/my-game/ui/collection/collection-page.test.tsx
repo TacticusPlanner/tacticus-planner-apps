@@ -915,7 +915,13 @@ describe("CollectionPage snapshots and compare", () => {
       mode: "empty",
       sources: {
         sources: [],
-        personal: { limit: 20, count: 0, items: [] },
+        personal: {
+          limit: 20,
+          count: 0,
+          autoLimit: 12,
+          autoCount: 0,
+          items: [],
+        },
         plans: [],
         eventNames: new Map(),
       },
@@ -958,7 +964,13 @@ describe("CollectionPage snapshots and compare", () => {
       mode: "ready",
       sources: {
         sources: [snapshot],
-        personal: { limit: 20, count: 1, items: [] },
+        personal: {
+          limit: 20,
+          count: 1,
+          autoLimit: 12,
+          autoCount: 0,
+          items: [],
+        },
         plans: [],
         eventNames: new Map(),
       },

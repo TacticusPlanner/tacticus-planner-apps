@@ -621,7 +621,18 @@
         "deleteBody": "Der Snapshot wird endgültig gelöscht.",
         "deleteConfirm": "Löschen",
         "renameFailed": "Der Snapshot konnte nicht umbenannt werden.",
-        "deleteFailed": "Der Snapshot konnte nicht gelöscht werden."
+        "deleteFailed": "Der Snapshot konnte nicht gelöscht werden.",
+        "autoLabel": "Auto · {{date}}",
+        "v1ImportLabel": "V1 · {{name}}",
+        "autoBadge": "Auto",
+        "v1ImportBadge": "V1",
+        "autoTitle": "Automatisch",
+        "autoHint": "Wird nach einer Synchronisierung erstellt, wenn es aus den letzten 30 Tagen keinen Snapshot deines Kaders gibt. Bis zu {{limit}} werden behalten; der älteste wird ersetzt.",
+        "autoSetting": "Automatische Snapshots erstellen",
+        "autoSettingFailed": "Die Einstellung konnte nicht gespeichert werden.",
+        "keep": "Behalten",
+        "keepLimitTooltip": "Lösche einen Snapshot, um diesen zu behalten",
+        "keepFailed": "Der Snapshot konnte nicht behalten werden."
       }
     }
   },
@@ -930,12 +941,14 @@
         "goals": "Ziele",
         "onslaughtProgress": "Onslaught-Fortschritt",
         "campaignEventProgress": "Kampagnen-Event-Fortschritt",
-        "legendaryEventPlans": "Teams für Legendäre Events"
+        "legendaryEventPlans": "Teams für Legendäre Events",
+        "rosterSnapshots": "Kader-Snapshots"
       },
       "partDescriptions": {
         "userId": "Verknüpft dein Planer-Konto mit deinem Spieler im Spiel. Gildenfunktionen benötigen das.",
         "guildKey": "Wird nur genutzt, wenn du Anführer oder Ko-Anführer deiner Gilde bist: Er registriert deine Gilde im Planer, damit alle Mitglieder die Gildenfunktionen nutzen können.",
-        "legendaryEventPlans": "Selbst erstellte Teams, Notizen, Missions- und Paketeingaben pro Durchlauf sowie „Vielleicht schaffbar“-/„Hier aufhören“-Markierungen für die Events, die der Planer kennt. Der Event-Fortschritt wird nicht importiert."
+        "legendaryEventPlans": "Selbst erstellte Teams, Notizen, Missions- und Paketeingaben pro Durchlauf sowie „Vielleicht schaffbar“-/„Hier aufhören“-Markierungen für die Events, die der Planer kennt. Der Event-Fortschritt wird nicht importiert.",
+        "rosterSnapshots": "Deine V1-Kader-Snapshots, die neuesten zuerst, bis zum Snapshot-Limit. Gesamt-EP und angewendete Upgrades wurden in V1 nicht gespeichert, daher lassen Vergleiche sie aus."
       },
       "submit": "Ausgewählte importieren",
       "submitting": "Wird importiert …",
@@ -1065,6 +1078,8 @@
         "goals_other": "{{count}} Ziele",
         "legendaryEvents_one": "Legendary-Event-Teams für {{count}} Event",
         "legendaryEvents_other": "Legendary-Event-Teams für {{count}} Events",
+        "rosterSnapshots_one": "{{count}} Kader-Snapshot",
+        "rosterSnapshots_other": "{{count}} Kader-Snapshots",
         "parts": {
           "personalTacticusApiKey": "API-Schlüssel",
           "tacticusUserId": "Tacticus-Benutzer-ID",
@@ -1077,6 +1092,26 @@
       "partReasons": {
         "invalidTacticusUserId": "Die Tacticus-Benutzer-ID aus V1 ist keine gültige GUID und wurde daher nicht importiert.",
         "tacticusUserIdConflict": "Diese Tacticus-Benutzer-ID ist bereits mit einem anderen Planner-Konto verknüpft und wurde daher nicht importiert."
+      },
+      "rosterSnapshots": {
+        "title": "Kader-Snapshots",
+        "unnamed": "Unbenannter Snapshot",
+        "droppedUnits_one": "{{count}} Einheit oder Gegenstand, die der Planer nicht kennt, wurde ausgelassen",
+        "droppedUnits_other": "{{count}} Einheiten oder Gegenstände, die der Planer nicht kennt, wurden ausgelassen",
+        "reasons": {
+          "imported": "Importiert",
+          "skippedDuplicate": "Bereits importiert",
+          "skippedDeleted": "Im V1-Papierkorb",
+          "skippedLimit": "Das Snapshot-Limit ist erreicht",
+          "failed": "Dieser Snapshot konnte nicht gelesen werden"
+        },
+        "partReasons": {
+          "missing_roster_snapshots": "Dein V1-Profil hat keine Kader-Snapshots.",
+          "invalid_roster_snapshots": "Deine V1-Kader-Snapshots konnten nicht gelesen werden.",
+          "no_roster_snapshot_imported": "Es kam kein neuer Kader-Snapshot herüber.",
+          "roster_snapshot_import_failed": "Keiner deiner V1-Kader-Snapshots konnte gelesen werden.",
+          "roster_snapshot_import_conflict": "Deine Snapshots haben sich während des Imports geändert. Versuche es erneut."
+        }
       }
     },
     "empty": {

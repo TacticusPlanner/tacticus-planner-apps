@@ -32,9 +32,14 @@ import {
   reasonKeyForLegendaryEventCode,
 } from "../model/legendary-event-outcome-buckets"
 import { V1_IMPORT_PARTS } from "../model/parts"
+import {
+  groupRosterSnapshotOutcomes,
+  reasonKeyForRosterSnapshotPart,
+} from "../model/roster-snapshot-outcome-buckets"
 import { useUpgradeName } from "../model/use-upgrade-name"
 import { LegendaryEventImportResult } from "./legendary-event-import-result"
 import { MaterialSteps } from "./material-steps"
+import { RosterSnapshotImportResult } from "./roster-snapshot-import-result"
 
 // i18next's `t` only accepts keys it can statically verify exist in the locale resources, so a
 // status-derived key is built through this small literal-keyed lookup rather than a template
@@ -85,6 +90,10 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
     () => groupLegendaryEventOutcomes(result.legendaryEventOutcomes ?? []),
     [result.legendaryEventOutcomes]
   )
+  const rosterSnapshotBuckets = useMemo(
+    () => groupRosterSnapshotOutcomes(result.rosterSnapshotOutcomes ?? []),
+    [result.rosterSnapshotOutcomes]
+  )
   // "not_selected" (ImportPartResult.NotSelected — API contract) hides a part the user didn't ask
   // for, so a cleared part can't be mistaken for one that was attempted and skipped.
   // The Legendary Event part's own code is translated; the other parts keep the server's message.
@@ -100,14 +109,21 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
         part:
           key === "legendaryEventPlans" && part.code
             ? { ...part, message: t(reasonKeyForLegendaryEventCode(part.code)) }
-            : part.code && part.code in PART_REASON_KEYS
+            : key === "rosterSnapshots" && part.code
               ? {
                   ...part,
-                  message: t(
-                    PART_REASON_KEYS[part.code as keyof typeof PART_REASON_KEYS]
-                  ),
+                  message: t(reasonKeyForRosterSnapshotPart(part.code)),
                 }
-              : part,
+              : part.code && part.code in PART_REASON_KEYS
+                ? {
+                    ...part,
+                    message: t(
+                      PART_REASON_KEYS[
+                        part.code as keyof typeof PART_REASON_KEYS
+                      ]
+                    ),
+                  }
+                : part,
       }
     })
 
@@ -224,6 +240,10 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
 
       {(result.legendaryEventOutcomes?.length ?? 0) > 0 ? (
         <LegendaryEventImportResult buckets={legendaryEventBuckets} />
+      ) : null}
+
+      {(result.rosterSnapshotOutcomes?.length ?? 0) > 0 ? (
+        <RosterSnapshotImportResult buckets={rosterSnapshotBuckets} />
       ) : null}
     </div>
   )

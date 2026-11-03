@@ -19,6 +19,8 @@ export type ImportSummary = {
   goals: number
   /** V1 events whose teams, inputs or marks came across. */
   legendaryEvents: number
+  /** V1 roster snapshots stored as personal snapshots. */
+  rosterSnapshots: number
   parts: SummaryPartKey[]
 }
 
@@ -31,6 +33,9 @@ export function importSummary(result: ImportV1ProfileResult): ImportSummary {
     legendaryEvents: groupLegendaryEventOutcomes(
       result.legendaryEventOutcomes ?? []
     ).imported.length,
+    rosterSnapshots: (result.rosterSnapshotOutcomes ?? []).filter(
+      (outcome) => outcome.status === "imported"
+    ).length,
     parts: SUMMARY_PARTS.filter((key) => result[key].status === "Imported"),
   }
 }
@@ -39,6 +44,7 @@ export function isEmptySummary(summary: ImportSummary): boolean {
   return (
     summary.goals === 0 &&
     summary.legendaryEvents === 0 &&
+    summary.rosterSnapshots === 0 &&
     summary.parts.length === 0
   )
 }

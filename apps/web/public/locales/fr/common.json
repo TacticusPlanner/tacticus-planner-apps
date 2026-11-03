@@ -621,7 +621,18 @@
         "deleteBody": "L’instantané est supprimé définitivement.",
         "deleteConfirm": "Supprimer",
         "renameFailed": "Impossible de renommer l’instantané.",
-        "deleteFailed": "Impossible de supprimer l’instantané."
+        "deleteFailed": "Impossible de supprimer l’instantané.",
+        "autoLabel": "Auto · {{date}}",
+        "v1ImportLabel": "V1 · {{name}}",
+        "autoBadge": "Auto",
+        "v1ImportBadge": "V1",
+        "autoTitle": "Automatiques",
+        "autoHint": "Pris après une synchronisation quand votre roster n'a aucun instantané des 30 derniers jours. Jusqu'à {{limit}} sont conservés ; le plus ancien est remplacé.",
+        "autoSetting": "Prendre des instantanés automatiques",
+        "autoSettingFailed": "Le réglage n'a pas pu être enregistré.",
+        "keep": "Conserver",
+        "keepLimitTooltip": "Supprimez un instantané pour conserver celui-ci",
+        "keepFailed": "L'instantané n'a pas pu être conservé."
       }
     }
   },
@@ -930,12 +941,14 @@
         "goals": "Objectifs",
         "onslaughtProgress": "Progression de l'Onslaught",
         "campaignEventProgress": "Progression des événements de campagne",
-        "legendaryEventPlans": "Équipes des Événements Légendaires"
+        "legendaryEventPlans": "Équipes des Événements Légendaires",
+        "rosterSnapshots": "Instantanés du roster"
       },
       "partDescriptions": {
         "userId": "Relie votre compte du planificateur à votre joueur en jeu, ce dont les fonctions de guilde ont besoin.",
         "guildKey": "Utilisé uniquement si vous êtes chef ou co-chef de votre guilde : il enregistre votre guilde dans le planificateur pour que tous les membres puissent utiliser les fonctions de guilde.",
-        "legendaryEventPlans": "Les équipes composées à la main, les notes, les saisies de missions et de packs par manche et les marques « Peut-être faisable » / « S'arrêter ici » des événements que le planificateur connaît. La progression des événements n'est pas importée."
+        "legendaryEventPlans": "Les équipes composées à la main, les notes, les saisies de missions et de packs par manche et les marques « Peut-être faisable » / « S'arrêter ici » des événements que le planificateur connaît. La progression des événements n'est pas importée.",
+        "rosterSnapshots": "Vos instantanés du roster de V1, du plus récent au plus ancien, jusqu'à la limite d'instantanés. V1 n'enregistrait ni l'XP totale ni les améliorations appliquées, les comparaisons les ignorent donc."
       },
       "submit": "Importer la sélection",
       "submitting": "Importation en cours…",
@@ -1065,6 +1078,8 @@
         "goals_other": "{{count}} objectifs",
         "legendaryEvents_one": "Équipes de Legendary Event pour {{count}} événement",
         "legendaryEvents_other": "Équipes de Legendary Event pour {{count}} événements",
+        "rosterSnapshots_one": "{{count}} instantané du roster",
+        "rosterSnapshots_other": "{{count}} instantanés du roster",
         "parts": {
           "personalTacticusApiKey": "Clé API",
           "tacticusUserId": "ID utilisateur Tacticus",
@@ -1077,6 +1092,26 @@
       "partReasons": {
         "invalidTacticusUserId": "L'ID utilisateur Tacticus de V1 n'est pas un GUID valide, il n'a donc pas été importé.",
         "tacticusUserIdConflict": "Cet ID utilisateur Tacticus est déjà lié à un autre compte du planificateur, il n'a donc pas été importé."
+      },
+      "rosterSnapshots": {
+        "title": "Instantanés du roster",
+        "unnamed": "Instantané sans nom",
+        "droppedUnits_one": "{{count}} unité ou objet inconnu du planificateur a été ignoré",
+        "droppedUnits_other": "{{count}} unités ou objets inconnus du planificateur ont été ignorés",
+        "reasons": {
+          "imported": "Importé",
+          "skippedDuplicate": "Déjà importé",
+          "skippedDeleted": "Dans la corbeille de V1",
+          "skippedLimit": "La limite d'instantanés est atteinte",
+          "failed": "Cet instantané n'a pas pu être lu"
+        },
+        "partReasons": {
+          "missing_roster_snapshots": "Votre profil V1 n'a aucun instantané du roster.",
+          "invalid_roster_snapshots": "Vos instantanés du roster de V1 n'ont pas pu être lus.",
+          "no_roster_snapshot_imported": "Aucun nouvel instantané n'a été importé.",
+          "roster_snapshot_import_failed": "Aucun de vos instantanés de V1 n'a pu être lu.",
+          "roster_snapshot_import_conflict": "Vos instantanés ont changé pendant l'import. Réessayez."
+        }
       }
     },
     "empty": {

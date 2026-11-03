@@ -621,7 +621,18 @@
         "deleteBody": "La instantánea se elimina de forma permanente.",
         "deleteConfirm": "Eliminar",
         "renameFailed": "No se pudo renombrar la instantánea.",
-        "deleteFailed": "No se pudo eliminar la instantánea."
+        "deleteFailed": "No se pudo eliminar la instantánea.",
+        "autoLabel": "Auto · {{date}}",
+        "v1ImportLabel": "V1 · {{name}}",
+        "autoBadge": "Auto",
+        "v1ImportBadge": "V1",
+        "autoTitle": "Automáticas",
+        "autoHint": "Se toman tras una sincronización si tu plantilla no tiene ninguna instantánea de los últimos 30 días. Se guardan hasta {{limit}}; la más antigua se reemplaza.",
+        "autoSetting": "Tomar instantáneas automáticas",
+        "autoSettingFailed": "No se pudo guardar el ajuste.",
+        "keep": "Conservar",
+        "keepLimitTooltip": "Elimina una instantánea para conservar esta",
+        "keepFailed": "No se pudo conservar la instantánea."
       }
     }
   },
@@ -930,12 +941,14 @@
         "goals": "Objetivos",
         "onslaughtProgress": "Progreso de Onslaught",
         "campaignEventProgress": "Progreso de eventos de campaña",
-        "legendaryEventPlans": "Equipos de Eventos Legendarios"
+        "legendaryEventPlans": "Equipos de Eventos Legendarios",
+        "rosterSnapshots": "Instantáneas de la plantilla"
       },
       "partDescriptions": {
         "userId": "Vincula tu cuenta del planificador con tu jugador del juego, algo que necesitan las funciones de gremio.",
         "guildKey": "Solo se usa si eres líder o colíder de tu gremio: registra tu gremio en el planificador para que todos los miembros puedan usar las funciones de gremio.",
-        "legendaryEventPlans": "Equipos creados a mano, notas, datos de misiones y packs por ronda y marcas «Quizá superable» / «Parar aquí» de los eventos que conoce el planificador. El progreso del evento no se importa."
+        "legendaryEventPlans": "Equipos creados a mano, notas, datos de misiones y packs por ronda y marcas «Quizá superable» / «Parar aquí» de los eventos que conoce el planificador. El progreso del evento no se importa.",
+        "rosterSnapshots": "Tus instantáneas de la plantilla de V1, de la más reciente a la más antigua, hasta el límite de instantáneas. V1 no guardaba la XP total ni las mejoras aplicadas, así que las comparaciones las omiten."
       },
       "submit": "Importar selección",
       "submitting": "Importando…",
@@ -1065,6 +1078,8 @@
         "goals_other": "{{count}} objetivos",
         "legendaryEvents_one": "Equipos de Legendary Event para {{count}} evento",
         "legendaryEvents_other": "Equipos de Legendary Event para {{count}} eventos",
+        "rosterSnapshots_one": "{{count}} instantánea de la plantilla",
+        "rosterSnapshots_other": "{{count}} instantáneas de la plantilla",
         "parts": {
           "personalTacticusApiKey": "Clave de API",
           "tacticusUserId": "ID de usuario de Tacticus",
@@ -1077,6 +1092,26 @@
       "partReasons": {
         "invalidTacticusUserId": "El ID de usuario de Tacticus de V1 no es un GUID válido, así que no se importó.",
         "tacticusUserIdConflict": "Este ID de usuario de Tacticus ya está vinculado a otra cuenta del planificador, así que no se importó."
+      },
+      "rosterSnapshots": {
+        "title": "Instantáneas de la plantilla",
+        "unnamed": "Instantánea sin nombre",
+        "droppedUnits_one": "Se omitió {{count}} unidad u objeto que el planificador no conoce",
+        "droppedUnits_other": "Se omitieron {{count}} unidades u objetos que el planificador no conoce",
+        "reasons": {
+          "imported": "Importada",
+          "skippedDuplicate": "Ya importada",
+          "skippedDeleted": "En la papelera de V1",
+          "skippedLimit": "Se alcanzó el límite de instantáneas",
+          "failed": "No se pudo leer esta instantánea"
+        },
+        "partReasons": {
+          "missing_roster_snapshots": "Tu perfil de V1 no tiene instantáneas de la plantilla.",
+          "invalid_roster_snapshots": "No se pudieron leer tus instantáneas de la plantilla de V1.",
+          "no_roster_snapshot_imported": "No llegó ninguna instantánea nueva.",
+          "roster_snapshot_import_failed": "No se pudo leer ninguna de tus instantáneas de V1.",
+          "roster_snapshot_import_conflict": "Tus instantáneas cambiaron durante la importación. Inténtalo de nuevo."
+        }
       }
     },
     "empty": {
