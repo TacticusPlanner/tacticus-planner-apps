@@ -25,6 +25,7 @@ import {
   type CollectionCatalog,
   type CollectionRoster,
 } from "../../model/collection-view"
+import type { CollectionCompareState } from "../../model/use-collection-compare"
 import type {
   CollectionViewState,
   QuickFilterAvailability,
@@ -65,12 +66,39 @@ vi.mock("@/features/player-data-sync", () => ({
   usePlayerDataSyncStatus: () => sync,
 }))
 
-const msal = vi.hoisted(() => ({ loginRedirect: vi.fn() }))
+const msal = vi.hoisted(() => ({
+  loginRedirect: vi.fn(),
+  authenticated: false,
+}))
 vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({
     inProgress: "none",
     instance: { loginRedirect: msal.loginRedirect },
   }),
+  useIsAuthenticated: () => msal.authenticated,
+}))
+
+// Compare mode's own data is covered by its model tests; here the page only renders its states.
+const compareState = vi.hoisted(() => ({
+  current: { mode: "off" } as CollectionCompareState,
+}))
+vi.mock("../../model/use-collection-compare", () => ({
+  useCollectionCompare: () => ({
+    state: compareState.current,
+    toRoster: undefined,
+  }),
+}))
+vi.mock("@/entities/roster-snapshot", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/roster-snapshot")>()),
+  useRosterSnapshots: () => ({
+    data: { limit: 20, count: 20, items: [] },
+  }),
+  useCreateRosterSnapshot: () => ({ mutate: vi.fn(), reset: vi.fn() }),
+  useRenameRosterSnapshot: () => ({ mutate: vi.fn() }),
+  useDeleteRosterSnapshot: () => ({ mutate: vi.fn() }),
+}))
+vi.mock("@/shared/player-data-status", () => ({
+  usePlayerDataStatus: () => ({ lastSyncedAt: null, syncNow: vi.fn() }),
 }))
 
 const tour = vi.hoisted(() => ({
@@ -226,6 +254,8 @@ beforeEach(() => {
   sync.isSyncing = false
   sync.syncNow.mockReset()
   msal.loginRedirect.mockReset().mockResolvedValue(undefined)
+  msal.authenticated = false
+  compareState.current = { mode: "off" }
   // The shared sign-in request reads the API scope when a button spreads it.
   vi.stubEnv("VITE_API_SCOPE", "api://test/access_as_user")
 })
@@ -243,13 +273,25 @@ function UnitPageProbe() {
   )
 }
 
+function SearchProbe() {
+  return <p data-testid="location">{useLocation().search}</p>
+}
+
 function renderPage(width: number, entry = "/my-game/collection") {
   setViewportWidth(width)
   return render(
     <I18nextProvider i18n={i18n}>
       <MemoryRouter initialEntries={[entry]}>
         <Routes>
-          <Route path="/my-game/collection" element={<CollectionPage />} />
+          <Route
+            path="/my-game/collection"
+            element={
+              <>
+                <CollectionPage />
+                <SearchProbe />
+              </>
+            }
+          />
           <Route path="/library/*" element={<UnitPageProbe />} />
         </Routes>
       </MemoryRouter>
@@ -830,5 +872,112 @@ describe("CollectionPage toolbar on mobile", () => {
     expect(
       screen.getByRole("button", { name: "Filters (1)" })
     ).toBeInTheDocument()
+  })
+})
+
+describe("CollectionPage snapshots and compare", () => {
+  it("tells a guest to sign in instead of offering Compare and Take snapshot", () => {
+    ready({ state: "anonymous" })
+    renderPage(1280, "/my-game/collection?compare=abc&to=current")
+
+    expect(screen.getByTestId("snapshots-sign-in-prompt")).toBeInTheDocument()
+    expect(screen.queryByTestId("compare-toggle")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("take-snapshot")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("compare-section")).not.toBeInTheDocument()
+  })
+
+  it("disables Take snapshot at the limit and starts the tour at Compare", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    expect(screen.getByTestId("take-snapshot")).toBeDisabled()
+    expect(screen.getByTestId("manage-snapshots")).toHaveTextContent("20/20")
+    expect(tour.steps?.desktop[0]?.target).toBe(
+      '[data-testid="compare-toggle"]'
+    )
+  })
+
+  it("turns compare mode on with compare=latest", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    fireEvent.click(
+      within(screen.getByTestId("compare-toggle")).getByRole("switch")
+    )
+    expect(screen.getByTestId("location")).toHaveTextContent("compare=latest")
+  })
+
+  it("shows the empty state in place of the faction cards when no source exists", () => {
+    msal.authenticated = true
+    compareState.current = {
+      mode: "empty",
+      sources: {
+        sources: [],
+        personal: { limit: 20, count: 0, items: [] },
+        plans: [],
+        eventNames: new Map(),
+      },
+    }
+    ready(synced)
+    renderPage(1280, "/my-game/collection?compare=latest")
+
+    expect(screen.getByTestId("compare-empty")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-faction-group")
+    ).not.toBeInTheDocument()
+  })
+
+  it("lists changed units by power gain with their chips", () => {
+    msal.authenticated = true
+    const diff = (unitId: string, delta: number) => ({
+      unitId,
+      kind: "character" as const,
+      unlocked: false,
+      changed: delta !== 0,
+      progression: null,
+      rank: delta ? { from: "Gold1" as const, to: "Gold2" as const } : null,
+      upgrades: null,
+      xpLevel: null,
+      xpGained: null,
+      shards: null,
+      mythicShards: null,
+      abilities: [],
+      equipment: [],
+      power: { from: 1000, to: 1000 + delta, delta },
+    })
+    const snapshot = {
+      kind: "snapshot" as const,
+      id: "s1",
+      name: "Before LE",
+      source: "manual" as const,
+      takenAt: "2026-10-01T00:00:00Z",
+    }
+    compareState.current = {
+      mode: "ready",
+      sources: {
+        sources: [snapshot],
+        personal: { limit: 20, count: 1, items: [] },
+        plans: [],
+        eventNames: new Map(),
+      },
+      from: snapshot,
+      to: null,
+      diffs: new Map([["ultraTitus", diff("ultraTitus", 4650)]]),
+      teamUnitIds: null,
+    }
+    ready(synced)
+    renderPage(1280, "/my-game/collection?compare=latest")
+
+    const tiles = screen.getAllByTestId("compare-tile")
+    expect(tiles.map((tile) => tile.dataset.unit)).toEqual(["ultraTitus"])
+    expect(within(tiles[0]!).getByTestId("compare-chips")).toHaveTextContent(
+      "Gold I → Gold II"
+    )
+    expect(screen.getByTestId("compare-summary")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-faction-group")
+    ).not.toBeInTheDocument()
   })
 })

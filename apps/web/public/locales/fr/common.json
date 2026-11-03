@@ -505,6 +505,123 @@
       "empty": {
         "title": "Aucune unité ne correspond à ces filtres",
         "body": "Modifiez ou effacez les filtres pour voir plus d'unités."
+      },
+      "compare": {
+        "toggle": "Comparer",
+        "loading": "Chargement de la comparaison…",
+        "options": "Options de comparaison",
+        "from": "Depuis",
+        "to": "Jusqu’à",
+        "current": "Effectif actuel",
+        "personalGroup": "Vos instantanés",
+        "leGroup": "Événements légendaires",
+        "runRecordLabel": "{{event}} · manche {{run}} · {{date}}",
+        "event": "Événement légendaire",
+        "anyEvent": "Toutes les unités",
+        "lane": "Voie",
+        "anyLane": "Toutes les voies",
+        "lanes": {
+          "alpha": "Alpha",
+          "beta": "Bêta",
+          "gamma": "Gamma"
+        },
+        "order": "Ordre",
+        "orderGain": "Puissance gagnée",
+        "fields": "Champs ({{count}}/{{total}})",
+        "fieldNames": {
+          "shards": "Fragments",
+          "mythicShards": "Fragments mythiques",
+          "xp": "XP",
+          "upgrades": "Améliorations",
+          "abilities": "Capacités",
+          "equipment": "Équipement",
+          "power": "Puissance"
+        },
+        "showUnchanged": "Afficher les inchangées",
+        "summaryTitle": "{{from}} → {{to}}",
+        "summaryFor_one": "pour {{count}} unité correspondante",
+        "summaryFor_other": "pour {{count}} unités correspondantes",
+        "metricHint": "Sélectionnez un nombre pour ne lister que les unités concernées.",
+        "metrics": {
+          "unlocked": "Débloquées",
+          "ascensions": "Ascensions",
+          "promotions": "Promotions",
+          "rankUps": "Montées de rang",
+          "abilityLevels": "Niveaux de capacité",
+          "upgradesApplied": "Améliorations appliquées",
+          "shardsEarned": "Fragments gagnés",
+          "mythicShardsEarned": "Fragments mythiques gagnés",
+          "power": "Puissance gagnée"
+        },
+        "noChanges": "Aucun changement pour ces unités",
+        "emptyTitle": "Prenez votre premier instantané",
+        "emptyBody": "Un instantané enregistre tout votre effectif tel qu’il est maintenant, pour le comparer à votre progression ultérieure.",
+        "errorTitle": "Impossible de charger les instantanés",
+        "errorBody": "La comparaison ne peut pas s’afficher sans eux. Réessayez.",
+        "fromTo": "{{from}} → {{to}}",
+        "chips": {
+          "unlocked": "Débloquée",
+          "stars": "{{value}}★",
+          "upgrades": "{{value}} améliorations",
+          "xpLevel": "{{value}} niveaux",
+          "abilities": "{{value}} capacité",
+          "shards": "{{value}} fragments",
+          "mythicShards": "{{value}} mythiques",
+          "equipment": "{{value}} équipement",
+          "power": "{{value}} puissance"
+        },
+        "details": {
+          "none": "Aucun changement.",
+          "unlocked": "Débloquée",
+          "rank": "Rang",
+          "stars": "Étoiles",
+          "upgrades": "Améliorations appliquées",
+          "xpLevel": "Niveau d’XP",
+          "xpGained": "XP gagnée",
+          "activeAbility": "Capacité active",
+          "passiveAbility": "Capacité passive",
+          "primaryAbility": "Capacité principale",
+          "secondaryAbility": "Capacité secondaire",
+          "shards": "Fragments",
+          "mythicShards": "Fragments mythiques",
+          "shardsBreakdown": "net {{net}} · dépensés {{spent}} · gagnés {{earned}}",
+          "equipment": "Équipement",
+          "power": "Puissance",
+          "openLibrary": "Ouvrir dans la Bibliothèque"
+        }
+      },
+      "snapshots": {
+        "signIn": "Connectez-vous pour enregistrer des instantanés de votre effectif et les comparer.",
+        "take": "Prendre un instantané",
+        "manage": "Instantanés",
+        "usage": "{{count}}/{{limit}}",
+        "limitTooltip": "Supprimez un instantané pour en prendre un nouveau",
+        "dialogTitle": "Prendre un instantané",
+        "dialogBody": "Synchronise d’abord avec Tacticus, puis enregistre tout votre effectif.",
+        "name": "Nom (facultatif)",
+        "nameLabel": "Nom de l’instantané",
+        "namePlaceholder": "La date du jour",
+        "nameTooLong": "Utilisez au plus {{max}} caractères.",
+        "cancel": "Annuler",
+        "confirm": "Prendre l’instantané",
+        "syncing": "Synchronisation…",
+        "retry": "Réessayer",
+        "syncFailed": "La synchronisation avec Tacticus a échoué.",
+        "rateLimited": "Trop de synchronisations. Vous pourrez réessayer {{time}}.",
+        "rateLimitedSoon": "Trop de synchronisations. Réessayez dans un instant.",
+        "notSynced": "Synchronisez votre effectif avant de prendre un instantané.",
+        "fromLastSync": "Prendre depuis la dernière synchronisation ({{time}})",
+        "taken": "Instantané enregistré",
+        "compare": "Comparer",
+        "manageTitle": "Gérer les instantanés",
+        "none": "Aucun instantané pour l’instant.",
+        "rename": "Renommer",
+        "delete": "Supprimer",
+        "deleteTitle": "Supprimer « {{name}} » ?",
+        "deleteBody": "L’instantané est supprimé définitivement.",
+        "deleteConfirm": "Supprimer",
+        "renameFailed": "Impossible de renommer l’instantané.",
+        "deleteFailed": "Impossible de supprimer l’instantané."
       }
     }
   },
@@ -1949,6 +2066,22 @@
     },
     "collection": {
       "steps": {
+        "compare": {
+          "title": "Comparer avec un instantané",
+          "content": "Activez Comparer pour voir ce qui a changé depuis un instantané ou une manche d’événement légendaire : les plus gros gains de puissance d’abord."
+        },
+        "takeSnapshot": {
+          "title": "Prendre un instantané",
+          "content": "Enregistre tout votre effectif après une nouvelle synchronisation, pour le comparer à votre progression ultérieure."
+        },
+        "compareOptions": {
+          "title": "Options de comparaison",
+          "content": "Choisissez les instantanés à comparer, filtrez par événement légendaire, changez l’ordre et choisissez les changements à afficher."
+        },
+        "compareSummary": {
+          "title": "Ce qui a changé",
+          "content": "Les totaux des unités listées. Sélectionnez un nombre pour ne lister que les unités concernées."
+        },
         "summary": {
           "title": "Votre collection en un coup d'œil",
           "content": "Combien de personnages et de Machines de guerre du jeu vous possédez."

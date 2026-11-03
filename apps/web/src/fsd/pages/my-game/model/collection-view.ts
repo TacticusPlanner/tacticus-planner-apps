@@ -133,6 +133,9 @@ export interface CollectionView {
   /** The query actually applied: the given one without the parts this roster cannot apply. The
    *  toolbar shows this, so it never marks as selected a value that does not narrow the list. */
   query: CollectionQuery
+  /** Every listed unit in one list, in the sort's order without faction grouping (owned first):
+   *  what compare mode lists. */
+  units: UnitTileUnit[]
 }
 
 interface CollectionRow {
@@ -291,8 +294,10 @@ export function buildCollectionView(
 
   const groupsById = new Map<string, CollectionFactionGroup>()
   const rowsByFaction = new Map<string, CollectionRow[]>()
+  const matched: CollectionRow[] = []
   for (const row of rows) {
     if (!matches(row)) continue
+    matched.push(row)
     if (!groupsById.has(row.factionId)) {
       groupsById.set(row.factionId, {
         factionId: row.factionId,
@@ -337,6 +342,9 @@ export function buildCollectionView(
     total,
     filtered: activeFilterCount(effective) > 0,
     query: effective,
+    units: matched
+      .sort((a, b) => compareRows(a, b, compareOwned, compareNames))
+      .map((row) => row.unit),
   }
 }
 

@@ -92,6 +92,26 @@ export const legendaryEventPlanQueries = {
         }
       },
     }),
+  // The newest page alone (the Collection compare picker); its own key below the event's records,
+  // so a sync's refresh covers it and it never shares a cache entry with the paged query.
+  latestRunRecords: (eventId: string) =>
+    queryOptions({
+      queryKey: [
+        ...legendaryEventPlanQueries.runRecordsAll(),
+        eventId,
+        "latest",
+      ] as const,
+      queryFn: async ({ signal }): Promise<LegendaryEventRunRecords> => {
+        try {
+          return await getLegendaryEventRunRecords(eventId, { signal })
+        } catch (error) {
+          if (error instanceof ApiError && error.status === 404) {
+            return { eventId, records: [], nextAfter: null }
+          }
+          throw error
+        }
+      },
+    }),
   // Under the event's records key, so refreshing the records (a sync) refreshes the rosters too.
   runRecordRoster: (eventId: string, recordId: string) =>
     queryOptions({

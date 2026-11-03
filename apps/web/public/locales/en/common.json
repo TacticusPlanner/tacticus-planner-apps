@@ -505,6 +505,123 @@
       "empty": {
         "title": "No unit matches these filters",
         "body": "Change or clear the filters to see more units."
+      },
+      "compare": {
+        "toggle": "Compare",
+        "loading": "Loading the comparison…",
+        "options": "Compare options",
+        "from": "From",
+        "to": "To",
+        "current": "Current roster",
+        "personalGroup": "Your snapshots",
+        "leGroup": "Legendary Events",
+        "runRecordLabel": "{{event}} · run {{run}} · {{date}}",
+        "event": "Legendary Event",
+        "anyEvent": "Any unit",
+        "lane": "Lane",
+        "anyLane": "Every lane",
+        "lanes": {
+          "alpha": "Alpha",
+          "beta": "Beta",
+          "gamma": "Gamma"
+        },
+        "order": "Order",
+        "orderGain": "Power gained",
+        "fields": "Fields ({{count}}/{{total}})",
+        "fieldNames": {
+          "shards": "Shards",
+          "mythicShards": "Mythic shards",
+          "xp": "XP",
+          "upgrades": "Upgrades",
+          "abilities": "Abilities",
+          "equipment": "Equipment",
+          "power": "Power"
+        },
+        "showUnchanged": "Show unchanged",
+        "summaryTitle": "{{from}} → {{to}}",
+        "summaryFor_one": "for {{count}} matching unit",
+        "summaryFor_other": "for {{count}} matching units",
+        "metricHint": "Select a number to list only the units behind it.",
+        "metrics": {
+          "unlocked": "Unlocked",
+          "ascensions": "Ascensions",
+          "promotions": "Promotions",
+          "rankUps": "Rank-ups",
+          "abilityLevels": "Ability levels",
+          "upgradesApplied": "Upgrades applied",
+          "shardsEarned": "Shards earned",
+          "mythicShardsEarned": "Mythic shards earned",
+          "power": "Power gained"
+        },
+        "noChanges": "No changes for these units",
+        "emptyTitle": "Take your first snapshot",
+        "emptyBody": "A snapshot saves your whole roster as it is now, so you can compare it with later progress.",
+        "errorTitle": "Snapshots couldn't be loaded",
+        "errorBody": "The comparison can't be shown without them. Try again.",
+        "fromTo": "{{from}} → {{to}}",
+        "chips": {
+          "unlocked": "Unlocked",
+          "stars": "{{value}}★",
+          "upgrades": "{{value}} upgrades",
+          "xpLevel": "{{value}} levels",
+          "abilities": "{{value}} ability",
+          "shards": "{{value}} shards",
+          "mythicShards": "{{value}} mythic",
+          "equipment": "{{value}} gear",
+          "power": "{{value}} power"
+        },
+        "details": {
+          "none": "No changes.",
+          "unlocked": "Unlocked",
+          "rank": "Rank",
+          "stars": "Stars",
+          "upgrades": "Upgrades applied",
+          "xpLevel": "XP level",
+          "xpGained": "XP gained",
+          "activeAbility": "Active ability",
+          "passiveAbility": "Passive ability",
+          "primaryAbility": "Primary ability",
+          "secondaryAbility": "Secondary ability",
+          "shards": "Shards",
+          "mythicShards": "Mythic shards",
+          "shardsBreakdown": "net {{net}} · spent {{spent}} · earned {{earned}}",
+          "equipment": "Equipment",
+          "power": "Power",
+          "openLibrary": "Open in Library"
+        }
+      },
+      "snapshots": {
+        "signIn": "Sign in to save snapshots of your roster and compare them.",
+        "take": "Take snapshot",
+        "manage": "Snapshots",
+        "usage": "{{count}}/{{limit}}",
+        "limitTooltip": "Delete a snapshot to take a new one",
+        "dialogTitle": "Take a snapshot",
+        "dialogBody": "Syncs with Tacticus first, then saves your whole roster.",
+        "name": "Name (optional)",
+        "nameLabel": "Snapshot name",
+        "namePlaceholder": "Today's date",
+        "nameTooLong": "Use at most {{max}} characters.",
+        "cancel": "Cancel",
+        "confirm": "Take snapshot",
+        "syncing": "Syncing…",
+        "retry": "Retry",
+        "syncFailed": "Syncing with Tacticus failed.",
+        "rateLimited": "Too many syncs. You can try again {{time}}.",
+        "rateLimitedSoon": "Too many syncs. Try again shortly.",
+        "notSynced": "Sync your roster before taking a snapshot.",
+        "fromLastSync": "Take from last sync (synced {{time}})",
+        "taken": "Snapshot taken",
+        "compare": "Compare",
+        "manageTitle": "Manage snapshots",
+        "none": "No snapshots yet.",
+        "rename": "Rename",
+        "delete": "Delete",
+        "deleteTitle": "Delete “{{name}}”?",
+        "deleteBody": "The snapshot is deleted permanently.",
+        "deleteConfirm": "Delete",
+        "renameFailed": "The snapshot couldn't be renamed.",
+        "deleteFailed": "The snapshot couldn't be deleted."
       }
     }
   },
@@ -1949,6 +2066,22 @@
     },
     "collection": {
       "steps": {
+        "compare": {
+          "title": "Compare with a snapshot",
+          "content": "Turn on Compare to see what changed since a snapshot or a Legendary Event run: the biggest power gains come first."
+        },
+        "takeSnapshot": {
+          "title": "Take a snapshot",
+          "content": "Saves your whole roster after a fresh sync, so you can compare it with later progress."
+        },
+        "compareOptions": {
+          "title": "Compare options",
+          "content": "Choose the snapshots to compare, filter by a Legendary Event, change the order and pick which changes to show."
+        },
+        "compareSummary": {
+          "title": "What changed",
+          "content": "Totals for the listed units. Select a number to list only the units behind it."
+        },
         "summary": {
           "title": "Your collection at a glance",
           "content": "How many of the game's characters and Machines of War you own."

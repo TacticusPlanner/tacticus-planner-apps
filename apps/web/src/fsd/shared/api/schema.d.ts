@@ -59,7 +59,7 @@ export interface paths {
     put?: never
     /**
      * Replaces this staging account's planner data with a copy from production.
-     * @description Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
+     * @description Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, personal roster snapshots, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
      */
     post: operations["TacticusPlannerApiFeaturesStagingTransferImportFromProductionEndpoint"]
     delete?: never
@@ -1560,6 +1560,58 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/me/roster-snapshots": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Lists the caller's personal roster snapshots, newest first, without rosters.
+     * @description count is the number that counts toward limit (manual and V1-imported snapshots). Legendary Event run-record rosters are not listed here.
+     */
+    get: operations["TacticusPlannerApiFeaturesRosterSnapshotsListPersonalRosterSnapshotsEndpoint"]
+    put?: never
+    /**
+     * Takes a personal roster snapshot from a fresh sync.
+     * @description Syncs player data from the Tacticus API and, in the same transaction, stores a copy of the whole synced roster as a snapshot with source manual. With fromLastSync=true it copies the last synced roster without calling the Tacticus API (takenAt is that sync's time) and is not rate limited. A sync failure creates nothing. At the limit (manual and V1-imported snapshots) the request is rejected before any sync with 409 rosterSnapshotLimitReached, carrying limit and count.
+     */
+    post: operations["TacticusPlannerApiFeaturesRosterSnapshotsCreatePersonalRosterSnapshotEndpoint"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/me/roster-snapshots/{snapshotId}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Reads the roster of one of the caller's personal snapshots.
+     * @description The roster never changes after creation, so the response may be cached for good.
+     */
+    get: operations["TacticusPlannerApiFeaturesRosterSnapshotsGetPersonalRosterSnapshotEndpoint"]
+    put?: never
+    post?: never
+    /**
+     * Permanently deletes one of the caller's personal snapshots.
+     * @description A hard delete with no trash or restore. The synced roster and run records are not affected.
+     */
+    delete: operations["TacticusPlannerApiFeaturesRosterSnapshotsDeletePersonalRosterSnapshotEndpoint"]
+    options?: never
+    head?: never
+    /**
+     * Renames one of the caller's personal snapshots.
+     * @description The name is trimmed and must be 1–60 characters; it need not be unique. The roster and takenAt do not change.
+     */
+    patch: operations["TacticusPlannerApiFeaturesRosterSnapshotsRenamePersonalRosterSnapshotEndpoint"]
+    trace?: never
+  }
   "/api/v1/player-data-overrides/battle-progress": {
     parameters: {
       query?: never
@@ -1955,6 +2007,9 @@ export interface components {
       expectedBattleClears: null | number
       expectedBattleClearsSource:
         null | components["schemas"]["LegendaryEventDepthSource"]
+    }
+    CreatePersonalRosterSnapshotRequest: {
+      name?: null | string
     }
     CreateProjectRequest: {
       name: string
@@ -3589,6 +3644,8 @@ export interface components {
       legendaryEventPlans: number
       /** Format: int32 */
       legendaryEventRunRecords: number
+      /** Format: int32 */
+      personalRosterSnapshots: number
       settings: boolean
       overrides: boolean
     }
@@ -3797,6 +3854,7 @@ export interface components {
     IReadOnlyListOfLegendaryEventRunRecordTeamResponse: components["schemas"]["LegendaryEventRunRecordTeamResponse"][]
     IReadOnlyListOfLegendaryEventTeamResponse: components["schemas"]["LegendaryEventTeamResponse"][]
     IReadOnlyListOfLegendaryEventTeamRunDepthResponse: components["schemas"]["LegendaryEventTeamRunDepthResponse"][]
+    IReadOnlyListOfPersonalRosterSnapshotResponse: components["schemas"]["PersonalRosterSnapshotResponse"][]
     IReadOnlyListOfPlayerDataManifestChunk: components["schemas"]["PlayerDataManifestChunk"][]
     IReadOnlyListOfRosterAbilityResponse: components["schemas"]["RosterAbilityResponse"][]
     IReadOnlyListOfRosterCharacterResponse: components["schemas"]["RosterCharacterResponse"][]
@@ -3976,6 +4034,25 @@ export interface components {
     /** @enum {string} */
     OnslaughtSector:
       "Stone" | "Iron" | "Bronze" | "Silver" | "Gold" | "Diamond" | "Adamantine"
+    PersonalRosterSnapshotListResponse: {
+      /** Format: int32 */
+      limit: number
+      /** Format: int32 */
+      count: number
+      items: components["schemas"]["IReadOnlyListOfPersonalRosterSnapshotResponse"]
+    }
+    PersonalRosterSnapshotResponse: {
+      /** Format: uuid */
+      id: string
+      name: string
+      source: components["schemas"]["RosterSnapshotSource"]
+      /** Format: date-time */
+      takenAt: string
+      /** Format: int32 */
+      characterCount: number
+      /** Format: int32 */
+      mowCount: number
+    }
     PlayerDataChunkEnvelopeOfObject: {
       /** Format: int32 */
       schemaVersion: number
@@ -4101,6 +4178,9 @@ export interface components {
     RegisterGuildRequest: {
       guildApiToken: string
     }
+    RenamePersonalRosterSnapshotRequest: {
+      name: null | string
+    }
     RosterAbilityResponse: {
       abilityId: string
       /** Format: int32 */
@@ -4149,6 +4229,8 @@ export interface components {
       characters: components["schemas"]["IReadOnlyListOfRosterCharacterResponse"]
       mows: components["schemas"]["IReadOnlyListOfRosterMowResponse"]
     }
+    /** @enum {string} */
+    RosterSnapshotSource: "manual" | "auto" | "v1Import"
     UnitId: string
     /** @enum {string} */
     UnitProgression:
@@ -9229,6 +9311,300 @@ export interface operations {
       }
       /** @description expectedRevision is stale or another write won (issueCode legendaryEventPlanStale), or a reorder's ids are not the lane's team set (legendaryEventOrderSetMismatch). current is the plan as it stands. */
       409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsListPersonalRosterSnapshotsEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PersonalRosterSnapshotListResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsCreatePersonalRosterSnapshotEndpoint: {
+    parameters: {
+      query?: {
+        fromLastSync?: null | boolean
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreatePersonalRosterSnapshotRequest"]
+      }
+    }
+    responses: {
+      /** @description The created snapshot. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PersonalRosterSnapshotResponse"]
+        }
+      }
+      /** @description The name is too long, no Tacticus API key is configured, or the Tacticus API rejected it. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The authenticated user has not signed up yet. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description rosterSnapshotLimitReached (with limit and count), or playerDataNotSynced for fromLastSync=true. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The per-profile upstream-call limit for this endpoint is exhausted; see Retry-After. */
+      429: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The Tacticus API failed or timed out (upstreamUnavailable). */
+      503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsGetPersonalRosterSnapshotEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        snapshotId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RosterSnapshotResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description No snapshot with this id belongs to the caller. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsDeletePersonalRosterSnapshotEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        snapshotId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The snapshot was deleted. */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description No snapshot with this id belongs to the caller. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsRenamePersonalRosterSnapshotEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        snapshotId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RenamePersonalRosterSnapshotRequest"]
+      }
+    }
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PersonalRosterSnapshotResponse"]
+        }
+      }
+      /** @description The name is blank or longer than 60 characters. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description No snapshot with this id belongs to the caller. */
+      404: {
         headers: {
           [name: string]: unknown
         }

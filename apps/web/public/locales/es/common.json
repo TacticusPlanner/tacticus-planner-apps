@@ -505,6 +505,123 @@
       "empty": {
         "title": "Ninguna unidad coincide con estos filtros",
         "body": "Cambia o borra los filtros para ver más unidades."
+      },
+      "compare": {
+        "toggle": "Comparar",
+        "loading": "Cargando la comparación…",
+        "options": "Opciones de comparación",
+        "from": "Desde",
+        "to": "Hasta",
+        "current": "Plantilla actual",
+        "personalGroup": "Tus instantáneas",
+        "leGroup": "Eventos legendarios",
+        "runRecordLabel": "{{event}} · ronda {{run}} · {{date}}",
+        "event": "Evento legendario",
+        "anyEvent": "Todas las unidades",
+        "lane": "Carril",
+        "anyLane": "Todos los carriles",
+        "lanes": {
+          "alpha": "Alfa",
+          "beta": "Beta",
+          "gamma": "Gamma"
+        },
+        "order": "Orden",
+        "orderGain": "Poder ganado",
+        "fields": "Campos ({{count}}/{{total}})",
+        "fieldNames": {
+          "shards": "Fragmentos",
+          "mythicShards": "Fragmentos míticos",
+          "xp": "EXP",
+          "upgrades": "Mejoras",
+          "abilities": "Habilidades",
+          "equipment": "Equipo",
+          "power": "Poder"
+        },
+        "showUnchanged": "Mostrar sin cambios",
+        "summaryTitle": "{{from}} → {{to}}",
+        "summaryFor_one": "para {{count}} unidad coincidente",
+        "summaryFor_other": "para {{count}} unidades coincidentes",
+        "metricHint": "Selecciona un número para listar solo las unidades que lo forman.",
+        "metrics": {
+          "unlocked": "Desbloqueadas",
+          "ascensions": "Ascensos de rareza",
+          "promotions": "Promociones",
+          "rankUps": "Subidas de rango",
+          "abilityLevels": "Niveles de habilidad",
+          "upgradesApplied": "Mejoras aplicadas",
+          "shardsEarned": "Fragmentos obtenidos",
+          "mythicShardsEarned": "Fragmentos míticos obtenidos",
+          "power": "Poder ganado"
+        },
+        "noChanges": "No hay cambios para estas unidades",
+        "emptyTitle": "Toma tu primera instantánea",
+        "emptyBody": "Una instantánea guarda toda tu plantilla tal como está ahora, para que puedas compararla con tu progreso posterior.",
+        "errorTitle": "No se pudieron cargar las instantáneas",
+        "errorBody": "La comparación no se puede mostrar sin ellas. Inténtalo de nuevo.",
+        "fromTo": "{{from}} → {{to}}",
+        "chips": {
+          "unlocked": "Desbloqueada",
+          "stars": "{{value}}★",
+          "upgrades": "{{value}} mejoras",
+          "xpLevel": "{{value}} niveles",
+          "abilities": "{{value}} habilidad",
+          "shards": "{{value}} fragmentos",
+          "mythicShards": "{{value}} míticos",
+          "equipment": "{{value}} equipo",
+          "power": "{{value}} poder"
+        },
+        "details": {
+          "none": "Sin cambios.",
+          "unlocked": "Desbloqueada",
+          "rank": "Rango",
+          "stars": "Estrellas",
+          "upgrades": "Mejoras aplicadas",
+          "xpLevel": "Nivel de EXP",
+          "xpGained": "EXP obtenida",
+          "activeAbility": "Habilidad activa",
+          "passiveAbility": "Habilidad pasiva",
+          "primaryAbility": "Habilidad principal",
+          "secondaryAbility": "Habilidad secundaria",
+          "shards": "Fragmentos",
+          "mythicShards": "Fragmentos míticos",
+          "shardsBreakdown": "neto {{net}} · gastados {{spent}} · obtenidos {{earned}}",
+          "equipment": "Equipo",
+          "power": "Poder",
+          "openLibrary": "Abrir en la Biblioteca"
+        }
+      },
+      "snapshots": {
+        "signIn": "Inicia sesión para guardar instantáneas de tu plantilla y compararlas.",
+        "take": "Tomar instantánea",
+        "manage": "Instantáneas",
+        "usage": "{{count}}/{{limit}}",
+        "limitTooltip": "Elimina una instantánea para tomar otra",
+        "dialogTitle": "Tomar una instantánea",
+        "dialogBody": "Primero sincroniza con Tacticus y después guarda toda tu plantilla.",
+        "name": "Nombre (opcional)",
+        "nameLabel": "Nombre de la instantánea",
+        "namePlaceholder": "La fecha de hoy",
+        "nameTooLong": "Usa como máximo {{max}} caracteres.",
+        "cancel": "Cancelar",
+        "confirm": "Tomar instantánea",
+        "syncing": "Sincronizando…",
+        "retry": "Reintentar",
+        "syncFailed": "La sincronización con Tacticus falló.",
+        "rateLimited": "Demasiadas sincronizaciones. Puedes volver a intentarlo {{time}}.",
+        "rateLimitedSoon": "Demasiadas sincronizaciones. Inténtalo de nuevo en un momento.",
+        "notSynced": "Sincroniza tu plantilla antes de tomar una instantánea.",
+        "fromLastSync": "Tomar de la última sincronización ({{time}})",
+        "taken": "Instantánea guardada",
+        "compare": "Comparar",
+        "manageTitle": "Gestionar instantáneas",
+        "none": "Aún no hay instantáneas.",
+        "rename": "Renombrar",
+        "delete": "Eliminar",
+        "deleteTitle": "¿Eliminar «{{name}}»?",
+        "deleteBody": "La instantánea se elimina de forma permanente.",
+        "deleteConfirm": "Eliminar",
+        "renameFailed": "No se pudo renombrar la instantánea.",
+        "deleteFailed": "No se pudo eliminar la instantánea."
       }
     }
   },
@@ -1949,6 +2066,22 @@
     },
     "collection": {
       "steps": {
+        "compare": {
+          "title": "Compara con una instantánea",
+          "content": "Activa Comparar para ver qué cambió desde una instantánea o una ronda de un evento legendario: primero las mayores ganancias de poder."
+        },
+        "takeSnapshot": {
+          "title": "Toma una instantánea",
+          "content": "Guarda toda tu plantilla tras una sincronización nueva, para compararla con tu progreso posterior."
+        },
+        "compareOptions": {
+          "title": "Opciones de comparación",
+          "content": "Elige las instantáneas que comparar, filtra por un evento legendario, cambia el orden y elige qué cambios mostrar."
+        },
+        "compareSummary": {
+          "title": "Qué ha cambiado",
+          "content": "Totales de las unidades listadas. Selecciona un número para listar solo las unidades que lo forman."
+        },
         "summary": {
           "title": "Tu colección de un vistazo",
           "content": "Cuántos de los personajes y Máquinas de Guerra del juego tienes."

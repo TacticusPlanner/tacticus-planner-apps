@@ -5,7 +5,16 @@ import type { Step } from "react-joyride"
 import { type TourPageSteps } from "@/shared/tour"
 
 type CollectionStepKey =
-  "toolbar" | "quickFilters" | "summary" | "faction" | "owned" | "unowned"
+  | "compare"
+  | "takeSnapshot"
+  | "compareOptions"
+  | "compareSummary"
+  | "toolbar"
+  | "quickFilters"
+  | "summary"
+  | "faction"
+  | "owned"
+  | "unowned"
 
 /**
  * Walks the toolbar (search, sort and filters), the quick filters, the summary, the first faction
@@ -14,18 +23,26 @@ type CollectionStepKey =
  * during the tour. The summary is shown only once a roster has synced and some unit is listed, the
  * faction step only while a group is listed, an owned tile only when a listed unit is owned and an
  * unowned tile only while a listed unit is not, so those steps are left out otherwise rather than
- * pointing at nothing.
+ * pointing at nothing. Signed in, the tour starts at the Compare switch and Take snapshot; while
+ * compare mode shows a comparison it adds its summary, and on mobile its Compare options trigger
+ * (the options sit inline on desktop, so that step is mobile-only).
  */
 export function useCollectionTutorial({
   hasSummary,
   hasGroups,
   hasOwned,
   hasUnowned,
+  hasSnapshotActions = false,
+  compareReady = false,
 }: {
   hasSummary: boolean
   hasGroups: boolean
   hasOwned: boolean
   hasUnowned: boolean
+  /** Signed in: the Compare switch and Take snapshot are shown. */
+  hasSnapshotActions?: boolean
+  /** Compare mode shows a comparison (its summary and options are on the page). */
+  compareReady?: boolean
 }): TourPageSteps {
   const { t } = useTranslation("common")
 
@@ -59,8 +76,23 @@ export function useCollectionTutorial({
         ? [step("unowned", "collection-unowned-tile", placement)]
         : []
 
+    const snapshotActions = hasSnapshotActions
+      ? [
+          step("compare", "compare-toggle", "bottom"),
+          step("takeSnapshot", "take-snapshot", "bottom"),
+        ]
+      : []
+    const compareSummary = compareReady
+      ? [step("compareSummary", "compare-summary", "bottom")]
+      : []
+    const compareOptions = compareReady
+      ? [step("compareOptions", "compare-options", "bottom")]
+      : []
+
     return {
       desktop: [
+        ...snapshotActions,
+        ...compareSummary,
         ...toolbar,
         ...summary,
         ...faction("right"),
@@ -68,6 +100,9 @@ export function useCollectionTutorial({
         ...unowned("bottom"),
       ],
       mobile: [
+        ...snapshotActions,
+        ...compareOptions,
+        ...compareSummary,
         ...toolbar,
         ...summary,
         ...faction("bottom"),
@@ -75,5 +110,13 @@ export function useCollectionTutorial({
         ...unowned("top"),
       ],
     }
-  }, [t, hasSummary, hasGroups, hasOwned, hasUnowned])
+  }, [
+    t,
+    hasSummary,
+    hasGroups,
+    hasOwned,
+    hasUnowned,
+    hasSnapshotActions,
+    compareReady,
+  ])
 }

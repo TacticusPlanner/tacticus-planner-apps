@@ -505,6 +505,123 @@
       "empty": {
         "title": "Keine Einheit passt zu diesen Filtern",
         "body": "Ändere die Filter oder setze sie zurück, um mehr Einheiten zu sehen."
+      },
+      "compare": {
+        "toggle": "Vergleichen",
+        "loading": "Vergleich wird geladen…",
+        "options": "Vergleichsoptionen",
+        "from": "Von",
+        "to": "Bis",
+        "current": "Aktueller Kader",
+        "personalGroup": "Deine Snapshots",
+        "leGroup": "Legendäre Events",
+        "runRecordLabel": "{{event}} · Durchlauf {{run}} · {{date}}",
+        "event": "Legendäres Event",
+        "anyEvent": "Alle Einheiten",
+        "lane": "Bahn",
+        "anyLane": "Alle Bahnen",
+        "lanes": {
+          "alpha": "Alpha",
+          "beta": "Beta",
+          "gamma": "Gamma"
+        },
+        "order": "Reihenfolge",
+        "orderGain": "Macht gewonnen",
+        "fields": "Felder ({{count}}/{{total}})",
+        "fieldNames": {
+          "shards": "Splitter",
+          "mythicShards": "Mythische Splitter",
+          "xp": "EP",
+          "upgrades": "Upgrades",
+          "abilities": "Fähigkeiten",
+          "equipment": "Ausrüstung",
+          "power": "Macht"
+        },
+        "showUnchanged": "Unveränderte zeigen",
+        "summaryTitle": "{{from}} → {{to}}",
+        "summaryFor_one": "für {{count}} passende Einheit",
+        "summaryFor_other": "für {{count}} passende Einheiten",
+        "metricHint": "Wähle eine Zahl, um nur die Einheiten dahinter aufzulisten.",
+        "metrics": {
+          "unlocked": "Freigeschaltet",
+          "ascensions": "Aufstiege",
+          "promotions": "Beförderungen",
+          "rankUps": "Rangaufstiege",
+          "abilityLevels": "Fähigkeitsstufen",
+          "upgradesApplied": "Upgrades angewendet",
+          "shardsEarned": "Splitter erhalten",
+          "mythicShardsEarned": "Mythische Splitter erhalten",
+          "power": "Macht gewonnen"
+        },
+        "noChanges": "Keine Änderungen für diese Einheiten",
+        "emptyTitle": "Mach deinen ersten Snapshot",
+        "emptyBody": "Ein Snapshot speichert deinen ganzen Kader, wie er jetzt ist, damit du ihn mit späterem Fortschritt vergleichen kannst.",
+        "errorTitle": "Snapshots konnten nicht geladen werden",
+        "errorBody": "Ohne sie kann der Vergleich nicht angezeigt werden. Versuche es erneut.",
+        "fromTo": "{{from}} → {{to}}",
+        "chips": {
+          "unlocked": "Freigeschaltet",
+          "stars": "{{value}}★",
+          "upgrades": "{{value}} Upgrades",
+          "xpLevel": "{{value}} Stufen",
+          "abilities": "{{value}} Fähigkeit",
+          "shards": "{{value}} Splitter",
+          "mythicShards": "{{value}} mythisch",
+          "equipment": "{{value}} Ausrüstung",
+          "power": "{{value}} Macht"
+        },
+        "details": {
+          "none": "Keine Änderungen.",
+          "unlocked": "Freigeschaltet",
+          "rank": "Rang",
+          "stars": "Sterne",
+          "upgrades": "Upgrades angewendet",
+          "xpLevel": "EP-Stufe",
+          "xpGained": "EP erhalten",
+          "activeAbility": "Aktive Fähigkeit",
+          "passiveAbility": "Passive Fähigkeit",
+          "primaryAbility": "Primäre Fähigkeit",
+          "secondaryAbility": "Sekundäre Fähigkeit",
+          "shards": "Splitter",
+          "mythicShards": "Mythische Splitter",
+          "shardsBreakdown": "netto {{net}} · ausgegeben {{spent}} · erhalten {{earned}}",
+          "equipment": "Ausrüstung",
+          "power": "Macht",
+          "openLibrary": "In der Bibliothek öffnen"
+        }
+      },
+      "snapshots": {
+        "signIn": "Melde dich an, um Snapshots deines Kaders zu speichern und zu vergleichen.",
+        "take": "Snapshot machen",
+        "manage": "Snapshots",
+        "usage": "{{count}}/{{limit}}",
+        "limitTooltip": "Lösche einen Snapshot, um einen neuen zu machen",
+        "dialogTitle": "Snapshot machen",
+        "dialogBody": "Synchronisiert zuerst mit Tacticus und speichert dann deinen ganzen Kader.",
+        "name": "Name (optional)",
+        "nameLabel": "Snapshot-Name",
+        "namePlaceholder": "Heutiges Datum",
+        "nameTooLong": "Verwende höchstens {{max}} Zeichen.",
+        "cancel": "Abbrechen",
+        "confirm": "Snapshot machen",
+        "syncing": "Synchronisiere…",
+        "retry": "Erneut versuchen",
+        "syncFailed": "Die Synchronisierung mit Tacticus ist fehlgeschlagen.",
+        "rateLimited": "Zu viele Synchronisierungen. Du kannst es {{time}} erneut versuchen.",
+        "rateLimitedSoon": "Zu viele Synchronisierungen. Versuche es gleich erneut.",
+        "notSynced": "Synchronisiere deinen Kader, bevor du einen Snapshot machst.",
+        "fromLastSync": "Aus letzter Synchronisierung (synchronisiert {{time}})",
+        "taken": "Snapshot gespeichert",
+        "compare": "Vergleichen",
+        "manageTitle": "Snapshots verwalten",
+        "none": "Noch keine Snapshots.",
+        "rename": "Umbenennen",
+        "delete": "Löschen",
+        "deleteTitle": "„{{name}}“ löschen?",
+        "deleteBody": "Der Snapshot wird endgültig gelöscht.",
+        "deleteConfirm": "Löschen",
+        "renameFailed": "Der Snapshot konnte nicht umbenannt werden.",
+        "deleteFailed": "Der Snapshot konnte nicht gelöscht werden."
       }
     }
   },
@@ -1949,6 +2066,22 @@
     },
     "collection": {
       "steps": {
+        "compare": {
+          "title": "Mit einem Snapshot vergleichen",
+          "content": "Schalte Vergleichen ein, um zu sehen, was sich seit einem Snapshot oder einem Durchlauf eines Legendären Events geändert hat: die größten Machtzuwächse zuerst."
+        },
+        "takeSnapshot": {
+          "title": "Snapshot machen",
+          "content": "Speichert nach einer frischen Synchronisierung deinen ganzen Kader, damit du ihn mit späterem Fortschritt vergleichen kannst."
+        },
+        "compareOptions": {
+          "title": "Vergleichsoptionen",
+          "content": "Wähle die zu vergleichenden Snapshots, filtere nach einem Legendären Event, ändere die Reihenfolge und wähle, welche Änderungen angezeigt werden."
+        },
+        "compareSummary": {
+          "title": "Was sich geändert hat",
+          "content": "Summen für die gelisteten Einheiten. Wähle eine Zahl, um nur die Einheiten dahinter aufzulisten."
+        },
         "summary": {
           "title": "Deine Sammlung auf einen Blick",
           "content": "Wie viele der Charaktere und Kriegsmaschinen des Spiels du besitzt."

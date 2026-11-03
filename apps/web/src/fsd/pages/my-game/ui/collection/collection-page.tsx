@@ -1,5 +1,13 @@
-import { useMemo } from "react"
-import { AlertTriangle, LogIn, RefreshCw, SearchX, X } from "lucide-react"
+import { useMemo, useState } from "react"
+import { useIsAuthenticated } from "@azure/msal-react"
+import {
+  AlertTriangle,
+  History,
+  LogIn,
+  RefreshCw,
+  SearchX,
+  X,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { factionIcon } from "@workspace/game-catalog"
 import {
@@ -16,6 +24,7 @@ import {
   UnitTile,
   type UnitKind,
 } from "@/entities/unit"
+import { useRosterSnapshots } from "@/entities/roster-snapshot"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
@@ -31,8 +40,15 @@ import {
 } from "../../model/use-collection-options"
 import { useCollectionQuery } from "../../model/use-collection-query"
 import { useCollectionView } from "../../model/use-collection-view"
+import { COMPARE_CURRENT, COMPARE_LATEST } from "../../model/compare-query"
+import { useCollectionCompare } from "../../model/use-collection-compare"
+import { useCompareQuery } from "../../model/use-compare-query"
 import { useCollectionTutorial } from "./collection.tutorial"
 import { CollectionToolbar } from "./collection-toolbar"
+import { SnapshotActions } from "./compare/compare-bar"
+import { CompareSection } from "./compare/compare-section"
+import { ManageSnapshotsSheet } from "./compare/manage-snapshots-sheet"
+import { TakeSnapshotDialog } from "./compare/take-snapshot-dialog"
 
 // Before the catalog is read the toolbar is hidden anyway; this only keeps its props total.
 const EMPTY_OPTIONS: CollectionOptions = {
@@ -64,17 +80,34 @@ export function CollectionPage() {
   const { t } = useTranslation("common")
   const options = useCollectionOptions()
   const { query, update, clear } = useCollectionQuery(options)
-  const state = useCollectionView(query)
-  const hasGroups = state.status === "ready" && state.view.groups.length > 0
+  const isAuthenticated = useIsAuthenticated()
+  const compareQuery = useCompareQuery()
+  const { state: compare, toRoster } = useCollectionCompare(compareQuery)
+  const snapshots = useRosterSnapshots(isAuthenticated)
+  const [takeOpen, setTakeOpen] = useState(false)
+  const [manageOpen, setManageOpen] = useState(false)
+  const state = useCollectionView(query, toRoster)
+  const comparing = compare.mode !== "off" && compare.mode !== "guest"
+  const hasGroups =
+    !comparing && state.status === "ready" && state.view.groups.length > 0
   const hasSummary = hasGroups && state.view.rosterState === "available"
-  const hasOwned = state.status === "ready" && state.view.owned > 0
-  const hasUnowned =
-    state.status === "ready" && state.view.owned < state.view.total
+  const hasOwned = hasGroups && state.view.owned > 0
+  const hasUnowned = hasGroups && state.view.owned < state.view.total
   useTourPageSteps(
-    useCollectionTutorial({ hasSummary, hasGroups, hasOwned, hasUnowned })
+    useCollectionTutorial({
+      hasSummary,
+      hasGroups,
+      hasOwned,
+      hasUnowned,
+      hasSnapshotActions: isAuthenticated,
+      compareReady: compare.mode === "ready",
+    })
   )
   const groups = state.status === "ready" ? state.view.groups : undefined
   const origins = useMemo(() => collectionOrigins(groups ?? []), [groups])
+  const usage = snapshots.data
+    ? { count: snapshots.data.count, limit: snapshots.data.limit }
+    : null
 
   if (state.status === "loading") {
     return <CollectionSkeleton />
@@ -103,6 +136,17 @@ export function CollectionPage() {
       {view.rosterState === "available" ? null : (
         <RosterPrompt rosterState={view.rosterState} onRetry={retry} />
       )}
+      {isAuthenticated ? (
+        <SnapshotActions
+          compareOn={comparing}
+          onCompareChange={compareQuery.setEnabled}
+          usage={usage}
+          onTake={() => setTakeOpen(true)}
+          onManage={() => setManageOpen(true)}
+        />
+      ) : (
+        <SnapshotsSignInPrompt />
+      )}
       <CollectionToolbar
         // The applied query: a value the page cannot apply yet (no roster, or a quick filter whose
         // data is missing) stays in the URL for later but is not shown as selected.
@@ -114,7 +158,16 @@ export function CollectionPage() {
         quickFilters={quickFilters}
         onRetry={retry}
       />
-      {rosterAvailable && view.groups.length > 0 ? (
+      {comparing ? (
+        <CompareSection
+          state={compare}
+          compare={compareQuery}
+          units={view.units}
+          filtered={view.filtered}
+          onTake={() => setTakeOpen(true)}
+        />
+      ) : null}
+      {!comparing && rosterAvailable && view.groups.length > 0 ? (
         <p
           className="text-sm text-muted-foreground"
           data-testid="collection-summary"
@@ -127,7 +180,7 @@ export function CollectionPage() {
           )}
         </p>
       ) : null}
-      {view.groups.length > 0 ? (
+      {comparing ? null : view.groups.length > 0 ? (
         <div className={factionGrid}>
           {view.groups.map((group) => (
             <FactionGroupCard
@@ -141,7 +194,42 @@ export function CollectionPage() {
       ) : (
         <NoMatches onClear={clear} />
       )}
+      {isAuthenticated ? (
+        <>
+          <TakeSnapshotDialog
+            open={takeOpen}
+            onOpenChange={setTakeOpen}
+            count={usage?.count ?? 0}
+            limit={usage?.limit ?? 0}
+            onCompare={() =>
+              compareQuery.update({
+                compare: COMPARE_LATEST,
+                to: COMPARE_CURRENT,
+              })
+            }
+          />
+          <ManageSnapshotsSheet
+            open={manageOpen}
+            onOpenChange={setManageOpen}
+            list={snapshots.data}
+          />
+        </>
+      ) : null}
     </div>
+  )
+}
+
+/** Shown to guests in place of Compare and Take snapshot (snapshots live in the account). */
+function SnapshotsSignInPrompt() {
+  const { t } = useTranslation("common")
+  return (
+    <p
+      className="flex items-center gap-2 text-sm text-muted-foreground"
+      data-testid="snapshots-sign-in-prompt"
+    >
+      <History aria-hidden className="size-4 shrink-0" />
+      {t("myGame.collection.snapshots.signIn")}
+    </p>
   )
 }
 
