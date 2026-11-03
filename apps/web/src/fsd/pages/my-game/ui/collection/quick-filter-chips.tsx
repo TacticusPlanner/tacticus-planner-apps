@@ -17,7 +17,7 @@ import type { QuickFilterAvailability } from "../../model/use-collection-view"
 
 type Unavailable = Extract<
   QuickFilterAvailability,
-  "needsRoster" | "needsInventory" | "failed"
+  "needsRoster" | "needsInventory" | "currentOnly" | "failed"
 >
 
 const isUnavailable = (
@@ -25,6 +25,7 @@ const isUnavailable = (
 ): availability is Unavailable =>
   availability === "needsRoster" ||
   availability === "needsInventory" ||
+  availability === "currentOnly" ||
   availability === "failed"
 
 /**
@@ -66,7 +67,9 @@ export function QuickFilterChips({
         : t(
             reason === "needsInventory"
               ? "myGame.collection.toolbar.quickNeedsInventory"
-              : "myGame.collection.toolbar.quickFailed",
+              : reason === "currentOnly"
+                ? "myGame.collection.toolbar.quickCurrentOnly"
+                : "myGame.collection.toolbar.quickFailed",
             { filters: list.format(quicks.map(label)) }
           ),
   }))

@@ -452,6 +452,7 @@
         },
         "quickNeedsRoster": "Quick filters need a synced roster.",
         "quickNeedsInventory": "{{filters}}: needs your synced inventory.",
+        "quickCurrentOnly": "{{filters}}: reads your current roster and inventory, so it is off while comparing a snapshot.",
         "quickFailed": "{{filters}}: its game data couldn't be loaded.",
         "rankRange": "Rank range",
         "groupUnit": "Unit",

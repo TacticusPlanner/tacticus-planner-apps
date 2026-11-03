@@ -94,9 +94,10 @@ export function useCompareSources(enabled: boolean): ReadState<CompareSources> {
   )
   const recordsReady = records.every((query) => query.data !== undefined)
   const recordPages = records.map((query) => query.data)
-  // Stable while no page changed, so the memo below does not rebuild every render.
-  const recordsKey = recordPages
-    .map((page) => (page ? `${page.eventId}:${page.records.length}` : "-"))
+  // Stable until a page is fetched again (a sync can replace records at the same count), so the
+  // memo below does not rebuild every render.
+  const recordsKey = records
+    .map((query) => (query.data ? String(query.dataUpdatedAt) : "-"))
     .join("|")
 
   const retry = () => {

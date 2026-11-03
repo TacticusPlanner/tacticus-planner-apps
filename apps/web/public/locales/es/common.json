@@ -452,6 +452,7 @@
         },
         "quickNeedsRoster": "Los filtros rápidos necesitan una plantilla sincronizada.",
         "quickNeedsInventory": "{{filters}}: necesita tu inventario sincronizado.",
+        "quickCurrentOnly": "{{filters}}: usa tu plantilla e inventario actuales, así que se desactiva al comparar una instantánea.",
         "quickFailed": "{{filters}}: no se pudieron cargar sus datos del juego.",
         "rankRange": "Intervalo de rangos",
         "groupUnit": "Unidad",

@@ -46,4 +46,13 @@ describe("takeFailure", () => {
       canFallBack: true,
     })
   })
+
+  it("offers no fallback when the request is unauthorized", () => {
+    for (const status of [401, 403]) {
+      expect(takeFailure(new ApiError(status, ""))).toEqual({
+        kind: "syncFailed",
+        canFallBack: false,
+      })
+    }
+  })
 })

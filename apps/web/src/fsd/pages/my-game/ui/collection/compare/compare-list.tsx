@@ -106,7 +106,10 @@ function MobileList({
   items: { item: CompareItem; dimmed: boolean }[]
   fields: ReadonlySet<CompareField>
 }) {
-  const [open, setOpen] = useState<CompareItem | null>(null)
+  // The id, not the item, so the sheet follows a refreshed diff and closes when the unit leaves.
+  const [openId, setOpenId] = useState<string | null>(null)
+  const open =
+    items.find(({ item }) => item.unit.unitId === openId)?.item ?? null
   return (
     <>
       <ul className="flex flex-col divide-y" data-testid="compare-list">
@@ -115,7 +118,7 @@ function MobileList({
             <button
               type="button"
               className="flex w-full min-w-0 items-center gap-3 py-2 text-left"
-              onClick={() => setOpen(item)}
+              onClick={() => setOpenId(item.unit.unitId)}
               data-testid="compare-row"
               data-unit={item.unit.unitId}
               data-changed={item.diff.changed}
@@ -138,7 +141,7 @@ function MobileList({
       <Sheet
         open={open !== null}
         onOpenChange={(next) => {
-          if (!next) setOpen(null)
+          if (!next) setOpenId(null)
         }}
       >
         <SheetContent side="bottom" data-testid="compare-details">

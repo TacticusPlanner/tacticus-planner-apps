@@ -452,6 +452,7 @@
         },
         "quickNeedsRoster": "Schnellfilter brauchen einen synchronisierten Kader.",
         "quickNeedsInventory": "{{filters}}: braucht dein synchronisiertes Inventar.",
+        "quickCurrentOnly": "{{filters}}: liest deinen aktuellen Kader und dein Inventar und ist beim Vergleich mit einem Snapshot aus.",
         "quickFailed": "{{filters}}: Die Spieldaten dafür konnten nicht geladen werden.",
         "rankRange": "Rangbereich",
         "groupUnit": "Einheit",

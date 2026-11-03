@@ -1,4 +1,4 @@
-import { useId, useState } from "react"
+import { useEffect, useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { AlertTriangle } from "lucide-react"
@@ -51,9 +51,23 @@ export function TakeSnapshotDialog({
   const { lastSyncedAt, syncNow } = usePlayerDataStatus()
   const nameError = snapshotNameError(name)
   const failure = create.error ? takeFailure(create.error) : null
+  // When a 429's Retry-After window ends, measured from the response's arrival.
+  const [retryAt, setRetryAt] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (retryAt === null) return
+    const timer = setTimeout(
+      () => setRetryAt(null),
+      Math.max(0, retryAt - Date.now())
+    )
+    return () => clearTimeout(timer)
+  }, [retryAt])
 
   const close = (next: boolean) => {
+    // The request cannot be aborted, so the dialog stays until it settles.
+    if (!next && create.isPending) return
     if (!next) {
+      setRetryAt(null)
       create.reset()
       setName("")
     }
@@ -81,6 +95,15 @@ export function TakeSnapshotDialog({
             },
           })
         },
+        onError: (error) => {
+          const failed = takeFailure(error)
+          if (
+            failed.kind === "rateLimited" &&
+            failed.retryAfterSeconds !== undefined
+          ) {
+            setRetryAt(Date.now() + failed.retryAfterSeconds * 1000)
+          }
+        },
       }
     )
   }
@@ -89,11 +112,8 @@ export function TakeSnapshotDialog({
     ? formatRelativeTime(Date.parse(lastSyncedAt), i18n.language)
     : null
   const retryIn =
-    failure?.kind === "rateLimited" && failure.retryAfterSeconds !== undefined
-      ? formatRelativeTime(
-          create.submittedAt + failure.retryAfterSeconds * 1000,
-          i18n.language
-        )
+    failure?.kind === "rateLimited" && retryAt !== null
+      ? formatRelativeTime(retryAt, i18n.language)
       : null
 
   return (
@@ -182,13 +202,18 @@ export function TakeSnapshotDialog({
         ) : null}
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter>
-        <Button variant="outline" onClick={() => close(false)}>
+        <Button
+          variant="outline"
+          disabled={create.isPending}
+          onClick={() => close(false)}
+        >
           {t("myGame.collection.snapshots.cancel")}
         </Button>
         <Button
           onClick={() => take(false)}
           disabled={
             create.isPending ||
+            retryAt !== null ||
             nameError !== null ||
             failure?.kind === "limitReached"
           }

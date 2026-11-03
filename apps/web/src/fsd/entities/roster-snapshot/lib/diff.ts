@@ -143,14 +143,20 @@ function diffUnit(
   const startIndex = unlocked
     ? unlockIndex(kind, after.unitId, context, endIndex)
     : progressionIndex(before.progressionIndex)
+  // A progression missing from the local ladder (a newer catalog) has no step costs or change.
+  const knownProgression = startIndex >= 0 && endIndex >= 0
   const unlockCost = unlocked ? unlockShardCost(kind, after, context) : 0
-  const stepCosts = progressionStepCosts(startIndex, endIndex, context)
+  const stepCosts = knownProgression
+    ? progressionStepCosts(startIndex, endIndex, context)
+    : { shards: 0, mythicShards: 0 }
   const shards = shardChange(
+    before,
     before?.shards,
     after.shards,
     unlockCost + stepCosts.shards
   )
   const mythicShards = shardChange(
+    before,
     before?.mythicShards,
     after.mythicShards,
     stepCosts.mythicShards
@@ -159,11 +165,13 @@ function diffUnit(
 
   const changes = before
     ? {
-        progression: later(
-          before.progressionIndex,
-          after.progressionIndex,
-          progressionIndex
-        ),
+        progression: knownProgression
+          ? later(
+              before.progressionIndex,
+              after.progressionIndex,
+              progressionIndex
+            )
+          : null,
         rank:
           before.rank !== undefined &&
           after.rank !== undefined &&
@@ -266,11 +274,15 @@ function progressionStepCosts(
 }
 
 function shardChange(
+  before: DiffUnit | undefined,
   from: number | undefined,
   to: number | undefined,
   spent: number
 ): ShardChange | null {
-  if (to === undefined) return null
+  // A newly unlocked unit starts from 0; an existing unit without the field has no comparison.
+  if (to === undefined || (before !== undefined && from === undefined)) {
+    return null
+  }
   const held = from ?? 0
   const net = to - held
   return { from: held, to, net, spent, earned: net + spent }
