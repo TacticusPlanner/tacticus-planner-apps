@@ -4,7 +4,9 @@ import type {
   PersonalRosterSnapshot,
   PersonalRosterSnapshotList,
 } from "@/entities/roster-snapshot"
-import { fireEvent, render, screen, within } from "@/test/render"
+import { toast } from "sonner"
+
+import { fireEvent, render, screen, waitFor, within } from "@/test/render"
 
 import { ManageSnapshotsSheet } from "./manage-snapshots-sheet"
 
@@ -23,6 +25,9 @@ vi.mock("react-i18next", () => ({
 
 const keep = vi.hoisted(() => ({ mutate: vi.fn() }))
 const save = vi.hoisted(() => vi.fn())
+const settingsState = vi.hoisted(() => ({ failed: false, retry: vi.fn() }))
+
+vi.mock("sonner", () => ({ toast: { error: vi.fn() } }))
 
 vi.mock("@/entities/roster-snapshot", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/roster-snapshot")>()),
@@ -41,6 +46,8 @@ vi.mock("@/entities/planning-setting", () => ({
       revision: 3,
     },
     loading: false,
+    failed: settingsState.failed,
+    retry: settingsState.retry,
     save,
   }),
 }))
@@ -74,6 +81,8 @@ describe("ManageSnapshotsSheet", () => {
   beforeEach(() => {
     keep.mutate.mockReset()
     save.mockReset()
+    settingsState.failed = false
+    vi.mocked(toast.error).mockReset()
   })
 
   it("lists manual and V1 snapshots first, then automatic ones with their labels and quota", () => {
@@ -121,5 +130,39 @@ describe("ManageSnapshotsSheet", () => {
       revision: 3,
       autoRosterSnapshots: false,
     })
+  })
+
+  it("shows an error and re-enables the switch when saving fails", async () => {
+    save.mockRejectedValue(new Error("network"))
+    render(<ManageSnapshotsSheet open onOpenChange={vi.fn()} list={list(2)} />)
+
+    fireEvent.click(screen.getByTestId("auto-snapshots-setting"))
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        "myGame.collection.snapshots.autoSettingFailed"
+      )
+    )
+    expect(screen.getByTestId("auto-snapshots-setting")).toBeEnabled()
+  })
+
+  it("disables the switch and offers a retry when the settings fail to load", () => {
+    settingsState.failed = true
+    render(<ManageSnapshotsSheet open onOpenChange={vi.fn()} list={list(2)} />)
+
+    expect(screen.getByTestId("auto-snapshots-setting")).toBeDisabled()
+    fireEvent.click(screen.getByTestId("auto-snapshots-setting-retry"))
+    expect(settingsState.retry).toHaveBeenCalled()
+  })
+
+  it("keeps the switch when the snapshot list has not loaded", () => {
+    render(
+      <ManageSnapshotsSheet open onOpenChange={vi.fn()} list={undefined} />
+    )
+
+    expect(screen.getByTestId("auto-snapshots-setting")).toBeInTheDocument()
+    expect(screen.getByTestId("manage-snapshots-auto")).not.toHaveTextContent(
+      "myGame.collection.snapshots.usage"
+    )
   })
 })

@@ -677,6 +677,7 @@ describe("ImportResult — roster snapshots", () => {
           rosterSnapshotOutcomes: [
             snapshotOutcome({ droppedUnits: 2 }),
             snapshotOutcome({ name: "Old", status: "skippedLimit" }),
+            snapshotOutcome({ name: "Broken", status: "failed" }),
           ],
         }}
       />
@@ -693,6 +694,13 @@ describe("ImportResult — roster snapshots", () => {
     expect(
       screen.getByTestId("v1-import-snapshot-bucket-notImported")
     ).toHaveTextContent("goals.v1Import.rosterSnapshots.reasons.skippedLimit")
+    // Only the Failed bucket starts open.
+    expect(
+      screen.getByTestId("v1-import-snapshot-bucket-failed")
+    ).toHaveAttribute("open")
+    expect(
+      screen.getByTestId("v1-import-snapshot-bucket-imported")
+    ).not.toHaveAttribute("open")
     expect(screen.getByTestId("v1-import-result")).toHaveTextContent(
       "goals.v1Import.parts.rosterSnapshots"
     )
@@ -716,5 +724,24 @@ describe("ImportResult — roster snapshots", () => {
       "goals.v1Import.rosterSnapshots.partReasons.missing_roster_snapshots"
     )
     expect(screen.queryByTestId("v1-import-roster-snapshots")).toBeNull()
+  })
+
+  it("keeps the server's message for an unknown part code", () => {
+    render(
+      <ImportResult
+        result={{
+          ...result([], notSelected),
+          rosterSnapshots: {
+            status: "Skipped",
+            code: "something_new",
+            message: "A newer server reason.",
+          },
+        }}
+      />
+    )
+
+    expect(screen.getByTestId("v1-import-result")).toHaveTextContent(
+      "A newer server reason."
+    )
   })
 })

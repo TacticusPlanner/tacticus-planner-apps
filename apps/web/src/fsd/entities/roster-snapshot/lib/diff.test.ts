@@ -289,6 +289,21 @@ describe("diffRosters with a V1 import", () => {
     expect(machine?.xpLevel).toBeNull()
     expect(machine?.changed).toBe(false)
   })
+
+  it("leaves the unknown applied upgrades out of both sides' power", () => {
+    const power = (_kind: string, unit: DiffUnit) =>
+      1000 + (unit.appliedUpgradeSlots?.length ?? 0) * 100
+    const v1Side = { ...calgarFrom, appliedUpgradeSlots: [] }
+    const current = { ...calgarFrom, appliedUpgradeSlots: [0, 1, 2] }
+
+    const [diff] = diffRosters(
+      { characters: [v1Side], progressUnknown: true },
+      { characters: [current] },
+      { power }
+    )
+
+    expect(diff?.power).toEqual({ from: 1000, to: 1000, delta: 0 })
+  })
 })
 
 describe("summarizeRosterDiff", () => {

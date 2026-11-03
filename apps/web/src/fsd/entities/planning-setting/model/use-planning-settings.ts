@@ -22,6 +22,9 @@ export function usePlanningSettings() {
   return {
     settings: query.data ?? defaultPlanningSettings,
     loading: isAuthenticated && query.isPending,
+    /** The stored settings failed to load, so `settings` holds defaults that must not be saved. */
+    failed: query.isError,
+    retry: () => void query.refetch(),
     save: async (settings: PlanningSettingsUpdate) => {
       await mutation.mutateAsync(settings)
     },

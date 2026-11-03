@@ -62,7 +62,6 @@ type PartReasonKey =
   | "goals.v1Import.rosterSnapshots.partReasons.no_roster_snapshot_imported"
   | "goals.v1Import.rosterSnapshots.partReasons.roster_snapshot_import_failed"
   | "goals.v1Import.rosterSnapshots.partReasons.roster_snapshot_import_conflict"
-  | "goals.v1Import.reasons.generic"
 
 const PART_CODES = [
   "missing_roster_snapshots",
@@ -72,9 +71,12 @@ const PART_CODES = [
   "roster_snapshot_import_conflict",
 ] as const
 
-/** The translated reason for the part's own code; unknown codes read generically. */
-export function reasonKeyForRosterSnapshotPart(code: string): PartReasonKey {
+/** The translated reason for the part's own code; undefined for an unknown code, whose server
+ *  message is shown instead. */
+export function reasonKeyForRosterSnapshotPart(
+  code: string
+): PartReasonKey | undefined {
   return (PART_CODES as readonly string[]).includes(code)
     ? (`goals.v1Import.rosterSnapshots.partReasons.${code}` as PartReasonKey)
-    : "goals.v1Import.reasons.generic"
+    : undefined
 }

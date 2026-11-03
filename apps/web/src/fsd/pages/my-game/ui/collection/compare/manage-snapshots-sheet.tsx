@@ -96,40 +96,43 @@ export function ManageSnapshotsSheet({
                 ))}
               </ul>
             </section>
-            {list ? (
-              <section
-                className="flex flex-col gap-2"
-                data-testid="manage-snapshots-auto"
-              >
-                <div className="flex items-baseline justify-between gap-2">
-                  <h3 className="text-sm font-semibold">
-                    {t("myGame.collection.snapshots.autoTitle")}
-                  </h3>
+            <section
+              className="flex flex-col gap-2"
+              data-testid="manage-snapshots-auto"
+            >
+              <div className="flex items-baseline justify-between gap-2">
+                <h3 className="text-sm font-semibold">
+                  {t("myGame.collection.snapshots.autoTitle")}
+                </h3>
+                {list ? (
                   <span className="text-xs text-muted-foreground tabular-nums">
                     {t("myGame.collection.snapshots.usage", {
                       count: list.autoCount,
                       limit: list.autoLimit,
                     })}
                   </span>
-                </div>
+                ) : null}
+              </div>
+              {list ? (
                 <p className="text-xs text-muted-foreground">
                   {t("myGame.collection.snapshots.autoHint", {
                     limit: list.autoLimit,
                   })}
                 </p>
-                <AutoSnapshotsSetting />
-                <ul className="flex flex-col divide-y">
-                  {sections.auto.map((snapshot) => (
-                    <SnapshotRow
-                      key={snapshot.id}
-                      snapshot={snapshot}
-                      keepable={keepable}
-                      onDelete={() => setDeleting(snapshot)}
-                    />
-                  ))}
-                </ul>
-              </section>
-            ) : null}
+              ) : null}
+              {/* Only needs the settings, so it stays usable when the list fails to load. */}
+              <AutoSnapshotsSetting />
+              <ul className="flex flex-col divide-y">
+                {sections.auto.map((snapshot) => (
+                  <SnapshotRow
+                    key={snapshot.id}
+                    snapshot={snapshot}
+                    keepable={keepable}
+                    onDelete={() => setDeleting(snapshot)}
+                  />
+                ))}
+              </ul>
+            </section>
           </div>
         </SheetContent>
       </Sheet>
@@ -146,7 +149,7 @@ export function ManageSnapshotsSheet({
 function AutoSnapshotsSetting() {
   const { t } = useTranslation("common")
   const id = useId()
-  const { settings, loading, save } = usePlanningSettings()
+  const { settings, loading, failed, retry, save } = usePlanningSettings()
   const [saving, setSaving] = useState(false)
   const { captureEvent } = useAnalyticsActions()
 
@@ -172,11 +175,23 @@ function AutoSnapshotsSetting() {
       <Switch
         id={id}
         checked={settings.autoRosterSnapshots}
-        disabled={loading || saving}
+        // A failed read leaves defaults in `settings`; saving them would overwrite the stored values.
+        disabled={loading || saving || failed}
         onCheckedChange={(enabled) => void change(enabled)}
         data-testid="auto-snapshots-setting"
       />
       <Label htmlFor={id}>{t("myGame.collection.snapshots.autoSetting")}</Label>
+      {failed ? (
+        <Button
+          variant="link"
+          size="sm"
+          className="ml-auto h-auto p-0"
+          onClick={retry}
+          data-testid="auto-snapshots-setting-retry"
+        >
+          {t("myGame.collection.snapshots.autoSettingRetry")}
+        </Button>
+      ) : null}
     </div>
   )
 }

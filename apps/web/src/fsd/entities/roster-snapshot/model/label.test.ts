@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { snapshotLabel } from "./label"
+import { hasDefaultName, snapshotLabel } from "./label"
 
 const labels = {
   auto: (date: string) => `Auto · ${date}`,
@@ -26,6 +26,20 @@ describe("snapshotLabel", () => {
         labels
       )
     ).toBe("Pre-raid")
+  })
+
+  it("treats a rename to another date as the user's own name", () => {
+    const renamed = {
+      name: "2026-10-30",
+      source: "auto" as const,
+      takenAt: "2026-11-03T10:00:00Z",
+    }
+    expect(hasDefaultName(renamed)).toBe(false)
+    expect(snapshotLabel(renamed, "en", labels)).toBe("2026-10-30")
+    // The default is the UTC date, even when the local date differs.
+    expect(
+      hasDefaultName({ name: "2026-11-03", takenAt: "2026-11-03T23:30:00Z" })
+    ).toBe(true)
   })
 
   it("prefixes a V1 import and leaves a manual snapshot as named", () => {

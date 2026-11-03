@@ -44,8 +44,6 @@ describe("reason keys", () => {
     expect(reasonKeyForRosterSnapshotPart("missing_roster_snapshots")).toBe(
       "goals.v1Import.rosterSnapshots.partReasons.missing_roster_snapshots"
     )
-    expect(reasonKeyForRosterSnapshotPart("something_new")).toBe(
-      "goals.v1Import.reasons.generic"
-    )
+    expect(reasonKeyForRosterSnapshotPart("something_new")).toBeUndefined()
   })
 })

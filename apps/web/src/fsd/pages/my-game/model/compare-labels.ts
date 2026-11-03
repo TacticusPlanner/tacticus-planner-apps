@@ -46,8 +46,8 @@ export function sourceLabel(
 ): string {
   if (source.kind === "snapshot") {
     const label = snapshotLabel(source, locale, labels)
-    // An automatic or default-named snapshot's label is its date already.
-    return source.source === "auto" || hasDefaultName(source)
+    // A default-named snapshot's label is its date already.
+    return hasDefaultName(source)
       ? label
       : `${label} · ${formatSnapshotDate(source.takenAt, locale)}`
   }

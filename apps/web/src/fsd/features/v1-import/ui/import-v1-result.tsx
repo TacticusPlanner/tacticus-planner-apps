@@ -103,18 +103,21 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
     .map(({ key, label }) => {
       const part =
         key === "goals" ? { ...result.goals, status: goalsStatus } : result[key]
+      const snapshotReason =
+        key === "rosterSnapshots" && part.code
+          ? reasonKeyForRosterSnapshotPart(part.code)
+          : undefined
       return {
         key,
         label,
         part:
           key === "legendaryEventPlans" && part.code
             ? { ...part, message: t(reasonKeyForLegendaryEventCode(part.code)) }
-            : key === "rosterSnapshots" && part.code
-              ? {
-                  ...part,
-                  message: t(reasonKeyForRosterSnapshotPart(part.code)),
-                }
-              : part.code && part.code in PART_REASON_KEYS
+            : snapshotReason
+              ? { ...part, message: t(snapshotReason) }
+              : key !== "rosterSnapshots" &&
+                  part.code &&
+                  part.code in PART_REASON_KEYS
                 ? {
                     ...part,
                     message: t(

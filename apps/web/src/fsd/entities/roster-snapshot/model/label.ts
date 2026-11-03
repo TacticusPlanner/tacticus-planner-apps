@@ -1,7 +1,5 @@
 import type { RosterSnapshotSource } from "./types"
 
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
-
 /** A snapshot's date with the year, e.g. "Nov 3, 2026". */
 export function formatSnapshotDate(takenAt: string, locale: string): string {
   return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(
@@ -9,9 +7,17 @@ export function formatSnapshotDate(takenAt: string, locale: string): string {
   )
 }
 
-/** Whether `name` is still the server's default name: the ISO date it was taken. */
-export function hasDefaultName(snapshot: { name: string }): boolean {
-  return ISO_DATE.test(snapshot.name)
+/** Whether `name` is still the server's default name: the ISO UTC date it was taken. A rename to
+ *  another date is the user's own name. */
+export function hasDefaultName(snapshot: {
+  name: string
+  takenAt: string
+}): boolean {
+  const taken = new Date(snapshot.takenAt)
+  return (
+    !Number.isNaN(taken.getTime()) &&
+    snapshot.name === taken.toISOString().slice(0, 10)
+  )
 }
 
 /**

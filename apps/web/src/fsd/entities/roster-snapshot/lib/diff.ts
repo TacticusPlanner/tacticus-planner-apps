@@ -169,7 +169,15 @@ function diffUnit(
     after.mythicShards,
     stepCosts.mythicShards
   )
-  const power = powerChange(kind, before, after, context)
+  // A V1 import's applied upgrades are unknown, so leave them out of both sides' power.
+  const power = progressUnknown
+    ? powerChange(
+        kind,
+        before && { ...before, appliedUpgradeSlots: [] },
+        { ...after, appliedUpgradeSlots: [] },
+        context
+      )
+    : powerChange(kind, before, after, context)
 
   const changes = before
     ? {

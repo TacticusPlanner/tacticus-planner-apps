@@ -631,6 +631,7 @@
         "autoHint": "Pris après une synchronisation quand votre roster n'a aucun instantané des 30 derniers jours. Jusqu'à {{limit}} sont conservés ; le plus ancien est remplacé.",
         "autoSetting": "Prendre des instantanés automatiques",
         "autoSettingFailed": "Le réglage n'a pas pu être enregistré.",
+        "autoSettingRetry": "Échec du chargement. Réessayer",
         "keep": "Conserver",
         "keepLimitTooltip": "Supprimez un instantané pour conserver celui-ci",
         "keepFailed": "L'instantané n'a pas pu être conservé."
