@@ -84,7 +84,13 @@ export function useAcquisitionSourceSelection(params: {
   shopOffers?: readonly ShopShardOffer[]
   /** Seeds the initial selection from a previously-saved goal (edit sheet). Omit for a fresh goal. */
   seed?: AcquisitionSourceSeed | null
+  /** Whether the Onslaught group starts selected when there's no seed and no explicit toggle yet.
+   *  Create passes `true` for a Character (matching V1, where new ascension goals farmed both
+   *  campaigns and Onslaught); the edit sheet leaves it off so a goal predating the picker isn't
+   *  silently switched to Onslaught farming. Read live, so switching the entity type follows it. */
+  defaultOnslaughtEnabled?: boolean
 }) {
+  const defaultOnslaughtEnabled = params.defaultOnslaughtEnabled ?? false
   const characterView =
     params.entityType === "Character" && params.entityId
       ? params.charactersById?.get(params.entityId)
@@ -114,9 +120,11 @@ export function useAcquisitionSourceSelection(params: {
   const [campaignEnabled, setCampaignEnabled] = useState(
     () => params.seed?.campaignEnabled ?? true
   )
-  const [onslaughtEnabled, setOnslaughtEnabled] = useState(
-    () => params.seed?.onslaughtEnabled ?? false
+  // `null` means "not toggled yet" — falls back to `defaultOnslaughtEnabled`.
+  const [onslaughtChoice, setOnslaughtEnabled] = useState<boolean | null>(
+    () => params.seed?.onslaughtEnabled ?? null
   )
+  const onslaughtEnabled = onslaughtChoice ?? defaultOnslaughtEnabled
   const [shopsEnabled, setShopsEnabled] = useState(
     () => (params.seed?.shopOfferIds.length ?? 0) > 0
   )
@@ -170,7 +178,7 @@ export function useAcquisitionSourceSelection(params: {
         : null
     )
     setCampaignEnabled(nextSeed?.campaignEnabled ?? true)
-    setOnslaughtEnabled(nextSeed?.onslaughtEnabled ?? false)
+    setOnslaughtEnabled(nextSeed?.onslaughtEnabled ?? null)
     setShopsEnabled((nextSeed?.shopOfferIds.length ?? 0) > 0)
     setManualShopOfferIds(nextSeed?.shopOfferIds ?? null)
   }
@@ -198,9 +206,10 @@ export function useAcquisitionSourceSelection(params: {
     [params.shopOffers, selectedShopOfferIds]
   )
 
-  // The plan a null seed resolves to (Campaigns-only, cheapest-node default, no manual edits) —
-  // exposed so a caller can tell "untouched since seeding" apart from "user made an empty
-  // selection" without re-deriving the same default-node logic itself (the Edit goal dialog's dirty check).
+  // The plan a null seed resolves to (cheapest-node Campaigns, plus Onslaught when
+  // `defaultOnslaughtEnabled`, no manual edits) — exposed so a caller can tell "untouched since seeding" apart from "user made an empty
+  // selection" without re-deriving the same default-node logic itself (the Edit goal dialog's
+  // dirty check).
   const defaultRegularShardLocationIds = useMemo(() => {
     const regularIds = new Set<string>(
       regularShardLocations.map((location) => location.battleId)
@@ -220,10 +229,14 @@ export function useAcquisitionSourceSelection(params: {
         regularBattleIds: defaultRegularShardLocationIds,
         mythicBattleIds: defaultMythicShardLocationIds,
       },
-      onslaught: { enabled: false },
+      onslaught: { enabled: defaultOnslaughtEnabled },
       shops: { enabled: false, offers: [] },
     }),
-    [defaultRegularShardLocationIds, defaultMythicShardLocationIds]
+    [
+      defaultRegularShardLocationIds,
+      defaultMythicShardLocationIds,
+      defaultOnslaughtEnabled,
+    ]
   )
 
   const plan: GoalAcquisitionPlan = useMemo(

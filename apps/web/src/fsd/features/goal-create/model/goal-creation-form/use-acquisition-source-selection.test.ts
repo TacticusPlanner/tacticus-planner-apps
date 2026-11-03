@@ -152,6 +152,39 @@ describe("useAcquisitionSourceSelection — default group selection", () => {
     })
   })
 
+  it("starts with Onslaught selected when defaultOnslaughtEnabled is set", () => {
+    const { result } = setup({ defaultOnslaughtEnabled: true })
+
+    expect(result.current.onslaughtEnabled).toBe(true)
+    expect(result.current.plan.onslaught.enabled).toBe(true)
+    expect(result.current.defaultPlan.onslaught.enabled).toBe(true)
+  })
+
+  it("an explicit Onslaught toggle survives the default, and reset restores it", () => {
+    const { result } = setup({ defaultOnslaughtEnabled: true })
+
+    act(() => result.current.setOnslaughtEnabled(false))
+    expect(result.current.plan.onslaught.enabled).toBe(false)
+
+    act(() => result.current.reset())
+    expect(result.current.plan.onslaught.enabled).toBe(true)
+  })
+
+  it("a seed overrides defaultOnslaughtEnabled", () => {
+    const { result } = setup({
+      defaultOnslaughtEnabled: true,
+      seed: {
+        campaignEnabled: true,
+        regularBattleIds: ["cheap"],
+        mythicBattleIds: [],
+        onslaughtEnabled: false,
+        shopOfferIds: [],
+      },
+    })
+
+    expect(result.current.plan.onslaught.enabled).toBe(false)
+  })
+
   it("checking a shop offer auto-enables the Shops group, unlike unchecking it", () => {
     const { result } = setup({ shopOffers: [guildOffer] })
 
