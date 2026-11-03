@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { lazy, useState } from "react"
 import userEvent from "@testing-library/user-event"
 import { createMemoryRouter, Link, RouterProvider } from "react-router"
 import { describe, expect, it, vi } from "vitest"
@@ -55,6 +55,30 @@ describe("UnsavedChangesGuard", () => {
     await userEvent.click(screen.getByRole("link", { name: "go elsewhere" }))
     await userEvent.click(await screen.findByRole("button", { name: "Leave" }))
     expect(await screen.findByTestId("other")).toBeInTheDocument()
+  })
+
+  it("ignores a second Leave while the next page is still loading", async () => {
+    const NeverLoads = lazy(() => new Promise<never>(() => {}))
+    const onError = vi.fn((event: ErrorEvent) => event.preventDefault())
+    window.addEventListener("error", onError)
+    const router = createMemoryRouter(
+      [
+        { path: "/editor", element: <Editor initiallyDirty /> },
+        { path: "/other", element: <NeverLoads /> },
+      ],
+      { initialEntries: ["/editor"] }
+    )
+    render(<RouterProvider router={router} />)
+
+    await userEvent.click(screen.getByRole("link", { name: "go elsewhere" }))
+    const leave = await screen.findByRole("button", { name: "Leave" })
+    await userEvent.click(leave)
+    // The router has moved on, but its state reaches React in a transition that is still
+    // suspended on the page chunk, so the dialog (and its Leave button) is still on screen.
+    await userEvent.click(leave)
+
+    window.removeEventListener("error", onError)
+    expect(onError).not.toHaveBeenCalled()
   })
 
   it("lets a dirty page move within its scope without asking", async () => {

@@ -335,7 +335,6 @@ describe("PostHogProvider error reporting", () => {
 
   it("reports one client_error with no query string for an identified user", () => {
     vi.spyOn(console, "error").mockImplementation(() => {})
-    vi.stubEnv("VITE_APP_VERSION", "1.2.3")
     useCurrentUserMock.mockReturnValue({
       state: successState("analytics-id-1"),
     })
@@ -354,7 +353,6 @@ describe("PostHogProvider error reporting", () => {
       stack: "Error: at https://app.example.test/assets/main.js:2:3",
       context: "sync",
       routeGroup: "/plan",
-      appVersion: "1.2.3",
     })
   })
 })

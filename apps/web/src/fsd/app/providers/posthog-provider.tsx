@@ -93,7 +93,6 @@ function PostHogIdentity({
         stack: asError?.stack ? withoutQueryStrings(asError.stack) : null,
         context: context ?? null,
         routeGroup: routeGroup ?? "unknown",
-        appVersion: import.meta.env.VITE_APP_VERSION ?? null,
       })
     })
     return () => setErrorReporter(null)
