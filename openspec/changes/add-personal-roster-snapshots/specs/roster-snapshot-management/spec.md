@@ -7,6 +7,7 @@ A signed-in user SHALL be able to take a snapshot from a Take snapshot button in
 - On success, the dialog closes, player data is refreshed, the list is refreshed, and a toast confirms with a Compare action that opens compare mode with the new snapshot.
 - On a sync failure, the dialog SHALL show the error with Retry and "Take from last sync (synced <relative time>)", which requests the snapshot without syncing.
 - When rate limited, it SHALL show when a retry is possible, alongside the same fallback.
+- When the user has never synced, the fallback SHALL NOT be offered; the dialog SHALL show the error with Retry only.
 - At the limit, the button SHALL be disabled, with a tooltip "Delete a snapshot to take a new one". A limit conflict from the API SHALL show the same message.
 
 #### Scenario: Successful snapshot
@@ -20,6 +21,12 @@ A signed-in user SHALL be able to take a snapshot from a Take snapshot button in
 - **GIVEN** the sync fails with the Tacticus API unavailable, and the last sync was 2 hours ago
 - **WHEN** the user selects "Take from last sync (synced 2 hours ago)"
 - **THEN** a snapshot is taken without syncing and the dialog closes
+
+#### Scenario: Sync fails before any sync
+
+- **GIVEN** a user who has never synced
+- **WHEN** the sync fails
+- **THEN** the dialog shows the error with Retry, and no "Take from last sync" option
 
 #### Scenario: At the limit
 

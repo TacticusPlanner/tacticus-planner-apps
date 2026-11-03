@@ -33,7 +33,7 @@ In compare mode, the page SHALL show:
 - when no source exists, an empty state "Take your first snapshot" with the Take snapshot action, and no list;
 - when sources exist but no listed unit changed, the summary at zero and "No changes for these units", with "Show unchanged" available.
 
-For guests, the Compare toggle and Take snapshot button SHALL be replaced by a "Sign in to save snapshots" prompt.
+For guests, the Compare toggle and Take snapshot button SHALL be replaced by a "Sign in to save snapshots" prompt. A guest who opens a URL with `compare` or `to` SHALL see the same prompt, and the page SHALL NOT request snapshot sources.
 
 #### Scenario: No snapshots yet
 
@@ -44,7 +44,13 @@ For guests, the Compare toggle and Take snapshot button SHALL be replaced by a "
 #### Scenario: Guest
 
 - **WHEN** a guest opens Collection
-- **THEN** no Compare toggle or Take snapshot button is shown, and the sign-in prompt is
+- **THEN** no Compare toggle or Take snapshot button is shown, and the sign-in prompt is shown
+
+#### Scenario: Guest opens a compare URL
+
+- **GIVEN** a guest
+- **WHEN** they open Collection with `?compare=<id>&to=current`
+- **THEN** the sign-in prompt is shown, no compare view renders, and no snapshot sources are requested
 
 ### Requirement: The summary leads and filters the list
 
@@ -101,10 +107,16 @@ Compare mode SHALL offer a fields multi-select: shards, mythic shards, XP, upgra
 
 ### Requirement: Compare mode has tour steps
 
-The Collection tour SHALL gain steps for the Compare toggle, the summary and the Take snapshot button, with separate desktop and mobile targets. Step copy SHALL come from `tour.collection.steps.*` in every supported locale.
+The Collection tour SHALL gain steps for the Compare toggle, the summary and the Take snapshot button, with separate desktop and mobile targets. Step copy SHALL come from `tour.collection.steps.*` in every supported locale. The mobile Compare options step SHALL be included only while compare mode is on; otherwise it SHALL be left out.
 
 #### Scenario: Mobile tour targets the options sheet trigger
 
 - **GIVEN** a mobile viewport in compare mode
 - **WHEN** the tour reaches the compare step
 - **THEN** it targets the Compare options trigger
+
+#### Scenario: Mobile tour outside compare mode
+
+- **GIVEN** a mobile viewport with compare mode off
+- **WHEN** the tour runs
+- **THEN** it has no Compare options step

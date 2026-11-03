@@ -9,7 +9,7 @@
 - [ ] 2.1 Query hooks: list, read (`staleTime: Infinity`), create (with `fromLastSync`), rename, delete. Invalidate the list and refresh player data on create.
 - [ ] 2.2 Source model for personal snapshots and LE run-record rosters (`le:<eventId>:<recordId>`).
 - [ ] 2.3 `diffRosters` and `summarizeRosterDiff`, including shards spent from progression rules and power through `character-combat-power`/`unit-power`. Vitest coverage for every worked example in `roster-snapshot-diff`.
-- [ ] 2.4 Refactor LE `rosterDeltas` onto `diffRosters`. The existing LE run-history tests stay green, unchanged.
+- [ ] 2.4 Refactor LE `rosterDeltas` onto `diffRosters`. The existing LE run-history tests stay green, unchanged. Add a test where a unit changes only in a non-LE field (XP, shards, equipment or power) and `rosterDeltas` returns no delta for it.
 
 ## 3. Collection compare mode
 
