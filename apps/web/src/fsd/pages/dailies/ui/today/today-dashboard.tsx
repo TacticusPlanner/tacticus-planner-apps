@@ -86,7 +86,17 @@ export function TodayDashboard({
         </div>
         <div className="flex min-w-0 flex-col gap-3.5">
           {bonusBeside ? bonusCard(false) : null}
-          <TodayShops />
+          {/* On one track Shops sits below the plan card, which grows when the plan arrives and
+              would push Shops down the screen (layout shift), so there it waits for the plan. Side
+              by side (two or four tracks) it shows while the plan loads. */}
+          <div
+            className={cn(
+              raids.status === "loading" && "hidden @[42rem]:block"
+            )}
+            data-testid="today-shops-slot"
+          >
+            <TodayShops />
+          </div>
         </div>
         {raids.status === "ready" && view ? (
           <div className="flex min-w-0 flex-col gap-3.5">
