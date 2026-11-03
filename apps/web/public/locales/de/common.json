@@ -686,6 +686,7 @@
       "description": "Eine Tacticus-Benutzer-ID wird benötigt, um dich mit Gildendaten abzugleichen, bevor du eine Gilde ansehen oder registrieren kannst.",
       "userIdLabel": "Tacticus-Benutzer-ID",
       "userIdPlaceholder": "Gib deine Tacticus-Benutzer-ID ein",
+      "userIdHint": "Du findest sie unten im Benutzereinstellungen-Bildschirm im Spiel.",
       "save": "Speichern",
       "saving": "Wird gespeichert…",
       "saved": "Tacticus-Benutzer-ID gespeichert.",
@@ -693,15 +694,36 @@
     },
     "unregistered": {
       "title": "Noch keine Gilde registriert",
-      "description": "Eine Gilde muss zuerst von einem Gildenanführer oder Ko-Anführer registriert werden.",
-      "leaderPrompt": "Bist du der Gildenanführer oder Ko-Anführer? Verwende das Eingabefeld unten, um ein Gilden-API-Token mit den Berechtigungen Guild und GuildRaids einzufügen.",
+      "description": "Ein Gildenanführer oder Ko-Anführer registriert die Gilde einmalig. Danach kann jedes Mitglied die Gildenfunktionen allein mit seiner Tacticus-Benutzer-ID nutzen.",
+      "leaderPrompt": "Bist du der Gildenanführer oder Ko-Anführer? Erstelle einen Gilden-API-Schlüssel und füge ihn unten ein.",
+      "memberNote": "Kein Anführer oder Ko-Anführer? Du brauchst keinen Schlüssel. Bitte deinen Anführer oder Ko-Anführer, die Gilde hier zu registrieren.",
       "eligibility": "Die Registrierung wird von Tacticus autorisiert und ist nur für den aktuellen Anführer oder einen Ko-Anführer verfügbar.",
-      "handoff": "Bitte deinen aktuellen Anführer oder Ko-Anführer, die Gildenregistrierung mit einem autorisierten Token abzuschließen.",
-      "tokenLabel": "Gilden-API-Token",
-      "tokenPlaceholder": "Füge dein Gilden-API-Token ein",
+      "handoff": "Bitte deinen aktuellen Anführer oder Ko-Anführer, die Gilde mit seinem eigenen Gilden-API-Schlüssel zu registrieren.",
+      "tokenLabel": "Gilden-API-Schlüssel",
+      "tokenPlaceholder": "Füge deinen Gilden-API-Schlüssel ein",
       "register": "Gilde registrieren",
       "registering": "Wird registriert…",
       "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "apiKeySteps": {
+      "title": "So bekommst du einen Gilden-API-Schlüssel",
+      "signIn": "Melde dich auf api.tacticusgame.com mit deinem Tacticus-Konto an.",
+      "create": "Erstelle einen API-Schlüssel mit den Berechtigungen Guild und Guild Raid.",
+      "paste": "Kopiere den Schlüssel und füge ihn hier ein.",
+      "getKey": "Schlüssel auf api.tacticusgame.com holen"
+    },
+    "settings": {
+      "apiKey": {
+        "title": "Gilden-API-Schlüssel",
+        "description": "Planner nutzt diesen Schlüssel, um die Mitglieder und Raid-Daten deiner Gilde zu synchronisieren. Ersetze ihn, wenn du den Schlüssel auf api.tacticusgame.com neu erstellt oder widerrufen hast oder Planner meldet, dass Tacticus ihn abgelehnt hat.",
+        "label": "Neuer Gilden-API-Schlüssel",
+        "placeholder": "Füge deinen Gilden-API-Schlüssel ein",
+        "replace": "Schlüssel ersetzen",
+        "replacing": "Wird ersetzt…",
+        "replaced": "Gilden-API-Schlüssel ersetzt und Gilde synchronisiert.",
+        "leadersOnly": "Nur der Anführer oder ein Ko-Anführer deiner Gilde kann den Gilden-API-Schlüssel ersetzen.",
+        "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+      }
     },
     "summary": {
       "level": "Level {{level}}",
@@ -726,7 +748,7 @@
       "genericError": "Beim Löschen der Gilde ist etwas schiefgelaufen. Bitte versuche es erneut.",
       "errors": {
         "forbidden": "Nur ein aktueller Anführer oder Co-Anführer mit Tacticus-Benutzer-ID kann diese Gilde löschen. Es wurde nichts gelöscht.",
-        "roleCheckFailed": "Deine Rolle konnte nicht bei Tacticus geprüft werden: Tacticus hat das gespeicherte Gilden-API-Token abgelehnt oder Daten gesendet, die Planner nicht lesen konnte. Es wurde nichts gelöscht. Registriere die Gilde mit einem neuen Gilden-API-Token erneut und versuche es dann noch einmal.",
+        "roleCheckFailed": "Deine Rolle konnte nicht bei Tacticus geprüft werden: Tacticus hat den gespeicherten Gilden-API-Schlüssel abgelehnt oder Daten gesendet, die Planner nicht lesen konnte. Es wurde nichts gelöscht. Ersetze den Gilden-API-Schlüssel unter Gilde > Einstellungen und versuche es dann noch einmal.",
         "upstreamUnavailable": "Tacticus ist gerade nicht erreichbar, daher konnte deine Rolle nicht geprüft werden. Es wurde nichts gelöscht. Bitte versuche es später erneut.",
         "concurrency": "Die Mitgliederliste der Gilde hat sich während der Prüfung geändert. Es wurde nichts gelöscht. Bitte versuche es erneut.",
         "rateLimited": "Zu viele Anfragen an Tacticus. Es wurde nichts gelöscht. Bitte warte einen Moment und versuche es erneut."
@@ -734,7 +756,9 @@
     },
     "tabs": {
       "members": "Mitglieder",
-      "membersDescription": "Zeige die Mitgliederliste deiner Gilde"
+      "membersDescription": "Zeige die Mitgliederliste deiner Gilde",
+      "settings": "Einstellungen",
+      "settingsDescription": "Verwalte die Planner-Einstellungen deiner Gilde"
     },
     "members": {
       "empty": "Keine Mitglieder gefunden.",
@@ -785,7 +809,7 @@
       "parts": {
         "personalKey": "Persönlicher Tacticus-API-Schlüssel",
         "userId": "Tacticus-Benutzer-ID",
-        "guildKey": "Gilden-API-Token",
+        "guildKey": "Gilden-API-Schlüssel",
         "goals": "Ziele",
         "onslaughtProgress": "Onslaught-Fortschritt",
         "campaignEventProgress": "Kampagnen-Event-Fortschritt",
@@ -927,7 +951,7 @@
         "parts": {
           "personalTacticusApiKey": "API-Schlüssel",
           "tacticusUserId": "Tacticus-Benutzer-ID",
-          "guildApiToken": "Gilden-API-Token",
+          "guildApiToken": "Gilden-API-Schlüssel",
           "onslaughtProgress": "Onslaught-Fortschritt",
           "campaignEventProgress": "Kampagnen-Event-Fortschritt"
         },

@@ -15,6 +15,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useGuildSync, type RegisteredGuild } from "@/entities/guild"
 
 import { formatRelativeTime } from "@/shared/lib"
+import type { GuildOutletContext } from "./guild-outlet-context"
 import { GuildPurgeDialog } from "./guild-purge-dialog"
 
 type Props = {
@@ -94,7 +95,11 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
         ) : null}
       </Card>
 
-      <Outlet context={guild.members} />
+      <Outlet
+        context={
+          { guild, onGuildUpdated: onSynced } satisfies GuildOutletContext
+        }
+      />
 
       <GuildPurgeDialog
         open={isPurgeDialogOpen}

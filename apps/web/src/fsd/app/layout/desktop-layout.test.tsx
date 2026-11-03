@@ -440,7 +440,7 @@ describe("DesktopShell", () => {
     )
   })
 
-  it("shows a single-child section's menu (Guild) and no column for childless Home", () => {
+  it("shows the Guild section's menu and no column for childless Home", () => {
     const guildItem = navItems.find((item) => item.path === "/guild")!
     const { rerender } = render(
       <MemoryRouter initialEntries={["/guild/members"]}>
@@ -461,7 +461,7 @@ describe("DesktopShell", () => {
       within(screen.getByTestId("desktop-section-navigation")).getAllByRole(
         "link"
       )
-    ).toHaveLength(1)
+    ).toHaveLength(2)
 
     rerender(
       <MemoryRouter initialEntries={["/guild/members"]}>
@@ -1115,9 +1115,9 @@ describe("DesktopShell", () => {
     )
   })
 
-  it("keeps single-child and no-children sections on their existing default route", () => {
+  it("returns Guild to its last tab and keeps no-children sections on their own route", () => {
     render(
-      <MemoryRouter initialEntries={["/guild/members"]}>
+      <MemoryRouter initialEntries={["/guild/settings"]}>
         <TooltipProvider>
           <EntryPathHarness />
         </TooltipProvider>
@@ -1128,7 +1128,11 @@ describe("DesktopShell", () => {
 
     expect(screen.getByTestId("desktop-nav-guild")).toHaveAttribute(
       "href",
-      "/guild"
+      "/guild/settings"
+    )
+    expect(screen.getByTestId("desktop-nav-home")).toHaveAttribute(
+      "href",
+      "/home"
     )
   })
 })

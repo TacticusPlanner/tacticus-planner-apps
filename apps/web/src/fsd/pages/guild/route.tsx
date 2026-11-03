@@ -19,6 +19,15 @@ const loadGuildMembersRoute = () =>
   }))
 const GuildMembersRoute = lazy(loadGuildMembersRoute)
 
+// Ships in the Guild page chunk rather than its own: a chunk that uses `useMutation` without
+// `useQuery` makes Rollup split react-query's shared `Removable` base out of the startup graph's
+// `useQuery` chunk, which costs startup bytes (see scripts/bundle-budget.mjs).
+const loadGuildSettingsRoute = () =>
+  import("./ui/guild-page").then((m) => ({
+    default: m.GuildSettingsRoute,
+  }))
+const GuildSettingsRoute = lazy(loadGuildSettingsRoute)
+
 // Nested under "/guild" — see app/routes.tsx, which owns the top-level path, the layout element,
 // and the ProtectedRoute wrapping, and just splices this array in as `children`.
 export const routes: RouteObject[] = [
@@ -27,5 +36,10 @@ export const routes: RouteObject[] = [
     path: "members",
     element: <GuildMembersRoute />,
     loader: preloadOnMatch(loadGuildMembersRoute),
+  },
+  {
+    path: "settings",
+    element: <GuildSettingsRoute />,
+    loader: preloadOnMatch(loadGuildSettingsRoute),
   },
 ]

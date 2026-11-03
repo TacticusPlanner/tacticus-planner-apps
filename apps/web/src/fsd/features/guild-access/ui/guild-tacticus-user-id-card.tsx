@@ -12,6 +12,7 @@ import {
 import {
   Field,
   FieldContent,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -90,6 +91,9 @@ export function GuildTacticusUserIdCard({ onSaved }: { onSaved: () => void }) {
                     if (updateIntegration.error) updateIntegration.reset()
                   }}
                 />
+                <FieldDescription>
+                  {t("guild.tacticusUserIdRequired.userIdHint")}
+                </FieldDescription>
               </FieldContent>
               {errorMessage ? (
                 <FieldError data-testid="guild-tacticus-user-id-error">
