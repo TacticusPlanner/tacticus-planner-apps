@@ -1,5 +1,5 @@
 import type { CaptureResult } from "posthog-js"
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 import {
   resetReportedRoutePattern,
@@ -27,6 +27,23 @@ afterEach(() => {
 })
 
 describe("sanitizeCapture", () => {
+  it("tags every event with the app version", () => {
+    vi.stubEnv("VITE_APP_VERSION", "1.2.3")
+
+    expect(sanitizeCapture(capture()).properties.app_version).toBe("1.2.3")
+    expect(
+      sanitizeCapture(capture({ event: "$exception" })).properties.app_version
+    ).toBe("1.2.3")
+  })
+
+  it("leaves app_version unset when the build has no version", () => {
+    vi.stubEnv("VITE_APP_VERSION", "")
+
+    expect(sanitizeCapture(capture()).properties).not.toHaveProperty(
+      "app_version"
+    )
+  })
+
   it("rewrites the current URL and path to the reported route pattern", () => {
     setReportedRoutePattern("/library/characters/:entityId")
 

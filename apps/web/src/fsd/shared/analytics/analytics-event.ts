@@ -258,7 +258,6 @@ type ClientErrorEvent = {
   stack: string | null
   context: string | null
   routeGroup: string
-  appVersion: string | null
 }
 
 /**

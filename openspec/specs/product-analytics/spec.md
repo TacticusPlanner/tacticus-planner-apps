@@ -89,7 +89,12 @@ While a user is identified, the client SHALL report a page view (PostHog's `$pag
 
 ### Requirement: Only declared events are captured
 
-The client SHALL report only events the product has explicitly declared. It SHALL NOT enable automatic capture of clicks, taps, form interactions, keystrokes, or input values, and SHALL NOT record or replay user sessions.
+The client SHALL report only events the product has explicitly declared. It SHALL NOT enable automatic capture of clicks, taps, form interactions, keystrokes, or input values, and SHALL NOT record or replay user sessions. Every reported event SHALL carry the app version of the build that sent it (`app_version`), including after the user signs out and back in, so any event can be attributed to a release.
+
+#### Scenario: Events name the build that sent them
+
+- **WHEN** an identified user's page view, web vitals or exception event is sent from a versioned build
+- **THEN** the event carries that build's app version
 
 #### Scenario: Interacting with the planner
 

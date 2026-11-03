@@ -373,7 +373,6 @@ export function useAnalyticsActions() {
           client.captureException(error, {
             context: event.context,
             route_group: event.routeGroup,
-            app_version: event.appVersion,
           })
           break
         }

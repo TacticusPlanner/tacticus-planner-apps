@@ -487,7 +487,6 @@ describe("useAnalyticsActions", () => {
           "TypeError: x is undefined\n    at https://app.example.test/assets/main.js:2:3",
         context: "window.error",
         routeGroup: "/plan",
-        appVersion: "1.2.3",
       })
     )
 
@@ -504,7 +503,6 @@ describe("useAnalyticsActions", () => {
     expect(properties).toEqual({
       context: "window.error",
       route_group: "/plan",
-      app_version: "1.2.3",
     })
   })
 

@@ -1,6 +1,6 @@
 import { useRef, useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { useBlocker } from "react-router"
+import { useBlocker, type Blocker } from "react-router"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { Button } from "@workspace/ui/components/button"
@@ -102,6 +102,14 @@ function GoalEditDialogContent({
         new URLSearchParams(nextLocation.search).get("goal") !== goalId)
   )
   const blocked = blocker.state === "blocked"
+  // Router state reaches React in a transition, so a second click can still see this blocker as
+  // blocked after it was resolved; resolving it twice throws (see UnsavedChangesGuard).
+  const settled = useRef<Blocker>(null)
+  const settle = (action: (() => void) | undefined) => {
+    if (settled.current === blocker) return
+    settled.current = blocker
+    action?.()
+  }
 
   const requestClose = () => {
     if (dirty) setConfirmingDiscard(true)
@@ -188,13 +196,15 @@ function GoalEditDialogContent({
       <GoalEditUnsavedDialog
         onCancel={() => {
           setConfirmingDiscard(false)
-          blocker.reset?.()
+          if (blocked) settle(blocker.reset)
         }}
         onConfirm={() => {
           setConfirmingDiscard(false)
           if (blocked) {
-            closing.current = true
-            blocker.proceed?.()
+            settle(() => {
+              closing.current = true
+              blocker.proceed?.()
+            })
           } else close()
         }}
         open={confirmingDiscard || blocked}

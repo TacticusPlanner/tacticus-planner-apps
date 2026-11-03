@@ -37,15 +37,41 @@ export function reportError(error: unknown, context?: string) {
   }
 }
 
-/** Routes every uncaught error and unhandled rejection to `reportError`; installed once at boot. */
+const escapeRegExp = (text: string) =>
+  text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+
+/**
+ * Whether an uncaught error came from this app's own scripts, which are always files served from
+ * this origin. Everything else is something we can neither diagnose nor fix:
+ * - a value that is not one of this page's `Error`s (an extension's content script rejecting with
+ *   its own realm's error, a bare string);
+ * - an error whose stack names none of our script files: a script an extension injects into the
+ *   page (its frames point at the page URL itself) or a third-party widget's own file.
+ * An error without a stack (Safari omits it on some DOMExceptions) is kept.
+ */
+function isFromOurScripts(error: unknown, origin: string): boolean {
+  // A DOMException is not an Error in every engine, and IndexedDB / fetch failures are ours.
+  if (!(error instanceof Error || error instanceof DOMException)) return false
+  if (!error.stack) return true
+  return new RegExp(
+    `${escapeRegExp(origin)}/[^\\s:)]+\\.(?:m?js|tsx?)\\b`
+  ).test(error.stack)
+}
+
+/**
+ * Routes every uncaught error and unhandled rejection from this app's own code to `reportError`;
+ * installed once at boot. A `window.error` without an error object is never ours: it is a
+ * cross-origin script's bare "Script error." or a browser notice such as "ResizeObserver loop
+ * completed with undelivered notifications".
+ */
 export function installGlobalErrorCapture(target: Window = window) {
+  const { origin } = window.location
   target.addEventListener("error", (event) => {
-    // A cross-origin script (an extension, a page translator) throwing reaches us as a bare
-    // "Script error." with no error object: nothing to diagnose, and not our code (ours is same-origin).
-    if (!event.error && event.message === "Script error.") return
-    reportError(event.error ?? event.message, "window.error")
+    if (!isFromOurScripts(event.error, origin)) return
+    reportError(event.error, "window.error")
   })
-  target.addEventListener("unhandledrejection", (event) =>
+  target.addEventListener("unhandledrejection", (event) => {
+    if (!isFromOurScripts(event.reason, origin)) return
     reportError(event.reason, "unhandledrejection")
-  )
+  })
 }

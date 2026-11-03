@@ -62,9 +62,13 @@ function redactUrls(properties: Properties | undefined, usePatterns: boolean) {
  * would report the ids and query strings the declared events deliberately leave out. Query
  * strings and hashes are cut from every URL-valued property at any depth, and the page's URL and
  * paths are rewritten to the route pattern of that page (so Web analytics groups pages by screen).
+ * Every event is also tagged with the build that sent it (`app_version`). This is done here rather
+ * than with `register()`, because `reset()` on sign-out clears registered properties.
  */
 export function sanitizeCapture(result: CaptureResult): CaptureResult {
   const { properties } = result
+  const appVersion = import.meta.env.VITE_APP_VERSION
+  if (appVersion) properties.app_version = appVersion
   const pattern = reportedRoutePattern
   const pagePattern =
     typeof properties.$current_url === "string"
