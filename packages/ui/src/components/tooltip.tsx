@@ -97,6 +97,10 @@ function TooltipTrigger({
       onClick={(event) => {
         onClick?.(event)
         if (!isTouchRef.current) return
+        // A link trigger (e.g. a sidebar nav item) must navigate on tap, not toggle its tooltip:
+        // the preventDefault below would also cancel the link's navigation, leaving taps dead on
+        // touch devices (only long-press > Open in new tab worked).
+        if (isLinkTrigger(event.currentTarget)) return
         // Stop Radix's own click handler from closing what we're about to open/toggle.
         event.preventDefault()
         if (openedByFocusRef.current) {
@@ -112,6 +116,10 @@ function TooltipTrigger({
       {...props}
     />
   )
+}
+
+function isLinkTrigger(element: EventTarget) {
+  return element instanceof Element && element.closest("a[href]") !== null
 }
 
 function TooltipContent({
