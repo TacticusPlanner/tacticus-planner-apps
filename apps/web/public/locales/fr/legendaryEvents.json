@@ -71,6 +71,20 @@
     "planToComplete": "{{field}} à accomplir",
     "planToCompleteShort": "Prévu à accomplir"
   },
+  "notes": {
+    "title": "Notes",
+    "description": "Vos notes personnelles pour cet événement : plans d’équipe, ce qu’il faut tenter à la prochaine manche, tout ce qu’il faut retenir. Vous seul les voyez.",
+    "placeholder": "ex. Bêta en dernier ; essayer Calgar au combat 9 d’Alpha à la prochaine manche",
+    "count": "{{length}} / {{max}} caractères",
+    "unsaved": "Modifications non enregistrées",
+    "save": "Enregistrer les notes",
+    "saving": "Enregistrement…",
+    "discard": "Annuler",
+    "loadError": "Impossible de charger vos notes. Réessayez plus tard.",
+    "toasts": {
+      "error": "Impossible d’enregistrer vos notes. Réessayez."
+    }
+  },
   "outlook": {
     "title": "Prévisions de récompenses",
     "steps": {

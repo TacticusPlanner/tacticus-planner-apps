@@ -1,6 +1,7 @@
 // Public API of the Legendary Event plan feature: the teams per lane (editor, picker, clear
-// depth), team suggestions, the Maybe clear / Stop here marks on the Synced progress grid, and
-// the run inputs drawer. Every write goes through the entity's shared plan write queue.
+// depth), team suggestions, the Maybe clear / Stop here marks on the Synced progress grid,
+// the run inputs drawer and the plan's notes. Every write goes through the entity's shared plan
+// write queue.
 export {
   useLegendaryEventPlan,
   type DepthEstimateContext,
@@ -17,3 +18,4 @@ export { AnnotationMenu } from "./ui/annotation-menu"
 export { AnnotationMarkIcon } from "./ui/annotation-mark"
 export { BattleAnnotationMenu } from "./ui/battle-annotation-menu"
 export { RunInputsDrawer, RunInputsForm } from "./ui/run-inputs-drawer"
+export { PlanNotesCard } from "./ui/plan-notes-card"

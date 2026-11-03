@@ -71,6 +71,20 @@
     "planToComplete": "{{field}} zu erledigen",
     "planToCompleteShort": "Geplant zu erledigen"
   },
+  "notes": {
+    "title": "Notizen",
+    "description": "Deine eigenen Notizen zu diesem Event: Teampläne, was du im nächsten Durchlauf ausprobieren willst, alles zum Merken. Nur du siehst sie.",
+    "placeholder": "z. B. Beta zuletzt; nächster Durchlauf Calgar in Alpha-Kampf 9 testen",
+    "count": "{{length}} / {{max}} Zeichen",
+    "unsaved": "Ungespeicherte Änderungen",
+    "save": "Notizen speichern",
+    "saving": "Wird gespeichert…",
+    "discard": "Verwerfen",
+    "loadError": "Deine Notizen konnten nicht geladen werden. Versuche es später erneut.",
+    "toasts": {
+      "error": "Deine Notizen konnten nicht gespeichert werden. Versuche es erneut."
+    }
+  },
   "outlook": {
     "title": "Belohnungsaussicht",
     "steps": {
