@@ -122,10 +122,12 @@ describe("TodayGlance", () => {
     expect(tileLabels()).toEqual(["Daily energy used", "Campaign event"])
   })
 
-  it("shows only the campaign event while the raids load", () => {
+  it("holds the energy row's place and shows the campaign event while the raids load", () => {
     render(<TodayGlance view={undefined} />)
 
-    expect(tileLabels()).toEqual(["Campaign event"])
+    expect(tileLabels()).toEqual(["Daily energy used", "Campaign event"])
+    expect(screen.getByTestId("energy-usage-loading")).toBeInTheDocument()
+    expect(screen.queryByTestId("energy-usage")).not.toBeInTheDocument()
   })
 
   it("folds into one dense card of label / value rows below 42rem, and into tiles from 42rem", () => {

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Progress } from "@workspace/ui/components/progress"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { CampaignEventTile } from "../campaign-event-status"
@@ -63,7 +64,16 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
               </span>
             </span>
           </GlanceTile>
-        ) : null}
+        ) : (
+          // Holds the energy row's place while the raids load, so it does not push the campaign
+          // event row and the plan below it down when it arrives (layout shift).
+          <GlanceTile
+            label={t("today.energyUsage.label")}
+            testId="energy-usage-loading"
+          >
+            <Skeleton className="ms-auto h-[1lh] w-20 @[42rem]:ms-0" />
+          </GlanceTile>
+        )}
         {view && hasOnslaught ? (
           <GlanceTile label={t("plan.onslaught")}>
             {t("today.glance.tokens", { count: view.onslaughtTokens })}
