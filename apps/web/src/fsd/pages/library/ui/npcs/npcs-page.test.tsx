@@ -10,6 +10,7 @@ import { seedGameCatalog } from "@/test/seed"
 
 import type { NpcRecord, NpcStatRow } from "@/entities/npc"
 import type { ReadState } from "@/shared/lib"
+import { refreshLocalDataAfterSync } from "@/shared/local-data"
 import {
   buildUnitPowerContext,
   npcPowerAt,
@@ -977,8 +978,9 @@ describe("NpcsPage encounters", () => {
       ...(encounters ? { "npc-encounters": encounters } : {}),
       ...(calendar ? { "events-calendar": calendar } : {}),
     })
-    await renderPage(entry)
+    const view = await renderPage(entry)
     await screen.findByTestId("npc-name")
+    return view
   }
 
   it("groups the selected variation's encounters by source in the fixed order", async () => {
@@ -1181,6 +1183,44 @@ describe("NpcsPage encounters", () => {
     )
   })
 
+  it("drops a chosen location that refreshed data no longer offers", async () => {
+    const user = userEvent.setup()
+    const { queryClient } = await renderWithEncounters(
+      "/library/npcs/makhotep",
+      [
+        ...wardenEncounters,
+        encounter("necroBossWardenLEG", "campaign", "elite1", [
+          battle({ battleId: "E01", number: 1 }),
+        ]),
+      ]
+    )
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    await user.click(await screen.findByRole("option", { name: "Campaign" }))
+    await user.click(screen.getByTestId("npcs-location-filter"))
+    const options = await screen.findAllByRole("option")
+    const elite = options.find((option) =>
+      /elite/i.test(option.textContent ?? "")
+    )
+    await user.click(elite as HTMLElement)
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (2)"
+    )
+
+    await seedGameCatalog({ "npc-encounters": wardenEncounters })
+    act(() =>
+      refreshLocalDataAfterSync(queryClient, "catalog", ["npc-encounters"])
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+        "Filters (1)"
+      )
+    )
+    expect(screen.queryByTestId("npcs-location-filter")).not.toBeInTheDocument()
+  })
+
   it("hides the location filter for a game mode with one location", async () => {
     const user = userEvent.setup()
     await renderWithEncounters("/library/npcs/makhotep")
@@ -1358,10 +1398,7 @@ describe("NpcsPage encounters", () => {
 
     await user.click(at(chips, 1))
     await waitFor(() =>
-      expect(screen.getByTestId("npcs-level-select")).toHaveAttribute(
-        "aria-expanded",
-        "false"
-      )
+      expect(location()).toContain("variation=necroNpcWarden&level=1")
     )
     expect(screen.getByTestId(`${id}-place-I03-npcs`)).toBeVisible()
   })

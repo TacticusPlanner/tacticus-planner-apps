@@ -1039,6 +1039,21 @@ describe("npc-encounters schema", () => {
     })
   })
 
+  it.each([0, -1])("rejects a count of %i", (count) => {
+    const record = npcEncounters[0]!
+    const battle = record.battles[0]!
+    const parse = (changed: unknown) =>
+      datasetPayloadSchemas["npc-encounters"].safeParse([
+        { ...record, battles: [changed] },
+      ]).success
+
+    expect(parse({ ...battle, count: 1 })).toBe(true)
+    expect(parse({ ...battle, count })).toBe(false)
+    expect(parse({ ...battle, levels: [{ servedIndex: 0, count }] })).toBe(
+      false
+    )
+  })
+
   it("rejects an unknown source", () => {
     const [record] = npcEncounters
     expect(

@@ -80,16 +80,37 @@ export function NpcsPage() {
   }, [encounterData, calendar, nowMs])
   const hasEncounters = encounterLookup !== undefined
   const canFilterRunning = hasEncounters && calendar !== null
-  const filters = useMemo<NpcFilters>(
-    () => ({
+  // Every game mode an NPC is fought in, with its locations.
+  const locationsByMode = useMemo(() => {
+    const modes = new Map<string, Map<string, NpcEncounter>>()
+    for (const group of catalog.groups) {
+      for (const variation of group.variations) {
+        for (const encounter of encounterLookup?.encountersOf(variation.id) ??
+          []) {
+          const locations =
+            modes.get(encounter.source) ?? new Map<string, NpcEncounter>()
+          locations.set(encounter.groupId, encounter)
+          modes.set(encounter.source, locations)
+        }
+      }
+    }
+    return modes
+  }, [catalog.groups, encounterLookup])
+  const filters = useMemo<NpcFilters>(() => {
+    const { gameMode, encounterGroup } = filterState
+    // Refreshed data can drop the chosen location, and its control may be hidden by then.
+    const locationOffered =
+      gameMode !== null &&
+      encounterGroup !== null &&
+      locationsByMode.get(gameMode)?.has(encounterGroup) === true
+    return {
       ...filterState,
-      gameMode: hasEncounters ? filterState.gameMode : null,
-      encounterGroup: hasEncounters ? filterState.encounterGroup : null,
+      gameMode: hasEncounters ? gameMode : null,
+      encounterGroup: locationOffered ? encounterGroup : null,
       minCount: hasEncounters ? filterState.minCount : null,
       runningNow: canFilterRunning && filterState.runningNow,
-    }),
-    [filterState, hasEncounters, canFilterRunning]
-  )
+    }
+  }, [filterState, hasEncounters, canFilterRunning, locationsByMode])
 
   // Route selection runs over every listed group (not the filtered view) so applying a filter never
   // redirects the current entity away.
@@ -126,17 +147,8 @@ export function NpcsPage() {
     const alliances = new Set<string>()
     const damageTypes = new Set<string>()
     const traits = new Set<string>()
-    const gameModes = new Set<string>()
-    const locations = new Map<string, NpcEncounter>()
     for (const group of catalog.groups) {
       for (const variation of group.variations) {
-        for (const encounter of encounterLookup?.encountersOf(variation.id) ??
-          []) {
-          gameModes.add(encounter.source)
-          if (encounter.source === filters.gameMode) {
-            locations.set(encounter.groupId, encounter)
-          }
-        }
         factions.set(variation.factionId, factionName(variation.factionId))
         alliances.add(variation.alliance)
         // A couple of non-combat units are served with an empty damage profile; an empty id would
@@ -151,6 +163,10 @@ export function NpcsPage() {
     }
     const byName = (a: { name: string }, b: { name: string }) =>
       a.name.localeCompare(b.name)
+    const locations =
+      filters.gameMode === null
+        ? undefined
+        : locationsByMode.get(filters.gameMode)
     return {
       factions: [...factions].map(([id, name]) => ({ id, name })).sort(byName),
       alliances: [...alliances]
@@ -170,12 +186,12 @@ export function NpcsPage() {
         .sort(byName),
       // Fixed source order, not alphabetical: the same order as the encounters section.
       gameModes: NPC_ENCOUNTER_SOURCES.filter((source) =>
-        gameModes.has(source)
+        locationsByMode.has(source)
       ).map((id) => ({
         id,
         name: t(`library:npcs.encounters.source.${id}`, { defaultValue: id }),
       })),
-      locations: [...locations]
+      locations: [...(locations ?? [])]
         .map(([id, encounter]) => ({ id, name: encounterGroupName(encounter) }))
         .sort(byName),
       canFilterRunning,
@@ -184,9 +200,9 @@ export function NpcsPage() {
     canFilterRunning,
     catalog.groups,
     encounterGroupName,
-    encounterLookup,
     factionName,
     filters.gameMode,
+    locationsByMode,
     t,
   ])
 

@@ -45,6 +45,7 @@
 - [x] 4.9 Nest an Incursion's battles under its tiers. Verify with an `npcs-page.test.tsx` case for the tier summary, opening a tier and a battle, and the challenge label.
 
 - [x] 4.10 Name and colour Incursion tiers by rarity in the row summary and the tier rows, and nest Campaign Event and Legendary Event battles under their tracks (design D5d). Verify with `npcs-page.test.tsx` cases for the rarity names and class, both track cases, and the Incursions page tests staying green after `tierLabels` moves.
+- [x] 4.11 Stop a chosen Location narrowing the list once refreshed encounter data no longer offers it. Verify with `npcs-page.test.tsx`.
 
 ## 5. Copy and tour
 

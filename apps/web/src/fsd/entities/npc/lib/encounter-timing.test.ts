@@ -47,6 +47,13 @@ describe("encounterTiming", () => {
     }
   })
 
+  it("ends a running incursion at its exact end time", () => {
+    const atEnd = Date.parse("2026-11-07T08:00:00Z")
+    expect(
+      encounterTiming("incursion", "tauBroadside", calendar, atEnd)
+    ).toEqual({ kind: "none" })
+  })
+
   it("picks the earliest future run", () => {
     expect(
       encounterTiming("legendaryEvent", "lostaBile", calendar, now)
