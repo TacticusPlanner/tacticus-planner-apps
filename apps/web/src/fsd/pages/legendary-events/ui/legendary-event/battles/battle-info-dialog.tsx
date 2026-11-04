@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -38,9 +39,12 @@ export function BattleInfoDialog({
   const { t } = useTranslation("legendaryEvents")
   const lane = target ? battles[target.laneId] : undefined
   const state = lane?.state
+  // The dialog's own Map disclosure, apart from Plan's Battles section.
+  const [mapOpen, setMapOpen] = useState(false)
+  // By number, not position: the ready list leaves out battles the read did not serve.
   const battle =
     target && state?.kind === "ready"
-      ? state.battles[target.battleIndex]
+      ? state.battles.find((entry) => entry.number === target.battleIndex + 1)
       : undefined
   return (
     <ResponsiveDialog
@@ -67,8 +71,8 @@ export function BattleInfoDialog({
             battle={battle}
             isMobile={isMobile}
             laneId={target.laneId}
-            mapOpen={lane.mapOpen}
-            onMapOpenChange={lane.onMapOpenChange}
+            mapOpen={mapOpen}
+            onMapOpenChange={setMapOpen}
             retryNpcs={state.retryNpcs}
           />
         ) : state?.kind === "error" ? (

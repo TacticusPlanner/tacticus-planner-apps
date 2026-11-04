@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 
 import {
+  eventUnitChipData,
   objectivesSatisfied,
   type LaneProgressView,
   type LegendaryEventRosterUnit,
@@ -13,7 +14,6 @@ import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 import {
   buildEventBoardLane,
   buildEventBoardTable,
-  eventBoardUnit,
   isVisibleLanesValue,
   parseVisibleLanes,
   serializeVisibleLanes,
@@ -230,10 +230,10 @@ describe("buildEventBoardTable", () => {
   })
 })
 
-describe("eventBoardUnit", () => {
+describe("eventUnitChipData", () => {
   it("reads rank, ascension and ability levels from the roster", () => {
     const roster = new Map([["a", rosterUnit("a", "Gold2")]])
-    expect(eventBoardUnit("a", roster)).toEqual({
+    expect(eventUnitChipData("a", roster)).toEqual({
       unitId: "a",
       owned: true,
       rank: "Gold2",
@@ -241,8 +241,11 @@ describe("eventBoardUnit", () => {
       activeLevel: 30,
       passiveLevel: 25,
     })
-    expect(eventBoardUnit("b", roster)).toEqual({ unitId: "b", owned: false })
-    expect(eventBoardUnit("a", undefined)).toEqual({
+    expect(eventUnitChipData("b", roster)).toEqual({
+      unitId: "b",
+      owned: false,
+    })
+    expect(eventUnitChipData("a", undefined)).toEqual({
       unitId: "a",
       owned: undefined,
     })

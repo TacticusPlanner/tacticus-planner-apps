@@ -5,6 +5,7 @@ import {
   buildTokenPlanView,
   nextTokenCardState,
   type TokenPlanReady,
+  upNextTokens,
 } from "./token-plan-view"
 import {
   UTHAR_RUN_STARTS,
@@ -309,5 +310,24 @@ describe("buildTokenPlanView", () => {
 
     expect(view.forecast).toBeNull()
     expect(view.plan.tokens).toHaveLength(6)
+  })
+})
+
+describe("upNextTokens", () => {
+  const plan = { tokens: ["a", "b", "c", "d", "e", "f", "g"] }
+
+  it("lists up to four tokens after the next one, not the ones it skipped", () => {
+    expect(
+      upNextTokens(plan, { index: 2 }).map((entry) => entry.index)
+    ).toEqual([3, 4, 5, 6])
+    expect(
+      upNextTokens(plan, { index: 0 }).map((entry) => entry.token)
+    ).toEqual(["b", "c", "d", "e"])
+  })
+
+  it("starts at the first token without a next one", () => {
+    expect(upNextTokens(plan, null, 2).map((entry) => entry.index)).toEqual([
+      0, 1,
+    ])
   })
 })

@@ -32,6 +32,7 @@ import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
+import type { BattleInfoTarget } from "./battles/battle-info-dialog"
 import { useBattlesSection } from "./battles/use-battles-section"
 import { LegendaryEventPageView } from "./legendary-event-page-view"
 import {
@@ -42,9 +43,11 @@ import {
   buildRunStatusViewModel,
   readValue,
   type LegendaryEventPageViewModel,
+  type LegendaryEventTab,
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
+import { shownObjectiveSelection } from "./leaderboard/leaderboard.view-model"
 import { useBattlesLane } from "./use-battles-lane"
 import { useLaneJump } from "./use-lane-jump"
 import { useLaneSelection } from "./use-lane-selection"
@@ -86,7 +89,18 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const syncTimes = useLegendaryEventSyncTimes()
   const lanes = useLaneSelection(isMobile)
   // The run tab opens first while the event is active (spec: the run tab is the active default).
-  const defaultTab = event.lifecycle?.state === "active" ? "run" : "overview"
+  // Fixed once the lifecycle is known: a run window ending while the page is open must not move a
+  // user on the default tab (left out of the URL) to another tab.
+  const liveDefaultTab: LegendaryEventTab | undefined = event.lifecycle
+    ? event.lifecycle.state === "active"
+      ? "run"
+      : "overview"
+    : undefined
+  const [pinnedDefaultTab, setPinnedDefaultTab] = useState(liveDefaultTab)
+  if (pinnedDefaultTab === undefined && liveDefaultTab !== undefined) {
+    setPinnedDefaultTab(liveDefaultTab)
+  }
+  const defaultTab = pinnedDefaultTab ?? liveDefaultTab ?? "overview"
   const [battlesLane, setBattlesLane] = useBattlesLane()
   const {
     selectedTab,
@@ -226,10 +240,20 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     initialRarityOf,
   })
   const impactTeamName = useImpactTeamName(eventData, plan.query.data)
+  const [battleInfo, setBattleInfo] = useState<BattleInfoTarget | null>(null)
+  const battlesLanes = useMemo(
+    () =>
+      [
+        ...(selectedTab === "plan" ? [battlesLane] : []),
+        ...(battleInfo ? [battleInfo.laneId] : []),
+      ] as LegendaryEventLaneId[],
+    [selectedTab, battlesLane, battleInfo]
+  )
   const battlesSection = useBattlesSection({
     event: eventData,
     battlesRead,
     progressGrid,
+    laneIds: battlesLanes,
   })
   const progressObservedAtMs =
     syncTimes.status === "ready" ? syncTimes.data.progressObservedAtMs : null
@@ -376,7 +400,12 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         onOnlyUnlockedChange: setOnlyUnlocked,
         deductScored,
         onDeductScoredChange: setDeductScored,
-        selectedObjectives,
+        // A hidden lane's objective chips no longer filter (spec: one lane selection).
+        selectedObjectives: shownObjectiveSelection(
+          eventData,
+          lanes.shown,
+          selectedObjectives
+        ),
         onSelectedObjectivesChange: setSelectedObjectives,
         clears:
           previewOn && previewEstimates ? previewEstimates : clearEstimates,
@@ -424,6 +453,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           }
         : null,
       battles: battlesSection,
+      battleInfo: { target: battleInfo, onChange: setBattleInfo },
       potentials,
       eventBoard: { units, roster: syncedRoster },
     }
@@ -481,6 +511,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     goalTargetsByUnit,
     impactTeamName,
     battlesSection,
+    battleInfo,
     potentials,
     units,
     syncedRoster,

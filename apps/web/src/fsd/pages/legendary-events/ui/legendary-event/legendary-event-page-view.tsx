@@ -1,4 +1,4 @@
-import { useCallback, useState, type ReactNode } from "react"
+import { useCallback, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
@@ -18,10 +18,7 @@ import {
 import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
 import { useUnitName } from "@/shared/unit-name"
 
-import {
-  BattleInfoDialog,
-  type BattleInfoTarget,
-} from "./battles/battle-info-dialog"
+import { BattleInfoDialog } from "./battles/battle-info-dialog"
 import { BattlesLaneSelect } from "./battles/battles-lane-select"
 import { BattlesSection } from "./battles/battles-section"
 import { EstimatesDisclaimer } from "./estimates-disclaimer"
@@ -66,10 +63,10 @@ export function LegendaryEventPageView({
   const { selectedTab, lanes, tokens } = props
   const shown = lanes.shown
   const unitName = useUnitName()
-  const [battleInfo, setBattleInfo] = useState<BattleInfoTarget | null>(null)
+  const setBattleInfo = props.battleInfo.onChange
   const openBattleInfo = useCallback<OpenBattleInfo>(
     (laneId, battleIndex) => setBattleInfo({ laneId, battleIndex }),
-    []
+    [setBattleInfo]
   )
   const laneSelector = <LaneSelector isMobile={isMobile} lanes={lanes} />
   const leaderboardLayout = isMobile ? "list" : "table"
@@ -292,7 +289,7 @@ export function LegendaryEventPageView({
           battles={props.battles}
           isMobile={isMobile}
           onClose={() => setBattleInfo(null)}
-          target={battleInfo}
+          target={props.battleInfo.target}
         />
       </div>
     </BattleInfoContext.Provider>

@@ -11,6 +11,7 @@ import {
   type LegendaryEventObjective,
   type LegendaryEventTeam,
   type LegendaryEventUnit,
+  eventUnitChipData,
   type EventUnitChipData,
 } from "@/entities/legendary-event"
 import type { UnitPowerContext } from "@/shared/unit-power"
@@ -84,32 +85,11 @@ export function buildEventBoardLane(
   }
 }
 
-/** What a unit chip on the board shows (the entity's chip data). */
-export type EventBoardUnit = EventUnitChipData
-
-/** A unit chip's data from the synced roster (`rosterById` undefined: ownership unknown). */
-export function eventBoardUnit(
-  unitId: string,
-  rosterById: ClearEstimateRoster | undefined
-): EventBoardUnit {
-  if (!rosterById) return { unitId, owned: undefined }
-  const entry = rosterById.get(unitId)
-  if (!entry) return { unitId, owned: false }
-  return {
-    unitId,
-    owned: true,
-    rank: entry.rank,
-    progression: entry.progressionIndex,
-    activeLevel: entry.abilities?.[0]?.level ?? 1,
-    passiveLevel: entry.abilities?.[1]?.level ?? 1,
-  }
-}
-
 /** One column of a lane's unit table: one objective, or every selected objective merged (V1's
  *  selection), and every allowed unit satisfying all of them, strongest owned first. */
 export interface EventBoardTableColumn {
   objectiveIndexes: number[]
-  units: EventBoardUnit[]
+  units: EventUnitChipData[]
   /** How many leading units are owned (the "best five" line falls inside them). */
   ownedCount: number
 }
@@ -174,7 +154,7 @@ export function buildEventBoardTable(
     return {
       objectiveIndexes,
       units: matching.map((candidate) =>
-        eventBoardUnit(candidate.id, rosterById)
+        eventUnitChipData(candidate.id, rosterById)
       ),
       ownedCount: matching.filter((candidate) => candidate.owned).length,
     }

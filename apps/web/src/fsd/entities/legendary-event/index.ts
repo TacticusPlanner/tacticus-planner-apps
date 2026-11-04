@@ -81,7 +81,12 @@ export {
   useObjectiveLabel,
 } from "./model/use-objective-label"
 export { ObjectiveIcon } from "./ui/objective-icon"
-export { EventUnitChip, type EventUnitChipData } from "./ui/event-unit-chip"
+export { EventUnitChip } from "./ui/event-unit-chip"
+export {
+  eventUnitChipData,
+  ownedUnitChipData,
+  type EventUnitChipData,
+} from "./lib/event-unit-chip-data"
 export {
   type CreateTeamRequestDto,
   type LegendaryEventAnnotation,

@@ -21,6 +21,7 @@ import {
   useObjectiveLabel,
   type LegendaryEventLane,
   EventUnitChip,
+  type EventUnitChipData,
 } from "@/entities/legendary-event"
 import {
   ClearDepthField,
@@ -32,7 +33,7 @@ import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import { PointsLeft, TeamPower } from "./team-card-figures"
-import type { TeamCardMember, TeamCardViewModel } from "./teams.view-model"
+import type { TeamCardViewModel } from "./teams.view-model"
 
 const FULL_TEAM = 5
 
@@ -344,7 +345,7 @@ function MemberPortrait({
   name,
   reserveLabel,
 }: {
-  member: TeamCardMember
+  member: EventUnitChipData
   name: string
   reserveLabel?: string
 }) {

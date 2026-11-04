@@ -201,3 +201,23 @@ export function useClearsText(): (clears: LeaderboardClears) => string {
     [t]
   )
 }
+
+/** The objective selection the shown lanes can draw: keys of a lane the user hid no longer filter
+ *  (their chips are gone), and come back when the lane is shown again. Returns `selected` itself
+ *  when nothing is dropped. */
+export function shownObjectiveSelection(
+  event: Pick<LegendaryEvent, LegendaryEventLaneId>,
+  laneIds: readonly LegendaryEventLaneId[],
+  selected: ReadonlySet<string>
+): ReadonlySet<string> {
+  const shown = new Set(
+    laneIds.flatMap((laneId) =>
+      event[laneId].unitsRestrictions.map((objective) =>
+        objectiveFilterKey(objective.filter)
+      )
+    )
+  )
+  return [...selected].every((key) => shown.has(key))
+    ? selected
+    : new Set([...selected].filter((key) => shown.has(key)))
+}
