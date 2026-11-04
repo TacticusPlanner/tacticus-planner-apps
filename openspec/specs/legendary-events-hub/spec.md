@@ -343,11 +343,11 @@ A row of an active or upcoming event SHALL list runs 1 to 3 with their start dat
 
 ### Requirement: The Overview shows an Event board of every lane
 
-While the `LreEventBoard` feature flag is on, the Overview tab SHALL show an Event board after the Run status card: one column per lane in lane order, side by side at or above 1024px and stacked below. Each column SHALL show the lane name with its allowed-units rule, every lane objective in objective order (icon, label, points, and "cleared / battles" from synced progress, omitted while progress is unavailable) and the lane's saved teams in stored order (readable name, member portraits, the icons of the stored objectives the members still derive). Once teams have loaded, an objective no saved team covers SHALL be marked "No team"; a lane with no teams SHALL say so. Activating a team SHALL open the page's team editor on it; activating a lane heading SHALL select that lane's tab. This is the only place lanes render side by side. While the flag is off the Overview is unchanged.
+The Overview tab SHALL show an Event board after the Run status card, laid out like V1's Teams tab: one column per shown lane in lane order, side by side at or above 1024px and stacked below. A switch per lane SHALL show or hide it, remembered per browser; the last shown lane cannot be hidden. Each lane SHALL show its name with its allowed-units rule, a unit table and its saved teams in stored order (readable name, the icons of the stored objectives the members still derive, and each member's chip). The unit table SHALL have one column per objective in objective order, headed by its icon, label, points and "cleared / battles" from synced progress (omitted while progress is unavailable), listing every unit the lane allows that satisfies it: owned units first by power, strongest first, then units the player does not own, marked "Locked"; a dashed line SHALL follow the fifth unit. Pressing objective headings SHALL select them: the selected objectives merge into one leading column listing the units that satisfy all of them, until the selection is cleared. Every owned unit's chip SHALL show its portrait ringed in its rarity colour, its rank icon and its active and passive ability levels on a background in its rank colour; a saved team's member chips SHALL also show its stars. Once teams have loaded, an objective no saved team covers SHALL be marked "No team"; a lane with no teams SHALL say so. Activating a unit SHALL open the page's team editor on a new team starting with that unit and the column's objectives; activating a team SHALL open the editor on it; activating a lane heading SHALL select that lane's tab. This is the only place lanes render side by side.
 
 #### Scenario: Board shows every lane
 
-- **GIVEN** the flag is on and Alpha and Beta each have one saved team
+- **GIVEN** Alpha and Beta each have one saved team
 - **WHEN** the user opens the Overview tab
 - **THEN** the Event board shows three lane columns with their objectives, one team row in Alpha and in Beta, and "No teams yet" in Gamma
 
@@ -357,8 +357,14 @@ While the `LreEventBoard` feature flag is on, the Overview tab SHALL show an Eve
 - **WHEN** the Event board renders
 - **THEN** that objective is marked "No team"
 
-#### Scenario: Flag off
+#### Scenario: Objective selection
 
-- **GIVEN** the flag is off
-- **WHEN** the user opens the Overview tab
-- **THEN** no Event board renders
+- **GIVEN** the user presses Alpha's first and second objective headings
+- **WHEN** the table renders
+- **THEN** its first column lists only the units satisfying both, and Clear selection restores one column per objective
+
+#### Scenario: Lane hidden
+
+- **GIVEN** the user switches Gamma off
+- **WHEN** the board renders, now or after a reload
+- **THEN** only Alpha and Beta show

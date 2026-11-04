@@ -86,17 +86,23 @@ export function LegendaryEventPageView({
           {props.runInputs.enabled ? (
             <PlanNotesCard eventId={props.event.id} />
           ) : null}
-          {props.showEventBoard ? (
-            <EventBoard
-              event={props.event}
-              onOpenLane={props.onSelectTab}
-              onOpenTeam={(laneId, team) =>
-                props.teamEditor.openTeamEditor({ laneId, team })
-              }
-              progressGrid={props.progressGrid}
-              teams={props.teams.state}
-            />
-          ) : null}
+          <EventBoard
+            event={props.event}
+            onAddTeam={(laneId, objectiveIndexes, unitId) =>
+              props.teamEditor.openTeamEditor({
+                laneId,
+                memberUnitIds: [unitId],
+                objectiveIndexes,
+              })
+            }
+            onOpenLane={props.onSelectTab}
+            onOpenTeam={(laneId, team) =>
+              props.teamEditor.openTeamEditor({ laneId, team })
+            }
+            progressGrid={props.progressGrid}
+            teams={props.teams.state}
+            unitPower={props.teams.unitPower}
+          />
           <LastRunCard
             isMobile={isMobile}
             lastRun={props.lastRun.state}

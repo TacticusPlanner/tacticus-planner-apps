@@ -28,7 +28,6 @@ import {
 } from "@/features/legendary-event-tokens"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { useFeatureFlag } from "@/shared/feature-flags"
 import { useSearchParamState } from "@/shared/lib"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
@@ -115,7 +114,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const plan = useLegendaryEventPlan({ eventId, run: runs.run })
   const annotations = useAnnotations(eventId)
   const teamEditor = useTeamEditorLauncher()
-  const showEventBoard = useFeatureFlag("LreEventBoard")
   const marksByLane = useMemo(
     () => buildMarksByLane(annotations.annotations, syncedEntry),
     [annotations.annotations, syncedEntry]
@@ -424,7 +422,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         : null,
       battles: battlesSection,
       potentials,
-      showEventBoard,
     }
   }, [
     eventData,
@@ -476,7 +473,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     impactTeamName,
     battlesSection,
     potentials,
-    showEventBoard,
   ])
 
   // Until `lres` has synced an absent event may just not have arrived yet (the catalog init gate
