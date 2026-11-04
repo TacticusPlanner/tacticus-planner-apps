@@ -5,6 +5,5 @@
  * environment's Azure App Configuration store (`appcs-tp-stg`,
  * `appcs-tp-prod`). Delete it once the feature has shipped everywhere.
  */
-export type FeatureFlag =
-  /** The Legendary Event Overview's Event board (all lanes' objectives and teams at once). */
-  "LreEventBoard"
+// No feature is hidden right now.
+export type FeatureFlag = never

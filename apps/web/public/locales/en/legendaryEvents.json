@@ -129,14 +129,21 @@
   },
   "eventBoard": {
     "title": "Event board",
-    "description": "Every lane's objectives and saved teams at once. Pick a team to edit it, or a lane to open its tab.",
+    "description": "Every lane's objectives, the units that fit each and your saved teams at once. Pick objectives to see the units that fit all of them, a unit to start a team with it, a team to edit it, or a lane to open its tab.",
     "openLane": "Open the {{lane}} tab",
     "teams_one": "{{count}} team",
     "teams_other": "{{count}} teams",
     "noTeams": "No teams yet.",
     "noTeam": "No team",
     "cleared": "Cleared in {{cleared}} of {{total}} battles",
-    "editTeam": "Edit {{name}}"
+    "editTeam": "Edit {{name}}",
+    "lanesShown": "Lanes shown",
+    "clearSelection": "Clear selection",
+    "columnUnits_one": "{{count}} unit",
+    "columnUnits_other": "{{count}} units",
+    "noUnits": "No units",
+    "addTeam": "Start a team with this unit",
+    "locked": "Locked"
   },
   "laneSummary": {
     "title": "Lane summary",
