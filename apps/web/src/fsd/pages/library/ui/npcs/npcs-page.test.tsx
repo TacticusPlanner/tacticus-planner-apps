@@ -1183,6 +1183,81 @@ describe("NpcsPage encounters", () => {
     )
   })
 
+  it("keeps other game modes out of the section when a game mode and a count are set", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "campaign", "campaign1", [
+        battle({ battleId: "I03", number: 3, count: 5 }),
+      ]),
+      encounter("necroNpcWarden", "legendaryEvent", "astarLysander", [
+        battle({
+          battleId: "astarLysander-alpha-1",
+          track: "alpha",
+          number: 1,
+          count: 5,
+        }),
+      ]),
+    ])
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    await user.click(await screen.findByRole("option", { name: "Campaign" }))
+    await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId("npc-encounter-legendaryEvent-astarLysander")
+      ).not.toBeInTheDocument()
+    )
+    expect(
+      screen.getByTestId("npc-encounter-campaign-campaign1")
+    ).toBeInTheDocument()
+  })
+
+  it("clears filters that exclude the variation a chip opens, and keeps its level", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "campaign", "campaign1", [
+        battle({
+          battleId: "I03",
+          number: 3,
+          count: 5,
+          levels: [{ servedIndex: 0, count: 5 }],
+        }),
+        battle({ battleId: "I07", number: 7, count: 5 }),
+      ]),
+      encounter("necroBossWardenLEG", "campaign", "campaign1", [
+        battle({
+          battleId: "I03",
+          number: 3,
+          count: 2,
+          levels: [{ servedIndex: 0, count: 2 }],
+        }),
+      ]),
+    ])
+    const id = "npc-encounter-campaign-campaign1"
+    await screen.findByTestId(id)
+    await openFilters(user)
+    await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    await user.click(screen.getByTestId(`${id}-place-I03`))
+
+    const chip = within(screen.getByTestId(`${id}-place-I03-npcs`))
+      .getAllByRole("link")
+      .find((link) =>
+        link.getAttribute("href")?.includes("variation=necroBossWardenLEG")
+      )
+    await user.click(chip as HTMLElement)
+
+    await waitFor(() =>
+      expect(location()).toContain("variation=necroBossWardenLEG&level=0")
+    )
+    expect(screen.getByTestId("npcs-filters-toggle")).not.toHaveTextContent("(")
+    expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
+      "necroBossWardenLEG"
+    )
+  })
+
   it("drops a chosen location that refreshed data no longer offers", async () => {
     const user = userEvent.setup()
     const { queryClient } = await renderWithEncounters(

@@ -15,6 +15,8 @@ export {
   activeNpcFilterCount,
   emptyNpcFilters,
   filterNpcGroups,
+  encounterAllowedByFilters,
+  matchesNpcFilters,
   matchingEncounterPlaces,
   matchingVariations,
   variationDamageTypes,
@@ -39,7 +41,6 @@ export {
   type NpcEncounterIndex,
   type NpcEncounterLookup,
 } from "./lib/encounters"
-export { encounterTiming, type EncounterTiming } from "./lib/encounter-timing"
 export { collapseRanges } from "./lib/number-ranges"
 export { useNpcLabels } from "./lib/use-npc-labels"
 export {

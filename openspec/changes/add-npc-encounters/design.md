@@ -43,8 +43,8 @@ New files in `entities/npc/lib/`, exported through the slice's `index.ts`:
   - `NPC_ENCOUNTER_SOURCES` (the fixed source order)
   - `indexEncounters(records) -> ReadonlyMap<npcId, NpcEncounter[]>` (keeps served order)
   - `encounterSources(index, variationId) -> Set<source>`
-- `encounter-timing.ts`: `encounterTiming(source, groupId, calendarRows, nowMs)`, returning
-  `{ kind: "always" } | { kind: "rotating" } | { kind: "running" } | { kind: "next"; startUtc } | { kind: "none" } | null`
+- `pages/library/model/encounter-timing.ts`: `encounterTiming(source, groupId, calendarRows, nowMs)`, returning
+  `{ kind: "always" } | { kind: "rotating" } | { kind: "running" } | { kind: "next"; startMs } | { kind: "none" } | null`
   (`null` = calendar not present). These are the spec's matching rules, unit-tested against fixture rows.
 - `number-ranges.ts`: `collapseRanges([3,7,12,13,14]) -> [[3,3],[7,7],[12,14]]`. Formatting the text
   stays in the page.

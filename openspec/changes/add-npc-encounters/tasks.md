@@ -2,7 +2,7 @@
 
 - [x] 1.1 Add `schemas/npc-encounters.ts` (the served shape from the `npc-encounters-catalog` spec) and export it. Verify with `schemas.test.ts` cases: a valid record parses, an unknown `source` fails, and an extra field is tolerated.
 - [x] 1.2 Register `"npc-encounters"` in `servedDatasetKeys` and `optionalDatasetKeys`, add the `byNpcEncounterKey` mapper (`"{npcId}|{source}|{groupId}"`), the `NpcEncounterStorageModel` type and a Dexie version bump with a complete `stores()` block. Verify with mapper and sync tests: two records of one NPC store as two rows, a manifest without the dataset still reaches ready, and the upgrade keeps existing stores.
-- [ ] 1.3 Once the API half has merged, regenerate `apps/web/src/fsd/shared/api/schema.d.ts` with `pnpm --filter web api:types`. Verify the diff only adds the `npc-encounters` path and schema.
+- [x] 1.3 Once the API half has merged, regenerate `apps/web/src/fsd/shared/api/schema.d.ts` with `pnpm --filter web api:types`. Verify the diff only adds the `npc-encounters` path and schema. (Pinned to API `bcd835c`: `schema.d.ts` gains 167 lines and loses none.)
 
 ## 2. Entity logic (`entities/npc`)
 
@@ -46,6 +46,8 @@
 
 - [x] 4.10 Name and colour Incursion tiers by rarity in the row summary and the tier rows, and nest Campaign Event and Legendary Event battles under their tracks (design D5d). Verify with `npcs-page.test.tsx` cases for the rarity names and class, both track cases, and the Incursions page tests staying green after `tierLabels` moves.
 - [x] 4.11 Stop a chosen Location narrowing the list once refreshed encounter data no longer offers it. Verify with `npcs-page.test.tsx`.
+- [x] 4.12 From review: a chip clears filters that exclude its variation; a mission count keeps the other encounter filters; the next run reads the viewer's date; Incursion timing uses `incursionWindow`, so `encounter-timing` moves to `pages/library/model`; the tier name and campaign label reuse their shared helpers; the page stops reading the clock while "Running now" is off. Verify with the `npcs-page.test.tsx`, `encounter-timing.test.ts` and `format-estimate-date.test.ts` cases.
+- [x] 4.13 Skip a record or battle with a source or role this build does not know, so a newer API cannot cost clients the whole optional dataset. Verify with `schemas.test.ts`.
 
 ## 5. Copy and tour
 

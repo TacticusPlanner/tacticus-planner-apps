@@ -28,9 +28,16 @@ Unknown extra fields SHALL be tolerated, as every other catalog schema does.
 - **THEN** every served record is stored and retrievable, and two records of the same NPC with
   different sources or groups are stored as separate rows
 
+#### Scenario: A source or role this build does not know
+
+- **WHEN** an `npc-encounters` payload carries a record whose `source`, or a battle whose `role`, is a name
+  outside the listed values
+- **THEN** that record or battle is skipped, a record left with no battles is skipped too, and the rest
+  is stored
+
 #### Scenario: Malformed payload
 
-- **WHEN** an `npc-encounters` payload carries a `source` outside the listed values
+- **WHEN** an `npc-encounters` payload breaks the schema in any other way, such as a `count` of 0
 - **THEN** the sync reports the failure the same way as for any other dataset, and the store is not
   left partially written
 

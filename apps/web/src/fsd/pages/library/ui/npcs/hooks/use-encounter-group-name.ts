@@ -11,7 +11,7 @@ import { useUnitName } from "@/shared/unit-name"
 /** The localized name of an encounter's group: its row name and its Location filter option. */
 export function useEncounterGroupName() {
   const { t } = useTranslation("library")
-  const campaigns = useCampaignDisplay()
+  const { name: campaignName, fullLabel } = useCampaignDisplay()
   const unitName = useUnitName()
   const { bossName } = useRaidBossLabels()
 
@@ -25,10 +25,9 @@ export function useEncounterGroupName() {
             encounter.battles[0]?.track ?? "Standard"
           )
           if (!descriptor) return encounter.groupId
-          const name = campaigns.name(descriptor)
           return encounter.source === "campaign"
-            ? `${name} ${campaigns.tierLabel(descriptor)}`.trim()
-            : name
+            ? fullLabel(descriptor)
+            : campaignName(descriptor)
         }
         case "legendaryEvent":
         case "questEvent":
@@ -45,6 +44,6 @@ export function useEncounterGroupName() {
           return t("npcs.encounters.source.onslaught")
       }
     },
-    [bossName, campaigns, t, unitName]
+    [bossName, campaignName, fullLabel, t, unitName]
   )
 }

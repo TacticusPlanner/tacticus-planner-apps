@@ -1054,11 +1054,32 @@ describe("npc-encounters schema", () => {
     )
   })
 
-  it("rejects an unknown source", () => {
-    const [record] = npcEncounters
+  it("skips a record with a source this build does not know", () => {
+    const record = npcEncounters[0]!
+    expect(
+      datasetPayloadSchemas["npc-encounters"].parse([
+        record,
+        { ...record, source: "syncPvp" },
+      ])
+    ).toHaveLength(1)
+  })
+
+  it("skips a battle with a role this build does not know", () => {
+    const record = npcEncounters[0]!
+    const battle = record.battles[0]!
+    const unknown = { ...battle, role: "miniboss" }
+    const parse = (battles: unknown[]) =>
+      datasetPayloadSchemas["npc-encounters"].parse([{ ...record, battles }])
+
+    expect(parse([battle, unknown])[0]?.battles).toHaveLength(1)
+    expect(parse([unknown])).toEqual([])
+  })
+
+  it("still rejects a source that is not a name", () => {
+    const record = npcEncounters[0]!
     expect(
       datasetPayloadSchemas["npc-encounters"].safeParse([
-        { ...record, source: "syncPvp" },
+        { ...record, source: 7 },
       ]).success
     ).toBe(false)
   })

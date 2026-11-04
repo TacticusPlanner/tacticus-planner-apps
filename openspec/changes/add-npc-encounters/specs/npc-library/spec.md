@@ -279,6 +279,18 @@ and show the no-matching-variation state instead of navigating away. Filter stat
 - **THEN** a Guild Raid never matches, because it names no counts, and an Onslaught tier uses the NPC's
   largest single wave
 
+#### Scenario: A mission count keeps the other encounter filters
+
+- **GIVEN** a variation spawns 5 times in a campaign battle and in a Legendary Event battle
+- **WHEN** the Game mode filter is `campaign` and "Min. in one battle" is 5
+- **THEN** its Encountered in section lists the campaign row and not the Legendary Event row
+
+#### Scenario: A chip opens a variation the filters exclude
+
+- **GIVEN** "Min. in one battle" is 5 and a battle spawns another NPC 2 times
+- **WHEN** the user clicks that NPC's chip
+- **THEN** the filters clear, and that variation opens at that chip's level
+
 #### Scenario: Encounter filters describe one encounter
 
 - **GIVEN** a variation has a campaign record and a running Legendary Event record

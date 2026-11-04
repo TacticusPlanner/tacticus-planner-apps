@@ -42,7 +42,6 @@ describe("encounterTiming", () => {
     for (const mowId of ["tauBroadside", "tyranBiovore"]) {
       expect(encounterTiming("incursion", mowId, calendar, now)).toEqual({
         kind: "running",
-        endUtc: "2026-11-07T08:00:00Z",
       })
     }
   })
@@ -57,7 +56,7 @@ describe("encounterTiming", () => {
   it("picks the earliest future run", () => {
     expect(
       encounterTiming("legendaryEvent", "lostaBile", calendar, now)
-    ).toEqual({ kind: "next", startUtc: "2026-11-08T00:00:00Z" })
+    ).toEqual({ kind: "next", startMs: Date.parse("2026-11-08T00:00:00Z") })
   })
 
   it("says none when no entry names the group", () => {

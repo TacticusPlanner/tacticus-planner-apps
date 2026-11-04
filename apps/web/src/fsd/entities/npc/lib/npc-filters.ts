@@ -92,6 +92,19 @@ export function matchingEncounterPlaces(
   )
 }
 
+/** Whether an encounter is one the game mode, location and "running now" filters allow. */
+export function encounterAllowedByFilters(
+  encounter: NpcEncounter,
+  { gameMode, encounterGroup, runningNow }: NpcFilters,
+  encounters: NpcEncounterLookup
+): boolean {
+  return (
+    (gameMode === null || encounter.source === gameMode) &&
+    (encounterGroup === null || encounter.groupId === encounterGroup) &&
+    (!runningNow || encounters.isRunning(encounter))
+  )
+}
+
 /**
  * Whether one encounter of the variation satisfies every chosen encounter filter at once, so a game mode,
  * location, "running now" and count describe the same encounter rather than different ones. Without the
@@ -116,9 +129,7 @@ function matchesEncounterFilters(
       ?.encountersOf(variation.id)
       .some(
         (encounter) =>
-          (gameMode === null || encounter.source === gameMode) &&
-          (encounterGroup === null || encounter.groupId === encounterGroup) &&
-          (!runningNow || encounters.isRunning(encounter)) &&
+          encounterAllowedByFilters(encounter, filters, encounters) &&
           (minCount === null ||
             matchingEncounterPlaces(encounter, minCount).size > 0)
       ) ?? false

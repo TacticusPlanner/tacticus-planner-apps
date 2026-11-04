@@ -1,4 +1,10 @@
-import { useCallback, useState, type ReactNode } from "react"
+import {
+  useCallback,
+  useState,
+  type ReactNode,
+  createContext,
+  useContext,
+} from "react"
 import { ChevronDownIcon } from "lucide-react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
@@ -15,23 +21,25 @@ import {
   NpcPortrait,
   collapseRanges,
   encounterPlaces,
-  encounterTiming,
   npcLibraryHref,
   npcsAtPlace,
   useNpcLabels,
   useNpcsById,
   type EncounterPlace,
   type EncounterPlaceIndex,
-  type EncounterTiming,
   type NpcEncounter,
 } from "@/entities/npc"
 import { RARITY_TEXT } from "@/entities/incursion"
 import { useMinuteNow } from "@/entities/legendary-event"
-import { formatEstimateDate, useDateLocale } from "@/shared/lib"
+import { formatEstimateDate, localIsoDate, useDateLocale } from "@/shared/lib"
 
 import { useEncounterGroupName } from "./hooks/use-encounter-group-name"
 import { useIncursionTierNames } from "./hooks/use-incursion-tier-names"
 import type { NpcsPageViewProps } from "./npcs-page.view-model"
+import {
+  encounterTiming,
+  type EncounterTiming,
+} from "../../model/encounter-timing"
 
 // Where a group links to, when the planner has a page for it (spec: Quest Event and Survival have none).
 const LINKS: Partial<Record<NpcEncounterSource, (groupId: string) => string>> =
@@ -304,8 +312,8 @@ function useEncounterText() {
         case "next":
           return t("npcs.encounters.timing.next", {
             date:
-              formatEstimateDate(value.startUtc.slice(0, 10), dateLocale) ??
-              value.startUtc.slice(0, 10),
+              formatEstimateDate(localIsoDate(value.startMs), dateLocale) ??
+              localIsoDate(value.startMs),
           })
         default:
           return t(`npcs.encounters.timing.${value.kind}`)
@@ -336,6 +344,11 @@ function Chevron({ open, className }: { open: boolean; className?: string }) {
   )
 }
 
+/** Tells the page a battle chip is opening a variation, which the filters may exclude. */
+const OpenVariationContext = createContext<(variationId: string) => void>(
+  () => undefined
+)
+
 /**
  * Everyone fought at one place, one chip per NPC and level. A chip opens that variation at that level in the
  * Library, the selected NPC's included (it is only marked), so a battle's stats are one click away. A Guild Raid
@@ -355,6 +368,7 @@ function PlaceNpcs({
   const { t } = useTranslation("library")
   const npcs = useNpcsById()
   const { variationName } = useNpcLabels()
+  const onOpenVariation = useContext(OpenVariationContext)
 
   return (
     <ul className="flex flex-wrap gap-1.5" data-testid={testId}>
@@ -417,6 +431,7 @@ function PlaceNpcs({
                     className={chip}
                     aria-current={current ? "true" : undefined}
                     preventScrollReset
+                    onClick={() => onOpenVariation(id)}
                   >
                     {content}
                   </Link>
@@ -672,6 +687,7 @@ export function NpcEncounters({
   encounters,
   encounterPlaces: places,
   matchingPlaces,
+  onOpenBattleVariation,
   encountersStatus,
   calendar,
 }: Pick<
@@ -679,6 +695,7 @@ export function NpcEncounters({
   | "encounters"
   | "encounterPlaces"
   | "matchingPlaces"
+  | "onOpenBattleVariation"
   | "encountersStatus"
   | "calendar"
 >) {
@@ -708,39 +725,41 @@ export function NpcEncounters({
     )
   } else {
     body = (
-      <div className="flex flex-col gap-3">
-        {NPC_ENCOUNTER_SOURCES.map((source) => {
-          const rows = encounters.filter(
-            (e) =>
-              e.source === source &&
-              (matchingPlaces === null || matchingPlaces(e).size > 0)
-          )
-          if (rows.length === 0) return null
-          return (
-            <div
-              key={source}
-              className="flex flex-col gap-1.5"
-              data-testid={`npc-encounters-${source}`}
-            >
-              <h4 className="text-sm font-semibold">
-                {t(`npcs.encounters.source.${source}`)}
-              </h4>
-              <ul className="flex flex-col gap-1.5">
-                {rows.map((encounter) => (
-                  <EncounterRow
-                    key={encounter.id}
-                    encounter={encounter}
-                    places={places}
-                    matching={matchingPlaces?.(encounter) ?? null}
-                    calendar={calendar}
-                    nowMs={nowMs}
-                  />
-                ))}
-              </ul>
-            </div>
-          )
-        })}
-      </div>
+      <OpenVariationContext.Provider value={onOpenBattleVariation}>
+        <div className="flex flex-col gap-3">
+          {NPC_ENCOUNTER_SOURCES.map((source) => {
+            const rows = encounters.filter(
+              (e) =>
+                e.source === source &&
+                (matchingPlaces === null || matchingPlaces(e).size > 0)
+            )
+            if (rows.length === 0) return null
+            return (
+              <div
+                key={source}
+                className="flex flex-col gap-1.5"
+                data-testid={`npc-encounters-${source}`}
+              >
+                <h4 className="text-sm font-semibold">
+                  {t(`npcs.encounters.source.${source}`)}
+                </h4>
+                <ul className="flex flex-col gap-1.5">
+                  {rows.map((encounter) => (
+                    <EncounterRow
+                      key={encounter.id}
+                      encounter={encounter}
+                      places={places}
+                      matching={matchingPlaces?.(encounter) ?? null}
+                      calendar={calendar}
+                      nowMs={nowMs}
+                    />
+                  ))}
+                </ul>
+              </div>
+            )
+          })}
+        </div>
+      </OpenVariationContext.Provider>
     )
   }
 

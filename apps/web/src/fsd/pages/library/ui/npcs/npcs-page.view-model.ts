@@ -81,6 +81,8 @@ export interface NpcsPageViewProps {
   encounterPlaces: EncounterPlaceIndex
   /** The places meeting the mission count of the filters, or `null` while none is set. */
   matchingPlaces: ((encounter: NpcEncounter) => ReadonlySet<string>) | null
+  /** Called as a battle chip opens a variation, which the filters may exclude. */
+  onOpenBattleVariation: (variationId: string) => void
   /** The `npc-encounters` data state: `present` makes `encounters` meaningful (empty = none recorded). */
   encountersStatus: "loading" | "absent" | "failed" | "present"
   /** The stored calendar rows for encounter timing, or `null` while the calendar is not available. */

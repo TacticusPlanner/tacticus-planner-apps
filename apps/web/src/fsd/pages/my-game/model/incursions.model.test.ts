@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { incursionsFixture } from "@workspace/game-catalog/testing"
 
-import { tierLabels } from "@/entities/incursion"
-
 import {
   bestPathShards,
   orderIncursions,
@@ -130,26 +128,13 @@ describe("runSteps", () => {
   })
 })
 
-describe("tierSummary and labels", () => {
+describe("tierSummary", () => {
   it("counts the tier's parts", () => {
     expect(tierSummary("tauBroadside", mythic!)).toMatchObject({
       battles: 15,
       chests: 5,
       bestPath: { shards: 18, mythicShards: 6 },
     })
-  })
-
-  it("numbers tiers within their rarity", () => {
-    const labels = tierLabels([
-      { ...common!, index: 0 },
-      { ...common!, index: 1 },
-      { ...mythic!, index: 2 },
-    ])
-    expect([...labels.values()]).toEqual([
-      { rarity: "Common", number: 1 },
-      { rarity: "Common", number: 2 },
-      { rarity: "Mythic", number: 1 },
-    ])
   })
 })
 

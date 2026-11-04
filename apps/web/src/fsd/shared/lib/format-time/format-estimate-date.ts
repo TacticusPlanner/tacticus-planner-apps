@@ -40,3 +40,11 @@ export function formatEstimateDate(
     timeZone: "UTC",
   }).format(date)
 }
+
+/** The `YYYY-MM-DD` an instant falls on in the viewer's own zone, as `formatEstimateDate` reads it. */
+export function localIsoDate(ms: number): string {
+  const date = new Date(ms)
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${date.getFullYear()}-${month}-${day}`
+}

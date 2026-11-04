@@ -9,8 +9,9 @@ import {
   activeNpcFilterCount,
   emptyNpcFilters,
   NO_ENCOUNTER_PLACES,
-  encounterTiming,
   encountersOf,
+  encounterAllowedByFilters,
+  matchesNpcFilters,
   matchingEncounterPlaces,
   filterNpcGroups,
   matchingVariations,
@@ -31,6 +32,8 @@ import { useUnitPowerContext } from "@/shared/unit-power"
 import { useLibraryRouteSelection } from "../../model/use-library-route-selection"
 import { NpcsDesktopPage } from "./desktop/npcs-desktop-page"
 import { useEncounterGroupName } from "./hooks/use-encounter-group-name"
+import { encounterTiming } from "../../model/encounter-timing"
+
 import { useNpcEncounters } from "./hooks/use-npc-encounters"
 import { useNpcsCatalog } from "./hooks/use-npcs-catalog"
 import { NpcsMobilePage } from "./mobile/npcs-mobile-page"
@@ -68,14 +71,27 @@ export function NpcsPage() {
   // The encounter filters need the encounter data (and "running now" the calendar too); without it their
   // controls are hidden, so a chosen value must not keep narrowing the list out of sight.
   const { encounters: encounterData, calendar } = useNpcEncounters()
-  const nowMs = useMinuteNow()
+  // Only "running now" depends on the time, so nothing recomputes each minute while it is off.
+  const readsClock = filterState.runningNow
+  const nowMs = useMinuteNow(
+    useCallback((now: number) => (readsClock ? now : 0), [readsClock])
+  )
   const encounterLookup = useMemo<NpcEncounterLookup | undefined>(() => {
     if (encounterData.status !== "present") return undefined
     const { index } = encounterData
+    // Many encounters share a group, and each answer scans the calendar.
+    const running = new Map<string, boolean>()
     return {
       encountersOf: (variationId) => encountersOf(index, variationId),
-      isRunning: ({ source, groupId }) =>
-        encounterTiming(source, groupId, calendar, nowMs)?.kind === "running",
+      isRunning: ({ source, groupId }) => {
+        const key = `${source}|${groupId}`
+        const known = running.get(key)
+        if (known !== undefined) return known
+        const isRunning =
+          encounterTiming(source, groupId, calendar, nowMs)?.kind === "running"
+        running.set(key, isRunning)
+        return isRunning
+      },
     }
   }, [encounterData, calendar, nowMs])
   const hasEncounters = encounterLookup !== undefined
@@ -314,6 +330,22 @@ export function NpcsPage() {
     [location.pathname, location.search, navigate]
   )
   const onClearFilters = useCallback(() => setFilters(emptyNpcFilters), [])
+  // A battle chip names one variation at one level, so filters that exclude it give way rather than move the
+  // page to another variation.
+  const onOpenBattleVariation = useCallback(
+    (variationId: string) => {
+      const variation = catalog.groups
+        .flatMap((group) => group.variations)
+        .find(({ id }) => id === variationId)
+      if (
+        variation &&
+        !matchesNpcFilters(variation, filters, encounterLookup)
+      ) {
+        setFilters(emptyNpcFilters)
+      }
+    },
+    [catalog.groups, encounterLookup, filters]
+  )
 
   useTourPageSteps(useNpcsTutorial())
   const powerContext = useUnitPowerContext()
@@ -383,9 +415,13 @@ export function NpcsPage() {
           )
         : [],
     matchingPlaces:
-      filters.minCount === null
+      filters.minCount === null || !encounterLookup
         ? null
-        : (encounter) => matchingEncounterPlaces(encounter, filters.minCount),
+        : (encounter) =>
+            encounterAllowedByFilters(encounter, filters, encounterLookup)
+              ? matchingEncounterPlaces(encounter, filters.minCount)
+              : new Set<string>(),
+    onOpenBattleVariation,
     encounterPlaces:
       encounterData.status === "present"
         ? encounterData.places

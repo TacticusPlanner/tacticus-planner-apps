@@ -16,6 +16,7 @@ type NpcDetailProps = Pick<
   | "encounters"
   | "encounterPlaces"
   | "matchingPlaces"
+  | "onOpenBattleVariation"
   | "encountersStatus"
   | "calendar"
   | "selectedGroup"
@@ -49,6 +50,7 @@ export function NpcDetail({
   encounters,
   encounterPlaces,
   matchingPlaces,
+  onOpenBattleVariation,
   encountersStatus,
   calendar,
   compact = false,
@@ -107,6 +109,7 @@ export function NpcDetail({
         encounters={encounters}
         encounterPlaces={encounterPlaces}
         matchingPlaces={matchingPlaces}
+        onOpenBattleVariation={onOpenBattleVariation}
         encountersStatus={encountersStatus}
         calendar={calendar}
       />

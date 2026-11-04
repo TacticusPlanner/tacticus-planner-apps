@@ -3,6 +3,8 @@ import type {
   NpcEncounterSource,
 } from "@workspace/game-catalog"
 
+import { incursionWindow } from "@/entities/incursion"
+
 /**
  * When an encounter can be played, for the encounters section:
  * - `always`: permanent content (campaigns, Onslaught)
@@ -12,22 +14,32 @@ import type {
 export type EncounterTiming =
   | { kind: "always" }
   | { kind: "rotating" }
-  | { kind: "running"; endUtc: string }
-  | { kind: "next"; startUtc: string }
+  | { kind: "running" }
+  | { kind: "next"; startMs: number }
   | { kind: "none" }
 
-// The calendar definition of a scheduled source and the occurrence parameter that names its group. An
-// Incursion window opens every MoW's Incursion (as the Incursions page reads it); its `featuredMowId`
-// only marks a debut, so an incursion entry is not narrowed by group.
+// The calendar definition of a scheduled source and the occurrence parameter that names its group.
 const SCHEDULED: Partial<
-  Record<NpcEncounterSource, { definitionId: string; parameter?: string }>
+  Record<NpcEncounterSource, { definitionId: string; parameter: string }>
 > = {
   legendaryEvent: {
     definitionId: "legendary-event",
     parameter: "featuredCharacterId",
   },
   questEvent: { definitionId: "quest", parameter: "featuredCharacterId" },
-  incursion: { definitionId: "incursion" },
+}
+
+// An Incursion window opens every MoW's Incursion, so it is read as the Incursions page reads it; its
+// `featuredMowId` only marks a debut.
+function incursionTiming(
+  calendar: readonly EventsCalendarStorageModel[],
+  nowMs: number
+): EncounterTiming {
+  const window = incursionWindow(calendar, nowMs)
+  if (!window) return { kind: "none" }
+  return window.status === "live"
+    ? { kind: "running" }
+    : { kind: "next", startMs: window.startMs }
 }
 
 const ALWAYS: ReadonlySet<NpcEncounterSource> = new Set([
@@ -49,27 +61,25 @@ export function encounterTiming(
   nowMs: number
 ): EncounterTiming | null {
   if (ALWAYS.has(source)) return { kind: "always" }
+  if (source === "incursion") {
+    return calendar ? incursionTiming(calendar, nowMs) : null
+  }
   const scheduled = SCHEDULED[source]
   if (!scheduled) return { kind: "rotating" }
   if (!calendar) return null
 
-  let next: string | undefined
+  let next: number | undefined
   for (const entry of calendar) {
     if (entry.definitionId !== scheduled.definitionId) continue
-    if (
-      scheduled.parameter &&
-      entry.parameters?.[scheduled.parameter] !== groupId
-    ) {
-      continue
-    }
+    if (entry.parameters?.[scheduled.parameter] !== groupId) continue
     const start = Date.parse(entry.startUtc)
     const end = Date.parse(entry.endUtc)
     if (start <= nowMs && nowMs < end) {
-      return { kind: "running", endUtc: entry.endUtc }
+      return { kind: "running" }
     }
-    if (start > nowMs && (!next || start < Date.parse(next))) {
-      next = entry.startUtc
+    if (start > nowMs && (next === undefined || start < next)) {
+      next = start
     }
   }
-  return next ? { kind: "next", startUtc: next } : { kind: "none" }
+  return next === undefined ? { kind: "none" } : { kind: "next", startMs: next }
 }

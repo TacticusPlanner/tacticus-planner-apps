@@ -599,7 +599,10 @@ describe("syncGameCatalog", () => {
       datasetHash: "npc-encounters-h2",
       data: [
         ...npcEncountersPayload,
-        { ...npcEncountersPayload[0], source: "somewhereNew" },
+        {
+          ...npcEncountersPayload[0],
+          battles: [{ ...npcEncountersPayload[0]?.battles[0], count: 0 }],
+        },
       ],
     }
     vi.stubGlobal(

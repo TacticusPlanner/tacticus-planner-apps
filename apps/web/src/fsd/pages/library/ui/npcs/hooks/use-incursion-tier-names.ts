@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from "react"
-import { useTranslation } from "react-i18next"
 
-import { tierLabels } from "@/entities/incursion"
+import { tierLabels, useTierLabelName } from "@/entities/incursion"
 import { useCatalogDataset } from "@/shared/local-data"
 
 /**
@@ -9,7 +8,7 @@ import { useCatalogDataset } from "@/shared/local-data"
  * ("Epic 2"). `undefined` while the `incursions` dataset does not name the tier.
  */
 export function useIncursionTierNames() {
-  const { t } = useTranslation(["incursions", "progression"])
+  const labelName = useTierLabelName()
   const incursions = useCatalogDataset("incursions")
   const records = incursions.status === "ready" ? incursions.data : undefined
   const labels = useMemo(
@@ -27,16 +26,8 @@ export function useIncursionTierNames() {
     (mowId: string, tier: number) => {
       const label = labels.get(mowId)?.get(tier)
       if (!label) return undefined
-      return {
-        rarity: label.rarity,
-        name: t("card.tierOption", {
-          rarity: t(`progression:rarities.${label.rarity}` as never, {
-            defaultValue: label.rarity,
-          }),
-          number: label.number,
-        }),
-      }
+      return { rarity: label.rarity, name: labelName(label) }
     },
-    [labels, t]
+    [labelName, labels]
   )
 }
