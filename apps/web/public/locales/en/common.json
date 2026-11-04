@@ -402,6 +402,14 @@
           "abilities": "Abilities",
           "shards": "Shards"
         },
+        "view": "View",
+        "views": {
+          "cards": "Cards",
+          "roster": "Roster"
+        },
+        "groupByFaction": "Group by faction",
+        "hideUnowned": "Hide unowned",
+        "hideUnownedNeedsRoster": "Hiding unowned units needs a synced roster.",
         "filters": "Filters",
         "filtersCount_one": "Filters ({{count}})",
         "filtersCount_other": "Filters ({{count}})",
@@ -422,15 +430,11 @@
         "clearRankTo": "Clear highest rank",
         "searchRanks": "Search ranks",
         "noRanks": "No rank matches",
-        "ownership": "Ownership",
-        "ownershipAll": "All units",
-        "owned": "Owned",
-        "unowned": "Not owned",
         "kind": "Unit type",
         "kindAll": "All unit types",
         "character": "Characters",
         "mow": "Machines of War",
-        "needsRoster": "Rank, stars and ownership filters need a synced roster.",
+        "needsRoster": "Rank and stars filters need a synced roster.",
         "quickFilters": "Quick filters",
         "quick": {
           "readyToRankUp": "Ready to rank up",
@@ -504,9 +508,22 @@
       },
       "empty": {
         "title": "No unit matches these filters",
-        "body": "Change or clear the filters to see more units."
+        "body": "Change or clear the filters to see more units.",
+        "hiddenTitle": "No owned units here",
+        "hiddenBody": "Hide unowned is hiding all of these units.",
+        "showUnowned": "Show unowned units"
       }
     }
+  },
+  "unitRow": {
+    "level": "Lv {{level}}",
+    "active": "Active",
+    "passive": "Passive",
+    "primary": "Primary",
+    "secondary": "Secondary",
+    "equipment": "Equipment",
+    "shards": "Shards",
+    "open": "Open {{name}}"
   },
   "unitTile": {
     "characterAbilities": "Active ability level {{first}}, passive ability level {{second}}",
@@ -1972,6 +1989,30 @@
         "quickFilters": {
           "title": "Quick filters",
           "content": "One tap shows the units to work on next: ready to rank up, need to ascend, can ascend, need to level or blue star ready. Select a chip again to clear it."
+        },
+        "view": {
+          "title": "Cards or Roster",
+          "content": "Switch between the faction cards and Roster, a denser list with one row per unit. Your choice is remembered. Turn off Group by faction to list every unit together in your sort order, and Hide unowned to see only the units you own."
+        },
+        "factionRoster": {
+          "title": "Grouped by faction",
+          "content": "Each section holds one faction's characters and Machines of War — the units you own come first."
+        },
+        "ownedRoster": {
+          "title": "An owned unit",
+          "content": "Each row shows the portrait ringed in its rarity colour, then its rank, stars, XP level, ability levels and equipment. Select a row to open its details in the Library."
+        },
+        "ownedRosterMobile": {
+          "title": "An owned unit",
+          "content": "Each row shows the portrait, rank, stars and XP level. Tap a row to see its ability levels, equipment and shards, then open its details in the Library from there."
+        },
+        "unownedRoster": {
+          "title": "Not unlocked yet",
+          "content": "Greyed-out rows aren't in your roster. The bar shows how close you are to unlocking them. Select a row to open its details in the Library."
+        },
+        "unownedRosterMobile": {
+          "title": "Not unlocked yet",
+          "content": "Greyed-out rows aren't in your roster. Tap a row to see how close you are to unlocking it, then open its details in the Library from there."
         }
       }
     },

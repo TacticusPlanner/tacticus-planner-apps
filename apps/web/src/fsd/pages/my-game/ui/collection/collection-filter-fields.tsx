@@ -38,11 +38,9 @@ import {
   collectionAlliances,
   collectionAttackTypes,
   collectionKinds,
-  collectionOwnerships,
   isCollectionAlliance,
   isCollectionAttackType,
   isCollectionKind,
-  isCollectionOwnership,
   type CollectionQuery,
 } from "../../model/collection-query"
 import type { CollectionOptions } from "../../model/use-collection-options"
@@ -55,7 +53,7 @@ const starSteps = progressionOrder.filter((step) => !step.endsWith(":None"))
 /**
  * The standalone filter controls, shared by the desktop inline panel and the mobile sheet, in two
  * labelled groups: Unit (who the unit is and how far the player has taken it) and Combat (V1's
- * character properties, plus where the shards drop). Rank range, stars range and ownership read
+ * character properties, plus where the shards drop). Rank range and stars range read
  * the synced roster, so without one they are disabled and explained. Each range (rank, stars, hits,
  * attack range) is one cell with both ends side by side, so a pair never splits across rows.
  * `layout="panel"` (desktop) fits as many columns as the width allows and stretches them across
@@ -250,26 +248,6 @@ export function CollectionFilterFields({
             data-testid="collection-stars-max-filter"
           />
         </RangeField>
-        <Field label={label("ownership")}>
-          {(id) => (
-            <PlainSelect
-              id={id}
-              value={query.ownership}
-              anyLabel={label("ownershipAll")}
-              options={collectionOwnerships.map((ownership) => ({
-                value: ownership,
-                label: label(ownership),
-              }))}
-              onChange={(value) =>
-                update({
-                  ownership: isCollectionOwnership(value) ? value : null,
-                })
-              }
-              disabled={!rosterAvailable}
-              describedBy={rosterNote}
-            />
-          )}
-        </Field>
         <Field label={label("kind")}>
           {(id) => (
             <PlainSelect
