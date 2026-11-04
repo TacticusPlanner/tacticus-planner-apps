@@ -62,6 +62,12 @@ vi.mock("@/entities/legendary-event", () => ({
   useLegendaryEvents: () => ({ status: "loading", retry: () => {}, nowMs: 0 }),
 }))
 
+const flags = vi.hoisted(() => ({ rosterSnapshots: true }))
+vi.mock("@/shared/feature-flags", () => ({
+  useFeatureFlag: (flag: string) =>
+    flag === "RosterSnapshots" && flags.rosterSnapshots,
+}))
+
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {
     errors?: Record<string, string[]>
@@ -156,6 +162,25 @@ describe("V1ImportPanel", () => {
     })
     importV1Profile.mockReset().mockResolvedValue(response())
     refetch.mockReset()
+    flags.rosterSnapshots = true
+  })
+
+  it("hides the roster snapshot part and never requests it while RosterSnapshots is off", async () => {
+    flags.rosterSnapshots = false
+    renderPanel()
+
+    expect(screen.queryByTestId("v1-import-rosterSnapshots")).toBeNull()
+    await fillCredentials()
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+    await waitFor(() => {
+      expect(importV1Profile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          import: expect.objectContaining({ rosterSnapshots: false }),
+        }),
+        expect.anything()
+      )
+    })
   })
 
   it("submits credentials with the given default parts and the prerequisites flag", async () => {
