@@ -32,6 +32,7 @@ import {
 } from "@/entities/roster-snapshot"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
+import { useFeatureFlag } from "@/shared/feature-flags"
 import { useTourPageSteps } from "@/shared/tour"
 
 import type {
@@ -91,9 +92,12 @@ export function CollectionPage() {
   const options = useCollectionOptions()
   const { query, update, clear } = useCollectionQuery(options)
   const isAuthenticated = useIsAuthenticated()
+  // Roster snapshots stay hidden behind their flag: no Compare, Take snapshot or sign-in prompt.
+  const snapshotsOn = useFeatureFlag("RosterSnapshots")
+  const snapshotActions = snapshotsOn && isAuthenticated
   const compareQuery = useCompareQuery()
   const { state: compare, toRoster } = useCollectionCompare(compareQuery)
-  const snapshots = useRosterSnapshots(isAuthenticated)
+  const snapshots = useRosterSnapshots(snapshotActions)
   const [takeOpen, setTakeOpen] = useState(false)
   const [manageOpen, setManageOpen] = useState(false)
   const comparing = compare.mode !== "off" && compare.mode !== "guest"
@@ -128,7 +132,7 @@ export function CollectionPage() {
       hasGroups,
       hasOwned,
       hasUnowned,
-      hasSnapshotActions: isAuthenticated,
+      hasSnapshotActions: snapshotActions,
       compareReady: compare.mode === "ready",
     })
   )
@@ -182,7 +186,7 @@ export function CollectionPage() {
       {listed.rosterState === "available" ? null : (
         <RosterPrompt rosterState={listed.rosterState} onRetry={retry} />
       )}
-      {isAuthenticated ? (
+      {!snapshotsOn ? null : isAuthenticated ? (
         <SnapshotActions
           compareOn={comparing}
           onCompareChange={compareQuery.setEnabled}
@@ -259,7 +263,7 @@ export function CollectionPage() {
       ) : (
         <NoMatches onClear={clear} />
       )}
-      {isAuthenticated ? (
+      {snapshotActions ? (
         <>
           <TakeSnapshotDialog
             open={takeOpen}

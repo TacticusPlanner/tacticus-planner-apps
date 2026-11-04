@@ -101,6 +101,12 @@ vi.mock("@/shared/player-data-status", () => ({
   usePlayerDataStatus: () => ({ lastSyncedAt: null, syncNow: vi.fn() }),
 }))
 
+const flags = vi.hoisted(() => ({ rosterSnapshots: true }))
+vi.mock("@/shared/feature-flags", () => ({
+  useFeatureFlag: (flag: string) =>
+    flag === "RosterSnapshots" && flags.rosterSnapshots,
+}))
+
 const tour = vi.hoisted(() => ({
   steps: undefined as TourPageSteps | undefined,
 }))
@@ -256,6 +262,7 @@ beforeEach(() => {
   msal.loginRedirect.mockReset().mockResolvedValue(undefined)
   msal.authenticated = false
   compareState.current = { mode: "off" }
+  flags.rosterSnapshots = true
   // The shared sign-in request reads the API scope when a button spreads it.
   vi.stubEnv("VITE_API_SCOPE", "api://test/access_as_user")
 })
@@ -894,6 +901,33 @@ describe("CollectionPage toolbar on mobile", () => {
 })
 
 describe("CollectionPage snapshots and compare", () => {
+  it("shows no snapshot actions or sign-in prompt while the RosterSnapshots flag is off", () => {
+    flags.rosterSnapshots = false
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    expect(screen.queryByTestId("compare-toggle")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("take-snapshot")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("manage-snapshots")).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("snapshots-sign-in-prompt")
+    ).not.toBeInTheDocument()
+    expect(tour.steps?.desktop[0]?.target).not.toBe(
+      '[data-testid="compare-toggle"]'
+    )
+  })
+
+  it("shows no sign-in prompt to a guest while the RosterSnapshots flag is off", () => {
+    flags.rosterSnapshots = false
+    ready({ state: "anonymous" })
+    renderPage(1280)
+
+    expect(
+      screen.queryByTestId("snapshots-sign-in-prompt")
+    ).not.toBeInTheDocument()
+  })
+
   it("tells a guest to sign in instead of offering Compare and Take snapshot", () => {
     ready({ state: "anonymous" })
     renderPage(1280, "/my-game/collection?compare=abc&to=current")
