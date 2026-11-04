@@ -15,6 +15,7 @@ import {
   useLegendaryEventSyncTimes,
   useLegendaryEventUnits,
   useMinuteNow,
+  LEGENDARY_EVENT_LANE_IDS,
 } from "@/entities/legendary-event"
 import {
   useAnnotations,
@@ -44,6 +45,7 @@ import {
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
+import { useBattlesLane } from "./use-battles-lane"
 import { useLaneJump } from "./use-lane-jump"
 import { useLaneSelection } from "./use-lane-selection"
 import { useLanePotentials } from "./use-lane-potentials"
@@ -85,8 +87,15 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const lanes = useLaneSelection(isMobile)
   // The run tab opens first while the event is active (spec: the run tab is the active default).
   const defaultTab = event.lifecycle?.state === "active" ? "run" : "overview"
-  const { selectedTab, selectTab, jumpToLane, openTeams, viewPlan } =
-    useLaneJump(defaultTab, lanes)
+  const [battlesLane, setBattlesLane] = useBattlesLane()
+  const {
+    selectedTab,
+    selectTab,
+    jumpToLane,
+    openTeams,
+    viewPlan,
+    viewBattles,
+  } = useLaneJump(defaultTab, lanes, setBattlesLane)
   // Shared by every view of the leaderboard; discarded when the page unmounts.
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -206,7 +215,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   })
   const upgradeImpact = useUpgradeImpact({
     eventData,
-    laneIds: selectedTab === "plan" ? lanes.shown : NO_LANES,
+    laneIds: selectedTab === "plan" ? LEGENDARY_EVENT_LANE_IDS : NO_LANES,
     planEnabled: plan.enabled,
     planData: plan.query.data,
     units: Array.isArray(units) ? units : undefined,
@@ -359,6 +368,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       lanes,
       onJumpToLane: jumpToLane,
       onViewPlan: viewPlan,
+      onViewBattles: viewBattles,
+      battlesLane: { laneId: battlesLane, onChange: setBattlesLane },
       leaderboard: {
         ...(previewLeaderboardRows ?? leaderboardRows),
         onlyUnlocked,
@@ -432,6 +443,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     lanes,
     jumpToLane,
     viewPlan,
+    viewBattles,
+    battlesLane,
+    setBattlesLane,
     previewLeaderboardRows,
     leaderboardRows,
     onlyUnlocked,

@@ -22,13 +22,15 @@ const isLane = (value: string | null): value is LegendaryEventLaneId =>
  * The page's tab, held in the `tab` query parameter (replace history; the default tab is left
  * out), and the jumps between tabs, each scrolled into view once its section has rendered: the
  * lane summary's jump to a lane's progress grid, a token section's jump to a lane's Teams section
- * or team card, and View full plan. A jump also shows its lane. A link from before the Teams tab
+ * or team card, View full plan, and the Event board's battle count to that lane's Battles on Plan. A jump also shows its lane. A link from before the Teams tab
  * (`?tab=beta`) opens Teams with that lane shown; any other unknown value falls back to the
  * default. The default is the run tab while the event is active, else Overview.
  */
 export function useLaneJump(
   defaultTab: LegendaryEventTab,
-  lanes: Pick<LaneSelection, "shown" | "reveal">
+  lanes: Pick<LaneSelection, "shown" | "reveal">,
+  /** Picks Plan's Battles lane (a jump to a lane's battles). */
+  pickBattlesLane: (lane: LegendaryEventLaneId) => void
 ) {
   const [params, setParams] = useSearchParams()
   const rawTab = params.get("tab")
@@ -111,7 +113,18 @@ export function useLaneJump(
       ),
     [jump]
   )
-  const shownKey = lanes.shown.join(",")
+  const viewBattles = useCallback(
+    (lane: LegendaryEventLaneId) => {
+      pickBattlesLane(lane)
+      jump("plan", () =>
+        document.querySelector(
+          `[data-testid="legendary-event-battles-section"][data-lane="${lane}"]`
+        )
+      )
+    },
+    [jump, pickBattlesLane]
+  )
+  // Every render: a jump's section can appear with its tab, its lane or Plan's Battles lane.
   useEffect(() => {
     const target = jumpTarget.current
     if (!target || target.tab !== selectedTab) return
@@ -119,6 +132,13 @@ export function useLaneJump(
     if (!element) return
     jumpTarget.current = null
     element.scrollIntoView({ block: "start" })
-  }, [selectedTab, shownKey])
-  return { selectedTab, selectTab, jumpToLane, openTeams, viewPlan }
+  })
+  return {
+    selectedTab,
+    selectTab,
+    jumpToLane,
+    openTeams,
+    viewPlan,
+    viewBattles,
+  }
 }

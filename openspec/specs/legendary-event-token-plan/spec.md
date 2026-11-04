@@ -246,6 +246,22 @@ When the Next token card shows a token, it SHALL add a **Progresses** line namin
 - **WHEN** the card renders
 - **THEN** it shows no Progresses line and no For missions entry
 
+### Requirement: Next token card Points / Missions switch
+
+Whenever a Missions order exists and the card shows a token, the Next token card SHALL offer the same Points / Missions switch as the Token plan, sharing its remembered choice. In Missions order the card SHALL show the first token of the Missions order that meets the Next token's eligibility (else its first), with its reason "Finishes this run's open missions soonest, for the same run points" and the missions it moves (as the Token plan's rows show them) in place of the Progresses line; no For missions entry; then quick mission ticks for the current run (the next run before run 1 or between runs): its Regular missions, and its Premium missions with Show paid options on, each with Done ticks and the Plan to complete count, saved like the run inputs drawer (`legendary-event-run-inputs`); then the tokens up next in Missions order. The For missions entry's battle SHALL open the battle info dialog, as the Next token's does.
+
+#### Scenario: Missions on the card
+
+- **GIVEN** a Missions order that puts Alpha battle 2 first and the Next token is Alpha battle 3
+- **WHEN** the user picks Missions on the Next token card
+- **THEN** the card shows Alpha battle 2 with "Mission done · Defeat 75 AdMechs", the run's mission ticks and four tokens up next, and the Token plan opens in Missions order too
+
+#### Scenario: Ticking a mission from the card
+
+- **GIVEN** the card in Missions order during run 2
+- **WHEN** the user ticks "Defeat 30 Necrons" Done
+- **THEN** run 2's inputs save with that mission completed and Plan to complete raised to 1
+
 ### Requirement: Missions order
 
 With a missions source and a token supply, the token plan SHALL also offer a **Missions order**: the same planned tokens, reordered inside each run section so that run's tracked open missions finish as early as possible, while each lane's tokens keep their relative order and tokens no run covers keep their place. Running points, supply slots and forecast markers SHALL follow the new order; each run's points SHALL be unchanged. With no tracked open mission telling tokens apart, the order SHALL equal the points order.

@@ -189,7 +189,9 @@
         "goals": "Avec les objectifs prévus",
         "out": "Hors de portée"
       }
-    }
+    },
+    "viewBattles_one": "{{lane}} : voir son {{count}} combat dans Plan",
+    "viewBattles_other": "{{lane}} : voir ses {{count}} combats dans Plan"
   },
   "leaderboard": {
     "title": "Classement d'éligibilité",
@@ -284,7 +286,8 @@
       "toggle": "Carte",
       "alt": "Carte du combat {{number}} de {{lane}}",
       "unavailable": "Carte non disponible"
-    }
+    },
+    "laneLabel": "Voie"
   },
   "annotations": {
     "maybeClear": "Peut-être faisable",
@@ -652,7 +655,8 @@
       "points": "+{{points}} points",
       "reasons": {
         "mostPoints": "Le plus de points disponibles maintenant",
-        "mostPointsPlayableNow": "Le plus de points parmi les combats jouables maintenant"
+        "mostPointsPlayableNow": "Le plus de points parmi les combats jouables maintenant",
+        "missionsOrder": "Termine au plus tôt les missions ouvertes de cette manche, pour les mêmes points de manche"
       },
       "upcoming": "{{reason}} pour le début de la manche {{run}}",
       "upcomingUnknown": "{{reason}} pour le début de la prochaine manche",

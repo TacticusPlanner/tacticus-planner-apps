@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { Button } from "@workspace/ui/components/button"
 
 import type {
   LegendaryEventLane,
@@ -16,11 +17,14 @@ export function LaneOverviewFigures({
   lane,
   potential,
   isMobile,
+  onViewBattles,
 }: {
   laneId: LegendaryEventLaneId
   lane: LegendaryEventLane
   potential: LanePotentialViewModel
   isMobile: boolean
+  /** Opens the lane's Battles on Plan. */
+  onViewBattles?: () => void
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -39,9 +43,25 @@ export function LaneOverviewFigures({
             points: number.format(lane.killPoints),
           })}
         </span>
-        <span data-testid="legendary-event-lane-battles">
-          {t("laneOverview.battles", { count: lane.battlesPoints.length })}
-        </span>
+        {onViewBattles ? (
+          <Button
+            aria-label={t("laneOverview.viewBattles", {
+              lane: t(`lanes.${laneId}`),
+              count: lane.battlesPoints.length,
+            })}
+            className="h-auto p-0 text-sm"
+            data-testid="legendary-event-lane-battles"
+            onClick={onViewBattles}
+            type="button"
+            variant="link"
+          >
+            {t("laneOverview.battles", { count: lane.battlesPoints.length })}
+          </Button>
+        ) : (
+          <span data-testid="legendary-event-lane-battles">
+            {t("laneOverview.battles", { count: lane.battlesPoints.length })}
+          </span>
+        )}
       </p>
       <RosterPotentialMap isMobile={isMobile} lane={lane} view={potential} />
     </div>

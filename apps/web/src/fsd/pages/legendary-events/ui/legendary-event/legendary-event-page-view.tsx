@@ -3,7 +3,11 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
 import { UpgradeImpactSection } from "@/features/legendary-event-goals"
-import { PlanNotesCard, RunInputsDrawer } from "@/features/legendary-event-plan"
+import {
+  PlanNotesCard,
+  RunInputsDrawer,
+  RunMissionsQuickInput,
+} from "@/features/legendary-event-plan"
 import {
   BattleInfoContext,
   NextTokenCard,
@@ -11,12 +15,14 @@ import {
   TokenPlanList,
   type OpenBattleInfo,
 } from "@/features/legendary-event-tokens"
+import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
 import { useUnitName } from "@/shared/unit-name"
 
 import {
   BattleInfoDialog,
   type BattleInfoTarget,
 } from "./battles/battle-info-dialog"
+import { BattlesLaneSelect } from "./battles/battles-lane-select"
 import { BattlesSection } from "./battles/battles-section"
 import { EstimatesDisclaimer } from "./estimates-disclaimer"
 import { HowPointsDisclosure, LaneOverviewFigures } from "./lane-overview"
@@ -45,8 +51,9 @@ const PLAN_TOKEN_PLAN_OPEN_KEY = "legendaryEvents.planTab.tokenPlan.open"
  * button), the tab strip, then one tab: Overview (lane summary, notes), Teams (the Event board,
  * each shown lane's column with its figures, unit table and team cards, then one eligibility
  * leaderboard over the shown lanes, one lane's own when only one is shown), Plan (Run forecast,
- * Token plan, then each shown lane's Upgrade impact and Battles) or the run tab (Next token with
- * the next few, Run status, the synced progress grid of the shown lanes, Last run). Every lane
+ * Token plan, every lane's Upgrade impact, then one lane's Battles picked in its battle row) or the
+ * run tab (Next token with the next few, Run status, the synced progress grid of the shown lanes,
+ * Last run). Every other lane
  * block follows one lane selection: one lane at a time on mobile, one to three on desktop. A
  * token's battle opens the battle info dialog. The team editor is mounted once here (design D4),
  * so the board, the team cards and the leaderboards open the same instance.
@@ -66,6 +73,17 @@ export function LegendaryEventPageView({
   )
   const laneSelector = <LaneSelector isMobile={isMobile} lanes={lanes} />
   const leaderboardLayout = isMobile ? "list" : "table"
+  // Before run 1 (or between runs) the next run's missions are the ones to tick.
+  const missionRun =
+    props.runInputs.runs.currentRun ?? props.runInputs.runs.nextRun
+  const missionsInput =
+    props.runInputs.enabled && missionRun !== null ? (
+      <RunMissionsQuickInput
+        event={props.event}
+        run={missionRun}
+        touch={isMobile}
+      />
+    ) : undefined
   return (
     <BattleInfoContext.Provider value={openBattleInfo}>
       <div
@@ -119,6 +137,7 @@ export function LegendaryEventPageView({
                   isMobile={isMobile}
                   lane={props.event[laneId]}
                   laneId={laneId}
+                  onViewBattles={() => props.onViewBattles(laneId)}
                   potential={props.potentials[laneId]}
                 />
               )}
@@ -198,9 +217,8 @@ export function LegendaryEventPageView({
               openKey={PLAN_TOKEN_PLAN_OPEN_KEY}
               view={tokens.view}
             />
-            {laneSelector}
             {props.upgradeImpact
-              ? shown.map((laneId) => {
+              ? LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
                   const state = props.upgradeImpact?.byLane[laneId]
                   return state && props.upgradeImpact ? (
                     <UpgradeImpactSection
@@ -210,25 +228,27 @@ export function LegendaryEventPageView({
                       laneId={laneId}
                       layout={leaderboardLayout}
                       nameOf={(unitId) => unitName("Character", unitId)}
-                      showLane={shown.length > 1}
+                      showLane
                       state={state}
                       teamName={props.upgradeImpact.teamName}
                     />
                   ) : null
                 })
               : null}
-            {shown.map((laneId) => {
-              const battles = props.battles[laneId]
-              return battles ? (
-                <BattlesSection
-                  battles={battles}
-                  isMobile={isMobile}
-                  key={laneId}
-                  laneId={laneId}
-                  showLane={shown.length > 1}
-                />
-              ) : null
-            })}
+            {props.battles[props.battlesLane.laneId] ? (
+              <BattlesSection
+                battles={props.battles[props.battlesLane.laneId]!}
+                isMobile={isMobile}
+                laneId={props.battlesLane.laneId}
+                lanePicker={
+                  <BattlesLaneSelect
+                    isMobile={isMobile}
+                    laneId={props.battlesLane.laneId}
+                    onChange={props.battlesLane.onChange}
+                  />
+                }
+              />
+            ) : null}
           </TabPanel>
         ) : null}
         {selectedTab === "run" ? (
@@ -239,6 +259,7 @@ export function LegendaryEventPageView({
               isMobile={isMobile}
               onMarkToken={tokens.onMarkToken}
               onOpenTeams={tokens.onOpenTeams}
+              missionsInput={missionsInput}
               onViewPlan={props.onViewPlan}
               view={tokens.view}
             />

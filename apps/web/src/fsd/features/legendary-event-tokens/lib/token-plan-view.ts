@@ -30,7 +30,9 @@ import { forecastRuns, type Forecast } from "./run-forecast"
 import {
   nextToken,
   planTokens,
+  playableNext,
   type NextTokenChoice,
+  type PlannedToken,
   type TokenPlan,
   type RunSlots,
   type TokenPlanLane,
@@ -42,7 +44,11 @@ import {
   type TokenMissionsInput,
 } from "./token-missions"
 import { splitPlanByRun, type PlanByRun } from "./token-runs"
-import { missionOrder, type MissionOrder } from "./mission-order"
+import {
+  missionOrder,
+  type MissionOrder,
+  type TokenMissionStep,
+} from "./mission-order"
 import type { TokenMarker } from "./run-forecast"
 
 /** A lane's team estimator, as the page builds it from the Stage 5 clear estimates. */
@@ -425,4 +431,21 @@ export function upNextTokens<T>(
     .map((token, index) => ({ token, index }))
     .filter((entry) => entry.index !== next?.index)
     .slice(0, count)
+}
+
+/** The Next token card in Missions order (spec: Next token card Points / Missions switch): the
+ *  first token of the Missions order that could be played next (else its first), with the
+ *  missions it moves; null without a Missions order or a token. */
+export function missionsNextToken(view: Pick<TokenPlanReady, "missionOrder">): {
+  token: PlannedToken
+  index: number
+  steps: readonly TokenMissionStep[]
+} | null {
+  const order = view.missionOrder
+  if (!order || order.tokens.length === 0) return null
+  const found = order.tokens.findIndex((_, index) =>
+    playableNext(order.tokens, index)
+  )
+  const index = found === -1 ? 0 : found
+  return { token: order.tokens[index]!, index, steps: order.steps[index] ?? [] }
 }

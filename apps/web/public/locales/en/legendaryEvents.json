@@ -189,7 +189,9 @@
         "goals": "With planned goals",
         "out": "Out of reach"
       }
-    }
+    },
+    "viewBattles_one": "{{lane}}: view its {{count}} battle on Plan",
+    "viewBattles_other": "{{lane}}: view its {{count}} battles on Plan"
   },
   "leaderboard": {
     "title": "Eligibility leaderboard",
@@ -284,7 +286,8 @@
       "toggle": "Map",
       "alt": "Map of {{lane}} battle {{number}}",
       "unavailable": "Map not available"
-    }
+    },
+    "laneLabel": "Lane"
   },
   "annotations": {
     "maybeClear": "Maybe clear",
@@ -652,7 +655,8 @@
       "points": "+{{points}} points",
       "reasons": {
         "mostPoints": "Most points available now",
-        "mostPointsPlayableNow": "Most points among battles you can play now"
+        "mostPointsPlayableNow": "Most points among battles you can play now",
+        "missionsOrder": "Finishes this run's open missions soonest, for the same run points"
       },
       "upcoming": "{{reason}} for when run {{run}} starts",
       "upcomingUnknown": "{{reason}} for when the next run starts",

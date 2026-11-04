@@ -189,7 +189,9 @@
         "goals": "Con objetivos planificados",
         "out": "Fuera de alcance"
       }
-    }
+    },
+    "viewBattles_one": "{{lane}}: ver su {{count}} batalla en Plan",
+    "viewBattles_other": "{{lane}}: ver sus {{count}} batallas en Plan"
   },
   "leaderboard": {
     "title": "Clasificación de elegibilidad",
@@ -284,7 +286,8 @@
       "toggle": "Mapa",
       "alt": "Mapa de la batalla {{number}} de {{lane}}",
       "unavailable": "Mapa no disponible"
-    }
+    },
+    "laneLabel": "Carril"
   },
   "annotations": {
     "maybeClear": "Quizá superable",
@@ -652,7 +655,8 @@
       "points": "+{{points}} puntos",
       "reasons": {
         "mostPoints": "La mayor cantidad de puntos disponible ahora",
-        "mostPointsPlayableNow": "La mayor cantidad de puntos entre las batallas que puedes jugar ahora"
+        "mostPointsPlayableNow": "La mayor cantidad de puntos entre las batallas que puedes jugar ahora",
+        "missionsOrder": "Completa antes las misiones abiertas de esta ronda, con los mismos puntos de ronda"
       },
       "upcoming": "{{reason}} para cuando empiece la ronda {{run}}",
       "upcomingUnknown": "{{reason}} para cuando empiece la próxima ronda",

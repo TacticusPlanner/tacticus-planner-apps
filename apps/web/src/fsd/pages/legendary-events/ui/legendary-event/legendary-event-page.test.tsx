@@ -280,10 +280,9 @@ const selectTab = (tab: string) => {
 }
 // Mobile's lane picker.
 const pickLane = (lane: string) => {
-  const trigger = screen.getByTestId(`legendary-event-lane-pick-${lane}`)
-  fireEvent.mouseDown(trigger, { button: 0 })
+  fireEvent.click(screen.getByTestId(`legendary-event-lane-pick-${lane}`))
 }
-// Desktop's lane switches.
+// Desktop's lane toggles.
 const laneSwitch = (lane: string) =>
   screen
     .getAllByTestId("legendary-event-lane-switch")
@@ -291,22 +290,31 @@ const laneSwitch = (lane: string) =>
 const switchLane = (lane: string) => fireEvent.click(laneSwitch(lane))
 // Each switch is its own act: a toggle reads the selection the previous one left.
 const showOnlyLane = (lane: string) => {
-  if (laneSwitch(lane).getAttribute("aria-checked") !== "true") switchLane(lane)
+  if (laneSwitch(lane).getAttribute("aria-pressed") !== "true") switchLane(lane)
   for (const other of ["alpha", "beta", "gamma"]) {
     if (
       other !== lane &&
-      laneSwitch(other).getAttribute("aria-checked") === "true"
+      laneSwitch(other).getAttribute("aria-pressed") === "true"
     )
       switchLane(other)
   }
+}
+// Plan's Battles lane dropdown.
+const pickBattlesLane = (lane: string) => {
+  fireEvent.click(screen.getByTestId("battles-lane-select"))
+  fireEvent.click(
+    screen.getByRole("option", {
+      name: lane.charAt(0).toUpperCase() + lane.slice(1),
+    })
+  )
 }
 const selectedTab = () =>
   within(screen.getByTestId("legendary-event-tab-list")).getByRole("tab", {
     selected: true,
   })
 const pickedLane = () =>
-  within(screen.getByTestId("legendary-event-lane-picker")).getByRole("tab", {
-    selected: true,
+  within(screen.getByTestId("legendary-event-lane-picker")).getByRole("radio", {
+    checked: true,
   })
 // The Overview's lane summary renders once the event has loaded.
 const overviewReady = () => screen.findAllByTestId("lane-summary-row")
@@ -469,23 +477,24 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       screen.queryByTestId("legendary-event-overview-leaderboard")
     ).toBeNull()
     // The last shown lane cannot be switched off.
-    expect(laneSwitch("beta")).toBeDisabled()
+    switchLane("beta")
+    expect(lanesOf("event-board-lane")).toEqual(["beta"])
+    expect(laneSwitch("beta")).toHaveAttribute("aria-pressed", "true")
   })
 
-  it("shows Plan's Run forecast, Token plan, then each shown lane's Upgrade impact and Battles", async () => {
+  it("shows Plan's Run forecast, Token plan, every lane's Upgrade impact, then one lane's Battles", async () => {
     renderPage("/legendary-events/astarLysander")
     await runReady()
+    showOnlyLane("beta")
 
     act(() => selectTab("plan"))
     expect(screen.getByTestId("legendary-event-plan-tab")).toBeInTheDocument()
-    expect(lanesOf("legendary-event-battles-section")).toEqual([
-      "alpha",
-      "beta",
-      "gamma",
-    ])
+    // Plan has no lane toggles: Battles picks its lane in the battle row.
+    expect(screen.queryByTestId("legendary-event-lane-switches")).toBeNull()
+    expect(lanesOf("legendary-event-battles-section")).toEqual(["alpha"])
     expect(
       screen.getAllByTestId("legendary-event-battles").map((h) => h.textContent)
-    ).toEqual(["Battles · Alpha", "Battles · Beta", "Battles · Gamma"])
+    ).toEqual(["Battles"])
     const impacts = await screen.findAllByTestId(
       "legendary-event-upgrade-impact-section"
     )
@@ -498,13 +507,10 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       follows(impacts[2]!, screen.getAllByTestId("legendary-event-battles")[0]!)
     ).toBe(true)
     // No served battle in this test's catalog.
-    expect(await screen.findAllByTestId("battles-empty")).toHaveLength(3)
+    expect(await screen.findAllByTestId("battles-empty")).toHaveLength(1)
 
-    showOnlyLane("beta")
-    expect(
-      screen.getAllByTestId("legendary-event-battles").map((h) => h.textContent)
-    ).toEqual(["Battles"])
-    expect(lanesOf("legendary-event-upgrade-impact-section")).toEqual(["beta"])
+    pickBattlesLane("gamma")
+    expect(lanesOf("legendary-event-battles-section")).toEqual(["gamma"])
     expect(screen.queryByTestId("legendary-event-next-token")).toBeNull()
   })
 
@@ -611,13 +617,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
         sectionOf(lane).getAllByTestId("battle-selector-item")[number - 1]!
       )
 
-    it("keeps each lane's battle selection while lanes are shown and hidden, starting on battle 1 without progress", async () => {
+    it("keeps each lane's battle selection while the lane is switched, starting on battle 1 without progress", async () => {
       await seedCatalog({ battles: lysanderBattles })
       renderPage("/legendary-events/astarLysander")
       await runReady()
 
       act(() => selectTab("plan"))
-      showOnlyLane("alpha")
       await screen.findByTestId("battle-preview")
       expect(battleTitle("alpha")).toBe("Battle 1")
       expect(
@@ -634,15 +639,15 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       })
       expect(battleTitle("alpha")).toBe("Battle 12")
 
-      switchLane("beta")
-      switchLane("alpha")
+      pickBattlesLane("beta")
       expect(battleTitle("beta")).toBe("Battle 1")
       act(() => {
         pickBattle("beta", 3)
       })
 
-      switchLane("alpha")
+      pickBattlesLane("alpha")
       expect(battleTitle("alpha")).toBe("Battle 12")
+      pickBattlesLane("beta")
       expect(battleTitle("beta")).toBe("Battle 3")
     })
 
@@ -652,21 +657,19 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       await runReady()
 
       act(() => selectTab("plan"))
-      expect(screen.getAllByTestId("battles-loading")).toHaveLength(3)
+      expect(screen.getAllByTestId("battles-loading")).toHaveLength(1)
+      expect(screen.getByTestId("battles-lane-select")).toBeInTheDocument()
       expect(screen.queryByTestId("battle-selector")).toBeNull()
     })
 
-    it("shows an error with Retry that re-runs the read, keeping the lane switches", async () => {
+    it("shows an error with Retry that re-runs the read, keeping the lane dropdown", async () => {
       reads.fail("lre-battles")
       renderPage("/legendary-events/astarLysander")
       await runReady()
 
       act(() => selectTab("plan"))
-      showOnlyLane("alpha")
       const error = await screen.findByTestId("battles-error")
-      expect(
-        screen.getByTestId("legendary-event-lane-switches")
-      ).toBeInTheDocument()
+      expect(screen.getByTestId("battles-lane-select")).toBeInTheDocument()
 
       // Served while the read still fails: only Retry reads them.
       await seedCatalog({ battles: lysanderBattles })
@@ -676,6 +679,29 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       await screen.findByTestId("battle-preview")
       expect(battleTitle("alpha")).toBe("Battle 1")
     })
+  })
+
+  it("jumps from a board lane's battle count to that lane's Battles on Plan", async () => {
+    const scrollIntoView = vi
+      .spyOn(HTMLElement.prototype, "scrollIntoView")
+      .mockImplementation(() => {})
+    renderPage("/legendary-events/astarLysander")
+    await runReady()
+    act(() => selectTab("teams"))
+
+    const betaBattles = screen
+      .getAllByTestId("legendary-event-lane-battles")
+      .find((link) => link.closest("[data-lane='beta']"))!
+    act(() => {
+      fireEvent.click(betaBattles)
+    })
+    expect(selectedTab()).toHaveTextContent("Plan")
+    expect(lanesOf("legendary-event-battles-section")).toEqual(["beta"])
+    // The battle row's dropdown also scrolls its picked option into view.
+    expect(scrollIntoView.mock.instances).toContain(
+      document.querySelector('[data-testid="legendary-event-battles-section"]')
+    )
+    scrollIntoView.mockRestore()
   })
 
   it("jumps from a lane summary row to the run tab with that lane shown, at its grid heading", async () => {

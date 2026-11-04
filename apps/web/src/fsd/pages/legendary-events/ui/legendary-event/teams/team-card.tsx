@@ -20,6 +20,7 @@ import {
   ObjectiveIcon,
   useObjectiveLabel,
   type LegendaryEventLane,
+  EventUnitChip,
 } from "@/entities/legendary-event"
 import {
   ClearDepthField,
@@ -29,8 +30,6 @@ import {
 import { useDebouncedCommit } from "@/shared/lib"
 import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
-
-import { EventBoardUnitChip } from "../overview/event-board-unit-chip"
 
 import { PointsLeft, TeamPower } from "./team-card-figures"
 import type { TeamCardMember, TeamCardViewModel } from "./teams.view-model"
@@ -360,7 +359,7 @@ function MemberPortrait({
       data-unit={member.unitId}
       title={reserveLabel ? `${name} · ${reserveLabel}` : name}
     >
-      <EventBoardUnitChip
+      <EventUnitChip
         className={cn(reserveLabel && "border-dashed border-border")}
         showStars
         unit={member}

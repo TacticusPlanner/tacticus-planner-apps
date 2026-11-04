@@ -189,7 +189,9 @@
         "goals": "Mit geplanten Zielen",
         "out": "Außer Reichweite"
       }
-    }
+    },
+    "viewBattles_one": "{{lane}}: seinen {{count}} Kampf im Plan ansehen",
+    "viewBattles_other": "{{lane}}: seine {{count}} Kämpfe im Plan ansehen"
   },
   "leaderboard": {
     "title": "Eignungsrangliste",
@@ -284,7 +286,8 @@
       "toggle": "Karte",
       "alt": "Karte von {{lane}} Kampf {{number}}",
       "unavailable": "Karte nicht verfügbar"
-    }
+    },
+    "laneLabel": "Bahn"
   },
   "annotations": {
     "maybeClear": "Vielleicht schaffbar",
@@ -652,7 +655,8 @@
       "points": "+{{points}} Punkte",
       "reasons": {
         "mostPoints": "Die meisten Punkte, die jetzt verfügbar sind",
-        "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst"
+        "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst",
+        "missionsOrder": "Schließt die offenen Missionen dieses Durchlaufs am frühesten ab, bei gleichen Durchlaufpunkten"
       },
       "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",
       "upcomingUnknown": "{{reason}}, sobald der nächste Durchlauf beginnt",

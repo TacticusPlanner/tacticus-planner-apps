@@ -107,7 +107,7 @@ Power in every re-estimate is the `character-combat-power` estimate of the unit 
 
 ### Requirement: Upgrade impact section on the Plan tab
 
-The Plan tab SHALL render, after the Token plan, one **Upgrade impact** section per shown lane in lane order, headed "Upgrade impact · <lane>" when more than one lane is shown. It SHALL be collapsed by default and its open state SHALL be remembered per device. Its header SHALL always show a summary derived from the rows ("4 upgrades add points · best +191", or the empty-state reason). Each row SHALL show the unit's portrait, localized name and goal badge, the step ("Unlock", "Rank to Gold II", "Ascension to Epic 3 red stars"), each affected team's depth change ("Four: battle 5 → 6") and the gain ("+191 points"). It SHALL also show a **Create goal** action that opens the shell's goal-creation sheet prefilled for that step (see `goal-creation-entry-points`). When the unit already has an Active goal whose target is at or beyond the step, the row SHALL show "In goals" instead of Create goal. The section SHALL NOT render on any other tab.
+The Plan tab SHALL render, after the Token plan, one **Upgrade impact** section per lane in lane order, each headed "Upgrade impact · <lane>" (Plan has no lane selection). It SHALL be collapsed by default and its open state SHALL be remembered per device, shared by the three sections. Its header SHALL always show a summary derived from the rows ("4 upgrades add points · best +191", or the empty-state reason). Each row SHALL show the unit's portrait, localized name and goal badge, the step ("Unlock", "Rank to Gold II", "Ascension to Epic 3 red stars"), each affected team's depth change ("Four: battle 5 → 6") and the gain ("+191 points"). It SHALL also show a **Create goal** action that opens the shell's goal-creation sheet prefilled for that step (see `goal-creation-entry-points`). When the unit already has an Active goal whose target is at or beyond the step, the row SHALL show "In goals" instead of Create goal. The section SHALL NOT render on any other tab.
 
 The body SHALL distinguish:
 
@@ -151,12 +151,12 @@ The body SHALL distinguish:
 
 ### Requirement: Upgrade impact is in the event page tour
 
-The event page tour SHALL include an **Upgrade impact** step on Plan right after the Token plan step, targeting the first shown lane's section header (`data-testid="legendary-event-upgrade-impact"`) on both forms. The Teams step's copy SHALL mention Suggest teams, and the eligibility leaderboard step's copy SHALL mention the row actions menu (Create goal, Add to new team). Step titles and content SHALL be localized in en/de/es/fr.
+The event page tour SHALL include an **Upgrade impact** step on Plan right after the Token plan step, targeting Alpha's section header (`data-testid="legendary-event-upgrade-impact"`) on both forms. The Teams step's copy SHALL mention Suggest teams, and the eligibility leaderboard step's copy SHALL mention the row actions menu (Create goal, Add to new team). Step titles and content SHALL be localized in en/de/es/fr.
 
 #### Scenario: Tour on desktop
 
 - **WHEN** the event page tour runs at or above 768px
-- **THEN** after the Token plan step, a step on Plan highlights the first shown lane's Upgrade impact header, and the following steps continue with the Battles heading and the run tab
+- **THEN** after the Token plan step, a step on Plan highlights Alpha's Upgrade impact header, and the following steps continue with the Battles heading and the run tab
 
 #### Scenario: Tour on mobile
 

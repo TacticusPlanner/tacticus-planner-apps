@@ -6,14 +6,19 @@ Lets a player preview any battle of a Legendary Event lane before playing it: it
 
 ## Requirements
 
-### Requirement: The Plan tab has a Battles section per shown lane
+### Requirement: The Plan tab has one Battles section with a lane dropdown
 
-The Plan tab SHALL render, after the Upgrade impact sections, one **Battles** section per shown lane (see the event page's lane selection in `legendary-events-hub`), in lane order. Each SHALL list its lane's battles in the order of the lane's catalog `battleIds`, read from the served `lre-battles` dataset. Its heading SHALL read "Battles", or "Battles · <lane>" when more than one lane is shown, and carry `data-testid="legendary-event-battles"`. No Battles section SHALL render on any other tab.
+The Plan tab SHALL render, after the Upgrade impact sections, one **Battles** section for one lane, picked in a lane dropdown placed before the battle selector in the same row (shown alone while battles load or fail), remembered per browser and Alpha by default. The Event board's battle count picks its lane (`legendary-events-hub`). The section SHALL list its lane's battles in the order of the lane's catalog `battleIds`, read from the served `lre-battles` dataset. Its heading SHALL read "Battles" and carry `data-testid="legendary-event-battles"`. No Battles section SHALL render on any other tab.
 
 #### Scenario: Section position with Alpha shown
 
-- **WHEN** the user opens Lysander's Plan tab with only Alpha shown
+- **WHEN** the user opens Lysander's Plan tab with Alpha picked in the lane dropdown
 - **THEN** a Battles section titled "Battles" renders after Upgrade impact and offers battles 1 to 18 of Alpha only
+
+#### Scenario: Lane picked from the Event board
+
+- **WHEN** the user activates Beta's "18 battles" on the Event board
+- **THEN** Plan opens with Beta picked in the lane dropdown and its Battles section scrolled into view
 
 #### Scenario: Not on other tabs
 
@@ -116,7 +121,7 @@ The preview SHALL list the battle's waves sorted by `round` ascending, numbered 
 
 ### Requirement: An enemy's level is resolved from its served ladder index
 
-An enemy's served `ladderIndex` SHALL be read as a 1-based index into the NPC's served stat ladder, not a star count: its stats are the row at that index minus 1 (row 0 for 0 or less). Its level SHALL show that row's rank and stars as the NPC Library does.
+An enemy's served `ladderIndex` SHALL be read as a 1-based index into the NPC's served stat ladder, not a star count: its stats are the row at that index minus 1 (row 0 for 0 or less). Its level SHALL show that row's rank icon, its rarity icon (resolved from the star index) and one star icon with the star count (the mythic wings at the top), as the collection's roster rows show stars; the NPC Library shows the same badge.
 
 Assumptions:
 
@@ -133,7 +138,7 @@ Assumptions:
 
 - **GIVEN** the served enemy `{ id: "orksNpc1Grot", ladderIndex: 5, count: 3 }` in Wave 2
 - **WHEN** the tile renders
-- **THEN** it reads row 4 (rank 3, stars 1) and shows Iron I with 1 star
+- **THEN** it reads row 4 (rank 3, stars 1) and shows Iron I, the Common rarity icon and one star icon with "1"
 
 ### Requirement: Unresolved enemies still show
 

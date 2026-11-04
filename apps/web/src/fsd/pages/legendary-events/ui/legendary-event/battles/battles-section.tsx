@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -13,8 +14,8 @@ import type {
 } from "./battles.view-model"
 
 /**
- * A lane's Battles section on Plan (spec: legendary-event-battle-preview): the battle selector,
- * then the selected battle's header, map and waves. With `showLane` (more than one lane shown)
+ * A lane's Battles section on Plan (spec: legendary-event-battle-preview): the lane picker and the
+ * battle selector in one row, then the selected battle's header, map and waves. With `showLane`
  * the heading names the lane. The heading is the tour target on both forms.
  */
 export function BattlesSection({
@@ -22,11 +23,14 @@ export function BattlesSection({
   battles,
   isMobile,
   showLane = false,
+  lanePicker,
 }: {
   laneId: LegendaryEventLaneId
   battles: BattlesViewModel
   isMobile: boolean
   showLane?: boolean
+  /** Plan's lane dropdown, placed before the battle selector. */
+  lanePicker?: ReactNode
 }) {
   const { t } = useTranslation("legendaryEvents")
   const { state } = battles
@@ -47,6 +51,9 @@ export function BattlesSection({
           ? t("battles.titleLane", { lane: t(`lanes.${laneId}`) })
           : t("battles.title")}
       </h2>
+      {lanePicker && state.kind !== "ready" ? (
+        <div className="flex">{lanePicker}</div>
+      ) : null}
       {state.kind === "loading" ? (
         <div data-testid="battles-loading">
           <span className="sr-only">{t("battles.loading")}</span>
@@ -75,6 +82,7 @@ export function BattlesSection({
           battles={battles}
           isMobile={isMobile}
           laneId={laneId}
+          lanePicker={lanePicker}
           state={state}
         />
       )}
@@ -87,11 +95,13 @@ function ReadyBattles({
   battles,
   state,
   isMobile,
+  lanePicker,
 }: {
   laneId: LegendaryEventLaneId
   battles: BattlesViewModel
   state: Extract<BattlesViewModel["state"], { kind: "ready" }>
   isMobile: boolean
+  lanePicker: ReactNode
 }) {
   const index = Math.min(
     battles.selectedIndex ?? state.defaultIndex,
@@ -101,12 +111,17 @@ function ReadyBattles({
   if (!battle) return null
   return (
     <div className="flex min-w-0 flex-col gap-3" data-testid="battle-preview">
-      <BattleSelector
-        battles={state.battles}
-        isMobile={isMobile}
-        onSelect={battles.onSelect}
-        selectedIndex={index}
-      />
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        {lanePicker}
+        <div className="min-w-0 flex-1">
+          <BattleSelector
+            battles={state.battles}
+            isMobile={isMobile}
+            onSelect={battles.onSelect}
+            selectedIndex={index}
+          />
+        </div>
+      </div>
       <BattlePreview
         battle={battle}
         isMobile={isMobile}

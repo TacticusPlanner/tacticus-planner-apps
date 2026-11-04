@@ -1,8 +1,11 @@
-import { useEffect, useId, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { useTranslation } from "react-i18next"
-import { Label } from "@workspace/ui/components/label"
-import { Switch } from "@workspace/ui/components/switch"
+import { CheckIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -101,9 +104,11 @@ export function LegendaryEventTabs({
   )
 }
 
-/** Which lanes the lane blocks below it show: a switch per lane on desktop (one, two or all
- *  three; the last shown lane stays), an Alpha / Beta / Gamma picker on mobile (one at a time).
- *  The choice is the page's, so every tab's lane blocks follow it. */
+/**
+ * The page's lane selection (spec: one lane selection): a segmented control above the lane blocks.
+ * Desktop: one toggle per lane, pressed while it shows, any one to three at once (the last pressed
+ * lane stays). Mobile: one lane at a time, as a segmented single choice.
+ */
 export function LaneSelector({
   lanes,
   isMobile,
@@ -112,52 +117,71 @@ export function LaneSelector({
   isMobile: boolean
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const id = useId()
   if (isMobile) {
     return (
-      <Tabs
+      <ToggleGroup
+        aria-label={t("tabs.laneLabel")}
+        className="w-full"
         data-testid="legendary-event-lane-picker"
-        onValueChange={(next) => lanes.onPick(next as LegendaryEventLaneId)}
+        onValueChange={(next) => {
+          // A pressed lane stays pressed: one lane always shows.
+          if (next) lanes.onPick(next as LegendaryEventLaneId)
+        }}
+        spacing={0}
+        type="single"
         value={lanes.shown[0]}
+        variant="outline"
       >
-        <TabsList aria-label={t("tabs.laneLabel")} className="w-full">
-          {LEGENDARY_EVENT_LANE_IDS.map((lane) => (
-            <TabsTrigger
-              className="px-4"
-              data-testid={`legendary-event-lane-pick-${lane}`}
-              key={lane}
-              value={lane}
-            >
-              {t(`lanes.${lane}`)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+        {LEGENDARY_EVENT_LANE_IDS.map((lane) => (
+          <ToggleGroupItem
+            className="min-h-11 flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            data-testid={`legendary-event-lane-pick-${lane}`}
+            key={lane}
+            value={lane}
+          >
+            {t(`lanes.${lane}`)}
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
     )
   }
   return (
-    <div
+    <ToggleGroup
       aria-label={t("tabs.lanesShown")}
-      className="flex flex-wrap items-center gap-x-4 gap-y-2"
+      className="self-start"
       data-testid="legendary-event-lane-switches"
-      role="group"
+      onValueChange={(next) => {
+        // The last shown lane stays: one lane always shows.
+        if (next.length === 0) return
+        for (const laneId of LEGENDARY_EVENT_LANE_IDS) {
+          const on = next.includes(laneId)
+          if (on !== lanes.shown.includes(laneId)) lanes.onToggle(laneId, on)
+        }
+      }}
+      spacing={0}
+      type="multiple"
+      value={[...lanes.shown]}
+      variant="outline"
     >
       {LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
         const shown = lanes.shown.includes(laneId)
         return (
-          <div className="flex items-center gap-2" key={laneId}>
-            <Switch
-              checked={shown}
-              data-lane={laneId}
-              data-testid="legendary-event-lane-switch"
-              disabled={shown && lanes.shown.length === 1}
-              id={`${id}-${laneId}`}
-              onCheckedChange={(checked) => lanes.onToggle(laneId, checked)}
-            />
-            <Label htmlFor={`${id}-${laneId}`}>{t(`lanes.${laneId}`)}</Label>
-          </div>
+          <ToggleGroupItem
+            className="min-w-24 gap-1.5 px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            data-lane={laneId}
+            data-testid="legendary-event-lane-switch"
+            key={laneId}
+            value={laneId}
+          >
+            {shown ? (
+              <CheckIcon aria-hidden className="size-3.5" />
+            ) : (
+              <span aria-hidden className="size-3.5" />
+            )}
+            {t(`lanes.${laneId}`)}
+          </ToggleGroupItem>
         )
       })}
-    </div>
+    </ToggleGroup>
   )
 }

@@ -1,5 +1,3 @@
-import type { Progression, Rank } from "@workspace/game-domain"
-
 import {
   derivedTeamCoverage,
   LEGENDARY_EVENT_LANE_IDS,
@@ -13,6 +11,7 @@ import {
   type LegendaryEventObjective,
   type LegendaryEventTeam,
   type LegendaryEventUnit,
+  type EventUnitChipData,
 } from "@/entities/legendary-event"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
@@ -85,16 +84,8 @@ export function buildEventBoardLane(
   }
 }
 
-/** What a unit chip on the board shows: ownership, then (owned only) its rank, ascension and
- *  ability levels. `owned` is undefined when the roster is unavailable. */
-export interface EventBoardUnit {
-  unitId: string
-  owned: boolean | undefined
-  rank?: Rank
-  progression?: Progression
-  activeLevel?: number
-  passiveLevel?: number
-}
+/** What a unit chip on the board shows (the entity's chip data). */
+export type EventBoardUnit = EventUnitChipData
 
 /** A unit chip's data from the synced roster (`rosterById` undefined: ownership unknown). */
 export function eventBoardUnit(

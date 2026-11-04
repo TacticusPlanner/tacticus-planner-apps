@@ -116,10 +116,10 @@ Each row SHALL show the event unit's portrait and localized name and its timing:
 
 - **Overview** shows the lane summary, then the plan notes (see "The Overview tab summarises the event").
 - **Teams** shows the Event board, then one Eligibility leaderboard (see "The Teams tab shows an Event board of the shown lanes").
-- **Plan** shows, in order, the collapsible Run forecast (see `legendary-event-run-forecast`), the Token plan, open by default (see `legendary-event-token-plan`), then each shown lane's Upgrade impact section (see `legendary-event-upgrade-impact`) and each shown lane's Battles section (see `legendary-event-battle-preview`).
+- **Plan** shows, in order, the collapsible Run forecast (see `legendary-event-run-forecast`), the Token plan, open by default (see `legendary-event-token-plan`), then every lane's Upgrade impact section, each naming its lane (see `legendary-event-upgrade-impact`), and one lane's Battles section, whose lane is picked in a dropdown in its battle row (see `legendary-event-battle-preview`). Plan shows no lane selection.
 - **The run tab** shows, in order, the Next token card with the tokens up next (see `legendary-event-token-plan`), the Run status card, the shown lanes' Synced progress grids and the Last run card (see `legendary-event-run-history`).
 
-Every lane block (the Event board's columns, the leaderboard, Upgrade impact, Battles and the progress grids) SHALL follow one **lane selection** for the page, remembered per browser and shown above the blocks of each tab that has them: on desktop a switch per lane shows one, two or all three lanes (all three by default; the last shown lane cannot be switched off), and below 768px an Alpha / Beta / Gamma picker shows one lane at a time (the first selected lane). When more than one lane is shown, the Upgrade impact and Battles headings SHALL name their lane.
+The Teams and run tabs' lane blocks (the Event board's columns, the leaderboard and the progress grids) SHALL follow one **lane selection** for the page, remembered per browser and shown above the blocks: on desktop a segmented control with a toggle per lane, pressed (with a check) while it shows, shows one, two or all three lanes (all three by default; pressing the last shown lane leaves it shown), and below 768px an Alpha / Beta / Gamma segmented single choice shows one lane at a time (the first selected lane).
 
 The selected tab SHALL be the `tab` query parameter (`overview`, `teams`, `plan`, `run`; missing means the default tab, which is left out of the URL). An unrecognized value SHALL fall back to the default and be dropped from the URL (replace); a lane id in `tab` (a link from before the Teams tab, such as `?tab=beta`) SHALL open Teams with that lane shown and be rewritten to `?tab=teams`. Selecting a tab SHALL update the parameter by replacing the current history entry, so Back leaves the event page. The parameter is not carried to another event, so the tab resets to that event's default on navigation to another event, and it survives a reload of the same event. On mobile the tab strip SHALL stay fixed below the app header while the page scrolls, so a tab can be switched from any scroll position. On desktop the strip scrolls with the page.
 
@@ -140,8 +140,8 @@ The selected tab SHALL be the `tab` query parameter (`overview`, `teams`, `plan`
 
 #### Scenario: Plan tab order
 
-- **WHEN** the user selects Plan with Alpha and Beta shown
-- **THEN** the page shows the Run forecast, the Token plan, Alpha's then Beta's Upgrade impact, then "Battles · Alpha" and "Battles · Beta", and nothing from Gamma
+- **WHEN** the user selects Plan with only Beta shown on the other tabs
+- **THEN** the page shows no lane selection, the Run forecast, the Token plan, Alpha's, Beta's and Gamma's Upgrade impact, then one "Battles" section with its lane dropdown
 
 #### Scenario: Shown lanes carry over between tabs and visits
 
@@ -250,7 +250,7 @@ An objective's display label SHALL be built from its catalog filter `{ kind, tar
 
 ### Requirement: Lane overview section
 
-Each Event board lane column SHALL show, under the lane's label with the allowed-alliance rule derived from `allowedUnitsFilter` (for example "Alpha · No Xenos"), its kill points per battle, the battle count and the roster potential mini map (`legendary-event-roster-potential`) in place of a per-battle points ladder; the lane's objectives with their scores are the column's unit-table headings. A collapsed "how points work" disclosure under the board SHALL explain kill points, objective scores, defeat-all and high-score points in one paragraph. Each battle's points SHALL remain available through the map column's label and tooltip.
+Each Event board lane column SHALL show, under the lane's label with the allowed-alliance rule derived from `allowedUnitsFilter` (for example "Alpha · No Xenos"), its kill points per battle, the battle count and the roster potential mini map (`legendary-event-roster-potential`, spanning the column's width) in place of a per-battle points ladder; the battle count SHALL be a link that opens Plan with that lane's Battles picked, scrolled into view; the lane's objectives with their scores are the column's unit-table headings. A collapsed "how points work" disclosure under the board SHALL explain kill points, objective scores, defeat-all and high-score points in one paragraph. Each battle's points SHALL remain available through the map column's label and tooltip.
 
 #### Scenario: Lane column figures
 

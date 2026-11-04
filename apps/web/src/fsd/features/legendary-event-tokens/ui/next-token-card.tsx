@@ -5,6 +5,7 @@ import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardHeader,
   CardTitle,
@@ -19,12 +20,17 @@ import type {
 import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
+import type { TokenMissionStep } from "../lib/mission-order"
+import type { PlannedToken } from "../lib/token-plan"
 import {
+  missionsNextToken,
   upNextTokens,
   type NextTokenEmpty,
   type TokenPlanView,
 } from "../lib/token-plan-view"
+import { useMissionsOrder } from "../model/token-plan-order"
 import { useNextTokenShown } from "../model/use-next-token-shown"
+import { TokenMissionSteps, TokenPlanOrderSwitch } from "./mission-order-view"
 import {
   MissionAlternativeView,
   MissionsProgressed,
@@ -47,11 +53,15 @@ export type OpenTeamsHandler = (
   teamId?: string
 ) => void
 
+type ReadyView = Extract<TokenPlanView, { kind: "ready" }>
+
 /**
  * The run tab's Next token card (spec: Next token card heads the run tab): the battle to play next
  * with its team, points, cleared cells and reason, and the Partly cleared / Couldn't clear
  * actions, then the next few planned tokens with View full plan; or what is missing for a plan.
- * Hidden on an archived event and when signed out.
+ * A Points / Missions switch (shared with the Token plan) reads the plan in Missions order, with
+ * the missions each token moves and the run's mission ticks. Hidden on an archived event and when
+ * signed out.
  */
 export function NextTokenCard({
   eventId,
@@ -61,6 +71,7 @@ export function NextTokenCard({
   onMarkToken,
   onOpenTeams,
   onViewPlan,
+  missionsInput,
 }: {
   eventId: string
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
@@ -71,10 +82,18 @@ export function NextTokenCard({
   onOpenTeams: OpenTeamsHandler
   /** Opens the full token plan. */
   onViewPlan?: () => void
+  /** The run's mission ticks, shown in Missions order (the plan feature's quick input). */
+  missionsInput?: ReactNode
 }) {
   const { t } = useTranslation("legendaryEvents")
+  const [byMissions, setByMissions] = useMissionsOrder()
   useNextTokenShown(eventId, view)
   if (view.kind === "hidden") return null
+  const canOrder = view.kind === "ready" && view.missionOrder !== null
+  const ordered =
+    view.kind === "ready" && byMissions && view.next
+      ? missionsNextToken(view)
+      : null
 
   return (
     <Card data-testid="legendary-event-next-token">
@@ -82,6 +101,14 @@ export function NextTokenCard({
         <CardTitle>
           <h2>{t("tokenPlan.nextToken.title")}</h2>
         </CardTitle>
+        {canOrder && view.kind === "ready" && view.next ? (
+          <CardAction data-testid="next-token-order">
+            <TokenPlanOrderSwitch
+              onChange={(order) => setByMissions(order === "missions")}
+              order={ordered ? "missions" : "points"}
+            />
+          </CardAction>
+        ) : null}
       </CardHeader>
       <CardContent>
         {view.kind === "loading" ? (
@@ -101,14 +128,52 @@ export function NextTokenCard({
         {view.kind === "ready" && view.empty ? (
           <EmptyState empty={view.empty} onOpenTeams={onOpenTeams} />
         ) : null}
-        {view.kind === "ready" && view.next ? (
-          <div className="flex flex-col gap-3">
+        {view.kind === "ready" && view.next && ordered ? (
+          <div className="flex flex-col gap-3" data-order="missions">
             <TokenView
               event={event}
               isMobile={isMobile}
               onMarkToken={onMarkToken}
+              reason={t("tokenPlan.nextToken.reasons.missionsOrder")}
+              token={ordered.token}
               view={view}
+            >
+              <TokenMissionSteps steps={ordered.steps} />
+            </TokenView>
+            {missionsInput ? (
+              <div
+                className="flex min-w-0 flex-col gap-2 border-t pt-3"
+                data-testid="next-token-missions-input"
+              >
+                {missionsInput}
+              </div>
+            ) : null}
+            <UpNext
+              event={event}
+              isMobile={isMobile}
+              nextIndex={ordered.index}
+              onViewPlan={onViewPlan}
+              steps={view.missionOrder?.steps}
+              tokens={view.missionOrder?.tokens ?? []}
+              total={view.plan.tokens.length}
             />
+          </div>
+        ) : null}
+        {view.kind === "ready" && view.next && !ordered ? (
+          <div className="flex flex-col gap-3" data-order="points">
+            <TokenView
+              event={event}
+              isMobile={isMobile}
+              onMarkToken={onMarkToken}
+              reason={t(`tokenPlan.nextToken.reasons.${view.next.reason}`)}
+              token={view.next.token}
+              view={view}
+            >
+              <MissionsProgressed
+                missions={view.missions?.progressed ?? []}
+                testId="next-token-progresses"
+              />
+            </TokenView>
             {view.missions?.alternative ? (
               <MissionAlternativeView
                 alternative={view.missions.alternative}
@@ -120,8 +185,11 @@ export function NextTokenCard({
             <UpNext
               event={event}
               isMobile={isMobile}
+              nextIndex={view.next.index}
               onViewPlan={onViewPlan}
-              view={view}
+              steps={undefined}
+              tokens={view.plan.tokens}
+              total={view.plan.tokens.length}
             />
           </div>
         ) : null}
@@ -133,22 +201,28 @@ export function NextTokenCard({
 function TokenView({
   event,
   view,
+  token,
+  reason: reasonText,
   isMobile,
   onMarkToken,
+  children,
 }: {
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
-  view: Extract<TokenPlanView, { kind: "ready" }>
+  view: ReadyView
+  token: PlannedToken
+  /** Why this token is next. */
+  reason: string
   isMobile: boolean
   onMarkToken: MarkTokenHandler | undefined
+  /** The missions it moves. */
+  children: ReactNode
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const unitName = useUnitName()
   const number = new Intl.NumberFormat(i18n.language)
-  const { token, reason } = view.next!
   const lane = t(`lanes.${token.laneId}`)
   const battle = token.battleIndex + 1
   const members = view.membersByTeam.get(token.teamId) ?? []
-  const reasonText = t(`tokenPlan.nextToken.reasons.${reason}`)
   const reasonLine =
     view.upcoming === null
       ? reasonText
@@ -229,10 +303,7 @@ function TokenView({
         >
           {reasonLine}
         </p>
-        <MissionsProgressed
-          missions={view.missions?.progressed ?? []}
-          testId="next-token-progresses"
-        />
+        {children}
       </div>
       {canMark && onMarkToken ? (
         <TokenMarkButtons
@@ -249,17 +320,25 @@ function TokenView({
 /** The planned tokens after the next one (plan-wide numbers), and View full plan. */
 function UpNext({
   event,
-  view,
+  tokens,
+  nextIndex,
+  steps,
+  total,
   isMobile,
   onViewPlan,
 }: {
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
-  view: Extract<TokenPlanView, { kind: "ready" }>
+  /** The plan's tokens in the shown order. */
+  tokens: readonly PlannedToken[]
+  nextIndex: number
+  /** Per token, the missions it moves (Missions order only). */
+  steps: readonly (readonly TokenMissionStep[])[] | undefined
+  total: number
   isMobile: boolean
   onViewPlan: (() => void) | undefined
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const upcoming = upNextTokens(view.plan, view.next)
+  const upcoming = upNextTokens({ tokens }, { index: nextIndex })
   if (upcoming.length === 0) return null
   return (
     <section
@@ -280,7 +359,7 @@ function UpNext({
             variant="link"
           >
             {t("tokenPlan.nextToken.viewPlan", {
-              count: view.plan.tokens.length,
+              count: total,
             })}
           </Button>
         ) : null}
@@ -293,7 +372,7 @@ function UpNext({
             isMobile={isMobile}
             key={index}
             marker={undefined}
-            steps={undefined}
+            steps={steps?.[index]}
             token={token}
           />
         ))}

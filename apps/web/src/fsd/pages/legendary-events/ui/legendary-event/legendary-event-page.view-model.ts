@@ -121,6 +121,13 @@ export interface LegendaryEventPageViewModel {
   onJumpToLane: (lane: LegendaryEventLaneId) => void
   /** Opens Plan, scrolled to the Token plan. */
   onViewPlan: () => void
+  /** Opens Plan with the lane's Battles picked and scrolled into view (the board's battle count). */
+  onViewBattles: (lane: LegendaryEventLaneId) => void
+  /** Plan's Battles lane, picked in the battle row (one lane at a time). */
+  battlesLane: {
+    laneId: LegendaryEventLaneId
+    onChange: (lane: LegendaryEventLaneId) => void
+  }
   leaderboard: LeaderboardViewModel
   progressGrid: ProgressGridViewModel
   /** Maybe clear / Stop here marks on the progress grid's not-cleared cells. */
@@ -129,7 +136,7 @@ export interface LegendaryEventPageViewModel {
   teams: TeamsViewModel
   /** The page's single team editor (design D4), opened by Teams and the leaderboards. */
   teamEditor: TeamEditorLauncher
-  /** Upgrade impact (Stage 6) of the shown lanes on Plan; null on other tabs or signed out. */
+  /** Upgrade impact (Stage 6) of every lane on Plan; null on other tabs or signed out. */
   upgradeImpact: UpgradeImpactViewModel | null
   /** Every lane's Battles section (battle preview), also read by the battle info dialog. */
   battles: Partial<ByLane<BattlesViewModel>>

@@ -10,6 +10,7 @@ import {
 import { EntityIcon } from "@/shared/ui"
 
 import type { MissionAlternative } from "../lib/token-missions"
+import { BattleInfoButton } from "./battle-info"
 import type { MarkTokenHandler } from "./next-token-card"
 import { TokenMarkButtons } from "./token-mark-buttons"
 import { TokenObjectives } from "./token-objectives"
@@ -85,10 +86,15 @@ export function MissionAlternativeView({
             {token.teamName}
           </span>
           <span data-testid="next-token-missions-battle">
-            {t("tokenPlan.nextToken.battle", {
-              lane,
-              battle: token.battleIndex + 1,
-            })}
+            <BattleInfoButton
+              battleIndex={token.battleIndex}
+              laneId={token.laneId}
+            >
+              {t("tokenPlan.nextToken.battle", {
+                lane,
+                battle: token.battleIndex + 1,
+              })}
+            </BattleInfoButton>
           </span>
           <span
             className="inline-flex items-center gap-1 tabular-nums"

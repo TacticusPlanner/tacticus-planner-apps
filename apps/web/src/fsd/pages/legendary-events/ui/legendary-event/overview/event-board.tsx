@@ -20,6 +20,7 @@ import {
   type LegendaryEventLaneId,
   type LegendaryEventRosterUnit,
   type LegendaryEventUnit,
+  EventUnitChip,
 } from "@/entities/legendary-event"
 import { laneTeams } from "@/features/legendary-event-plan"
 import { useUnitName } from "@/shared/unit-name"
@@ -41,7 +42,6 @@ import {
   type EventBoardObjective,
   type EventBoardTableColumn,
 } from "./event-board.view-model"
-import { EventBoardUnitChip } from "./event-board-unit-chip"
 
 /** The best-five line: V1 drew a dashed rule under the fifth unit of every column. */
 const TEAM_LINE = 5
@@ -249,7 +249,7 @@ function EventBoardColumn({
       data-lane={laneId}
       data-testid="event-board-lane"
     >
-      <CardHeader className="flex min-w-0 flex-col gap-2 px-3">
+      <CardHeader className="flex min-w-0 flex-col items-stretch gap-2 px-3">
         <div className="flex w-full min-w-0 flex-row items-center justify-between gap-2">
           <CardTitle className="min-w-0">
             <h3 className="truncate" data-testid="legendary-event-lane-label">
@@ -386,7 +386,7 @@ function UnitTable({
                     title={t("eventBoard.addTeam")}
                     type="button"
                   >
-                    <EventBoardUnitChip
+                    <EventUnitChip
                       className="hover:brightness-110"
                       unit={unit}
                     />
