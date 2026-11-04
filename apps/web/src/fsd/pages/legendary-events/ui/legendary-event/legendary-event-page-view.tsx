@@ -102,6 +102,7 @@ export function LegendaryEventPageView({
             progressGrid={props.progressGrid}
             teams={props.teams.state}
             unitPower={props.teams.unitPower}
+            catalog={props.eventBoard}
           />
           <LastRunCard
             isMobile={isMobile}

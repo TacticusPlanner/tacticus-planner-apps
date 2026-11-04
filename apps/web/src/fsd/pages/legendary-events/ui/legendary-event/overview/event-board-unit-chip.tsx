@@ -76,6 +76,7 @@ export function EventBoardUnitChip({
       }
       data-rank={unit.rank}
       data-testid="event-board-unit"
+      data-unit-id={unit.unitId}
       role="img"
       style={owned ? rankTone(unit.rank) : undefined}
       title={label}

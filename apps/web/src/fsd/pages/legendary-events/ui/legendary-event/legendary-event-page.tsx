@@ -422,6 +422,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         : null,
       battles: battlesSection,
       potentials,
+      eventBoard: { units, roster: syncedRoster },
     }
   }, [
     eventData,
@@ -473,6 +474,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     impactTeamName,
     battlesSection,
     potentials,
+    units,
+    syncedRoster,
   ])
 
   // Until `lres` has synced an absent event may just not have arrived yet (the catalog init gate

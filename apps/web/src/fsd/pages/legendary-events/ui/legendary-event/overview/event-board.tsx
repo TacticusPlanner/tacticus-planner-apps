@@ -21,13 +21,18 @@ import {
   useTeamDisplayName,
   type LegendaryEvent,
   type LegendaryEventLaneId,
+  type LegendaryEventRosterUnit,
   type LegendaryEventTeam,
+  type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { laneTeams } from "@/features/legendary-event-plan"
 import { usePersistedSelection } from "@/shared/lib"
 import { useUnitName } from "@/shared/unit-name"
 
-import type { ProgressGridViewModel } from "../legendary-event-page.view-model"
+import type {
+  ProgressGridViewModel,
+  ReadValue,
+} from "../legendary-event-page.view-model"
 import {
   rosterMap,
   type TeamPowerSource,
@@ -60,6 +65,13 @@ const LANE_GRID: Record<number, string> = {
   3: "lg:grid-cols-3",
 }
 
+/** What the unit table lists: the catalog units and the synced roster (undefined when signed out
+ *  or unavailable: ownership is then unknown). Independent of the plan. */
+interface EventBoardCatalog {
+  units: ReadValue<readonly LegendaryEventUnit[]>
+  roster: readonly LegendaryEventRosterUnit[] | undefined
+}
+
 /** Opens the team editor on a new team for the lane: the unit first, the column's objectives. */
 type AddBoardTeam = (
   laneId: LegendaryEventLaneId,
@@ -81,6 +93,7 @@ export function EventBoard({
   teams,
   progressGrid,
   unitPower,
+  catalog,
   onOpenLane,
   onOpenTeam,
   onAddTeam,
@@ -89,6 +102,7 @@ export function EventBoard({
   teams: TeamsSectionState
   progressGrid: ProgressGridViewModel
   unitPower: TeamPowerSource
+  catalog: EventBoardCatalog
   onOpenLane: (laneId: LegendaryEventLaneId) => void
   onOpenTeam: (laneId: LegendaryEventLaneId, team: LegendaryEventTeam) => void
   onAddTeam: AddBoardTeam
@@ -174,6 +188,7 @@ export function EventBoard({
         {visibleLanes.map((laneId) => (
           <EventBoardColumn
             board={lanes[laneId]}
+            catalog={catalog}
             event={event}
             key={laneId}
             laneId={laneId}
@@ -232,6 +247,7 @@ function EventBoardColumn({
   board,
   teamsState,
   unitPower,
+  catalog,
   selected,
   onToggleObjective,
   onClearObjectives,
@@ -244,6 +260,7 @@ function EventBoardColumn({
   board: EventBoardLane
   teamsState: TeamsSectionState
   unitPower: TeamPowerSource
+  catalog: EventBoardCatalog
   selected: readonly number[]
   onToggleObjective: (laneId: LegendaryEventLaneId, index: number) => void
   onClearObjectives: (laneId: LegendaryEventLaneId) => void
@@ -261,26 +278,24 @@ function EventBoardColumn({
   const savedTeams = board.teams.map((entry) => entry.team)
   const teamsReady = teamsState.kind === "ready"
   const rosterById = useMemo(
-    () =>
-      teamsState.kind === "ready" && teamsState.roster
-        ? rosterMap(teamsState.roster)
-        : undefined,
-    [teamsState]
+    () => (catalog.roster ? rosterMap(catalog.roster) : undefined),
+    [catalog.roster]
   )
+  const { units } = catalog
   const powerContext = typeof unitPower === "object" ? unitPower : null
   const columns = useMemo(
     () =>
-      teamsState.kind === "ready"
+      Array.isArray(units)
         ? buildEventBoardTable(
             lane,
-            teamsState.units,
+            units as readonly LegendaryEventUnit[],
             rosterById,
             powerContext,
             new Set(selected),
             (unitId) => unitName("Character", unitId)
           )
         : undefined,
-    [lane, teamsState, rosterById, powerContext, selected, unitName]
+    [lane, units, rosterById, powerContext, selected, unitName]
   )
   const objectivesByIndex = useMemo(
     () =>
@@ -334,7 +349,9 @@ function EventBoardColumn({
           onToggleObjective={onToggleObjective}
           selected={selected}
           showCoverage={teamsReady}
-          teamsState={teamsState}
+          unitsState={
+            units === "loading" || units === "error" ? units : "ready"
+          }
         />
         {teamsState.kind === "hidden" ? null : (
           <div className="flex min-w-0 flex-col gap-1.5 border-t pt-3">
@@ -375,7 +392,7 @@ function UnitTable({
   objectivesByIndex,
   selected,
   showCoverage,
-  teamsState,
+  unitsState,
   onToggleObjective,
   onAddTeam,
 }: {
@@ -384,11 +401,14 @@ function UnitTable({
   objectivesByIndex: ReadonlyMap<number, EventBoardObjective>
   selected: readonly number[]
   showCoverage: boolean
-  teamsState: TeamsSectionState
+  unitsState: "loading" | "error" | "ready"
   onToggleObjective: (laneId: LegendaryEventLaneId, index: number) => void
   onAddTeam: AddBoardTeam
 }) {
   const { t } = useTranslation("legendaryEvents")
+  const headingId = useId()
+  const headingFor = (indexes: readonly number[]) =>
+    `${headingId}-${indexes.join("+")}`
   // Before the units load the headings still show every objective, one column each.
   const headings =
     columns?.map((column) => column.objectiveIndexes) ??
@@ -409,6 +429,7 @@ function UnitTable({
       >
         {headings.map((indexes) => (
           <ObjectiveHeading
+            id={headingFor(indexes)}
             entries={indexes
               .map((index) => objectivesByIndex.get(index))
               .filter((entry) => entry !== undefined)}
@@ -419,16 +440,17 @@ function UnitTable({
           />
         ))}
       </div>
-      {teamsState.kind === "loading" ? (
+      {unitsState === "loading" ? (
         <Skeleton className="m-1 h-32 rounded-md" />
       ) : null}
-      {teamsState.kind === "error" ? (
+      {unitsState === "error" ? (
         <p className="p-2 text-sm text-destructive">{t("teams.loadError")}</p>
       ) : null}
       {columns ? (
         <div className="grid gap-px p-px" style={template}>
           {columns.map((column) => (
             <ul
+              aria-describedby={headingFor(column.objectiveIndexes)}
               aria-label={t("eventBoard.columnUnits", {
                 count: column.units.length,
               })}
@@ -476,11 +498,13 @@ function UnitTable({
 /** One table heading: an objective (or the selected ones, merged) with its points, its synced
  *  cleared count and a dashed edge when no saved team covers it; pressing it selects it. */
 function ObjectiveHeading({
+  id,
   entries,
   selected,
   showCoverage,
   onToggle,
 }: {
+  id: string
   entries: EventBoardObjective[]
   selected: readonly number[]
   showCoverage: boolean
@@ -492,6 +516,7 @@ function ObjectiveHeading({
   const merged = entries.length > 1
   return (
     <div
+      id={id}
       className={cn(
         "flex min-w-0 flex-col gap-px",
         merged && "rounded-md bg-primary/10"

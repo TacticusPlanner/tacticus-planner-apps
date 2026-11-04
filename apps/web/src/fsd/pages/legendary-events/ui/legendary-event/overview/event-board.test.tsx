@@ -74,12 +74,18 @@ const withUnits: TeamsSectionState = {
   roster: [rosterUnit("ultraCalgar")],
 }
 
-function renderBoard(teams: TeamsSectionState = ready) {
+function renderBoard(
+  teams: TeamsSectionState = ready,
+  catalog: Parameters<typeof EventBoard>[0]["catalog"] = teams.kind === "ready"
+    ? { units: teams.units, roster: teams.roster }
+    : { units: "loading", roster: undefined }
+) {
   const onOpenLane = vi.fn()
   const onOpenTeam = vi.fn()
   const onAddTeam = vi.fn()
-  render(
+  const view = render(
     <EventBoard
+      catalog={catalog}
       event={lysanderEvent}
       onAddTeam={onAddTeam}
       onOpenLane={onOpenLane}
@@ -90,7 +96,7 @@ function renderBoard(teams: TeamsSectionState = ready) {
     />,
     { wrapper: i18nWrapper(i18n) }
   )
-  return { onOpenLane, onOpenTeam, onAddTeam }
+  return { onOpenLane, onOpenTeam, onAddTeam, unmount: view.unmount }
 }
 
 const lane = (laneId: string) =>
@@ -162,16 +168,27 @@ describe("EventBoard", () => {
       "event-board-add-team"
     )
     fireEvent.click(firstUnit!)
-    expect(onAddTeam).toHaveBeenCalledWith(
+    const firstIndex = Math.min(
+      ...lysanderEvent.alpha.unitsRestrictions.map(
+        (objective) => objective.index
+      )
+    )
+    const firstUnitId = within(firstUnit!)
+      .getByTestId("event-board-unit")
+      .getAttribute("data-unit-id")
+    expect(onAddTeam).toHaveBeenCalledExactlyOnceWith(
       "alpha",
-      [expect.any(Number)],
-      expect.any(String)
+      [firstIndex],
+      firstUnitId
     )
   })
 
   it("shows saved members with their rank and ability levels", () => {
     renderBoard(withUnits)
-    const [member] = within(lane("alpha")).getAllByRole("img", {
+    const team = within(lane("alpha")).getByRole("button", {
+      name: "Edit Alpha squad",
+    })
+    const [member] = within(team).getAllByRole("img", {
       name: /^Calgar/,
     })
     expect(member).toHaveAttribute("data-rank", "Gold2")
@@ -197,13 +214,29 @@ describe("EventBoard", () => {
     expect(alpha.getAllByTestId("event-board-column")).toHaveLength(count)
   })
 
-  it("hides a lane switched off and keeps the last one shown", () => {
-    renderBoard()
+  it("hides a lane switched off, remembers it and keeps the last one shown", () => {
+    const { unmount } = renderBoard()
     fireEvent.click(screen.getByRole("switch", { name: "Gamma" }))
+    expect(
+      screen.getAllByTestId("event-board-lane").map((c) => c.dataset.lane)
+    ).toEqual(["alpha", "beta"])
+    unmount()
+    renderBoard()
     expect(
       screen.getAllByTestId("event-board-lane").map((c) => c.dataset.lane)
     ).toEqual(["alpha", "beta"])
     fireEvent.click(screen.getByRole("switch", { name: "Beta" }))
     expect(screen.getByRole("switch", { name: "Alpha" })).toBeDisabled()
+  })
+
+  it("lists units for a signed-out visitor, with ownership unknown", () => {
+    renderBoard(
+      { kind: "hidden" },
+      { units: legendaryEventCharacters as never, roster: undefined }
+    )
+    const units = within(lane("alpha")).getAllByTestId("event-board-unit")
+    expect(units.length).toBeGreaterThan(0)
+    expect(units.every((unit) => unit.dataset.owned === undefined)).toBe(true)
+    expect(screen.queryByTestId("event-board-team")).not.toBeInTheDocument()
   })
 })
