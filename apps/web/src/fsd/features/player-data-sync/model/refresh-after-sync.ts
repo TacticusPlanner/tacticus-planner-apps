@@ -2,7 +2,7 @@ import type { QueryClient } from "@tanstack/react-query"
 
 import { goalQueries } from "@/entities/goal"
 import { legendaryEventPlanQueries } from "@/entities/legendary-event"
-import { rosterSnapshotQueries } from "@/entities/roster-snapshot"
+import { rosterSnapshotKeys } from "@/entities/roster-snapshot"
 
 /**
  * The server reads a completed player-data sync can change: goals, every event's Legendary Event
@@ -22,7 +22,7 @@ export async function refreshServerReadsAfterSync(
       queryKey: legendaryEventPlanQueries.list().queryKey,
     }),
     queryClient.invalidateQueries({
-      queryKey: rosterSnapshotQueries.list().queryKey,
+      queryKey: rosterSnapshotKeys.list(),
     }),
   ])
 }
