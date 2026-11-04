@@ -129,14 +129,21 @@
   },
   "eventBoard": {
     "title": "Tableau de l'événement",
-    "description": "Les objectifs et équipes enregistrées de toutes les voies d'un coup d'œil. Choisissez une équipe pour la modifier, ou une voie pour ouvrir son onglet.",
+    "description": "Les objectifs de chaque voie, les unités qui conviennent à chacun et vos équipes enregistrées d'un seul coup d'œil. Choisissez des objectifs pour voir les unités qui les remplissent tous, une unité pour commencer une équipe avec elle, une équipe pour la modifier ou une voie pour ouvrir son onglet.",
     "openLane": "Ouvrir l'onglet {{lane}}",
     "teams_one": "{{count}} équipe",
     "teams_other": "{{count}} équipes",
     "noTeams": "Aucune équipe pour l'instant.",
     "noTeam": "Aucune équipe",
     "cleared": "Rempli dans {{cleared}} combats sur {{total}}",
-    "editTeam": "Modifier {{name}}"
+    "editTeam": "Modifier {{name}}",
+    "lanesShown": "Voies affichées",
+    "clearSelection": "Effacer la sélection",
+    "columnUnits_one": "{{count}} unité",
+    "columnUnits_other": "{{count}} unités",
+    "noUnits": "Aucune unité",
+    "addTeam": "Commencer une équipe avec cette unité",
+    "locked": "Verrouillée"
   },
   "laneSummary": {
     "title": "Résumé des voies",

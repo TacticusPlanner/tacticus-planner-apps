@@ -129,14 +129,21 @@
   },
   "eventBoard": {
     "title": "Eventübersicht",
-    "description": "Ziele und gespeicherte Teams aller Bahnen auf einen Blick. Wähle ein Team zum Bearbeiten oder eine Bahn, um ihren Tab zu öffnen.",
+    "description": "Die Ziele jeder Bahn, die passenden Einheiten und deine gespeicherten Teams auf einen Blick. Wähle Ziele, um die Einheiten zu sehen, die alle erfüllen, eine Einheit, um damit ein Team zu beginnen, ein Team, um es zu bearbeiten, oder eine Bahn, um ihren Tab zu öffnen.",
     "openLane": "Tab {{lane}} öffnen",
     "teams_one": "{{count}} Team",
     "teams_other": "{{count}} Teams",
     "noTeams": "Noch keine Teams.",
     "noTeam": "Kein Team",
     "cleared": "In {{cleared}} von {{total}} Kämpfen erfüllt",
-    "editTeam": "{{name}} bearbeiten"
+    "editTeam": "{{name}} bearbeiten",
+    "lanesShown": "Angezeigte Bahnen",
+    "clearSelection": "Auswahl aufheben",
+    "columnUnits_one": "{{count}} Einheit",
+    "columnUnits_other": "{{count}} Einheiten",
+    "noUnits": "Keine Einheiten",
+    "addTeam": "Team mit dieser Einheit beginnen",
+    "locked": "Gesperrt"
   },
   "laneSummary": {
     "title": "Lane-Zusammenfassung",

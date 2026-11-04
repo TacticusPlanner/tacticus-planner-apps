@@ -124,8 +124,12 @@ export interface LegendaryEventPageViewModel {
   lastRun: LastRunSectionViewModel
   /** Every lane's roster potential map (lane overview) and reach line (Overview lane summary). */
   potentials: LanePotentialsViewModel
-  /** The Overview's Event board (`LreEventBoard` flag); off when absent. */
-  showEventBoard?: boolean
+  /** The Overview Event board's unit table: the catalog units and the synced roster (undefined
+   *  when signed out or unavailable), independent of the plan so it shows for everyone. */
+  eventBoard: {
+    units: ReadValue<LegendaryEventUnit[]>
+    roster: LegendaryEventRosterUnit[] | undefined
+  }
 }
 
 /** The Last run card's state and its analytics callbacks (design D9). */
