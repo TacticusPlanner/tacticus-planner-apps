@@ -246,11 +246,11 @@
     "level": "Nivel del PNJ",
     "variationMode": {
       "standard": "Estándar",
-      "lhe": "Evento de Héroe Legendario",
-      "legendary": "Legendario",
+      "questEvent": "Evento de misión",
+      "legendary": "Evento Legendario",
       "survival": "Supervivencia",
       "campaign": "Campaña",
-      "championEvent": "Evento de Campeón",
+      "campaignEvent": "Evento de campaña",
       "tutorial": "Tutorial",
       "leviathan": "Flota Enjambre Leviatán",
       "kronos": "Flota Enjambre Kronos",
@@ -276,6 +276,58 @@
     },
     "traits": "Rasgos",
     "noTraits": "Esta unidad no tiene rasgos.",
+    "encounters": {
+      "title": "Se encuentra en",
+      "unavailable": "Los datos de encuentros aún no están disponibles.",
+      "none": "No hay encuentros registrados para esta variante.",
+      "noneHint": "El contenido pasado o rotativo puede faltar en los datos del juego, así que aún puede aparecer en otro lugar.",
+      "alongside": "Lucha junto a este jefe",
+      "boss": "Como jefe",
+      "prime": "Como prime",
+      "challenge": "Desafío {{list}}",
+      "battles": "Batallas {{list}}",
+      "rounds": "Rondas {{list}}",
+      "battle": "Batalla {{number}}",
+      "round": "Ronda {{number}}",
+      "tier": "Nivel {{number}}",
+      "count": "×{{number}}",
+      "upTo": "hasta {{number}}",
+      "matches_one": "{{count}} batalla coincidente",
+      "matches_other": "{{count}} batallas coincidentes",
+      "canAppear": "Puede aparecer en los niveles {{list}}",
+      "tierBattles_one": "Nivel {{tiers}}: batallas {{battles}}",
+      "tierBattles_other": "Niveles {{tiers}}: batallas {{battles}}",
+      "tierRangeBattles": "{{tiers}}: batallas {{battles}}",
+      "tracks": {
+        "Standard": "Estándar",
+        "Extremis": "Extremis",
+        "alpha": "Alfa",
+        "beta": "Beta",
+        "gamma": "Gamma"
+      },
+      "source": {
+        "campaign": "Campaña",
+        "campaignEvent": "Evento de campaña",
+        "legendaryEvent": "Evento Legendario",
+        "questEvent": "Evento de misión",
+        "incursion": "Incursión",
+        "guildRaid": "Incursión de gremio",
+        "survival": "Supervivencia",
+        "onslaught": "Onslaught"
+      },
+      "timing": {
+        "always": "Siempre disponible",
+        "rotating": "Rotativo",
+        "running": "En curso",
+        "next": "Próxima edición {{date}}",
+        "none": "Sin edición programada"
+      },
+      "survivalSeason": {
+        "survival_may_2026": "Mayo de 2026",
+        "survival_september_2026": "Septiembre de 2026",
+        "survival_crescendo_01": "Crescendo"
+      }
+    },
     "healthAtLevel": "{{health}} PS",
     "noMatchingNpcs": "Ningún PNJ coincide con los filtros actuales.",
     "noMatchingOptions": "No hay opciones coincidentes.",
@@ -286,7 +338,7 @@
       "steps": {
         "filters": {
           "title": "Filtra la lista",
-          "content": "Busca por nombre o acota la lista por facción, tipo de daño y rasgo. Un PNJ sigue apareciendo mientras alguna de sus variantes coincida."
+          "content": "Busca por nombre o acota la lista por facción, modo de juego, ubicación, tipo de daño y rasgo. Un PNJ sigue apareciendo mientras alguna de sus variantes coincida."
         },
         "list": {
           "title": "Elige un PNJ",
@@ -298,7 +350,7 @@
         },
         "variation": {
           "title": "Variante",
-          "content": "El juego genera la misma unidad con distintas escalas de nivel según el modo: Supervivencia, Eventos de Héroe Legendario, campañas. Cambia entre ellas aquí."
+          "content": "El juego genera la misma unidad con distintas escalas de nivel según el modo: Supervivencia, Eventos de misión, campañas. Cambia entre ellas aquí."
         },
         "level": {
           "title": "Nivel del PNJ",
@@ -307,6 +359,10 @@
         "stats": {
           "title": "Estadísticas, poder, ataques y rasgos",
           "content": "Salud, armadura, daño, movimiento y poder estimado en el nivel seleccionado, además de los ataques y rasgos de la unidad."
+        },
+        "encounters": {
+          "title": "Dónde se lucha",
+          "content": "Cada campaña, evento y modo en el que aparece esta variante, cuándo vuelve el contenido por tiempo limitado y un enlace a la página correspondiente."
         }
       }
     },
@@ -325,6 +381,11 @@
     },
     "attack": "Ataque",
     "anyAttack": "Cualquier ataque",
+    "gameMode": "Modo de juego",
+    "anyGameMode": "Cualquier modo de juego",
+    "location": "Ubicación",
+    "anyLocation": "Cualquier ubicación",
+    "minCount": "Mín. en una batalla",
     "meleeOnly": "Solo cuerpo a cuerpo",
     "hasRanged": "Con ataque a distancia",
     "clearOne": "Borrar {{name}}",

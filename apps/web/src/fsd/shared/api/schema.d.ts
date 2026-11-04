@@ -848,6 +848,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/npc-encounters": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets where each NPC is encountered. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/npc-encounters/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets where each NPC is encountered. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/npcs": {
     parameters: {
       query?: never
@@ -2088,6 +2122,8 @@ export interface components {
       /** Format: int32 */
       stars: number
       rank: string
+      /** Format: int32 */
+      servedIndex: number
     }
     GameCatalogCampaignGuaranteedReward: {
       id: string
@@ -2402,6 +2438,16 @@ export interface components {
       datasetKey: string
       datasetHash: string
       data: null | components["schemas"]["IReadOnlyListOfGameCatalogNpc"]
+    }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data:
+        null | components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounter"]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogOnslaughtReward: {
       version: string
@@ -3088,6 +3134,32 @@ export interface components {
       passiveAbilities: components["schemas"]["IReadOnlyListOfString"]
       stats: components["schemas"]["IReadOnlyListOfGameCatalogNpcStat"]
     }
+    GameCatalogNpcEncounter: {
+      npcId: string
+      source: string
+      groupId: string
+      battles: components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounterBattle"]
+    }
+    GameCatalogNpcEncounterBattle: {
+      battleId: null | string
+      track: null | string
+      /** Format: int32 */
+      tier: null | number
+      /** Format: int32 */
+      number: null | number
+      challenge: boolean
+      role: string
+      rounds: components["schemas"]["IReadOnlyListOfInt32"]
+      /** Format: int32 */
+      count: null | number
+      levels: components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounterLevel"]
+    }
+    GameCatalogNpcEncounterLevel: {
+      /** Format: int32 */
+      servedIndex: null | number
+      /** Format: int32 */
+      count: number
+    }
     GameCatalogNpcStat: {
       /** Format: int32 */
       abilityLevel: number
@@ -3750,6 +3822,9 @@ export interface components {
     IReadOnlyListOfGameCatalogMythicQuestTaskView: components["schemas"]["GameCatalogMythicQuestTaskView"][]
     IReadOnlyListOfGameCatalogMythicQuestView: components["schemas"]["GameCatalogMythicQuestView"][]
     IReadOnlyListOfGameCatalogNpc: components["schemas"]["GameCatalogNpc"][]
+    IReadOnlyListOfGameCatalogNpcEncounter: components["schemas"]["GameCatalogNpcEncounter"][]
+    IReadOnlyListOfGameCatalogNpcEncounterBattle: components["schemas"]["GameCatalogNpcEncounterBattle"][]
+    IReadOnlyListOfGameCatalogNpcEncounterLevel: components["schemas"]["GameCatalogNpcEncounterLevel"][]
     IReadOnlyListOfGameCatalogNpcStat: components["schemas"]["GameCatalogNpcStat"][]
     IReadOnlyListOfGameCatalogOnslaughtReward: components["schemas"]["GameCatalogOnslaughtReward"][]
     IReadOnlyListOfGameCatalogProgressionRules: components["schemas"]["GameCatalogProgressionRules"][]
@@ -6717,6 +6792,98 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogMythicQuestsView"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per npc, source and group naming every battle the npc fights in as an enemy: source is campaign, campaignEvent, legendaryEvent, questEvent, incursion, guildRaid, survival or onslaught; groupId is the campaign group, event id (lreId or featured character), MoW, raid boss / prime unit set, Survival battle set or onslaught; each battle carries the served battle id, track, tier, node or battle number, challenge flag, guild raid role and the wave rounds where the source has them. Ids and numbers only; no schedule. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per npc, source and group naming every battle the npc fights in as an enemy: source is campaign, campaignEvent, legendaryEvent, questEvent, incursion, guildRaid, survival or onslaught; groupId is the campaign group, event id (lreId or featured character), MoW, raid boss / prime unit set, Survival battle set or onslaught; each battle carries the served battle id, track, tier, node or battle number, challenge flag, guild raid role and the wave rounds where the source has them. Ids and numbers only; no schedule. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter"]
         }
       }
       /** @description The dataset has not changed. */

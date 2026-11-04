@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
-import { formatEstimateDate } from "./format-estimate-date"
+import { formatEstimateDate, localIsoDate } from "./format-estimate-date"
 
 describe("formatEstimateDate", () => {
   it("formats an ISO completion date as a locale-aware short date", () => {
@@ -22,5 +22,18 @@ describe("formatEstimateDate", () => {
     expect(formatEstimateDate(undefined, "en")).toBeNull()
     expect(formatEstimateDate("", "en")).toBeNull()
     expect(formatEstimateDate("not-a-date", "en")).toBeNull()
+  })
+})
+
+describe("localIsoDate", () => {
+  it("reads the viewer's date, not the UTC one", () => {
+    vi.stubEnv("TZ", "America/New_York")
+    try {
+      expect(localIsoDate(Date.parse("2026-11-08T00:00:00Z"))).toBe(
+        "2026-11-07"
+      )
+    } finally {
+      vi.unstubAllEnvs()
+    }
   })
 })

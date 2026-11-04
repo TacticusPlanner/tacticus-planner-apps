@@ -44,3 +44,4 @@ export type GlobalValuesStorageModel = StorageModel<"global-values">
 export type ProgressionRulesStorageModel = StorageModel<"progression-rules">
 export type HreStorageModel = StorageModel<"hre">
 export type IncursionStorageModel = StorageModel<"incursions">
+export type NpcEncounterStorageModel = StorageModel<"npc-encounters">

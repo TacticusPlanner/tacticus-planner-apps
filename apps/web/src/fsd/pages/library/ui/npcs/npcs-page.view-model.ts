@@ -1,4 +1,11 @@
 import type {
+  EventsCalendarStorageModel,
+  NpcEncounterSource,
+} from "@workspace/game-catalog"
+
+import type {
+  EncounterPlaceIndex,
+  NpcEncounter,
   NpcFilters,
   NpcGroup,
   NpcLevelOption,
@@ -35,6 +42,12 @@ export interface NpcFilterOptions {
   alliances: { id: string; name: string }[]
   damageTypes: { id: string; name: string }[]
   traits: { id: string; name: string }[]
+  /** The encounter sources some listed variation has, in display order; empty without encounter data. */
+  gameModes: { id: NpcEncounterSource; name: string }[]
+  /** The groups of the chosen game mode, by name; empty until one is chosen. */
+  locations: { id: string; name: string }[]
+  /** Whether "running now" can be answered: both the encounter data and the calendar are present. */
+  canFilterRunning: boolean
 }
 
 /** Flat props for the desktop and mobile sub-pages; the orchestrator computes them once. */
@@ -61,6 +74,19 @@ export interface NpcsPageViewProps {
   onLevelChange: (servedIndex: number) => void
   /** The selected variation's power at the selected level row (an estimate). */
   power: PowerFigure
+
+  /** Where the selected variation is encountered, ordered by source; see `encountersStatus`. */
+  encounters: NpcEncounter[]
+  /** The NPCs at each encounter location, for the rows' expanded battle lists. */
+  encounterPlaces: EncounterPlaceIndex
+  /** The places meeting the mission count of the filters, or `null` while none is set. */
+  matchingPlaces: ((encounter: NpcEncounter) => ReadonlySet<string>) | null
+  /** Called as a battle chip opens a variation, which the filters may exclude. */
+  onOpenBattleVariation: (variationId: string) => void
+  /** The `npc-encounters` data state: `present` makes `encounters` meaningful (empty = none recorded). */
+  encountersStatus: "loading" | "absent" | "failed" | "present"
+  /** The stored calendar rows for encounter timing, or `null` while the calendar is not available. */
+  calendar: readonly EventsCalendarStorageModel[] | null
 }
 
 /** The estimated power of an NPC variation at one of its level rows. */
