@@ -2,6 +2,8 @@ import { useMemo, useState } from "react"
 import { useIsAuthenticated } from "@azure/msal-react"
 import {
   AlertTriangle,
+  Eye,
+  EyeOff,
   History,
   LogIn,
   RefreshCw,
@@ -9,7 +11,6 @@ import {
   X,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { factionIcon } from "@workspace/game-catalog"
 import {
   Alert,
   AlertDescription,
@@ -23,6 +24,7 @@ import {
   unitOriginState,
   UnitTile,
   type UnitKind,
+  type UnitTileUnit,
 } from "@/entities/unit"
 import {
   formatRosterSourceId,
@@ -31,10 +33,10 @@ import {
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
-import { EntityIcon } from "@/shared/ui"
 
 import type {
   CollectionFactionGroup,
+  CollectionListedUnit,
   CollectionRosterState,
 } from "../../model/collection-view"
 import {
@@ -47,11 +49,13 @@ import { COMPARE_CURRENT } from "../../model/compare-query"
 import { useCollectionCompare } from "../../model/use-collection-compare"
 import { useCompareQuery } from "../../model/use-compare-query"
 import { useCollectionTutorial } from "./collection.tutorial"
+import { CollectionRoster, CollectionRosterList } from "./collection-roster"
 import { CollectionToolbar } from "./collection-toolbar"
 import { SnapshotActions } from "./compare/compare-bar"
 import { CompareSection } from "./compare/compare-section"
 import { ManageSnapshotsSheet } from "./compare/manage-snapshots-sheet"
 import { TakeSnapshotDialog } from "./compare/take-snapshot-dialog"
+import { FactionHeader } from "./faction-header"
 
 // Before the catalog is read the toolbar is hidden anyway; this only keeps its props total.
 const EMPTY_OPTIONS: CollectionOptions = {
@@ -71,13 +75,16 @@ const factionGrid =
   "grid items-stretch gap-2.5 sm:gap-3 [grid-template-columns:repeat(auto-fill,minmax(min(30rem,100%),1fr))]"
 const unitSlots =
   "grid grid-cols-5 gap-x-1.5 gap-y-3 px-2 pt-3 pb-2.5 md:grid-cols-7"
+// Without faction groups: one card of slots about as wide as a faction card's.
+const ungroupedSlots =
+  "grid gap-x-1.5 gap-y-3 rounded-[10px] border bg-card px-2 pt-3 pb-2.5 [grid-template-columns:repeat(auto-fill,minmax(4.25rem,1fr))]"
 
 /**
  * My Game's Collection: every catalog unit grouped by faction, owned units with their synced
  * progression and the rest greyed out. Without a roster (signed out, not synced yet, or unreadable)
  * the whole catalog shows greyed out under a prompt explaining how to see it. A toolbar searches,
- * sorts and filters the list; its state lives in the URL. Laid out per the Cards view of the
- * design handoff (tacticus-planner-docs/ux/wireframes/collection-handoff.md).
+ * sorts and filters the list, switches between the Cards and Roster views and can list every unit
+ * across factions instead of by faction; its state lives in the URL. Laid out per the design handoff (tacticus-planner-docs/ux/wireframes/collection-handoff.md).
  */
 export function CollectionPage() {
   const { t } = useTranslation("common")
@@ -100,13 +107,23 @@ export function CollectionPage() {
     [comparing, compareOrder, query]
   )
   const state = useCollectionView(viewQuery, toRoster)
-  const hasGroups =
-    !comparing && state.status === "ready" && state.view.groups.length > 0
-  const hasSummary = hasGroups && state.view.rosterState === "available"
-  const hasOwned = hasGroups && state.view.owned > 0
-  const hasUnowned = hasGroups && state.view.owned < state.view.total
+  // Compare mode replaces the list, so the list's tour steps are off while it is on.
+  const listing = !comparing && state.status === "ready"
+  const hasGroups = listing && state.view.groups.length > 0
+  // Shown even when Hide unowned hides every unit: the counts still include them.
+  const hasSummary =
+    listing && state.view.rosterState === "available" && state.view.total > 0
+  const hasOwned = listing && state.view.owned > 0
+  // What is listed, not what is counted: Hide unowned keeps unowned units in the counts.
+  const hasUnowned =
+    listing &&
+    state.view.units.some((entry) => entry.unit.data.state !== "owned")
+  const applied = state.status === "ready" ? state.view.query : query
+  const grouped = applied.group === "faction"
   useTourPageSteps(
     useCollectionTutorial({
+      view: applied.view,
+      grouped,
       hasSummary,
       hasGroups,
       hasOwned,
@@ -115,8 +132,24 @@ export function CollectionPage() {
       compareReady: compare.mode === "ready",
     })
   )
-  const groups = state.status === "ready" ? state.view.groups : undefined
-  const origins = useMemo(() => collectionOrigins(groups ?? []), [groups])
+  const view = state.status === "ready" ? state.view : undefined
+  // The order the page shows: faction group by faction group, or the one ungrouped list.
+  const origins = useMemo(
+    () =>
+      collectionOrigins(
+        !view
+          ? []
+          : grouped
+            ? view.groups.flatMap((group) => group.units)
+            : view.units.map((entry) => entry.unit)
+      ),
+    [view, grouped]
+  )
+  // Compare lists every unit in one list, in the sort's order without faction grouping.
+  const compareUnits = useMemo(
+    () => view?.units.map((entry) => entry.unit) ?? [],
+    [view]
+  )
   const usage = snapshots.data
     ? { count: snapshots.data.count, limit: snapshots.data.limit }
     : null
@@ -140,13 +173,14 @@ export function CollectionPage() {
     )
   }
 
-  const { view, quickFilters, retry } = state
-  const rosterAvailable = view.rosterState === "available"
+  const { quickFilters, retry } = state
+  const listed = state.view
+  const rosterAvailable = listed.rosterState === "available"
 
   return (
     <div className="space-y-6" data-testid="collection-page">
-      {view.rosterState === "available" ? null : (
-        <RosterPrompt rosterState={view.rosterState} onRetry={retry} />
+      {listed.rosterState === "available" ? null : (
+        <RosterPrompt rosterState={listed.rosterState} onRetry={retry} />
       )}
       {isAuthenticated ? (
         <SnapshotActions
@@ -162,7 +196,7 @@ export function CollectionPage() {
       <CollectionToolbar
         // The applied query: a value the page cannot apply yet (no roster, or a quick filter whose
         // data is missing) stays in the URL for later but is not shown as selected.
-        query={view.query}
+        query={listed.query}
         update={update}
         clear={clear}
         options={options ?? EMPTY_OPTIONS}
@@ -174,27 +208,39 @@ export function CollectionPage() {
         <CompareSection
           state={compare}
           compare={compareQuery}
-          units={view.units}
-          filtered={view.filtered}
+          units={compareUnits}
+          filtered={listed.filtered}
           onTake={() => setTakeOpen(true)}
         />
       ) : null}
-      {!comparing && rosterAvailable && view.groups.length > 0 ? (
+      {!comparing && rosterAvailable && listed.total > 0 ? (
         <p
           className="text-sm text-muted-foreground"
           data-testid="collection-summary"
         >
           {t(
-            view.filtered
+            listed.filtered
               ? "myGame.collection.summaryFiltered"
               : "myGame.collection.summary",
-            { owned: view.owned, total: view.total }
+            { owned: listed.owned, total: listed.total }
           )}
         </p>
       ) : null}
-      {comparing ? null : view.groups.length > 0 ? (
+      {comparing || listed.groups.length === 0 ? null : !grouped ? (
+        listed.query.view === "roster" ? (
+          <CollectionRosterList units={listed.units} origins={origins} />
+        ) : (
+          <UngroupedCards units={listed.units} origins={origins} />
+        )
+      ) : listed.query.view === "roster" ? (
+        <CollectionRoster
+          groups={listed.groups}
+          showOwned={rosterAvailable}
+          origins={origins}
+        />
+      ) : (
         <div className={factionGrid}>
-          {view.groups.map((group) => (
+          {listed.groups.map((group) => (
             <FactionGroupCard
               key={group.factionId}
               group={group}
@@ -203,6 +249,13 @@ export function CollectionPage() {
             />
           ))}
         </div>
+      )}
+      {comparing || listed.groups.length > 0 ? null : listed.total > 0 ? (
+        <AllHidden
+          filtered={listed.filtered}
+          onClear={clear}
+          onShowUnowned={() => update({ hideUnowned: false })}
+        />
       ) : (
         <NoMatches onClear={clear} />
       )}
@@ -273,23 +326,93 @@ function NoMatches({ onClear }: { onClear: () => void }) {
   )
 }
 
+/** Shown when units match but Hide unowned hides all of them, so turning it off is the way out. */
+function AllHidden({
+  filtered,
+  onClear,
+  onShowUnowned,
+}: {
+  filtered: boolean
+  onClear: () => void
+  onShowUnowned: () => void
+}) {
+  const { t } = useTranslation("common")
+
+  return (
+    <div
+      className="flex flex-col items-center gap-3 rounded-[10px] border border-dashed px-4 py-10 text-center"
+      role="status"
+      data-testid="collection-all-hidden"
+    >
+      <EyeOff aria-hidden className="size-8 text-muted-foreground" />
+      <div className="space-y-1">
+        <p className="font-semibold">
+          {t("myGame.collection.empty.hiddenTitle")}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          {t("myGame.collection.empty.hiddenBody")}
+        </p>
+      </div>
+      <div className="flex flex-wrap justify-center gap-2">
+        <Button variant="outline" size="sm" onClick={onShowUnowned}>
+          <Eye aria-hidden />
+          {t("myGame.collection.empty.showUnowned")}
+        </Button>
+        {filtered ? (
+          <Button variant="outline" size="sm" onClick={onClear}>
+            <X aria-hidden />
+            {t("myGame.collection.toolbar.clearFilters")}
+          </Button>
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
 /**
  * The history state each tile hands its unit page: Collection's order of the units of that kind, so
  * the page's prev/next walk Collection without stepping a character page onto a Machine of War.
  */
 function collectionOrigins(
-  groups: readonly CollectionFactionGroup[]
+  units: readonly UnitTileUnit[]
 ): Record<UnitKind, unknown> {
   const ids = (kind: UnitKind) =>
-    groups.flatMap((group) =>
-      group.units
-        .filter((unit) => unit.kind === kind)
-        .map((unit) => unit.unitId)
-    )
+    units.filter((unit) => unit.kind === kind).map((unit) => unit.unitId)
   return {
     character: unitOriginState({ kind: "collection", ids: ids("character") }),
     mow: unitOriginState({ kind: "collection", ids: ids("mow") }),
   }
+}
+
+/** The Cards view without faction groups: one grid of tiles, each showing its faction. */
+function UngroupedCards({
+  units,
+  origins,
+}: {
+  units: readonly CollectionListedUnit[]
+  origins: Record<UnitKind, unknown>
+}) {
+  return (
+    <ul className={ungroupedSlots} data-testid="collection-ungrouped">
+      {units.map(({ unit, factionId, factionName }) => (
+        <li key={`${unit.kind}:${unit.unitId}`} className="min-w-0">
+          <UnitTile
+            unit={unit}
+            faction={{ id: factionId, name: factionName }}
+            link={{
+              to: unitLibraryPath(unit.kind, unit.unitId),
+              state: origins[unit.kind],
+            }}
+            testId={
+              unit.data.state === "owned"
+                ? "collection-owned-tile"
+                : "collection-unowned-tile"
+            }
+          />
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 function FactionGroupCard({
@@ -301,9 +424,6 @@ function FactionGroupCard({
   showOwned: boolean
   origins: Record<UnitKind, unknown>
 }) {
-  const { t } = useTranslation("common")
-  const total = group.units.length
-
   return (
     <section
       aria-label={group.factionName}
@@ -311,34 +431,7 @@ function FactionGroupCard({
       data-testid="collection-faction-group"
       data-faction={group.factionId}
     >
-      <header
-        className="flex h-[30px] shrink-0 items-center gap-2 px-2.5 text-overlay-foreground"
-        style={{
-          background: `var(--faction-${group.factionId}, var(--muted-foreground))`,
-        }}
-        data-testid="collection-faction-header"
-      >
-        <EntityIcon
-          src={factionIcon(group.factionId)}
-          alt=""
-          className="size-[22px] shrink-0"
-        />
-        <h2 className="min-w-0 flex-1 truncate text-[13px] font-bold tracking-[0.06em] uppercase">
-          {group.factionName}
-        </h2>
-        {showOwned ? (
-          <span
-            className="shrink-0 text-[13px] font-semibold tabular-nums"
-            aria-label={t("myGame.collection.factionOwned", {
-              owned: group.owned,
-              total,
-            })}
-            data-testid="collection-faction-owned"
-          >
-            {group.owned}/{total}
-          </span>
-        ) : null}
-      </header>
+      <FactionHeader group={group} showOwned={showOwned} />
       <ul className={unitSlots}>
         {group.units.map((unit) => (
           <li key={unit.unitId} className="min-w-0">

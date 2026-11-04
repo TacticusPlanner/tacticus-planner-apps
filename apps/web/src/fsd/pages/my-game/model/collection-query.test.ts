@@ -6,8 +6,9 @@ import {
   defaultCollectionQuery,
   isCollectionAlliance,
   isCollectionAttackType,
+  isCollectionGrouping,
   isCollectionKind,
-  isCollectionOwnership,
+  isCollectionLayout,
   isCollectionProgression,
   isCollectionQuickFilter,
   isCollectionRank,
@@ -24,7 +25,6 @@ describe("collection query validators", () => {
     expect(isCollectionQuickFilter("readyToAscend")).toBe(false)
     expect(isCollectionAlliance("Xenos")).toBe(true)
     expect(isCollectionAlliance("Neutral")).toBe(false)
-    expect(isCollectionOwnership("unowned")).toBe(true)
     expect(isCollectionKind("mow")).toBe(true)
     expect(isCollectionKind("npc")).toBe(false)
     expect(isCollectionRarity("Mythic")).toBe(true)
@@ -39,15 +39,25 @@ describe("collection query validators", () => {
     expect(isCollectionShardSource("Onslaught")).toBe(false)
     expect(isCollectionProgression("Legendary:RedThreeStars")).toBe(true)
     expect(isCollectionProgression("Legendary")).toBe(false)
+    expect(isCollectionLayout("roster")).toBe(true)
+    expect(isCollectionLayout("gallery")).toBe(false)
+    expect(isCollectionGrouping("none")).toBe(true)
+    expect(isCollectionGrouping("alliance")).toBe(false)
   })
 })
 
 describe("activeFilterCount", () => {
-  it("counts nothing for the default query, whatever the sort", () => {
+  it("counts nothing for the default query, whatever the sort or view", () => {
     expect(activeFilterCount(defaultCollectionQuery)).toBe(0)
     expect(activeFilterCount({ ...defaultCollectionQuery, sort: "rank" })).toBe(
       0
     )
+    expect(
+      activeFilterCount({ ...defaultCollectionQuery, view: "roster" })
+    ).toBe(0)
+    expect(
+      activeFilterCount({ ...defaultCollectionQuery, group: "none" })
+    ).toBe(0)
   })
 
   it("counts search, each set filter, the rank range once and the quick filter", () => {
@@ -78,6 +88,12 @@ describe("activeFilterCount", () => {
     }
     expect(activeFilterCount(query)).toBe(8)
     expect(activeStandaloneFilterCount(query)).toBe(8)
+  })
+
+  it("does not count Hide unowned as a filter", () => {
+    expect(
+      activeFilterCount({ ...defaultCollectionQuery, hideUnowned: true })
+    ).toBe(0)
   })
 
   it("ignores a search of whitespace only", () => {
