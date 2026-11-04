@@ -80,13 +80,13 @@ type AddBoardTeam = (
 ) => void
 
 /**
- * The Overview Event board, as V1's Teams tab: every shown lane side by side from 1024px (stacked
+ * The Teams tab's Event board, as V1's Teams tab: every shown lane side by side from 1024px (stacked
  * below), each with its rule, a unit table (one column per objective listing the allowed units
  * that satisfy it, strongest owned first, coloured by rank, with a dashed line under the best
  * five) and its saved teams with each member's rank, stars and ability levels. Lane switches hide
  * lanes (kept per browser); picking objective headings merges them into one column of the units
  * satisfying all of them. A unit starts a new team, a team row opens the team editor and a lane
- * heading opens that lane's tab.
+ * heading opens the Lanes tab on that lane.
  */
 export function EventBoard({
   event,

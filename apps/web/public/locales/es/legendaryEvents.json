@@ -125,12 +125,20 @@
   },
   "tabs": {
     "label": "Secciones del evento",
-    "overview": "Resumen"
+    "overview": "Resumen",
+    "teams": "Equipos",
+    "lanes": "Carriles",
+    "progress": "Progreso",
+    "tokens": "Fichas",
+    "battles": "Batallas",
+    "leaderboard": "Clasificación",
+    "laneLabel": "Carril",
+    "allLanes": "Todos los carriles"
   },
   "eventBoard": {
     "title": "Tablero del evento",
-    "description": "Los objetivos de cada carril, las unidades que encajan en cada uno y tus equipos guardados a la vez. Elige objetivos para ver las unidades que los cumplen todos, una unidad para empezar un equipo con ella, un equipo para editarlo o un carril para abrir su pestaña.",
-    "openLane": "Abrir la pestaña {{lane}}",
+    "description": "Los objetivos de cada carril, las unidades que encajan en cada uno y tus equipos guardados a la vez. Elige objetivos para ver las unidades que los cumplen todos, una unidad para empezar un equipo con ella, un equipo para editarlo o un carril para abrirlo en la pestaña Carriles.",
+    "openLane": "Abrir {{lane}} en la pestaña Carriles",
     "teams_one": "{{count}} equipo",
     "teams_other": "{{count}} equipos",
     "noTeams": "Aún no hay equipos.",
@@ -432,8 +440,8 @@
     "event": {
       "steps": {
         "tabs": {
-          "title": "Resumen y carriles",
-          "content": "El Resumen condensa el evento; Alfa, Beta y Gamma abren un carril cada uno. En el móvil la franja se queda bajo la cabecera mientras te desplazas."
+          "title": "Pestañas del evento",
+          "content": "El Resumen condensa el evento. Equipos muestra los objetivos y unidades de todos los carriles lado a lado; Carriles, Progreso y Batallas muestran un carril cada vez, elegido con Alfa, Beta y Gamma; Fichas planifica tus fichas; Clasificación ordena las unidades en todos los carriles o en uno. En el móvil la franja se queda bajo la cabecera mientras te desplazas."
         },
         "nextToken": {
           "title": "Siguiente ficha",
@@ -454,6 +462,10 @@
         "laneSummary": {
           "title": "Resumen de carriles",
           "content": "Los puntos conseguidos en cada carril frente a su máximo y cuántas batallas has superado por completo. Elige un carril para saltar a su cuadrícula de progreso."
+        },
+        "eventBoard": {
+          "title": "Tablero del evento",
+          "content": "Los objetivos de cada carril con las unidades que encajan, las más fuertes primero, y tus equipos guardados. Activa o desactiva carriles, elige objetivos para ver las unidades que los cumplen todos y elige una unidad para empezar un equipo con ella."
         },
         "overviewLeaderboard": {
           "title": "Elegibilidad entre carriles",

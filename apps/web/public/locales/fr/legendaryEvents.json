@@ -125,12 +125,20 @@
   },
   "tabs": {
     "label": "Sections de l'événement",
-    "overview": "Aperçu"
+    "overview": "Aperçu",
+    "teams": "Équipes",
+    "lanes": "Voies",
+    "progress": "Progression",
+    "tokens": "Jetons",
+    "battles": "Combats",
+    "leaderboard": "Classement",
+    "laneLabel": "Voie",
+    "allLanes": "Toutes les voies"
   },
   "eventBoard": {
     "title": "Tableau de l'événement",
-    "description": "Les objectifs de chaque voie, les unités qui conviennent à chacun et vos équipes enregistrées d'un seul coup d'œil. Choisissez des objectifs pour voir les unités qui les remplissent tous, une unité pour commencer une équipe avec elle, une équipe pour la modifier ou une voie pour ouvrir son onglet.",
-    "openLane": "Ouvrir l'onglet {{lane}}",
+    "description": "Les objectifs de chaque voie, les unités qui conviennent à chacun et vos équipes enregistrées d'un seul coup d'œil. Choisissez des objectifs pour voir les unités qui les remplissent tous, une unité pour commencer une équipe avec elle, une équipe pour la modifier ou une voie pour l'ouvrir dans l'onglet Voies.",
+    "openLane": "Ouvrir {{lane}} dans l'onglet Voies",
     "teams_one": "{{count}} équipe",
     "teams_other": "{{count}} équipes",
     "noTeams": "Aucune équipe pour l'instant.",
@@ -432,8 +440,8 @@
     "event": {
       "steps": {
         "tabs": {
-          "title": "Aperçu et voies",
-          "content": "L'Aperçu résume l'événement ; Alpha, Bêta et Gamma ouvrent chacune une voie. Sur mobile, la barre reste sous l'en-tête pendant le défilement."
+          "title": "Onglets de l'événement",
+          "content": "L'Aperçu résume l'événement. Équipes montre les objectifs et les unités de toutes les voies côte à côte ; Voies, Progression et Combats montrent une voie à la fois, choisie avec Alpha, Bêta et Gamma ; Jetons planifie vos jetons ; Classement classe les unités sur toutes les voies ou une seule. Sur mobile, la barre reste sous l'en-tête pendant le défilement."
         },
         "nextToken": {
           "title": "Prochain jeton",
@@ -454,6 +462,10 @@
         "laneSummary": {
           "title": "Résumé des voies",
           "content": "Les points gagnés de chaque voie par rapport à son maximum et le nombre de combats entièrement terminés. Choisissez une voie pour aller à sa grille de progression."
+        },
+        "eventBoard": {
+          "title": "Tableau de l'événement",
+          "content": "Les objectifs de chaque voie avec les unités qui conviennent, les plus fortes d'abord, et vos équipes enregistrées. Affichez ou masquez des voies, choisissez des objectifs pour voir les unités qui les remplissent tous et choisissez une unité pour commencer une équipe avec elle."
         },
         "overviewLeaderboard": {
           "title": "Éligibilité toutes voies",

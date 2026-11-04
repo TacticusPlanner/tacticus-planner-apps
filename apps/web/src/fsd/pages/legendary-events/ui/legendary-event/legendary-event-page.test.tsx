@@ -277,10 +277,20 @@ const selectTab = (tab: string) => {
   // Radix tabs activate on mousedown.
   fireEvent.mouseDown(trigger, { button: 0 })
 }
+const pickLane = (lane: string) => {
+  const trigger = screen.getByTestId(`legendary-event-lane-pick-${lane}`)
+  fireEvent.mouseDown(trigger, { button: 0 })
+}
 const selectedTab = () =>
   within(screen.getByTestId("legendary-event-tab-list")).getByRole("tab", {
     selected: true,
   })
+const pickedLane = () =>
+  within(screen.getByTestId("legendary-event-lane-picker")).getByRole("tab", {
+    selected: true,
+  })
+// The Overview's lane summary renders once the event has loaded.
+const overviewReady = () => screen.findAllByTestId("lane-summary-row")
 const lanesOf = (testId: string) =>
   screen.getAllByTestId(testId).map((element) => element.dataset.lane)
 const laneLabels = () => lanesOf("legendary-event-lane-panel")
@@ -326,7 +336,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     vi.unstubAllGlobals()
   })
 
-  it("opens a known event on Overview: name, lifecycle badge, the strip, Run status, lane summary, leaderboard", async () => {
+  it("opens a known event on Overview: name, lifecycle badge, the strip, Run status, lane summary", async () => {
     renderPage("/legendary-events/astarLysander")
     const page = await screen.findByTestId("legendary-event-page")
 
@@ -341,13 +351,19 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       within(screen.getByTestId("legendary-event-tab-list"))
         .getAllByRole("tab")
         .map((tab) => tab.textContent)
-    ).toEqual(["Overview", "Alpha", "Beta", "Gamma"])
+    ).toEqual([
+      "Overview",
+      "Teams",
+      "Lanes",
+      "Progress",
+      "Tokens",
+      "Battles",
+      "Leaderboard",
+    ])
     const tabs = screen.getByTestId("legendary-event-tabs")
     const runStatus = screen.getByTestId("legendary-event-run-status")
     const summary = screen.getByTestId("legendary-event-lane-summary")
-    const leaderboard = await screen.findByTestId(
-      "legendary-event-overview-leaderboard"
-    )
+    await overviewReady()
     expect(page).toContainElement(runStatus)
     expect(follows(tabs, runStatus)).toBe(true)
     const disclaimer = screen.getByTestId(
@@ -357,8 +373,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(follows(tabs, disclaimer)).toBe(true)
     expect(follows(disclaimer, runStatus)).toBe(true)
     expect(follows(runStatus, summary)).toBe(true)
-    expect(follows(summary, leaderboard)).toBe(true)
-    // No lane section renders on Overview.
+    // The other tabs' sections do not render on Overview.
+    expect(
+      screen.queryByTestId("legendary-event-overview-leaderboard")
+    ).toBeNull()
+    expect(screen.queryByTestId("legendary-event-board")).toBeNull()
+    expect(screen.queryByTestId("legendary-event-token-plan")).toBeNull()
     expect(screen.queryByTestId("legendary-event-lane-overview")).toBeNull()
     expect(screen.queryByTestId("legendary-event-progress-grid")).toBeNull()
     expect(screen.queryByTestId("legendary-event-battles")).toBeNull()
@@ -390,28 +410,40 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     )
   })
 
-  it("shows one lane per tab in the order overview, teams, upgrade impact, progress grid, battles, leaderboard", async () => {
+  it("shows the picked lane on Lanes (overview, teams, upgrade impact), Progress, Battles and Leaderboard", async () => {
     renderPage("/legendary-events/astarLysander")
-    await screen.findByTestId("legendary-event-overview-leaderboard")
+    await overviewReady()
 
-    act(() => selectTab("beta"))
-    expect(selectedTab()).toHaveTextContent("Beta")
+    act(() => selectTab("lanes"))
+    expect(selectedTab()).toHaveTextContent("Lanes")
+    expect(pickedLane()).toHaveTextContent("Alpha")
+    act(() => pickLane("beta"))
+    expect(pickedLane()).toHaveTextContent("Beta")
     expect(laneLabels()).toEqual(["beta"])
     const overview = screen.getByTestId("legendary-event-lane-overview")
     const teams = screen.getByTestId("legendary-event-teams")
     const impact = screen.getByTestId("legendary-event-upgrade-impact")
-    const grid = screen.getByTestId("legendary-event-progress-grid")
-    const battles = screen.getByTestId("legendary-event-battles")
-    const leaderboard = await screen.findByTestId("legendary-event-leaderboard")
     expect(teams).toHaveAttribute("data-lane", "beta")
     expect(
       await screen.findByTestId("legendary-event-teams-empty")
     ).toHaveTextContent("No teams on Beta yet.")
     expect(follows(overview, teams)).toBe(true)
     expect(follows(teams, impact)).toBe(true)
-    expect(follows(impact, grid)).toBe(true)
-    expect(follows(grid, battles)).toBe(true)
-    expect(follows(battles, leaderboard)).toBe(true)
+    expect(screen.queryByTestId("legendary-event-progress-grid")).toBeNull()
+    expect(screen.queryByTestId("legendary-event-battles")).toBeNull()
+    expect(screen.queryByTestId("legendary-event-lane-summary")).toBeNull()
+
+    // The lane carries over to the other lane-scoped tabs.
+    act(() => selectTab("progress"))
+    expect(pickedLane()).toHaveTextContent("Beta")
+    expect(
+      screen.getByTestId("legendary-event-progress-grid")
+    ).toBeInTheDocument()
+    expect(lanesOf("progress-lane")).toEqual(["beta"])
+    expect(screen.queryByTestId("legendary-event-teams")).toBeNull()
+
+    act(() => selectTab("battles"))
+    const battles = screen.getByTestId("legendary-event-battles")
     expect(battles).toHaveTextContent("Battles")
     expect(lanesOf("legendary-event-battles-section")).toEqual(["beta"])
     // No served battle for Beta in this test's catalog.
@@ -419,9 +451,40 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       "No battle data for this lane yet"
     )
     expect(screen.queryByTestId("battle-selector")).toBeNull()
-    expect(lanesOf("progress-lane")).toEqual(["beta"])
+
+    // Leaderboard starts on every lane, with its own picker.
+    act(() => selectTab("leaderboard"))
+    expect(
+      await screen.findByTestId("legendary-event-overview-leaderboard")
+    ).toBeInTheDocument()
+    expect(pickedLane()).toHaveTextContent("All lanes")
+    act(() => pickLane("beta"))
+    await screen.findByTestId("legendary-event-leaderboard")
     expect(lanesOf("leaderboard-lane")).toEqual(["beta"])
     expect(screen.getAllByTestId("leaderboard-table")).toHaveLength(1)
+    expect(
+      screen.queryByTestId("legendary-event-overview-leaderboard")
+    ).toBeNull()
+  })
+
+  it("shows the Event board on Teams", async () => {
+    renderPage("/legendary-events/astarLysander")
+    await overviewReady()
+
+    act(() => selectTab("teams"))
+    expect(
+      await screen.findByTestId("legendary-event-board")
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId("legendary-event-lane-summary")).toBeNull()
+  })
+
+  it("shows the Token plan and Run forecast on Tokens, not the Next token card", async () => {
+    renderPage("/legendary-events/astarLysander")
+    await overviewReady()
+
+    act(() => selectTab("tokens"))
+    expect(screen.getByTestId("legendary-event-tokens-tab")).toBeInTheDocument()
+    expect(screen.queryByTestId("legendary-event-next-token")).toBeNull()
     expect(screen.queryByTestId("legendary-event-lane-summary")).toBeNull()
   })
 
@@ -431,7 +494,8 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     renderPage("/legendary-events/astarLysander")
     await screen.findByTestId("legendary-event-page")
 
-    act(() => selectTab("gamma"))
+    act(() => selectTab("lanes"))
+    act(() => pickLane("gamma"))
     expect(laneLabels()).toEqual(["gamma"])
 
     fireEvent.click(screen.getByTestId("open-uthar"))
@@ -448,29 +512,40 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
   describe("tab query parameter", () => {
     const currentSearch = () => screen.getByTestId("current-search")
 
-    it("writes the selected lane to the URL so a reload keeps it", async () => {
+    it("writes the selected tab and lane to the URL so a reload keeps them", async () => {
       renderPage("/legendary-events/astarLysander")
-      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await overviewReady()
 
-      act(() => selectTab("beta"))
-      expect(currentSearch()).toHaveTextContent(/^\?tab=beta$/)
+      act(() => selectTab("lanes"))
+      expect(currentSearch()).toHaveTextContent(/^\?tab=lanes$/)
+      act(() => pickLane("beta"))
+      expect(currentSearch()).toHaveTextContent(/^\?tab=lanes&lane=beta$/)
+      act(() => selectTab("leaderboard"))
+      act(() => pickLane("gamma"))
+      expect(currentSearch()).toHaveTextContent(
+        /^\?tab=leaderboard&lane=beta&scope=gamma$/
+      )
       act(() => selectTab("overview"))
-      expect(currentSearch()).toBeEmptyDOMElement()
+      expect(currentSearch()).toHaveTextContent(/^\?lane=beta&scope=gamma$/)
     })
 
-    it("restores the lane from the URL on reload", async () => {
-      renderPage("/legendary-events/astarLysander?tab=beta")
+    it("restores the tab and lane from the URL on reload", async () => {
+      renderPage("/legendary-events/astarLysander?tab=progress&lane=beta")
       await screen.findByTestId("legendary-event-page")
 
-      expect(selectedTab()).toHaveTextContent("Beta")
-      expect(laneLabels()).toEqual(["beta"])
+      expect(selectedTab()).toHaveTextContent("Progress")
+      expect(pickedLane()).toHaveTextContent("Beta")
+      expect(lanesOf("progress-lane")).toEqual(["beta"])
     })
 
-    it("opens a shared lane link on that lane", async () => {
+    it("opens a link from before the Lanes tab on Lanes for that lane", async () => {
       renderPage("/legendary-events/astarLysander?tab=gamma")
       await screen.findByTestId("legendary-event-page")
 
-      expect(selectedTab()).toHaveTextContent("Gamma")
+      expect(selectedTab()).toHaveTextContent("Lanes")
+      expect(pickedLane()).toHaveTextContent("Gamma")
+      expect(laneLabels()).toEqual(["gamma"])
+      expect(currentSearch()).toHaveTextContent(/^\?tab=lanes&lane=gamma$/)
     })
 
     it("falls back to Overview on an unknown tab value and drops it from the URL", async () => {
@@ -486,10 +561,11 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
 
     it("adds no history entry when switching tabs", async () => {
       renderPage("/legendary-events/astarLysander")
-      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await overviewReady()
 
-      act(() => selectTab("alpha"))
-      act(() => selectTab("beta"))
+      act(() => selectTab("lanes"))
+      act(() => pickLane("beta"))
+      act(() => selectTab("progress"))
       act(() => {
         fireEvent.click(screen.getByTestId("back"))
       })
@@ -505,12 +581,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
         screen.getAllByTestId("battle-selector-item")[number - 1]!
       )
 
-    it("keeps each lane's battle selection across lane tabs, starting on battle 1 without progress", async () => {
+    it("keeps each lane's battle selection across lanes, starting on battle 1 without progress", async () => {
       await seedCatalog({ battles: lysanderBattles })
       renderPage("/legendary-events/astarLysander")
-      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await overviewReady()
 
-      act(() => selectTab("alpha"))
+      act(() => selectTab("battles"))
       await screen.findByTestId("battle-preview")
       expect(battleTitle()).toBe("Battle 1")
       expect(screen.getAllByTestId("battle-selector-item")).toHaveLength(18)
@@ -524,7 +600,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       })
       expect(battleTitle()).toBe("Battle 12")
 
-      act(() => selectTab("beta"))
+      act(() => pickLane("beta"))
       await screen.findByTestId("battle-preview")
       expect(battleTitle()).toBe("Battle 1")
       act(() => {
@@ -532,34 +608,31 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       })
       expect(battleTitle()).toBe("Battle 3")
 
-      act(() => selectTab("alpha"))
+      act(() => pickLane("alpha"))
       expect(battleTitle()).toBe("Battle 12")
-      act(() => selectTab("beta"))
+      act(() => pickLane("beta"))
       expect(battleTitle()).toBe("Battle 3")
     })
 
     it("shows a skeleton and no selector while the battles read is pending", async () => {
       battlesHold.set(true)
       renderPage("/legendary-events/astarLysander")
-      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await overviewReady()
 
-      act(() => selectTab("alpha"))
+      act(() => selectTab("battles"))
       expect(screen.getByTestId("battles-loading")).toBeInTheDocument()
       expect(screen.queryByTestId("battle-selector")).toBeNull()
     })
 
-    it("shows an error with Retry that re-runs the read, keeping the rest of the lane tab", async () => {
+    it("shows an error with Retry that re-runs the read, keeping the lane picker", async () => {
       reads.fail("lre-battles")
       renderPage("/legendary-events/astarLysander")
-      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await overviewReady()
 
-      act(() => selectTab("alpha"))
+      act(() => selectTab("battles"))
       const error = await screen.findByTestId("battles-error")
       expect(
-        await screen.findByTestId("legendary-event-leaderboard")
-      ).toBeInTheDocument()
-      expect(
-        screen.getByTestId("legendary-event-progress-grid")
+        screen.getByTestId("legendary-event-lane-picker")
       ).toBeInTheDocument()
 
       // Served while the read still fails: only Retry reads them.
@@ -572,13 +645,13 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     })
   })
 
-  it("jumps from a lane summary row to that lane's progress grid heading", async () => {
+  it("jumps from a lane summary row to Progress on that lane, at its grid heading", async () => {
     // The setup file stubs scrollIntoView on HTMLElement.prototype, which shadows Element's.
     const scrollIntoView = vi
       .spyOn(HTMLElement.prototype, "scrollIntoView")
       .mockImplementation(() => {})
     renderPage("/legendary-events/astarLysander")
-    await screen.findByTestId("legendary-event-overview-leaderboard")
+    await overviewReady()
 
     const betaRow = screen
       .getAllByTestId("lane-summary-row")
@@ -586,7 +659,8 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     act(() => {
       fireEvent.click(betaRow)
     })
-    expect(selectedTab()).toHaveTextContent("Beta")
+    expect(selectedTab()).toHaveTextContent("Progress")
+    expect(pickedLane()).toHaveTextContent("Beta")
     expect(scrollIntoView).toHaveBeenCalledTimes(1)
     expect(scrollIntoView.mock.instances[0]).toBe(
       document.getElementById("legendary-event-progress-beta")
@@ -594,8 +668,10 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     scrollIntoView.mockRestore()
   })
 
-  it("keeps Only unlocked, Deduct scored points and the objective filter across tabs, resetting them on leaving", async () => {
+  it("keeps Only unlocked, Deduct scored points and the objective filter across scopes, resetting them on leaving", async () => {
     renderPage("/legendary-events/astarLysander")
+    await overviewReady()
+    act(() => selectTab("leaderboard"))
     await screen.findByTestId("legendary-event-overview-leaderboard")
     expect(lockedRows().length).toBeGreaterThan(0)
     expect(screen.getByTestId("leaderboard-deduct-scored")).toHaveAttribute(
@@ -611,7 +687,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     })
     expect(lockedRows()).toHaveLength(0)
 
-    act(() => selectTab("alpha"))
+    act(() => pickLane("alpha"))
     await screen.findByTestId("legendary-event-leaderboard")
     expect(screen.getByTestId("leaderboard-only-unlocked")).toHaveAttribute(
       "aria-checked",
@@ -628,6 +704,8 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
 
     fireEvent.click(screen.getByTestId("open-uthar"))
     await screen.findByText("Ûthar", { selector: "h1" })
+    await overviewReady()
+    act(() => selectTab("leaderboard"))
     await screen.findByTestId("legendary-event-overview-leaderboard")
     expect(screen.getByTestId("leaderboard-only-unlocked")).toHaveAttribute(
       "aria-checked",
@@ -641,16 +719,17 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
   })
 
   // Two full page renders with goal reads; slow under coverage instrumentation in CI.
-  it("previews goal targets on the leaderboards, shared across tabs and reset on leaving", async () => {
+  it("previews goal targets on the leaderboards, shared across scopes and reset on leaving", async () => {
     giveCyrusUnlockGoal()
     renderPage("/legendary-events/astarLysander")
-    await screen.findByTestId("legendary-event-overview-leaderboard")
+    await overviewReady()
+    act(() => selectTab("leaderboard"))
     const previewSwitch = await screen.findByTestId("leaderboard-goals-preview")
     await vi.waitFor(() => expect(previewSwitch).toBeEnabled())
     act(() => {
       toggleOnlyUnlocked()
     })
-    act(() => selectTab("alpha"))
+    act(() => pickLane("alpha"))
     await screen.findByTestId("legendary-event-leaderboard")
     expect(screen.getAllByTestId("leaderboard-row")).toHaveLength(1)
 
@@ -662,7 +741,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(rows).toHaveLength(2)
     expect(screen.getAllByTestId("leaderboard-preview-marker")).toHaveLength(1)
 
-    act(() => selectTab("overview"))
+    act(() => pickLane("all"))
     expect(screen.getByTestId("leaderboard-goals-preview")).toHaveAttribute(
       "aria-checked",
       "true"
@@ -670,6 +749,8 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
 
     fireEvent.click(screen.getByTestId("open-uthar"))
     await screen.findByText("Ûthar", { selector: "h1" })
+    await overviewReady()
+    act(() => selectTab("leaderboard"))
     await screen.findByTestId("legendary-event-overview-leaderboard")
     expect(screen.getByTestId("leaderboard-goals-preview")).toHaveAttribute(
       "aria-checked",
@@ -679,11 +760,13 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
 
   it("launches goal creation from a leaderboard row with the unit prefilled", async () => {
     renderPage("/legendary-events/astarLysander")
+    await overviewReady()
+    act(() => selectTab("leaderboard"))
     await screen.findByTestId("legendary-event-overview-leaderboard")
     act(() => {
       toggleOnlyUnlocked()
     })
-    act(() => selectTab("alpha"))
+    act(() => pickLane("alpha"))
     await screen.findByTestId("legendary-event-leaderboard")
 
     const menu = screen.getByTestId("leaderboard-row-menu")
@@ -712,8 +795,10 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
         .filter((element) => element.dataset.selected === "true")
         .map((element) => element.dataset.unit)
 
-    it("opens the editor from the Overview leaderboard on the chosen lane", async () => {
+    it("opens the editor from the cross-lane leaderboard on the chosen lane", async () => {
       renderPage("/legendary-events/astarLysander")
+      await overviewReady()
+      act(() => selectTab("leaderboard"))
       await screen.findByTestId("legendary-event-overview-leaderboard")
       await openDanteMenu()
       const items = await screen.findAllByTestId("leaderboard-add-to-team")
@@ -728,13 +813,16 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
         within(editor).getByRole("heading", { level: 2 })
       ).toHaveTextContent("Add a team to Gamma")
       expect(editorMembers()).toEqual(["bloodDante"])
-      expect(screen.getByTestId("legendary-event-overview")).toBeInTheDocument()
+      expect(
+        screen.getByTestId("legendary-event-leaderboard-tab")
+      ).toBeInTheDocument()
     })
 
     it("opens the editor from a lane leaderboard covering the unit's objectives", async () => {
       renderPage("/legendary-events/astarLysander")
-      await screen.findByTestId("legendary-event-overview-leaderboard")
-      act(() => selectTab("alpha"))
+      await overviewReady()
+      act(() => selectTab("leaderboard"))
+      act(() => pickLane("alpha"))
       await screen.findByTestId("legendary-event-leaderboard")
       await openDanteMenu()
       fireEvent.click(await screen.findByTestId("leaderboard-add-to-team"))
@@ -754,7 +842,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
 
   it("names Add to new team in the lane leaderboard tour step", async () => {
     renderPage("/legendary-events/astarLysander")
-    await screen.findByTestId("legendary-event-overview-leaderboard")
+    await overviewReady()
     const { desktop } = tour.steps as {
       desktop: { target: string; content: string }[]
     }
@@ -765,9 +853,9 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(step.content).toContain("Add to new team")
   })
 
-  it("registers the same tour on both forms, lane steps after the tab switch", async () => {
+  it("registers the same tour on both forms, each step on its tab", async () => {
     renderPage("/legendary-events/astarLysander")
-    await screen.findByTestId("legendary-event-overview-leaderboard")
+    await overviewReady()
 
     const { desktop, mobile } = tour.steps as {
       desktop: { target: string; before?: () => Promise<void> }[]
@@ -779,38 +867,42 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       '[data-testid="legendary-event-next-token"]',
       '[data-testid="legendary-event-run-status"]',
       '[data-testid="legendary-event-run-inputs"]',
-      '[data-testid="legendary-event-token-plan-header"]',
       '[data-testid="legendary-event-lane-summary"]',
-      '[data-testid="legendary-event-overview-leaderboard"]',
+      '[data-testid="legendary-event-board"]',
       '[data-testid="legendary-event-lane-overview"]',
       '[data-testid="legendary-event-teams"]',
       '[data-testid="legendary-event-upgrade-impact"]',
       '[data-testid="legendary-event-progress-grid"]',
+      '[data-testid="legendary-event-token-plan-header"]',
       '[data-testid="legendary-event-battles"]',
+      '[data-testid="legendary-event-overview-leaderboard"]',
       '[data-testid="legendary-event-leaderboard"]',
     ])
-    // With no teams the plan is empty, so the Token plan step's target is absent (Joyride skips it).
-    for (const step of desktop.slice(0, 7)) {
-      if (step.target.includes("legendary-event-token-plan")) {
-        expect(document.querySelector(step.target)).toBeNull()
-        continue
-      }
-      expect(document.querySelector(step.target)).not.toBeNull()
-    }
-    // `before` resolves only once the lane section is in the document, which an `act` scope
+    // `before` resolves only once the step's section is in the document, which an `act` scope
     // would withhold until it resolves, so it runs as Joyride runs it: outside act.
     const actGlobal = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
     const actEnvironment = actGlobal.IS_REACT_ACT_ENVIRONMENT
     actGlobal.IS_REACT_ACT_ENVIRONMENT = false
     try {
-      await desktop[7]!.before!()
+      for (const step of desktop) {
+        // With no teams the plan is empty, so the Token plan step's target is absent (Joyride
+        // skips it): its wait ends at its timeout, which the faked clock is moved past.
+        if (step.target.includes("legendary-event-token-plan")) {
+          const opening = step.before!()
+          await screen.findByTestId("legendary-event-tokens-tab")
+          vi.setSystemTime(Date.now() + 2000)
+          await opening
+          expect(document.querySelector(step.target)).toBeNull()
+          continue
+        }
+        await step.before!()
+        expect(document.querySelector(step.target), step.target).not.toBeNull()
+      }
     } finally {
       actGlobal.IS_REACT_ACT_ENVIRONMENT = actEnvironment
     }
-    expect(selectedTab()).toHaveTextContent("Alpha")
-    for (const step of desktop.slice(7)) {
-      expect(document.querySelector(step.target)).not.toBeNull()
-    }
+    expect(selectedTab()).toHaveTextContent("Leaderboard")
+    expect(pickedLane()).toHaveTextContent("Alpha")
   })
 
   describe("run history", () => {
@@ -821,7 +913,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     it("hides the card on an active event with no synced progress (the newest record may be the current run)", async () => {
       history.records = [utharRun1Record]
       renderPage("/legendary-events/astarLysander")
-      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await overviewReady()
       expect(screen.queryByTestId("legendary-event-last-run")).toBeNull()
       expect(screen.queryByTestId("legendary-event-history-note")).toBeNull()
     })
@@ -886,7 +978,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
           ],
         ])
         // Leaving the Overview and coming back is the same page view.
-        selectTab("alpha")
+        selectTab("lanes")
         await screen.findByTestId("legendary-event-lane")
         selectTab("overview")
         await screen.findByTestId("legendary-event-last-run")
@@ -903,9 +995,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       expect(
         screen.getByTestId("legendary-event-run-status")
       ).toBeInTheDocument()
-      expect(
-        await screen.findByTestId("legendary-event-overview-leaderboard")
-      ).toBeInTheDocument()
+      expect(await overviewReady()).toHaveLength(3)
       expect(
         screen.getByTestId("legendary-event-lane-summary")
       ).toBeInTheDocument()
@@ -938,14 +1028,14 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       await seedProgress(runTwoProgress)
       renderPage("/legendary-events/astarLysander")
       await screen.findByTestId("legendary-event-last-run")
-      selectTab("alpha")
+      selectTab("lanes")
       const line = await screen.findByTestId("team-card-last-run")
       expect(line).toHaveTextContent("Last run: cleared up to battle 3")
       expect(screen.getAllByTestId("team-card-last-run")).toHaveLength(1)
     })
   })
 
-  describe("token plan on Overview", () => {
+  describe("Next token on Overview, Token plan on Tokens", () => {
     // Lysander run 1: Alpha battle 1 won, one Alpha team that clears defeat-all three battles
     // deep, so the plan is Alpha battle 2, battle 3, then battle 1's remaining kill score.
     const runOneProgress = {
@@ -983,28 +1073,31 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       ],
     }
 
-    it("orders the Overview: Next token, Run status, Token plan, Run forecast, lane summary, leaderboard", async () => {
+    it("orders the Overview (Next token, Run status, lane summary) and Tokens (Token plan, Run forecast)", async () => {
       await seedProgress(runOneProgress)
       planApi.teams = [deepTeam]
       renderPage("/legendary-events/astarLysander")
       const card = await screen.findByTestId("next-token-view")
-      const leaderboard = await screen.findByTestId(
-        "legendary-event-overview-leaderboard"
-      )
+      await overviewReady()
 
       const order = [
         screen.getByTestId("legendary-event-next-token"),
         screen.getByTestId("legendary-event-run-status"),
-        screen.getByTestId("legendary-event-token-plan"),
-        screen.getByTestId("legendary-event-run-forecast"),
         screen.getByTestId("legendary-event-lane-summary"),
-        leaderboard,
       ]
       for (const [index, element] of order.slice(1).entries()) {
         expect(follows(order[index]!, element)).toBe(true)
       }
       expect(card).toHaveAttribute("data-lane", "alpha")
       expect(card).toHaveAttribute("data-battle", "1")
+
+      act(() => selectTab("tokens"))
+      expect(
+        follows(
+          screen.getByTestId("legendary-event-token-plan"),
+          screen.getByTestId("legendary-event-run-forecast")
+        )
+      ).toBe(true)
       expect(screen.getByTestId("token-plan-summary")).toHaveTextContent(
         /^3 tokens/
       )
@@ -1042,6 +1135,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       // Battle 2's defeat-all is Stop here: Alpha stops there, leaving battle 1's kill score.
       const card = await screen.findByTestId("next-token-view")
       await vi.waitFor(() => expect(card).toHaveAttribute("data-battle", "0"))
+      act(() => selectTab("tokens"))
       expect(screen.getByTestId("token-plan-summary")).toHaveTextContent(
         /^1 token /
       )
@@ -1058,9 +1152,10 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
 
     it("renders no token sections on an archived event", async () => {
       renderPage("/legendary-events/archivedLysander")
-      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await overviewReady()
 
       expect(screen.queryByTestId("legendary-event-next-token")).toBeNull()
+      act(() => selectTab("tokens"))
       expect(screen.queryByTestId("legendary-event-token-plan")).toBeNull()
       expect(screen.queryByTestId("legendary-event-run-forecast")).toBeNull()
     })
@@ -1070,14 +1165,16 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     it("renders a static strip, the cross-lane table and the lane table", async () => {
       await seedProgress(lysanderProgress)
       renderPage("/legendary-events/astarLysander")
-      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await overviewReady()
 
       expect(screen.getByTestId("legendary-event-tabs")).not.toHaveAttribute(
         "data-sticky"
       )
+      act(() => selectTab("leaderboard"))
       expect(await screen.findByTestId("cross-lane-table")).toBeInTheDocument()
-      act(() => selectTab("alpha"))
+      act(() => pickLane("alpha"))
       expect(await screen.findByTestId("leaderboard-table")).toBeInTheDocument()
+      act(() => selectTab("progress"))
       expect(screen.getByTestId("progress-grid")).toBeInTheDocument()
     })
   })
@@ -1088,17 +1185,19 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     it("renders the strip sticky under the header, row cards and compact rows", async () => {
       await seedProgress(lysanderProgress)
       renderPage("/legendary-events/astarLysander")
-      await screen.findByTestId("legendary-event-overview-leaderboard")
+      await overviewReady()
 
       const strip = screen.getByTestId("legendary-event-tabs")
       expect(strip).toHaveAttribute("data-sticky", "true")
       expect(strip).toHaveClass("sticky", "top-(--mobile-header-height)")
+      act(() => selectTab("leaderboard"))
       expect(await screen.findByTestId("cross-lane-list")).toBeInTheDocument()
 
-      act(() => selectTab("alpha"))
+      act(() => pickLane("alpha"))
       expect(await screen.findByTestId("leaderboard-list")).toBeInTheDocument()
-      expect(screen.getByTestId("progress-rows")).toBeInTheDocument()
       expect(screen.queryByTestId("leaderboard-table")).toBeNull()
+      act(() => selectTab("progress"))
+      expect(screen.getByTestId("progress-rows")).toBeInTheDocument()
     })
   })
 })

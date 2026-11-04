@@ -125,12 +125,20 @@
   },
   "tabs": {
     "label": "Event sections",
-    "overview": "Overview"
+    "overview": "Overview",
+    "teams": "Teams",
+    "lanes": "Lanes",
+    "progress": "Progress",
+    "tokens": "Tokens",
+    "battles": "Battles",
+    "leaderboard": "Leaderboard",
+    "laneLabel": "Lane",
+    "allLanes": "All lanes"
   },
   "eventBoard": {
     "title": "Event board",
-    "description": "Every lane's objectives, the units that fit each and your saved teams at once. Pick objectives to see the units that fit all of them, a unit to start a team with it, a team to edit it, or a lane to open its tab.",
-    "openLane": "Open the {{lane}} tab",
+    "description": "Every lane's objectives, the units that fit each and your saved teams at once. Pick objectives to see the units that fit all of them, a unit to start a team with it, a team to edit it, or a lane to open it in the Lanes tab.",
+    "openLane": "Open {{lane}} in the Lanes tab",
     "teams_one": "{{count}} team",
     "teams_other": "{{count}} teams",
     "noTeams": "No teams yet.",
@@ -432,8 +440,8 @@
     "event": {
       "steps": {
         "tabs": {
-          "title": "Overview and lanes",
-          "content": "Overview sums up the event; Alpha, Beta and Gamma open one lane each. On a phone the strip stays under the header while you scroll."
+          "title": "Event tabs",
+          "content": "Overview sums up the event. Teams shows every lane's objectives and units side by side; Lanes, Progress and Battles show one lane at a time, picked with Alpha, Beta and Gamma; Tokens plans your tokens; Leaderboard ranks units across every lane or one. On a phone the strip stays under the header while you scroll."
         },
         "nextToken": {
           "title": "Next token",
@@ -454,6 +462,10 @@
         "laneSummary": {
           "title": "Lane summary",
           "content": "Each lane's points earned against its maximum and how many battles you have fully cleared. Pick a lane to jump to its progress grid."
+        },
+        "eventBoard": {
+          "title": "Event board",
+          "content": "Every lane's objectives with the units that fit each, strongest first, and your saved teams. Turn lanes on or off, pick objectives to see the units that fit all of them, and pick a unit to start a team with it."
         },
         "overviewLeaderboard": {
           "title": "Eligibility across lanes",

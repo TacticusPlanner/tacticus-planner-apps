@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines lane reachable points (the event points a lane's teams can still earn within their depths), the next upgrade steps of a team member, how much each step adds to a lane, the Upgrade impact section on a lane tab with its Create goal action, and its tour step.
+Defines lane reachable points (the event points a lane's teams can still earn within their depths), the next upgrade steps of a team member, how much each step adds to a lane, the Upgrade impact section on the Lanes tab with its Create goal action, and its tour step.
 
 ## Requirements
 
@@ -105,9 +105,9 @@ Power in every re-estimate is the `character-combat-power` estimate of the unit 
 - **WHEN** upgrade impact is computed
 - **THEN** unlocking Certus adds his base power 45, for 88,362.4, still below battle 6's 90,944.4, so no Unlock row is listed
 
-### Requirement: Upgrade impact section on a lane tab
+### Requirement: Upgrade impact section on the Lanes tab
 
-Each lane tab SHALL render an **Upgrade impact** section after the Teams section and before the Synced progress grid. It SHALL be collapsed by default and its open state SHALL be remembered per device. Its header SHALL always show a summary derived from the rows ("4 upgrades add points · best +191", or the empty-state reason). Each row SHALL show the unit's portrait, localized name and goal badge, the step ("Unlock", "Rank to Gold II", "Ascension to Epic 3 red stars"), each affected team's depth change ("Four: battle 5 → 6") and the gain ("+191 points"). It SHALL also show a **Create goal** action that opens the shell's goal-creation sheet prefilled for that step (see `goal-creation-entry-points`). When the unit already has an Active goal whose target is at or beyond the step, the row SHALL show "In goals" instead of Create goal. The section SHALL NOT render on Overview.
+The Lanes tab SHALL render, for the picked lane, an **Upgrade impact** section after the Teams section. It SHALL be collapsed by default and its open state SHALL be remembered per device. Its header SHALL always show a summary derived from the rows ("4 upgrades add points · best +191", or the empty-state reason). Each row SHALL show the unit's portrait, localized name and goal badge, the step ("Unlock", "Rank to Gold II", "Ascension to Epic 3 red stars"), each affected team's depth change ("Four: battle 5 → 6") and the gain ("+191 points"). It SHALL also show a **Create goal** action that opens the shell's goal-creation sheet prefilled for that step (see `goal-creation-entry-points`). When the unit already has an Active goal whose target is at or beyond the step, the row SHALL show "In goals" instead of Create goal. The section SHALL NOT render on any other tab.
 
 The body SHALL distinguish:
 

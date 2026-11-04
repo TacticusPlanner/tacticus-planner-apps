@@ -139,13 +139,15 @@ describe("EventBoard", () => {
     ).toBe(true)
   })
 
-  it("opens the team editor from a team and the lane tab from its heading", () => {
+  it("opens the team editor from a team and the Lanes tab from a lane heading", () => {
     const { onOpenLane, onOpenTeam } = renderBoard()
     fireEvent.click(
       within(lane("beta")).getByRole("button", { name: "Edit Beta squad" })
     )
     expect(onOpenTeam).toHaveBeenCalledWith("beta", plan.teams[1])
-    fireEvent.click(screen.getByRole("button", { name: "Open the Gamma tab" }))
+    fireEvent.click(
+      screen.getByRole("button", { name: "Open Gamma in the Lanes tab" })
+    )
     expect(onOpenLane).toHaveBeenCalledWith("gamma")
   })
 

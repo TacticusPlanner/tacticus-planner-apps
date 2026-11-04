@@ -125,12 +125,20 @@
   },
   "tabs": {
     "label": "Bereiche des Events",
-    "overview": "Übersicht"
+    "overview": "Übersicht",
+    "teams": "Teams",
+    "lanes": "Bahnen",
+    "progress": "Fortschritt",
+    "tokens": "Tokens",
+    "battles": "Kämpfe",
+    "leaderboard": "Rangliste",
+    "laneLabel": "Bahn",
+    "allLanes": "Alle Bahnen"
   },
   "eventBoard": {
     "title": "Eventübersicht",
-    "description": "Die Ziele jeder Bahn, die passenden Einheiten und deine gespeicherten Teams auf einen Blick. Wähle Ziele, um die Einheiten zu sehen, die alle erfüllen, eine Einheit, um damit ein Team zu beginnen, ein Team, um es zu bearbeiten, oder eine Bahn, um ihren Tab zu öffnen.",
-    "openLane": "Tab {{lane}} öffnen",
+    "description": "Die Ziele jeder Bahn, die passenden Einheiten und deine gespeicherten Teams auf einen Blick. Wähle Ziele, um die Einheiten zu sehen, die alle erfüllen, eine Einheit, um damit ein Team zu beginnen, ein Team, um es zu bearbeiten, oder eine Bahn, um sie im Tab Bahnen zu öffnen.",
+    "openLane": "{{lane}} im Tab Bahnen öffnen",
     "teams_one": "{{count}} Team",
     "teams_other": "{{count}} Teams",
     "noTeams": "Noch keine Teams.",
@@ -432,8 +440,8 @@
     "event": {
       "steps": {
         "tabs": {
-          "title": "Übersicht und Lanes",
-          "content": "Die Übersicht fasst das Event zusammen; Alpha, Beta und Gamma öffnen je eine Lane. Auf dem Smartphone bleibt die Leiste beim Scrollen unter der Kopfzeile."
+          "title": "Event-Tabs",
+          "content": "Die Übersicht fasst das Event zusammen. Teams zeigt die Ziele und Einheiten aller Bahnen nebeneinander; Bahnen, Fortschritt und Kämpfe zeigen je eine Bahn, die du mit Alpha, Beta und Gamma wählst; Tokens plant deine Tokens; die Rangliste ordnet Einheiten über alle Bahnen oder eine. Auf dem Smartphone bleibt die Leiste beim Scrollen unter der Kopfzeile."
         },
         "nextToken": {
           "title": "Nächster Token",
@@ -454,6 +462,10 @@
         "laneSummary": {
           "title": "Lane-Zusammenfassung",
           "content": "Die erzielten Punkte jeder Lane im Verhältnis zum Maximum und wie viele Kämpfe du vollständig abgeschlossen hast. Wähle eine Lane, um zu ihrem Fortschrittsraster zu springen."
+        },
+        "eventBoard": {
+          "title": "Eventübersicht",
+          "content": "Die Ziele jeder Bahn mit den passenden Einheiten, die stärksten zuerst, und deine gespeicherten Teams. Blende Bahnen ein oder aus, wähle Ziele, um die Einheiten zu sehen, die alle erfüllen, und wähle eine Einheit, um damit ein Team zu beginnen."
         },
         "overviewLeaderboard": {
           "title": "Eignung über alle Lanes",

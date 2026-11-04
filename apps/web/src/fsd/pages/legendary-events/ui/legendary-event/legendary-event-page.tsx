@@ -6,7 +6,6 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
-  LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEventLaneId,
   useClearEstimateConfig,
   useLegendaryEvent,
@@ -28,7 +27,6 @@ import {
 } from "@/features/legendary-event-tokens"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { useSearchParamState } from "@/shared/lib"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
@@ -43,7 +41,6 @@ import {
   buildRunStatusViewModel,
   readValue,
   type LegendaryEventPageViewModel,
-  type LegendaryEventTab,
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
@@ -63,13 +60,9 @@ import {
   pickerGoalsPreview,
 } from "./teams/teams.view-model"
 
-const isEventTab = (value: string) =>
-  value === "overview" ||
-  (LEGENDARY_EVENT_LANE_IDS as readonly string[]).includes(value)
-
 /** `/legendary-events/:eventId`: computes the page's view model once and renders the tab-strip
- *  page (design D3). An unknown id replaces the route with the hub. The selected tab is the `tab`
- *  query parameter (replace history), which navigation to another event does not carry. The
+ *  page (design D3). An unknown id replaces the route with the hub. The selected tab and lane are the
+ *  `tab` and `lane` query parameters (replace history), which navigation to another event does not carry. The
  *  content is keyed by the event id, so the leaderboard's filters and toggles (and every read)
  *  start fresh on each event instead of carrying over. */
 export function LegendaryEventPage() {
@@ -86,11 +79,17 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const progress = useLegendaryEventProgress(eventId)
   const unitName = useUnitName()
   const syncTimes = useLegendaryEventSyncTimes()
-  const [selectedTab, setSelectedTab] = useSearchParamState<LegendaryEventTab>(
-    "tab",
-    isEventTab,
-    "overview"
-  )
+  const {
+    selectedTab,
+    selectedLane,
+    selectTab,
+    selectLane,
+    leaderboardScope,
+    selectLeaderboardScope,
+    openLane,
+    jumpToLane,
+    openTeams,
+  } = useLaneJump()
   // Shared by the three lanes' leaderboards and the Overview one; discarded when the page unmounts.
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -208,10 +207,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     progress: progressValue,
     roster,
   })
-  const selectedLane = selectedTab === "overview" ? undefined : selectedTab
   const upgradeImpact = useUpgradeImpact({
     eventData,
-    laneId: selectedLane,
+    laneId: selectedTab === "lanes" ? selectedLane : undefined,
     planEnabled: plan.enabled,
     planData: plan.query.data,
     units: Array.isArray(units) ? units : undefined,
@@ -224,7 +222,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const impactTeamName = useImpactTeamName(eventData, plan.query.data)
   const battlesSection = useBattlesSection({
     event: eventData,
-    laneId: selectedLane,
+    laneId: selectedTab === "battles" ? selectedLane : undefined,
     battlesRead,
     progressGrid,
   })
@@ -258,10 +256,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     plan: plan.query.data,
     run: runs.run,
   })
-  const { selectTab, jumpToLane, openTeams } = useLaneJump(
-    selectedTab,
-    setSelectedTab
-  )
   useTourPageSteps(useLegendaryEventTutorial(selectTab, runHistory.hasLastRun))
 
   // A record cached before rewards were served lacks them until the next catalog sync.
@@ -366,6 +360,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       syncedAtMs,
       selectedTab,
       onSelectTab: selectTab,
+      selectedLane,
+      onSelectLane: selectLane,
+      leaderboardScope,
+      onSelectLeaderboardScope: selectLeaderboardScope,
+      onOpenLane: openLane,
       onJumpToLane: jumpToLane,
       leaderboard: {
         ...(previewLeaderboardRows ?? leaderboardRows),
@@ -437,6 +436,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     syncedAtMs,
     selectedTab,
     selectTab,
+    selectedLane,
+    selectLane,
+    leaderboardScope,
+    selectLeaderboardScope,
+    openLane,
     jumpToLane,
     previewLeaderboardRows,
     leaderboardRows,

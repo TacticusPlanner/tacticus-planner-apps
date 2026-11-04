@@ -88,8 +88,24 @@ export interface RunInputsViewModel {
   runs: LegendaryEventRunResolution
 }
 
-/** The page's tab strip: Overview, then one tab per lane (design D3). */
-export type LegendaryEventTab = "overview" | LegendaryEventLaneId
+/** The page's tab strip (design D3), after V1's event tabs: Overview, the all-lanes Teams board,
+ *  then Lanes (one lane's overview, teams and upgrade impact), Progress, Tokens, Battles and
+ *  Leaderboard. Lanes, Progress and Battles show the selected lane; Leaderboard shows
+ *  every lane or one. */
+export const LEGENDARY_EVENT_TABS = [
+  "overview",
+  "teams",
+  "lanes",
+  "progress",
+  "tokens",
+  "battles",
+  "leaderboard",
+] as const
+
+export type LegendaryEventTab = (typeof LEGENDARY_EVENT_TABS)[number]
+
+/** The Leaderboard tab's scope: the cross-lane board, or one lane's. */
+export type LeaderboardScope = "all" | LegendaryEventLaneId
 
 export interface LegendaryEventPageViewModel {
   event: LegendaryEvent
@@ -104,7 +120,14 @@ export interface LegendaryEventPageViewModel {
   syncedAtMs: number | null | undefined
   selectedTab: LegendaryEventTab
   onSelectTab: (tab: LegendaryEventTab) => void
-  /** Selects the lane's tab and scrolls its Synced progress grid into view. */
+  /** The lane the lane-scoped tabs show. */
+  selectedLane: LegendaryEventLaneId
+  onSelectLane: (lane: LegendaryEventLaneId) => void
+  leaderboardScope: LeaderboardScope
+  onSelectLeaderboardScope: (scope: LeaderboardScope) => void
+  /** Opens the Lanes tab on that lane. */
+  onOpenLane: (lane: LegendaryEventLaneId) => void
+  /** Opens the Progress tab on that lane and scrolls its Synced progress grid into view. */
   onJumpToLane: (lane: LegendaryEventLaneId) => void
   leaderboard: LeaderboardViewModel
   progressGrid: ProgressGridViewModel

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
@@ -15,9 +16,15 @@ import { EstimatesDisclaimer } from "./estimates-disclaimer"
 import { LaneOverview } from "./lane-overview"
 import { LeaderboardSection } from "./leaderboard/leaderboard-section"
 import { LegendaryEventHeader } from "./legendary-event-header"
-import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-model"
+import type {
+  LegendaryEventPageViewModel,
+  LegendaryEventTab,
+} from "./legendary-event-page.view-model"
 import { LegendaryEventPlanEntry } from "./legendary-event-plan-entry"
-import { LegendaryEventTabs } from "./legendary-event-tabs"
+import {
+  LegendaryEventLanePicker,
+  LegendaryEventTabs,
+} from "./legendary-event-tabs"
 import { CrossLaneLeaderboard } from "./overview/cross-lane-leaderboard"
 import { EventBoard } from "./overview/event-board"
 import { LaneSummary } from "./overview/lane-summary"
@@ -29,10 +36,13 @@ import { TeamsSection } from "./teams/teams-section"
 
 /**
  * The event page on both forms (design D3): header (with the linked projects and the plan wizard
- * button), the tab strip, then the Overview tab (Next token, Run status, Notes, Last run, Token plan, Run forecast, lane summary, cross-lane leaderboard) or a lane tab
- * (lane overview, Teams, Upgrade impact, synced progress, Battles, then the lane's leaderboard). The forms
- * differ only in the strip's stickiness and in the table-versus-cards rendering of the leaderboard
- * and grid. The team editor is mounted once here (design D4), so the Teams section and both
+ * button), the tab strip, then one tab, after V1's event tabs: Overview (Next token, Run status,
+ * Notes, Last run, lane summary), Teams (the all-lanes Event board), Lanes (one lane's overview,
+ * Teams and Upgrade impact), Progress (its synced progress grid), Tokens (Token plan and Run
+ * forecast), Battles (its battles) or Leaderboard (cross-lane, or one lane's). Lanes, Progress and
+ * Battles share one lane picker; Leaderboard has its own, led by All lanes. The forms differ only
+ * in the strip's stickiness and in the table-versus-cards rendering of the leaderboards and grid.
+ * The team editor is mounted once here (design D4), so the Teams board, the Teams section and the
  * leaderboards open the same instance.
  */
 export function LegendaryEventPageView({
@@ -40,8 +50,16 @@ export function LegendaryEventPageView({
   ...props
 }: LegendaryEventPageViewModel & { isMobile: boolean }) {
   const { t } = useTranslation("legendaryEvents")
-  const { selectedTab, tokens } = props
+  const {
+    selectedTab,
+    selectedLane: lane,
+    leaderboardScope: scope,
+    tokens,
+  } = props
   const unitName = useUnitName()
+  const lanePicker = (
+    <LegendaryEventLanePicker onValueChange={props.onSelectLane} value={lane} />
+  )
   return (
     <div
       className="flex min-w-0 flex-col gap-4"
@@ -70,10 +88,7 @@ export function LegendaryEventPageView({
       />
       <EstimatesDisclaimer />
       {selectedTab === "overview" ? (
-        <div
-          className="flex min-w-0 flex-col gap-6"
-          data-testid="legendary-event-overview"
-        >
+        <TabPanel tab="overview">
           <NextTokenCard
             event={props.event}
             eventId={props.event.id}
@@ -86,24 +101,6 @@ export function LegendaryEventPageView({
           {props.runInputs.enabled ? (
             <PlanNotesCard eventId={props.event.id} />
           ) : null}
-          <EventBoard
-            event={props.event}
-            onAddTeam={(laneId, objectiveIndexes, unitId) =>
-              props.teamEditor.openTeamEditor({
-                laneId,
-                memberUnitIds: [unitId],
-                objectiveIndexes,
-              })
-            }
-            onOpenLane={props.onSelectTab}
-            onOpenTeam={(laneId, team) =>
-              props.teamEditor.openTeamEditor({ laneId, team })
-            }
-            progressGrid={props.progressGrid}
-            teams={props.teams.state}
-            unitPower={props.teams.unitPower}
-            catalog={props.eventBoard}
-          />
           <LastRunCard
             isMobile={isMobile}
             lastRun={props.lastRun.state}
@@ -112,6 +109,38 @@ export function LegendaryEventPageView({
             onEarlierExpanded={props.lastRun.onEarlierExpanded}
             onViewed={props.lastRun.onViewed}
           />
+          <LaneSummary
+            event={props.event}
+            onJumpToLane={props.onJumpToLane}
+            potentials={props.potentials}
+            progressGrid={props.progressGrid}
+          />
+        </TabPanel>
+      ) : null}
+      {selectedTab === "teams" ? (
+        <TabPanel tab="teams">
+          <EventBoard
+            catalog={props.eventBoard}
+            event={props.event}
+            onAddTeam={(laneId, objectiveIndexes, unitId) =>
+              props.teamEditor.openTeamEditor({
+                laneId,
+                memberUnitIds: [unitId],
+                objectiveIndexes,
+              })
+            }
+            onOpenLane={props.onOpenLane}
+            onOpenTeam={(laneId, team) =>
+              props.teamEditor.openTeamEditor({ laneId, team })
+            }
+            progressGrid={props.progressGrid}
+            teams={props.teams.state}
+            unitPower={props.teams.unitPower}
+          />
+        </TabPanel>
+      ) : null}
+      {selectedTab === "tokens" ? (
+        <TabPanel tab="tokens">
           <TokenPlanList
             event={props.event}
             eventId={props.event.id}
@@ -143,78 +172,121 @@ export function LegendaryEventPageView({
             onOpenTeams={tokens.onOpenTeams}
             view={tokens.view}
           />
-          <LaneSummary
-            event={props.event}
-            onJumpToLane={props.onJumpToLane}
-            potentials={props.potentials}
-            progressGrid={props.progressGrid}
+        </TabPanel>
+      ) : null}
+      {selectedTab === "leaderboard" ? (
+        <TabPanel lane={scope === "all" ? undefined : scope} tab="leaderboard">
+          <LegendaryEventLanePicker
+            allLanes
+            onValueChange={props.onSelectLeaderboardScope}
+            value={scope}
           />
-          <CrossLaneLeaderboard
-            event={props.event}
-            layout={isMobile ? "list" : "table"}
-            leaderboard={props.leaderboard}
-            progressGrid={props.progressGrid}
-          />
-        </div>
-      ) : (
-        <div
-          className="flex min-w-0 flex-col gap-6"
-          data-lane={selectedTab}
-          data-testid="legendary-event-lane"
-        >
+          {scope === "all" ? (
+            <CrossLaneLeaderboard
+              event={props.event}
+              layout={isMobile ? "list" : "table"}
+              leaderboard={props.leaderboard}
+              progressGrid={props.progressGrid}
+            />
+          ) : (
+            <LeaderboardSection
+              event={props.event}
+              laneId={scope}
+              layout={isMobile ? "list" : "table"}
+              leaderboard={props.leaderboard}
+              progressGrid={props.progressGrid}
+            />
+          )}
+        </TabPanel>
+      ) : null}
+      {selectedTab === "lanes" ? (
+        <TabPanel lane={lane} tab="lanes">
+          {lanePicker}
           <LaneOverview
             event={props.event}
             isMobile={isMobile}
-            laneIds={[selectedTab]}
+            laneIds={[lane]}
             potentials={props.potentials}
           />
           <TeamsSection
             editor={props.teamEditor}
             isMobile={isMobile}
-            lane={props.event[selectedTab]}
-            laneId={selectedTab}
+            lane={props.event[lane]}
+            laneId={lane}
             teams={props.teams}
           />
           {props.upgradeImpact ? (
             <UpgradeImpactSection
               eventId={props.event.id}
               goalTargets={props.upgradeImpact.goalTargets}
-              laneId={selectedTab}
+              laneId={lane}
               layout={isMobile ? "list" : "table"}
               nameOf={(unitId) => unitName("Character", unitId)}
               state={props.upgradeImpact.state}
               teamName={props.upgradeImpact.teamName}
             />
           ) : null}
+        </TabPanel>
+      ) : null}
+      {selectedTab === "progress" ? (
+        <TabPanel lane={lane} tab="progress">
+          {lanePicker}
           <ProgressSection
             event={props.event}
-            laneId={selectedTab}
+            laneId={lane}
             layout={isMobile ? "rows" : "grid"}
             marks={props.marks}
             progressGrid={props.progressGrid}
           />
+        </TabPanel>
+      ) : null}
+      {selectedTab === "battles" ? (
+        <TabPanel lane={lane} tab="battles">
+          {lanePicker}
           {props.battles ? (
             <BattlesSection
               battles={props.battles}
               isMobile={isMobile}
-              laneId={selectedTab}
+              laneId={lane}
             />
           ) : null}
-          <LeaderboardSection
-            event={props.event}
-            laneId={selectedTab}
-            layout={isMobile ? "list" : "table"}
-            leaderboard={props.leaderboard}
-            progressGrid={props.progressGrid}
-          />
-        </div>
-      )}
+        </TabPanel>
+      ) : null}
       <TeamEditorHost
         event={props.event}
         launcher={props.teamEditor}
         onlyUnlocked={props.leaderboard.onlyUnlocked}
         teams={props.teams}
       />
+    </div>
+  )
+}
+
+/** One tab's content column; a lane-scoped tab also carries its lane. The Overview and Lanes
+ *  panels keep their earlier test ids. */
+function TabPanel({
+  tab,
+  lane,
+  children,
+}: {
+  tab: LegendaryEventTab
+  lane?: string
+  children: ReactNode
+}) {
+  return (
+    <div
+      className="flex min-w-0 flex-col gap-6"
+      data-lane={lane}
+      data-tab={tab}
+      data-testid={
+        tab === "overview"
+          ? "legendary-event-overview"
+          : tab === "lanes"
+            ? "legendary-event-lane"
+            : `legendary-event-${tab}-tab`
+      }
+    >
+      {children}
     </div>
   )
 }

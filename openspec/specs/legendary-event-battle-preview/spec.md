@@ -1,22 +1,23 @@
 # legendary-event-battle-preview Specification
 
 ## Purpose
-Lets a player preview any battle of a Legendary Event lane before playing it: its map, its waves round by round, and every enemy with its level and stats, ported from V1's LE Battles tab onto V2's lane tabs.
+
+Lets a player preview any battle of a Legendary Event lane before playing it: its map, its waves round by round, and every enemy with its level and stats, ported from V1's LE Battles tab onto V2's Battles tab.
 
 ## Requirements
 
-### Requirement: Each lane tab has a Battles section
+### Requirement: The Battles tab has a Battles section
 
-Each lane tab SHALL render a **Battles** section for that lane only, after the Synced progress section and before the Eligibility leaderboard. It SHALL list the lane's battles in the order of the lane's catalog `battleIds`, read from the served `lre-battles` dataset. The section SHALL NOT render on Overview. Its heading SHALL carry `data-testid="legendary-event-battles"`.
+The Battles tab SHALL render a **Battles** section for the picked lane only. It SHALL list the lane's battles in the order of the lane's catalog `battleIds`, read from the served `lre-battles` dataset. The section SHALL NOT render on any other tab. Its heading SHALL carry `data-testid="legendary-event-battles"`.
 
 #### Scenario: Section position on Alpha
 
-- **WHEN** the user opens Lysander's Alpha tab
-- **THEN** a Battles section titled "Battles" renders below the Synced progress section and above the Eligibility leaderboard, and offers battles 1 to 18 of Alpha only
+- **WHEN** the user opens Lysander's Battles tab on Alpha
+- **THEN** a Battles section titled "Battles" renders below the lane picker and offers battles 1 to 18 of Alpha only
 
-#### Scenario: Not on Overview
+#### Scenario: Not on other tabs
 
-- **WHEN** the Overview tab is selected
+- **WHEN** the Overview or Lanes tab is selected
 - **THEN** no Battles section renders
 
 ### Requirement: One battle is selected per lane, defaulting to the next battle to play
@@ -108,6 +109,7 @@ The preview SHALL list the battle's waves sorted by `round` ascending, numbered 
 An enemy's served `ladderIndex` SHALL be read as a 1-based index into the NPC's served stat ladder, not a star count: its stats are the row at that index minus 1 (row 0 for 0 or less). Its level SHALL show that row's rank and stars as the NPC Library does.
 
 Assumptions:
+
 - Served `ladderIndex` is V1's `"{npcId}:{N}"` index (values reach 56).
 - The served ladder is in V1's `NpcService` order.
 
