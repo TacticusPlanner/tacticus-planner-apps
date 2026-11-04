@@ -59,7 +59,7 @@ describe("useCollectionQuery", () => {
       rarities: ["Epic", "Legendary"],
       rankMin: "Gold1",
       rankMax: "Diamond3",
-      ownership: "owned",
+      hideUnowned: true,
       kind: "mow",
       quick: "canAscend",
       sort: "shards",
@@ -155,7 +155,7 @@ describe("useCollectionQuery", () => {
       alliance: null,
       kind: null,
       sort: "rarity",
-      ownership: "owned",
+      hideUnowned: true,
     })
     expect(result.current.location.search).toBe("?owned=owned")
   })
@@ -229,5 +229,117 @@ describe("useCollectionQuery", () => {
     expect(result.current.location.search).toBe("?sort=rank")
     expect(result.current.navigationType).toBe("REPLACE")
     expect(window.history.length).toBe(historyLength)
+  })
+
+  describe("view", () => {
+    it("keeps the default Cards view out of the URL", () => {
+      const { result } = renderAt("/my-game/collection?view=roster")
+      act(() => result.current.state.update({ view: "cards" }))
+      expect(result.current.state.query.view).toBe("cards")
+      expect(result.current.location.search).toBe("")
+    })
+
+    it("writes the view to the URL so a reload restores it", () => {
+      const first = renderAt("/my-game/collection")
+      act(() => first.result.current.state.update({ view: "roster" }))
+      const reloaded = first.result.current.location
+      expect(reloaded.search).toBe("?view=roster")
+      expect(first.result.current.navigationType).toBe("REPLACE")
+      first.unmount()
+      localStorage.clear()
+
+      const second = renderAt(`${reloaded.pathname}${reloaded.search}`)
+      expect(second.result.current.state.query.view).toBe("roster")
+    })
+
+    it("applies the remembered view when the URL has none", () => {
+      const first = renderAt("/my-game/collection")
+      act(() => first.result.current.state.update({ view: "roster" }))
+      first.unmount()
+
+      const fresh = renderAt("/my-game/collection")
+      expect(fresh.result.current.state.query).toEqual({
+        ...defaultCollectionQuery,
+        view: "roster",
+      })
+    })
+
+    it("removes an unknown view and shows the remembered one", () => {
+      localStorage.setItem("collection.view", "roster")
+      const { result } = renderAt("/my-game/collection?view=gallery&kind=mow")
+      expect(result.current.state.query.view).toBe("roster")
+      expect(result.current.location.search).toBe("?kind=mow")
+    })
+
+    it("does not remember a view that arrived in a link", () => {
+      const linked = renderAt("/my-game/collection?view=roster")
+      expect(linked.result.current.state.query.view).toBe("roster")
+      linked.unmount()
+
+      const fresh = renderAt("/my-game/collection")
+      expect(fresh.result.current.state.query.view).toBe("cards")
+    })
+
+    it("keeps the view when filters are cleared", () => {
+      const { result } = renderAt(
+        "/my-game/collection?q=ti&quick=needToLevel&view=roster"
+      )
+      act(() => result.current.state.clear())
+      expect(result.current.state.query.view).toBe("roster")
+      expect(result.current.location.search).toBe("?view=roster")
+    })
+  })
+
+  it("keeps Hide unowned when filters are cleared", () => {
+    const { result } = renderAt("/my-game/collection?owned=owned&q=ti")
+    act(() => result.current.state.clear())
+    expect(result.current.location.search).toBe("?owned=owned")
+  })
+
+  it("drops the removed Not owned value from an old link", () => {
+    const { result } = renderAt("/my-game/collection?owned=unowned&kind=mow")
+    expect(result.current.state.query.hideUnowned).toBe(false)
+    expect(result.current.location.search).toBe("?kind=mow")
+  })
+
+  describe("grouping", () => {
+    it("keeps the default faction grouping out of the URL", () => {
+      const { result } = renderAt("/my-game/collection?group=none")
+      expect(result.current.state.query.group).toBe("none")
+      act(() => result.current.state.update({ group: "faction" }))
+      expect(result.current.location.search).toBe("")
+    })
+
+    it("applies the remembered grouping when the URL has none", () => {
+      const first = renderAt("/my-game/collection")
+      act(() => first.result.current.state.update({ group: "none" }))
+      expect(first.result.current.location.search).toBe("?group=none")
+      first.unmount()
+
+      const fresh = renderAt("/my-game/collection")
+      expect(fresh.result.current.state.query).toEqual({
+        ...defaultCollectionQuery,
+        group: "none",
+      })
+    })
+
+    it("removes an unknown grouping and does not remember a linked one", () => {
+      const bad = renderAt("/my-game/collection?group=alliance")
+      expect(bad.result.current.state.query.group).toBe("faction")
+      expect(bad.result.current.location.search).toBe("")
+      bad.unmount()
+
+      const linked = renderAt("/my-game/collection?group=none")
+      expect(linked.result.current.state.query.group).toBe("none")
+      linked.unmount()
+      const fresh = renderAt("/my-game/collection")
+      expect(fresh.result.current.state.query.group).toBe("faction")
+    })
+
+    it("keeps the grouping when filters are cleared", () => {
+      const { result } = renderAt("/my-game/collection?q=ti&group=none")
+      act(() => result.current.state.clear())
+      expect(result.current.location.search).toBe("?group=none")
+    })
   })
 })

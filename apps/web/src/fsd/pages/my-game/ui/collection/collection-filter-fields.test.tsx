@@ -60,9 +60,6 @@ describe("CollectionFilterFields", () => {
     choose(screen.getByLabelText("Alliance"), "Chaos")
     expect(update).toHaveBeenLastCalledWith({ alliance: "Chaos" })
 
-    choose(screen.getByLabelText("Ownership"), "Not owned")
-    expect(update).toHaveBeenLastCalledWith({ ownership: "unowned" })
-
     choose(screen.getByLabelText("Unit type"), "Machines of War")
     expect(update).toHaveBeenLastCalledWith({ kind: "mow" })
   })
@@ -192,13 +189,13 @@ describe("CollectionFilterFields", () => {
     expect(within(unit).getByLabelText("Alliance")).toBeInTheDocument()
   })
 
-  it("disables rank range, stars range and ownership without a roster and explains why", () => {
+  it("disables rank range and stars range without a roster and explains why", () => {
     renderFields(false)
 
-    const note = "Rank, stars and ownership filters need a synced roster."
+    const note = "Rank and stars filters need a synced roster."
     expect(screen.getByText(note)).toBeInTheDocument()
-    expect(screen.getByLabelText("Ownership")).toBeDisabled()
-    expect(screen.getByLabelText("Ownership")).toHaveAccessibleDescription(note)
+    // Hide unowned lives in the toolbar; the panel has no Ownership filter.
+    expect(screen.queryByLabelText("Ownership")).not.toBeInTheDocument()
     const rankRange = screen.getByRole("group", { name: "Rank range" })
     expect(rankRange).toHaveAccessibleDescription(note)
     for (const picker of within(rankRange).getAllByRole("combobox")) {

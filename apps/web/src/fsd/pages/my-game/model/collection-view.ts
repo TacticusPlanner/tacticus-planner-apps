@@ -118,14 +118,25 @@ export interface CollectionFactionGroup {
   factionName: string
   alliance: Alliance
   units: UnitTileUnit[]
-  /** Owned units in this faction; the header shows it against `units.length`. */
+  /** Owned units in this faction; the header shows it against `total`. */
   owned: number
+  /** Matching units in this faction, counting unowned ones hidden by Hide unowned. */
+  total: number
+}
+
+/** A listed unit with its faction, for the list shown while faction grouping is off. */
+export interface CollectionListedUnit {
+  unit: UnitTileUnit
+  factionId: string
+  factionName: string
 }
 
 /** The one structure the page renders and the owned summary is derived from. */
 export interface CollectionView {
   rosterState: CollectionRosterState
   groups: CollectionFactionGroup[]
+  /** The same units across factions, in one order: owned by the sort, then nearest to unlock. */
+  units: CollectionListedUnit[]
   owned: number
   total: number
   /** A search, filter or quick filter narrowed the list, so the counts cover matching units only. */
@@ -284,15 +295,21 @@ export function buildCollectionView(
           rankMax: null,
           starsMin: null,
           starsMax: null,
-          ownership: null,
+          hideUnowned: false,
           quick: null,
         }
   const matches = rowMatcher(effective, extras, labels)
 
   const groupsById = new Map<string, CollectionFactionGroup>()
   const rowsByFaction = new Map<string, CollectionRow[]>()
+  const totals = new Map<string, number>()
+  let total = 0
   for (const row of rows) {
     if (!matches(row)) continue
+    total += 1
+    totals.set(row.factionId, (totals.get(row.factionId) ?? 0) + 1)
+    // Hide unowned only hides units: the counts above still include them.
+    if (effective.hideUnowned && row.unit.data.state !== "owned") continue
     if (!groupsById.has(row.factionId)) {
       groupsById.set(row.factionId, {
         factionId: row.factionId,
@@ -300,6 +317,7 @@ export function buildCollectionView(
         alliance: row.alliance,
         units: [],
         owned: 0,
+        total: 0,
       })
       rowsByFaction.set(row.factionId, [])
     }
@@ -324,15 +342,26 @@ export function buildCollectionView(
         ...group,
         units,
         owned: units.filter((unit) => unit.data.state === "owned").length,
+        total: totals.get(group.factionId)!,
       }
     })
 
+  // The ungrouped order: the same comparator as within a faction, across every listed faction.
+  const units = [...rowsByFaction.values()]
+    .flat()
+    .sort((a, b) => compareRows(a, b, compareOwned, compareNames))
+    .map((row) => ({
+      unit: row.unit,
+      factionId: row.factionId,
+      factionName: groupsById.get(row.factionId)!.factionName,
+    }))
+
   const ownedCount = groups.reduce((count, group) => count + group.owned, 0)
-  const total = groups.reduce((count, group) => count + group.units.length, 0)
 
   return {
     rosterState,
     groups,
+    units,
     owned: ownedCount,
     total,
     filtered: activeFilterCount(effective) > 0,
@@ -389,8 +418,6 @@ function rowMatcher(
     if (stars && (!isOwned || !stars(row.progression))) return false
     if (matchesCombat && (!row.combat || !matchesCombat(row.combat)))
       return false
-    if (query.ownership === "owned" && !isOwned) return false
-    if (query.ownership === "unowned" && isOwned) return false
     if (query.kind !== null && row.unit.kind !== query.kind) return false
     if (query.quick !== null && !matchesQuick(row, query.quick, extras))
       return false

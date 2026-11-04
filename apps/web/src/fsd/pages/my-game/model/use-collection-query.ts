@@ -9,17 +9,22 @@ import {
 import { usePersistedSelection } from "@/shared/lib"
 
 import {
+  defaultCollectionGrouping,
+  defaultCollectionLayout,
   defaultCollectionQuery,
   defaultCollectionSort,
   isCollectionAlliance,
   isCollectionAttackType,
+  isCollectionGrouping,
   isCollectionKind,
-  isCollectionOwnership,
+  isCollectionLayout,
   isCollectionProgression,
   isCollectionQuickFilter,
   isCollectionRank,
   isCollectionRarity,
   isCollectionSort,
+  type CollectionGrouping,
+  type CollectionLayout,
   type CollectionQuery,
   type CollectionShardSource,
   type CollectionSort,
@@ -36,7 +41,7 @@ const PARAM = {
   rankMax: "rankMax",
   starsMin: "starsMin",
   starsMax: "starsMax",
-  ownership: "owned",
+  hideUnowned: "owned",
   kind: "kind",
   attack: "attack",
   hitsMin: "hitsMin",
@@ -49,14 +54,41 @@ const PARAM = {
   shardSources: "source",
   quick: "quick",
   sort: "sort",
+  view: "view",
+  group: "group",
 } as const satisfies Record<keyof CollectionQuery, string>
 
-const SORT_STORAGE_KEY = "collection.sort"
+/** The value of `?owned=` that hides unowned units; any other value is dropped from the URL. */
+const HIDE_UNOWNED_VALUE = "owned"
+const isHideUnownedValue = (
+  value: string
+): value is typeof HIDE_UNOWNED_VALUE => value === HIDE_UNOWNED_VALUE
 
-/** Every part of the query at its default except the sort, which Clear filters keeps. */
+const SORT_STORAGE_KEY = "collection.sort"
+const VIEW_STORAGE_KEY = "collection.view"
+const GROUP_STORAGE_KEY = "collection.group"
+
+/** The parts of the query that are display settings, not filters: Clear filters keeps them. */
+const SETTINGS = new Set<keyof CollectionQuery>([
+  "sort",
+  "view",
+  "group",
+  "hideUnowned",
+])
+
+/** Every part of the query at its default except the settings. */
 const CLEARED_FILTERS: Partial<CollectionQuery> = Object.fromEntries(
-  Object.entries(defaultCollectionQuery).filter(([key]) => key !== "sort")
+  Object.entries(defaultCollectionQuery).filter(
+    ([key]) => !SETTINGS.has(key as keyof CollectionQuery)
+  )
 )
+
+/** What the browser remembers for the settings the URL does not carry. */
+interface RememberedSettings {
+  sort: CollectionSort
+  view: CollectionLayout
+  group: CollectionGrouping
+}
 
 const list = (raw: string) => raw.split(",")
 
@@ -72,7 +104,7 @@ type ParamFixes = Partial<Record<string, string | null>>
 function readCollectionQuery(
   params: URLSearchParams,
   options: CollectionOptions | undefined,
-  rememberedSort: CollectionSort
+  remembered: RememberedSettings
 ): { query: CollectionQuery; fixes: ParamFixes } {
   const fixes: ParamFixes = {}
   const one = <T extends string>(
@@ -171,7 +203,7 @@ function readCollectionQuery(
     rankMax,
     starsMin,
     starsMax,
-    ownership: one(PARAM.ownership, isCollectionOwnership),
+    hideUnowned: one(PARAM.hideUnowned, isHideUnownedValue) !== null,
     kind: one(PARAM.kind, isCollectionKind),
     attack: one(PARAM.attack, isCollectionAttackType),
     hitsMin,
@@ -191,7 +223,9 @@ function readCollectionQuery(
       )
     ),
     quick: one(PARAM.quick, isCollectionQuickFilter),
-    sort: one(PARAM.sort, isCollectionSort) ?? rememberedSort,
+    sort: one(PARAM.sort, isCollectionSort) ?? remembered.sort,
+    view: one(PARAM.view, isCollectionLayout) ?? remembered.view,
+    group: one(PARAM.group, isCollectionGrouping) ?? remembered.group,
   }
   return { query, fixes }
 }
@@ -201,8 +235,13 @@ function serialize<K extends keyof CollectionQuery>(
   key: K,
   value: CollectionQuery[K]
 ): string | null {
+  if (key === "hideUnowned") return value ? HIDE_UNOWNED_VALUE : null
   if (key === "sort")
     return value === defaultCollectionSort ? null : (value as string)
+  if (key === "view")
+    return value === defaultCollectionLayout ? null : (value as string)
+  if (key === "group")
+    return value === defaultCollectionGrouping ? null : (value as string)
   if (Array.isArray(value)) return value.length > 0 ? value.join(",") : null
   if (key === "search") return value === "" ? null : (value as string)
   if (typeof value === "number") return String(value)
@@ -211,20 +250,22 @@ function serialize<K extends keyof CollectionQuery>(
 
 export interface CollectionQueryState {
   query: CollectionQuery
-  /** Changes the given parts in one history replacement; a new sort is also remembered. */
+  /** Changes the given parts in one history replacement; a new sort, view or grouping is also remembered. */
   update: (patch: Partial<CollectionQuery>) => void
-  /** Removes the search, every filter and the quick filter in one replacement; keeps the sort. */
+  /** Removes the search, every filter and the quick filter in one replacement; keeps the settings
+   *  (sort, view, grouping, and hiding unowned units). */
   clear: () => void
 }
 
 /**
  * The Collection toolbar's state, owned by the URL (`?q=&alliance=&faction=&rarity=&rankMin=
  * &rankMax=&starsMin=&starsMax=&owned=&kind=&attack=&hitsMin=&hitsMax=&move=&rangeMin=&rangeMax=
- * &damage=&trait=&source=&quick=&sort=`) so reload, Back and shared links restore it. Invalid
+ * &damage=&trait=&source=&quick=&sort=&view=&group=`) so reload, Back and shared links restore it. Invalid
  * values are dropped from the URL (a list keeps its valid items) and a backwards range is swapped.
  * `options` validates the values only the catalog knows; while it is `undefined` (catalog loading)
- * those raw values are kept and not applied yet. The last selected sort is
- * remembered in this browser and applies when the URL carries none.
+ * those raw values are kept and not applied yet. The last selected sort, view and grouping are
+ * remembered in this browser and apply when the URL carries none; a value arriving in a link is
+ * shown without being remembered.
  */
 export function useCollectionQuery(
   options: CollectionOptions | undefined
@@ -235,9 +276,26 @@ export function useCollectionQuery(
     isCollectionSort,
     defaultCollectionSort
   )
+  const [rememberedView, rememberView] =
+    usePersistedSelection<CollectionLayout>(
+      VIEW_STORAGE_KEY,
+      isCollectionLayout,
+      defaultCollectionLayout
+    )
+  const [rememberedGroup, rememberGroup] =
+    usePersistedSelection<CollectionGrouping>(
+      GROUP_STORAGE_KEY,
+      isCollectionGrouping,
+      defaultCollectionGrouping
+    )
   const { query, fixes } = useMemo(
-    () => readCollectionQuery(params, options, rememberedSort),
-    [params, options, rememberedSort]
+    () =>
+      readCollectionQuery(params, options, {
+        sort: rememberedSort,
+        view: rememberedView,
+        group: rememberedGroup,
+      }),
+    [params, options, rememberedSort, rememberedView, rememberedGroup]
   )
 
   // One replacement for every fix, so fixes to several parameters cannot overwrite each other.
@@ -260,6 +318,8 @@ export function useCollectionQuery(
   const update = useCallback(
     (patch: Partial<CollectionQuery>) => {
       if (patch.sort !== undefined) rememberSort(patch.sort)
+      if (patch.view !== undefined) rememberView(patch.view)
+      if (patch.group !== undefined) rememberGroup(patch.group)
       setParams(
         (previous) => {
           for (const key of Object.keys(patch) as (keyof CollectionQuery)[]) {
@@ -272,7 +332,7 @@ export function useCollectionQuery(
         { replace: true }
       )
     },
-    [rememberSort, setParams]
+    [rememberSort, rememberView, rememberGroup, setParams]
   )
 
   const clear = useCallback(() => update(CLEARED_FILTERS), [update])
