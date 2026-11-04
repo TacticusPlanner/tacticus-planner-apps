@@ -48,6 +48,7 @@
 - [x] 4.11 Stop a chosen Location narrowing the list once refreshed encounter data no longer offers it. Verify with `npcs-page.test.tsx`.
 - [x] 4.12 From review: a chip clears filters that exclude its variation; a mission count keeps the other encounter filters; the next run reads the viewer's date; Incursion timing uses `incursionWindow`, so `encounter-timing` moves to `pages/library/model`; the tier name and campaign label reuse their shared helpers; the page stops reading the clock while "Running now" is off. Verify with the `npcs-page.test.tsx`, `encounter-timing.test.ts` and `format-estimate-date.test.ts` cases.
 - [x] 4.13 Skip a record or battle with a source or role this build does not know, so a newer API cannot cost clients the whole optional dataset. Verify with `schemas.test.ts`.
+- [x] 4.14 From review: a modified click on a chip leaves the filters alone; a chosen game mode refreshed data no longer offers stops narrowing the list; a battle with no number or id is never summarised as battle 0. Verify with `npcs-page.test.tsx`.
 
 ## 5. Copy and tour
 

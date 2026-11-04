@@ -70,6 +70,11 @@ function formatNumberList(numbers: readonly number[]): string {
     .join(", ")
 }
 
+/** A battle's id as a number, or NaN without one: `Number(null)` would read as battle 0. */
+function battleIdNumber({ battleId }: NpcEncounterBattle): number {
+  return battleId === null ? Number.NaN : Number(battleId)
+}
+
 function numbersOf(battles: readonly NpcEncounterBattle[]): number[] {
   return battles.flatMap((battle) =>
     battle.number === null ? [] : [battle.number]
@@ -100,7 +105,7 @@ function incursionTiers(battles: readonly NpcEncounterBattle[]) {
   const byTier = new Map<number, number[]>()
   for (const battle of battles) {
     if (battle.tier === null) continue
-    const id = Number(battle.battleId)
+    const id = battleIdNumber(battle)
     byTier.set(battle.tier, [
       ...(byTier.get(battle.tier) ?? []),
       ...(Number.isFinite(id) ? [id] : []),
@@ -253,7 +258,7 @@ function useEncounterText() {
       const numbers = (group: readonly EncounterPlace[], challenge: boolean) =>
         formatNumberList(
           group.flatMap(({ battle }) => {
-            const id = battle.number ?? Number(battle.battleId)
+            const id = battle.number ?? battleIdNumber(battle)
             return battle.challenge === challenge && Number.isFinite(id)
               ? [id]
               : []
@@ -431,7 +436,15 @@ function PlaceNpcs({
                     className={chip}
                     aria-current={current ? "true" : undefined}
                     preventScrollReset
-                    onClick={() => onOpenVariation(id)}
+                    onClick={(event) => {
+                      // A modified click opens a new tab, so this page keeps its filters.
+                      const opensElsewhere =
+                        event.ctrlKey ||
+                        event.metaKey ||
+                        event.shiftKey ||
+                        event.altKey
+                      if (!opensElsewhere) onOpenVariation(id)
+                    }}
                   >
                     {content}
                   </Link>

@@ -246,6 +246,12 @@ and show the no-matching-variation state instead of navigating away. Filter stat
 - **WHEN** the user changes the Game mode filter
 - **THEN** the Location resets
 
+#### Scenario: Refreshed data stops offering the chosen filter
+
+- **GIVEN** a Game mode or Location is chosen
+- **WHEN** refreshed encounter data no longer offers it
+- **THEN** that filter stops narrowing the list and no longer counts as active
+
 #### Scenario: No Location filter without a choice to make
 
 - **WHEN** no game mode is chosen, or the chosen one has a single group (Onslaught)
@@ -290,6 +296,12 @@ and show the no-matching-variation state instead of navigating away. Filter stat
 - **GIVEN** "Min. in one battle" is 5 and a battle spawns another NPC 2 times
 - **WHEN** the user clicks that NPC's chip
 - **THEN** the filters clear, and that variation opens at that chip's level
+
+#### Scenario: A chip opens in a new tab
+
+- **GIVEN** filters that exclude the variation a chip opens
+- **WHEN** the user opens the chip with a modifier key held
+- **THEN** the current page keeps its filters and selection
 
 #### Scenario: Encounter filters describe one encounter
 

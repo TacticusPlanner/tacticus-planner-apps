@@ -1258,6 +1258,68 @@ describe("NpcsPage encounters", () => {
     )
   })
 
+  it("keeps the filters when a chip is opened in a new tab", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "campaign", "campaign1", [
+        battle({ battleId: "I03", number: 3, count: 5 }),
+        battle({ battleId: "I07", number: 7, count: 5 }),
+      ]),
+      encounter("necroBossWardenLEG", "campaign", "campaign1", [
+        battle({ battleId: "I03", number: 3, count: 2 }),
+      ]),
+    ])
+    const id = "npc-encounter-campaign-campaign1"
+    await screen.findByTestId(id)
+    await openFilters(user)
+    await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    await user.click(screen.getByTestId(`${id}-place-I03`))
+    const chip = within(screen.getByTestId(`${id}-place-I03-npcs`))
+      .getAllByRole("link")
+      .find((link) =>
+        link.getAttribute("href")?.includes("variation=necroBossWardenLEG")
+      )
+    const urlBefore = location()
+
+    await user.keyboard("{Control>}")
+    await user.click(chip as HTMLElement)
+    await user.keyboard("{/Control}")
+
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (1)"
+    )
+    expect(location()).toBe(urlBefore)
+  })
+
+  it("drops a chosen game mode that refreshed data no longer offers", async () => {
+    const user = userEvent.setup()
+    const { queryClient } = await renderWithEncounters("/library/npcs/makhotep")
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    await user.click(await screen.findByRole("option", { name: "Survival" }))
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (1)"
+    )
+
+    await seedGameCatalog({
+      "npc-encounters": wardenEncounters.filter(
+        ({ source }) => source !== "survival"
+      ),
+    })
+    act(() =>
+      refreshLocalDataAfterSync(queryClient, "catalog", ["npc-encounters"])
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId("npcs-filters-toggle")).not.toHaveTextContent(
+        "("
+      )
+    )
+    expect(screen.getByTestId("npc-name")).toBeInTheDocument()
+  })
+
   it("drops a chosen location that refreshed data no longer offers", async () => {
     const user = userEvent.setup()
     const { queryClient } = await renderWithEncounters(
@@ -1509,6 +1571,25 @@ describe("NpcsPage encounters", () => {
     expect(screen.getByTestId(`${id}-place-1|3`)).toHaveTextContent(
       "Challenge 3"
     )
+  })
+
+  it("does not read a battle without an id as battle 0", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "incursion", "tauBroadside", [
+        battle({ battleId: "1", tier: 0 }),
+        battle({ battleId: null, tier: 0 }),
+        battle({ battleId: "2", tier: 1 }),
+      ]),
+    ])
+
+    const id = "npc-encounter-incursion-tauBroadside"
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    expect(screen.getByTestId(`${id}-group-0`)).toHaveTextContent("Battles 1")
+    expect(screen.getByTestId(`${id}-group-0`)).not.toHaveTextContent(
+      "Battles 0"
+    )
+    expect(screen.getByTestId(id)).not.toHaveTextContent(/battles 0/i)
   })
 
   it("names and colours Incursion tiers by rarity, as the Incursions page does", async () => {

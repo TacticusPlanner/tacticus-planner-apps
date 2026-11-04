@@ -114,14 +114,15 @@ export function NpcsPage() {
   }, [catalog.groups, encounterLookup])
   const filters = useMemo<NpcFilters>(() => {
     const { gameMode, encounterGroup } = filterState
-    // Refreshed data can drop the chosen location, and its control may be hidden by then.
+    // Refreshed data can drop the chosen game mode or location, and its control may be hidden by then.
+    const modeOffered = gameMode !== null && locationsByMode.has(gameMode)
     const locationOffered =
-      gameMode !== null &&
+      modeOffered &&
       encounterGroup !== null &&
       locationsByMode.get(gameMode)?.has(encounterGroup) === true
     return {
       ...filterState,
-      gameMode: hasEncounters ? gameMode : null,
+      gameMode: modeOffered ? gameMode : null,
       encounterGroup: locationOffered ? encounterGroup : null,
       minCount: hasEncounters ? filterState.minCount : null,
       runningNow: canFilterRunning && filterState.runningNow,
