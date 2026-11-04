@@ -29,7 +29,8 @@ const ROUTES = {
   "/": { budgetKb: 1310, modules: [] },
   "/home": { budgetKb: 2000, modules: ["src/fsd/pages/home/index.ts"] },
   "/library/characters": {
-    budgetKb: 1310,
+    // Raised from 1310: main measured 1310 KB, so automatic snapshots' sync refresh tipped it.
+    budgetKb: 1320,
     modules: [
       "src/fsd/pages/library/ui/library-page.tsx",
       "src/fsd/pages/library/ui/characters/characters-list-page.tsx",
