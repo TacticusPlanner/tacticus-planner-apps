@@ -107,11 +107,11 @@ Required data states:
 - a signed-out session.
 
 - [x] 7.1 With a synced roster, check that Cards and Roster list the same units and counts under the Imperial filter and sort Rank. Check that Clear filters keeps the Roster view, and that reload and a fresh visit to `/my-game/collection` restore the remembered view.
-- [ ] 7.2 Toggle Hide unowned. Check that only owned units show, the summary reads matching units, and the Filters panel shows Ownership "owned". Signed out, check that the toggle is disabled with its explanation.
+- [x] 7.2 Toggle Hide unowned. Check that only owned units show, the summary keeps counting the hidden units, and the Filters panel has no Ownership filter. Signed out, check that the toggle is disabled with its explanation.
 
 ## 8. Desktop verification (viewport â‰Ą 768px, e.g. 1440Ă—900)
 
-- [ ] 8.1 Check the Roster layout:
+- [x] 8.1 Check the Roster layout:
   - sections in equal columns of at least 420px;
   - rows 44px tall;
   - columns aligned between character and MoW rows;
@@ -165,6 +165,6 @@ Required data states:
 
 - [x] 12.1 Replace the one-value `ownership` field with a `hideUnowned` boolean, still `?owned=owned`, and remove the dead `rowMatcher` branch and the strip before it. Verify with the query, view and page tests.
 - [x] 12.2 When Hide unowned hides every match, keep the summary and show a state with a Show unowned units action, plus Clear filters only while a filter is active. Add the strings in en/de/es/fr. Verify with page tests.
-- [ ] 12.3 Move the ungrouped tile's faction badge to the portrait's left edge, clear of the star pill and the rank badge. Verify live with 5-star units.
-- [ ] 12.4 Hide the bottom row's dividers in a multi-column Roster list. Verify live on a wide window.
+- [x] 12.3 Move the ungrouped tile's faction badge to the portrait's left edge, clear of the star pill and the rank badge. Verify live with 5-star units.
+- [x] 12.4 Hide the bottom row's dividers in a multi-column Roster list. Verify live on a wide window.
 - [x] 12.5 Close an expanded Roster row that leaves the list, so it does not come back open. Verify with a page test.
