@@ -7,4 +7,6 @@
  */
 export type FeatureFlag =
   /** The Legendary Event Overview's Event board (all lanes' objectives and teams at once). */
-  "LreEventBoard"
+  | "LreEventBoard"
+  /** Personal roster snapshots: Collection's Take snapshot, Compare and Manage snapshots. */
+  | "RosterSnapshots"

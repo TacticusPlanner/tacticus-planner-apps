@@ -6,6 +6,7 @@ import {
   type DiffRoster,
   type UnitDiff,
 } from "@/entities/roster-snapshot"
+import { useFeatureFlag } from "@/shared/feature-flags"
 
 import { COMPARE_CURRENT, resolveCompareSources } from "./compare-query"
 import { teamUnitIdsOf } from "./compare-view"
@@ -40,15 +41,17 @@ export type CollectionCompareState =
 /**
  * Compare mode's data (design D4): the sources, the two rosters the URL names and their diff. The
  * "to" roster, when a snapshot, is handed to the Collection view as `toRoster` so the list shows
- * that state. A guest requests nothing.
+ * that state. A guest requests nothing, and nothing is requested while the RosterSnapshots flag is off.
  */
 export function useCollectionCompare(compare: CompareQueryState): {
   state: CollectionCompareState
   toRoster: CollectionRosterOverride | undefined
 } {
   const isAuthenticated = useIsAuthenticated()
+  const snapshotsOn = useFeatureFlag("RosterSnapshots")
   const { query, applyFixes } = compare
-  const on = query.compare !== null
+  // While the RosterSnapshots flag is off a compare URL is ignored: compare mode stays off.
+  const on = snapshotsOn && query.compare !== null
   const enabled = isAuthenticated && on
   const sourcesRead = useCompareSources(enabled)
   const sources = sourcesRead.status === "ready" ? sourcesRead.data : undefined
