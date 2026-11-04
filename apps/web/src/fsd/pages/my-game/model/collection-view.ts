@@ -295,16 +295,10 @@ export function buildCollectionView(
           rankMax: null,
           starsMin: null,
           starsMax: null,
-          ownership: null,
+          hideUnowned: false,
           quick: null,
         }
-  // Hide unowned (Ownership "owned") only hides units: the counts still include them.
-  const hidesUnowned = effective.ownership === "owned"
-  const matches = rowMatcher(
-    hidesUnowned ? { ...effective, ownership: null } : effective,
-    extras,
-    labels
-  )
+  const matches = rowMatcher(effective, extras, labels)
 
   const groupsById = new Map<string, CollectionFactionGroup>()
   const rowsByFaction = new Map<string, CollectionRow[]>()
@@ -314,7 +308,8 @@ export function buildCollectionView(
     if (!matches(row)) continue
     total += 1
     totals.set(row.factionId, (totals.get(row.factionId) ?? 0) + 1)
-    if (hidesUnowned && row.unit.data.state !== "owned") continue
+    // Hide unowned only hides units: the counts above still include them.
+    if (effective.hideUnowned && row.unit.data.state !== "owned") continue
     if (!groupsById.has(row.factionId)) {
       groupsById.set(row.factionId, {
         factionId: row.factionId,
@@ -423,7 +418,6 @@ function rowMatcher(
     if (stars && (!isOwned || !stars(row.progression))) return false
     if (matchesCombat && (!row.combat || !matchesCombat(row.combat)))
       return false
-    if (query.ownership === "owned" && !isOwned) return false
     if (query.kind !== null && row.unit.kind !== query.kind) return false
     if (query.quick !== null && !matchesQuick(row, query.quick, extras))
       return false

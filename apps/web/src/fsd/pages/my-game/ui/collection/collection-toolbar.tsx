@@ -476,8 +476,8 @@ function UnownedToggle({
   return (
     <ToolbarSwitch
       label={t("myGame.collection.toolbar.hideUnowned")}
-      checked={query.ownership === "owned"}
-      onCheckedChange={(hide) => update({ ownership: hide ? "owned" : null })}
+      checked={query.hideUnowned}
+      onCheckedChange={(hideUnowned) => update({ hideUnowned })}
       disabledHint={
         rosterAvailable
           ? undefined

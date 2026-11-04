@@ -56,6 +56,7 @@ The Collection toolbar SHALL show a Hide unowned switch. It hides units the play
   - it SHALL NOT bring up the Clear filters action;
   - Clear filters SHALL leave it on;
   - the summary and the faction owned/total counts SHALL still include the hidden units, and the summary SHALL NOT call the units "matching" because of it.
+- When units match but Hide unowned hides all of them, the summary SHALL still be shown and the page SHALL NOT use the no-match empty state. It SHALL say that Hide unowned is hiding the units and offer an action that shows unowned units. Clear filters SHALL be offered there only while a filter is active.
 - Like the site's other on/off toolbar options, it SHALL be a switch with a visible label, exposed to assistive technology as a switch that is on or off.
 
 While no synced roster is available, the switch SHALL be off and disabled, with a short explanation next to it that it needs a synced roster.
@@ -65,6 +66,18 @@ While no synced roster is available, the switch SHALL be off and disabled, with 
 - **GIVEN** a synced roster with 84 of 131 units owned and no active filter
 - **WHEN** the user turns Hide unowned on
 - **THEN** only owned units are listed, the summary still reads 84 of 131 units owned, the Filters control reports no active filter, and no Clear filters action is shown
+
+#### Scenario: Hide unowned hides every matching unit
+
+- **GIVEN** a synced roster with no owned unit and no active filter
+- **WHEN** the user turns Hide unowned on
+- **THEN** the summary still reads 0 of 131 units owned, the page says Hide unowned is hiding these units, no Clear filters action is shown, and selecting Show unowned units turns Hide unowned off and lists every unit
+
+#### Scenario: Hide unowned hides everything the search finds
+
+- **GIVEN** Hide unowned is on and the search matches only unowned units
+- **WHEN** the page renders
+- **THEN** it offers both Show unowned units and Clear filters, not the no-match empty state
 
 #### Scenario: Clear filters keeps unowned units hidden
 

@@ -508,7 +508,10 @@
       },
       "empty": {
         "title": "Ninguna unidad coincide con estos filtros",
-        "body": "Cambia o borra los filtros para ver más unidades."
+        "body": "Cambia o borra los filtros para ver más unidades.",
+        "hiddenTitle": "No hay unidades desbloqueadas aquí",
+        "hiddenBody": "«Ocultar no desbloqueadas» está ocultando todas estas unidades.",
+        "showUnowned": "Mostrar unidades no desbloqueadas"
       }
     }
   },

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { cn } from "@workspace/ui/lib/utils"
 
 import {
   unitLibraryPath,
@@ -20,6 +21,11 @@ import { FactionHeader } from "./faction-header"
 const sectionGrid =
   "grid items-start gap-2.5 sm:gap-3 [grid-template-columns:repeat(auto-fill,minmax(min(26.25rem,100%),1fr))]"
 
+// Every row draws its bottom divider; this covers the dividers of the bottom row, which in a
+// multi-column list is more than the last item. It sits on the list's 4px bottom padding edge.
+const hideBottomDivider =
+  "relative after:absolute after:inset-x-0 after:bottom-1 after:h-px after:bg-card"
+
 /**
  * The Roster view: the same faction groups as the Cards view, each unit a dense row. On desktop a
  * row is a link to the unit's Library page; on mobile it expands in place, one row at a time, and
@@ -34,7 +40,10 @@ export function CollectionRoster({
   showOwned: boolean
   origins: Record<UnitKind, unknown>
 }) {
-  const row = useRosterRow(origins)
+  const row = useRosterRow(
+    groups.flatMap((group) => group.units),
+    origins
+  )
 
   return (
     <div className={sectionGrid}>
@@ -47,7 +56,7 @@ export function CollectionRoster({
           data-faction={group.factionId}
         >
           <FactionHeader group={group} showOwned={showOwned} />
-          <ul className="flex flex-col px-1 py-1">
+          <ul className={cn("flex flex-col px-1 py-1", hideBottomDivider)}>
             {group.units.map((unit) => row(unit))}
           </ul>
         </section>
@@ -67,10 +76,16 @@ export function CollectionRosterList({
   units: readonly CollectionListedUnit[]
   origins: Record<UnitKind, unknown>
 }) {
-  const row = useRosterRow(origins)
+  const row = useRosterRow(
+    units.map((entry) => entry.unit),
+    origins
+  )
 
   return (
-    <ul className={ungroupedRows} data-testid="collection-ungrouped">
+    <ul
+      className={cn(ungroupedRows, hideBottomDivider)}
+      data-testid="collection-ungrouped"
+    >
       {units.map(({ unit, factionId, factionName }) =>
         row(unit, { id: factionId, name: factionName })
       )}
@@ -81,18 +96,29 @@ export function CollectionRosterList({
 const ungroupedRows =
   "grid gap-x-3 rounded-[10px] border bg-card px-1 py-1 [grid-template-columns:repeat(auto-fill,minmax(min(26.25rem,100%),1fr))]"
 
+const rowKey = (unit: UnitTileUnit) => `${unit.kind}:${unit.unitId}`
+
 /**
  * Renders one roster row as a list item: a link on desktop, an expandable row on mobile where the
- * list keeps a single expanded row (a row that left the list simply stops matching).
+ * list keeps a single expanded row. A row that leaves the list closes, so it does not come back open.
  */
-function useRosterRow(origins: Record<UnitKind, unknown>) {
+function useRosterRow(
+  units: readonly UnitTileUnit[],
+  origins: Record<UnitKind, unknown>
+) {
   const isMobile = useIsMobile()
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  if (
+    expandedId !== null &&
+    !units.some((unit) => rowKey(unit) === expandedId)
+  ) {
+    setExpandedId(null)
+  }
 
   return (unit: UnitTileUnit, faction?: UnitFaction) => {
-    const key = `${unit.kind}:${unit.unitId}`
+    const key = rowKey(unit)
     return (
-      <li key={key} className="min-w-0 border-b last:border-b-0">
+      <li key={key} className="min-w-0 border-b">
         <UnitRosterRow
           unit={unit}
           faction={faction}

@@ -9,7 +9,6 @@ import {
   isCollectionGrouping,
   isCollectionKind,
   isCollectionLayout,
-  isCollectionOwnership,
   isCollectionProgression,
   isCollectionQuickFilter,
   isCollectionRank,
@@ -26,8 +25,6 @@ describe("collection query validators", () => {
     expect(isCollectionQuickFilter("readyToAscend")).toBe(false)
     expect(isCollectionAlliance("Xenos")).toBe(true)
     expect(isCollectionAlliance("Neutral")).toBe(false)
-    expect(isCollectionOwnership("owned")).toBe(true)
-    expect(isCollectionOwnership("unowned")).toBe(false)
     expect(isCollectionKind("mow")).toBe(true)
     expect(isCollectionKind("npc")).toBe(false)
     expect(isCollectionRarity("Mythic")).toBe(true)
@@ -95,7 +92,7 @@ describe("activeFilterCount", () => {
 
   it("does not count Hide unowned as a filter", () => {
     expect(
-      activeFilterCount({ ...defaultCollectionQuery, ownership: "owned" })
+      activeFilterCount({ ...defaultCollectionQuery, hideUnowned: true })
     ).toBe(0)
   })
 

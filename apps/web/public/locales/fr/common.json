@@ -508,7 +508,10 @@
       },
       "empty": {
         "title": "Aucune unité ne correspond à ces filtres",
-        "body": "Modifiez ou effacez les filtres pour voir plus d'unités."
+        "body": "Modifiez ou effacez les filtres pour voir plus d'unités.",
+        "hiddenTitle": "Aucune unité débloquée ici",
+        "hiddenBody": "« Masquer les non débloquées » masque toutes ces unités.",
+        "showUnowned": "Afficher les unités non débloquées"
       }
     }
   },

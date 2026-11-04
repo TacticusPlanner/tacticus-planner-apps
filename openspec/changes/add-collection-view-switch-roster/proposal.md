@@ -8,7 +8,6 @@ My Game → Collection has one layout, the faction-grouped Cards view. The Colle
   - On desktop it is the site's segmented mode control (as on the Library unit page); below 768px it is a select.
   - The selected view is held in the URL (`?view=`), is remembered in this browser like the sort, and Clear filters leaves it unchanged.
 - Add a **Hide unowned** switch to the toolbar: a display setting kept in `?owned=owned`. It replaces the Filters panel's Ownership filter, which is removed. **BREAKING** for old links carrying `owned=unowned`, which is now dropped.
-  - Hiding unowned units sets Ownership to "owned"; showing them clears it.
   - It is not counted as a filter, Clear filters leaves it on, and the summary keeps counting the hidden units.
   - Without a synced roster it is disabled, with the reason shown next to it.
 - Add the **Roster view**: the same faction groups, in the same order and with the same filters, rendered as dense rows.

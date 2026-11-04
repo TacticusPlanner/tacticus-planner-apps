@@ -862,6 +862,59 @@ const listedNames = () =>
     ),
   ].map((unit) => unit.getAttribute("title"))
 
+describe("CollectionPage when Hide unowned hides every match", () => {
+  it("keeps the summary and offers to show unowned units, not to clear filters", () => {
+    ready({ ...synced, characters: [] })
+    renderPage(1280, "/my-game/collection?owned=owned")
+
+    expect(screen.queryByTestId("collection-empty")).not.toBeInTheDocument()
+    expect(screen.getByTestId("collection-summary")).toHaveTextContent(
+      "0 of 4 units owned"
+    )
+    const hidden = screen.getByTestId("collection-all-hidden")
+    expect(hidden).toHaveTextContent(
+      "Hide unowned is hiding all of these units."
+    )
+    expect(
+      screen.queryByRole("button", { name: "Clear filters" })
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(
+      within(hidden).getByRole("button", { name: "Show unowned units" })
+    )
+
+    expect(listedNames()).toHaveLength(4)
+    expect(
+      screen.getByRole("switch", { name: "Hide unowned" })
+    ).toHaveAttribute("aria-checked", "false")
+  })
+
+  it("also offers Clear filters when a filter is set", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?owned=owned&q=calgar")
+
+    const hidden = screen.getByTestId("collection-all-hidden")
+    fireEvent.click(
+      within(hidden).getByRole("button", { name: "Clear filters" })
+    )
+
+    expect(listedNames()).toEqual(["Titus"])
+    expect(
+      screen.getByRole("switch", { name: "Hide unowned" })
+    ).toHaveAttribute("aria-checked", "true")
+  })
+
+  it("keeps the no-match state when the filters match nothing at all", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?owned=owned&q=zzz")
+
+    expect(screen.getByTestId("collection-empty")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-all-hidden")
+    ).not.toBeInTheDocument()
+  })
+})
+
 describe("CollectionPage view switch and Roster on desktop", () => {
   it("switches to Roster with the same units, order and filters", () => {
     ready(synced)
@@ -1034,6 +1087,32 @@ describe("CollectionPage view switch and Roster on mobile", () => {
     expect(
       screen.getByRole("switch", { name: "Hide unowned" })
     ).toBeInTheDocument()
+  })
+
+  it("closes an expanded row that leaves the list, so it does not come back open", async () => {
+    ready(synced)
+    renderPage(420, "/my-game/collection?view=roster")
+
+    fireEvent.click(screen.getByRole("button", { name: /^Titus,/ }))
+    expect(screen.getByRole("button", { name: /^Titus,/ })).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    )
+
+    fireEvent.change(screen.getByRole("searchbox", { name: "Search units" }), {
+      target: { value: "calgar" },
+    })
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("button", { name: /^Titus,/ })
+      ).not.toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
+
+    expect(screen.getByRole("button", { name: /^Titus,/ })).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    )
   })
 
   it("expands one row at a time and opens the unit from the expanded row", () => {

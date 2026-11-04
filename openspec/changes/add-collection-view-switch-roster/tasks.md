@@ -160,3 +160,11 @@ Required data states:
 - [x] 11.3 Update the spec delta, design and proposal, and the Collection handoff in `tacticus-planner-docs`, to the site's controls and the Hide unowned behaviour. Verify with `openspec validate --strict`.
 - [x] 11.5 Remove the Filters panel's Ownership filter now that Hide unowned covers it: `ownership` keeps only `"owned"` (a stale `owned=unowned` is dropped), Clear filters keeps it, and the filter's strings are removed and the roster note reworded in en/de/es/fr. Verify with the query, view, filter-field and page tests (no Ownership control in the panel; an old `owned=unowned` link lists every unit).
 - [x] 11.4 Re-run the gates and re-check live, desktop and mobile: the segmented view control and the switches render like the Library page and the tier list; Hide unowned shows no Clear filters and keeps the counts.
+
+## 12. PR review (#441)
+
+- [x] 12.1 Replace the one-value `ownership` field with a `hideUnowned` boolean, still `?owned=owned`, and remove the dead `rowMatcher` branch and the strip before it. Verify with the query, view and page tests.
+- [x] 12.2 When Hide unowned hides every match, keep the summary and show a state with a Show unowned units action, plus Clear filters only while a filter is active. Add the strings in en/de/es/fr. Verify with page tests.
+- [ ] 12.3 Move the ungrouped tile's faction badge to the portrait's left edge, clear of the star pill and the rank badge. Verify live with 5-star units.
+- [ ] 12.4 Hide the bottom row's dividers in a multi-column Roster list. Verify live on a wide window.
+- [x] 12.5 Close an expanded Roster row that leaves the list, so it does not come back open. Verify with a page test.

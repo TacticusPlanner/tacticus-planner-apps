@@ -508,7 +508,10 @@
       },
       "empty": {
         "title": "No unit matches these filters",
-        "body": "Change or clear the filters to see more units."
+        "body": "Change or clear the filters to see more units.",
+        "hiddenTitle": "No owned units here",
+        "hiddenBody": "Hide unowned is hiding all of these units.",
+        "showUnowned": "Show unowned units"
       }
     }
   },

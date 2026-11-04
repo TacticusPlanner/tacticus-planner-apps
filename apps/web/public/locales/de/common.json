@@ -508,7 +508,10 @@
       },
       "empty": {
         "title": "Keine Einheit passt zu diesen Filtern",
-        "body": "Ändere die Filter oder setze sie zurück, um mehr Einheiten zu sehen."
+        "body": "Ändere die Filter oder setze sie zurück, um mehr Einheiten zu sehen.",
+        "hiddenTitle": "Hier gibt es keine freigeschalteten Einheiten",
+        "hiddenBody": "„Nicht freigeschaltete ausblenden“ blendet alle diese Einheiten aus.",
+        "showUnowned": "Nicht freigeschaltete Einheiten anzeigen"
       }
     }
   },

@@ -1,5 +1,13 @@
 import { useMemo } from "react"
-import { AlertTriangle, LogIn, RefreshCw, SearchX, X } from "lucide-react"
+import {
+  AlertTriangle,
+  Eye,
+  EyeOff,
+  LogIn,
+  RefreshCw,
+  SearchX,
+  X,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
   Alert,
@@ -71,7 +79,11 @@ export function CollectionPage() {
   const { query, update, clear } = useCollectionQuery(options)
   const state = useCollectionView(query)
   const hasGroups = state.status === "ready" && state.view.groups.length > 0
-  const hasSummary = hasGroups && state.view.rosterState === "available"
+  // Shown even when Hide unowned hides every unit: the counts still include them.
+  const hasSummary =
+    state.status === "ready" &&
+    state.view.rosterState === "available" &&
+    state.view.total > 0
   const hasOwned = state.status === "ready" && state.view.owned > 0
   // What is listed, not what is counted: Hide unowned keeps unowned units in the counts.
   const hasUnowned =
@@ -142,7 +154,7 @@ export function CollectionPage() {
         quickFilters={quickFilters}
         onRetry={retry}
       />
-      {rosterAvailable && listed.groups.length > 0 ? (
+      {rosterAvailable && listed.total > 0 ? (
         <p
           className="text-sm text-muted-foreground"
           data-testid="collection-summary"
@@ -179,7 +191,15 @@ export function CollectionPage() {
           ))}
         </div>
       )}
-      {listed.groups.length > 0 ? null : <NoMatches onClear={clear} />}
+      {listed.groups.length > 0 ? null : listed.total > 0 ? (
+        <AllHidden
+          filtered={listed.filtered}
+          onClear={clear}
+          onShowUnowned={() => update({ hideUnowned: false })}
+        />
+      ) : (
+        <NoMatches onClear={clear} />
+      )}
     </div>
   )
 }
@@ -205,6 +225,49 @@ function NoMatches({ onClear }: { onClear: () => void }) {
         <X aria-hidden />
         {t("myGame.collection.toolbar.clearFilters")}
       </Button>
+    </div>
+  )
+}
+
+/** Shown when units match but Hide unowned hides all of them, so turning it off is the way out. */
+function AllHidden({
+  filtered,
+  onClear,
+  onShowUnowned,
+}: {
+  filtered: boolean
+  onClear: () => void
+  onShowUnowned: () => void
+}) {
+  const { t } = useTranslation("common")
+
+  return (
+    <div
+      className="flex flex-col items-center gap-3 rounded-[10px] border border-dashed px-4 py-10 text-center"
+      role="status"
+      data-testid="collection-all-hidden"
+    >
+      <EyeOff aria-hidden className="size-8 text-muted-foreground" />
+      <div className="space-y-1">
+        <p className="font-semibold">
+          {t("myGame.collection.empty.hiddenTitle")}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          {t("myGame.collection.empty.hiddenBody")}
+        </p>
+      </div>
+      <div className="flex flex-wrap justify-center gap-2">
+        <Button variant="outline" size="sm" onClick={onShowUnowned}>
+          <Eye aria-hidden />
+          {t("myGame.collection.empty.showUnowned")}
+        </Button>
+        {filtered ? (
+          <Button variant="outline" size="sm" onClick={onClear}>
+            <X aria-hidden />
+            {t("myGame.collection.toolbar.clearFilters")}
+          </Button>
+        ) : null}
+      </div>
     </div>
   )
 }

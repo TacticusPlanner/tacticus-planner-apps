@@ -59,7 +59,7 @@ describe("useCollectionQuery", () => {
       rarities: ["Epic", "Legendary"],
       rankMin: "Gold1",
       rankMax: "Diamond3",
-      ownership: "owned",
+      hideUnowned: true,
       kind: "mow",
       quick: "canAscend",
       sort: "shards",
@@ -155,7 +155,7 @@ describe("useCollectionQuery", () => {
       alliance: null,
       kind: null,
       sort: "rarity",
-      ownership: "owned",
+      hideUnowned: true,
     })
     expect(result.current.location.search).toBe("?owned=owned")
   })
@@ -298,7 +298,7 @@ describe("useCollectionQuery", () => {
 
   it("drops the removed Not owned value from an old link", () => {
     const { result } = renderAt("/my-game/collection?owned=unowned&kind=mow")
-    expect(result.current.state.query.ownership).toBeNull()
+    expect(result.current.state.query.hideUnowned).toBe(false)
     expect(result.current.location.search).toBe("?kind=mow")
   })
 

@@ -43,10 +43,6 @@ export type CollectionQuickFilter = (typeof collectionQuickFilters)[number]
 /** The alliances a player can filter by; Neutral has no playable units. */
 export const collectionAlliances = ["Imperial", "Chaos", "Xenos"] as const
 
-/** Hide unowned: the one ownership value, a display setting stored in `?owned=owned`. */
-const collectionOwnerships = ["owned"] as const
-type CollectionOwnership = (typeof collectionOwnerships)[number]
-
 export const collectionKinds = [
   "character",
   "mow",
@@ -77,7 +73,8 @@ export interface CollectionQuery {
   /** Rarity and stars; owned units only. */
   starsMin: Progression | null
   starsMax: Progression | null
-  ownership: CollectionOwnership | null
+  /** Lists owned units only: a display setting, kept in `?owned=owned`; the counts are unchanged. */
+  hideUnowned: boolean
   kind: UnitKind | null
   // The combat filters: catalog properties of characters, so they apply signed out too.
   attack: CollectionAttackType | null
@@ -106,7 +103,7 @@ export const defaultCollectionQuery: CollectionQuery = {
   rankMax: null,
   starsMin: null,
   starsMax: null,
-  ownership: null,
+  hideUnowned: false,
   kind: null,
   attack: null,
   hitsMin: null,
@@ -133,7 +130,6 @@ export const isCollectionLayout = includes(collectionLayouts)
 export const isCollectionGrouping = includes(collectionGroupings)
 export const isCollectionQuickFilter = includes(collectionQuickFilters)
 export const isCollectionAlliance = includes(collectionAlliances)
-export const isCollectionOwnership = includes(collectionOwnerships)
 export const isCollectionKind = includes(collectionKinds)
 export const isCollectionRarity = includes(rarityOrder)
 export const isCollectionAttackType = includes(collectionAttackTypes)

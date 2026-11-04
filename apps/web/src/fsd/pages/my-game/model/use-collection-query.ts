@@ -18,7 +18,6 @@ import {
   isCollectionGrouping,
   isCollectionKind,
   isCollectionLayout,
-  isCollectionOwnership,
   isCollectionProgression,
   isCollectionQuickFilter,
   isCollectionRank,
@@ -42,7 +41,7 @@ const PARAM = {
   rankMax: "rankMax",
   starsMin: "starsMin",
   starsMax: "starsMax",
-  ownership: "owned",
+  hideUnowned: "owned",
   kind: "kind",
   attack: "attack",
   hitsMin: "hitsMin",
@@ -59,6 +58,12 @@ const PARAM = {
   group: "group",
 } as const satisfies Record<keyof CollectionQuery, string>
 
+/** The value of `?owned=` that hides unowned units; any other value is dropped from the URL. */
+const HIDE_UNOWNED_VALUE = "owned"
+const isHideUnownedValue = (
+  value: string
+): value is typeof HIDE_UNOWNED_VALUE => value === HIDE_UNOWNED_VALUE
+
 const SORT_STORAGE_KEY = "collection.sort"
 const VIEW_STORAGE_KEY = "collection.view"
 const GROUP_STORAGE_KEY = "collection.group"
@@ -68,8 +73,7 @@ const SETTINGS = new Set<keyof CollectionQuery>([
   "sort",
   "view",
   "group",
-  // Hide unowned.
-  "ownership",
+  "hideUnowned",
 ])
 
 /** Every part of the query at its default except the settings. */
@@ -199,7 +203,7 @@ function readCollectionQuery(
     rankMax,
     starsMin,
     starsMax,
-    ownership: one(PARAM.ownership, isCollectionOwnership),
+    hideUnowned: one(PARAM.hideUnowned, isHideUnownedValue) !== null,
     kind: one(PARAM.kind, isCollectionKind),
     attack: one(PARAM.attack, isCollectionAttackType),
     hitsMin,
@@ -231,6 +235,7 @@ function serialize<K extends keyof CollectionQuery>(
   key: K,
   value: CollectionQuery[K]
 ): string | null {
+  if (key === "hideUnowned") return value ? HIDE_UNOWNED_VALUE : null
   if (key === "sort")
     return value === defaultCollectionSort ? null : (value as string)
   if (key === "view")

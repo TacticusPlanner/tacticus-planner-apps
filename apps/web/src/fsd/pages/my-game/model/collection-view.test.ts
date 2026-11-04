@@ -772,7 +772,7 @@ describe("buildCollectionView with a query", () => {
       catalog,
       roster,
       labels,
-      query({ ownership: "owned" })
+      query({ hideUnowned: true })
     )
     expect(hidden.units.map((entry) => entry.unit.unitId)).toEqual([
       "ultraTitus",
@@ -788,7 +788,7 @@ describe("buildCollectionView with a query", () => {
     )
   })
 
-  it("ignores rank range, ownership and quick filters without a roster", () => {
+  it("ignores rank range, Hide unowned and quick filters without a roster", () => {
     const view = buildCollectionView(
       catalog,
       { state: "anonymous" },
@@ -797,7 +797,7 @@ describe("buildCollectionView with a query", () => {
         alliance: "Imperial",
         quick: "canAscend",
         rankMin: "Gold1",
-        ownership: "owned",
+        hideUnowned: true,
       })
     )
 
@@ -809,7 +809,7 @@ describe("buildCollectionView with a query", () => {
       alliance: "Imperial",
       quick: null,
       rankMin: null,
-      ownership: null,
+      hideUnowned: false,
     })
   })
 

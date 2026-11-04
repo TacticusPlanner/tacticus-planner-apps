@@ -40,26 +40,23 @@ Because it is part of the query, `buildCollectionView` receives the view, but it
 
 _Alternative:_ a separate `useCollectionLayout` hook with its own search-param handling. Rejected because it would duplicate the fix-up/replace logic and could race the query's own URL fixes, which are written as one replacement.
 
-### 2. Hide unowned is a display setting stored in the `ownership` field; the Ownership filter is removed
+### 2. Hide unowned is a boolean display setting; the Ownership filter is removed
 
-The switch is on when `query.ownership === "owned"`. Turning it on calls `update({ ownership: "owned" })`, and turning it off calls `update({ ownership: null })`.
+`CollectionQuery.hideUnowned` is a boolean, serialized as `?owned=owned`. Any other `owned` value, such as an old `owned=unowned`, is dropped from the URL like any invalid value. The toolbar switch reads and writes it directly.
 
-- It reads `view.query`, the applied query, the same input the Filters panel reads. Without a roster, ownership is stripped from that query, so the switch shows off, and it is disabled with the Filters panel's roster explanation shown next to it.
-- After live review the product owner asked that hiding unowned units not behave as a filter. So `ownership: "owned"` is treated as a display setting:
-  - `activeFilterCount` counts Ownership only when it is `"unowned"`;
-  - `clear()` keeps `ownership: "owned"` and clears `"unowned"`;
-  - `buildCollectionView` matches rows without the "owned" restriction to compute `total`, the per-faction `group.total` and `filtered`, and then drops unowned rows from what it lists.
-
-  So the summary and the faction headers keep counting the hidden units.
-
-- With both in place, Ownership appeared twice: the switch and the Filters panel's Ownership select, whose "Owned" option was the same thing. At the product owner's request the select is removed. `CollectionQuery.ownership` keeps only `"owned"`; a stale `owned=unowned` is dropped from the URL like any invalid value. `ownership` joins the settings that `clear()` keeps, and listing only unowned units is no longer offered.
+- It reads `view.query`, the applied query, the same input the Filters panel reads. Without a roster it is forced off in that query, so the switch shows off, and it is disabled with the reason shown next to it.
+- It is a display setting, at the product owner's request after live review:
+  - `activeFilterCount` does not count it;
+  - `clear()` keeps it, like the other settings;
+  - `rowMatcher` does not know about it. `buildCollectionView` counts every match for `total` and the per-faction `group.total`, then skips unowned rows when listing, so the summary and the faction headers keep counting the hidden units.
+- When units match but all of them are hidden (`groups` empty, `total` above 0), the page keeps the summary and shows its own state with a Show unowned units action, because the no-match state's Clear filters would keep the setting and change nothing. Clear filters is offered there only while a filter is active.
+- The Filters panel's Ownership select is removed: with the switch, ownership appeared twice. Listing only unowned units is no longer offered.
 - It stays URL-only, not remembered in the browser, as it was when it was a filter.
-
-No new URL parameter is needed.
 
 _Alternatives:_
 
-- A separate `?unowned=` display setting. Rejected because it would overlap Ownership.
+- A separate `?unowned=` parameter. Rejected: `owned=owned` links already exist and keep working.
+- Keeping a one-value `ownership` enum. Tried first; review showed it kept a filter-shaped field and undid its filter behaviour in several places.
 - Dropping the toggle. Rejected because the handoff wants a one-tap control in the toolbar.
 - Keeping it a filter and hiding only the Clear filters button. Rejected by the product owner in favour of a true display setting.
 

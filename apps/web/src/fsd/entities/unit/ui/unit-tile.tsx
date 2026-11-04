@@ -88,7 +88,7 @@ export function UnitTile({
         </div>
         {faction ? (
           <span
-            className="absolute -top-1 -left-1 grid size-5.5 place-items-center rounded-full bg-overlay"
+            className="absolute top-1/2 -left-1 grid size-5.5 -translate-y-1/2 place-items-center rounded-full bg-overlay"
             data-testid="unit-tile-faction"
             data-faction={faction.id}
           >
