@@ -38,7 +38,11 @@ const onOpenTeams = vi.fn()
 
 function renderCard(
   view: TokenPlanView,
-  { isMobile = false, canMark = true } = {}
+  {
+    isMobile = false,
+    canMark = true,
+    onViewPlan,
+  }: { isMobile?: boolean; canMark?: boolean; onViewPlan?: () => void } = {}
 ) {
   return render(
     <NextTokenCard
@@ -47,6 +51,7 @@ function renderCard(
       isMobile={isMobile}
       onMarkToken={canMark ? onMarkToken : undefined}
       onOpenTeams={onOpenTeams}
+      onViewPlan={onViewPlan}
       view={view}
     />,
     { wrapper: i18nWrapper(i18n) }
@@ -119,7 +124,8 @@ describe("NextTokenCard", () => {
     expect(screen.getByTestId("next-token-points")).toHaveTextContent(
       "+240 points"
     )
-    const objectives = within(screen.getByTestId("token-objectives"))
+    // The first objectives list is the next token's; the rest belong to the tokens up next.
+    const objectives = within(screen.getAllByTestId("token-objectives")[0]!)
       .getAllByRole("listitem")
       .map((item) => item.dataset.objective)
     expect(objectives).toEqual(["0", "1", "4"])
@@ -133,6 +139,18 @@ describe("NextTokenCard", () => {
       planLength: 6,
       tokensLeftOver: 94,
     })
+  })
+
+  it("lists the next four tokens after it, with View all opening the plan", () => {
+    const onViewPlan = vi.fn()
+    renderCard(buildTokenPlanView(workedViewInput()), { onViewPlan })
+    const upNext = within(screen.getByTestId("next-token-up-next"))
+
+    expect(upNext.getAllByTestId("token-plan-row")).toHaveLength(4)
+    fireEvent.click(
+      upNext.getByRole("button", { name: "View all 6 planned tokens" })
+    )
+    expect(onViewPlan).toHaveBeenCalledOnce()
   })
 
   it("skips a flagged token and battles not playable yet", () => {

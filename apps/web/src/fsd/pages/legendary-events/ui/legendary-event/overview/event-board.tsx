@@ -1,6 +1,6 @@
-import { useCallback, useId, useMemo, useState } from "react"
+import { useCallback, useId, useMemo, useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, ChevronRight } from "lucide-react"
+import { Check } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -8,9 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import { Label } from "@workspace/ui/components/label"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -18,15 +16,12 @@ import {
   ObjectiveIcon,
   useLaneAllowedRule,
   useObjectiveLabel,
-  useTeamDisplayName,
   type LegendaryEvent,
   type LegendaryEventLaneId,
   type LegendaryEventRosterUnit,
-  type LegendaryEventTeam,
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { laneTeams } from "@/features/legendary-event-plan"
-import { usePersistedSelection } from "@/shared/lib"
 import { useUnitName } from "@/shared/unit-name"
 
 import type {
@@ -42,22 +37,14 @@ import {
 import {
   buildEventBoardLane,
   buildEventBoardTable,
-  eventBoardUnit,
-  isVisibleLanesValue,
-  parseVisibleLanes,
-  serializeVisibleLanes,
   type EventBoardLane,
   type EventBoardObjective,
   type EventBoardTableColumn,
-  type EventBoardTeam,
 } from "./event-board.view-model"
 import { EventBoardUnitChip } from "./event-board-unit-chip"
 
 /** The best-five line: V1 drew a dashed rule under the fifth unit of every column. */
 const TEAM_LINE = 5
-
-const VISIBLE_LANES_KEY = "legendaryEvents.eventBoard.lanes"
-const ALL_LANES = serializeVisibleLanes(LEGENDARY_EVENT_LANE_IDS)
 
 const LANE_GRID: Record<number, string> = {
   1: "lg:grid-cols-1",
@@ -80,47 +67,38 @@ type AddBoardTeam = (
 ) => void
 
 /**
- * The Teams tab's Event board, as V1's Teams tab: every shown lane side by side from 1024px (stacked
- * below), each with its rule, a unit table (one column per objective listing the allowed units
- * that satisfy it, strongest owned first, coloured by rank, with a dashed line under the best
- * five) and its saved teams with each member's rank, stars and ability levels. Lane switches hide
- * lanes (kept per browser); picking objective headings merges them into one column of the units
- * satisfying all of them. A unit starts a new team, a team row opens the team editor and a lane
- * heading opens the Lanes tab on that lane.
+ * The Teams tab's Event board, as V1's Teams tab: the shown lanes (the page's lane selection) side
+ * by side from 1024px (stacked below), each with its rule and overview figures, a unit table (one
+ * column per objective listing the allowed units that satisfy it, strongest owned first, coloured
+ * by rank, with a dashed line under the best five) and the lane's Teams section with its team
+ * cards. Picking objective headings merges them into one column of the units satisfying all of
+ * them; a unit starts a new team.
  */
 export function EventBoard({
   event,
+  laneIds,
   teams,
   progressGrid,
   unitPower,
   catalog,
-  onOpenLane,
-  onOpenTeam,
+  laneFigures,
+  laneTeamsSection,
   onAddTeam,
 }: {
   event: LegendaryEvent
+  /** The shown lanes, in lane order (the page's lane selection). */
+  laneIds: readonly LegendaryEventLaneId[]
   teams: TeamsSectionState
   progressGrid: ProgressGridViewModel
   unitPower: TeamPowerSource
   catalog: EventBoardCatalog
-  onOpenLane: (laneId: LegendaryEventLaneId) => void
-  onOpenTeam: (laneId: LegendaryEventLaneId, team: LegendaryEventTeam) => void
+  /** The lane's overview figures, under its name. */
+  laneFigures: (laneId: LegendaryEventLaneId) => ReactNode
+  /** The lane's Teams section (its team cards, Add team and Suggest teams), under its table. */
+  laneTeamsSection: (laneId: LegendaryEventLaneId) => ReactNode
   onAddTeam: AddBoardTeam
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const [visibleRaw, setVisibleRaw] = usePersistedSelection(
-    VISIBLE_LANES_KEY,
-    isVisibleLanesValue,
-    ALL_LANES
-  )
-  const visibleLanes = parseVisibleLanes(visibleRaw)
-  const toggleLane = (laneId: LegendaryEventLaneId, shown: boolean) => {
-    const next = shown
-      ? [...visibleLanes, laneId]
-      : visibleLanes.filter((id) => id !== laneId)
-    // The last shown lane stays: an empty board would hide the switches' purpose.
-    if (next.length > 0) setVisibleRaw(serializeVisibleLanes(next))
-  }
   const [selection, setSelection] = useState<
     Partial<Record<LegendaryEventLaneId, readonly number[]>>
   >({})
@@ -177,67 +155,32 @@ export function EventBoard({
             {t("eventBoard.description")}
           </p>
         </div>
-        <LaneSwitches onToggle={toggleLane} visibleLanes={visibleLanes} />
       </div>
       <div
         className={cn(
           "grid min-w-0 grid-cols-1 gap-3",
-          LANE_GRID[visibleLanes.length]
+          LANE_GRID[laneIds.length]
         )}
       >
-        {visibleLanes.map((laneId) => (
+        {laneIds.map((laneId) => (
           <EventBoardColumn
             board={lanes[laneId]}
             catalog={catalog}
             event={event}
+            figures={laneFigures(laneId)}
             key={laneId}
             laneId={laneId}
             onAddTeam={onAddTeam}
             onClearObjectives={clearObjectives}
-            onOpenLane={onOpenLane}
-            onOpenTeam={onOpenTeam}
             onToggleObjective={toggleObjective}
             selected={selection[laneId] ?? []}
+            teamsSection={laneTeamsSection(laneId)}
             teamsState={teams}
             unitPower={unitPower}
           />
         ))}
       </div>
     </section>
-  )
-}
-
-function LaneSwitches({
-  visibleLanes,
-  onToggle,
-}: {
-  visibleLanes: readonly LegendaryEventLaneId[]
-  onToggle: (laneId: LegendaryEventLaneId, shown: boolean) => void
-}) {
-  const { t } = useTranslation("legendaryEvents")
-  const id = useId()
-  return (
-    <div
-      aria-label={t("eventBoard.lanesShown")}
-      className="flex flex-wrap items-center gap-x-4 gap-y-2"
-      role="group"
-    >
-      {LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
-        const shown = visibleLanes.includes(laneId)
-        return (
-          <div className="flex items-center gap-2" key={laneId}>
-            <Switch
-              checked={shown}
-              data-testid="event-board-lane-switch"
-              disabled={shown && visibleLanes.length === 1}
-              id={`${id}-${laneId}`}
-              onCheckedChange={(checked) => onToggle(laneId, checked)}
-            />
-            <Label htmlFor={`${id}-${laneId}`}>{t(`lanes.${laneId}`)}</Label>
-          </div>
-        )
-      })}
-    </div>
   )
 }
 
@@ -249,10 +192,10 @@ function EventBoardColumn({
   unitPower,
   catalog,
   selected,
+  figures,
+  teamsSection,
   onToggleObjective,
   onClearObjectives,
-  onOpenLane,
-  onOpenTeam,
   onAddTeam,
 }: {
   event: LegendaryEvent
@@ -262,20 +205,18 @@ function EventBoardColumn({
   unitPower: TeamPowerSource
   catalog: EventBoardCatalog
   selected: readonly number[]
+  figures: ReactNode
+  teamsSection: ReactNode
   onToggleObjective: (laneId: LegendaryEventLaneId, index: number) => void
   onClearObjectives: (laneId: LegendaryEventLaneId) => void
-  onOpenLane: (laneId: LegendaryEventLaneId) => void
-  onOpenTeam: (laneId: LegendaryEventLaneId, team: LegendaryEventTeam) => void
   onAddTeam: AddBoardTeam
 }) {
   const { t } = useTranslation("legendaryEvents")
   const allowedRule = useLaneAllowedRule()
-  const displayName = useTeamDisplayName()
   const unitName = useUnitName()
   const lane = event[laneId]
   const laneName = t(`lanes.${laneId}`)
   const rule = allowedRule(lane)
-  const savedTeams = board.teams.map((entry) => entry.team)
   const teamsReady = teamsState.kind === "ready"
   const rosterById = useMemo(
     () => (catalog.roster ? rosterMap(catalog.roster) : undefined),
@@ -308,37 +249,27 @@ function EventBoardColumn({
       data-lane={laneId}
       data-testid="event-board-lane"
     >
-      <CardHeader className="flex flex-row items-center justify-between gap-2 px-3">
-        <CardTitle className="min-w-0">
-          <h3>
-            <button
-              aria-label={t("eventBoard.openLane", { lane: laneName })}
-              className="flex max-w-full items-center gap-1 rounded-md text-left hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
-              onClick={() => onOpenLane(laneId)}
+      <CardHeader className="flex min-w-0 flex-col gap-2 px-3">
+        <div className="flex w-full min-w-0 flex-row items-center justify-between gap-2">
+          <CardTitle className="min-w-0">
+            <h3 className="truncate" data-testid="legendary-event-lane-label">
+              {rule
+                ? t("laneOverview.labelWithRule", { lane: laneName, rule })
+                : laneName}
+            </h3>
+          </CardTitle>
+          {selected.length > 0 ? (
+            <Button
+              className="h-7 shrink-0 px-2 text-xs"
+              onClick={() => onClearObjectives(laneId)}
               type="button"
+              variant="ghost"
             >
-              <span className="truncate">
-                {rule
-                  ? t("laneOverview.labelWithRule", { lane: laneName, rule })
-                  : laneName}
-              </span>
-              <ChevronRight
-                aria-hidden="true"
-                className="size-4 shrink-0 text-muted-foreground"
-              />
-            </button>
-          </h3>
-        </CardTitle>
-        {selected.length > 0 ? (
-          <Button
-            className="h-7 shrink-0 px-2 text-xs"
-            onClick={() => onClearObjectives(laneId)}
-            type="button"
-            variant="ghost"
-          >
-            {t("eventBoard.clearSelection")}
-          </Button>
-        ) : null}
+              {t("eventBoard.clearSelection")}
+            </Button>
+          ) : null}
+        </div>
+        {figures}
       </CardHeader>
       <CardContent className="flex min-w-0 flex-col gap-3 px-3">
         <UnitTable
@@ -354,32 +285,7 @@ function EventBoardColumn({
           }
         />
         {teamsState.kind === "hidden" ? null : (
-          <div className="flex min-w-0 flex-col gap-1.5 border-t pt-3">
-            <h4 className="text-sm font-medium">
-              {teamsReady
-                ? t("eventBoard.teams", { count: board.teams.length })
-                : t("teams.title")}
-            </h4>
-            {teamsReady && board.teams.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                {t("eventBoard.noTeams")}
-              </p>
-            ) : null}
-            {teamsReady && board.teams.length > 0 ? (
-              <ul className="flex min-w-0 flex-col gap-1">
-                {board.teams.map((entry) => (
-                  <TeamLine
-                    entry={entry}
-                    key={entry.team.id}
-                    lane={lane}
-                    name={displayName(entry.team, lane, savedTeams)}
-                    onOpen={() => onOpenTeam(laneId, entry.team)}
-                    rosterById={rosterById}
-                  />
-                ))}
-              </ul>
-            ) : null}
-          </div>
+          <div className="min-w-0 border-t pt-3">{teamsSection}</div>
         )}
       </CardContent>
     </Card>
@@ -581,66 +487,5 @@ function ObjectiveHeading({
         )
       })}
     </div>
-  )
-}
-
-function TeamLine({
-  entry,
-  lane,
-  name,
-  rosterById,
-  onOpen,
-}: {
-  entry: EventBoardTeam
-  lane: LegendaryEvent[LegendaryEventLaneId]
-  name: string
-  rosterById: ReturnType<typeof rosterMap> | undefined
-  onOpen: () => void
-}) {
-  const { t } = useTranslation("legendaryEvents")
-  const objectiveLabel = useObjectiveLabel()
-  const covered = entry.coveredObjectiveIndexes
-    .map((index) =>
-      lane.unitsRestrictions.find((objective) => objective.index === index)
-    )
-    .filter((objective) => objective !== undefined)
-  return (
-    <li className="min-w-0">
-      <button
-        aria-label={t("eventBoard.editTeam", { name })}
-        className="flex w-full min-w-0 flex-col gap-1 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
-        data-testid="event-board-team"
-        onClick={onOpen}
-        type="button"
-      >
-        <span className="flex min-w-0 items-center gap-2">
-          <span className="min-w-0 flex-1 truncate text-sm font-medium">
-            {name}
-          </span>
-          {covered.length > 0 ? (
-            <span className="flex shrink-0 items-center gap-0.5">
-              {covered.map((objective) => {
-                const { label, icon } = objectiveLabel(objective)
-                return (
-                  <span key={objective.index} title={label}>
-                    <ObjectiveIcon className="size-4" icon={icon} />
-                    <span className="sr-only">{label}</span>
-                  </span>
-                )
-              })}
-            </span>
-          ) : null}
-        </span>
-        <span className="flex min-w-0 flex-wrap items-center gap-1 pt-1.5">
-          {entry.team.memberUnitIds.map((unitId) => (
-            <EventBoardUnitChip
-              key={unitId}
-              showStars
-              unit={eventBoardUnit(unitId, rosterById)}
-            />
-          ))}
-        </span>
-      </button>
-    </li>
   )
 }

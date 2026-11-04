@@ -8,20 +8,10 @@ import {
 
 import {
   LEGENDARY_EVENT_TABS,
-  type LeaderboardScope,
   type LegendaryEventTab,
 } from "./legendary-event-page.view-model"
 import { progressHeadingId } from "./progress/progress-heading"
-
-/** The lane (Lanes, Progress, Battles) and Leaderboard scope to show with a tab; left out, each
- *  keeps its current value. */
-export interface TabOptions {
-  lane?: LegendaryEventLaneId
-  scope?: LeaderboardScope
-}
-
-const DEFAULT_TAB: LegendaryEventTab = "overview"
-const DEFAULT_LANE: LegendaryEventLaneId = "alpha"
+import type { LaneSelection } from "./use-lane-selection"
 
 const isTab = (value: string | null): value is LegendaryEventTab =>
   (LEGENDARY_EVENT_TABS as readonly (string | null)[]).includes(value)
@@ -29,141 +19,106 @@ const isLane = (value: string | null): value is LegendaryEventLaneId =>
   (LEGENDARY_EVENT_LANE_IDS as readonly (string | null)[]).includes(value)
 
 /**
- * The page's tab and lane selection, held in the `tab` and `lane` query parameters (replace
- * history; a default value is left out), and the jumps between tabs: the lane summary's jump to a
- * lane's progress grid, and a token section's jump to a lane's Teams section or team card, each
- * scrolled into view once that tab has mounted. A link from before the Lanes tab (`?tab=beta`)
- * opens Lanes on that lane; any other unknown value falls back to the default. The Leaderboard
- * tab keeps its own scope (`scope`: every lane, or one), since it starts on the cross-lane board.
+ * The page's tab, held in the `tab` query parameter (replace history; the default tab is left
+ * out), and the jumps between tabs, each scrolled into view once its section has rendered: the
+ * lane summary's jump to a lane's progress grid, a token section's jump to a lane's Teams section
+ * or team card, and View full plan. A jump also shows its lane. A link from before the Teams tab
+ * (`?tab=beta`) opens Teams with that lane shown; any other unknown value falls back to the
+ * default. The default is the run tab while the event is active, else Overview.
  */
-export function useLaneJump() {
+export function useLaneJump(
+  defaultTab: LegendaryEventTab,
+  lanes: Pick<LaneSelection, "shown" | "reveal">
+) {
   const [params, setParams] = useSearchParams()
   const rawTab = params.get("tab")
-  const rawLane = params.get("lane")
   const legacyLane = isLane(rawTab) ? rawTab : undefined
   const selectedTab: LegendaryEventTab = legacyLane
-    ? "lanes"
+    ? "teams"
     : isTab(rawTab)
       ? rawTab
-      : DEFAULT_TAB
-  const selectedLane: LegendaryEventLaneId =
-    legacyLane ?? (isLane(rawLane) ? rawLane : DEFAULT_LANE)
-  // The Leaderboard tab's scope: every lane (the default, left out of the URL) or one lane.
-  const rawScope = params.get("scope")
-  const leaderboardScope: LeaderboardScope = isLane(rawScope) ? rawScope : "all"
+      : defaultTab
 
-  // Every parameter changes in one update, so a tab-and-lane jump never loses either half.
   const show = useCallback(
-    (tab: LegendaryEventTab, options: TabOptions = {}) =>
+    (tab: LegendaryEventTab) =>
       setParams(
         (previous) => {
-          if (tab === DEFAULT_TAB) previous.delete("tab")
+          if (tab === defaultTab) previous.delete("tab")
           else previous.set("tab", tab)
-          const { lane, scope } = options
-          if (lane !== undefined) {
-            if (lane === DEFAULT_LANE) previous.delete("lane")
-            else previous.set("lane", lane)
-          }
-          if (scope !== undefined) {
-            if (scope === "all") previous.delete("scope")
-            else previous.set("scope", scope)
-          }
           return previous
         },
         { replace: true }
       ),
-    [setParams]
+    [setParams, defaultTab]
   )
 
-  // Rewrites a legacy or invalid value to the canonical parameters.
-  const canonical =
-    (rawTab === null || (isTab(rawTab) && rawTab !== DEFAULT_TAB)) &&
-    (rawLane === null || (isLane(rawLane) && rawLane !== DEFAULT_LANE)) &&
-    (rawScope === null || isLane(rawScope))
+  // Rewrites a legacy or invalid value to the canonical parameter.
+  const { reveal } = lanes
+  const canonical = rawTab === null || isTab(rawTab)
   useEffect(() => {
     if (canonical) return
-    setParams(
-      (previous) => {
-        if (selectedTab === DEFAULT_TAB) previous.delete("tab")
-        else previous.set("tab", selectedTab)
-        if (selectedLane === DEFAULT_LANE) previous.delete("lane")
-        else previous.set("lane", selectedLane)
-        if (leaderboardScope === "all") previous.delete("scope")
-        return previous
-      },
-      { replace: true }
-    )
-  }, [canonical, selectedTab, selectedLane, leaderboardScope, setParams])
+    if (legacyLane) reveal(legacyLane)
+    show(selectedTab)
+  }, [canonical, legacyLane, reveal, selectedTab, show])
 
-  // The section a jump asked to show; consumed by the effect below once its tab and lane have
-  // mounted. A ref, not state: it drives a DOM scroll, never a render.
+  // The section a jump asked to show; consumed by the effect below once it has rendered. A ref,
+  // not state: it drives a DOM scroll, never a render.
   const jumpTarget = useRef<{
     tab: LegendaryEventTab
-    lane: LegendaryEventLaneId
     find: () => Element | null
   } | null>(null)
-
-  const selectTab = useCallback(
-    (tab: LegendaryEventTab, options?: TabOptions) => show(tab, options),
-    [show]
-  )
-  const selectLane = useCallback(
-    (lane: LegendaryEventLaneId) => show(selectedTab, { lane }),
-    [show, selectedTab]
-  )
-  const selectLeaderboardScope = useCallback(
-    (scope: LeaderboardScope) => show(selectedTab, { scope }),
-    [show, selectedTab]
-  )
-  const openLane = useCallback(
-    (lane: LegendaryEventLaneId) => show("lanes", { lane }),
-    [show]
-  )
-  const jumpToLane = useCallback(
-    (lane: LegendaryEventLaneId) => {
-      // The heading carries the sticky-strip offset as scroll-margin (see progress-parts.tsx).
-      jumpTarget.current = {
-        tab: "progress",
-        lane,
-        find: () => document.getElementById(progressHeadingId(lane)),
-      }
-      show("progress", { lane })
+  const jump = useCallback(
+    (
+      tab: LegendaryEventTab,
+      find: () => Element | null,
+      lane?: LegendaryEventLaneId
+    ) => {
+      jumpTarget.current = { tab, find }
+      if (lane) reveal(lane)
+      show(tab)
     },
-    [show]
+    [reveal, show]
+  )
+
+  const selectTab = useCallback((tab: LegendaryEventTab) => show(tab), [show])
+  const jumpToLane = useCallback(
+    (lane: LegendaryEventLaneId) =>
+      // The heading carries the sticky-strip offset as scroll-margin (see progress-parts.tsx).
+      jump("run", () => document.getElementById(progressHeadingId(lane)), lane),
+    [jump]
   )
   const openTeams = useCallback(
-    (lane: LegendaryEventLaneId, teamId?: string) => {
-      jumpTarget.current = {
-        tab: "lanes",
-        lane,
-        find: () =>
+    (lane: LegendaryEventLaneId, teamId?: string) =>
+      jump(
+        "teams",
+        () =>
           (teamId
             ? document.querySelector(
                 `[data-testid="legendary-event-team-card"][data-team="${CSS.escape(teamId)}"]`
               )
             : null) ??
-          document.querySelector('[data-testid="legendary-event-teams"]'),
-      }
-      show("lanes", { lane })
-    },
-    [show]
+          document.querySelector(
+            `[data-testid="legendary-event-teams"][data-lane="${lane}"]`
+          ),
+        lane
+      ),
+    [jump]
   )
+  const viewPlan = useCallback(
+    () =>
+      jump("plan", () =>
+        document.querySelector('[data-testid="legendary-event-token-plan"]')
+      ),
+    [jump]
+  )
+  const shownKey = lanes.shown.join(",")
   useEffect(() => {
     const target = jumpTarget.current
-    if (!target || target.tab !== selectedTab || target.lane !== selectedLane)
-      return
+    if (!target || target.tab !== selectedTab) return
+    const element = target.find()
+    if (!element) return
     jumpTarget.current = null
-    target.find()?.scrollIntoView({ block: "start" })
-  }, [selectedTab, selectedLane])
-  return {
-    selectedTab,
-    selectedLane,
-    selectTab,
-    selectLane,
-    leaderboardScope,
-    selectLeaderboardScope,
-    openLane,
-    jumpToLane,
-    openTeams,
-  }
+    element.scrollIntoView({ block: "start" })
+  }, [selectedTab, shownKey])
+  return { selectedTab, selectTab, jumpToLane, openTeams, viewPlan }
 }

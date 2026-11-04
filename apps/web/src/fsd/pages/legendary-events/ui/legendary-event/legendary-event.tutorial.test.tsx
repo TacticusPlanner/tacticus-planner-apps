@@ -91,7 +91,7 @@ function eventSteps() {
 }
 
 describe("useLegendaryEventTutorial", () => {
-  it("opens each step's tab, on Alpha, before showing it", async () => {
+  it("opens each step's tab before showing it", async () => {
     const selectTab = vi.fn()
     const { result } = renderHook(() =>
       useLegendaryEventTutorial(selectTab, false)
@@ -109,22 +109,14 @@ describe("useLegendaryEventTutorial", () => {
       await step.before?.({} as never)
       opened.push(selectTab.mock.calls[0])
     }
-    const alpha = (tab: string, scope?: string) => [
-      tab,
-      { lane: "alpha", scope },
-    ]
-    expect(opened).toEqual([
-      ...Array.from({ length: 5 }, () => alpha("overview")),
-      alpha("teams"),
-      alpha("lanes"),
-      alpha("lanes"),
-      alpha("lanes"),
-      alpha("progress"),
-      alpha("tokens"),
-      alpha("battles"),
-      alpha("leaderboard", "all"),
-      alpha("leaderboard", "alpha"),
-    ])
+    expect(opened).toEqual(
+      [
+        ...Array.from({ length: 2 }, () => "overview"),
+        ...Array.from({ length: 3 }, () => "teams"),
+        ...Array.from({ length: 3 }, () => "plan"),
+        ...Array.from({ length: 4 }, () => "run"),
+      ].map((tab) => [tab])
+    )
     document.body.replaceChildren()
   })
 
@@ -174,7 +166,7 @@ describe("useLegendaryEventTutorial", () => {
     (_form, viewport) => {
       const { desktop, mobile } = eventSteps()
       const steps = viewport === MOBILE ? (mobile ?? desktop) : desktop
-      expect(steps).toHaveLength(15)
+      expect(steps).toHaveLength(13)
       for (const step of steps) {
         for (const height of [40, 400, TALL_TARGET]) {
           for (const tooltip of TOOLTIPS) {

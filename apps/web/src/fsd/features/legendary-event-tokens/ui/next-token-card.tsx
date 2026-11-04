@@ -19,13 +19,19 @@ import type {
 import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-import type { NextTokenEmpty, TokenPlanView } from "../lib/token-plan-view"
+import {
+  upNextTokens,
+  type NextTokenEmpty,
+  type TokenPlanView,
+} from "../lib/token-plan-view"
 import { useNextTokenShown } from "../model/use-next-token-shown"
 import {
   MissionAlternativeView,
   MissionsProgressed,
 } from "./next-token-missions"
+import { BattleInfoButton } from "./battle-info"
 import { TokenMarkButtons } from "./token-mark-buttons"
+import { TokenRow } from "./token-plan-rows"
 import { TokenObjectives } from "./token-objectives"
 
 export type MarkTokenHandler = (
@@ -42,9 +48,10 @@ export type OpenTeamsHandler = (
 ) => void
 
 /**
- * The Overview's Next token card (spec: Next token card heads the Overview tab): the battle to play
- * next with its team, points, cleared cells and reason, and the Partly cleared / Couldn't clear
- * actions; or what is missing for a plan. Hidden on an archived event and when signed out.
+ * The run tab's Next token card (spec: Next token card heads the run tab): the battle to play next
+ * with its team, points, cleared cells and reason, and the Partly cleared / Couldn't clear
+ * actions, then the next few planned tokens with View full plan; or what is missing for a plan.
+ * Hidden on an archived event and when signed out.
  */
 export function NextTokenCard({
   eventId,
@@ -53,6 +60,7 @@ export function NextTokenCard({
   isMobile,
   onMarkToken,
   onOpenTeams,
+  onViewPlan,
 }: {
   eventId: string
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
@@ -61,6 +69,8 @@ export function NextTokenCard({
   /** Absent while marks cannot be written (the plan has not loaded). */
   onMarkToken: MarkTokenHandler | undefined
   onOpenTeams: OpenTeamsHandler
+  /** Opens the full token plan. */
+  onViewPlan?: () => void
 }) {
   const { t } = useTranslation("legendaryEvents")
   useNextTokenShown(eventId, view)
@@ -107,6 +117,12 @@ export function NextTokenCard({
                 onMarkToken={view.upcoming === null ? onMarkToken : undefined}
               />
             ) : null}
+            <UpNext
+              event={event}
+              isMobile={isMobile}
+              onViewPlan={onViewPlan}
+              view={view}
+            />
           </div>
         ) : null}
       </CardContent>
@@ -179,7 +195,12 @@ function TokenView({
         </div>
         <div className="flex flex-wrap items-baseline gap-x-3 text-sm">
           <span data-testid="next-token-battle">
-            {t("tokenPlan.nextToken.battle", { lane, battle })}
+            <BattleInfoButton
+              battleIndex={token.battleIndex}
+              laneId={token.laneId}
+            >
+              {t("tokenPlan.nextToken.battle", { lane, battle })}
+            </BattleInfoButton>
           </span>
           <span
             className="font-semibold tabular-nums"
@@ -222,6 +243,62 @@ function TokenView({
         />
       ) : null}
     </div>
+  )
+}
+
+/** The planned tokens after the next one (plan-wide numbers), and View full plan. */
+function UpNext({
+  event,
+  view,
+  isMobile,
+  onViewPlan,
+}: {
+  event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
+  view: Extract<TokenPlanView, { kind: "ready" }>
+  isMobile: boolean
+  onViewPlan: (() => void) | undefined
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  const upcoming = upNextTokens(view.plan, view.next)
+  if (upcoming.length === 0) return null
+  return (
+    <section
+      aria-labelledby="next-token-up-next-title"
+      className="flex min-w-0 flex-col gap-1 border-t pt-3"
+      data-testid="next-token-up-next"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold" id="next-token-up-next-title">
+          {t("tokenPlan.nextToken.upNext")}
+        </h3>
+        {onViewPlan ? (
+          <Button
+            className="h-auto px-0"
+            data-testid="next-token-view-plan"
+            onClick={onViewPlan}
+            type="button"
+            variant="link"
+          >
+            {t("tokenPlan.nextToken.viewPlan", {
+              count: view.plan.tokens.length,
+            })}
+          </Button>
+        ) : null}
+      </div>
+      <ol className="flex min-w-0 flex-col divide-y">
+        {upcoming.map(({ token, index }) => (
+          <TokenRow
+            event={event}
+            index={index}
+            isMobile={isMobile}
+            key={index}
+            marker={undefined}
+            steps={undefined}
+            token={token}
+          />
+        ))}
+      </ol>
+    </section>
   )
 }
 

@@ -1,12 +1,12 @@
 import type { i18n as I18n } from "i18next"
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import type {
+  LegendaryEventLaneId,
   LegendaryEventPlan,
   LegendaryEventRosterUnit,
   LegendaryEventTeam,
 } from "@/entities/legendary-event"
-import { safeStorage } from "@/shared/lib"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
@@ -78,25 +78,27 @@ function renderBoard(
   teams: TeamsSectionState = ready,
   catalog: Parameters<typeof EventBoard>[0]["catalog"] = teams.kind === "ready"
     ? { units: teams.units, roster: teams.roster }
-    : { units: "loading", roster: undefined }
+    : { units: "loading", roster: undefined },
+  laneIds: readonly LegendaryEventLaneId[] = ["alpha", "beta", "gamma"]
 ) {
-  const onOpenLane = vi.fn()
-  const onOpenTeam = vi.fn()
   const onAddTeam = vi.fn()
-  const view = render(
+  render(
     <EventBoard
       catalog={catalog}
       event={lysanderEvent}
+      laneFigures={(laneId) => <p data-testid="lane-figures">{laneId}</p>}
+      laneIds={laneIds}
+      laneTeamsSection={(laneId) => (
+        <p data-testid="lane-teams">{`${laneId} teams`}</p>
+      )}
       onAddTeam={onAddTeam}
-      onOpenLane={onOpenLane}
-      onOpenTeam={onOpenTeam}
       progressGrid={{ kind: "unavailable" }}
       teams={teams}
       unitPower={null}
     />,
     { wrapper: i18nWrapper(i18n) }
   )
-  return { onOpenLane, onOpenTeam, onAddTeam, unmount: view.unmount }
+  return { onAddTeam }
 }
 
 const lane = (laneId: string) =>
@@ -108,23 +110,30 @@ describe("EventBoard", () => {
   beforeAll(async () => {
     i18n = await createTestI18n("en")
   })
-  beforeEach(() => {
-    safeStorage.remove("legendaryEvents.eventBoard.lanes")
-  })
 
-  it("shows all three lanes with their objectives and saved teams", () => {
+  it("shows every given lane with its objectives, figures and Teams section", () => {
     renderBoard()
     expect(screen.getAllByTestId("event-board-lane")).toHaveLength(3)
     for (const laneId of ["alpha", "beta", "gamma"] as const) {
-      expect(
-        within(lane(laneId)).getAllByTestId("event-board-objective")
-      ).toHaveLength(lysanderEvent[laneId].unitsRestrictions.length)
+      const column = within(lane(laneId))
+      expect(column.getAllByTestId("event-board-objective")).toHaveLength(
+        lysanderEvent[laneId].unitsRestrictions.length
+      )
+      expect(column.getByTestId("lane-figures")).toHaveTextContent(laneId)
+      expect(column.getByTestId("lane-teams")).toHaveTextContent(
+        `${laneId} teams`
+      )
     }
     expect(
-      within(lane("alpha")).getByRole("button", { name: "Edit Alpha squad" })
-    ).toBeInTheDocument()
-    expect(within(lane("beta")).getByText("1 team")).toBeInTheDocument()
-    expect(within(lane("gamma")).getByText("No teams yet.")).toBeInTheDocument()
+      within(lane("alpha")).getByTestId("legendary-event-lane-label")
+    ).toHaveTextContent("Alpha · No Xenos")
+  })
+
+  it("renders only the shown lanes", () => {
+    renderBoard(ready, undefined, ["beta"])
+    expect(
+      screen.getAllByTestId("event-board-lane").map((c) => c.dataset.lane)
+    ).toEqual(["beta"])
   })
 
   it("marks the objectives no saved team covers", () => {
@@ -139,18 +148,6 @@ describe("EventBoard", () => {
     ).toBe(true)
   })
 
-  it("opens the team editor from a team and the Lanes tab from a lane heading", () => {
-    const { onOpenLane, onOpenTeam } = renderBoard()
-    fireEvent.click(
-      within(lane("beta")).getByRole("button", { name: "Edit Beta squad" })
-    )
-    expect(onOpenTeam).toHaveBeenCalledWith("beta", plan.teams[1])
-    fireEvent.click(
-      screen.getByRole("button", { name: "Open Gamma in the Lanes tab" })
-    )
-    expect(onOpenLane).toHaveBeenCalledWith("gamma")
-  })
-
   it("shows objectives without coverage marks while teams load", () => {
     renderBoard({ kind: "loading" })
     expect(
@@ -158,7 +155,6 @@ describe("EventBoard", () => {
         .getAllByTestId("event-board-objective")
         .some((entry) => entry.dataset.uncovered === "true")
     ).toBe(false)
-    expect(screen.queryByTestId("event-board-team")).not.toBeInTheDocument()
   })
 
   it("lists each objective's units and starts a team from one", () => {
@@ -185,20 +181,6 @@ describe("EventBoard", () => {
     )
   })
 
-  it("shows saved members with their rank and ability levels", () => {
-    renderBoard(withUnits)
-    const team = within(lane("alpha")).getByRole("button", {
-      name: "Edit Alpha squad",
-    })
-    const [member] = within(team).getAllByRole("img", {
-      name: /^Calgar/,
-    })
-    expect(member).toHaveAttribute("data-rank", "Gold2")
-    expect(member!.getAttribute("aria-label")).toContain(
-      "Active ability level 35, passive ability level 28"
-    )
-  })
-
   it("merges the selected objectives into one column and clears them", () => {
     renderBoard(withUnits)
     const alpha = within(lane("alpha"))
@@ -216,21 +198,6 @@ describe("EventBoard", () => {
     expect(alpha.getAllByTestId("event-board-column")).toHaveLength(count)
   })
 
-  it("hides a lane switched off, remembers it and keeps the last one shown", () => {
-    const { unmount } = renderBoard()
-    fireEvent.click(screen.getByRole("switch", { name: "Gamma" }))
-    expect(
-      screen.getAllByTestId("event-board-lane").map((c) => c.dataset.lane)
-    ).toEqual(["alpha", "beta"])
-    unmount()
-    renderBoard()
-    expect(
-      screen.getAllByTestId("event-board-lane").map((c) => c.dataset.lane)
-    ).toEqual(["alpha", "beta"])
-    fireEvent.click(screen.getByRole("switch", { name: "Beta" }))
-    expect(screen.getByRole("switch", { name: "Alpha" })).toBeDisabled()
-  })
-
   it("lists units for a signed-out visitor, with ownership unknown", () => {
     renderBoard(
       { kind: "hidden" },
@@ -239,6 +206,6 @@ describe("EventBoard", () => {
     const units = within(lane("alpha")).getAllByTestId("event-board-unit")
     expect(units.length).toBeGreaterThan(0)
     expect(units.every((unit) => unit.dataset.owned === undefined)).toBe(true)
-    expect(screen.queryByTestId("event-board-team")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("lane-teams")).not.toBeInTheDocument()
   })
 })

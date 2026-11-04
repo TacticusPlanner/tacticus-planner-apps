@@ -21,13 +21,13 @@ import {
 type UpgradeImpactInputs = Parameters<typeof buildUpgradeImpactState>[0]
 
 /**
- * The selected lane's Upgrade impact (Stage 6) over the synced roster; null on Overview or while
- * the plan cannot be read (signed out). Teams read as loading until the plan, the units and the
- * synced progress have all resolved.
+ * The given lanes' Upgrade impact (Stage 6) over the synced roster; null with no lane (another
+ * tab) or while the plan cannot be read (signed out). Teams read as loading until the plan, the
+ * units and the synced progress have all resolved.
  */
 export function useUpgradeImpact({
   eventData,
-  laneId,
+  laneIds,
   planEnabled,
   planData,
   units,
@@ -38,7 +38,7 @@ export function useUpgradeImpact({
   initialRarityOf,
 }: {
   eventData: LegendaryEvent | undefined
-  laneId: LegendaryEventLaneId | undefined
+  laneIds: readonly LegendaryEventLaneId[]
   planEnabled: boolean
   planData: LegendaryEventPlan | undefined
   units: readonly LegendaryEventUnit[] | undefined
@@ -50,24 +50,33 @@ export function useUpgradeImpact({
 }) {
   const unitName = useUnitName()
   return useMemo(() => {
-    if (!eventData || !laneId || !planEnabled) return null
-    const lane = eventData[laneId]
+    if (!eventData || laneIds.length === 0 || !planEnabled) return null
     const teamsReady = planData !== undefined && units && !progressPending
-    return buildUpgradeImpactState({
-      teams: teamsReady ? laneTeams(planData, laneId) : "loading",
-      estimates: laneEstimateInputs(clearEstimates, laneId),
-      lane,
-      units: units ?? [],
-      run,
-      model: buildLanePointsModel(lane),
-      progress:
-        progressGrid.kind === "ready" ? progressGrid.lanes[laneId] : undefined,
-      initialRarityOf,
-      nameOf: (unitId) => unitName("Character", unitId),
-    })
+    return Object.fromEntries(
+      laneIds.map((laneId) => {
+        const lane = eventData[laneId]
+        return [
+          laneId,
+          buildUpgradeImpactState({
+            teams: teamsReady ? laneTeams(planData, laneId) : "loading",
+            estimates: laneEstimateInputs(clearEstimates, laneId),
+            lane,
+            units: units ?? [],
+            run,
+            model: buildLanePointsModel(lane),
+            progress:
+              progressGrid.kind === "ready"
+                ? progressGrid.lanes[laneId]
+                : undefined,
+            initialRarityOf,
+            nameOf: (unitId) => unitName("Character", unitId),
+          }),
+        ]
+      })
+    )
   }, [
     eventData,
-    laneId,
+    laneIds,
     planEnabled,
     planData,
     units,

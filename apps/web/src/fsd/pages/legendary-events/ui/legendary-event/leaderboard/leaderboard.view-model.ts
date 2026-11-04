@@ -75,10 +75,16 @@ export function laneLeaderboardBody(
 }
 
 /** The Overview counterpart of `laneLeaderboardBody`, ordered by the figures' sum. */
+/** The cross-lane body over the shown lanes: a unit no shown lane allows is left out, and the
+ *  order is the sum over the shown lanes. */
 export function crossLaneLeaderboardBody(
-  rows: readonly CrossLaneLeaderboardRow[],
-  input: LeaderboardFilterInput
+  allRows: readonly CrossLaneLeaderboardRow[],
+  input: LeaderboardFilterInput,
+  laneIds: readonly LegendaryEventLaneId[]
 ): LeaderboardBody<CrossLaneLeaderboardRow> {
+  const rows = allRows.filter((row) =>
+    laneIds.some((laneId) => row.lanes[laneId])
+  )
   const filtered = filterLeaderboard(rows, input)
   return (
     classify(rows, input, filtered) ?? {
@@ -87,7 +93,8 @@ export function crossLaneLeaderboardBody(
         filtered,
         input.figure,
         (row) => input.nameOf(row.unit),
-        input.locale
+        input.locale,
+        laneIds
       ),
     }
   )

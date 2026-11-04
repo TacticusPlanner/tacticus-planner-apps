@@ -93,17 +93,17 @@ When creating a team the editor SHALL offer **Save and add another** beside Save
 
 ### Requirement: Leaderboard rows can start a team
 
-A leaderboard row's actions menu SHALL carry **Add to new team** after Create goal. On a lane leaderboard it SHALL open the team editor for that lane with the unit as the first member. On the Overview leaderboard it SHALL list one item per lane that allows the unit ("Add to new team on Alpha"). The editor opens as for a suggestion (derived objectives ticked, default name) and nothing is saved until the user saves.
+A leaderboard row's actions menu SHALL carry **Add to new team** after Create goal. On a lane leaderboard it SHALL open the team editor for that lane with the unit as the first member. On the cross-lane leaderboard it SHALL list one item per shown lane that allows the unit ("Add to new team on Alpha"). The editor opens as for a suggestion (derived objectives ticked, default name) and nothing is saved until the user saves.
 
 #### Scenario: Lane leaderboard
 
 - **WHEN** the user opens Dante's row menu on the Alpha leaderboard and chooses Add to new team
 - **THEN** the editor opens on Alpha with Dante as the first member and his objectives ticked
 
-#### Scenario: Overview leaderboard
+#### Scenario: Cross-lane leaderboard
 
 - **GIVEN** Dante is allowed on Alpha and Gamma but not on Beta
-- **WHEN** the user opens his row menu on Overview
+- **WHEN** the user opens his row menu on the cross-lane leaderboard
 - **THEN** the menu lists "Add to new team on Alpha" and "Add to new team on Gamma", and no Beta item
 
 #### Scenario: Locked unit

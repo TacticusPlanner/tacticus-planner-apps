@@ -313,6 +313,32 @@ describe("TeamCard", () => {
     )
   })
 
+  it("draws each owned member as the Event board does, with rank, stars and ability levels", () => {
+    renderEstimatedCard(team(), estimateOf(), {
+      roster: [
+        {
+          ...ownedRoster([teamUnits.a.id])[0]!,
+          abilities: [
+            { abilityId: "active", level: 35 },
+            { abilityId: "passive", level: 28 },
+          ],
+        } as LegendaryEventRosterUnit,
+      ],
+    })
+    const [owned, locked] = screen
+      .getAllByTestId("team-card-member")
+      .map((member) => within(member).getByTestId("event-board-unit"))
+    expect(owned).toHaveAttribute("data-rank", "Gold1")
+    expect(owned).toHaveAttribute("data-owned", "true")
+    expect(
+      within(owned!).getByTestId("event-board-unit-stars")
+    ).toBeInTheDocument()
+    expect(owned!.getAttribute("aria-label")).toContain(
+      "Active ability level 35, passive ability level 28"
+    )
+    expect(locked).toHaveAttribute("data-owned", "false")
+  })
+
   it("marks a covered objective already cleared through the depth", () => {
     const model = buildLanePointsModel(teamLane)
     const progress = buildSyncedLaneProgress(model, {

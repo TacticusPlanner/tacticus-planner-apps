@@ -8,6 +8,10 @@ export {
   type OpenTeamsHandler,
 } from "./ui/next-token-card"
 export { TokenPlanList } from "./ui/token-plan-list"
+export {
+  BattleInfoContext,
+  type OpenBattleInfo,
+} from "./ui/battle-info-context"
 export { RunForecastSection } from "./ui/run-forecast"
 export {
   buildTokenPlanView,

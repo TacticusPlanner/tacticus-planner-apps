@@ -410,3 +410,19 @@ export function nextTokenCardState(
   if (view.kind !== "ready") return null
   return view.next ? "token" : (view.empty?.kind ?? null)
 }
+
+/** How many planned tokens the Next token card lists after the next one. */
+const UP_NEXT_COUNT = 4
+
+/** The planned tokens after the next one, in plan order with their plan indexes (the next token is
+ *  not always the plan's first). */
+export function upNextTokens<T>(
+  plan: { tokens: readonly T[] },
+  next: { index: number } | null,
+  count = UP_NEXT_COUNT
+): { token: T; index: number }[] {
+  return plan.tokens
+    .map((token, index) => ({ token, index }))
+    .filter((entry) => entry.index !== next?.index)
+    .slice(0, count)
+}

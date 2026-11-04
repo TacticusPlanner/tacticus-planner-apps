@@ -2,23 +2,33 @@
 
 ## Purpose
 
-Lets a player preview any battle of a Legendary Event lane before playing it: its map, its waves round by round, and every enemy with its level and stats, ported from V1's LE Battles tab onto V2's Battles tab.
+Lets a player preview any battle of a Legendary Event lane before playing it: its map, its waves round by round, and every enemy with its level and stats, ported from V1's LE Battles tab onto V2's Plan tab and the battle info dialog.
 
 ## Requirements
 
-### Requirement: The Battles tab has a Battles section
+### Requirement: The Plan tab has a Battles section per shown lane
 
-The Battles tab SHALL render a **Battles** section for the picked lane only. It SHALL list the lane's battles in the order of the lane's catalog `battleIds`, read from the served `lre-battles` dataset. The section SHALL NOT render on any other tab. Its heading SHALL carry `data-testid="legendary-event-battles"`.
+The Plan tab SHALL render, after the Upgrade impact sections, one **Battles** section per shown lane (see the event page's lane selection in `legendary-events-hub`), in lane order. Each SHALL list its lane's battles in the order of the lane's catalog `battleIds`, read from the served `lre-battles` dataset. Its heading SHALL read "Battles", or "Battles · <lane>" when more than one lane is shown, and carry `data-testid="legendary-event-battles"`. No Battles section SHALL render on any other tab.
 
-#### Scenario: Section position on Alpha
+#### Scenario: Section position with Alpha shown
 
-- **WHEN** the user opens Lysander's Battles tab on Alpha
-- **THEN** a Battles section titled "Battles" renders below the lane picker and offers battles 1 to 18 of Alpha only
+- **WHEN** the user opens Lysander's Plan tab with only Alpha shown
+- **THEN** a Battles section titled "Battles" renders after Upgrade impact and offers battles 1 to 18 of Alpha only
 
 #### Scenario: Not on other tabs
 
-- **WHEN** the Overview or Lanes tab is selected
+- **WHEN** Overview, Teams or the run tab is selected
 - **THEN** no Battles section renders
+
+### Requirement: A token's battle opens the battle info dialog
+
+On the event page, each Token plan row's battle, the Next token card's battle and each of its tokens up next SHALL be a button (accessible name "Battle info: <lane> battle <N>") that opens a **battle info** dialog titled "<lane> · Battle <N>", showing that battle's header, map and waves as the Battles section does, from the same read: a skeleton while it loads, the error with Retry when it failed, and the empty-state line when the lane has no battle data. It SHALL be a centred dialog at or above 768px and a bottom sheet below. Elsewhere (the plan wizard) a token's battle stays plain text.
+
+#### Scenario: Next token's battle
+
+- **GIVEN** the next token is Alpha battle 2
+- **WHEN** the user activates its battle
+- **THEN** the dialog "Alpha · Battle 2" opens with battle 2's header, its map ("Map of Alpha battle 2") and its waves
 
 ### Requirement: One battle is selected per lane, defaulting to the next battle to play
 

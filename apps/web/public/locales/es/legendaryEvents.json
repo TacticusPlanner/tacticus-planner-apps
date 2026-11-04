@@ -127,25 +127,24 @@
     "label": "Secciones del evento",
     "overview": "Resumen",
     "teams": "Equipos",
-    "lanes": "Carriles",
-    "progress": "Progreso",
-    "tokens": "Fichas",
-    "battles": "Batallas",
-    "leaderboard": "Clasificación",
+    "plan": "Plan",
+    "run": {
+      "current": "Ronda actual",
+      "next": "Próxima ronda",
+      "last": "Última ronda"
+    },
     "laneLabel": "Carril",
-    "allLanes": "Todos los carriles"
+    "lanesShown": "Carriles mostrados"
+  },
+  "battleInfo": {
+    "open": "Información de la batalla: {{lane}} batalla {{battle}}",
+    "title": "{{lane}} · Batalla {{battle}}"
   },
   "eventBoard": {
     "title": "Tablero del evento",
-    "description": "Los objetivos de cada carril, las unidades que encajan en cada uno y tus equipos guardados a la vez. Elige objetivos para ver las unidades que los cumplen todos, una unidad para empezar un equipo con ella, un equipo para editarlo o un carril para abrirlo en la pestaña Carriles.",
-    "openLane": "Abrir {{lane}} en la pestaña Carriles",
-    "teams_one": "{{count}} equipo",
-    "teams_other": "{{count}} equipos",
-    "noTeams": "Aún no hay equipos.",
+    "description": "Los objetivos de cada carril mostrado, las unidades que encajan en cada uno y los equipos del carril lado a lado. Elige objetivos para ver las unidades que los cumplen todos, o una unidad para empezar un equipo con ella.",
     "noTeam": "Sin equipo",
     "cleared": "Cumplido en {{cleared}} de {{total}} batallas",
-    "editTeam": "Editar {{name}}",
-    "lanesShown": "Carriles mostrados",
     "clearSelection": "Borrar selección",
     "columnUnits_one": "{{count}} unidad",
     "columnUnits_other": "{{count}} unidades",
@@ -164,7 +163,6 @@
     "rosterReaches": "La plantilla llega a la batalla {{battle}}"
   },
   "laneOverview": {
-    "title": "Resumen de carriles",
     "labelWithRule": "{{lane}} · {{rule}}",
     "killPoints": "{{points}} puntos por bajas por batalla",
     "battles": "{{count}} batallas",
@@ -251,6 +249,7 @@
   },
   "battles": {
     "title": "Batallas",
+    "titleLane": "Batallas · {{lane}}",
     "loading": "Cargando batallas…",
     "error": "No se pudieron cargar los datos de las batallas.",
     "empty": "Todavía no hay datos de batallas para esta línea",
@@ -441,7 +440,7 @@
       "steps": {
         "tabs": {
           "title": "Pestañas del evento",
-          "content": "El Resumen condensa el evento. Equipos muestra los objetivos y unidades de todos los carriles lado a lado; Carriles, Progreso y Batallas muestran un carril cada vez, elegido con Alfa, Beta y Gamma; Fichas planifica tus fichas; Clasificación ordena las unidades en todos los carriles o en uno. En el móvil la franja se queda bajo la cabecera mientras te desplazas."
+          "content": "El Resumen condensa el evento. Equipos muestra los objetivos, unidades y equipos de cada carril; Plan reúne la previsión por ronda, el plan de fichas, el impacto de las mejoras y las batallas; la pestaña de la ronda (Ronda actual durante el evento, si no Próxima o Última ronda) muestra tus próximas fichas y el progreso sincronizado. Los interruptores de carril eligen qué carriles se muestran, uno cada vez en el móvil. En el móvil la franja se queda bajo la cabecera mientras te desplazas."
         },
         "nextToken": {
           "title": "Siguiente ficha",
@@ -457,7 +456,7 @@
         },
         "tokenPlan": {
           "title": "Plan de fichas",
-          "content": "Todas las fichas que el plan prevé jugar en orden, con los puntos acumulados y los hitos que alcanzan. La previsión por ronda las reparte entre las rondas que quedan."
+          "content": "Todas las fichas que el plan prevé jugar en orden, con los puntos acumulados y los hitos que alcanzan. La previsión por ronda de arriba las reparte entre las rondas que quedan. Elige una batalla para ver su mapa y sus enemigos."
         },
         "laneSummary": {
           "title": "Resumen de carriles",
@@ -465,15 +464,11 @@
         },
         "eventBoard": {
           "title": "Tablero del evento",
-          "content": "Los objetivos de cada carril con las unidades que encajan, las más fuertes primero, y tus equipos guardados. Activa o desactiva carriles, elige objetivos para ver las unidades que los cumplen todos y elige una unidad para empezar un equipo con ella."
+          "content": "Los objetivos de cada carril mostrado con las unidades que encajan, las más fuertes primero, y debajo los equipos del carril. Elige objetivos para ver las unidades que los cumplen todos y elige una unidad para empezar un equipo con ella."
         },
-        "overviewLeaderboard": {
-          "title": "Elegibilidad entre carriles",
-          "content": "Cada unidad que puede jugar, con los puntos que aún puede conseguir en cada carril. Filtra por objetivo, muestra solo las unidades desbloqueadas o cambia a puntos por batalla."
-        },
-        "laneOverview": {
-          "title": "Resumen del carril",
-          "content": "Las unidades permitidas del carril, los puntos por baja y los cinco objetivos con su puntuación, y después un mapa de hasta dónde llega tu plantilla: el derrotar a todos y los objetivos de cada batalla como superados, alcanzados por tus equipos, al alcance de tu plantilla o fuera de alcance."
+        "eligibility": {
+          "title": "Elegibilidad",
+          "content": "Cada unidad que puede jugar, con los puntos que aún puede conseguir en los carriles mostrados. Con un solo carril mostrado indica sus objetivos y las batallas estimadas. Filtra por objetivo, muestra solo las unidades desbloqueadas o usa el menú de una fila para Crear objetivo o Añadir a un equipo nuevo."
         },
         "teams": {
           "title": "Equipos",
@@ -490,10 +485,6 @@
         "battles": {
           "title": "Batallas",
           "content": "Consulta cualquier batalla de la línea antes de jugarla: su mapa, sus oleadas ronda a ronda y cada enemigo con su nivel. Toca un enemigo para ver sus estadísticas. Se abre en tu próxima batalla por jugar."
-        },
-        "leaderboard": {
-          "title": "Clasificación del carril",
-          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí. Activa la vista de objetivos para ver las unidades como si hubieras alcanzado tus objetivos activos, y usa el menú de una fila para «Crear objetivo» o «Añadir a un equipo nuevo»."
         },
         "lastRun": {
           "title": "Última ronda",
@@ -617,6 +608,7 @@
   },
   "upgradeImpact": {
     "title": "Impacto de las mejoras",
+    "titleLane": "Impacto de las mejoras · {{lane}}",
     "summary_one": "{{count}} mejora suma puntos · mejor +{{best}}",
     "summary_other": "{{count}} mejoras suman puntos · mejor +{{best}}",
     "hint": "Lo que aporta en este carril un único paso siguiente de un miembro del equipo, por las batallas que permite alcanzar. Basado en tu plantilla sincronizada.",
@@ -684,7 +676,10 @@
         "progresses": "Avanza:",
         "premium": "{{mission}} (premium)",
         "points": "+{{points}} puntos ({{difference}})"
-      }
+      },
+      "upNext": "A continuación",
+      "viewPlan_one": "Ver la {{count}} ficha planificada",
+      "viewPlan_other": "Ver las {{count}} fichas planificadas"
     },
     "plan": {
       "title": "Plan de fichas",

@@ -108,9 +108,9 @@ For each lane the planner SHALL compute, from the lane's teams that have a depth
 - **WHEN** the figure is computed
 - **THEN** each equals V1's (not all covered, five single-objective teams give 5, overlapping coverage, unnecessary teams)
 
-### Requirement: Next token card heads the Overview tab
+### Requirement: Next token card heads the run tab
 
-The Overview tab SHALL open with a **Next token** card. With a non-empty plan it SHALL show the next token: the first planned token that is not flagged Maybe, whose battle is playable now (its lane's first battle, or synced progress shows the previous battle's defeat-all cleared) and that has no earlier planned token on the same battle, or the first planned token when none qualifies. It SHALL show the team name and members' portraits, the lane, "Battle N", "+P points", the icon and name of each objective it clears (defeat-all included), and one reason line: "Most points available now" when it is the plan's first token, otherwise "Most points among battles you can play now". When the event is upcoming it SHALL add the next-run suffix of `legendary-event-run-resolution`. It SHALL carry two actions: **Partly cleared**, which marks the token's objective cells Maybe clear (its defeat-all cell too when it clears no objective), and **Couldn't clear**, which marks every cell it clears Stop here; each is one annotation write for the token's battle through the existing marks contract, and the card and plan recompute at once.
+The run tab (Current, Next or Last run) SHALL open with a **Next token** card. With a non-empty plan it SHALL show the next token: the first planned token that is not flagged Maybe, whose battle is playable now (its lane's first battle, or synced progress shows the previous battle's defeat-all cleared) and that has no earlier planned token on the same battle, or the first planned token when none qualifies. It SHALL show the team name and members' portraits, the lane, "Battle N", "+P points", the icon and name of each objective it clears (defeat-all included), and one reason line: "Most points available now" when it is the plan's first token, otherwise "Most points among battles you can play now". When the event is upcoming it SHALL add the next-run suffix of `legendary-event-run-resolution`. It SHALL carry two actions: **Partly cleared**, which marks the token's objective cells Maybe clear (its defeat-all cell too when it clears no objective), and **Couldn't clear**, which marks every cell it clears Stop here; each is one annotation write for the token's battle through the existing marks contract, and the card and plan recompute at once.
 
 When there is no next token the card SHALL name what is missing, checked in this order:
 
@@ -124,7 +124,7 @@ The card SHALL NOT render on an archived event. While the roster, plan or clear 
 
 #### Scenario: Card on the worked example
 
-- **WHEN** the Overview tab renders the worked Uthar Alpha example
+- **WHEN** the run tab renders the worked Uthar Alpha example
 - **THEN** the card shows team Melee with its three portraits, "Alpha · Battle 3", "+240 points", defeat-all, Ultramarines and Melee, and "Most points available now"
 
 #### Scenario: Flagged and unplayable tokens are skipped
@@ -165,12 +165,12 @@ The card SHALL NOT render on an archived event. While the roster, plan or clear 
 
 #### Scenario: Archived event
 
-- **WHEN** an archived event's Overview and Tokens tabs render
+- **WHEN** an archived event's run and Plan tabs render
 - **THEN** there is no Next token card, token plan or run forecast
 
 ### Requirement: Token plan list
 
-The Tokens tab SHALL open with a collapsible **Token plan**, collapsed by default and remembered per device, headed "N tokens · +P points". Expanded, it SHALL list the planned tokens in **run sections**: the plan's tokens are spent in order across the runs that are not Done, each run taking up to its supply, exactly as the run forecast spends them (`legendary-event-run-forecast`). Each section SHALL be headed "Run R · <state> · U of A tokens · +P points · ends at E" (state Now, Next or Planned; U the tokens it uses, A its supply, P their points, E the running points after its last token), or, when it uses none, "Run R · <state>" with "No tokens planned · A tokens available". Tokens that no run's supply covers SHALL follow in a final **Not enough tokens** section headed "N tokens beyond run R's supply" (R the last run). When the run is unknown there SHALL be one section for the Next run. Done runs SHALL have no section.
+The Plan tab SHALL show, after the Run forecast, a collapsible **Token plan**, open by default there and remembered per device, headed "N tokens · +P points". Expanded, it SHALL list the planned tokens in **run sections**: the plan's tokens are spent in order across the runs that are not Done, each run taking up to its supply, exactly as the run forecast spends them (`legendary-event-run-forecast`). Each section SHALL be headed "Run R · <state> · U of A tokens · +P points · ends at E" (state Now, Next or Planned; U the tokens it uses, A its supply, P their points, E the running points after its last token), or, when it uses none, "Run R · <state>" with "No tokens planned · A tokens available". Tokens that no run's supply covers SHALL follow in a final **Not enough tokens** section headed "N tokens beyond run R's supply" (R the last run). When the run is unknown there SHALL be one section for the Next run. Done runs SHALL have no section.
 
 Within a section, consecutive tokens of the same team SHALL be grouped under the team name; each row shows its number (counted across the whole plan), lane, battle, the icons of the objectives it clears, "+points" and running points, the Maybe flag when flagged, and a marker when the running points cross a points milestone ("Milestone M · +E currency") or when the run forecast reaches an ascension step at that token. Under the list one line per lane with teams SHALL show the fewest tokens per battle ("Alpha: a full clear takes 2 tokens a battle") or the objectives no team covers ("Alpha: no team covers Resilient, Max 2 Hits, Piercing"). With an empty plan the section SHALL be hidden; the Next token card carries the reason.
 

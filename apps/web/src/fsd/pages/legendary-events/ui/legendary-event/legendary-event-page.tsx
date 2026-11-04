@@ -45,6 +45,7 @@ import {
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
 import { useLaneJump } from "./use-lane-jump"
+import { useLaneSelection } from "./use-lane-selection"
 import { useLanePotentials } from "./use-lane-potentials"
 import { useCreateGoalFromRow } from "./use-create-goal-from-row"
 import { useEventGoals } from "./use-event-goals"
@@ -70,6 +71,8 @@ export function LegendaryEventPage() {
   return <LegendaryEventPageContent eventId={eventId} key={eventId} />
 }
 
+const NO_LANES: readonly LegendaryEventLaneId[] = []
+
 function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const { t } = useTranslation("legendaryEvents")
   const isMobile = useIsMobile()
@@ -79,18 +82,12 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const progress = useLegendaryEventProgress(eventId)
   const unitName = useUnitName()
   const syncTimes = useLegendaryEventSyncTimes()
-  const {
-    selectedTab,
-    selectedLane,
-    selectTab,
-    selectLane,
-    leaderboardScope,
-    selectLeaderboardScope,
-    openLane,
-    jumpToLane,
-    openTeams,
-  } = useLaneJump()
-  // Shared by the three lanes' leaderboards and the Overview one; discarded when the page unmounts.
+  const lanes = useLaneSelection(isMobile)
+  // The run tab opens first while the event is active (spec: the run tab is the active default).
+  const defaultTab = event.lifecycle?.state === "active" ? "run" : "overview"
+  const { selectedTab, selectTab, jumpToLane, openTeams, viewPlan } =
+    useLaneJump(defaultTab, lanes)
+  // Shared by every view of the leaderboard; discarded when the page unmounts.
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
   const [selectedObjectives, setSelectedObjectives] = useState<
@@ -209,7 +206,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   })
   const upgradeImpact = useUpgradeImpact({
     eventData,
-    laneId: selectedTab === "lanes" ? selectedLane : undefined,
+    laneIds: selectedTab === "plan" ? lanes.shown : NO_LANES,
     planEnabled: plan.enabled,
     planData: plan.query.data,
     units: Array.isArray(units) ? units : undefined,
@@ -222,7 +219,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const impactTeamName = useImpactTeamName(eventData, plan.query.data)
   const battlesSection = useBattlesSection({
     event: eventData,
-    laneId: selectedTab === "battles" ? selectedLane : undefined,
     battlesRead,
     progressGrid,
   })
@@ -360,12 +356,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       syncedAtMs,
       selectedTab,
       onSelectTab: selectTab,
-      selectedLane,
-      onSelectLane: selectLane,
-      leaderboardScope,
-      onSelectLeaderboardScope: selectLeaderboardScope,
-      onOpenLane: openLane,
+      lanes,
       onJumpToLane: jumpToLane,
+      onViewPlan: viewPlan,
       leaderboard: {
         ...(previewLeaderboardRows ?? leaderboardRows),
         onlyUnlocked,
@@ -414,7 +407,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       lastRun: runHistory.lastRun,
       upgradeImpact: upgradeImpact
         ? {
-            state: upgradeImpact,
+            byLane: upgradeImpact,
             goalTargets: goalTargetsByUnit,
             teamName: impactTeamName,
           }
@@ -436,12 +429,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     syncedAtMs,
     selectedTab,
     selectTab,
-    selectedLane,
-    selectLane,
-    leaderboardScope,
-    selectLeaderboardScope,
-    openLane,
+    lanes,
     jumpToLane,
+    viewPlan,
     previewLeaderboardRows,
     leaderboardRows,
     onlyUnlocked,

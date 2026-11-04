@@ -27,7 +27,7 @@ export interface EventBoardObjective {
 }
 
 /** One saved team on the Event board, in lane order. */
-export interface EventBoardTeam {
+interface EventBoardTeam {
   team: LegendaryEventTeam
   /** The stored objectives the current members still derive, in objective order. */
   coveredObjectiveIndexes: number[]
@@ -44,7 +44,7 @@ type BoardLane = Pick<
 >
 
 /**
- * A lane's column on the Overview Event board: every objective in objective order with its
+ * A lane's column on the Teams tab's Event board: every objective in objective order with its
  * cleared count and covering-team count, then the lane's saved teams (already in stored order)
  * with the objectives they cover. A team covers an objective when it is stored on the team and
  * the members still derive it, as the team card counts it in points.

@@ -23,16 +23,18 @@ import { teamPointsLeft } from "../../../lib/team-points"
 import type { PickerGoalsPreview } from "@/features/legendary-event-plan"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
+import {
+  eventBoardUnit,
+  type EventBoardUnit,
+} from "../overview/event-board.view-model"
 import type {
   ClearEstimatesViewModel,
   ReadValue,
 } from "../legendary-event-page.view-model"
 
-export interface TeamCardMember {
-  unitId: string
-  /** `undefined` when the roster could not be read. */
-  owned: boolean | undefined
-}
+/** A member as the Event board draws it: ownership (undefined when the roster could not be read)
+ *  and, when owned, rank, stars and ability levels. */
+export type TeamCardMember = EventBoardUnit
 
 interface TeamCardCoverage {
   index: number
@@ -125,10 +127,8 @@ export function buildTeamCardViewModel(
   /** The lane's points model; the section builds it once for all its cards. */
   model: LanePointsModel = buildLanePointsModel(lane)
 ): TeamCardViewModel {
-  const member = (unitId: string): TeamCardMember => ({
-    unitId,
-    owned: rosterById ? rosterById.has(unitId) : undefined,
-  })
+  const member = (unitId: string): TeamCardMember =>
+    eventBoardUnit(unitId, rosterById)
   const derived = new Set(derivedTeamCoverage(team.memberUnitIds, lane, units))
   const stored = new Set(team.objectiveIndexes)
   const members = team.memberUnitIds.map(member)

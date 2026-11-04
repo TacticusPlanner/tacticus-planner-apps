@@ -6,9 +6,9 @@ Defines the per-lane Teams section of a Legendary Event page: the team card, the
 
 ## Requirements
 
-### Requirement: Each lane tab has a Teams section with one card per team
+### Requirement: Each Event board lane column has a Teams section with one card per team
 
-A lane tab SHALL show a Teams section, between the lane overview and the synced progress grid, listing that lane's teams in their stored order as one card per team. A card SHALL show the team name, its members as unit portraits in position order with a count badge ("N/5") whenever fewer than five members, the reserve member marked as such when present, the covered objectives as chips (objective icon, label and points; a stored objective the current members no longer derive shows muted and does not count toward points), the team's **points left** (see the points-left requirement), the team's **total power**, the clear depth (or a "Set depth" prompt when null), and an actions menu with Edit, Delete and, on mobile, Move up / Move down. The same team SHALL never be rendered more than once, whatever the number of objectives it covers. The section SHALL carry an explicit **Add team** button; no scroll, swipe or other gesture SHALL create or open a team.
+Each lane column of the Teams tab's Event board SHALL show a Teams section, under its unit table, listing that lane's teams in their stored order as one card per team. A card SHALL show the team name, its members in position order as Event board unit chips (rank, stars and ability levels when owned) with a count badge ("N/5") whenever fewer than five members, the reserve member marked as such when present, the covered objectives as chips (objective icon, label and points; a stored objective the current members no longer derive shows muted and does not count toward points), the team's **points left** (see the points-left requirement), the team's **total power**, the clear depth (or a "Set depth" prompt when null), and an actions menu with Edit, Delete and, on mobile, Move up / Move down. The same team SHALL never be rendered more than once, whatever the number of objectives it covers. The section SHALL carry an explicit **Add team** button; no scroll, swipe or other gesture SHALL create or open a team.
 
 #### Scenario: Teams render in order on a lane
 

@@ -83,7 +83,7 @@ Assumptions:
 
 ### Requirement: Synced progress grid section on the event page
 
-Each lane tab SHALL render a Synced progress section after the Lane overview and before the Eligibility leaderboard, for that lane only. It SHALL show a header with points earned of maximum (for example "3,410 / 9,000") and a progress bar, then a grid of battles (rows, battle 1 first) by six columns: defeat-all and the five objectives in catalog order, each headed by its V1-set icon (defeat-all's own icon; objective icons per the objective-icons requirement) and labelled with its per-battle score. Each cell is a cleared or not-cleared indicator with accessible text, never colour alone; a not-cleared cell is also the control for its Maybe clear / Stop here mark (see "Uncleared objectives can be marked Maybe clear or Stop here"). Each row ends with the battle's earned points of its maximum and its high score when non-zero, and, when the battle is not complete, its row action. A collapsed "how points work" disclosure sits under the header and explains that earned points are the kill score plus the high score plus the defeat-all and cleared objective scores; the marks legend sits beside it. Cleared state, scores and points SHALL be read-only; only marks are editable. The section heading SHALL carry a stable id so the Overview lane summary can scroll to it.
+The run tab SHALL render, after the Run status card, a Synced progress section with one grid per shown lane (see the event page's lane selection in `legendary-events-hub`). It SHALL show a header with points earned of maximum (for example "3,410 / 9,000") and a progress bar, then a grid of battles (rows, battle 1 first) by six columns: defeat-all and the five objectives in catalog order, each headed by its V1-set icon (defeat-all's own icon; objective icons per the objective-icons requirement) and labelled with its per-battle score. Each cell is a cleared or not-cleared indicator with accessible text, never colour alone; a not-cleared cell is also the control for its Maybe clear / Stop here mark (see "Uncleared objectives can be marked Maybe clear or Stop here"). Each row ends with the battle's earned points of its maximum and its high score when non-zero, and, when the battle is not complete, its row action. A collapsed "how points work" disclosure sits under the header and explains that earned points are the kill score plus the high score plus the defeat-all and cleared objective scores; the marks legend sits beside it. Cleared state, scores and points SHALL be read-only; only marks are editable. The section heading SHALL carry a stable id so the Overview lane summary can scroll to it.
 
 #### Scenario: Lane header totals
 
@@ -109,7 +109,7 @@ Each lane tab SHALL render a Synced progress section after the Lane overview and
 #### Scenario: Tour step
 
 - **WHEN** the event page tour runs on either form
-- **THEN** a step highlights the Alpha progress grid after the lane overview step and before the leaderboard step, and its copy mentions that not-cleared cells can be marked Maybe clear or Stop here
+- **THEN** a step on the run tab highlights the progress grid after the Run inputs step, and its copy mentions that not-cleared cells can be marked Maybe clear or Stop here
 
 ### Requirement: Objective icons use the V1 icon set
 

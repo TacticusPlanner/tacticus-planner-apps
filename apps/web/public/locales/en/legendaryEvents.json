@@ -127,25 +127,24 @@
     "label": "Event sections",
     "overview": "Overview",
     "teams": "Teams",
-    "lanes": "Lanes",
-    "progress": "Progress",
-    "tokens": "Tokens",
-    "battles": "Battles",
-    "leaderboard": "Leaderboard",
+    "plan": "Plan",
+    "run": {
+      "current": "Current run",
+      "next": "Next run",
+      "last": "Last run"
+    },
     "laneLabel": "Lane",
-    "allLanes": "All lanes"
+    "lanesShown": "Lanes shown"
+  },
+  "battleInfo": {
+    "open": "Battle info: {{lane}} battle {{battle}}",
+    "title": "{{lane}} · Battle {{battle}}"
   },
   "eventBoard": {
     "title": "Event board",
-    "description": "Every lane's objectives, the units that fit each and your saved teams at once. Pick objectives to see the units that fit all of them, a unit to start a team with it, a team to edit it, or a lane to open it in the Lanes tab.",
-    "openLane": "Open {{lane}} in the Lanes tab",
-    "teams_one": "{{count}} team",
-    "teams_other": "{{count}} teams",
-    "noTeams": "No teams yet.",
+    "description": "Each shown lane's objectives, the units that fit each and the lane's teams side by side. Pick objectives to see the units that fit all of them, or a unit to start a team with it.",
     "noTeam": "No team",
     "cleared": "Cleared in {{cleared}} of {{total}} battles",
-    "editTeam": "Edit {{name}}",
-    "lanesShown": "Lanes shown",
     "clearSelection": "Clear selection",
     "columnUnits_one": "{{count}} unit",
     "columnUnits_other": "{{count}} units",
@@ -164,7 +163,6 @@
     "rosterReaches": "Roster reaches battle {{battle}}"
   },
   "laneOverview": {
-    "title": "Lane overview",
     "labelWithRule": "{{lane}} · {{rule}}",
     "killPoints": "{{points}} kill points per battle",
     "battles": "{{count}} battles",
@@ -251,6 +249,7 @@
   },
   "battles": {
     "title": "Battles",
+    "titleLane": "Battles · {{lane}}",
     "loading": "Loading battles…",
     "error": "Battle data could not be loaded.",
     "empty": "No battle data for this lane yet",
@@ -441,7 +440,7 @@
       "steps": {
         "tabs": {
           "title": "Event tabs",
-          "content": "Overview sums up the event. Teams shows every lane's objectives and units side by side; Lanes, Progress and Battles show one lane at a time, picked with Alpha, Beta and Gamma; Tokens plans your tokens; Leaderboard ranks units across every lane or one. On a phone the strip stays under the header while you scroll."
+          "content": "Overview sums up the event. Teams lays out each lane's objectives, units and teams; Plan holds the run forecast, the token plan, upgrade impact and battles; the run tab (Current run while the event is on, otherwise Next or Last run) shows your next tokens and synced progress. The lane switches pick which lanes show, one at a time on a phone. On a phone the strip stays under the header while you scroll."
         },
         "nextToken": {
           "title": "Next token",
@@ -457,7 +456,7 @@
         },
         "tokenPlan": {
           "title": "Token plan",
-          "content": "Every token the plan expects to play in order, with running points and the milestones it crosses. The run forecast below spreads it across the remaining runs."
+          "content": "Every token the plan expects to play in order, with running points and the milestones it crosses. The run forecast above spreads it across the remaining runs. Pick a battle to see its map and enemies."
         },
         "laneSummary": {
           "title": "Lane summary",
@@ -465,15 +464,11 @@
         },
         "eventBoard": {
           "title": "Event board",
-          "content": "Every lane's objectives with the units that fit each, strongest first, and your saved teams. Turn lanes on or off, pick objectives to see the units that fit all of them, and pick a unit to start a team with it."
+          "content": "Each shown lane's objectives with the units that fit each, strongest first, and the lane's teams under them. Pick objectives to see the units that fit all of them, and pick a unit to start a team with it."
         },
-        "overviewLeaderboard": {
-          "title": "Eligibility across lanes",
-          "content": "Every unit that can play, with the points it can still score in each lane. Filter by objective, show only unlocked units, or switch to points per battle."
-        },
-        "laneOverview": {
-          "title": "Lane overview",
-          "content": "The lane's allowed units, kill points and five objectives with their scores, then a map of how far your roster can get: each battle's defeat-all and objectives as cleared, reached by your teams, within your roster's reach, or out of reach."
+        "eligibility": {
+          "title": "Eligibility",
+          "content": "Every unit that can play, with the points it can still score on the shown lanes. With one lane shown it lists that lane's objectives and estimated clears. Filter by objective, show only unlocked units, or use a row's menu for Create goal or Add to new team."
         },
         "teams": {
           "title": "Teams",
@@ -490,10 +485,6 @@
         "battles": {
           "title": "Battles",
           "content": "Preview any battle of the lane before you play it: its map, its waves round by round and every enemy with its level. Tap an enemy for its stats. It opens on your next battle to play."
-        },
-        "leaderboard": {
-          "title": "Lane leaderboard",
-          "content": "Every unit this lane allows, whether you own it, which objectives it meets and the points it can still score here. Turn on Goals Preview to see units as if your active goals were reached, and use a row's menu for Create goal or Add to new team."
         },
         "lastRun": {
           "title": "Last run",
@@ -617,6 +608,7 @@
   },
   "upgradeImpact": {
     "title": "Upgrade impact",
+    "titleLane": "Upgrade impact · {{lane}}",
     "summary_one": "{{count}} upgrade adds points · best +{{best}}",
     "summary_other": "{{count}} upgrades add points · best +{{best}}",
     "hint": "What one next step of a team member adds on this lane, through the battles it lets a team reach. Based on your synced roster.",
@@ -684,7 +676,10 @@
         "progresses": "Progresses:",
         "premium": "{{mission}} (premium)",
         "points": "+{{points}} points ({{difference}})"
-      }
+      },
+      "upNext": "Up next",
+      "viewPlan_one": "View the {{count}} planned token",
+      "viewPlan_other": "View all {{count}} planned tokens"
     },
     "plan": {
       "title": "Token plan",

@@ -127,25 +127,24 @@
     "label": "Sections de l'événement",
     "overview": "Aperçu",
     "teams": "Équipes",
-    "lanes": "Voies",
-    "progress": "Progression",
-    "tokens": "Jetons",
-    "battles": "Combats",
-    "leaderboard": "Classement",
+    "plan": "Plan",
+    "run": {
+      "current": "Manche en cours",
+      "next": "Prochaine manche",
+      "last": "Dernière manche"
+    },
     "laneLabel": "Voie",
-    "allLanes": "Toutes les voies"
+    "lanesShown": "Voies affichées"
+  },
+  "battleInfo": {
+    "open": "Infos du combat : {{lane}} combat {{battle}}",
+    "title": "{{lane}} · Combat {{battle}}"
   },
   "eventBoard": {
     "title": "Tableau de l'événement",
-    "description": "Les objectifs de chaque voie, les unités qui conviennent à chacun et vos équipes enregistrées d'un seul coup d'œil. Choisissez des objectifs pour voir les unités qui les remplissent tous, une unité pour commencer une équipe avec elle, une équipe pour la modifier ou une voie pour l'ouvrir dans l'onglet Voies.",
-    "openLane": "Ouvrir {{lane}} dans l'onglet Voies",
-    "teams_one": "{{count}} équipe",
-    "teams_other": "{{count}} équipes",
-    "noTeams": "Aucune équipe pour l'instant.",
+    "description": "Les objectifs de chaque voie affichée, les unités qui conviennent à chacun et les équipes de la voie côte à côte. Choisissez des objectifs pour voir les unités qui les remplissent tous, ou une unité pour commencer une équipe avec elle.",
     "noTeam": "Aucune équipe",
     "cleared": "Rempli dans {{cleared}} combats sur {{total}}",
-    "editTeam": "Modifier {{name}}",
-    "lanesShown": "Voies affichées",
     "clearSelection": "Effacer la sélection",
     "columnUnits_one": "{{count}} unité",
     "columnUnits_other": "{{count}} unités",
@@ -164,7 +163,6 @@
     "rosterReaches": "L'effectif atteint le combat {{battle}}"
   },
   "laneOverview": {
-    "title": "Aperçu des voies",
     "labelWithRule": "{{lane}} · {{rule}}",
     "killPoints": "{{points}} points d'élimination par combat",
     "battles": "{{count}} combats",
@@ -251,6 +249,7 @@
   },
   "battles": {
     "title": "Combats",
+    "titleLane": "Combats · {{lane}}",
     "loading": "Chargement des combats…",
     "error": "Les données des combats n’ont pas pu être chargées.",
     "empty": "Pas encore de données de combat pour cette voie",
@@ -441,7 +440,7 @@
       "steps": {
         "tabs": {
           "title": "Onglets de l'événement",
-          "content": "L'Aperçu résume l'événement. Équipes montre les objectifs et les unités de toutes les voies côte à côte ; Voies, Progression et Combats montrent une voie à la fois, choisie avec Alpha, Bêta et Gamma ; Jetons planifie vos jetons ; Classement classe les unités sur toutes les voies ou une seule. Sur mobile, la barre reste sous l'en-tête pendant le défilement."
+          "content": "L'Aperçu résume l'événement. Équipes présente les objectifs, les unités et les équipes de chaque voie ; Plan réunit la prévision par manche, le plan de jetons, l'impact des améliorations et les combats ; l'onglet de la manche (Manche en cours pendant l'événement, sinon Prochaine ou Dernière manche) montre vos prochains jetons et la progression synchronisée. Les interrupteurs de voie choisissent les voies affichées, une à la fois sur mobile. Sur mobile, la barre reste sous l'en-tête pendant le défilement."
         },
         "nextToken": {
           "title": "Prochain jeton",
@@ -457,7 +456,7 @@
         },
         "tokenPlan": {
           "title": "Plan de jetons",
-          "content": "Tous les jetons que le plan prévoit de jouer dans l'ordre, avec les points cumulés et les paliers franchis. La prévision par manche ci-dessous les répartit sur les manches restantes."
+          "content": "Tous les jetons que le plan prévoit de jouer dans l'ordre, avec les points cumulés et les paliers franchis. La prévision par manche ci-dessus les répartit sur les manches restantes. Choisissez un combat pour voir sa carte et ses ennemis."
         },
         "laneSummary": {
           "title": "Résumé des voies",
@@ -465,15 +464,11 @@
         },
         "eventBoard": {
           "title": "Tableau de l'événement",
-          "content": "Les objectifs de chaque voie avec les unités qui conviennent, les plus fortes d'abord, et vos équipes enregistrées. Affichez ou masquez des voies, choisissez des objectifs pour voir les unités qui les remplissent tous et choisissez une unité pour commencer une équipe avec elle."
+          "content": "Les objectifs de chaque voie affichée avec les unités qui conviennent, les plus fortes d'abord, et en dessous les équipes de la voie. Choisissez des objectifs pour voir les unités qui les remplissent tous et choisissez une unité pour commencer une équipe avec elle."
         },
-        "overviewLeaderboard": {
-          "title": "Éligibilité toutes voies",
-          "content": "Chaque unité pouvant jouer, avec les points qu'elle peut encore marquer dans chaque voie. Filtrez par objectif, n'affichez que les unités débloquées ou passez aux points par combat."
-        },
-        "laneOverview": {
-          "title": "Aperçu de la voie",
-          "content": "Les unités autorisées de la voie, les points d'élimination et les cinq objectifs avec leurs scores, puis une carte de jusqu'où va votre effectif : le « tout vaincre » et les objectifs de chaque combat comme réussis, atteints par vos équipes, à portée de votre effectif ou hors de portée."
+        "eligibility": {
+          "title": "Éligibilité",
+          "content": "Chaque unité pouvant jouer, avec les points qu'elle peut encore marquer sur les voies affichées. Avec une seule voie affichée, elle indique ses objectifs et les combats estimés. Filtrez par objectif, n'affichez que les unités débloquées ou utilisez le menu d'une ligne pour Créer un objectif ou Ajouter à une nouvelle équipe."
         },
         "teams": {
           "title": "Équipes",
@@ -490,10 +485,6 @@
         "battles": {
           "title": "Combats",
           "content": "Consultez chaque combat de la voie avant de le jouer : sa carte, ses vagues tour par tour et chaque ennemi avec son niveau. Touchez un ennemi pour voir ses statistiques. Il s’ouvre sur votre prochain combat à jouer."
-        },
-        "leaderboard": {
-          "title": "Classement de la voie",
-          "content": "Chaque unité autorisée dans cette voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut encore marquer ici. Activez l'aperçu des objectifs pour voir les unités comme si vos objectifs actifs étaient atteints, et utilisez le menu d'une ligne pour « Créer un objectif » ou « Ajouter à une nouvelle équipe »."
         },
         "lastRun": {
           "title": "Dernière manche",
@@ -617,6 +608,7 @@
   },
   "upgradeImpact": {
     "title": "Impact des améliorations",
+    "titleLane": "Impact des améliorations · {{lane}}",
     "summary_one": "{{count}} amélioration rapporte des points · meilleure +{{best}}",
     "summary_other": "{{count}} améliorations rapportent des points · meilleure +{{best}}",
     "hint": "Ce qu'une seule étape suivante d'un membre d'équipe rapporte sur cette voie, par les combats qu'elle permet d'atteindre. D'après votre effectif synchronisé.",
@@ -684,7 +676,10 @@
         "progresses": "Fait avancer :",
         "premium": "{{mission}} (premium)",
         "points": "+{{points}} points ({{difference}})"
-      }
+      },
+      "upNext": "Ensuite",
+      "viewPlan_one": "Voir le {{count}} jeton prévu",
+      "viewPlan_other": "Voir les {{count}} jetons prévus"
     },
     "plan": {
       "title": "Plan de jetons",

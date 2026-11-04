@@ -44,13 +44,14 @@ import type {
 } from "../legendary-event-page.view-model"
 
 /**
- * The Overview Eligibility leaderboard (spec: cross-lane eligibility leaderboard on Overview):
- * one row per unit allowed on at least one lane with its Alpha / Beta / Gamma figures ("—" where
- * a lane disallows it), each under that lane's objective indicators, ordered by their sum. Shares
+ * The cross-lane Eligibility leaderboard (spec: one eligibility leaderboard on Teams): one row per
+ * unit allowed on at least one shown lane with each shown lane's figure ("—" where a lane
+ * disallows it), each under that lane's objective indicators, ordered by their sum. Shares
  * the controls bar and its state with the lane leaderboards; the chips are grouped per lane.
  */
 export function CrossLaneLeaderboard({
   event,
+  laneIds = LEGENDARY_EVENT_LANE_IDS,
   leaderboard,
   progressGrid,
   layout,
@@ -59,6 +60,8 @@ export function CrossLaneLeaderboard({
   leaderboard: LeaderboardViewModel
   progressGrid: ProgressGridViewModel
   layout: "table" | "list"
+  /** The lanes it compares (every lane by default), in lane order. */
+  laneIds?: readonly LegendaryEventLaneId[]
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const nameOf = useLeaderboardUnitName()
@@ -66,7 +69,7 @@ export function CrossLaneLeaderboard({
   const ready = leaderboard.kind === "ready"
   const rosterAvailable = ready && leaderboard.rosterAvailable
   const figure = leaderboardFigure(leaderboard)
-  const groups = objectiveChips(event, LEGENDARY_EVENT_LANE_IDS, progressGrid)
+  const groups = objectiveChips(event, laneIds, progressGrid)
   const clearFilter = () => leaderboard.onSelectedObjectivesChange(new Set())
 
   let body: ReactNode
@@ -87,17 +90,22 @@ export function CrossLaneLeaderboard({
       </p>
     )
   } else {
-    const result = crossLaneLeaderboardBody(leaderboard.crossLaneRows, {
-      onlyUnlocked: rosterAvailable && leaderboard.onlyUnlocked,
-      objectiveKeys: leaderboard.selectedObjectives,
-      figure,
-      nameOf,
-      locale: i18n.language,
-    })
+    const result = crossLaneLeaderboardBody(
+      leaderboard.crossLaneRows,
+      {
+        onlyUnlocked: rosterAvailable && leaderboard.onlyUnlocked,
+        objectiveKeys: leaderboard.selectedObjectives,
+        figure,
+        nameOf,
+        locale: i18n.language,
+      },
+      laneIds
+    )
     body =
       result.kind === "rows" ? (
         layout === "table" ? (
           <CrossLaneTable
+            laneIds={laneIds}
             figure={figure}
             goals={leaderboard.goals}
             groups={groups}
@@ -107,6 +115,7 @@ export function CrossLaneLeaderboard({
           />
         ) : (
           <CrossLaneList
+            laneIds={laneIds}
             figure={figure}
             goals={leaderboard.goals}
             groups={groups}
@@ -148,12 +157,13 @@ export function CrossLaneLeaderboard({
  *  order, each naming its lane. */
 function crossLaneAddToTeam(
   row: CrossLaneLeaderboardRow,
+  laneIds: readonly LegendaryEventLaneId[],
   onAddToTeam:
     ((unitId: string, laneId: LegendaryEventLaneId) => void) | undefined
 ): LeaderboardAddToTeam | undefined {
   if (!onAddToTeam) return undefined
   return {
-    laneIds: LEGENDARY_EVENT_LANE_IDS.filter((laneId) => row.lanes[laneId]),
+    laneIds: laneIds.filter((laneId) => row.lanes[laneId]),
     nameLane: true,
     onSelect: (laneId) => onAddToTeam(row.unit.id, laneId),
   }
@@ -195,10 +205,7 @@ function LaneObjectives({
 function useLaneFigure(figure: LeaderboardFigure) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
-  return (
-    row: CrossLaneLeaderboardRow,
-    laneId: (typeof LEGENDARY_EVENT_LANE_IDS)[number]
-  ) => {
+  return (row: CrossLaneLeaderboardRow, laneId: LegendaryEventLaneId) => {
     const value = crossLaneFigure(row, laneId, figure)
     const lane = t(`lanes.${laneId}`)
     return value === undefined
@@ -223,6 +230,7 @@ function CrossLaneTable({
   nameOf,
   goals,
   onAddToTeam,
+  laneIds,
 }: {
   rows: readonly CrossLaneLeaderboardRow[]
   groups: readonly ObjectiveChipGroup[]
@@ -230,6 +238,7 @@ function CrossLaneTable({
   nameOf: (unit: LegendaryEventUnit) => string
   goals: LeaderboardGoalsViewModel
   onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
+  laneIds: readonly LegendaryEventLaneId[]
 }) {
   const { t } = useTranslation("legendaryEvents")
   const laneFigure = useLaneFigure(figure)
@@ -245,7 +254,7 @@ function CrossLaneTable({
             <TableHead className="px-1">
               <span className="sr-only">{t("leaderboard.rank")}</span>
             </TableHead>
-            {LEGENDARY_EVENT_LANE_IDS.map((laneId) => (
+            {laneIds.map((laneId) => (
               <TableHead className="text-right" key={laneId}>
                 {t(`lanes.${laneId}`)}
               </TableHead>
@@ -260,7 +269,7 @@ function CrossLaneTable({
             </TableHead>
             <TableHead
               className="h-6 py-0 text-right text-xs font-normal text-muted-foreground"
-              colSpan={3}
+              colSpan={laneIds.length}
               data-testid="leaderboard-figure-head"
             >
               {t(`leaderboard.${figure}`)}
@@ -289,7 +298,7 @@ function CrossLaneTable({
               <TableCell className="px-1">
                 <LeaderboardRank row={row} />
               </TableCell>
-              {LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
+              {laneIds.map((laneId) => {
                 const { text, label } = laneFigure(row, laneId)
                 return (
                   <TableCell
@@ -320,7 +329,7 @@ function CrossLaneTable({
                 <LeaderboardRowActions
                   name={nameOf(row.unit)}
                   onCreateGoal={() => goals.onCreateGoal(row.unit.id, null)}
-                  addToTeam={crossLaneAddToTeam(row, onAddToTeam)}
+                  addToTeam={crossLaneAddToTeam(row, laneIds, onAddToTeam)}
                 />
               </TableCell>
             </TableRow>
@@ -338,6 +347,7 @@ function CrossLaneList({
   nameOf,
   goals,
   onAddToTeam,
+  laneIds,
 }: {
   rows: readonly CrossLaneLeaderboardRow[]
   groups: readonly ObjectiveChipGroup[]
@@ -345,6 +355,7 @@ function CrossLaneList({
   nameOf: (unit: LegendaryEventUnit) => string
   goals: LeaderboardGoalsViewModel
   onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
+  laneIds: readonly LegendaryEventLaneId[]
 }) {
   const { t } = useTranslation("legendaryEvents")
   const laneFigure = useLaneFigure(figure)
@@ -371,7 +382,7 @@ function CrossLaneList({
               <LeaderboardRowActions
                 name={nameOf(row.unit)}
                 onCreateGoal={() => goals.onCreateGoal(row.unit.id, null)}
-                addToTeam={crossLaneAddToTeam(row, onAddToTeam)}
+                addToTeam={crossLaneAddToTeam(row, laneIds, onAddToTeam)}
                 size="card"
               />
             </span>
@@ -380,7 +391,7 @@ function CrossLaneList({
             <span className="text-xs text-muted-foreground">
               {t(`leaderboard.${figure}`)}
             </span>
-            {LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
+            {laneIds.map((laneId) => {
               const { text, label } = laneFigure(row, laneId)
               return (
                 <span
