@@ -36,6 +36,9 @@ function seedPlanDetails(client: QueryClient, plans: LegendaryEventPlan[]) {
   }
 }
 
+/** The API's largest run-record page. */
+const COMPARE_RUN_RECORD_LIMIT = 100
+
 export const legendaryEventPlanQueries = {
   all: () => ["legendary-event-plans"] as const,
   detail: (eventId: string) =>
@@ -92,8 +95,9 @@ export const legendaryEventPlanQueries = {
         }
       },
     }),
-  // The newest page alone (the Collection compare picker); its own key below the event's records,
-  // so a sync's refresh covers it and it never shares a cache entry with the paged query.
+  // The newest page alone (the Collection compare picker), at the API's largest page size so it
+  // reaches back about 33 occurrences of three runs; its own key below the event's records, so a
+  // sync's refresh covers it and it never shares a cache entry with the paged query.
   latestRunRecords: (eventId: string) =>
     queryOptions({
       queryKey: [
@@ -103,7 +107,10 @@ export const legendaryEventPlanQueries = {
       ] as const,
       queryFn: async ({ signal }): Promise<LegendaryEventRunRecords> => {
         try {
-          return await getLegendaryEventRunRecords(eventId, { signal })
+          return await getLegendaryEventRunRecords(eventId, {
+            limit: COMPARE_RUN_RECORD_LIMIT,
+            signal,
+          })
         } catch (error) {
           if (error instanceof ApiError && error.status === 404) {
             return { eventId, records: [], nextAfter: null }
