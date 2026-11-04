@@ -402,6 +402,14 @@
           "abilities": "Capacités",
           "shards": "Éclats"
         },
+        "view": "Affichage",
+        "views": {
+          "cards": "Cartes",
+          "roster": "Liste"
+        },
+        "groupByFaction": "Grouper par faction",
+        "hideUnowned": "Masquer les non débloquées",
+        "hideUnownedNeedsRoster": "Masquer les unités non débloquées nécessite un effectif synchronisé.",
         "filters": "Filtres",
         "filtersCount_one": "Filtres ({{count}})",
         "filtersCount_other": "Filtres ({{count}})",
@@ -422,15 +430,11 @@
         "clearRankTo": "Retirer le rang maximum",
         "searchRanks": "Rechercher des rangs",
         "noRanks": "Aucun rang ne correspond",
-        "ownership": "Possession",
-        "ownershipAll": "Toutes les unités",
-        "owned": "Possédées",
-        "unowned": "Non possédées",
         "kind": "Type d'unité",
         "kindAll": "Tous les types",
         "character": "Personnages",
         "mow": "Machines de guerre",
-        "needsRoster": "Les filtres de rang, d'étoiles et de possession nécessitent un effectif synchronisé.",
+        "needsRoster": "Les filtres de rang et d'étoiles nécessitent un effectif synchronisé.",
         "quickFilters": "Filtres rapides",
         "quick": {
           "readyToRankUp": "Prête à monter en rang",
@@ -505,7 +509,10 @@
       },
       "empty": {
         "title": "Aucune unité ne correspond à ces filtres",
-        "body": "Modifiez ou effacez les filtres pour voir plus d'unités."
+        "body": "Modifiez ou effacez les filtres pour voir plus d'unités.",
+        "hiddenTitle": "Aucune unité débloquée ici",
+        "hiddenBody": "« Masquer les non débloquées » masque toutes ces unités.",
+        "showUnowned": "Afficher les unités non débloquées"
       },
       "compare": {
         "toggle": "Comparer",
@@ -625,6 +632,16 @@
         "deleteFailed": "Impossible de supprimer l’instantané."
       }
     }
+  },
+  "unitRow": {
+    "level": "Niv. {{level}}",
+    "active": "Active",
+    "passive": "Passive",
+    "primary": "Principale",
+    "secondary": "Secondaire",
+    "equipment": "Équipement",
+    "shards": "Éclats",
+    "open": "Ouvrir {{name}}"
   },
   "unitTile": {
     "characterAbilities": "Capacité active niveau {{first}}, capacité passive niveau {{second}}",
@@ -2106,6 +2123,30 @@
         "quickFilters": {
           "title": "Filtres rapides",
           "content": "D'un geste, affichez les unités à faire progresser ensuite : prête à monter en rang, doit être ascensionnée, peut être ascensionnée, doit monter de niveau ou prête pour l'étoile bleue. Sélectionnez à nouveau un filtre pour le retirer."
+        },
+        "view": {
+          "title": "Cartes ou liste",
+          "content": "Passez des cartes de faction à la liste, un affichage plus dense avec une ligne par unité. Votre choix est mémorisé. Désactivez « Grouper par faction » pour voir toutes les unités ensemble dans votre tri, et « Masquer les non débloquées » pour ne voir que vos unités."
+        },
+        "factionRoster": {
+          "title": "Regroupées par faction",
+          "content": "Chaque section réunit les personnages et Machines de guerre d'une faction ; vos unités viennent en premier."
+        },
+        "ownedRoster": {
+          "title": "Une unité possédée",
+          "content": "Chaque ligne montre le portrait cerclé de la couleur de sa rareté, puis son rang, ses étoiles, son niveau d'XP, ses niveaux de capacité et son équipement. Sélectionnez une ligne pour ouvrir ses détails dans la Bibliothèque."
+        },
+        "ownedRosterMobile": {
+          "title": "Une unité possédée",
+          "content": "Chaque ligne montre le portrait, le rang, les étoiles et le niveau d'XP. Touchez une ligne pour voir ses niveaux de capacité, son équipement et ses éclats, puis ouvrez de là ses détails dans la Bibliothèque."
+        },
+        "unownedRoster": {
+          "title": "Pas encore débloquée",
+          "content": "Les lignes grisées ne sont pas dans votre effectif. La barre montre où vous en êtes de leur déblocage. Sélectionnez une ligne pour ouvrir ses détails dans la Bibliothèque."
+        },
+        "unownedRosterMobile": {
+          "title": "Pas encore débloquée",
+          "content": "Les lignes grisées ne sont pas dans votre effectif. Touchez une ligne pour voir où vous en êtes de son déblocage, puis ouvrez de là ses détails dans la Bibliothèque."
         }
       }
     },

@@ -5,7 +5,7 @@ import {
   type Rarity,
 } from "@workspace/game-domain"
 
-import type { UnitTileUnit } from "../model/types"
+import type { UnitFaction, UnitTileUnit } from "../model/types"
 
 /**
  * From the first blue star on, every further ascension costs mythic shards, so an owned unit's tile
@@ -17,10 +17,13 @@ export function usesMythicShards(progression: Progression): boolean {
 const firstBlueStarIndex = 11
 
 /** "Titus, Legendary, Red Four Stars, Gold I, level 45, active ability level 40, ...". */
-export function useUnitTileLabel(unit: UnitTileUnit): string {
+export function useUnitTileLabel(
+  unit: UnitTileUnit,
+  faction?: UnitFaction
+): string {
   const { t } = useTranslation(["common", "progression"])
   const { data } = unit
-  const parts = [unit.name]
+  const parts = faction ? [unit.name, faction.name] : [unit.name]
 
   if (data.state === "owned") {
     parts.push(...progressionParts(data.progression, t))

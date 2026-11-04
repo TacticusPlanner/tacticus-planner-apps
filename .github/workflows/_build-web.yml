@@ -103,8 +103,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # A release build (CD Prod checks out refs/tags/vX.Y.Z) is versioned by its tag, so analytics
+      # app_version names the release; any other build by its commit.
       - name: Set app version
-        run: echo "VITE_APP_VERSION=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+        shell: bash
+        env:
+          REF: ${{ inputs.ref || github.ref }}
+        run: |
+          if [[ "$REF" =~ ^refs/tags/(v[0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "VITE_APP_VERSION=${BASH_REMATCH[1]}" >> "$GITHUB_ENV"
+          else
+            echo "VITE_APP_VERSION=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          fi
 
       - name: Apply deployment variable overrides
         if: ${{ inputs.upload-artifact }}

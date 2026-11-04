@@ -22,7 +22,8 @@ function CurrentPath() {
 
 function renderTile(
   unit: UnitTileUnit,
-  link?: { to: string; state?: unknown }
+  link?: { to: string; state?: unknown },
+  faction?: { id: string; name: string }
 ) {
   return render(
     <I18nextProvider i18n={i18n}>
@@ -32,7 +33,12 @@ function renderTile(
             path="*"
             element={
               <>
-                <UnitTile unit={unit} link={link} testId="tile" />
+                <UnitTile
+                  unit={unit}
+                  link={link}
+                  faction={faction}
+                  testId="tile"
+                />
                 <CurrentPath />
               </>
             }
@@ -282,5 +288,23 @@ describe("UnitTile", () => {
     expect(screen.getByRole("group")).toHaveAccessibleName(
       "Marneus Calgar, not unlocked, Starts Epic"
     )
+  })
+
+  it("shows its faction and names it after the unit when given one", () => {
+    renderTile(titus, undefined, { id: "Ultramarines", name: "Ultramarines" })
+
+    expect(screen.getByTestId("unit-tile-faction")).toHaveAttribute(
+      "data-faction",
+      "Ultramarines"
+    )
+    expect(screen.getByRole("group")).toHaveAccessibleName(
+      expect.stringMatching(/^Titus, Ultramarines, Legendary,/)
+    )
+  })
+
+  it("shows no faction without one", () => {
+    renderTile(titus)
+
+    expect(screen.queryByTestId("unit-tile-faction")).not.toBeInTheDocument()
   })
 })

@@ -76,7 +76,7 @@ function capModulePreloads(): Plugin {
 
 // Locale files and catalog images are served immutable (public/staticwebapp.config.json), so their
 // URLs carry a version (`?v=`) that must change whenever their content can:
-// - locales: the commit (VITE_APP_VERSION, set by CI; shared/config/i18n),
+// - locales: the release tag or commit (VITE_APP_VERSION, set by CI; shared/config/i18n),
 // - catalog images: the git tree hash of public/game_catalog, which changes exactly when an image
 //   does (packages/game-catalog asset-path.ts).
 // Outside a git checkout both fall back to a per-build value, never to a fixed one.
