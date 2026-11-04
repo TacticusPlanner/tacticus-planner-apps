@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { incursionsFixture } from "@workspace/game-catalog/testing"
 
+import { tierLabels } from "@/entities/incursion"
+
 import {
   bestPathShards,
   orderIncursions,
@@ -8,7 +10,6 @@ import {
   runSteps,
   shardYield,
   sumRewards,
-  tierLabels,
   tierSummary,
   enhancementSubject,
   enemyStatRow,

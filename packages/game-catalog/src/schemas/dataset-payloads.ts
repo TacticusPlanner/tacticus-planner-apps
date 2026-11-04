@@ -9,6 +9,7 @@ import { globalValuesSchema } from "./global-values"
 import { progressionRulesSchema } from "./progression-rules"
 import { hreSchema } from "./hre"
 import { incursionSchema } from "./incursions"
+import { npcEncounterSchema } from "./npc-encounters"
 import {
   eventDefinitionSchema,
   eventsCalendarPayloadSchema,
@@ -67,6 +68,7 @@ export const datasetPayloadSchemas = {
   "progression-rules": z.array(progressionRulesSchema),
   hre: z.array(hreSchema),
   incursions: z.array(incursionSchema),
+  "npc-encounters": z.array(npcEncounterSchema),
 } satisfies Record<GameCatalogDatasetKey, z.ZodType>
 
 // Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
@@ -105,4 +107,5 @@ export type GameCatalogRecordByKey = {
   "progression-rules": z.infer<typeof progressionRulesSchema> & { id: string }
   hre: z.infer<typeof hreSchema>
   incursions: z.infer<typeof incursionSchema>
+  "npc-encounters": z.infer<typeof npcEncounterSchema>
 }

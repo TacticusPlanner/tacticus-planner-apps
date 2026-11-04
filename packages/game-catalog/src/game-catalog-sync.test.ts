@@ -23,6 +23,7 @@ import globalValuesPayload from "./schemas/global-values.fixture.json"
 import progressionRulesPayload from "./schemas/progression-rules.fixture.json"
 import hrePayload from "./schemas/hre.fixture.json"
 import incursionsPayload from "./schemas/incursions.fixture.json"
+import npcEncountersPayload from "./schemas/npc-encounters.fixture.json"
 
 // The fake client bypasses zod (the real GameCatalogHttpClient validates); these records only need the shape
 // the storage adapters key on (an id, a groupId, etc.), not the full served schema.
@@ -179,6 +180,7 @@ const datasetData: Record<string, unknown> = {
   "progression-rules": progressionRulesPayload,
   hre: hrePayload,
   incursions: incursionsPayload,
+  "npc-encounters": npcEncountersPayload,
 }
 
 function createManifest(
@@ -525,6 +527,43 @@ describe("syncGameCatalog", () => {
       "hero_release_event_1",
       "hero_release_event_2",
     ])
+  })
+
+  it("stores one npc-encounters row per npc, source and group, and is ready without the dataset", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    const ids = (await getDatasetRecords("npc-encounters")).map(
+      (record) => record.id
+    )
+    expect(ids).toHaveLength(npcEncountersPayload.length)
+    expect(ids).toContain("tyranNpc3Termagant|campaign|campaign3")
+    expect(ids).toContain("tyranNpc3Termagant|onslaught|onslaught")
+
+    await resetDb()
+    const manifest = createManifest()
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient({
+        ...manifest,
+        datasets: manifest.datasets.filter(
+          (dataset) => dataset.key !== "npc-encounters"
+        ),
+      })
+    )
+    expect(result.status).toBe("ready")
+    expect(await getDatasetRecords("npc-encounters")).toEqual([])
+  })
+
+  it("creates the v19 npc-encounters store for a client one version behind and keeps its other rows", async () => {
+    await seedDbMissingStore("npc-encounters")
+
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient(createManifest())
+    )
+
+    expect(result.status).toBe("ready")
+    expect(await getDatasetRecords("npc-encounters")).toHaveLength(
+      npcEncountersPayload.length
+    )
+    expect((await getDatasetRecords("characters"))[0]?.id).toBe("c1")
   })
 
   it("keys the incursions records by their MoW id", async () => {

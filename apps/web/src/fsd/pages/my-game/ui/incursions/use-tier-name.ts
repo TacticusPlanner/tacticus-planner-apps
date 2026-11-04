@@ -1,7 +1,9 @@
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
-import { tierLabels, type Incursion } from "../../model/incursions.model"
+import { tierLabels } from "@/entities/incursion"
+
+import type { Incursion } from "../../model/incursions.model"
 
 /** A tier's display name by index, e.g. "Epic 2"; falls back to its 1-based position. */
 export function useTierName(incursion: Incursion | undefined) {

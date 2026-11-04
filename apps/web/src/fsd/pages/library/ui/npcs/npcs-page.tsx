@@ -5,22 +5,33 @@ import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
+  NPC_ENCOUNTER_SOURCES,
   activeNpcFilterCount,
   emptyNpcFilters,
+  NO_ENCOUNTER_PLACES,
+  encounterTiming,
+  encountersOf,
+  matchingEncounterPlaces,
   filterNpcGroups,
   matchingVariations,
   orderLevels,
+  sortEncountersBySource,
   useNpcLabels,
   variationDamageTypes,
   variationMode,
   variationModeLabelKey,
+  type NpcEncounter,
+  type NpcEncounterLookup,
   type NpcFilters,
 } from "@/entities/npc"
+import { useMinuteNow } from "@/entities/legendary-event"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { useLibraryRouteSelection } from "../../model/use-library-route-selection"
 import { NpcsDesktopPage } from "./desktop/npcs-desktop-page"
+import { useEncounterGroupName } from "./hooks/use-encounter-group-name"
+import { useNpcEncounters } from "./hooks/use-npc-encounters"
 import { useNpcsCatalog } from "./hooks/use-npcs-catalog"
 import { NpcsMobilePage } from "./mobile/npcs-mobile-page"
 import { useNpcsTutorial } from "./npcs.tutorial"
@@ -48,10 +59,37 @@ export function NpcsPage() {
   const navigate = useNavigate()
   const catalog = useNpcsCatalog()
   const { groupName, factionName } = useNpcLabels()
+  const encounterGroupName = useEncounterGroupName()
 
   // Filters describe the list, not the selected entity, so they stay page-local (reset on unmount)
   // rather than in the URL — see design D7.
-  const [filters, setFilters] = useState<NpcFilters>(emptyNpcFilters)
+  const [filterState, setFilters] = useState<NpcFilters>(emptyNpcFilters)
+
+  // The encounter filters need the encounter data (and "running now" the calendar too); without it their
+  // controls are hidden, so a chosen value must not keep narrowing the list out of sight.
+  const { encounters: encounterData, calendar } = useNpcEncounters()
+  const nowMs = useMinuteNow()
+  const encounterLookup = useMemo<NpcEncounterLookup | undefined>(() => {
+    if (encounterData.status !== "present") return undefined
+    const { index } = encounterData
+    return {
+      encountersOf: (variationId) => encountersOf(index, variationId),
+      isRunning: ({ source, groupId }) =>
+        encounterTiming(source, groupId, calendar, nowMs)?.kind === "running",
+    }
+  }, [encounterData, calendar, nowMs])
+  const hasEncounters = encounterLookup !== undefined
+  const canFilterRunning = hasEncounters && calendar !== null
+  const filters = useMemo<NpcFilters>(
+    () => ({
+      ...filterState,
+      gameMode: hasEncounters ? filterState.gameMode : null,
+      encounterGroup: hasEncounters ? filterState.encounterGroup : null,
+      minCount: hasEncounters ? filterState.minCount : null,
+      runningNow: canFilterRunning && filterState.runningNow,
+    }),
+    [filterState, hasEncounters, canFilterRunning]
+  )
 
   // Route selection runs over every listed group (not the filtered view) so applying a filter never
   // redirects the current entity away.
@@ -68,8 +106,8 @@ export function NpcsPage() {
   const selectedGroup = selectedId ? catalog.byId.get(selectedId) : undefined
 
   const listedGroups = useMemo(
-    () => filterNpcGroups(catalog.groups, filters, groupName),
-    [catalog.groups, filters, groupName]
+    () => filterNpcGroups(catalog.groups, filters, groupName, encounterLookup),
+    [catalog.groups, filters, groupName, encounterLookup]
   )
   const items = useMemo<NpcListItem[]>(
     () =>
@@ -88,8 +126,17 @@ export function NpcsPage() {
     const alliances = new Set<string>()
     const damageTypes = new Set<string>()
     const traits = new Set<string>()
+    const gameModes = new Set<string>()
+    const locations = new Map<string, NpcEncounter>()
     for (const group of catalog.groups) {
       for (const variation of group.variations) {
+        for (const encounter of encounterLookup?.encountersOf(variation.id) ??
+          []) {
+          gameModes.add(encounter.source)
+          if (encounter.source === filters.gameMode) {
+            locations.set(encounter.groupId, encounter)
+          }
+        }
         factions.set(variation.factionId, factionName(variation.factionId))
         alliances.add(variation.alliance)
         // A couple of non-combat units are served with an empty damage profile; an empty id would
@@ -121,8 +168,27 @@ export function NpcsPage() {
       traits: [...traits]
         .map((id) => ({ id, name: t(`traits:${id}`, { defaultValue: id }) }))
         .sort(byName),
+      // Fixed source order, not alphabetical: the same order as the encounters section.
+      gameModes: NPC_ENCOUNTER_SOURCES.filter((source) =>
+        gameModes.has(source)
+      ).map((id) => ({
+        id,
+        name: t(`library:npcs.encounters.source.${id}`, { defaultValue: id }),
+      })),
+      locations: [...locations]
+        .map(([id, encounter]) => ({ id, name: encounterGroupName(encounter) }))
+        .sort(byName),
+      canFilterRunning,
     }
-  }, [catalog.groups, factionName, t])
+  }, [
+    canFilterRunning,
+    catalog.groups,
+    encounterGroupName,
+    encounterLookup,
+    factionName,
+    filters.gameMode,
+    t,
+  ])
 
   // --- Variation resolution -------------------------------------------------------------------
   const search = useMemo(
@@ -131,8 +197,11 @@ export function NpcsPage() {
   )
   const requestedVariationId = search.get("variation")
   const matching = useMemo(
-    () => (selectedGroup ? matchingVariations(selectedGroup, filters) : []),
-    [selectedGroup, filters]
+    () =>
+      selectedGroup
+        ? matchingVariations(selectedGroup, filters, encounterLookup)
+        : [],
+    [selectedGroup, filters, encounterLookup]
   )
   const selectedVariation = useMemo(() => {
     if (!selectedGroup || matching.length === 0) return undefined
@@ -291,6 +360,22 @@ export function NpcsPage() {
       selectedLevel?.row,
       powerContext
     ),
+    encounters:
+      encounterData.status === "present" && selectedVariation
+        ? sortEncountersBySource(
+            encountersOf(encounterData.index, selectedVariation.id)
+          )
+        : [],
+    matchingPlaces:
+      filters.minCount === null
+        ? null
+        : (encounter) => matchingEncounterPlaces(encounter, filters.minCount),
+    encounterPlaces:
+      encounterData.status === "present"
+        ? encounterData.places
+        : NO_ENCOUNTER_PLACES,
+    encountersStatus: encounterData.status,
+    calendar,
   }
 
   return (

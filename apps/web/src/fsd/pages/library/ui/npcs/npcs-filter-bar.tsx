@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { Check, ChevronsUpDown, X } from "lucide-react"
 import { damageTypeIcon, factionIcon, traitIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
+import { Input } from "@workspace/ui/components/input"
 import {
   Command,
   CommandEmpty,
@@ -19,10 +20,12 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { NpcAttackFilter, NpcFilters } from "@/entities/npc"
@@ -164,22 +167,24 @@ function IconSelect({
       <SelectTrigger className="w-full" aria-label={label} data-testid={testId}>
         <SelectValue />
       </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={ANY}>{anyLabel}</SelectItem>
-        {options.map((option) => (
-          <SelectItem key={option.id} value={option.id}>
-            <span className="flex items-center gap-2">
-              {option.icon ? (
-                <EntityIcon
-                  src={option.icon}
-                  alt=""
-                  className="size-5 shrink-0"
-                />
-              ) : null}
-              {option.name}
-            </span>
-          </SelectItem>
-        ))}
+      <SelectContent position="popper" align="start">
+        <SelectGroup>
+          <SelectItem value={ANY}>{anyLabel}</SelectItem>
+          {options.map((option) => (
+            <SelectItem key={option.id} value={option.id}>
+              <span className="flex items-center gap-2">
+                {option.icon ? (
+                  <EntityIcon
+                    src={option.icon}
+                    alt=""
+                    className="size-5 shrink-0"
+                  />
+                ) : null}
+                {option.name}
+              </span>
+            </SelectItem>
+          ))}
+        </SelectGroup>
       </SelectContent>
     </Select>
   )
@@ -233,6 +238,68 @@ export function NpcsFilterBar({
         onChange={(alliance) => onChange({ ...filters, alliance })}
         testId="npcs-alliance-filter"
       />
+      {/* Offered only while the encounter data is present (the orchestrator leaves no modes otherwise). */}
+      {options.gameModes.length > 0 ? (
+        <IconSelect
+          label={t("npcs.gameMode")}
+          anyLabel={t("npcs.anyGameMode")}
+          options={options.gameModes}
+          value={filters.gameMode}
+          onChange={(gameMode) =>
+            onChange({
+              ...filters,
+              gameMode: gameMode as NpcFilters["gameMode"],
+              // A location belongs to the mode it was chosen under.
+              encounterGroup: null,
+            })
+          }
+          testId="npcs-game-mode-filter"
+        />
+      ) : null}
+      {/* A single location (Onslaught) would only repeat the game mode. */}
+      {options.locations.length > 1 ? (
+        <IconSelect
+          label={t("npcs.location")}
+          anyLabel={t("npcs.anyLocation")}
+          options={options.locations}
+          value={filters.encounterGroup}
+          onChange={(encounterGroup) =>
+            onChange({ ...filters, encounterGroup })
+          }
+          testId="npcs-location-filter"
+        />
+      ) : null}
+      {options.gameModes.length > 0 ? (
+        <label className="flex items-center justify-between gap-2 px-1 text-sm">
+          {t("npcs.minCount")}
+          <Input
+            type="number"
+            min={1}
+            inputMode="numeric"
+            className="w-20"
+            value={filters.minCount ?? ""}
+            onChange={({ target: { valueAsNumber: count } }) =>
+              onChange({
+                ...filters,
+                minCount: Number.isInteger(count) && count > 0 ? count : null,
+              })
+            }
+            data-testid="npcs-min-count-filter"
+          />
+        </label>
+      ) : null}
+      {options.canFilterRunning ? (
+        <label className="flex items-center justify-between gap-2 px-1 text-sm">
+          {t("npcs.encounters.timing.running")}
+          <Switch
+            checked={filters.runningNow}
+            onCheckedChange={(runningNow) =>
+              onChange({ ...filters, runningNow })
+            }
+            data-testid="npcs-running-filter"
+          />
+        </label>
+      ) : null}
       <IconSelect
         label={t("npcs.attack")}
         anyLabel={t("npcs.anyAttack")}

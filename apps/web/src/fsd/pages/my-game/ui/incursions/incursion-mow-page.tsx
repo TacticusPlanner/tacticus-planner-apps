@@ -12,6 +12,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { RARITY_BORDER, RARITY_TEXT } from "@/entities/incursion"
 import { useDateLocale } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
@@ -40,7 +41,6 @@ import {
   useIncursionsOutlet,
   type IncursionProgress,
 } from "./incursions-outlet"
-import { RARITY_BORDER, RARITY_TEXT } from "./rarity-classes"
 import { useTierName } from "./use-tier-name"
 
 const NO_STARS: TierStars = () => 0
