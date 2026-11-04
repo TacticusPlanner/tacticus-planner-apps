@@ -1,10 +1,10 @@
 export type NpcVariationMode =
   | "standard"
-  | "lhe"
+  | "questEvent"
   | "legendary"
   | "survival"
   | "campaign"
-  | "championEvent"
+  | "campaignEvent"
   | "tutorial"
   | "leviathan"
   | "kronos"
@@ -21,10 +21,10 @@ const SUFFIX_RULES: readonly [RegExp, NpcVariationMode][] = [
   [/Leviathan$/, "leviathan"],
   [/Kronos$/, "kronos"],
   [/Gorgon$/, "gorgon"],
-  [/_?LHE$/, "lhe"],
+  [/_?LHE$/, "questEvent"],
   [/LEG$/, "legendary"],
   [/Surv$/, "survival"],
-  [/CE\d*$/, "championEvent"],
+  [/CE\d*$/, "campaignEvent"],
   [/C1(?=[A-Z]|$)/, "campaign"],
 ]
 

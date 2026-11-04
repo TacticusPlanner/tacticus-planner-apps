@@ -246,11 +246,11 @@
     "level": "NPC level",
     "variationMode": {
       "standard": "Standard",
-      "lhe": "Legendary Hero Event",
-      "legendary": "Legendary",
+      "questEvent": "Quest Event",
+      "legendary": "Legendary Event",
       "survival": "Survival",
       "campaign": "Campaign",
-      "championEvent": "Champion Event",
+      "campaignEvent": "Campaign Event",
       "tutorial": "Tutorial",
       "leviathan": "Hive Fleet Leviathan",
       "kronos": "Hive Fleet Kronos",
@@ -276,6 +276,58 @@
     },
     "traits": "Traits",
     "noTraits": "This unit has no traits.",
+    "encounters": {
+      "title": "Encountered in",
+      "unavailable": "Encounter data is not available yet.",
+      "none": "No encounters are recorded for this variation.",
+      "noneHint": "Past and rotating content can be missing from the game data, so it may still be met elsewhere.",
+      "alongside": "Fights alongside this boss",
+      "boss": "As the boss",
+      "prime": "As a prime",
+      "challenge": "Challenge {{list}}",
+      "battles": "Battles {{list}}",
+      "rounds": "Rounds {{list}}",
+      "battle": "Battle {{number}}",
+      "round": "Round {{number}}",
+      "tier": "Tier {{number}}",
+      "count": "×{{number}}",
+      "upTo": "up to {{number}}",
+      "matches_one": "{{count}} matching battle",
+      "matches_other": "{{count}} matching battles",
+      "canAppear": "Can appear in tiers {{list}}",
+      "tierBattles_one": "Tier {{tiers}}: battles {{battles}}",
+      "tierBattles_other": "Tiers {{tiers}}: battles {{battles}}",
+      "tierRangeBattles": "{{tiers}}: battles {{battles}}",
+      "tracks": {
+        "Standard": "Standard",
+        "Extremis": "Extremis",
+        "alpha": "Alpha",
+        "beta": "Beta",
+        "gamma": "Gamma"
+      },
+      "source": {
+        "campaign": "Campaign",
+        "campaignEvent": "Campaign Event",
+        "legendaryEvent": "Legendary Event",
+        "questEvent": "Quest Event",
+        "incursion": "Incursion",
+        "guildRaid": "Guild Raid",
+        "survival": "Survival",
+        "onslaught": "Onslaught"
+      },
+      "timing": {
+        "always": "Always available",
+        "rotating": "Rotating",
+        "running": "Running now",
+        "next": "Next run {{date}}",
+        "none": "No scheduled run"
+      },
+      "survivalSeason": {
+        "survival_may_2026": "May 2026",
+        "survival_september_2026": "September 2026",
+        "survival_crescendo_01": "Crescendo"
+      }
+    },
     "healthAtLevel": "{{health}} HP",
     "noMatchingNpcs": "No NPCs match the current filters.",
     "noMatchingOptions": "No matching options.",
@@ -286,7 +338,7 @@
       "steps": {
         "filters": {
           "title": "Filter the roster",
-          "content": "Search by name, or narrow the list by faction, damage type, and trait. An NPC stays listed while any of its variations matches."
+          "content": "Search by name, or narrow the list by faction, game mode, location, damage type, and trait. An NPC stays listed while any of its variations matches."
         },
         "list": {
           "title": "Pick an NPC",
@@ -298,7 +350,7 @@
         },
         "variation": {
           "title": "Variation",
-          "content": "The game spawns the same unit with different level ladders per mode — Survival, Legendary Hero Events, campaigns. Switch between them here."
+          "content": "The game spawns the same unit with different level ladders per mode — Survival, Quest Events, campaigns. Switch between them here."
         },
         "level": {
           "title": "NPC level",
@@ -307,6 +359,10 @@
         "stats": {
           "title": "Stats, power, attacks, and traits",
           "content": "Health, armour, damage, movement, and estimated power at the selected level, plus the unit’s attacks and traits."
+        },
+        "encounters": {
+          "title": "Where it is fought",
+          "content": "Every campaign, event and mode this variation appears in, when time-limited content runs next, and a link to the matching page."
         }
       }
     },
@@ -325,6 +381,11 @@
     },
     "attack": "Attack",
     "anyAttack": "Any attack",
+    "gameMode": "Game mode",
+    "anyGameMode": "Any game mode",
+    "location": "Location",
+    "anyLocation": "Any location",
+    "minCount": "Min. in one battle",
     "meleeOnly": "Melee only",
     "hasRanged": "Has ranged",
     "clearOne": "Clear {{name}}",

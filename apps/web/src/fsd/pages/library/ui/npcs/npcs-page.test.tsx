@@ -2,12 +2,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
 import { useLocation } from "react-router"
 
+import { incursionsFixture } from "@workspace/game-catalog/testing"
+
 import { holdNamespaceLoads, requestedNamespaces } from "@/test/i18n-instance"
 import { act, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
 import type { NpcRecord, NpcStatRow } from "@/entities/npc"
 import type { ReadState } from "@/shared/lib"
+import { refreshLocalDataAfterSync } from "@/shared/local-data"
 import {
   buildUnitPowerContext,
   npcPowerAt,
@@ -308,7 +311,7 @@ describe("NpcsPage", () => {
 
     expect(await screen.findByTestId("npc-name")).toHaveTextContent("Makhotep")
     expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
-      "Legendary Hero Event"
+      "Quest Event"
     )
     // served index 1 of the LHE ladder is rank 18 / 13 stars, health 8000
     expect(screen.getByTestId("npc-stat-health")).toHaveTextContent(
@@ -878,5 +881,841 @@ describe("NpcsPage power card", () => {
     expect(
       within(screen.getByTestId("npcs-stats")).getByTestId("npc-stat-power")
     ).toHaveTextContent(/45/)
+  })
+})
+
+describe("NpcsPage encounters", () => {
+  type Battle = {
+    battleId: string | null
+    track: string | null
+    tier: number | null
+    number: number | null
+    challenge: boolean
+    role: "enemy" | "boss" | "prime"
+    rounds: number[]
+    count: number | null
+    levels: { servedIndex: number | null; count: number }[]
+  }
+  const battle = (overrides: Partial<Battle> = {}): Battle => ({
+    battleId: null,
+    track: null,
+    tier: null,
+    number: null,
+    challenge: false,
+    role: "enemy",
+    rounds: [],
+    count: 1,
+    levels: [],
+    ...overrides,
+  })
+  const encounter = (
+    npcId: string,
+    source: string,
+    groupId: string,
+    battles: Battle[]
+  ) => ({ npcId, source, groupId, battles })
+
+  // necroNpcWarden is Makhotep's default variation; only the LEG variation fights in Survival.
+  const wardenEncounters = [
+    encounter(
+      "necroNpcWarden",
+      "onslaught",
+      "onslaught",
+      Array.from({ length: 21 }, (_, i) =>
+        battle({ tier: i + 1, rounds: [1, 2] })
+      )
+    ),
+    encounter("necroNpcWarden", "campaign", "campaign1", [
+      battle({ battleId: "I03", number: 3 }),
+      battle({ battleId: "I07", number: 7 }),
+    ]),
+    encounter("necroNpcWarden", "legendaryEvent", "astarLysander", [
+      battle({ battleId: "astarLysander-alpha-1", track: "alpha", number: 1 }),
+      battle({ battleId: "astarLysander-alpha-2", track: "alpha", number: 2 }),
+      battle({ battleId: "astarLysander-alpha-3", track: "alpha", number: 3 }),
+      battle({ battleId: "astarLysander-beta-7", track: "beta", number: 7 }),
+    ]),
+    encounter("necroNpcWarden", "questEvent", "astarCyrus", [
+      battle({ number: 1 }),
+    ]),
+    encounter(
+      "necroNpcWarden",
+      "guildRaid",
+      "GuildBoss1Boss1TyranTervigonLeviathan",
+      [battle({ count: null })]
+    ),
+    encounter("necroBossWardenLEG", "survival", "survival_crescendo_01", [
+      battle({ rounds: [1] }),
+      battle({ rounds: [3] }),
+    ]),
+  ]
+  // Far in the future, so the run is "next" whatever day the test runs.
+  const lysanderRun = {
+    "2099-01-08": [
+      {
+        occurrenceId: "occ-2099-01-08-legendary-event-lysander",
+        definitionId: "legendary-event",
+        confirmed: true,
+        startUtc: "2099-01-08T00:00:00Z",
+        endUtc: "2099-01-15T00:00:00Z",
+        parameters: { featuredCharacterId: "astarLysander" },
+      },
+    ],
+  }
+
+  beforeEach(() => {
+    isMobileMock.value = false
+    seededNpcs = dataset
+    powerMock.state = powerReady
+  })
+
+  async function renderWithEncounters(
+    entry: string,
+    encounters: unknown[] | null = wardenEncounters,
+    calendar: unknown = lysanderRun
+  ) {
+    await seedGameCatalog({
+      ...(encounters ? { "npc-encounters": encounters } : {}),
+      ...(calendar ? { "events-calendar": calendar } : {}),
+    })
+    const view = await renderPage(entry)
+    await screen.findByTestId("npc-name")
+    return view
+  }
+
+  it("groups the selected variation's encounters by source in the fixed order", async () => {
+    await renderWithEncounters("/library/npcs/makhotep")
+
+    const section = await screen.findByTestId("npc-encounters")
+    await within(section).findByTestId("npc-encounters-campaign")
+    const blocks = within(section)
+      .getAllByTestId(/^npc-encounters-[a-zA-Z]+$/)
+      .map((block) => block.dataset.testid)
+    expect(blocks).toEqual([
+      "npc-encounters-campaign",
+      "npc-encounters-legendaryEvent",
+      "npc-encounters-questEvent",
+      "npc-encounters-guildRaid",
+      "npc-encounters-onslaught",
+    ])
+    expect(
+      screen.getByTestId("npc-encounter-campaign-campaign1-location")
+    ).toHaveTextContent("Battles 3, 7")
+  })
+
+  it("shows a Legendary Event's tracks, its next run and a link to the event", async () => {
+    await renderWithEncounters("/library/npcs/makhotep")
+
+    const id = "npc-encounter-legendaryEvent-astarLysander"
+    await screen.findByTestId(id)
+    expect(screen.getByTestId(`${id}-location`)).toHaveTextContent(
+      "Alpha 1–3 · Beta 7"
+    )
+    expect(screen.getByTestId(`${id}-timing`)).toHaveTextContent(
+      /^Next run (Jan 8|8 Jan)/
+    )
+    expect(screen.getByTestId(`${id}-link`)).toHaveAttribute(
+      "href",
+      "/legendary-events/astarLysander"
+    )
+  })
+
+  it("shows a Quest Event with no scheduled run and no link", async () => {
+    await renderWithEncounters("/library/npcs/makhotep")
+
+    const quest = await screen.findByTestId(
+      "npc-encounter-questEvent-astarCyrus"
+    )
+    expect(quest).toHaveTextContent("No scheduled run")
+    expect(within(quest).queryByRole("link")).not.toBeInTheDocument()
+  })
+
+  it("shows a guild raid field unit alongside its boss, rotating, linked to the boss", async () => {
+    await renderWithEncounters("/library/npcs/makhotep")
+
+    const raid = await screen.findByTestId(
+      "npc-encounter-guildRaid-GuildBoss1Boss1TyranTervigonLeviathan"
+    )
+    expect(raid).toHaveTextContent("Fights alongside this boss")
+    expect(raid).toHaveTextContent("Rotating")
+    expect(within(raid).getByRole("link")).toHaveAttribute(
+      "href",
+      "/library/raid-bosses/GuildBoss1Boss1TyranTervigonLeviathan"
+    )
+  })
+
+  it("shows Onslaught tiers as a range that is always available", async () => {
+    await renderWithEncounters("/library/npcs/makhotep")
+
+    const onslaught = await screen.findByTestId(
+      "npc-encounter-onslaught-onslaught"
+    )
+    expect(onslaught).toHaveTextContent("Can appear in tiers 1–21")
+    expect(onslaught).toHaveTextContent("Always available")
+    expect(within(onslaught).getByRole("link")).toHaveAttribute(
+      "href",
+      "/my-game/onslaught"
+    )
+  })
+
+  it("names an incursion by its MoW and a Survival season by its label, with tiers 1-based", async () => {
+    await renderWithEncounters("/library/npcs/imospekh", [
+      encounter("necroNpcDestroyer", "incursion", "tauBroadside", [
+        battle({ battleId: "1", tier: 0 }),
+        battle({ battleId: "2", tier: 0 }),
+        battle({ battleId: "1", tier: 1 }),
+        battle({ battleId: "2", tier: 1 }),
+      ]),
+      encounter("necroNpcDestroyer", "survival", "survival_crescendo_01", [
+        battle({ rounds: [1, 3, 4, 5] }),
+      ]),
+    ])
+
+    const incursion = await screen.findByTestId(
+      "npc-encounter-incursion-tauBroadside"
+    )
+    expect(within(incursion).getByRole("link")).toHaveTextContent("Tson'ji")
+    expect(incursion).toHaveTextContent("Tiers 1–2: battles 1–2")
+    const survival = screen.getByTestId(
+      "npc-encounter-survival-survival_crescendo_01"
+    )
+    expect(survival).toHaveTextContent("Crescendo")
+    expect(survival).toHaveTextContent("Rounds 1, 3–5")
+    expect(within(survival).queryByRole("link")).not.toBeInTheDocument()
+  })
+
+  it("says no encounters are recorded when the data names the variation nowhere", async () => {
+    await renderWithEncounters("/library/npcs/imospekh")
+
+    const none = await screen.findByTestId("npc-encounters-none")
+    expect(none).toHaveTextContent(
+      "No encounters are recorded for this variation."
+    )
+    expect(none).toHaveTextContent("may still be met elsewhere")
+  })
+
+  it("shows the rows without timing while the calendar is unavailable", async () => {
+    await renderWithEncounters("/library/npcs/makhotep", wardenEncounters, null)
+
+    const id = "npc-encounter-legendaryEvent-astarLysander"
+    await screen.findByTestId(id)
+    expect(screen.getByTestId(`${id}-location`)).toHaveTextContent(
+      "Alpha 1–3 · Beta 7"
+    )
+    expect(screen.queryByTestId(`${id}-timing`)).not.toBeInTheDocument()
+    expect(screen.getByTestId(`${id}-link`)).toBeInTheDocument()
+  })
+
+  it("shows the unavailable note and no game-mode filter without encounter data", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", null)
+
+    expect(
+      await screen.findByTestId("npc-encounters-unavailable")
+    ).toHaveTextContent("Encounter data is not available yet.")
+    expect(screen.getByTestId("npc-stat-health")).toBeVisible()
+    await openFilters(user)
+    expect(screen.getByTestId("npcs-faction-filter")).toBeVisible()
+    expect(
+      screen.queryByTestId("npcs-game-mode-filter")
+    ).not.toBeInTheDocument()
+  })
+
+  it("narrows the list and the variations by game mode, counting it as a filter", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep")
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    await user.click(await screen.findByRole("option", { name: "Survival" }))
+
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (1)"
+    )
+    expect(
+      within(screen.getByTestId("npcs-list")).getAllByRole("button")
+    ).toHaveLength(1)
+    await waitFor(() =>
+      expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
+        "necroBossWardenLEG"
+      )
+    )
+    expect(screen.getByTestId("npcs-variation-select")).toBeDisabled()
+  })
+
+  it("offers the locations of the chosen game mode and clears them with it", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      ...wardenEncounters,
+      encounter("necroBossWardenLEG", "campaign", "elite1", [
+        battle({ battleId: "E01", number: 1 }),
+      ]),
+    ])
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+    expect(screen.queryByTestId("npcs-location-filter")).not.toBeInTheDocument()
+
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    await user.click(await screen.findByRole("option", { name: "Campaign" }))
+    await user.click(screen.getByTestId("npcs-location-filter"))
+    const [any, ...locations] = await screen.findAllByRole("option")
+    expect(any).toHaveTextContent("Any location")
+    expect(locations).toHaveLength(2)
+    const elite = locations.find((option) =>
+      /elite/i.test(option.textContent ?? "")
+    )
+    await user.click(elite as HTMLElement)
+
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (2)"
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
+        "necroBossWardenLEG"
+      )
+    )
+
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    await user.click(await screen.findByRole("option", { name: "Survival" }))
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (1)"
+    )
+  })
+
+  it("keeps other game modes out of the section when a game mode and a count are set", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "campaign", "campaign1", [
+        battle({ battleId: "I03", number: 3, count: 5 }),
+      ]),
+      encounter("necroNpcWarden", "legendaryEvent", "astarLysander", [
+        battle({
+          battleId: "astarLysander-alpha-1",
+          track: "alpha",
+          number: 1,
+          count: 5,
+        }),
+      ]),
+    ])
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    await user.click(await screen.findByRole("option", { name: "Campaign" }))
+    await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId("npc-encounter-legendaryEvent-astarLysander")
+      ).not.toBeInTheDocument()
+    )
+    expect(
+      screen.getByTestId("npc-encounter-campaign-campaign1")
+    ).toBeInTheDocument()
+  })
+
+  it("clears filters that exclude the variation a chip opens, and keeps its level", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "campaign", "campaign1", [
+        battle({
+          battleId: "I03",
+          number: 3,
+          count: 5,
+          levels: [{ servedIndex: 0, count: 5 }],
+        }),
+        battle({ battleId: "I07", number: 7, count: 5 }),
+      ]),
+      encounter("necroBossWardenLEG", "campaign", "campaign1", [
+        battle({
+          battleId: "I03",
+          number: 3,
+          count: 2,
+          levels: [{ servedIndex: 0, count: 2 }],
+        }),
+      ]),
+    ])
+    const id = "npc-encounter-campaign-campaign1"
+    await screen.findByTestId(id)
+    await openFilters(user)
+    await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    await user.click(screen.getByTestId(`${id}-place-I03`))
+
+    const chip = within(screen.getByTestId(`${id}-place-I03-npcs`))
+      .getAllByRole("link")
+      .find((link) =>
+        link.getAttribute("href")?.includes("variation=necroBossWardenLEG")
+      )
+    await user.click(chip as HTMLElement)
+
+    await waitFor(() =>
+      expect(location()).toContain("variation=necroBossWardenLEG&level=0")
+    )
+    expect(screen.getByTestId("npcs-filters-toggle")).not.toHaveTextContent("(")
+    expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
+      "necroBossWardenLEG"
+    )
+  })
+
+  it("keeps the filters when a chip is opened in a new tab", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "campaign", "campaign1", [
+        battle({ battleId: "I03", number: 3, count: 5 }),
+        battle({ battleId: "I07", number: 7, count: 5 }),
+      ]),
+      encounter("necroBossWardenLEG", "campaign", "campaign1", [
+        battle({ battleId: "I03", number: 3, count: 2 }),
+      ]),
+    ])
+    const id = "npc-encounter-campaign-campaign1"
+    await screen.findByTestId(id)
+    await openFilters(user)
+    await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    await user.click(screen.getByTestId(`${id}-place-I03`))
+    const chip = within(screen.getByTestId(`${id}-place-I03-npcs`))
+      .getAllByRole("link")
+      .find((link) =>
+        link.getAttribute("href")?.includes("variation=necroBossWardenLEG")
+      )
+    const urlBefore = location()
+
+    await user.keyboard("{Control>}")
+    await user.click(chip as HTMLElement)
+    await user.keyboard("{/Control}")
+
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (1)"
+    )
+    expect(location()).toBe(urlBefore)
+  })
+
+  it("drops a chosen game mode that refreshed data no longer offers", async () => {
+    const user = userEvent.setup()
+    const { queryClient } = await renderWithEncounters("/library/npcs/makhotep")
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    await user.click(await screen.findByRole("option", { name: "Survival" }))
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (1)"
+    )
+
+    await seedGameCatalog({
+      "npc-encounters": wardenEncounters.filter(
+        ({ source }) => source !== "survival"
+      ),
+    })
+    act(() =>
+      refreshLocalDataAfterSync(queryClient, "catalog", ["npc-encounters"])
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId("npcs-filters-toggle")).not.toHaveTextContent(
+        "("
+      )
+    )
+    expect(screen.getByTestId("npc-name")).toBeInTheDocument()
+  })
+
+  it("drops a chosen location that refreshed data no longer offers", async () => {
+    const user = userEvent.setup()
+    const { queryClient } = await renderWithEncounters(
+      "/library/npcs/makhotep",
+      [
+        ...wardenEncounters,
+        encounter("necroBossWardenLEG", "campaign", "elite1", [
+          battle({ battleId: "E01", number: 1 }),
+        ]),
+      ]
+    )
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    await user.click(await screen.findByRole("option", { name: "Campaign" }))
+    await user.click(screen.getByTestId("npcs-location-filter"))
+    const options = await screen.findAllByRole("option")
+    const elite = options.find((option) =>
+      /elite/i.test(option.textContent ?? "")
+    )
+    await user.click(elite as HTMLElement)
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (2)"
+    )
+
+    await seedGameCatalog({ "npc-encounters": wardenEncounters })
+    act(() =>
+      refreshLocalDataAfterSync(queryClient, "catalog", ["npc-encounters"])
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+        "Filters (1)"
+      )
+    )
+    expect(screen.queryByTestId("npcs-location-filter")).not.toBeInTheDocument()
+  })
+
+  it("hides the location filter for a game mode with one location", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep")
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    await user.click(await screen.findByRole("option", { name: "Onslaught" }))
+    expect(screen.queryByTestId("npcs-location-filter")).not.toBeInTheDocument()
+  })
+
+  it("narrows the list to NPCs in something running now", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", wardenEncounters, {
+      "2000-01-01": [
+        {
+          occurrenceId: "occ-long-running-lysander",
+          definitionId: "legendary-event",
+          confirmed: true,
+          startUtc: "2000-01-01T00:00:00Z",
+          endUtc: "2099-01-01T00:00:00Z",
+          parameters: { featuredCharacterId: "astarLysander" },
+        },
+      ],
+    })
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+
+    await user.click(screen.getByTestId("npcs-running-filter"))
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (1)"
+    )
+    expect(
+      within(screen.getByTestId("npcs-list")).getAllByRole("button")
+    ).toHaveLength(1)
+  })
+
+  it("narrows the list and the encounters to battles meeting a mission count", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      ...wardenEncounters,
+      encounter("necroBossWardenLEG", "campaign", "elite1", [
+        battle({ battleId: "E01", number: 1, count: 6 }),
+        battle({ battleId: "E02", number: 2, count: 1 }),
+      ]),
+    ])
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+
+    await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
+      "Filters (1)"
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
+        "necroBossWardenLEG"
+      )
+    )
+
+    const id = "npc-encounter-campaign-elite1"
+    expect(
+      screen.queryByTestId("npc-encounter-survival-survival_crescendo_01")
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId(`${id}-location`)).toHaveTextContent(
+      "1 matching battle"
+    )
+    await user.click(screen.getByTestId(`${id}-toggle`))
+    expect(screen.getByTestId(`${id}-place-E01`)).toBeVisible()
+    expect(screen.queryByTestId(`${id}-place-E02`)).not.toBeInTheDocument()
+  })
+
+  it("hides the running-now filter without a calendar", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", wardenEncounters, null)
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+    expect(screen.getByTestId("npcs-game-mode-filter")).toBeVisible()
+    expect(screen.queryByTestId("npcs-running-filter")).not.toBeInTheDocument()
+  })
+
+  it("offers only the game modes the data has, in source order", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep")
+    await screen.findByTestId("npc-encounter-campaign-campaign1")
+    await openFilters(user)
+
+    await user.click(screen.getByTestId("npcs-game-mode-filter"))
+    const options = (await screen.findAllByRole("option")).map(
+      (option) => option.textContent
+    )
+    expect(options).toEqual([
+      "Any game mode",
+      "Campaign",
+      "Legendary Event",
+      "Quest Event",
+      "Guild Raid",
+      "Survival",
+      "Onslaught",
+    ])
+  })
+
+  it("opens a row to its battles and a battle to every NPC fought there", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      ...wardenEncounters,
+      encounter("necroNpcDestroyer", "campaign", "campaign1", [
+        battle({ battleId: "I03", number: 3, count: 4 }),
+      ]),
+    ])
+
+    const id = "npc-encounter-campaign-campaign1"
+    const toggle = await screen.findByTestId(`${id}-toggle`)
+    expect(toggle).toHaveAttribute("aria-expanded", "false")
+    expect(screen.queryByTestId(`${id}-place-I03`)).not.toBeInTheDocument()
+
+    await user.click(toggle)
+    expect(toggle).toHaveAttribute("aria-expanded", "true")
+    const third = screen.getByTestId(`${id}-place-I03`)
+    expect(third).toHaveTextContent("Battle 3")
+    expect(screen.getByTestId(`${id}-place-I07`)).toHaveTextContent("Battle 7")
+
+    await user.click(third)
+    const npcs = within(screen.getByTestId(`${id}-place-I03-npcs`))
+    expect(npcs.getAllByRole("listitem")).toHaveLength(2)
+    expect(
+      npcs.getAllByTestId("npc-encounter-count").map((c) => c.textContent)
+    ).toEqual(["×4", "×1"])
+    // Every chip links; the selected NPC is only marked.
+    expect(
+      npcs.getAllByRole("link").map((link) => link.getAttribute("href"))
+    ).toEqual([
+      expect.stringContaining("variation=necroNpcDestroyer"),
+      expect.stringContaining("variation=necroNpcWarden"),
+    ])
+    expect(
+      within(screen.getByTestId(`${id}-place-I03-npcs`))
+        .getAllByRole("listitem")
+        .some((item) => item.querySelector("[aria-current='true']"))
+    ).toBe(true)
+  })
+
+  it("shows one chip per level, each opening that variation at that level", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "campaign", "campaign1", [
+        battle({
+          battleId: "I03",
+          number: 3,
+          count: 3,
+          levels: [
+            { servedIndex: 0, count: 2 },
+            { servedIndex: 1, count: 1 },
+          ],
+        }),
+        battle({ battleId: "I07", number: 7 }),
+      ]),
+    ])
+
+    const id = "npc-encounter-campaign-campaign1"
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    await user.click(screen.getByTestId(`${id}-place-I03`))
+
+    const chips = within(
+      screen.getByTestId(`${id}-place-I03-npcs`)
+    ).getAllByRole("link")
+    expect(chips.map((chip) => chip.getAttribute("href"))).toEqual([
+      expect.stringContaining("variation=necroNpcWarden&level=0"),
+      expect.stringContaining("variation=necroNpcWarden&level=1"),
+    ])
+    expect(
+      chips.map(
+        (chip) => within(chip).getByTestId("npc-encounter-count").textContent
+      )
+    ).toEqual(["×2", "×1"])
+
+    await user.click(at(chips, 1))
+    await waitFor(() =>
+      expect(location()).toContain("variation=necroNpcWarden&level=1")
+    )
+    expect(screen.getByTestId(`${id}-place-I03-npcs`)).toBeVisible()
+  })
+
+  it("nests an Incursion's battles under its tiers", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "incursion", "tauBroadside", [
+        battle({ battleId: "1", tier: 0 }),
+        battle({ battleId: "2", tier: 0 }),
+        battle({ battleId: "3", tier: 0, challenge: true }),
+        battle({ battleId: "3", tier: 1, challenge: true }),
+      ]),
+    ])
+
+    const id = "npc-encounter-incursion-tauBroadside"
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    const firstTier = screen.getByTestId(`${id}-group-0`)
+    expect(firstTier).toHaveTextContent("Tier 1")
+    expect(firstTier).toHaveTextContent("Battles 1–2 · Challenge 3")
+    expect(screen.getByTestId(`${id}-group-1`)).toHaveTextContent("Tier 2")
+    expect(screen.queryByTestId(`${id}-place-0|1`)).not.toBeInTheDocument()
+
+    await user.click(firstTier)
+    const firstBattle = screen.getByTestId(`${id}-place-0|1`)
+    expect(firstBattle).toHaveTextContent("Battle 1")
+    expect(screen.queryByTestId(`${id}-place-1|3`)).not.toBeInTheDocument()
+
+    await user.click(firstBattle)
+    expect(screen.getByTestId(`${id}-place-0|1-npcs`)).toBeVisible()
+
+    await user.click(screen.getByTestId(`${id}-group-1`))
+    expect(screen.getByTestId(`${id}-place-1|3`)).toHaveTextContent(
+      "Challenge 3"
+    )
+  })
+
+  it("does not read a battle without an id as battle 0", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "incursion", "tauBroadside", [
+        battle({ battleId: "1", tier: 0 }),
+        battle({ battleId: null, tier: 0 }),
+        battle({ battleId: "2", tier: 1 }),
+      ]),
+    ])
+
+    const id = "npc-encounter-incursion-tauBroadside"
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    expect(screen.getByTestId(`${id}-group-0`)).toHaveTextContent("Battles 1")
+    expect(screen.getByTestId(`${id}-group-0`)).not.toHaveTextContent(
+      "Battles 0"
+    )
+    expect(screen.getByTestId(id)).not.toHaveTextContent(/battles 0/i)
+  })
+
+  it("names and colours Incursion tiers by rarity, as the Incursions page does", async () => {
+    const user = userEvent.setup()
+    await seedGameCatalog({
+      incursions: incursionsFixture,
+      "npc-encounters": [
+        encounter("necroNpcWarden", "incursion", "tauBroadside", [
+          battle({ battleId: "1", tier: 0 }),
+          battle({ battleId: "2", tier: 0 }),
+          // The fixture's Mythic tier has index 12.
+          battle({ battleId: "1", tier: 12 }),
+        ]),
+      ],
+    })
+    await renderPage("/library/npcs/makhotep")
+
+    const id = "npc-encounter-incursion-tauBroadside"
+    await waitFor(() =>
+      expect(screen.getByTestId(`${id}-location`)).toHaveTextContent(
+        "Common 1: battles 1–2 · Mythic 1: battles 1"
+      )
+    )
+    await user.click(screen.getByTestId(`${id}-toggle`))
+    const mythic = screen.getByTestId(`${id}-group-12`)
+    expect(mythic).toHaveTextContent("Mythic 1")
+    expect(within(mythic).getByText("Mythic 1")).toHaveClass(
+      "text-(--rarity-mythic)"
+    )
+  })
+
+  it("nests event battles under their tracks, opening a lone track", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep")
+
+    const id = "npc-encounter-legendaryEvent-astarLysander"
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    const alpha = screen.getByTestId(`${id}-group-alpha`)
+    expect(alpha).toHaveTextContent("Alpha")
+    expect(alpha).toHaveTextContent("Battles 1–3")
+    expect(alpha).toHaveAttribute("aria-expanded", "false")
+    expect(screen.getByTestId(`${id}-group-beta`)).toHaveTextContent("Beta")
+
+    await user.click(alpha)
+    expect(
+      screen.getByTestId(`${id}-place-astarLysander-alpha-2`)
+    ).toHaveTextContent("Battle 2")
+  })
+
+  it("opens the only track of a row straight away", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "legendaryEvent", "astarLysander", [
+        battle({
+          battleId: "astarLysander-alpha-1",
+          track: "alpha",
+          number: 1,
+        }),
+        battle({
+          battleId: "astarLysander-alpha-2",
+          track: "alpha",
+          number: 2,
+        }),
+      ]),
+    ])
+
+    const id = "npc-encounter-legendaryEvent-astarLysander"
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    expect(screen.getByTestId(`${id}-group-alpha`)).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    )
+    expect(
+      screen.getByTestId(`${id}-place-astarLysander-alpha-1`)
+    ).toBeVisible()
+  })
+
+  it("opens a single-place group straight to its NPCs", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep")
+
+    const id = "npc-encounter-guildRaid-GuildBoss1Boss1TyranTervigonLeviathan"
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    const npcs = screen.getByTestId(`${id}-npcs`)
+    expect(npcs).toBeVisible()
+    // A Guild Raid names no count.
+    expect(
+      within(npcs).queryByTestId("npc-encounter-count")
+    ).not.toBeInTheDocument()
+  })
+
+  it("shows an Onslaught count as a ceiling", async () => {
+    const user = userEvent.setup()
+    await renderWithEncounters("/library/npcs/makhotep", [
+      encounter("necroNpcWarden", "onslaught", "onslaught", [
+        battle({ tier: 1, rounds: [1, 2], count: 3 }),
+        battle({ tier: 2, rounds: [1], count: 5 }),
+      ]),
+    ])
+
+    const id = "npc-encounter-onslaught-onslaught"
+    await user.click(await screen.findByTestId(`${id}-toggle`))
+    await user.click(screen.getByTestId(`${id}-place-2`))
+    expect(
+      within(screen.getByTestId(`${id}-place-2-npcs`)).getByTestId(
+        "npc-encounter-count"
+      )
+    ).toHaveTextContent("up to 5")
+  })
+
+  it("stacks the encounter rows on mobile and wraps long text instead of overflowing", async () => {
+    isMobileMock.value = true
+    await renderWithEncounters("/library/npcs/makhotep")
+
+    expect(await screen.findByTestId("npcs-mobile-page")).toBeVisible()
+    const id = "npc-encounter-legendaryEvent-astarLysander"
+    // Column on narrow screens; the row only goes horizontal from md (768px) up.
+    await screen.findByTestId(id)
+    expect(screen.getByTestId(`${id}-toggle`)).toHaveClass(
+      "flex-col",
+      "md:flex-row"
+    )
+    expect(screen.getByTestId(`${id}-location`)).toHaveClass(
+      "min-w-0",
+      "break-words"
+    )
+    expect(screen.getByTestId("npc-encounters")).toHaveClass("min-w-0")
   })
 })

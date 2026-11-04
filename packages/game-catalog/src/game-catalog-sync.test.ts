@@ -1,9 +1,10 @@
 import Dexie from "dexie"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import type {
-  GameCatalogClient,
-  GameCatalogManifestResult,
+import {
+  GameCatalogHttpClient,
+  type GameCatalogClient,
+  type GameCatalogManifestResult,
 } from "./game-catalog-api"
 import {
   catalogDbName,
@@ -23,6 +24,7 @@ import globalValuesPayload from "./schemas/global-values.fixture.json"
 import progressionRulesPayload from "./schemas/progression-rules.fixture.json"
 import hrePayload from "./schemas/hre.fixture.json"
 import incursionsPayload from "./schemas/incursions.fixture.json"
+import npcEncountersPayload from "./schemas/npc-encounters.fixture.json"
 
 // The fake client bypasses zod (the real GameCatalogHttpClient validates); these records only need the shape
 // the storage adapters key on (an id, a groupId, etc.), not the full served schema.
@@ -179,6 +181,7 @@ const datasetData: Record<string, unknown> = {
   "progression-rules": progressionRulesPayload,
   hre: hrePayload,
   incursions: incursionsPayload,
+  "npc-encounters": npcEncountersPayload,
 }
 
 function createManifest(
@@ -270,17 +273,32 @@ function deleteDatasetMetadata(datasetKey: string) {
 // set up that "before" state; the migrated storage code then opens at the current `catalogDbVersion`
 // via the app's normal path, and Dexie's own version-upgrade cascade (not a custom self-heal
 // workaround) must create the missing store so the sync proceeds normally.
-function seedDbMissingStore(missingKey: string) {
+// `syncedCharacter`, when given, is an already-synced row: its metadata matches the manifest, so a sync leaves it.
+function seedDbMissingStore(
+  missingKey: string,
+  syncedCharacter?: { id: string }
+) {
   return new Promise<void>((resolve, reject) => {
     const request = indexedDB.open(catalogDbName, catalogDbVersion - 1)
 
     request.onupgradeneeded = () => {
       const db = request.result
-      db.createObjectStore("metadata", { keyPath: "key" })
+      const metadata = db.createObjectStore("metadata", { keyPath: "key" })
 
       for (const key of servedDatasetKeys) {
         if (key !== missingKey) {
-          db.createObjectStore(key, { keyPath: "id" })
+          const store = db.createObjectStore(key, { keyPath: "id" })
+          if (key === "characters" && syncedCharacter) {
+            store.put(syncedCharacter)
+            metadata.put({
+              key,
+              hash: `${key}-h1`,
+              catalogVersion: "dev-1",
+              gameVersion: "1.40",
+              schemaHash: "schema-11",
+              updatedAt: "2026-10-01T00:00:00Z",
+            })
+          }
         }
       }
     }
@@ -525,6 +543,90 @@ describe("syncGameCatalog", () => {
       "hero_release_event_1",
       "hero_release_event_2",
     ])
+  })
+
+  it("stores one npc-encounters row per npc, source and group, and is ready without the dataset", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    const ids = (await getDatasetRecords("npc-encounters")).map(
+      (record) => record.id
+    )
+    expect(ids).toHaveLength(npcEncountersPayload.length)
+    expect(ids).toContain("tyranNpc3Termagant|campaign|campaign3")
+    expect(ids).toContain("tyranNpc3Termagant|onslaught|onslaught")
+
+    await resetDb()
+    const manifest = createManifest()
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient({
+        ...manifest,
+        datasets: manifest.datasets.filter(
+          (dataset) => dataset.key !== "npc-encounters"
+        ),
+      })
+    )
+    expect(result.status).toBe("ready")
+    expect(await getDatasetRecords("npc-encounters")).toEqual([])
+  })
+
+  it("creates the v19 npc-encounters store for a client one version behind and keeps its other rows", async () => {
+    const syncedCharacter = { id: "already-synced" }
+    await seedDbMissingStore("npc-encounters", syncedCharacter)
+    const client = new FakeGameCatalogClient(createManifest())
+
+    const result = await syncGameCatalog(client)
+
+    expect(result.status).toBe("ready")
+    expect(await getDatasetRecords("npc-encounters")).toHaveLength(
+      npcEncountersPayload.length
+    )
+    expect(client.downloaded).not.toContain("characters")
+    expect(await getDatasetRecords("characters")).toEqual([syncedCharacter])
+  })
+
+  it("reports a malformed npc-encounters payload and keeps the stored rows", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    const stored = await getDatasetRecords("npc-encounters")
+    expect(stored).not.toHaveLength(0)
+
+    // Through the real client, because the fake one does not validate.
+    const manifest = createManifest({ "npc-encounters": "npc-encounters-h2" })
+    const malformed = {
+      version: manifest.version,
+      schemaHash: manifest.schemaHash,
+      gameVersion: manifest.gameVersion,
+      sourceHash: manifest.sourceHash,
+      datasetKey: "npc-encounters",
+      datasetHash: "npc-encounters-h2",
+      data: [
+        ...npcEncountersPayload,
+        {
+          ...npcEncountersPayload[0],
+          battles: [{ ...npcEncountersPayload[0]?.battles[0], count: 0 }],
+        },
+      ],
+    }
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: URL) =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify(
+              url.pathname.endsWith("/npc-encounters") ? malformed : manifest
+            )
+          )
+        )
+      )
+    )
+
+    try {
+      await expect(
+        syncGameCatalog(new GameCatalogHttpClient("http://localhost"))
+      ).rejects.toThrow(/npc-encounters/)
+    } finally {
+      vi.unstubAllGlobals()
+    }
+
+    expect(await getDatasetRecords("npc-encounters")).toEqual(stored)
   })
 
   it("keys the incursions records by their MoW id", async () => {

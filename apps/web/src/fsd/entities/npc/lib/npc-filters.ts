@@ -1,12 +1,21 @@
 import { matchesSearch } from "@/shared/lib"
 
 import type { NpcFilters, NpcGroup, NpcVariation } from "../model/types"
+import {
+  encounterPlaces,
+  type NpcEncounter,
+  type NpcEncounterLookup,
+} from "./encounters"
 
 export const emptyNpcFilters: NpcFilters = {
   search: "",
   factionId: null,
   alliance: null,
   attack: null,
+  gameMode: null,
+  encounterGroup: null,
+  runningNow: false,
+  minCount: null,
   damageTypes: [],
   traits: [],
 }
@@ -24,6 +33,10 @@ export function activeNpcFilterCount(filters: NpcFilters): number {
     (filters.factionId !== null ? 1 : 0) +
     (filters.alliance !== null ? 1 : 0) +
     (filters.attack !== null ? 1 : 0) +
+    (filters.gameMode !== null ? 1 : 0) +
+    (filters.encounterGroup !== null ? 1 : 0) +
+    (filters.runningNow ? 1 : 0) +
+    (filters.minCount !== null ? 1 : 0) +
     filters.damageTypes.length +
     filters.traits.length
   )
@@ -38,12 +51,8 @@ export function variationDamageTypes(variation: NpcVariation): string[] {
   return [...types]
 }
 
-/**
- * Whether one variation matches the faction / damage-type / trait filters (damage types and traits are
- * all-of). The name search is a group-level concern — see `matchesNpcSearch` — because it runs against
- * the localized group name, not the variation.
- */
-export function matchesNpcFilters(
+/** Whether the unit itself matches: faction / attack / damage-type / trait (the last two are all-of). */
+function matchesNpcAttributes(
   variation: NpcVariation,
   filters: NpcFilters
 ): boolean {
@@ -62,13 +71,84 @@ export function matchesNpcFilters(
     const dealt = variationDamageTypes(variation)
     if (!filters.damageTypes.every((type) => dealt.includes(type))) return false
   }
+  return filters.traits.every((trait) => variation.traits.includes(trait))
+}
+
+/**
+ * The places of an encounter where its own NPC spawns at least `minCount` times (every place without one).
+ * A unit filter does not add other NPCs to the count: the number always means the NPC itself. A Guild Raid has
+ * no counts, so it never reaches one.
+ */
+export function matchingEncounterPlaces(
+  encounter: NpcEncounter,
+  minCount: number | null
+): ReadonlySet<string> {
+  return new Set(
+    encounterPlaces(encounter)
+      .filter(
+        ({ battle }) => minCount === null || (battle.count ?? 0) >= minCount
+      )
+      .map(({ key }) => key)
+  )
+}
+
+/** Whether an encounter is one the game mode, location and "running now" filters allow. */
+export function encounterAllowedByFilters(
+  encounter: NpcEncounter,
+  { gameMode, encounterGroup, runningNow }: NpcFilters,
+  encounters: NpcEncounterLookup
+): boolean {
+  return (
+    (gameMode === null || encounter.source === gameMode) &&
+    (encounterGroup === null || encounter.groupId === encounterGroup) &&
+    (!runningNow || encounters.isRunning(encounter))
+  )
+}
+
+/**
+ * Whether one encounter of the variation satisfies every chosen encounter filter at once, so a game mode,
+ * location, "running now" and count describe the same encounter rather than different ones. Without the
+ * `npc-encounters` data any chosen encounter filter matches nothing.
+ */
+function matchesEncounterFilters(
+  variation: NpcVariation,
+  filters: NpcFilters,
+  encounters?: NpcEncounterLookup
+): boolean {
+  const { gameMode, encounterGroup, runningNow, minCount } = filters
   if (
-    filters.traits.length > 0 &&
-    !filters.traits.every((trait) => variation.traits.includes(trait))
+    gameMode === null &&
+    encounterGroup === null &&
+    !runningNow &&
+    minCount === null
   ) {
-    return false
+    return true
   }
-  return true
+  return (
+    encounters
+      ?.encountersOf(variation.id)
+      .some(
+        (encounter) =>
+          encounterAllowedByFilters(encounter, filters, encounters) &&
+          (minCount === null ||
+            matchingEncounterPlaces(encounter, minCount).size > 0)
+      ) ?? false
+  )
+}
+
+/**
+ * Whether one variation matches the unit and encounter filters. The name search is a group-level concern —
+ * see `matchesNpcSearch` — because it runs against the localized group name, not the variation.
+ */
+export function matchesNpcFilters(
+  variation: NpcVariation,
+  filters: NpcFilters,
+  encounters?: NpcEncounterLookup
+): boolean {
+  return (
+    matchesNpcAttributes(variation, filters) &&
+    matchesEncounterFilters(variation, filters, encounters)
+  )
 }
 
 function matchesNpcSearch(displayName: string, search: string): boolean {
@@ -78,10 +158,11 @@ function matchesNpcSearch(displayName: string, search: string): boolean {
 /** The variations of a group that match the filters (all of them when no filter is active). */
 export function matchingVariations(
   group: NpcGroup,
-  filters: NpcFilters
+  filters: NpcFilters,
+  encounters?: NpcEncounterLookup
 ): NpcVariation[] {
   return group.variations.filter((variation) =>
-    matchesNpcFilters(variation, filters)
+    matchesNpcFilters(variation, filters, encounters)
   )
 }
 
@@ -92,11 +173,12 @@ export function matchingVariations(
 export function filterNpcGroups(
   groups: readonly NpcGroup[],
   filters: NpcFilters,
-  displayName: (group: NpcGroup) => string
+  displayName: (group: NpcGroup) => string,
+  encounters?: NpcEncounterLookup
 ): NpcGroup[] {
   return groups.filter(
     (group) =>
       matchesNpcSearch(displayName(group), filters.search) &&
-      matchingVariations(group, filters).length > 0
+      matchingVariations(group, filters, encounters).length > 0
   )
 }

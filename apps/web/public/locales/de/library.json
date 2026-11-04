@@ -246,11 +246,11 @@
     "level": "NPC-Stufe",
     "variationMode": {
       "standard": "Standard",
-      "lhe": "Legendäres Heldenevent",
-      "legendary": "Legendär",
+      "questEvent": "Quest-Event",
+      "legendary": "Legendäres Event",
       "survival": "Überleben",
       "campaign": "Kampagne",
-      "championEvent": "Champion-Event",
+      "campaignEvent": "Kampagnen-Event",
       "tutorial": "Tutorial",
       "leviathan": "Schwarmflotte Leviathan",
       "kronos": "Schwarmflotte Kronos",
@@ -276,6 +276,58 @@
     },
     "traits": "Eigenschaften",
     "noTraits": "Diese Einheit hat keine Eigenschaften.",
+    "encounters": {
+      "title": "Anzutreffen in",
+      "unavailable": "Begegnungsdaten sind noch nicht verfügbar.",
+      "none": "Für diese Variante sind keine Begegnungen erfasst.",
+      "noneHint": "Vergangene und wechselnde Inhalte können in den Spieldaten fehlen, daher kann sie trotzdem anderswo vorkommen.",
+      "alongside": "Kämpft an der Seite dieses Bosses",
+      "boss": "Als Boss",
+      "prime": "Als Prime",
+      "challenge": "Herausforderung {{list}}",
+      "battles": "Kämpfe {{list}}",
+      "rounds": "Runden {{list}}",
+      "battle": "Kampf {{number}}",
+      "round": "Runde {{number}}",
+      "tier": "Stufe {{number}}",
+      "count": "×{{number}}",
+      "upTo": "bis zu {{number}}",
+      "matches_one": "{{count}} passender Kampf",
+      "matches_other": "{{count}} passende Kämpfe",
+      "canAppear": "Kann in den Stufen {{list}} auftauchen",
+      "tierBattles_one": "Stufe {{tiers}}: Kämpfe {{battles}}",
+      "tierBattles_other": "Stufen {{tiers}}: Kämpfe {{battles}}",
+      "tierRangeBattles": "{{tiers}}: Kämpfe {{battles}}",
+      "tracks": {
+        "Standard": "Standard",
+        "Extremis": "Extremis",
+        "alpha": "Alpha",
+        "beta": "Beta",
+        "gamma": "Gamma"
+      },
+      "source": {
+        "campaign": "Kampagne",
+        "campaignEvent": "Kampagnen-Event",
+        "legendaryEvent": "Legendäres Event",
+        "questEvent": "Quest-Event",
+        "incursion": "Incursion",
+        "guildRaid": "Gildenraid",
+        "survival": "Überleben",
+        "onslaught": "Onslaught"
+      },
+      "timing": {
+        "always": "Immer verfügbar",
+        "rotating": "Wechselnd",
+        "running": "Läuft gerade",
+        "next": "Nächster Lauf {{date}}",
+        "none": "Kein geplanter Lauf"
+      },
+      "survivalSeason": {
+        "survival_may_2026": "Mai 2026",
+        "survival_september_2026": "September 2026",
+        "survival_crescendo_01": "Crescendo"
+      }
+    },
     "healthAtLevel": "{{health}} LP",
     "noMatchingNpcs": "Keine NPCs entsprechen den aktuellen Filtern.",
     "noMatchingOptions": "Keine passenden Optionen.",
@@ -286,7 +338,7 @@
       "steps": {
         "filters": {
           "title": "Die Liste filtern",
-          "content": "Suche nach Namen oder grenze die Liste nach Fraktion, Schadensart und Eigenschaft ein. Ein NPC bleibt sichtbar, solange eine seiner Varianten passt."
+          "content": "Suche nach Namen oder grenze die Liste nach Fraktion, Spielmodus, Ort, Schadensart und Eigenschaft ein. Ein NPC bleibt sichtbar, solange eine seiner Varianten passt."
         },
         "list": {
           "title": "NPC auswählen",
@@ -298,7 +350,7 @@
         },
         "variation": {
           "title": "Variante",
-          "content": "Das Spiel setzt dieselbe Einheit je nach Modus mit unterschiedlichen Stufenleitern ein – Überleben, Legendäre Heldenevents, Kampagnen. Hier wechselst du zwischen ihnen."
+          "content": "Das Spiel setzt dieselbe Einheit je nach Modus mit unterschiedlichen Stufenleitern ein – Überleben, Quest-Events, Kampagnen. Hier wechselst du zwischen ihnen."
         },
         "level": {
           "title": "NPC-Stufe",
@@ -307,6 +359,10 @@
         "stats": {
           "title": "Werte, Stärke, Angriffe und Eigenschaften",
           "content": "Leben, Rüstung, Schaden, Bewegung und geschätzte Stärke auf der gewählten Stufe sowie die Angriffe und Eigenschaften der Einheit."
+        },
+        "encounters": {
+          "title": "Wo sie kämpft",
+          "content": "Jede Kampagne, jedes Event und jeder Modus, in dem diese Variante vorkommt, wann zeitlich begrenzte Inhalte als Nächstes laufen, und ein Link zur passenden Seite."
         }
       }
     },
@@ -325,6 +381,11 @@
     },
     "attack": "Angriff",
     "anyAttack": "Beliebiger Angriff",
+    "gameMode": "Spielmodus",
+    "anyGameMode": "Jeder Spielmodus",
+    "location": "Ort",
+    "anyLocation": "Beliebiger Ort",
+    "minCount": "Min. in einem Kampf",
     "meleeOnly": "Nur Nahkampf",
     "hasRanged": "Mit Fernkampf",
     "clearOne": "{{name}} zurücksetzen",
