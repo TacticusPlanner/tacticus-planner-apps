@@ -47,6 +47,7 @@ import type { LastRunViewModel } from "./overview/last-run.view-model"
 import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamEditorLauncher } from "./teams/team-editor-launcher"
 import type { TeamsViewModel } from "./teams/teams-section"
+import type { LaneSelection } from "./use-lane-selection"
 
 /** When the next token arrives: at `targetMs`, or already due (the timer ran out since the sync). */
 type NextTokenViewModel =
@@ -88,8 +89,18 @@ export interface RunInputsViewModel {
   runs: LegendaryEventRunResolution
 }
 
-/** The page's tab strip: Overview, then one tab per lane (design D3). */
-export type LegendaryEventTab = "overview" | LegendaryEventLaneId
+/** The page's tab strip (design D3): Overview (lane summary, notes), Teams (the Event board with
+ *  every lane's teams, then the eligibility leaderboard), Plan (forecast, token plan, upgrade
+ *  impact, battles) and the run tab (Current, Next or Last run by lifecycle: next tokens, run
+ *  status, progress grid, last run). */
+export const LEGENDARY_EVENT_TABS = [
+  "overview",
+  "teams",
+  "plan",
+  "run",
+] as const
+
+export type LegendaryEventTab = (typeof LEGENDARY_EVENT_TABS)[number]
 
 export interface LegendaryEventPageViewModel {
   event: LegendaryEvent
@@ -104,27 +115,38 @@ export interface LegendaryEventPageViewModel {
   syncedAtMs: number | null | undefined
   selectedTab: LegendaryEventTab
   onSelectTab: (tab: LegendaryEventTab) => void
-  /** Selects the lane's tab and scrolls its Synced progress grid into view. */
+  /** The lanes every lane block renders (one at a time on mobile), and their switches. */
+  lanes: LaneSelection
+  /** Opens the run tab with the lane shown and scrolls its Synced progress grid into view. */
   onJumpToLane: (lane: LegendaryEventLaneId) => void
+  /** Opens Plan, scrolled to the Token plan. */
+  onViewPlan: () => void
+  /** Opens Plan with the lane's Battles picked and scrolled into view (the board's battle count). */
+  onViewBattles: (lane: LegendaryEventLaneId) => void
+  /** Plan's Battles lane, picked in the battle row (one lane at a time). */
+  battlesLane: {
+    laneId: LegendaryEventLaneId
+    onChange: (lane: LegendaryEventLaneId) => void
+  }
   leaderboard: LeaderboardViewModel
   progressGrid: ProgressGridViewModel
   /** Maybe clear / Stop here marks on the progress grid's not-cleared cells. */
   marks: ProgressMarksViewModel
-  /** The lane tabs' Teams section: the plan, the current run and the plan actions. */
+  /** Each Event board lane's Teams section: the plan, the current run and the plan actions. */
   teams: TeamsViewModel
   /** The page's single team editor (design D4), opened by Teams and the leaderboards. */
   teamEditor: TeamEditorLauncher
-  /** The selected lane's Upgrade impact (Stage 6); null on Overview or signed out. */
+  /** Upgrade impact (Stage 6) of every lane on Plan; null on other tabs or signed out. */
   upgradeImpact: UpgradeImpactViewModel | null
-  /** The selected lane's Battles section (battle preview); null on Overview. */
-  battles: BattlesViewModel | null
-  /** The Overview's Next token card, Token plan and Run forecast (Stage 4). */
+  /** Every lane's Battles section (battle preview), also read by the battle info dialog. */
+  battles: Partial<ByLane<BattlesViewModel>>
+  /** The run tab's Next token card, Plan's Token plan and Run forecast (Stage 4). */
   tokens: TokensViewModel
-  /** The Overview's Last run card (run history). */
+  /** The run tab's Last run card (run history). */
   lastRun: LastRunSectionViewModel
   /** Every lane's roster potential map (lane overview) and reach line (Overview lane summary). */
   potentials: LanePotentialsViewModel
-  /** The Overview Event board's unit table: the catalog units and the synced roster (undefined
+  /** The Event board's unit table: the catalog units and the synced roster (undefined
    *  when signed out or unavailable), independent of the plan so it shows for everyone. */
   eventBoard: {
     units: ReadValue<LegendaryEventUnit[]>
@@ -146,7 +168,8 @@ export interface LastRunSectionViewModel {
 }
 
 interface UpgradeImpactViewModel {
-  state: UpgradeImpactState
+  /** Per shown lane. */
+  byLane: Partial<ByLane<UpgradeImpactState>>
   /** Goal targets by unit, for "In goals" and badges; undefined while goals load or failed. */
   goalTargets: ReadonlyMap<string, LegendaryEventGoalTarget> | undefined
   teamName: (teamId: string) => string
@@ -156,7 +179,7 @@ interface TokensViewModel {
   view: TokenPlanView
   /** Absent while marks cannot be written (signed out, or the plan has not loaded). */
   onMarkToken: MarkTokenHandler | undefined
-  /** Selects a lane's tab and scrolls its Teams section (or one team's card) into view. */
+  /** Opens Teams with the lane shown and scrolls its Teams section (or one team's card) into view. */
   onOpenTeams: OpenTeamsHandler
 }
 

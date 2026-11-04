@@ -6,7 +6,6 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
-  LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEventLaneId,
   useClearEstimateConfig,
   useLegendaryEvent,
@@ -16,6 +15,7 @@ import {
   useLegendaryEventSyncTimes,
   useLegendaryEventUnits,
   useMinuteNow,
+  LEGENDARY_EVENT_LANE_IDS,
 } from "@/entities/legendary-event"
 import {
   useAnnotations,
@@ -28,7 +28,6 @@ import {
 } from "@/features/legendary-event-tokens"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { useSearchParamState } from "@/shared/lib"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
@@ -43,11 +42,12 @@ import {
   buildRunStatusViewModel,
   readValue,
   type LegendaryEventPageViewModel,
-  type LegendaryEventTab,
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
+import { useBattlesLane } from "./use-battles-lane"
 import { useLaneJump } from "./use-lane-jump"
+import { useLaneSelection } from "./use-lane-selection"
 import { useLanePotentials } from "./use-lane-potentials"
 import { useCreateGoalFromRow } from "./use-create-goal-from-row"
 import { useEventGoals } from "./use-event-goals"
@@ -63,19 +63,17 @@ import {
   pickerGoalsPreview,
 } from "./teams/teams.view-model"
 
-const isEventTab = (value: string) =>
-  value === "overview" ||
-  (LEGENDARY_EVENT_LANE_IDS as readonly string[]).includes(value)
-
 /** `/legendary-events/:eventId`: computes the page's view model once and renders the tab-strip
- *  page (design D3). An unknown id replaces the route with the hub. The selected tab is the `tab`
- *  query parameter (replace history), which navigation to another event does not carry. The
+ *  page (design D3). An unknown id replaces the route with the hub. The selected tab and lane are the
+ *  `tab` and `lane` query parameters (replace history), which navigation to another event does not carry. The
  *  content is keyed by the event id, so the leaderboard's filters and toggles (and every read)
  *  start fresh on each event instead of carrying over. */
 export function LegendaryEventPage() {
   const { eventId = "" } = useParams()
   return <LegendaryEventPageContent eventId={eventId} key={eventId} />
 }
+
+const NO_LANES: readonly LegendaryEventLaneId[] = []
 
 function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const { t } = useTranslation("legendaryEvents")
@@ -86,12 +84,19 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const progress = useLegendaryEventProgress(eventId)
   const unitName = useUnitName()
   const syncTimes = useLegendaryEventSyncTimes()
-  const [selectedTab, setSelectedTab] = useSearchParamState<LegendaryEventTab>(
-    "tab",
-    isEventTab,
-    "overview"
-  )
-  // Shared by the three lanes' leaderboards and the Overview one; discarded when the page unmounts.
+  const lanes = useLaneSelection(isMobile)
+  // The run tab opens first while the event is active (spec: the run tab is the active default).
+  const defaultTab = event.lifecycle?.state === "active" ? "run" : "overview"
+  const [battlesLane, setBattlesLane] = useBattlesLane()
+  const {
+    selectedTab,
+    selectTab,
+    jumpToLane,
+    openTeams,
+    viewPlan,
+    viewBattles,
+  } = useLaneJump(defaultTab, lanes, setBattlesLane)
+  // Shared by every view of the leaderboard; discarded when the page unmounts.
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
   const [selectedObjectives, setSelectedObjectives] = useState<
@@ -208,10 +213,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     progress: progressValue,
     roster,
   })
-  const selectedLane = selectedTab === "overview" ? undefined : selectedTab
   const upgradeImpact = useUpgradeImpact({
     eventData,
-    laneId: selectedLane,
+    laneIds: selectedTab === "plan" ? LEGENDARY_EVENT_LANE_IDS : NO_LANES,
     planEnabled: plan.enabled,
     planData: plan.query.data,
     units: Array.isArray(units) ? units : undefined,
@@ -224,7 +228,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const impactTeamName = useImpactTeamName(eventData, plan.query.data)
   const battlesSection = useBattlesSection({
     event: eventData,
-    laneId: selectedLane,
     battlesRead,
     progressGrid,
   })
@@ -258,10 +261,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     plan: plan.query.data,
     run: runs.run,
   })
-  const { selectTab, jumpToLane, openTeams } = useLaneJump(
-    selectedTab,
-    setSelectedTab
-  )
   useTourPageSteps(useLegendaryEventTutorial(selectTab, runHistory.hasLastRun))
 
   // A record cached before rewards were served lacks them until the next catalog sync.
@@ -366,7 +365,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       syncedAtMs,
       selectedTab,
       onSelectTab: selectTab,
+      lanes,
       onJumpToLane: jumpToLane,
+      onViewPlan: viewPlan,
+      onViewBattles: viewBattles,
+      battlesLane: { laneId: battlesLane, onChange: setBattlesLane },
       leaderboard: {
         ...(previewLeaderboardRows ?? leaderboardRows),
         onlyUnlocked,
@@ -415,7 +418,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       lastRun: runHistory.lastRun,
       upgradeImpact: upgradeImpact
         ? {
-            state: upgradeImpact,
+            byLane: upgradeImpact,
             goalTargets: goalTargetsByUnit,
             teamName: impactTeamName,
           }
@@ -437,7 +440,12 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     syncedAtMs,
     selectedTab,
     selectTab,
+    lanes,
     jumpToLane,
+    viewPlan,
+    viewBattles,
+    battlesLane,
+    setBattlesLane,
     previewLeaderboardRows,
     leaderboardRows,
     onlyUnlocked,

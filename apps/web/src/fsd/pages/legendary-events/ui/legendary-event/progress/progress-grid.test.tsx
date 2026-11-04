@@ -65,7 +65,7 @@ function renderProgress(
   return render(
     <ProgressSection
       event={lysanderEvent}
-      laneId={laneId}
+      laneIds={[laneId]}
       layout={layout}
       progressGrid={buildProgressGridViewModel(lysanderEvent, progress)}
     />,
@@ -298,7 +298,7 @@ function MarkedProgress({
   return (
     <ProgressSection
       event={lysanderEvent}
-      laneId="alpha"
+      laneIds={["alpha"]}
       layout={layout}
       marks={marks}
       progressGrid={buildProgressGridViewModel(lysanderEvent, progress)}

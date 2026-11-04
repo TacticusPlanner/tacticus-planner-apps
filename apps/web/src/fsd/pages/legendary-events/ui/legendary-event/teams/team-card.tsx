@@ -6,8 +6,6 @@ import {
   MoreHorizontal,
   TriangleAlert,
 } from "lucide-react"
-import { characterIcon } from "@workspace/game-catalog"
-import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
@@ -22,6 +20,7 @@ import {
   ObjectiveIcon,
   useObjectiveLabel,
   type LegendaryEventLane,
+  EventUnitChip,
 } from "@/entities/legendary-event"
 import {
   ClearDepthField,
@@ -29,7 +28,7 @@ import {
   type DepthEstimateContext,
 } from "@/features/legendary-event-plan"
 import { useDebouncedCommit } from "@/shared/lib"
-import { EntityIcon, type SortableRenderProps } from "@/shared/ui"
+import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import { PointsLeft, TeamPower } from "./team-card-figures"
@@ -51,8 +50,8 @@ export interface TeamCardActions {
 }
 
 /**
- * One team on a lane (design D4): name with the "N/5" badge for a partial team, member portraits
- * in position order and the reserve, the covered objectives as chips (muted when the members no
+ * One team on a lane (design D4): name with the "N/5" badge for a partial team, members in position
+ * order and the reserve as the Event board draws them (rank, stars, ability levels), the covered objectives as chips (muted when the members no
  * longer derive one), points per battle and the summed Team power, the current run's depth stepper with its estimate
  * (manual depth wins; "Set depth" when there is neither) with what the same team cleared last run
  * (beside it on desktop, wrapped under it on mobile), and the actions menu. On desktop the grip
@@ -360,14 +359,10 @@ function MemberPortrait({
       data-unit={member.unitId}
       title={reserveLabel ? `${name} · ${reserveLabel}` : name}
     >
-      <EntityIcon
-        alt={name}
-        className={cn(
-          "size-9 rounded-full",
-          member.owned === false && "opacity-50 grayscale",
-          reserveLabel && "size-7 border border-dashed"
-        )}
-        src={characterIcon(member.unitId as UnitId)}
+      <EventUnitChip
+        className={cn(reserveLabel && "border-dashed border-border")}
+        showStars
+        unit={member}
       />
       {reserveLabel ? (
         <span className="ml-1 text-xs text-muted-foreground">

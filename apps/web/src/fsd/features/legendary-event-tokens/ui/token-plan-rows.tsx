@@ -10,6 +10,7 @@ import type { TokenMarker } from "../lib/run-forecast"
 import { groupTokensByTeam } from "../lib/token-groups"
 import type { TokenPlanView } from "../lib/token-plan-view"
 import type { RunTokenSection } from "../lib/token-runs"
+import { BattleInfoButton } from "./battle-info"
 import { TokenMissionSteps } from "./mission-order-view"
 import { TokenObjectives } from "./token-objectives"
 
@@ -125,7 +126,9 @@ export function TokenGroups({
   )
 }
 
-function TokenRow({
+/** One planned token: its plan number, lane, battle (opening its info on the event page), cleared
+ *  objectives, points and running points, then its milestone and step markers. */
+export function TokenRow({
   event,
   token,
   index,
@@ -143,7 +146,11 @@ function TokenRow({
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
   const lane = t(`lanes.${token.laneId}`)
-  const battle = t("tokenPlan.plan.battle", { battle: token.battleIndex + 1 })
+  const battle = (
+    <BattleInfoButton battleIndex={token.battleIndex} laneId={token.laneId}>
+      {t("tokenPlan.plan.battle", { battle: token.battleIndex + 1 })}
+    </BattleInfoButton>
+  )
   const points = (
     <span className="inline-flex items-center gap-1 font-medium tabular-nums">
       <EntityIcon
@@ -186,11 +193,12 @@ function TokenRow({
       {isMobile ? (
         <>
           <div className="flex min-w-0 items-baseline justify-between gap-2">
-            <span className="min-w-0 truncate">
+            <span className="flex min-w-0 items-baseline gap-1">
               <span className="text-muted-foreground tabular-nums">
                 {index + 1}.
-              </span>{" "}
-              {lane} · {battle}
+              </span>
+              <span className="shrink-0">{lane} ·</span>
+              {battle}
             </span>
             {points}
           </div>

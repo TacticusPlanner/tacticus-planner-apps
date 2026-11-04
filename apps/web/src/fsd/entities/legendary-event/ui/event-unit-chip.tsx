@@ -5,13 +5,29 @@ import {
   progressionVisual,
   rankIcon,
 } from "@workspace/game-catalog"
-import { progressionRarity, type UnitId } from "@workspace/game-domain"
+import {
+  progressionRarity,
+  type Progression,
+  type Rank,
+  type UnitId,
+} from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-import type { EventBoardUnit } from "./event-board.view-model"
+/** What a unit chip shows: ownership, then (owned only) its rank, ascension and ability levels.
+ *  `owned` is undefined when the roster is unavailable. */
+export interface EventUnitChipData {
+  unitId: string
+  owned: boolean | undefined
+  rank?: Rank
+  progression?: Progression
+  activeLevel?: number
+  passiveLevel?: number
+}
+
+type EventBoardUnit = EventUnitChipData
 
 /** The chip's background and edge in the unit's rank colour (the `--rank-*` tokens, which flip
  *  with the theme), so a column reads by rank at a glance as V1's table did. */
@@ -25,13 +41,13 @@ function rankTone(rank: EventBoardUnit["rank"]): CSSProperties | undefined {
 }
 
 /**
- * One unit on the Event board: its portrait ringed in its rarity colour, its rank icon, and its
+ * One unit on the Event board, a team card or the team picker: its portrait ringed in its rarity colour, its rank icon, and its
  * active and passive ability levels, on a background in its rank colour. `showStars` adds its
  * ascension stars (saved teams, where the chip carries what a shared screenshot needs). A unit
  * the player does not own is greyed out and reads "Locked"; with no roster only the portrait
  * shows. The accessible name spells it all out.
  */
-export function EventBoardUnitChip({
+export function EventUnitChip({
   unit,
   showStars = false,
   className,

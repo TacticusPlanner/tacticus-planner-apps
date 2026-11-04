@@ -91,6 +91,35 @@ function eventSteps() {
 }
 
 describe("useLegendaryEventTutorial", () => {
+  it("opens each step's tab before showing it", async () => {
+    const selectTab = vi.fn()
+    const { result } = renderHook(() =>
+      useLegendaryEventTutorial(selectTab, false)
+    )
+    // Every target is in the document, so no step waits for its section to mount.
+    for (const step of result.current.desktop) {
+      const testId = /data-testid="([^"]+)"/.exec(step.target as string)![1]!
+      const element = document.createElement("div")
+      element.dataset.testid = testId
+      document.body.append(element)
+    }
+    const opened: unknown[] = []
+    for (const step of result.current.desktop) {
+      selectTab.mockClear()
+      await step.before?.({} as never)
+      opened.push(selectTab.mock.calls[0])
+    }
+    expect(opened).toEqual(
+      [
+        ...Array.from({ length: 2 }, () => "overview"),
+        ...Array.from({ length: 3 }, () => "teams"),
+        ...Array.from({ length: 3 }, () => "plan"),
+        ...Array.from({ length: 4 }, () => "run"),
+      ].map((tab) => [tab])
+    )
+    document.body.replaceChildren()
+  })
+
   it("targets the Token plan header, not the whole card", () => {
     const step = eventSteps().desktop.find(
       (entry) => entry.title === "Token plan"
@@ -137,7 +166,7 @@ describe("useLegendaryEventTutorial", () => {
     (_form, viewport) => {
       const { desktop, mobile } = eventSteps()
       const steps = viewport === MOBILE ? (mobile ?? desktop) : desktop
-      expect(steps).toHaveLength(14)
+      expect(steps).toHaveLength(13)
       for (const step of steps) {
         for (const height of [40, 400, TALL_TARGET]) {
           for (const tooltip of TOOLTIPS) {

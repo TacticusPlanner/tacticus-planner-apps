@@ -105,11 +105,11 @@ Assumptions:
 
 ### Requirement: Run forecast section
 
-Below the token plan the Overview tab SHALL show a collapsible **Run forecast**, collapsed by default and remembered per device, headed by the last forecast run's outcome ("By the end of run 3: 6,136 points · Unlock 75 shards short"). Expanded, it SHALL show one block per run 1–3 with its state (Done, Now, Next, Planned); Done blocks show "Finished" only; other blocks show tokens available as free + ad + bonus delivery, "uses N" and "N left over", ending points, currency, chests, shards, the steps reached, the next step with shards missing, and the Oh So Close hint when present. When any run has tokens left over and the plan is shorter than the supply, a line SHALL say "N tokens with nothing to play: add a team or raise a depth to use them" linking to the first lane with points left. An **Edit inputs** link SHALL open the Stage 3 run inputs drawer (which carries Show paid options); the forecast recomputes when the drawer saves. With an empty plan the forecast SHALL still render (inputs alone can open chests). While supply inputs load the section SHALL show a skeleton; when the event's catalog record failed to load it SHALL be hidden with the Run status card's failure note.
+The Plan tab SHALL open with a collapsible **Run forecast**, above the Token plan, collapsed by default and remembered per device, headed by the last forecast run's outcome ("By the end of run 3: 6,136 points · Unlock 75 shards short"). Expanded, it SHALL show one block per run 1–3 with its state (Done, Now, Next, Planned); Done blocks show "Finished" only; other blocks show tokens available as free + ad + bonus delivery, "uses N" and "N left over", ending points, currency, chests, shards, the steps reached, the next step with shards missing, and the Oh So Close hint when present. When any run has tokens left over and the plan is shorter than the supply, a line SHALL say "N tokens with nothing to play: add a team or raise a depth to use them" linking to the first lane with points left. An **Edit inputs** link SHALL open the Stage 3 run inputs drawer (which carries Show paid options); the forecast recomputes when the drawer saves. With an empty plan the forecast SHALL still render (inputs alone can open chests). While supply inputs load the section SHALL show a skeleton; when the event's catalog record failed to load it SHALL be hidden with the Run status card's failure note.
 
 #### Scenario: Forecast header on the worked example
 
-- **WHEN** the Overview renders the worked forecast
+- **WHEN** the Plan tab renders the worked forecast
 - **THEN** the collapsed header reads "By the end of run 3: 6,136 points · Unlock 75 shards short"
 
 #### Scenario: Leftover tokens line

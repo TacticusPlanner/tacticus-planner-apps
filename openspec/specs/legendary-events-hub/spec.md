@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Legendary Events section's hub and event page: how an event's lifecycle is derived from the catalog, how the hub lists events, what the event page shows on its Overview and lane tabs, how objective labels are localized, and how loading, failure and empty states present, on desktop and mobile.
+The Legendary Events section's hub and event page: how an event's lifecycle is derived from the catalog, how the hub lists events, what the event page shows on each of its tabs, how objective labels are localized, and how loading, failure and empty states present, on desktop and mobile.
 
 ## Requirements
 
@@ -112,59 +112,79 @@ Each row SHALL show the event unit's portrait and localized name and its timing:
 
 ### Requirement: The event page shows one event with in-page sections
 
-`/legendary-events/:eventId` SHALL render the event named by `:eventId` (the catalog `lres` id, a unit snowprint id such as `astarLysander`) as one page with a tab strip of four tabs in this order: **Overview**, Alpha, Beta, Gamma, on desktop and mobile alike. The page title is the event unit's localized name; the header shows the lifecycle badge. An unknown `:eventId` SHALL replace the route with `/legendary-events`. The old `/events/legendary-events/:eventId` route SHALL NOT exist and SHALL NOT redirect. The selected tab SHALL be the `tab` query parameter (`overview`, `alpha`, `beta`, `gamma`); a missing or unrecognized value means Overview and an unrecognized value is dropped from the URL (replace). Selecting a tab SHALL update the parameter by replacing the current history entry, so Back leaves the event page. The parameter is not carried to another event, so the tab still resets to Overview on navigation to another event, and it survives a reload of the same event. A lane tab SHALL show, in order, that lane's Lane overview, Teams section (see `legendary-event-teams`), Synced progress grid, Battles section (see `legendary-event-battle-preview`) and Eligibility leaderboard. On mobile the tab strip SHALL stay fixed below the app header while the page scrolls, so a lane can be switched from any scroll position. On desktop the strip scrolls with the page.
+`/legendary-events/:eventId` SHALL render the event named by `:eventId` (the catalog `lres` id, a unit snowprint id such as `astarLysander`) as one page with a tab strip of four tabs in this order: **Overview**, **Teams**, **Plan** and the **run tab**, on desktop and mobile alike; the strip scrolls sideways when it does not fit. The run tab SHALL be named "Current run" while the event is active, "Next run" while it is upcoming and "Last run" once it is archived. The default tab SHALL be the run tab while the event is active, and Overview otherwise. The page title is the event unit's localized name; the header shows the lifecycle badge. An unknown `:eventId` SHALL replace the route with `/legendary-events`. The old `/events/legendary-events/:eventId` route SHALL NOT exist and SHALL NOT redirect.
 
-#### Scenario: Known event renders
+- **Overview** shows the lane summary, then the plan notes (see "The Overview tab summarises the event").
+- **Teams** shows the Event board, then one Eligibility leaderboard (see "The Teams tab shows an Event board of the shown lanes").
+- **Plan** shows, in order, the collapsible Run forecast (see `legendary-event-run-forecast`), the Token plan, open by default (see `legendary-event-token-plan`), then every lane's Upgrade impact section, each naming its lane (see `legendary-event-upgrade-impact`), and one lane's Battles section, whose lane is picked in a dropdown in its battle row (see `legendary-event-battle-preview`). Plan shows no lane selection.
+- **The run tab** shows, in order, the Next token card with the tokens up next (see `legendary-event-token-plan`), the Run status card, the shown lanes' Synced progress grids and the Last run card (see `legendary-event-run-history`).
 
-- **WHEN** a signed-in user opens `/legendary-events/astarLysander`
-- **THEN** the page title is Lysander's localized name, the lifecycle badge matches the derived state, the Overview tab is selected and the Run status card renders in it
+The Teams and run tabs' lane blocks (the Event board's columns, the leaderboard and the progress grids) SHALL follow one **lane selection** for the page, remembered per browser and shown above the blocks: on desktop a segmented control with a toggle per lane, pressed (with a check) while it shows, shows one, two or all three lanes (all three by default; pressing the last shown lane leaves it shown), and below 768px an Alpha / Beta / Gamma segmented single choice shows one lane at a time (the first selected lane).
+
+The selected tab SHALL be the `tab` query parameter (`overview`, `teams`, `plan`, `run`; missing means the default tab, which is left out of the URL). An unrecognized value SHALL fall back to the default and be dropped from the URL (replace); a lane id in `tab` (a link from before the Teams tab, such as `?tab=beta`) SHALL open Teams with that lane shown and be rewritten to `?tab=teams`. Selecting a tab SHALL update the parameter by replacing the current history entry, so Back leaves the event page. The parameter is not carried to another event, so the tab resets to that event's default on navigation to another event, and it survives a reload of the same event. On mobile the tab strip SHALL stay fixed below the app header while the page scrolls, so a tab can be switched from any scroll position. On desktop the strip scrolls with the page.
+
+#### Scenario: Known active event renders on Current run
+
+- **WHEN** a signed-in user opens `/legendary-events/astarLysander` while Lysander is active
+- **THEN** the page title is Lysander's localized name, the lifecycle badge reads Active, the strip reads Overview, Teams, Plan, Current run, Current run is selected, and Run status and the progress grids of all three lanes render in it
+
+#### Scenario: Upcoming and archived events open on Overview
+
+- **WHEN** a user opens an upcoming event's page, or an archived one's
+- **THEN** Overview is selected and the run tab reads "Next run", or "Last run"
 
 #### Scenario: Unknown event id
 
 - **WHEN** a user opens `/legendary-events/notAnEvent`
 - **THEN** the route is replaced with `/legendary-events` and the hub renders
 
-#### Scenario: Lane tab order
+#### Scenario: Plan tab order
 
-- **WHEN** the user selects Beta
-- **THEN** the page shows Beta's lane overview, then its Teams section, then its Upgrade impact section, then its synced progress grid, then its Battles section, then its eligibility leaderboard, and nothing from Alpha or Gamma
+- **WHEN** the user selects Plan with only Beta shown on the other tabs
+- **THEN** the page shows no lane selection, the Run forecast, the Token plan, Alpha's, Beta's and Gamma's Upgrade impact, then one "Battles" section with its lane dropdown
 
-#### Scenario: Mobile uses one shared lane selector
+#### Scenario: Shown lanes carry over between tabs and visits
 
-- **WHEN** the page renders below 768px and the user scrolls to the bottom of Beta's leaderboard
-- **THEN** the tab strip is still visible under the app header and tapping Gamma switches the content without scrolling back up
+- **GIVEN** the user switched Beta off on desktop
+- **WHEN** they select Teams, then reload the page
+- **THEN** the Event board and, after the reload, the run tab's progress grids show Alpha and Gamma only
 
-#### Scenario: Desktop shows all three lanes
+#### Scenario: Mobile shows one lane at a time
 
-- **WHEN** the page renders at or above 768px
-- **THEN** the same four tabs render once above the content and no lane renders side by side with another
+- **WHEN** the page renders below 768px
+- **THEN** each lane block shows one lane, picked with Alpha, Beta, Gamma, and picking Beta shows Beta's blocks on every tab
 
-#### Scenario: Lane selector resets per event
+#### Scenario: Mobile keeps the strip in reach
 
-- **GIVEN** the user selected Gamma on Lysander's page
-- **WHEN** they open Uthar's page
+- **WHEN** the page renders below 768px and the user scrolls to the bottom of Beta's progress grid
+- **THEN** the tab strip is still visible under the app header and tapping Plan switches the content without scrolling back up
+
+#### Scenario: Tab resets per event
+
+- **GIVEN** the user selected Plan on Lysander's page
+- **WHEN** they open the page of Uthar, which is upcoming
 - **THEN** Overview is selected
 
-#### Scenario: Selected lane survives a reload
+#### Scenario: Selected tab survives a reload
 
-- **GIVEN** the user selected Beta on Lysander's page, so the URL is `/legendary-events/astarLysander?tab=beta`
+- **GIVEN** the user selected Plan, so the URL is `/legendary-events/astarLysander?tab=plan`
 - **WHEN** they reload the page
-- **THEN** Beta is selected and its sections render
+- **THEN** Plan is selected
 
-#### Scenario: A shared lane link opens that lane
+#### Scenario: A lane link from before the Teams tab
 
-- **WHEN** a user opens `/legendary-events/astarLysander?tab=gamma`
-- **THEN** Gamma is selected
+- **WHEN** a user opens `/legendary-events/astarLysander?tab=gamma` below 768px
+- **THEN** Teams is selected with Gamma picked and the URL is replaced with `?tab=teams`
 
-#### Scenario: Unknown tab value falls back to Overview
+#### Scenario: Unknown tab value falls back to the default
 
-- **WHEN** a user opens `/legendary-events/astarLysander?tab=delta`
-- **THEN** Overview is selected and the URL is replaced with `/legendary-events/astarLysander`
+- **WHEN** a user opens `/legendary-events/astarLysander?tab=delta` while Lysander is active
+- **THEN** Current run is selected and the URL is replaced with `/legendary-events/astarLysander`
 
 #### Scenario: Switching tabs adds no history entry
 
 - **GIVEN** the user arrived at Lysander's page from `/legendary-events`
-- **WHEN** they select Alpha, then Beta, then press Back
+- **WHEN** they select Teams, then Plan, then press Back
 - **THEN** the hub renders
 
 ### Requirement: Run status is read from the synced progress chunk
@@ -230,12 +250,12 @@ An objective's display label SHALL be built from its catalog filter `{ kind, tar
 
 ### Requirement: Lane overview section
 
-For each lane the Lane overview SHALL show the lane's label (Alpha / Beta / Gamma) with the allowed-alliance rule derived from `allowedUnitsFilter` (for example "Alpha · No Xenos"), kill points per battle, the five objectives as chips with icon, label and score, the battle count, the roster potential mini map (`legendary-event-roster-potential`) in place of a per-battle points ladder, and a collapsed "how points work" disclosure explaining kill points, objective scores, defeat-all and high-score points in one paragraph. Each battle's points SHALL remain available through the map column's label and tooltip.
+Each Event board lane column SHALL show, under the lane's label with the allowed-alliance rule derived from `allowedUnitsFilter` (for example "Alpha · No Xenos"), its kill points per battle, the battle count and the roster potential mini map (`legendary-event-roster-potential`, spanning the column's width) in place of a per-battle points ladder; the battle count SHALL be a link that opens Plan with that lane's Battles picked, scrolled into view; the lane's objectives with their scores are the column's unit-table headings. A collapsed "how points work" disclosure under the board SHALL explain kill points, objective scores, defeat-all and high-score points in one paragraph. Each battle's points SHALL remain available through the map column's label and tooltip.
 
-#### Scenario: Lane card content
+#### Scenario: Lane column figures
 
-- **WHEN** Lysander's Lane overview renders
-- **THEN** the Alpha card shows "Alpha · No Xenos", "32 kill points per battle", five chips (Eviscerate 75, Suppressive Fire 95, Flying 80, Min 5 hits 85, No Resilient 40), "18 battles", an 18-column roster potential map whose first column is labelled "Battle 1 · 32 points" and last "Battle 18 · 57 points", and the collapsed disclosure
+- **WHEN** Lysander's Event board renders
+- **THEN** the Alpha column shows "Alpha · No Xenos", "32 kill points per battle", "18 battles", an 18-column roster potential map whose first column is labelled "Battle 1 · 32 points" and last "Battle 18 · 57 points", and five objective headings (Eviscerate 75, Suppressive Fire 95, Flying 80, Min 5 hits 85, No Resilient 40); the disclosure under the board is collapsed
 
 ### Requirement: Loading and failure states are distinct
 
@@ -259,17 +279,17 @@ While the catalog `lres` read is pending the hub and event page SHALL show a ske
 
 ### Requirement: The Events pages have Joyride tours
 
-The hub SHALL have a page tour with steps for the Active group (or the no-event line) and one upcoming row, on desktop and mobile. The event page SHALL have a page tour that targets, in order, the tab strip, the Next token card, the Run status card, the Last run card when it renders (see `legendary-event-run-history`), the Run status card's Run inputs button, the Token plan header, the Overview lane summary and the cross-lane leaderboard, then (after switching to Alpha) the lane overview, the Teams section (which holds its Add team button), the Upgrade impact header (see `legendary-event-upgrade-impact`), the progress grid, the Battles section and the leaderboard; the same steps on desktop and mobile. The Next token step SHALL target the card in whichever state it renders (token or empty state). Every step's tooltip SHALL lie fully inside the viewport when it shows; a tall target such as an expanded Token plan is highlighted by its header, not its whole list. Step titles and content SHALL be localized in en/de/es/fr.
+The hub SHALL have a page tour with steps for the Active group (or the no-event line) and one upcoming row, on desktop and mobile. The event page SHALL have a page tour that targets, in order, on Overview the tab strip and the lane summary; on Teams the Event board, the first shown lane's Teams section (which holds its Add team button) and the Eligibility leaderboard (cross-lane, or the lane's own with one lane shown); on Plan the Token plan header, the Upgrade impact header (see `legendary-event-upgrade-impact`) and the Battles section heading; and on the run tab the Next token card, the Run status card, its Run inputs button, the progress grid and the Last run card when it renders (see `legendary-event-run-history`); the same steps on desktop and mobile. Each step SHALL first open its tab, so stepping back across tabs shows the right one. The Next token step SHALL target the card in whichever state it renders (token or empty state). Every step's tooltip SHALL lie fully inside the viewport when it shows; a tall target such as an expanded Token plan is highlighted by its header, not its whole list. Step titles and content SHALL be localized in en/de/es/fr.
 
 #### Scenario: Event page tour on desktop
 
 - **WHEN** the page tour starts on `/legendary-events/astarLysander` at or above 768px
-- **THEN** steps highlight the tab strip, the Next token card, Run status, Last run (when the card renders), Run inputs, the Token plan header, the lane summary and the cross-lane leaderboard, then Alpha's lane overview, Teams section, Upgrade impact header, progress grid, Battles section and leaderboard, each target visible when its step shows
+- **THEN** steps highlight the tab strip and the lane summary, then the Event board, the first Teams section and the Eligibility leaderboard, then the Token plan header, the Upgrade impact header and the Battles heading, then the Next token card, Run status, Run inputs, the progress grid and Last run (when the card renders), each on its tab and visible when its step shows
 
 #### Scenario: Event page tour on mobile
 
 - **WHEN** the page tour starts below 768px
-- **THEN** the same steps run in the same order; the strip step targets the sticky strip and the lane steps follow the switch to Alpha, each target scrolled into view
+- **THEN** the same steps run in the same order; the strip step targets the sticky strip and each step follows the switch to its tab, each target scrolled into view
 
 #### Scenario: Token plan step with a long plan
 
@@ -279,12 +299,12 @@ The hub SHALL have a page tour with steps for the Active group (or the no-event 
 
 #### Scenario: Battles step
 
-- **WHEN** the event page tour reaches the step after Alpha's progress grid
-- **THEN** it highlights Alpha's Battles section heading on desktop and mobile, then continues with the leaderboard
+- **WHEN** the event page tour reaches the step after the Upgrade impact header
+- **THEN** it stays on Plan and highlights the first shown lane's Battles section heading on desktop and mobile, then continues on the run tab
 
 ### Requirement: The Overview tab summarises the event
 
-The Overview tab SHALL show, in order: the **Next token** card (see `legendary-event-token-plan`); the Run status card; the **Last run** card when a previous run exists (see `legendary-event-run-history`); the collapsible **Token plan** (see `legendary-event-token-plan`); the collapsible **Run forecast** (see `legendary-event-run-forecast`); a **lane summary** with one row per lane (Alpha, Beta, Gamma) carrying the lane's earned points of its maximum as text and a bar, the count of fully cleared battles of the lane's battle count ("N / M battles fully cleared", a battle counting when all six of its cells are cleared), and an **objectives line** with one indicator per lane objective in the lane's objective order (the objective's icon, "cleared / battles" where cleared is the number of the lane's battles whose synced progress has that objective cleared, and a bar in the same accent colour as the lane bar); and the cross-lane Eligibility leaderboard (specified in `legendary-event-eligibility`). Activating a lane summary row SHALL select that lane's tab and scroll the page so that lane's Synced progress grid is at the top of the viewport (below the sticky strip on mobile). When the synced progress read failed the lane summary SHALL show "synced data unavailable" in place of the figures and the objectives line; when the event has no synced entry it SHALL show 0 of the maximum for each lane and 0 of the battle count for each objective.
+The Overview tab SHALL show, in order, a **lane summary** with one row per lane (Alpha, Beta, Gamma) carrying the lane's earned points of its maximum as text and a bar, the count of fully cleared battles of the lane's battle count ("N / M battles fully cleared", a battle counting when all six of its cells are cleared), and an **objectives line** with one indicator per lane objective in the lane's objective order (the objective's icon, "cleared / battles" where cleared is the number of the lane's battles whose synced progress has that objective cleared, and a bar in the same accent colour as the lane bar); then the plan notes when the plan is available. Activating a lane summary row SHALL select the run tab with that lane shown (added to the shown lanes on desktop, picked on mobile) and scroll the page so that lane's Synced progress grid is at the top of the viewport (below the sticky strip on mobile). When the synced progress read failed the lane summary SHALL show "synced data unavailable" in place of the figures and the objectives line; when the event has no synced entry it SHALL show 0 of the maximum for each lane and 0 of the battle count for each objective.
 
 #### Scenario: Lane summary figures
 
@@ -301,7 +321,7 @@ The Overview tab SHALL show, in order: the **Next token** card (see `legendary-e
 #### Scenario: Lane summary jumps to the grid
 
 - **WHEN** the user activates the Beta row
-- **THEN** the Beta tab becomes selected and the Beta Synced progress grid heading is scrolled into view
+- **THEN** the run tab becomes selected with Beta shown and the Beta Synced progress grid heading is scrolled into view
 
 #### Scenario: Progress unavailable
 
@@ -315,11 +335,11 @@ The Overview tab SHALL show, in order: the **Next token** card (see `legendary-e
 - **WHEN** Overview renders
 - **THEN** that lane's objectives line reads "0 / 18" for every objective
 
-#### Scenario: Overview order with a plan
+#### Scenario: Run tab and Plan order with a plan
 
 - **GIVEN** an active event with teams that have depths
-- **WHEN** Overview renders
-- **THEN** it shows, top to bottom, the Next token card, Run status, Token plan (collapsed), Run forecast (collapsed), the lane summary and the cross-lane leaderboard
+- **WHEN** the page opens
+- **THEN** Current run shows, top to bottom, the Next token card with the tokens up next, Run status and the progress grids, and Plan shows the Run forecast (collapsed), then the Token plan (open)
 
 ### Requirement: Home links target the Legendary Events section
 
@@ -341,15 +361,17 @@ A row of an active or upcoming event SHALL list runs 1 to 3 with their start dat
 - **WHEN** the hub renders in English
 - **THEN** Bile's row lists "Run 1: Nov 8, 2026", "Run 2: maybe ~May 2027" and "Run 3: maybe ~Oct 2027"
 
-### Requirement: The Overview shows an Event board of every lane
+### Requirement: The Teams tab shows an Event board of the shown lanes
 
-The Overview tab SHALL show an Event board after the Run status card, laid out like V1's Teams tab: one column per shown lane in lane order, side by side at or above 1024px and stacked below. A switch per lane SHALL show or hide it, remembered per browser; the last shown lane cannot be hidden. Each lane SHALL show its name with its allowed-units rule, a unit table and its saved teams in stored order (readable name, the icons of the stored objectives the members still derive, and each member's chip). The unit table SHALL have one column per objective in objective order, headed by its icon, label, points and "cleared / battles" from synced progress (omitted while progress is unavailable), listing every unit the lane allows that satisfies it: owned units first by power, strongest first, then units the player does not own, marked "Locked"; a dashed line SHALL follow the fifth unit. Pressing objective headings SHALL select them: the selected objectives merge into one leading column listing the units that satisfy all of them, until the selection is cleared. Every owned unit's chip SHALL show its portrait ringed in its rarity colour, its rank icon and its active and passive ability levels on a background in its rank colour; a saved team's member chips SHALL also show its stars. Once teams have loaded, an objective no saved team covers SHALL be marked "No team"; a lane with no teams SHALL say so. Activating a unit SHALL open the page's team editor on a new team starting with that unit and the column's objectives; activating a team SHALL open the editor on it; activating a lane heading SHALL select that lane's tab. This is the only place lanes render side by side.
+The Teams tab SHALL show, after the lane selection, an Event board laid out like V1's Teams tab: one column per shown lane in lane order, side by side at or above 1024px and stacked below. Each column SHALL show its name with its allowed-units rule and its overview figures (see "Lane overview section"), a unit table, then the lane's Teams section with its team cards, Add team and Suggest teams (see `legendary-event-teams`), so a lane's teams are edited in place. The unit table SHALL have one column per objective in objective order, headed by its icon, label, points and "cleared / battles" from synced progress (omitted while progress is unavailable), listing every unit the lane allows that satisfies it: owned units first by power, strongest first, then units the player does not own, marked "Locked"; a dashed line SHALL follow the fifth unit. Pressing objective headings SHALL select them: the selected objectives merge into one leading column listing the units that satisfy all of them, until the selection is cleared. Every owned unit's chip SHALL show its portrait ringed in its rarity colour, its rank icon and its active and passive ability levels on a background in its rank colour; a team card's member chips SHALL be the same chips with its stars. Once teams have loaded, an objective no saved team covers SHALL be marked "No team". Activating a unit SHALL open the page's team editor on a new team starting with that unit and the column's objectives.
 
-#### Scenario: Board shows every lane
+Under the board the tab SHALL show one **Eligibility leaderboard** (specified in `legendary-event-eligibility`): the cross-lane leaderboard over the shown lanes when two or three are shown, and the lane's own leaderboard (with its objective icons and estimated clears) when one is.
 
-- **GIVEN** Alpha and Beta each have one saved team
-- **WHEN** the user opens the Overview tab
-- **THEN** the Event board shows three lane columns with their objectives, one team row in Alpha and in Beta, and "No teams yet" in Gamma
+#### Scenario: Board shows the shown lanes
+
+- **GIVEN** Alpha and Beta each have one saved team and all three lanes are shown
+- **WHEN** the user opens the Teams tab
+- **THEN** the Event board shows three lane columns with their figures and objectives, one team card in Alpha and in Beta, Gamma's empty state, and the cross-lane leaderboard under the board
 
 #### Scenario: Uncovered objective
 
@@ -363,8 +385,8 @@ The Overview tab SHALL show an Event board after the Run status card, laid out l
 - **WHEN** the table renders
 - **THEN** its first column lists only the units satisfying both, and Clear selection restores one column per objective
 
-#### Scenario: Lane hidden
+#### Scenario: One lane shown
 
-- **GIVEN** the user switches Gamma off
-- **WHEN** the board renders, now or after a reload
-- **THEN** only Alpha and Beta show
+- **GIVEN** the user switches Alpha and Gamma off
+- **WHEN** the Teams tab renders, now or after a reload
+- **THEN** only Beta's column shows, the leaderboard is Beta's own, and Beta's switch cannot be turned off

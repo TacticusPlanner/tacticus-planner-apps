@@ -125,19 +125,26 @@
   },
   "tabs": {
     "label": "Bereiche des Events",
-    "overview": "Übersicht"
+    "overview": "Übersicht",
+    "teams": "Teams",
+    "plan": "Plan",
+    "run": {
+      "current": "Aktueller Durchlauf",
+      "next": "Nächster Durchlauf",
+      "last": "Letzter Durchlauf"
+    },
+    "laneLabel": "Bahn",
+    "lanesShown": "Angezeigte Bahnen"
+  },
+  "battleInfo": {
+    "open": "Kampfinfo: {{lane}} Kampf {{battle}}",
+    "title": "{{lane}} · Kampf {{battle}}"
   },
   "eventBoard": {
     "title": "Eventübersicht",
-    "description": "Die Ziele jeder Bahn, die passenden Einheiten und deine gespeicherten Teams auf einen Blick. Wähle Ziele, um die Einheiten zu sehen, die alle erfüllen, eine Einheit, um damit ein Team zu beginnen, ein Team, um es zu bearbeiten, oder eine Bahn, um ihren Tab zu öffnen.",
-    "openLane": "Tab {{lane}} öffnen",
-    "teams_one": "{{count}} Team",
-    "teams_other": "{{count}} Teams",
-    "noTeams": "Noch keine Teams.",
+    "description": "Die Ziele jeder angezeigten Bahn, die passenden Einheiten und die Teams der Bahn nebeneinander. Wähle Ziele, um die Einheiten zu sehen, die alle erfüllen, oder eine Einheit, um damit ein Team zu beginnen.",
     "noTeam": "Kein Team",
     "cleared": "In {{cleared}} von {{total}} Kämpfen erfüllt",
-    "editTeam": "{{name}} bearbeiten",
-    "lanesShown": "Angezeigte Bahnen",
     "clearSelection": "Auswahl aufheben",
     "columnUnits_one": "{{count}} Einheit",
     "columnUnits_other": "{{count}} Einheiten",
@@ -156,7 +163,6 @@
     "rosterReaches": "Roster schafft Kampf {{battle}}"
   },
   "laneOverview": {
-    "title": "Bahnübersicht",
     "labelWithRule": "{{lane}} · {{rule}}",
     "killPoints": "{{points}} Kill-Punkte pro Kampf",
     "battles": "{{count}} Kämpfe",
@@ -183,7 +189,9 @@
         "goals": "Mit geplanten Zielen",
         "out": "Außer Reichweite"
       }
-    }
+    },
+    "viewBattles_one": "{{lane}}: seinen {{count}} Kampf im Plan ansehen",
+    "viewBattles_other": "{{lane}}: seine {{count}} Kämpfe im Plan ansehen"
   },
   "leaderboard": {
     "title": "Eignungsrangliste",
@@ -243,6 +251,7 @@
   },
   "battles": {
     "title": "Kämpfe",
+    "titleLane": "Kämpfe · {{lane}}",
     "loading": "Kämpfe werden geladen…",
     "error": "Die Kampfdaten konnten nicht geladen werden.",
     "empty": "Für diese Bahn gibt es noch keine Kampfdaten",
@@ -277,7 +286,8 @@
       "toggle": "Karte",
       "alt": "Karte von {{lane}} Kampf {{number}}",
       "unavailable": "Karte nicht verfügbar"
-    }
+    },
+    "laneLabel": "Bahn"
   },
   "annotations": {
     "maybeClear": "Vielleicht schaffbar",
@@ -432,8 +442,8 @@
     "event": {
       "steps": {
         "tabs": {
-          "title": "Übersicht und Lanes",
-          "content": "Die Übersicht fasst das Event zusammen; Alpha, Beta und Gamma öffnen je eine Lane. Auf dem Smartphone bleibt die Leiste beim Scrollen unter der Kopfzeile."
+          "title": "Event-Tabs",
+          "content": "Die Übersicht fasst das Event zusammen. Teams zeigt die Ziele, Einheiten und Teams jeder Bahn; Plan enthält die Durchlaufprognose, den Token-Plan, die Wirkung von Verbesserungen und die Kämpfe; der Durchlauf-Tab (Aktueller Durchlauf während des Events, sonst Nächster oder Letzter Durchlauf) zeigt deine nächsten Tokens und den synchronisierten Fortschritt. Mit den Bahnschaltern wählst du, welche Bahnen angezeigt werden, auf dem Smartphone je eine. Auf dem Smartphone bleibt die Leiste beim Scrollen unter der Kopfzeile."
         },
         "nextToken": {
           "title": "Nächster Token",
@@ -449,19 +459,19 @@
         },
         "tokenPlan": {
           "title": "Token-Plan",
-          "content": "Alle Tokens, die der Plan der Reihe nach erwartet, mit laufenden Punkten und den erreichten Meilensteinen. Die Durchlaufprognose darunter verteilt sie auf die verbleibenden Durchläufe."
+          "content": "Alle Tokens, die der Plan der Reihe nach erwartet, mit laufenden Punkten und den erreichten Meilensteinen. Die Durchlaufprognose darüber verteilt sie auf die verbleibenden Durchläufe. Wähle einen Kampf, um seine Karte und Gegner zu sehen."
         },
         "laneSummary": {
           "title": "Lane-Zusammenfassung",
           "content": "Die erzielten Punkte jeder Lane im Verhältnis zum Maximum und wie viele Kämpfe du vollständig abgeschlossen hast. Wähle eine Lane, um zu ihrem Fortschrittsraster zu springen."
         },
-        "overviewLeaderboard": {
-          "title": "Eignung über alle Lanes",
-          "content": "Jede spielbare Einheit mit den Punkten, die sie in jeder Lane noch erzielen kann. Filtere nach Ziel, zeige nur freigeschaltete Einheiten oder wechsle zu Punkten pro Kampf."
+        "eventBoard": {
+          "title": "Eventübersicht",
+          "content": "Die Ziele jeder angezeigten Bahn mit den passenden Einheiten, die stärksten zuerst, und darunter die Teams der Bahn. Wähle Ziele, um die Einheiten zu sehen, die alle erfüllen, und wähle eine Einheit, um damit ein Team zu beginnen."
         },
-        "laneOverview": {
-          "title": "Lane-Übersicht",
-          "content": "Die erlaubten Einheiten der Lane, Kill-Punkte und die fünf Ziele mit ihren Punkten, dann eine Karte, wie weit dein Roster kommt: Besiege-alle und Ziele jedes Kampfes als geschafft, von deinen Teams erreicht, für dein Roster erreichbar oder außer Reichweite."
+        "eligibility": {
+          "title": "Eignung",
+          "content": "Jede spielbare Einheit mit den Punkten, die sie auf den angezeigten Bahnen noch erzielen kann. Ist nur eine Bahn angezeigt, nennt sie deren Ziele und geschätzte Kämpfe. Filtere nach Ziel, zeige nur freigeschaltete Einheiten oder nutze das Menü einer Zeile für Ziel erstellen oder Zu neuem Team hinzufügen."
         },
         "teams": {
           "title": "Teams",
@@ -478,10 +488,6 @@
         "battles": {
           "title": "Kämpfe",
           "content": "Sieh dir jeden Kampf der Bahn an, bevor du ihn spielst: die Karte, die Wellen Runde für Runde und jeden Gegner mit seiner Stufe. Tippe auf einen Gegner, um seine Werte zu sehen. Geöffnet wird dein nächster zu spielender Kampf."
-        },
-        "leaderboard": {
-          "title": "Lane-Rangliste",
-          "content": "Jede Einheit, die diese Lane erlaubt, ob du sie besitzt, welche Ziele sie erfüllt und welche Punkte sie hier noch erzielen kann. Schalte die Zielvorschau ein, um Einheiten so zu sehen, als hättest du deine aktiven Ziele erreicht, und nutze das Menü einer Zeile für „Ziel erstellen“ oder „Zu neuem Team hinzufügen“."
         },
         "lastRun": {
           "title": "Letzter Durchlauf",
@@ -605,6 +611,7 @@
   },
   "upgradeImpact": {
     "title": "Wirkung von Verbesserungen",
+    "titleLane": "Wirkung von Verbesserungen · {{lane}}",
     "summary_one": "{{count}} Verbesserung bringt Punkte · beste +{{best}}",
     "summary_other": "{{count}} Verbesserungen bringen Punkte · beste +{{best}}",
     "hint": "Was ein einzelner nächster Schritt eines Teammitglieds auf dieser Lane bringt, über die Kämpfe, die ein Team dadurch erreicht. Grundlage ist dein synchronisierter Kader.",
@@ -648,7 +655,8 @@
       "points": "+{{points}} Punkte",
       "reasons": {
         "mostPoints": "Die meisten Punkte, die jetzt verfügbar sind",
-        "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst"
+        "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst",
+        "missionsOrder": "Schließt die offenen Missionen dieses Durchlaufs am frühesten ab, bei gleichen Durchlaufpunkten"
       },
       "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",
       "upcomingUnknown": "{{reason}}, sobald der nächste Durchlauf beginnt",
@@ -672,7 +680,10 @@
         "progresses": "Bringt voran:",
         "premium": "{{mission}} (Premium)",
         "points": "+{{points}} Punkte ({{difference}})"
-      }
+      },
+      "upNext": "Danach",
+      "viewPlan_one": "Den {{count}} geplanten Token ansehen",
+      "viewPlan_other": "Alle {{count}} geplanten Tokens ansehen"
     },
     "plan": {
       "title": "Token-Plan",

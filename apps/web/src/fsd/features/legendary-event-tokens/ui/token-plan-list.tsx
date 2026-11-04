@@ -10,13 +10,13 @@ import {
 import { useAnalyticsActions } from "@/shared/analytics"
 
 import type { LaneFullClear, TokenPlanView } from "../lib/token-plan-view"
+import { useMissionsOrder } from "../model/token-plan-order"
 import { useStoredOpen } from "../model/use-stored-open"
 import { RunMissionsSummary, TokenPlanOrderSwitch } from "./mission-order-view"
 import { RunSection, RunSectionHeader, TokenGroups } from "./token-plan-rows"
 
 const OPEN_KEY = "legendaryEvents.tokenPlan.open"
 const REGION_ID = "legendary-event-token-plan-list"
-const ORDER_KEY = "legendaryEvents.tokenPlan.missionsOrder"
 
 /**
  * The Overview's collapsible Token plan (spec: Token plan list): every planned token in run
@@ -46,7 +46,7 @@ export function TokenPlanList({
   const { captureEvent } = useAnalyticsActions()
   const [open, setOpen] = useStoredOpen(openKey, defaultOpen)
   // Remembered per device, shared by the event page and the plan wizard.
-  const [byMissions, setByMissions] = useStoredOpen(ORDER_KEY, false)
+  const [byMissions, setByMissions] = useMissionsOrder()
   if (view.kind !== "ready" || view.plan.tokens.length === 0) return null
   const number = new Intl.NumberFormat(i18n.language)
   const missionOrder = byMissions ? view.missionOrder : null
