@@ -92,6 +92,7 @@ export function GoalEditForm({
   const acquisition = useGoalEditAcquisition({
     detail,
     charactersById: catalog.charactersById,
+    mowsById: catalog.mowsById,
     unlockShardCostsById: catalog.unlockShardCostsById,
     battlesById: catalog.battlesById,
     dailyEnergy: planningSettings.dailyEnergy,

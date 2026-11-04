@@ -1,6 +1,7 @@
 import { Suspense, useMemo, useState } from "react"
 import { Outlet } from "react-router"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
@@ -37,9 +38,10 @@ const Loading = () => (
   </div>
 )
 
+/** What a save that didn't go through needs the player to know; a successful save is a toast. */
 type Message = {
-  tone: "success" | "info" | "error"
-  key: "saved" | "conflict" | "saveError"
+  tone: "info" | "error"
+  key: "conflict" | "saveError"
 }
 
 /**
@@ -101,12 +103,14 @@ export function IncursionsPage() {
   const save = async () => {
     setMessage(null)
     const outcome = await progressDraft.save()
+    if (outcome === "saved") {
+      toast.success(t("progress.saved"))
+      return
+    }
     setMessage(
-      outcome === "saved"
-        ? { tone: "success", key: "saved" }
-        : outcome === "conflict"
-          ? { tone: "info", key: "conflict" }
-          : { tone: "error", key: "saveError" }
+      outcome === "conflict"
+        ? { tone: "info", key: "conflict" }
+        : { tone: "error", key: "saveError" }
     )
   }
 

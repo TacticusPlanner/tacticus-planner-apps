@@ -6,6 +6,14 @@ export type IncursionBattle = IncursionTier["battles"][number]
 export type IncursionNode = IncursionTier["nodes"][number]
 export type IncursionEnhancement = Incursion["enhancements"][string]
 
+/**
+ * A node's name as the game shows it: a battle by its battle number (challenges are numbered in
+ * sequence too, not "4B" like the map data names them), anything else by its map name.
+ */
+export function nodeName(node: IncursionNode): string {
+  return node.kind === "battle" && node.battleId ? node.battleId : node.name
+}
+
 /** A game reward string ("type", "type:N" or "type:N-M") as an id and an amount range. */
 export type ParsedReward = { id: string; min: number; max: number }
 

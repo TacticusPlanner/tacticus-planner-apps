@@ -88,9 +88,7 @@ export function GoalEditFarmingFields({
           selection.regularShardLocations.length > 0 ||
           selection.mythicShardLocations.length > 0
         }
-        showOnslaught={
-          acquisition.isAscension && detail.entityType === "Character"
-        }
+        showOnslaught={acquisition.isAscension}
       />
     )
   }

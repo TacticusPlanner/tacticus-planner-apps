@@ -201,13 +201,18 @@ describe("TodayDashboard", () => {
     )
   })
 
-  it("keeps the plan card and Shops while the raids load, and nothing else", () => {
+  it("keeps the plan card and Shops while the raids load, Shops only beside the plan", () => {
     renderDashboard({ status: "loading" })
 
     expect(
       within(planCard()!).getByTestId("dailies-loading")
     ).toBeInTheDocument()
     expect(screen.getByTestId("today-shops")).toBeInTheDocument()
+    // Hidden on one track, where the arriving plan would push it down the screen.
+    expect(screen.getByTestId("today-shops-slot")).toHaveClass(
+      "hidden",
+      "@[42rem]:block"
+    )
     expect(bonusCards()).toHaveLength(0)
     expect(screen.queryByTestId("today-onslaught")).not.toBeInTheDocument()
     expect(screen.queryByTestId("todays-attempts")).not.toBeInTheDocument()

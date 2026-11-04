@@ -1,5 +1,5 @@
-import { useEffect, type ReactNode } from "react"
-import { useBlocker } from "react-router"
+import { useEffect, useRef, type ReactNode } from "react"
+import { useBlocker, type Blocker } from "react-router"
 
 import { ConfirmationDialog } from "./confirmation-dialog"
 
@@ -36,6 +36,16 @@ export function UnsavedChangesGuard({
       !(scope && within(nextLocation.pathname, scope))
   )
 
+  // The router's state reaches React in a transition, so while the next page's chunk loads the
+  // dialog still shows this blocker: a second click must not resolve it again (the router throws
+  // "Invalid blocker state transition").
+  const settled = useRef<Blocker>(null)
+  const settle = (action: (() => void) | undefined) => {
+    if (settled.current === blocker) return
+    settled.current = blocker
+    action?.()
+  }
+
   useEffect(() => {
     if (!when) return
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -54,8 +64,8 @@ export function UnsavedChangesGuard({
       description={description}
       confirmLabel={leaveLabel}
       cancelLabel={stayLabel}
-      onConfirm={() => blocker.proceed?.()}
-      onCancel={() => blocker.reset?.()}
+      onConfirm={() => settle(blocker.proceed)}
+      onCancel={() => settle(blocker.reset)}
     />
   )
 }

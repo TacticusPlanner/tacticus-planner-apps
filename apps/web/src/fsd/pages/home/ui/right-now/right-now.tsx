@@ -11,6 +11,7 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { useMinuteNow } from "@/entities/legendary-event"
 import { formatEventCountdown } from "@/shared/lib"
 
 import type { HomeEventRow } from "../../model/select-home-events"
@@ -20,6 +21,7 @@ import { LegendaryEventPlanButton } from "../events/legendary-event-plan-button"
 import { useHomeEventName } from "../events/use-home-event-name"
 import { TokenAvailability } from "../token-availability/token-availability"
 import { BetaPromoTile } from "./beta-promo-tile"
+import { IncursionTile } from "./incursion-tile"
 
 /** Home's first card: token status and whatever event is live, the two things a glance at Home is
  *  for. Upcoming events live in their own card further down. */
@@ -42,6 +44,7 @@ export function RightNow({ events }: { events: HomeEventsState }) {
 
 function LiveEvents({ events }: { events: HomeEventsState }) {
   const { t } = useTranslation("common")
+  const minuteNowMs = useMinuteNow()
 
   if (events.status === "loading") {
     return (
@@ -54,8 +57,10 @@ function LiveEvents({ events }: { events: HomeEventsState }) {
       </div>
     )
   }
+  const live = events.status === "ready" ? events.live : []
+  const nowMs = events.status === "ready" ? events.nowMs : minuteNowMs
   // Read failures are reported once, in Upcoming events.
-  if (events.status === "error" || events.live.length === 0) {
+  if (live.length === 0) {
     return (
       <p
         className="self-center text-sm text-muted-foreground"
@@ -68,9 +73,13 @@ function LiveEvents({ events }: { events: HomeEventsState }) {
 
   return (
     <ul className="grid gap-2 sm:grid-cols-2" data-testid="home-live-events">
-      {events.live.map((row) => (
+      {live.map((row) => (
         <li key={row.key}>
-          <LiveEventTile nowMs={events.nowMs} row={row} />
+          {row.type === "incursion" ? (
+            <IncursionTile nowMs={nowMs} />
+          ) : (
+            <LiveEventTile nowMs={nowMs} row={row} />
+          )}
         </li>
       ))}
     </ul>

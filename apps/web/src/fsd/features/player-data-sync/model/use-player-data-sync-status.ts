@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { formatRelativeTime } from "@/shared/lib"
 import {
+  getAutoSyncProgress,
   usePlayerDataProgress,
   usePlayerDataStatus,
   type PlayerDataStatus,
@@ -32,7 +33,7 @@ export function usePlayerDataSyncStatus() {
     usePlayerDataStatus()
   // Subscribes to every progress tick: call this only from a control that shows the status text.
   const progress = usePlayerDataProgress()
-  const [, setRelativeTimeTick] = useState(() => Date.now())
+  const [relativeTimeTick, setRelativeTimeTick] = useState(() => Date.now())
   const isSyncing = status === "syncing"
   const statusLabel = t(statusLabelKeys[status])
   const relativeLastSync = lastSyncedAt
@@ -47,6 +48,22 @@ export function usePlayerDataSyncStatus() {
         total: progress.total,
       })
     : statusLabel
+  // Counts towards the provider's next background sync; only meaningful once the last sync has
+  // settled (a running or failed sync has no countdown to show). Re-evaluated on the relative-time tick.
+  const autoSyncProgress =
+    status === "ready" || status === "stale"
+      ? getAutoSyncProgress(lastSyncedAt, relativeTimeTick)
+      : null
+  // Once overdue the sync fires on the provider's next check, so there is no future time to name.
+  const relativeNextAutoSync =
+    autoSyncProgress && autoSyncProgress.fraction < 1
+      ? formatRelativeTime(autoSyncProgress.nextSyncAt, i18n.language)
+      : null
+  const nextAutoSyncText = relativeNextAutoSync
+    ? t("manageAccount.playerData.nextAutoSync", {
+        time: relativeNextAutoSync,
+      })
+    : null
   const statusText =
     status === "syncing"
       ? progressText
@@ -79,6 +96,8 @@ export function usePlayerDataSyncStatus() {
     lastSyncedAt,
     lastSyncText,
     statusText,
+    autoSyncProgress,
+    nextAutoSyncText,
     errorText: error,
     requiresReauth,
     // The provider refreshes the server reads once the sync completes (refreshServerReadsAfterSync).

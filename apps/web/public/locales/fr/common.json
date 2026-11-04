@@ -79,6 +79,7 @@
       "statusError": "Échec de la synchronisation",
       "lastSynced": "Dernière synchronisation {{time}}",
       "neverSynced": "Jamais synchronisé",
+      "nextAutoSync": "Prochaine synchronisation automatique {{time}}",
       "syncProgress": "Synchronisation {{downloaded}} / {{total}}…",
       "retrySync": "Échec de la synchronisation — réessayer",
       "reauthRequired": "Connexion expirée — appuyez pour vous connecter",
@@ -676,6 +677,12 @@
       "copied": "Copié",
       "copyFailed": "Copie impossible",
       "dismiss": "Masquer le code promo"
+    },
+    "incursion": {
+      "title": "Incursion",
+      "latest": "Plus récente : {{mow}}",
+      "arrives": "{{mow}} arrive le {{date}}",
+      "track": "Suivez votre progression : marquez les paliers terminés pour voir les fragments encore à gagner."
     }
   },
   "guild": {
@@ -693,6 +700,7 @@
       "description": "Un ID utilisateur Tacticus est nécessaire pour vous identifier dans les données de guilde avant de pouvoir la consulter ou l'enregistrer.",
       "userIdLabel": "ID utilisateur Tacticus",
       "userIdPlaceholder": "Entrez votre ID utilisateur Tacticus",
+      "userIdHint": "Vous le trouverez en bas de l'écran des paramètres utilisateur du jeu.",
       "save": "Enregistrer",
       "saving": "Enregistrement…",
       "saved": "ID utilisateur Tacticus enregistré.",
@@ -700,15 +708,36 @@
     },
     "unregistered": {
       "title": "Aucune guilde enregistrée pour le moment",
-      "description": "Une guilde doit d'abord être enregistrée par un chef ou un co-chef de guilde.",
-      "leaderPrompt": "Êtes-vous le chef ou le co-chef de la guilde ? Utilisez le champ ci-dessous pour coller un jeton API de guilde avec les portées Guild et GuildRaids.",
+      "description": "Un chef ou co-chef de guilde enregistre la guilde une seule fois. Ensuite, chaque membre peut utiliser les fonctions de guilde avec son seul ID utilisateur Tacticus.",
+      "leaderPrompt": "Êtes-vous le chef ou le co-chef de la guilde ? Créez une clé API de guilde et collez-la ci-dessous.",
+      "memberNote": "Vous n'êtes ni chef ni co-chef ? Vous n'avez pas besoin de clé. Demandez à votre chef ou co-chef d'enregistrer la guilde ici.",
       "eligibility": "L'enregistrement est autorisé par Tacticus et n'est accessible qu'au chef actuel ou à un co-chef.",
-      "handoff": "Demandez au chef ou au co-chef actuel de terminer l'enregistrement de la guilde avec un jeton autorisé.",
-      "tokenLabel": "Jeton API de guilde",
-      "tokenPlaceholder": "Collez votre jeton API de guilde",
+      "handoff": "Demandez au chef ou au co-chef actuel d'enregistrer la guilde avec sa propre clé API de guilde.",
+      "tokenLabel": "Clé API de guilde",
+      "tokenPlaceholder": "Collez votre clé API de guilde",
       "register": "Enregistrer la guilde",
       "registering": "Enregistrement…",
       "genericError": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "apiKeySteps": {
+      "title": "Comment obtenir une clé API de guilde",
+      "signIn": "Connectez-vous sur api.tacticusgame.com avec votre compte Tacticus.",
+      "create": "Créez une clé API avec les portées Guild et Guild Raid.",
+      "paste": "Copiez la clé et collez-la ici.",
+      "getKey": "Obtenir une clé sur api.tacticusgame.com"
+    },
+    "settings": {
+      "apiKey": {
+        "title": "Clé API de guilde",
+        "description": "Planner utilise cette clé pour synchroniser les membres et les données de raid de votre guilde. Remplacez-la si vous avez régénéré ou révoqué la clé sur api.tacticusgame.com, ou si Planner indique que Tacticus l'a refusée.",
+        "label": "Nouvelle clé API de guilde",
+        "placeholder": "Collez votre clé API de guilde",
+        "replace": "Remplacer la clé",
+        "replacing": "Remplacement…",
+        "replaced": "Clé API de guilde remplacée et guilde synchronisée.",
+        "leadersOnly": "Seul le chef ou un co-chef de votre guilde peut remplacer la clé API de guilde.",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      }
     },
     "summary": {
       "level": "Niveau {{level}}",
@@ -733,7 +762,7 @@
       "genericError": "Une erreur s'est produite lors de la suppression de la guilde. Veuillez réessayer.",
       "errors": {
         "forbidden": "Seul un chef ou co-chef actuel disposant d'un ID utilisateur Tacticus peut supprimer cette guilde. Rien n'a été supprimé.",
-        "roleCheckFailed": "Votre rôle n'a pas pu être vérifié auprès de Tacticus : il a refusé le jeton d'API de guilde enregistré ou renvoyé des données que Planner n'a pas pu lire. Rien n'a été supprimé. Réenregistrez la guilde avec un nouveau jeton d'API de guilde, puis réessayez.",
+        "roleCheckFailed": "Votre rôle n'a pas pu être vérifié auprès de Tacticus : il a refusé la clé API de guilde enregistrée ou renvoyé des données que Planner n'a pas pu lire. Rien n'a été supprimé. Remplacez la clé API de guilde dans Guilde > Paramètres, puis réessayez.",
         "upstreamUnavailable": "Tacticus est indisponible pour le moment, votre rôle n'a donc pas pu être vérifié. Rien n'a été supprimé. Veuillez réessayer plus tard.",
         "concurrency": "La liste des membres de la guilde a changé pendant la vérification. Rien n'a été supprimé. Veuillez réessayer.",
         "rateLimited": "Trop de requêtes vers Tacticus. Rien n'a été supprimé. Patientez un instant et réessayez."
@@ -741,7 +770,9 @@
     },
     "tabs": {
       "members": "Membres",
-      "membersDescription": "Consultez la liste des membres de votre guilde"
+      "membersDescription": "Consultez la liste des membres de votre guilde",
+      "settings": "Paramètres",
+      "settingsDescription": "Gérez les paramètres du planificateur pour votre guilde"
     },
     "members": {
       "empty": "Aucun membre trouvé.",
@@ -792,7 +823,7 @@
       "parts": {
         "personalKey": "Clé API Tacticus personnelle",
         "userId": "ID utilisateur Tacticus",
-        "guildKey": "Jeton API de guilde",
+        "guildKey": "Clé API de guilde",
         "goals": "Objectifs",
         "onslaughtProgress": "Progression de l'Onslaught",
         "campaignEventProgress": "Progression des événements de campagne",
@@ -934,7 +965,7 @@
         "parts": {
           "personalTacticusApiKey": "Clé API",
           "tacticusUserId": "ID utilisateur Tacticus",
-          "guildApiToken": "Jeton API de guilde",
+          "guildApiToken": "Clé API de guilde",
           "onslaughtProgress": "Progression Onslaught",
           "campaignEventProgress": "Progression des événements de campagne"
         },
@@ -1448,7 +1479,9 @@
       "groupByType": "Regrouper par type",
       "groupByUnit": "Regrouper par unité",
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés",
-      "statusFilterLabel": "Filtre de statut des objectifs"
+      "statusFilterLabel": "Filtre de statut des objectifs",
+      "groupCount_one": "{{count}} objectif",
+      "groupCount_other": "{{count}} objectifs"
     },
     "seasonFit": {
       "label": "Calage sur la saison",

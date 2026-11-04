@@ -59,14 +59,20 @@ describe("useSectionEntryPath", () => {
   })
 
   it("always returns the item's own path for single-child or no-children items", () => {
+    // Guild trimmed to one tab stands in for a single-child section.
+    const items = navItems.map((item) =>
+      item.path === "/guild"
+        ? { ...item, children: item.children?.slice(0, 1) }
+        : item
+    )
     const { rerender, result } = renderHook(
-      ({ pathname }) => useSectionEntryPath(navItems, pathname),
+      ({ pathname }) => useSectionEntryPath(items, pathname),
       { initialProps: { pathname: "/guild/members" } }
     )
     rerender({ pathname: "/home" })
 
-    const guild = navItems.find((item) => item.path === "/guild")!
-    const home = navItems.find((item) => item.path === "/home")!
+    const guild = items.find((item) => item.path === "/guild")!
+    const home = items.find((item) => item.path === "/home")!
     expect(result.current.getEntryPath(guild)).toBe("/guild")
     expect(result.current.getEntryPath(home)).toBe("/home")
   })

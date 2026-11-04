@@ -31,7 +31,7 @@ vi.mock("posthog-js", () => {
   sdk.imported()
   return { default: { init: sdk.init } }
 })
-vi.mock("posthog-js/dist/web-vitals", () => ({}))
+vi.mock("posthog-js/dist/web-vitals-with-attribution", () => ({}))
 
 import { AnalyticsProvider, useAnalyticsActions } from "./analytics-provider"
 
@@ -91,75 +91,6 @@ describe("AnalyticsProvider", () => {
 
     expect(sdk.init).not.toHaveBeenCalled()
     expect(result.current.isReady).toBe(false)
-  })
-
-  it("loads the SDK on identification, opted out, with no autocapture, replay, or default pageview capture, then identifies and opts in", async () => {
-    // initOptions.api_host is a module-level constant baked in when analytics-provider is first
-    // imported, before this stub runs - re-import fresh so this render picks up the stubbed host.
-    vi.stubEnv("VITE_POSTHOG_HOST", "https://us.i.posthog.com")
-    vi.resetModules()
-    const fresh = await import("./analytics-provider")
-    const { result } = renderHook(() => fresh.useAnalyticsActions(), {
-      wrapper: ({ children }: { children: ReactNode }) => (
-        <fresh.AnalyticsProvider>{children}</fresh.AnalyticsProvider>
-      ),
-    })
-
-    act(() => result.current.identifyUser("analytics-id"))
-    await waitFor(() => expect(result.current.isReady).toBe(true))
-
-    expect(sdk.init).toHaveBeenCalledExactlyOnceWith(
-      "test-token",
-      expect.objectContaining({
-        api_host: "https://us.i.posthog.com",
-        opt_out_capturing_by_default: true,
-        autocapture: false,
-        capture_pageview: false,
-        disable_session_recording: true,
-        person_profiles: "identified_only",
-        // opt_out_capturing_by_default alone only suppresses event capture - init() still makes
-        // its own /flags and remote-config requests. These two keep the browser silent.
-        advanced_disable_flags: true,
-        disable_external_dependency_loading: true,
-        capture_pageleave: true,
-        // Web vitals are enabled client-side (remote config is off) and their extension is bundled.
-        capture_performance: {
-          web_vitals: true,
-          web_vitals_attribution: false,
-        },
-        before_send: expect.any(Function),
-      })
-    )
-    expect(sdk.client.identify).toHaveBeenCalledWith("analytics-id")
-    expect(sdk.client.opt_in_capturing).toHaveBeenCalledExactlyOnceWith({
-      captureEventName: false,
-    })
-  })
-
-  it("stays silent and inert when the SDK download is blocked", async () => {
-    vi.resetModules()
-    vi.doMock("posthog-js", () => {
-      throw new Error("blocked by the client")
-    })
-    const fresh = await import("./analytics-provider")
-    const { result } = renderHook(() => fresh.useAnalyticsActions(), {
-      wrapper: ({ children }: { children: ReactNode }) => (
-        <fresh.AnalyticsProvider>{children}</fresh.AnalyticsProvider>
-      ),
-    })
-
-    act(() => result.current.identifyUser("analytics-id"))
-    await new Promise((resolve) => setTimeout(resolve, 0))
-    result.current.captureEvent({
-      type: "page_view",
-      routePattern: "/home",
-      routeGroup: "/home",
-      viewMode: "desktop",
-    })
-
-    expect(result.current.isReady).toBe(false)
-    expect(sdk.init).not.toHaveBeenCalled()
-    vi.doMock("posthog-js", () => ({ default: { init: sdk.init } }))
   })
 
   it("discards the SDK when the user signs out before it finished loading", async () => {
@@ -556,7 +487,6 @@ describe("useAnalyticsActions", () => {
           "TypeError: x is undefined\n    at https://app.example.test/assets/main.js:2:3",
         context: "window.error",
         routeGroup: "/plan",
-        appVersion: "1.2.3",
       })
     )
 
@@ -573,7 +503,6 @@ describe("useAnalyticsActions", () => {
     expect(properties).toEqual({
       context: "window.error",
       route_group: "/plan",
-      app_version: "1.2.3",
     })
   })
 
@@ -608,5 +537,80 @@ describe("useAnalyticsActions", () => {
       "app_install_card_dismissed",
       { platform: "android" }
     )
+  })
+})
+
+// These re-import the provider after vi.resetModules(), which leaves the statically imported
+// provider resolving a stale posthog-js mock. Keep them last so no test that relies on the shared
+// mock runs after them.
+describe("AnalyticsProvider SDK loading", () => {
+  it("loads the SDK on identification, opted out, with no autocapture, replay, or default pageview capture, then identifies and opts in", async () => {
+    // initOptions.api_host is a module-level constant baked in when analytics-provider is first
+    // imported, before this stub runs - re-import fresh so this render picks up the stubbed host.
+    vi.stubEnv("VITE_POSTHOG_HOST", "https://us.i.posthog.com")
+    vi.resetModules()
+    const fresh = await import("./analytics-provider")
+    const { result } = renderHook(() => fresh.useAnalyticsActions(), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <fresh.AnalyticsProvider>{children}</fresh.AnalyticsProvider>
+      ),
+    })
+
+    act(() => result.current.identifyUser("analytics-id"))
+    await waitFor(() => expect(result.current.isReady).toBe(true))
+
+    expect(sdk.init).toHaveBeenCalledExactlyOnceWith(
+      "test-token",
+      expect.objectContaining({
+        api_host: "https://us.i.posthog.com",
+        opt_out_capturing_by_default: true,
+        autocapture: false,
+        capture_pageview: false,
+        disable_session_recording: true,
+        person_profiles: "identified_only",
+        // opt_out_capturing_by_default alone only suppresses event capture - init() still makes
+        // its own /flags and remote-config requests. These two keep the browser silent.
+        advanced_disable_flags: true,
+        disable_external_dependency_loading: true,
+        capture_pageleave: true,
+        // Web vitals are enabled client-side (remote config is off), with attribution, and their
+        // extension is bundled.
+        capture_performance: {
+          web_vitals: true,
+          web_vitals_attribution: ["CLS", "INP", "LCP"],
+        },
+        before_send: expect.any(Function),
+      })
+    )
+    expect(sdk.client.identify).toHaveBeenCalledWith("analytics-id")
+    expect(sdk.client.opt_in_capturing).toHaveBeenCalledExactlyOnceWith({
+      captureEventName: false,
+    })
+  })
+
+  it("stays silent and inert when the SDK download is blocked", async () => {
+    vi.resetModules()
+    vi.doMock("posthog-js", () => {
+      throw new Error("blocked by the client")
+    })
+    const fresh = await import("./analytics-provider")
+    const { result } = renderHook(() => fresh.useAnalyticsActions(), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <fresh.AnalyticsProvider>{children}</fresh.AnalyticsProvider>
+      ),
+    })
+
+    act(() => result.current.identifyUser("analytics-id"))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    result.current.captureEvent({
+      type: "page_view",
+      routePattern: "/home",
+      routeGroup: "/home",
+      viewMode: "desktop",
+    })
+
+    expect(result.current.isReady).toBe(false)
+    expect(sdk.init).not.toHaveBeenCalled()
+    vi.doMock("posthog-js", () => ({ default: { init: sdk.init } }))
   })
 })

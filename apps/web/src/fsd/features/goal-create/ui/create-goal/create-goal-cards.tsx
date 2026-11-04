@@ -294,7 +294,7 @@ function CreateAscensionCard({ form }: CardArgs) {
               (form.regularShardLocations.length > 0 ||
                 form.mythicShardLocations.length > 0)
             }
-            showOnslaught={isCharacter}
+            showOnslaught
           />
           {onlyMythicLocations.length > 0 || onlyMythicOffers.length > 0 ? (
             <div

@@ -71,6 +71,20 @@
     "planToComplete": "{{field}} por completar",
     "planToCompleteShort": "Plan a completar"
   },
+  "notes": {
+    "title": "Notas",
+    "description": "Tus propias notas para este evento: planes de equipos, qué probar en la próxima ronda, cualquier cosa que recordar. Solo tú las ves.",
+    "placeholder": "p. ej. Beta al final; probar a Calgar en la batalla 9 de Alfa la próxima ronda",
+    "count": "{{length}} / {{max}} caracteres",
+    "unsaved": "Cambios sin guardar",
+    "save": "Guardar notas",
+    "saving": "Guardando…",
+    "discard": "Descartar",
+    "loadError": "No se pudieron cargar tus notas. Inténtalo más tarde.",
+    "toasts": {
+      "error": "No se pudieron guardar tus notas. Inténtalo de nuevo."
+    }
+  },
   "outlook": {
     "title": "Previsión de recompensas",
     "steps": {

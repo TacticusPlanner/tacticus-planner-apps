@@ -214,6 +214,7 @@ export function useCreateGoalForm({
     battlesById,
     dailyEnergy: planningSettings.dailyEnergy,
     shopOffers,
+    defaultOnslaughtEnabled: true, // Unlock filters Onslaught out itself.
   })
   const {
     shardLocationIds,

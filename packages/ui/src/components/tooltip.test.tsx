@@ -104,4 +104,26 @@ describe("Tooltip", () => {
 
     expect(document.querySelector('[data-slot="tooltip-content"]')).toBeNull()
   })
+
+  it("lets a tapped link trigger navigate instead of toggling its tooltip", () => {
+    render(
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <a href="/goals">Goals</a>
+          </TooltipTrigger>
+          <TooltipContent>Goals tooltip</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+    const link = screen.getByText("Goals")
+
+    fireEvent.pointerDown(link, { pointerType: "touch" })
+    fireEvent.focus(link)
+    const click = new MouseEvent("click", { bubbles: true, cancelable: true })
+    link.dispatchEvent(click)
+
+    expect(click.defaultPrevented).toBe(false)
+    expect(document.querySelector('[data-slot="tooltip-content"]')).toBeNull()
+  })
 })

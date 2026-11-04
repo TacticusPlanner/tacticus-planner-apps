@@ -32,7 +32,7 @@
     "bestPathHint": "MoW shards from 3-star wins and chests along the richest path through this tier."
   },
   "map": {
-    "title": "Run map",
+    "title": "Run Layout",
     "step": "Step {{number}}",
     "pickOne": "Pick one",
     "after": "After {{names}}",
@@ -45,9 +45,11 @@
     "lightningVictory": "Lightning Victory: {{turns}} turns",
     "enemies": "Enemies",
     "everyWin": "Every win",
-    "stars": "{{count}}★",
-    "starsClaimed": "{{count}}★ (claimed)",
-    "board": "Battle board"
+    "board": "Battle board",
+    "medals_one": "{{count}} medal",
+    "medals_other": "{{count}} medals",
+    "medalsClaimed_one": "{{count}} medal (claimed)",
+    "medalsClaimed_other": "{{count}} medals (claimed)"
   },
   "enhancement": {
     "title": "Enhancement",
@@ -89,10 +91,10 @@
     "remainingMythic": "{{shards}} shards and {{mythicShards}} mythic shards left to earn from battle stars",
     "allClaimed": "Every battle star reward claimed",
     "howTo": "Open a tier to set the stars you've earned on each battle, or mark the whole tier at 3 stars. A tier counts as cleared once you've won a battle on its last step.",
-    "starsEarned": "Your stars",
-    "starsFor": "Stars earned on {{battle}}",
-    "stars_one": "{{count}} star",
-    "stars_other": "{{count}} stars",
+    "starsEarned": "Your medals",
+    "starsFor": "Medals earned on {{battle}}",
+    "stars_one": "{{count}} medal",
+    "stars_other": "{{count}} medals",
     "raidable": "Raidable",
     "raidableHint": "Cleared with 3 stars, so later runs can raid it.",
     "replayTitle": "Each replay pays",
@@ -169,8 +171,12 @@
   "estimate": {
     "clears_one": "Clears in 1 run",
     "clears_other": "Clears in {{count}} runs",
-    "stuck": "Stuck at battle {{battle}} of {{battles}}",
-    "firstRun": "First run wins {{wins}} of {{battles}} battles with your team capped to this tier ({{power}} power).",
+    "stuck": "Stuck at battle {{battle}}",
+    "firstRun": "First run wins {{wins}} of the {{battles}} battles on the easiest route, with your team capped to this tier ({{power}} power).",
     "hint": "Estimate: your suggested team with every hero capped to this tier's rarity ({{power}} power). A battle is won while your power × HP left reaches a fifth of the enemy power; each win costs HP in proportion (less with a Healer). Battles won stay won, so the next run starts at full HP where the last one stopped."
+  },
+  "event": {
+    "endsIn": "Incursion ends in {{when}}",
+    "startsIn": "Next Incursion starts in {{when}}"
   }
 }

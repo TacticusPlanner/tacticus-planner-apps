@@ -1,6 +1,5 @@
 import {
   chestIcon,
-  heroStarIcon,
   incursionEnhancementIcon,
   type ChestTier,
 } from "@workspace/game-catalog"
@@ -8,7 +7,12 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
 
-import type { Incursion, IncursionNode } from "../../model/incursions.model"
+import {
+  nodeName,
+  type Incursion,
+  type IncursionNode,
+} from "../../model/incursions.model"
+import { medalIcon } from "./medal-icon"
 
 const CHEST_TIERS: Record<string, ChestTier> = {
   Bronze: "bronze",
@@ -21,7 +25,7 @@ const STARS = [1, 2, 3] as const
 
 /**
  * A run-map node drawn as the game draws it: a battle's number on a dark disc (ringed orange for a
- * challenge) under the stars earned, an enhancement's icon, or the chest.
+ * challenge) under the medals earned, an enhancement's icon, or the chest.
  */
 export function IncursionNodeMarker({
   node,
@@ -45,7 +49,7 @@ export function IncursionNodeMarker({
             {STARS.map((count) => (
               <EntityIcon
                 key={count}
-                src={heroStarIcon()}
+                src={medalIcon}
                 alt=""
                 className={cn(
                   "size-3",
@@ -62,7 +66,7 @@ export function IncursionNodeMarker({
             challenge ? "border-orange-500" : "border-amber-700/70"
           )}
         >
-          {node.name}
+          {nodeName(node)}
         </span>
       </span>
     )

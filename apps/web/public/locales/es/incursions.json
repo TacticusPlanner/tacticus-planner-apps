@@ -32,7 +32,7 @@
     "bestPathHint": "Fragmentos de la Máquina de Guerra de victorias de 3 estrellas y cofres en el camino más rentable de este nivel."
   },
   "map": {
-    "title": "Mapa de partida",
+    "title": "Diseño del intento",
     "step": "Paso {{number}}",
     "pickOne": "Elige uno",
     "after": "Tras {{names}}",
@@ -45,9 +45,11 @@
     "lightningVictory": "Victoria relámpago: {{turns}} turnos",
     "enemies": "Enemigos",
     "everyWin": "Cada victoria",
-    "stars": "{{count}}★",
-    "starsClaimed": "{{count}}★ (obtenida)",
-    "board": "Tablero de batalla"
+    "board": "Tablero de batalla",
+    "medals_one": "{{count}} medalla",
+    "medals_other": "{{count}} medallas",
+    "medalsClaimed_one": "{{count}} medalla (reclamada)",
+    "medalsClaimed_other": "{{count}} medallas (reclamadas)"
   },
   "enhancement": {
     "title": "Mejora",
@@ -89,10 +91,10 @@
     "remainingMythic": "Quedan {{shards}} fragmentos y {{mythicShards}} fragmentos míticos por ganar con estrellas de batalla",
     "allClaimed": "Todas las recompensas de estrellas obtenidas",
     "howTo": "Abre un nivel para marcar las estrellas que ganaste en cada batalla, o marca todo el nivel con 3 estrellas. Un nivel cuenta como superado cuando ganas una batalla de su último paso.",
-    "starsEarned": "Tus estrellas",
-    "starsFor": "Estrellas ganadas en {{battle}}",
-    "stars_one": "{{count}} estrella",
-    "stars_other": "{{count}} estrellas",
+    "starsEarned": "Tus medallas",
+    "starsFor": "Medallas obtenidas en {{battle}}",
+    "stars_one": "{{count}} medalla",
+    "stars_other": "{{count}} medallas",
     "raidable": "Asaltable",
     "raidableHint": "Completada con 3 estrellas: las partidas siguientes pueden asaltarla.",
     "replayTitle": "Cada repetición da",
@@ -169,8 +171,12 @@
   "estimate": {
     "clears_one": "Se completa en 1 intento",
     "clears_other": "Se completa en {{count}} intentos",
-    "stuck": "Atascado en la batalla {{battle}} de {{battles}}",
-    "firstRun": "El primer intento gana {{wins}} de {{battles}} batallas con tu equipo limitado a este nivel ({{power}} de poder).",
+    "stuck": "Atascado en la batalla {{battle}}",
+    "firstRun": "El primer intento gana {{wins}} de las {{battles}} batallas de la ruta más fácil, con tu equipo limitado a este nivel ({{power}} de poder).",
     "hint": "Estimación: tu equipo sugerido con cada héroe limitado a la rareza de este nivel ({{power}} de poder). Una batalla se gana mientras poder × PV restantes alcance una quinta parte del poder enemigo; cada victoria cuesta PV en proporción (menos con un Sanador). Las batallas ganadas se mantienen, así que el siguiente intento empieza con PV completos donde terminó el anterior."
+  },
+  "event": {
+    "endsIn": "La Incursión termina en {{when}}",
+    "startsIn": "La próxima Incursión empieza en {{when}}"
   }
 }

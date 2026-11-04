@@ -13,10 +13,10 @@ import {
   type IncursionNode,
   type IncursionTier,
   type RunStep,
+  nodeName,
 } from "../../model/incursions.model"
 import { IncursionNodeCard } from "./incursion-node-card"
 import { IncursionNodeMarker } from "./incursion-node-marker"
-import { neighbours } from "./incursions-outlet"
 
 /**
  * The tier's run map as a compact picker, one row per step like the game's map, beside the chosen
@@ -46,7 +46,8 @@ export function IncursionRunMap({
 }) {
   const { t } = useTranslation(["incursions", "traits"])
   const nodeLabel = (node: IncursionNode) => {
-    if (node.kind === "battle") return t("battle.name", { name: node.name })
+    if (node.kind === "battle")
+      return t("battle.name", { name: nodeName(node) })
     if (node.kind === "chest") {
       const type = node.chest?.type ?? ""
       return t("chest.title", {
@@ -76,9 +77,14 @@ export function IncursionRunMap({
   )
   const selected = nodes.find((node) => node.index === pickedIndex) ?? nodes[0]
   const onSelect = (node: IncursionNode) => setPickedIndex(node.index)
+  // Previous/Next step through battles only; from a chest or pick they go to the nearest battle.
   const at = selected ? nodes.indexOf(selected) : -1
-  const { previous, next } = neighbours(nodes, at)
-  const namesByIndex = new Map(nodes.map((node) => [node.index, node.name]))
+  const isBattle = (node: IncursionNode) => node.kind === "battle"
+  const previous = nodes.slice(0, Math.max(at, 0)).findLast(isBattle)
+  const next = nodes.slice(at + 1).find(isBattle)
+  const namesByIndex = new Map(
+    nodes.map((node) => [node.index, nodeName(node)])
+  )
   const starsOf = (node: IncursionNode) =>
     stars && node.kind === "battle" && node.battleId
       ? stars(tier.index, node.battleId)
@@ -92,26 +98,23 @@ export function IncursionRunMap({
   const branched = (steps[stepOf(selected) - 1]?.nodes.length ?? 0) > 1
 
   return (
-    <section
-      className="grid gap-4 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]"
-      aria-label={t("map.title")}
-    >
-      <div className="lg:sticky lg:top-4 lg:self-start">
+    <section className="flex flex-col gap-4" aria-label={t("map.title")}>
+      <div className="min-w-0">
         <h3 className="mb-2 text-sm font-semibold">{t("map.title")}</h3>
         <ol
-          className="max-h-[60vh] space-y-1 overflow-y-auto rounded-lg border bg-muted/30 p-2 lg:max-h-[calc(100vh-8rem)]"
+          className="flex items-stretch gap-1 overflow-x-auto rounded-lg border bg-muted/30 p-2"
           data-testid="incursion-map"
         >
           {steps.map((step, index) => (
             <li
               key={step.depth}
-              className="flex items-center gap-2"
+              className="flex shrink-0 flex-col items-center gap-1 border-l border-border/50 px-1 first:border-l-0"
               data-testid={`incursion-step-${step.depth}`}
             >
-              <span className="w-6 shrink-0 text-right text-[10px] text-muted-foreground tabular-nums">
+              <span className="text-[10px] text-muted-foreground tabular-nums">
                 {index + 1}
               </span>
-              <div className="flex flex-wrap items-center gap-1">
+              <div className="flex flex-1 flex-col items-center justify-center gap-1">
                 {step.nodes.map((node, position) => {
                   const battle = node.battleId
                     ? battlesById.get(node.battleId)

@@ -14,7 +14,7 @@ export type GoalAcquisitionPlan = {
     regularBattleIds: string[]
     mythicBattleIds: string[]
   }
-  /** Character Ascension only — see the picker spec's group-visibility rule. */
+  /** Ascension only (Characters and MoWs) — see the picker spec's group-visibility rule. */
   onslaught: {
     enabled: boolean
   }

@@ -6,14 +6,18 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import type { PlayerDataStatus } from "@/shared/player-data-status"
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    i18n: { language: "en" },
+    t: (key: string) => key,
+  }),
 }))
 
 const { usePlayerDataStatusMock } = vi.hoisted(() => ({
   usePlayerDataStatusMock: vi.fn(),
 }))
 
-vi.mock("@/shared/player-data-status", () => ({
+vi.mock("@/shared/player-data-status", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/player-data-status")>()),
   usePlayerDataStatus: () => usePlayerDataStatusMock(),
   usePlayerDataProgress: () => usePlayerDataStatusMock().progress,
 }))
@@ -31,6 +35,7 @@ function mockStatus(
   status: PlayerDataStatus,
   overrides: Partial<{
     error: string | null
+    lastSyncedAt: string | null
     progress: { downloaded: number; total: number } | null
     syncNow: () => void
   }> = {}
@@ -38,7 +43,7 @@ function mockStatus(
   usePlayerDataStatusMock.mockReturnValue({
     status,
     progress: overrides.progress ?? null,
-    lastSyncedAt: null,
+    lastSyncedAt: overrides.lastSyncedAt ?? null,
     error: overrides.error ?? null,
     syncNow: overrides.syncNow ?? vi.fn(),
   })
@@ -86,6 +91,25 @@ describe("PlayerDataSyncButton", () => {
     expect(button.querySelector("svg")).not.toHaveClass(
       "motion-safe:animate-spin"
     )
+  })
+
+  it("fills its icon badge with the elapsed share of the auto-sync interval", () => {
+    mockStatus("ready", {
+      lastSyncedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+    })
+    renderButton()
+
+    expect(screen.getByTestId("auto-sync-fill")).toHaveAttribute(
+      "data-progress",
+      "25"
+    )
+  })
+
+  it("shows no auto-sync fill when it has never synced", () => {
+    mockStatus("idle")
+    renderButton()
+
+    expect(screen.queryByTestId("auto-sync-fill")).not.toBeInTheDocument()
   })
 
   it("shows the platform shortcut hint next to its label", () => {

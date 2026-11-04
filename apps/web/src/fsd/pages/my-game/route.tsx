@@ -4,7 +4,6 @@
 import { lazy } from "react"
 import { Navigate, type RouteObject } from "react-router"
 
-import { FeatureGate } from "@/shared/feature-flags"
 import { preloadOnMatch } from "@/shared/lib"
 
 // The section layout, lazy-loaded by app/routes.tsx (exported from here so the page's public API
@@ -74,18 +73,9 @@ export const protectedRoutes: RouteObject[] = [
     element: <CampaignEventsPage />,
     loader: preloadOnMatch(loadCampaignEventsPage),
   },
-  // Behind the Incursion feature flag: once the flags fetch settles with it off, the path falls back to Collection.
   {
     path: "incursions",
-    element: (
-      <FeatureGate
-        flag="Incursion"
-        fallback={<Navigate replace to="/my-game/collection" />}
-        pending={null}
-      >
-        <IncursionsPage />
-      </FeatureGate>
-    ),
+    element: <IncursionsPage />,
     loader: preloadOnMatch(loadIncursionsPage),
     // The section loads its data once; its pages share it (and unsaved stars) through the outlet.
     children: [

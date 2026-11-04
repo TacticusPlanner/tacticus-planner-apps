@@ -129,6 +129,13 @@ type LegendaryEventPaidOptionsToggledEvent = {
   on: boolean
 }
 
+/** The plan's notes were saved (`length` 0 when they were cleared). */
+type LegendaryEventNotesSavedEvent = {
+  type: "legendary_event_notes_saved"
+  eventId: string
+  length: number
+}
+
 /** A Maybe clear / Stop here mark was set (or cleared, status null) on one cell or a whole battle
  *  of the Synced progress grid, or on a planned token's cells from the Next token card. */
 type LegendaryEventAnnotationSetEvent = {
@@ -251,7 +258,6 @@ type ClientErrorEvent = {
   stack: string | null
   context: string | null
   routeGroup: string
-  appVersion: string | null
 }
 
 /**
@@ -270,6 +276,7 @@ export type AnalyticsEvent =
   | LegendaryEventDepthSetEvent
   | LegendaryEventRunInputsSavedEvent
   | LegendaryEventPaidOptionsToggledEvent
+  | LegendaryEventNotesSavedEvent
   | LegendaryEventPlanWizardOpenedEvent
   | LegendaryEventPlanTargetChosenEvent
   | LegendaryEventPlanCreatedEvent

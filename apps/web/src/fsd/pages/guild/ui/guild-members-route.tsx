@@ -1,7 +1,6 @@
 import { useOutletContext } from "react-router"
 
-import type { GuildMemberSummary } from "@/entities/guild"
-
+import type { GuildOutletContext } from "./guild-outlet-context"
 import { GuildMembersList } from "./guild-members-list"
 
 /**
@@ -10,7 +9,7 @@ import { GuildMembersList } from "./guild-members-list"
  * is only known once GuildPage's `/api/v1/guild` fetch resolves.
  */
 export function GuildMembersRoute() {
-  const members = useOutletContext<GuildMemberSummary[]>()
+  const { guild } = useOutletContext<GuildOutletContext>()
 
-  return <GuildMembersList members={members} />
+  return <GuildMembersList members={guild.members} />
 }

@@ -44,7 +44,13 @@
     "equipmentPool": "{{rarity}} {{type}} item",
     "seasonalEventCurrency": "Event currency",
     "energy": "Energy",
-    "generic": "{{name}}"
+    "generic": "{{name}}",
+    "mowAmmo": "MoW ammo",
+    "alliance": {
+      "Chaos": "Chaos",
+      "Imperial": "Imperial",
+      "Xenos": "Xenos"
+    }
   },
   "state": {
     "loading": "Loading shop recommendations…",

@@ -32,7 +32,7 @@
     "bestPathHint": "Éclats de Machine de guerre des victoires 3 étoiles et des coffres sur le chemin le plus rentable de ce palier."
   },
   "map": {
-    "title": "Carte de course",
+    "title": "Disposition du run",
     "step": "Étape {{number}}",
     "pickOne": "Choisissez-en un",
     "after": "Après {{names}}",
@@ -45,9 +45,11 @@
     "lightningVictory": "Victoire éclair : {{turns}} tours",
     "enemies": "Ennemis",
     "everyWin": "Chaque victoire",
-    "stars": "{{count}}★",
-    "starsClaimed": "{{count}}★ (obtenu)",
-    "board": "Plateau de combat"
+    "board": "Plateau de combat",
+    "medals_one": "{{count}} médaille",
+    "medals_other": "{{count}} médailles",
+    "medalsClaimed_one": "{{count}} médaille (récupérée)",
+    "medalsClaimed_other": "{{count}} médailles (récupérées)"
   },
   "enhancement": {
     "title": "Amélioration",
@@ -89,10 +91,10 @@
     "remainingMythic": "{{shards}} éclats et {{mythicShards}} éclats mythiques restant à gagner via les étoiles de combat",
     "allClaimed": "Toutes les récompenses d'étoiles obtenues",
     "howTo": "Ouvrez un palier pour indiquer les étoiles obtenues dans chaque combat, ou mettez tout le palier à 3 étoiles. Un palier compte comme terminé dès que vous avez gagné un combat de sa dernière étape.",
-    "starsEarned": "Vos étoiles",
-    "starsFor": "Étoiles obtenues sur {{battle}}",
-    "stars_one": "{{count}} étoile",
-    "stars_other": "{{count}} étoiles",
+    "starsEarned": "Vos médailles",
+    "starsFor": "Médailles obtenues sur {{battle}}",
+    "stars_one": "{{count}} médaille",
+    "stars_other": "{{count}} médailles",
     "raidable": "Raidable",
     "raidableHint": "Terminé avec 3 étoiles : les courses suivantes peuvent le raider.",
     "replayTitle": "Chaque nouvelle course rapporte",
@@ -169,8 +171,12 @@
   "estimate": {
     "clears_one": "Terminé en 1 run",
     "clears_other": "Terminé en {{count}} runs",
-    "stuck": "Bloqué au combat {{battle}} sur {{battles}}",
-    "firstRun": "Le premier run gagne {{wins}} combats sur {{battles}} avec votre équipe plafonnée à ce palier ({{power}} de puissance).",
+    "stuck": "Bloqué au combat {{battle}}",
+    "firstRun": "Le premier run gagne {{wins}} des {{battles}} combats du chemin le plus facile, avec votre équipe plafonnée à ce palier ({{power}} de puissance).",
     "hint": "Estimation : votre équipe suggérée, chaque héros plafonné à la rareté de ce palier ({{power}} de puissance). Un combat est gagné tant que puissance × PV restants atteint un cinquième de la puissance ennemie ; chaque victoire coûte des PV en proportion (moins avec un Soigneur). Les combats gagnés le restent : le run suivant repart à PV pleins là où le dernier s'est arrêté."
+  },
+  "event": {
+    "endsIn": "L'Incursion se termine dans {{when}}",
+    "startsIn": "Prochaine Incursion dans {{when}}"
   }
 }

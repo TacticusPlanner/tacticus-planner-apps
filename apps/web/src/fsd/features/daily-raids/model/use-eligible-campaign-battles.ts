@@ -4,7 +4,6 @@ import type {
   CampaignDefinitionStorageModel,
   CampaignBattleStorageModel,
 } from "@workspace/game-catalog"
-import { useFeatureFlag } from "@/shared/feature-flags"
 import { usePlayerChunk } from "@/shared/local-data"
 import {
   availableCampaignBattles,
@@ -28,9 +27,6 @@ import {
  * standing node of each track is reachable (no false date before hydration). `liveProgress`
  * (undefined until read, null before its first sync), `ready` and `isError` (a failed chunk read or
  * override load) let callers tell whether hydration finished.
- *
- * While the `ManualBattles` flag is off, the manual battles are left out instead (the frontiers stay
- * locked, as before the feature) and none is marked, so no "Play manually" UI shows.
  */
 export function useEligibleCampaignBattles(
   battles: CampaignBattleStorageModel[] | undefined,
@@ -41,10 +37,9 @@ export function useEligibleCampaignBattles(
   const campaignEventProgress =
     useEffectiveCampaignEventProgress(isAuthenticated)
   const campaignProgressRead = usePlayerChunk("campaign-progress")
-  const manualBattlesEnabled = useFeatureFlag("ManualBattles")
   const battleOverridesQuery = useQuery({
     ...battleProgressQueries.current(),
-    enabled: isAuthenticated && manualBattlesEnabled,
+    enabled: isAuthenticated,
   })
   const liveProgress =
     liveProgressRead.status === "ready" ? liveProgressRead.data : undefined
@@ -94,23 +89,15 @@ export function useEligibleCampaignBattles(
       ),
     [reachedBattles, eventCampaignIds, campaignProgressByKey, battleOverrides]
   )
-  const availableBattles = useMemo(
-    () =>
-      manualBattlesEnabled
-        ? reachedBattles
-        : reachedBattles.filter((battle) => !manualIds.has(battle.id)),
-    [manualBattlesEnabled, reachedBattles, manualIds]
-  )
   return {
-    availableBattles,
-    manualBattleIds: manualBattlesEnabled ? manualIds : NO_MANUAL_BATTLES,
+    availableBattles: reachedBattles,
+    manualBattleIds: manualIds,
     liveProgress,
     ready:
       liveProgressRead.status === "ready" &&
       campaignProgressRead.status === "ready" &&
       campaignEventProgress.ready &&
       (!isAuthenticated ||
-        !manualBattlesEnabled ||
         battleOverridesQuery.isSuccess ||
         battleOverridesQuery.isError),
     isError:
@@ -119,8 +106,6 @@ export function useEligibleCampaignBattles(
       campaignEventProgress.isError,
   }
 }
-
-const NO_MANUAL_BATTLES: ReadonlySet<string> = new Set()
 
 /**
  * Event-campaign progress for raid eligibility: the player's manual overrides from the Progress

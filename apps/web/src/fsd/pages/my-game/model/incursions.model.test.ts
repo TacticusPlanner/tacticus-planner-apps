@@ -13,6 +13,7 @@ import {
   enhancementSubject,
   enemyStatRow,
   isShardReward,
+  nodeName,
 } from "./incursions.model"
 
 const broadside = incursionsFixture.find(
@@ -53,6 +54,17 @@ describe("shardYield", () => {
         "shards_tauBroadside",
       ])
     ).toEqual({ shards: 3, mythicShards: 4 })
+  })
+})
+
+describe("nodeName", () => {
+  it("names a battle by its number, challenges included, and other nodes by their map name", () => {
+    const nodes = incursionsFixture.find(
+      (incursion) => incursion.mowId === "tauBroadside"
+    )!.tiers[0]!.nodes
+    expect(nodeName(nodes[9]!)).toBe("5")
+    expect(nodeName(nodes[11]!)).toBe("6")
+    expect(nodeName(nodes[2]!)).toBe("E")
   })
 })
 

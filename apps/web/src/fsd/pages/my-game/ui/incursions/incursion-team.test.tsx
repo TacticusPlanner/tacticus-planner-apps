@@ -55,6 +55,7 @@ describe("IncursionTeam", () => {
     expect(
       await screen.findByTestId("incursion-eligible-dialog")
     ).toBeInTheDocument()
+    expect(screen.getAllByTestId("incursion-eligible-selected")).toHaveLength(2)
     expect(
       screen.getByTestId("incursion-eligible-ultraTigurius")
     ).toHaveAttribute("aria-pressed", "false")

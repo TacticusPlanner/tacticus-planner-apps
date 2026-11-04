@@ -51,7 +51,11 @@ const lysanderProgress = {
 
 const summary = (rows: readonly HomeEventRow[]) =>
   rows.map((row) => [
-    row.type === "homeScreen" ? row.definitionId : row.unitId,
+    row.type === "homeScreen"
+      ? row.definitionId
+      : row.type === "legendaryEvent"
+        ? row.unitId
+        : row.type,
     row.live,
   ])
 // Live rows, then upcoming rows, as one list.
@@ -140,6 +144,105 @@ describe("selectHomeEvents", () => {
       ["votanUthar", false],
       ["hse-warp-surge", false],
     ])
+  })
+
+  it("lists a live Incursion as live, after the other live events", () => {
+    const events = selectHomeEvents({
+      homeScreen: { active: machineHunt, upcoming: [] },
+      legendary: null,
+      incursion: {
+        status: "live",
+        startMs: Date.parse("2026-10-02T00:00:00Z"),
+        endMs: Date.parse("2026-10-05T00:00:00Z"),
+      },
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(summary(events.live)).toEqual([
+      ["hse-machine-hunt", true],
+      ["incursion", true],
+    ])
+    expect(events.live[1]).toMatchObject({ destination: "/my-game/incursions" })
+    expect(events.upcoming).toEqual([])
+  })
+
+  it("lists a live Campaign Event with the synced campaign, before Incursion", () => {
+    const window = {
+      status: "live" as const,
+      startMs: Date.parse("2026-10-02T00:00:00Z"),
+      endMs: Date.parse("2026-10-05T00:00:00Z"),
+    }
+    const events = selectHomeEvents({
+      homeScreen: null,
+      legendary: null,
+      campaignEvent: { ...window, campaignId: "eventCampaign1" },
+      incursion: window,
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(summary(events.live)).toEqual([
+      ["campaignEvent", true],
+      ["incursion", true],
+    ])
+    expect(events.live[0]).toMatchObject({
+      campaignId: "eventCampaign1",
+      destination: "/my-game/campaign-events",
+    })
+  })
+
+  it("lists an upcoming Campaign Event by start, without a campaign", () => {
+    const events = selectHomeEvents({
+      homeScreen: { active: null, upcoming: [trainingRush] },
+      legendary: null,
+      campaignEvent: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-06T00:00:00Z"),
+        endMs: Date.parse("2026-10-09T00:00:00Z"),
+        // A stale sync names the previous event; it is not this one.
+        campaignId: "eventCampaign1",
+      },
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(summary(events.upcoming)).toEqual([
+      ["campaignEvent", false],
+      ["hse-training-rush", false],
+    ])
+    expect(events.upcoming[0]).toMatchObject({ campaignId: null })
+  })
+
+  it("gives an upcoming Incursion a slot by start, only when one is free", () => {
+    const incursion = {
+      status: "upcoming" as const,
+      startMs: Date.parse("2026-10-10T00:00:00Z"),
+      endMs: Date.parse("2026-10-13T00:00:00Z"),
+    }
+    const nowMs = Date.parse("2026-10-03T12:00:00Z")
+
+    expect(
+      summary(
+        selectHomeEvents({
+          homeScreen: { active: null, upcoming: [trainingRush] },
+          legendary: null,
+          incursion,
+          nowMs,
+        }).upcoming
+      )
+    ).toEqual([
+      ["hse-training-rush", false],
+      ["incursion", false],
+    ])
+    // Three events start before it.
+    expect(
+      summary(
+        selectHomeEvents({
+          homeScreen: { active: null, upcoming: [early1, early2, early3] },
+          legendary: null,
+          incursion,
+          nowMs,
+        }).upcoming
+      ).map(([id]) => id)
+    ).not.toContain("incursion")
   })
 
   it("pins the next Legendary Event into the last upcoming slot when none is live", () => {

@@ -49,9 +49,15 @@ const initOptions: Partial<PostHogConfig> = {
   person_profiles: "identified_only",
   advanced_disable_flags: true,
   disable_external_dependency_loading: true,
-  // Attribution off: the SDK then picks the plain "web-vitals" flavor, which is the one bundled
-  // below (the attribution flavor would need a CDN fetch, which is disabled).
-  capture_performance: { web_vitals: true, web_vitals_attribution: false },
+  // Attribution names the shifted element, the slow interaction's target and the LCP element, so
+  // poor values can be traced (selectors and timings only; see specs/product-analytics/spec.md).
+  // The SDK then picks the "web-vitals-with-attribution" flavor, which is the one bundled below.
+  // ponytail: CLS attribution can keep detached DOM nodes alive in an SPA (PostHog's warning);
+  // drop "CLS" from this list once CLS meets its target.
+  capture_performance: {
+    web_vitals: true,
+    web_vitals_attribution: ["CLS", "INP", "LCP"],
+  },
   before_send: sanitizeCapture,
 }
 
@@ -59,7 +65,7 @@ const initOptions: Partial<PostHogConfig> = {
 async function loadSdk() {
   const [{ default: posthog }] = await Promise.all([
     import("posthog-js"),
-    import("posthog-js/dist/web-vitals"),
+    import("posthog-js/dist/web-vitals-with-attribution"),
   ])
   return posthog
 }
@@ -167,7 +173,7 @@ export function useAnalyticsActions() {
       }
       switch (event.type) {
         case "page_view":
-          setReportedRoutePattern(event.routePattern)
+          setReportedRoutePattern(event.routePattern, window.location.pathname)
           client.capture("$pageview", {
             route_pattern: event.routePattern,
             route_group: event.routeGroup,
@@ -221,6 +227,12 @@ export function useAnalyticsActions() {
           break
         case "legendary_event_paid_options_toggled":
           client.capture(event.type, { event_id: event.eventId, on: event.on })
+          break
+        case "legendary_event_notes_saved":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            length: event.length,
+          })
           break
         case "legendary_event_plan_wizard_opened":
           client.capture(event.type, {
@@ -361,7 +373,6 @@ export function useAnalyticsActions() {
           client.captureException(error, {
             context: event.context,
             route_group: event.routeGroup,
-            app_version: event.appVersion,
           })
           break
         }

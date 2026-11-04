@@ -1,7 +1,10 @@
 import * as React from "react"
 
-const MOBILE_BREAKPOINT = 768
-const MOBILE_QUERY = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`
+// The exact complement of Tailwind's `md:` (`width >= 48rem`), which the desktop Sidebar uses to
+// show itself. A px query (`max-width: 767px`) left a gap where neither matched: fractional widths
+// from zoom/display scaling (767.5px), or a larger browser default font size (48rem > 768px). In
+// that gap the desktop shell rendered but its sidebar stayed `hidden`, so navigation vanished.
+const MOBILE_QUERY = "(width < 48rem)"
 
 export function useIsMobile() {
   return React.useSyncExternalStore(

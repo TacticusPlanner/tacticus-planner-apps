@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Gift } from "lucide-react"
+import { chestIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import {
   Popover,
@@ -7,12 +7,14 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 
+import { EntityIcon } from "@/shared/ui"
+
 import { isShardReward } from "../../model/incursions.model"
 import { IncursionRewards } from "./incursion-rewards"
 
 /**
  * What finishing a tier still pays: the MoW's shards and mythic shards inline, and every reward
- * (badges, upgrades, gold…) in a popover.
+ * (badges, upgrades, gold…) behind the game's chest.
  */
 export function IncursionTierRewards({
   mowId,
@@ -42,7 +44,7 @@ export function IncursionTierRewards({
             aria-label={t("rewards.all")}
             data-testid={testId ? `${testId}-all` : undefined}
           >
-            <Gift aria-hidden="true" />
+            <EntityIcon src={chestIcon("gold")} alt="" className="size-6" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-72 space-y-2">

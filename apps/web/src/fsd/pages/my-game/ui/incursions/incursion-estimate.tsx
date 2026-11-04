@@ -41,10 +41,7 @@ export function IncursionEstimate({
     >
       {estimate.status === "clears"
         ? t("estimate.clears", { count: estimate.runs })
-        : t("estimate.stuck", {
-            battle: estimate.battle,
-            battles: estimate.battles,
-          })}
+        : t("estimate.stuck", { battle: estimate.battle })}
     </Badge>
   )
   if (!detailed) return badge

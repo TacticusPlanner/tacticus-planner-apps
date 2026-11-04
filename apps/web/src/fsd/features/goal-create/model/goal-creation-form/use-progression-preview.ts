@@ -10,7 +10,7 @@ import type { Progression, UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
-import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import {
   estimateGoal,
@@ -69,6 +69,12 @@ export function useProgressionPreview(params: {
     ? shardsByUnitId?.get(params.entityId)
     : undefined
   const rewards = readyData(useCatalogDataset("onslaught-rewards"))
+  // A MoW's alliance picks its Onslaught progress row, as `character.alliance` does for a Character.
+  const mowsById = readyData(useCatalogDataset("mows", toById))
+  const alliance =
+    params.entityType === "Mow" && params.entityId
+      ? mowsById?.get(params.entityId)?.alliance
+      : params.character?.alliance
   const onslaughtRunsPerDay = readyData(
     useCatalogDataset("global-values", toOnslaughtRunsPerDay)
   )
@@ -149,8 +155,8 @@ export function useProgressionPreview(params: {
       }
     }
 
-    // Onslaught grants character shards only (regular or mythic depending on the character's
-    // rarity) — never ascension orbs (the onslaught-rewards dataset has no orb field), so this only
+    // Onslaught grants unit shards only (regular or mythic depending on the unit's rarity —
+    // Characters and MoWs alike) — never ascension orbs (the onslaught-rewards dataset has no orb field), so this only
     // ever affects shard need, and the goal's orb requirement/estimate is untouched regardless.
     // The per-run yield is computed from the character's CURRENT progression tier (not the goal
     // target) and is always available for display once progress + rewards are loaded — selecting
@@ -162,7 +168,6 @@ export function useProgressionPreview(params: {
     let onslaughtShardsPerRun = 0
     if (
       params.ascensionEnabled &&
-      params.entityType === "Character" &&
       onslaughtProgress &&
       rewards?.length &&
       onslaughtRunsPerDay !== undefined
@@ -171,7 +176,7 @@ export function useProgressionPreview(params: {
       const yieldPerRun = onslaughtShardsPerRunFor({
         progress: onslaughtProgress,
         rewards,
-        alliance: params.character?.alliance ?? "Imperial",
+        alliance: alliance ?? "Imperial",
         currentProgression,
       })
       onslaughtShardsPerRun = yieldPerRun.shardsPerRun
@@ -331,7 +336,7 @@ export function useProgressionPreview(params: {
       // rather than a Stone 1 placeholder yield.
       onslaughtProgressSaved: isOnslaughtProgressSaved(
         onslaughtProgress,
-        params.character?.alliance
+        alliance
       ),
       campaignShardsPerDay,
       campaignMythicShardsPerDay,
@@ -341,6 +346,7 @@ export function useProgressionPreview(params: {
     }
   }, [
     params,
+    alliance,
     inventoryShard?.amount,
     onslaughtProgress,
     rewards,

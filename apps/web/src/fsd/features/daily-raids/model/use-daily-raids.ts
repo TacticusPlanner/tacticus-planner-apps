@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useDeferredValue, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
@@ -286,10 +286,15 @@ export function useDailyRaids(
   const onslaughtProgress = onslaughtProgressQuery.data
   const dailyEnergy = settings.dailyEnergy
   const eventFarmOff = options?.eventFarm === false
+  // False on the first render after mounting, true from a lower-priority render React schedules right
+  // after it: the page paints its loading state first and the engine (hundreds of ms on a large
+  // roster) runs after that paint, not in the frame of the tap that opened the page (INP).
+  const painted = useDeferredValue(true, false)
   // The engine runs once per change of its inputs, never on a mere re-render (a keystroke in the
   // page above). It sits above the early returns, so every state calls the same Hooks.
   const computed = useMemo((): DailyRaidsViewModel | null => {
     const ready =
+      painted &&
       !failed &&
       !planLoading &&
       charactersById &&
@@ -441,6 +446,7 @@ export function useDailyRaids(
     onslaughtReady,
     onslaughtRewards,
     onslaughtRunsPerDay,
+    painted,
     planLoading,
     playerCharacterById,
     playerMowById,

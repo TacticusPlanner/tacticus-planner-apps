@@ -25,6 +25,7 @@ import type { useGoalCatalog } from "@/features/goal-planning/@x/goal-create"
 import { readyData, toByUnitId } from "@/features/goal-planning/@x/goal-create"
 
 type CharactersById = ReturnType<typeof useGoalCatalog>["charactersById"]
+type MowsById = ReturnType<typeof useGoalCatalog>["mowsById"]
 type UnlockShardCostsById = ReturnType<
   typeof useGoalCatalog
 >["unlockShardCostsById"]
@@ -39,12 +40,14 @@ type BattlesById = Parameters<typeof estimateGoal>[0]["battlesById"]
 export function useGoalEditAcquisition({
   detail,
   charactersById,
+  mowsById,
   unlockShardCostsById,
   battlesById,
   dailyEnergy,
 }: {
   detail: GoalDetail
   charactersById: CharactersById
+  mowsById: MowsById
   unlockShardCostsById: UnlockShardCostsById
   battlesById: BattlesById
   dailyEnergy: number
@@ -92,8 +95,11 @@ export function useGoalEditAcquisition({
 
   const onslaught = useEditOnslaughtYield({
     detail,
-    alliance: characterView?.alliance,
-    enabled: isAscension && detail.entityType === "Character",
+    alliance:
+      detail.entityType === "Mow"
+        ? mowsById?.get(detail.entityId)?.alliance
+        : characterView?.alliance,
+    enabled: isAscension,
   })
 
   const baselineSources: AcquisitionSource[] | null = usesAcquisitionSources
@@ -118,7 +124,7 @@ export function useGoalEditAcquisition({
 
 /** The Onslaught group's yield note for the Edit goal dialog — the same per-run yield the create
  *  form shows (see `onslaughtShardsPerRun`), from the player's saved Onslaught position and the
- *  character's *current* progression, falling back to the goal's saved start when the unit isn't
+ *  unit's *current* progression, falling back to the goal's saved start when the unit isn't
  *  in the synced roster. */
 function useEditOnslaughtYield({
   detail,
@@ -138,15 +144,21 @@ function useEditOnslaughtYield({
   const runsPerDay = readyData(
     useCatalogDataset("global-values", toOnslaughtRunsPerDay)
   )
-  const charactersById = readyData(usePlayerChunk("characters", toByUnitId))
+  const playerCharactersById = readyData(
+    usePlayerChunk("characters", toByUnitId)
+  )
+  const playerMowsById = readyData(usePlayerChunk("mows", toByUnitId))
   const rewards = enabled ? rewardsRead : undefined
-  const playerCharacter =
+  const playerUnit =
     enabled && isAuthenticated
-      ? charactersById?.get(detail.entityId)
+      ? (detail.entityType === "Mow"
+          ? playerMowsById
+          : playerCharactersById
+        )?.get(detail.entityId)
       : undefined
 
   const currentProgression =
-    playerCharacter?.progressionIndex ?? detail.config.progression?.start
+    playerUnit?.progressionIndex ?? detail.config.progression?.start
   const shardsPerRun =
     enabled && onslaughtProgress && rewards?.length && currentProgression
       ? onslaughtShardsPerRun({

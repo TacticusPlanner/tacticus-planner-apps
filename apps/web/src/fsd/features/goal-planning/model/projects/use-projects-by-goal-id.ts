@@ -6,7 +6,9 @@ import type { GoalsFetchState } from "../goals-data/use-goals"
 import type { GoalProject } from "../shared/types"
 
 /** Each loaded goal's projects, named from the project list. Membership comes with each goal
- *  (`projectIds`); the project list only names the projects. */
+ *  (`projectIds`); the project list only names the projects. Archived projects are left out: a goal
+ *  row shows where the goal is planned now, and an archived membership stays editable (and marked
+ *  Archived) in the goal's membership editor. */
 export function useProjectsByGoalId(
   projects: readonly ProjectSummary[],
   nonArchived: GoalsFetchState,
@@ -14,14 +16,16 @@ export function useProjectsByGoalId(
 ): ReadonlyMap<string, GoalProject[]> {
   return useMemo(() => {
     const byId = new Map(
-      projects.map((project) => [
-        project.projectId,
-        {
-          projectId: project.projectId,
-          name: project.name,
-          color: project.color,
-        },
-      ])
+      projects
+        .filter((project) => project.status !== "Archived")
+        .map((project) => [
+          project.projectId,
+          {
+            projectId: project.projectId,
+            name: project.name,
+            color: project.color,
+          },
+        ])
     )
     const result = new Map<string, GoalProject[]>()
     for (const state of [nonArchived, archived]) {

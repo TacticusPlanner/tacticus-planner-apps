@@ -26,7 +26,10 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import {
+  AutoSyncFill,
+  usePlayerDataSyncStatus,
+} from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
 import { NavItemIcon } from "./nav-child-icon"
 import { matchesNavPath } from "./find-active-child"
@@ -103,8 +106,16 @@ export function MobileShell({
 
 function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
   const { t } = useTranslation()
-  const { errorText, isSyncing, requiresReauth, status, statusText, syncNow } =
-    usePlayerDataSyncStatus()
+  const {
+    autoSyncProgress,
+    errorText,
+    isSyncing,
+    nextAutoSyncText,
+    requiresReauth,
+    status,
+    statusText,
+    syncNow,
+  } = usePlayerDataSyncStatus()
   const syncPresentation = {
     idle: {
       Icon: CircleDashed,
@@ -127,7 +138,8 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
       className: "bg-destructive text-destructive-foreground",
     },
   }[status]
-  const syncLabel = `${t("nav.syncWithTacticus")} — ${requiresReauth ? statusText : (errorText ?? statusText)}`
+  const syncStatusText = requiresReauth ? statusText : (errorText ?? statusText)
+  const syncLabel = `${t("nav.syncWithTacticus")} — ${nextAutoSyncText ? `${syncStatusText} · ${nextAutoSyncText}` : syncStatusText}`
   const SyncIcon = syncPresentation.Icon
 
   return (
@@ -157,12 +169,22 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
         <span
           className={cn(
             "relative flex size-11 items-center justify-center rounded-full shadow-md",
-            syncPresentation.className
+            syncPresentation.className,
+            // The countdown track: the unfilled part of the ring reads as a dimmed accent.
+            autoSyncProgress && "bg-accent/30"
           )}
         >
+          {autoSyncProgress ? (
+            <AutoSyncFill fraction={autoSyncProgress.fraction} />
+          ) : null}
           <SyncIcon
             aria-hidden="true"
-            className={cn("size-6", isSyncing && "motion-safe:animate-spin")}
+            className={cn(
+              "relative size-6",
+              // A solid disc behind the icon keeps it legible over the dimmed, partly filled track.
+              autoSyncProgress && "rounded-full bg-accent",
+              isSyncing && "motion-safe:animate-spin"
+            )}
           />
           {status === "stale" ? (
             <span

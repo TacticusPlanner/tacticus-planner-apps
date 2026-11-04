@@ -1,10 +1,13 @@
 import userEvent from "@testing-library/user-event"
 import { createMemoryRouter, RouterProvider } from "react-router"
+import { toast } from "sonner"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { incursionsFixture } from "@workspace/game-catalog/testing"
 
 import { render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
+
+vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 
 const getProgress = vi.fn()
 const saveProgress = vi.fn()
@@ -92,9 +95,10 @@ describe("IncursionsPage", () => {
     expect(
       screen.getByTestId("incursion-necroReanimator-owned")
     ).toHaveTextContent("Not owned")
-    expect(
-      await screen.findByTestId("incursion-tauBroadside-cleared")
-    ).toHaveTextContent("1/2 cleared")
+    const tiers = await screen.findByTestId("incursion-tauBroadside-cleared")
+    expect(tiers).toHaveAccessibleName("1/2 cleared")
+    expect(tiers).toHaveTextContent("1/2")
+    expect(tiers.querySelectorAll("[data-cleared]")).toHaveLength(1)
     expect(
       screen.getByTestId("incursion-tauBroadside-stars")
     ).toHaveTextContent("4/81")
@@ -158,11 +162,22 @@ describe("IncursionsPage", () => {
     expect(
       screen.getAllByTestId("incursion-step-choice").length
     ).toBeGreaterThan(0)
+    expect(screen.getByTestId("incursion-map-node-9")).toHaveAccessibleName(
+      "Battle 5"
+    )
     await user.click(screen.getByTestId("incursion-map-node-7"))
     expect(screen.getByTestId("incursion-node-7")).toHaveAttribute(
       "data-kind",
       "chest"
     )
+    // Previous/Next skip chests and picks: from the chest they land on battles.
+    await user.click(screen.getByTestId("incursion-node-next"))
+    expect(
+      screen
+        .getByTestId("incursion-node-previous")
+        .closest("section")!
+        .querySelector("[data-kind]")
+    ).toHaveAttribute("data-kind", "battle")
     expect(screen.getByTestId("incursion-nav-previous")).toBeDisabled()
 
     await user.click(screen.getByTestId("incursion-nav-next"))
@@ -231,9 +246,10 @@ describe("IncursionsPage", () => {
         revision: 4,
       })
     )
-    expect(await screen.findByTestId("incursions-message")).toHaveTextContent(
-      "Incursion progress saved."
+    await waitFor(() =>
+      expect(toast.success).toHaveBeenCalledWith("Incursion progress saved.")
     )
+    expect(screen.queryByTestId("incursions-message")).toBeNull()
   })
 
   it("marks a whole tier at 3 stars and resets it", async () => {
@@ -279,6 +295,11 @@ describe("IncursionsPage", () => {
     expect(
       await screen.findByTestId("incursion-tier-0-rewards-popover")
     ).toBeInTheDocument()
+    expect(
+      screen
+        .getByTestId("incursion-tier-0-rewards-shards")
+        .querySelector("[data-shard='regular']")
+    ).not.toBeNull()
   })
 
   it("asks a signed-out visitor to sign in instead of showing progress", async () => {

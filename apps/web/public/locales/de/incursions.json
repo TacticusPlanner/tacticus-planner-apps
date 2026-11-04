@@ -32,7 +32,7 @@
     "bestPathHint": "Kriegsmaschinen-Splitter aus 3-Sterne-Siegen und Truhen auf dem ertragreichsten Weg dieser Stufe."
   },
   "map": {
-    "title": "Laufkarte",
+    "title": "Lauf-Layout",
     "step": "Schritt {{number}}",
     "pickOne": "Eins wählen",
     "after": "Nach {{names}}",
@@ -45,9 +45,11 @@
     "lightningVictory": "Blitzsieg: {{turns}} Züge",
     "enemies": "Gegner",
     "everyWin": "Jeder Sieg",
-    "stars": "{{count}}★",
-    "starsClaimed": "{{count}}★ (erhalten)",
-    "board": "Schlachtfeld"
+    "board": "Schlachtfeld",
+    "medals_one": "{{count}} Medaille",
+    "medals_other": "{{count}} Medaillen",
+    "medalsClaimed_one": "{{count}} Medaille (erhalten)",
+    "medalsClaimed_other": "{{count}} Medaillen (erhalten)"
   },
   "enhancement": {
     "title": "Verstärkung",
@@ -89,10 +91,10 @@
     "remainingMythic": "Noch {{shards}} Splitter und {{mythicShards}} mythische Splitter aus Kampfsternen zu verdienen",
     "allClaimed": "Alle Sternbelohnungen erhalten",
     "howTo": "Öffne eine Stufe, um die Sterne jedes Kampfes einzutragen, oder setze die ganze Stufe auf 3 Sterne. Eine Stufe gilt als geschafft, sobald du einen Kampf ihres letzten Schritts gewonnen hast.",
-    "starsEarned": "Deine Sterne",
-    "starsFor": "Verdiente Sterne für {{battle}}",
-    "stars_one": "{{count}} Stern",
-    "stars_other": "{{count}} Sterne",
+    "starsEarned": "Deine Medaillen",
+    "starsFor": "Medaillen in {{battle}}",
+    "stars_one": "{{count}} Medaille",
+    "stars_other": "{{count}} Medaillen",
     "raidable": "Überfallbar",
     "raidableHint": "Mit 3 Sternen abgeschlossen, spätere Läufe können ihn überfallen.",
     "replayTitle": "Jede Wiederholung bringt",
@@ -169,8 +171,12 @@
   "estimate": {
     "clears_one": "In 1 Lauf geschafft",
     "clears_other": "In {{count}} Läufen geschafft",
-    "stuck": "Hängt bei Kampf {{battle}} von {{battles}}",
-    "firstRun": "Der erste Lauf gewinnt {{wins}} von {{battles}} Kämpfen mit deinem auf diese Stufe begrenzten Team ({{power}} Macht).",
+    "stuck": "Hängt bei Kampf {{battle}}",
+    "firstRun": "Der erste Lauf gewinnt {{wins}} der {{battles}} Kämpfe auf dem leichtesten Weg, mit deinem auf diese Stufe begrenzten Team ({{power}} Macht).",
     "hint": "Schätzung: dein vorgeschlagenes Team, jeder Held auf die Seltenheit dieser Stufe begrenzt ({{power}} Macht). Ein Kampf wird gewonnen, solange Macht × verbleibende LP ein Fünftel der Gegnermacht erreicht; jeder Sieg kostet anteilig LP (weniger mit Heiler). Gewonnene Kämpfe bleiben gewonnen, der nächste Lauf beginnt mit vollen LP dort, wo der letzte endete."
+  },
+  "event": {
+    "endsIn": "Incursion endet in {{when}}",
+    "startsIn": "Nächste Incursion beginnt in {{when}}"
   }
 }

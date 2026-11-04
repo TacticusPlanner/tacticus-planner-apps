@@ -143,7 +143,7 @@ describe("useNavItems", () => {
     ).toEqual(STATIC_CHILDREN)
   })
 
-  it("shows My Game's Incursions child only while its feature flag is on", async () => {
+  it("lists My Game's Incursions child", async () => {
     const myGameChildren = (
       items: Awaited<ReturnType<typeof renderNavItems>>
     ) =>
@@ -151,10 +151,6 @@ describe("useNavItems", () => {
         .find((item) => item.path === "/my-game")
         ?.children?.map((child) => child.path)
 
-    expect(myGameChildren(await renderNavItems())).not.toContain(
-      "/my-game/incursions"
-    )
-    flags.enabled = ["Incursion"]
     expect(myGameChildren(await renderNavItems())).toContain(
       "/my-game/incursions"
     )

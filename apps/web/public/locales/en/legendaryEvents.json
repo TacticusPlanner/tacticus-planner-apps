@@ -71,6 +71,20 @@
     "planToComplete": "{{field}} to complete",
     "planToCompleteShort": "Plan to complete"
   },
+  "notes": {
+    "title": "Notes",
+    "description": "Your own notes for this event: team plans, what to try next run, anything to remember. Only you see them.",
+    "placeholder": "e.g. Beta last; try Calgar in Alpha battle 9 next run",
+    "count": "{{length}} / {{max}} characters",
+    "unsaved": "Unsaved changes",
+    "save": "Save notes",
+    "saving": "Saving…",
+    "discard": "Discard",
+    "loadError": "Your notes could not be loaded. Try again later.",
+    "toasts": {
+      "error": "Your notes could not be saved. Try again."
+    }
+  },
   "outlook": {
     "title": "Reward outlook",
     "steps": {

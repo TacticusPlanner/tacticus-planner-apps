@@ -74,7 +74,7 @@ Wherever the Goals list renders (desktop table or mobile cards, on the Goals pag
 
 ### Requirement: In-flight rows show their account-wide priority position
 
-Wherever the Goals list renders Active or Paused goals in priority order — the Goals page (`/plan/goals`), with or without a project scope — each such row SHALL show the goal's account-wide priority position (`globalPriority`, 1 to N across every Active and Paused goal) as visible text in the row's leading cell beside the drag handle on the desktop table, and in the card header on mobile. The position is not a seventh column and SHALL NOT change the six-column contract. It SHALL be the goal's position in the whole account order, never its index among the visible rows: with filters, Group, or a project view, the visible rows show non-consecutive numbers. Rows without a position (Reached, Completed, or Archived goals) SHALL show none and SHALL leave the leading cell empty. The number SHALL appear in Comfortable and Compact density and on mobile cards, SHALL meet the text-contrast rules of `goal-visual-accessibility`, and SHALL be part of the row's accessible name or description (for example "Priority 3"). While a reorder is in flight or awaiting rollback, the numbers SHALL follow the same optimistic update as the order: the moved goal takes the displaced goal's number and the goals between them shift by one, reverting with the order on rollback.
+Wherever the Goals list renders Active or Paused goals in priority order — the Goals page (`/plan/goals`), with or without a project scope — each such row SHALL show the goal's account-wide priority position (`globalPriority`, 1 to N across every Active and Paused goal) as visible text in the row's leading cell beside the drag handle on the desktop table, and in the card header on mobile. The position is not a data column and SHALL NOT change the seven-column contract. It SHALL be the goal's position in the whole account order, never its index among the visible rows: with filters, Group, or a project view, the visible rows show non-consecutive numbers. Rows without a position (Reached, Completed, or Archived goals) SHALL show none and SHALL leave the leading cell empty. The number SHALL appear in Comfortable and Compact density and on mobile cards, SHALL meet the text-contrast rules of `goal-visual-accessibility`, and SHALL be part of the row's accessible name or description (for example "Priority 3"). While a reorder is in flight or awaiting rollback, the numbers SHALL follow the same optimistic update as the order: the moved goal takes the displaced goal's number and the goals between them shift by one, reverting with the order on rollback.
 
 #### Scenario: Active and Paused rows show a position
 
@@ -136,7 +136,7 @@ Wherever the Goals list renders (desktop table or mobile cards, on the Goals pag
 
 ### Requirement: The Remaining column shows resource chips, not prose
 
-For a goal that has not reached its target, the Remaining cell (desktop) and the remaining area of the card (mobile) SHALL show the resource chips defined by `goal-remaining-resources` in place of the previous sentence. The Remaining cell SHALL NOT show an upgrade-slot count ("N slots") or a raw XP figure ("N XP"). Remaining is the last column of the desktop table (see "Desktop table uses static columns with a leading control cell and a row menu").
+For a goal that has not reached its target, the Remaining cell (desktop) and the remaining area of the card (mobile) SHALL show the resource chips defined by `goal-remaining-resources` in place of the previous sentence. The Remaining cell SHALL NOT show an upgrade-slot count ("N slots") or a raw XP figure ("N XP"). Remaining sits between "Done by" and Progress on the desktop table (see "Desktop table uses static columns with a leading control cell and a row menu"), and its chips SHALL use icons and text at least as large as the row's body text so the energy figure reads at a glance.
 
 #### Scenario: A Rank goal no longer shows slots
 
@@ -210,6 +210,8 @@ The Goal cell (desktop) and goal line (mobile card) SHALL identify the goal kind
 
 On the desktop table, a goal's project memberships SHALL render only in the standalone Projects column between Character and Goal, never inside the Character cell. A goal's notes SHALL render in the Character cell on one line directly beneath the unit name (the position the goal-type caption used to occupy), truncated after one line, and SHALL NOT render as an extra line below the cell's other content. The Projects column SHALL appear on the Goals page and on a project's detail route alike. The mobile card is unchanged by this requirement: it keeps its existing notes line and project badges in the card body.
 
+A goal row (desktop Projects cell and mobile card badges alike) SHALL show only the goal's non-archived projects. A membership in an archived project SHALL NOT render as a badge in the list; it stays visible, marked Archived, in the goal's membership editor (`goal-project-membership`).
+
 #### Scenario: Project badges move to their own column
 
 - **GIVEN** a goal that belongs to the projects "My Goals" and "Neuro"
@@ -228,6 +230,12 @@ On the desktop table, a goal's project memberships SHALL render only in the stan
 - **WHEN** the desktop table renders its row
 - **THEN** the notes show on one line ending in an ellipsis, and the full text is available as a tooltip
 
+#### Scenario: Archived projects are not shown on the row
+
+- **GIVEN** a goal that belongs to the archived project "V1 Tacticus" and the project "Neuro"
+- **WHEN** the goal's row renders on the desktop table or as a mobile card
+- **THEN** only the "Neuro" badge renders, and no "V1 Tacticus" badge
+
 #### Scenario: A goal in no project
 
 - **GIVEN** a goal that belongs to no project
@@ -242,13 +250,13 @@ On the desktop table, a goal's project memberships SHALL render only in the stan
 
 ### Requirement: Desktop table uses static columns with a leading control cell and a row menu
 
-At or above the mobile breakpoint (see the platform-switch requirement), the Goals list SHALL render as a table with these data columns, in order: Character, Projects, Goal, Progress, "Status · Done by", and Remaining. These columns SHALL remain static: none of them SHALL be hidden or added based on the table's or viewport's width — the only layout change at any desktop width is the fixed set of columns above, and the only responsive change at all is the 768px table→card switch. A column set that changes with width was tried and rejected: it made the page feel like it was "jumping" as the table resized. Remaining SHALL be the last column, so its chips can wrap without displacing any fixed-width content to its right.
+At or above the mobile breakpoint (see the platform-switch requirement), the Goals list SHALL render as a table with these data columns, in order: Character, Projects, Goal, Status, "Done by", Remaining, and Progress. Progress is last and narrow: it is the least-scanned figure in the row (UserJot "V2 Goals Page Is Harder to Scan"), so the status, completion date, day count and energy come before it. These columns SHALL remain static: none of them SHALL be hidden or added based on the table's or viewport's width — the only layout change at any desktop width is the fixed set of columns above, and the only responsive change at all is the 768px table→card switch. A column set that changes with width was tried and rejected: it made the page feel like it was "jumping" as the table resized. Progress SHALL be the last column at a fixed narrow width; Remaining chips wrap within their own cell.
 
-The Character column SHALL show the unit's avatar, its name, and, when the goal has notes, the notes on a single line directly beneath the name (truncated with an ellipsis after that one line, the full text available as a tooltip), and SHALL NOT show the goal type as a text caption or the goal's project badges; the goal type is instead encoded in the Goal column (see "The Goal column encodes the goal kind visually, without a type label"). At the trailing edge of the Character cell, every row SHALL render an always-visible "⋯" menu trigger with an accessible name, opening the row's actions menu: Edit, then Pause or Resume (for a goal that is not Reached and is Active or Paused respectively — see `goal-status-actions`), then Delete as a destructive item. There SHALL be no separate Actions column and no inline action icon buttons in the row. The Projects column SHALL show the goal's project-membership badges (colour dot and project name, wrapping within the cell), and SHALL be empty for a goal in no project; its header text SHALL be visible. The Goal column SHALL show the goal's from → to representation as defined by "The Goal column encodes the goal kind visually, without a type label". The "Status · Done by" column SHALL show the goal's Active/Blocked/etc. status label(s) on one line, with the existing `goal-list-estimate-display` "Done By" date-and-day-count content on a second line directly beneath when a completion estimate is available; when no estimate is available, the second line SHALL be omitted rather than showing a placeholder; a blocked estimate's per-material detail SHALL NOT render in the cell (it is the Blocked indicator's tooltip content, see `goal-list-estimate-display`).
+The Character column SHALL show the unit's avatar (drawn larger than the 40px V2 launch size so it reads like V1's goal cards), its name, and, when the goal has notes, the notes on a single line directly beneath the name (truncated with an ellipsis after that one line, the full text available as a tooltip), and SHALL NOT show the goal type as a text caption or the goal's project badges; the goal type is instead encoded in the Goal column (see "The Goal column encodes the goal kind visually, without a type label"). At the trailing edge of the Character cell, every row SHALL render an always-visible "⋯" menu trigger with an accessible name, opening the row's actions menu: Edit, then Pause or Resume (for a goal that is not Reached and is Active or Paused respectively — see `goal-status-actions`), then Delete as a destructive item. There SHALL be no separate Actions column and no inline action icon buttons in the row. The Projects column SHALL show the goal's project-membership badges (colour dot and project name, wrapping within the cell), and SHALL be empty for a goal in no project; its header text SHALL be visible. The Goal column SHALL show the goal's from → to representation as defined by "The Goal column encodes the goal kind visually, without a type label", with the rank and rarity emblems drawn at the large size. The Status column SHALL show only the goal's status chip(s) (Active/Paused toggle, Reached, Blocked/Restricted), drawn at body-text size so Active and Paused read at a glance. The "Done by" column SHALL show the `goal-list-estimate-display` completion date as its headline (body-text size, foreground colour) with the day count on a line directly beneath, and any season-fit label under that; when no estimate is available the cell SHALL be empty rather than showing a placeholder; a blocked estimate's per-material detail SHALL NOT render in the cell (it is the Blocked indicator's tooltip content, see `goal-list-estimate-display`).
 
-Each row SHALL render at a fixed height sized to one line of content per column (with the Character column's name-and-notes lines and the "Status · Done by" column's two stacked lines accommodated within that same fixed height). Two exceptions SHALL exist: a row whose Progress cell carries level-requirement sub-lines, and a row whose Remaining chips wrap beyond two lines (see `goal-remaining-resources`: every chip renders) — such a row SHALL grow only as far as its wrapped content needs, and no other row SHALL change height because of it. The existing alternating row (zebra) striping SHALL be preserved.
+Each row SHALL render at a fixed height sized to one line of content per column (with the Character column's name-and-notes lines and the "Done by" column's date-and-days lines accommodated within that same fixed height). Two exceptions SHALL exist: a row whose Progress cell carries level-requirement sub-lines, and a row whose Remaining chips wrap beyond two lines (see `goal-remaining-resources`: every chip renders) — such a row SHALL grow only as far as its wrapped content needs, and no other row SHALL change height because of it. The existing alternating row (zebra) striping SHALL be preserved.
 
-Every desktop row SHALL have a leading cell before the Character column holding, in order: the selection checkbox (`goal-bulk-actions`), the account-wide priority number for an in-flight row, and — when the table renders on a route where inline reordering is available (the Goals page, with or without a project scope — see `global-goal-priority`'s "Owner can reorder from Goals") — a drag handle for each Active or Paused row. This cell holds control affordances, not a data column, and does not change the six static columns above; the handle is present only in a reorderable context and absent elsewhere, which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
+Every desktop row SHALL have a leading cell before the Character column holding, in order: the selection checkbox (`goal-bulk-actions`), the account-wide priority number for an in-flight row, and — when the table renders on a route where inline reordering is available (the Goals page, with or without a project scope — see `global-goal-priority`'s "Owner can reorder from Goals") — a drag handle for each Active or Paused row. This cell holds control affordances, not a data column, and does not change the seven static columns above; the handle is present only in a reorderable context and absent elsewhere, which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
 
 Assumptions:
 
@@ -258,25 +266,25 @@ Assumptions:
 
 - **GIVEN** a Rank goal has status "Active", is "Blocked", and has a computed completion estimate of October 11th (in 22 days)
 - **WHEN** the row renders
-- **THEN** the "Status · Done by" column shows "Active" and "Blocked" on the first line and "📅 Oct 11 · in 22 days" on the second line
+- **THEN** the Status column shows "Active" and "Blocked", and the "Done by" column shows "📅 Oct 11" with "in 22 days" on the line beneath
 
 #### Scenario: A goal with no completion estimate
 
 - **GIVEN** a goal has status "Active" and no computed completion estimate (no project selected, or the goal kind is not farmable)
 - **WHEN** the row renders
-- **THEN** the "Status · Done by" column shows only "Active", with no second line and no placeholder such as "—"
+- **THEN** the Status column shows "Active" and the "Done by" cell is empty, with no placeholder such as "—"
 
 #### Scenario: The Remaining column stays visible at every desktop width
 
 - **GIVEN** the viewport is at or above the mobile breakpoint, at any desktop width
 - **WHEN** the Goals list renders
-- **THEN** it renders as a table with all six data columns in the order Character, Projects, Goal, Progress, Status · Done by, Remaining — no width threshold hides or restores any of them
+- **THEN** it renders as a table with all seven data columns in the order Character, Projects, Goal, Status, Done by, Remaining, Progress — no width threshold hides or restores any of them
 
 #### Scenario: A drag handle appears only in a reorderable context
 
 - **GIVEN** the same Active goal renders once on the Goals page and once in a list that is not reorderable
 - **WHEN** each list renders as a desktop table
-- **THEN** the Goals page row shows a leading drag handle and the other row does not, with both rows otherwise showing the same six columns
+- **THEN** the Goals page row shows a leading drag handle and the other row does not, with both rows otherwise showing the same seven columns
 
 #### Scenario: The row menu holds every row action
 
@@ -287,7 +295,7 @@ Assumptions:
 #### Scenario: No Actions column
 
 - **WHEN** the desktop table renders
-- **THEN** no column follows Remaining and no column header reads "Actions", visibly or for assistive technology
+- **THEN** no column follows Progress and no column header reads "Actions", visibly or for assistive technology
 
 #### Scenario: A Machine of War row with many chips grows
 

@@ -89,7 +89,12 @@ While a user is identified, the client SHALL report a page view (PostHog's `$pag
 
 ### Requirement: Only declared events are captured
 
-The client SHALL report only events the product has explicitly declared. It SHALL NOT enable automatic capture of clicks, taps, form interactions, keystrokes, or input values, and SHALL NOT record or replay user sessions.
+The client SHALL report only events the product has explicitly declared. It SHALL NOT enable automatic capture of clicks, taps, form interactions, keystrokes, or input values, and SHALL NOT record or replay user sessions. Every reported event SHALL carry the app version of the build that sent it (`app_version`), including after the user signs out and back in, so any event can be attributed to a release.
+
+#### Scenario: Events name the build that sent them
+
+- **WHEN** an identified user's page view, web vitals or exception event is sent from a versioned build
+- **THEN** the event carries that build's app version
 
 #### Scenario: Interacting with the planner
 
@@ -170,3 +175,23 @@ The client SHALL report `app_install_guide_opened` (source `homeCard` or `accoun
 
 - **WHEN** an identified user taps Install on the Home card and accepts the browser's prompt
 - **THEN** `app_install_prompt_answered` is reported with source `homeCard` and outcome `accepted`
+
+### Requirement: Web vitals are reported with diagnostic attribution
+
+While a user is identified, the client SHALL report Core Web Vitals (CLS, INP, LCP, FCP) for the pages they use, each labelled with the route pattern of the page the metric was measured on. CLS, INP and LCP SHALL carry diagnostic attribution limited to element selectors, the interaction type, the LCP resource URL without its query string, and timing values. Attribution SHALL NOT include text content, input values or any URL parameter or query values.
+
+#### Scenario: A metric is sent after the user has moved on
+
+- **GIVEN** an identified user loads `/library/characters/abc-123` and navigates to `/home` before that page's LCP is sent
+- **WHEN** the LCP metric is reported
+- **THEN** it is reported against `/library/characters/:entityId`, not `/home`
+
+#### Scenario: A layout shift is attributed
+
+- **WHEN** a CLS value is reported for an identified user
+- **THEN** it carries the selector of the element with the largest shift, its time and its value, and no text from the page
+
+#### Scenario: A slow interaction is attributed
+
+- **WHEN** an INP value is reported for an identified user
+- **THEN** it carries the selector of the interaction target, the interaction type and the input-delay, processing and presentation timings, and no input value

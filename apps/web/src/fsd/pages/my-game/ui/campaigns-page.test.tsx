@@ -3,12 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
-const flags = vi.hoisted(() => ({ manualBattles: false }))
-vi.mock("@/shared/feature-flags", () => ({
-  useFeatureFlag: (flag: string) =>
-    flag === "ManualBattles" && flags.manualBattles,
-}))
-
 const { saved } = vi.hoisted(() => ({
   saved: {
     battles: [] as {
@@ -103,7 +97,6 @@ const data = {
 import { CampaignsPage } from "./campaigns-page"
 
 beforeEach(async () => {
-  flags.manualBattles = false
   saved.battles = []
   await seedGameCatalog({
     "campaign-definitions": data.definitions,
@@ -133,8 +126,7 @@ describe("CampaignsPage", () => {
     expect(screen.queryByAltText("unitB")).not.toBeInTheDocument()
   })
 
-  it("counts medals and Lightning Victories in completion once manual battles are on", async () => {
-    flags.manualBattles = true
+  it("counts medals and Lightning Victories in completion", async () => {
     saved.battles = [
       { battleId: "I0", medals: 1, lightningVictory: false, milestone: null },
     ]
@@ -149,7 +141,6 @@ describe("CampaignsPage", () => {
   })
 
   it("lists the one-time rewards still to claim below the medals", async () => {
-    flags.manualBattles = true
     saved.battles = [
       { battleId: "I0", medals: 1, lightningVictory: false, milestone: null },
     ]
