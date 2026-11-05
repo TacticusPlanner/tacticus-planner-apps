@@ -420,7 +420,6 @@ describe("HRE tab", () => {
         fewerRaids: false,
         combineGoals: false,
         raidableOnly: false,
-        ignoreGoals: false,
       },
       eventFarm: false,
       missionRaids: {
@@ -486,7 +485,6 @@ describe("HRE tab", () => {
         fewerRaids: false,
         combineGoals: false,
         raidableOnly: false,
-        ignoreGoals: false,
       },
       eventFarm: false,
       missionRaids: {

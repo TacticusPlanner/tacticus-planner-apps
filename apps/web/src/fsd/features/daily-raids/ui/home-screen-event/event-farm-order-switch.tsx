@@ -7,17 +7,22 @@ import {
 
 import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 
-import type { EventFarmOrder } from "../../model/home-screen-event-farm"
+import type { HseListMode } from "../../model/home-screen-event-farm"
 
-const ORDERS = ["points", "energy"] as const satisfies readonly EventFarmOrder[]
+const ORDERS = [
+  "points",
+  "energy",
+  "ignoreGoals",
+] as const satisfies readonly HseListMode[]
 
-/** The HSE list's order switch: points per energy, or energy per item (Today's cheapest nodes). */
+/** The HSE list's Sort switch: points per energy, energy per item (Today's cheapest nodes), or
+ * every point-earning location with goals ignored. */
 export function EventFarmOrderSwitch({
   order,
   onOrderChange,
 }: {
-  order: EventFarmOrder
-  onOrderChange: (order: EventFarmOrder) => void
+  order: HseListMode
+  onOrderChange: (order: HseListMode) => void
 }) {
   const { t } = useTranslation("dailies")
   const labelId = useId()

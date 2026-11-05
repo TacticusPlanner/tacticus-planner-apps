@@ -43,6 +43,10 @@ export type EventFarmEmptyReason =
  */
 export type EventFarmOrder = "points" | "energy"
 
+/** The HSE list's Sort switch: the farm list in either order, or every point-earning location
+ * with goals ignored (`selectEventLocations`, points per energy). */
+export type HseListMode = EventFarmOrder | "ignoreGoals"
+
 export type EventFarm = {
   rows: EventFarmRow[]
   totalPoints: number

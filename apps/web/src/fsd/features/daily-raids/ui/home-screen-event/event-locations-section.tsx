@@ -6,7 +6,7 @@ import { energyIcon } from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
 
-import type { EventFarmOrder } from "../../model/home-screen-event-farm"
+import type { HseListMode } from "../../model/home-screen-event-farm"
 import type { HseRaidRule } from "../../model/home-screen-event-rules"
 import {
   countActiveFilterGroups,
@@ -22,8 +22,8 @@ import { EventFarmOrderSwitch } from "./event-farm-order-switch"
 import { EventLocationRow } from "./event-location-row"
 
 /**
- * The HSE list with "Ignore goals" on, in place of the farm list: every location that earns event
- * points, goals ignored and energy unlimited, in the chosen order. Each row shows the drop and how
+ * The HSE list with "Ignore goals" picked on the Sort switch, in place of the farm list: every
+ * location that earns event points, goals ignored and energy unlimited, most points per energy first. Each row shows the drop and how
  * many the player holds (no goal target), the attempts left today with their points, and points per
  * raid and per energy. Paged like the farm list.
  */
@@ -31,17 +31,15 @@ export function EventLocationsSection({
   rule,
   pointsIcon,
   quickFilters,
-  order = "points",
   onOrderChange,
 }: {
   rule: HseRaidRule
   pointsIcon?: string
   quickFilters?: TodayQuickFilterOptions
-  order?: EventFarmOrder
-  onOrderChange?: (order: EventFarmOrder) => void
+  onOrderChange?: (mode: HseListMode) => void
 }) {
   const { t } = useTranslation("dailies")
-  const state = useHomeScreenEventLocations(rule, { order, quickFilters })
+  const state = useHomeScreenEventLocations(rule, { quickFilters })
   const [filters, setFilters] = useRaidsFilters()
   const filtered = countActiveFilterGroups(filters) > 0
   const paging = useListPaging(
@@ -52,12 +50,13 @@ export function EventLocationsSection({
     <section className="space-y-3" data-testid="hse-raids">
       <h2 className="text-lg font-semibold">{t("hse.raids.title")}</h2>
       {onOrderChange ? (
-        <EventFarmOrderSwitch onOrderChange={onOrderChange} order={order} />
+        <EventFarmOrderSwitch
+          onOrderChange={onOrderChange}
+          order="ignoreGoals"
+        />
       ) : null}
       <p className="text-sm text-muted-foreground" data-testid="hse-raids-note">
-        {order === "energy"
-          ? t("hse.raids.noteIgnoreGoalsEnergy")
-          : t("hse.raids.noteIgnoreGoals")}
+        {t("hse.raids.noteIgnoreGoals")}
       </p>
       {state.status === "loading" ? (
         <div

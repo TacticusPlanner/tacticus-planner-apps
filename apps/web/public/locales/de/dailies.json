@@ -373,7 +373,7 @@
         },
         "farm": {
           "title": "Farm-Liste für Event-Punkte",
-          "content": "Wo du raiden solltest, um Event-Punkte zu sammeln und deine Ziele voranzubringen, ohne Begrenzung auf die heutige Energie. Sortiere nach Punkten pro Energie oder nach Energie pro Gegenstand und aktiviere Ziele ignorieren, um jeden Ort mit Punkten zu sehen."
+          "content": "Wo du raiden solltest, um Event-Punkte zu sammeln und deine Ziele voranzubringen, ohne Begrenzung auf die heutige Energie. Sortiere nach Punkten pro Energie oder nach Energie pro Gegenstand, oder wähle Ziele ignorieren, um jeden Ort mit Punkten zu sehen."
         }
       }
     },
@@ -527,20 +527,17 @@
     "chip": {
       "fewerRaids": "Weniger Raids",
       "combineGoals": "Ziele kombinieren",
-      "raidableOnly": "Nur raidbar",
-      "ignoreGoals": "Ziele ignorieren"
+      "raidableOnly": "Nur raidbar"
     },
     "help": {
       "fewerRaids": "Wenn mehrere Orte gleich viel Energie pro Gegenstand kosten, nur die mit der meisten Energie pro Kampf raiden. Gleiche Materialien für gleiche Energie, mit weniger Raids. Praktisch, wenn Raid-Tickets knapp sind.",
       "combineGoals": "Fasst die restlichen Materialien aller Ziele zusammen (nur die des gewählten Projekts, falls eines gewählt ist) und plant die heutigen Raids, als wären sie ein Ziel: eine Liste ohne Zielgruppen, die Materialien mit dem meisten Energiebedarf zuerst, die Zielpriorität wird ignoriert.",
-      "raidableOnly": "Lässt Kämpfe weg, die du noch nicht raiden kannst (weniger als 3 Medaillen), und raidet andere Orte für dieselben Materialien. Ein Material ohne raidbaren Ort wird als blockiert angezeigt.",
-      "ignoreGoals": "Zeigt jeden Ort, der Event-Punkte bringt, unabhängig davon, was deine Ziele brauchen. Jede Zeile zeigt die Beute und wie viel du davon besitzt."
+      "raidableOnly": "Lässt Kämpfe weg, die du noch nicht raiden kannst (weniger als 3 Medaillen), und raidet andere Orte für dieselben Materialien. Ein Material ohne raidbaren Ort wird als blockiert angezeigt."
     },
     "note": {
       "fewerRaids": "Weniger Raids: Gleichwertige Orte mit mehr Energie pro Kampf werden genutzt, damit dieselben Materialien weniger Raids brauchen.",
       "combineGoals": "Ziele kombinieren: Die heutigen Raids behandeln alle Ziele als eine Liste, die Materialien mit dem meisten Energiebedarf zuerst. Daten in Plan und Ziele folgen weiter der Zielpriorität.",
-      "raidableOnly": "Nur raidbar: Kämpfe, die manuell gespielt werden müssen, werden durch raidbare Orte ersetzt.",
-      "ignoreGoals": "Ziele ignorieren: jeder Ort, der Event-Punkte bringt, nicht nur die, die deine Ziele voranbringen."
+      "raidableOnly": "Nur raidbar: Kämpfe, die manuell gespielt werden müssen, werden durch raidbare Orte ersetzt."
     }
   },
   "hse": {
@@ -593,7 +590,6 @@
       "moreGoals": "+{{count}}",
       "noteEnergy": "Nur die Orte, die Heute für die Materialien deiner Ziele raiden würde (geringste Energie pro Gegenstand), die mit den meisten Event-Punkten zuerst. Keine Energie wird bei Materialien verschwendet.",
       "noteIgnoreGoals": "Jeder Ort, der Event-Punkte bringt, Ziele ignoriert, die meisten Punkte pro Energie zuerst.",
-      "noteIgnoreGoalsEnergy": "Orte, die Event-Punkte bringen und für ein Material, das sie droppen, am günstigsten sind (Energie pro Gegenstand), Ziele ignoriert, die meisten Punkte pro Energie zuerst.",
       "owned_one": "{{count}} im Besitz",
       "owned_other": "{{count}} im Besitz",
       "perRaid": "{{points}} Pkt. pro Raid",
@@ -604,8 +600,10 @@
         "energy": "Energie pro Gegenstand",
         "help": {
           "points": "Die meisten Event-Punkte pro Energie zuerst, auch wenn ein günstigerer Ort für dasselbe Material keine bringt.",
-          "energy": "Nur die günstigsten Orte pro Gegenstand, wie Heute sie raidet, nach Event-Punkten sortiert."
-        }
+          "energy": "Nur die günstigsten Orte pro Gegenstand, wie Heute sie raidet, nach Event-Punkten sortiert.",
+          "ignoreGoals": "Jeder Ort, der Event-Punkte bringt, unabhängig davon, was deine Ziele brauchen, die meisten Punkte pro Energie zuerst. Jede Zeile zeigt die Beute und wie viel du davon besitzt."
+        },
+        "ignoreGoals": "Ziele ignorieren"
       }
     },
     "details": {

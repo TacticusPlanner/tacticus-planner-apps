@@ -11,6 +11,7 @@ import type {
   EventFarm,
   EventFarmEmptyReason,
   EventFarmOrder,
+  HseListMode,
 } from "../../model/home-screen-event-farm"
 import type { HseRaidRule } from "../../model/home-screen-event-rules"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
@@ -61,8 +62,8 @@ export const EventFarmSection = memo(function EventFarmSection({
   /** Today's quick filters, picked in the raids controls row. */
   quickFilters?: TodayQuickFilterOptions
   order?: EventFarmOrder
-  /** Shows the order switch when set. */
-  onOrderChange?: (order: EventFarmOrder) => void
+  /** Shows the Sort switch when set (it also offers "Ignore goals", which swaps this list out). */
+  onOrderChange?: (mode: HseListMode) => void
 }) {
   const { t } = useTranslation("dailies")
   const raids = useDailyRaids(projectId, {

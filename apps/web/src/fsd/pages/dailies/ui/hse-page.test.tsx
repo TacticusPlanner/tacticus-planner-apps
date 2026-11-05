@@ -445,7 +445,6 @@ describe("HSE tab header", () => {
           fewerRaids: false,
           combineGoals: false,
           raidableOnly: false,
-          ignoreGoals: false,
         },
       },
     ])
@@ -597,20 +596,18 @@ describe("HSE list controls", () => {
     )
   })
 
-  it("offers Today's quick filters with Ignore goals and passes them to the list", async () => {
+  it("offers Today's quick filters and passes them to the list", async () => {
     const user = userEvent.setup()
     renderHse()
 
     const controls = screen.getByTestId("hse-raids-controls")
-    for (const quick of [
-      "fewerRaids",
-      "combineGoals",
-      "raidableOnly",
-      "ignoreGoals",
-    ])
+    for (const quick of ["fewerRaids", "combineGoals", "raidableOnly"])
       expect(
         within(controls).getByTestId(`today-quick-filter-${quick}`)
       ).toBeInTheDocument()
+    expect(
+      within(controls).queryByTestId("today-quick-filter-ignoreGoals")
+    ).toBeNull()
     await user.click(screen.getByTestId("today-quick-filter-combineGoals"))
 
     expect(screen.getByTestId("location")).toHaveTextContent(
@@ -621,6 +618,21 @@ describe("HSE list controls", () => {
     })
   })
 
+  it("offers Ignore goals as a third Sort option", async () => {
+    const user = userEvent.setup()
+    mocks.locations = readyLocations({ locations: [] })
+    renderHse()
+
+    await user.click(screen.getByTestId("hse-raids-order-ignoreGoals"))
+
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "order=ignoreGoals"
+    )
+    expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
+      "hse.raids.noteIgnoreGoals"
+    )
+  })
+
   it("lists every point-earning location with Ignore goals: the drop and how many you hold, no goal icons", () => {
     mocks.locations = readyLocations({
       locations: [
@@ -628,7 +640,7 @@ describe("HSE list controls", () => {
         eventLocation("B3" as typeof battle, 6, 6, null),
       ],
     })
-    renderHse(undefined, "/?quick=ignoreGoals")
+    renderHse(undefined, "/?order=ignoreGoals")
 
     expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
       "hse.raids.noteIgnoreGoals"
@@ -686,7 +698,7 @@ describe("HSE tab Raids Filters", () => {
   it("shows the filtered-empty message with Reset in the Ignore goals list", async () => {
     const user = userEvent.setup()
     mocks.locations = readyLocations({ locations: [] })
-    renderHse(undefined, "/?quick=ignoreGoals")
+    renderHse(undefined, "/?order=ignoreGoals")
     applyFilter()
 
     expect(screen.getByTestId("hse-raids-empty-locations")).toHaveTextContent(

@@ -373,7 +373,7 @@
         },
         "farm": {
           "title": "Liste de farm pour les points d'événement",
-          "content": "Où raider pour gagner des points d'événement tout en faisant avancer vos objectifs, sans limite d'énergie du jour. Triez par points par énergie ou par énergie par objet, et activez Ignorer les objectifs pour voir tous les lieux avec points."
+          "content": "Où raider pour gagner des points d'événement tout en faisant avancer vos objectifs, sans limite d'énergie du jour. Triez par points par énergie ou par énergie par objet, ou choisissez Ignorer les objectifs pour voir tous les lieux avec points."
         }
       }
     },
@@ -527,20 +527,17 @@
     "chip": {
       "fewerRaids": "Moins de raids",
       "combineGoals": "Combiner les objectifs",
-      "raidableOnly": "Raidables seulement",
-      "ignoreGoals": "Ignorer les objectifs"
+      "raidableOnly": "Raidables seulement"
     },
     "help": {
       "fewerRaids": "Quand plusieurs lieux coûtent la même énergie par objet, ne raider que ceux qui coûtent le plus d'énergie par combat. Mêmes matériaux pour la même énergie, en moins de raids. Utile quand il vous reste peu de tickets de raid.",
       "combineGoals": "Combine les matériaux restants de tous les objectifs (seulement ceux du projet sélectionné s'il y en a un) et planifie les raids du jour comme s'il s'agissait d'un seul objectif : une seule liste sans groupes par objectif, les matériaux qui demandent le plus d'énergie en premier, et la priorité des objectifs est ignorée.",
-      "raidableOnly": "Écarte les combats que vous ne pouvez pas encore raider (moins de 3 médailles) et raide d'autres lieux pour les mêmes matériaux. Un matériau sans lieu raidable apparaît comme bloqué.",
-      "ignoreGoals": "Liste tous les lieux qui rapportent des points d'événement, quels que soient les besoins de vos objectifs. Chaque ligne montre son butin et combien vous en possédez."
+      "raidableOnly": "Écarte les combats que vous ne pouvez pas encore raider (moins de 3 médailles) et raide d'autres lieux pour les mêmes matériaux. Un matériau sans lieu raidable apparaît comme bloqué."
     },
     "note": {
       "fewerRaids": "Moins de raids : les lieux à égalité qui coûtent plus d'énergie par combat sont utilisés, donc les mêmes matériaux demandent moins de raids.",
       "combineGoals": "Combiner les objectifs : les raids du jour traitent tous les objectifs comme une seule liste, les matériaux qui demandent le plus d'énergie en premier. Les dates de Plan et Objectifs suivent toujours la priorité des objectifs.",
-      "raidableOnly": "Raidables seulement : les combats à jouer manuellement sont remplacés par des lieux raidables.",
-      "ignoreGoals": "Ignorer les objectifs : tous les lieux qui rapportent des points d'événement, pas seulement ceux qui font avancer vos objectifs."
+      "raidableOnly": "Raidables seulement : les combats à jouer manuellement sont remplacés par des lieux raidables."
     }
   },
   "hse": {
@@ -593,7 +590,6 @@
       "moreGoals": "+{{count}}",
       "noteEnergy": "Seulement les lieux qu'Aujourd'hui raiderait pour les matériaux de vos objectifs (le moins d'énergie par objet), ceux qui rapportent le plus de points d'événement en premier. Aucune énergie n'est gaspillée sur les matériaux.",
       "noteIgnoreGoals": "Tous les lieux qui rapportent des points d'événement, objectifs ignorés, le plus de points par énergie en premier.",
-      "noteIgnoreGoalsEnergy": "Lieux qui rapportent des points d'événement et sont les moins chers (énergie par objet) pour un matériau qu'ils donnent, objectifs ignorés, le plus de points par énergie en premier.",
       "owned_one": "{{count}} possédé",
       "owned_other": "{{count}} possédés",
       "perRaid": "{{points}} pts par raid",
@@ -604,8 +600,10 @@
         "energy": "Énergie par objet",
         "help": {
           "points": "Le plus de points d'événement par énergie en premier, même quand un lieu moins cher pour le même matériau n'en rapporte pas.",
-          "energy": "Seulement les lieux les moins chers par objet, comme Aujourd'hui les raide, triés par points d'événement."
-        }
+          "energy": "Seulement les lieux les moins chers par objet, comme Aujourd'hui les raide, triés par points d'événement.",
+          "ignoreGoals": "Tous les lieux qui rapportent des points d'événement, quels que soient les besoins de vos objectifs, le plus de points par énergie en premier. Chaque ligne montre son butin et combien vous en possédez."
+        },
+        "ignoreGoals": "Ignorer les objectifs"
       }
     },
     "details": {
