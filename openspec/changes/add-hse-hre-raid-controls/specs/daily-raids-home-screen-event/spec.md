@@ -62,7 +62,7 @@ The energy budget SHALL be the planning-settings daily energy minus the energy t
 
 #### Scenario: Changing daily energy changes the list
 
-- **WHEN** the player changes the daily energy in the Planning Settings opened from the HSE tab
+- **WHEN** the player changes the daily energy in the Planning Settings opened from Today
 - **THEN** the budget and the farm list change accordingly
 
 #### Scenario: Filter-then-pick
