@@ -870,6 +870,43 @@ describe("GoalsList remaining chips on mobile", () => {
   })
 })
 
+describe("GoalsList goal line on mobile", () => {
+  it("names the goal type and its configured target for a unit that isn't owned yet", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    render(
+      <GoalsList
+        actions={stubActions}
+        metrics={
+          new Map([
+            [
+              "goal-1",
+              {
+                progress: {
+                  kind: "Unknown",
+                  preview: {
+                    kind: "Rank",
+                    start: "Stone1",
+                    target: "Iron1",
+                    targetSlots: 0,
+                  },
+                },
+                remaining: null,
+                blockers: { isBlocked: false, reasons: [] },
+              },
+            ],
+          ]) as never
+        }
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+    const target = await screen.findByTestId("goal-row-target")
+    expect(target).toHaveTextContent("Rank")
+    expect(screen.getByTestId("goal-target-preview")).toBeInTheDocument()
+    expect(screen.getByAltText("Iron I")).toBeInTheDocument()
+  })
+})
+
 describe("GoalsList selection", () => {
   beforeEach(() => useIsMobileMock.mockReturnValue(false))
 

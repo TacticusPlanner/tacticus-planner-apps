@@ -18,7 +18,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { ProgressionBadge, RankBadge } from "@/shared/ui"
 
 import type { ResourceNeed } from "@/features/goal-farming"
-import type { GoalProgress } from "@/features/goal-planning"
+import type { GoalProgress, GoalTargetPreview } from "@/features/goal-planning"
 import { reachableCeilingLabel } from "./ceiling-marker"
 import {
   formatGenericRemainingText,
@@ -51,7 +51,10 @@ function AbilityTargetPills({
   progress,
   entityType,
 }: {
-  progress: Extract<GoalProgress, { kind: "Ability" }>
+  progress: Pick<
+    Extract<GoalProgress, { kind: "Ability" }>,
+    "currentActive" | "targetActive" | "currentPassive" | "targetPassive"
+  >
   entityType?: string
 }) {
   const { t } = useTranslation()
@@ -107,6 +110,77 @@ function ProgressSwatch({ variant }: { variant: "actual" | "potential" }) {
   )
 }
 
+/** A goal's configured start → target while its progress is `Unknown` (the unit isn't owned yet,
+ *  or player data hasn't synced) — the same emblems as live progress, so the row still says what the
+ *  goal is aiming for instead of rendering nothing. */
+function GoalTargetPreviewDisplay({
+  preview,
+  entityType,
+  size,
+  rankIconClass,
+  arrowClass,
+}: {
+  preview: GoalTargetPreview
+  entityType?: string
+  size: "md" | "lg"
+  rankIconClass?: string
+  arrowClass: string
+}) {
+  switch (preview.kind) {
+    case "Rank":
+      return (
+        <span
+          className="flex items-center gap-1.5"
+          data-testid="goal-target-preview"
+        >
+          <RankBadge
+            iconClassName={rankIconClass}
+            rank={preview.start}
+            showLabel={false}
+            tooltip
+          />
+          <ArrowRight className={arrowClass} />
+          <RankBadge
+            iconClassName={rankIconClass}
+            rank={preview.target}
+            showLabel={false}
+            tooltip
+          />
+          {preview.targetSlots > 0 ? (
+            <span className="text-xs text-muted-foreground">
+              ({preview.targetSlots}/6)
+            </span>
+          ) : null}
+        </span>
+      )
+    case "Ascension":
+      return (
+        <span
+          className="flex items-center gap-1.5"
+          data-testid="goal-target-preview"
+        >
+          <ProgressionBadge size={size} value={preview.start} />
+          <ArrowRight className={arrowClass} />
+          <ProgressionBadge size={size} value={preview.target} />
+        </span>
+      )
+    case "Ability":
+      return (
+        <span data-testid="goal-target-preview">
+          <AbilityTargetPills
+            entityType={entityType}
+            progress={{
+              currentActive: preview.startActive,
+              targetActive: preview.targetActive,
+              currentPassive: preview.startPassive,
+              targetPassive: preview.targetPassive,
+            }}
+          />
+        </span>
+      )
+  }
+}
+
 /** The goal's own from → target representation (Rank/Ascension badges, "Lv 44 → 50", "273 / 500
  *  shards", …) — split out from the progress bar/percent/explanation (`GoalProgressDisplay`) so a
  *  caller can lay the two out independently (the desktop table's separate Goal/Progress columns; the
@@ -129,7 +203,17 @@ export function GoalTargetDisplay({
   const rankIconClass = large ? "size-8" : undefined
   const arrowClass = cn("text-muted-foreground", large ? "size-4" : "size-3.5")
 
-  if (progress.kind === "Unknown") return null
+  if (progress.kind === "Unknown") {
+    return progress.preview ? (
+      <GoalTargetPreviewDisplay
+        arrowClass={arrowClass}
+        entityType={entityType}
+        preview={progress.preview}
+        rankIconClass={rankIconClass}
+        size={size}
+      />
+    ) : null
+  }
 
   return progress.kind === "Rank" ? (
     <span className="flex items-center gap-1.5">
