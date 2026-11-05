@@ -57,9 +57,10 @@ function LegendaryEventSettingsForm() {
   const paid = useShowPaidOptions()
   const ads = useWatchAds()
   // Each save is built from the loaded settings, so the switches wait for the read and for the
-  // previous save: a second change made meanwhile would drop the first one's flag.
+  // previous save: a second change made meanwhile would drop the first one's flag. A failed read
+  // leaves only the defaults, so a save then would overwrite the account's other settings.
   const [saving, setSaving] = useState(false)
-  const busy = paid.loading || saving
+  const busy = paid.loading || paid.failed || saving
   const save = (write: Promise<unknown>) => {
     setSaving(true)
     void write.finally(() => setSaving(false))
