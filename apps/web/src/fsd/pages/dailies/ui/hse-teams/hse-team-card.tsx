@@ -13,6 +13,7 @@ import { EntityIcon } from "@/shared/ui"
 import type { HseTeam, HseTeamMode } from "@/features/team-recommendations"
 import { TeamList } from "../team-recs/team-list"
 import { TrackShortfall } from "../team-recs/track-shortfall"
+import { useEnemyLabelNames } from "./use-enemy-label-names"
 import { hseTeamTestId } from "./hse-team-test-id"
 
 /**
@@ -31,9 +32,20 @@ export function HseTeamCard({
 }) {
   const { t } = useTranslation(["dailies", "teamRecs", "common", "factions"])
   const testId = hseTeamTestId(mode, team)
-  const allianceLabel = team.alliance
-    ? t(`common:alliances.${team.alliance}`)
+  const names = useEnemyLabelNames()
+  const criteria = team.criteria
+  const matchingLabel = criteria
+    ? criteria.allowed.length > 0
+      ? t("dailies:hse.teams.matching.allowed", {
+          units: names(criteria.allowed),
+        })
+      : t("dailies:hse.teams.matching.excluded", {
+          units: names(criteria.excluded),
+        })
     : null
+  const allianceLabel =
+    matchingLabel ??
+    (team.alliance ? t(`common:alliances.${team.alliance}`) : null)
 
   if (team.status === "insufficient") {
     return allianceLabel ? (
@@ -73,6 +85,11 @@ export function HseTeamCard({
           ) : null}
           {allianceLabel ?? t(`dailies:hse.details.modes.${mode}`)}
         </CardTitle>
+        {criteria ? (
+          <CardDescription data-testid={`${testId}-criteria`}>
+            {t("dailies:hse.teams.matching.description")}
+          </CardDescription>
+        ) : null}
         {pick.kind === "faction" ? (
           <CardDescription data-testid={`${testId}-faction`}>
             {t("dailies:hse.teams.faction", {
@@ -80,7 +97,7 @@ export function HseTeamCard({
             })}
           </CardDescription>
         ) : null}
-        {pick.kind === "any-unit" ? (
+        {pick.kind === "any-unit" && !criteria ? (
           <CardDescription data-testid={`${testId}-any-unit`}>
             {t("dailies:hse.teams.anyUnit")}
           </CardDescription>

@@ -33,12 +33,13 @@ export function TodayPage() {
     quickFilters: todayQuickFilterOptions(quickFilters),
   })
   const [raidsFilters] = useRaidsFilters()
-  // "Raidable only" is offered only when today's plan raids a manual battle, or while it is on.
+  // "Raidable only" is offered only when today's plan raids a manual battle, or while it is on;
+  // "Ignore goals" belongs to the HSE tab.
   const hiddenQuickFilters =
     (raids.status === "ready" && raids.hasManualRaids) ||
     quickFilters.includes("raidableOnly")
-      ? []
-      : (["raidableOnly"] as const)
+      ? (["ignoreGoals"] as const)
+      : (["raidableOnly", "ignoreGoals"] as const)
   useTodayTutorial()
   // A new project or filter set is a new Bonus raids list, so the dashboard starts over: Bonus
   // raids opens on its top 3 again instead of keeping the previous list's expansion.

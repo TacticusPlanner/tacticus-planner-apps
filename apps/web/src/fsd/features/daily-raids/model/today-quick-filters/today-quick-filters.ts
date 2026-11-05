@@ -1,8 +1,10 @@
-/** Today's quick filters, in display order (daily-raids-today spec: *Today quick filters*). */
+/** Today's quick filters, in display order (daily-raids-today spec: *Today quick filters*).
+ * "ignoreGoals" is offered on the Dailies > HSE tab only (every point-earning location). */
 export const TODAY_QUICK_FILTERS = [
   "fewerRaids",
   "combineGoals",
   "raidableOnly",
+  "ignoreGoals",
 ] as const
 export type TodayQuickFilter = (typeof TODAY_QUICK_FILTERS)[number]
 
@@ -12,6 +14,8 @@ export type TodayQuickFilterOptions = {
   combineGoals: boolean
   /** Leave out battles that must be played manually (fewer than 3 medals). */
   raidableOnly?: boolean
+  /** Dailies > HSE only: list every point-earning location, goals ignored. */
+  ignoreGoals?: boolean
 }
 
 export const isTodayQuickFilter = (value: string): value is TodayQuickFilter =>
@@ -49,5 +53,6 @@ export function todayQuickFilterOptions(
     fewerRaids: filters.includes("fewerRaids"),
     combineGoals: filters.includes("combineGoals"),
     raidableOnly: filters.includes("raidableOnly"),
+    ignoreGoals: filters.includes("ignoreGoals"),
   }
 }

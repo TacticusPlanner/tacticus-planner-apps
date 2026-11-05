@@ -416,6 +416,12 @@ describe("HRE tab", () => {
     expect(screen.getByTestId("hre-mission-complete")).toBeDisabled()
 
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      quickFilters: {
+        fewerRaids: false,
+        combineGoals: false,
+        raidableOnly: false,
+        ignoreGoals: false,
+      },
       eventFarm: false,
       missionRaids: {
         battlesToGo: 63,
@@ -442,7 +448,7 @@ describe("HRE tab", () => {
       "raids.planned"
     )
     expect(screen.getByTestId("hre-raids-budget")).toHaveTextContent(
-      "energy=188"
+      "raids.unlimitedEnergy"
     )
     expect(
       within(screen.getByTestId("hre-raids-list")).getAllByRole("listitem")
@@ -476,6 +482,12 @@ describe("HRE tab", () => {
     renderHre()
     expect(screen.getByTestId("hre-objective-0-input")).toHaveValue(12)
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      quickFilters: {
+        fewerRaids: false,
+        combineGoals: false,
+        raidableOnly: false,
+        ignoreGoals: false,
+      },
       eventFarm: false,
       missionRaids: {
         battlesToGo: 0,

@@ -1,17 +1,20 @@
-import { useEffect } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useOutletContext, useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { homeScreenEventPointsIcon } from "@workspace/game-catalog"
 
 import {
   EventFarmSection,
+  EventLocationsSection,
   EventPreviewBanner,
   EventStatusLine,
   EventSwitcher,
-  EventTopLocations,
   resolveHomeScreenEventSelection,
   selectListTarget,
+  todayQuickFilterOptions,
   useActiveHomeScreenEvent,
+  useTodayQuickFilters,
+  type EventFarmOrder,
 } from "@/features/daily-raids"
 import {
   EventDetails,
@@ -28,6 +31,8 @@ import { HseTeamsSection } from "./hse-teams/hse-teams-section"
 
 /** The HSE tab's search parameter holding the selected instance key (HSE-only, never carried over). */
 const EVENT_PARAM = "event"
+/** The farm list's order (`energy`; points per energy without it), so a reload or link keeps it. */
+const ORDER_PARAM = "order"
 
 /**
  * Dailies > HSE: one Home Screen Event instance at a time. By default the running event (or, with
@@ -35,18 +40,40 @@ const EVENT_PARAM = "event"
  * instance, held in the `event` URL parameter so it survives a reload. Every instance with scoring
  * data gets its event details (tier, description, milestones) and, when running or upcoming and
  * personal, its points projection and event teams for Arena, Onslaught and Salvage Run. Only a
- * running or upcoming rule-bearing instance also gets the farm list and the top-10 lists, which
- * follow the Dailies project (every active goal without one) and the Raids Filters, both picked in
- * the controls row above them (and shared with Today), and the Planning Settings chosen on Today.
- * Order: status line, details, projection, event teams, then the raid lists. Stacked on mobile
- * (farm list, overall top 10, event-campaign top 10); on desktop details and projection share a
- * row above the teams and the farm list, which sits beside a column holding both top-10 lists.
+ * running or upcoming rule-bearing instance also gets the raid list, which follows the Dailies
+ * project (every active goal without one), the Raids Filters and Today's quick filters (the `quick`
+ * URL state), all picked in the controls row above it (and shared with Today), and the Planning
+ * Settings chosen on Today. "Ignore goals" swaps the farm list for every point-earning location; the
+ * list's order switch is held in the `order` URL parameter. Order: status line, details (beside
+ * the projection on desktop), projection, the raid list, then event teams.
  */
 export function HsePage() {
   const { t } = useTranslation("dailies")
   const context = useOutletContext<DailiesOutletContext>()
   const [searchParams, setSearchParams] = useSearchParams()
   const state = useActiveHomeScreenEvent()
+  const [quickFilters, setQuickFilters] = useTodayQuickFilters()
+  // One object per selection, so the memoised farm list does not re-render on a keystroke.
+  const quickOptions = useMemo(
+    () => todayQuickFilterOptions(quickFilters),
+    [quickFilters]
+  )
+  const farmOrder: EventFarmOrder =
+    searchParams.get(ORDER_PARAM) === "energy" ? "energy" : "points"
+  // Stable, so the memoised farm list does not re-render on a projection keystroke.
+  const setFarmOrder = useCallback(
+    (order: EventFarmOrder) =>
+      setSearchParams(
+        (previous) => {
+          const params = new URLSearchParams(previous)
+          if (order === "points") params.delete(ORDER_PARAM)
+          else params.set(ORDER_PARAM, order)
+          return params
+        },
+        { replace: true }
+      ),
+    [setSearchParams]
+  )
 
   const requestedKey = searchParams.get(EVENT_PARAM)
   const selection =
@@ -138,28 +165,40 @@ export function HsePage() {
           />
         </div>
       ) : null}
-      <HseTeamsSection view={teams} />
       {target && !target.live ? (
         <EventPreviewBanner entry={target.entry} />
       ) : null}
       {raidRule ? (
         <div className="space-y-3">
-          <RaidsSectionControls context={context} testIdPrefix="hse" />
-          <div
-            className="space-y-5 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0"
-            data-testid="hse-sections"
-          >
-            <EventFarmSection
-              pointsIcon={pointsIcon}
-              projectId={context.projectId}
-              rule={raidRule}
-            />
-            <div data-testid="hse-top-lists">
-              <EventTopLocations rule={raidRule} />
-            </div>
+          <RaidsSectionControls
+            context={context}
+            onQuickFiltersChange={setQuickFilters}
+            quickFilters={quickFilters}
+            testIdPrefix="hse"
+          />
+          <div data-testid="hse-sections">
+            {quickOptions.ignoreGoals ? (
+              <EventLocationsSection
+                onOrderChange={setFarmOrder}
+                order={farmOrder}
+                pointsIcon={pointsIcon}
+                quickFilters={quickOptions}
+                rule={raidRule}
+              />
+            ) : (
+              <EventFarmSection
+                onOrderChange={setFarmOrder}
+                order={farmOrder}
+                pointsIcon={pointsIcon}
+                projectId={context.projectId}
+                quickFilters={quickOptions}
+                rule={raidRule}
+              />
+            )}
           </div>
         </div>
       ) : null}
+      <HseTeamsSection view={teams} />
     </section>
   )
 }

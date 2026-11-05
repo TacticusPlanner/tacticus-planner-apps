@@ -373,11 +373,7 @@
         },
         "farm": {
           "title": "Farm list for event points",
-          "content": "Where to raid today to earn event points while feeding your goals, filled to the energy you have left today."
-        },
-        "top": {
-          "title": "Best locations",
-          "content": "The locations that earn the most event points per raid and per energy, regardless of your goals."
+          "content": "Where to raid to earn event points while feeding your goals, not limited to today's energy. Sort by points per energy or by energy per item, and turn on Ignore goals to see every point-earning location."
         }
       }
     },
@@ -401,7 +397,7 @@
         },
         "raids": {
           "title": "Campaign raids",
-          "content": "Where to raid today for the current mission's campaign objective, cheapest energy first, after the raids already on today's plan. The summary below counts the campaign battles left over the whole event."
+          "content": "Where to raid for the current mission's campaign objective, cheapest energy first, not limited to today's energy. The summary below counts the campaign battles left over the whole event."
         },
         "team": {
           "title": "Mission team",
@@ -531,17 +527,20 @@
     "chip": {
       "fewerRaids": "Fewer raids",
       "combineGoals": "Combine goals",
-      "raidableOnly": "Raidable only"
+      "raidableOnly": "Raidable only",
+      "ignoreGoals": "Ignore goals"
     },
     "help": {
       "fewerRaids": "When several locations cost the same energy per item, raid only the ones with the highest energy per battle. Same materials for the same energy, in fewer raids. Useful when you're low on raid tickets.",
       "combineGoals": "Combine the remaining materials of all goals (only the selected project's goals when one is picked) and plan today's raids as if they were one goal: one list without goal groups, the materials that take the most energy to farm first, and goal priority is ignored.",
-      "raidableOnly": "Leave out battles you can't raid yet (fewer than 3 medals) and raid other locations for the same materials. A material with no raidable location shows as blocked."
+      "raidableOnly": "Leave out battles you can't raid yet (fewer than 3 medals) and raid other locations for the same materials. A material with no raidable location shows as blocked.",
+      "ignoreGoals": "List every location that earns event points, whatever your goals need. Each row shows its drop and how many you hold."
     },
     "note": {
       "fewerRaids": "Fewer raids: tied locations with more energy per battle are used, so the same materials take fewer raids.",
       "combineGoals": "Combine goals: today's raids treat all goals as one list, the materials that take the most energy to farm first. Plan and Goals dates still follow goal priority.",
-      "raidableOnly": "Raidable only: battles that need to be played manually are replaced with raidable locations."
+      "raidableOnly": "Raidable only: battles that need to be played manually are replaced with raidable locations.",
+      "ignoreGoals": "Ignore goals: every location that earns event points, not only those feeding your goals."
     }
   },
   "hse": {
@@ -579,7 +578,6 @@
       "total": "{{points}} event points",
       "energy": "{{energy}} energy",
       "note": "Locations that earn event points and feed your goals, chosen from your whole plan. It picks point-earning locations even where a cheaper location without points exists, so it can cost more energy per item than Today.",
-      "budget": "Energy left today: {{energy}}.",
       "points": "{{points}} pts",
       "raidCount_one": "{{count}} raid",
       "raidCount_other": "{{count}} raids",
@@ -587,18 +585,28 @@
         "noGoals": "You have no active goals, so there is nothing to farm.",
         "noEnergy": "There is no energy left today for any of these locations.",
         "nothingContributes": "No location that earns event points drops a resource your goals still need. See the best locations below for where to raid for points.",
-        "filtered": "No location matches your Raids Filters."
+        "filtered": "No location matches your Raids Filters.",
+        "noneEfficient": "None of the cheapest locations for your goals' materials earns event points. Switch the sort to Points per energy to see point-earning locations.",
+        "noLocations": "No unlocked location with attempts left earns event points."
       },
       "goals": "Goals: {{goals}}",
-      "moreGoals": "+{{count}}"
-    },
-    "top": {
-      "overallTitle": "Best locations for event points",
-      "eventTitle": "Best event-campaign locations",
-      "empty": "No unlocked location left to raid earns event points.",
-      "filteredEmpty": "No location matches your Raids Filters.",
+      "moreGoals": "+{{count}}",
+      "noteEnergy": "Only the locations Today would raid for your goals' materials (least energy per item), the ones worth the most event points first. No energy is wasted on materials.",
+      "noteIgnoreGoals": "Every location that earns event points, goals ignored, most points per energy first.",
+      "noteIgnoreGoalsEnergy": "Locations that earn event points and are the cheapest place (energy per item) for a material they drop, goals ignored, most points per energy first.",
+      "owned_one": "{{count}} owned",
+      "owned_other": "{{count}} owned",
       "perRaid": "{{points}} pts per raid",
-      "perEnergy": "{{value}} pts per energy"
+      "perEnergy": "{{value}} pts per energy",
+      "order": {
+        "label": "Sort",
+        "points": "Points per energy",
+        "energy": "Energy per item",
+        "help": {
+          "points": "Most event points per energy first, even where a cheaper location for the same material earns none.",
+          "energy": "Only the cheapest locations per item, as Today raids them, ordered by event points."
+        }
+      }
     },
     "details": {
       "title": "Event details",
@@ -800,6 +808,11 @@
         "excluded": "Only kills of non-{{enemies}} enemies count.",
         "allowedExcluded": "Only kills of {{enemies}} enemies that are not {{excluded}} count.",
         "units": "Only kills of {{units}} count."
+      },
+      "matching": {
+        "allowed": "{{units}} only",
+        "excluded": "No {{units}}",
+        "description": "Only characters matching the enemies that count, for a team that fits the event's rule."
       }
     }
   },
@@ -848,5 +861,10 @@
     "edit": "Edit medals",
     "medalsEarned": "Medals",
     "goldMilestones": "Gold milestones"
+  },
+  "listPaging": {
+    "showNext_one": "Show next {{count}}",
+    "showNext_other": "Show next {{count}}",
+    "showAll": "Show all ({{count}})"
   }
 }
