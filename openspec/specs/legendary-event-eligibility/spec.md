@@ -281,10 +281,10 @@ Opening the menu SHALL NOT change the row's order, filters or the Goals Preview 
 
 #### Scenario: Desktop menu
 
-- **WHEN** a leaderboard renders at or above 768px
-- **THEN** each table row ends with a three-dots button in a narrow trailing column whose header's accessible name is "Actions", and the table keeps no horizontal page scroll
+- **WHEN** a lane leaderboard renders at or above 768px
+- **THEN** each table row ends with a three-dots button in a narrow trailing column whose header's accessible name is "Actions", and the table keeps no horizontal page scroll; the cross-lane leaderboard's rows carry it right after the unit's name instead
 
 #### Scenario: Mobile menu
 
-- **WHEN** a leaderboard renders below 768px
-- **THEN** each row card has a three-dots button in its top-right corner with a touch target of at least 44px, and opening it does not navigate or expand the card
+- **WHEN** a lane leaderboard renders below 768px
+- **THEN** each row card has a three-dots button in its top-right corner (right after the unit's name on the cross-lane leaderboard) with a touch target of at least 44px, and opening it does not navigate or expand the card

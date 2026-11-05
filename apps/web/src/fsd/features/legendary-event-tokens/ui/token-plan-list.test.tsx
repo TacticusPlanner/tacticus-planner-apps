@@ -140,12 +140,12 @@ describe("TokenPlanList", () => {
     expand()
 
     fireEvent.click(
-      within(screen.getByTestId("token-plan-run")).getByTestId(
-        "token-battle-info"
-      )
+      within(screen.getByTestId("token-plan-run")).getByRole("button", {
+        name: "Battle info: Alpha battle 3",
+      })
     )
     expect(openBattle).toHaveBeenCalledWith("alpha", 2)
-    fireEvent.click(screen.getAllByTestId("token-plan-team")[1]!)
+    fireEvent.click(screen.getByRole("button", { name: "Open team Five" }))
     expect(openTeam).toHaveBeenCalledWith("alpha", "five")
   })
 
