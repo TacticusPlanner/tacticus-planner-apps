@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Switch } from "@workspace/ui/components/switch"
+import { cn } from "@workspace/ui/lib/utils"
 
 import type {
   LaneProgressView,
@@ -17,8 +18,16 @@ import { laneMarks, type ProgressMarksViewModel } from "./progress-marks"
 import { LaneProgressHeader, MarksLegend } from "./progress-parts"
 import { ProgressRows } from "./progress-rows"
 
+/** On desktop the shown lanes sit side by side, as the Event board's columns do. */
+const LANE_GRID: Record<number, string> = {
+  1: "lg:grid-cols-1",
+  2: "lg:grid-cols-2",
+  3: "lg:grid-cols-3",
+}
+
 /**
- * The run tab's Synced progress section, one card per shown lane in lane order: points earned of
+ * The run tab's Synced progress section, one card per shown lane in lane order (side by side on
+ * desktop): points earned of
  * the maximum, then the battles × objectives grid read from the last sync.
  * `layout` picks the desktop grid or the mobile compact rows. With editable `marks` (signed in, plan
  * loaded) not-cleared cells and incomplete rows carry Maybe clear / Stop here marks, and the marks
@@ -99,17 +108,25 @@ export function ProgressSection({
           {t("progress.unavailable")}
         </p>
       ) : (
-        laneIds.map((laneId) => (
-          <ProgressLane
-            event={event}
-            key={laneId}
-            laneId={laneId}
-            layout={layout}
-            editing={laneMarksOn}
-            marks={editable ? marks : undefined}
-            progress={progressGrid.lanes[laneId]}
-          />
-        ))
+        <div
+          className={cn(
+            "grid min-w-0 grid-cols-1 gap-3 lg:items-start",
+            layout === "grid" && LANE_GRID[laneIds.length]
+          )}
+          data-testid="progress-lanes"
+        >
+          {laneIds.map((laneId) => (
+            <ProgressLane
+              event={event}
+              key={laneId}
+              laneId={laneId}
+              layout={layout}
+              editing={laneMarksOn}
+              marks={editable ? marks : undefined}
+              progress={progressGrid.lanes[laneId]}
+            />
+          ))}
+        </div>
       )}
     </section>
   )
@@ -160,7 +177,7 @@ function ProgressLane({
       <CardHeader>
         <LaneProgressHeader laneId={laneId} progress={progress} />
       </CardHeader>
-      <CardContent className="min-w-0">{body}</CardContent>
+      <CardContent className="min-w-0 overflow-x-auto">{body}</CardContent>
     </Card>
   )
 }
