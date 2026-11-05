@@ -672,17 +672,24 @@
   "suggestions": {
     "button": "Teams vorschlagen",
     "title": "Vorgeschlagene Teams für {{lane}}",
-    "description": "Teams aus deinem Kader, sortiert nach den Punkten, die sie zu deinen aktuellen Teams hinzufügen. Nichts wird gespeichert, bis du das Team speicherst.",
+    "description": "Teams aus deinem Kader, sortiert nach den Punkten, die sie zu deinen aktuellen Teams hinzufügen, dann nach den gesparten Token. Nichts wird gespeichert, bis du das Team speicherst.",
     "onlyUnlocked": "Nur freigeschaltete",
     "preferGoals": "Einheiten mit Zielen bevorzugen",
     "reason": "Deckt {{objectives}} ab · schafft ~{{depth}} · +{{points}} Punkte zu deinen Teams",
     "use": "Dieses Team verwenden",
     "showMore": "Mehr anzeigen",
-    "empty": "Kein Team bringt Punkte zu deinen aktuellen Teams hinzu",
+    "empty": "Kein Team bringt Punkte oder spart Token gegenüber deinen aktuellen Teams",
     "needsEstimates": "Benötigt Abschluss-Schätzungen",
     "loading": "Vorschläge werden geladen…",
     "rank": "Vorschlag {{rank}}",
-    "reasonNoObjectives": "Schafft ~{{depth}} · +{{points}} Punkte zu deinen Teams"
+    "reasonNoObjectives": "Schafft ~{{depth}} · +{{points}} Punkte zu deinen Teams",
+    "savesTokens_one": "spart {{count}} Token",
+    "savesTokens_other": "spart {{count}} Token",
+    "reasonTokens_one": "Deckt {{objectives}} ab · schafft ~{{depth}} · spart {{count}} Token gegenüber deinen Teams",
+    "reasonTokens_other": "Deckt {{objectives}} ab · schafft ~{{depth}} · spart {{count}} Token gegenüber deinen Teams",
+    "reasonNoObjectivesTokens_one": "Schafft ~{{depth}} · spart {{count}} Token gegenüber deinen Teams",
+    "reasonNoObjectivesTokens_other": "Schafft ~{{depth}} · spart {{count}} Token gegenüber deinen Teams",
+    "reasonNoGain": "Deckt {{objectives}} ab · schafft ~{{depth}} · noch kein Gewinn gegenüber deinen Teams"
   },
   "tokenPlan": {
     "nextToken": {

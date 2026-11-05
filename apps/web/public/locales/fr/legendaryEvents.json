@@ -672,17 +672,24 @@
   "suggestions": {
     "button": "Suggérer des équipes",
     "title": "Équipes suggérées pour {{lane}}",
-    "description": "Des équipes tirées de votre effectif, classées selon les points qu'elles ajoutent à vos équipes actuelles. Rien n'est enregistré tant que vous n'enregistrez pas l'équipe.",
+    "description": "Des équipes tirées de votre effectif, classées selon les points qu'elles ajoutent à vos équipes actuelles, puis les jetons qu'elles économisent. Rien n'est enregistré tant que vous n'enregistrez pas l'équipe.",
     "onlyUnlocked": "Débloquées uniquement",
     "preferGoals": "Privilégier les unités avec objectifs",
     "reason": "Couvre {{objectives}} · franchit ~{{depth}} · +{{points}} points par rapport à vos équipes",
     "use": "Utiliser cette équipe",
     "showMore": "Afficher plus",
-    "empty": "Aucune équipe n'ajoute de points à vos équipes actuelles",
+    "empty": "Aucune équipe n'ajoute de points ni n'économise de jetons par rapport à vos équipes actuelles",
     "needsEstimates": "Nécessite des estimations de progression",
     "loading": "Chargement des suggestions…",
     "rank": "Suggestion {{rank}}",
-    "reasonNoObjectives": "Franchit ~{{depth}} · +{{points}} points par rapport à vos équipes"
+    "reasonNoObjectives": "Franchit ~{{depth}} · +{{points}} points par rapport à vos équipes",
+    "savesTokens_one": "économise {{count}} jeton",
+    "savesTokens_other": "économise {{count}} jetons",
+    "reasonTokens_one": "Couvre {{objectives}} · franchit ~{{depth}} · économise {{count}} jeton par rapport à vos équipes",
+    "reasonTokens_other": "Couvre {{objectives}} · franchit ~{{depth}} · économise {{count}} jetons par rapport à vos équipes",
+    "reasonNoObjectivesTokens_one": "Franchit ~{{depth}} · économise {{count}} jeton par rapport à vos équipes",
+    "reasonNoObjectivesTokens_other": "Franchit ~{{depth}} · économise {{count}} jetons par rapport à vos équipes",
+    "reasonNoGain": "Couvre {{objectives}} · franchit ~{{depth}} · pas encore de gain par rapport à vos équipes"
   },
   "tokenPlan": {
     "nextToken": {

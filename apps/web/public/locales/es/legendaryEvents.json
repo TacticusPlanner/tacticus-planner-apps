@@ -672,17 +672,24 @@
   "suggestions": {
     "button": "Sugerir equipos",
     "title": "Equipos sugeridos para {{lane}}",
-    "description": "Equipos de tu plantilla, ordenados por los puntos que suman a tus equipos actuales. No se guarda nada hasta que guardes el equipo.",
+    "description": "Equipos de tu plantilla, ordenados por los puntos que suman a tus equipos actuales y luego por los tokens que ahorran. No se guarda nada hasta que guardes el equipo.",
     "onlyUnlocked": "Solo desbloqueadas",
     "preferGoals": "Preferir unidades con objetivos",
     "reason": "Cubre {{objectives}} · supera ~{{depth}} · +{{points}} puntos sobre tus equipos",
     "use": "Usar este equipo",
     "showMore": "Mostrar más",
-    "empty": "Ningún equipo suma puntos a tus equipos actuales",
+    "empty": "Ningún equipo suma puntos ni ahorra tokens respecto a tus equipos actuales",
     "needsEstimates": "Necesita estimaciones de superación",
     "loading": "Cargando sugerencias…",
     "rank": "Sugerencia {{rank}}",
-    "reasonNoObjectives": "Supera ~{{depth}} · +{{points}} puntos sobre tus equipos"
+    "reasonNoObjectives": "Supera ~{{depth}} · +{{points}} puntos sobre tus equipos",
+    "savesTokens_one": "ahorra {{count}} token",
+    "savesTokens_other": "ahorra {{count}} tokens",
+    "reasonTokens_one": "Cubre {{objectives}} · supera ~{{depth}} · ahorra {{count}} token sobre tus equipos",
+    "reasonTokens_other": "Cubre {{objectives}} · supera ~{{depth}} · ahorra {{count}} tokens sobre tus equipos",
+    "reasonNoObjectivesTokens_one": "Supera ~{{depth}} · ahorra {{count}} token sobre tus equipos",
+    "reasonNoObjectivesTokens_other": "Supera ~{{depth}} · ahorra {{count}} tokens sobre tus equipos",
+    "reasonNoGain": "Cubre {{objectives}} · supera ~{{depth}} · aún sin ganancia sobre tus equipos"
   },
   "tokenPlan": {
     "nextToken": {

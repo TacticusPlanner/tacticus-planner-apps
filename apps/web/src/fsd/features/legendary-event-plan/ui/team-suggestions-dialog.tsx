@@ -32,6 +32,7 @@ import {
 } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
+import { suggestionReason } from "../model/suggestion-reason"
 import type { TeamSuggestionsSource } from "../model/team-suggestions-state"
 import { useTeamSuggestions } from "../model/use-team-suggestions"
 
@@ -210,6 +211,11 @@ export function TeamSuggestionsDialog({
                 <li
                   aria-label={t("suggestions.rank", { rank: index + 1 })}
                   className="flex min-w-0 flex-col gap-2 rounded-xl border p-3"
+                  data-no-gain={
+                    suggestion.gainPoints <= 0 && suggestion.tokensSaved <= 0
+                      ? "true"
+                      : undefined
+                  }
                   data-testid="team-suggestion"
                   key={suggestion.memberUnitIds.join("|")}
                 >
@@ -294,18 +300,14 @@ export function TeamSuggestionsDialog({
                     data-testid="team-suggestion-reason"
                     id={`${reasonIdPrefix}-${index}`}
                   >
-                    {scoring.length > 0
-                      ? t("suggestions.reason", {
-                          objectives: list.format(
-                            scoring.map((objective) => objective.label)
-                          ),
-                          depth: suggestion.depth,
-                          points: number.format(suggestion.gainPoints),
-                        })
-                      : t("suggestions.reasonNoObjectives", {
-                          depth: suggestion.depth,
-                          points: number.format(suggestion.gainPoints),
-                        })}
+                    {suggestionReason(suggestion, {
+                      t,
+                      objectives: list.format(
+                        scoring.map((objective) => objective.label)
+                      ),
+                      hasObjectives: scoring.length > 0,
+                      points: number.format(suggestion.gainPoints),
+                    })}
                   </p>
                   <Button
                     aria-describedby={`${reasonIdPrefix}-${index}`}

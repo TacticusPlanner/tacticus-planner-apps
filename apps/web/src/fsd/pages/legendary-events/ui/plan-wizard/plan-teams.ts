@@ -150,8 +150,10 @@ function bestSuggestion(
     nameOf: (unit) => inputs.nameOf(unit.id),
   })
   const present = new Set(teams.map((team) => memberKey(team.memberUnitIds)))
+  // Only points count here: token-only and wide-coverage proposals would grow the lane to `cap`.
   return suggestions.find(
     (suggestion) =>
+      suggestion.gainPoints > 0 &&
       !present.has(memberKey(suggestion.memberUnitIds)) &&
       !input.excluded?.has(
         generatedTeamKey(planLane.laneId, suggestion.memberUnitIds)
