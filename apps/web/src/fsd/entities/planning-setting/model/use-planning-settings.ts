@@ -3,7 +3,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import { planningSettingsQueries } from "../api/planning-settings.queries"
 import { updatePlanningSettings } from "../api/planning-settings.api"
-import { defaultPlanningSettings, type PlanningSettingsUpdate } from "./types"
+import { defaultPlanningSettings, type PlanningSettings } from "./types"
 
 export function usePlanningSettings() {
   const isAuthenticated = useIsAuthenticated()
@@ -22,10 +22,7 @@ export function usePlanningSettings() {
   return {
     settings: query.data ?? defaultPlanningSettings,
     loading: isAuthenticated && query.isPending,
-    /** The stored settings failed to load, so `settings` holds defaults that must not be saved. */
-    failed: query.isError,
-    retry: () => void query.refetch(),
-    save: async (settings: PlanningSettingsUpdate) => {
+    save: async (settings: PlanningSettings) => {
       await mutation.mutateAsync(settings)
     },
   }

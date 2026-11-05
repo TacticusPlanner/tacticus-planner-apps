@@ -636,9 +636,6 @@
         "v1ImportBadge": "V1",
         "autoTitle": "Automatic",
         "autoHint": "Taken after a sync when your roster has no snapshot from the last 30 days. Up to {{limit}} are kept; the oldest is replaced.",
-        "autoSetting": "Take automatic snapshots",
-        "autoSettingFailed": "The setting couldn't be saved.",
-        "autoSettingRetry": "Couldn't load. Retry",
         "keep": "Keep",
         "keepLimitTooltip": "Delete a snapshot to keep this one",
         "keepFailed": "The snapshot couldn't be kept."

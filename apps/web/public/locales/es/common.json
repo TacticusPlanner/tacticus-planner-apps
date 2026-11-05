@@ -636,9 +636,6 @@
         "v1ImportBadge": "V1",
         "autoTitle": "Automáticas",
         "autoHint": "Se toman tras una sincronización si tu plantilla no tiene ninguna instantánea de los últimos 30 días. Se guardan hasta {{limit}}; la más antigua se reemplaza.",
-        "autoSetting": "Tomar instantáneas automáticas",
-        "autoSettingFailed": "No se pudo guardar el ajuste.",
-        "autoSettingRetry": "No se pudo cargar. Reintentar",
         "keep": "Conservar",
         "keepLimitTooltip": "Elimina una instantánea para conservar esta",
         "keepFailed": "No se pudo conservar la instantánea."

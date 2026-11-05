@@ -277,12 +277,6 @@ type RosterSnapshotManagedEvent = {
     | "roster_snapshot_kept"
 }
 
-/** The automatic roster snapshots setting was turned on or off. */
-type RosterAutoSnapshotsToggledEvent = {
-  type: "roster_auto_snapshots_toggled"
-  enabled: boolean
-}
-
 /** An error nothing else handled (spec: client-error-reporting), sent as PostHog's `$exception` so
  *  it lands in Error Tracking. Message and stack have URL query strings removed; the route is
  *  reported as its nav section, never the URL. */
@@ -333,5 +327,4 @@ export type AnalyticsEvent =
   | RosterCompareOpenedEvent
   | RosterCompareMetricSelectedEvent
   | RosterSnapshotManagedEvent
-  | RosterAutoSnapshotsToggledEvent
   | ClientErrorEvent

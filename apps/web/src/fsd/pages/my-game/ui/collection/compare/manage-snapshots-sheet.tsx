@@ -1,11 +1,10 @@
-import { useId, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { BookmarkPlus, Pencil, Trash2 } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
 import {
   Sheet,
   SheetContent,
@@ -13,14 +12,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@workspace/ui/components/sheet"
-import { Switch } from "@workspace/ui/components/switch"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import { usePlanningSettings } from "@/entities/planning-setting"
 import {
   formatSnapshotDate,
   snapshotLabel,
@@ -45,7 +42,7 @@ import { useSourceLabels } from "../../../model/use-source-labels"
 
 /**
  * The personal snapshots newest first (never Legendary Event rosters) in two sections (design D3):
- * manual ones with V1 imports, then automatic ones with their quota, the setting and Keep. Each row
+ * manual ones with V1 imports, then automatic ones with their quota and Keep. Each row
  * has an inline rename (Enter or blur saves, Escape cancels) and a confirmed permanent delete.
  */
 export function ManageSnapshotsSheet({
@@ -120,8 +117,6 @@ export function ManageSnapshotsSheet({
                   })}
                 </p>
               ) : null}
-              {/* Only needs the settings, so it stays usable when the list fails to load. */}
-              <AutoSnapshotsSetting />
               <ul className="flex flex-col divide-y">
                 {sections.auto.map((snapshot) => (
                   <SnapshotRow
@@ -141,58 +136,6 @@ export function ManageSnapshotsSheet({
         onClose={() => setDeleting(null)}
       />
     </>
-  )
-}
-
-/** The account-wide `autoRosterSnapshots` setting; sends only that field, so other settings keep
- *  their stored values. */
-function AutoSnapshotsSetting() {
-  const { t } = useTranslation("common")
-  const id = useId()
-  const { settings, loading, failed, retry, save } = usePlanningSettings()
-  const [saving, setSaving] = useState(false)
-  const { captureEvent } = useAnalyticsActions()
-
-  const change = async (enabled: boolean) => {
-    setSaving(true)
-    try {
-      await save({
-        dailyEnergy: settings.dailyEnergy,
-        xpBookRarity: settings.xpBookRarity,
-        revision: settings.revision,
-        autoRosterSnapshots: enabled,
-      })
-      captureEvent({ type: "roster_auto_snapshots_toggled", enabled })
-    } catch {
-      toast.error(t("myGame.collection.snapshots.autoSettingFailed"))
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  return (
-    <div className="flex items-center gap-2">
-      <Switch
-        id={id}
-        checked={settings.autoRosterSnapshots}
-        // A failed read leaves defaults in `settings`; saving them would overwrite the stored values.
-        disabled={loading || saving || failed}
-        onCheckedChange={(enabled) => void change(enabled)}
-        data-testid="auto-snapshots-setting"
-      />
-      <Label htmlFor={id}>{t("myGame.collection.snapshots.autoSetting")}</Label>
-      {failed ? (
-        <Button
-          variant="link"
-          size="sm"
-          className="ml-auto h-auto p-0"
-          onClick={retry}
-          data-testid="auto-snapshots-setting-retry"
-        >
-          {t("myGame.collection.snapshots.autoSettingRetry")}
-        </Button>
-      ) : null}
-    </div>
   )
 }
 

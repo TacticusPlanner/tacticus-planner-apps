@@ -636,9 +636,6 @@
         "v1ImportBadge": "V1",
         "autoTitle": "Automatisch",
         "autoHint": "Wird nach einer Synchronisierung erstellt, wenn es aus den letzten 30 Tagen keinen Snapshot deines Kaders gibt. Bis zu {{limit}} werden behalten; der älteste wird ersetzt.",
-        "autoSetting": "Automatische Snapshots erstellen",
-        "autoSettingFailed": "Die Einstellung konnte nicht gespeichert werden.",
-        "autoSettingRetry": "Laden fehlgeschlagen. Erneut versuchen",
         "keep": "Behalten",
         "keepLimitTooltip": "Lösche einen Snapshot, um diesen zu behalten",
         "keepFailed": "Der Snapshot konnte nicht behalten werden."

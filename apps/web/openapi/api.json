@@ -2433,6 +2433,100 @@
         }
       }
     },
+    "/api/v1/game-catalog/npc-encounters": {
+      "get": {
+        "tags": ["Game-Catalog"],
+        "summary": "Gets where each NPC is encountered.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint1",
+        "responses": {
+          "200": {
+            "description": "One record per npc, source and group naming every battle the npc fights in as an enemy: source is campaign, campaignEvent, legendaryEvent, questEvent, incursion, guildRaid, survival or onslaught; groupId is the campaign group, event id (lreId or featured character), MoW, raid boss / prime unit set, Survival battle set or onslaught; each battle carries the served battle id, track, tier, node or battle number, challenge flag, guild raid role and the wave rounds where the source has them. Ids and numbers only; no schedule.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/game-catalog/npc-encounters/{envelopeHash}": {
+      "get": {
+        "tags": ["Game-Catalog"],
+        "summary": "Gets where each NPC is encountered.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint2",
+        "parameters": [
+          {
+            "name": "envelopeHash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One record per npc, source and group naming every battle the npc fights in as an enemy: source is campaign, campaignEvent, legendaryEvent, questEvent, incursion, guildRaid, survival or onslaught; groupId is the campaign group, event id (lreId or featured character), MoW, raid boss / prime unit set, Survival battle set or onslaught; each battle carries the served battle id, track, tier, node or battle number, challenge flag, guild raid role and the wave rounds where the source has them. Ids and numbers only; no schedule.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/game-catalog/npcs": {
       "get": {
         "tags": ["Game-Catalog"],
@@ -8000,7 +8094,7 @@
         }
       },
       "GameCatalogCampaignDetailedEnemy": {
-        "required": ["id", "name", "count", "stars", "rank"],
+        "required": ["id", "name", "count", "stars", "rank", "servedIndex"],
         "type": "object",
         "properties": {
           "id": {
@@ -8019,6 +8113,10 @@
           },
           "rank": {
             "type": "string"
+          },
+          "servedIndex": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -9215,6 +9313,48 @@
               },
               {
                 "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogNpc"
+              }
+            ]
+          }
+        }
+      },
+      "GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter": {
+        "required": [
+          "version",
+          "schemaHash",
+          "gameVersion",
+          "sourceHash",
+          "datasetKey",
+          "datasetHash",
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "schemaHash": {
+            "type": "string"
+          },
+          "gameVersion": {
+            "type": "string"
+          },
+          "sourceHash": {
+            "type": "string"
+          },
+          "datasetKey": {
+            "type": "string"
+          },
+          "datasetHash": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogNpcEncounter"
               }
             ]
           }
@@ -11407,6 +11547,84 @@
           },
           "stats": {
             "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogNpcStat"
+          }
+        }
+      },
+      "GameCatalogNpcEncounter": {
+        "required": ["npcId", "source", "groupId", "battles"],
+        "type": "object",
+        "properties": {
+          "npcId": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "groupId": {
+            "type": "string"
+          },
+          "battles": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogNpcEncounterBattle"
+          }
+        }
+      },
+      "GameCatalogNpcEncounterBattle": {
+        "required": [
+          "battleId",
+          "track",
+          "tier",
+          "number",
+          "challenge",
+          "role",
+          "rounds",
+          "count",
+          "levels"
+        ],
+        "type": "object",
+        "properties": {
+          "battleId": {
+            "type": ["null", "string"]
+          },
+          "track": {
+            "type": ["null", "string"]
+          },
+          "tier": {
+            "type": ["null", "integer"],
+            "format": "int32"
+          },
+          "number": {
+            "type": ["null", "integer"],
+            "format": "int32"
+          },
+          "challenge": {
+            "type": "boolean"
+          },
+          "role": {
+            "type": "string"
+          },
+          "rounds": {
+            "$ref": "#/components/schemas/IReadOnlyListOfInt32"
+          },
+          "count": {
+            "type": ["null", "integer"],
+            "format": "int32"
+          },
+          "levels": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogNpcEncounterLevel"
+          }
+        }
+      },
+      "GameCatalogNpcEncounterLevel": {
+        "required": ["servedIndex", "count"],
+        "type": "object",
+        "properties": {
+          "servedIndex": {
+            "type": ["null", "integer"],
+            "format": "int32"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -13710,6 +13928,24 @@
           "$ref": "#/components/schemas/GameCatalogNpc"
         }
       },
+      "IReadOnlyListOfGameCatalogNpcEncounter": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogNpcEncounter"
+        }
+      },
+      "IReadOnlyListOfGameCatalogNpcEncounterBattle": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogNpcEncounterBattle"
+        }
+      },
+      "IReadOnlyListOfGameCatalogNpcEncounterLevel": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogNpcEncounterLevel"
+        }
+      },
       "IReadOnlyListOfGameCatalogNpcStat": {
         "type": "array",
         "items": {
@@ -15804,9 +16040,6 @@
           },
           "watchAds": {
             "type": ["null", "boolean"]
-          },
-          "autoRosterSnapshots": {
-            "type": ["null", "boolean"]
           }
         }
       },
@@ -15952,13 +16185,7 @@
         }
       },
       "UserSettingsResponse": {
-        "required": [
-          "dailyEnergy",
-          "xpBookRarity",
-          "watchAds",
-          "revision",
-          "autoRosterSnapshots"
-        ],
+        "required": ["dailyEnergy", "xpBookRarity", "watchAds", "revision"],
         "type": "object",
         "properties": {
           "dailyEnergy": {
@@ -15974,9 +16201,6 @@
           "revision": {
             "type": "integer",
             "format": "int64"
-          },
-          "autoRosterSnapshots": {
-            "type": "boolean"
           }
         }
       },
