@@ -6,7 +6,7 @@ import { energyIcon } from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
 
-import type { HseListMode } from "../../model/home-screen-event-farm"
+import type { EventFarmOrder } from "../../model/home-screen-event-farm"
 import type { HseRaidRule } from "../../model/home-screen-event-rules"
 import {
   countActiveFilterGroups,
@@ -18,28 +18,34 @@ import { useHomeScreenEventLocations } from "../../model/use-home-screen-event-l
 import { useListPaging } from "../../model/use-list-paging"
 import { ListPagingControls } from "../list-paging-controls"
 import { ResourceIconWithTooltip } from "../resource-icon"
-import { EventFarmOrderSwitch } from "./event-farm-order-switch"
+import {
+  EventFarmOrderSwitch,
+  type HseListView,
+} from "./event-farm-order-switch"
 import { EventLocationRow } from "./event-location-row"
 
 /**
- * The HSE list with "Ignore goals" picked on the Sort switch, in place of the farm list: every
- * location that earns event points, goals ignored and energy unlimited, most points per energy first. Each row shows the drop and how
- * many the player holds (no goal target), the attempts left today with their points, and points per
- * raid and per energy. Paged like the farm list.
+ * The HSE list with "Ignore goals" on, in place of the farm list: every location that earns event
+ * points, goals ignored and energy unlimited, in the Sort switch's order (points per energy, or the
+ * cheapest locations for their drop first). Each row shows the drop and how many the player holds
+ * (no goal target), the attempts left today with their points, and points per raid and per energy
+ * (energy per item with the energy order). Paged like the farm list.
  */
 export function EventLocationsSection({
   rule,
   pointsIcon,
   quickFilters,
-  onOrderChange,
+  order = "points",
+  onViewChange,
 }: {
   rule: HseRaidRule
   pointsIcon?: string
   quickFilters?: TodayQuickFilterOptions
-  onOrderChange?: (mode: HseListMode) => void
+  order?: EventFarmOrder
+  onViewChange?: (view: HseListView) => void
 }) {
   const { t } = useTranslation("dailies")
-  const state = useHomeScreenEventLocations(rule, { quickFilters })
+  const state = useHomeScreenEventLocations(rule, { quickFilters, order })
   const [filters, setFilters] = useRaidsFilters()
   const filtered = countActiveFilterGroups(filters) > 0
   const paging = useListPaging(
@@ -49,14 +55,16 @@ export function EventLocationsSection({
   return (
     <section className="space-y-3" data-testid="hse-raids">
       <h2 className="text-lg font-semibold">{t("hse.raids.title")}</h2>
-      {onOrderChange ? (
+      {onViewChange ? (
         <EventFarmOrderSwitch
-          onOrderChange={onOrderChange}
-          order="ignoreGoals"
+          onViewChange={onViewChange}
+          view={{ order, ignoreGoals: true }}
         />
       ) : null}
       <p className="text-sm text-muted-foreground" data-testid="hse-raids-note">
-        {t("hse.raids.noteIgnoreGoals")}
+        {order === "energy"
+          ? t("hse.raids.noteIgnoreGoalsEnergy")
+          : t("hse.raids.noteIgnoreGoals")}
       </p>
       {state.status === "loading" ? (
         <div
@@ -110,6 +118,17 @@ export function EventLocationsSection({
                         />
                       ) : null}
                       {t("hse.raids.points", { points: location.points })}
+                    </Badge>
+                  ) : null}
+                  {order === "energy" && location.energyPerItem !== null ? (
+                    <Badge
+                      className="tabular-nums"
+                      data-testid={`hse-raid-${location.battleId}-per-item`}
+                      variant="outline"
+                    >
+                      {t("hse.raids.perItem", {
+                        value: Number(location.energyPerItem.toFixed(1)),
+                      })}
                     </Badge>
                   ) : null}
                   <Badge className="tabular-nums" variant="outline">

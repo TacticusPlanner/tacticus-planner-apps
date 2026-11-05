@@ -583,25 +583,26 @@
         "noEnergy": "Hoy no queda energía para ninguna de estas ubicaciones.",
         "nothingContributes": "Ninguna ubicación que da puntos de evento suelta un recurso que tus objetivos aún necesiten. Consulta abajo las mejores ubicaciones para conseguir puntos.",
         "filtered": "Ninguna ubicación coincide con tus filtros de incursiones.",
-        "noneEfficient": "Ninguna de las ubicaciones más baratas para los materiales de tus objetivos da puntos de evento. Ordena por puntos por energía para ver ubicaciones con puntos.",
         "noLocations": "Ninguna ubicación desbloqueada con intentos restantes da puntos de evento."
       },
       "goals": "Objetivos: {{goals}}",
       "moreGoals": "+{{count}}",
-      "noteEnergy": "Solo las ubicaciones que Hoy incursionaría para los materiales de tus objetivos (menor energía por objeto), primero las que dan más puntos de evento. No se desperdicia energía en materiales.",
+      "noteEnergy": "Ubicaciones que alimentan tus objetivos, primero las más baratas para su material (energía por objeto, como las elige Hoy), luego las de más puntos por energía. Una ubicación más cara solo recibe las incursiones que aún faltan.",
       "noteIgnoreGoals": "Todas las ubicaciones que dan puntos de evento, sin tener en cuenta objetivos, primero las de más puntos por energía.",
+      "noteIgnoreGoalsEnergy": "Todas las ubicaciones que dan puntos de evento, sin tener en cuenta objetivos, primero las más baratas para su botín (energía por objeto frente a la mejor ubicación para ese objeto), luego las de más puntos por energía.",
       "owned_one": "{{count}} en posesión",
       "owned_other": "{{count}} en posesión",
       "perRaid": "{{points}} pts por incursión",
       "perEnergy": "{{value}} pts por energía",
+      "perItem": "{{value}} de energía por objeto",
       "order": {
         "label": "Ordenar",
         "points": "Puntos por energía",
         "energy": "Energía por objeto",
         "help": {
           "points": "Primero los más puntos de evento por energía, aunque una ubicación más barata para el mismo material no dé ninguno.",
-          "energy": "Solo las ubicaciones más baratas por objeto, como las incursiona Hoy, ordenadas por puntos de evento.",
-          "ignoreGoals": "Todas las ubicaciones que dan puntos de evento, sin importar lo que necesiten tus objetivos, primero las de más puntos por energía. Cada fila muestra su botín y cuántos tienes."
+          "energy": "Primero las ubicaciones más baratas para cada objeto, como las elige Hoy, luego las de más puntos de evento por energía.",
+          "ignoreGoals": "Muestra todas las ubicaciones que dan puntos de evento, sin importar lo que necesiten tus objetivos. Funciona con cualquier orden. Cada fila muestra su botín y cuántos tienes."
         },
         "ignoreGoals": "Ignorar objetivos"
       }
