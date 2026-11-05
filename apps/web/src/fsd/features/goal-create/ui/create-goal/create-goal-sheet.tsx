@@ -64,6 +64,14 @@ export function CreateGoalSheet({
     setWasOpen(open)
     if (open) setMobileStep(firstStep)
   }
+  // Only a successful creation clears the unit; with "create another" the form then preselects the
+  // default unit. Return to the Unit step so that swap is seen, rather than the next goals landing
+  // on a unit the user never picked from a later step.
+  const [shownEntityId, setShownEntityId] = useState(form.entityId)
+  if (form.entityId !== shownEntityId) {
+    setShownEntityId(form.entityId)
+    if (shownEntityId && !form.entityId) setMobileStep("unit")
+  }
   const stepIndex = MOBILE_CREATE_STEPS.indexOf(mobileStep)
   const nextBlocked =
     mobileStep === "unit"
