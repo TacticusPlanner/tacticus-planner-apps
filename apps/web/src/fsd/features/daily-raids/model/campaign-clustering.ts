@@ -3,7 +3,7 @@ import type { BattleId } from "@workspace/game-domain"
 import type { DailyRaidLocationViewModel } from "./daily-raids.domain"
 
 /** Two upgrades are of similar priority when their energy to clear is at most this far apart. */
-export const CAMPAIGN_CLUSTER_ENERGY_WINDOW = 50
+const CAMPAIGN_CLUSTER_ENERGY_WINDOW = 50
 
 /**
  * Pulls same-campaign upgrades of similar priority together, so going down Today's list the player
