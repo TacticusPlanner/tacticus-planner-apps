@@ -11,7 +11,10 @@ import {
   type DailyRaidResourceUrgency,
   type DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
+import { groupEntriesByCampaign } from "../model/campaign-groups"
 import { isLocationVisible } from "../model/location-visibility"
+import { EntityIcon } from "@/shared/ui"
+
 import { GoalTargetBadge, ResourceCard, UnitIcon } from "./resource-card"
 
 // Stable default so callers that never use "location" emphasis (Raids Plan) don't need to pass
@@ -20,7 +23,14 @@ const NO_ATTEMPTS_LEFT_DATA: ReadonlyMap<BattleId, number> = new Map()
 const NO_RESOURCE_URGENCY_DATA: ReadonlyMap<string, DailyRaidResourceUrgency> =
   new Map()
 
-type GoalGroup = ReturnType<typeof groupEntries>[number]
+type ResourceEntries = { resourceId: string; entries: RaidBreakdownEntry[] }
+type GoalGroup = {
+  goal: DailyRaidGoalViewModel
+  /** Set for the "campaign" grouping: the section's campaign header. */
+  campaign?: CampaignHeading
+  resources: ResourceEntries[]
+}
+type CampaignHeading = { name: string; icon?: string }
 
 export function RaidSchedule({
   entries,
@@ -63,18 +73,27 @@ export function RaidSchedule({
   /** Offers "Can't raid this?" on each card, opening the battle progress dialog. */
   onCantRaid?: (battleId: BattleId) => void
   // "combined" (Today's Combine goals): one list with no goal headers, in the entries' own order,
-  // with `resourceProgress` keyed by resource alone.
-  grouping?: "goal" | "combined"
+  // with `resourceProgress` keyed by resource alone. "campaign" (Today's By campaign): one section per
+  // campaign, in the order each campaign first appears, also keyed by resource alone.
+  grouping?: "goal" | "combined" | "campaign"
   testId: string
 }) {
-  const group = (groupedEntries: RaidBreakdownEntry[]) =>
-    grouping === "combined"
-      ? combineEntries(groupedEntries)
-      : groupEntries(
-          groupedEntries,
-          goalsById,
-          resourceUrgencyByGoalAndResource
+  const group = (groupedEntries: RaidBreakdownEntry[]): GoalGroup[] =>
+    grouping === "campaign"
+      ? groupEntriesByCampaign(groupedEntries, locationsByBattleId).map(
+          ({ campaignName, icon, resources }) => ({
+            goal: { ...COMBINED_GROUP, goalId: `campaign-${campaignName}` },
+            campaign: { name: campaignName, icon },
+            resources,
+          })
         )
+      : grouping === "combined"
+        ? combineEntries(groupedEntries)
+        : groupEntries(
+            groupedEntries,
+            goalsById,
+            resourceUrgencyByGoalAndResource
+          )
   const grouped = group(entries)
   const bonusGrouped = bonusEntries ? group(bonusEntries) : []
 
@@ -90,7 +109,7 @@ export function RaidSchedule({
   )
 
   const renderGroup = (
-    { goal, resources }: GoalGroup,
+    { goal, campaign, resources }: GoalGroup,
     keyPrefix: string,
     header?: ReactNode,
     footer?: ReactNode
@@ -118,6 +137,7 @@ export function RaidSchedule({
         {grouping === "goal" && !combinesShardIdentity ? (
           <GoalHeader goal={goal} />
         ) : null}
+        {campaign ? <CampaignHeader campaign={campaign} /> : null}
         <div
           // Never wider than the group: a dashboard track can be narrower than 20rem.
           className="grid gap-2 md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))] md:gap-3"
@@ -134,7 +154,7 @@ export function RaidSchedule({
               label={resourceLabels.get(resourceId) ?? resourceId}
               locationsByBattleId={locationsByBattleId}
               progress={resourceProgress.get(
-                grouping === "combined"
+                grouping !== "goal"
                   ? resourceId
                   : dailyRaidResourceKey(goal.goalId, resourceId)
               )}
@@ -203,6 +223,24 @@ function GoalHeader({ goal }: { goal: DailyRaidGoalViewModel }) {
   )
 }
 
+function CampaignHeader({ campaign }: { campaign: CampaignHeading }) {
+  return (
+    <div
+      className="flex items-center gap-2 border-b pb-2"
+      data-testid="raid-campaign-header"
+    >
+      {campaign.icon ? (
+        <EntityIcon
+          alt=""
+          className="size-8 shrink-0 md:size-9"
+          src={campaign.icon}
+        />
+      ) : null}
+      <h3 className="min-w-0 font-semibold break-words">{campaign.name}</h3>
+    </div>
+  )
+}
+
 const COMBINED_GROUP: DailyRaidGoalViewModel = {
   goalId: "combined",
   priority: 0,
@@ -242,7 +280,7 @@ function groupEntries(
     string,
     DailyRaidResourceUrgency
   >
-) {
+): GoalGroup[] {
   const byGoal = new Map<string, Map<string, RaidBreakdownEntry[]>>()
   for (const entry of entries) {
     const resources =

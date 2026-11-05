@@ -115,6 +115,60 @@ describe("RaidSchedule combined grouping", () => {
   })
 })
 
+describe("RaidSchedule campaign grouping", () => {
+  it("shows one section per campaign with no goal headers, resources keyed by resource alone", () => {
+    const b3 = battleIdSchema.parse("B3")
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[
+          entry(b1, 1),
+          { ...bonusEntry(b2, 1), resourceId: "upgrade2" as never },
+          { ...bonusEntry(b3, 1), resourceId: "upgrade3" as never },
+        ]}
+        goalsById={
+          new Map([
+            ["g1", goal],
+            ["g2", bonusGoal],
+          ])
+        }
+        grouping="campaign"
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Indomitus", "Elite 4")],
+            [b2, location("B2", "Fall of Cadia", "Standard 7")],
+            [b3, location("B3", "Indomitus", "Elite 9")],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map([["upgrade3", { owned: 3, target: 20 }]])}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    expect(screen.queryByText("Hero One")).not.toBeInTheDocument()
+    const headers = screen
+      .getAllByTestId("raid-campaign-header")
+      .map((header) => header.textContent)
+    expect(headers).toEqual(["Indomitus", "Fall of Cadia"])
+    const indomitus = screen.getByTestId(
+      "raid-resource-grid-campaign-Indomitus"
+    )
+    expect(
+      [
+        ...indomitus.querySelectorAll<HTMLElement>(
+          "[data-testid^='raid-card-']"
+        ),
+      ].map((element) => element.dataset.testid)
+    ).toEqual(["raid-card-g1-upgrade1", "raid-card-g2-upgrade3"])
+    expect(screen.getByTestId("raid-card-g2-upgrade3")).toHaveTextContent(
+      "3 / 20"
+    )
+  })
+})
+
 describe("RaidSchedule location emphasis", () => {
   it("orders resources by duration, energy, then resource identity within a goal", () => {
     const resources = [

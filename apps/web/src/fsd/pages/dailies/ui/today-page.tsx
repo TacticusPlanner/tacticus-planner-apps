@@ -59,6 +59,7 @@ export function TodayPage() {
       />
       <TodayDashboard
         key={selectionKey}
+        byCampaign={quickFilters.includes("byCampaign")}
         onCantRaid={setCantRaidBattleId}
         raids={raids}
       />

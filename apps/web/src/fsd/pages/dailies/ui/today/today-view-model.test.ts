@@ -74,6 +74,17 @@ describe("buildTodayView", () => {
     })
   })
 
+  it("with By campaign, groups by campaign and reads pooled have/need, keeping the plan's order", () => {
+    const raids = ready()
+    const view = buildTodayView(raids, { byCampaign: true })
+
+    expect(view.scheduleProps.grouping).toBe("campaign")
+    expect(view.selection.planEntries).toEqual(
+      buildTodayView(raids).selection.planEntries
+    )
+    expect(view.scheduleProps.resourceProgress).toBe(raids.resourceTotals)
+  })
+
   it("shows every bonus entry once the energy limit is reached, with no Show more", () => {
     const view = buildTodayView(
       ready({ dailyEnergy: 288, realEnergyUsedToday: 288 })

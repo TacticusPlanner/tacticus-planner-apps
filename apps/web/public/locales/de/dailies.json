@@ -527,16 +527,19 @@
     "chip": {
       "fewerRaids": "Weniger Raids",
       "combineGoals": "Ziele kombinieren",
+      "byCampaign": "Nach Kampagne",
       "raidableOnly": "Nur raidbar"
     },
     "help": {
       "fewerRaids": "Wenn mehrere Orte gleich viel Energie pro Gegenstand kosten, nur die mit der meisten Energie pro Kampf raiden. Gleiche Materialien für gleiche Energie, mit weniger Raids. Praktisch, wenn Raid-Tickets knapp sind.",
       "combineGoals": "Fasst die restlichen Materialien aller Ziele zusammen (nur die des gewählten Projekts, falls eines gewählt ist) und plant die heutigen Raids, als wären sie ein Ziel: eine Liste ohne Zielgruppen, die Materialien mit dem meisten Energiebedarf zuerst, die Zielpriorität wird ignoriert.",
+      "byCampaign": "Zeigt die heutigen Raids in einem Abschnitt pro Kampagne, damit du in einer Kampagne bleiben und nur die Schlachten wechseln kannst. Die Kampagnen folgen der Reihenfolge ihres ersten Raids in der Liste. Die geplanten Raids ändern sich nicht.",
       "raidableOnly": "Lässt Kämpfe weg, die du noch nicht raiden kannst (weniger als 3 Medaillen), und raidet andere Orte für dieselben Materialien. Ein Material ohne raidbaren Ort wird als blockiert angezeigt."
     },
     "note": {
       "fewerRaids": "Weniger Raids: Gleichwertige Orte mit mehr Energie pro Kampf werden genutzt, damit dieselben Materialien weniger Raids brauchen.",
       "combineGoals": "Ziele kombinieren: Die heutigen Raids behandeln alle Ziele als eine Liste, die Materialien mit dem meisten Energiebedarf zuerst. Daten in Plan und Ziele folgen weiter der Zielpriorität.",
+      "byCampaign": "Nach Kampagne: Die heutigen Raids sind nach Kampagne gruppiert, in der Reihenfolge des ersten Raids jeder Kampagne. Es werden dieselben Raids geplant.",
       "raidableOnly": "Nur raidbar: Kämpfe, die manuell gespielt werden müssen, werden durch raidbare Orte ersetzt."
     }
   },

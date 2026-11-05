@@ -24,9 +24,12 @@ import { TodaysAttemptsCard } from "./todays-attempts-card"
  * at every track count.
  */
 export function TodayDashboard({
+  byCampaign = false,
   raids,
   onCantRaid,
 }: {
+  /** By campaign quick filter: group the plan and Bonus Raids by campaign. */
+  byCampaign?: boolean
   raids: DailyRaidsViewModel
   /** "Can't raid this?" on a planned location: opens the battle progress dialog. */
   onCantRaid?: (battleId: BattleId) => void
@@ -34,7 +37,7 @@ export function TodayDashboard({
   const [bonusShownCount, setBonusShownCount] = useState(BONUS_LIMIT)
   const view =
     raids.status === "ready"
-      ? buildTodayView(raids, { bonusShownCount })
+      ? buildTodayView(raids, { bonusShownCount, byCampaign })
       : undefined
 
   // Bonus raids take the plan's place once the energy limit is spent, and whenever the plan shows no

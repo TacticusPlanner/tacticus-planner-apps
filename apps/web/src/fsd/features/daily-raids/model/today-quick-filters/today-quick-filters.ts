@@ -2,11 +2,13 @@
 export const TODAY_QUICK_FILTERS = [
   "fewerRaids",
   "combineGoals",
+  "byCampaign",
   "raidableOnly",
 ] as const
 export type TodayQuickFilter = (typeof TODAY_QUICK_FILTERS)[number]
 
-/** The engine options the quick filters switch on; both off is the default schedule. */
+/** The engine options the quick filters switch on; all off is the default schedule. "By campaign"
+ * only regroups the list Today shows, so it is no engine option (see `buildTodayView`). */
 export type TodayQuickFilterOptions = {
   fewerRaids: boolean
   combineGoals: boolean

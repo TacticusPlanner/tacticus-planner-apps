@@ -527,16 +527,19 @@
     "chip": {
       "fewerRaids": "Fewer raids",
       "combineGoals": "Combine goals",
+      "byCampaign": "By campaign",
       "raidableOnly": "Raidable only"
     },
     "help": {
       "fewerRaids": "When several locations cost the same energy per item, raid only the ones with the highest energy per battle. Same materials for the same energy, in fewer raids. Useful when you're low on raid tickets.",
       "combineGoals": "Combine the remaining materials of all goals (only the selected project's goals when one is picked) and plan today's raids as if they were one goal: one list without goal groups, the materials that take the most energy to farm first, and goal priority is ignored.",
+      "byCampaign": "Show today's raids in one section per campaign, so you can stay in a campaign and only switch battles. Campaigns come in the order their first raid is in the list. The planned raids don't change.",
       "raidableOnly": "Leave out battles you can't raid yet (fewer than 3 medals) and raid other locations for the same materials. A material with no raidable location shows as blocked."
     },
     "note": {
       "fewerRaids": "Fewer raids: tied locations with more energy per battle are used, so the same materials take fewer raids.",
       "combineGoals": "Combine goals: today's raids treat all goals as one list, the materials that take the most energy to farm first. Plan and Goals dates still follow goal priority.",
+      "byCampaign": "By campaign: today's raids are grouped by campaign, in the order each campaign's first raid comes in the list. The same raids are planned.",
       "raidableOnly": "Raidable only: battles that need to be played manually are replaced with raidable locations."
     }
   },

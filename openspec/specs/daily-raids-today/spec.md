@@ -866,13 +866,15 @@ Campaign names and node labels in Today's schedule rows, and in the shared locat
 
 ### Requirement: Today quick filters
 
-Today SHALL show a quick-filter chip row, captioned "Quick filters", next to the Raids Filters trigger, with two chips: **Fewer raids** and **Combine goals**. Either, both or neither MAY be on. Each chip SHALL carry a tooltip explaining what it does, and while a chip is on Today SHALL show one line under the row stating what it changes. The state SHALL live in the URL (`quick` search parameter, a comma-separated list; unknown values are ignored; the earlier value `bottlenecks` SHALL be read as `combineGoals`) so reload and shared links restore it, and it SHALL NOT be stored anywhere else, so leaving Today without the parameter shows the defaults.
+Today SHALL show a quick-filter chip row, captioned "Quick filters", next to the Raids Filters trigger, with the chips **Fewer raids**, **Combine goals**, **By campaign** and **Raidable only** (offered as described under campaign progress). Any combination MAY be on. Each chip SHALL carry a tooltip explaining what it does, and while a chip is on Today SHALL show one line under the row stating what it changes. The state SHALL live in the URL (`quick` search parameter, a comma-separated list; unknown values are ignored; the earlier value `bottlenecks` SHALL be read as `combineGoals`) so reload and shared links restore it, and it SHALL NOT be stored anywhere else, so leaving Today without the parameter shows the defaults.
 
 The chips SHALL change only Today's plan and Bonus Raids (including the raids-left list after the daily energy limit). Plan > Schedule, Goals estimates and dates, Insights, the HSE and HRE tabs and the Home raids widget SHALL be computed as if both chips were off. The chips combine with the applied Raids Filters.
 
 **Fewer raids**: after the preferred nodes are chosen (least energy per item among nodes that pass the Raids Filters), only the node(s) with the highest energy cost per battle SHALL be kept. Tied nodes left after that keep the expected-gold ordering. A goal's pinned farm locations SHALL be used as chosen.
 
 **Combine goals** (in the spirit of V1's "By total materials" farm order): Today SHALL plan raids as if every in-scope goal (all goals, or the selected project's goals) were one goal, ignoring goal priority when spending energy. Inventory SHALL still be allocated to goals in priority order, and shop and Onslaught supply SHALL still be applied per goal in priority order. The remaining need of every in-scope goal, summed per resource across all of the goal's stages, SHALL form one pool, and the day's energy SHALL be spent on that pool longest-to-finish resource first (then greatest energy cost), with each node's daily attempt cap shared as usual. A resource SHALL be farmed at the nodes chosen for the highest-priority goal that needs it. Each raid entry SHALL be credited to the highest-priority goal still needing that resource (for goal totals). Today's plan and Bonus Raids SHALL then be shown as one combined list with no goal headers, ordered by each resource's pooled urgency: the energy to clear the resource's whole pooled need at the nodes it is farmed at, most first (the order Insights ranks its bottlenecks in), then the days to finish it, longest first. Bonus Raids' top-entries cut SHALL be taken from that order. Each resource card SHALL show the have/need over every in-scope goal. This overrides "Today and Bonus Raids prioritize long-running resources" and goal-by-goal spending while the chip is on.
+
+**By campaign** (display only): Today's plan and Bonus Raids SHALL be shown in one section per campaign instead of goal sections, so the player can stay in one campaign and only switch battles. The campaign is the location's campaign name (a mirror is its own campaign; Normal and Elite nodes of one campaign share a section). Sections SHALL come in the order each campaign's first entry appears in the list Today would otherwise show (goal priority, or Combine goals' pooled order), and inside a section resources and their locations keep that order. A resource raided for several goals SHALL be one card showing the have/need over every in-scope goal; the same node raided for that resource by several goals SHALL be one location row. The chip SHALL NOT change which raids are planned, nor Bonus Raids' top-entries cut, which is taken before grouping.
 
 #### Scenario: Chips off
 
@@ -902,6 +904,12 @@ The chips SHALL change only Today's plan and Bonus Raids (including the raids-le
 
 - **WHEN** Fewer raids and Combine goals are both on
 - **THEN** the pooled schedule uses the Fewer raids node choice
+
+#### Scenario: By campaign keeps a campaign's raids together
+
+- **GIVEN** today's plan raids goal A's material in Indomitus, goal B's material in Fall of Cadia and goal C's material in Indomitus, in that order
+- **WHEN** By campaign is on
+- **THEN** Today shows an Indomitus section with goal A's and goal C's materials, then a Fall of Cadia section with goal B's material, with no goal headers, and the planned raids are the same as with the chip off
 
 #### Scenario: Other surfaces ignore the chips
 

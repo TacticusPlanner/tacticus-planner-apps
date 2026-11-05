@@ -44,7 +44,14 @@ export type TodayView = {
  */
 export function buildTodayView(
   raids: DailyRaidsReadyViewModel,
-  { bonusShownCount = BONUS_LIMIT }: { bonusShownCount?: number } = {}
+  {
+    bonusShownCount = BONUS_LIMIT,
+    byCampaign = false,
+  }: {
+    bonusShownCount?: number
+    /** By campaign: the plan and Bonus Raids in one section per campaign (display only). */
+    byCampaign?: boolean
+  } = {}
 ): TodayView {
   // Exhausted bonus locations are dropped before slicing to BONUS_LIMIT — otherwise an actionable
   // entry past the limit can become unreachable if the first few entries all happen to be exhausted.
@@ -125,14 +132,15 @@ export function buildTodayView(
       attemptsLeftByBattle: raids.attemptsLeftByBattle,
       attemptsUsedByBattle: combinedAttemptsUsedByBattle,
       emphasis: "location",
-      grouping: combined ? "combined" : "goal",
+      grouping: byCampaign ? "campaign" : combined ? "combined" : "goal",
       goalsById: raids.goalsById,
       locationsByBattleId: raids.locationsByBattleId,
       resourceLabels: raids.resourceLabels,
-      // Combined cards show the have/need over every goal, keyed by resource alone.
-      resourceProgress: combined
-        ? raids.resourceTotals
-        : (raids.resourceProgressByDay.get(1) ?? new Map()),
+      // Combined and By campaign cards show the have/need over every goal, keyed by resource alone.
+      resourceProgress:
+        combined || byCampaign
+          ? raids.resourceTotals
+          : (raids.resourceProgressByDay.get(1) ?? new Map()),
       resourceUrgencyByGoalAndResource: raids.resourceUrgencyByGoalAndResource,
       resourceVisuals: raids.resourceVisuals,
     },
