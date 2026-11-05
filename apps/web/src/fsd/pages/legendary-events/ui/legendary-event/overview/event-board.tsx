@@ -363,7 +363,7 @@ function UnitTable({
                 aria-label={t("eventBoard.columnUnits", {
                   count: column.units.length,
                 })}
-                className="flex min-w-0 flex-col gap-px"
+                className="@container flex min-w-0 flex-col gap-px"
                 data-testid="event-board-column"
                 key={column.objectiveIndexes.join("+")}
               >

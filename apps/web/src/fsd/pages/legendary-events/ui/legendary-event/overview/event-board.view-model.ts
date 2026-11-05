@@ -121,6 +121,7 @@ export function buildEventBoardTable(
       const owned = rosterById?.has(unit.id) ?? false
       return {
         id: unit.id,
+        traits: unit.traits,
         owned,
         satisfied: new Set(objectivesSatisfied(unit, lane)),
         power: owned
@@ -154,7 +155,7 @@ export function buildEventBoardTable(
     return {
       objectiveIndexes,
       units: matching.map((candidate) =>
-        eventUnitChipData(candidate.id, rosterById)
+        eventUnitChipData(candidate.id, rosterById, candidate.traits)
       ),
       ownedCount: matching.filter((candidate) => candidate.owned).length,
     }
