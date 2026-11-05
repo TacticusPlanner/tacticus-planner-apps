@@ -1,4 +1,5 @@
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
+import { useOutletContext, useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -9,6 +10,7 @@ import {
   campaignObjectiveState,
   DEFAULT_HRE_PROGRESS,
   HreEventHeader,
+  HreEventSwitcher,
   hreObjectiveIcon,
   hreDaysLeft,
   hrePaceFor,
@@ -31,20 +33,27 @@ import {
 
 import { useHreTeamRecommendations } from "@/features/team-recommendations"
 import { useRunningHse } from "../model/use-running-hse"
+import type { DailiesOutletContext } from "./dailies-layout"
 import { HreCampaignTeams } from "./hre/hre-campaign-teams"
 import { HreTeamCard } from "./hre/hre-team-card"
 import { useHreTutorial } from "./hre-page.tutorial"
+import { RaidsSectionControls } from "./raids-section-controls"
 
 const NO_MISSIONS: readonly HreMission[] = []
+/** The HRE tab's search parameter holding the selected instance key (HRE-only, never carried over). */
+const EVENT_PARAM = "event"
 
 /**
- * Dailies > HRE: the running Hero Release Event (or the next one as a read-only preview). On a
+ * Dailies > HRE: one Hero Release Event at a time. By default the running one (or the next one as a
+ * read-only preview); the switcher opens any other upcoming or past event, held in the `event` URL
+ * parameter so it survives a reload. A past event shows its header and mission list only. On a
  * running event: the current mission with its progress inputs and tips, the campaign battles to
  * fight by hand for its manual objectives and the raids for its campaign objective, the mission's
  * teams (one per campaign of the battles to fight by hand, and one per token mode it plays; each led by a running HSE's scoring
  * units), the tokens the remaining missions need and the event pace. Every event lists all missions and the remaining-campaign
- * summary. Desktop: missions on the left, the rest on the right. Mobile: one column with the
- * mission list last, collapsed behind "All missions".
+ * summary. The raids follow the Dailies project and the Raids Filters, picked in the raids section.
+ * Desktop: missions on the left, the rest on the right. Mobile: one column with the mission list
+ * last, collapsed behind "All missions".
  */
 export function HrePage() {
   const { t } = useTranslation([
@@ -55,8 +64,12 @@ export function HrePage() {
     "factions",
   ])
   const isMobile = useIsMobile()
-  const state = useHreInstance()
+  const context = useOutletContext<DailiesOutletContext>()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const state = useHreInstance(searchParams.get(EVENT_PARAM))
   const ready = state.status === "ready" ? state : null
+  const stale = ready?.stale ?? false
+  const defaultKey = ready?.defaultKey ?? null
   const instance = ready?.instance ?? null
   const hero = ready?.hero ?? null
   const rules = ready?.rules ?? null
@@ -64,6 +77,7 @@ export function HrePage() {
   // Without the served rules the event shows only its header and a notice.
   const event = rules ? instance : null
   const running = event?.status === "running"
+  const past = event?.status === "past"
   const [progress, actions] = useHreProgress(
     running ? event.key : null,
     missions
@@ -149,11 +163,36 @@ export function HrePage() {
     : []
 
   useHreTutorial({
+    hasSwitcher: !!ready,
     hasEvent: !!event,
+    hasRaids: !!event && !past,
     running,
     hasTeam: firstTeam >= 0,
     hasTokens: tokenRows.length > 0,
   })
+
+  // A key that no longer resolves falls back to the default and leaves the URL, replacing the entry
+  // so Back does not loop through it.
+  useEffect(() => {
+    if (!stale) return
+    setSearchParams(
+      (previous) => {
+        const params = new URLSearchParams(previous)
+        params.delete(EVENT_PARAM)
+        return params
+      },
+      { replace: true }
+    )
+  }, [stale, setSearchParams])
+
+  // Picking the default instance clears the parameter, so the plain tab always means "current".
+  const selectInstance = (key: string) =>
+    setSearchParams((previous) => {
+      const params = new URLSearchParams(previous)
+      if (key === defaultKey) params.delete(EVENT_PARAM)
+      else params.set(EVENT_PARAM, key)
+      return params
+    })
 
   const notice = (() => {
     if (!running) return t("hre:raids.notice.preview")
@@ -226,39 +265,42 @@ export function HrePage() {
       t,
     ]
   )
-  const raids = event ? (
-    <HreRaidsSection
-      notice={notice}
-      daysLeft={
-        ready
-          ? hreDaysLeft({
-              running,
-              startUtc: event.entry.startUtc,
-              endUtc: event.entry.endUtc,
-              nowMs: ready.nowMs,
-            })
-          : 0
-      }
-      remainingBattles={remainingCampaignBattles(shown, missions)}
-      renderTeams={
-        battlePlan
-          ? (groups) => (
-              <HreCampaignTeams
-                alliance={hero?.alliance ?? null}
-                allianceName={allianceName}
-                featuredCharacterId={instance?.featuredCharacterId ?? null}
-                groups={groups}
-                hero={heroName}
-                hse={hse}
-                missions={missions}
-                plan={battlePlan}
-              />
-            )
-          : undefined
-      }
-      request={request}
-    />
-  ) : null
+  const raids =
+    event && !past ? (
+      <HreRaidsSection
+        controls={<RaidsSectionControls context={context} testIdPrefix="hre" />}
+        notice={notice}
+        projectId={context.projectId}
+        daysLeft={
+          ready
+            ? hreDaysLeft({
+                running,
+                startUtc: event.entry.startUtc,
+                endUtc: event.entry.endUtc,
+                nowMs: ready.nowMs,
+              })
+            : 0
+        }
+        remainingBattles={remainingCampaignBattles(shown, missions)}
+        renderTeams={
+          battlePlan
+            ? (groups) => (
+                <HreCampaignTeams
+                  alliance={hero?.alliance ?? null}
+                  allianceName={allianceName}
+                  featuredCharacterId={instance?.featuredCharacterId ?? null}
+                  groups={groups}
+                  hero={heroName}
+                  hse={hse}
+                  missions={missions}
+                  plan={battlePlan}
+                />
+              )
+            : undefined
+        }
+        request={request}
+      />
+    ) : null
   const teamCard = teams.map((view, index) => {
     // The first shown card keeps the `hre-team` id the tutorial points at.
     const plan = teamPlans[index] ?? null
@@ -347,6 +389,15 @@ export function HrePage() {
           data-testid="hre-title-row"
         >
           <h2 className="text-lg font-semibold">{t("hre:title")}</h2>
+          {ready ? (
+            <HreEventSwitcher
+              className="order-last md:order-none md:ml-auto"
+              heroes={ready.heroes}
+              instances={ready.instances}
+              onSelect={selectInstance}
+              selectedKey={instance?.key ?? null}
+            />
+          ) : null}
         </div>
         <div data-testid="hre-status">
           <HreEventHeader state={state} />
@@ -359,7 +410,14 @@ export function HrePage() {
             {t("hre:status.error")}
           </p>
         ) : null}
-        {event && !running ? (
+        {event && past ? (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="hre-past-note"
+          >
+            {t("hre:status.pastNote")}
+          </p>
+        ) : event && !running ? (
           <p
             className="text-sm text-muted-foreground"
             data-testid="hre-preview-note"

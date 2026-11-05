@@ -68,6 +68,8 @@ export function HreRaidsSection({
   remainingBattles,
   daysLeft,
   renderTeams,
+  projectId,
+  controls,
 }: {
   request: HreRaidsRequest | null
   notice: ReactNode
@@ -76,6 +78,10 @@ export function HreRaidsSection({
   /** The teams for the battles to fight by hand: one per group of nodes that allow the same
    * factions, shown under the list. */
   renderTeams?: (groups: readonly MissionDeployGroup[]) => ReactNode
+  /** The Dailies project: narrows the goals the suggestions serve first (none: every active goal). */
+  projectId?: string
+  /** The project selector and Raids Filters, shown under the title. */
+  controls?: ReactNode
 }) {
   const { t } = useTranslation("hre")
   // A running Home Screen Event with a raid rule ranks the nodes too, so both events progress.
@@ -115,7 +121,7 @@ export function HreRaidsSection({
         : SUMMARY_ONLY,
     [hasRequest, battlesToGo, eventOnly, manual]
   )
-  const raids = useDailyRaids(undefined, {
+  const raids = useDailyRaids(projectId, {
     homeScreenEventRule: runningEventRule ?? undefined,
     eventFarm: false,
     missionRaids,
@@ -154,6 +160,7 @@ export function HreRaidsSection({
           </Badge>
         ) : null}
       </div>
+      {controls}
       {raids.status === "loading" || raids.status === "error" ? (
         <RaidState state={raids.status} />
       ) : !shown ? (

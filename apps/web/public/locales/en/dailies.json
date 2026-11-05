@@ -383,6 +383,10 @@
     },
     "hre": {
       "steps": {
+        "switcher": {
+          "title": "Choose an event",
+          "content": "Shows the current event by default. Open any other upcoming or past Hero Release Event here, or step through them with the arrows. Your choice stays in the page address, so you can reload or share it."
+        },
         "header": {
           "title": "The event",
           "content": "The featured hero, their alliance and when the event ends. Before it starts, the tab previews the next event."
