@@ -427,7 +427,19 @@
     "pointsLeftNeedsDepth": "Set depth to see points left",
     "clearedThrough": "Already cleared through battle {{battle}}",
     "pointsLeftCannotClear": "Can't clear battle 1 yet",
-    "laneFull": "This lane holds the maximum of {{max}} teams."
+    "laneFull": "This lane holds the maximum of {{max}} teams.",
+    "depthBar": {
+      "battles": "Battles 1–{{depth}}",
+      "cannotClear": "Can't clear battle 1 yet",
+      "unset": "No depth set",
+      "label": "Clears battles 1–{{depth}} of {{total}}",
+      "labelNone": "Clears no battle of {{total}}",
+      "close": "Close to battle {{battle}}",
+      "manual": "Depth set by you"
+    },
+    "editDepth": "Edit clear depth",
+    "details": "Details",
+    "objectives": "Objectives"
   },
   "objective": {
     "minHits_one": "Min {{count}} hit",

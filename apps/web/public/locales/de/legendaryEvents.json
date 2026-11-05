@@ -427,7 +427,19 @@
     "pointsLeftNeedsDepth": "Tiefe festlegen, um die verbleibenden Punkte zu sehen",
     "clearedThrough": "Bereits bis Kampf {{battle}} erfüllt",
     "pointsLeftCannotClear": "Schafft Kampf 1 noch nicht",
-    "laneFull": "Diese Bahn enthält bereits die maximal {{max}} Teams."
+    "laneFull": "Diese Bahn enthält bereits die maximal {{max}} Teams.",
+    "depthBar": {
+      "battles": "Kämpfe 1–{{depth}}",
+      "cannotClear": "Kampf 1 noch nicht schaffbar",
+      "unset": "Keine Tiefe gesetzt",
+      "label": "Schafft Kämpfe 1–{{depth}} von {{total}}",
+      "labelNone": "Schafft keinen von {{total}} Kämpfen",
+      "close": "Knapp vor Kampf {{battle}}",
+      "manual": "Von dir gesetzte Tiefe"
+    },
+    "editDepth": "Tiefe bearbeiten",
+    "details": "Details",
+    "objectives": "Ziele"
   },
   "objective": {
     "minHits_one": "Mind. {{count}} Treffer",
