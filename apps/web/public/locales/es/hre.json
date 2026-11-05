@@ -9,7 +9,22 @@
     "window": "Del {{start}} al {{end}}",
     "endsIn": "Termina en {{when}}",
     "startsIn": "Empieza en {{when}}",
-    "previewNote": "Este evento aún no ha empezado. El progreso de misiones, las incursiones y el ritmo se activan cuando esté en curso."
+    "previewNote": "Este evento aún no ha empezado. El progreso de misiones, las incursiones y el ritmo se activan cuando esté en curso.",
+    "past": "Terminado",
+    "pastNote": "Este evento ha terminado. Sus misiones se muestran como referencia."
+  },
+  "switcher": {
+    "label": "Elige un evento de lanzamiento de héroe",
+    "placeholder": "Elige un evento",
+    "empty": "No hay eventos en el calendario",
+    "previous": "Evento anterior",
+    "next": "Evento siguiente",
+    "option": "{{name}} · {{dates}}",
+    "groups": {
+      "running": "En curso",
+      "upcoming": "Próximos",
+      "past": "Pasados"
+    }
   },
   "missions": {
     "number": "Misión {{number}}",

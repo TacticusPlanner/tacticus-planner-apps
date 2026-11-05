@@ -383,6 +383,10 @@
     },
     "hre": {
       "steps": {
+        "switcher": {
+          "title": "Elige un evento",
+          "content": "Por defecto se muestra el evento actual. Abre aquí cualquier otro evento de lanzamiento de héroe próximo o pasado, o recórrelos con las flechas. Tu elección se guarda en la dirección de la página, así que puedes recargarla o compartirla."
+        },
         "header": {
           "title": "El evento",
           "content": "El héroe del evento, su alianza y cuándo termina el evento. Antes de que empiece, la pestaña muestra una vista previa del siguiente."

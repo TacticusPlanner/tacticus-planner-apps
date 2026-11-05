@@ -6,13 +6,18 @@ import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 import { combineReadStates, useReadState } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
-import { selectHreInstance, type HreInstance } from "./hre-instance"
+import {
+  listHreInstances,
+  resolveHreSelection,
+  selectHreInstance,
+  type HreInstance,
+} from "./hre-instance"
 import { toHreRules, type HreRules } from "./hre-rules"
 
 const DAY_MS = 86_400_000
-/** An HRE lasts 14 days; reading a little further back finds one that is still running. */
-const LOOKBACK_DAYS = 30
-const LOOKAHEAD_DAYS = 120
+/** How far back the calendar is read: past events stay reachable from the HRE switcher. */
+const LOOKBACK_DAYS = 400
+const LOOKAHEAD_DAYS = 400
 const TICK_MS = 60_000
 
 /** The featured hero, when `featuredCharacterId` resolves to a catalog character. */
@@ -30,7 +35,16 @@ export type HreInstanceState =
   | { status: "error"; retry: () => void }
   | {
       status: "ready"
+      /** The shown instance: the requested one, else the running one, else the next one. */
       instance: HreInstance<EventsCalendarStorageModel> | null
+      /** Every HRE instance in the horizon (running, upcoming, past), by start. */
+      instances: HreInstance<EventsCalendarStorageModel>[]
+      /** The key of the default instance (running, else next), or null without one. */
+      defaultKey: string | null
+      /** True when the requested key no longer resolves (the tab then drops it). */
+      stale: boolean
+      /** Each instance's featured hero by character id, for the switcher's options. */
+      heroes: ReadonlyMap<string, HreFeaturedHero>
       hero: HreFeaturedHero | null
       /** The event's served missions and reward rules; null when the served data lacks a part the
        *  tracker needs (an unknown mission task, say). */
@@ -52,8 +66,22 @@ function entriesAround(
   )
 }
 
-/** The running Hero Release Event, else the next one, with its featured hero and served rules. */
-export function useHreInstance(): HreInstanceState {
+const toHero = (character: HreFeaturedHero): HreFeaturedHero => ({
+  id: character.id,
+  name: character.name,
+  alliance: character.alliance,
+  faction: character.faction,
+  initialRarity: character.initialRarity,
+})
+
+/**
+ * The Hero Release Event the HRE tab shows, with its featured hero and served rules: the instance
+ * `requestedKey` names, else the running one, else the next one. Also lists every instance in the
+ * calendar horizon for the switcher.
+ */
+export function useHreInstance(
+  requestedKey: string | null = null
+): HreInstanceState {
   // A coarse tick re-selects from the cached calendar across an event boundary without a reload.
   const [nowMs, setNowMs] = useState(() => Date.now())
   useEffect(() => {
@@ -96,22 +124,22 @@ export function useHreInstance(): HreInstanceState {
       progressionRules,
     ] = read.data
     if (!isSynced) return { status: "loading" }
-    const instance = selectHreInstance(
-      entriesAround(entries, nowMs),
-      definitionsById,
-      nowMs
+    const around = entriesAround(entries, nowMs)
+    const instances = listHreInstances(around, definitionsById, nowMs)
+    const { instance, defaultInstance, stale } = resolveHreSelection(
+      instances,
+      selectHreInstance(around, definitionsById, nowMs),
+      requestedKey
     )
-    const character = instance?.featuredCharacterId
-      ? charactersById.get(instance.featuredCharacterId)
-      : undefined
-    const hero: HreFeaturedHero | null = character
-      ? {
-          id: character.id,
-          name: character.name,
-          alliance: character.alliance,
-          faction: character.faction,
-          initialRarity: character.initialRarity,
-        }
+    const heroes = new Map<string, HreFeaturedHero>()
+    for (const { featuredCharacterId } of instances) {
+      const character = featuredCharacterId
+        ? charactersById.get(featuredCharacterId)
+        : undefined
+      if (character) heroes.set(character.id, toHero(character))
+    }
+    const hero = instance?.featuredCharacterId
+      ? (heroes.get(instance.featuredCharacterId) ?? null)
       : null
     const rules =
       toHreRules(
@@ -119,12 +147,25 @@ export function useHreInstance(): HreInstanceState {
         progressionRules,
         instance?.featuredCharacterId ?? null
       ) ?? null
-    return { status: "ready", instance, hero, rules, nowMs }
-  }, [read, nowMs])
+    return {
+      status: "ready",
+      instance,
+      instances,
+      defaultKey: defaultInstance?.key ?? null,
+      stale,
+      heroes,
+      hero,
+      rules,
+      nowMs,
+    }
+  }, [read, nowMs, requestedKey])
 }
 
 /** Whether an HRE is running now, for the navigation's live indicator (never true while loading). */
 export function useIsHreLive(): boolean {
   const state = useHreInstance()
-  return state.status === "ready" && state.instance?.status === "running"
+  return (
+    state.status === "ready" &&
+    state.instances.some((instance) => instance.status === "running")
+  )
 }

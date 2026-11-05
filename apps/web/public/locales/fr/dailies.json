@@ -383,6 +383,10 @@
     },
     "hre": {
       "steps": {
+        "switcher": {
+          "title": "Choisir un événement",
+          "content": "L'événement en cours est affiché par défaut. Ouvrez ici n'importe quel autre événement de sortie de héros à venir ou passé, ou parcourez-les avec les flèches. Votre choix reste dans l'adresse de la page : vous pouvez la recharger ou la partager."
+        },
         "header": {
           "title": "L'événement",
           "content": "Le héros de l'événement, son alliance et la fin de l'événement. Avant le début, l'onglet présente un aperçu du prochain événement."

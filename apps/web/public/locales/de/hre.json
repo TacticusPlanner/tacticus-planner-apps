@@ -9,7 +9,22 @@
     "window": "{{start}} bis {{end}}",
     "endsIn": "Endet in {{when}}",
     "startsIn": "Beginnt in {{when}}",
-    "previewNote": "Dieses Event hat noch nicht begonnen. Missionsfortschritt, Raids und Tempo werden freigeschaltet, sobald es läuft."
+    "previewNote": "Dieses Event hat noch nicht begonnen. Missionsfortschritt, Raids und Tempo werden freigeschaltet, sobald es läuft.",
+    "past": "Beendet",
+    "pastNote": "Dieses Event ist beendet. Seine Missionen werden zur Übersicht angezeigt."
+  },
+  "switcher": {
+    "label": "Helden-Release-Event auswählen",
+    "placeholder": "Event auswählen",
+    "empty": "Keine Events im Kalender",
+    "previous": "Vorheriges Event",
+    "next": "Nächstes Event",
+    "option": "{{name}} · {{dates}}",
+    "groups": {
+      "running": "Läuft",
+      "upcoming": "Demnächst",
+      "past": "Vergangen"
+    }
   },
   "missions": {
     "number": "Mission {{number}}",

@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useSearchParams } from "react-router"
+import { useOutletContext, useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { homeScreenEventPointsIcon } from "@workspace/game-catalog"
 
@@ -21,7 +21,9 @@ import {
 } from "@/features/home-screen-event-points"
 
 import { useHseTeamRecommendations } from "@/features/team-recommendations"
+import type { DailiesOutletContext } from "./dailies-layout"
 import { useHseTutorial } from "./hse-page.tutorial"
+import { RaidsSectionControls } from "./raids-section-controls"
 import { HseTeamsSection } from "./hse-teams/hse-teams-section"
 
 /** The HSE tab's search parameter holding the selected instance key (HSE-only, never carried over). */
@@ -34,13 +36,15 @@ const EVENT_PARAM = "event"
  * data gets its event details (tier, description, milestones) and, when running or upcoming and
  * personal, its points projection and event teams for Arena, Onslaught and Salvage Run. Only a
  * running or upcoming rule-bearing instance also gets the farm list and the top-10 lists, which
- * cover every active goal and honor the Raids Filters and Planning Settings chosen on Today.
+ * follow the Dailies project (every active goal without one) and the Raids Filters, both picked in
+ * the controls row above them (and shared with Today), and the Planning Settings chosen on Today.
  * Order: status line, details, projection, event teams, then the raid lists. Stacked on mobile
  * (farm list, overall top 10, event-campaign top 10); on desktop details and projection share a
  * row above the teams and the farm list, which sits beside a column holding both top-10 lists.
  */
 export function HsePage() {
   const { t } = useTranslation("dailies")
+  const context = useOutletContext<DailiesOutletContext>()
   const [searchParams, setSearchParams] = useSearchParams()
   const state = useActiveHomeScreenEvent()
 
@@ -139,13 +143,20 @@ export function HsePage() {
         <EventPreviewBanner entry={target.entry} />
       ) : null}
       {raidRule ? (
-        <div
-          className="space-y-5 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0"
-          data-testid="hse-sections"
-        >
-          <EventFarmSection pointsIcon={pointsIcon} rule={raidRule} />
-          <div data-testid="hse-top-lists">
-            <EventTopLocations rule={raidRule} />
+        <div className="space-y-3">
+          <RaidsSectionControls context={context} testIdPrefix="hse" />
+          <div
+            className="space-y-5 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0"
+            data-testid="hse-sections"
+          >
+            <EventFarmSection
+              pointsIcon={pointsIcon}
+              projectId={context.projectId}
+              rule={raidRule}
+            />
+            <div data-testid="hse-top-lists">
+              <EventTopLocations rule={raidRule} />
+            </div>
           </div>
         </div>
       ) : null}
