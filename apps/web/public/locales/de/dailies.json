@@ -255,7 +255,7 @@
     },
     "cell": {
       "label": "{{material}}, {{owned}} von {{target}} vorhanden",
-      "node": "{{campaign}} {{node}} × {{raids}}",
+      "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} weitere",
       "moreUnits": "+{{count}}"
     },

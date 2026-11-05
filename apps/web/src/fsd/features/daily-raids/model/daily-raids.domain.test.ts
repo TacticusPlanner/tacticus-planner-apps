@@ -100,6 +100,19 @@ describe("campaignLocationLabels", () => {
     })
   })
 
+  it("drops the Standard word for a campaign event's standard tier", () => {
+    expect(
+      labels(
+        descriptor({
+          nameKey: "adepta-sororitas-vs-death-guard",
+          isEvent: true,
+          difficultyToken: "eventStandard",
+        }),
+        3
+      )
+    ).toEqual({ campaignName: "Death Guard", nodeLabel: "3" })
+  })
+
   it("suffixes a challenge node with B", () => {
     expect(
       labels(

@@ -13,7 +13,7 @@ import type {
   DailyRaidLocationViewModel,
   DailyRaidResourceVisual,
 } from "../../model/daily-raids.domain"
-import { EntityIcon } from "@/shared/ui"
+import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 import type { PlanCell } from "../../model/plan-day-cells"
 import { ManualBattleBadge } from "../manual-battle"
 import { UnitIcon } from "../resource-card"
@@ -95,11 +95,14 @@ export function PlanMaterialCell({
                 {location?.icon ? (
                   <EntityIcon alt="" className="size-4" src={location.icon} />
                 ) : null}
-                {t("plan.cell.node", {
-                  campaign: location?.campaignName ?? node.battleId,
-                  node: location?.nodeLabel ?? "",
-                  raids: node.raidsPerformed,
-                }).trim()}
+                <span>
+                  <CampaignLocationName
+                    campaignName={location?.campaignName ?? node.battleId}
+                    difficultyLabel={location?.difficultyLabel}
+                    nodeLabel={location?.nodeLabel}
+                  />{" "}
+                  {t("plan.cell.nodeRaids", { raids: node.raidsPerformed })}
+                </span>
                 {location?.manual ? <ManualBattleBadge compact /> : null}
               </li>
             )

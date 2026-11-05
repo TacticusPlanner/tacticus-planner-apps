@@ -242,8 +242,11 @@ function BattleProgressEditor({
   const tier = selected.descriptor ? difficultyLabel(selected.descriptor) : ""
   const battleLabel = (row: BattleProgressRow) =>
     row.challenge
-      ? t("battleProgress.challengeBattle", { tier, node: row.nodeNumber })
-      : `${tier} ${row.nodeNumber}`
+      ? t("battleProgress.challengeBattle", {
+          tier,
+          node: row.nodeNumber,
+        }).trim()
+      : `${tier} ${row.nodeNumber}`.trim()
   // The frontier was never beaten, so it holds every reward; beaten battles default to the best.
   const progressFor = (row: BattleProgressRow): BattleProgress =>
     row.frontier
