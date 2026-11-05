@@ -59,17 +59,48 @@ describe("groupRows", () => {
     expect(groupRows([], "type")).toEqual([])
   })
 
-  it("preserves a pre-sorted row set: group order by first appearance, row order untouched", () => {
-    // Sorted newest-first, the way both routes' default Sort leaves them.
+  it("lists type groups Rank first, whatever type holds the top-priority goal", () => {
+    // Global priority order: an Ability goal leads, then Upgrade, Rank and Ascension.
     const sorted = [
-      row({ goalId: "b-newest", goalType: "Ability", updatedAt: "2026-03" }),
-      row({ goalId: "a-newer", goalType: "Rank", updatedAt: "2026-02" }),
-      row({ goalId: "b-older", goalType: "Ability", updatedAt: "2026-01" }),
+      row({ goalId: "ability-1", goalType: "Ability" }),
+      row({ goalId: "upgrade-1", goalType: "Upgrade" }),
+      row({ goalId: "rank-1", goalType: "Rank" }),
+      row({ goalId: "ability-2", goalType: "Ability" }),
+      row({ goalId: "ascension-1", goalType: "Ascension" }),
+      row({ goalId: "rank-2", goalType: "Rank" }),
     ]
 
     const groups = groupRows(sorted, "type")
 
-    expect(groups.map((group) => group.key)).toEqual(["Ability", "Rank"])
+    expect(groups.map((group) => group.key)).toEqual([
+      "Rank",
+      "Ascension",
+      "Ability",
+      "Upgrade",
+    ])
+    expect(groups.flatMap((group) => group.rows.map((r) => r.goalId))).toEqual([
+      "rank-1",
+      "rank-2",
+      "ascension-1",
+      "ability-1",
+      "ability-2",
+      "upgrade-1",
+    ])
+  })
+
+  it("preserves a pre-sorted row set for units: group order by first appearance, row order untouched", () => {
+    const sorted = [
+      row({ goalId: "b-newest", entityId: "hero2", updatedAt: "2026-03" }),
+      row({ goalId: "a-newer", entityId: "hero1", updatedAt: "2026-02" }),
+      row({ goalId: "b-older", entityId: "hero2", updatedAt: "2026-01" }),
+    ]
+
+    const groups = groupRows(sorted, "unit")
+
+    expect(groups.map((group) => group.key)).toEqual([
+      "Character:hero2",
+      "Character:hero1",
+    ])
     expect(groups.flatMap((group) => group.rows.map((r) => r.goalId))).toEqual([
       "b-newest",
       "b-older",
