@@ -383,6 +383,10 @@
     },
     "hre": {
       "steps": {
+        "switcher": {
+          "title": "Event auswählen",
+          "content": "Standardmäßig wird das aktuelle Event angezeigt. Hier kannst du jedes andere kommende oder vergangene Helden-Release-Event öffnen oder mit den Pfeilen durchblättern. Deine Auswahl bleibt in der Seitenadresse, sodass du neu laden oder sie teilen kannst."
+        },
         "header": {
           "title": "Das Event",
           "content": "Der Event-Held, seine Allianz und wann das Event endet. Vor dem Start zeigt der Tab das nächste Event als Vorschau."

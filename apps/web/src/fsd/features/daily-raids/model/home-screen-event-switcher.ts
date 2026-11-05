@@ -1,3 +1,5 @@
+import { adjacentSwitcherKeys, groupSwitcherInstances } from "@/shared/ui"
+
 import type {
   HomeScreenEventEntry,
   HomeScreenEventInstance,
@@ -18,13 +20,7 @@ export function groupHomeScreenEventInstances<
 >(
   instances: readonly HomeScreenEventInstance<TEntry>[]
 ): HomeScreenEventGroups<TEntry> {
-  return {
-    running: instances.filter((instance) => instance.status === "running"),
-    upcoming: instances.filter((instance) => instance.status === "upcoming"),
-    past: instances
-      .filter((instance) => instance.status === "past")
-      .toReversed(),
-  }
+  return groupSwitcherInstances(instances)
 }
 
 export type AdjacentHomeScreenEventKeys = {
@@ -41,11 +37,5 @@ export function adjacentHomeScreenEventKeys(
   instances: readonly HomeScreenEventInstance<HomeScreenEventEntry>[],
   selectedKey: string | null
 ): AdjacentHomeScreenEventKeys {
-  const index = instances.findIndex((instance) => instance.key === selectedKey)
-  if (index === -1)
-    return { previous: instances.at(-1)?.key ?? null, next: null }
-  return {
-    previous: instances[index - 1]?.key ?? null,
-    next: instances[index + 1]?.key ?? null,
-  }
+  return adjacentSwitcherKeys(instances, selectedKey)
 }

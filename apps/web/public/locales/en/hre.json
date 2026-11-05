@@ -9,7 +9,22 @@
     "window": "{{start}} to {{end}}",
     "endsIn": "Ends in {{when}}",
     "startsIn": "Starts in {{when}}",
-    "previewNote": "This event has not started yet. Mission progress, raids and pace open once it runs."
+    "previewNote": "This event has not started yet. Mission progress, raids and pace open once it runs.",
+    "past": "Ended",
+    "pastNote": "This event has ended. Its missions are shown for reference."
+  },
+  "switcher": {
+    "label": "Choose a Hero Release Event",
+    "placeholder": "Choose an event",
+    "empty": "No events in the calendar",
+    "previous": "Previous event",
+    "next": "Next event",
+    "option": "{{name}} · {{dates}}",
+    "groups": {
+      "running": "Running",
+      "upcoming": "Upcoming",
+      "past": "Past"
+    }
   },
   "missions": {
     "number": "Mission {{number}}",

@@ -428,19 +428,23 @@ describe("HSE tab states", () => {
 })
 
 describe("HSE tab header", () => {
-  it("shows no project, Raids Filters or Planning Settings controls", () => {
+  it("shows the project selector and Raids Filters above the raid lists, not in the title row", () => {
     renderHse()
 
-    expect(screen.queryByTestId("hse-project-select")).toBeNull()
-    expect(screen.queryByTestId("raids-filters")).toBeNull()
+    const title = screen.getByTestId("hse-title-row")
+    expect(within(title).queryByTestId("hse-project-select")).toBeNull()
+    expect(within(title).queryByTestId("hse-raids-filters")).toBeNull()
+    expect(screen.getByTestId("hse-raids-controls")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-project-select")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-raids-filters")).toBeInTheDocument()
     expect(screen.queryByTestId("hse-planning-settings")).toBeNull()
   })
 
-  it("lists for every active goal, whatever project Today has selected", () => {
+  it("lists for the selected Dailies project", () => {
     renderHse("project-1")
 
     expect(mocks.raidsArgs.at(-1)).toEqual([
-      undefined,
+      "project-1",
       { homeScreenEventRule: homeScreenEventRaidRuleOf("hse-machine-hunt") },
     ])
   })

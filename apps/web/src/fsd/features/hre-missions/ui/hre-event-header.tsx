@@ -13,7 +13,8 @@ import type { HreInstanceState } from "../model/use-hre-instance"
 
 /**
  * The HRE tab's event header: the featured hero (icon, localized name, alliance), the window and
- * the countdown, labelled as a preview for an upcoming event. A hero id that does not resolve
+ * the countdown, labelled as a preview for an upcoming event and as ended (no countdown) for a
+ * past one. A hero id that does not resolve
  * shows the raw id alone. Loading shows a skeleton, a failed read the retryable error.
  */
 export function HreEventHeader({ state }: { state: HreInstanceState }) {
@@ -50,6 +51,7 @@ export function HreEventHeader({ state }: { state: HreInstanceState }) {
   const startMs = Date.parse(instance.entry.startUtc)
   const endMs = Date.parse(instance.entry.endUtc)
   const running = instance.status === "running"
+  const past = instance.status === "past"
   const formatDate = (ms: number) =>
     new Date(ms).toLocaleDateString(dateLocale, { dateStyle: "medium" })
   const name = hero
@@ -91,7 +93,11 @@ export function HreEventHeader({ state }: { state: HreInstanceState }) {
               })}
             </Badge>
           ) : null}
-          {running ? null : (
+          {running ? null : past ? (
+            <Badge data-testid="hre-header-past" variant="outline">
+              {t("hre:status.past")}
+            </Badge>
+          ) : (
             <Badge data-testid="hre-header-preview" variant="outline">
               {t("hre:status.preview")}
             </Badge>
@@ -102,16 +108,20 @@ export function HreEventHeader({ state }: { state: HreInstanceState }) {
             start: formatDate(startMs),
             end: formatDate(endMs),
           })}
-          {" · "}
-          <span data-testid="hre-header-countdown">
-            {t(running ? "hre:status.endsIn" : "hre:status.startsIn", {
-              when: formatEventCountdown(
-                running ? endMs : startMs,
-                nowMs,
-                i18n.language
-              ),
-            })}
-          </span>
+          {past ? null : (
+            <>
+              {" · "}
+              <span data-testid="hre-header-countdown">
+                {t(running ? "hre:status.endsIn" : "hre:status.startsIn", {
+                  when: formatEventCountdown(
+                    running ? endMs : startMs,
+                    nowMs,
+                    i18n.language
+                  ),
+                })}
+              </span>
+            </>
+          )}
         </p>
       </div>
     </div>
