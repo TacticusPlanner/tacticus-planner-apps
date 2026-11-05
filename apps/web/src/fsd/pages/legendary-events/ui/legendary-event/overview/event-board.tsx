@@ -324,7 +324,7 @@ function UnitTable({
   }
   return (
     <div
-      className="max-h-[34rem] min-w-0 overflow-auto rounded-md border"
+      className="max-h-[max(34rem,calc(100dvh-18rem))] min-w-0 overflow-auto rounded-md border"
       data-testid="event-board-table"
     >
       {/* As wide as the columns, not the scroll box: the sticky heading row (and its background)
