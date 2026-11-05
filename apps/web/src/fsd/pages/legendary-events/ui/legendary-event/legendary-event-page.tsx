@@ -442,6 +442,10 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           onCreateGoal: createGoalFromRow,
         },
       },
+      allLanesObjectives: {
+        selected: selectedObjectives,
+        onChange: setSelectedObjectives,
+      },
       progressGrid,
       marks: {
         editable: marksEditable,

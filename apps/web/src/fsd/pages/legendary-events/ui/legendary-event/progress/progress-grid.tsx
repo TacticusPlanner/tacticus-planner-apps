@@ -18,7 +18,7 @@ import {
 /** Desktop: one lane's battles (rows, open battles first, then the fully cleared ones struck
  *  through below a divider) by defeat-all and the five objectives, each
  *  row ending with its points earned of the maximum and its high score. Cleared state and points
- *  are read-only; with `marks`, a not-cleared cell opens its mark menu and an incomplete row ends
+ *  are read-only; with editable `marks`, a not-cleared cell opens its mark menu and an incomplete row ends
  *  with a "⋯" row action. */
 export function ProgressGrid({
   progress,
@@ -85,7 +85,7 @@ export function ProgressGrid({
           </span>
         ) : null}
       </td>
-      {marks ? (
+      {marks?.editable ? (
         <td className="py-0.5 pl-1 text-right">
           {battle.complete ? null : (
             <BattleRowAction battle={battle} marks={marks} />
@@ -131,7 +131,7 @@ export function ProgressGrid({
           <th className="py-1 pl-1 text-right font-medium" scope="col">
             {t("progress.points")}
           </th>
-          {marks ? (
+          {marks?.editable ? (
             <th className="w-7 py-1" scope="col">
               <span className="sr-only">
                 {t("annotations.rowActionHeader")}
@@ -146,7 +146,7 @@ export function ProgressGrid({
           <tr data-testid="progress-cleared-divider">
             <td
               className="border-t-2 border-border pt-2 pb-0.5 text-xs text-muted-foreground"
-              colSpan={columns.length + (marks ? 3 : 2)}
+              colSpan={columns.length + (marks?.editable ? 3 : 2)}
             >
               {t("progress.clearedDivider", { count: cleared.length })}
             </td>

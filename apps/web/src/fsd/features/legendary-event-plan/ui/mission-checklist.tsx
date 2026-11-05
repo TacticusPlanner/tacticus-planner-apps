@@ -15,7 +15,7 @@ import { NumberStepper } from "@/shared/ui"
  * One track's missions in a run (spec: missions are done in order): the game unlocks them one at a
  * time, so the player sets how many are done rather than ticking each. A collapsible list shows the
  * done missions struck through, the current one marked Now and the rest in turn; picking a mission
- * sets Done up to it (picking the last done one undoes it). Then the Done and Plan to complete
+ * sets Done up to it (picking a done one sets Done to the mission before it). Then the Done and Plan to complete
  * counts; Plan to complete never drops below Done.
  */
 export function MissionChecklist({
@@ -92,7 +92,7 @@ export function MissionChecklist({
               label={missionLabel(mission)}
               number={position + 1}
               onPick={() =>
-                onDoneChange(position + 1 === done ? position : position + 1)
+                onDoneChange(position < done ? position : position + 1)
               }
               state={
                 position < done

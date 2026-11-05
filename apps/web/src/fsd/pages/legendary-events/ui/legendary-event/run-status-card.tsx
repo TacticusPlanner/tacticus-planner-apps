@@ -158,7 +158,7 @@ export function RunStatusCard({
           <h2>{t("runStatus.title")}</h2>
         </CardTitle>
         {runInputs.enabled || onGoToRun ? (
-          <CardAction className="flex items-center gap-1">
+          <CardAction className="flex flex-wrap items-center justify-end gap-1">
             {runInputs.enabled ? (
               <RunInputsDrawer
                 runs={runInputs.runs}
@@ -174,11 +174,14 @@ export function RunStatusCard({
                 type="button"
                 variant="outline"
               >
-                {t(
-                  lifecycle.state === "upcoming"
-                    ? "runStatus.goToNextRun"
-                    : "runStatus.goToCurrentRun"
-                )}
+                {/* Icon only on narrow screens, so both actions fit beside the title. */}
+                <span className="max-sm:sr-only">
+                  {t(
+                    lifecycle.state === "upcoming"
+                      ? "runStatus.goToNextRun"
+                      : "runStatus.goToCurrentRun"
+                  )}
+                </span>
                 <ArrowRight aria-hidden="true" />
               </Button>
             ) : null}

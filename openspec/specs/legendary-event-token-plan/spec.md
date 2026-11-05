@@ -259,8 +259,8 @@ Whenever a Missions order exists and the card shows a token, the Next token card
 #### Scenario: Setting a mission done from the card
 
 - **GIVEN** the card in Missions order during run 2
-- **WHEN** the user picks the first mission, "Defeat 30 Necrons"
-- **THEN** run 2's inputs save with 1 done and Plan to complete at least 1
+- **WHEN** the user picks "Defeat 30 Necrons", Uthar's second regular mission, with no mission done
+- **THEN** run 2's inputs save with 2 done and Plan to complete at least 2
 
 ### Requirement: Missions order
 

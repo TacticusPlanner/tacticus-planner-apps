@@ -54,7 +54,16 @@ const teams: Record<string, readonly LegendaryEventUnit[]> = {
 
 const enemies: Record<string, BattleEnemies> = {
   "alpha-2": { factions: new Set(["Necrons"]), traits: new Set() },
-  "beta-3": { factions: new Set(["AdeptusMechanicus"]), traits: new Set() },
+  "beta-3": {
+    factions: new Set(["AdeptusMechanicus"]),
+    traits: new Set(),
+    counts: {
+      waves: 1,
+      enemies: 40,
+      byFaction: new Map([["AdeptusMechanicus", 40]]),
+      byTrait: new Map(),
+    },
+  },
 }
 
 function input(
@@ -84,7 +93,7 @@ describe("nextTokenMissions", () => {
       token: beta4,
       index: 1,
       missions: [
-        { ref: ADMECH, amount: expect.any(Number), estimate: false },
+        { ref: ADMECH, amount: 40, estimate: false },
         { ref: NO_BIG_TARGET, amount: 1, estimate: false },
       ],
       pointsDifference: -30,

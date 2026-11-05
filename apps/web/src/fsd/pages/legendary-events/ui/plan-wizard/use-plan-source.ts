@@ -127,6 +127,7 @@ export function usePlanSource(eventId: string): PlanSource {
     config.status !== "loading" &&
     plan.status !== "pending" &&
     !paid.loading &&
+    !paid.failed &&
     goalTargets.status !== "loading"
 
   // The reads hand out a new state object every render; the memo keys on their data, which only
@@ -274,12 +275,14 @@ export function usePlanSource(eventId: string): PlanSource {
     }
     return frozenSource
   }
-  if (failed || plan.status === "error") {
+  // A failed settings read would plan with the default Show paid options, not the account's.
+  if (failed || plan.status === "error" || paid.failed) {
     return {
       status: "error",
       retry: () => {
         event.retry?.()
         void plan.refetch()
+        paid.retry()
       },
     }
   }

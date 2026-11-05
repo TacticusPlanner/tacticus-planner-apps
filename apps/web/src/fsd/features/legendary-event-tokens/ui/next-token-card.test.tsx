@@ -380,6 +380,7 @@ describe("NextTokenCard", () => {
         missionOrder: {
           tokens,
           markers: [],
+          nextProgress: [],
           steps: tokens.map(() => [
             {
               ref: admech,
@@ -423,6 +424,39 @@ describe("NextTokenCard", () => {
       expect(
         localStorage.getItem("legendaryEvents.tokenPlan.missionsOrder")
       ).toBe("true")
+    })
+
+    it("offers the For missions alternative in Missions order when it is another token", () => {
+      const view = withMissionOrder()
+      if (view.kind !== "ready") throw new Error("worked view is not ready")
+      const ordered = view.missionOrder!.tokens[0]!
+      const other = view.plan.tokens.find(
+        (token) =>
+          token.laneId !== ordered.laneId ||
+          token.battleIndex !== ordered.battleIndex
+      )!
+      const alternative = (token: typeof ordered) => ({
+        ...view,
+        missions: {
+          progressed: [],
+          alternative: {
+            token,
+            // A plan position, which can match the Missions order's own position by chance.
+            index: 0,
+            missions: [{ ref: admech, amount: 3, estimate: false }],
+            pointsDifference: -10,
+          },
+        },
+      })
+      const { unmount } = renderCard(alternative(other))
+      fireEvent.click(screen.getByRole("radio", { name: "Missions" }))
+      expect(
+        screen.getByTestId("next-token-missions-alternative")
+      ).toBeInTheDocument()
+      unmount()
+
+      renderCard(alternative(ordered))
+      expect(screen.queryByTestId("next-token-missions-alternative")).toBeNull()
     })
 
     it("has no switch without a Missions order", () => {

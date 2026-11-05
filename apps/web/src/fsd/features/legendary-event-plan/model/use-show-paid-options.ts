@@ -12,11 +12,11 @@ import {
 const FLAG = "LegendaryEventShowPaidOptions" as const
 
 /** The account's Show paid options (off by default), a user preference flag so it applies to every
- *  Legendary Event; `loading` while the account settings load. A failed write shows the run
+ *  Legendary Event; `loading` while the account settings load, `failed` when that read failed. A failed write shows the run
  *  inputs toast. */
 export function useShowPaidOptions() {
   const { t } = useTranslation("legendaryEvents")
-  const { settings, loading, save } = usePlanningSettings()
+  const { settings, loading, failed, retry, save } = usePlanningSettings()
   const { captureEvent } = useAnalyticsActions()
   const setShowPaidOptions = (on: boolean) =>
     save(withPreference(settings, FLAG, on))
@@ -29,6 +29,9 @@ export function useShowPaidOptions() {
   return {
     showPaidOptions: hasPreference(settings, FLAG),
     loading,
+    /** The settings read failed, so `showPaidOptions` is the default rather than the account's. */
+    failed,
+    retry,
     setShowPaidOptions,
   }
 }

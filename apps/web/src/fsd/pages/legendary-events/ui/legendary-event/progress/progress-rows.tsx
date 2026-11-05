@@ -17,7 +17,7 @@ const ROW_GRID = "grid grid-cols-[2.5rem_repeat(6,minmax(0,1fr))_auto] gap-1"
 
 /** Mobile: one compact row per battle (number, six cells, points earned) under a sticky header
  *  row that shows the column icons once; open battles first, then the fully cleared ones struck
- *  through below a divider. Cleared state and points are read-only; with `marks`, a
+ *  through below a divider. Cleared state and points are read-only; saved marks always show; with editable `marks`, a
  *  not-cleared cell opens its mark menu and an incomplete row's battle number is its row action,
  *  with 40px touch targets. */
 export function ProgressRows({
@@ -45,7 +45,7 @@ export function ProgressRows({
       data-testid="progress-row"
       key={battle.index}
     >
-      {marks && !battle.complete ? (
+      {marks?.editable && !battle.complete ? (
         <BattleAnnotationMenu
           battle={battle.index + 1}
           onChange={(status) => marks.onMarkBattle(battle, status)}

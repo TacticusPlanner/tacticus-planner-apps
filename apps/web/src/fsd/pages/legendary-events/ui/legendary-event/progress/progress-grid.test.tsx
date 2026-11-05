@@ -168,6 +168,17 @@ describe("ProgressSection", () => {
     expect(rowsIn("alpha")[0]).not.toHaveClass("line-through")
   })
 
+  it("lists the cleared battles last below the divider on mobile", () => {
+    renderProgress(entry, "rows")
+    const order = within(lane("alpha"))
+      .getAllByTestId("progress-row")
+      .map((row) => Number(row.dataset.battle))
+    expect(order.slice(-3)).toEqual([4, 8, 9])
+    expect(
+      within(lane("alpha")).getByTestId("progress-cleared-divider")
+    ).toHaveTextContent("3")
+  })
+
   it("leaves battles beyond the synced encounters uncleared at 0 points", () => {
     renderProgress(entry)
     const rows = rowsIn("alpha")
@@ -453,6 +464,24 @@ describe("ProgressSection marks", () => {
         name: "Flying: not cleared",
       })
     ).toBeNull()
+  })
+
+  it("shows saved marks read-only on mobile until Edit marks is on", async () => {
+    const user = userEvent.setup()
+    renderMarked(markedEntry, {
+      layout: "rows",
+      initial: [annotation(6, 3, "stopHere")],
+    })
+    const flying = () =>
+      within(rowsIn("alpha")[6]!)
+        .getAllByTestId("progress-cell")
+        .find((cell) => cell.dataset.mark === "stopHere")!
+
+    expect(flying()).toHaveTextContent("Flying: not cleared, marked Stop here")
+    expect(flying().tagName).toBe("SPAN")
+
+    await user.click(screen.getByTestId("progress-edit-toggle"))
+    expect(flying().tagName).toBe("BUTTON")
   })
 
   it("makes the battle number of an incomplete mobile row its 40px row action", async () => {

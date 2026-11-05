@@ -136,6 +136,7 @@ describe("EventBoard", () => {
     // The scroll box holds one content block sized to the columns (w-max, at least the box), and
     // the sticky heading row and the columns both sit inside it.
     expect(content.parentElement).toBe(table)
+    expect(table).toHaveClass("overflow-auto")
     expect(content).toHaveClass("w-max", "min-w-full")
     const heading = within(content).getByRole("group", { name: "Objectives" })
     expect(heading).toHaveClass("sticky")

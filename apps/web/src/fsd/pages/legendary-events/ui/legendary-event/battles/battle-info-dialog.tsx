@@ -127,7 +127,7 @@ function BattleInfoNav({
   const previous = adjacentBattle(target, battleCount, -1)
   const next = adjacentBattle(target, battleCount, 1)
   return (
-    <ResponsiveDialogFooter className="flex-row items-center justify-between gap-2 border-t md:justify-between">
+    <ResponsiveDialogFooter className="flex-row flex-wrap items-center justify-between gap-2 border-t md:justify-between">
       <Button
         data-testid="battle-info-previous"
         disabled={!previous}

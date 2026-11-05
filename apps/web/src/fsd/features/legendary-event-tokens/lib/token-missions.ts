@@ -67,24 +67,8 @@ export interface NextTokenMissions {
 export function nextTokenMissions(
   input: TokenMissionsInput
 ): NextTokenMissions {
-  const counted = currentMissions(input.open).filter(
-    (entry) => !UNTRACKED_MISSION_KINDS.has(entry.mission.kind)
-  )
-  const progressedBy = (token: PlannedToken): MissionProgress[] => {
-    const members = input.membersOf(token.teamId)
-    const enemies = input.enemiesOf(token.laneId, token.battleIndex)
-    return counted.flatMap((ref) => {
-      if (!tokenProgressesMission(ref.mission, members, enemies)) return []
-      const amount = tokenMissionAmount(ref.mission, members, enemies)
-      return [
-        {
-          ref,
-          amount: amount?.amount ?? 0,
-          estimate: amount?.estimate ?? true,
-        },
-      ]
-    })
-  }
+  const progressedBy = (token: PlannedToken) =>
+    tokenMissionProgress(input, token)
   const { tokens } = input.plan
   const next = input.next.token
   const progressed = progressedBy(next)
@@ -111,4 +95,27 @@ export function nextTokenMissions(
     }
   }
   return { progressed, alternative: best }
+}
+
+/** The current missions (each track's first open one, untracked kinds left out) `token`
+ *  progresses, with what one play adds. */
+export function tokenMissionProgress(
+  input: Pick<TokenMissionsInput, "open" | "membersOf" | "enemiesOf">,
+  token: Pick<PlannedToken, "teamId" | "laneId" | "battleIndex">
+): MissionProgress[] {
+  const members = input.membersOf(token.teamId)
+  const enemies = input.enemiesOf(token.laneId, token.battleIndex)
+  return currentMissions(input.open)
+    .filter((entry) => !UNTRACKED_MISSION_KINDS.has(entry.mission.kind))
+    .flatMap((ref) => {
+      if (!tokenProgressesMission(ref.mission, members, enemies)) return []
+      const amount = tokenMissionAmount(ref.mission, members, enemies)
+      return [
+        {
+          ref,
+          amount: amount?.amount ?? 0,
+          estimate: amount?.estimate ?? true,
+        },
+      ]
+    })
 }

@@ -696,7 +696,11 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     act(() => {
       fireEvent.click(betaBattles)
     })
-    expect(await screen.findByTestId("battle-info-dialog")).toBeInTheDocument()
+    // With no synced progress the first battle not fully cleared is Beta's first.
+    const dialog = await screen.findByTestId("battle-info-dialog")
+    expect(within(dialog).getByRole("heading")).toHaveTextContent(
+      "Beta · Battle 1"
+    )
     // The dialog opens over Teams rather than switching to Plan.
     expect(screen.getByTestId("legendary-event-tab-teams")).toHaveAttribute(
       "aria-selected",

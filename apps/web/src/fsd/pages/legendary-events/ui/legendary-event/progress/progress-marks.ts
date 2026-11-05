@@ -34,6 +34,8 @@ export interface ProgressMarksViewModel {
 
 /** One lane's slice of the marks, as the grid and the rows read it. */
 export interface LaneMarks {
+  /** Off while the mobile Edit marks switch is: saved marks show, but nothing opens a menu. */
+  editable: boolean
   statusAt: (
     battleIndex: number,
     objectiveId: number
@@ -68,10 +70,12 @@ export function buildMarksByLane(
 
 export function laneMarks(
   marks: ProgressMarksViewModel,
-  laneId: LegendaryEventLaneId
+  laneId: LegendaryEventLaneId,
+  editable = true
 ): LaneMarks {
   const byCell = marks.byLane[laneId]
   return {
+    editable,
     statusAt: (battleIndex, objectiveId) =>
       byCell.get(annotationCellKey(battleIndex, objectiveId)) ?? null,
     onMarkCell: (battleIndex, objectiveId, status) =>

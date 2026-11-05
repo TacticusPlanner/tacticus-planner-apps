@@ -30,4 +30,22 @@ describe("mission gains", () => {
       ])
     ).toStrictEqual([{ ref, amount: 4, estimate: false, completes: true }])
   })
+
+  it("leaves untracked missions out of a step's gains", () => {
+    const anyBattle = {
+      track: "regular",
+      mission: { index: 1, kind: "anyBattle", count: 5 },
+    } as unknown as LegendaryEventMissionRef
+    const step = (mission: LegendaryEventMissionRef) => ({
+      ref: mission,
+      total: 5,
+      gained: 1,
+      needed: 5,
+      completes: false,
+      estimate: false,
+    })
+    expect(
+      gainsFromSteps([step(anyBattle), step(ref)]).map((gain) => gain.ref)
+    ).toStrictEqual([ref])
+  })
 })

@@ -1,4 +1,7 @@
-import type { LegendaryEventMissionRef } from "@/entities/legendary-event"
+import {
+  UNTRACKED_MISSION_KINDS,
+  type LegendaryEventMissionRef,
+} from "@/entities/legendary-event"
 
 import type { TokenMissionStep } from "./mission-order"
 import type { MissionProgress } from "./token-missions"
@@ -20,14 +23,17 @@ export function gainsFromProgress(
   return progress.map((entry) => ({ ...entry, completes: false }))
 }
 
-/** The Missions order's gains: each step's added count, and whether it finishes the mission. */
+/** The Missions order's gains: each step's added count, and whether it finishes the mission.
+ *  Untracked kinds (every battle progresses them) are left out, as in the Points order. */
 export function gainsFromSteps(
   steps: readonly TokenMissionStep[]
 ): MissionGain[] {
-  return steps.map((step) => ({
-    ref: step.ref,
-    amount: step.gained,
-    estimate: step.estimate,
-    completes: step.completes,
-  }))
+  return steps
+    .filter((step) => !UNTRACKED_MISSION_KINDS.has(step.ref.mission.kind))
+    .map((step) => ({
+      ref: step.ref,
+      amount: step.gained,
+      estimate: step.estimate,
+      completes: step.completes,
+    }))
 }

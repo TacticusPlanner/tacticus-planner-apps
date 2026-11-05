@@ -20,7 +20,9 @@ const CONFIG: ClearEstimateConfig = {
 const CONFIG_STATE = { status: "ready", config: CONFIG }
 let configState: unknown = CONFIG_STATE
 let eventData: unknown = utharEvent
-const PLAN_QUERY = { query: { status: "success", data: EMPTY_PLAN } }
+let planQuery = { query: { status: "success", data: EMPTY_PLAN } }
+const PAID_SETTINGS = { showPaidOptions: false, loading: false, failed: false }
+let paidSettings = PAID_SETTINGS
 const EVENTS = [utharEvent]
 const ROSTER: never[] = []
 const BATTLES: never[] = []
@@ -45,8 +47,8 @@ vi.mock("@/features/legendary-event-goals", () => ({
 }))
 vi.mock("@/features/legendary-event-plan", () => ({
   useShowPaidOptions: () => ({
-    showPaidOptions: false,
-    loading: false,
+    ...paidSettings,
+    retry: vi.fn(),
     setShowPaidOptions: vi.fn(),
   }),
 }))
@@ -71,7 +73,7 @@ vi.mock("@/entities/legendary-event", async (importOriginal) => ({
   useLegendaryEventBattles: () => read(BATTLES),
   useLegendaryEventSyncTimes: () => read(SYNC_TIMES),
   useClearEstimateConfig: () => configState,
-  usePlanWriteQueue: () => PLAN_QUERY,
+  usePlanWriteQueue: () => planQuery,
 }))
 
 describe("usePlanSource", () => {
@@ -82,6 +84,45 @@ describe("usePlanSource", () => {
     unitName = () => ""
     configState = CONFIG_STATE
     eventData = utharEvent
+    planQuery = { query: { status: "success", data: EMPTY_PLAN } }
+    paidSettings = PAID_SETTINGS
+  })
+
+  it("plans with the account's Show paid options over the stored plan's, both ways", () => {
+    const paidOf = () => {
+      const { result } = renderHook(() => usePlanSource(utharEvent.id))
+      if (result.current.status !== "ready") throw new Error("not ready")
+      return result.current.inputs.plan.showPaidOptions
+    }
+    paidSettings = { ...PAID_SETTINGS, showPaidOptions: true }
+    planQuery = {
+      query: {
+        status: "success",
+        data: { ...EMPTY_PLAN, showPaidOptions: false },
+      },
+    }
+    expect(paidOf()).toBe(true)
+
+    paidSettings = { ...PAID_SETTINGS, showPaidOptions: false }
+    planQuery = {
+      query: {
+        status: "success",
+        data: { ...EMPTY_PLAN, showPaidOptions: true },
+      },
+    }
+    expect(paidOf()).toBe(false)
+  })
+
+  it("waits for the account settings, and fails rather than plan with their defaults", () => {
+    paidSettings = { ...PAID_SETTINGS, loading: true }
+    expect(
+      renderHook(() => usePlanSource(utharEvent.id)).result.current.status
+    ).not.toBe("ready")
+
+    paidSettings = { ...PAID_SETTINGS, failed: true }
+    expect(
+      renderHook(() => usePlanSource(utharEvent.id)).result.current.status
+    ).toBe("error")
   })
 
   it("is ready for an event with no synced progress or roster", () => {

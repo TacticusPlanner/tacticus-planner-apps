@@ -139,7 +139,12 @@ export function LegendaryEventPageView({
                 event={props.event}
                 laneIds={LEGENDARY_EVENT_LANE_IDS}
                 layout="list"
-                leaderboard={props.leaderboard}
+                // Every lane's chips show here, so every lane's selection filters.
+                leaderboard={{
+                  ...props.leaderboard,
+                  selectedObjectives: props.allLanesObjectives.selected,
+                  onSelectedObjectivesChange: props.allLanesObjectives.onChange,
+                }}
                 progressGrid={props.progressGrid}
               />
             ) : null}

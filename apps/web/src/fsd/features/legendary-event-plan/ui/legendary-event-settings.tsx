@@ -1,4 +1,4 @@
-import { useId } from "react"
+import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { Settings } from "lucide-react"
@@ -56,20 +56,30 @@ function LegendaryEventSettingsForm() {
   const { t } = useTranslation("legendaryEvents")
   const paid = useShowPaidOptions()
   const ads = useWatchAds()
+  // Each save is built from the loaded settings, so the switches wait for the read and for the
+  // previous save: a second change made meanwhile would drop the first one's flag.
+  const [saving, setSaving] = useState(false)
+  const busy = paid.loading || saving
+  const save = (write: Promise<unknown>) => {
+    setSaving(true)
+    void write.finally(() => setSaving(false))
+  }
   return (
     <div className="flex flex-col gap-3">
       <SettingSwitch
         checked={paid.showPaidOptions}
+        disabled={busy}
         hint={t("settings.showPaidOptionsHint")}
         label={t("runInputs.showPaidOptions")}
-        onChange={(on) => void paid.setShowPaidOptions(on)}
+        onChange={(on) => save(paid.setShowPaidOptions(on))}
         testId="legendary-event-settings-paid"
       />
       <SettingSwitch
         checked={ads.watchAds}
+        disabled={busy}
         hint={t("runInputs.watchAdsHint")}
         label={t("runInputs.watchAds")}
-        onChange={(on) => void ads.setWatchAds(on)}
+        onChange={(on) => save(ads.setWatchAds(on))}
         testId="legendary-event-settings-ads"
       />
     </div>
@@ -78,12 +88,14 @@ function LegendaryEventSettingsForm() {
 
 function SettingSwitch({
   checked,
+  disabled,
   label,
   hint,
   testId,
   onChange,
 }: {
   checked: boolean
+  disabled: boolean
   label: string
   hint: string
   testId: string
@@ -103,6 +115,7 @@ function SettingSwitch({
         aria-describedby={hintId}
         checked={checked}
         data-testid={testId}
+        disabled={disabled}
         id={id}
         onCheckedChange={onChange}
       />

@@ -105,7 +105,8 @@ export function ProgressSection({
             key={laneId}
             laneId={laneId}
             layout={layout}
-            marks={laneMarksOn ? marks : undefined}
+            editing={laneMarksOn}
+            marks={editable ? marks : undefined}
             progress={progressGrid.lanes[laneId]}
           />
         ))
@@ -120,16 +121,19 @@ function ProgressLane({
   progress,
   layout,
   marks,
+  editing,
 }: {
   event: LegendaryEvent
   laneId: LegendaryEventLaneId
   progress: LaneProgressView
   layout: "grid" | "rows"
   marks: ProgressMarksViewModel | undefined
+  /** Marks open their menus (else saved marks show read-only). */
+  editing: boolean
 }) {
   const { t } = useTranslation("legendaryEvents")
   const columns = useProgressColumns(event[laneId])
-  const lane = marks ? laneMarks(marks, laneId) : undefined
+  const lane = marks ? laneMarks(marks, laneId, editing) : undefined
   const body =
     progress.status === "noEvent" ? (
       <p

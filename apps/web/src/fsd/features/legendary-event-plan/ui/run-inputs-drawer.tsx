@@ -80,7 +80,8 @@ export function RunInputsDrawer({
     <RunInputsForm
       event={event}
       inputs={inputs}
-      only={focus === null ? undefined : [focus]}
+      // No focus run: every run while the run is unknown, none after the last run.
+      only={focus !== null ? [focus] : runs.kind === "unknown" ? undefined : []}
       runs={runs}
       touch={isMobile}
     />

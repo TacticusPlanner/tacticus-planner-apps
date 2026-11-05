@@ -151,6 +151,20 @@ describe("usePlanDraft", () => {
     expect(runSliced).toHaveBeenCalledTimes(starts + 1)
   })
 
+  it("follows the account's Show paid options when it changes while the wizard is open", () => {
+    const { result, rerender } = renderHook(
+      ({ paid }: { paid: boolean | undefined }) =>
+        usePlanDraft(SOURCE, null, paid),
+      { initialProps: { paid: undefined as boolean | undefined } }
+    )
+    const initial = result.current.economy.showPaidOptions
+
+    rerender({ paid: !initial })
+    expect(result.current.economy.showPaidOptions).toBe(!initial)
+    // The draft's run inputs are kept.
+    expect(result.current.economy.runs).toBe(SOURCE.inputs.plan.runs ?? [])
+  })
+
   it("does not restart the search on a re-render with unchanged inputs", () => {
     const { rerender } = renderHook(() => usePlanDraft(SOURCE, null))
     const starts = runSliced.mock.calls.length

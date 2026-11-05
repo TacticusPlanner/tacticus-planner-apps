@@ -2,7 +2,7 @@ import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { fireEvent, render, screen } from "@/test/render"
+import { fireEvent, render, screen, waitFor } from "@/test/render"
 
 import type { NavItem } from "./nav-items"
 import { SectionActions } from "./section-actions"
@@ -58,6 +58,25 @@ describe("SectionActions", () => {
       expect.objectContaining({
         preferences: ["LegendaryEventShowPaidOptions"],
       })
+    )
+  })
+
+  it("holds both switches while a save is in flight", async () => {
+    let finish = () => {}
+    save.mockReturnValue(
+      new Promise<void>((resolve) => {
+        finish = resolve
+      })
+    )
+    renderActions("/legendary-events")
+    fireEvent.click(await screen.findByTestId("legendary-event-settings"))
+    fireEvent.click(screen.getByTestId("legendary-event-settings-paid"))
+
+    // A second change now would be built from the settings before the first save.
+    expect(screen.getByTestId("legendary-event-settings-ads")).toBeDisabled()
+    finish()
+    await waitFor(() =>
+      expect(screen.getByTestId("legendary-event-settings-ads")).toBeEnabled()
     )
   })
 

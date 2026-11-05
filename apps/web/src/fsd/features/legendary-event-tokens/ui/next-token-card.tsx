@@ -17,13 +17,9 @@ import type {
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
-import {
-  gainsFromProgress,
-  gainsFromSteps,
-  type MissionGain,
-} from "../lib/mission-gains"
+import { gainsFromProgress, type MissionGain } from "../lib/mission-gains"
 import type { TokenMissionStep } from "../lib/mission-order"
-import type { PlannedToken } from "../lib/token-plan"
+import { samePlannedToken, type PlannedToken } from "../lib/token-plan"
 import {
   missionsNextToken,
   upNextTokens,
@@ -138,13 +134,16 @@ export function NextTokenCard({
               isMobile={isMobile}
               onMarkToken={onMarkToken}
               chipOf={chipOf}
-              gains={gainsFromSteps(ordered.steps)}
+              gains={ordered.gains}
               reason={t("tokenPlan.nextToken.reasons.missionsOrder")}
               token={ordered.token}
               view={view}
             />
             {view.missions?.alternative &&
-            view.missions.alternative.index !== ordered.index ? (
+            !samePlannedToken(
+              view.missions.alternative.token,
+              ordered.token
+            ) ? (
               <MissionAlternativeView
                 alternative={view.missions.alternative}
                 event={event}

@@ -130,6 +130,12 @@ export interface LegendaryEventPageViewModel {
     onChange: (lane: LegendaryEventLaneId) => void
   }
   leaderboard: LeaderboardViewModel
+  /** The objective chip selection across every lane, for the Overview's all-lanes leaderboard
+   *  (`leaderboard` keeps only the shown lanes' chips). */
+  allLanesObjectives: {
+    selected: ReadonlySet<string>
+    onChange: (keys: ReadonlySet<string>) => void
+  }
   progressGrid: ProgressGridViewModel
   /** Maybe clear / Stop here marks on the progress grid's not-cleared cells. */
   marks: ProgressMarksViewModel
