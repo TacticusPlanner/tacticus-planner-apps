@@ -204,12 +204,7 @@ describe("useCampaignDisplay().tierLabel", () => {
 
 describe("useCampaignDisplay().campaignName / difficultyLabel", () => {
   it.each([
-    [
-      "standard storyline",
-      descriptor({}),
-      "indomitus",
-      "campaigns:difficulties.standard",
-    ],
+    ["standard storyline", descriptor({}), "indomitus", ""],
     [
       "elite storyline",
       descriptor({ difficultyToken: "elite" }),
@@ -220,7 +215,7 @@ describe("useCampaignDisplay().campaignName / difficultyLabel", () => {
       "mirror base tier",
       descriptor({ isMirror: true }),
       "indomitus campaigns:difficulties.mirror",
-      "campaigns:difficulties.standard",
+      "",
     ],
     [
       "elite mirror",

@@ -948,7 +948,8 @@ describe("CreateGoalSheet", () => {
     // Full campaign battle name (resolved from the "campaign1"/Standard descriptor + node number),
     // not the raw battle id.
     expect(location).toHaveTextContent("Indomitus")
-    expect(location).toHaveTextContent("Indomitus Standard 1")
+    expect(location).toHaveTextContent("Indomitus 1")
+    expect(location).not.toHaveTextContent("Standard")
     // B1's energyCost (10) / guaranteed dropRate (1) = 10 energy per shard.
     expect(location).toHaveTextContent("≈10 energy per shard")
     // B1 is the character's only regular shard location, so it's selected by default without any

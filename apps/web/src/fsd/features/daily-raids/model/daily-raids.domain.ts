@@ -113,8 +113,8 @@ export function campaignLocationLabels(
   if (!descriptor) return { campaignName: battleId, nodeLabel: "" }
   const node = `${battle.nodeNumber}${battle.challenge ? "B" : ""}`
   const campaignName = display.campaignName(descriptor)
-  // Empty for a campaign event's Standard tier (its default, so "Death Guard 3"); storylines always
-  // name their tier, since Standard and Elite are separate picks in the game.
+  // Empty for a Standard tier, storyline or campaign event ("Saim-Hann 42", "Death Guard 3"): the
+  // location icon already tells it from Elite.
   const difficultyLabel = display.difficultyLabel(descriptor)
   if (!difficultyLabel) return { campaignName, nodeLabel: node }
   return {

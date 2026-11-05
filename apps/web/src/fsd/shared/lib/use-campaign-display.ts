@@ -74,9 +74,10 @@ export function useCampaignDisplay() {
   )
 
   /**
-   * Just the difficulty word of a campaign/event tier: "Standard", "Elite" or "Extremis" — or ""
-   * for a campaign event's Standard tier, which is left unnamed (see `tierLabel`). The counterpart
-   * of `campaignName`, which already carries "Mirror".
+   * Just the difficulty word of a campaign/event tier for a location label: "Elite" or "Extremis",
+   * or "" for a Standard tier (storyline or campaign event), which is left unnamed: the location
+   * icon already tells Standard from Elite. The counterpart of `campaignName`, which already
+   * carries "Mirror".
    */
   const difficultyLabel = useCallback(
     (descriptor: CampaignDescriptor) => {
@@ -87,7 +88,7 @@ export function useCampaignDisplay() {
       }
       return descriptor.difficultyToken === "elite"
         ? t("campaigns:difficulties.elite")
-        : t("campaigns:difficulties.standard")
+        : ""
     },
     [t]
   )
