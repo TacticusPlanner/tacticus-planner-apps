@@ -14,7 +14,7 @@ import {
   todayQuickFilterOptions,
   useActiveHomeScreenEvent,
   useTodayQuickFilters,
-  type HseListMode,
+  type HseListView,
 } from "@/features/daily-raids"
 import {
   EventDetails,
@@ -34,6 +34,7 @@ const EVENT_PARAM = "event"
 /** The list's Sort mode (`energy` or `ignoreGoals`; points per energy without it), so a reload or
  * link keeps it. */
 const ORDER_PARAM = "order"
+const IGNORE_GOALS_PARAM = "ignoreGoals"
 
 /**
  * Dailies > HSE: one Home Screen Event instance at a time. By default the running event (or, with
@@ -60,19 +61,22 @@ export function HsePage() {
     () => todayQuickFilterOptions(quickFilters),
     [quickFilters]
   )
-  const requestedMode = searchParams.get(ORDER_PARAM)
-  const listMode: HseListMode =
-    requestedMode === "energy" || requestedMode === "ignoreGoals"
-      ? requestedMode
-      : "points"
+  const requestedOrder = searchParams.get(ORDER_PARAM)
+  const listOrder = requestedOrder === "energy" ? "energy" : "points"
+  // `?order=ignoreGoals` is the link shape from when Ignore goals was a Sort option.
+  const ignoreGoals =
+    searchParams.get(IGNORE_GOALS_PARAM) === "1" ||
+    requestedOrder === "ignoreGoals"
   // Stable, so the memoised farm list does not re-render on a projection keystroke.
-  const setListMode = useCallback(
-    (order: HseListMode) =>
+  const setListView = useCallback(
+    (view: HseListView) =>
       setSearchParams(
         (previous) => {
           const params = new URLSearchParams(previous)
-          if (order === "points") params.delete(ORDER_PARAM)
-          else params.set(ORDER_PARAM, order)
+          if (view.order === "points") params.delete(ORDER_PARAM)
+          else params.set(ORDER_PARAM, view.order)
+          if (view.ignoreGoals) params.set(IGNORE_GOALS_PARAM, "1")
+          else params.delete(IGNORE_GOALS_PARAM)
           return params
         },
         { replace: true }
@@ -182,17 +186,18 @@ export function HsePage() {
             testIdPrefix="hse"
           />
           <div data-testid="hse-sections">
-            {listMode === "ignoreGoals" ? (
+            {ignoreGoals ? (
               <EventLocationsSection
-                onOrderChange={setListMode}
+                onViewChange={setListView}
+                order={listOrder}
                 pointsIcon={pointsIcon}
                 quickFilters={quickOptions}
                 rule={raidRule}
               />
             ) : (
               <EventFarmSection
-                onOrderChange={setListMode}
-                order={listMode}
+                onViewChange={setListView}
+                order={listOrder}
                 pointsIcon={pointsIcon}
                 projectId={context.projectId}
                 quickFilters={quickOptions}

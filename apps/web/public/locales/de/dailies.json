@@ -199,6 +199,8 @@
     "upgradesLeft_other": "Noch {{count}} Upgrades",
     "shardsLeft_one": "Noch {{count}} Scherbe",
     "shardsLeft_other": "Noch {{count}} Scherben",
+    "more_one": "Noch {{count}}",
+    "more_other": "Noch {{count}}",
     "progress": "{{owned}} von {{target}} im Besitz",
     "fullyRaided": "Vollständig geraidet"
   },
@@ -253,7 +255,7 @@
     },
     "cell": {
       "label": "{{material}}, {{owned}} von {{target}} vorhanden",
-      "node": "{{campaign}} {{node}} × {{raids}}",
+      "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} weitere",
       "moreUnits": "+{{count}}"
     },
@@ -583,25 +585,26 @@
         "noEnergy": "Heute reicht die Energie für keinen dieser Orte mehr.",
         "nothingContributes": "Kein Ort mit Event-Punkten liefert eine Ressource, die deine Ziele noch brauchen. Die besten Orte für Punkte findest du unten.",
         "filtered": "Kein Ort entspricht deinen Raid-Filtern.",
-        "noneEfficient": "Keiner der günstigsten Orte für die Materialien deiner Ziele bringt Event-Punkte. Sortiere nach Punkten pro Energie, um Orte mit Punkten zu sehen.",
         "noLocations": "Kein freigeschalteter Ort mit verbleibenden Versuchen bringt Event-Punkte."
       },
       "goals": "Ziele: {{goals}}",
       "moreGoals": "+{{count}}",
-      "noteEnergy": "Nur die Orte, die Heute für die Materialien deiner Ziele raiden würde (geringste Energie pro Gegenstand), die mit den meisten Event-Punkten zuerst. Keine Energie wird bei Materialien verschwendet.",
+      "noteEnergy": "Orte, die deine Ziele versorgen, die günstigsten für ihr Material zuerst (Energie pro Gegenstand, wie Heute sie wählt), dann die meisten Punkte pro Energie. Ein teurerer Ort bekommt nur die noch nötigen Raids.",
       "noteIgnoreGoals": "Jeder Ort, der Event-Punkte bringt, Ziele ignoriert, die meisten Punkte pro Energie zuerst.",
+      "noteIgnoreGoalsEnergy": "Jeder Ort, der Event-Punkte bringt, Ziele ignoriert, die günstigsten für ihre Beute zuerst (Energie pro Gegenstand im Vergleich zum besten Ort für diesen Gegenstand), dann die meisten Punkte pro Energie.",
       "owned_one": "{{count}} im Besitz",
       "owned_other": "{{count}} im Besitz",
       "perRaid": "{{points}} Pkt. pro Raid",
       "perEnergy": "{{value}} Pkt. pro Energie",
+      "perItem": "{{value}} Energie pro Gegenstand",
       "order": {
         "label": "Sortieren",
         "points": "Punkte pro Energie",
         "energy": "Energie pro Gegenstand",
         "help": {
           "points": "Die meisten Event-Punkte pro Energie zuerst, auch wenn ein günstigerer Ort für dasselbe Material keine bringt.",
-          "energy": "Nur die günstigsten Orte pro Gegenstand, wie Heute sie raidet, nach Event-Punkten sortiert.",
-          "ignoreGoals": "Jeder Ort, der Event-Punkte bringt, unabhängig davon, was deine Ziele brauchen, die meisten Punkte pro Energie zuerst. Jede Zeile zeigt die Beute und wie viel du davon besitzt."
+          "energy": "Die günstigsten Orte für jeden Gegenstand zuerst, wie Heute sie wählt, dann die meisten Event-Punkte pro Energie.",
+          "ignoreGoals": "Zeigt jeden Ort, der Event-Punkte bringt, unabhängig davon, was deine Ziele brauchen. Funktioniert mit beiden Sortierungen. Jede Zeile zeigt die Beute und wie viel du davon besitzt."
         },
         "ignoreGoals": "Ziele ignorieren"
       }

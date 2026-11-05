@@ -1,4 +1,5 @@
 export { EntityIcon } from "./entity-icon"
+export { CampaignLocationName } from "./campaign-location-name"
 export { IconLine } from "./icon-line"
 export { energyIconUrl } from "./energy-icon"
 export { UpgradeIcon } from "./upgrade-icon"

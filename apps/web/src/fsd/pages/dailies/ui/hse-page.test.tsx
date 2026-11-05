@@ -29,6 +29,7 @@ const { mocks } = vi.hoisted(() => ({
     raids: undefined as unknown,
     locations: undefined as unknown,
     raidsArgs: [] as unknown[][],
+    locationsArgs: [] as unknown[][],
     hseReads: {} as import("@/test/fixtures/hse-event-points").HseFixtureReads,
     teamsRead: undefined as HseTeamsRead | undefined,
   },
@@ -60,7 +61,10 @@ vi.mock("@/features/daily-raids/model/use-daily-raids", () => ({
   },
 }))
 vi.mock("@/features/daily-raids/model/use-home-screen-event-locations", () => ({
-  useHomeScreenEventLocations: () => mocks.locations,
+  useHomeScreenEventLocations: (...args: unknown[]) => {
+    mocks.locationsArgs.push(args)
+    return mocks.locations
+  },
 }))
 vi.mock(
   "@/features/home-screen-event-points/model/use-hse-projection",
@@ -127,6 +131,7 @@ const eventLocation = (
   energyCost: cost,
   raids,
   points: raids === null ? null : raids * perRaid,
+  energyPerItem: cost * 2,
 })
 const readyLocations = (
   overrides: Partial<{
@@ -187,6 +192,7 @@ const row = (
   energy: raids * energyCost,
   goalIds,
   resourceId: "U1" as never,
+  energyPerItem: 7.5,
 })
 // B1 x3 raids at 12 points (18 energy), B2 x2 raids at 6 points (12 energy): 48 points, 30 energy.
 const farmRows = (): ReturnType<typeof row>[] => [
@@ -268,6 +274,7 @@ beforeEach(() => {
   mocks.raids = withFarm(farmRows())
   mocks.locations = readyLocations()
   mocks.raidsArgs.length = 0
+  mocks.locationsArgs.length = 0
   mocks.hseReads = {}
   mocks.teamsRead = hseTeamsFixtureRead()
   act(() => {})
@@ -473,7 +480,6 @@ describe("HSE farm list", () => {
     ["no-energy", "hse.raids.empty.noEnergy"],
     ["nothing-contributes", "hse.raids.empty.nothingContributes"],
     ["filtered", "hse.raids.empty.filtered"],
-    ["none-efficient", "hse.raids.empty.noneEfficient"],
   ])(
     "explains an empty list (%s) and keeps the status line",
     (reason, text) => {
@@ -594,6 +600,9 @@ describe("HSE list controls", () => {
     expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
       "hse.raids.noteEnergy"
     )
+    expect(screen.getByTestId(`hse-raid-${battle}-per-item`)).toHaveTextContent(
+      "hse.raids.perItem|value=7.5"
+    )
   })
 
   it("offers Today's quick filters and passes them to the list", async () => {
@@ -618,18 +627,58 @@ describe("HSE list controls", () => {
     })
   })
 
-  it("offers Ignore goals as a third Sort option", async () => {
+  it("toggles Ignore goals independently of the sort, both kept in the URL", async () => {
     const user = userEvent.setup()
-    mocks.locations = readyLocations({ locations: [] })
-    renderHse()
+    mocks.locations = readyLocations()
+    renderHse(undefined, "/?order=energy")
 
-    await user.click(screen.getByTestId("hse-raids-order-ignoreGoals"))
+    await user.click(screen.getByTestId("hse-raids-ignore-goals"))
 
     expect(screen.getByTestId("location")).toHaveTextContent(
-      "order=ignoreGoals"
+      "order=energy&ignoreGoals=1"
     )
+    expect(screen.getByTestId("hse-raids-ignore-goals")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(screen.getByTestId("hse-raids-order-energy")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(mocks.locationsArgs.at(-1)?.[1]).toMatchObject({ order: "energy" })
+    expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
+      "hse.raids.noteIgnoreGoalsEnergy"
+    )
+    expect(screen.getByTestId(`hse-raid-${battle}-per-item`)).toHaveTextContent(
+      "hse.raids.perItem|value=12"
+    )
+
+    await user.click(screen.getByTestId("hse-raids-order-points"))
+    expect(screen.getByTestId("location")).toHaveTextContent("ignoreGoals=1")
+    expect(screen.getByTestId("location")).not.toHaveTextContent("order=")
     expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
       "hse.raids.noteIgnoreGoals"
+    )
+    expect(screen.queryByTestId(`hse-raid-${battle}-per-item`)).toBeNull()
+
+    await user.click(screen.getByTestId("hse-raids-ignore-goals"))
+    expect(screen.getByTestId("location")).not.toHaveTextContent("ignoreGoals")
+    expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
+      "hse.raids.note"
+    )
+  })
+
+  it("opens the Ignore goals list from the older order=ignoreGoals link", () => {
+    mocks.locations = readyLocations()
+    renderHse(undefined, "/?order=ignoreGoals")
+
+    expect(screen.getByTestId("hse-raids-ignore-goals")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(screen.getByTestId("hse-raids-order-points")).toHaveAttribute(
+      "data-state",
+      "on"
     )
   })
 
@@ -640,7 +689,7 @@ describe("HSE list controls", () => {
         eventLocation("B3" as typeof battle, 6, 6, null),
       ],
     })
-    renderHse(undefined, "/?order=ignoreGoals")
+    renderHse(undefined, "/?ignoreGoals=1")
 
     expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
       "hse.raids.noteIgnoreGoals"

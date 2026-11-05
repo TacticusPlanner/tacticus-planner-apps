@@ -199,6 +199,8 @@
     "upgradesLeft_other": "{{count}} upgrades left",
     "shardsLeft_one": "{{count}} shard left",
     "shardsLeft_other": "{{count}} shards left",
+    "more_one": "{{count}} more",
+    "more_other": "{{count}} more",
     "progress": "{{owned}} of {{target}} owned",
     "fullyRaided": "Fully raided"
   },
@@ -253,7 +255,7 @@
     },
     "cell": {
       "label": "{{material}}, {{owned}} of {{target}} owned",
-      "node": "{{campaign}} {{node}} × {{raids}}",
+      "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} more",
       "moreUnits": "+{{count}}"
     },
@@ -373,7 +375,7 @@
         },
         "farm": {
           "title": "Farm list for event points",
-          "content": "Where to raid to earn event points while feeding your goals, not limited to today's energy. Sort by points per energy or by energy per item, or pick Ignore goals to see every point-earning location."
+          "content": "Where to raid to earn event points while feeding your goals, not limited to today's energy. Sort by points per energy or by energy per item, and turn on Ignore goals to see every point-earning location."
         }
       }
     },
@@ -583,25 +585,26 @@
         "noEnergy": "There is no energy left today for any of these locations.",
         "nothingContributes": "No location that earns event points drops a resource your goals still need. See the best locations below for where to raid for points.",
         "filtered": "No location matches your Raids Filters.",
-        "noneEfficient": "None of the cheapest locations for your goals' materials earns event points. Switch the sort to Points per energy to see point-earning locations.",
         "noLocations": "No unlocked location with attempts left earns event points."
       },
       "goals": "Goals: {{goals}}",
       "moreGoals": "+{{count}}",
-      "noteEnergy": "Only the locations Today would raid for your goals' materials (least energy per item), the ones worth the most event points first. No energy is wasted on materials.",
+      "noteEnergy": "Locations that feed your goals, the cheapest for their material first (energy per item, as Today picks them), then most points per energy. A costlier location only gets the raids still needed.",
       "noteIgnoreGoals": "Every location that earns event points, goals ignored, most points per energy first.",
+      "noteIgnoreGoalsEnergy": "Every location that earns event points, goals ignored, the cheapest for its drop first (energy per item against the best location for that item), then most points per energy.",
       "owned_one": "{{count}} owned",
       "owned_other": "{{count}} owned",
       "perRaid": "{{points}} pts per raid",
       "perEnergy": "{{value}} pts per energy",
+      "perItem": "{{value}} energy per item",
       "order": {
         "label": "Sort",
         "points": "Points per energy",
         "energy": "Energy per item",
         "help": {
           "points": "Most event points per energy first, even where a cheaper location for the same material earns none.",
-          "energy": "Only the cheapest locations per item, as Today raids them, ordered by event points.",
-          "ignoreGoals": "Every location that earns event points, whatever your goals need, most points per energy first. Each row shows its drop and how many you hold."
+          "energy": "The cheapest locations for each item first, as Today picks them, then most event points per energy.",
+          "ignoreGoals": "List every location that earns event points, whatever your goals need. Works with either sort. Each row shows its drop and how many you hold."
         },
         "ignoreGoals": "Ignore goals"
       }

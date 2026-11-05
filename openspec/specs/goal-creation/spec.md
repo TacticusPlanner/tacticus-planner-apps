@@ -668,6 +668,12 @@ On mobile the footer SHALL hold one row: Back (Close on the first step) on the l
 - **WHEN** they press Back
 - **THEN** the Goals step shows Rank with target Diamond II
 
+#### Scenario: Create another returns to Unit
+
+- **GIVEN** a viewport below 768px and the user created goals for Hollan with "Create another goal" checked
+- **WHEN** the creation succeeds and the form preselects the first Character again
+- **THEN** the Unit step is shown with that Character, so the next goals are never made for a unit the user did not see picked
+
 ### Requirement: A mobile step with problems cannot be left forward
 
 On the mobile Goals step, Next SHALL be unavailable while no goal type is enabled or any enabled goal has a blocking problem. The issue summary SHALL list those problems beside Next, and following one SHALL expand its card and focus its field. Back SHALL always be available.
