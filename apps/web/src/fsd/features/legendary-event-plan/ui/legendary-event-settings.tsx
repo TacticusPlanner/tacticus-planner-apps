@@ -1,5 +1,6 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
+import { useIsAuthenticated } from "@azure/msal-react"
 import { Settings } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -23,6 +24,9 @@ import { useWatchAds } from "../model/use-watch-ads"
  */
 export function LegendaryEventSettingsButton() {
   const { t } = useTranslation("legendaryEvents")
+  const signedIn = useIsAuthenticated()
+  // Settings are account preferences, so signed-out players get no button.
+  if (!signedIn) return null
   return (
     <Dialog>
       <DialogTrigger asChild>
