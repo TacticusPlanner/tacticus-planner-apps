@@ -73,11 +73,27 @@ Today SHALL compute its schedule from all account goals whose status is `Active`
 
 Within each goal group, Today and Bonus Raids SHALL order resources by the estimated time investment required to finish that resource: longest estimated completion time first, then greatest estimated energy cost. Configured goal priority SHALL remain the primary ordering between goal groups. Resources tied on both estimates SHALL use a stable deterministic ordering.
 
+That order SHALL then keep same-campaign upgrades of similar priority together, so the player can stay in one campaign and only switch battles. An upgrade's campaign SHALL be the campaign of its first planned location (the plan's best node for that goal), including the difficulty: Indomitus, Indomitus Elite, Indomitus Mirror and Indomitus Mirror Elite are four campaigns. Going down the order, each upgrade not yet placed SHALL be placed, followed by every later unplaced upgrade in the same campaign whose estimated energy cost is within 50 of that upgrade's own, in their own order. A pulled upgrade SHALL NOT pull further upgrades (no chaining), and an upgrade with no known campaign or energy SHALL keep its place. The same rule SHALL apply to Combine goals' combined list.
+
+Worked example: A Indomitus Elite 120⚡, B Fall of Cadia Elite 110⚡, C Indomitus Elite 75⚡, D Fall of Cadia Elite 65⚡ and E Indomitus Elite 30⚡, in that urgency order, show as A, C, B, D, E: C is 45 from A and D is 45 from B, while E is 90 from A. With A Indomitus Elite 200⚡, B Fall of Cadia Elite 180⚡, C Indomitus Elite 160⚡ and D Indomitus Elite 140⚡ they show as A, C, B, D: D is 60 from A and does not join through C.
+
 #### Scenario: A longer resource precedes a faster one in the same goal
 
 - **GIVEN** two resources scheduled for the same goal and one has a longer estimated completion time than the other
 - **WHEN** Today renders the goal group
 - **THEN** the longer-running resource is shown first
+
+#### Scenario: Same-campaign upgrades of similar energy stay together
+
+- **GIVEN** a goal's upgrades in urgency order X Indomitus Elite 90⚡, Y Fall of Cadia Elite 80⚡, Z Indomitus Elite 50⚡
+- **WHEN** Today renders the goal group
+- **THEN** they show as X, Z, Y
+
+#### Scenario: A different difficulty or mirror is a different campaign
+
+- **GIVEN** upgrades in urgency order A Indomitus Elite 120⚡, B Indomitus Mirror Elite 110⚡, C Indomitus Elite 80⚡, D Indomitus 75⚡
+- **WHEN** Today renders them
+- **THEN** they show as A, C, B, D
 
 #### Scenario: Energy breaks equal-time resource ties
 
@@ -872,7 +888,7 @@ The chips SHALL change only Today's plan and Bonus Raids (including the raids-le
 
 **Fewer raids**: after the preferred nodes are chosen (least energy per item among nodes that pass the Raids Filters), only the node(s) with the highest energy cost per battle SHALL be kept. Tied nodes left after that keep the expected-gold ordering. A goal's pinned farm locations SHALL be used as chosen.
 
-**Combine goals** (in the spirit of V1's "By total materials" farm order): Today SHALL plan raids as if every in-scope goal (all goals, or the selected project's goals) were one goal, ignoring goal priority when spending energy. Inventory SHALL still be allocated to goals in priority order, and shop and Onslaught supply SHALL still be applied per goal in priority order. The remaining need of every in-scope goal, summed per resource across all of the goal's stages, SHALL form one pool, and the day's energy SHALL be spent on that pool longest-to-finish resource first (then greatest energy cost), with each node's daily attempt cap shared as usual. A resource SHALL be farmed at the nodes chosen for the highest-priority goal that needs it. Each raid entry SHALL be credited to the highest-priority goal still needing that resource (for goal totals). Today's plan and Bonus Raids SHALL then be shown as one combined list with no goal headers, ordered by each resource's pooled urgency: the energy to clear the resource's whole pooled need at the nodes it is farmed at, most first (the order Insights ranks its bottlenecks in), then the days to finish it, longest first. Bonus Raids' top-entries cut SHALL be taken from that order. Each resource card SHALL show the have/need over every in-scope goal. This overrides "Today and Bonus Raids prioritize long-running resources" and goal-by-goal spending while the chip is on.
+**Combine goals** (in the spirit of V1's "By total materials" farm order): Today SHALL plan raids as if every in-scope goal (all goals, or the selected project's goals) were one goal, ignoring goal priority when spending energy. Inventory SHALL still be allocated to goals in priority order, and shop and Onslaught supply SHALL still be applied per goal in priority order. The remaining need of every in-scope goal, summed per resource across all of the goal's stages, SHALL form one pool, and the day's energy SHALL be spent on that pool longest-to-finish resource first (then greatest energy cost), with each node's daily attempt cap shared as usual. A resource SHALL be farmed at the nodes chosen for the highest-priority goal that needs it. Each raid entry SHALL be credited to the highest-priority goal still needing that resource (for goal totals). Today's plan and Bonus Raids SHALL then be shown as one combined list with no goal headers, ordered by each resource's pooled urgency: the days to finish it, longest first, then the energy to clear the resource's whole pooled need at the nodes it is farmed at, most first (the same order a goal group uses), with same-campaign upgrades of similar energy kept together as described under "Today and Bonus Raids prioritize long-running resources". Bonus Raids' top-entries cut SHALL be taken from that order. Each resource card SHALL show the have/need over every in-scope goal. This overrides "Today and Bonus Raids prioritize long-running resources" and goal-by-goal spending while the chip is on.
 
 #### Scenario: Chips off
 

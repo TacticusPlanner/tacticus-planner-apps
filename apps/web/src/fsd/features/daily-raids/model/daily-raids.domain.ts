@@ -78,6 +78,10 @@ export type DailyRaidLocationViewModel = {
   // second line of that same rendering. Empty when the catalog has no descriptor, in which case
   // renderers omit the line entirely rather than inventing one.
   nodeLabel: string
+  /** Identifies the campaign with its difficulty (Indomitus, Indomitus Elite and Indomitus Mirror
+   *  Elite are three campaigns): the campaign group and battle type. Used to keep same-campaign
+   *  upgrades together in Today's order. */
+  campaignKey?: string
   // Just the difficulty word that opens `nodeLabel` ("Elite", "Extremis"), so renderers can set it
   // apart (italic) from the campaign name and node number. Absent when the catalog has no descriptor.
   difficultyLabel?: string
