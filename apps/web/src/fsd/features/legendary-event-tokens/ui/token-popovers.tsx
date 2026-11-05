@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next"
-import { ListChecks, Users } from "lucide-react"
+import { ListChecks } from "lucide-react"
+import { characterIcon } from "@workspace/game-catalog"
+import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
   Popover,
@@ -13,6 +15,7 @@ import {
   useMissionLabel,
   type EventUnitChipData,
 } from "@/entities/legendary-event"
+import { EntityIcon } from "@/shared/ui"
 
 import type { MissionGain } from "../lib/mission-gains"
 
@@ -117,14 +120,29 @@ export function TokenTeamPopover({
       <PopoverTrigger asChild>
         <Button
           aria-label={label}
-          className="size-7"
+          className="h-8 rounded-full px-1"
           data-testid={testId}
-          size="icon-sm"
+          size="sm"
           title={label}
           type="button"
-          variant="outline"
+          variant="ghost"
         >
-          <Users aria-hidden="true" className="size-3.5" />
+          <span aria-hidden="true" className="flex -space-x-2">
+            {members.map((unit) => (
+              <span
+                className="size-7 shrink-0 overflow-hidden rounded-full bg-muted ring-2 ring-card"
+                data-testid={`${testId}-portrait`}
+                data-unit={unit.unitId}
+                key={unit.unitId}
+              >
+                <EntityIcon
+                  alt=""
+                  className="size-full object-cover"
+                  src={characterIcon(unit.unitId as UnitId)}
+                />
+              </span>
+            ))}
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
