@@ -15,6 +15,7 @@ import {
 } from "../shared/goal-progress-visuals"
 import { CoveredByNote } from "../shared/covered-by-note"
 import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-create"
+import { GoalTypeBadge } from "@/entities/goal"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
 import { SortableList, type SortableRenderProps } from "@/shared/ui"
 import { SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
@@ -303,12 +304,24 @@ export function GoalsMobileCards({
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between gap-2">
-                  <GoalTargetDisplay
+                {/* The goal type leads the goal line: the desktop table has a Goal column header for
+                    context, a card doesn't, and two goals for one unit otherwise only differ by their
+                    emblems. Unlock's target readout is already the word "Unlock", so it's skipped. */}
+                <div
+                  className="flex flex-wrap items-center gap-2"
+                  data-testid="goal-row-target"
+                >
+                  <GoalTypeBadge
                     entityType={row.entityType}
-                    progress={progress}
-                    size="lg"
+                    type={row.goalType}
                   />
+                  {progress.kind === "Unlock" ? null : (
+                    <GoalTargetDisplay
+                      entityType={row.entityType}
+                      progress={progress}
+                      size="lg"
+                    />
+                  )}
                 </div>
                 <CoveredByNote
                   coveredBy={metrics?.get(row.goalId)?.coveredBy}

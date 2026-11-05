@@ -22,7 +22,10 @@ export {
   NO_BLOCKERS,
   UNKNOWN_PROGRESS,
 } from "./model/attainment/goal-overview-metrics-defaults"
-export { type GoalProgress } from "./model/attainment/goal-progress"
+export {
+  type GoalProgress,
+  type GoalTargetPreview,
+} from "./model/attainment/goal-progress"
 export { type LevelRequirementProgress } from "./model/attainment/level-requirement-progress"
 export {
   useGoalAttainment,

@@ -101,7 +101,24 @@ export type GoalProgress =
        *  material's image beside its owned/needed count. */
       materials: UpgradeProgressMaterial[]
     }
-  | { kind: "Unknown" }
+  | {
+      kind: "Unknown"
+      /** The goal's own configured start → target, when it has one, so a goal whose unit isn't
+       *  owned yet (or whose player data hasn't synced) still says what it is aiming for. */
+      preview?: GoalTargetPreview
+    }
+
+/** A goal's configured start → target, independent of any player data. */
+export type GoalTargetPreview =
+  | { kind: "Rank"; start: Rank; target: Rank; targetSlots: number }
+  | { kind: "Ascension"; start: Progression; target: Progression }
+  | {
+      kind: "Ability"
+      startActive: number
+      targetActive: number
+      startPassive: number
+      targetPassive: number
+    }
 
 type UpgradeProgressMaterial = {
   upgradeId: UpgradeId
@@ -115,6 +132,50 @@ type UpgradeProgressMaterial = {
 }
 
 const UNKNOWN_PROGRESS: GoalProgress = { kind: "Unknown" }
+
+/** `Unknown` progress that still carries the goal's configured target (see `GoalTargetPreview`). */
+function goalTargetPreview(
+  detail: GoalProgressParams["detail"]
+): GoalTargetPreview | undefined {
+  switch (detail.goalType) {
+    case "Rank": {
+      const target = detail.config.rank
+      return target
+        ? {
+            kind: "Rank",
+            start: rankAt(target.start),
+            target: rankAt(target.end),
+            targetSlots: rankTargetSlots(target),
+          }
+        : undefined
+    }
+    case "Ascension": {
+      const target = detail.config.progression
+      return target
+        ? { kind: "Ascension", start: target.start, target: target.end }
+        : undefined
+    }
+    case "Ability": {
+      const target = detail.config.ability
+      return target
+        ? {
+            kind: "Ability",
+            startActive: target.activeStart,
+            targetActive: target.activeEnd,
+            startPassive: target.passiveStart,
+            targetPassive: target.passiveEnd,
+          }
+        : undefined
+    }
+    default:
+      return undefined
+  }
+}
+
+function unknownProgress(detail: GoalProgressParams["detail"]): GoalProgress {
+  const preview = goalTargetPreview(detail)
+  return preview ? { kind: "Unknown", preview } : UNKNOWN_PROGRESS
+}
 
 function clampRatio(done: number, total: number): number {
   if (total <= 0) return 1
@@ -168,7 +229,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
   switch (detail.goalType) {
     case "Rank": {
       const target = detail.config.rank
-      if (!target || !params.playerCharacter) return UNKNOWN_PROGRESS
+      if (!target || !params.playerCharacter) return unknownProgress(detail)
       const currentIndex = rankIndex(params.playerCharacter.rank)
       const appliedSlots = new Set(params.playerCharacter.appliedUpgradeSlots)
         .size
@@ -236,7 +297,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
     }
     case "Ability": {
       const target = detail.config.ability
-      if (!target || !ownedUnit) return UNKNOWN_PROGRESS
+      if (!target || !ownedUnit) return unknownProgress(detail)
       const currentActive = abilityTrackLevel(ownedUnit, "primary")
       const currentPassive = abilityTrackLevel(ownedUnit, "secondary")
       const activeSpan = Math.max(0, target.activeEnd - target.activeStart)
@@ -260,7 +321,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
     }
     case "Ascension": {
       const target = detail.config.progression
-      if (!target || !ownedUnit) return UNKNOWN_PROGRESS
+      if (!target || !ownedUnit) return unknownProgress(detail)
       const startIndex = progressionOrder.indexOf(target.start)
       const endIndex = progressionOrder.indexOf(target.end)
       const currentIndex = progressionOrder.indexOf(ownedUnit.progressionIndex)
