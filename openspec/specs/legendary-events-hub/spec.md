@@ -141,7 +141,7 @@ The selected tab SHALL be the last path segment of the event page (`/legendary-e
 #### Scenario: Plan tab order
 
 - **WHEN** the user selects Plan with only Beta shown on the other tabs
-- **THEN** the page shows no lane selection, the Run forecast, the Token plan, Alpha's, Beta's and Gamma's Upgrade impact, then one "Battles" section with its lane dropdown
+- **THEN** the page shows no lane selection, the Run forecast, Alpha's, Beta's and Gamma's Upgrade impact, the Token plan, then one "Battles" section with its lane dropdown
 
 #### Scenario: Shown lanes carry over between tabs and visits
 

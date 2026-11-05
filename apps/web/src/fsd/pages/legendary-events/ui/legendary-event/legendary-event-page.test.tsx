@@ -490,7 +490,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(laneSwitch("beta")).toHaveAttribute("aria-pressed", "true")
   })
 
-  it("shows Plan's Run forecast, Token plan, every lane's Upgrade impact, then one lane's Battles", async () => {
+  it("shows Plan's Run forecast, every lane's Upgrade impact (the Token plan, empty here, between), then one lane's Battles", async () => {
     renderPage("/legendary-events/astarLysander")
     await runReady()
     showOnlyLane("beta")
@@ -511,6 +511,9 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       "beta",
       "gamma",
     ])
+    expect(
+      follows(screen.getByTestId("legendary-event-run-forecast"), impacts[0]!)
+    ).toBe(true)
     expect(
       follows(impacts[2]!, screen.getAllByTestId("legendary-event-battles")[0]!)
     ).toBe(true)

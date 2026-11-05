@@ -247,15 +247,6 @@ export function LegendaryEventPageView({
               onOpenTeams={tokens.onOpenTeams}
               view={tokens.view}
             />
-            <TokenPlanList
-              defaultOpen
-              event={props.event}
-              eventId={props.event.id}
-              isMobile={isMobile}
-              onOpenTeam={teamsState.kind === "ready" ? openTeam : undefined}
-              openKey={PLAN_TOKEN_PLAN_OPEN_KEY}
-              view={tokens.view}
-            />
             {props.upgradeImpact
               ? LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
                   const state = props.upgradeImpact?.byLane[laneId]
@@ -274,6 +265,15 @@ export function LegendaryEventPageView({
                   ) : null
                 })
               : null}
+            <TokenPlanList
+              defaultOpen
+              event={props.event}
+              eventId={props.event.id}
+              isMobile={isMobile}
+              onOpenTeam={teamsState.kind === "ready" ? openTeam : undefined}
+              openKey={PLAN_TOKEN_PLAN_OPEN_KEY}
+              view={tokens.view}
+            />
             {props.battles[props.battlesLane.laneId] ? (
               <BattlesSection
                 battles={props.battles[props.battlesLane.laneId]!}
