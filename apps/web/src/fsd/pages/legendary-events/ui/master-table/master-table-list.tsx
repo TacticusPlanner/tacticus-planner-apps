@@ -18,9 +18,12 @@ export function MasterTableList({
   unitSet,
   unitName,
   eventName,
+  noTeamEventIds = [],
 }: {
   rows: readonly MasterTableRow[]
   eventIds: readonly string[]
+  /** In teams: events without a complete team, whose line says so rather than showing zeros. */
+  noTeamEventIds?: readonly string[]
   unitSet: MasterTableUnitSet
   unitName: (unitId: string) => string
   eventName: (eventId: string) => string
@@ -73,11 +76,14 @@ export function MasterTableList({
                   data-testid="master-table-event-line"
                   key={eventId}
                 >
-                  {[
-                    eventName(eventId),
-                    number.format(cell?.points ?? 0),
-                    ...detail,
-                  ].join(" · ")}
+                  {(noTeamEventIds.includes(eventId)
+                    ? [eventName(eventId), t("masterTable.cell.noTeams")]
+                    : [
+                        eventName(eventId),
+                        number.format(cell?.points ?? 0),
+                        ...detail,
+                      ]
+                  ).join(" · ")}
                 </li>
               )
             })}

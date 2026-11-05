@@ -14,6 +14,9 @@ import { MasterTableUnit } from "./master-table-parts"
 import { useCellLanes } from "./use-cell-lanes"
 import { rowDetailTotal } from "./master-table.view-model"
 
+/** What an event without teams shows in In teams instead of zeros. */
+const NO_TEAMS = "—"
+
 /**
  * The desktop table (design D5): the unit column stays visible while the table scrolls
  * horizontally inside its container; a Total group (points, objectives) follows, then one group
@@ -28,9 +31,12 @@ export function MasterTableTable({
   onSortChange,
   unitName,
   eventName,
+  noTeamEventIds = [],
 }: {
   rows: readonly MasterTableRow[]
   eventIds: readonly string[]
+  /** In teams: events without a complete team, whose cells show a dash rather than zeros. */
+  noTeamEventIds?: readonly string[]
   unitSet: MasterTableUnitSet
   sort: string | null
   onSortChange: (eventId: string | null) => void
@@ -134,6 +140,26 @@ export function MasterTableTable({
                 </td>
                 {eventIds.map((eventId) => {
                   const cell = row.cells[eventId]
+                  if (noTeamEventIds.includes(eventId)) {
+                    return [
+                      <td
+                        className="border-l px-3 py-2 text-right text-muted-foreground"
+                        data-event={eventId}
+                        data-testid="master-table-cell-points"
+                        key={`${eventId}-points`}
+                      >
+                        {NO_TEAMS}
+                      </td>,
+                      <td
+                        className="px-3 py-2 text-right text-muted-foreground"
+                        data-event={eventId}
+                        data-testid="master-table-cell-detail"
+                        key={`${eventId}-detail`}
+                      >
+                        {NO_TEAMS}
+                      </td>,
+                    ]
+                  }
                   return [
                     <td
                       className="border-l px-3 py-2 text-right tabular-nums"

@@ -504,6 +504,54 @@ describe("MasterTablePage", () => {
     expect(detail).toHaveTextContent("Gamma")
   })
 
+  it("calls out a selected event without teams in In teams and offers All", async () => {
+    data.plans = {
+      status: "ready",
+      data: [
+        {
+          eventId: "astarLysander",
+          revision: 1,
+          catalogVersion: "1",
+          notes: null,
+          showPaidOptions: false,
+          teams: [
+            {
+              id: "assault",
+              laneId: "gamma",
+              name: "Assault",
+              sortOrder: 0,
+              memberUnitIds: [
+                "bloodDante",
+                "bloodDeathCompany",
+                "bloodTerminator",
+              ],
+              reserveUnitId: null,
+              objectiveIndexes: [2, 4],
+              runDepths: [],
+            },
+          ],
+        },
+      ],
+    }
+    renderPage("?events=astarLysander,tauFarsight&points=all")
+    await ready()
+    expect(
+      await screen.findByTestId("master-table-no-teams")
+    ).toHaveTextContent("No complete teams planned for Farsight yet")
+    await waitFor(() => expect(rowIds()).toContain("bloodDante"))
+    const farsightPoints = within(rowOf("bloodDante"))
+      .getAllByTestId("master-table-cell-points")
+      .find((cell) => cell.dataset.event === "tauFarsight")
+    expect(farsightPoints).toHaveTextContent("—")
+
+    fireEvent.click(screen.getByRole("button", { name: "Show all units" }))
+    expect(screen.getByTestId("master-table-unit-set-all")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(screen.queryByTestId("master-table-no-teams")).toBeNull()
+  })
+
   it("stays on All when the selected plan's only team is incomplete", async () => {
     data.plans = {
       status: "ready",
