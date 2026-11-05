@@ -12,6 +12,7 @@ import {
   RunForecastSection,
   TokenPlanList,
   type OpenBattleInfo,
+  type OpenTeamHandler,
 } from "@/features/legendary-event-tokens"
 import {
   LEGENDARY_EVENT_LANE_IDS,
@@ -69,6 +70,16 @@ export function LegendaryEventPageView({
   const openBattleInfo = useCallback<OpenBattleInfo>(
     (laneId, battleIndex) => setBattleInfo({ laneId, battleIndex }),
     [setBattleInfo]
+  )
+  const teamsState = props.teams.state
+  const openTeamEditor = props.teamEditor.openTeamEditor
+  const openTeam = useCallback<OpenTeamHandler>(
+    (laneId, teamId) => {
+      if (teamsState.kind !== "ready") return
+      const team = teamsState.plan.teams.find((entry) => entry.id === teamId)
+      if (team) openTeamEditor({ laneId, team })
+    },
+    [teamsState, openTeamEditor]
   )
   const syncedRoster = props.eventBoard.roster
   const chipOf = useMemo(() => {
@@ -241,6 +252,7 @@ export function LegendaryEventPageView({
               event={props.event}
               eventId={props.event.id}
               isMobile={isMobile}
+              onOpenTeam={teamsState.kind === "ready" ? openTeam : undefined}
               openKey={PLAN_TOKEN_PLAN_OPEN_KEY}
               view={tokens.view}
             />

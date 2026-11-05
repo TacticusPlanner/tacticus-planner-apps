@@ -771,7 +771,13 @@
         },
         "doneCount": "{{done}}/{{total}} completadas",
         "completed": "Completada"
-      }
+      },
+      "battles": "Batallas {{first}}–{{last}}",
+      "expandRun_one": "Mostrar {{count}} batalla",
+      "expandRun_other": "Mostrar {{count}} batallas",
+      "collapseRun_one": "Ocultar {{count}} batalla",
+      "collapseRun_other": "Ocultar {{count}} batallas",
+      "openTeam": "Abrir el equipo {{team}}"
     },
     "forecast": {
       "title": "Previsión por ronda",

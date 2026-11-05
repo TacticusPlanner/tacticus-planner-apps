@@ -13,7 +13,12 @@ import type { LaneFullClear, TokenPlanView } from "../lib/token-plan-view"
 import { useMissionsOrder } from "../model/token-plan-order"
 import { useStoredOpen } from "../model/use-stored-open"
 import { RunMissionsSummary, TokenPlanOrderSwitch } from "./mission-order-view"
-import { RunSection, RunSectionHeader, TokenGroups } from "./token-plan-rows"
+import {
+  RunSection,
+  RunSectionHeader,
+  TokenGroups,
+  type OpenTeamHandler,
+} from "./token-plan-rows"
 
 const OPEN_KEY = "legendaryEvents.tokenPlan.open"
 const REGION_ID = "legendary-event-token-plan-list"
@@ -31,6 +36,7 @@ export function TokenPlanList({
   openKey = OPEN_KEY,
   defaultOpen = false,
   trackExpand = true,
+  onOpenTeam,
 }: {
   eventId: string
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
@@ -41,6 +47,8 @@ export function TokenPlanList({
   defaultOpen?: boolean
   /** Report expanding it to analytics (the event page's sections do). */
   trackExpand?: boolean
+  /** Makes the team names open that team's editor (the event page). */
+  onOpenTeam?: OpenTeamHandler
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const { captureEvent } = useAnalyticsActions()
@@ -144,6 +152,7 @@ export function TokenPlanList({
                       event={event}
                       isMobile={isMobile}
                       markers={markers}
+                      onOpenTeam={onOpenTeam}
                       start={section.start}
                       steps={steps}
                       tokens={plan.tokens}
@@ -173,6 +182,7 @@ export function TokenPlanList({
                     event={event}
                     isMobile={isMobile}
                     markers={markers}
+                    onOpenTeam={onOpenTeam}
                     start={view.byRun.overflow.start}
                     tokens={plan.tokens}
                   />
@@ -185,6 +195,7 @@ export function TokenPlanList({
               event={event}
               isMobile={isMobile}
               markers={markers}
+              onOpenTeam={onOpenTeam}
               start={0}
               tokens={plan.tokens}
             />

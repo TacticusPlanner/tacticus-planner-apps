@@ -771,7 +771,13 @@
         },
         "doneCount": "{{done}}/{{total}} erledigt",
         "completed": "Erledigt"
-      }
+      },
+      "battles": "Kämpfe {{first}}–{{last}}",
+      "expandRun_one": "{{count}} Kampf anzeigen",
+      "expandRun_other": "{{count}} Kämpfe anzeigen",
+      "collapseRun_one": "{{count}} Kampf ausblenden",
+      "collapseRun_other": "{{count}} Kämpfe ausblenden",
+      "openTeam": "Team {{team}} öffnen"
     },
     "forecast": {
       "title": "Durchlaufprognose",

@@ -771,7 +771,13 @@
         },
         "doneCount": "{{done}}/{{total}} terminées",
         "completed": "Terminée"
-      }
+      },
+      "battles": "Combats {{first}}–{{last}}",
+      "expandRun_one": "Afficher {{count}} combat",
+      "expandRun_other": "Afficher {{count}} combats",
+      "collapseRun_one": "Masquer {{count}} combat",
+      "collapseRun_other": "Masquer {{count}} combats",
+      "openTeam": "Ouvrir l’équipe {{team}}"
     },
     "forecast": {
       "title": "Prévision par manche",
