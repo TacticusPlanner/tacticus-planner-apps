@@ -1,7 +1,8 @@
 // Dailies > HRE: the selected (by default the running, else next) Hero Release Event, the player's mission progress kept in
 // this browser, the mission guidance and the event pace. The page composes these with the
 // campaign raid suggestions of `daily-raids` and the mission teams of the Dailies page slice.
-export { useHreInstance, useIsHreLive } from "./model/use-hre-instance"
+export { useHreInstance } from "./model/use-hre-instance"
+export { useIsHreLive } from "./model/use-is-hre-live"
 export { useHreProgress } from "./model/use-hre-progress"
 export { DEFAULT_HRE_PROGRESS } from "./model/hre-progress"
 export type { HreMission } from "./model/hre-missions"

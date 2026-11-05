@@ -160,12 +160,3 @@ export function useHreInstance(
     }
   }, [read, nowMs, requestedKey])
 }
-
-/** Whether an HRE is running now, for the navigation's live indicator (never true while loading). */
-export function useIsHreLive(): boolean {
-  const state = useHreInstance()
-  return (
-    state.status === "ready" &&
-    state.instances.some((instance) => instance.status === "running")
-  )
-}
