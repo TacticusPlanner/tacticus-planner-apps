@@ -1,15 +1,18 @@
 import { useTranslation } from "react-i18next"
+import { Link2 } from "lucide-react"
 
 import { UpgradeIcon } from "@/shared/ui"
 
 import type { GoalProgress } from "@/features/goal-planning"
+import { upgradeMaterialLabel } from "./upgrade-target-material-label"
 
 /** Desktop rows are a fixed height, so a long material list (a whole rank range) is cut here and
  *  the rest folded into a "+N" chip. */
 const MAX_VISIBLE = 4
 
 /** One image per targeted upgrade material with its owned/needed count; the material's name is the
- *  tooltip and accessible name. Counts read "–/n" while the inventory hasn't loaded. Past
+ *  tooltip and accessible name. Counts read "–/n" while the inventory hasn't loaded. A material that
+ *  goals ranked ahead hold some of gets a link mark, and its tooltip names those goals. Past
  *  `MAX_VISIBLE`, the rest are one "+N" chip whose tooltip lists them. */
 export function UpgradeTargetMaterials({
   materials,
@@ -18,11 +21,7 @@ export function UpgradeTargetMaterials({
 }) {
   const { t } = useTranslation()
   const labelOf = (material: (typeof materials)[number]) =>
-    t("goals.overview.upgradeMaterial", {
-      name: material.label,
-      owned: material.owned === null ? "–" : String(material.owned),
-      quantity: material.quantity,
-    })
+    upgradeMaterialLabel(t, material)
   const visible = materials.slice(0, MAX_VISIBLE)
   const hidden = materials.slice(MAX_VISIBLE)
   const hiddenLabel = hidden.map(labelOf).join("\n")
@@ -52,6 +51,13 @@ export function UpgradeTargetMaterials({
               <span aria-hidden>
                 {owned}/{material.quantity}
               </span>
+              {material.heldBy ? (
+                <Link2
+                  aria-hidden
+                  className="size-3 text-muted-foreground"
+                  data-testid="goal-upgrade-material-held"
+                />
+              ) : null}
             </span>
           </li>
         )

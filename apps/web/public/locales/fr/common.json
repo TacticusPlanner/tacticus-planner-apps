@@ -1572,6 +1572,8 @@
       "levelProgress": "Niv {{current}} → {{target}}",
       "ownedOfRequired": "{{owned}} / {{required}}",
       "upgradeMaterial": "{{name}} : {{owned}} / {{quantity}}",
+      "upgradeMaterialCounted": "Inclut {{amount}} de l’objectif {{goalType}} de {{unit}} (#{{priority}})",
+      "upgradeMaterialTakenFirst": "{{amount}} déjà réservés par l’objectif {{goalType}} de {{unit}} (#{{priority}})",
       "abilityTrack": {
         "active": "Actif",
         "passive": "Passif",

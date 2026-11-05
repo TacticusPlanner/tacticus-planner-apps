@@ -12,7 +12,7 @@ import {
 import type { UnlockShardCostStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { rankTargetSlots } from "@/entities/goal"
+import { rankTargetSlots, type GoalKind } from "@/entities/goal"
 import {
   reachableRankProgress,
   type LevelRules,
@@ -120,6 +120,17 @@ export type GoalTargetPreview =
       targetPassive: number
     }
 
+/** A goal ranked ahead of an Upgrade goal that holds some of one of its materials (see
+ *  `splitUpgradeGoalStock`), named for display. `counted` pieces count toward the Upgrade goal (an
+ *  earlier goal on the same unit, same slots); otherwise they were taken ahead of it. */
+export type UpgradeMaterialHolder = {
+  unitName: string
+  goalType: GoalKind
+  priority: number | null
+  amount: number
+  counted: boolean
+}
+
 type UpgradeProgressMaterial = {
   upgradeId: UpgradeId
   /** Catalog name, or the raw id while the catalog hasn't loaded. */
@@ -129,6 +140,8 @@ type UpgradeProgressMaterial = {
   /** `null` while the upgrade inventory hasn't loaded. */
   owned: number | null
   quantity: number
+  /** Earlier goals holding some of this material; absent when none do. */
+  heldBy?: readonly UpgradeMaterialHolder[]
 }
 
 const UNKNOWN_PROGRESS: GoalProgress = { kind: "Unknown" }
@@ -198,6 +211,8 @@ export type GoalProgressParams = GoalAttainmentParams & {
   >
   /** The game's level rules; absent (still loading) leaves a Rank goal without its reachable marker. */
   levelRules?: LevelRules
+  /** An Upgrade goal's materials held by goals ranked ahead of it; absent means none. */
+  upgradeHolders?: ReadonlyMap<UpgradeId, readonly UpgradeMaterialHolder[]>
 }
 
 /** What rarity and level let a Rank goal reach right now, when that falls short of its `totalSlots`
@@ -372,6 +387,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
       const materials = targets.map((need): UpgradeProgressMaterial => {
         const upgradeId = need.upgradeId as UpgradeId
         const upgrade = params.upgradesById?.get(upgradeId)
+        const heldBy = params.upgradeHolders?.get(upgradeId)
         return {
           upgradeId,
           label: upgrade?.label ?? need.upgradeId,
@@ -379,6 +395,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
           crafted: upgrade?.crafted,
           owned: ownedById ? (ownedById.get(upgradeId) ?? 0) : null,
           quantity: need.quantity,
+          ...(heldBy && heldBy.length > 0 ? { heldBy } : {}),
         }
       })
       if (materials.length === 0 || !ownedById)
