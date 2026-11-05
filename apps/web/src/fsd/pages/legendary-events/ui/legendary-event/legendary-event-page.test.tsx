@@ -375,6 +375,10 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(screen.getByTestId("legendary-event-lifecycle")).toHaveTextContent(
       "Active"
     )
+    // The run timing sits in the header, so it shows on every tab.
+    expect(screen.getByTestId("event-timing-countdown")).toHaveTextContent(
+      /^Ends in /
+    )
     expect(selectedTab()).toHaveTextContent("Current run")
     expect(
       within(screen.getByTestId("legendary-event-tab-list"))

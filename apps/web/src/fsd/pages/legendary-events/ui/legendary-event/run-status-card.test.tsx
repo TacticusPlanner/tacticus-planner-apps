@@ -250,9 +250,6 @@ describe("RunStatusCard", () => {
     expect(screen.getByTestId("run-status-milestone")).toHaveTextContent(
       "90 points to milestone 14 (+60 currency)"
     )
-    expect(screen.getByTestId("event-timing-countdown")).toHaveTextContent(
-      "Ends in 4 days"
-    )
   })
 
   it("counts the next token down from the sync, and reads it as ready once due", () => {
@@ -341,14 +338,13 @@ describe("RunStatusCard", () => {
     )
   })
 
-  it("shows the run timing and the no-entry body for an event not in the chunk", () => {
+  it("shows the no-entry body for an event not in the chunk", () => {
     const view = build({ status: "ready", data: undefined, retry }, ladder)
     renderCard(view)
 
     expect(screen.getByTestId("run-status-no-entry")).toHaveTextContent(
       "No synced progress for this event yet."
     )
-    expect(screen.getByTestId("event-timing")).toBeInTheDocument()
     expect(screen.queryByTestId("run-status-values")).toBeNull()
   })
 
@@ -358,7 +354,6 @@ describe("RunStatusCard", () => {
     expect(screen.getByTestId("run-status-unavailable")).toHaveTextContent(
       "Synced data unavailable"
     )
-    expect(screen.getByTestId("event-timing")).toBeInTheDocument()
     expect(screen.queryByTestId("run-status-values")).toBeNull()
   })
 
