@@ -168,6 +168,64 @@ describe("RaidSchedule location emphasis", () => {
     ])
   })
 
+  it("pulls a same-campaign upgrade within 50 energy up next to the earlier one", () => {
+    const b3 = battleIdSchema.parse("B3")
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        entries={[
+          { ...entry(b1, 1), resourceId: "X" as never },
+          { ...entry(b2, 1), resourceId: "Y" as never },
+          { ...entry(b3, 1), resourceId: "Z" as never },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [
+              b1,
+              {
+                ...location("B1", "Indomitus", "Elite 4"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+            [
+              b2,
+              {
+                ...location("B2", "Fall of Cadia", "Elite 7"),
+                campaignKey: "cadia:Elite",
+              },
+            ],
+            [
+              b3,
+              {
+                ...location("B3", "Indomitus", "Elite 9"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map()}
+        resourceUrgencyByGoalAndResource={
+          new Map([
+            ["g1:X", { days: 3, energyTotal: 90 }],
+            ["g1:Y", { days: 3, energyTotal: 80 }],
+            ["g1:Z", { days: 2, energyTotal: 50 }],
+          ])
+        }
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const resourceIds = [
+      ...screen
+        .getByTestId("raid-resource-grid-g1")
+        .querySelectorAll<HTMLElement>("[data-testid^='raid-card-g1-']"),
+    ].map((element) => element.dataset.testid?.replace("raid-card-g1-", ""))
+    expect(resourceIds).toEqual(["X", "Z", "Y"])
+  })
+
   it("uses the same urgency order for Bonus Raids", () => {
     render(
       <RaidSchedule
