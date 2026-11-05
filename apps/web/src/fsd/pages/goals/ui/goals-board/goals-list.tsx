@@ -42,6 +42,8 @@ export function GoalsList(props: GoalsListProps) {
 const EMPTY_SELECTION: ReadonlySet<string> = new Set()
 /** Header columns in `GoalsTable`, spanned by the season cut-off row. */
 const COLUMN_COUNT = 8
+/** A header class that shrinks its column to the widest cell's content. */
+const FIT_COLUMN = "w-px"
 
 function GoalsTable({
   rows,
@@ -84,7 +86,11 @@ function GoalsTable({
     <Table data-testid="goals-list-table">
       <TableHeader>
         <TableRow>
-          <TableHead className="w-24">
+          {/* Columns size to their content (`w-px` shrinks a column to its widest cell, which never
+              wraps), so short goals don't leave wide gaps and long names never collide with the
+              actions button; Remaining alone takes the leftover width (UserJot "Improve goals
+              table layout"). */}
+          <TableHead className={FIT_COLUMN}>
             <div className="flex items-center gap-2">
               <Checkbox
                 aria-label={t("goals.bulk.selectAll")}
@@ -101,13 +107,23 @@ function GoalsTable({
               <span className="sr-only">{t("goals.columns.reorder")}</span>
             </div>
           </TableHead>
-          <TableHead>{t("goals.columns.entity")}</TableHead>
-          <TableHead>{t("goals.columns.projects")}</TableHead>
-          <TableHead>{t("goals.columns.goal")}</TableHead>
-          <TableHead>{t("goals.columns.status")}</TableHead>
-          <TableHead>{t("goals.columns.doneBy")}</TableHead>
+          <TableHead className={FIT_COLUMN}>
+            {t("goals.columns.entity")}
+          </TableHead>
+          <TableHead className={FIT_COLUMN}>
+            {t("goals.columns.projects")}
+          </TableHead>
+          <TableHead className={FIT_COLUMN}>
+            {t("goals.columns.goal")}
+          </TableHead>
+          <TableHead className={FIT_COLUMN}>
+            {t("goals.columns.status")}
+          </TableHead>
+          <TableHead className={FIT_COLUMN}>
+            {t("goals.columns.doneBy")}
+          </TableHead>
           <TableHead>{t("goals.columns.remaining")}</TableHead>
-          <TableHead>{t("goals.columns.progress")}</TableHead>
+          <TableHead className="w-40">{t("goals.columns.progress")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

@@ -166,7 +166,9 @@ export const GoalRowCells = memo(function GoalRowCells({
             entityType={row.entityType}
             name={getEntityName(row.entityType, row.entityId)}
           />
-          <div className="min-w-0">
+          {/* No min-w-0: the name keeps its full width, so a squeezed table can never slide it under
+              the actions button beside it (UserJot "Improve goals table layout"). */}
+          <div>
             <GoalNameLink remainingText={remainingText} row={row} />
             {row.notes ? (
               <p
@@ -179,7 +181,7 @@ export const GoalRowCells = memo(function GoalRowCells({
             ) : null}
           </div>
           <div
-            className="ml-auto"
+            className="ml-auto shrink-0"
             data-testid={`goal-row-menu-${row.goalId}`}
             role="presentation"
             onClick={stopRowNavigation}
@@ -206,7 +208,7 @@ export const GoalRowCells = memo(function GoalRowCells({
       <TableCell>
         {/* At most two lines inside the fixed row height; the full list is the tooltip. */}
         <div
-          className="max-h-10 max-w-48 overflow-hidden"
+          className="max-h-10 w-max max-w-48 overflow-hidden"
           data-testid="goal-row-projects"
           title={(row.projects ?? []).map((project) => project.name).join(", ")}
         >
@@ -228,7 +230,7 @@ export const GoalRowCells = memo(function GoalRowCells({
         )}
       </TableCell>
       <TableCell>
-        <div className="flex flex-wrap items-center gap-1">
+        <div className="flex items-center gap-1">
           <StatusBadge
             className="px-2.5 py-1 text-sm"
             disabled={actions.pendingIds.has(row.goalId)}
@@ -256,7 +258,9 @@ export const GoalRowCells = memo(function GoalRowCells({
           </div>
         ) : null}
       </TableCell>
-      <TableCell className="min-w-[220px]">
+      {/* The one column without a fixed or content width: it takes whatever the table has left, and
+          its chips wrap inside it rather than pushing the table into a horizontal scroll. */}
+      <TableCell className="min-w-56 whitespace-normal">
         {reached ? (
           <ReachedDash />
         ) : (
