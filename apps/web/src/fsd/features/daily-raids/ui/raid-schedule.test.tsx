@@ -307,9 +307,11 @@ describe("RaidSchedule location emphasis", () => {
 
     const row = within(screen.getByTestId(`raid-location-${b1}`))
     for (const label of [campaignName, nodeLabel]) {
-      const line = row.getByText(label)
-      expect(line).toHaveClass("break-words")
+      // Campaign, tier and node share one line that wraps instead of truncating.
+      const line = row.getByText(label).closest(".break-words")
+      expect(line).not.toBeNull()
       expect(line).not.toHaveClass("truncate")
+      expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
     }
   })
 
@@ -419,6 +421,9 @@ describe("RaidSchedule location emphasis", () => {
     const row = screen.getByTestId(`raid-location-${b1}`)
     expect(row).toHaveTextContent("3 upgrades left")
     expect(row).not.toHaveTextContent(/attempts? used/)
+    // Short visible form so the name keeps the row width on mobile; full wording stays for AT.
+    expect(within(row).getByText("3 more")).toHaveAttribute("aria-hidden")
+    expect(within(row).getByText("3 upgrades left")).toHaveClass("sr-only")
   })
 
   it("excludes a fully-raided location from the card but keeps the card for its other locations", () => {

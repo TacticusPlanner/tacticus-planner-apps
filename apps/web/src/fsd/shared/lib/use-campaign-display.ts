@@ -38,12 +38,15 @@ export function useCampaignDisplay() {
    * `eliteMirror{n}` group (tacticus-planner-apps#119) named a different campaign than the one the
    * entry actually points at. The mirror base tier is the one case that omits its difficulty word:
    * "Indomitus Mirror" already reads as a campaign name, and "Indomitus Mirror Standard" would only
-   * add a redundant word.
+   * add a redundant word. A campaign event's Standard tier is likewise unnamed (empty string): it is
+   * the event's default, and only Extremis needs calling out.
    */
   const tierLabel = useCallback(
     (descriptor: CampaignDescriptor) => {
       if (descriptor.isEvent) {
-        return t(`campaigns:difficulties.${descriptor.difficultyToken}`)
+        return descriptor.difficultyToken === "eventStandard"
+          ? ""
+          : t(`campaigns:difficulties.${descriptor.difficultyToken}`)
       }
       const mirror = descriptor.isMirror
         ? t("campaigns:difficulties.mirror")
@@ -71,13 +74,16 @@ export function useCampaignDisplay() {
   )
 
   /**
-   * Just the difficulty word of a campaign/event tier: "Standard", "Elite" or "Extremis". The
-   * counterpart of `campaignName`, which already carries "Mirror".
+   * Just the difficulty word of a campaign/event tier: "Standard", "Elite" or "Extremis" — or ""
+   * for a campaign event's Standard tier, which is left unnamed (see `tierLabel`). The counterpart
+   * of `campaignName`, which already carries "Mirror".
    */
   const difficultyLabel = useCallback(
     (descriptor: CampaignDescriptor) => {
       if (descriptor.isEvent) {
-        return t(`campaigns:difficulties.${descriptor.difficultyToken}`)
+        return descriptor.difficultyToken === "eventStandard"
+          ? ""
+          : t(`campaigns:difficulties.${descriptor.difficultyToken}`)
       }
       return descriptor.difficultyToken === "elite"
         ? t("campaigns:difficulties.elite")
@@ -89,14 +95,14 @@ export function useCampaignDisplay() {
   /**
    * Full campaign label for a single campaign/event chip, e.g. "Fall of Cadia Standard",
    * "Indomitus Elite", "Indomitus Mirror", "Saim-Hann Mirror Elite", or "Death Guard Extremis"
-   * for an event tier — events carry two distinct difficulty tiers (Standard/Extremis) that farm
-   * at very different rates, so the tier must stay visible here too.
+   * for an event tier — Extremis farms at a very different rate, so it stays visible; the event's
+   * Standard tier reads as the bare name ("Death Guard").
    *
    * Composed from `name` + `tierLabel` so the tier words live in exactly one place.
    */
   const fullLabel = useCallback(
     (descriptor: CampaignDescriptor) =>
-      `${name(descriptor)} ${tierLabel(descriptor)}`,
+      [name(descriptor), tierLabel(descriptor)].filter(Boolean).join(" "),
     [name, tierLabel]
   )
 

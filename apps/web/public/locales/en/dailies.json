@@ -199,6 +199,8 @@
     "upgradesLeft_other": "{{count}} upgrades left",
     "shardsLeft_one": "{{count}} shard left",
     "shardsLeft_other": "{{count}} shards left",
+    "more_one": "{{count}} more",
+    "more_other": "{{count}} more",
     "progress": "{{owned}} of {{target}} owned",
     "fullyRaided": "Fully raided"
   },
@@ -253,7 +255,7 @@
     },
     "cell": {
       "label": "{{material}}, {{owned}} of {{target}} owned",
-      "node": "{{campaign}} {{node}} × {{raids}}",
+      "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} more",
       "moreUnits": "+{{count}}"
     },
