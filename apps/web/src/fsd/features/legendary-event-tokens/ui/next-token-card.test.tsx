@@ -124,6 +124,11 @@ describe("NextTokenCard", () => {
     renderCard(buildTokenPlanView(workedViewInput()))
 
     expect(screen.getByTestId("next-token-team")).toHaveTextContent("Melee")
+    expect(
+      screen
+        .getAllByTestId("next-token-team-details-portrait")
+        .map((portrait) => portrait.dataset.unit)
+    ).toEqual(["ultraCalgar", "ultraTitus", "ultraApothecary"])
     fireEvent.click(screen.getByTestId("next-token-team-details"))
     expect(
       screen.getAllByTestId("next-token-member").map((m) => m.dataset.unit)

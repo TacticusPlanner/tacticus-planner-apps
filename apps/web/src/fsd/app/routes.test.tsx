@@ -69,8 +69,8 @@ describe("app routes", () => {
       "index",
       "master-table",
       "tier-list",
-      ":eventId",
-      ":eventId/plan",
+      ":eventId/plan/edit",
+      ":eventId/:tab?",
     ])
     expect(findRoute(routes, "/events")).toBeUndefined()
   })

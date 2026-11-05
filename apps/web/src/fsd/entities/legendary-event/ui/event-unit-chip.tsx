@@ -1,9 +1,9 @@
-import type { CSSProperties } from "react"
 import { useTranslation } from "react-i18next"
 import {
   characterIcon,
   progressionVisual,
   rankIcon,
+  traitIcon,
 } from "@workspace/game-catalog"
 import { progressionRarity, type UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
@@ -12,24 +12,16 @@ import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import type { EventUnitChipData } from "../lib/event-unit-chip-data"
-
-/** The chip's background and edge in the unit's rank colour (the `--rank-*` tokens, which flip
- *  with the theme), so a column reads by rank at a glance as V1's table did. */
-function rankTone(rank: EventUnitChipData["rank"]): CSSProperties | undefined {
-  if (!rank) return undefined
-  const token = `var(--rank-${rank.toLowerCase()})`
-  return {
-    backgroundColor: `color-mix(in oklab, ${token} 60%, transparent)`,
-    borderColor: token,
-  }
-}
+import { rankTone } from "../lib/rank-tone"
 
 /**
  * One unit on the Event board, a team card or the team picker: its portrait ringed in its rarity colour, its rank icon, and its
  * active and passive ability levels, on a background in its rank colour. `showStars` adds its
  * ascension stars (saved teams, where the chip carries what a shared screenshot needs). A unit
  * the player does not own is greyed out and reads "Locked"; with no roster only the portrait
- * shows. The accessible name spells it all out.
+ * shows. A Healer or Mechanic shows its trait icon at the end when the chip sits in a container
+ * (`@container`) wide enough for it, as on the Event board's wider columns. The accessible name
+ * spells it all out.
  */
 export function EventUnitChip({
   unit,
@@ -40,13 +32,21 @@ export function EventUnitChip({
   showStars?: boolean
   className?: string
 }) {
-  const { t } = useTranslation(["legendaryEvents", "common", "progression"])
+  const { t } = useTranslation([
+    "legendaryEvents",
+    "common",
+    "progression",
+    "traits",
+  ])
   const unitName = useUnitName()
   const name = unitName("Character", unit.unitId)
   const owned = unit.owned === true
   const visual =
     showStars && unit.progression ? progressionVisual(unit.progression) : null
-  const label = owned
+  const traitLabels = (unit.supportTraits ?? []).map((trait) =>
+    t(`traits:${trait}`, { defaultValue: trait })
+  )
+  const baseLabel = owned
     ? [
         name,
         unit.progression
@@ -63,6 +63,7 @@ export function EventUnitChip({
     : unit.owned === false
       ? `${name}, ${t("common:unitTile.notOwned")}`
       : name
+  const label = [baseLabel, ...traitLabels].join(", ")
   return (
     <span
       aria-label={label}
@@ -148,6 +149,16 @@ export function EventUnitChip({
           {t("legendaryEvents:eventBoard.locked")}
         </span>
       ) : null}
+      {unit.supportTraits?.map((trait) => (
+        <EntityIcon
+          alt=""
+          className="ml-auto hidden size-4 shrink-0 @[7.5rem]:block"
+          data-testid="event-board-unit-trait"
+          data-trait={trait}
+          key={trait}
+          src={traitIcon(trait)}
+        />
+      ))}
     </span>
   )
 }

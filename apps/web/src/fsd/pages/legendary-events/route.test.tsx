@@ -26,7 +26,9 @@ function renderLegendaryEventsRoutes(entries: string[]) {
                 element={
                   <div
                     data-testid={
-                      route.path === ":eventId" ? "event-page" : route.path
+                      route.path === ":eventId/:tab?"
+                        ? "event-page"
+                        : route.path
                     }
                   />
                 }
@@ -53,9 +55,15 @@ describe("legendary events routes", () => {
     expect(screen.getByTestId("event-page")).toBeInTheDocument()
   })
 
+  it("routes an event page's tab as a path segment", () => {
+    renderLegendaryEventsRoutes(["/legendary-events/astarLysander/teams"])
+    expect(screen.getByTestId("event-page")).toBeInTheDocument()
+  })
+
   it("routes an event's plan wizard", () => {
-    renderLegendaryEventsRoutes(["/legendary-events/astarLysander/plan"])
-    expect(screen.getByTestId(":eventId/plan")).toBeInTheDocument()
+    renderLegendaryEventsRoutes(["/legendary-events/astarLysander/plan/edit"])
+    expect(screen.getByTestId(":eventId/plan/edit")).toBeInTheDocument()
+    expect(screen.queryByTestId("event-page")).toBeNull()
   })
 
   it("routes the master table and the tier list, never as event ids", () => {

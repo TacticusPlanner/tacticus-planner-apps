@@ -110,7 +110,7 @@ For each lane the planner SHALL compute, from the lane's teams that have a depth
 
 ### Requirement: Next token card heads the run tab
 
-The run tab (Current, Next or Last run) SHALL open with a **Next token** card. With a non-empty plan it SHALL show the next token: the first planned token that is not flagged Maybe, whose battle is playable now (its lane's first battle, or synced progress shows the previous battle's defeat-all cleared) and that has no earlier planned token on the same battle, or the first planned token when none qualifies. It SHALL show the team name with a team button (`data-testid="next-token-team-details"`) whose popover shows the members as the Teams view's unit chips (portrait ringed in rarity colour, stars, rank icon, ability levels), the lane, "Battle N", "+P points", the icon and name of each objective it clears (defeat-all included), and one reason line: "Most points available now" when it is the plan's first token, otherwise "Most points among battles you can play now". When the event is upcoming it SHALL add the next-run suffix of `legendary-event-run-resolution`. It SHALL carry two actions: **Partly cleared**, which marks the token's objective cells Maybe clear (its defeat-all cell too when it clears no objective), and **Couldn't clear**, which marks every cell it clears Stop here; each is one annotation write for the token's battle through the existing marks contract, and the card and plan recompute at once.
+The run tab (Current, Next or Last run) SHALL open with a **Next token** card. With a non-empty plan it SHALL show the next token: the first planned token that is not flagged Maybe, whose battle is playable now (its lane's first battle, or synced progress shows the previous battle's defeat-all cleared) and that has no earlier planned token on the same battle, or the first planned token when none qualifies. It SHALL show the team name with a team button (`data-testid="next-token-team-details"`) showing the members' portraits stacked over one another, whose popover shows the members as the Teams view's unit chips (portrait ringed in rarity colour, stars, rank icon, ability levels), the lane, "Battle N", "+P points", the icon and name of each objective it clears (defeat-all included), and one reason line: "Most points available now" when it is the plan's first token, otherwise "Most points among battles you can play now". When the event is upcoming it SHALL add the next-run suffix of `legendary-event-run-resolution`. It SHALL carry two actions: **Partly cleared**, which marks the token's objective cells Maybe clear (its defeat-all cell too when it clears no objective), and **Couldn't clear**, which marks every cell it clears Stop here; each is one annotation write for the token's battle through the existing marks contract, and the card and plan recompute at once.
 
 When there is no next token the card SHALL name what is missing, checked in this order:
 
@@ -125,7 +125,7 @@ The card SHALL NOT render on an archived event. While the roster, plan or clear 
 #### Scenario: Card on the worked example
 
 - **WHEN** the run tab renders the worked Uthar Alpha example
-- **THEN** the card shows team Melee with its team button (its popover showing the three unit chips), "Alpha · Battle 3", "+240 points", defeat-all, Ultramarines and Melee, and "Most points available now"
+- **THEN** the card shows team Melee with its team button (the three members' portraits stacked, its popover showing the three unit chips), "Alpha · Battle 3", "+240 points", defeat-all, Ultramarines and Melee, and "Most points available now"
 
 #### Scenario: Flagged and unplayable tokens are skipped
 
@@ -170,9 +170,9 @@ The card SHALL NOT render on an archived event. While the roster, plan or clear 
 
 ### Requirement: Token plan list
 
-The Plan tab SHALL show, after the Run forecast, a collapsible **Token plan**, open by default there and remembered per device, headed "N tokens · +P points". Expanded, it SHALL list the planned tokens in **run sections**: the plan's tokens are spent in order across the runs that are not Done, each run taking up to its supply, exactly as the run forecast spends them (`legendary-event-run-forecast`). Each section SHALL be headed "Run R · <state> · U of A tokens · +P points · ends at E" (state Now, Next or Planned; U the tokens it uses, A its supply, P their points, E the running points after its last token), or, when it uses none, "Run R · <state>" with "No tokens planned · A tokens available". Tokens that no run's supply covers SHALL follow in a final **Not enough tokens** section headed "N tokens beyond run R's supply" (R the last run). When the run is unknown there SHALL be one section for the Next run. Done runs SHALL have no section.
+The Plan tab SHALL show, after the Run forecast and the Upgrade impact sections, a collapsible **Token plan**, open by default there and remembered per device, headed "N tokens · +P points". Expanded, it SHALL list the planned tokens in **run sections**: the plan's tokens are spent in order across the runs that are not Done, each run taking up to its supply, exactly as the run forecast spends them (`legendary-event-run-forecast`). Each section SHALL be headed "Run R · <state> · U of A tokens · +P points · ends at E" (state Now, Next or Planned; U the tokens it uses, A its supply, P their points, E the running points after its last token), or, when it uses none, "Run R · <state>" with "No tokens planned · A tokens available". Tokens that no run's supply covers SHALL follow in a final **Not enough tokens** section headed "N tokens beyond run R's supply" (R the last run). When the run is unknown there SHALL be one section for the Next run. Done runs SHALL have no section.
 
-Within a section, consecutive tokens of the same team SHALL be grouped under the team name; each row shows its number (counted across the whole plan), lane, battle, the icons of the objectives it clears, "+points" and running points, the Maybe flag when flagged, and a marker when the running points cross a points milestone ("Milestone M · +E currency") or when the run forecast reaches an ascension step at that token. Under the list one line per lane with teams SHALL show the fewest tokens per battle ("Alpha: a full clear takes 2 tokens a battle") or the objectives no team covers ("Alpha: no team covers Resilient, Max 2 Hits, Piercing"). With an empty plan the section SHALL be hidden; the Next token card carries the reason.
+Within a section, consecutive tokens of the same team SHALL be grouped under the team name; each row shows its number (counted across the whole plan), lane, battle, the icons of the objectives it clears, "+points" and running points, the Maybe flag when flagged, and a marker when the running points cross a points milestone ("Milestone M · +E currency") or when the run forecast reaches an ascension step at that token. Within a team group, consecutive tokens playing the next battle of the same lane and clearing the same cells SHALL fold into one row: its token range, lane and "Battles F–L" (opening the battle info dialog on battle F), the cells, the summed "+points", the running points after its last token, the Maybe flag when any token is flagged, and every milestone and step its tokens reach; a separate expand button (not the row) SHALL reveal the per-battle rows, which then carry the markers. On the event page the team name SHALL open that team in the team editor. Under the list one line per lane with teams SHALL show the fewest tokens per battle ("Alpha: a full clear takes 2 tokens a battle") or the objectives no team covers ("Alpha: no team covers Resilient, Max 2 Hits, Piercing"). With an empty plan the section SHALL be hidden; the Next token card carries the reason.
 
 #### Scenario: Sections on the worked example
 
@@ -207,6 +207,16 @@ Within a section, consecutive tokens of the same team SHALL be grouped under the
 
 - **WHEN** the worked example's plan is expanded
 - **THEN** run 2's section shows the groups Melee (tokens 1–3), Five (token 4), Melee (tokens 5–6)
+
+#### Scenario: Folded battles
+
+- **WHEN** the worked example's plan is expanded
+- **THEN** Melee's tokens 1–3 (Alpha battles 3, 4 and 5, each clearing the same cells) show as one row "1–3 · Alpha · Battles 3–5" carrying "Milestone 13 · +85 currency"; pressing its expand button shows tokens 1, 2 and 3, token 3 carrying the marker, and pressing "Battles 3–5" opens battle 3's info
+
+#### Scenario: Team opens its editor
+
+- **WHEN** the user presses "Five" above token 4 on the event page
+- **THEN** the team editor opens on Alpha's team Five
 
 #### Scenario: Grouping restarts in a new section
 

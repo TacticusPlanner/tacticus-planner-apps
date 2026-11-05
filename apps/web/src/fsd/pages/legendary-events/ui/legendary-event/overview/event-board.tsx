@@ -324,7 +324,7 @@ function UnitTable({
   }
   return (
     <div
-      className="max-h-[34rem] min-w-0 overflow-auto rounded-md border"
+      className="max-h-[max(34rem,calc(100dvh-18rem))] min-w-0 overflow-auto rounded-md border"
       data-testid="event-board-table"
     >
       {/* As wide as the columns, not the scroll box: the sticky heading row (and its background)
@@ -363,7 +363,7 @@ function UnitTable({
                 aria-label={t("eventBoard.columnUnits", {
                   count: column.units.length,
                 })}
-                className="flex min-w-0 flex-col gap-px"
+                className="@container flex min-w-0 flex-col gap-px"
                 data-testid="event-board-column"
                 key={column.objectiveIndexes.join("+")}
               >

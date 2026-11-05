@@ -12,6 +12,17 @@ export interface EventUnitChipData {
   progression?: Progression
   activeLevel?: number
   passiveLevel?: number
+  /** The unit's support traits (Healer, Mechanic), shown when the chip has room. */
+  supportTraits?: readonly SupportTrait[]
+}
+
+/** The support traits a chip marks, in display order (V1's LRE tile shows the same two). */
+const SUPPORT_TRAITS = ["Healer", "Mechanic"] as const
+type SupportTrait = (typeof SUPPORT_TRAITS)[number]
+
+/** The support traits among `traits`, in display order. */
+export function supportTraitsOf(traits: readonly string[]): SupportTrait[] {
+  return SUPPORT_TRAITS.filter((trait) => traits.includes(trait))
 }
 
 /** An owned unit's chip data from its synced roster record (ability levels default to 1). */
@@ -29,12 +40,18 @@ export function ownedUnitChipData(
   }
 }
 
-/** A unit chip's data from the synced roster (`rosterById` undefined: ownership unknown). */
+/** A unit chip's data from the synced roster (`rosterById` undefined: ownership unknown), with
+ *  the unit's support traits when its catalog `traits` are given. */
 export function eventUnitChipData(
   unitId: string,
-  rosterById: ReadonlyMap<string, LegendaryEventRosterUnit> | undefined
+  rosterById: ReadonlyMap<string, LegendaryEventRosterUnit> | undefined,
+  traits?: readonly string[]
 ): EventUnitChipData {
-  if (!rosterById) return { unitId, owned: undefined }
+  const supports = traits ? supportTraitsOf(traits) : []
+  const extra = supports.length > 0 ? { supportTraits: supports } : {}
+  if (!rosterById) return { unitId, owned: undefined, ...extra }
   const entry = rosterById.get(unitId)
-  return entry ? ownedUnitChipData(unitId, entry) : { unitId, owned: false }
+  return entry
+    ? { ...ownedUnitChipData(unitId, entry), ...extra }
+    : { unitId, owned: false, ...extra }
 }

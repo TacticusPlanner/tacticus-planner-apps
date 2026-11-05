@@ -92,6 +92,32 @@ describe("ProgressSection", () => {
     i18n = await createTestI18n("en")
   })
 
+  it("puts the shown lanes side by side on desktop and stacks them on mobile", () => {
+    const progressGrid = buildProgressGridViewModel(lysanderEvent, entry)
+    const { rerender } = render(
+      <ProgressSection
+        event={lysanderEvent}
+        laneIds={["alpha", "beta"]}
+        layout="grid"
+        progressGrid={progressGrid}
+      />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+    expect(screen.getByTestId("progress-lanes")).toHaveClass("lg:grid-cols-2")
+
+    rerender(
+      <ProgressSection
+        event={lysanderEvent}
+        laneIds={["alpha", "beta"]}
+        layout="rows"
+        progressGrid={progressGrid}
+      />
+    )
+    expect(screen.getByTestId("progress-lanes")).not.toHaveClass(
+      "lg:grid-cols-2"
+    )
+  })
+
   it("heads the lane with points earned of the maximum, a bar and the stable heading id", () => {
     renderProgress(entry)
     expect(

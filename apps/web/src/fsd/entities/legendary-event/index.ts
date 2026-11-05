@@ -82,6 +82,7 @@ export {
 } from "./model/use-objective-label"
 export { ObjectiveIcon } from "./ui/objective-icon"
 export { EventUnitChip } from "./ui/event-unit-chip"
+export { rankTone } from "./lib/rank-tone"
 export {
   eventUnitChipData,
   ownedUnitChipData,

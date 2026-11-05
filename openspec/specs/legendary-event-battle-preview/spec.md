@@ -83,7 +83,7 @@ The section SHALL show one selected battle. On first render for a lane the selec
 
 ### Requirement: Desktop and mobile select battles differently
 
-On desktop the selector SHALL show every battle number of the lane as a single-choice control, with the selected one pressed and complete battles marked with accessible text, not colour alone. On mobile it SHALL show previous and next buttons around a "Battle N of M" label, disabled at the first and last battle, and a menu listing every battle to jump to.
+On desktop the selector SHALL show every battle number of the lane as a single-choice control between Previous and Next buttons (disabled at the first and last battle), with the selected one pressed and complete battles marked with accessible text, not colour alone. On mobile it SHALL show previous and next buttons around a "Battle N of M" label, disabled at the first and last battle, and a menu listing every battle to jump to.
 
 #### Scenario: Desktop picks a battle directly
 

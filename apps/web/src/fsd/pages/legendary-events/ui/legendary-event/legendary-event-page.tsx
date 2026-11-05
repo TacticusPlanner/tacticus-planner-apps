@@ -435,6 +435,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           setSelectedObjectives((current) =>
             mergeShownObjectiveSelection(eventData, lanes.shown, current, next)
           ),
+        allSelectedObjectives: selectedObjectives,
+        onAllSelectedObjectivesChange: setSelectedObjectives,
         clears:
           previewOn && previewEstimates ? previewEstimates : clearEstimates,
         onAddToTeam: teamsState.kind === "ready" ? addToTeam : undefined,

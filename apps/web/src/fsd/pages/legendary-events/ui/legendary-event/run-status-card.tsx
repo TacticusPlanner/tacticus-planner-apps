@@ -23,7 +23,6 @@ import { RunInputsDrawer } from "@/features/legendary-event-plan"
 import { formatEventCountdown, formatRelativeTime } from "@/shared/lib"
 import { IconLine } from "@/shared/ui"
 
-import { EventTimingLines } from "../shared/event-timing-lines"
 import type {
   RewardOutlookViewModel,
   RunInputsViewModel,
@@ -189,7 +188,6 @@ export function RunStatusCard({
         ) : null}
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <EventTimingLines lifecycle={lifecycle} nowMs={nowMs} />
         {body}
         <RewardOutlook outlook={outlook} />
         {syncedAtMs === undefined ? null : (

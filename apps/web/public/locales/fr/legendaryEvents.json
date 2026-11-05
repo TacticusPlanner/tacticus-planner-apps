@@ -238,7 +238,14 @@
       "notAllowed": "—",
       "notAllowedLabel": "{{lane}} : non autorisé",
       "laneFigure": "{{lane}} : {{points}}"
-    }
+    },
+    "filters": "Filtres",
+    "filtersCount": "Filtres ({{count}})",
+    "lanes": "Voies",
+    "lanesAll": "Toutes les voies",
+    "lanesCount": "{{count}} voies",
+    "progression": "Progression",
+    "sortBy": "Trier par {{column}}"
   },
   "progress": {
     "title": "Progression synchronisée",
@@ -427,7 +434,20 @@
     "pointsLeftNeedsDepth": "Définissez la profondeur pour voir les points restants",
     "clearedThrough": "Déjà validé jusqu'au combat {{battle}}",
     "pointsLeftCannotClear": "Ne franchit pas encore le combat 1",
-    "laneFull": "Cette voie contient déjà le maximum de {{max}} équipes."
+    "laneFull": "Cette voie contient déjà le maximum de {{max}} équipes.",
+    "depthBar": {
+      "battles": "Combats 1–{{depth}}",
+      "cannotClear": "Ne passe pas encore le combat 1",
+      "unset": "Aucune profondeur",
+      "label": "Passe les combats 1–{{depth}} sur {{total}}",
+      "labelNone": "Ne passe aucun des {{total}} combats",
+      "close": "Proche du combat {{battle}}",
+      "manual": "Profondeur fixée par vous"
+    },
+    "editDepth": "Modifier la profondeur",
+    "details": "Détails",
+    "objectives": "Objectifs",
+    "objectiveUncovered": "{{objective}} : aucun membre de l’équipe ne le couvre"
   },
   "objective": {
     "minHits_one": "Min. {{count}} coup",
@@ -752,7 +772,13 @@
         },
         "doneCount": "{{done}}/{{total}} terminées",
         "completed": "Terminée"
-      }
+      },
+      "battles": "Combats {{first}}–{{last}}",
+      "expandRun_one": "Afficher {{count}} combat",
+      "expandRun_other": "Afficher {{count}} combats",
+      "collapseRun_one": "Masquer {{count}} combat",
+      "collapseRun_other": "Masquer {{count}} combats",
+      "openTeam": "Ouvrir l’équipe {{team}}"
     },
     "forecast": {
       "title": "Prévision par manche",

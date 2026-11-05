@@ -112,16 +112,16 @@ Each row SHALL show the event unit's portrait and localized name and its timing:
 
 ### Requirement: The event page shows one event with in-page sections
 
-`/legendary-events/:eventId` SHALL render the event named by `:eventId` (the catalog `lres` id, a unit snowprint id such as `astarLysander`) as one page with a tab strip of four tabs in this order: **Overview**, **Teams**, **Plan** and the **run tab**, on desktop and mobile alike; the strip scrolls sideways when it does not fit. The run tab SHALL be named "Current run" while the event is active, "Next run" while it is upcoming and "Last run" once it is archived. The default tab SHALL be the run tab while the event is active, and Overview otherwise. The page title is the event unit's localized name; the header shows the lifecycle badge. An unknown `:eventId` SHALL replace the route with `/legendary-events`. The old `/events/legendary-events/:eventId` route SHALL NOT exist and SHALL NOT redirect.
+`/legendary-events/:eventId` SHALL render the event named by `:eventId` (the catalog `lres` id, a unit snowprint id such as `astarLysander`) as one page with a tab strip of four tabs in this order: **Overview**, **Teams**, **Plan** and the **run tab**, on desktop and mobile alike; the strip scrolls sideways when it does not fit. The run tab SHALL be named "Current run" while the event is active, "Next run" while it is upcoming and "Last run" once it is archived. The default tab SHALL be the run tab while the event is active, and Overview otherwise. The page title is the event unit's localized name; the header shows the lifecycle badge and, under the name on every tab, the run timing on one line ("Starts in 3 days · Nov 8, 2026, 2:00 AM", "Ends in …" while active; nothing once archived), so it stays visible whichever tab is open. Run status does not repeat it. An unknown `:eventId` SHALL replace the route with `/legendary-events`. The old `/events/legendary-events/:eventId` route SHALL NOT exist and SHALL NOT redirect.
 
 - **Overview** shows the Run status card (see "The Overview tab summarises the event"), the lane summary, on mobile the all-lanes Eligibility leaderboard, then the plan notes.
 - **Teams** shows the Event board, then one Eligibility leaderboard (see "The Teams tab shows an Event board of the shown lanes").
-- **Plan** shows, in order, the collapsible Run forecast (see `legendary-event-run-forecast`), the Token plan, open by default (see `legendary-event-token-plan`), then every lane's Upgrade impact section, each naming its lane (see `legendary-event-upgrade-impact`), and one lane's Battles section, whose lane is picked in a dropdown in its battle row (see `legendary-event-battle-preview`). Plan shows no lane selection.
+- **Plan** shows, in order, the collapsible Run forecast (see `legendary-event-run-forecast`), every lane's Upgrade impact section, each naming its lane (see `legendary-event-upgrade-impact`), the Token plan, open by default (see `legendary-event-token-plan`), and one lane's Battles section, whose lane is picked in a dropdown in its battle row (see `legendary-event-battle-preview`). Plan shows no lane selection.
 - **The run tab** shows, in order, the Next token card with the tokens up next (see `legendary-event-token-plan`), the Run status card, the shown lanes' Synced progress grids and the Last run card (see `legendary-event-run-history`).
 
 The Teams and run tabs' lane blocks (the Event board's columns, the leaderboard and the progress grids) SHALL follow one **lane selection** for the page, remembered per browser and shown above the blocks: on desktop a segmented control with a toggle per lane, pressed (with a check) while it shows, shows one, two or all three lanes (all three by default; pressing the last shown lane leaves it shown), and below 768px an Alpha / Beta / Gamma segmented single choice shows one lane at a time (the first selected lane).
 
-The selected tab SHALL be the `tab` query parameter (`overview`, `teams`, `plan`, `run`; missing means the default tab, which is left out of the URL). An unrecognized value SHALL fall back to the default and be dropped from the URL (replace); a lane id in `tab` (a link from before the Teams tab, such as `?tab=beta`) SHALL open Teams with that lane shown and be rewritten to `?tab=teams`. Selecting a tab SHALL update the parameter by replacing the current history entry, so Back leaves the event page. The parameter is not carried to another event, so the tab resets to that event's default on navigation to another event, and it survives a reload of the same event. On mobile the tab strip SHALL stay fixed below the app header while the page scrolls, so a tab can be switched from any scroll position. On desktop the strip scrolls with the page.
+The selected tab SHALL be the last path segment of the event page (`/legendary-events/:eventId/overview`, `/teams`, `/plan`, `/run`); the bare event path shows the default tab. An unrecognized segment SHALL show the default tab. Old `?tab=` links carry no redirect and open the default tab. Selecting a tab SHALL write its segment by replacing the current history entry, so Back leaves the event page, and SHALL keep the query string. The segment is not carried to another event, so the tab resets to that event's default on navigation to another event, and it survives a reload of the same event. On mobile the tab strip SHALL stay fixed below the app header while the page scrolls, so a tab can be switched from any scroll position. On desktop the strip scrolls with the page.
 
 #### Scenario: Known active event renders on Current run
 
@@ -141,7 +141,7 @@ The selected tab SHALL be the `tab` query parameter (`overview`, `teams`, `plan`
 #### Scenario: Plan tab order
 
 - **WHEN** the user selects Plan with only Beta shown on the other tabs
-- **THEN** the page shows no lane selection, the Run forecast, the Token plan, Alpha's, Beta's and Gamma's Upgrade impact, then one "Battles" section with its lane dropdown
+- **THEN** the page shows no lane selection, the Run forecast, Alpha's, Beta's and Gamma's Upgrade impact, the Token plan, then one "Battles" section with its lane dropdown
 
 #### Scenario: Shown lanes carry over between tabs and visits
 
@@ -167,19 +167,14 @@ The selected tab SHALL be the `tab` query parameter (`overview`, `teams`, `plan`
 
 #### Scenario: Selected tab survives a reload
 
-- **GIVEN** the user selected Plan, so the URL is `/legendary-events/astarLysander?tab=plan`
+- **GIVEN** the user selected Plan, so the URL is `/legendary-events/astarLysander/plan`
 - **WHEN** they reload the page
 - **THEN** Plan is selected
 
-#### Scenario: A lane link from before the Teams tab
-
-- **WHEN** a user opens `/legendary-events/astarLysander?tab=gamma` below 768px
-- **THEN** Teams is selected with Gamma picked and the URL is replaced with `?tab=teams`
-
 #### Scenario: Unknown tab value falls back to the default
 
-- **WHEN** a user opens `/legendary-events/astarLysander?tab=delta` while Lysander is active
-- **THEN** Current run is selected and the URL is replaced with `/legendary-events/astarLysander`
+- **WHEN** a user opens `/legendary-events/astarLysander/delta` while Lysander is active
+- **THEN** Current run is selected
 
 #### Scenario: Switching tabs adds no history entry
 

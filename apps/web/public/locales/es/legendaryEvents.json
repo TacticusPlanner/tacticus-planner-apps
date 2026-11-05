@@ -238,7 +238,14 @@
       "notAllowed": "—",
       "notAllowedLabel": "{{lane}}: no permitido",
       "laneFigure": "{{lane}}: {{points}}"
-    }
+    },
+    "filters": "Filtros",
+    "filtersCount": "Filtros ({{count}})",
+    "lanes": "Carriles",
+    "lanesAll": "Todos los carriles",
+    "lanesCount": "{{count}} carriles",
+    "progression": "Progresión",
+    "sortBy": "Ordenar por {{column}}"
   },
   "progress": {
     "title": "Progreso sincronizado",
@@ -427,7 +434,20 @@
     "pointsLeftNeedsDepth": "Fija la profundidad para ver los puntos restantes",
     "clearedThrough": "Ya completado hasta la batalla {{battle}}",
     "pointsLeftCannotClear": "Aún no supera la batalla 1",
-    "laneFull": "Este carril ya tiene el máximo de {{max}} equipos."
+    "laneFull": "Este carril ya tiene el máximo de {{max}} equipos.",
+    "depthBar": {
+      "battles": "Batallas 1–{{depth}}",
+      "cannotClear": "Aún no supera la batalla 1",
+      "unset": "Sin profundidad",
+      "label": "Supera las batallas 1–{{depth}} de {{total}}",
+      "labelNone": "No supera ninguna de {{total}} batallas",
+      "close": "Cerca de la batalla {{battle}}",
+      "manual": "Profundidad fijada por ti"
+    },
+    "editDepth": "Editar profundidad",
+    "details": "Detalles",
+    "objectives": "Objetivos",
+    "objectiveUncovered": "{{objective}}: ningún miembro del equipo lo cubre"
   },
   "objective": {
     "minHits_one": "Mín. {{count}} golpe",
@@ -752,7 +772,13 @@
         },
         "doneCount": "{{done}}/{{total}} completadas",
         "completed": "Completada"
-      }
+      },
+      "battles": "Batallas {{first}}–{{last}}",
+      "expandRun_one": "Mostrar {{count}} batalla",
+      "expandRun_other": "Mostrar {{count}} batallas",
+      "collapseRun_one": "Ocultar {{count}} batalla",
+      "collapseRun_other": "Ocultar {{count}} batallas",
+      "openTeam": "Abrir el equipo {{team}}"
     },
     "forecast": {
       "title": "Previsión por ronda",

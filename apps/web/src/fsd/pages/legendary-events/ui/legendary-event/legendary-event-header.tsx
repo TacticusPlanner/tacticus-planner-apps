@@ -4,16 +4,22 @@ import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 
+import { EventTimingLines } from "../shared/event-timing-lines"
 import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-model"
 
-/** The event's portrait, localized unit name and lifecycle badge, with `actions` (the plan entry)
- *  at the end of the row, wrapping below on narrow screens. */
+/** The event's portrait, localized unit name and lifecycle badge, with the run's timing ("Starts in
+ *  3 days · Nov 8, …") under the name on every tab, and `actions` (the plan entry) at the end of
+ *  the row, wrapping below on narrow screens. */
 export function LegendaryEventHeader({
   event,
   lifecycle,
   name,
+  nowMs,
   actions,
-}: Pick<LegendaryEventPageViewModel, "event" | "lifecycle" | "name"> & {
+}: Pick<
+  LegendaryEventPageViewModel,
+  "event" | "lifecycle" | "name" | "nowMs"
+> & {
   actions?: ReactNode
 }) {
   const { t } = useTranslation("legendaryEvents")
@@ -29,19 +35,24 @@ export function LegendaryEventHeader({
             src={portrait}
           />
         ) : null}
-        <h1
-          className="min-w-0 truncate text-xl font-semibold"
-          data-testid="legendary-event-title"
-        >
-          {name}
-        </h1>
-        <Badge
-          data-state={lifecycle.state}
-          data-testid="legendary-event-lifecycle"
-          variant={lifecycle.state === "active" ? "default" : "secondary"}
-        >
-          {t(`lifecycle.${lifecycle.state}`)}
-        </Badge>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <div className="flex min-w-0 items-center gap-3">
+            <h1
+              className="min-w-0 truncate text-xl font-semibold"
+              data-testid="legendary-event-title"
+            >
+              {name}
+            </h1>
+            <Badge
+              data-state={lifecycle.state}
+              data-testid="legendary-event-lifecycle"
+              variant={lifecycle.state === "active" ? "default" : "secondary"}
+            >
+              {t(`lifecycle.${lifecycle.state}`)}
+            </Badge>
+          </div>
+          <EventTimingLines inline lifecycle={lifecycle} nowMs={nowMs} />
+        </div>
       </div>
       {actions}
     </div>

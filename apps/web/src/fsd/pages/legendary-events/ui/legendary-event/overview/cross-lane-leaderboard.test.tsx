@@ -1,6 +1,7 @@
+import userEvent from "@testing-library/user-event"
 import { useState } from "react"
 import type { i18n as I18n } from "i18next"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
   objectiveFilterKey,
@@ -100,12 +101,15 @@ function Harness({
   progressGrid = progress,
   goals = noGoals,
   onAddToTeam,
+  wholeSelection = false,
 }: {
   rows: LeaderboardRowsViewModel
   layout: "table" | "list"
   progressGrid?: ProgressGridViewModel
   goals?: LeaderboardGoalsViewModel
   onAddToTeam?: (unitId: string, laneId: "alpha" | "beta" | "gamma") => void
+  /** Hand it every lane's picks, as the page does. */
+  wholeSelection?: boolean
 }) {
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
@@ -124,6 +128,12 @@ function Harness({
         onDeductScoredChange: setDeductScored,
         selectedObjectives,
         onSelectedObjectivesChange: setSelectedObjectives,
+        ...(wholeSelection
+          ? {
+              allSelectedObjectives: selectedObjectives,
+              onAllSelectedObjectivesChange: setSelectedObjectives,
+            }
+          : {}),
         clears: { kind: "hidden" },
         goals,
         onAddToTeam,
@@ -155,6 +165,128 @@ const laneFigures = (unit: string) =>
 describe("CrossLaneLeaderboard", () => {
   beforeAll(async () => {
     i18n = await createTestI18n("en")
+  })
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it("hides the filters behind a Filters button that counts the active ones", () => {
+    renderOverview()
+    const button = screen.getByRole("button", { name: "Filters" })
+    const panel = screen.getByTestId("leaderboard-filters-panel")
+    expect(panel).not.toBeVisible()
+    fireEvent.click(button)
+    expect(panel).toBeVisible()
+    act(() => {
+      fireEvent.click(screen.getAllByTestId("leaderboard-objective-chip")[0]!)
+    })
+    expect(
+      screen.getByRole("button", { name: "Filters (1)" })
+    ).toBeInTheDocument()
+  })
+
+  it("compares only the lanes picked in its own lane selector", async () => {
+    const user = userEvent.setup()
+    renderOverview()
+    await user.click(screen.getByRole("button", { name: "Lanes: All lanes" }))
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Alpha" }))
+    expect(screen.queryByRole("columnheader", { name: /Alpha/ })).toBeNull()
+    expect(laneFigures("bloodDante")).toEqual(["1,200", "—"])
+    expect(
+      screen
+        .getAllByTestId("leaderboard-objective-group")
+        .map((g) => g.dataset.lane)
+    ).toEqual(["beta", "gamma"])
+  })
+
+  it("filters only by the chips of the lanes its own selector shows, keeping a hidden lane's picks", async () => {
+    const user = userEvent.setup()
+    render(<Harness layout="table" rows={ready} wholeSelection />, {
+      wrapper: i18nWrapper(i18n),
+    })
+    const healer = () =>
+      screen
+        .getAllByTestId("leaderboard-objective-chip")
+        .find((element) => element.dataset.objective === "Trait:Healer:is")
+    const lane = healer()!.closest<HTMLElement>(
+      "[data-testid='leaderboard-objective-group']"
+    )!.dataset.lane!
+    act(() => {
+      fireEvent.click(healer()!)
+    })
+    expect(screen.getByTestId("leaderboard-none-match")).toBeInTheDocument()
+
+    const laneName = lane.charAt(0).toUpperCase() + lane.slice(1)
+    await user.click(screen.getByRole("button", { name: "Lanes: All lanes" }))
+    await user.click(screen.getByRole("menuitemcheckbox", { name: laneName }))
+    expect(screen.queryByTestId("leaderboard-none-match")).toBeNull()
+
+    await user.click(screen.getByRole("menuitemcheckbox", { name: laneName }))
+    expect(screen.getByTestId("leaderboard-none-match")).toBeInTheDocument()
+  })
+
+  it("drops a lane's sort when the selector hides that lane", async () => {
+    const user = userEvent.setup()
+    renderOverview()
+    fireEvent.click(
+      within(screen.getByRole("columnheader", { name: /^Beta/ })).getByRole(
+        "button"
+      )
+    )
+    await user.click(screen.getByRole("button", { name: "Lanes: All lanes" }))
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Beta" }))
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Beta" }))
+    await user.keyboard("{Escape}")
+    expect(
+      screen.getByRole("columnheader", { name: /^Beta/ })
+    ).not.toHaveAttribute("aria-sort", "descending")
+  })
+
+  it("sorts by a lane, progression or rank from the column headings", () => {
+    renderOverview("table", {
+      ...ready,
+      crossLaneRows: [
+        {
+          ...otherRow,
+          rank: "Iron1",
+          rarity: "Epic",
+          progression: "Epic:RedTwoStars",
+        },
+        {
+          ...danteRow,
+          rank: "Diamond3",
+          rarity: "Rare",
+          progression: "Rare:FourStars",
+        },
+      ],
+    })
+    expect(units()).toEqual(["bloodDante", "other"])
+    const sortBy = (name: RegExp) =>
+      fireEvent.click(
+        within(screen.getByRole("columnheader", { name })).getByRole("button")
+      )
+    sortBy(/^Beta/)
+    expect(units()).toEqual(["bloodDante", "other"])
+    sortBy(/^Progression/)
+    expect(units()).toEqual(["other", "bloodDante"])
+    expect(
+      screen.getByRole("columnheader", { name: /^Progression/ })
+    ).toHaveAttribute("aria-sort", "descending")
+    sortBy(/^Rank/)
+    expect(units()).toEqual(["bloodDante", "other"])
+    expect(
+      within(screen.getAllByTestId("leaderboard-row")[0]!).getByTestId(
+        "leaderboard-progression"
+      )
+    ).toHaveTextContent("4")
+  })
+
+  it("puts the actions menu right after the unit's name", () => {
+    renderOverview()
+    const first = screen.getAllByTestId("leaderboard-row")[0]!
+    const name = within(first).getByTestId("leaderboard-unit-name")
+    const menu = within(first).getByTestId("leaderboard-row-menu")
+    expect(name.closest("td")).toContainElement(menu)
   })
 
   it("shows one figure per lane, — for a disallowed lane, ordered by the sum", () => {

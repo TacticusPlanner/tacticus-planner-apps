@@ -221,6 +221,12 @@ export interface LeaderboardControlsState {
   /** `objectiveFilterKey`s every listed unit must satisfy. */
   selectedObjectives: ReadonlySet<string>
   onSelectedObjectivesChange: (keys: ReadonlySet<string>) => void
+  /** Every lane's picks, hidden lanes' included: the cross-lane leaderboard keeps its own lanes,
+   *  so it prunes and merges against those instead of the page's lane switches. */
+  allSelectedObjectives?: ReadonlySet<string>
+  onAllSelectedObjectivesChange?: (
+    update: (current: ReadonlySet<string>) => ReadonlySet<string>
+  ) => void
 }
 
 /** Goals Preview availability (design D8): goals loading, failed, none for the event's units. */

@@ -234,7 +234,7 @@ The leaderboard controls SHALL include an objective filter listing the current l
 
 ### Requirement: Cross-lane eligibility leaderboard on Teams
 
-The Teams tab SHALL render, under the Event board when two or three lanes are shown, a cross-lane Eligibility leaderboard over the shown lanes with one row per character allowed on at least one of them, showing portrait, name, trait markers, owned state with rarity and rank, and one cell per lane (Alpha, Beta, Gamma) carrying the lane's objective icons as met / muted indicators in the lane's objective order, each with accessible text, above the lane's points figure following the Deduct scored points toggle; a lane that does not allow the unit shows "—" and no indicators. Rows are ordered by the sum of the three figures descending, then name. The row's accessible text names each lane's figure. Filters and toggles are the shared ones.
+The Teams tab SHALL render, under the Event board when two or three lanes are shown, a cross-lane Eligibility leaderboard with its own lane multi-select (a dropdown of lane checkboxes, every lane by default, remembered per browser apart from the page's lane switches; the last lane stays checked) and one row per character allowed on at least one of its lanes, showing portrait, name, trait markers and the row's actions menu right after the name, a **Progression** column (the owned unit's rarity icon, star icon and star count, as the collection's roster view shows it), a **Rank** column (the rank icon on a background in the rank's colour, as on team tiles), and one cell per lane (Alpha, Beta, Gamma) carrying the lane's objective icons as met / muted indicators in the lane's objective order, each with accessible text, above the lane's points figure following the Deduct scored points toggle; a lane that does not allow the unit shows "—" and no indicators. Rows are ordered by the sum of the lanes' figures descending, then name; pressing the Progression, Rank or a lane heading SHALL sort by it descending, again ascending, and a third time return to that order, with ties and locked units (no value) kept in that order, last. The row's accessible text names each lane's figure. Filters and toggles are the shared ones; like the collection page, they sit in a panel behind a **Filters** button that counts the active filters (selected objectives, Only unlocked, Goals Preview) and opens at first when any is active.
 
 #### Scenario: Cross-lane row
 
@@ -281,10 +281,10 @@ Opening the menu SHALL NOT change the row's order, filters or the Goals Preview 
 
 #### Scenario: Desktop menu
 
-- **WHEN** a leaderboard renders at or above 768px
-- **THEN** each table row ends with a three-dots button in a narrow trailing column whose header's accessible name is "Actions", and the table keeps no horizontal page scroll
+- **WHEN** a lane leaderboard renders at or above 768px
+- **THEN** each table row ends with a three-dots button in a narrow trailing column whose header's accessible name is "Actions", and the table keeps no horizontal page scroll; the cross-lane leaderboard's rows carry it right after the unit's name instead
 
 #### Scenario: Mobile menu
 
-- **WHEN** a leaderboard renders below 768px
-- **THEN** each row card has a three-dots button in its top-right corner with a touch target of at least 44px, and opening it does not navigate or expand the card
+- **WHEN** a lane leaderboard renders below 768px
+- **THEN** each row card has a three-dots button in its top-right corner (right after the unit's name on the cross-lane leaderboard) with a touch target of at least 44px, and opening it does not navigate or expand the card

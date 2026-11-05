@@ -238,7 +238,14 @@
       "notAllowed": "—",
       "notAllowedLabel": "{{lane}}: nicht erlaubt",
       "laneFigure": "{{lane}}: {{points}}"
-    }
+    },
+    "filters": "Filter",
+    "filtersCount": "Filter ({{count}})",
+    "lanes": "Bahnen",
+    "lanesAll": "Alle Bahnen",
+    "lanesCount": "{{count}} Bahnen",
+    "progression": "Fortschritt",
+    "sortBy": "Nach {{column}} sortieren"
   },
   "progress": {
     "title": "Synchronisierter Fortschritt",
@@ -427,7 +434,20 @@
     "pointsLeftNeedsDepth": "Tiefe festlegen, um die verbleibenden Punkte zu sehen",
     "clearedThrough": "Bereits bis Kampf {{battle}} erfüllt",
     "pointsLeftCannotClear": "Schafft Kampf 1 noch nicht",
-    "laneFull": "Diese Bahn enthält bereits die maximal {{max}} Teams."
+    "laneFull": "Diese Bahn enthält bereits die maximal {{max}} Teams.",
+    "depthBar": {
+      "battles": "Kämpfe 1–{{depth}}",
+      "cannotClear": "Kampf 1 noch nicht schaffbar",
+      "unset": "Keine Tiefe gesetzt",
+      "label": "Schafft Kämpfe 1–{{depth}} von {{total}}",
+      "labelNone": "Schafft keinen von {{total}} Kämpfen",
+      "close": "Knapp vor Kampf {{battle}}",
+      "manual": "Von dir gesetzte Tiefe"
+    },
+    "editDepth": "Tiefe bearbeiten",
+    "details": "Details",
+    "objectives": "Ziele",
+    "objectiveUncovered": "{{objective}}: kein Teammitglied deckt es ab"
   },
   "objective": {
     "minHits_one": "Mind. {{count}} Treffer",
@@ -752,7 +772,13 @@
         },
         "doneCount": "{{done}}/{{total}} erledigt",
         "completed": "Erledigt"
-      }
+      },
+      "battles": "Kämpfe {{first}}–{{last}}",
+      "expandRun_one": "{{count}} Kampf anzeigen",
+      "expandRun_other": "{{count}} Kämpfe anzeigen",
+      "collapseRun_one": "{{count}} Kampf ausblenden",
+      "collapseRun_other": "{{count}} Kämpfe ausblenden",
+      "openTeam": "Team {{team}} öffnen"
     },
     "forecast": {
       "title": "Durchlaufprognose",
