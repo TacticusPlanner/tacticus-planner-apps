@@ -1,4 +1,10 @@
 import { useTranslation } from "react-i18next"
+import { ChevronDown } from "lucide-react"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover"
 import {
   abilityBadgeIcon,
   energyIcon,
@@ -17,6 +23,7 @@ import type { GoalKind } from "@/entities/goal"
 import type { ResourceNeed } from "@/features/goal-farming"
 import { shopCurrencyIcon } from "@/features/shop-rewards"
 import { EntityIcon } from "@/shared/ui"
+import { sumPools } from "./goal-resource-totals"
 
 const EMPTY_AVAILABLE = {
   badgesByRarity: {},
@@ -33,12 +40,17 @@ type Chip = {
   name: string
   /** Available/needed quantities (Machine of War materials): shows "a/n", the label reads "a of n". */
   pool?: { available: number; needed: number }
+  /** The raw count behind `text` (summed when chips fold into one). */
+  quantity?: number
   /** Display text beside the icon (a formatted quantity, or ). */
   text: string
   /** Shortened text shown instead of `text` when they differ (gold: "42k"); the label keeps the full value. */
   display?: string
   /** Extra tooltip line (the energy chip's standalone figures). */
   hint?: string
+  /** Per-rarity chips folded into this one (UserJot "Improve goals table layout"): the chip shows
+   *  their total and opens a popover listing each rarity. */
+  parts?: Chip[]
 }
 
 /** Icon chips for what a goal still needs, per goal kind (`goal-remaining-resources`): never upgrade
@@ -75,7 +87,7 @@ export function GoalResourceChips({
     overlay?: string
   ) => {
     if (quantity && quantity > 0) {
-      chips.push({ key, icon, overlay, name, text: fmt(quantity) })
+      chips.push({ key, icon, overlay, name, quantity, text: fmt(quantity) })
     }
   }
   const addPool = (
@@ -102,6 +114,7 @@ export function GoalResourceChips({
     overlay?: string,
     available?: Partial<Record<Rarity, number>>
   ) => {
+    const start = chips.length
     for (const rarity of rarityOrder) {
       const name = t(`goals.resourceChips.${kind}`, {
         rarity: rarityName(rarity),
@@ -117,6 +130,38 @@ export function GoalResourceChips({
       } else {
         add(`${kind}-${rarity}`, icon(rarity), name, amounts?.[rarity], overlay)
       }
+    }
+    // Two or more rarities fold into one chip (the highest rarity's art) so a long Remaining list
+    // stays scannable; a lone rarity keeps its own chip.
+    const parts = chips.splice(start)
+    if (parts.length < 2) {
+      chips.push(...parts)
+      return
+    }
+    const top = parts.at(-1) as Chip
+    const name = t(`goals.resourceChips.${kind}Total`)
+    if (available) {
+      // Surplus of one rarity can't stand in for another, so a rarity counts at most what it needs.
+      const total = sumPools(parts)
+      chips.push({
+        key: kind,
+        icon: top.icon,
+        overlay: top.overlay,
+        name,
+        pool: total,
+        text: `${fmt(total.available)}/${fmt(total.needed)}`,
+        parts,
+      })
+    } else {
+      const total = parts.reduce((sum, part) => sum + (part.quantity ?? 0), 0)
+      chips.push({
+        key: kind,
+        icon: top.icon,
+        overlay: top.overlay,
+        name,
+        text: fmt(total),
+        parts,
+      })
     }
   }
   const addEnergy = () => {
@@ -261,26 +306,82 @@ ${chip.hint}`
     >
       {chips.map((chip) => (
         <li data-testid="goal-resource-chip" key={chip.key}>
-          <span
-            aria-label={tooltip(chip)}
-            className="flex items-center gap-1 tabular-nums"
-            role="img"
-            title={tooltip(chip)}
-          >
-            <span className="relative inline-flex">
-              <EntityIcon alt="" className="size-6" src={chip.icon} />
-              {chip.overlay ? (
-                <img
-                  alt=""
-                  className="absolute top-1/2 left-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 object-contain"
-                  src={chip.overlay}
-                />
-              ) : null}
-            </span>
-            <span aria-hidden>{chip.display ?? chip.text}</span>
-          </span>
+          {chip.parts ? (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  aria-label={t("goals.resourceChips.byRarityLabel", {
+                    label: tooltip(chip),
+                  })}
+                  className="-mx-1 flex items-center gap-0.5 rounded-md px-1 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  data-testid="goal-resource-chip-group"
+                  type="button"
+                >
+                  <ChipFace chip={chip} label={tooltip(chip)} />
+                  <ChevronDown
+                    aria-hidden="true"
+                    className="size-3 text-muted-foreground"
+                  />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="w-auto gap-2 p-3"
+                data-testid="goal-resource-chip-breakdown"
+              >
+                <p className="font-medium">{chip.name}</p>
+                <ul className="grid gap-1.5">
+                  {chip.parts.map((part) => (
+                    <li
+                      className="flex items-center justify-between gap-4"
+                      key={part.key}
+                    >
+                      <span className="flex items-center gap-2">
+                        <ChipIcon chip={part} />
+                        {part.name}
+                      </span>
+                      <span className="tabular-nums">
+                        {part.display ?? part.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <ChipFace chip={chip} label={tooltip(chip)} />
+          )}
         </li>
       ))}
     </ul>
+  )
+}
+
+function ChipIcon({ chip }: { chip: Chip }) {
+  return (
+    <span className="relative inline-flex shrink-0">
+      <EntityIcon alt="" className="size-6" src={chip.icon} />
+      {chip.overlay ? (
+        <img
+          alt=""
+          className="absolute top-1/2 left-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 object-contain"
+          src={chip.overlay}
+        />
+      ) : null}
+    </span>
+  )
+}
+
+function ChipFace({ chip, label }: { chip: Chip; label: string }) {
+  return (
+    <span
+      aria-label={label}
+      className="flex items-center gap-1 tabular-nums"
+      role="img"
+      title={label}
+    >
+      <ChipIcon chip={chip} />
+      <span aria-hidden>{chip.display ?? chip.text}</span>
+    </span>
   )
 }
