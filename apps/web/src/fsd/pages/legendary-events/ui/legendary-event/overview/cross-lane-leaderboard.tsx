@@ -33,6 +33,8 @@ import {
 import {
   crossLaneLeaderboardBody,
   leaderboardFigure,
+  mergeShownObjectiveSelection,
+  shownObjectiveSelection,
   useLeaderboardUnitName,
   useObjectiveChips,
   type ObjectiveChipGroup,
@@ -61,7 +63,7 @@ import { useLeaderboardLanes } from "./use-leaderboard-lanes"
  */
 export function CrossLaneLeaderboard({
   event,
-  leaderboard,
+  leaderboard: state,
   progressGrid,
   layout,
 }: {
@@ -73,6 +75,12 @@ export function CrossLaneLeaderboard({
   const lanes = useLeaderboardLanes()
   const laneIds = lanes.laneIds
   const [sort, setSort] = useState<CrossLaneSort | null>(null)
+  const leaderboard = withPickerLaneSelection(event, laneIds, state)
+  const onLaneToggle = (laneId: LegendaryEventLaneId, shown: boolean) => {
+    // A hidden lane's column can't show its sort.
+    if (!shown && sort?.key === laneId) setSort(null)
+    lanes.onToggle(laneId, shown)
+  }
   const { t, i18n } = useTranslation("legendaryEvents")
   const nameOf = useLeaderboardUnitName()
   const objectiveChips = useObjectiveChips()
@@ -159,7 +167,7 @@ export function CrossLaneLeaderboard({
         goals={leaderboard.goals}
         groups={groups}
         leading={
-          <LeaderboardLanePicker laneIds={laneIds} onToggle={lanes.onToggle} />
+          <LeaderboardLanePicker laneIds={laneIds} onToggle={onLaneToggle} />
         }
         progressAvailable={!ready || leaderboard.progressAvailable}
         rosterAvailable={!ready || rosterAvailable}
@@ -168,6 +176,26 @@ export function CrossLaneLeaderboard({
       {body}
     </section>
   )
+}
+
+/** The objective chips of the picker's lanes filter (a lane the picker hides keeps its picks for
+ *  when it's shown again), rather than the page's lane switches. */
+function withPickerLaneSelection(
+  event: LegendaryEvent,
+  laneIds: readonly LegendaryEventLaneId[],
+  leaderboard: LeaderboardViewModel
+): LeaderboardViewModel {
+  const all = leaderboard.allSelectedObjectives
+  const update = leaderboard.onAllSelectedObjectivesChange
+  if (!all || !update) return leaderboard
+  return {
+    ...leaderboard,
+    selectedObjectives: shownObjectiveSelection(event, laneIds, all),
+    onSelectedObjectivesChange: (next) =>
+      update((current) =>
+        mergeShownObjectiveSelection(event, laneIds, current, next)
+      ),
+  }
 }
 
 /** Add to new team on the Overview (design D5): one item per lane allowing the unit, in lane

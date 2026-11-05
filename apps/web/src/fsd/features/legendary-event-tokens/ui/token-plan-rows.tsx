@@ -284,9 +284,9 @@ function TokenBattleRunRow({
           <div className="flex min-w-0 items-center justify-between gap-2">
             <span className="flex min-w-0 items-center gap-1">
               {toggle}
-              {range}
+              <span className="shrink-0">{range}</span>
               <span className="shrink-0">· {lane} ·</span>
-              {battle}
+              <span className="min-w-0">{battle}</span>
             </span>
             {points}
           </div>

@@ -316,13 +316,16 @@ function CoverageStrip({
   const coverageByIndex = new Map(
     card.coverage.map((entry) => [entry.index, entry])
   )
+  const objectives = [...lane.unitsRestrictions].sort(
+    (a, b) => a.index - b.index
+  )
   return (
     <ul
       aria-label={t("teams.objectives")}
       className="ml-auto flex shrink-0 items-center gap-1"
       data-testid="team-card-objectives"
     >
-      {lane.unitsRestrictions.map((objective) => {
+      {objectives.map((objective) => {
         const { label, icon } = objectiveLabel(objective)
         const entry = coverageByIndex.get(objective.index)
         if (!entry)
@@ -334,7 +337,12 @@ function CoverageStrip({
               title={label}
             >
               <ObjectiveIcon className="size-5" icon={icon} muted />
-              <span className="text-[10px] leading-3">&nbsp;</span>
+              <span aria-hidden="true" className="text-[10px] leading-3">
+                &nbsp;
+              </span>
+              <span className="sr-only">
+                {t("teams.objectiveUncovered", { objective: label })}
+              </span>
             </li>
           )
         const muted = !entry.derived
@@ -408,7 +416,11 @@ function TeamDepthBar({
   card: Pick<TeamCardViewModel, "displayedDepth" | "estimate">
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const depth = card.displayedDepth
+  // A stored depth past the lane's last battle reads as the whole lane, as the bar fills.
+  const depth =
+    card.displayedDepth === null
+      ? null
+      : Math.min(card.displayedDepth, bar.total)
   const headline =
     depth === null
       ? t("teams.depthBar.unset")

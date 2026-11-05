@@ -446,7 +446,8 @@
     },
     "editDepth": "Edit clear depth",
     "details": "Details",
-    "objectives": "Objectives"
+    "objectives": "Objectives",
+    "objectiveUncovered": "{{objective}}: no team member covers it"
   },
   "objective": {
     "minHits_one": "Min {{count}} hit",

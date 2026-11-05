@@ -446,7 +446,8 @@
     },
     "editDepth": "Tiefe bearbeiten",
     "details": "Details",
-    "objectives": "Ziele"
+    "objectives": "Ziele",
+    "objectiveUncovered": "{{objective}}: kein Teammitglied deckt es ab"
   },
   "objective": {
     "minHits_one": "Mind. {{count}} Treffer",

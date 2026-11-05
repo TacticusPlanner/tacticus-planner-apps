@@ -196,13 +196,16 @@ export function LeaderboardProgression({ row }: { row: LeaderboardUnitRow }) {
           {visual.count}
         </>
       ) : visual.kind === "none" ? null : (
-        <EntityIcon
-          alt=""
-          className="h-4 w-auto"
-          height={164}
-          src={visual.icon}
-          width={512}
-        />
+        <>
+          <EntityIcon
+            alt=""
+            className="h-4 w-auto"
+            height={164}
+            src={visual.icon}
+            width={512}
+          />
+          <span className="sr-only">{t("stars.MythicWings")}</span>
+        </>
       )}
     </span>
   )

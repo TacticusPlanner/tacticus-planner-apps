@@ -621,6 +621,22 @@ describe("TeamCard", () => {
     expect(editor).toBeVisible()
   })
 
+  it("reads a depth past the lane's last battle as the whole lane", () => {
+    const card = {
+      ...buildTeamCardViewModel(team(), teamLane, teamUnitList, undefined, 1),
+      displayedDepth: 30,
+    }
+    render(
+      <ul>
+        <TeamCard actions={actions()} card={card} lane={teamLane} />
+      </ul>,
+      { wrapper: i18nWrapper(i18n) }
+    )
+    expect(screen.getByTestId("team-card-depth-headline")).toHaveTextContent(
+      `Battles 1–${teamLane.battleIds.length}`
+    )
+  })
+
   describe("Team power (spec: legendary-event-teams)", () => {
     const renderPower = (power: Partial<TeamCardViewModel>) => {
       const card = {

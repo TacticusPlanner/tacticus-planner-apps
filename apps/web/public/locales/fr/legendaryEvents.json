@@ -446,7 +446,8 @@
     },
     "editDepth": "Modifier la profondeur",
     "details": "Détails",
-    "objectives": "Objectifs"
+    "objectives": "Objectifs",
+    "objectiveUncovered": "{{objective}} : aucun membre de l’équipe ne le couvre"
   },
   "objective": {
     "minHits_one": "Min. {{count}} coup",
