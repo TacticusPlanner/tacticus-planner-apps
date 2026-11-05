@@ -238,7 +238,14 @@
       "notAllowed": "—",
       "notAllowedLabel": "{{lane}}: no permitido",
       "laneFigure": "{{lane}}: {{points}}"
-    }
+    },
+    "filters": "Filtros",
+    "filtersCount": "Filtros ({{count}})",
+    "lanes": "Carriles",
+    "lanesAll": "Todos los carriles",
+    "lanesCount": "{{count}} carriles",
+    "progression": "Progresión",
+    "sortBy": "Ordenar por {{column}}"
   },
   "progress": {
     "title": "Progreso sincronizado",

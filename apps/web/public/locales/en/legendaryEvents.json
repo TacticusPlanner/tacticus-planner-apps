@@ -238,7 +238,14 @@
       "notAllowed": "—",
       "notAllowedLabel": "{{lane}}: not allowed",
       "laneFigure": "{{lane}}: {{points}}"
-    }
+    },
+    "filters": "Filters",
+    "filtersCount": "Filters ({{count}})",
+    "lanes": "Lanes",
+    "lanesAll": "All lanes",
+    "lanesCount": "{{count}} lanes",
+    "progression": "Progression",
+    "sortBy": "Sort by {{column}}"
   },
   "progress": {
     "title": "Synced progress",

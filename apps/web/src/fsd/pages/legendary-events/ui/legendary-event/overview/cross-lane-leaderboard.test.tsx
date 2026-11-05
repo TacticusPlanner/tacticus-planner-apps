@@ -1,6 +1,7 @@
+import userEvent from "@testing-library/user-event"
 import { useState } from "react"
 import type { i18n as I18n } from "i18next"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
   objectiveFilterKey,
@@ -155,6 +156,85 @@ const laneFigures = (unit: string) =>
 describe("CrossLaneLeaderboard", () => {
   beforeAll(async () => {
     i18n = await createTestI18n("en")
+  })
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it("hides the filters behind a Filters button that counts the active ones", () => {
+    renderOverview()
+    const button = screen.getByRole("button", { name: "Filters" })
+    const panel = screen.getByTestId("leaderboard-filters-panel")
+    expect(panel).not.toBeVisible()
+    fireEvent.click(button)
+    expect(panel).toBeVisible()
+    act(() => {
+      fireEvent.click(screen.getAllByTestId("leaderboard-objective-chip")[0]!)
+    })
+    expect(
+      screen.getByRole("button", { name: "Filters (1)" })
+    ).toBeInTheDocument()
+  })
+
+  it("compares only the lanes picked in its own lane selector", async () => {
+    const user = userEvent.setup()
+    renderOverview()
+    await user.click(screen.getByRole("button", { name: "Lanes: All lanes" }))
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Alpha" }))
+    expect(screen.queryByRole("columnheader", { name: /Alpha/ })).toBeNull()
+    expect(laneFigures("bloodDante")).toEqual(["1,200", "—"])
+    expect(
+      screen
+        .getAllByTestId("leaderboard-objective-group")
+        .map((g) => g.dataset.lane)
+    ).toEqual(["beta", "gamma"])
+  })
+
+  it("sorts by a lane, progression or rank from the column headings", () => {
+    renderOverview("table", {
+      ...ready,
+      crossLaneRows: [
+        {
+          ...otherRow,
+          rank: "Iron1",
+          rarity: "Epic",
+          progression: "Epic:RedTwoStars",
+        },
+        {
+          ...danteRow,
+          rank: "Diamond3",
+          rarity: "Rare",
+          progression: "Rare:FourStars",
+        },
+      ],
+    })
+    expect(units()).toEqual(["bloodDante", "other"])
+    const sortBy = (name: RegExp) =>
+      fireEvent.click(
+        within(screen.getByRole("columnheader", { name })).getByRole("button")
+      )
+    sortBy(/^Beta/)
+    expect(units()).toEqual(["bloodDante", "other"])
+    sortBy(/^Progression/)
+    expect(units()).toEqual(["other", "bloodDante"])
+    expect(
+      screen.getByRole("columnheader", { name: /^Progression/ })
+    ).toHaveAttribute("aria-sort", "descending")
+    sortBy(/^Rank/)
+    expect(units()).toEqual(["bloodDante", "other"])
+    expect(
+      within(screen.getAllByTestId("leaderboard-row")[0]!).getByTestId(
+        "leaderboard-progression"
+      )
+    ).toHaveTextContent("4")
+  })
+
+  it("puts the actions menu right after the unit's name", () => {
+    renderOverview()
+    const first = screen.getAllByTestId("leaderboard-row")[0]!
+    const name = within(first).getByTestId("leaderboard-unit-name")
+    const menu = within(first).getByTestId("leaderboard-row-menu")
+    expect(name.closest("td")).toContainElement(menu)
   })
 
   it("shows one figure per lane, — for a disallowed lane, ordered by the sum", () => {

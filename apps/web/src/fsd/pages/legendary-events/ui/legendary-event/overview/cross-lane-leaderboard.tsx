@@ -1,5 +1,6 @@
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
@@ -11,7 +12,6 @@ import {
 } from "@workspace/ui/components/table"
 
 import {
-  LEGENDARY_EVENT_LANE_IDS,
   crossLaneFigure,
   type CrossLaneLeaderboardRow,
   type LeaderboardFigure,
@@ -23,8 +23,8 @@ import {
 import { LeaderboardControls } from "../leaderboard/leaderboard-controls"
 import {
   LeaderboardEmptyBody,
-  LeaderboardRank,
-  LeaderboardRarity,
+  LeaderboardProgression,
+  LeaderboardRankTile,
   LeaderboardRowActions,
   LeaderboardUnit,
   ObjectiveIndicator,
@@ -42,16 +42,25 @@ import type {
   LeaderboardViewModel,
   ProgressGridViewModel,
 } from "../legendary-event-page.view-model"
+import {
+  nextCrossLaneSort,
+  sortCrossLaneRows,
+  type CrossLaneSort,
+  type CrossLaneSortKey,
+} from "./cross-lane-sort"
+import { LeaderboardLanePicker } from "./leaderboard-lane-picker"
+import { useLeaderboardLanes } from "./use-leaderboard-lanes"
 
 /**
  * The cross-lane Eligibility leaderboard (spec: one eligibility leaderboard on Teams): one row per
- * unit allowed on at least one shown lane with each shown lane's figure ("—" where a lane
- * disallows it), each under that lane's objective indicators, ordered by their sum. Shares
- * the controls bar and its state with the lane leaderboards; the chips are grouped per lane.
+ * unit allowed on at least one of its lanes with each lane's figure ("—" where a lane disallows
+ * it), each under that lane's objective indicators, ordered by their sum. Its lanes come from its
+ * own multi-select (every lane by default, remembered apart from the page's lane switches). The
+ * table's Progression, Rank and lane columns sort on a header press. Shares the controls bar and
+ * its state with the lane leaderboards; the chips are grouped per lane.
  */
 export function CrossLaneLeaderboard({
   event,
-  laneIds = LEGENDARY_EVENT_LANE_IDS,
   leaderboard,
   progressGrid,
   layout,
@@ -60,9 +69,10 @@ export function CrossLaneLeaderboard({
   leaderboard: LeaderboardViewModel
   progressGrid: ProgressGridViewModel
   layout: "table" | "list"
-  /** The lanes it compares (every lane by default), in lane order. */
-  laneIds?: readonly LegendaryEventLaneId[]
 }) {
+  const lanes = useLeaderboardLanes()
+  const laneIds = lanes.laneIds
+  const [sort, setSort] = useState<CrossLaneSort | null>(null)
   const { t, i18n } = useTranslation("legendaryEvents")
   const nameOf = useLeaderboardUnitName()
   const objectiveChips = useObjectiveChips()
@@ -111,7 +121,11 @@ export function CrossLaneLeaderboard({
             groups={groups}
             nameOf={nameOf}
             onAddToTeam={leaderboard.onAddToTeam}
-            rows={result.rows}
+            onSort={(key) =>
+              setSort((current) => nextCrossLaneSort(current, key))
+            }
+            rows={sortCrossLaneRows(result.rows, sort, figure)}
+            sort={sort}
           />
         ) : (
           <CrossLaneList
@@ -144,6 +158,9 @@ export function CrossLaneLeaderboard({
       <LeaderboardControls
         goals={leaderboard.goals}
         groups={groups}
+        leading={
+          <LeaderboardLanePicker laneIds={laneIds} onToggle={lanes.onToggle} />
+        }
         progressAvailable={!ready || leaderboard.progressAvailable}
         rosterAvailable={!ready || rosterAvailable}
         state={leaderboard}
@@ -223,6 +240,57 @@ function useLaneFigure(figure: LeaderboardFigure) {
   }
 }
 
+/** A sortable column heading: a button naming the column, with `aria-sort` on the cell. */
+function SortHead({
+  sortKey,
+  sort,
+  onSort,
+  label,
+  className,
+}: {
+  sortKey: CrossLaneSortKey
+  sort: CrossLaneSort | null
+  onSort: (key: CrossLaneSortKey) => void
+  label: string
+  className?: string
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  const direction = sort?.key === sortKey ? sort.direction : undefined
+  const Icon =
+    direction === "desc"
+      ? ArrowDown
+      : direction === "asc"
+        ? ArrowUp
+        : ArrowUpDown
+  return (
+    <TableHead
+      aria-sort={
+        direction === "desc"
+          ? "descending"
+          : direction === "asc"
+            ? "ascending"
+            : "none"
+      }
+      className={className}
+    >
+      <button
+        className="inline-flex items-center gap-1 rounded-sm hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+        data-sort={sortKey}
+        data-testid="leaderboard-sort"
+        onClick={() => onSort(sortKey)}
+        title={t("leaderboard.sortBy", { column: label })}
+        type="button"
+      >
+        {label}
+        <Icon
+          aria-hidden
+          className={direction ? "size-3.5" : "size-3.5 opacity-40"}
+        />
+      </button>
+    </TableHead>
+  )
+}
+
 function CrossLaneTable({
   rows,
   groups,
@@ -231,6 +299,8 @@ function CrossLaneTable({
   goals,
   onAddToTeam,
   laneIds,
+  sort,
+  onSort,
 }: {
   rows: readonly CrossLaneLeaderboardRow[]
   groups: readonly ObjectiveChipGroup[]
@@ -239,6 +309,8 @@ function CrossLaneTable({
   goals: LeaderboardGoalsViewModel
   onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
   laneIds: readonly LegendaryEventLaneId[]
+  sort: CrossLaneSort | null
+  onSort: (key: CrossLaneSortKey) => void
 }) {
   const { t } = useTranslation("legendaryEvents")
   const laneFigure = useLaneFigure(figure)
@@ -248,20 +320,28 @@ function CrossLaneTable({
         <TableHeader className="sticky top-0 z-10 bg-card">
           <TableRow>
             <TableHead>{t("leaderboard.unit")}</TableHead>
-            <TableHead className="px-1">
-              <span className="sr-only">{t("leaderboard.rarity")}</span>
-            </TableHead>
-            <TableHead className="px-1">
-              <span className="sr-only">{t("leaderboard.rank")}</span>
-            </TableHead>
+            <SortHead
+              label={t("leaderboard.progression")}
+              onSort={onSort}
+              sort={sort}
+              sortKey="progression"
+            />
+            <SortHead
+              label={t("leaderboard.rank")}
+              onSort={onSort}
+              sort={sort}
+              sortKey="rank"
+            />
             {laneIds.map((laneId) => (
-              <TableHead className="text-right" key={laneId}>
-                {t(`lanes.${laneId}`)}
-              </TableHead>
+              <SortHead
+                className="text-right"
+                key={laneId}
+                label={t(`lanes.${laneId}`)}
+                onSort={onSort}
+                sort={sort}
+                sortKey={laneId}
+              />
             ))}
-            <TableHead className="w-10 px-1" rowSpan={2}>
-              <span className="sr-only">{t("leaderboardActions.header")}</span>
-            </TableHead>
           </TableRow>
           <TableRow>
             <TableHead className="h-6 py-0 text-xs font-normal" colSpan={3}>
@@ -284,19 +364,26 @@ function CrossLaneTable({
               data-unit={row.unit.id}
               key={row.unit.id}
             >
-              <TableCell className="max-w-48">
-                <LeaderboardUnit
-                  goalLines={goals.badgeLines(row.unit.id)}
-                  name={nameOf(row.unit)}
-                  previewed={goals.previewed.has(row.unit.id)}
-                  row={row}
-                />
+              <TableCell className="max-w-64">
+                <span className="flex min-w-0 items-center gap-1">
+                  <LeaderboardUnit
+                    goalLines={goals.badgeLines(row.unit.id)}
+                    name={nameOf(row.unit)}
+                    previewed={goals.previewed.has(row.unit.id)}
+                    row={row}
+                  />
+                  <LeaderboardRowActions
+                    name={nameOf(row.unit)}
+                    onCreateGoal={() => goals.onCreateGoal(row.unit.id, null)}
+                    addToTeam={crossLaneAddToTeam(row, laneIds, onAddToTeam)}
+                  />
+                </span>
               </TableCell>
-              <TableCell className="px-1">
-                <LeaderboardRarity row={row} />
+              <TableCell>
+                <LeaderboardProgression row={row} />
               </TableCell>
-              <TableCell className="px-1">
-                <LeaderboardRank row={row} />
+              <TableCell>
+                <LeaderboardRankTile row={row} />
               </TableCell>
               {laneIds.map((laneId) => {
                 const { text, label } = laneFigure(row, laneId)
@@ -325,13 +412,6 @@ function CrossLaneTable({
                   </TableCell>
                 )
               })}
-              <TableCell className="w-10 px-1">
-                <LeaderboardRowActions
-                  name={nameOf(row.unit)}
-                  onCreateGoal={() => goals.onCreateGoal(row.unit.id, null)}
-                  addToTeam={crossLaneAddToTeam(row, laneIds, onAddToTeam)}
-                />
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -370,21 +450,23 @@ function CrossLaneList({
           key={row.unit.id}
         >
           <div className="flex min-w-0 items-center justify-between gap-2">
-            <LeaderboardUnit
-              goalLines={goals.badgeLines(row.unit.id)}
-              name={nameOf(row.unit)}
-              previewed={goals.previewed.has(row.unit.id)}
-              row={row}
-            />
-            <span className="-my-1.5 -mr-1.5 flex shrink-0 items-center gap-1">
-              <LeaderboardRarity row={row} />
-              <LeaderboardRank row={row} />
+            <span className="-my-1.5 flex min-w-0 items-center gap-1">
+              <LeaderboardUnit
+                goalLines={goals.badgeLines(row.unit.id)}
+                name={nameOf(row.unit)}
+                previewed={goals.previewed.has(row.unit.id)}
+                row={row}
+              />
               <LeaderboardRowActions
                 name={nameOf(row.unit)}
                 onCreateGoal={() => goals.onCreateGoal(row.unit.id, null)}
                 addToTeam={crossLaneAddToTeam(row, laneIds, onAddToTeam)}
                 size="card"
               />
+            </span>
+            <span className="flex shrink-0 items-center gap-2">
+              <LeaderboardProgression row={row} />
+              <LeaderboardRankTile row={row} />
             </span>
           </div>
           <div className="flex min-w-0 flex-col gap-1 text-sm">

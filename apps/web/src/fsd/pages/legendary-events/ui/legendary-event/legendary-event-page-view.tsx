@@ -137,7 +137,6 @@ export function LegendaryEventPageView({
             {isMobile ? (
               <CrossLaneLeaderboard
                 event={props.event}
-                laneIds={LEGENDARY_EVENT_LANE_IDS}
                 layout="list"
                 // Every lane's chips show here, so every lane's selection filters.
                 leaderboard={{
@@ -210,7 +209,6 @@ export function LegendaryEventPageView({
             ) : (
               <CrossLaneLeaderboard
                 event={props.event}
-                laneIds={shown}
                 layout={leaderboardLayout}
                 leaderboard={props.leaderboard}
                 progressGrid={props.progressGrid}

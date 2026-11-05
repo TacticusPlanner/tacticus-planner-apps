@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react"
 import { useTranslation } from "react-i18next"
 import {
   characterIcon,
@@ -13,17 +12,7 @@ import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import type { EventUnitChipData } from "../lib/event-unit-chip-data"
-
-/** The chip's background and edge in the unit's rank colour (the `--rank-*` tokens, which flip
- *  with the theme), so a column reads by rank at a glance as V1's table did. */
-function rankTone(rank: EventUnitChipData["rank"]): CSSProperties | undefined {
-  if (!rank) return undefined
-  const token = `var(--rank-${rank.toLowerCase()})`
-  return {
-    backgroundColor: `color-mix(in oklab, ${token} 60%, transparent)`,
-    borderColor: token,
-  }
-}
+import { rankTone } from "../lib/rank-tone"
 
 /**
  * One unit on the Event board, a team card or the team picker: its portrait ringed in its rarity colour, its rank icon, and its

@@ -238,7 +238,14 @@
       "notAllowed": "—",
       "notAllowedLabel": "{{lane}} : non autorisé",
       "laneFigure": "{{lane}} : {{points}}"
-    }
+    },
+    "filters": "Filtres",
+    "filtersCount": "Filtres ({{count}})",
+    "lanes": "Voies",
+    "lanesAll": "Toutes les voies",
+    "lanesCount": "{{count}} voies",
+    "progression": "Progression",
+    "sortBy": "Trier par {{column}}"
   },
   "progress": {
     "title": "Progression synchronisée",
