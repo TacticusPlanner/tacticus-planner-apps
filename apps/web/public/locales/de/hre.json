@@ -107,7 +107,6 @@
     "toGo_other": "Noch {{count}} Schlachten",
     "note": "Raids für das Kampagnenziel: die günstigsten Kampagnenknoten, die etwas droppen. Bei gleichen Kosten zuerst Knoten mit mehr Eventpunkten, dann Knoten mit einem Drop für deine Ziele, nach Droprate, dann nach Gold.",
     "noteLightning": "Raids auf den Knoten des laufenden Kampagnenevents zählen als Blitzsiege, daher werden nur diese Knoten gezeigt.",
-    "budget": "Heute übrige Energie: {{energy}}.",
     "raidCount_one": "{{count}} Raid",
     "raidCount_other": "{{count}} Raids",
     "energy": "{{energy}} Energie",
@@ -162,7 +161,8 @@
       "more": "Nach der heutigen Energie sind weitere Schlachten nötig.",
       "none": "Kein Kampagnenknoten passt zu den Zielen dieser Mission.",
       "rulesTitle": "Knotenregeln"
-    }
+    },
+    "unlimitedEnergy": "Nicht auf die heutige Energie begrenzt: Nur die heutigen Versuche und das Ziel begrenzen die Liste."
   },
   "tokens": {
     "title": "Benötigte Marken",

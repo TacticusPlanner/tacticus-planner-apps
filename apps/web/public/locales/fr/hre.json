@@ -107,7 +107,6 @@
     "toGo_other": "Encore {{count}} batailles",
     "note": "Raids pour l'objectif de campagne : les nœuds de campagne les moins chers qui donnent quelque chose. À coût égal, d'abord ceux qui rapportent le plus de points d'événement, puis ceux qui donnent un objet utile à vos objectifs, par taux de drop, puis par or.",
     "noteLightning": "Les raids sur les nœuds de l'événement de campagne en cours comptent comme des victoires éclair, donc seuls ces nœuds sont listés.",
-    "budget": "Énergie restante aujourd'hui : {{energy}}.",
     "raidCount_one": "{{count}} raid",
     "raidCount_other": "{{count}} raids",
     "energy": "{{energy}} d'énergie",
@@ -162,7 +161,8 @@
       "more": "D'autres batailles seront nécessaires après l'énergie du jour.",
       "none": "Aucun nœud de campagne ne convient aux objectifs de cette mission.",
       "rulesTitle": "Règles des nœuds"
-    }
+    },
+    "unlimitedEnergy": "Sans limite d'énergie du jour : seules les tentatives du jour et l'objectif limitent la liste."
   },
   "tokens": {
     "title": "Jetons nécessaires",

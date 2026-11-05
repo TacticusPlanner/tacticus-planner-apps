@@ -47,7 +47,7 @@ import {
   resourceProgress,
   totalResourceProgress,
 } from "./daily-raids-progress"
-import { planEventFarm } from "./home-screen-event-farm"
+import { planEventFarm, type EventFarmOrder } from "./home-screen-event-farm"
 import { buildMissionGoalNodes } from "./mission-raids"
 import { buildFarmNodeFilter } from "./raids-filters/build-farm-node-filter"
 import type {
@@ -108,6 +108,8 @@ export type DailyRaidsCalculationInput = {
     pointsByBattleId: ReadonlyMap<BattleId, number>
     attemptsLeftByBattle: ReadonlyMap<BattleId, number>
     energyBudget: number
+    /** Points per energy (default) or energy per item first (`planEventFarm`). */
+    order?: EventFarmOrder
   }
   /** The Dailies > HRE tab only: also return, per node, the best-priority goal it feeds. */
   missionGoalNodes?: boolean
@@ -367,6 +369,8 @@ export function calculateDailyRaids(
         upgradesById,
         battlesById: params.battlesById,
         nodeFilter,
+        fewerRaids: params.quickFilters?.fewerRaids,
+        combineGoals: params.quickFilters?.combineGoals,
         ...params.eventFarm,
       })
     : undefined

@@ -3,7 +3,11 @@ import { useOutletContext, useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { HreRaidsSection } from "@/features/daily-raids"
+import {
+  HreRaidsSection,
+  todayQuickFilterOptions,
+  useTodayQuickFilters,
+} from "@/features/daily-raids"
 import {
   AllMissions,
   arenaSurplus,
@@ -40,6 +44,8 @@ import { useHreTutorial } from "./hre-page.tutorial"
 import { RaidsSectionControls } from "./raids-section-controls"
 
 const NO_MISSIONS: readonly HreMission[] = []
+/** The raids count battles, so "Fewer raids" changes nothing here; "Ignore goals" is the HSE tab's. */
+const HRE_HIDDEN_QUICK_FILTERS = ["fewerRaids", "ignoreGoals"] as const
 /** The HRE tab's search parameter holding the selected instance key (HRE-only, never carried over). */
 const EVENT_PARAM = "event"
 
@@ -66,6 +72,7 @@ export function HrePage() {
   const isMobile = useIsMobile()
   const context = useOutletContext<DailiesOutletContext>()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [quickFilters, setQuickFilters] = useTodayQuickFilters()
   const state = useHreInstance(searchParams.get(EVENT_PARAM))
   const ready = state.status === "ready" ? state : null
   const stale = ready?.stale ?? false
@@ -268,9 +275,18 @@ export function HrePage() {
   const raids =
     event && !past ? (
       <HreRaidsSection
-        controls={<RaidsSectionControls context={context} testIdPrefix="hre" />}
+        controls={
+          <RaidsSectionControls
+            context={context}
+            hiddenQuickFilters={HRE_HIDDEN_QUICK_FILTERS}
+            onQuickFiltersChange={setQuickFilters}
+            quickFilters={quickFilters}
+            testIdPrefix="hre"
+          />
+        }
         notice={notice}
         projectId={context.projectId}
+        quickFilters={todayQuickFilterOptions(quickFilters)}
         daysLeft={
           ready
             ? hreDaysLeft({

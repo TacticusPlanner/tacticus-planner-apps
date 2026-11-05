@@ -22,6 +22,7 @@ import {
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { useActiveHomeScreenEvent } from "../../model/use-active-home-screen-event"
+import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/today-quick-filters"
 import { useDailyRaids } from "../../model/use-daily-raids"
 import { useHomeScreenEventName } from "../home-screen-event/use-home-screen-event-name"
 import { RaidState } from "../raid-state"
@@ -70,6 +71,7 @@ export function HreRaidsSection({
   renderTeams,
   projectId,
   controls,
+  quickFilters,
 }: {
   request: HreRaidsRequest | null
   notice: ReactNode
@@ -82,6 +84,9 @@ export function HreRaidsSection({
   projectId?: string
   /** The project selector and Raids Filters, shown under the title. */
   controls?: ReactNode
+  /** Today's quick filters picked in `controls`: "Combine goals" drops goal priority from the order,
+   * "Raidable only" leaves battles to play manually out of the raids. */
+  quickFilters?: TodayQuickFilterOptions
 }) {
   const { t } = useTranslation("hre")
   // A running Home Screen Event with a raid rule ranks the nodes too, so both events progress.
@@ -125,6 +130,7 @@ export function HreRaidsSection({
     homeScreenEventRule: runningEventRule ?? undefined,
     eventFarm: false,
     missionRaids,
+    quickFilters,
   })
   const loaded = raids.status !== "loading" && raids.status !== "error"
   const plan = loaded ? raids.missionRaids : undefined
@@ -176,7 +182,7 @@ export function HreRaidsSection({
             className="text-sm text-muted-foreground"
             data-testid="hre-raids-budget"
           >
-            {t("raids.budget", { energy: plan.energyBudget })}
+            {t("raids.unlimitedEnergy")}
             {hseNote ? ` ${hseNote}` : null}
           </p>
           {request.manualNotice ? (

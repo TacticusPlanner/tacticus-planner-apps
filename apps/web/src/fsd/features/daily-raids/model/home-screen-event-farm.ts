@@ -30,13 +30,24 @@ type EventFarmRow = {
 }
 
 export type EventFarmEmptyReason =
-  "no-goals" | "no-energy" | "nothing-contributes" | "filtered"
+  | "no-goals"
+  | "no-energy"
+  | "nothing-contributes"
+  | "filtered"
+  | "none-efficient"
+
+/**
+ * How the farm list picks its locations. `points`: any point-earning location that drops a needed
+ * material, most points per energy first. `energy`: only the locations Today would pick for the
+ * material (least energy per item), most points per energy first among them.
+ */
+export type EventFarmOrder = "points" | "energy"
 
 export type EventFarm = {
   rows: EventFarmRow[]
   totalPoints: number
   totalEnergy: number
-  /** Daily energy minus real energy spent today, never below 0. */
+  /** The energy the list may spend: Infinity on the HSE tab (not bound to today's energy). */
   energyBudget: number
   /** Why `rows` is empty, null when it is not. */
   empty: EventFarmEmptyReason | null
@@ -54,6 +65,12 @@ export type PlanEventFarmInput = {
   energyBudget: number
   /** The applied Raids Filters (`buildFarmNodeFilter`), evaluated per node and dropped resource. */
   nodeFilter?: FarmNodeFilter
+  /** Points per energy (default) or energy per item first. */
+  order?: EventFarmOrder
+  /** Today's "Fewer raids": among locations tied on energy per item, only the costliest per battle. */
+  fewerRaids?: boolean
+  /** Today's "Combine goals": goal priority no longer breaks ties between locations. */
+  combineGoals?: boolean
 }
 
 // Float drop rates leave dust after subtracting farmed amounts; do not round it up into a raid.
@@ -88,6 +105,12 @@ type Candidate = {
  * raids its attempts, the budget and the still-unmet need allow, and a location that does not fit is
  * skipped, not a stop. This is a filter-then-pick (an implicit "earns points" filter): it prefers a
  * point-earning node over a cheaper node without points, where Today picks the cheapest passing node.
+ *
+ * `order: "energy"` keeps only Today's pick per material (least energy per item among the passing
+ * nodes, the costliest per battle of those with `fewerRaids`) before the same fill, so no energy is
+ * wasted on materials; a material whose cheapest node earns no points then gets no row
+ * (`none-efficient` when that leaves the list empty). `combineGoals` drops goal priority from the
+ * tie-break.
  *
  * ponytail: greedy by ratio, not an optimal packing; shop/Onslaught suppliers and stage order are
  * ignored. A knapsack over (raids, energy) would be the upgrade if the greedy fill proves too loose.
@@ -138,11 +161,22 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
     }
   }
 
+  const energyOrder = input.order === "energy"
+  let pointEarning = false
   const candidatesByBattle = new Map<BattleId, Candidate>()
   for (const [resourceId, goalIds] of goalIdsByResource) {
     const upgrade = input.upgradesById.get(resourceId)
     if (!upgrade) continue
-    for (const node of collectFarmNodes(upgrade, input.battlesById)) {
+    const nodes = collectFarmNodes(upgrade, input.battlesById)
+    const efficient = energyOrder
+      ? efficientNodeIds(
+          nodes.filter(
+            (node) => input.nodeFilter?.(node.battleId, resourceId) ?? true
+          ),
+          input.fewerRaids ?? false
+        )
+      : null
+    for (const node of nodes) {
       const pointsPerRaid = input.pointsByBattleId.get(node.battleId) ?? 0
       if (pointsPerRaid <= 0) continue
       const attempts =
@@ -154,6 +188,15 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
         return !pins || pins.includes(node.battleId)
       })
       if (serving.length === 0) continue
+      pointEarning = true
+      // Energy per item: a goal with pinned locations is served by its pins as chosen; any other
+      // goal only by the least-energy-per-item node(s) of the material, as Today picks them.
+      const efficientServing = efficient
+        ? serving.filter(
+            (goalId) => !!pinsByGoal.get(goalId) || efficient.has(node.battleId)
+          )
+        : serving
+      if (efficientServing.length === 0) continue
 
       const candidate = candidatesByBattle.get(node.battleId) ?? {
         battleId: node.battleId,
@@ -167,10 +210,10 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
       candidate.drops.push({
         resourceId,
         dropRate: node.dropRate,
-        goalIds: serving,
+        goalIds: efficientServing,
         allowed: input.nodeFilter?.(node.battleId, resourceId) ?? true,
       })
-      for (const goalId of serving) {
+      for (const goalId of efficientServing) {
         candidate.priority = Math.min(
           candidate.priority,
           priorityByGoal.get(goalId) ?? Infinity
@@ -187,11 +230,18 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
       (a, b) =>
         b.ratio - a.ratio ||
         b.pointsPerRaid - a.pointsPerRaid ||
-        a.priority - b.priority ||
+        (input.combineGoals ? 0 : a.priority - b.priority) ||
         a.battleId.localeCompare(b.battleId)
     )
   if (candidates.length === 0) {
-    return done([], all.length > 0 ? "filtered" : "nothing-contributes")
+    return done(
+      [],
+      all.length > 0
+        ? "filtered"
+        : energyOrder && pointEarning
+          ? "none-efficient"
+          : "nothing-contributes"
+    )
   }
 
   let budget = energyBudget
@@ -251,4 +301,28 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
   }
   // Rows are empty only when no candidate fit the budget (the first one always fits otherwise).
   return done(rows, "no-energy")
+}
+
+/**
+ * The nodes Today would pick for one material (`selectFarmNodes`' rule): the least energy per item,
+ * tied on two decimals, and with `fewerRaids` only the costliest per battle among those.
+ */
+function efficientNodeIds(
+  nodes: readonly {
+    battleId: BattleId
+    energyCost: number
+    dropRate: number
+  }[],
+  fewerRaids: boolean
+): Set<BattleId> {
+  if (nodes.length === 0) return new Set()
+  const efficiency = (node: (typeof nodes)[number]) =>
+    Number((node.energyCost / node.dropRate).toFixed(2))
+  const least = Math.min(...nodes.map(efficiency))
+  let cheapest = nodes.filter((node) => efficiency(node) === least)
+  if (fewerRaids) {
+    const most = Math.max(...cheapest.map((node) => node.energyCost))
+    cheapest = cheapest.filter((node) => node.energyCost === most)
+  }
+  return new Set(cheapest.map((node) => node.battleId))
 }

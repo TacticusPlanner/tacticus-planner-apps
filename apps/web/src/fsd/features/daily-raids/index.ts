@@ -30,7 +30,8 @@ export { useHomeScreenEventName } from "./ui/home-screen-event/use-home-screen-e
 export { EventPreviewBanner } from "./ui/home-screen-event/event-preview-banner"
 export { EventStatusLine } from "./ui/home-screen-event/event-status-line"
 export { EventFarmSection } from "./ui/home-screen-event/event-farm-section"
-export { EventTopLocations } from "./ui/home-screen-event/event-top-locations"
+export type { EventFarmOrder } from "./model/home-screen-event-farm"
+export { EventLocationsSection } from "./ui/home-screen-event/event-locations-section"
 export { calculateDailyRaids } from "./model/daily-raids-calc"
 // Exported so Today can cross-check its campaign-event status line against the very rule that
 // decides whether an event node is schedulable at all (see campaign-event-status.test.tsx).

@@ -22,6 +22,7 @@ import {
   type HseModeTeams,
   type HseTeam,
   type HseTeamCatalog,
+  type HseTeamCriteria,
   type HseTeamMode,
   type HseTeamPick,
   type HseTeamRecommendations,
@@ -345,6 +346,59 @@ function buildTeam(
   return { status: "ready", alliance, pick, team }
 }
 
+/** True when the unit is one the label names (a unit label never matches: characters are not NPCs). */
+function labelMatches(
+  label: HseEnemyLabel,
+  unit: { alliance: string; faction: string; traits: readonly string[] }
+): boolean {
+  switch (label.via) {
+    case "alliance":
+      return unit.alliance === label.id
+    case "faction":
+      return unit.faction === label.id
+    case "trait":
+      return unit.traits.includes(label.id)
+    case "unit":
+      return false
+  }
+}
+
+/**
+ * The criteria of the extra "matching" team: the first enemy rule naming an alliance, faction or
+ * trait, as the characters to field (Warp Surge: only Chaos enemies count, so a Chaos-only team).
+ * Unit labels (Squig Smash) name no character and are dropped. Null when no rule is left, or, in an
+ * alliance-track mode, when the rule names only alliances (an alliance team already covers it).
+ */
+function matchingCriteria(
+  hints: readonly HseEnemyHint[],
+  allianceTracks: boolean
+): HseTeamCriteria | null {
+  for (const hint of hints) {
+    const allowed = hint.allowed.filter((label) => label.via !== "unit")
+    const excluded = hint.excluded.filter((label) => label.via !== "unit")
+    if (hint.allowed.length > 0 && allowed.length === 0) continue
+    if (allowed.length === 0 && excluded.length === 0) continue
+    if (
+      allianceTracks &&
+      [...allowed, ...excluded].every((label) => label.via === "alliance")
+    )
+      continue
+    return { allowed, excluded }
+  }
+  return null
+}
+
+function matchesCriteria(
+  criteria: HseTeamCriteria,
+  unit: { alliance: string; faction: string; traits: readonly string[] }
+): boolean {
+  if (criteria.excluded.some((label) => labelMatches(label, unit))) return false
+  return (
+    criteria.allowed.length === 0 ||
+    criteria.allowed.some((label) => labelMatches(label, unit))
+  )
+}
+
 /**
  * A running HSE's event-unit pools for another event's team in `mode` (an HRE mission team), so its
  * units lead and both events progress: empty when the event does not score in `mode`.
@@ -376,7 +430,8 @@ export function hseTeamModes(
  * The HSE event teams (design D2, D3): for every token mode the event scores in, the shared
  * engine's Plan team in Power Mode, size five, led by the mode's event units — one team over the
  * whole roster for Arena, one per alliance for Onslaught and Salvage Run — plus the mode's
- * enemy-side hints.
+ * enemy-side hints, and one more team of the characters matching the first enemy rule that names an
+ * alliance, faction or trait (`matchingCriteria`).
  */
 export function buildHseTeamRecommendations(
   input: BuildHseTeamRecommendationsInput
@@ -402,7 +457,28 @@ export function buildHseTeamRecommendations(
               input.unitPower
             )
           )
-    return { mode, hints: modeHints(trackers), teams }
+    const hints = modeHints(trackers)
+    const criteria = matchingCriteria(hints, mode !== "Arena")
+    if (criteria) {
+      const matching = roster.filter((c) => {
+        const view = input.catalog.get(c.unitId)
+        return !!view && matchesCriteria(criteria, view)
+      })
+      // The whole roster matching gives the same team as the main one: no extra team.
+      if (matching.length < roster.length) {
+        teams.push({
+          ...buildTeam(
+            trackers,
+            matching,
+            input.catalog,
+            null,
+            input.unitPower
+          ),
+          criteria,
+        })
+      }
+    }
+    return { mode, hints, teams }
   })
   return { modes }
 }
