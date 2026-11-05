@@ -250,6 +250,29 @@ describe("eventUnitChipData", () => {
       owned: undefined,
     })
   })
+
+  it("defaults each missing ability level to 1 on its own", () => {
+    const partial = {
+      ...rosterUnit("partial", "Gold2"),
+      abilities: [{ abilityId: "active", level: 30 }],
+    } as unknown as LegendaryEventRosterUnit
+    const none = {
+      ...rosterUnit("none", "Gold2"),
+      abilities: undefined,
+    } as unknown as LegendaryEventRosterUnit
+    const roster = new Map([
+      ["partial", partial],
+      ["none", none],
+    ])
+    expect(eventUnitChipData("partial", roster)).toMatchObject({
+      activeLevel: 30,
+      passiveLevel: 1,
+    })
+    expect(eventUnitChipData("none", roster)).toMatchObject({
+      activeLevel: 1,
+      passiveLevel: 1,
+    })
+  })
 })
 
 describe("visible lanes", () => {

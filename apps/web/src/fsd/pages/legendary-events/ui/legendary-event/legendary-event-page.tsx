@@ -47,7 +47,10 @@ import {
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
-import { shownObjectiveSelection } from "./leaderboard/leaderboard.view-model"
+import {
+  mergeShownObjectiveSelection,
+  shownObjectiveSelection,
+} from "./leaderboard/leaderboard.view-model"
 import { useBattlesLane } from "./use-battles-lane"
 import { useLaneJump } from "./use-lane-jump"
 import { useLaneSelection } from "./use-lane-selection"
@@ -406,7 +409,10 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           lanes.shown,
           selectedObjectives
         ),
-        onSelectedObjectivesChange: setSelectedObjectives,
+        onSelectedObjectivesChange: (next) =>
+          setSelectedObjectives((current) =>
+            mergeShownObjectiveSelection(eventData, lanes.shown, current, next)
+          ),
         clears:
           previewOn && previewEstimates ? previewEstimates : clearEstimates,
         onAddToTeam: teamsState.kind === "ready" ? addToTeam : undefined,

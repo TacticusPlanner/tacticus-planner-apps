@@ -27,4 +27,14 @@ describe("useLaneSelection", () => {
     expect(result.current.shown).toEqual(["beta"])
     expect(localStorage.getItem("legendaryEvents.eventBoard.lanes")).toBeNull()
   })
+
+  it("remembers the picked mobile lane after a remount", () => {
+    const first = renderHook(() => useLaneSelection(true))
+    act(() => first.result.current.onPick("gamma"))
+    first.unmount()
+    expect(localStorage.getItem("legendaryEvents.lanes.mobile")).toBe("gamma")
+
+    const second = renderHook(() => useLaneSelection(true))
+    expect(second.result.current.shown).toEqual(["gamma"])
+  })
 })

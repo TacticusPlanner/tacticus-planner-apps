@@ -330,4 +330,15 @@ describe("upNextTokens", () => {
       0, 1,
     ])
   })
+
+  it("lists only the tokens left when fewer than four follow the next one", () => {
+    expect(
+      upNextTokens(plan, { index: 5 }).map((entry) => entry.index)
+    ).toEqual([6])
+    expect(upNextTokens(plan, { index: 6 })).toEqual([])
+  })
+
+  it("lists nothing for an empty plan", () => {
+    expect(upNextTokens({ tokens: [] }, null)).toEqual([])
+  })
 })
