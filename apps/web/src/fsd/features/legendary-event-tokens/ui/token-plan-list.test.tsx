@@ -294,6 +294,7 @@ describe("TokenPlanList on another page", () => {
                   {
                     ref: admech,
                     total: 75,
+                    gained: 75,
                     needed: 75,
                     completes: true,
                     estimate: false,

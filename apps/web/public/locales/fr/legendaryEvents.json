@@ -40,12 +40,14 @@
     "noEntry": "Aucune progression synchronisée pour cet événement pour l'instant.",
     "syncedUnavailable": "Données synchronisées indisponibles",
     "syncedAgo": "Synchronisé {{when}}",
-    "neverSynced": "Pas encore synchronisé"
+    "neverSynced": "Pas encore synchronisé",
+    "goToCurrentRun": "Aller à la session en cours",
+    "goToNextRun": "Aller à la prochaine session"
   },
   "runInputs": {
     "button": "Saisies",
     "title": "Saisies par manche",
-    "description": "Les missions et packs que le jeu ne communique pas. Ils alimentent les prévisions de récompenses de la carte État de la manche.",
+    "description": "Missions et packs que le jeu ne signale pas pour la session en cours. Les missions se terminent dans l'ordre : indiquez combien sont terminées. Ils alimentent les prévisions de récompenses de la carte État de la session.",
     "run": "Manche {{run}}",
     "phase": {
       "done": "Terminée",
@@ -69,7 +71,15 @@
     },
     "ticked": "{{done}} sur {{total}} faites",
     "planToComplete": "{{field}} à accomplir",
-    "planToCompleteShort": "Prévu à accomplir"
+    "planToCompleteShort": "Prévu à accomplir",
+    "doneCount": "{{field}} terminées",
+    "doneShort": "Terminées",
+    "now": "En cours",
+    "missionState": {
+      "done": "Mission {{number}}, terminée : {{mission}}",
+      "current": "Mission {{number}}, en cours : {{mission}}",
+      "later": "Mission {{number}}, plus tard : {{mission}}"
+    }
   },
   "notes": {
     "title": "Notes",
@@ -138,7 +148,10 @@
   },
   "battleInfo": {
     "open": "Infos du combat : {{lane}} combat {{battle}}",
-    "title": "{{lane}} · Combat {{battle}}"
+    "title": "{{lane}} · Combat {{battle}}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "close": "Fermer"
   },
   "eventBoard": {
     "title": "Tableau de l'événement",
@@ -190,8 +203,8 @@
         "out": "Hors de portée"
       }
     },
-    "viewBattles_one": "{{lane}} : voir son {{count}} combat dans Plan",
-    "viewBattles_other": "{{lane}} : voir ses {{count}} combats dans Plan"
+    "viewBattles_one": "{{lane}} : ouvrir les infos de son {{count}} combat",
+    "viewBattles_other": "{{lane}} : ouvrir les infos de ses {{count}} combats"
   },
   "leaderboard": {
     "title": "Classement d'éligibilité",
@@ -247,7 +260,10 @@
     "howPoints": {
       "title": "Comment fonctionnent les points",
       "body": "Les points gagnés d'un combat sont son score d'éliminations plus son meilleur score, auxquels s'ajoutent le bonus « tout vaincre » et le score de chaque objectif que vous y avez rempli. Le maximum d'un combat additionne son score d'éliminations complet, son meilleur score complet, le bonus « tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
-    }
+    },
+    "editMarks": "Modifier les marques",
+    "clearedDivider_one": "{{count}} combat entièrement terminé",
+    "clearedDivider_other": "{{count}} combats entièrement terminés"
   },
   "battles": {
     "title": "Combats",
@@ -455,7 +471,7 @@
         },
         "runInputs": {
           "title": "Saisies par manche",
-          "content": "Cochez les missions terminées à chaque manche et indiquez combien vous prévoyez d'en accomplir, ainsi que les packs que le jeu ne communique pas. Elles alimentent les prévisions de récompenses de cette carte, et les missions ouvertes orientent le prochain jeton vers les batailles qui les font avancer."
+          "content": "Indiquez combien de missions vous avez terminées dans la session en cours (elles se terminent dans l'ordre) et combien vous prévoyez d'en terminer, ainsi que les packs que le jeu ne signale pas. Les sessions futures supposent toutes les missions gratuites. Les missions ouvertes orientent le prochain jeton vers les combats qui les font avancer ; modifiez chaque session depuis les prévisions dans Plan."
         },
         "tokenPlan": {
           "title": "Plan de jetons",
@@ -677,13 +693,18 @@
       "nothingLeft": "Vos équipes n'ont plus rien à réussir · {{points}} points restants sur {{lane}}",
       "missions": {
         "title": "Pour les missions",
-        "progresses": "Fait avancer :",
+        "progresses": "Missions qu'il fait avancer",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} points ({{difference}})"
+        "points": "+{{points}} points ({{difference}})",
+        "button_one": "Fait avancer {{count}} mission",
+        "button_other": "Fait avancer {{count}} missions",
+        "uncounted": "compte",
+        "finishes": "terminée"
       },
       "upNext": "Ensuite",
       "viewPlan_one": "Voir le {{count}} jeton prévu",
-      "viewPlan_other": "Voir les {{count}} jetons prévus"
+      "viewPlan_other": "Voir les {{count}} jetons prévus",
+      "team": "Voir les unités de {{team}}"
     },
     "plan": {
       "title": "Plan de jetons",
@@ -760,7 +781,12 @@
       "ohSoClose": "Oh So Close : {{shards}} fragments pour {{blackstone}} pierre noire",
       "leftover_one": "{{count}} jeton sans combat à jouer : ajoutez une équipe ou augmentez une profondeur pour l'utiliser",
       "leftover_other": "{{count}} jetons sans combat à jouer : ajoutez une équipe ou augmentez une profondeur pour les utiliser",
-      "editInputs": "Modifier les saisies"
+      "summary": {
+        "tokens": "Jetons utilisés sur la réserve de la session",
+        "points": "Points en fin de session",
+        "chests": "Coffres obtenus",
+        "shards": "Éclats en fin de session"
+      }
     }
   },
   "masterTable": {
@@ -1088,9 +1114,7 @@
       "nothing": "Rien à modifier",
       "removeTeam": "Retirer « {{name}} » de {{lane}}",
       "updateTeam": "Mettre à jour « {{name}} » dans {{lane}}",
-      "createTeam": "Créer « {{name}} » dans {{lane}}",
-      "paidOn": "Afficher les options payantes : activé",
-      "paidOff": "Afficher les options payantes : désactivé"
+      "createTeam": "Créer « {{name}} » dans {{lane}}"
     },
     "toast": {
       "created": "Plan créé : {{goals}}, {{teams}}",
@@ -1126,5 +1150,11 @@
     "window": "{{start}} – {{end}}",
     "guessed": "peut-être ~{{date}}",
     "unknown": "date inconnue"
+  },
+  "settings": {
+    "button": "Paramètres des événements légendaires",
+    "title": "Paramètres des événements légendaires",
+    "description": "Ils s'appliquent au plan de chaque événement légendaire et sont enregistrés dans votre compte.",
+    "showPaidOptionsHint": "Activé : planifie avec ce que vous payez — missions premium, le pack de 300 devises et les éclats Oh So Close. Désactivé : récompenses gratuites uniquement."
   }
 }

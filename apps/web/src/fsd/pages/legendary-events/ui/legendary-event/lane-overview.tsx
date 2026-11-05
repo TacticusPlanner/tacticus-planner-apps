@@ -23,7 +23,7 @@ export function LaneOverviewFigures({
   lane: LegendaryEventLane
   potential: LanePotentialViewModel
   isMobile: boolean
-  /** Opens the lane's Battles on Plan. */
+  /** Opens the battle info dialog at the lane's first battle that isn't fully cleared. */
   onViewBattles?: () => void
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")

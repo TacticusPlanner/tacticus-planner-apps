@@ -24,6 +24,7 @@ vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({
     instance: { loginRedirect: (...args: unknown[]) => loginRedirect(...args) },
   }),
+  useIsAuthenticated: () => false,
 }))
 
 const silentSignInStatus = vi.fn(() => "idle")

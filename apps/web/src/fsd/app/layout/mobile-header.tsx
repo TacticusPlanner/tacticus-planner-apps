@@ -19,6 +19,7 @@ import { AuthControl } from "../providers/auth-control"
 import { useUserJot } from "../providers/userjot-provider"
 import { AppLogo, AppLogoHomeLink, BetaBadge } from "./app-logo"
 import type { NavItem } from "./nav-items"
+import { SectionActions } from "./section-actions"
 import { SectionTabs } from "./section-tabs"
 import { PAGE_HEADING_ID } from "./use-focus-page-heading"
 
@@ -79,8 +80,11 @@ export function MobileHeader({
         </div>
       </div>
       {activeSection?.children?.length ? (
-        <div className="border-t px-4 py-1.5">
-          <SectionTabs item={activeSection} />
+        <div className="flex items-center gap-1 border-t px-4 py-1.5">
+          <div className="min-w-0 flex-1">
+            <SectionTabs item={activeSection} />
+          </div>
+          <SectionActions item={activeSection} />
         </div>
       ) : null}
     </header>

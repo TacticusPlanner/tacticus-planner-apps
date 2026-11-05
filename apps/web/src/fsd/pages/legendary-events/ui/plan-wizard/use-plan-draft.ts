@@ -608,10 +608,6 @@ export function usePlanDraft(
       })
       markDirty()
     },
-    setShowPaidOptions: (on: boolean) => {
-      setEconomy((current) => ({ ...current, showPaidOptions: on }))
-      markDirty()
-    },
   }
 }
 

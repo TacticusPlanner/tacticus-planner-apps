@@ -4,6 +4,8 @@ import {
   legendaryEventResourceIcon,
   type LegendaryEventResource,
 } from "@workspace/game-catalog"
+import { ArrowRight } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardAction,
@@ -30,7 +32,7 @@ import type {
 import { RewardOutlook } from "./reward-outlook"
 
 /** The event's run status from the last sync, the Inputs drawer (signed in) and the Reward
- *  outlook. Refreshing is the shell's Sync action; there is deliberately no sync control here
+ *  outlook. On Overview `onGoToRun` adds a button that opens the run tab. Refreshing is the shell's Sync action; there is deliberately no sync control here
  *  (design D8). */
 export function RunStatusCard({
   event,
@@ -41,6 +43,7 @@ export function RunStatusCard({
   runInputs,
   syncedAtMs,
   isMobile,
+  onGoToRun,
 }: {
   event: Pick<LegendaryEvent, "id" | "regularMissions" | "premiumMissions">
   lifecycle: LegendaryEventLifecycle
@@ -51,6 +54,8 @@ export function RunStatusCard({
   /** `null` before the first sync; `undefined` while unknown, which hides the line. */
   syncedAtMs: number | null | undefined
   isMobile: boolean
+  /** Opens the run tab (the Overview copy of the card). */
+  onGoToRun?: () => void
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -152,13 +157,31 @@ export function RunStatusCard({
         <CardTitle>
           <h2>{t("runStatus.title")}</h2>
         </CardTitle>
-        {runInputs.enabled ? (
-          <CardAction>
-            <RunInputsDrawer
-              runs={runInputs.runs}
-              event={event}
-              isMobile={isMobile}
-            />
+        {runInputs.enabled || onGoToRun ? (
+          <CardAction className="flex items-center gap-1">
+            {runInputs.enabled ? (
+              <RunInputsDrawer
+                runs={runInputs.runs}
+                event={event}
+                isMobile={isMobile}
+              />
+            ) : null}
+            {onGoToRun ? (
+              <Button
+                data-testid="run-status-go-to-run"
+                onClick={onGoToRun}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                {t(
+                  lifecycle.state === "upcoming"
+                    ? "runStatus.goToNextRun"
+                    : "runStatus.goToCurrentRun"
+                )}
+                <ArrowRight aria-hidden="true" />
+              </Button>
+            ) : null}
           </CardAction>
         ) : null}
       </CardHeader>

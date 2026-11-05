@@ -421,12 +421,12 @@ describe("PlanWizard", () => {
     const of = utharEvent.regularMissions.length
     expect(
       screen.getByTestId("plan-wizard-run-inputs-summary")
-    ).toHaveTextContent(`Run 2: 0 of ${of} missions`)
+    ).toHaveTextContent(`Run 2: ${of} of ${of} missions`)
     await userEvent.click(screen.getByTestId("plan-wizard-horizon-3"))
     expect(
       screen.getByTestId("plan-wizard-run-inputs-summary")
     ).toHaveTextContent(
-      `Run 2: 0 of ${of} missions · Run 3: 0 of ${of} missions`
+      `Run 2: ${of} of ${of} missions · Run 3: ${of} of ${of} missions`
     )
     expect(screen.queryByTestId("run-inputs-run")).not.toBeInTheDocument()
     await userEvent.click(screen.getByTestId("plan-wizard-run-inputs-toggle"))

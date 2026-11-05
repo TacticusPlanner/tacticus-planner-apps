@@ -25,6 +25,11 @@ import type { RunSupply, RunSupplyState } from "./token-supply"
 // own ladder and Stage 3's input semantics (design D3 f, g).
 
 /** The event's served "Oh So Close" pricing: base plus a per-shard price, for Unlock and later steps. */
+const UNKNOWN_RUN_INPUT_VALUES = {
+  ...EMPTY_RUN_INPUT_VALUES,
+  regularMissions: 0,
+}
+
 export type OhSoCloseOffer = LegendaryEvent["ohSoCloseOffer"]
 
 export interface ForecastInput {
@@ -185,9 +190,10 @@ export function forecastRuns({
     let used = 0
 
     if (runSupply.state !== "done") {
-      // An unknown run's one Next block reads no stored inputs (spec: the unknown state).
+      // An unknown run's one Next block reads no stored inputs and assumes no missions (spec: the
+      // unknown state).
       const values = runSupply.unknownRun
-        ? EMPTY_RUN_INPUT_VALUES
+        ? UNKNOWN_RUN_INPUT_VALUES
         : runInputValues(runs, runSupply.run)
       const premium = showPaidOptions ? values.premiumMissions : 0
       const isNow = runSupply.state === "now"

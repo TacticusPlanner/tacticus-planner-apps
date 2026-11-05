@@ -43,6 +43,13 @@ vi.mock("@/shared/unit-power", async (importOriginal) => ({
 vi.mock("@/features/legendary-event-goals", () => ({
   useLegendaryEventGoalTargets: () => FAILED_GOALS,
 }))
+vi.mock("@/features/legendary-event-plan", () => ({
+  useShowPaidOptions: () => ({
+    showPaidOptions: false,
+    loading: false,
+    setShowPaidOptions: vi.fn(),
+  }),
+}))
 vi.mock("@/entities/npc", () => ({
   useNpcsById: () => ({ status: "loading" }),
 }))

@@ -1,10 +1,10 @@
-import { useId, useState } from "react"
+import { useId, useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronDown } from "lucide-react"
-import { Checkbox } from "@workspace/ui/components/checkbox"
+import { Check, ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
+  doneMissionCount,
   useMissionLabel,
   type LegendaryEventMission,
   type LegendaryEventRun,
@@ -12,9 +12,11 @@ import {
 import { NumberStepper } from "@/shared/ui"
 
 /**
- * One track's missions in a run (spec: the Run status card opens a run inputs drawer): a
- * collapsible checklist with a Done tick per mission, then the Plan to complete count, which never
- * drops below the ticked count. `onTick` receives the mission's catalog index.
+ * One track's missions in a run (spec: missions are done in order): the game unlocks them one at a
+ * time, so the player sets how many are done rather than ticking each. A collapsible list shows the
+ * done missions struck through, the current one marked Now and the rest in turn; picking a mission
+ * sets Done up to it (picking the last done one undoes it). Then the Done and Plan to complete
+ * counts; Plan to complete never drops below Done.
  */
 export function MissionChecklist({
   run,
@@ -25,7 +27,7 @@ export function MissionChecklist({
   count,
   defaultOpen,
   touch,
-  onTick,
+  onDoneChange,
   onCountChange,
 }: {
   run: LegendaryEventRun
@@ -33,21 +35,21 @@ export function MissionChecklist({
   field: string
   testId: string
   missions: readonly LegendaryEventMission[]
+  /** The stored Done missions (their count is what counts). */
   completed: readonly number[]
   count: number
   defaultOpen: boolean
   touch: boolean
-  onTick: (index: number, done: boolean) => void
+  onDoneChange: (done: number) => void
   onCountChange: (count: number) => void
 }) {
   const { t } = useTranslation("legendaryEvents")
   const missionLabel = useMissionLabel()
   const [open, setOpen] = useState(defaultOpen)
   const listId = useId()
-  const ticked = missions.filter((mission) =>
-    completed.includes(mission.index)
-  ).length
+  const done = doneMissionCount(missions, completed)
   const planField = t("runInputs.planToComplete", { field })
+  const doneField = t("runInputs.doneCount", { field })
   return (
     <div className="flex flex-col gap-2" data-testid={testId}>
       <button
@@ -67,7 +69,7 @@ export function MissionChecklist({
             className="text-muted-foreground tabular-nums"
             data-testid={`${testId}-ticked`}
           >
-            {t("runInputs.ticked", { done: ticked, total: missions.length })}
+            {t("runInputs.ticked", { done, total: missions.length })}
           </span>
         </span>
         <ChevronDown
@@ -79,27 +81,48 @@ export function MissionChecklist({
         />
       </button>
       {open ? (
-        <ul
+        <ol
           aria-label={t("runInputs.fieldLabel", { field, run })}
-          className="flex flex-col gap-1"
+          className="flex flex-col gap-0.5"
           id={listId}
         >
-          {missions.map((mission) => (
+          {missions.map((mission, position) => (
             <MissionRow
-              done={completed.includes(mission.index)}
               key={mission.index}
               label={missionLabel(mission)}
-              onChange={(done) => onTick(mission.index, done)}
+              number={position + 1}
+              onPick={() =>
+                onDoneChange(position + 1 === done ? position : position + 1)
+              }
+              state={
+                position < done
+                  ? "done"
+                  : position === done
+                    ? "current"
+                    : "later"
+              }
               testId={`${testId}-mission`}
               touch={touch}
             />
           ))}
-        </ul>
+        </ol>
       ) : null}
-      <div className="flex items-center justify-between gap-3">
-        <span aria-hidden="true" className="text-sm">
-          {t("runInputs.planToCompleteShort")}
-        </span>
+      <CountField label={t("runInputs.doneShort")}>
+        <NumberStepper
+          data-testid={`${testId}-done`}
+          labels={{
+            value: t("runInputs.fieldLabel", { field: doneField, run }),
+            decrease: t("runInputs.decrease", { field: doneField, run }),
+            increase: t("runInputs.increase", { field: doneField, run }),
+          }}
+          max={missions.length}
+          min={0}
+          onChange={(value) => onDoneChange(value ?? 0)}
+          touch={touch}
+          value={done}
+        />
+      </CountField>
+      <CountField label={t("runInputs.planToCompleteShort")}>
         <NumberStepper
           data-testid={`${testId}-count`}
           labels={{
@@ -108,45 +131,90 @@ export function MissionChecklist({
             increase: t("runInputs.increase", { field: planField, run }),
           }}
           max={missions.length}
-          min={ticked}
-          onChange={(value) => onCountChange(Math.max(value ?? 0, ticked))}
+          min={done}
+          onChange={(value) => onCountChange(Math.max(value ?? 0, done))}
           touch={touch}
           value={count}
         />
-      </div>
+      </CountField>
+    </div>
+  )
+}
+
+function CountField({
+  label,
+  children,
+}: {
+  label: string
+  children: ReactNode
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span aria-hidden="true" className="text-sm">
+        {label}
+      </span>
+      {children}
     </div>
   )
 }
 
 function MissionRow({
   label,
-  done,
+  number,
+  state,
   touch,
   testId,
-  onChange,
+  onPick,
 }: {
   label: string
-  done: boolean
+  number: number
+  state: "done" | "current" | "later"
   touch: boolean
   testId: string
-  onChange: (done: boolean) => void
+  onPick: () => void
 }) {
-  const id = useId()
+  const { t } = useTranslation("legendaryEvents")
   return (
-    <li
-      className={cn("flex items-center gap-3 text-sm", touch && "min-h-11")}
-      data-done={done}
-      data-testid={testId}
-    >
-      <Checkbox
-        checked={done}
-        className={cn(touch && "size-6")}
-        id={id}
-        onCheckedChange={(state) => onChange(state === true)}
-      />
-      <label className="min-w-0 flex-1 leading-snug" htmlFor={id}>
-        {label}
-      </label>
+    <li data-state={state} data-testid={testId}>
+      <button
+        aria-label={t(`runInputs.missionState.${state}`, {
+          number,
+          mission: label,
+        })}
+        className={cn(
+          "flex w-full items-center gap-3 rounded-md px-1.5 py-1 text-left text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+          touch && "min-h-11",
+          state === "current" && "bg-primary/10 font-medium",
+          state === "done" && "text-muted-foreground"
+        )}
+        onClick={onPick}
+        type="button"
+      >
+        <span
+          aria-hidden="true"
+          className={cn(
+            "flex size-6 shrink-0 items-center justify-center rounded-full border text-xs tabular-nums",
+            state === "done" &&
+              "border-primary bg-primary text-primary-foreground",
+            state === "current" && "border-primary text-primary"
+          )}
+        >
+          {state === "done" ? <Check className="size-3.5" /> : number}
+        </span>
+        <span
+          className={cn(
+            "min-w-0 flex-1 leading-snug",
+            state === "done" && "line-through"
+          )}
+        >
+          {label}
+        </span>
+        {state === "current" ? (
+          <span className="text-xs text-primary" aria-hidden="true">
+            {t("runInputs.now")}
+          </span>
+        ) : null}
+      </button>
     </li>
   )
 }

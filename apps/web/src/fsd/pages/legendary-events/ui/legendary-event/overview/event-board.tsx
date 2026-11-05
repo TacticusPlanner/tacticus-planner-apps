@@ -327,76 +327,80 @@ function UnitTable({
       className="max-h-[34rem] min-w-0 overflow-auto rounded-md border"
       data-testid="event-board-table"
     >
-      <div
-        className="sticky top-0 z-10 grid gap-px border-b bg-card"
-        role="group"
-        aria-label={t("laneOverview.objectives")}
-        style={template}
-      >
-        {headings.map((indexes) => (
-          <ObjectiveHeading
-            id={headingFor(indexes)}
-            entries={indexes
-              .map((index) => objectivesByIndex.get(index))
-              .filter((entry) => entry !== undefined)}
-            key={indexes.join("+")}
-            onToggle={(index) => onToggleObjective(laneId, index)}
-            selected={selected}
-            showCoverage={showCoverage}
-          />
-        ))}
-      </div>
-      {unitsState === "loading" ? (
-        <Skeleton className="m-1 h-32 rounded-md" />
-      ) : null}
-      {unitsState === "error" ? (
-        <p className="p-2 text-sm text-destructive">{t("teams.loadError")}</p>
-      ) : null}
-      {columns ? (
-        <div className="grid gap-px p-px" style={template}>
-          {columns.map((column) => (
-            <ul
-              aria-describedby={headingFor(column.objectiveIndexes)}
-              aria-label={t("eventBoard.columnUnits", {
-                count: column.units.length,
-              })}
-              className="flex min-w-0 flex-col gap-px"
-              data-testid="event-board-column"
-              key={column.objectiveIndexes.join("+")}
-            >
-              {column.units.length === 0 ? (
-                <li className="p-1 text-center text-xs text-muted-foreground">
-                  {t("eventBoard.noUnits")}
-                </li>
-              ) : null}
-              {column.units.map((unit, position) => (
-                <li
-                  className={cn(
-                    position === TEAM_LINE &&
-                      "mt-0.5 border-t-2 border-dashed border-foreground/60 pt-0.5"
-                  )}
-                  key={unit.unitId}
-                >
-                  <button
-                    className="block w-full rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
-                    data-testid="event-board-add-team"
-                    onClick={() =>
-                      onAddTeam(laneId, column.objectiveIndexes, unit.unitId)
-                    }
-                    title={t("eventBoard.addTeam")}
-                    type="button"
-                  >
-                    <EventUnitChip
-                      className="hover:brightness-110"
-                      unit={unit}
-                    />
-                  </button>
-                </li>
-              ))}
-            </ul>
+      {/* As wide as the columns, not the scroll box: the sticky heading row (and its background)
+          then spans every column and moves sideways with them on a narrow screen. */}
+      <div className="w-max min-w-full" data-testid="event-board-table-content">
+        <div
+          className="sticky top-0 z-10 grid gap-px border-b bg-card"
+          role="group"
+          aria-label={t("laneOverview.objectives")}
+          style={template}
+        >
+          {headings.map((indexes) => (
+            <ObjectiveHeading
+              id={headingFor(indexes)}
+              entries={indexes
+                .map((index) => objectivesByIndex.get(index))
+                .filter((entry) => entry !== undefined)}
+              key={indexes.join("+")}
+              onToggle={(index) => onToggleObjective(laneId, index)}
+              selected={selected}
+              showCoverage={showCoverage}
+            />
           ))}
         </div>
-      ) : null}
+        {unitsState === "loading" ? (
+          <Skeleton className="m-1 h-32 rounded-md" />
+        ) : null}
+        {unitsState === "error" ? (
+          <p className="p-2 text-sm text-destructive">{t("teams.loadError")}</p>
+        ) : null}
+        {columns ? (
+          <div className="grid gap-px p-px" style={template}>
+            {columns.map((column) => (
+              <ul
+                aria-describedby={headingFor(column.objectiveIndexes)}
+                aria-label={t("eventBoard.columnUnits", {
+                  count: column.units.length,
+                })}
+                className="flex min-w-0 flex-col gap-px"
+                data-testid="event-board-column"
+                key={column.objectiveIndexes.join("+")}
+              >
+                {column.units.length === 0 ? (
+                  <li className="p-1 text-center text-xs text-muted-foreground">
+                    {t("eventBoard.noUnits")}
+                  </li>
+                ) : null}
+                {column.units.map((unit, position) => (
+                  <li
+                    className={cn(
+                      position === TEAM_LINE &&
+                        "mt-0.5 border-t-2 border-dashed border-foreground/60 pt-0.5"
+                    )}
+                    key={unit.unitId}
+                  >
+                    <button
+                      className="block w-full rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+                      data-testid="event-board-add-team"
+                      onClick={() =>
+                        onAddTeam(laneId, column.objectiveIndexes, unit.unitId)
+                      }
+                      title={t("eventBoard.addTeam")}
+                      type="button"
+                    >
+                      <EventUnitChip
+                        className="hover:brightness-110"
+                        unit={unit}
+                      />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        ) : null}
+      </div>
     </div>
   )
 }

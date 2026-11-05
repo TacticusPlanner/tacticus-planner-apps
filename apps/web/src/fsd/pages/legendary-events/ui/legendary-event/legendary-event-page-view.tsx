@@ -1,11 +1,9 @@
-import { useCallback, type ReactNode } from "react"
-import { useTranslation } from "react-i18next"
-import { Button } from "@workspace/ui/components/button"
+import { useCallback, useMemo, type ReactNode } from "react"
 
 import { UpgradeImpactSection } from "@/features/legendary-event-goals"
 import {
   PlanNotesCard,
-  RunInputsDrawer,
+  RunInputsInline,
   RunMissionsQuickInput,
 } from "@/features/legendary-event-plan"
 import {
@@ -15,10 +13,14 @@ import {
   TokenPlanList,
   type OpenBattleInfo,
 } from "@/features/legendary-event-tokens"
-import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
+import {
+  LEGENDARY_EVENT_LANE_IDS,
+  eventUnitChipData,
+} from "@/entities/legendary-event"
 import { useUnitName } from "@/shared/unit-name"
 
 import { BattleInfoDialog } from "./battles/battle-info-dialog"
+import { firstOpenBattleIndex } from "./battles/battle-info-target"
 import { BattlesLaneSelect } from "./battles/battles-lane-select"
 import { BattlesSection } from "./battles/battles-section"
 import { EstimatesDisclaimer } from "./estimates-disclaimer"
@@ -39,6 +41,7 @@ import { ProgressSection } from "./progress/progress-section"
 import { RunStatusCard } from "./run-status-card"
 import { TeamEditorHost } from "./teams/team-editor-host"
 import { TeamsSection } from "./teams/teams-section"
+import { rosterMap } from "./teams/teams.view-model"
 
 /** Plan's Token plan opens by default and remembers its own open state. */
 const PLAN_TOKEN_PLAN_OPEN_KEY = "legendaryEvents.planTab.tokenPlan.open"
@@ -59,7 +62,6 @@ export function LegendaryEventPageView({
   isMobile,
   ...props
 }: LegendaryEventPageViewModel & { isMobile: boolean }) {
-  const { t } = useTranslation("legendaryEvents")
   const { selectedTab, lanes, tokens } = props
   const shown = lanes.shown
   const unitName = useUnitName()
@@ -68,6 +70,11 @@ export function LegendaryEventPageView({
     (laneId, battleIndex) => setBattleInfo({ laneId, battleIndex }),
     [setBattleInfo]
   )
+  const syncedRoster = props.eventBoard.roster
+  const chipOf = useMemo(() => {
+    const rosterById = syncedRoster ? rosterMap(syncedRoster) : undefined
+    return (unitId: string) => eventUnitChipData(unitId, rosterById)
+  }, [syncedRoster])
   const laneSelector = <LaneSelector isMobile={isMobile} lanes={lanes} />
   const leaderboardLayout = isMobile ? "list" : "table"
   // Before run 1 (or between runs) the next run's missions are the ones to tick.
@@ -112,12 +119,30 @@ export function LegendaryEventPageView({
         <EstimatesDisclaimer />
         {selectedTab === "overview" ? (
           <TabPanel tab="overview">
+            <RunStatusCard
+              {...props}
+              isMobile={isMobile}
+              onGoToRun={
+                props.lifecycle.state === "archived"
+                  ? undefined
+                  : () => props.onSelectTab("run")
+              }
+            />
             <LaneSummary
               event={props.event}
               onJumpToLane={props.onJumpToLane}
               potentials={props.potentials}
               progressGrid={props.progressGrid}
             />
+            {isMobile ? (
+              <CrossLaneLeaderboard
+                event={props.event}
+                laneIds={LEGENDARY_EVENT_LANE_IDS}
+                layout="list"
+                leaderboard={props.leaderboard}
+                progressGrid={props.progressGrid}
+              />
+            ) : null}
             {props.runInputs.enabled ? (
               <PlanNotesCard eventId={props.event.id} />
             ) : null}
@@ -134,7 +159,16 @@ export function LegendaryEventPageView({
                   isMobile={isMobile}
                   lane={props.event[laneId]}
                   laneId={laneId}
-                  onViewBattles={() => props.onViewBattles(laneId)}
+                  onViewBattles={() =>
+                    openBattleInfo(
+                      laneId,
+                      firstOpenBattleIndex(
+                        props.progressGrid.kind === "ready"
+                          ? props.progressGrid.lanes[laneId]
+                          : undefined
+                      )
+                    )
+                  }
                   potential={props.potentials[laneId]}
                 />
               )}
@@ -182,24 +216,17 @@ export function LegendaryEventPageView({
         {selectedTab === "plan" ? (
           <TabPanel tab="plan">
             <RunForecastSection
-              editInputs={
-                props.runInputs.enabled ? (
-                  <RunInputsDrawer
-                    runs={props.runInputs.runs}
-                    event={props.event}
-                    isMobile={isMobile}
-                    trigger={
-                      <Button
-                        className="px-0"
-                        data-testid="run-forecast-edit-inputs"
-                        type="button"
-                        variant="link"
-                      >
-                        {t("tokenPlan.forecast.editInputs")}
-                      </Button>
-                    }
-                  />
-                ) : null
+              runInputs={
+                props.runInputs.enabled
+                  ? (run) => (
+                      <RunInputsInline
+                        event={props.event}
+                        run={run.run}
+                        runs={props.runInputs.runs}
+                        touch={isMobile}
+                      />
+                    )
+                  : undefined
               }
               eventId={props.event.id}
               isMobile={isMobile}
@@ -251,6 +278,7 @@ export function LegendaryEventPageView({
         {selectedTab === "run" ? (
           <TabPanel tab="run">
             <NextTokenCard
+              chipOf={chipOf}
               event={props.event}
               eventId={props.event.id}
               isMobile={isMobile}
@@ -288,6 +316,8 @@ export function LegendaryEventPageView({
         <BattleInfoDialog
           battles={props.battles}
           isMobile={isMobile}
+          event={props.event}
+          onChange={setBattleInfo}
           onClose={() => setBattleInfo(null)}
           target={props.battleInfo.target}
         />

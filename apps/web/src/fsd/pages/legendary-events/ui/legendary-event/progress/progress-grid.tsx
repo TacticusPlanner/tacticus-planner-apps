@@ -1,17 +1,22 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { LaneProgressView } from "@/entities/legendary-event"
+import type {
+  BattleProgressView,
+  LaneProgressView,
+} from "@/entities/legendary-event"
 
 import type { ProgressColumn } from "./progress-columns"
 import type { LaneMarks } from "./progress-marks"
+import { splitClearedBattles } from "./progress-order"
 import {
   BattleRowAction,
   ProgressCell,
   ProgressColumnIcon,
 } from "./progress-parts"
 
-/** Desktop: one lane's battles (rows, battle 1 first) by defeat-all and the five objectives, each
+/** Desktop: one lane's battles (rows, open battles first, then the fully cleared ones struck
+ *  through below a divider) by defeat-all and the five objectives, each
  *  row ending with its points earned of the maximum and its high score. Cleared state and points
  *  are read-only; with `marks`, a not-cleared cell opens its mark menu and an incomplete row ends
  *  with a "⋯" row action. */
@@ -26,6 +31,69 @@ export function ProgressGrid({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
+  const { open, cleared } = splitClearedBattles(progress.battles)
+  const renderRow = (battle: BattleProgressView) => (
+    <tr
+      className={cn(
+        "border-b last:border-0",
+        battle.complete &&
+          "bg-(--event-legendary)/10 text-muted-foreground line-through"
+      )}
+      data-battle={battle.index + 1}
+      data-complete={battle.complete}
+      data-testid="progress-row"
+      key={battle.index}
+    >
+      <th
+        className="py-0.5 pr-1 text-left font-medium tabular-nums"
+        scope="row"
+      >
+        <span className="sr-only">
+          {t("progress.battleNumber", { battle: battle.index + 1 })}
+        </span>
+        <span aria-hidden="true">{battle.index + 1}</span>
+        {battle.complete ? (
+          <span className="sr-only">{t("progress.complete")}</span>
+        ) : null}
+      </th>
+      {battle.cleared.map((cleared, index) => (
+        <td className="px-0.5 py-0.5 text-center" key={index}>
+          <ProgressCell
+            battleIndex={battle.index}
+            cleared={cleared}
+            label={columns[index]?.label ?? ""}
+            marks={marks}
+            objectiveId={index}
+          />
+        </td>
+      ))}
+      <td className="py-0.5 pl-1 text-right whitespace-nowrap">
+        <span className="tabular-nums" data-testid="progress-row-points">
+          {t("progress.battlePoints", {
+            earned: number.format(battle.pointsEarned),
+            max: number.format(battle.maxPoints),
+          })}
+        </span>
+        {battle.highScore > 0 ? (
+          <span
+            className="block text-xs text-muted-foreground"
+            data-testid="progress-row-high-score"
+          >
+            {t("progress.highScore", {
+              score: number.format(battle.highScore),
+            })}
+          </span>
+        ) : null}
+      </td>
+      {marks ? (
+        <td className="py-0.5 pl-1 text-right">
+          {battle.complete ? null : (
+            <BattleRowAction battle={battle} marks={marks} />
+          )}
+        </td>
+      ) : null}
+    </tr>
+  )
   return (
     <table className="w-full text-sm" data-testid="progress-grid">
       <thead>
@@ -73,66 +141,18 @@ export function ProgressGrid({
         </tr>
       </thead>
       <tbody>
-        {progress.battles.map((battle) => (
-          <tr
-            className={cn(
-              "border-b last:border-0",
-              battle.complete && "bg-(--event-legendary)/10"
-            )}
-            data-complete={battle.complete}
-            data-testid="progress-row"
-            key={battle.index}
-          >
-            <th
-              className="py-0.5 pr-1 text-left font-medium tabular-nums"
-              scope="row"
+        {open.map(renderRow)}
+        {cleared.length > 0 ? (
+          <tr data-testid="progress-cleared-divider">
+            <td
+              className="border-t-2 border-border pt-2 pb-0.5 text-xs text-muted-foreground"
+              colSpan={columns.length + (marks ? 3 : 2)}
             >
-              <span className="sr-only">
-                {t("progress.battleNumber", { battle: battle.index + 1 })}
-              </span>
-              <span aria-hidden="true">{battle.index + 1}</span>
-              {battle.complete ? (
-                <span className="sr-only">{t("progress.complete")}</span>
-              ) : null}
-            </th>
-            {battle.cleared.map((cleared, index) => (
-              <td className="px-0.5 py-0.5 text-center" key={index}>
-                <ProgressCell
-                  battleIndex={battle.index}
-                  cleared={cleared}
-                  label={columns[index]?.label ?? ""}
-                  marks={marks}
-                  objectiveId={index}
-                />
-              </td>
-            ))}
-            <td className="py-0.5 pl-1 text-right whitespace-nowrap">
-              <span className="tabular-nums" data-testid="progress-row-points">
-                {t("progress.battlePoints", {
-                  earned: number.format(battle.pointsEarned),
-                  max: number.format(battle.maxPoints),
-                })}
-              </span>
-              {battle.highScore > 0 ? (
-                <span
-                  className="block text-xs text-muted-foreground"
-                  data-testid="progress-row-high-score"
-                >
-                  {t("progress.highScore", {
-                    score: number.format(battle.highScore),
-                  })}
-                </span>
-              ) : null}
+              {t("progress.clearedDivider", { count: cleared.length })}
             </td>
-            {marks ? (
-              <td className="py-0.5 pl-1 text-right">
-                {battle.complete ? null : (
-                  <BattleRowAction battle={battle} marks={marks} />
-                )}
-              </td>
-            ) : null}
           </tr>
-        ))}
+        ) : null}
+        {cleared.map(renderRow)}
       </tbody>
     </table>
   )

@@ -414,7 +414,11 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(
       screen.getByTestId("legendary-event-lane-summary")
     ).toBeInTheDocument()
-    expect(screen.queryByTestId("legendary-event-run-status")).toBeNull()
+    // Overview repeats the Run status card, with a jump to the next run.
+    expect(screen.getByTestId("legendary-event-run-status")).toBeInTheDocument()
+    expect(screen.getByTestId("run-status-go-to-run")).toHaveTextContent(
+      "Go to next run"
+    )
   })
 
   it("replaces an unknown event id with the hub", async () => {
@@ -681,10 +685,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     })
   })
 
-  it("jumps from a board lane's battle count to that lane's Battles on Plan", async () => {
-    const scrollIntoView = vi
-      .spyOn(HTMLElement.prototype, "scrollIntoView")
-      .mockImplementation(() => {})
+  it("opens a board lane's battle count in the battle info dialog at its first open battle", async () => {
     renderPage("/legendary-events/astarLysander")
     await runReady()
     act(() => selectTab("teams"))
@@ -695,13 +696,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     act(() => {
       fireEvent.click(betaBattles)
     })
-    expect(selectedTab()).toHaveTextContent("Plan")
-    expect(lanesOf("legendary-event-battles-section")).toEqual(["beta"])
-    // The battle row's dropdown also scrolls its picked option into view.
-    expect(scrollIntoView.mock.instances).toContain(
-      document.querySelector('[data-testid="legendary-event-battles-section"]')
+    expect(await screen.findByTestId("battle-info-dialog")).toBeInTheDocument()
+    // The dialog opens over Teams rather than switching to Plan.
+    expect(screen.getByTestId("legendary-event-tab-teams")).toHaveAttribute(
+      "aria-selected",
+      "true"
     )
-    scrollIntoView.mockRestore()
   })
 
   it("jumps from a lane summary row to the run tab with that lane shown, at its grid heading", async () => {
@@ -723,10 +723,13 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     })
     expect(selectedTab()).toHaveTextContent("Current run")
     expect(lanesOf("progress-lane")).toEqual(["alpha", "beta", "gamma"])
-    expect(scrollIntoView).toHaveBeenCalledTimes(1)
-    expect(scrollIntoView.mock.instances[0]).toBe(
-      document.getElementById("legendary-event-progress-beta")
+    // Earlier tests' open selects can still scroll their options, so only headings count here.
+    const headings = scrollIntoView.mock.instances.filter(
+      (element) => (element as HTMLElement).tagName === "H3"
     )
+    expect(headings).toEqual([
+      document.getElementById("legendary-event-progress-beta"),
+    ])
     scrollIntoView.mockRestore()
   })
 

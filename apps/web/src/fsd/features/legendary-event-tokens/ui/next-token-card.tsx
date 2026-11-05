@@ -1,7 +1,5 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { characterIcon } from "@workspace/game-catalog"
-import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -13,13 +11,17 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type {
+  EventUnitChipData,
   LegendaryEvent,
   LegendaryEventAnnotationStatus,
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
-import { EntityIcon } from "@/shared/ui"
-import { useUnitName } from "@/shared/unit-name"
 
+import {
+  gainsFromProgress,
+  gainsFromSteps,
+  type MissionGain,
+} from "../lib/mission-gains"
 import type { TokenMissionStep } from "../lib/mission-order"
 import type { PlannedToken } from "../lib/token-plan"
 import {
@@ -30,15 +32,13 @@ import {
 } from "../lib/token-plan-view"
 import { useMissionsOrder } from "../model/token-plan-order"
 import { useNextTokenShown } from "../model/use-next-token-shown"
-import { TokenMissionSteps, TokenPlanOrderSwitch } from "./mission-order-view"
-import {
-  MissionAlternativeView,
-  MissionsProgressed,
-} from "./next-token-missions"
+import { TokenPlanOrderSwitch } from "./mission-order-view"
+import { MissionAlternativeView } from "./next-token-missions"
 import { BattleInfoButton } from "./battle-info"
 import { TokenMarkButtons } from "./token-mark-buttons"
 import { TokenRow } from "./token-plan-rows"
 import { TokenObjectives } from "./token-objectives"
+import { TokenMissionsPopover, TokenTeamPopover } from "./token-popovers"
 
 export type MarkTokenHandler = (
   laneId: LegendaryEventLaneId,
@@ -72,6 +72,7 @@ export function NextTokenCard({
   onOpenTeams,
   onViewPlan,
   missionsInput,
+  chipOf = unknownChip,
 }: {
   eventId: string
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
@@ -84,6 +85,8 @@ export function NextTokenCard({
   onViewPlan?: () => void
   /** The run's mission ticks, shown in Missions order (the plan feature's quick input). */
   missionsInput?: ReactNode
+  /** A unit's chip in the team popover (rank, rarity, abilities from the synced roster). */
+  chipOf?: (unitId: string) => EventUnitChipData
 }) {
   const { t } = useTranslation("legendaryEvents")
   const [byMissions, setByMissions] = useMissionsOrder()
@@ -134,12 +137,21 @@ export function NextTokenCard({
               event={event}
               isMobile={isMobile}
               onMarkToken={onMarkToken}
+              chipOf={chipOf}
+              gains={gainsFromSteps(ordered.steps)}
               reason={t("tokenPlan.nextToken.reasons.missionsOrder")}
               token={ordered.token}
               view={view}
-            >
-              <TokenMissionSteps steps={ordered.steps} />
-            </TokenView>
+            />
+            {view.missions?.alternative &&
+            view.missions.alternative.index !== ordered.index ? (
+              <MissionAlternativeView
+                alternative={view.missions.alternative}
+                event={event}
+                isMobile={isMobile}
+                onMarkToken={view.upcoming === null ? onMarkToken : undefined}
+              />
+            ) : null}
             {missionsInput ? (
               <div
                 className="flex min-w-0 flex-col gap-2 border-t pt-3"
@@ -165,23 +177,12 @@ export function NextTokenCard({
               event={event}
               isMobile={isMobile}
               onMarkToken={onMarkToken}
+              chipOf={chipOf}
+              gains={gainsFromProgress(view.missions?.progressed ?? [])}
               reason={t(`tokenPlan.nextToken.reasons.${view.next.reason}`)}
               token={view.next.token}
               view={view}
-            >
-              <MissionsProgressed
-                missions={view.missions?.progressed ?? []}
-                testId="next-token-progresses"
-              />
-            </TokenView>
-            {view.missions?.alternative ? (
-              <MissionAlternativeView
-                alternative={view.missions.alternative}
-                event={event}
-                isMobile={isMobile}
-                onMarkToken={view.upcoming === null ? onMarkToken : undefined}
-              />
-            ) : null}
+            />
             <UpNext
               event={event}
               isMobile={isMobile}
@@ -205,7 +206,8 @@ function TokenView({
   reason: reasonText,
   isMobile,
   onMarkToken,
-  children,
+  gains,
+  chipOf,
 }: {
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
   view: ReadyView
@@ -215,10 +217,10 @@ function TokenView({
   isMobile: boolean
   onMarkToken: MarkTokenHandler | undefined
   /** The missions it moves. */
-  children: ReactNode
+  gains: readonly MissionGain[]
+  chipOf: (unitId: string) => EventUnitChipData
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const unitName = useUnitName()
   const number = new Intl.NumberFormat(i18n.language)
   const lane = t(`lanes.${token.laneId}`)
   const battle = token.battleIndex + 1
@@ -248,24 +250,12 @@ function TokenView({
           <span className="font-semibold" data-testid="next-token-team">
             {token.teamName}
           </span>
-          <ul
-            aria-label={t("tokenPlan.nextToken.members")}
-            className="flex items-center gap-1"
-          >
-            {members.map((unitId) => (
-              <li
-                data-testid="next-token-member"
-                data-unit={unitId}
-                key={unitId}
-              >
-                <EntityIcon
-                  alt={unitName("Character", unitId)}
-                  className="size-8 rounded-full"
-                  src={characterIcon(unitId as UnitId)}
-                />
-              </li>
-            ))}
-          </ul>
+          <TokenTeamPopover
+            members={members.map((unitId) => chipOf(unitId))}
+            teamName={token.teamName}
+            testId="next-token-team-details"
+          />
+          <TokenMissionsPopover gains={gains} testId="next-token-progresses" />
         </div>
         <div className="flex flex-wrap items-baseline gap-x-3 text-sm">
           <span data-testid="next-token-battle">
@@ -303,7 +293,6 @@ function TokenView({
         >
           {reasonLine}
         </p>
-        {children}
       </div>
       {canMark && onMarkToken ? (
         <TokenMarkButtons
@@ -372,6 +361,7 @@ function UpNext({
             isMobile={isMobile}
             key={index}
             marker={undefined}
+            missionsPopover
             steps={steps?.[index]}
             token={token}
           />
@@ -423,6 +413,10 @@ function EmptyState({
       {text}
     </Button>
   )
+}
+
+function unknownChip(unitId: string): EventUnitChipData {
+  return { unitId, owned: undefined }
 }
 
 function Note({ children, testId }: { children: ReactNode; testId: string }) {

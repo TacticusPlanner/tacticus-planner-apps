@@ -124,6 +124,7 @@ describe("NextTokenCard", () => {
     renderCard(buildTokenPlanView(workedViewInput()))
 
     expect(screen.getByTestId("next-token-team")).toHaveTextContent("Melee")
+    fireEvent.click(screen.getByTestId("next-token-team-details"))
     expect(
       screen.getAllByTestId("next-token-member").map((m) => m.dataset.unit)
     ).toEqual(["ultraCalgar", "ultraTitus", "ultraApothecary"])
@@ -383,6 +384,7 @@ describe("NextTokenCard", () => {
             {
               ref: admech,
               total: 75,
+              gained: 75,
               needed: 75,
               completes: true,
               estimate: false,
@@ -407,9 +409,10 @@ describe("NextTokenCard", () => {
       expect(screen.getByTestId("next-token-battle")).toHaveTextContent(
         "Alpha · Battle 2"
       )
-      expect(screen.getByTestId("next-token-view")).toHaveTextContent(
-        /Mission done · Defeat 75 /
-      )
+      fireEvent.click(screen.getByTestId("next-token-progresses"))
+      expect(
+        screen.getByTestId("next-token-progresses-mission")
+      ).toHaveTextContent(/Defeat 75 .*\+75 · done/)
       expect(screen.getByTestId("next-token-reason")).toHaveTextContent(
         "Finishes this run's open missions soonest"
       )

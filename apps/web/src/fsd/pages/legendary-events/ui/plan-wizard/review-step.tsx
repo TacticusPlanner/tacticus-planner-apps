@@ -200,7 +200,7 @@ export function ReviewStep({
           testId="plan-wizard-review-runs"
           title={t("planWizard.review.runs")}
         >
-          {runLines.length === 0 && writes.showPaidOptions === null ? (
+          {runLines.length === 0 ? (
             <Empty text={t("planWizard.review.nothing")} />
           ) : (
             <>
@@ -218,15 +218,6 @@ export function ReviewStep({
                   ].join(" · ")}
                 </li>
               ))}
-              {writes.showPaidOptions === null ? null : (
-                <li>
-                  {t(
-                    writes.showPaidOptions
-                      ? "planWizard.review.paidOn"
-                      : "planWizard.review.paidOff"
-                  )}
-                </li>
-              )}
             </>
           )}
         </Group>

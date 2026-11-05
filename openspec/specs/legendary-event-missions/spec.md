@@ -18,7 +18,7 @@ The client SHALL read each served mission's `kind` and parameters and SHALL rend
 
 ### Requirement: Open missions of the current run
 
-A mission is **open** for a run when it is not ticked Done for that run. The planner SHALL use the open regular missions of the current run, and its open premium missions only when Show paid options is on and the run plans the premium track (stored premium missions > 0). With no run in progress (event upcoming or between runs) the planner SHALL use the next run's open missions; with no run known there are no open missions for suggestions.
+Missions of a track finish in order: a run's done count `d` marks the track's first `d` missions done, and a mission is **open** for a run when it is after them. Only each track's **current** mission (its first open one) counts a token's progress, and progress never carries over to the next mission; a mission that every token progresses (`anyBattle`, `winWithoutSummon`) finishes with the next token. The planner SHALL use the open regular missions of the current run, and its open premium missions only when Show paid options is on and the run plans the premium track (stored premium missions > 0). With no run in progress (event upcoming or between runs) the planner SHALL use the next run's open missions; with no run known there are no open missions for suggestions.
 
 #### Scenario: Premium hidden
 

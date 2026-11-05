@@ -32,9 +32,12 @@ import {
 } from "@/entities/legendary-event"
 import { NumberStepper } from "@/shared/ui"
 
-import { missionTickPatch, runInputsPhase } from "../model/run-inputs-patches"
+import {
+  missionDonePatch,
+  runInputsFocusRun,
+  runInputsPhase,
+} from "../model/run-inputs-patches"
 import { useRunInputs, type RunInputsActions } from "../model/use-run-inputs"
-import { useWatchAds } from "../model/use-watch-ads"
 import { MissionChecklist } from "./mission-checklist"
 
 const RUNS: readonly LegendaryEventRun[] = [1, 2, 3]
@@ -42,10 +45,10 @@ const CLOSE_SHARDS_STEP = 25
 
 /**
  * The Run status card's Inputs button and its drawer (design D5): a right-side sheet at or above
- * 768px and a swipe-to-dismiss bottom drawer (90% of the height) below it. Runs 1–3 are stacked and
- * labelled Done / Now / Planned against the resolved runs (no labels while the run is unknown);
- * every run stays editable. Paid fields
- * show only with Show paid options on. Closing returns focus to the Inputs button.
+ * 768px and a swipe-to-dismiss bottom drawer (90% of the height) below it. It edits the current
+ * run (else the next one; every run while the run is unknown), labelled Now / Planned; the Plan
+ * tab's Run forecast edits each run in place. Paid fields show only with the account's Show paid
+ * options on (Legendary Event settings). Closing returns focus to the Inputs button.
  */
 export function RunInputsDrawer({
   event,
@@ -56,14 +59,12 @@ export function RunInputsDrawer({
   event: Pick<LegendaryEvent, "id" | "regularMissions" | "premiumMissions">
   runs: LegendaryEventRunResolution
   isMobile: boolean
-  /** Replaces the Inputs button (the Run forecast's Edit inputs link); one focusable element. */
+  /** Replaces the Inputs button; one focusable element. */
   trigger?: ReactElement
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const inputs: RunInputsFormSource = {
-    ...useRunInputs(event.id),
-    ...useWatchAds(),
-  }
+  const inputs: RunInputsFormSource = useRunInputs(event.id)
+  const focus = runInputsFocusRun(runs)
   const trigger = customTrigger ?? (
     <Button
       data-testid="legendary-event-run-inputs"
@@ -76,7 +77,13 @@ export function RunInputsDrawer({
     </Button>
   )
   const body = (
-    <RunInputsForm event={event} runs={runs} inputs={inputs} touch={isMobile} />
+    <RunInputsForm
+      event={event}
+      inputs={inputs}
+      only={focus === null ? undefined : [focus]}
+      runs={runs}
+      touch={isMobile}
+    />
   )
 
   if (isMobile) {
@@ -119,32 +126,24 @@ export function RunInputsDrawer({
 export type RunInputsFormSource = Pick<
   RunInputsActions,
   "loading" | "failed" | "showPaidOptions" | "values" | "change"
-> & {
-  setShowPaidOptions: (on: boolean) => unknown
-  /** The account's Watch daily ads; the wizard's draft leaves both out (no switch shown). */
-  watchAds?: boolean
-  setWatchAds?: (on: boolean) => unknown
-}
+>
 
-/** Runs 1–3 with each run's missions, and the paid fields while Show paid options is on. */
+/** Runs 1–3 (or the `only` ones) with each run's missions, and the paid fields while Show paid
+ *  options is on. */
 export function RunInputsForm({
   event,
   runs,
   inputs,
   touch,
+  only,
 }: {
   event: Pick<LegendaryEvent, "regularMissions" | "premiumMissions">
   runs: LegendaryEventRunResolution
   inputs: RunInputsFormSource
   touch: boolean
+  only?: readonly LegendaryEventRun[]
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const paidId = useId()
-  const stepperLabels = (field: string, run: LegendaryEventRun) => ({
-    value: t("runInputs.fieldLabel", { field, run }),
-    decrease: t("runInputs.decrease", { field, run }),
-    increase: t("runInputs.increase", { field, run }),
-  })
   if (inputs.loading) {
     return (
       <div
@@ -166,123 +165,189 @@ export function RunInputsForm({
       </p>
     )
   }
-  const paid = inputs.showPaidOptions
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 pb-6">
+      {(only ?? RUNS).map((run) => (
+        <RunInputsRunSection
+          event={event}
+          inputs={inputs}
+          key={run}
+          run={run}
+          runs={runs}
+          touch={touch}
+        />
+      ))}
+    </div>
+  )
+}
+
+/**
+ * One run's inputs, in place (spec: the Run forecast edits each run): the stored plan's values with
+ * the run's missions and paid fields. Nothing while the plan is loading, failed or disabled.
+ */
+export function RunInputsInline({
+  event,
+  run,
+  runs,
+  touch,
+}: {
+  event: Pick<LegendaryEvent, "id" | "regularMissions" | "premiumMissions">
+  run: LegendaryEventRun
+  runs: LegendaryEventRunResolution
+  touch: boolean
+}) {
+  const inputs = useRunInputs(event.id)
+  if (!inputs.enabled || inputs.loading || inputs.failed) return null
+  return (
+    <RunInputsFields
+      event={event}
+      inputs={inputs}
+      phase={runInputsPhase(run, runs)}
+      run={run}
+      touch={touch}
+    />
+  )
+}
+
+function RunInputsRunSection({
+  event,
+  run,
+  runs,
+  inputs,
+  touch,
+}: {
+  event: Pick<LegendaryEvent, "regularMissions" | "premiumMissions">
+  run: LegendaryEventRun
+  runs: LegendaryEventRunResolution
+  inputs: RunInputsFormSource
+  touch: boolean
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  const id = useId()
+  const phase = runInputsPhase(run, runs)
+  return (
+    <section
+      aria-labelledby={id}
+      className="flex flex-col gap-3 rounded-xl border p-3"
+      data-phase={phase ?? undefined}
+      data-run={run}
+      data-testid="run-inputs-run"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="font-semibold" id={id}>
+          {t("runInputs.run", { run })}
+        </h3>
+        {phase ? (
+          <Badge
+            data-testid="run-inputs-phase"
+            variant={phase === "now" ? "default" : "outline"}
+          >
+            {t(`runInputs.phase.${phase}`)}
+          </Badge>
+        ) : null}
+      </div>
+      <RunInputsFields
+        event={event}
+        inputs={inputs}
+        phase={phase}
+        run={run}
+        touch={touch}
+      />
+    </section>
+  )
+}
+
+/** A run's mission tracks and, with Show paid options on, its premium track, bundle and shards. */
+function RunInputsFields({
+  event,
+  run,
+  phase,
+  inputs,
+  touch,
+}: {
+  event: Pick<LegendaryEvent, "regularMissions" | "premiumMissions">
+  run: LegendaryEventRun
+  phase: ReturnType<typeof runInputsPhase>
+  inputs: RunInputsFormSource
+  touch: boolean
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  const stepperLabels = (field: string) => ({
+    value: t("runInputs.fieldLabel", { field, run }),
+    decrease: t("runInputs.decrease", { field, run }),
+    increase: t("runInputs.increase", { field, run }),
+  })
+  const values = inputs.values(run)
   const regular = eventMissions(event, "regular")
   const premium = eventMissions(event, "premium")
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 pb-6">
-      <div className="flex items-center justify-between gap-3 rounded-xl border p-3">
-        <Label htmlFor={paidId}>{t("runInputs.showPaidOptions")}</Label>
-        <Switch
-          checked={paid}
-          data-testid="run-inputs-paid-switch"
-          id={paidId}
-          onCheckedChange={(on) => void inputs.setShowPaidOptions(on)}
-        />
-      </div>
-      {inputs.setWatchAds ? (
-        <AdsSwitch
-          onChange={inputs.setWatchAds}
-          watchAds={inputs.watchAds ?? true}
-        />
+    <div className="flex flex-col gap-3">
+      {phase === "now" ? (
+        <p
+          className="text-xs text-muted-foreground"
+          data-testid="run-inputs-now-hint"
+        >
+          {t("runInputs.nowHint")}
+        </p>
       ) : null}
-      {RUNS.map((run) => {
-        const values = inputs.values(run)
-        const phase = runInputsPhase(run, runs)
-        return (
-          <section
-            aria-labelledby={`${paidId}-run-${run}`}
-            className="flex flex-col gap-3 rounded-xl border p-3"
-            data-phase={phase ?? undefined}
-            data-run={run}
-            data-testid="run-inputs-run"
-            key={run}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="font-semibold" id={`${paidId}-run-${run}`}>
-                {t("runInputs.run", { run })}
-              </h3>
-              {phase ? (
-                <Badge
-                  data-testid="run-inputs-phase"
-                  variant={phase === "now" ? "default" : "outline"}
-                >
-                  {t(`runInputs.phase.${phase}`)}
-                </Badge>
-              ) : null}
-            </div>
-            {phase === "now" ? (
-              <p
-                className="text-xs text-muted-foreground"
-                data-testid="run-inputs-now-hint"
-              >
-                {t("runInputs.nowHint")}
-              </p>
-            ) : null}
-            <MissionChecklist
-              completed={values.completedRegularMissions}
-              count={values.regularMissions}
-              defaultOpen={phase === "now"}
-              field={t("runInputs.regularMissions")}
-              missions={regular}
-              onCountChange={(count) =>
-                inputs.change(run, { regularMissions: count })
+      <MissionChecklist
+        completed={values.completedRegularMissions}
+        count={values.regularMissions}
+        defaultOpen={phase === "now"}
+        field={t("runInputs.regularMissions")}
+        missions={regular}
+        onCountChange={(count) =>
+          inputs.change(run, { regularMissions: count })
+        }
+        onDoneChange={(done) =>
+          inputs.change(run, missionDonePatch(values, "regular", regular, done))
+        }
+        run={run}
+        testId="run-inputs-regular"
+        touch={touch}
+      />
+      {inputs.showPaidOptions ? (
+        <>
+          <MissionChecklist
+            completed={values.completedPremiumMissions}
+            count={values.premiumMissions}
+            defaultOpen={phase === "now"}
+            field={t("runInputs.premiumMissions")}
+            missions={premium}
+            onCountChange={(count) =>
+              inputs.change(run, { premiumMissions: count })
+            }
+            onDoneChange={(done) =>
+              inputs.change(
+                run,
+                missionDonePatch(values, "premium", premium, done)
+              )
+            }
+            run={run}
+            testId="run-inputs-premium"
+            touch={touch}
+          />
+          <BundleSwitch
+            checked={values.bundlePurchased}
+            onChange={(on) => inputs.change(run, { bundlePurchased: on })}
+            run={run}
+          />
+          <Field label={t("runInputs.closeShards")}>
+            <NumberStepper
+              data-testid="run-inputs-close-shards"
+              labels={stepperLabels(t("runInputs.closeShards"))}
+              max={MAX_CLOSE_SHARDS}
+              min={0}
+              onChange={(value) =>
+                inputs.change(run, { closeShards: value ?? 0 })
               }
-              onTick={(index, done) =>
-                inputs.change(
-                  run,
-                  missionTickPatch(values, "regular", index, done)
-                )
-              }
-              run={run}
-              testId="run-inputs-regular"
+              step={CLOSE_SHARDS_STEP}
               touch={touch}
+              value={values.closeShards}
             />
-            {paid ? (
-              <>
-                <MissionChecklist
-                  completed={values.completedPremiumMissions}
-                  count={values.premiumMissions}
-                  defaultOpen={phase === "now"}
-                  field={t("runInputs.premiumMissions")}
-                  missions={premium}
-                  onCountChange={(count) =>
-                    inputs.change(run, { premiumMissions: count })
-                  }
-                  onTick={(index, done) =>
-                    inputs.change(
-                      run,
-                      missionTickPatch(values, "premium", index, done)
-                    )
-                  }
-                  run={run}
-                  testId="run-inputs-premium"
-                  touch={touch}
-                />
-                <BundleSwitch
-                  checked={values.bundlePurchased}
-                  onChange={(on) => inputs.change(run, { bundlePurchased: on })}
-                  run={run}
-                />
-                <Field label={t("runInputs.closeShards")}>
-                  <NumberStepper
-                    data-testid="run-inputs-close-shards"
-                    labels={stepperLabels(t("runInputs.closeShards"), run)}
-                    max={MAX_CLOSE_SHARDS}
-                    min={0}
-                    onChange={(value) =>
-                      inputs.change(run, { closeShards: value ?? 0 })
-                    }
-                    step={CLOSE_SHARDS_STEP}
-                    touch={touch}
-                    value={values.closeShards}
-                  />
-                </Field>
-              </>
-            ) : null}
-          </section>
-        )
-      })}
+          </Field>
+        </>
+      ) : null}
     </div>
   )
 }
@@ -323,36 +388,6 @@ function BundleSwitch({
         data-testid="run-inputs-bundle"
         id={id}
         onCheckedChange={onChange}
-      />
-    </div>
-  )
-}
-
-/** Watch daily ads (an account setting, on by default): off plans no ad tokens in any event. */
-function AdsSwitch({
-  watchAds,
-  onChange,
-}: {
-  watchAds: boolean
-  onChange: (on: boolean) => unknown
-}) {
-  const { t } = useTranslation("legendaryEvents")
-  const id = useId()
-  const hintId = useId()
-  return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border p-3">
-      <div className="flex flex-col gap-0.5">
-        <Label htmlFor={id}>{t("runInputs.watchAds")}</Label>
-        <p className="text-xs text-muted-foreground" id={hintId}>
-          {t("runInputs.watchAdsHint")}
-        </p>
-      </div>
-      <Switch
-        aria-describedby={hintId}
-        checked={watchAds}
-        data-testid="run-inputs-ads-switch"
-        id={id}
-        onCheckedChange={(on) => void onChange(on)}
       />
     </div>
   )

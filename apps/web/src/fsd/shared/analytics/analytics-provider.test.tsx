@@ -310,7 +310,6 @@ describe("useAnalyticsActions", () => {
     })
     result.current.captureEvent({
       type: "legendary_event_paid_options_toggled",
-      eventId: "votanUthar",
       on: true,
     })
     result.current.captureEvent({
@@ -343,7 +342,7 @@ describe("useAnalyticsActions", () => {
     )
     expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_paid_options_toggled",
-      { event_id: "votanUthar", on: true }
+      { on: true }
     )
     expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_plan_created",

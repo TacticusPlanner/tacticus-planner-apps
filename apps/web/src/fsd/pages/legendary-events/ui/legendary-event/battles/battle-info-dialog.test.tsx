@@ -1,8 +1,9 @@
-import { beforeAll, describe, expect, it } from "vitest"
+import { beforeAll, describe, expect, it, vi } from "vitest"
 import type { i18n as I18n } from "i18next"
 
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { render, screen } from "@/test/render"
+import { lysanderEvent } from "@/test/fixtures/legendary-events"
+import { fireEvent, render, screen } from "@/test/render"
 
 import { BattleInfoDialog } from "./battle-info-dialog"
 import { lysanderLane } from "./battles.test-utils"
@@ -33,7 +34,9 @@ describe("BattleInfoDialog", () => {
     render(
       <BattleInfoDialog
         battles={{ alpha }}
+        event={lysanderEvent}
         isMobile={false}
+        onChange={() => {}}
         onClose={() => {}}
         target={{ laneId: "alpha", battleIndex: 4 }}
       />,
@@ -41,5 +44,58 @@ describe("BattleInfoDialog", () => {
     )
 
     expect(screen.getByTestId("battle-title")).toHaveTextContent("Battle 5")
+  })
+
+  it("steps to the previous and next battle, with a bottom Close on mobile", () => {
+    const alpha: BattlesViewModel = {
+      state: {
+        kind: "ready",
+        battles: lysanderLane("alpha"),
+        defaultIndex: 0,
+        retryNpcs: undefined,
+      },
+      selectedIndex: undefined,
+      onSelect: () => {},
+      mapOpen: false,
+      onMapOpenChange: () => {},
+    }
+    const onChange = vi.fn()
+    const onClose = vi.fn()
+    render(
+      <BattleInfoDialog
+        battles={{ alpha }}
+        event={lysanderEvent}
+        isMobile
+        onChange={onChange}
+        onClose={onClose}
+        target={{ laneId: "alpha", battleIndex: 0 }}
+      />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+
+    expect(screen.getByTestId("battle-info-previous")).toBeDisabled()
+    fireEvent.click(screen.getByTestId("battle-info-next"))
+    expect(onChange).toHaveBeenCalledWith({ laneId: "alpha", battleIndex: 1 })
+    fireEvent.click(screen.getByTestId("battle-info-close"))
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it("has no Close button on desktop and stops Next at the lane's last battle", () => {
+    const last = lysanderEvent.alpha.battlesPoints.length - 1
+    render(
+      <BattleInfoDialog
+        battles={{}}
+        event={lysanderEvent}
+        isMobile={false}
+        onChange={() => {}}
+        onClose={() => {}}
+        target={{ laneId: "alpha", battleIndex: last }}
+      />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+
+    expect(screen.getByTestId("battle-info-next")).toBeDisabled()
+    expect(screen.getByTestId("battle-info-previous")).toBeEnabled()
+    expect(screen.queryByTestId("battle-info-close")).toBeNull()
   })
 })

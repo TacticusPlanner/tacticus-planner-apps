@@ -77,15 +77,29 @@ describe("nextTokenMissions", () => {
 
   it("offers a playable token progressing more open missions, with the points it gives up", () => {
     const result = nextTokenMissions(
-      input([alpha3, beta4], [ANY_BATTLE, ADMECH, NO_BIG_TARGET])
+      input([alpha3, beta4], [ADMECH, NO_BIG_TARGET])
     )
     expect(result.progressed).toEqual([])
     expect(result.alternative).toEqual({
       token: beta4,
       index: 1,
-      missions: [ADMECH, NO_BIG_TARGET],
+      missions: [
+        { ref: ADMECH, amount: expect.any(Number), estimate: false },
+        { ref: NO_BIG_TARGET, amount: 1, estimate: false },
+      ],
       pointsDifference: -30,
     })
+  })
+
+  it("counts only each track's current mission", () => {
+    // "Any battle" is the current regular mission, so AdMechs waits; it is untracked, so only the
+    // premium mission counts.
+    const result = nextTokenMissions(
+      input([alpha3, beta4], [ANY_BATTLE, ADMECH, NO_BIG_TARGET])
+    )
+    expect(result.alternative?.missions.map((entry) => entry.ref)).toEqual([
+      NO_BIG_TARGET,
+    ])
   })
 
   it("shows no alternative when the Next token already progresses the most", () => {
@@ -93,7 +107,10 @@ describe("nextTokenMissions", () => {
     const result = nextTokenMissions(
       input([next, token({ battleIndex: 2 })], [ADMECH, NO_BIG_TARGET])
     )
-    expect(result.progressed).toEqual([ADMECH, NO_BIG_TARGET])
+    expect(result.progressed.map((entry) => entry.ref)).toEqual([
+      ADMECH,
+      NO_BIG_TARGET,
+    ])
     expect(result.alternative).toBeNull()
   })
 

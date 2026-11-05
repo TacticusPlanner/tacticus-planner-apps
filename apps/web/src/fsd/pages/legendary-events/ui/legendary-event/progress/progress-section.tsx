@@ -1,6 +1,8 @@
+import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Switch } from "@workspace/ui/components/switch"
 
 import type {
   LaneProgressView,
@@ -20,7 +22,8 @@ import { ProgressRows } from "./progress-rows"
  * the maximum, then the battles × objectives grid read from the last sync.
  * `layout` picks the desktop grid or the mobile compact rows. With editable `marks` (signed in, plan
  * loaded) not-cleared cells and incomplete rows carry Maybe clear / Stop here marks, and the marks
- * legend sits beside "how points work".
+ * legend sits beside "how points work". On the mobile rows the marks wait behind an Edit marks
+ * switch (off on open), so scrolling past the grid can't open a mark menu.
  */
 export function ProgressSection({
   event,
@@ -36,15 +39,39 @@ export function ProgressSection({
   marks?: ProgressMarksViewModel
 }) {
   const { t } = useTranslation("legendaryEvents")
+  const switchId = useId()
+  const [editing, setEditing] = useState(false)
+  const editable = marks?.editable === true
+  const needsToggle = editable && layout === "rows"
+  const laneMarksOn = editable && (!needsToggle || editing)
   return (
     <section
       aria-labelledby="legendary-event-progress-title"
       className="flex min-w-0 flex-col gap-3"
       data-testid="legendary-event-progress-grid"
     >
-      <h2 className="text-lg font-semibold" id="legendary-event-progress-title">
-        {t("progress.title")}
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2
+          className="text-lg font-semibold"
+          id="legendary-event-progress-title"
+        >
+          {t("progress.title")}
+        </h2>
+        {needsToggle ? (
+          <label
+            className="flex min-h-10 items-center gap-2 text-sm"
+            htmlFor={switchId}
+          >
+            {t("progress.editMarks")}
+            <Switch
+              checked={editing}
+              data-testid="progress-edit-toggle"
+              id={switchId}
+              onCheckedChange={setEditing}
+            />
+          </label>
+        ) : null}
+      </div>
       <div className="grid gap-3 md:grid-cols-2 md:items-start">
         <details
           className="rounded-xl border p-3 text-sm"
@@ -57,7 +84,7 @@ export function ProgressSection({
             {t("progress.howPoints.body")}
           </p>
         </details>
-        {marks?.editable ? <MarksLegend /> : null}
+        {laneMarksOn ? <MarksLegend /> : null}
       </div>
       {progressGrid.kind === "loading" ? (
         <div data-testid="progress-loading">
@@ -78,7 +105,7 @@ export function ProgressSection({
             key={laneId}
             laneId={laneId}
             layout={layout}
-            marks={marks?.editable ? marks : undefined}
+            marks={laneMarksOn ? marks : undefined}
             progress={progressGrid.lanes[laneId]}
           />
         ))

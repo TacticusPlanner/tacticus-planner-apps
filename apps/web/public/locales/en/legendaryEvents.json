@@ -40,12 +40,14 @@
     "noEntry": "No synced progress for this event yet.",
     "syncedUnavailable": "Synced data unavailable",
     "syncedAgo": "Synced {{when}}",
-    "neverSynced": "Not synced yet"
+    "neverSynced": "Not synced yet",
+    "goToCurrentRun": "Go to current run",
+    "goToNextRun": "Go to next run"
   },
   "runInputs": {
     "button": "Inputs",
     "title": "Run inputs",
-    "description": "Missions and packs the game does not report. They feed the reward outlook on the Run status card.",
+    "description": "Missions and packs the game does not report for the current run. Missions finish in order, so set how many are done. They feed the reward outlook on the Run status card.",
     "run": "Run {{run}}",
     "phase": {
       "done": "Done",
@@ -69,7 +71,15 @@
     },
     "ticked": "{{done}} of {{total}} done",
     "planToComplete": "{{field}} to complete",
-    "planToCompleteShort": "Plan to complete"
+    "planToCompleteShort": "Plan to complete",
+    "doneCount": "{{field}} done",
+    "doneShort": "Done",
+    "now": "Now",
+    "missionState": {
+      "done": "Mission {{number}}, done: {{mission}}",
+      "current": "Mission {{number}}, current: {{mission}}",
+      "later": "Mission {{number}}, later: {{mission}}"
+    }
   },
   "notes": {
     "title": "Notes",
@@ -138,7 +148,10 @@
   },
   "battleInfo": {
     "open": "Battle info: {{lane}} battle {{battle}}",
-    "title": "{{lane}} · Battle {{battle}}"
+    "title": "{{lane}} · Battle {{battle}}",
+    "previous": "Previous",
+    "next": "Next",
+    "close": "Close"
   },
   "eventBoard": {
     "title": "Event board",
@@ -190,8 +203,8 @@
         "out": "Out of reach"
       }
     },
-    "viewBattles_one": "{{lane}}: view its {{count}} battle on Plan",
-    "viewBattles_other": "{{lane}}: view its {{count}} battles on Plan"
+    "viewBattles_one": "{{lane}}: open the battle info for its {{count}} battle",
+    "viewBattles_other": "{{lane}}: open the battle info for its {{count}} battles"
   },
   "leaderboard": {
     "title": "Eligibility leaderboard",
@@ -247,7 +260,10 @@
     "howPoints": {
       "title": "How points work",
       "body": "Each battle's earned points are its kill score plus its high score, plus the defeat-all bonus and the score of every objective you cleared in it. A battle's maximum adds its full kill score, its full high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
-    }
+    },
+    "editMarks": "Edit marks",
+    "clearedDivider_one": "{{count}} battle fully cleared",
+    "clearedDivider_other": "{{count}} battles fully cleared"
   },
   "battles": {
     "title": "Battles",
@@ -455,7 +471,7 @@
         },
         "runInputs": {
           "title": "Run inputs",
-          "content": "Tick the missions you finish in each run and set how many you plan to complete, plus the packs the game does not report. They feed the reward outlook on this card, and open missions point the Next token at battles that progress them."
+          "content": "Set how many missions you have done in the current run (they finish in order) and how many you plan to complete, plus the packs the game does not report. Future runs assume all free missions. Open missions point the Next token at battles that progress them; edit every run from the Run forecast on Plan."
         },
         "tokenPlan": {
           "title": "Token plan",
@@ -677,13 +693,18 @@
       "nothingLeft": "Your teams have nothing left to clear · {{points}} points left in {{lane}}",
       "missions": {
         "title": "For missions",
-        "progresses": "Progresses:",
+        "progresses": "Missions it progresses",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} points ({{difference}})"
+        "points": "+{{points}} points ({{difference}})",
+        "button_one": "Progresses {{count}} mission",
+        "button_other": "Progresses {{count}} missions",
+        "uncounted": "counts",
+        "finishes": "done"
       },
       "upNext": "Up next",
       "viewPlan_one": "View the {{count}} planned token",
-      "viewPlan_other": "View all {{count}} planned tokens"
+      "viewPlan_other": "View all {{count}} planned tokens",
+      "team": "Show the units of {{team}}"
     },
     "plan": {
       "title": "Token plan",
@@ -760,7 +781,12 @@
       "ohSoClose": "Oh So Close: {{shards}} shards for {{blackstone}} blackstone",
       "leftover_one": "{{count}} token with nothing to play: add a team or raise a depth to use it",
       "leftover_other": "{{count}} tokens with nothing to play: add a team or raise a depth to use them",
-      "editInputs": "Edit inputs"
+      "summary": {
+        "tokens": "Tokens used of the run's supply",
+        "points": "Points at the end of the run",
+        "chests": "Chests claimed",
+        "shards": "Shards at the end of the run"
+      }
     }
   },
   "masterTable": {
@@ -1088,9 +1114,7 @@
       "nothing": "Nothing to change",
       "removeTeam": "Remove '{{name}}' from {{lane}}",
       "updateTeam": "Update '{{name}}' in {{lane}}",
-      "createTeam": "Create '{{name}}' in {{lane}}",
-      "paidOn": "Show paid options: on",
-      "paidOff": "Show paid options: off"
+      "createTeam": "Create '{{name}}' in {{lane}}"
     },
     "toast": {
       "created": "Plan created: {{goals}}, {{teams}}",
@@ -1126,5 +1150,11 @@
     "window": "{{start}} – {{end}}",
     "guessed": "maybe ~{{date}}",
     "unknown": "date unknown"
+  },
+  "settings": {
+    "button": "Legendary Event settings",
+    "title": "Legendary Event settings",
+    "description": "These apply to every Legendary Event's plan and are saved to your account.",
+    "showPaidOptionsHint": "On: plan with what you pay for — premium missions, the 300 currency bundle and Oh So Close shards. Off: plan with free rewards only."
   }
 }

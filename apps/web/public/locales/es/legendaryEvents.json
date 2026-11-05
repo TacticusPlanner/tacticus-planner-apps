@@ -40,12 +40,14 @@
     "noEntry": "Todavía no hay progreso sincronizado para este evento.",
     "syncedUnavailable": "Datos sincronizados no disponibles",
     "syncedAgo": "Sincronizado {{when}}",
-    "neverSynced": "Aún sin sincronizar"
+    "neverSynced": "Aún sin sincronizar",
+    "goToCurrentRun": "Ir a la ejecución actual",
+    "goToNextRun": "Ir a la próxima ejecución"
   },
   "runInputs": {
     "button": "Datos",
     "title": "Datos por ronda",
-    "description": "Misiones y packs que el juego no informa. Alimentan la previsión de recompensas de la tarjeta Estado de la ronda.",
+    "description": "Misiones y paquetes que el juego no informa para la ejecución actual. Las misiones se completan en orden, así que indica cuántas están hechas. Alimentan la previsión de recompensas de la tarjeta Estado de la ejecución.",
     "run": "Ronda {{run}}",
     "phase": {
       "done": "Hecha",
@@ -69,7 +71,15 @@
     },
     "ticked": "{{done}} de {{total}} hechas",
     "planToComplete": "{{field}} por completar",
-    "planToCompleteShort": "Plan a completar"
+    "planToCompleteShort": "Plan a completar",
+    "doneCount": "{{field}} completadas",
+    "doneShort": "Completadas",
+    "now": "Ahora",
+    "missionState": {
+      "done": "Misión {{number}}, completada: {{mission}}",
+      "current": "Misión {{number}}, actual: {{mission}}",
+      "later": "Misión {{number}}, después: {{mission}}"
+    }
   },
   "notes": {
     "title": "Notas",
@@ -138,7 +148,10 @@
   },
   "battleInfo": {
     "open": "Información de la batalla: {{lane}} batalla {{battle}}",
-    "title": "{{lane}} · Batalla {{battle}}"
+    "title": "{{lane}} · Batalla {{battle}}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "close": "Cerrar"
   },
   "eventBoard": {
     "title": "Tablero del evento",
@@ -190,8 +203,8 @@
         "out": "Fuera de alcance"
       }
     },
-    "viewBattles_one": "{{lane}}: ver su {{count}} batalla en Plan",
-    "viewBattles_other": "{{lane}}: ver sus {{count}} batallas en Plan"
+    "viewBattles_one": "{{lane}}: abrir la información de su {{count}} batalla",
+    "viewBattles_other": "{{lane}}: abrir la información de sus {{count}} batallas"
   },
   "leaderboard": {
     "title": "Clasificación de elegibilidad",
@@ -247,7 +260,10 @@
     "howPoints": {
       "title": "Cómo funcionan los puntos",
       "body": "Los puntos conseguidos en una batalla son su puntuación de bajas más su puntuación máxima, más la bonificación por derrotar a todos y la puntuación de cada objetivo que superaste en ella. El máximo de una batalla suma su puntuación de bajas completa, su puntuación máxima completa, la bonificación por derrotar a todos y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
-    }
+    },
+    "editMarks": "Editar marcas",
+    "clearedDivider_one": "{{count}} batalla completada del todo",
+    "clearedDivider_other": "{{count}} batallas completadas del todo"
   },
   "battles": {
     "title": "Batallas",
@@ -455,7 +471,7 @@
         },
         "runInputs": {
           "title": "Datos por ronda",
-          "content": "Marca las misiones que completes en cada ronda e indica cuántas piensas completar, además de los packs que el juego no informa. Alimentan la previsión de recompensas de esta tarjeta, y las misiones abiertas orientan el siguiente token hacia batallas que las hacen avanzar."
+          "content": "Indica cuántas misiones has completado en la ejecución actual (se completan en orden) y cuántas planeas completar, además de los paquetes que el juego no informa. Las ejecuciones futuras asumen todas las misiones gratuitas. Las misiones abiertas dirigen la siguiente ficha a batallas que las hacen avanzar; edita todas las ejecuciones desde la previsión en Plan."
         },
         "tokenPlan": {
           "title": "Plan de fichas",
@@ -677,13 +693,18 @@
       "nothingLeft": "A tus equipos no les queda nada por superar · quedan {{points}} puntos en {{lane}}",
       "missions": {
         "title": "Para misiones",
-        "progresses": "Avanza:",
+        "progresses": "Misiones que hace avanzar",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} puntos ({{difference}})"
+        "points": "+{{points}} puntos ({{difference}})",
+        "button_one": "Hace avanzar {{count}} misión",
+        "button_other": "Hace avanzar {{count}} misiones",
+        "uncounted": "cuenta",
+        "finishes": "completada"
       },
       "upNext": "A continuación",
       "viewPlan_one": "Ver la {{count}} ficha planificada",
-      "viewPlan_other": "Ver las {{count}} fichas planificadas"
+      "viewPlan_other": "Ver las {{count}} fichas planificadas",
+      "team": "Ver las unidades de {{team}}"
     },
     "plan": {
       "title": "Plan de fichas",
@@ -760,7 +781,12 @@
       "ohSoClose": "Oh So Close: {{shards}} fragmentos por {{blackstone}} de piedra negra",
       "leftover_one": "{{count}} ficha sin nada que jugar: añade un equipo o sube una profundidad para usarla",
       "leftover_other": "{{count}} fichas sin nada que jugar: añade un equipo o sube una profundidad para usarlas",
-      "editInputs": "Editar datos"
+      "summary": {
+        "tokens": "Fichas usadas del suministro de la ejecución",
+        "points": "Puntos al final de la ejecución",
+        "chests": "Cofres obtenidos",
+        "shards": "Fragmentos al final de la ejecución"
+      }
     }
   },
   "masterTable": {
@@ -1088,9 +1114,7 @@
       "nothing": "Nada que cambiar",
       "removeTeam": "Quitar «{{name}}» de {{lane}}",
       "updateTeam": "Actualizar «{{name}}» en {{lane}}",
-      "createTeam": "Crear «{{name}}» en {{lane}}",
-      "paidOn": "Mostrar opciones de pago: activado",
-      "paidOff": "Mostrar opciones de pago: desactivado"
+      "createTeam": "Crear «{{name}}» en {{lane}}"
     },
     "toast": {
       "created": "Plan creado: {{goals}}, {{teams}}",
@@ -1126,5 +1150,11 @@
     "window": "{{start}} – {{end}}",
     "guessed": "quizá ~{{date}}",
     "unknown": "fecha desconocida"
+  },
+  "settings": {
+    "button": "Ajustes de eventos legendarios",
+    "title": "Ajustes de eventos legendarios",
+    "description": "Se aplican al plan de cada evento legendario y se guardan en tu cuenta.",
+    "showPaidOptionsHint": "Activado: planifica con lo que pagas: misiones premium, el paquete de 300 de moneda y los fragmentos Oh So Close. Desactivado: solo recompensas gratuitas."
   }
 }

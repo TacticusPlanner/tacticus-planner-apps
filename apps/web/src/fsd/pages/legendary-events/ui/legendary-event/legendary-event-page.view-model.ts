@@ -48,7 +48,7 @@ import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamEditorLauncher } from "./teams/team-editor-launcher"
 import type { TeamsViewModel } from "./teams/teams-section"
 import type { LaneSelection } from "./use-lane-selection"
-import type { BattleInfoTarget } from "./battles/battle-info-dialog"
+import type { BattleInfoTarget } from "./battles/battle-info-target"
 
 /** When the next token arrives: at `targetMs`, or already due (the timer ran out since the sync). */
 type NextTokenViewModel =
