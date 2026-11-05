@@ -139,17 +139,22 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const runs = useEventRuns(event, syncedEntry, roster)
   const plan = useLegendaryEventPlan({ eventId, run: runs.run })
   // Show paid options is an account preference: it replaces the plan's own (legacy) copy everywhere
-  // the plan feeds a figure.
-  const { showPaidOptions } = useShowPaidOptions()
+  // the plan feeds a figure. Until the account's value has loaded (or when its read failed) the
+  // plan's own copy stands, so the defaults never override it.
+  const paid = useShowPaidOptions()
+  const accountPaid =
+    paid.loading || paid.failed ? undefined : paid.showPaidOptions
   const paidPlanQuery = useMemo(
     () =>
-      plan.query.data && plan.query.data.showPaidOptions !== showPaidOptions
+      plan.query.data &&
+      accountPaid !== undefined &&
+      plan.query.data.showPaidOptions !== accountPaid
         ? {
             ...plan.query,
-            data: { ...plan.query.data, showPaidOptions },
+            data: { ...plan.query.data, showPaidOptions: accountPaid },
           }
         : plan.query,
-    [plan.query, showPaidOptions]
+    [plan.query, accountPaid]
   )
   const annotations = useAnnotations(eventId)
   const teamEditor = useTeamEditorLauncher()
