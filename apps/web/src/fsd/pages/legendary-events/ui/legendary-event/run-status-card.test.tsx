@@ -148,6 +148,8 @@ const runInputs = (
   completedPremiumMissions: [],
   updatedAt: "2026-10-10T00:00:00Z",
 })
+/** Every run stored with no missions planned (a run with no inputs plans its free missions). */
+const NO_MISSIONS = [runInputs(1, 0), runInputs(2, 0), runInputs(3, 0)]
 const utharPlan: LegendaryEventPlan = {
   eventId: "votanUthar",
   revision: 3,
@@ -455,7 +457,7 @@ describe("RunStatusCard", () => {
             currentShards: 25,
             currentEventRun: null,
           }),
-          { ...utharPlan, runs: [] },
+          { ...utharPlan, runs: NO_MISSIONS },
           {
             unit: {
               unitId: "votanUthar",
@@ -484,7 +486,7 @@ describe("RunStatusCard", () => {
       renderOutlook(
         outlookFor(
           undefined,
-          { ...utharPlan, eventId: "lostaBile", runs: [] },
+          { ...utharPlan, eventId: "lostaBile", runs: NO_MISSIONS },
           {
             resolution: {
               kind: "known",
@@ -566,7 +568,7 @@ describe("RunStatusCard", () => {
       renderOutlook(
         outlookFor(synced({ currentPoints: 26_900, currentCurrency: 0 }), {
           ...utharPlan,
-          runs: [],
+          runs: NO_MISSIONS,
         })
       )
       expect(
@@ -614,7 +616,7 @@ describe("RunStatusCard", () => {
       expect(screen.getByTestId("reward-outlook-loading")).toBeInTheDocument()
     })
 
-    it("runs without inputs when signed out", () => {
+    it("plans every run's free missions when signed out", () => {
       const outlook = buildRewardOutlookViewModel({
         ...OUTLOOK_DEFAULTS,
         rewards: utharEvent.rewards,
@@ -624,7 +626,7 @@ describe("RunStatusCard", () => {
       })
       expect(outlook).toMatchObject({
         kind: "ready",
-        projection: { futureRuns: [{ run: 3, missionCurrency: 0 }] },
+        projection: { futureRuns: [{ run: 3, missionCurrency: 250 }] },
       })
     })
 

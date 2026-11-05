@@ -129,6 +129,22 @@ describe("EventBoard", () => {
     ).toHaveTextContent("Alpha · No Xenos")
   })
 
+  it("keeps the sticky heading row as wide as the columns so it scrolls sideways with them", () => {
+    renderBoard(ready, undefined, ["alpha"])
+    const table = within(lane("alpha")).getByTestId("event-board-table")
+    const content = within(table).getByTestId("event-board-table-content")
+    // The scroll box holds one content block sized to the columns (w-max, at least the box), and
+    // the sticky heading row and the columns both sit inside it.
+    expect(content.parentElement).toBe(table)
+    expect(table).toHaveClass("overflow-auto")
+    expect(content).toHaveClass("w-max", "min-w-full")
+    const heading = within(content).getByRole("group", { name: "Objectives" })
+    expect(heading).toHaveClass("sticky")
+    expect(content).toContainElement(
+      within(content).getAllByTestId("event-board-column")[0]!
+    )
+  })
+
   it("renders only the shown lanes", () => {
     renderBoard(ready, undefined, ["beta"])
     expect(

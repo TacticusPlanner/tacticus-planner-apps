@@ -27,7 +27,19 @@ The Plan tab SHALL render, after the Upgrade impact sections, one **Battles** se
 
 ### Requirement: A token's battle opens the battle info dialog
 
-On the event page, each Token plan row's battle, the Next token card's battle and each of its tokens up next SHALL be a button (accessible name "Battle info: <lane> battle <N>") that opens a **battle info** dialog titled "<lane> · Battle <N>", showing that battle's header, map and waves as the Battles section does, from the same read: a skeleton while it loads, the error with Retry when it failed, and the empty-state line when the lane has no battle data. It SHALL be a centred dialog at or above 768px and a bottom sheet below. Elsewhere (the plan wizard) a token's battle stays plain text.
+On the event page, each Token plan row's battle, the Next token card's battle and each of its tokens up next SHALL be a button (accessible name "Battle info: <lane> battle <N>") that opens a **battle info** dialog titled "<lane> · Battle <N>", showing that battle's header, map and waves as the Battles section does, from the same read: a skeleton while it loads, the error with Retry when it failed, and the empty-state line when the lane has no battle data. It SHALL be a centred dialog at or above 768px and a bottom sheet below. Its footer SHALL carry **Previous** and **Next** buttons that show the lane's battle before or after (disabled at the lane's first and last battle) on both forms, and on mobile a **Close** button between them. The Teams tab's battle count of a lane ("18 battles") SHALL open the same dialog at the lane's first battle that isn't fully cleared (the last battle when all are). Elsewhere (the plan wizard) a token's battle stays plain text.
+
+#### Scenario: Stepping through battles
+
+- **GIVEN** the dialog shows Alpha battle 1
+- **WHEN** the user presses Next
+- **THEN** it shows Alpha battle 2, and Previous is enabled
+
+#### Scenario: Battle count on Teams
+
+- **GIVEN** Alpha battles 1–4 are fully cleared and battle 5 is not
+- **WHEN** the user activates "18 battles" in Alpha's column
+- **THEN** the dialog opens on "Alpha · Battle 5"
 
 #### Scenario: Next token's battle
 

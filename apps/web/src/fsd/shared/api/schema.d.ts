@@ -4421,7 +4421,7 @@ export interface components {
       xpBookRarity: components["schemas"]["XpBookRarity"]
       /** Format: int64 */
       revision: number
-      watchAds?: null | boolean
+      preferences?: null | components["schemas"]["UserPreferenceArray"]
     }
     UpgradeMaterialTargetRequest: {
       upgradeId: string
@@ -4460,11 +4460,15 @@ export interface components {
     UserJotTokenResponse: {
       token: string
     }
+    /** @enum {string} */
+    UserPreference:
+      "LegendaryEventShowPaidOptions" | "LegendaryEventSkipDailyAds"
+    UserPreferenceArray: components["schemas"]["UserPreference"][]
     UserSettingsResponse: {
       /** Format: int32 */
       dailyEnergy: number
       xpBookRarity: components["schemas"]["XpBookRarity"]
-      watchAds: boolean
+      preferences: components["schemas"]["UserPreferenceArray"]
       /** Format: int64 */
       revision: number
     }

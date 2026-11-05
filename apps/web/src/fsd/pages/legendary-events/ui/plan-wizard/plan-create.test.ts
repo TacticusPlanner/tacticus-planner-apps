@@ -109,10 +109,9 @@ describe("planWrites", () => {
     expect(writes.goals.map((entry) => entry.unitId)).toEqual(["calgar"])
     expect(writes.lanes).toEqual([])
     expect(writes.runs).toEqual([])
-    expect(writes.showPaidOptions).toBeNull()
   })
 
-  it("saves edited runs and a changed Show paid options", () => {
+  it("saves edited runs (Show paid options is an account setting, never a plan write)", () => {
     const writes = planWrites({
       plan: PLAN,
       teams: [draftTeam({ key: "stored", storedId: "stored" })],
@@ -133,6 +132,6 @@ describe("planWrites", () => {
     expect(writes.runs).toEqual([
       { run: 3, values: { ...EMPTY_RUN_INPUT_VALUES, regularMissions: 5 } },
     ])
-    expect(writes.showPaidOptions).toBe(true)
+    expect(writes).not.toHaveProperty("showPaidOptions")
   })
 })

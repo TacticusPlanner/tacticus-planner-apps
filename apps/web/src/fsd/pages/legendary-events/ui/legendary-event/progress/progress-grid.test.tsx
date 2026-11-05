@@ -77,8 +77,11 @@ const lane = (laneId: LegendaryEventLaneId) =>
   screen
     .getAllByTestId("progress-lane")
     .find((element) => element.dataset.lane === laneId)!
+/** A lane's rows in battle order (cleared battles render below the open ones). */
 const rowsIn = (laneId: LegendaryEventLaneId) =>
-  within(lane(laneId)).getAllByTestId("progress-row")
+  within(lane(laneId))
+    .getAllByTestId("progress-row")
+    .toSorted((a, b) => Number(a.dataset.battle) - Number(b.dataset.battle))
 const clearedFlags = (row: HTMLElement) =>
   within(row)
     .getAllByTestId("progress-cell")
@@ -151,6 +154,31 @@ describe("ProgressSection", () => {
     )
   })
 
+  it("moves the fully cleared battles below a divider, struck through", () => {
+    renderProgress(entry)
+    const order = within(lane("alpha"))
+      .getAllByTestId("progress-row")
+      .map((row) => Number(row.dataset.battle))
+    // Battles 4, 8 and 9 are complete.
+    expect(order.slice(-3)).toEqual([4, 8, 9])
+    expect(
+      within(lane("alpha")).getByTestId("progress-cleared-divider")
+    ).toHaveTextContent("3")
+    expect(rowsIn("alpha")[3]).toHaveClass("line-through")
+    expect(rowsIn("alpha")[0]).not.toHaveClass("line-through")
+  })
+
+  it("lists the cleared battles last below the divider on mobile", () => {
+    renderProgress(entry, "rows")
+    const order = within(lane("alpha"))
+      .getAllByTestId("progress-row")
+      .map((row) => Number(row.dataset.battle))
+    expect(order.slice(-3)).toEqual([4, 8, 9])
+    expect(
+      within(lane("alpha")).getByTestId("progress-cleared-divider")
+    ).toHaveTextContent("3")
+  })
+
   it("leaves battles beyond the synced encounters uncleared at 0 points", () => {
     renderProgress(entry)
     const rows = rowsIn("alpha")
@@ -219,9 +247,7 @@ describe("ProgressSection", () => {
     expect(header).toHaveClass("sticky")
     expect(screen.getAllByTestId("progress-row")).toHaveLength(18)
     expect(
-      within(screen.getAllByTestId("progress-row")[0]!).getByTestId(
-        "progress-row-points"
-      )
+      within(rowsIn("alpha")[0]!).getByTestId("progress-row-points")
     ).toHaveTextContent("269 / 471")
   })
 })
@@ -440,10 +466,31 @@ describe("ProgressSection marks", () => {
     ).toBeNull()
   })
 
+  it("shows saved marks read-only on mobile until Edit marks is on", async () => {
+    const user = userEvent.setup()
+    renderMarked(markedEntry, {
+      layout: "rows",
+      initial: [annotation(6, 3, "stopHere")],
+    })
+    const flying = () =>
+      within(rowsIn("alpha")[6]!)
+        .getAllByTestId("progress-cell")
+        .find((cell) => cell.dataset.mark === "stopHere")!
+
+    expect(flying()).toHaveTextContent("Flying: not cleared, marked Stop here")
+    expect(flying().tagName).toBe("SPAN")
+
+    await user.click(screen.getByTestId("progress-edit-toggle"))
+    expect(flying().tagName).toBe("BUTTON")
+  })
+
   it("makes the battle number of an incomplete mobile row its 40px row action", async () => {
     const user = userEvent.setup()
     const writes = renderMarked(markedEntry, { layout: "rows" })
-    const rows = screen.getAllByTestId("progress-row")
+    // Marks stay off on mobile until Edit marks is on, so scrolling past the rows edits nothing.
+    expect(screen.queryByRole("button", { name: "Mark battle 9" })).toBeNull()
+    await user.click(screen.getByTestId("progress-edit-toggle"))
+    const rows = rowsIn("alpha")
     const action = within(rows[8]!).getByRole("button", {
       name: "Mark battle 9",
     })

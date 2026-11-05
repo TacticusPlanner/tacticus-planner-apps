@@ -40,15 +40,18 @@ import {
 import { runTokenSupply, type RunSupply } from "./token-supply"
 import {
   nextTokenMissions,
+  tokenMissionProgress,
+  type MissionProgress,
   type NextTokenMissions,
   type TokenMissionsInput,
 } from "./token-missions"
-import { splitPlanByRun, type PlanByRun } from "./token-runs"
 import {
-  missionOrder,
-  type MissionOrder,
-  type TokenMissionStep,
-} from "./mission-order"
+  gainsFromProgress,
+  gainsFromSteps,
+  type MissionGain,
+} from "./mission-gains"
+import { splitPlanByRun, type PlanByRun } from "./token-runs"
+import { missionOrder, type MissionOrder } from "./mission-order"
 import type { TokenMarker } from "./run-forecast"
 
 /** A lane's team estimator, as the page builds it from the Stage 5 clear estimates. */
@@ -141,7 +144,13 @@ export interface TokenPlanReady {
   upcoming: { run: LegendaryEventRun | null } | null
   /** The Missions order of the plan (spec: Missions order) with its forecast markers; null without
    *  a missions source or a token supply. */
-  missionOrder: (MissionOrder & { markers: TokenMarker[] }) | null
+  missionOrder:
+    | (MissionOrder & {
+        markers: TokenMarker[]
+        /** The current missions the order's first playable token progresses (what it adds now). */
+        nextProgress: MissionProgress[]
+      })
+    | null
   /** Tokens left over across runs while the plan is shorter than the supply, with the first lane
    *  that still has points left; null when every token has a battle to play. */
   leftover: { tokens: number; laneId: LegendaryEventLaneId | null } | null
@@ -342,7 +351,22 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     }),
     forecast,
     byRun,
-    missionOrder: ordered ? { ...ordered, markers: orderedMarkers } : null,
+    missionOrder: ordered
+      ? {
+          ...ordered,
+          markers: orderedMarkers,
+          nextProgress: source
+            ? tokenMissionProgress(
+                {
+                  open: missionsOf(missionRun),
+                  membersOf,
+                  enemiesOf: source.enemiesOf,
+                },
+                ordered.tokens[firstPlayableIndex(ordered.tokens)]!
+              )
+            : [],
+        }
+      : null,
     upcoming:
       lifecycle.state !== "upcoming" ? null : { run: resolution.nextRun },
     leftover:
@@ -442,13 +466,22 @@ export function upNextTokens<T>(
 export function missionsNextToken(view: Pick<TokenPlanReady, "missionOrder">): {
   token: PlannedToken
   index: number
-  steps: readonly TokenMissionStep[]
+  gains: MissionGain[]
 } | null {
   const order = view.missionOrder
   if (!order || order.tokens.length === 0) return null
-  const found = order.tokens.findIndex((_, index) =>
-    playableNext(order.tokens, index)
-  )
-  const index = found === -1 ? 0 : found
-  return { token: order.tokens[index]!, index, steps: order.steps[index] ?? [] }
+  const index = firstPlayableIndex(order.tokens)
+  // The order's steps replay every token before this one; once earlier ones are skipped, only the
+  // current missions say what this play adds.
+  const gains =
+    index === 0
+      ? gainsFromSteps(order.steps[0] ?? [])
+      : gainsFromProgress(order.nextProgress)
+  return { token: order.tokens[index]!, index, gains }
+}
+
+/** The first token that could be played next, else the first. */
+function firstPlayableIndex(tokens: readonly PlannedToken[]): number {
+  const found = tokens.findIndex((_, index) => playableNext(tokens, index))
+  return found === -1 ? 0 : found
 }

@@ -40,12 +40,14 @@
     "noEntry": "Für dieses Event gibt es noch keinen synchronisierten Fortschritt.",
     "syncedUnavailable": "Synchronisierte Daten nicht verfügbar",
     "syncedAgo": "Synchronisiert {{when}}",
-    "neverSynced": "Noch nicht synchronisiert"
+    "neverSynced": "Noch nicht synchronisiert",
+    "goToCurrentRun": "Zum aktuellen Lauf",
+    "goToNextRun": "Zum nächsten Lauf"
   },
   "runInputs": {
     "button": "Eingaben",
     "title": "Eingaben pro Durchlauf",
-    "description": "Missionen und Pakete, die das Spiel nicht meldet. Sie fließen in die Belohnungsaussicht der Durchlaufstatus-Karte ein.",
+    "description": "Missionen und Pakete, die das Spiel für den aktuellen Lauf nicht meldet. Missionen werden der Reihe nach abgeschlossen, also gib an, wie viele erledigt sind. Sie fließen in die Belohnungsprognose der Karte Laufstatus ein.",
     "run": "Durchlauf {{run}}",
     "phase": {
       "done": "Erledigt",
@@ -69,7 +71,15 @@
     },
     "ticked": "{{done}} von {{total}} erledigt",
     "planToComplete": "{{field}} zu erledigen",
-    "planToCompleteShort": "Geplant zu erledigen"
+    "planToCompleteShort": "Geplant zu erledigen",
+    "doneCount": "{{field}} erledigt",
+    "doneShort": "Erledigt",
+    "now": "Jetzt",
+    "missionState": {
+      "done": "Mission {{number}}, erledigt: {{mission}}",
+      "current": "Mission {{number}}, aktuell: {{mission}}",
+      "later": "Mission {{number}}, später: {{mission}}"
+    }
   },
   "notes": {
     "title": "Notizen",
@@ -138,7 +148,10 @@
   },
   "battleInfo": {
     "open": "Kampfinfo: {{lane}} Kampf {{battle}}",
-    "title": "{{lane}} · Kampf {{battle}}"
+    "title": "{{lane}} · Kampf {{battle}}",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "close": "Schließen"
   },
   "eventBoard": {
     "title": "Eventübersicht",
@@ -190,8 +203,8 @@
         "out": "Außer Reichweite"
       }
     },
-    "viewBattles_one": "{{lane}}: seinen {{count}} Kampf im Plan ansehen",
-    "viewBattles_other": "{{lane}}: seine {{count}} Kämpfe im Plan ansehen"
+    "viewBattles_one": "{{lane}}: Kampfinfo für seinen {{count}} Kampf öffnen",
+    "viewBattles_other": "{{lane}}: Kampfinfo für seine {{count}} Kämpfe öffnen"
   },
   "leaderboard": {
     "title": "Eignungsrangliste",
@@ -247,7 +260,10 @@
     "howPoints": {
       "title": "So funktionieren Punkte",
       "body": "Die erzielten Punkte eines Kampfes sind seine Kill-Punkte plus sein Highscore, dazu der Bonus für „Alle besiegen“ und die Punkte jedes Ziels, das du darin erfüllt hast. Das Maximum eines Kampfes addiert die vollen Kill-Punkte, den vollen Highscore, den Bonus für „Alle besiegen“ und alle Zielpunkte; das Lane-Maximum addiert alle Kämpfe."
-    }
+    },
+    "editMarks": "Markierungen bearbeiten",
+    "clearedDivider_one": "{{count}} Kampf vollständig abgeschlossen",
+    "clearedDivider_other": "{{count}} Kämpfe vollständig abgeschlossen"
   },
   "battles": {
     "title": "Kämpfe",
@@ -455,7 +471,7 @@
         },
         "runInputs": {
           "title": "Eingaben pro Durchlauf",
-          "content": "Hake in jedem Durchlauf die erledigten Missionen ab und lege fest, wie viele du erledigen willst, dazu die Pakete, die das Spiel nicht meldet. Sie fließen in die Belohnungsaussicht dieser Karte ein, und offene Missionen lenken den nächsten Token auf Kämpfe, die sie voranbringen."
+          "content": "Gib an, wie viele Missionen du im aktuellen Lauf erledigt hast (sie werden der Reihe nach abgeschlossen) und wie viele du abschließen willst, dazu die Pakete, die das Spiel nicht meldet. Künftige Läufe gehen von allen kostenlosen Missionen aus. Offene Missionen lenken den nächsten Token auf Kämpfe, die sie voranbringen; alle Läufe bearbeitest du in der Laufprognose unter Plan."
         },
         "tokenPlan": {
           "title": "Token-Plan",
@@ -677,13 +693,18 @@
       "nothingLeft": "Deine Teams können nichts mehr abschließen · {{points}} Punkte offen auf {{lane}}",
       "missions": {
         "title": "Für Missionen",
-        "progresses": "Bringt voran:",
+        "progresses": "Missionen, die er voranbringt",
         "premium": "{{mission}} (Premium)",
-        "points": "+{{points}} Punkte ({{difference}})"
+        "points": "+{{points}} Punkte ({{difference}})",
+        "button_one": "Bringt {{count}} Mission voran",
+        "button_other": "Bringt {{count}} Missionen voran",
+        "uncounted": "zählt",
+        "finishes": "erledigt"
       },
       "upNext": "Danach",
       "viewPlan_one": "Den {{count}} geplanten Token ansehen",
-      "viewPlan_other": "Alle {{count}} geplanten Tokens ansehen"
+      "viewPlan_other": "Alle {{count}} geplanten Tokens ansehen",
+      "team": "Einheiten von {{team}} anzeigen"
     },
     "plan": {
       "title": "Token-Plan",
@@ -760,7 +781,12 @@
       "ohSoClose": "Oh So Close: {{shards}} Splitter für {{blackstone}} Schwarzstein",
       "leftover_one": "{{count}} Token ohne Kampf: Füge ein Team hinzu oder erhöhe eine Tiefe, um ihn zu nutzen",
       "leftover_other": "{{count}} Tokens ohne Kampf: Füge ein Team hinzu oder erhöhe eine Tiefe, um sie zu nutzen",
-      "editInputs": "Eingaben bearbeiten"
+      "summary": {
+        "tokens": "Verbrauchte Token vom Vorrat des Laufs",
+        "points": "Punkte am Ende des Laufs",
+        "chests": "Erhaltene Truhen",
+        "shards": "Splitter am Ende des Laufs"
+      }
     }
   },
   "masterTable": {
@@ -1088,9 +1114,7 @@
       "nothing": "Nichts zu ändern",
       "removeTeam": "„{{name}}“ aus {{lane}} entfernen",
       "updateTeam": "„{{name}}“ in {{lane}} aktualisieren",
-      "createTeam": "„{{name}}“ in {{lane}} erstellen",
-      "paidOn": "Kostenpflichtige Optionen anzeigen: an",
-      "paidOff": "Kostenpflichtige Optionen anzeigen: aus"
+      "createTeam": "„{{name}}“ in {{lane}} erstellen"
     },
     "toast": {
       "created": "Plan erstellt: {{goals}}, {{teams}}",
@@ -1126,5 +1150,11 @@
     "window": "{{start}} – {{end}}",
     "guessed": "vielleicht ~{{date}}",
     "unknown": "Termin unbekannt"
+  },
+  "settings": {
+    "button": "Einstellungen für Legendäre Events",
+    "title": "Einstellungen für Legendäre Events",
+    "description": "Diese gelten für den Plan jedes Legendären Events und werden in deinem Konto gespeichert.",
+    "showPaidOptionsHint": "An: mit Bezahlinhalten planen – Premium-Missionen, dem 300-Währungs-Paket und Oh-So-Close-Splittern. Aus: nur mit kostenlosen Belohnungen planen."
   }
 }

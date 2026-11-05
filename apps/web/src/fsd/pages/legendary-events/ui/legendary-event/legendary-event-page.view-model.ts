@@ -48,7 +48,7 @@ import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamEditorLauncher } from "./teams/team-editor-launcher"
 import type { TeamsViewModel } from "./teams/teams-section"
 import type { LaneSelection } from "./use-lane-selection"
-import type { BattleInfoTarget } from "./battles/battle-info-dialog"
+import type { BattleInfoTarget } from "./battles/battle-info-target"
 
 /** When the next token arrives: at `targetMs`, or already due (the timer ran out since the sync). */
 type NextTokenViewModel =
@@ -130,6 +130,12 @@ export interface LegendaryEventPageViewModel {
     onChange: (lane: LegendaryEventLaneId) => void
   }
   leaderboard: LeaderboardViewModel
+  /** The objective chip selection across every lane, for the Overview's all-lanes leaderboard
+   *  (`leaderboard` keeps only the shown lanes' chips). */
+  allLanesObjectives: {
+    selected: ReadonlySet<string>
+    onChange: (keys: ReadonlySet<string>) => void
+  }
   progressGrid: ProgressGridViewModel
   /** Maybe clear / Stop here marks on the progress grid's not-cleared cells. */
   marks: ProgressMarksViewModel

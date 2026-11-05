@@ -11,7 +11,18 @@ import { act, fireEvent, render, screen } from "@/test/render"
 
 import { RunMissionsQuickInput } from "./run-missions-quick-input"
 
-const api = vi.hoisted(() => ({ plan: undefined as unknown, put: vi.fn() }))
+const api = vi.hoisted(() => ({
+  plan: undefined as unknown,
+  settings: undefined as unknown,
+  put: vi.fn(),
+}))
+
+const settings = (preferences: string[] = []) => ({
+  dailyEnergy: 288,
+  xpBookRarity: "Legendary",
+  preferences,
+  revision: 1,
+})
 
 vi.mock("@azure/msal-react", () => ({ useIsAuthenticated: () => true }))
 vi.mock("@/shared/api", async (importOriginal) => {
@@ -21,7 +32,9 @@ vi.mock("@/shared/api", async (importOriginal) => {
     apiClient: fakeApiClient((call) =>
       call.method === "PUT"
         ? api.put({ path: call.path, params: call.params, body: call.body })
-        : api.plan
+        : call.path === "/api/v1/settings"
+          ? api.settings
+          : api.plan
     ),
   }
 })
@@ -62,20 +75,20 @@ describe("RunMissionsQuickInput", () => {
   })
   beforeEach(() => {
     api.plan = plan()
+    api.settings = settings()
     api.put.mockReset()
   })
 
-  it("ticks the run's regular missions and saves them like the drawer", async () => {
+  it("sets the run's done regular missions and saves them like the drawer", async () => {
     api.put.mockResolvedValue(plan({ revision: 3 }))
     render(<RunMissionsQuickInput event={utharEvent} run={2} touch={false} />, {
       wrapper: i18nWrapper(i18n),
     })
-    const tick = await screen.findByRole("checkbox", {
-      name: "Defeat 30 Necrons",
-    })
+    const rows = await screen.findAllByTestId("quick-missions-regular-mission")
     expect(screen.queryByTestId("quick-missions-premium")).toBeNull()
 
-    fireEvent.click(tick)
+    // Missions finish in order: picking the second marks the first two done.
+    fireEvent.click(rows[1]!.firstElementChild!)
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 700))
     })
@@ -83,14 +96,14 @@ describe("RunMissionsQuickInput", () => {
       path: "/api/v1/legendary-event-plans/{eventId}/runs/{run}",
       params: { path: { eventId: "votanUthar", run: "2" } },
       body: expect.objectContaining({
-        regularMissions: 1,
-        completedRegularMissions: [1],
+        regularMissions: 2,
+        completedRegularMissions: [0, 1],
       }),
     })
   })
 
   it("adds the premium missions with Show paid options on", async () => {
-    api.plan = plan({ showPaidOptions: true })
+    api.settings = settings(["LegendaryEventShowPaidOptions"])
     render(<RunMissionsQuickInput event={utharEvent} run={2} touch={false} />, {
       wrapper: i18nWrapper(i18n),
     })

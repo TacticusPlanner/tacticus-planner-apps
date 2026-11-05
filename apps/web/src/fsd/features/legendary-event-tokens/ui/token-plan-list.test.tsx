@@ -288,12 +288,14 @@ describe("TokenPlanList on another page", () => {
         missionOrder: {
           tokens,
           markers: [],
+          nextProgress: [],
           steps: tokens.map((_, index) =>
             index === 0
               ? [
                   {
                     ref: admech,
                     total: 75,
+                    gained: 75,
                     needed: 75,
                     completes: true,
                     estimate: false,

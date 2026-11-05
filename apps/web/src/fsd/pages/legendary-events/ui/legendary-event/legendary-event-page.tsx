@@ -20,19 +20,23 @@ import {
 import {
   useAnnotations,
   useLegendaryEventPlan,
+  useShowPaidOptions,
 } from "@/features/legendary-event-plan"
 import {
   type MarkTokenHandler,
   useTokenMissionsSource,
   useTokenPlan,
 } from "@/features/legendary-event-tokens"
-import { usePlanningSettings } from "@/entities/planning-setting"
+import {
+  usePlanningSettings,
+  watchesDailyAds,
+} from "@/entities/planning-setting"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
-import type { BattleInfoTarget } from "./battles/battle-info-dialog"
+import type { BattleInfoTarget } from "./battles/battle-info-target"
 import { useBattlesSection } from "./battles/use-battles-section"
 import { LegendaryEventPageView } from "./legendary-event-page-view"
 import {
@@ -134,6 +138,24 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const eventData = event.status === "ready" ? event.data : undefined
   const runs = useEventRuns(event, syncedEntry, roster)
   const plan = useLegendaryEventPlan({ eventId, run: runs.run })
+  // Show paid options is an account preference: it replaces the plan's own (legacy) copy everywhere
+  // the plan feeds a figure. Until the account's value has loaded (or when its read failed) the
+  // plan's own copy stands, so the defaults never override it.
+  const paid = useShowPaidOptions()
+  const accountPaid =
+    paid.loading || paid.failed ? undefined : paid.showPaidOptions
+  const paidPlanQuery = useMemo(
+    () =>
+      plan.query.data &&
+      accountPaid !== undefined &&
+      plan.query.data.showPaidOptions !== accountPaid
+        ? {
+            ...plan.query,
+            data: { ...plan.query.data, showPaidOptions: accountPaid },
+          }
+        : plan.query,
+    [plan.query, accountPaid]
+  )
   const annotations = useAnnotations(eventId)
   const teamEditor = useTeamEditorLauncher()
   const marksByLane = useMemo(
@@ -272,11 +294,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     nowMs,
     progress: progressValue,
     progressObservedAtMs,
-    watchAds: accountSettings.watchAds,
+    watchAds: watchesDailyAds(accountSettings),
     plan: {
       enabled: plan.enabled,
-      status: plan.query.status,
-      data: plan.query.data,
+      status: paidPlanQuery.status,
+      data: paidPlanQuery.data,
     },
     resolution: runs.resolution,
     eventUnit: runs.ownedEventUnit,
@@ -309,7 +331,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         progress: progressValue,
         unit: runs.eventUnit,
         resolution: runs.resolution,
-        plan: plan.query,
+        plan: paidPlanQuery,
         planEnabled: plan.enabled,
       }),
     [
@@ -317,7 +339,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       progressValue,
       runs.eventUnit,
       runs.resolution,
-      plan.query,
+      paidPlanQuery,
       plan.enabled,
     ]
   )
@@ -424,6 +446,10 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           badgeLines: goalLines,
           onCreateGoal: createGoalFromRow,
         },
+      },
+      allLanesObjectives: {
+        selected: selectedObjectives,
+        onChange: setSelectedObjectives,
       },
       progressGrid,
       marks: {

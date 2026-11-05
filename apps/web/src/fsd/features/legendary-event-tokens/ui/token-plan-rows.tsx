@@ -5,6 +5,7 @@ import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 import type { LegendaryEvent } from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
 
+import { gainsFromSteps } from "../lib/mission-gains"
 import type { TokenMissionStep } from "../lib/mission-order"
 import type { TokenMarker } from "../lib/run-forecast"
 import { groupTokensByTeam } from "../lib/token-groups"
@@ -13,6 +14,7 @@ import type { RunTokenSection } from "../lib/token-runs"
 import { BattleInfoButton } from "./battle-info"
 import { TokenMissionSteps } from "./mission-order-view"
 import { TokenObjectives } from "./token-objectives"
+import { TokenMissionsPopover } from "./token-popovers"
 
 type ReadyView = Extract<TokenPlanView, { kind: "ready" }>
 type PlannedTokenRow = ReadyView["plan"]["tokens"][number]
@@ -135,6 +137,7 @@ export function TokenRow({
   marker,
   steps,
   isMobile,
+  missionsPopover = false,
 }: {
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
   token: PlannedTokenRow
@@ -142,6 +145,8 @@ export function TokenRow({
   marker: TokenMarker | undefined
   steps: readonly TokenMissionStep[] | undefined
   isMobile: boolean
+  /** Show the missions it moves behind an icon button (the Next token card's Up next). */
+  missionsPopover?: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -183,6 +188,13 @@ export function TokenRow({
       {t("tokenPlan.plan.maybe")}
     </span>
   ) : null
+  const missionsButton =
+    missionsPopover && steps ? (
+      <TokenMissionsPopover
+        gains={gainsFromSteps(steps)}
+        testId={`token-plan-row-missions-${index}`}
+      />
+    ) : null
 
   return (
     <li
@@ -206,6 +218,7 @@ export function TokenRow({
             <span className="flex min-w-0 items-center gap-2">
               {objectives}
               {maybe}
+              {missionsButton}
             </span>
             {running}
           </div>
@@ -220,6 +233,7 @@ export function TokenRow({
           <span className="flex min-w-0 items-center gap-2">
             {objectives}
             {maybe}
+            {missionsButton}
           </span>
           <span className="text-right">{points}</span>
           <span className="text-right">{running}</span>
@@ -245,7 +259,7 @@ export function TokenRow({
           ))}
         </ul>
       ) : null}
-      {steps ? <TokenMissionSteps steps={steps} /> : null}
+      {steps && !missionsPopover ? <TokenMissionSteps steps={steps} /> : null}
     </li>
   )
 }

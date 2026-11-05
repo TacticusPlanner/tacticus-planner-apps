@@ -226,7 +226,7 @@ export function useAnalyticsActions() {
           })
           break
         case "legendary_event_paid_options_toggled":
-          client.capture(event.type, { event_id: event.eventId, on: event.on })
+          client.capture(event.type, { on: event.on })
           break
         case "legendary_event_notes_saved":
           client.capture(event.type, {

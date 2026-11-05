@@ -257,10 +257,18 @@ function initialEconomy(source: ReadySource): PlanEconomy {
  */
 export function usePlanDraft(
   source: ReadySource,
-  initialTarget: AscensionStep | null
+  initialTarget: AscensionStep | null,
+  /** The account's live Show paid options; the draft follows it once it is known. */
+  showPaidOptions?: boolean
 ) {
   const { inputs } = source
   const [economy, setEconomy] = useState(() => initialEconomy(source))
+  if (
+    showPaidOptions !== undefined &&
+    showPaidOptions !== economy.showPaidOptions
+  ) {
+    setEconomy({ ...economy, showPaidOptions })
+  }
   const runs = useMemo(() => planRuns(inputs.resolution), [inputs.resolution])
   // The run the target is reached by (spec: targets are per run): the run in progress or the
   // next one until the user picks a later run.
@@ -606,10 +614,6 @@ export function usePlanDraft(
           ].sort((a, b) => a.run - b.run),
         }
       })
-      markDirty()
-    },
-    setShowPaidOptions: (on: boolean) => {
-      setEconomy((current) => ({ ...current, showPaidOptions: on }))
       markDirty()
     },
   }

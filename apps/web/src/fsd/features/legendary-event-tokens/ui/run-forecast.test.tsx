@@ -2,7 +2,7 @@ import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { fireEvent, render, screen } from "@/test/render"
+import { fireEvent, render, screen, within } from "@/test/render"
 
 import { buildTokenPlanView, type TokenPlanView } from "../lib/token-plan-view"
 import {
@@ -23,7 +23,7 @@ const onOpenTeams = vi.fn()
 function renderForecast(view: TokenPlanView, isMobile = false) {
   return render(
     <RunForecastSection
-      editInputs={<button type="button">Edit inputs</button>}
+      runInputs={(run) => <p data-testid="run-inputs-slot">{run.run}</p>}
       eventId="votanUthar"
       isMobile={isMobile}
       onOpenTeams={onOpenTeams}
@@ -73,9 +73,13 @@ describe("RunForecastSection", () => {
       })
     )
     expect(onOpenTeams).toHaveBeenCalledWith("alpha")
+    // Each run still to play shows its own inputs in its block; the finished run has none.
     expect(
-      screen.getByRole("button", { name: "Edit inputs" })
-    ).toBeInTheDocument()
+      screen.getAllByTestId("run-inputs-slot").map((slot) => slot.textContent)
+    ).toEqual(["2", "3"])
+    expect(
+      within(runs[1]!).getByTestId("run-forecast-summary")
+    ).toHaveTextContent("6/32")
     expect(capture).toHaveBeenCalledWith({
       type: "legendary_event_run_forecast_expanded",
       eventId: "votanUthar",
@@ -174,7 +178,6 @@ describe("RunForecastSection on another page", () => {
     render(
       <RunForecastSection
         defaultOpen
-        editInputs={null}
         eventId="votanUthar"
         isMobile={false}
         onOpenTeams={onOpenTeams}

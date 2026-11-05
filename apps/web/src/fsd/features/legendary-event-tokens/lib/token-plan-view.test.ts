@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import { mark } from "./token-plan.fixtures"
 import {
   buildTokenPlanView,
+  missionsNextToken,
   nextTokenCardState,
   type TokenPlanReady,
   upNextTokens,
@@ -340,5 +341,61 @@ describe("upNextTokens", () => {
 
   it("lists nothing for an empty plan", () => {
     expect(upNextTokens({ tokens: [] }, null)).toEqual([])
+  })
+})
+
+describe("missionsNextToken", () => {
+  const view = ready(buildTokenPlanView(workedViewInput()))
+  const first = { ...view.plan.tokens[0]!, maybe: false, playableNow: true }
+  // Another lane's battle, so nothing earlier in the order blocks it.
+  const second = {
+    ...first,
+    laneId: first.laneId === "alpha" ? ("beta" as const) : ("alpha" as const),
+  }
+  const ref = {
+    track: "regular" as const,
+    mission: {
+      index: 1,
+      kind: "defeatFaction",
+      count: 30,
+      faction: "Necrons",
+      alliance: null,
+      damageType: null,
+      trait: null,
+      text: "Defeat 30 Necrons",
+    },
+  }
+  const step = (gained: number) => ({
+    ref,
+    total: gained,
+    gained,
+    needed: 30,
+    completes: false,
+    estimate: false,
+  })
+  const order = (tokens: (typeof view.plan.tokens)[number][]) => ({
+    missionOrder: {
+      tokens,
+      markers: [],
+      runs: [],
+      steps: [[step(10)], [step(4)]],
+      nextProgress: [{ ref, amount: 12, estimate: false }],
+    },
+  })
+
+  it("reads the first token's gains from the order's steps", () => {
+    expect(missionsNextToken(order([first, second]))).toMatchObject({
+      index: 0,
+      gains: [{ ref, amount: 10, completes: false }],
+    })
+  })
+
+  it("reads a later token's gains from the current missions once earlier tokens are skipped", () => {
+    // The step after a skipped Maybe token assumes it was played, so it would undercount.
+    const skipped = { ...first, maybe: true }
+    expect(missionsNextToken(order([skipped, second]))).toMatchObject({
+      index: 1,
+      gains: [{ ref, amount: 12, completes: false }],
+    })
   })
 })

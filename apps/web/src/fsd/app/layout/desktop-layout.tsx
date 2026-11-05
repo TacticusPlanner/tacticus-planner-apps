@@ -26,6 +26,7 @@ import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
 import { RouteLoadingFill } from "./route-loading-fill"
+import { SectionActions } from "./section-actions"
 import { SkipLink } from "./skip-link"
 import { useFocusPageHeadingOnNavigate } from "./use-focus-page-heading"
 
@@ -148,6 +149,7 @@ export function DesktopShell({
                     {/* Renders only on a page that registered its own tour - the app-wide navigation
                       tour lives on the sidebar footer's persistent "Show me around" button. */}
                     <PageTourButton className="shrink-0" />
+                    <SectionActions item={activeSection} />
                   </div>
                 </div>
                 {pageDescription ? (
