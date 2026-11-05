@@ -134,10 +134,10 @@ export function ResourceCard({
                         src={location.icon}
                       />
                     ) : null}
-                    {/* Name takes the full row width on mobile, with the badges below it,
-                        so a long campaign name never wraps mid-word beside them. */}
+                    {/* Name takes the full row width with the badges below it (same on mobile
+                        and desktop), so a long campaign name never wraps mid-word beside them. */}
                     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
-                      <div className="min-w-0 basis-full sm:flex-1 sm:basis-auto">
+                      <div className="min-w-0 basis-full">
                         <RaidLocationName
                           fallbackLabel={entry.battleId}
                           location={location}

@@ -41,4 +41,35 @@ describe("LocationRow", () => {
       expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
     }
   })
+
+  it("sets the difficulty word in italics on the same line as the campaign and node", () => {
+    render(
+      <LocationRow
+        entry={{
+          battleId,
+          resourceId: "upgrade-1",
+          raidsToPerform: 3,
+          dailyAttempts: 5,
+          remainingBefore: 4,
+          dropRate: 0.5,
+        }}
+        location={{
+          id: battleId,
+          campaignName: "Indomitus Mirror",
+          nodeLabel: "Elite 36",
+          difficultyLabel: "Elite",
+          shortLabel: "IM E 36",
+          challenge: false,
+        }}
+        resourceLabel="Upgrade"
+        resourceVisual={undefined}
+      />
+    )
+
+    const tier = screen.getByText("Elite")
+    expect(tier.tagName).toBe("EM")
+    expect(tier.closest(".break-words")).toHaveTextContent(
+      "Indomitus Mirror Elite 36"
+    )
+  })
 })

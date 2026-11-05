@@ -77,6 +77,9 @@ export type DailyRaidLocationViewModel = {
   // second line of that same rendering. Empty when the catalog has no descriptor, in which case
   // renderers omit the line entirely rather than inventing one.
   nodeLabel: string
+  // Just the difficulty word that opens `nodeLabel` ("Elite", "Extremis"), so renderers can set it
+  // apart (italic) from the campaign name and node number. Absent when the catalog has no descriptor.
+  difficultyLabel?: string
   // Compact "{name} {code} {node}{B?}" form Raids Plan's chips still use verbatim.
   shortLabel: string
   challenge: boolean
@@ -98,13 +101,18 @@ export function campaignLocationLabels(
     campaignName: (descriptor: CampaignDescriptor) => string
     difficultyLabel: (descriptor: CampaignDescriptor) => string
   }
-): Pick<DailyRaidLocationViewModel, "campaignName" | "nodeLabel"> {
+): Pick<
+  DailyRaidLocationViewModel,
+  "campaignName" | "nodeLabel" | "difficultyLabel"
+> {
   if (!descriptor) return { campaignName: battleId, nodeLabel: "" }
+  const difficultyLabel = display.difficultyLabel(descriptor)
   return {
     campaignName: display.campaignName(descriptor),
-    nodeLabel: `${display.difficultyLabel(descriptor)} ${battle.nodeNumber}${
+    nodeLabel: `${difficultyLabel} ${battle.nodeNumber}${
       battle.challenge ? "B" : ""
     }`,
+    difficultyLabel,
   }
 }
 
