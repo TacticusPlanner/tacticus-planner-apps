@@ -237,7 +237,7 @@ describe("TeamSuggestionsDialog", () => {
   it("says when no team adds points and when estimates are unavailable", () => {
     const { onClose } = renderDialog({ model: { ...model, battles: [] } })
     expect(screen.getByTestId("team-suggestions-empty")).toHaveTextContent(
-      "No team adds points over your current teams"
+      "No team adds points or saves tokens over your current teams"
     )
     expect(onClose).not.toHaveBeenCalled()
   })

@@ -672,17 +672,24 @@
   "suggestions": {
     "button": "Suggest teams",
     "title": "Suggested teams for {{lane}}",
-    "description": "Teams from your roster, ranked by the points they add over your current teams. Nothing is saved until you save the team.",
+    "description": "Teams from your roster, ranked by the points they add over your current teams, then the tokens they save. Nothing is saved until you save the team.",
     "onlyUnlocked": "Only unlocked",
     "preferGoals": "Prefer units with goals",
     "reason": "Covers {{objectives}} · clears ~{{depth}} · +{{points}} points over your teams",
     "use": "Use this team",
     "showMore": "Show more",
-    "empty": "No team adds points over your current teams",
+    "empty": "No team adds points or saves tokens over your current teams",
     "needsEstimates": "Needs clear estimates",
     "loading": "Loading suggestions…",
     "rank": "Suggestion {{rank}}",
-    "reasonNoObjectives": "Clears ~{{depth}} · +{{points}} points over your teams"
+    "reasonNoObjectives": "Clears ~{{depth}} · +{{points}} points over your teams",
+    "savesTokens_one": "saves {{count}} token",
+    "savesTokens_other": "saves {{count}} tokens",
+    "reasonTokens_one": "Covers {{objectives}} · clears ~{{depth}} · saves {{count}} token over your teams",
+    "reasonTokens_other": "Covers {{objectives}} · clears ~{{depth}} · saves {{count}} tokens over your teams",
+    "reasonNoObjectivesTokens_one": "Clears ~{{depth}} · saves {{count}} token over your teams",
+    "reasonNoObjectivesTokens_other": "Clears ~{{depth}} · saves {{count}} tokens over your teams",
+    "reasonNoGain": "Covers {{objectives}} · clears ~{{depth}} · no gain over your teams yet"
   },
   "tokenPlan": {
     "nextToken": {
