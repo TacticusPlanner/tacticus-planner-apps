@@ -1,7 +1,12 @@
 import { useMemo } from "react"
+import type { UpgradeStorageModel } from "@workspace/game-catalog"
 import type { BattleId } from "@workspace/game-domain"
 
-import { mapCampaignBattleStorageToDomain } from "@/features/rank-lookup/@x/daily-raids"
+import { shardResourceId } from "@/features/goal-farming/@x/daily-raids"
+import {
+  mapCampaignBattleStorageToDomain,
+  mapUpgradeStorageToDomain,
+} from "@/features/rank-lookup/@x/daily-raids"
 import { useCampaignDisplay } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
@@ -14,7 +19,9 @@ import type {
   DailyRaidBattleResource,
   DailyRaidLocationViewModel,
 } from "./daily-raids.domain"
+import type { EventFarmOrder } from "./home-screen-event-farm"
 import {
+  buildLocationDrops,
   selectEventLocations,
   type EventLocation,
 } from "./home-screen-event-locations"
@@ -48,13 +55,18 @@ export type HomeScreenEventLocationsState =
  * without a material) and "Raidable only" (battles to play manually left out), skips locked
  * locations (the shared eligibility, which only admits event-campaign nodes while their campaign is
  * the active campaign event) and locations with no attempts left today, and reads the inventory for
- * each location's drop.
+ * each location's drop. `order: "energy"` ranks by drop efficiency (`buildLocationDrops`: energy per
+ * item against the cheapest location for the same item among the eligible, passing locations).
  */
 export function useHomeScreenEventLocations(
   rule: HseRaidRule,
-  { quickFilters }: { quickFilters?: TodayQuickFilterOptions } = {}
+  {
+    quickFilters,
+    order = "points",
+  }: { quickFilters?: TodayQuickFilterOptions; order?: EventFarmOrder } = {}
 ): HomeScreenEventLocationsState {
   const raidableOnly = quickFilters?.raidableOnly ?? false
+  const fewerRaids = quickFilters?.fewerRaids ?? false
   const {
     campaignName: campaignDisplayName,
     difficultyLabel: campaignDifficultyLabel,
@@ -64,6 +76,12 @@ export function useHomeScreenEventLocations(
   const battlesRead = useCatalogDataset("campaign-battles")
   const campaignDefinitionsRead = useCatalogDataset("campaign-definitions")
   const npcsRead = useCatalogDataset("npcs", toById)
+  const upgradesRead = useCatalogDataset("upgrades", toDomainUpgrades)
+  const charactersRead = useCatalogDataset("characters")
+  const upgrades =
+    upgradesRead.status === "ready" ? upgradesRead.data : undefined
+  const characters =
+    charactersRead.status === "ready" ? charactersRead.data : undefined
   const battles = battlesRead.status === "ready" ? battlesRead.data : undefined
   const campaignDefinitions =
     campaignDefinitionsRead.status === "ready"
@@ -140,12 +158,47 @@ export function useHomeScreenEventLocations(
     [liveProgress, allBattlesById]
   )
 
-  const locations = useMemo(() => {
-    const passesFilter = (battleId: string) => {
+  const passesFilter = useMemo(
+    () => (battleId: string) => {
       if (raidableOnly && manualBattleIds.has(battleId)) return false
       const battle = filterBattlesById.get(battleId)
       return !battle || passLocationFilter(battle, filters)
-    }
+    },
+    [raidableOnly, manualBattleIds, filterBattlesById, filters]
+  )
+  // Only built for the energy order: it walks every material's farm locations.
+  const dropByBattleId = useMemo(() => {
+    if (order !== "energy") return undefined
+    const passing = new Map(
+      availableBattles
+        .filter((battle) => passesFilter(battle.id))
+        .flatMap((battle) => {
+          const domain = allBattlesById.get(battle.id)
+          return domain ? [[battle.id, domain] as const] : []
+        })
+    )
+    return buildLocationDrops(
+      [
+        ...(upgrades ?? []),
+        ...(characters ?? []).map((character) => ({
+          id: shardResourceId(character.id),
+          farmLocations: character.shardLocations.filter(
+            (location) => !location.isMythic
+          ),
+        })),
+      ],
+      passing
+    )
+  }, [
+    order,
+    availableBattles,
+    passesFilter,
+    allBattlesById,
+    upgrades,
+    characters,
+  ])
+
+  const locations = useMemo(() => {
     return selectEventLocations({
       battles: availableBattles.map((battle) => ({
         id: battle.id,
@@ -155,15 +208,18 @@ export function useHomeScreenEventLocations(
       pointsByBattleId,
       attemptsLeftByBattle,
       passesFilter,
+      dropByBattleId,
+      order,
+      fewerRaids,
     })
   }, [
     availableBattles,
     pointsByBattleId,
     attemptsLeftByBattle,
-    filterBattlesById,
-    filters,
-    raidableOnly,
-    manualBattleIds,
+    passesFilter,
+    dropByBattleId,
+    order,
+    fewerRaids,
   ])
 
   const ownedByBattleId = useMemo(() => {
@@ -187,7 +243,13 @@ export function useHomeScreenEventLocations(
     return owned
   }, [locations, resourceByBattleId, inventoryUpgrades, inventoryShards])
 
-  if (!battles || !campaignDefinitions || !npcsById || !eligibilityReady) {
+  if (
+    !battles ||
+    !campaignDefinitions ||
+    !npcsById ||
+    !eligibilityReady ||
+    (order === "energy" && (!upgrades || !characters))
+  ) {
     return { status: "loading" }
   }
   return {
@@ -198,3 +260,6 @@ export function useHomeScreenEventLocations(
     resourceByBattleId,
   }
 }
+
+const toDomainUpgrades = (records: UpgradeStorageModel[]) =>
+  records.map(mapUpgradeStorageToDomain)

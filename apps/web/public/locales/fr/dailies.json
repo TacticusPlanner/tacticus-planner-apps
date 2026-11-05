@@ -585,25 +585,26 @@
         "noEnergy": "Il ne reste plus assez d'énergie aujourd'hui pour ces lieux.",
         "nothingContributes": "Aucun lieu rapportant des points d'événement ne donne une ressource dont vos objectifs ont encore besoin. Consultez les meilleurs lieux ci-dessous pour gagner des points.",
         "filtered": "Aucun lieu ne correspond à vos filtres de raids.",
-        "noneEfficient": "Aucun des lieux les moins chers pour les matériaux de vos objectifs ne rapporte de points d'événement. Triez par points par énergie pour voir les lieux avec points.",
         "noLocations": "Aucun lieu débloqué avec des tentatives restantes ne rapporte de points d'événement."
       },
       "goals": "Objectifs : {{goals}}",
       "moreGoals": "+{{count}}",
-      "noteEnergy": "Seulement les lieux qu'Aujourd'hui raiderait pour les matériaux de vos objectifs (le moins d'énergie par objet), ceux qui rapportent le plus de points d'événement en premier. Aucune énergie n'est gaspillée sur les matériaux.",
+      "noteEnergy": "Les lieux qui alimentent vos objectifs, les moins chers pour leur matériau en premier (énergie par objet, comme Aujourd'hui les choisit), puis le plus de points par énergie. Un lieu plus cher ne reçoit que les raids encore nécessaires.",
       "noteIgnoreGoals": "Tous les lieux qui rapportent des points d'événement, objectifs ignorés, le plus de points par énergie en premier.",
+      "noteIgnoreGoalsEnergy": "Tous les lieux qui rapportent des points d'événement, objectifs ignorés, les moins chers pour leur butin en premier (énergie par objet comparée au meilleur lieu pour cet objet), puis le plus de points par énergie.",
       "owned_one": "{{count}} possédé",
       "owned_other": "{{count}} possédés",
       "perRaid": "{{points}} pts par raid",
       "perEnergy": "{{value}} pts par énergie",
+      "perItem": "{{value}} énergie par objet",
       "order": {
         "label": "Trier",
         "points": "Points par énergie",
         "energy": "Énergie par objet",
         "help": {
           "points": "Le plus de points d'événement par énergie en premier, même quand un lieu moins cher pour le même matériau n'en rapporte pas.",
-          "energy": "Seulement les lieux les moins chers par objet, comme Aujourd'hui les raide, triés par points d'événement.",
-          "ignoreGoals": "Tous les lieux qui rapportent des points d'événement, quels que soient les besoins de vos objectifs, le plus de points par énergie en premier. Chaque ligne montre son butin et combien vous en possédez."
+          "energy": "Les lieux les moins chers pour chaque objet en premier, comme Aujourd'hui les choisit, puis le plus de points d'événement par énergie.",
+          "ignoreGoals": "Affiche tous les lieux qui rapportent des points d'événement, quels que soient les besoins de vos objectifs. Fonctionne avec les deux tris. Chaque ligne montre son butin et combien vous en possédez."
         },
         "ignoreGoals": "Ignorer les objectifs"
       }

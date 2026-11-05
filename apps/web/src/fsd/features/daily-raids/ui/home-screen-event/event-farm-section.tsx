@@ -11,7 +11,6 @@ import type {
   EventFarm,
   EventFarmEmptyReason,
   EventFarmOrder,
-  HseListMode,
 } from "../../model/home-screen-event-farm"
 import type { HseRaidRule } from "../../model/home-screen-event-rules"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
@@ -23,7 +22,10 @@ import { ListPagingControls } from "../list-paging-controls"
 import { RaidState } from "../raid-state"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
-import { EventFarmOrderSwitch } from "./event-farm-order-switch"
+import {
+  EventFarmOrderSwitch,
+  type HseListView,
+} from "./event-farm-order-switch"
 import { EventGoalIcons } from "./event-goal-icons"
 import { EventLocationRow } from "./event-location-row"
 
@@ -34,7 +36,6 @@ const EMPTY_KEYS = {
   "no-energy": "hse.raids.empty.noEnergy",
   "nothing-contributes": "hse.raids.empty.nothingContributes",
   filtered: "hse.raids.empty.filtered",
-  "none-efficient": "hse.raids.empty.noneEfficient",
 } as const satisfies Record<EventFarmEmptyReason, string>
 
 /**
@@ -42,8 +43,8 @@ const EMPTY_KEYS = {
  * schedule and filled to the energy left today (`planEventFarm`). Each row shows its goals, raids,
  * points, energy and drop. The order switch picks points per energy (point-earning nodes even where
  * a cheaper node without points exists, so it can cost more energy per item than Today) or energy
- * per item (only Today's cheapest nodes per material, ordered by points); the note under it says
- * which. Today's quick filters (`quickFilters`) apply as on Today. Memoised: the HSE page re-renders
+ * per item (the cheapest locations for each material first, with their energy per item shown); the
+ * note under it says which. Today's quick filters (`quickFilters`) apply as on Today. Memoised: the HSE page re-renders
  * on every projection keystroke, which changes none of its props.
  */
 export const EventFarmSection = memo(function EventFarmSection({
@@ -52,7 +53,7 @@ export const EventFarmSection = memo(function EventFarmSection({
   pointsIcon,
   quickFilters,
   order = "points",
-  onOrderChange,
+  onViewChange,
 }: {
   /** The shown event's raid-point rule. */
   rule: HseRaidRule
@@ -62,8 +63,8 @@ export const EventFarmSection = memo(function EventFarmSection({
   /** Today's quick filters, picked in the raids controls row. */
   quickFilters?: TodayQuickFilterOptions
   order?: EventFarmOrder
-  /** Shows the Sort switch when set (it also offers "Ignore goals", which swaps this list out). */
-  onOrderChange?: (mode: HseListMode) => void
+  /** Shows the list controls when set (their "Ignore goals" toggle swaps this list out). */
+  onViewChange?: (view: HseListView) => void
 }) {
   const { t } = useTranslation("dailies")
   const raids = useDailyRaids(projectId, {
@@ -102,8 +103,11 @@ export const EventFarmSection = memo(function EventFarmSection({
           </div>
         ) : null}
       </div>
-      {onOrderChange ? (
-        <EventFarmOrderSwitch onOrderChange={onOrderChange} order={order} />
+      {onViewChange ? (
+        <EventFarmOrderSwitch
+          onViewChange={onViewChange}
+          view={{ order, ignoreGoals: false }}
+        />
       ) : null}
       <p className="text-sm text-muted-foreground" data-testid="hse-raids-note">
         {order === "energy" ? t("hse.raids.noteEnergy") : t("hse.raids.note")}
@@ -149,6 +153,17 @@ export const EventFarmSection = memo(function EventFarmSection({
                     />
                     {t("hse.raids.energy", { energy: row.energy })}
                   </Badge>
+                  {order === "energy" ? (
+                    <Badge
+                      className="tabular-nums"
+                      data-testid={`hse-raid-${row.battleId}-per-item`}
+                      variant="outline"
+                    >
+                      {t("hse.raids.perItem", {
+                        value: Number(row.energyPerItem.toFixed(1)),
+                      })}
+                    </Badge>
+                  ) : null}
                   <span className="flex items-center gap-1">
                     <ResourceIconWithTooltip
                       className="size-6"

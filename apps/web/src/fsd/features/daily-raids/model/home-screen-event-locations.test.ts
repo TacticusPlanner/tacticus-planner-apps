@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest"
-import { selectEventLocations } from "./home-screen-event-locations"
+import type { BattleId } from "@workspace/game-domain"
+import {
+  battleIdSchema,
+  campaignIdSchema,
+  upgradeIdSchema,
+} from "@workspace/game-domain/schemas"
+
+import type { Battle } from "@/shared/lib"
+
+import {
+  buildLocationDrops,
+  selectEventLocations,
+} from "./home-screen-event-locations"
 
 const battle = (id: string, energyCost: number, dailyAttempts = 3) => ({
   id,
@@ -62,5 +74,79 @@ describe("selectEventLocations", () => {
         })
       )
     ).toEqual(["a"])
+  })
+
+  it("energy order ranks by drop efficiency first, unrated locations last", () => {
+    const dropByBattleId = new Map([
+      ["a", { energyPerItem: 10, efficiency: 1.8 }],
+      ["b", { energyPerItem: 30, efficiency: 1 }],
+      ["c", { energyPerItem: 5, efficiency: 1 }],
+    ])
+    const points = { a: 10, b: 10, c: 6, d: 20 }
+    // c and b tie on efficiency: c earns more points per energy (1.2 vs 1), Fewer raids puts the
+    // costlier b first.
+    expect(ids(select({ points, dropByBattleId, order: "energy" }))).toEqual([
+      "c",
+      "b",
+      "a",
+      "d",
+    ])
+    expect(
+      ids(select({ points, dropByBattleId, order: "energy", fewerRaids: true }))
+    ).toEqual(["b", "c", "a", "d"])
+    const [first] = select({ points, dropByBattleId, order: "energy" })
+    expect(first).toMatchObject({ battleId: "c", energyPerItem: 5 })
+    // The points order ignores the drops.
+    expect(ids(select({ points, dropByBattleId }))[0]).toBe("d")
+  })
+})
+
+describe("buildLocationDrops", () => {
+  const node = (energyCost: number): Battle => ({
+    campaignGroupId: campaignIdSchema.parse("CG1"),
+    type: "Elite",
+    challenge: false,
+    nodeNumber: 1,
+    battleIndex: 0,
+    energyCost,
+    dailyAttempts: 6,
+  })
+  const at = (battleId: string, rate: number) => ({
+    battleId: battleIdSchema.parse(battleId),
+    guaranteed: false,
+    effectiveRate: rate,
+    numerator: null,
+    denominator: null,
+    isMythic: false,
+  })
+
+  it("rates each location against the cheapest one for the same item", () => {
+    const battles = new Map<BattleId, Battle>([
+      [battleIdSchema.parse("ELITE"), node(10)],
+      [battleIdSchema.parse("MIRROR"), node(10)],
+      [battleIdSchema.parse("STANDARD"), node(6)],
+    ])
+    const drops = buildLocationDrops(
+      [
+        {
+          id: upgradeIdSchema.parse("legendary"),
+          farmLocations: [
+            at("ELITE", 1 / 3),
+            at("MIRROR", 1 / 3),
+            at("STANDARD", 1 / 9),
+          ],
+        },
+      ],
+      battles
+    )
+    expect(drops.get(battleIdSchema.parse("ELITE"))).toEqual({
+      energyPerItem: 30,
+      efficiency: 1,
+    })
+    expect(drops.get(battleIdSchema.parse("MIRROR"))?.efficiency).toBe(1)
+    expect(drops.get(battleIdSchema.parse("STANDARD"))).toEqual({
+      energyPerItem: 54,
+      efficiency: 1.8,
+    })
   })
 })

@@ -7,22 +7,25 @@ import {
 
 import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 
-import type { HseListMode } from "../../model/home-screen-event-farm"
+import type { EventFarmOrder } from "../../model/home-screen-event-farm"
 
-const ORDERS = [
-  "points",
-  "energy",
-  "ignoreGoals",
-] as const satisfies readonly HseListMode[]
+const ORDERS = ["points", "energy"] as const satisfies readonly EventFarmOrder[]
+const IGNORE_GOALS = "ignoreGoals"
 
-/** The HSE list's Sort switch: points per energy, energy per item (Today's cheapest nodes), or
- * every point-earning location with goals ignored. */
+/** What the HSE list shows, picked on the list's controls row. */
+export type HseListView = { order: EventFarmOrder; ignoreGoals: boolean }
+
+/**
+ * The HSE list's controls: the Sort switch (points per energy or energy per item) and, beside it,
+ * the independent "Ignore goals" toggle that lists every point-earning location instead of the
+ * goal farm list.
+ */
 export function EventFarmOrderSwitch({
-  order,
-  onOrderChange,
+  view,
+  onViewChange,
 }: {
-  order: HseListMode
-  onOrderChange: (order: HseListMode) => void
+  view: HseListView
+  onViewChange: (view: HseListView) => void
 }) {
   const { t } = useTranslation("dailies")
   const labelId = useId()
@@ -36,12 +39,12 @@ export function EventFarmOrderSwitch({
         data-testid="hse-raids-order"
         onValueChange={(value) => {
           const next = ORDERS.find((item) => item === value)
-          if (next) onOrderChange(next)
+          if (next) onViewChange({ ...view, order: next })
         }}
         size="sm"
         spacing={1}
         type="single"
-        value={order}
+        value={view.order}
         variant="outline"
       >
         {ORDERS.map((item) => (
@@ -55,6 +58,26 @@ export function EventFarmOrderSwitch({
             {t(`hse.raids.order.${item}`)}
           </ToggleGroupItem>
         ))}
+      </ToggleGroup>
+      <ToggleGroup
+        aria-label={t("hse.raids.order.ignoreGoals")}
+        onValueChange={(values) =>
+          onViewChange({ ...view, ignoreGoals: values.includes(IGNORE_GOALS) })
+        }
+        size="sm"
+        spacing={1}
+        type="multiple"
+        value={view.ignoreGoals ? [IGNORE_GOALS] : []}
+        variant="outline"
+      >
+        <ToggleGroupItem
+          className={FILTER_CHIP_CLASS_NAME}
+          data-testid="hse-raids-ignore-goals"
+          title={t("hse.raids.order.help.ignoreGoals")}
+          value={IGNORE_GOALS}
+        >
+          {t("hse.raids.order.ignoreGoals")}
+        </ToggleGroupItem>
       </ToggleGroup>
     </div>
   )
