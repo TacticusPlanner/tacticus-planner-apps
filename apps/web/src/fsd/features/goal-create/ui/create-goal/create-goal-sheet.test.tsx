@@ -3078,6 +3078,40 @@ describe("CreateGoalSheet", () => {
           restore()
         }
       })
+
+      it("returns to Unit after a 'create another' success, showing the newly preselected unit", async () => {
+        createCombinedGoals.mockResolvedValue({
+          goals: [{ goalId: "goal-1", projectIds: [] }],
+        })
+        const restore = asMobile()
+        try {
+          render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+          await selectCharacter()
+          fireEvent.click(
+            screen.getByRole("combobox", { name: "Select a unit" })
+          )
+          fireEvent.click(await screen.findByText("Hero Two"))
+          fireEvent.click(next())
+          await enable("Rank")
+          await vi.waitFor(() => expect(next()).toBeEnabled())
+          fireEvent.click(next())
+          fireEvent.click(
+            screen.getByRole("checkbox", { name: "Create another goal" })
+          )
+          fireEvent.click(screen.getByRole("button", { name: "Create goal" }))
+
+          await vi.waitFor(() => {
+            expect(currentStep()).toHaveTextContent("Unit")
+          })
+          expect(createCombinedGoals.mock.calls[0]?.[0]).toMatchObject({
+            entityId: "hero2",
+          })
+          // The reset preselects the first character again; the Unit step shows it.
+          await selectCharacter()
+        } finally {
+          restore()
+        }
+      })
     })
 
     it("sends a separate note per goal type card and places the goals last by default", async () => {
