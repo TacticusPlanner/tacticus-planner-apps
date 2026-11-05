@@ -15,16 +15,24 @@ import {
 // The Event board's key from before the page shared one selection, so a choice made there stays.
 const SHOWN_LANES_KEY = "legendaryEvents.eventBoard.lanes"
 const ALL_LANES = serializeVisibleLanes(LEGENDARY_EVENT_LANE_IDS)
+// Mobile's one lane, kept apart so picking it never narrows the desktop selection; empty until
+// picked (the first desktop-selected lane shows).
+const MOBILE_LANE_KEY = "legendaryEvents.lanes.mobile"
+const isMobileLaneValue = (
+  value: unknown
+): value is "" | LegendaryEventLaneId =>
+  value === "" ||
+  (LEGENDARY_EVENT_LANE_IDS as readonly unknown[]).includes(value)
 
-/** The page's lane selection, shared by every lane block (the Event board, the leaderboard, the
- *  progress grid, Battles and Upgrade impact) and remembered per browser. */
+/** The page's lane selection, shared by the Teams and run tabs' lane blocks (the Event board, the
+ *  leaderboard, the progress grid) and remembered per browser. */
 export interface LaneSelection {
-  /** The lanes the blocks render, in lane order: the selection on desktop, its first lane on
-   *  mobile (one lane at a time). */
+  /** The lanes the blocks render, in lane order: the selection on desktop; on mobile one lane at
+   *  a time, the picked lane (remembered apart) or else the selection's first. */
   shown: readonly LegendaryEventLaneId[]
   /** Desktop's switches: show or hide a lane; the last shown lane stays. */
   onToggle: (laneId: LegendaryEventLaneId, shown: boolean) => void
-  /** Mobile's picker: show that lane alone. */
+  /** Mobile's picker: show that lane alone (the desktop selection is kept). */
   onPick: (laneId: LegendaryEventLaneId) => void
   /** Makes sure a lane renders (a jump to it): added on desktop, picked on mobile. */
   reveal: (laneId: LegendaryEventLaneId) => void
@@ -36,10 +44,20 @@ export function useLaneSelection(isMobile: boolean): LaneSelection {
     isVisibleLanesValue,
     ALL_LANES
   )
+  const [mobileLane, setMobileLane] = usePersistedSelection(
+    MOBILE_LANE_KEY,
+    isMobileLaneValue,
+    ""
+  )
   const selected = useMemo(() => parseVisibleLanes(raw), [raw])
   const shown = useMemo(
-    () => (isMobile ? selected.slice(0, 1) : selected),
-    [isMobile, selected]
+    () =>
+      isMobile
+        ? mobileLane === ""
+          ? selected.slice(0, 1)
+          : [mobileLane]
+        : selected,
+    [isMobile, mobileLane, selected]
   )
   const onToggle = useCallback(
     (laneId: LegendaryEventLaneId, show: boolean) => {
@@ -51,8 +69,8 @@ export function useLaneSelection(isMobile: boolean): LaneSelection {
     [selected, setRaw]
   )
   const onPick = useCallback(
-    (laneId: LegendaryEventLaneId) => setRaw(serializeVisibleLanes([laneId])),
-    [setRaw]
+    (laneId: LegendaryEventLaneId) => setMobileLane(laneId),
+    [setMobileLane]
   )
   const reveal = useCallback(
     (laneId: LegendaryEventLaneId) => {

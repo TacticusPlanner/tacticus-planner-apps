@@ -5,33 +5,17 @@ import {
   progressionVisual,
   rankIcon,
 } from "@workspace/game-catalog"
-import {
-  progressionRarity,
-  type Progression,
-  type Rank,
-  type UnitId,
-} from "@workspace/game-domain"
+import { progressionRarity, type UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-/** What a unit chip shows: ownership, then (owned only) its rank, ascension and ability levels.
- *  `owned` is undefined when the roster is unavailable. */
-export interface EventUnitChipData {
-  unitId: string
-  owned: boolean | undefined
-  rank?: Rank
-  progression?: Progression
-  activeLevel?: number
-  passiveLevel?: number
-}
-
-type EventBoardUnit = EventUnitChipData
+import type { EventUnitChipData } from "../lib/event-unit-chip-data"
 
 /** The chip's background and edge in the unit's rank colour (the `--rank-*` tokens, which flip
  *  with the theme), so a column reads by rank at a glance as V1's table did. */
-function rankTone(rank: EventBoardUnit["rank"]): CSSProperties | undefined {
+function rankTone(rank: EventUnitChipData["rank"]): CSSProperties | undefined {
   if (!rank) return undefined
   const token = `var(--rank-${rank.toLowerCase()})`
   return {
@@ -52,7 +36,7 @@ export function EventUnitChip({
   showStars = false,
   className,
 }: {
-  unit: EventBoardUnit
+  unit: EventUnitChipData
   showStars?: boolean
   className?: string
 }) {

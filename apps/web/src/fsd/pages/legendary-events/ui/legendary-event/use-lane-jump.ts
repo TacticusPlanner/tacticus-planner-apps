@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef } from "react"
-import { useSearchParams } from "react-router"
 
 import {
   LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEventLaneId,
 } from "@/entities/legendary-event"
+import { useSearchParamState } from "@/shared/lib"
 
 import {
   LEGENDARY_EVENT_TABS,
@@ -12,6 +12,9 @@ import {
 } from "./legendary-event-page.view-model"
 import { progressHeadingId } from "./progress/progress-heading"
 import type { LaneSelection } from "./use-lane-selection"
+
+/** How long a jump waits for its section to render (a tab's reads can still be loading). */
+const JUMP_TIMEOUT_MS = 8000
 
 const isTab = (value: string | null): value is LegendaryEventTab =>
   (LEGENDARY_EVENT_TABS as readonly (string | null)[]).includes(value)
@@ -32,42 +35,29 @@ export function useLaneJump(
   /** Picks Plan's Battles lane (a jump to a lane's battles). */
   pickBattlesLane: (lane: LegendaryEventLaneId) => void
 ) {
-  const [params, setParams] = useSearchParams()
-  const rawTab = params.get("tab")
-  const legacyLane = isLane(rawTab) ? rawTab : undefined
-  const selectedTab: LegendaryEventTab = legacyLane
-    ? "teams"
-    : isTab(rawTab)
-      ? rawTab
-      : defaultTab
+  // A lane id is kept valid here only to be rewritten to Teams below; any other unknown value is
+  // dropped from the URL by the shared search-param state.
+  const [tabParam, setTabParam] = useSearchParamState<
+    LegendaryEventTab | LegendaryEventLaneId
+  >("tab", (value) => isTab(value) || isLane(value), defaultTab)
+  const legacyLane = isLane(tabParam) ? tabParam : undefined
+  const selectedTab: LegendaryEventTab = isTab(tabParam) ? tabParam : "teams"
+  const show = setTabParam
 
-  const show = useCallback(
-    (tab: LegendaryEventTab) =>
-      setParams(
-        (previous) => {
-          if (tab === defaultTab) previous.delete("tab")
-          else previous.set("tab", tab)
-          return previous
-        },
-        { replace: true }
-      ),
-    [setParams, defaultTab]
-  )
-
-  // Rewrites a legacy or invalid value to the canonical parameter.
   const { reveal } = lanes
-  const canonical = rawTab === null || isTab(rawTab)
   useEffect(() => {
-    if (canonical) return
-    if (legacyLane) reveal(legacyLane)
-    show(selectedTab)
-  }, [canonical, legacyLane, reveal, selectedTab, show])
+    if (!legacyLane) return
+    reveal(legacyLane)
+    show("teams")
+  }, [legacyLane, reveal, show])
 
   // The section a jump asked to show; consumed by the effect below once it has rendered. A ref,
   // not state: it drives a DOM scroll, never a render.
   const jumpTarget = useRef<{
     tab: LegendaryEventTab
     find: () => Element | null
+    /** When it was asked for: a section that has not rendered by then is never scrolled to. */
+    at: number
   } | null>(null)
   const jump = useCallback(
     (
@@ -75,14 +65,21 @@ export function useLaneJump(
       find: () => Element | null,
       lane?: LegendaryEventLaneId
     ) => {
-      jumpTarget.current = { tab, find }
+      jumpTarget.current = { tab, find, at: Date.now() }
       if (lane) reveal(lane)
       show(tab)
     },
     [reveal, show]
   )
 
-  const selectTab = useCallback((tab: LegendaryEventTab) => show(tab), [show])
+  const selectTab = useCallback(
+    (tab: LegendaryEventTab) => {
+      // Picking a tab cancels a jump still waiting for its section.
+      jumpTarget.current = null
+      show(tab)
+    },
+    [show]
+  )
   const jumpToLane = useCallback(
     (lane: LegendaryEventLaneId) =>
       // The heading carries the sticky-strip offset as scroll-margin (see progress-parts.tsx).
@@ -128,6 +125,11 @@ export function useLaneJump(
   useEffect(() => {
     const target = jumpTarget.current
     if (!target || target.tab !== selectedTab) return
+    // A section that never renders (no progress grid, say) must not scroll the page later.
+    if (Date.now() - target.at > JUMP_TIMEOUT_MS) {
+      jumpTarget.current = null
+      return
+    }
     const element = target.find()
     if (!element) return
     jumpTarget.current = null

@@ -19,19 +19,22 @@ import {
 } from "./battles.view-model"
 
 /**
- * Every lane's Battles section over the page's `lre-battles` read, the synced `npcs` and the
+ * The given lanes' Battles sections over the page's `lre-battles` read, the synced `npcs` and the
  * progress grid, with the page-held selection per lane and the mobile Map disclosure (design D3):
  * page state, so both survive tab switches and reset with the event (the page content is keyed by
- * the event id). The battle info dialog reads the same states. Empty until the event loads.
+ * the event id). Only the lanes something shows are built (Plan's Battles lane, the battle info
+ * dialog's lane). Empty until the event loads.
  */
 export function useBattlesSection({
   event,
   battlesRead,
   progressGrid,
+  laneIds,
 }: {
   event: LegendaryEvent | undefined
   battlesRead: ReadState<LegendaryEventBattle[]>
   progressGrid: ProgressGridViewModel
+  laneIds: readonly LegendaryEventLaneId[]
 }): Partial<Record<LegendaryEventLaneId, BattlesViewModel>> {
   const npcsRead = useNpcsById()
   const npcs = readValue(npcsRead)
@@ -45,7 +48,9 @@ export function useBattlesSection({
   const states = useMemo(
     () =>
       event
-        ? LEGENDARY_EVENT_LANE_IDS.map(
+        ? LEGENDARY_EVENT_LANE_IDS.filter((laneId) =>
+            laneIds.includes(laneId)
+          ).map(
             (laneId) =>
               [
                 laneId,
@@ -63,7 +68,7 @@ export function useBattlesSection({
               ] as const
           )
         : [],
-    [event, battles, retryBattles, npcs, retryNpcs, progressGrid]
+    [event, battles, retryBattles, npcs, retryNpcs, progressGrid, laneIds]
   )
   return useMemo(
     () =>

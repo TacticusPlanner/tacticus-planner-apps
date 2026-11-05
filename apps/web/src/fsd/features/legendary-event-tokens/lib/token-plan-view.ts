@@ -421,16 +421,19 @@ export function nextTokenCardState(
 const UP_NEXT_COUNT = 4
 
 /** The planned tokens after the next one, in plan order with their plan indexes (the next token is
- *  not always the plan's first). */
+ *  not always the plan's first; the ones it skipped are not up next). */
 export function upNextTokens<T>(
   plan: { tokens: readonly T[] },
   next: { index: number } | null,
   count = UP_NEXT_COUNT
 ): { token: T; index: number }[] {
-  return plan.tokens
-    .map((token, index) => ({ token, index }))
-    .filter((entry) => entry.index !== next?.index)
-    .slice(0, count)
+  return (
+    plan.tokens
+      .map((token, index) => ({ token, index }))
+      // After the next one: tokens before it were skipped (flagged or not playable yet).
+      .filter((entry) => next === null || entry.index > next.index)
+      .slice(0, count)
+  )
 }
 
 /** The Next token card in Missions order (spec: Next token card Points / Missions switch): the

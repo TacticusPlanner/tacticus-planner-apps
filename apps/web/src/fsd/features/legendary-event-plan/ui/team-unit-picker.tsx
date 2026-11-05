@@ -10,6 +10,7 @@ import { UnitGoalBadge } from "@/entities/goal"
 import {
   EventUnitChip,
   ObjectiveIcon,
+  ownedUnitChipData,
   unitEffectivePower,
   useObjectiveLabel,
   type LaneProgressView,
@@ -365,16 +366,7 @@ export function TeamUnitPicker({
                         showStars
                         unit={
                           shownUnit
-                            ? {
-                                unitId: id,
-                                owned: true,
-                                rank: shownUnit.rank,
-                                progression: shownUnit.progressionIndex,
-                                activeLevel:
-                                  shownUnit.abilities?.[0]?.level ?? 1,
-                                passiveLevel:
-                                  shownUnit.abilities?.[1]?.level ?? 1,
-                              }
+                            ? ownedUnitChipData(id, shownUnit)
                             : { unitId: id, owned: tile.owned }
                         }
                       />

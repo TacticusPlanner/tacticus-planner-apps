@@ -201,3 +201,41 @@ export function useClearsText(): (clears: LeaderboardClears) => string {
     [t]
   )
 }
+
+/** The objective selection the shown lanes can draw: keys of a lane the user hid no longer filter
+ *  (their chips are gone), and come back when the lane is shown again. Returns `selected` itself
+ *  when nothing is dropped. */
+function shownObjectiveKeys(
+  event: Pick<LegendaryEvent, LegendaryEventLaneId>,
+  laneIds: readonly LegendaryEventLaneId[]
+): ReadonlySet<string> {
+  return new Set(
+    laneIds.flatMap((laneId) =>
+      event[laneId].unitsRestrictions.map((objective) =>
+        objectiveFilterKey(objective.filter)
+      )
+    )
+  )
+}
+
+export function shownObjectiveSelection(
+  event: Pick<LegendaryEvent, LegendaryEventLaneId>,
+  laneIds: readonly LegendaryEventLaneId[],
+  selected: ReadonlySet<string>
+): ReadonlySet<string> {
+  const shown = shownObjectiveKeys(event, laneIds)
+  return [...selected].every((key) => shown.has(key))
+    ? selected
+    : new Set([...selected].filter((key) => shown.has(key)))
+}
+
+/** Applies an edit made on the shown chips, keeping hidden lanes' picks for when they're shown again. */
+export function mergeShownObjectiveSelection(
+  event: Pick<LegendaryEvent, LegendaryEventLaneId>,
+  laneIds: readonly LegendaryEventLaneId[],
+  selected: ReadonlySet<string>,
+  next: ReadonlySet<string>
+): ReadonlySet<string> {
+  const shown = shownObjectiveKeys(event, laneIds)
+  return new Set([...[...selected].filter((key) => !shown.has(key)), ...next])
+}

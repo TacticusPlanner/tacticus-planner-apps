@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 
 import {
+  eventUnitChipData,
   objectivesSatisfied,
   type LaneProgressView,
   type LegendaryEventRosterUnit,
@@ -13,7 +14,6 @@ import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 import {
   buildEventBoardLane,
   buildEventBoardTable,
-  eventBoardUnit,
   isVisibleLanesValue,
   parseVisibleLanes,
   serializeVisibleLanes,
@@ -230,10 +230,10 @@ describe("buildEventBoardTable", () => {
   })
 })
 
-describe("eventBoardUnit", () => {
+describe("eventUnitChipData", () => {
   it("reads rank, ascension and ability levels from the roster", () => {
     const roster = new Map([["a", rosterUnit("a", "Gold2")]])
-    expect(eventBoardUnit("a", roster)).toEqual({
+    expect(eventUnitChipData("a", roster)).toEqual({
       unitId: "a",
       owned: true,
       rank: "Gold2",
@@ -241,10 +241,36 @@ describe("eventBoardUnit", () => {
       activeLevel: 30,
       passiveLevel: 25,
     })
-    expect(eventBoardUnit("b", roster)).toEqual({ unitId: "b", owned: false })
-    expect(eventBoardUnit("a", undefined)).toEqual({
+    expect(eventUnitChipData("b", roster)).toEqual({
+      unitId: "b",
+      owned: false,
+    })
+    expect(eventUnitChipData("a", undefined)).toEqual({
       unitId: "a",
       owned: undefined,
+    })
+  })
+
+  it("defaults each missing ability level to 1 on its own", () => {
+    const partial = {
+      ...rosterUnit("partial", "Gold2"),
+      abilities: [{ abilityId: "active", level: 30 }],
+    } as unknown as LegendaryEventRosterUnit
+    const none = {
+      ...rosterUnit("none", "Gold2"),
+      abilities: undefined,
+    } as unknown as LegendaryEventRosterUnit
+    const roster = new Map([
+      ["partial", partial],
+      ["none", none],
+    ])
+    expect(eventUnitChipData("partial", roster)).toMatchObject({
+      activeLevel: 30,
+      passiveLevel: 1,
+    })
+    expect(eventUnitChipData("none", roster)).toMatchObject({
+      activeLevel: 1,
+      passiveLevel: 1,
     })
   })
 })
