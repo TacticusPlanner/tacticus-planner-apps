@@ -15,6 +15,7 @@ import {
   rankOptionsAbove,
   progressionEndOptionsFor,
   abilityLevelOptionsFor,
+  withUpgradeRange,
   type GoalTargetDraft,
 } from "./goal-target-edit"
 
@@ -454,5 +455,61 @@ describe("target options above the start", () => {
     expect(options[0]).toBe(48)
     expect(options).not.toContain(47)
     expect(abilityLevelOptionsFor(48, 40)[0]).toBe(40)
+  })
+})
+
+describe("withUpgradeRange", () => {
+  const draft = {
+    kind: "Upgrade" as const,
+    targets: [
+      { upgradeId: "kept", quantity: 1 },
+      { upgradeId: "dropped", quantity: 4 },
+    ],
+    rankRange: { start: 0, end: 2 },
+    activeRange: null,
+    passiveRange: null,
+  }
+  const required = new Map([
+    ["kept", 5],
+    ["other", 2],
+  ])
+
+  it("takes the new range's quantities and drops materials it doesn't need", () => {
+    expect(
+      withUpgradeRange(
+        draft,
+        { rankRange: { start: 0, end: 4 } },
+        () => required
+      )
+    ).toEqual({
+      ...draft,
+      rankRange: { start: 0, end: 4 },
+      targets: [{ upgradeId: "kept", quantity: 5 }],
+    })
+  })
+
+  it("asks for the requirement of the range being set", () => {
+    const seen: unknown[] = []
+    withUpgradeRange(draft, { rankRange: { start: 1, end: 3 } }, (next) => {
+      seen.push(next.rankRange)
+      return required
+    })
+    expect(seen).toEqual([{ start: 1, end: 3 }])
+  })
+
+  it("keeps the materials when the range is cleared or nothing is known for it", () => {
+    expect(
+      withUpgradeRange(draft, { rankRange: null }, () => required)
+    ).toEqual({
+      ...draft,
+      rankRange: null,
+    })
+    expect(
+      withUpgradeRange(
+        draft,
+        { rankRange: { start: 0, end: 4 } },
+        () => new Map()
+      )
+    ).toEqual({ ...draft, rankRange: { start: 0, end: 4 } })
   })
 })
