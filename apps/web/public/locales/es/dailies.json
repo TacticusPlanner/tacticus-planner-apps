@@ -199,6 +199,8 @@
     "upgradesLeft_other": "Faltan {{count}} mejoras",
     "shardsLeft_one": "Falta {{count}} fragmento",
     "shardsLeft_other": "Faltan {{count}} fragmentos",
+    "more_one": "Falta {{count}}",
+    "more_other": "Faltan {{count}}",
     "progress": "{{owned}} de {{target}} en posesión",
     "fullyRaided": "Completado"
   },

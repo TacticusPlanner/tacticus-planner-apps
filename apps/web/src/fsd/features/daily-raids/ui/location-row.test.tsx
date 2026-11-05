@@ -34,9 +34,11 @@ describe("LocationRow", () => {
     )
 
     for (const label of [campaignName, nodeLabel]) {
-      const line = screen.getByText(label)
-      expect(line).toHaveClass("break-words")
+      // Campaign, tier and node share one line that wraps instead of truncating.
+      const line = screen.getByText(label).closest(".break-words")
+      expect(line).not.toBeNull()
       expect(line).not.toHaveClass("truncate")
+      expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
     }
   })
 })
