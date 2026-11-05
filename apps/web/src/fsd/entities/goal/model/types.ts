@@ -26,6 +26,17 @@ export const GOAL_TYPE_VALUES: readonly GoalKind[] = [
   "Upgrade",
 ]
 
+/** Orders goal types the way Group by type lists its sections: Rank first, as in v1, then
+ *  Ascension, Ability, Unlock and Upgrade (`GOAL_TYPE_VALUES` order). Takes plain strings so a
+ *  group key can be compared directly; an unknown type sorts last. */
+export function compareGoalTypes(a: string, b: string) {
+  const rank = (type: string) => {
+    const index = (GOAL_TYPE_VALUES as readonly string[]).indexOf(type)
+    return index === -1 ? GOAL_TYPE_VALUES.length : index
+  }
+  return rank(a) - rank(b)
+}
+
 /** Type guard for a value read back from the URL (`?status=` on the Goals page). */
 export function isGoalStatusFilterValue(
   value: string
