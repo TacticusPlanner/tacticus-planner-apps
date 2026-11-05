@@ -89,7 +89,7 @@ function renderWizard(source = SOURCE, search = "") {
   const router = createMemoryRouter(
     [
       {
-        path: "/legendary-events/:eventId/plan",
+        path: "/legendary-events/:eventId/plan/edit",
         element: <PlanWizard initialTarget={null} source={source} />,
       },
       {
@@ -97,7 +97,9 @@ function renderWizard(source = SOURCE, search = "") {
         element: <div data-testid="event-page" />,
       },
     ],
-    { initialEntries: [`/legendary-events/${utharEvent.id}/plan${search}`] }
+    {
+      initialEntries: [`/legendary-events/${utharEvent.id}/plan/edit${search}`],
+    }
   )
   render(<RouterProvider router={router} />, { wrapper: i18nWrapper(i18n) })
   return router

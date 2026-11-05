@@ -256,7 +256,7 @@ function renderPage(path: string) {
         <Route element={<div data-testid="hub" />} path="/legendary-events" />
         <Route
           element={<LegendaryEventPage />}
-          path="/legendary-events/:eventId"
+          path="/legendary-events/:eventId/:tab?"
         />
       </Routes>
     </MemoryRouter>,
@@ -549,48 +549,49 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(selectedTab()).toHaveTextContent("Current run")
   }, 30_000)
 
-  describe("tab query parameter", () => {
-    const currentSearch = () => screen.getByTestId("current-search")
+  describe("tab path segment", () => {
+    const currentPath = () => screen.getByTestId("current-path")
 
-    it("writes the selected tab to the URL so a reload keeps it, leaving out the default", async () => {
+    it("writes the selected tab to the path so a reload keeps it", async () => {
       renderPage("/legendary-events/astarLysander")
       await runReady()
 
       act(() => selectTab("teams"))
-      expect(currentSearch()).toHaveTextContent(/^\?tab=teams$/)
+      expect(currentPath()).toHaveTextContent(
+        /^\/legendary-events\/astarLysander\/teams$/
+      )
       act(() => selectTab("plan"))
-      expect(currentSearch()).toHaveTextContent(/^\?tab=plan$/)
+      expect(currentPath()).toHaveTextContent(
+        /^\/legendary-events\/astarLysander\/plan$/
+      )
       act(() => selectTab("run"))
-      expect(currentSearch()).toBeEmptyDOMElement()
+      expect(currentPath()).toHaveTextContent(
+        /^\/legendary-events\/astarLysander\/run$/
+      )
     })
 
-    it("restores the tab from the URL on reload", async () => {
-      renderPage("/legendary-events/astarLysander?tab=plan")
+    it("restores the tab from the path on reload", async () => {
+      renderPage("/legendary-events/astarLysander/plan")
       await screen.findByTestId("legendary-event-page")
 
       expect(selectedTab()).toHaveTextContent("Plan")
     })
 
-    it("opens a link from before the Teams tab on Teams with that lane shown", async () => {
-      setViewportWidth(390)
-      renderPage("/legendary-events/astarLysander?tab=gamma")
-      await screen.findByTestId("legendary-event-board")
+    it("keeps the query string when switching tabs", async () => {
+      renderPage("/legendary-events/astarLysander?keep=1")
+      await runReady()
 
-      expect(selectedTab()).toHaveTextContent("Teams")
-      expect(pickedLane()).toHaveTextContent("Gamma")
-      expect(lanesOf("event-board-lane")).toEqual(["gamma"])
-      expect(currentSearch()).toHaveTextContent(/^\?tab=teams$/)
+      act(() => selectTab("teams"))
+      expect(screen.getByTestId("current-search")).toHaveTextContent(
+        /^\?keep=1$/
+      )
     })
 
-    it("falls back to the default tab on an unknown tab value and drops it from the URL", async () => {
-      renderPage("/legendary-events/astarLysander?tab=delta")
+    it("shows the default tab on an unknown segment", async () => {
+      renderPage("/legendary-events/astarLysander/delta")
       await screen.findByTestId("legendary-event-page")
 
       expect(selectedTab()).toHaveTextContent("Current run")
-      expect(currentSearch()).toBeEmptyDOMElement()
-      expect(screen.getByTestId("current-path")).toHaveTextContent(
-        /^\/legendary-events\/astarLysander$/
-      )
     })
 
     it("adds no history entry when switching tabs", async () => {

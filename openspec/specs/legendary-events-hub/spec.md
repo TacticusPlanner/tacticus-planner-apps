@@ -121,7 +121,7 @@ Each row SHALL show the event unit's portrait and localized name and its timing:
 
 The Teams and run tabs' lane blocks (the Event board's columns, the leaderboard and the progress grids) SHALL follow one **lane selection** for the page, remembered per browser and shown above the blocks: on desktop a segmented control with a toggle per lane, pressed (with a check) while it shows, shows one, two or all three lanes (all three by default; pressing the last shown lane leaves it shown), and below 768px an Alpha / Beta / Gamma segmented single choice shows one lane at a time (the first selected lane).
 
-The selected tab SHALL be the `tab` query parameter (`overview`, `teams`, `plan`, `run`; missing means the default tab, which is left out of the URL). An unrecognized value SHALL fall back to the default and be dropped from the URL (replace); a lane id in `tab` (a link from before the Teams tab, such as `?tab=beta`) SHALL open Teams with that lane shown and be rewritten to `?tab=teams`. Selecting a tab SHALL update the parameter by replacing the current history entry, so Back leaves the event page. The parameter is not carried to another event, so the tab resets to that event's default on navigation to another event, and it survives a reload of the same event. On mobile the tab strip SHALL stay fixed below the app header while the page scrolls, so a tab can be switched from any scroll position. On desktop the strip scrolls with the page.
+The selected tab SHALL be the last path segment of the event page (`/legendary-events/:eventId/overview`, `/teams`, `/plan`, `/run`); the bare event path shows the default tab. An unrecognized segment SHALL show the default tab. Old `?tab=` links carry no redirect and open the default tab. Selecting a tab SHALL write its segment by replacing the current history entry, so Back leaves the event page, and SHALL keep the query string. The segment is not carried to another event, so the tab resets to that event's default on navigation to another event, and it survives a reload of the same event. On mobile the tab strip SHALL stay fixed below the app header while the page scrolls, so a tab can be switched from any scroll position. On desktop the strip scrolls with the page.
 
 #### Scenario: Known active event renders on Current run
 
@@ -167,19 +167,14 @@ The selected tab SHALL be the `tab` query parameter (`overview`, `teams`, `plan`
 
 #### Scenario: Selected tab survives a reload
 
-- **GIVEN** the user selected Plan, so the URL is `/legendary-events/astarLysander?tab=plan`
+- **GIVEN** the user selected Plan, so the URL is `/legendary-events/astarLysander/plan`
 - **WHEN** they reload the page
 - **THEN** Plan is selected
 
-#### Scenario: A lane link from before the Teams tab
-
-- **WHEN** a user opens `/legendary-events/astarLysander?tab=gamma` below 768px
-- **THEN** Teams is selected with Gamma picked and the URL is replaced with `?tab=teams`
-
 #### Scenario: Unknown tab value falls back to the default
 
-- **WHEN** a user opens `/legendary-events/astarLysander?tab=delta` while Lysander is active
-- **THEN** Current run is selected and the URL is replaced with `/legendary-events/astarLysander`
+- **WHEN** a user opens `/legendary-events/astarLysander/delta` while Lysander is active
+- **THEN** Current run is selected
 
 #### Scenario: Switching tabs adds no history entry
 

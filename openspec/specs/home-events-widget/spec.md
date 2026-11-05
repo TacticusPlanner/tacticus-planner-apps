@@ -83,13 +83,13 @@ Assumptions:
 
 ### Requirement: Legendary Event rows carry a plan action
 
-Every Legendary Event tile in Right now and row in Upcoming events SHALL carry a plan action beside, not inside, its row link: when exactly one active project targets that event, an "Open project" link to `/plan/goals?project=<id>`; when several do, a menu labelled with their count listing each project as a link to `/plan/goals?project=<id>`; otherwise (no project, signed out, or the projects read failed), a "Plan this event" link to the event's plan wizard, `/legendary-events/:eventId/plan`. While projects load, the action SHALL show a placeholder.
+Every Legendary Event tile in Right now and row in Upcoming events SHALL carry a plan action beside, not inside, its row link: when exactly one active project targets that event, an "Open project" link to `/plan/goals?project=<id>`; when several do, a menu labelled with their count listing each project as a link to `/plan/goals?project=<id>`; otherwise (no project, signed out, or the projects read failed), a "Plan this event" link to the event's plan wizard, `/legendary-events/:eventId/plan/edit`. While projects load, the action SHALL show a placeholder.
 
 #### Scenario: No project targets the event
 
 - **GIVEN** Uthar is upcoming and no project targets it
 - **WHEN** Home renders
-- **THEN** Uthar's row shows "Plan this event" linking to `/legendary-events/votanUthar/plan`
+- **THEN** Uthar's row shows "Plan this event" linking to `/legendary-events/votanUthar/plan/edit`
 
 #### Scenario: One project targets the event
 

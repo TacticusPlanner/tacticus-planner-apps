@@ -333,7 +333,7 @@ export function TeamsSection({
             <Link
               className="self-start text-sm text-primary underline-offset-4 hover:underline"
               data-testid="team-suggestions-plan-wizard"
-              to={`/legendary-events/${teams.eventId}/plan?from=suggestions`}
+              to={`/legendary-events/${teams.eventId}/plan/edit?from=suggestions`}
             >
               {t("planWizard.openFromSuggestions")}
             </Link>

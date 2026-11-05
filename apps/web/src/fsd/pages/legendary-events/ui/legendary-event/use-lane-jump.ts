@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useRef } from "react"
+import { useLocation, useNavigate, useParams } from "react-router"
 
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEventLaneId,
-} from "@/entities/legendary-event"
-import { useSearchParamState } from "@/shared/lib"
+import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 
 import {
   LEGENDARY_EVENT_TABS,
@@ -16,18 +13,17 @@ import type { LaneSelection } from "./use-lane-selection"
 /** How long a jump waits for its section to render (a tab's reads can still be loading). */
 const JUMP_TIMEOUT_MS = 8000
 
-const isTab = (value: string | null): value is LegendaryEventTab =>
-  (LEGENDARY_EVENT_TABS as readonly (string | null)[]).includes(value)
-const isLane = (value: string | null): value is LegendaryEventLaneId =>
-  (LEGENDARY_EVENT_LANE_IDS as readonly (string | null)[]).includes(value)
+const isTab = (value: string | undefined): value is LegendaryEventTab =>
+  (LEGENDARY_EVENT_TABS as readonly (string | undefined)[]).includes(value)
 
 /**
- * The page's tab, held in the `tab` query parameter (replace history; the default tab is left
- * out), and the jumps between tabs, each scrolled into view once its section has rendered: the
- * lane summary's jump to a lane's progress grid, a token section's jump to a lane's Teams section
- * or team card, View full plan, and the Event board's battle count to that lane's Battles on Plan. A jump also shows its lane. A link from before the Teams tab
- * (`?tab=beta`) opens Teams with that lane shown; any other unknown value falls back to the
- * default. The default is the run tab while the event is active, else Overview.
+ * The page's tab, held in the path's last segment (`/legendary-events/:eventId/teams`; replace
+ * history; the bare event path shows the default tab), and the jumps between tabs, each scrolled
+ * into view once its section has rendered: the lane summary's jump to a lane's progress grid, a
+ * token section's jump to a lane's Teams section or team card, View full plan, and the Event
+ * board's battle count to that lane's Battles on Plan. A jump also shows its lane. An unknown
+ * segment shows the default tab, which is the run tab while the event is active, else Overview.
+ * The query string (lane selection and the like) is kept across tab switches.
  */
 export function useLaneJump(
   defaultTab: LegendaryEventTab,
@@ -35,21 +31,21 @@ export function useLaneJump(
   /** Picks Plan's Battles lane (a jump to a lane's battles). */
   pickBattlesLane: (lane: LegendaryEventLaneId) => void
 ) {
-  // A lane id is kept valid here only to be rewritten to Teams below; any other unknown value is
-  // dropped from the URL by the shared search-param state.
-  const [tabParam, setTabParam] = useSearchParamState<
-    LegendaryEventTab | LegendaryEventLaneId
-  >("tab", (value) => isTab(value) || isLane(value), defaultTab)
-  const legacyLane = isLane(tabParam) ? tabParam : undefined
-  const selectedTab: LegendaryEventTab = isTab(tabParam) ? tabParam : "teams"
-  const show = setTabParam
+  const { eventId, tab: tabParam } = useParams()
+  const { search } = useLocation()
+  const navigate = useNavigate()
+  const selectedTab: LegendaryEventTab = isTab(tabParam) ? tabParam : defaultTab
+  const show = useCallback(
+    (tab: LegendaryEventTab) => {
+      void navigate(
+        { pathname: `/legendary-events/${eventId ?? ""}/${tab}`, search },
+        { replace: true }
+      )
+    },
+    [eventId, navigate, search]
+  )
 
   const { reveal } = lanes
-  useEffect(() => {
-    if (!legacyLane) return
-    reveal(legacyLane)
-    show("teams")
-  }, [legacyLane, reveal, show])
 
   // The section a jump asked to show; consumed by the effect below once it has rendered. A ref,
   // not state: it drives a DOM scroll, never a render.
