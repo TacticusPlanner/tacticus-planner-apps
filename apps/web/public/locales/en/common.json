@@ -1459,6 +1459,13 @@
       }
     },
     "estimate": {
+      "checkpoints": {
+        "summary": "{{count}} checkpoints",
+        "next": "Next",
+        "title": "Checkpoints",
+        "ready": "Ready now",
+        "energy": "{{energy}} energy"
+      },
       "none": "—",
       "days": "in {{days}} days",
       "blockedLabel": "Blocked",

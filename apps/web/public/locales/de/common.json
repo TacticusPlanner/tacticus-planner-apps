@@ -1459,6 +1459,13 @@
       }
     },
     "estimate": {
+      "checkpoints": {
+        "summary": "{{count}} Zwischenziele",
+        "next": "Nächstes",
+        "title": "Zwischenziele",
+        "ready": "Schon bereit",
+        "energy": "{{energy}} Energie"
+      },
       "none": "—",
       "days": "in {{days}} Tagen",
       "blockedLabel": "Blockiert",

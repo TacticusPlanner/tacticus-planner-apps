@@ -711,6 +711,82 @@ describe("estimatePlan", () => {
   })
 })
 
+describe("estimatePlan farming-strategy checkpoints", () => {
+  const resource = upgradeId("U1")
+  const upgradesById = new Map<EstimateResourceId, EstimateUpgrade>([
+    [
+      resource,
+      { id: resource, farmLocations: [location("B1", { guaranteed: true })] },
+    ],
+  ])
+  const battlesById = new Map([battle("B1", 10)])
+  const stagedGoal: GoalNeed = {
+    goalId: "staged",
+    priority: 1,
+    needs: [{ id: resource, count: 7 }],
+    stages: [
+      { target: "7", needs: [{ id: resource, count: 2 }] },
+      { target: "8", needs: [{ id: resource, count: 3 }] },
+      { target: "9", needs: [{ id: resource, count: 2 }] },
+    ],
+  }
+
+  // "Combine goals" spends a day's energy as one pool, so a checkpoint it reaches is credited
+  // that whole day's energy.
+  it.each([
+    { combineGoals: false, energies: [0, 30, 20] },
+    { combineGoals: true, energies: [0, 40, 10] },
+  ])(
+    "dates each checkpoint and splits the energy between them (combineGoals: $combineGoals)",
+    ({ combineGoals, energies }) => {
+      const results = estimatePlan({
+        goals: [stagedGoal],
+        upgradesById,
+        battlesById,
+        dailyEnergy: 20,
+        inventory: [{ id: resource, count: 2 }],
+        referenceDate: REFERENCE_DATE,
+        combineGoals,
+      })
+
+      const result = results.get("staged")
+      expect(result).toMatchObject({ days: 3, energyTotal: 50 })
+      expect(result?.status === "Blocked" ? null : result?.checkpoints).toEqual(
+        [
+          {
+            target: "7",
+            days: 0,
+            date: "2026-01-01",
+            energy: energies[0],
+          },
+          { target: "8", days: 2, date: "2026-01-02", energy: energies[1] },
+          { target: "9", days: 3, date: "2026-01-03", energy: energies[2] },
+        ]
+      )
+    }
+  )
+
+  it("reports no checkpoints for a single-stage goal", () => {
+    const results = estimatePlan({
+      goals: [
+        {
+          goalId: "single",
+          priority: 1,
+          needs: [{ id: resource, count: 3 }],
+          stages: [{ target: "9", needs: [{ id: resource, count: 3 }] }],
+        },
+      ],
+      upgradesById,
+      battlesById,
+      dailyEnergy: 20,
+      inventory: [],
+      referenceDate: REFERENCE_DATE,
+    })
+
+    expect(results.get("single")).not.toHaveProperty("checkpoints")
+  })
+})
+
 describe("allocatePlanInventory", () => {
   it("deducts inventory by priority while preserving ordered stage traces", () => {
     const resource = upgradeId("U1")

@@ -14,6 +14,7 @@ import {
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
 import { CoveredByNote } from "../shared/covered-by-note"
+import { GoalCheckpoints } from "../shared/goal-checkpoints"
 import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-create"
 import { GoalTypeBadge } from "@/entities/goal"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
@@ -326,6 +327,12 @@ export function GoalsMobileCards({
                 <CoveredByNote
                   coveredBy={metrics?.get(row.goalId)?.coveredBy}
                 />
+                {reached ? null : (
+                  <GoalCheckpoints
+                    estimate={estimates?.get(row.goalId)}
+                    goalType={row.goalType}
+                  />
+                )}
                 {reached ? (
                   <ReachedDash />
                 ) : (
