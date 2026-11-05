@@ -3,7 +3,7 @@ import type { i18n as I18n } from "i18next"
 
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { lysanderEvent } from "@/test/fixtures/legendary-events"
-import { fireEvent, render, screen } from "@/test/render"
+import { fireEvent, render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
 import { BattleInfoDialog } from "./battle-info-dialog"
@@ -12,6 +12,8 @@ import type { BattlesViewModel } from "./battles.view-model"
 
 let i18n: I18n
 const button = (name: string) => screen.getByRole("button", { name })
+// The footer holds Previous, Close and Next; the sheet's own corner Close sits outside it.
+const footer = () => within(button("Previous").parentElement!)
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -83,7 +85,7 @@ describe("BattleInfoDialog", () => {
     expect(button("Previous")).toBeDisabled()
     fireEvent.click(button("Next"))
     expect(onChange).toHaveBeenCalledWith({ laneId: "alpha", battleIndex: 1 })
-    fireEvent.click(screen.getByTestId("battle-info-close"))
+    fireEvent.click(footer().getByRole("button", { name: "Close" }))
     expect(onClose).toHaveBeenCalled()
 
     rerender(dialog(2))
@@ -110,6 +112,6 @@ describe("BattleInfoDialog", () => {
 
     expect(button("Next")).toBeDisabled()
     expect(button("Previous")).toBeEnabled()
-    expect(screen.queryByTestId("battle-info-close")).toBeNull()
+    expect(footer().queryByRole("button", { name: "Close" })).toBeNull()
   })
 })
