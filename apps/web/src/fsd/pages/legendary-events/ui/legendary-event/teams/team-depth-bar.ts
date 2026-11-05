@@ -6,7 +6,7 @@ import type { TeamCardViewModel } from "./teams.view-model"
 export type DepthTone = "manual" | "close" | "room" | "none"
 
 /** An estimate this close to the next battle's threshold, in percent, reads as close to it. */
-export const CLOSE_TO_NEXT_PCT = 10
+const CLOSE_TO_NEXT_PCT = 10
 
 export interface DepthBar {
   /** Battles 1..filled are inside the depth; 0 when the team clears none or has no depth. */
