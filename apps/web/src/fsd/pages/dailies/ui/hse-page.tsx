@@ -14,7 +14,7 @@ import {
   todayQuickFilterOptions,
   useActiveHomeScreenEvent,
   useTodayQuickFilters,
-  type EventFarmOrder,
+  type HseListMode,
 } from "@/features/daily-raids"
 import {
   EventDetails,
@@ -31,7 +31,8 @@ import { HseTeamsSection } from "./hse-teams/hse-teams-section"
 
 /** The HSE tab's search parameter holding the selected instance key (HSE-only, never carried over). */
 const EVENT_PARAM = "event"
-/** The farm list's order (`energy`; points per energy without it), so a reload or link keeps it. */
+/** The list's Sort mode (`energy` or `ignoreGoals`; points per energy without it), so a reload or
+ * link keeps it. */
 const ORDER_PARAM = "order"
 
 /**
@@ -43,8 +44,9 @@ const ORDER_PARAM = "order"
  * running or upcoming rule-bearing instance also gets the raid list, which follows the Dailies
  * project (every active goal without one), the Raids Filters and Today's quick filters (the `quick`
  * URL state), all picked in the controls row above it (and shared with Today), and the Planning
- * Settings chosen on Today. "Ignore goals" swaps the farm list for every point-earning location; the
- * list's order switch is held in the `order` URL parameter. Order: status line, details (beside
+ * Settings chosen on Today. The list's Sort switch (points per energy, energy per item, or "Ignore
+ * goals", which swaps the farm list for every point-earning location) is held in the `order` URL
+ * parameter. Order: status line, details (beside
  * the projection on desktop), projection, the raid list, then event teams.
  */
 export function HsePage() {
@@ -58,11 +60,14 @@ export function HsePage() {
     () => todayQuickFilterOptions(quickFilters),
     [quickFilters]
   )
-  const farmOrder: EventFarmOrder =
-    searchParams.get(ORDER_PARAM) === "energy" ? "energy" : "points"
+  const requestedMode = searchParams.get(ORDER_PARAM)
+  const listMode: HseListMode =
+    requestedMode === "energy" || requestedMode === "ignoreGoals"
+      ? requestedMode
+      : "points"
   // Stable, so the memoised farm list does not re-render on a projection keystroke.
-  const setFarmOrder = useCallback(
-    (order: EventFarmOrder) =>
+  const setListMode = useCallback(
+    (order: HseListMode) =>
       setSearchParams(
         (previous) => {
           const params = new URLSearchParams(previous)
@@ -177,18 +182,17 @@ export function HsePage() {
             testIdPrefix="hse"
           />
           <div data-testid="hse-sections">
-            {quickOptions.ignoreGoals ? (
+            {listMode === "ignoreGoals" ? (
               <EventLocationsSection
-                onOrderChange={setFarmOrder}
-                order={farmOrder}
+                onOrderChange={setListMode}
                 pointsIcon={pointsIcon}
                 quickFilters={quickOptions}
                 rule={raidRule}
               />
             ) : (
               <EventFarmSection
-                onOrderChange={setFarmOrder}
-                order={farmOrder}
+                onOrderChange={setListMode}
+                order={listMode}
                 pointsIcon={pointsIcon}
                 projectId={context.projectId}
                 quickFilters={quickOptions}

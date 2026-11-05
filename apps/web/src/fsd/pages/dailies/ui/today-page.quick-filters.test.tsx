@@ -82,7 +82,6 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: false,
       raidableOnly: false,
-      ignoreGoals: false,
     })
     expect(
       screen.queryByTestId("today-quick-filter-note-fewerRaids")
@@ -99,7 +98,6 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: true,
       raidableOnly: false,
-      ignoreGoals: false,
     })
     expect(
       screen.getByTestId("today-quick-filter-note-combineGoals")
@@ -113,7 +111,6 @@ describe("Today quick filters", () => {
       fewerRaids: true,
       combineGoals: true,
       raidableOnly: false,
-      ignoreGoals: false,
     })
     expect(
       screen.getByTestId("today-quick-filter-note-fewerRaids")
@@ -128,7 +125,6 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: false,
       raidableOnly: false,
-      ignoreGoals: false,
     })
     expect(screen.getByTestId("search")).toHaveTextContent("")
   })
@@ -157,7 +153,6 @@ describe("Today quick filters", () => {
       fewerRaids: true,
       combineGoals: false,
       raidableOnly: false,
-      ignoreGoals: false,
     })
     expect(screen.getByTestId("today-quick-filter-fewerRaids")).toHaveAttribute(
       "data-state",
@@ -171,7 +166,6 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: true,
       raidableOnly: false,
-      ignoreGoals: false,
     })
     expect(
       screen.getByTestId("today-quick-filter-combineGoals")
@@ -194,7 +188,6 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: false,
       raidableOnly: true,
-      ignoreGoals: false,
     })
   })
 
@@ -204,7 +197,6 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: false,
       raidableOnly: true,
-      ignoreGoals: false,
     })
     expect(
       screen.getByTestId("today-quick-filter-raidableOnly")

@@ -373,7 +373,7 @@
         },
         "farm": {
           "title": "Lista de farmeo para puntos de evento",
-          "content": "Dónde incursionar para ganar puntos de evento mientras avanzas tus objetivos, sin límite de la energía de hoy. Ordena por puntos por energía o por energía por objeto, y activa Ignorar objetivos para ver todas las ubicaciones con puntos."
+          "content": "Dónde incursionar para ganar puntos de evento mientras avanzas tus objetivos, sin límite de la energía de hoy. Ordena por puntos por energía o por energía por objeto, o elige Ignorar objetivos para ver todas las ubicaciones con puntos."
         }
       }
     },
@@ -527,20 +527,17 @@
     "chip": {
       "fewerRaids": "Menos incursiones",
       "combineGoals": "Combinar objetivos",
-      "raidableOnly": "Solo incursionables",
-      "ignoreGoals": "Ignorar objetivos"
+      "raidableOnly": "Solo incursionables"
     },
     "help": {
       "fewerRaids": "Cuando varios lugares cuestan la misma energía por objeto, incursiona solo en los de más energía por batalla. Mismos materiales con la misma energía, en menos incursiones. Útil cuando te quedan pocos tickets de incursión.",
       "combineGoals": "Combina los materiales restantes de todos los objetivos (solo los del proyecto seleccionado si hay uno) y planifica las incursiones de hoy como si fueran un solo objetivo: una lista sin grupos por objetivo, primero los materiales que más energía necesitan, sin tener en cuenta la prioridad.",
-      "raidableOnly": "Omite las batallas que aún no puedes incursionar (menos de 3 medallas) e incursiona otras ubicaciones para los mismos materiales. Un material sin ubicación incursionable aparece como bloqueado.",
-      "ignoreGoals": "Muestra todas las ubicaciones que dan puntos de evento, sin importar lo que necesiten tus objetivos. Cada fila muestra su botín y cuántos tienes."
+      "raidableOnly": "Omite las batallas que aún no puedes incursionar (menos de 3 medallas) e incursiona otras ubicaciones para los mismos materiales. Un material sin ubicación incursionable aparece como bloqueado."
     },
     "note": {
       "fewerRaids": "Menos incursiones: se usan los lugares empatados con más energía por batalla, así los mismos materiales requieren menos incursiones.",
       "combineGoals": "Combinar objetivos: las incursiones de hoy tratan todos los objetivos como una sola lista, primero los materiales que más energía necesitan. Las fechas de Plan y Objetivos siguen la prioridad de los objetivos.",
-      "raidableOnly": "Solo incursionables: las batallas que hay que jugar manualmente se sustituyen por ubicaciones incursionables.",
-      "ignoreGoals": "Ignorar objetivos: todas las ubicaciones que dan puntos de evento, no solo las que avanzan tus objetivos."
+      "raidableOnly": "Solo incursionables: las batallas que hay que jugar manualmente se sustituyen por ubicaciones incursionables."
     }
   },
   "hse": {
@@ -593,7 +590,6 @@
       "moreGoals": "+{{count}}",
       "noteEnergy": "Solo las ubicaciones que Hoy incursionaría para los materiales de tus objetivos (menor energía por objeto), primero las que dan más puntos de evento. No se desperdicia energía en materiales.",
       "noteIgnoreGoals": "Todas las ubicaciones que dan puntos de evento, sin tener en cuenta objetivos, primero las de más puntos por energía.",
-      "noteIgnoreGoalsEnergy": "Ubicaciones que dan puntos de evento y son las más baratas (energía por objeto) para un material que sueltan, sin tener en cuenta objetivos, primero las de más puntos por energía.",
       "owned_one": "{{count}} en posesión",
       "owned_other": "{{count}} en posesión",
       "perRaid": "{{points}} pts por incursión",
@@ -604,8 +600,10 @@
         "energy": "Energía por objeto",
         "help": {
           "points": "Primero los más puntos de evento por energía, aunque una ubicación más barata para el mismo material no dé ninguno.",
-          "energy": "Solo las ubicaciones más baratas por objeto, como las incursiona Hoy, ordenadas por puntos de evento."
-        }
+          "energy": "Solo las ubicaciones más baratas por objeto, como las incursiona Hoy, ordenadas por puntos de evento.",
+          "ignoreGoals": "Todas las ubicaciones que dan puntos de evento, sin importar lo que necesiten tus objetivos, primero las de más puntos por energía. Cada fila muestra su botín y cuántos tienes."
+        },
+        "ignoreGoals": "Ignorar objetivos"
       }
     },
     "details": {

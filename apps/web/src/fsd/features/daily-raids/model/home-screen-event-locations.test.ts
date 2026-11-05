@@ -1,16 +1,10 @@
 import { describe, expect, it } from "vitest"
 import { selectEventLocations } from "./home-screen-event-locations"
 
-const battle = (
-  id: string,
-  energyCost: number,
-  drops: Record<string, number> = {},
-  dailyAttempts = 3
-) => ({
+const battle = (id: string, energyCost: number, dailyAttempts = 3) => ({
   id,
   energyCost,
   dailyAttempts,
-  dropRates: new Map(Object.entries(drops)),
 })
 const select = (
   overrides: Partial<Parameters<typeof selectEventLocations>[0]> & {
@@ -68,27 +62,5 @@ describe("selectEventLocations", () => {
         })
       )
     ).toEqual(["a"])
-  })
-
-  it("energy order keeps only the cheapest location per item of a material", () => {
-    const battles = [
-      // Both drop m1: x costs 10 energy per item, y 6 (cheapest), z 6 at a higher cost per battle.
-      battle("x", 5, { m1: 0.5 }),
-      battle("y", 6, { m1: 1 }),
-      battle("z", 12, { m1: 2 }),
-    ]
-    const points = { x: 50, y: 6, z: 12 }
-    expect(ids(select({ battles, points, order: "points" }))).toEqual([
-      "x",
-      "z",
-      "y",
-    ])
-    expect(ids(select({ battles, points, order: "energy" }))).toEqual([
-      "z",
-      "y",
-    ])
-    expect(
-      ids(select({ battles, points, order: "energy", fewerRaids: true }))
-    ).toEqual(["z"])
   })
 })

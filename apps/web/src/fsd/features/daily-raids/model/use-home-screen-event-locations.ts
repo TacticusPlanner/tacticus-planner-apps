@@ -14,7 +14,6 @@ import type {
   DailyRaidBattleResource,
   DailyRaidLocationViewModel,
 } from "./daily-raids.domain"
-import type { EventFarmOrder } from "./home-screen-event-farm"
 import {
   selectEventLocations,
   type EventLocation,
@@ -35,7 +34,7 @@ export type HomeScreenEventLocationsState =
   | { status: "loading" }
   | {
       status: "ready"
-      /** Every point-earning location over the eligible battles, in `order`. */
+      /** Every point-earning location over the eligible battles, most points per energy first. */
       locations: EventLocation[]
       /** What the player holds of each location's shown drop (`resourceByBattleId`). */
       ownedByBattleId: ReadonlyMap<BattleId, number>
@@ -53,12 +52,8 @@ export type HomeScreenEventLocationsState =
  */
 export function useHomeScreenEventLocations(
   rule: HseRaidRule,
-  {
-    order = "points",
-    quickFilters,
-  }: { order?: EventFarmOrder; quickFilters?: TodayQuickFilterOptions } = {}
+  { quickFilters }: { quickFilters?: TodayQuickFilterOptions } = {}
 ): HomeScreenEventLocationsState {
-  const fewerRaids = quickFilters?.fewerRaids ?? false
   const raidableOnly = quickFilters?.raidableOnly ?? false
   const {
     campaignName: campaignDisplayName,
@@ -156,18 +151,10 @@ export function useHomeScreenEventLocations(
         id: battle.id,
         energyCost: battle.energyCost,
         dailyAttempts: battle.dailyAttempts,
-        dropRates: new Map(
-          battle.rewards.potential.map((reward) => [
-            reward.id,
-            reward.effectiveRate ?? 0,
-          ])
-        ),
       })),
       pointsByBattleId,
       attemptsLeftByBattle,
       passesFilter,
-      order,
-      fewerRaids,
     })
   }, [
     availableBattles,
@@ -177,8 +164,6 @@ export function useHomeScreenEventLocations(
     filters,
     raidableOnly,
     manualBattleIds,
-    order,
-    fewerRaids,
   ])
 
   const ownedByBattleId = useMemo(() => {

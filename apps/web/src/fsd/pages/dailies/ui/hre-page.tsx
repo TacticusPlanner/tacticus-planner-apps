@@ -44,8 +44,8 @@ import { useHreTutorial } from "./hre-page.tutorial"
 import { RaidsSectionControls } from "./raids-section-controls"
 
 const NO_MISSIONS: readonly HreMission[] = []
-/** The raids count battles, so "Fewer raids" changes nothing here; "Ignore goals" is the HSE tab's. */
-const HRE_HIDDEN_QUICK_FILTERS = ["fewerRaids", "ignoreGoals"] as const
+/** The raids count battles, so "Fewer raids" changes nothing here. */
+const HRE_HIDDEN_QUICK_FILTERS = ["fewerRaids"] as const
 /** The HRE tab's search parameter holding the selected instance key (HRE-only, never carried over). */
 const EVENT_PARAM = "event"
 

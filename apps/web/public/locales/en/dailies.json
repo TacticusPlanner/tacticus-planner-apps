@@ -373,7 +373,7 @@
         },
         "farm": {
           "title": "Farm list for event points",
-          "content": "Where to raid to earn event points while feeding your goals, not limited to today's energy. Sort by points per energy or by energy per item, and turn on Ignore goals to see every point-earning location."
+          "content": "Where to raid to earn event points while feeding your goals, not limited to today's energy. Sort by points per energy or by energy per item, or pick Ignore goals to see every point-earning location."
         }
       }
     },
@@ -527,20 +527,17 @@
     "chip": {
       "fewerRaids": "Fewer raids",
       "combineGoals": "Combine goals",
-      "raidableOnly": "Raidable only",
-      "ignoreGoals": "Ignore goals"
+      "raidableOnly": "Raidable only"
     },
     "help": {
       "fewerRaids": "When several locations cost the same energy per item, raid only the ones with the highest energy per battle. Same materials for the same energy, in fewer raids. Useful when you're low on raid tickets.",
       "combineGoals": "Combine the remaining materials of all goals (only the selected project's goals when one is picked) and plan today's raids as if they were one goal: one list without goal groups, the materials that take the most energy to farm first, and goal priority is ignored.",
-      "raidableOnly": "Leave out battles you can't raid yet (fewer than 3 medals) and raid other locations for the same materials. A material with no raidable location shows as blocked.",
-      "ignoreGoals": "List every location that earns event points, whatever your goals need. Each row shows its drop and how many you hold."
+      "raidableOnly": "Leave out battles you can't raid yet (fewer than 3 medals) and raid other locations for the same materials. A material with no raidable location shows as blocked."
     },
     "note": {
       "fewerRaids": "Fewer raids: tied locations with more energy per battle are used, so the same materials take fewer raids.",
       "combineGoals": "Combine goals: today's raids treat all goals as one list, the materials that take the most energy to farm first. Plan and Goals dates still follow goal priority.",
-      "raidableOnly": "Raidable only: battles that need to be played manually are replaced with raidable locations.",
-      "ignoreGoals": "Ignore goals: every location that earns event points, not only those feeding your goals."
+      "raidableOnly": "Raidable only: battles that need to be played manually are replaced with raidable locations."
     }
   },
   "hse": {
@@ -593,7 +590,6 @@
       "moreGoals": "+{{count}}",
       "noteEnergy": "Only the locations Today would raid for your goals' materials (least energy per item), the ones worth the most event points first. No energy is wasted on materials.",
       "noteIgnoreGoals": "Every location that earns event points, goals ignored, most points per energy first.",
-      "noteIgnoreGoalsEnergy": "Locations that earn event points and are the cheapest place (energy per item) for a material they drop, goals ignored, most points per energy first.",
       "owned_one": "{{count}} owned",
       "owned_other": "{{count}} owned",
       "perRaid": "{{points}} pts per raid",
@@ -604,8 +600,10 @@
         "energy": "Energy per item",
         "help": {
           "points": "Most event points per energy first, even where a cheaper location for the same material earns none.",
-          "energy": "Only the cheapest locations per item, as Today raids them, ordered by event points."
-        }
+          "energy": "Only the cheapest locations per item, as Today raids them, ordered by event points.",
+          "ignoreGoals": "Every location that earns event points, whatever your goals need, most points per energy first. Each row shows its drop and how many you hold."
+        },
+        "ignoreGoals": "Ignore goals"
       }
     },
     "details": {
