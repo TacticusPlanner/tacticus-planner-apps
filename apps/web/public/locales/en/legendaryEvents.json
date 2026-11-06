@@ -847,7 +847,10 @@
       "teamsUnavailable": "Teams unavailable",
       "teamsLoading": "Loading teams",
       "noRoster": "Sync your roster",
-      "rosterLoading": "Loading roster"
+      "rosterLoading": "Loading roster",
+      "noTeams_one": "No complete teams planned for {{events}} yet, so its column is empty under In teams.",
+      "noTeams_other": "No complete teams planned for {{events}} yet, so their columns are empty under In teams.",
+      "showAll": "Show all units"
     },
     "points": {
       "label": "Points",
@@ -880,7 +883,8 @@
       "objectives_one": "{{count}} objective",
       "objectives_other": "{{count}} objectives",
       "teams_one": "{{count}} team",
-      "teams_other": "{{count}} teams"
+      "teams_other": "{{count}} teams",
+      "noTeams": "no teams yet"
     },
     "explanation": {
       "title": "How points work",

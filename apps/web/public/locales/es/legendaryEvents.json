@@ -847,7 +847,10 @@
       "teamsUnavailable": "Equipos no disponibles",
       "teamsLoading": "Cargando equipos",
       "noRoster": "Sincroniza tu plantilla",
-      "rosterLoading": "Cargando plantilla"
+      "rosterLoading": "Cargando plantilla",
+      "noTeams_one": "Aún no hay equipos completos planificados para {{events}}, así que su columna está vacía en En equipos.",
+      "noTeams_other": "Aún no hay equipos completos planificados para {{events}}, así que sus columnas están vacías en En equipos.",
+      "showAll": "Mostrar todas las unidades"
     },
     "points": {
       "label": "Puntos",
@@ -880,7 +883,8 @@
       "objectives_one": "{{count}} objetivo",
       "objectives_other": "{{count}} objetivos",
       "teams_one": "{{count}} equipo",
-      "teams_other": "{{count}} equipos"
+      "teams_other": "{{count}} equipos",
+      "noTeams": "aún sin equipos"
     },
     "explanation": {
       "title": "Cómo se cuentan los puntos",

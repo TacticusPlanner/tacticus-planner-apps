@@ -847,7 +847,10 @@
       "teamsUnavailable": "Équipes indisponibles",
       "teamsLoading": "Chargement des équipes",
       "noRoster": "Synchronisez votre effectif",
-      "rosterLoading": "Chargement de l'effectif"
+      "rosterLoading": "Chargement de l'effectif",
+      "noTeams_one": "Aucune équipe complète n'est encore prévue pour {{events}}, sa colonne est donc vide dans En équipes.",
+      "noTeams_other": "Aucune équipe complète n'est encore prévue pour {{events}}, leurs colonnes sont donc vides dans En équipes.",
+      "showAll": "Afficher toutes les unités"
     },
     "points": {
       "label": "Points",
@@ -880,7 +883,8 @@
       "objectives_one": "{{count}} objectif",
       "objectives_other": "{{count}} objectifs",
       "teams_one": "{{count}} équipe",
-      "teams_other": "{{count}} équipes"
+      "teams_other": "{{count}} équipes",
+      "noTeams": "pas encore d'équipe"
     },
     "explanation": {
       "title": "Comment les points sont comptés",
