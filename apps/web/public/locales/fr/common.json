@@ -82,6 +82,7 @@
       "nextAutoSync": "Prochaine synchronisation automatique {{time}}",
       "syncProgress": "Synchronisation {{downloaded}} / {{total}}…",
       "retrySync": "Échec de la synchronisation — réessayer",
+      "rateLimited": "Limite de synchronisation atteinte. Réessayez {{time}}.",
       "reauthRequired": "Connexion expirée — appuyez pour vous connecter",
       "refreshRequired": "Actualisation requise · {{lastSync}}",
       "syncNow": "Synchroniser maintenant"
@@ -290,6 +291,7 @@
     "noResults": "Aucune page ou action correspondante trouvée.",
     "search": "Rechercher des pages et des actions",
     "sync": "Synchroniser",
+    "syncCooldown": "{{minutes}} min",
     "syncWithTacticus": "Synchroniser avec Tacticus",
     "skipToContent": "Aller au contenu",
     "primaryNavigation": "Navigation principale",

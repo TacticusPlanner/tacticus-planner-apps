@@ -63,6 +63,8 @@ vi.mock("@/features/player-data-sync", () => ({
     status: "idle",
     isSyncing: false,
     statusText: "Up to date",
+    syncDisabled: false,
+    cooldownMinutes: null,
     syncNow: vi.fn(),
   }),
 }))

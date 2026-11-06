@@ -5,6 +5,7 @@ import { GuildRaidPrimeCard } from "./guild-raid-prime-card"
 import { GuildRaidCatalogWarning } from "./guild-raid-status-states"
 import { GuildRaidRefreshButton } from "./guild-raid-refresh-button"
 import {
+  GuildRaidKeyRejected,
   GuildRaidStatusError,
   GuildRaidStatusLoading,
   GuildRaidStatusNeverObserved,
@@ -18,7 +19,8 @@ export function GuildRaidStatusRegion({
   isMobile: boolean
   viewModel: GuildRaidsViewModel
 }) {
-  const { status, refresh, isRefreshing, hasRefreshError } = viewModel
+  const { status, refresh, isRefreshing, hasRefreshError, isKeyRejected } =
+    viewModel
 
   if (status.kind === "loading") {
     return <GuildRaidStatusLoading />
@@ -31,7 +33,11 @@ export function GuildRaidStatusRegion({
   if (status.kind === "neverObserved") {
     return (
       <div className="flex flex-col gap-3">
-        <GuildRaidStatusNeverObserved />
+        {isKeyRejected ? (
+          <GuildRaidKeyRejected />
+        ) : (
+          <GuildRaidStatusNeverObserved />
+        )}
         {hasRefreshError ? (
           <div className="flex justify-end">
             <GuildRaidRefreshButton

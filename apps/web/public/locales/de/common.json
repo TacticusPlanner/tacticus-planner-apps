@@ -82,6 +82,7 @@
       "nextAutoSync": "Nächste automatische Synchronisierung {{time}}",
       "syncProgress": "Synchronisierung {{downloaded}} / {{total}}…",
       "retrySync": "Synchronisierung fehlgeschlagen — erneut versuchen",
+      "rateLimited": "Sync-Limit erreicht. Erneut versuchen {{time}}.",
       "reauthRequired": "Anmeldung abgelaufen — zum Anmelden tippen",
       "refreshRequired": "Aktualisierung erforderlich · {{lastSync}}",
       "syncNow": "Jetzt synchronisieren"
@@ -290,6 +291,7 @@
     "noResults": "Keine passenden Seiten oder Aktionen gefunden.",
     "search": "Seiten und Aktionen durchsuchen",
     "sync": "Sync",
+    "syncCooldown": "{{minutes}} Min.",
     "syncWithTacticus": "Mit Tacticus synchronisieren",
     "skipToContent": "Zum Inhalt springen",
     "primaryNavigation": "Hauptnavigation",

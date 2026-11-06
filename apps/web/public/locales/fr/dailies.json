@@ -61,11 +61,17 @@
       "catalogWarning": "Certaines données de raid n'ont pas pu être associées à vos données de jeu locales. Affichage des valeurs de base.",
       "refresh": "Actualiser le statut",
       "refreshing": "Actualisation…",
-      "refreshFailed": "Échec de l'actualisation. Affichage du dernier statut connu."
+      "refreshFailed": "Échec de l'actualisation. Affichage du dernier statut connu.",
+      "keyRejected": "Tacticus a refusé la clé API de cette guilde. Affichage du dernier statut connu. Un chef ou co-chef doit la remplacer dans les paramètres de guilde."
     },
     "noActiveSeason": {
       "title": "Aucune saison de Raid de guilde active",
       "description": "Revenez lorsque la prochaine saison de votre guilde commencera."
+    },
+    "keyRejected": {
+      "title": "Clé API de guilde refusée",
+      "description": "Tacticus a refusé la clé API de cette guilde, le statut du raid ne peut donc pas être mis à jour. Un chef ou co-chef doit la remplacer par une clé disposant des portées Guild et Guild Raid.",
+      "action": "Ouvrir les paramètres de guilde"
     },
     "neverObserved": {
       "title": "Synchronisation du statut du Raid de guilde",

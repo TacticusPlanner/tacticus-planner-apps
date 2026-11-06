@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
   useMutation,
   useQuery,
   useQueryClient,
   type UseQueryResult,
 } from "@tanstack/react-query"
+
+import { apiIssue } from "@/shared/api"
 
 import {
   refreshGuildRaidStatus,
@@ -26,6 +28,8 @@ export type UseGuildRaidStatusResult = {
   refresh: () => void
   isRefreshing: boolean
   refreshError: unknown
+  /** Tacticus refused the guild's stored API key, so only replacing the key can fix the refresh. */
+  isKeyRejected: boolean
 }
 
 function isDue(result: GuildRaidStatusResult, now: number): boolean {
@@ -50,12 +54,21 @@ export function useGuildRaidStatus(): UseGuildRaidStatusResult {
   // double click, or a click racing the mount-triggered auto-refresh) happen before React has
   // re-rendered with the pending state, so `isPending` alone would let both through.
   const isRefreshingRef = useRef(false)
+  // Kept apart from `mutation.error`: a retry inside the API's one-minute cooldown answers 503 without
+  // asking Tacticus, which says nothing new about the key and must not hide the rejection.
+  const [isKeyRejected, setIsKeyRejected] = useState(false)
 
   const mutation = useMutation({
     mutationFn: () => refreshGuildRaidStatus(),
     onSuccess: (status) => {
       const observed: GuildRaidStatusResult = { kind: "observed", status }
       queryClient.setQueryData(guildRaidStatusQueryKey, observed)
+      setIsKeyRejected(false)
+    },
+    onError: (error) => {
+      if (apiIssue(error, "guildRaidTokenRejected")) {
+        setIsKeyRejected(true)
+      }
     },
     onSettled: () => {
       isRefreshingRef.current = false
@@ -88,5 +101,6 @@ export function useGuildRaidStatus(): UseGuildRaidStatusResult {
     refresh: startRefresh,
     isRefreshing: mutation.isPending,
     refreshError: mutation.error,
+    isKeyRejected,
   }
 }

@@ -82,6 +82,7 @@
       "nextAutoSync": "Next auto sync {{time}}",
       "syncProgress": "Syncing {{downloaded}} / {{total}}…",
       "retrySync": "Sync failed — try again",
+      "rateLimited": "Sync limit reached. Try again {{time}}.",
       "reauthRequired": "Sign-in expired — tap to sign in",
       "refreshRequired": "Refresh required · {{lastSync}}",
       "syncNow": "Sync now"
@@ -290,6 +291,7 @@
     "noResults": "No matching pages or actions found.",
     "search": "Search pages and actions",
     "sync": "Sync",
+    "syncCooldown": "{{minutes}} min",
     "syncWithTacticus": "Sync with Tacticus",
     "skipToContent": "Skip to content",
     "primaryNavigation": "Main navigation",

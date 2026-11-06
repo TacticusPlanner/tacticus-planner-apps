@@ -1,4 +1,5 @@
 import { isPlayerDataChunkKey } from "./chunk-keys"
+import { PlayerDataRateLimitError } from "./player-data-errors"
 import {
   playerDataChunkEnvelopeMetaSchema,
   playerDataChunkPayloadSchemas,
@@ -41,6 +42,11 @@ export class PlayerDataHttpClient implements PlayerDataClient {
 
   async triggerSync(): Promise<PlayerDataManifest> {
     const response = await this.authorizedFetch(syncPath, { method: "POST" })
+
+    if (response.status === 429) {
+      const seconds = Number(response.headers.get("Retry-After") ?? NaN)
+      throw new PlayerDataRateLimitError(seconds > 0 ? seconds : undefined)
+    }
 
     if (!response.ok) {
       throw new Error(

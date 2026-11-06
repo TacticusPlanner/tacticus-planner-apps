@@ -105,7 +105,7 @@ export function useQuickActions({
           description: t("nav.quickActions.syncDescription"),
           keywords: ["api"],
           disabledReason:
-            sync.status === "syncing"
+            sync.status === "syncing" || sync.syncBlockedUntil !== null
               ? createElement(SyncStatusText)
               : undefined,
         },

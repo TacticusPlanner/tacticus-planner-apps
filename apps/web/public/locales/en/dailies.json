@@ -61,11 +61,17 @@
       "catalogWarning": "Some raid data couldn't be matched to your local game data. Showing basic values.",
       "refresh": "Refresh status",
       "refreshing": "Refreshing…",
-      "refreshFailed": "Refresh failed. Showing the last known status."
+      "refreshFailed": "Refresh failed. Showing the last known status.",
+      "keyRejected": "Tacticus rejected this guild's API key. Showing the last known status. A Leader or Co-Leader needs to replace it in Guild settings."
     },
     "noActiveSeason": {
       "title": "No active Guild Raid season",
       "description": "Check back once your guild's next season begins."
+    },
+    "keyRejected": {
+      "title": "Guild API key rejected",
+      "description": "Tacticus refused this guild's API key, so raid status can't update. A Leader or Co-Leader needs to replace it with a key that has both the Guild and Guild Raid scopes.",
+      "action": "Open Guild settings"
     },
     "neverObserved": {
       "title": "Syncing your guild's Guild Raid status",

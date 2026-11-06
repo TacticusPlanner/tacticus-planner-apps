@@ -24,6 +24,7 @@ vi.mock("@/shared/player-data-status", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/player-data-status")>()),
   usePlayerDataStatus: () => ({
     status: sync.isSyncing ? "syncing" : "ready",
+    syncBlockedUntil: null,
     syncNow: sync.syncNow,
   }),
 }))

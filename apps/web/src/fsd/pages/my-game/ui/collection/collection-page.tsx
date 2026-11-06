@@ -464,14 +464,15 @@ function SignInButton() {
 
 function SyncButton() {
   const { t } = useTranslation("common")
-  const { isSyncing, statusText, syncNow } = usePlayerDataSyncStatus()
+  const { isSyncing, statusText, syncDisabled, syncNow } =
+    usePlayerDataSyncStatus()
 
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Button
         size="sm"
         onClick={() => void syncNow()}
-        disabled={isSyncing}
+        disabled={syncDisabled}
         data-testid="collection-sync"
       >
         <RefreshCw
