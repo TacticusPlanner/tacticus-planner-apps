@@ -1312,10 +1312,14 @@ describe("CreateGoalSheet", () => {
         name: "None",
       })
     ).toBeInTheDocument()
-    expect(
-      within(listbox).getByRole("option", { name: /Stone II\s*\(3\/6\)/ })
-    ).toBeInTheDocument()
-    expect(within(listbox).getAllByRole("option")).toHaveLength(2)
+    for (const count of [1, 2, 3]) {
+      expect(
+        within(listbox).getByRole("option", {
+          name: new RegExp(String.raw`Stone II\s*\(${count}\/6\)`),
+        })
+      ).toBeInTheDocument()
+    }
+    expect(within(listbox).getAllByRole("option")).toHaveLength(4)
 
     fireEvent.click(
       within(listbox).getByRole("option", {
