@@ -54,8 +54,8 @@ export function useGuildRaidStatus(): UseGuildRaidStatusResult {
   // double click, or a click racing the mount-triggered auto-refresh) happen before React has
   // re-rendered with the pending state, so `isPending` alone would let both through.
   const isRefreshingRef = useRef(false)
-  // Kept apart from `mutation.error`: a retry inside the API's one-minute cooldown answers 503 without
-  // asking Tacticus, which says nothing new about the key and must not hide the rejection.
+  // Kept apart from `mutation.error`: a retry inside the API's one-minute cooldown doesn't ask Tacticus
+  // (it answers 503, or 200 with the saved status marked stale), which says nothing new about the key.
   const [isKeyRejected, setIsKeyRejected] = useState(false)
 
   const mutation = useMutation({
@@ -63,7 +63,9 @@ export function useGuildRaidStatus(): UseGuildRaidStatusResult {
     onSuccess: (status) => {
       const observed: GuildRaidStatusResult = { kind: "observed", status }
       queryClient.setQueryData(guildRaidStatusQueryKey, observed)
-      setIsKeyRejected(false)
+      if (status.freshness === "fresh") {
+        setIsKeyRejected(false)
+      }
     },
     onError: (error) => {
       if (apiIssue(error, "guildRaidTokenRejected")) {

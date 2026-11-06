@@ -240,7 +240,16 @@ describe("useGuildRaidStatus", () => {
     await waitFor(() => expect(result.current.isRefreshing).toBe(false))
     expect(result.current.isKeyRejected).toBe(true)
 
-    refreshGuildRaidStatusMock.mockResolvedValueOnce(statusResponse())
+    refreshGuildRaidStatusMock.mockResolvedValueOnce(
+      statusResponse({ freshness: "stale" })
+    )
+    await act(async () => result.current.refresh())
+    await waitFor(() => expect(result.current.isRefreshing).toBe(false))
+    expect(result.current.isKeyRejected).toBe(true)
+
+    refreshGuildRaidStatusMock.mockResolvedValueOnce(
+      statusResponse({ freshness: "fresh" })
+    )
     await act(async () => result.current.refresh())
     await waitFor(() => expect(result.current.isKeyRejected).toBe(false))
   })

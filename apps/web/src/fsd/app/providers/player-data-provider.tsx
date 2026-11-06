@@ -187,8 +187,11 @@ export function PlayerDataProvider({
           syncBlockRef.current = nextBlock
           setSyncBlock(nextBlock)
           // The stored data is untouched, so this is not a failed state; `syncBlockedUntil` says the rest.
-          const manifest = getManifestMetadata(await getPlayerDataMetadata())
-          setStatus(manifest ? "ready" : "idle")
+          // A failed read must not leave the status stuck on "syncing".
+          const metadata = await getPlayerDataMetadata().catch(() => null)
+          setStatus(
+            metadata && getManifestMetadata(metadata) ? "ready" : "idle"
+          )
           return
         }
 
