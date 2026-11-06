@@ -7,7 +7,6 @@ import { GoalDragHandle } from "./goal-drag-handle"
 import { GoalTargetDisplay } from "../shared/goal-progress-visuals"
 import { GoalUnitIcon } from "@/features/goal-create"
 import { SortableList, type SortableRenderProps } from "@/shared/ui"
-import { GoalsCards } from "./goals-cards"
 import { SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffItem, SeasonFitLabel } from "./season-fit-ui"
 import { StatusBadge } from "../shared/status-badge"
@@ -59,25 +58,17 @@ const ReorderCardBody = memo(function ReorderCardBody({
   )
 })
 
-/** The mobile list: the shared goal cards, or, while reorder mode is on, the collapsed drag-only cards
- *  (global-goal-priority: mobile reorders in its own mode). */
-export function GoalsMobileCards(props: GoalsListProps) {
-  const {
-    rows,
-    metrics,
-    onReorder,
-    reorderEnabled = false,
-    mobileReorderActive = false,
-    reorderPending = false,
-    reachedByGoalId,
-    seasonFit,
-    seasonCutoffGoalId,
-  } = props
+/** Mobile reorder mode's collapsed drag-only cards (global-goal-priority). */
+export function GoalsReorderCards({
+  rows,
+  metrics,
+  onReorder,
+  reorderPending = false,
+  reachedByGoalId,
+  seasonFit,
+  seasonCutoffGoalId,
+}: GoalsListProps) {
   const { getEntityName } = useGoalCatalog()
-
-  if (!(reorderEnabled && mobileReorderActive)) {
-    return <GoalsCards {...props} isMobile />
-  }
 
   const seasonFitAccent = (goalId: string) => {
     const fit = seasonFit?.fits.get(goalId)

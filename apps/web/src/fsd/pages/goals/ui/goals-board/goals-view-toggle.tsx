@@ -21,15 +21,19 @@ const viewOptions: {
 export function GoalsViewToggle({
   view,
   onViewChange,
+  disabled = false,
 }: {
   view: GoalsView
   onViewChange: (view: GoalsView) => void
+  /** Phone reorder mode always shows its own list, so a switch there would have no visible effect. */
+  disabled?: boolean
 }) {
   const { t } = useTranslation()
   return (
     <ToggleGroup
       aria-label={t("goals.view.label")}
       data-testid="goals-view-toggle"
+      disabled={disabled}
       onValueChange={(value) => {
         // Radix emits "" when the pressed item is clicked again; the view can't be unset.
         if (value) onViewChange(value as GoalsView)

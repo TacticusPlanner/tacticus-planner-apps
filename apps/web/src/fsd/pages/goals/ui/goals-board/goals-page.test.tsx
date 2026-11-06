@@ -820,6 +820,26 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
+  it("shows one select-all above the groups in Cards view, not one per group", async () => {
+    window.localStorage.setItem("goals.overview.view", "Cards")
+    window.localStorage.setItem("goals.overview.group", "type")
+    listGoals.mockResolvedValue({
+      goals: [
+        activeGoal,
+        { ...activeGoal, goalId: "goal-2", goalType: "Ability" },
+      ],
+    })
+    renderPage()
+
+    const heading = await screen.findByRole("heading", { name: /^Rank/ })
+    const selectAll = screen.getByTestId("goals-cards-select-all")
+    expect(screen.getAllByTestId("goals-select-all")).toHaveLength(1)
+    expect(
+      selectAll.compareDocumentPosition(heading) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
   it("collapses a goal type section and remembers it", async () => {
     window.localStorage.setItem("goals.overview.group", "type")
     listGoals.mockResolvedValue({
@@ -2062,6 +2082,9 @@ describe("GoalsPage Goals view", () => {
         await screen.findByTestId("goals-list-reorder-cards")
       ).toBeInTheDocument()
       expect(screen.queryByTestId("goals-list-table")).not.toBeInTheDocument()
+      // The list ignores the view in this mode, so switching it can't look like it worked.
+      expect(screen.getByTestId("goals-view-cards")).toBeDisabled()
+      expect(screen.getByTestId("goals-view-table")).toBeDisabled()
     })
   })
 })

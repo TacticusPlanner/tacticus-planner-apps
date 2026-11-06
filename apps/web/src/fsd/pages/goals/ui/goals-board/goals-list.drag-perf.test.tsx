@@ -38,6 +38,14 @@ vi.mock("../shared/goal-resource-chips", () => ({
     counts.chips++
     return null
   },
+  GoalResourceChipList: () => {
+    counts.chips++
+    return null
+  },
+}))
+
+vi.mock("../shared/use-goal-resource-chips", () => ({
+  useGoalResourceChips: () => [],
 }))
 
 vi.mock(
@@ -122,6 +130,7 @@ describe("GoalsList drag performance", () => {
     const onReorder = vi.fn()
     const { queryClient } = render(
       <GoalsList
+        view="Table"
         actions={actions}
         onReorder={onReorder}
         reorderEnabled
@@ -171,6 +180,7 @@ describe("GoalsList mobile reorder cards drag performance", () => {
     const onReorder = vi.fn()
     const { queryClient } = render(
       <GoalsList
+        view="Table"
         actions={actions}
         mobileReorderActive
         onReorder={onReorder}

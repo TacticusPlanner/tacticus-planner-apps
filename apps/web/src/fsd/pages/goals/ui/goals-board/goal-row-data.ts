@@ -28,7 +28,7 @@ export type GoalRowSources = Pick<
   | "reachedByGoalId"
 >
 
-/** Everything a goal card displays that is derived rather than read straight off the row. */
+/** Everything a goal row or card displays that is derived rather than read straight off the row. */
 export type GoalRowData = {
   progress: GoalOverviewMetrics["progress"]
   remaining: GoalOverviewMetrics["remaining"]

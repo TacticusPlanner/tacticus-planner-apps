@@ -18,6 +18,7 @@ import type {
   useGoalActions,
 } from "@/features/goal-planning"
 import { NO_BLOCKERS } from "@/features/goal-planning"
+import { GoalsCardsSelectAll } from "./goals-cards"
 import { GoalsList } from "./goals-list"
 
 const setStatus = vi.fn(() => Promise.resolve(true))
@@ -196,7 +197,12 @@ describe("Goal cards", () => {
   it("shows checkboxes on mobile only in select mode, and never an inline handle", async () => {
     useIsMobileMock.mockReturnValue(true)
     const { rerender } = render(
-      <GoalsList actions={stubActions} reorderEnabled rows={[row("g1", 1)]} />
+      <GoalsList
+        actions={stubActions}
+        reorderEnabled
+        rows={[row("g1", 1)]}
+        view="Cards"
+      />
     )
 
     const card = await screen.findByTestId("goal-row")
@@ -206,6 +212,7 @@ describe("Goal cards", () => {
 
     rerender(
       <GoalsList
+        view="Cards"
         actions={stubActions}
         reorderEnabled
         rows={[row("g1", 1)]}
@@ -537,13 +544,6 @@ describe("Goal cards grid", () => {
     expect(screen.queryByTestId("goals-list-cards")).not.toBeInTheDocument()
   })
 
-  it("renders cards on mobile when no view is given", async () => {
-    useIsMobileMock.mockReturnValue(true)
-    render(<GoalsList actions={stubActions} rows={rows} />)
-
-    expect(await screen.findByTestId("goals-list-cards")).toBeInTheDocument()
-  })
-
   it("shows no legend for Ascension cards, whose shard bars have no Potential", async () => {
     render(
       <GoalsList
@@ -609,30 +609,27 @@ describe("Goal cards grid", () => {
     expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(3)
   })
 
-  it("selects every visible goal from the select-all checkbox above the grid", async () => {
-    const onSelectAllVisible = vi.fn()
+  it("selects every visible goal from the select-all checkbox", async () => {
+    const onSelectAll = vi.fn()
+    const visibleIds = ["a", "b", "c"]
     const { rerender } = render(
-      <GoalsList
-        actions={stubActions}
-        onSelectAllVisible={onSelectAllVisible}
-        rows={rows}
+      <GoalsCardsSelectAll
+        onSelectAll={onSelectAll}
         selection={new Set()}
-        view="Cards"
+        visibleIds={visibleIds}
       />
     )
 
     const selectAll = await screen.findByTestId("goals-select-all")
     expect(selectAll).toHaveAttribute("data-state", "unchecked")
     fireEvent.click(selectAll)
-    expect(onSelectAllVisible).toHaveBeenCalledTimes(1)
+    expect(onSelectAll).toHaveBeenCalledTimes(1)
 
     rerender(
-      <GoalsList
-        actions={stubActions}
-        onSelectAllVisible={onSelectAllVisible}
-        rows={rows}
+      <GoalsCardsSelectAll
+        onSelectAll={onSelectAll}
         selection={new Set(["a"])}
-        view="Cards"
+        visibleIds={visibleIds}
       />
     )
     expect(screen.getByTestId("goals-select-all")).toHaveAttribute(
@@ -641,18 +638,24 @@ describe("Goal cards grid", () => {
     )
 
     rerender(
-      <GoalsList
-        actions={stubActions}
-        onSelectAllVisible={onSelectAllVisible}
-        rows={rows}
-        selection={new Set(["a", "b", "c"])}
-        view="Cards"
+      <GoalsCardsSelectAll
+        onSelectAll={onSelectAll}
+        selection={new Set(visibleIds)}
+        visibleIds={visibleIds}
       />
     )
     expect(screen.getByTestId("goals-select-all")).toHaveAttribute(
       "data-state",
       "checked"
     )
+  })
+
+  it("mounts no drag wiring on phones, which reorder in their own mode", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    render(<GoalsList actions={stubActions} rows={rows} view="Cards" />)
+
+    await screen.findAllByTestId("goal-row")
+    expect(document.querySelector('[id^="DndLiveRegion"]')).toBeNull()
   })
 
   it("toggles one goal from its card checkbox without touching other controls", async () => {

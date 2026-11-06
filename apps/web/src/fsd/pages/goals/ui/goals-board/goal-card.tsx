@@ -6,7 +6,12 @@ import { GoalTypeBadge } from "@/entities/goal"
 import { useGoalCatalog, type GoalMenuMoves } from "@/features/goal-planning"
 import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-create"
 import type { SortableRenderProps } from "@/shared/ui"
-import { GoalResourceChips } from "../shared/goal-resource-chips"
+import { GoalResourceChipList } from "../shared/goal-resource-chips"
+import {
+  useGoalResourceChips,
+  type GoalResourceChip,
+  type GoalResourceChipKind,
+} from "../shared/use-goal-resource-chips"
 import {
   GoalProgressDisplay,
   GoalTargetDisplay,
@@ -35,17 +40,23 @@ import {
 import { SeasonFitLabel } from "./season-fit-ui"
 
 /** Chips shown at the right end of the target row, as V1's estimate chips were. */
-const ROW_END_CHIPS: ReadonlySet<string> = new Set([
+const ROW_END_KINDS: ReadonlySet<GoalResourceChipKind> = new Set([
   "energy",
   "onslaughtTokens",
 ])
 /** An Ability goal's costs, on the left of its top row (V1's ability cost row). */
-// A material with two or more rarities folds into one chip keyed by the bare kind.
-const ABILITY_COST_CHIP =
-  /^(abilityBadges(-|$)|forgeBadges(-|$)|components$|gold$)/
-const ORB_CHIP = /^orbs(-|$)/
+const ABILITY_COST_KINDS: ReadonlySet<GoalResourceChipKind> = new Set([
+  "abilityBadges",
+  "forgeBadges",
+  "components",
+  "gold",
+])
 /** Shown as bars instead of chips when the Ascension goal's shard progress is known. */
-const SHARD_CHIPS: ReadonlySet<string> = new Set(["shards", "mythicShards"])
+const SHARD_KINDS: ReadonlySet<GoalResourceChipKind> = new Set([
+  "shards",
+  "mythicShards",
+])
+const ROW_END_CHIP_CLASS = "ml-auto justify-end gap-x-2 text-xs"
 
 type GoalCardProps = Pick<
   GoalsListProps,
@@ -72,7 +83,8 @@ type GoalCardProps = Pick<
   showCheckbox: boolean
   /** Desktop where reordering is available; mobile reorders in its own mode instead. */
   showDragHandle: boolean
-  dragHandle: SortableRenderProps["dragHandle"]
+  /** Absent where the card isn't in a sortable list. */
+  dragHandle?: SortableRenderProps["dragHandle"]
   popoverOpen: boolean
   setOpenPopoverGoalId: Dispatch<SetStateAction<string | null>>
 }
@@ -118,15 +130,24 @@ export const GoalCard = memo(
     const hasLevelRow = !data.reached && !!data.levelRequirement
     const kind = row.goalType
     const shardProgress = data.remaining?.shardProgress
-    const chipProps = {
+    const chips = useGoalResourceChips({
       energy: data.energy,
       entityType: row.entityType,
       goalType: row.goalType,
       onslaughtTokens: data.onslaughtTokens,
       remaining: data.remaining,
       shopSpend: data.shopSpend,
-      className: "gap-x-2 text-xs",
-    }
+    })
+    const chipRow = (
+      keep: (chip: GoalResourceChip) => boolean,
+      className = "gap-x-2 text-xs"
+    ) => (
+      <GoalResourceChipList chips={chips.filter(keep)} className={className} />
+    )
+    const rowEndChips = chipRow(
+      (chip) => ROW_END_KINDS.has(chip.kind),
+      ROW_END_CHIP_CLASS
+    )
 
     return (
       <>
@@ -146,7 +167,7 @@ export const GoalCard = memo(
               />
             ) : null}
             <GoalPriorityNumber row={row} />
-            {showDragHandle && isInFlightStatus(row.status) ? (
+            {showDragHandle && dragHandle && isInFlightStatus(row.status) ? (
               <GoalDragHandle dragHandle={dragHandle} entityName={name} />
             ) : null}
           </div>
@@ -208,15 +229,8 @@ export const GoalCard = memo(
               className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
               data-testid="goal-card-cost-row"
             >
-              <GoalResourceChips
-                {...chipProps}
-                include={(key) => ABILITY_COST_CHIP.test(key)}
-              />
-              <GoalResourceChips
-                {...chipProps}
-                className="ml-auto justify-end gap-x-2 text-xs"
-                include={(key) => ROW_END_CHIPS.has(key)}
-              />
+              {chipRow((chip) => ABILITY_COST_KINDS.has(chip.kind))}
+              {rowEndChips}
             </div>
           ) : null}
           <div
@@ -239,13 +253,7 @@ export const GoalCard = memo(
                 />
               )}
             </div>
-            {data.reached || kind === "Ability" ? null : (
-              <GoalResourceChips
-                {...chipProps}
-                className="ml-auto justify-end gap-x-2 text-xs"
-                include={(key) => ROW_END_CHIPS.has(key)}
-              />
-            )}
+            {data.reached || kind === "Ability" ? null : rowEndChips}
           </div>
           <CoveredByNote
             coveredBy={sources.metrics?.get(row.goalId)?.coveredBy}
@@ -261,19 +269,14 @@ export const GoalCard = memo(
           ) : kind === "Ascension" ? (
             // V1's Ascension card: the orbs on their own row, then a labelled bar per shard kind.
             <>
-              <GoalResourceChips
-                {...chipProps}
-                include={(key) => ORB_CHIP.test(key)}
-              />
+              {chipRow((chip) => chip.kind === "orbs")}
               <ShardProgressBars shardProgress={shardProgress} />
-              <GoalResourceChips
-                {...chipProps}
-                include={(key) =>
-                  !ROW_END_CHIPS.has(key) &&
-                  !ORB_CHIP.test(key) &&
-                  !(shardProgress && SHARD_CHIPS.has(key))
-                }
-              />
+              {chipRow(
+                (chip) =>
+                  !ROW_END_KINDS.has(chip.kind) &&
+                  chip.kind !== "orbs" &&
+                  !(shardProgress && SHARD_KINDS.has(chip.kind))
+              )}
             </>
           ) : kind === "Ability" ? (
             <>
@@ -288,12 +291,11 @@ export const GoalCard = memo(
                   />
                 </div>
               ) : null}
-              <GoalResourceChips
-                {...chipProps}
-                include={(key) =>
-                  !ROW_END_CHIPS.has(key) && !ABILITY_COST_CHIP.test(key)
-                }
-              />
+              {chipRow(
+                (chip) =>
+                  !ROW_END_KINDS.has(chip.kind) &&
+                  !ABILITY_COST_KINDS.has(chip.kind)
+              )}
             </>
           ) : (
             <>
@@ -321,22 +323,16 @@ export const GoalCard = memo(
                     className="mt-0"
                     levelRequirement={data.levelRequirement}
                     potentialRatio={levelPotentialProgress?.get(row.goalId)}
-                    trailing={
-                      <GoalResourceChips
-                        {...chipProps}
-                        include={(key) => key === "gold"}
-                      />
-                    }
+                    trailing={chipRow((chip) => chip.kind === "gold")}
                     xpBooks={data.xpBooks}
                   />
                 </div>
               ) : null}
-              <GoalResourceChips
-                {...chipProps}
-                include={(key) =>
-                  !ROW_END_CHIPS.has(key) && (!hasLevelRow || key !== "gold")
-                }
-              />
+              {chipRow(
+                (chip) =>
+                  !ROW_END_KINDS.has(chip.kind) &&
+                  (!hasLevelRow || chip.kind !== "gold")
+              )}
             </>
           )}
         </div>

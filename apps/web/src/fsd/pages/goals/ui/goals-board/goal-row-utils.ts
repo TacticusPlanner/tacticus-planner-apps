@@ -169,7 +169,7 @@ export type RowSliceProps = Pick<
   moves: GoalMenuMoves | undefined
   row: GoalRow
   selected: boolean
-  dragHandle: unknown
+  dragHandle?: unknown
   popoverOpen: boolean
 }
 
@@ -178,6 +178,34 @@ export type RowSliceProps = Pick<
  *  only this goal's slice of each. Functions other than `onToggleSelected` are omitted on purpose:
  *  `actions`, `onEdit` and `onMenuMove` only act on ids/state read at call time (a move's target is the
  *  compared `moves`), and `setOpenPopoverGoalId` is a state setter. `extra` adds a surface's own scalar props. */
+/** Whether a goal's row or card draws a Potential bar, which is what the legend explains. Cards draw
+ *  shard bars with no Potential for Ascension, and an Ability card's only one is on its level row. */
+export function drawsPotentialBar(
+  row: GoalRow,
+  {
+    metrics,
+    potentialProgress,
+    levelPotentialProgress,
+    reachedByGoalId,
+  }: Pick<
+    GoalsListProps,
+    | "metrics"
+    | "potentialProgress"
+    | "levelPotentialProgress"
+    | "reachedByGoalId"
+  >,
+  view: "Cards" | "Table"
+) {
+  if (isReachedRow(row, reachedByGoalId)) return false
+  const onProgressBar = potentialProgress?.get(row.goalId) !== undefined
+  const onLevelRow =
+    !!metrics?.get(row.goalId)?.levelRequirement &&
+    levelPotentialProgress?.get(row.goalId) !== undefined
+  if (view === "Table") return onProgressBar || onLevelRow
+  if (row.goalType === "Ascension") return false
+  return onLevelRow || (row.goalType !== "Ability" && onProgressBar)
+}
+
 export function sameRowSlice<P extends RowSliceProps>(
   a: P,
   b: P,

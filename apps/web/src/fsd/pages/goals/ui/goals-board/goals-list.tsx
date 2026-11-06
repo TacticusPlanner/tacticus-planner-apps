@@ -13,22 +13,22 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useGoalCatalog } from "@/features/goal-planning"
 import { SortableList } from "@/shared/ui"
+import { ProgressLegend } from "../shared/goal-progress-visuals"
 import { GoalRowCells } from "./goal-table-row"
 import { GoalsCards } from "./goals-cards"
 import {
+  drawsPotentialBar,
   isReachedRow,
   REACHED_ROW_CLASS,
   type GoalsListProps,
 } from "./goal-row-utils"
-import { GoalsMobileCards } from "./goals-mobile-cards"
+import { GoalsReorderCards } from "./goals-reorder-cards"
 import { SEASON_FIT_ROW_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffRow } from "./season-fit-ui"
 import type { GoalsView } from "./use-goals-view"
 
-/** A tab's goal rows as the goal cards or the table (goal-list-layout). `view` picks (the page passes
- * this device's stored Goals view); when omitted, for embeds that have no view toggle, it is cards below
- * the mobile breakpoint and the table at or above it. Mobile reorder mode always shows its collapsed
- * cards. The row itself opens nothing;
+/** A tab's goal rows as the goal cards or the table (goal-list-layout), by this device's stored Goals
+ * view. Mobile reorder mode always shows its collapsed cards. The row itself opens nothing;
  * its Edit action opens the Edit goal dialog, and the actions and nested buttons stop activation from
  * bubbling so they keep working independently. `reorderEnabled` shows a drag handle on every desktop
  * row or card directly (no separate mode); mobile additionally needs `mobileReorderActive`
@@ -36,7 +36,7 @@ import type { GoalsView } from "./use-goals-view"
 export function GoalsList({
   view,
   ...props
-}: GoalsListProps & { view?: GoalsView }) {
+}: GoalsListProps & { view: GoalsView }) {
   const isMobile = useIsMobile()
   const { rows, reorderEnabled, mobileReorderActive } = props
 
@@ -44,14 +44,13 @@ export function GoalsList({
     return null
   }
 
-  const reordering = isMobile && reorderEnabled && mobileReorderActive
-  if ((view ?? (isMobile ? "Cards" : "Table")) === "Table" && !reordering) {
-    return <GoalsTable {...props} isMobile={isMobile} />
+  if (isMobile && reorderEnabled && mobileReorderActive) {
+    return <GoalsReorderCards {...props} />
   }
-  return isMobile ? (
-    <GoalsMobileCards {...props} />
+  return view === "Table" ? (
+    <GoalsTable {...props} isMobile={isMobile} />
   ) : (
-    <GoalsCards {...props} isMobile={false} />
+    <GoalsCards {...props} isMobile={isMobile} />
   )
 }
 
@@ -101,6 +100,13 @@ function GoalsTable({
   const allSelected = scopeIds.length > 0 && selectedCount === scopeIds.length
   // Mobile matches its cards: bulk actions only exist in select mode, and reorder has its own mode.
   const showCheckboxes = !isMobile || selectActive
+  const showLegend = rows.some((row) =>
+    drawsPotentialBar(
+      row,
+      { metrics, potentialProgress, levelPotentialProgress, reachedByGoalId },
+      "Table"
+    )
+  )
 
   return (
     <Table data-testid="goals-list-table">
@@ -145,7 +151,17 @@ function GoalsTable({
             {t("goals.columns.doneBy")}
           </TableHead>
           <TableHead>{t("goals.columns.remaining")}</TableHead>
-          <TableHead className="w-40">{t("goals.columns.progress")}</TableHead>
+          <TableHead className="w-40">
+            {showLegend ? (
+              <div className="grid gap-0.5 py-1">
+                {t("goals.columns.progress")}
+                {/* Stacked: side by side it would widen this deliberately narrow column. */}
+                <ProgressLegend className="flex-col items-start gap-0" />
+              </div>
+            ) : (
+              t("goals.columns.progress")
+            )}
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

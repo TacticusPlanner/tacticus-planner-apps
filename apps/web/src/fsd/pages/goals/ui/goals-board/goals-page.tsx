@@ -41,6 +41,7 @@ import { goalMenuMoves, useGoalsPageReorder } from "@/features/goal-planning"
 import { isGoalsListLoading } from "@/features/goal-planning"
 import { useProjects } from "@/entities/project"
 import { useGoalCatalog } from "@/features/goal-planning"
+import { GoalsCardsSelectAll } from "./goals-cards"
 import { GoalsList } from ".//goals-list"
 import { GoalGroupSection } from "./goal-group-section"
 import { GoalsBulkControls } from "./goals-bulk-controls"
@@ -436,6 +437,7 @@ export function GoalsPage() {
         statusFilter={statusFilter}
         viewToggle={
           <GoalsViewToggle
+            disabled={isMobile && reorderActive}
             onViewChange={goalsView.setView}
             view={goalsView.view}
           />
@@ -466,6 +468,16 @@ export function GoalsPage() {
         ref={listRef}
         tabIndex={-1}
       >
+        {!isLoading &&
+        !isMobile &&
+        goalsView.view === "Cards" &&
+        visibleIds.length > 0 ? (
+          <GoalsCardsSelectAll
+            onSelectAll={selectAllVisible}
+            selection={selection}
+            visibleIds={visibleIds}
+          />
+        ) : null}
         {(isLoading ? [] : rowGroups).map((rowGroup) => {
           if (rowGroup.rows.length === 0) return null
           const list = (

@@ -76,7 +76,9 @@ function SortableItem<T>({
 
   return renderItem(item, {
     setNodeRef,
-    style: { transform: CSS.Transform.toString(transform), transition },
+    // Translate only: the grid strategy also returns a scale, which would stretch a card moving
+    // into a row of another height.
+    style: { transform: CSS.Translate.toString(transform), transition },
     dragHandle,
     isDragging,
   })

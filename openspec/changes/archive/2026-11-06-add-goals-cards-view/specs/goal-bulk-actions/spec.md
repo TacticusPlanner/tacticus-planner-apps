@@ -7,7 +7,7 @@ At or above the mobile breakpoint, every goal on the Goals page (`/plan/goals`, 
 - in Table view, in the row's leading cell, before the priority number and drag handle;
 - in Cards view, first in the card header, before the priority number and drag handle.
 
-A select-all checkbox SHALL also be present: in the table header in Table view, and in a bar directly above the cards grid (above the Actual/Potential legend, when that renders) in Cards view.
+A select-all checkbox SHALL also be present: in the table header in Table view, and once above the goal groups in Cards view, because a label under a group heading would read as selecting that group only.
 
 - Toggling a goal's checkbox SHALL add or remove that goal from the selection without triggering any other control of its row or card.
 - The select-all checkbox SHALL select every currently visible goal, across every group when Group is set, when not all are selected. It SHALL clear the selection when all visible goals are selected, and SHALL render as indeterminate while some but not all are selected.
@@ -23,7 +23,7 @@ A select-all checkbox SHALL also be present: in the table header in Table view, 
 #### Scenario: Select all visible across groups
 
 - **GIVEN** Group is set to goal type and the visible goals span three groups
-- **WHEN** the user checks the select-all checkbox, in the table header or above the cards grid
+- **WHEN** the user checks the select-all checkbox, in the table header or above the goal groups
 - **THEN** every goal in all three groups is selected
 
 #### Scenario: Header checkbox clears a full selection

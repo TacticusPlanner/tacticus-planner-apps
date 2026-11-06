@@ -36,7 +36,7 @@ The stored view SHALL be read synchronously, so the list SHALL NOT wait for it a
 
 - **GIVEN** the Goals page below the mobile breakpoint in Table view
 - **WHEN** the user turns reorder mode on
-- **THEN** the list shows the collapsed reorder cards, and leaving reorder mode returns to the table
+- **THEN** the list shows the collapsed reorder cards with the Table/Cards toggle disabled, and leaving reorder mode returns to the table
 
 ### Requirement: Goal cards share one layout on every platform
 

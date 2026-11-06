@@ -3,16 +3,10 @@ import { useTranslation } from "react-i18next"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { TableCell } from "@workspace/ui/components/table"
 
-import {
-  NO_BLOCKERS,
-  UNKNOWN_PROGRESS,
-  type GoalMenuMoves,
-} from "@/features/goal-planning"
-import { useGoalCatalog } from "@/features/goal-planning"
+import { useGoalCatalog, type GoalMenuMoves } from "@/features/goal-planning"
 import { GoalDragHandle } from "./goal-drag-handle"
 import { GoalRowActions } from ".//goal-row-actions"
 import { GoalResourceChips } from "../shared/goal-resource-chips"
-import { formatGoalRemainingText } from "../shared/goal-remaining-text"
 import {
   GoalProgressDisplay,
   GoalTargetDisplay,
@@ -30,13 +24,9 @@ import {
   GoalPriorityNumber,
   ReachedDash,
 } from "./goal-row-shared"
+import { deriveGoalRowData } from "./goal-row-data"
 import {
-  estimateEnergy,
-  estimateOnslaughtTokens,
-  estimateShopSpend,
   isInFlightStatus,
-  isReachedRow,
-  goalXpBookFigure,
   sameRowSlice,
   stopRowNavigation,
   toggleGoalStatus,
@@ -103,26 +93,29 @@ export const GoalRowCells = memo(function GoalRowCells({
 }: GoalRowCellsProps) {
   const { t, i18n } = useTranslation()
   const { getEntityName } = useGoalCatalog()
-  const progress = metrics?.get(row.goalId)?.progress ?? UNKNOWN_PROGRESS
-  const remaining = metrics?.get(row.goalId)?.remaining ?? null
-  const levelRequirement = metrics?.get(row.goalId)?.levelRequirement
-  const energy = estimateEnergy(estimates?.get(row.goalId))
-  const onslaughtTokens = estimateOnslaughtTokens(estimates?.get(row.goalId))
-  const shopSpend = estimateShopSpend(estimates?.get(row.goalId))
-  const reached = isReachedRow(row, reachedByGoalId)
-  const xpBooks = reached
-    ? undefined
-    : goalXpBookFigure(
-        levelChargedXp?.get(row.goalId),
-        levelPoolXpAvailable?.get(row.goalId),
-        xpBook
-      )
-  const remainingText = formatGoalRemainingText(
-    t,
-    i18n?.resolvedLanguage,
+  const {
     progress,
     remaining,
-    energy
+    levelRequirement,
+    blockers,
+    energy,
+    onslaughtTokens,
+    shopSpend,
+    reached,
+    xpBooks,
+    remainingText,
+  } = deriveGoalRowData(
+    row,
+    {
+      estimates,
+      metrics,
+      levelChargedXp,
+      levelPoolXpAvailable,
+      xpBook,
+      reachedByGoalId,
+    },
+    t,
+    i18n?.resolvedLanguage
   )
 
   return (
@@ -156,7 +149,9 @@ export const GoalRowCells = memo(function GoalRowCells({
         </div>
       </TableCell>
       <TableCell className="font-medium">
-        <div className="flex items-center gap-3">
+        {/* `w-max`: the avatar image counts for no width in this content-sized column, which pushed the
+            actions button out of the cell and under the Projects column. */}
+        <div className="flex w-max min-w-full items-center gap-3">
           <GoalUnitIcon
             className="size-12"
             entityId={row.entityId}
@@ -239,7 +234,7 @@ export const GoalRowCells = memo(function GoalRowCells({
           />
           <BlockedIndicator
             className="px-2.5 py-1 text-sm"
-            blockers={metrics?.get(row.goalId)?.blockers ?? NO_BLOCKERS}
+            blockers={blockers}
             estimate={estimates?.get(row.goalId)}
             progress={progress}
           />

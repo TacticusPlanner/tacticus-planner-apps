@@ -68,6 +68,8 @@
 
 Required data: a signed-in account on the Aspire stack with at least 7 Active goals across 2 projects (one Paused, one Reached, one Blocked or Restricted, one with notes, one Rank goal below its required level), a project with no goals, and a Battle Pass season-fit mode that produces a cut-off.
 
+- [x] 7.1 With no stored view in this browser, Goals opens in Cards view. Check the card slots against design D1, equal-height rows, footer alignment, the legend once above the grid, the Reached tint, the Blocked indicator tooltip, and the season divider spanning the grid.
+- [x] 7.2 Toggle to Table and back: the switch is immediate, the selection is kept, and a reload restores the choice. A second browser keeps its own view.
 - [x] 7.3 In Cards view: per-card select, select-all (including indeterminate), a bulk action, the "⋯" menu items, the footer chip Pause/Resume, a drag across grid rows, a keyboard reorder, and 200% zoom without horizontal scrolling.
 - [x] 7.4 The desktop tour runs through every step in both views, including the new view-toggle step.
 
@@ -78,10 +80,3 @@ Run this in a 420px same-origin iframe on the app origin (per the `tp-manual-ui-
 - [x] 8.1 In Cards view the list renders as single-column cards with the same slots, and the toggle is in the control row. In Table view the table scrolls sideways inside the list and the page itself does not.
 - [x] 8.2 In both views: select mode (checkboxes and bottom bar), reorder mode (collapsed cards unchanged, the move saves, then back to the chosen view), the Pause/Resume chip, and the "⋯" menu all work.
 - [x] 8.3 The mobile tour runs through every step, including the new view-toggle step.
-
-## Deferred / out-of-session
-
-Not run by hand before merge, by maintainer decision and without a tracking issue. The local data had no Reached goal, Blocked goal or notes, and a second browser needs its own sign-in. Automated tests cover the card states.
-
-- 7.1 With no stored view in this browser, Goals opens in Cards view. Check the card slots against design D1, equal-height rows, footer alignment, the legend once above the grid, the Reached tint, the Blocked indicator tooltip, and the season divider spanning the grid.
-- 7.2 Toggle to Table and back: the switch is immediate, the selection is kept, and a reload restores the choice. A second browser keeps its own view.

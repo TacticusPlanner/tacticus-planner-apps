@@ -140,7 +140,7 @@ function GoalTargetPreviewDisplay({
     case "Rank":
       return (
         <span
-          className="flex items-center gap-1.5"
+          className="flex w-max items-center gap-1.5"
           data-testid="goal-target-preview"
         >
           <RankBadge
@@ -166,7 +166,7 @@ function GoalTargetPreviewDisplay({
     case "Ascension":
       return (
         <span
-          className="flex items-center gap-1.5"
+          className="flex w-max items-center gap-1.5"
           data-testid="goal-target-preview"
         >
           <ProgressionBadge size={size} value={preview.start} />
@@ -192,11 +192,14 @@ function GoalTargetPreviewDisplay({
 }
 
 /** The once-per-list Actual/Potential key (goal-list-layout: never repeated per row or card). */
-export function ProgressLegend() {
+export function ProgressLegend({ className }: { className?: string }) {
   const { t } = useTranslation()
   return (
     <div
-      className="flex items-center gap-4 text-xs text-muted-foreground"
+      className={cn(
+        "flex items-center gap-4 text-xs text-muted-foreground",
+        className
+      )}
       data-testid="goals-progress-legend"
     >
       <span className="flex items-center gap-1.5">
@@ -234,6 +237,8 @@ export function GoalTargetDisplay({
   const { t } = useTranslation()
   const large = size === "lg"
   const rankIconClass = large ? "size-8" : undefined
+  // `w-max` on each target row: the Goal column shrinks to its content's minimum width, and Tailwind's
+  // `max-width: 100%` on images gives a row of icons almost none, which squashed them into the next cell.
   const arrowClass = cn("text-muted-foreground", large ? "size-4" : "size-3.5")
 
   if (progress.kind === "Unknown") {
@@ -249,7 +254,7 @@ export function GoalTargetDisplay({
   }
 
   return progress.kind === "Rank" ? (
-    <span className="flex items-center gap-1.5">
+    <span className="flex w-max items-center gap-1.5">
       <RankBadge
         iconClassName={rankIconClass}
         rank={progress.current}
@@ -272,7 +277,7 @@ export function GoalTargetDisplay({
       ) : null}
     </span>
   ) : progress.kind === "Ascension" ? (
-    <span className="flex items-center gap-1.5">
+    <span className="flex w-max items-center gap-1.5">
       <ProgressionBadge size={size} value={progress.current} />
       <ArrowRight className={arrowClass} />
       <ProgressionBadge size={size} value={progress.target} />
@@ -357,7 +362,7 @@ export function GoalProgressDisplay({
         {unlockCount}
         {remainingText ? (
           <p
-            className="text-xs text-muted-foreground"
+            className="text-xs whitespace-normal text-muted-foreground"
             data-testid="goal-remaining-text"
           >
             {remainingText}
