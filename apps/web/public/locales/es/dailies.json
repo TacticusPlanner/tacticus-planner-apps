@@ -61,11 +61,17 @@
       "catalogWarning": "Algunos datos de la incursión no coinciden con tus datos locales del juego. Se muestran valores básicos.",
       "refresh": "Actualizar estado",
       "refreshing": "Actualizando…",
-      "refreshFailed": "Error al actualizar. Mostrando el último estado conocido."
+      "refreshFailed": "Error al actualizar. Mostrando el último estado conocido.",
+      "keyRejected": "Tacticus rechazó la clave de API de este gremio. Mostrando el último estado conocido. Un líder o colíder debe reemplazarla en los ajustes del gremio."
     },
     "noActiveSeason": {
       "title": "No hay temporada de Incursión de gremio activa",
       "description": "Vuelve más tarde cuando comience la próxima temporada de tu gremio."
+    },
+    "keyRejected": {
+      "title": "Clave de API del gremio rechazada",
+      "description": "Tacticus rechazó la clave de API de este gremio, por lo que el estado de la incursión no puede actualizarse. Un líder o colíder debe reemplazarla por una clave con los permisos Guild y Guild Raid.",
+      "action": "Abrir ajustes del gremio"
     },
     "neverObserved": {
       "title": "Sincronizando el estado de la Incursión de gremio",

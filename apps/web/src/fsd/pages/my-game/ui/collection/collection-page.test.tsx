@@ -59,6 +59,8 @@ vi.mock("../../model/use-collection-options", () => ({
 const sync = vi.hoisted(() => ({
   isSyncing: false,
   statusText: "Never synced",
+  syncDisabled: false,
+  cooldownMinutes: null,
   syncNow: vi.fn(),
 }))
 vi.mock("@/features/player-data-sync", () => ({
@@ -224,6 +226,7 @@ beforeEach(() => {
   localStorage.clear()
   tour.steps = undefined
   sync.isSyncing = false
+  sync.syncDisabled = false
   sync.syncNow.mockReset()
   msal.loginRedirect.mockReset().mockResolvedValue(undefined)
   // The shared sign-in request reads the API scope when a button spreads it.
@@ -501,6 +504,7 @@ describe("CollectionPage states", () => {
 
   it("disables the sync action while a sync is running", () => {
     sync.isSyncing = true
+    sync.syncDisabled = true
     ready({
       state: "signedIn",
       characters: undefined,

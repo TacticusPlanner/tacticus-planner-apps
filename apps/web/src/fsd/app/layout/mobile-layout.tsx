@@ -108,12 +108,14 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
   const { t } = useTranslation()
   const {
     autoSyncProgress,
+    cooldownMinutes,
     errorText,
     isSyncing,
     nextAutoSyncText,
     requiresReauth,
     status,
     statusText,
+    syncDisabled,
     syncNow,
   } = usePlayerDataSyncStatus()
   const syncPresentation = {
@@ -162,7 +164,7 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
         aria-label={syncLabel}
         className="flex flex-1 flex-col items-center justify-center gap-1 text-[0.65rem] font-semibold disabled:cursor-not-allowed disabled:opacity-50"
         data-testid="mobile-sync-button"
-        disabled={isSyncing}
+        disabled={syncDisabled}
         onClick={syncNow}
         title={syncLabel}
       >
@@ -193,7 +195,11 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
             />
           ) : null}
         </span>
-        <span>{t("nav.sync")}</span>
+        <span>
+          {cooldownMinutes === null
+            ? t("nav.sync")
+            : t("nav.syncCooldown", { minutes: cooldownMinutes })}
+        </span>
       </button>
     </>
   )

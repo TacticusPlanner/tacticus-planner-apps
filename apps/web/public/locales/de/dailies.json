@@ -61,11 +61,17 @@
       "catalogWarning": "Einige Raid-Daten konnten nicht deinen lokalen Spieldaten zugeordnet werden. Es werden Basiswerte angezeigt.",
       "refresh": "Status aktualisieren",
       "refreshing": "Wird aktualisiert…",
-      "refreshFailed": "Aktualisierung fehlgeschlagen. Zeigt den letzten bekannten Status."
+      "refreshFailed": "Aktualisierung fehlgeschlagen. Zeigt den letzten bekannten Status.",
+      "keyRejected": "Tacticus hat den API-Schlüssel dieser Gilde abgelehnt. Zeigt den letzten bekannten Status. Der Anführer oder ein Ko-Anführer muss ihn in den Gildeneinstellungen ersetzen."
     },
     "noActiveSeason": {
       "title": "Keine aktive Gilden-Raid-Saison",
       "description": "Schau später wieder vorbei, wenn die nächste Saison deiner Gilde beginnt."
+    },
+    "keyRejected": {
+      "title": "Gilden-API-Schlüssel abgelehnt",
+      "description": "Tacticus hat den API-Schlüssel dieser Gilde abgelehnt, daher kann der Raid-Status nicht aktualisiert werden. Der Anführer oder ein Ko-Anführer muss ihn durch einen Schlüssel mit den Bereichen Guild und Guild Raid ersetzen.",
+      "action": "Gildeneinstellungen öffnen"
     },
     "neverObserved": {
       "title": "Gilden-Raid-Status deiner Gilde wird synchronisiert",
