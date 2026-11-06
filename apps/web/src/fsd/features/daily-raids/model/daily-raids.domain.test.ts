@@ -54,15 +54,11 @@ describe("campaignLocationLabels", () => {
   it("names a mirror campaign apart from its base storyline on the first line", () => {
     const standard = labels(descriptor({}), 22)
     const mirror = labels(descriptor({ isMirror: true }), 12)
-    expect(standard).toEqual({
-      campaignName: "Indomitus",
-      nodeLabel: "Standard 22",
-      difficultyLabel: "Standard",
-    })
+    // The Standard tier is left unnamed: the location icon tells it from Elite.
+    expect(standard).toEqual({ campaignName: "Indomitus", nodeLabel: "22" })
     expect(mirror).toEqual({
       campaignName: "Indomitus Mirror",
-      nodeLabel: "Standard 12",
-      difficultyLabel: "Standard",
+      nodeLabel: "12",
     })
   })
 
