@@ -64,9 +64,10 @@ export interface CollectionToolbarProps {
 /**
  * Search, sort, filters, the view switch and quick filters above the faction groups. Desktop keeps
  * search, Sort, Filters, the view switch, the grouping and Unowned toggles on one wrapping row and opens the
- * filters inline below it (already open when one is set, so a short list is never unexplained);
- * mobile stacks search over Sort and Filters, then the view select and the Unowned toggle, and
- * opens the filters in a bottom sheet. The quick-filter chips wrap below in both forms.
+ * filters inline below it (already open when one is set, so a short list is never unexplained).
+ * Mobile keeps it to three short rows: search with an icon Filters button, Sort with icon view
+ * buttons, then the grouping and Unowned switches side by side; the filters open in a bottom sheet
+ * and the quick-filter chips scroll sideways in one row. Desktop wraps its chips below.
  */
 export function CollectionToolbar(props: CollectionToolbarProps) {
   const isMobile = useIsMobile()
@@ -173,26 +174,37 @@ function MobileToolbar(props: CollectionToolbarProps) {
         aria-label={t("myGame.collection.toolbar.label")}
         data-testid="collection-toolbar"
       >
-        <SearchField value={query.search} onChange={setSearch} />
-        <div className="grid grid-cols-2 gap-2">
-          <SortSelect query={query} update={update} />
+        <div className="flex gap-2">
+          <SearchField
+            value={query.search}
+            onChange={setSearch}
+            className="min-w-0 flex-1"
+          />
           <FiltersButton
             count={active}
             expanded={open}
             onClick={() => setOpen(true)}
+            compact
           />
         </div>
         <div
           className="flex flex-col gap-1"
           data-testid="collection-view-switch"
         >
-          <ViewSelect query={query} update={update} />
-          <GroupToggle query={query} update={update} />
-          <UnownedToggle
-            query={query}
-            update={update}
-            rosterAvailable={rosterAvailable}
-          />
+          <div className="flex gap-2">
+            <div className="min-w-0 flex-1">
+              <SortSelect query={query} update={update} />
+            </div>
+            <ViewButtons query={query} update={update} compact />
+          </div>
+          <div className="flex flex-wrap items-center gap-x-4">
+            <GroupToggle query={query} update={update} />
+            <UnownedToggle
+              query={query}
+              update={update}
+              rosterAvailable={rosterAvailable}
+            />
+          </div>
         </div>
         {active > 0 ? <ClearFiltersButton onClick={clear} /> : null}
       </div>
@@ -201,6 +213,7 @@ function MobileToolbar(props: CollectionToolbarProps) {
         availability={quickFilters}
         onChange={(quick) => update({ quick })}
         onRetry={onRetry}
+        scroll
       />
       <ResponsiveDialog
         open={open}
@@ -325,13 +338,43 @@ function FiltersButton({
   expanded,
   controls,
   onClick,
+  compact = false,
 }: {
   count: number
   expanded: boolean
   controls?: string
   onClick: () => void
+  /** Icon only, with the active count as a badge (the mobile search row). */
+  compact?: boolean
 }) {
   const { t } = useTranslation("common")
+  const label =
+    count > 0
+      ? t("myGame.collection.toolbar.filtersCount", { count })
+      : t("myGame.collection.toolbar.filters")
+  if (compact) {
+    return (
+      <Button
+        variant="outline"
+        size="icon"
+        className="relative size-8 shrink-0 after:absolute after:-inset-1.5 after:content-['']"
+        aria-label={label}
+        aria-expanded={expanded}
+        aria-controls={controls}
+        onClick={onClick}
+      >
+        <SlidersHorizontal aria-hidden />
+        {count > 0 ? (
+          <span
+            aria-hidden
+            className="absolute -top-1.5 -right-1.5 flex min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs leading-5 font-semibold text-primary-foreground tabular-nums"
+          >
+            {count}
+          </span>
+        ) : null}
+      </Button>
+    )
+  }
   return (
     <Button
       variant="outline"
@@ -340,9 +383,7 @@ function FiltersButton({
       onClick={onClick}
     >
       <SlidersHorizontal aria-hidden />
-      {count > 0
-        ? t("myGame.collection.toolbar.filtersCount", { count })
-        : t("myGame.collection.toolbar.filters")}
+      {label}
     </Button>
   )
 }
@@ -369,7 +410,11 @@ const layoutIcons: Record<CollectionLayout, LucideIcon> = {
 function ViewButtons({
   query,
   update,
-}: Pick<CollectionToolbarProps, "query" | "update">) {
+  compact = false,
+}: Pick<CollectionToolbarProps, "query" | "update"> & {
+  /** Icons only, named for screen readers (the mobile sort row). */
+  compact?: boolean
+}) {
   const { t } = useTranslation("common")
   return (
     <ToggleGroup
@@ -386,46 +431,26 @@ function ViewButtons({
       {collectionLayouts.map((layout) => {
         const Icon = layoutIcons[layout]
         return (
-          <ToggleGroupItem key={layout} value={layout} className="px-3">
+          <ToggleGroupItem
+            key={layout}
+            value={layout}
+            className={
+              compact
+                ? "relative h-8 w-9 after:absolute after:inset-x-0 after:-inset-y-1.5 after:content-['']"
+                : "px-3"
+            }
+            aria-label={
+              compact
+                ? t(`myGame.collection.toolbar.views.${layout}`)
+                : undefined
+            }
+          >
             <Icon aria-hidden />
-            {t(`myGame.collection.toolbar.views.${layout}`)}
+            {compact ? null : t(`myGame.collection.toolbar.views.${layout}`)}
           </ToggleGroupItem>
         )
       })}
     </ToggleGroup>
-  )
-}
-
-/** Mobile: the views in a select, named with the current one. */
-function ViewSelect({
-  query,
-  update,
-}: Pick<CollectionToolbarProps, "query" | "update">) {
-  const { t } = useTranslation("common")
-  return (
-    <Select
-      value={query.view}
-      onValueChange={(view) => {
-        if (isCollectionLayout(view)) update({ view })
-      }}
-    >
-      <SelectTrigger
-        className="w-full"
-        aria-label={`${t("myGame.collection.toolbar.view")}: ${t(`myGame.collection.toolbar.views.${query.view}`)}`}
-      >
-        <span className="text-muted-foreground">
-          {t("myGame.collection.toolbar.view")}:
-        </span>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent position="popper" align="start">
-        {collectionLayouts.map((layout) => (
-          <SelectItem key={layout} value={layout}>
-            {t(`myGame.collection.toolbar.views.${layout}`)}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
   )
 }
 

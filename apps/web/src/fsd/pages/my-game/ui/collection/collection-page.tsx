@@ -182,17 +182,6 @@ export function CollectionPage() {
       {listed.rosterState === "available" ? null : (
         <RosterPrompt rosterState={listed.rosterState} onRetry={retry} />
       )}
-      {isAuthenticated ? (
-        <SnapshotActions
-          compareOn={comparing}
-          onCompareChange={compareQuery.setEnabled}
-          usage={usage}
-          onTake={() => setTakeOpen(true)}
-          onManage={() => setManageOpen(true)}
-        />
-      ) : (
-        <SnapshotsSignInPrompt />
-      )}
       <CollectionToolbar
         // The applied query: a value the page cannot apply yet (no roster, or a quick filter whose
         // data is missing) stays in the URL for later but is not shown as selected.
@@ -204,6 +193,17 @@ export function CollectionPage() {
         quickFilters={quickFilters}
         onRetry={retry}
       />
+      {isAuthenticated ? (
+        <SnapshotActions
+          compareOn={comparing}
+          onCompareChange={compareQuery.setEnabled}
+          usage={usage}
+          onTake={() => setTakeOpen(true)}
+          onManage={() => setManageOpen(true)}
+        />
+      ) : (
+        <SnapshotsSignInPrompt />
+      )}
       {comparing ? (
         <CompareSection
           state={compare}

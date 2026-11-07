@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { AlertTriangle, Camera, History } from "lucide-react"
+import { AlertTriangle, ClockPlus, History } from "lucide-react"
 import {
   Alert,
   AlertDescription,
@@ -86,7 +86,7 @@ export function CompareSection({
           </p>
         </div>
         <Button size="sm" onClick={onTake}>
-          <Camera aria-hidden />
+          <ClockPlus aria-hidden />
           {t("myGame.collection.snapshots.take")}
         </Button>
       </div>

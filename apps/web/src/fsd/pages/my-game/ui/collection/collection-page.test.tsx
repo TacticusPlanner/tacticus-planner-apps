@@ -16,7 +16,14 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { readUnitOrigin } from "@/entities/unit"
 import type { TourPageSteps } from "@/shared/tour"
 import { createTestI18n } from "@/test/i18n"
-import { fireEvent, render, screen, waitFor, within } from "@/test/render"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
 import type { CollectionQuery } from "../../model/collection-query"
@@ -908,16 +915,20 @@ describe("CollectionPage snapshots and compare", () => {
     expect(screen.queryByTestId("compare-section")).not.toBeInTheDocument()
   })
 
-  it("disables Take snapshot at the limit and starts the tour at Compare", () => {
+  it("disables Take snapshot at the limit and tours Compare right after the toolbar", () => {
     msal.authenticated = true
     ready(synced)
     renderPage(1280)
 
     expect(screen.getByTestId("take-snapshot")).toBeDisabled()
     expect(screen.getByTestId("manage-snapshots")).toHaveTextContent("20/20")
-    expect(tour.steps?.desktop[0]?.target).toBe(
-      '[data-testid="compare-toggle"]'
-    )
+    expect(tour.steps?.desktop.slice(0, 5).map((step) => step.target)).toEqual([
+      '[data-testid="collection-toolbar"]',
+      '[data-testid="collection-view-switch"]',
+      '[data-testid="collection-quick-filters"]',
+      '[data-testid="compare-toggle"]',
+      '[data-testid="take-snapshot"]',
+    ])
   })
 
   it("turns compare mode on with compare=latest", () => {
@@ -1013,6 +1024,34 @@ describe("CollectionPage snapshots and compare", () => {
     expect(
       screen.queryByTestId("collection-faction-group")
     ).not.toBeInTheDocument()
+
+    cleanup()
+    renderPage(420, "/my-game/collection?compare=latest")
+    // On mobile the options button names both rosters and sits right below the Compare switch.
+    const options = screen.getByTestId("compare-options")
+    expect(options).toHaveTextContent("Before LE")
+    expect(options).toHaveTextContent("→ Current roster")
+    expect(
+      screen.getByTestId("snapshot-actions").compareDocumentPosition(options) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      screen
+        .getByTestId("collection-toolbar")
+        .compareDocumentPosition(screen.getByTestId("snapshot-actions")) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    // The options come before the comparison's summary, on the page and in the tour.
+    expect(
+      options.compareDocumentPosition(screen.getByTestId("compare-summary")) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    const mobileTargets = tour.steps?.mobile?.map((step) => step.target) ?? []
+    const optionsStep = mobileTargets.indexOf('[data-testid="compare-options"]')
+    expect(optionsStep).toBeGreaterThan(-1)
+    expect(mobileTargets[optionsStep + 1]).toBe(
+      '[data-testid="compare-summary"]'
+    )
   })
 })
 
@@ -1236,18 +1275,14 @@ describe("CollectionPage Unowned toggle", () => {
 })
 
 describe("CollectionPage view switch and Roster on mobile", () => {
-  it("offers the view as a select and the toggle below Sort and Filters", () => {
+  it("offers the views as icon buttons next to Sort, and the toggle below them", () => {
     ready(synced)
     renderPage(420)
 
-    const view = screen.getByRole("combobox", { name: "View: Cards" })
-    view.focus()
-    fireEvent.keyDown(view, { key: "Enter" })
-    fireEvent.click(screen.getByRole("option", { name: "Roster" }))
+    expect(screen.getByRole("radio", { name: "Cards" })).toBeChecked()
+    fireEvent.click(screen.getByRole("radio", { name: "Roster" }))
 
-    expect(
-      screen.getByRole("combobox", { name: "View: Roster" })
-    ).toBeInTheDocument()
+    expect(screen.getByRole("radio", { name: "Roster" })).toBeChecked()
     expect(rosterSections()).toEqual(["Ultramarines", "BlackLegion"])
     expect(
       screen.getByRole("switch", { name: "Hide unowned" })
@@ -1413,13 +1448,13 @@ describe("CollectionPage faction grouping", () => {
     ])
   })
 
-  it("offers the toggle on mobile next to the view select", () => {
+  it("offers the toggle on mobile next to the view buttons", () => {
     ready(synced)
     renderPage(420)
 
     const row = screen.getByTestId("collection-view-switch")
     expect(
-      within(row).getByRole("combobox", { name: "View: Cards" })
+      within(row).getByRole("radio", { name: "Cards" })
     ).toBeInTheDocument()
     expect(
       within(row).getByRole("switch", { name: "Group by faction" })

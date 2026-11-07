@@ -34,9 +34,9 @@ type CollectionStepKey =
  * is shown only once a roster has synced and some unit is listed, the faction step only while a
  * group is listed, an owned unit only when a listed unit is owned and an unowned unit only while a
  * listed unit is not, so those steps are left out otherwise rather than pointing at nothing.
- * Signed in, the tour starts at the Compare switch and Take snapshot; while compare mode shows a
- * comparison it adds its summary, and on mobile its Compare options trigger (the options sit
- * inline on desktop, so that step is mobile-only).
+ * Signed in, the Compare switch and Take snapshot follow the toolbar (they sit between it and the
+ * list); while compare mode shows a comparison it adds its summary, and on mobile its Compare
+ * options trigger (the options sit inline on desktop, so that step is mobile-only).
  */
 export function useCollectionTutorial({
   view = "cards",
@@ -122,19 +122,19 @@ export function useCollectionTutorial({
 
     return {
       desktop: [
+        ...toolbar,
         ...snapshotActions,
         ...compareSummary,
-        ...toolbar,
         ...summary,
         ...faction("right"),
         ...unit("owned", hasOwned, false, "bottom"),
         ...unit("unowned", hasUnowned, false, "bottom"),
       ],
       mobile: [
+        ...toolbar,
         ...snapshotActions,
         ...compareOptions,
         ...compareSummary,
-        ...toolbar,
         ...summary,
         ...faction("bottom"),
         ...unit("owned", hasOwned, true, "bottom"),

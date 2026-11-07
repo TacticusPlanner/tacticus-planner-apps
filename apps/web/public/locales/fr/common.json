@@ -571,10 +571,8 @@
         "fromTo": "{{from}} → {{to}}",
         "chips": {
           "unlocked": "Débloquée",
-          "stars": "{{value}}★",
           "upgrades": "{{value}} améliorations",
           "xpLevel": "{{value}} niveaux",
-          "abilities": "{{value}} capacité",
           "shards": "{{value}} fragments",
           "mythicShards": "{{value}} mythiques",
           "equipment": "{{value}} équipement",
