@@ -111,6 +111,14 @@ export interface CollectionExtras {
   orbs?: InventoryOrbs
   /** Ready to rank up: the owned characters whose current rank the inventory can finish. */
   rankUpReady?: ReadonlySet<string>
+  /** Power sort: an owned unit's in-game power, null when unavailable (it then sorts last). */
+  power?: CollectionPower
+}
+
+/** Computes an owned unit's in-game power (see `@/shared/unit-power`). */
+export interface CollectionPower {
+  character: (record: PlayerCharacter) => number | null
+  mow: (record: PlayerMow) => number | null
 }
 
 export interface CollectionFactionGroup {
@@ -158,6 +166,8 @@ interface CollectionRow {
   progression: number
   rank: number
   abilities: number
+  /** Power sort: the in-game power, or -1 when unowned or unavailable. */
+  power: number
   /** Shards sort: 1 at or past one blue star (ranked by mythic shards), else 0 (by shards). */
   shardTier: number
   shardCount: number
@@ -267,7 +277,13 @@ export function buildCollectionView(
       const record = ownedCharacters.get(character.id)
       const name = labels.unitName("character", character.id, character.name)
       const row = record
-        ? ownedCharacterRow(character, record, name, catalog)
+        ? ownedCharacterRow(
+            character,
+            record,
+            name,
+            catalog,
+            extras.power?.character(record) ?? -1
+          )
         : unownedRow("character", character, name, {
             rarity: character.initialRarity,
             unlockShards: unlockCost.get(character.initialRarity),
@@ -279,7 +295,7 @@ export function buildCollectionView(
       const record = ownedMows.get(mow.id)
       const name = labels.unitName("mow", mow.id, mow.name)
       return record
-        ? ownedMowRow(mow, record, name)
+        ? ownedMowRow(mow, record, name, extras.power?.mow(record) ?? -1)
         : unownedRow("mow", mow, name, { shards })
     }),
   ]
@@ -548,6 +564,8 @@ function ownedComparator(sort: CollectionSort): OwnedComparator {
         b.shardTier - a.shardTier ||
         b.shardCount - a.shardCount ||
         byRarity(a, b)
+    case "power":
+      return (a, b) => b.power - a.power || byRarity(a, b)
   }
 }
 
@@ -594,11 +612,13 @@ function ownedCharacterRow(
   character: CatalogCharacter,
   record: PlayerCharacter,
   name: string,
-  catalog: CollectionCatalog
+  catalog: CollectionCatalog,
+  power: number
 ): CollectionRow {
   const { abilityLevels, ...keys } = ownedKeys(record)
   return {
     ...keys,
+    power,
     factionId: character.faction,
     alliance: character.alliance,
     catalogName: character.name ?? "",
@@ -640,11 +660,13 @@ function ownedCharacterRow(
 function ownedMowRow(
   mow: CatalogMow,
   record: PlayerMow,
-  name: string
+  name: string,
+  power: number
 ): CollectionRow {
   const { abilityLevels, ...keys } = ownedKeys(record)
   return {
     ...keys,
+    power,
     factionId: mow.faction,
     alliance: mow.alliance,
     catalogName: mow.name ?? "",
@@ -698,6 +720,7 @@ function unownedRow(
     progression: -1,
     rank: -1,
     abilities: -1,
+    power: -1,
     shardTier: -1,
     shardCount: -1,
     // Nearest to unlock first; units with no unlock cost or no shard data go after those with one.

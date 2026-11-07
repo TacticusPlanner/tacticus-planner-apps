@@ -20,7 +20,8 @@ import {
 describe("collection query validators", () => {
   it("accept only known values", () => {
     expect(isCollectionSort("shards")).toBe(true)
-    expect(isCollectionSort("power")).toBe(false)
+    expect(isCollectionSort("power")).toBe(true)
+    expect(isCollectionSort("level")).toBe(false)
     expect(isCollectionQuickFilter("canAscend")).toBe(true)
     expect(isCollectionQuickFilter("readyToAscend")).toBe(false)
     expect(isCollectionAlliance("Xenos")).toBe(true)

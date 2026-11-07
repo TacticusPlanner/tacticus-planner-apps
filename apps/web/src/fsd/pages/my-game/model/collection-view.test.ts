@@ -584,7 +584,43 @@ describe("buildCollectionView with a query", () => {
     ])
   })
 
-  it.each(["rarity", "rank", "abilities", "shards"] as const)(
+  it("sorts by power with the Machine of War among the characters and unknown power last", () => {
+    const powers: Record<string, number | null> = {
+      ultraTitus: 1200,
+      ultraCalgar: 3400,
+      ultraTigurius: null,
+      ultraDreadnought: 2000,
+    }
+    const view = buildCollectionView(
+      catalog,
+      signedIn({
+        characters: [
+          character("ultraTitus"),
+          character("ultraCalgar"),
+          character("ultraTigurius"),
+        ],
+        mows: [mowRecord("ultraDreadnought")],
+        shards: [],
+      }),
+      labels,
+      query({ sort: "power" }),
+      {
+        power: {
+          character: (record) => powers[record.unitId] ?? null,
+          mow: (record) => powers[record.unitId] ?? null,
+        },
+      }
+    )
+
+    expect(ultramarines(view)?.slice(0, 4)).toEqual([
+      "ultraCalgar",
+      "ultraDreadnought",
+      "ultraTitus",
+      "ultraTigurius",
+    ])
+  })
+
+  it.each(["rarity", "rank", "abilities", "shards", "power"] as const)(
     "keeps owned first and unowned nearest to unlock under sort %s",
     (sort) => {
       const view = buildCollectionView(

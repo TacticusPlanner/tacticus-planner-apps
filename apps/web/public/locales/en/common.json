@@ -402,7 +402,8 @@
           "rarity": "Rarity",
           "rank": "Rank",
           "abilities": "Abilities",
-          "shards": "Shards"
+          "shards": "Shards",
+          "power": "Power"
         },
         "view": "View",
         "views": {
