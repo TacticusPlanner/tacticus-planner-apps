@@ -253,8 +253,10 @@ function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
   const { t, i18n } = useTranslation(["common", "progression"])
   const labels = useMarkLabels()
   const signed = (count: number) => formatSigned(count, i18n.language)
-  const text = (kind: string, count: number) =>
-    t(`myGame.collection.compare.chips.${kind}`, { value: signed(count) })
+  const text = (
+    kind: Extract<CompareChip, { count: number }>["kind"],
+    count: number
+  ) => t(`myGame.collection.compare.chips.${kind}`, { value: signed(count) })
   return (chip: CompareChip): ReactNode => {
     switch (chip.kind) {
       case "unlocked": {
