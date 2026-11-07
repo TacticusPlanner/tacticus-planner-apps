@@ -244,13 +244,19 @@ An Ability goal SHALL be valid when at least one track rises above its start; a 
 
 ### Requirement: Ability steppers offer quick picks
 
-Each ability stepper SHALL offer "Next" (start + 1), "+5" (start + 5, capped at 60), and "Rarity cap" (the ability cap of the unit's current rarity). "Rarity cap" SHALL be hidden when the start is at or above that cap.
+Each ability stepper SHALL offer "Next" (start + 1), "+5" (the current target + 5, capped at 60, so each press adds 5 more), and "Rarity cap" (the ability cap of the unit's current rarity). "Rarity cap" SHALL be hidden when the start is at or above that cap, and "+5" SHALL be hidden once the target is at 60.
 
 #### Scenario: Quick picks for a Legendary unit at 35
 
 - **GIVEN** the active ability is at 35 and the unit is Legendary, with cap 50
 - **WHEN** the user activates "Next", then "+5", then "Rarity cap"
-- **THEN** the target becomes 36, then 40, then 50
+- **THEN** the target becomes 36, then 41, then 50
+
+#### Scenario: Repeated +5
+
+- **GIVEN** the active ability is at 35
+- **WHEN** the user activates "+5" twice
+- **THEN** the target becomes 40, then 45
 
 #### Scenario: At the rarity cap
 
