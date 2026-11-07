@@ -76,6 +76,8 @@ describe("Today quick filters", () => {
   it("starts with both chips off and no note", () => {
     renderToday()
     expect(screen.getByTestId("today-quick-filters")).toBeInTheDocument()
+    // "Ignore goals" belongs to the HSE tab.
+    expect(screen.queryByTestId("today-quick-filter-ignoreGoals")).toBeNull()
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
       combineGoals: false,

@@ -12,7 +12,7 @@ import {
 import type { UnlockShardCostStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { rankTargetSlots } from "@/entities/goal"
+import { rankTargetSlots, type GoalKind } from "@/entities/goal"
 import {
   reachableRankProgress,
   type LevelRules,
@@ -101,7 +101,35 @@ export type GoalProgress =
        *  material's image beside its owned/needed count. */
       materials: UpgradeProgressMaterial[]
     }
-  | { kind: "Unknown" }
+  | {
+      kind: "Unknown"
+      /** The goal's own configured start → target, when it has one, so a goal whose unit isn't
+       *  owned yet (or whose player data hasn't synced) still says what it is aiming for. */
+      preview?: GoalTargetPreview
+    }
+
+/** A goal's configured start → target, independent of any player data. */
+export type GoalTargetPreview =
+  | { kind: "Rank"; start: Rank; target: Rank; targetSlots: number }
+  | { kind: "Ascension"; start: Progression; target: Progression }
+  | {
+      kind: "Ability"
+      startActive: number
+      targetActive: number
+      startPassive: number
+      targetPassive: number
+    }
+
+/** A goal ranked ahead of an Upgrade goal that holds some of one of its materials (see
+ *  `splitUpgradeGoalStock`), named for display. `counted` pieces count toward the Upgrade goal (an
+ *  earlier goal on the same unit, same slots); otherwise they were taken ahead of it. */
+export type UpgradeMaterialHolder = {
+  unitName: string
+  goalType: GoalKind
+  priority: number | null
+  amount: number
+  counted: boolean
+}
 
 type UpgradeProgressMaterial = {
   upgradeId: UpgradeId
@@ -112,9 +140,55 @@ type UpgradeProgressMaterial = {
   /** `null` while the upgrade inventory hasn't loaded. */
   owned: number | null
   quantity: number
+  /** Earlier goals holding some of this material; absent when none do. */
+  heldBy?: readonly UpgradeMaterialHolder[]
 }
 
 const UNKNOWN_PROGRESS: GoalProgress = { kind: "Unknown" }
+
+/** `Unknown` progress that still carries the goal's configured target (see `GoalTargetPreview`). */
+function goalTargetPreview(
+  detail: GoalProgressParams["detail"]
+): GoalTargetPreview | undefined {
+  switch (detail.goalType) {
+    case "Rank": {
+      const target = detail.config.rank
+      return target
+        ? {
+            kind: "Rank",
+            start: rankAt(target.start),
+            target: rankAt(target.end),
+            targetSlots: rankTargetSlots(target),
+          }
+        : undefined
+    }
+    case "Ascension": {
+      const target = detail.config.progression
+      return target
+        ? { kind: "Ascension", start: target.start, target: target.end }
+        : undefined
+    }
+    case "Ability": {
+      const target = detail.config.ability
+      return target
+        ? {
+            kind: "Ability",
+            startActive: target.activeStart,
+            targetActive: target.activeEnd,
+            startPassive: target.passiveStart,
+            targetPassive: target.passiveEnd,
+          }
+        : undefined
+    }
+    default:
+      return undefined
+  }
+}
+
+function unknownProgress(detail: GoalProgressParams["detail"]): GoalProgress {
+  const preview = goalTargetPreview(detail)
+  return preview ? { kind: "Unknown", preview } : UNKNOWN_PROGRESS
+}
 
 function clampRatio(done: number, total: number): number {
   if (total <= 0) return 1
@@ -137,6 +211,8 @@ export type GoalProgressParams = GoalAttainmentParams & {
   >
   /** The game's level rules; absent (still loading) leaves a Rank goal without its reachable marker. */
   levelRules?: LevelRules
+  /** An Upgrade goal's materials held by goals ranked ahead of it; absent means none. */
+  upgradeHolders?: ReadonlyMap<UpgradeId, readonly UpgradeMaterialHolder[]>
 }
 
 /** What rarity and level let a Rank goal reach right now, when that falls short of its `totalSlots`
@@ -168,7 +244,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
   switch (detail.goalType) {
     case "Rank": {
       const target = detail.config.rank
-      if (!target || !params.playerCharacter) return UNKNOWN_PROGRESS
+      if (!target || !params.playerCharacter) return unknownProgress(detail)
       const currentIndex = rankIndex(params.playerCharacter.rank)
       const appliedSlots = new Set(params.playerCharacter.appliedUpgradeSlots)
         .size
@@ -236,7 +312,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
     }
     case "Ability": {
       const target = detail.config.ability
-      if (!target || !ownedUnit) return UNKNOWN_PROGRESS
+      if (!target || !ownedUnit) return unknownProgress(detail)
       const currentActive = abilityTrackLevel(ownedUnit, "primary")
       const currentPassive = abilityTrackLevel(ownedUnit, "secondary")
       const activeSpan = Math.max(0, target.activeEnd - target.activeStart)
@@ -260,7 +336,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
     }
     case "Ascension": {
       const target = detail.config.progression
-      if (!target || !ownedUnit) return UNKNOWN_PROGRESS
+      if (!target || !ownedUnit) return unknownProgress(detail)
       const startIndex = progressionOrder.indexOf(target.start)
       const endIndex = progressionOrder.indexOf(target.end)
       const currentIndex = progressionOrder.indexOf(ownedUnit.progressionIndex)
@@ -311,6 +387,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
       const materials = targets.map((need): UpgradeProgressMaterial => {
         const upgradeId = need.upgradeId as UpgradeId
         const upgrade = params.upgradesById?.get(upgradeId)
+        const heldBy = params.upgradeHolders?.get(upgradeId)
         return {
           upgradeId,
           label: upgrade?.label ?? need.upgradeId,
@@ -318,6 +395,7 @@ export function computeGoalProgress(params: GoalProgressParams): GoalProgress {
           crafted: upgrade?.crafted,
           owned: ownedById ? (ownedById.get(upgradeId) ?? 0) : null,
           quantity: need.quantity,
+          ...(heldBy && heldBy.length > 0 ? { heldBy } : {}),
         }
       })
       if (materials.length === 0 || !ownedById)

@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { ApiError } from "@/shared/api"
+
 import type {
   GuildRaidStatusResponse,
   GuildRaidStatusResult,
@@ -215,5 +217,40 @@ describe("useGuildRaidStatus", () => {
     await waitFor(() => expect(result.current.refreshError).not.toBeNull())
 
     expect(result.current.query.data).toEqual(dataBefore)
+    expect(result.current.isKeyRejected).toBe(false)
+  })
+
+  it("keeps a rejected key flagged through a cooldown retry until a refresh succeeds", async () => {
+    getGuildRaidStatusMock.mockResolvedValue(observedStatus())
+    const { result } = renderHook(() => useGuildRaidStatus(), {
+      wrapper: createWrapper(),
+    })
+    await waitFor(() => expect(result.current.query.isSuccess).toBe(true))
+
+    refreshGuildRaidStatusMock.mockRejectedValueOnce(
+      new ApiError(502, "rejected", { issueCode: "guildRaidTokenRejected" })
+    )
+    await act(async () => result.current.refresh())
+    await waitFor(() => expect(result.current.isKeyRejected).toBe(true))
+
+    refreshGuildRaidStatusMock.mockRejectedValueOnce(
+      new ApiError(503, "cooldown", { issueCode: "upstreamUnavailable" })
+    )
+    await act(async () => result.current.refresh())
+    await waitFor(() => expect(result.current.isRefreshing).toBe(false))
+    expect(result.current.isKeyRejected).toBe(true)
+
+    refreshGuildRaidStatusMock.mockResolvedValueOnce(
+      statusResponse({ freshness: "stale" })
+    )
+    await act(async () => result.current.refresh())
+    await waitFor(() => expect(result.current.isRefreshing).toBe(false))
+    expect(result.current.isKeyRejected).toBe(true)
+
+    refreshGuildRaidStatusMock.mockResolvedValueOnce(
+      statusResponse({ freshness: "fresh" })
+    )
+    await act(async () => result.current.refresh())
+    await waitFor(() => expect(result.current.isKeyRejected).toBe(false))
   })
 })

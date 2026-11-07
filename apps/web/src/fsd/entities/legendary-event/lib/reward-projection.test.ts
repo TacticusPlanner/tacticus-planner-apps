@@ -169,6 +169,9 @@ const dante: LegendaryEventRewards = {
   shardsPerChest: 25,
 }
 
+/** Every run stored with nothing planned (a run without stored inputs plans all 10 free missions). */
+const NO_RUN_INPUTS = ([1, 2, 3] as const).map((run) => runInputs(run, 0))
+
 describe("projectRewards", () => {
   it("works the Uthar example without the premium track", () => {
     const projection = projectRewards(utharExample)
@@ -271,9 +274,10 @@ describe("projectRewards", () => {
       shards: 0,
     })
     expect(projection.futureRuns.map((run) => run.run)).toEqual([1, 2, 3])
-    expect(projection.currency?.futureMissions).toBe(250)
-    // 16 chests for unlock: 3,350 − 250 from run 1's missions.
-    expect(projection.currency?.fromPoints).toBe(3100)
+    // Run 1 stores 10 missions; runs 2 and 3 have no inputs, so they plan all 10 free ones.
+    expect(projection.currency?.futureMissions).toBe(750)
+    // 16 chests for unlock: 3,350 − 750 from the three runs' missions.
+    expect(projection.currency?.fromPoints).toBe(2600)
   })
 
   it("never counts chests to go below zero when fewer shards are held than chests claimed", () => {
@@ -323,7 +327,7 @@ describe("projectRewards", () => {
       progress: synced({ currentPoints: 26_900, currentCurrency: 0 }),
       resolution: inRun(2),
       unit: undefined,
-      runs: [],
+      runs: NO_RUN_INPUTS,
       showPaidOptions: false,
     })
 
@@ -414,7 +418,7 @@ describe("projectRewards", () => {
       }),
       resolution: inRun(1),
       unit: undefined,
-      runs: [],
+      runs: NO_RUN_INPUTS,
       showPaidOptions: false,
     })
 
@@ -435,7 +439,7 @@ describe("projectRewards", () => {
       }),
       resolution: inRun(1),
       unit: undefined,
-      runs: [],
+      runs: NO_RUN_INPUTS,
       showPaidOptions: false,
     })
 
@@ -458,7 +462,7 @@ describe("projectRewards: resolved runs and the unit's step", () => {
       }),
       resolution: between(2),
       unit: { progressionIndex: "Legendary:RedThreeStars" },
-      runs: [],
+      runs: NO_RUN_INPUTS,
       showPaidOptions: true,
     })
 

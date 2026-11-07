@@ -1,4 +1,5 @@
 import { cleanup } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { render, screen, within } from "@/test/render"
 import { describe, expect, it } from "vitest"
 
@@ -91,6 +92,43 @@ describe("GoalResourceChips", () => {
       />
     )
     expect(chipNames()).toEqual(["Energy: 50", "Rare orbs: 3", "Shards: 200"])
+  })
+
+  it("Ascension in the plan: orbs read available/needed, uncapped, even when fully held", () => {
+    render(
+      <GoalResourceChips
+        energy={undefined}
+        entityType="Character"
+        goalType="Ascension"
+        remaining={need({
+          orbsByType: {},
+          orbPool: {
+            neededByRarity: { Rare: 10 },
+            availableByRarity: { Rare: 35 },
+          },
+        })}
+      />
+    )
+    expect(chipNames()).toEqual(["Rare orbs: 35 of 10"])
+  })
+
+  it("Ascension in the plan: two orb rarities fold, each counting at most what it needs", () => {
+    render(
+      <GoalResourceChips
+        energy={undefined}
+        entityType="Character"
+        goalType="Ascension"
+        remaining={need({
+          orbsByType: { Epic: 4 },
+          orbPool: {
+            neededByRarity: { Rare: 10, Epic: 20 },
+            availableByRarity: { Rare: 35, Epic: 16 },
+          },
+        })}
+      />
+    )
+    expect(chipNames()).toEqual(["Orbs: 26 of 30"])
+    expect(screen.getByTestId("goal-resource-chip")).toHaveTextContent("26/30")
   })
 
   it("Ascension: energy, gold, then onslaught tokens lead; orbs and shards follow", () => {
@@ -232,6 +270,29 @@ describe("GoalResourceChips", () => {
     expect(chipNames()).toEqual(["Gold: 12,000", "Epic ability badges: 4"])
   })
 
+  it("Character Ability in the plan: badges read available/needed like V1's x/y", () => {
+    render(
+      <GoalResourceChips
+        energy={undefined}
+        entityType="Character"
+        goalType="Ability"
+        remaining={need({
+          abilityMaterials: {
+            ...abilityMaterials,
+            forgeBadgesByRarity: {},
+            components: 0,
+            available: {
+              badgesByRarity: { Epic: 3 },
+              forgeBadgesByRarity: {},
+              components: 0,
+            },
+          },
+        })}
+      />
+    )
+    expect(chipNames()).toEqual(["Gold: 12,000", "Epic ability badges: 3 of 4"])
+  })
+
   it("Upgrade: energy only", () => {
     render(
       <GoalResourceChips
@@ -290,8 +351,54 @@ describe("GoalResourceChips", () => {
         })}
       />
     )
-    expect(screen.getAllByTestId("goal-resource-chip")).toHaveLength(12)
+    // Energy, gold, ability badges (5 rarities folded), forge badges (3 folded), components, tokens.
+    expect(screen.getAllByTestId("goal-resource-chip")).toHaveLength(6)
+    expect(screen.getAllByTestId("goal-resource-chip-group")).toHaveLength(2)
     expect(screen.queryByTestId("goal-resource-chips-overflow")).toBeNull()
+  })
+
+  it("folds several rarities of one material into a total chip with a per-rarity popover", async () => {
+    const user = userEvent.setup()
+    render(
+      <GoalResourceChips
+        energy={undefined}
+        entityType="Character"
+        goalType="Ascension"
+        remaining={need({ orbsByType: { Rare: 3, Epic: 12, Legendary: 5 } })}
+      />
+    )
+    expect(chipNames()).toEqual(["Orbs: 20"])
+    await user.click(screen.getByTestId("goal-resource-chip-group"))
+    const breakdown = await screen.findByTestId("goal-resource-chip-breakdown")
+    expect(
+      within(breakdown)
+        .getAllByRole("listitem")
+        .map((item) => item.textContent)
+    ).toEqual(["Rare orbs3", "Epic orbs12", "Legendary orbs5"])
+  })
+
+  it("totals a Machine of War's pooled rarities, counting each rarity at most what it needs", () => {
+    render(
+      <GoalResourceChips
+        energy={undefined}
+        entityType="Mow"
+        goalType="Ability"
+        remaining={need({
+          abilityMaterials: {
+            gold: 0,
+            badgesByRarity: { Common: 10, Legendary: 50 },
+            forgeBadgesByRarity: {},
+            components: 0,
+            available: {
+              badgesByRarity: { Common: 900, Legendary: 3 },
+              forgeBadgesByRarity: {},
+              components: 0,
+            },
+          },
+        })}
+      />
+    )
+    expect(chipNames()).toEqual(["Ability badges: 13 of 60"])
   })
 
   describe("Onslaught tokens", () => {

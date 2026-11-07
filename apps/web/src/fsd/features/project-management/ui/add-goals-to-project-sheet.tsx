@@ -19,6 +19,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import {
   describeRankTargetKey,
   goalQueries,
+  compareGoalTypes,
   goalRankTargetKey,
   type GoalDetail,
   type GoalGroupValue,
@@ -189,14 +190,18 @@ export function AddGoalsToProjectSheet({
       !query ||
       `${goalLabel(goal)} ${goalTypeLabel(goal)}`.toLowerCase().includes(query)
   )
-  // Groups keep first-appearance order and each keeps the incoming (global-priority) order.
+  // Unit groups keep first-appearance order, type groups the fixed goal-type order (Rank first, as
+  // on the Goals page); each keeps the incoming (global-priority) row order.
   const groupKey = (goal: GoalDetail) =>
     group === "unit"
       ? `${goal.entityType}:${goal.entityId}`
       : group === "type"
         ? goal.goalType
         : "all"
-  const groups = [...new Set(visibleGoals.map(groupKey))].map((key) => {
+  const firstSeen = [...new Set(visibleGoals.map(groupKey))]
+  const groupKeys =
+    group === "type" ? firstSeen.toSorted(compareGoalTypes) : firstSeen
+  const groups = groupKeys.map((key) => {
     const rows = visibleGoals.filter((goal) => groupKey(goal) === key)
     return {
       key,

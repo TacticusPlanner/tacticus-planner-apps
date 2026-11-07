@@ -71,7 +71,7 @@ describe("useCampaignDisplay().fullLabel", () => {
     expect(mirror).not.toBe(result.current.fullLabel(descriptor({})))
   })
 
-  it("appends the difficulty word for an event's Standard tier", () => {
+  it("leaves an event's Standard tier unnamed (bare event name)", () => {
     const { result } = renderHook(() => useCampaignDisplay())
     expect(
       result.current.fullLabel(
@@ -81,9 +81,7 @@ describe("useCampaignDisplay().fullLabel", () => {
           difficultyToken: "eventStandard",
         })
       )
-    ).toBe(
-      "adepta-sororitas-vs-death-guard campaigns:difficulties.eventStandard"
-    )
+    ).toBe("adepta-sororitas-vs-death-guard")
   })
 
   it("appends the difficulty word for an event's Extremis tier, distinguishing it from Standard", () => {
@@ -171,7 +169,7 @@ describe("useCampaignDisplay().tierLabel", () => {
         isEvent: true,
         difficultyToken: "eventStandard",
       }),
-      "campaigns:difficulties.eventStandard",
+      "",
     ],
     [
       "event extremis",
@@ -197,19 +195,16 @@ describe("useCampaignDisplay().tierLabel", () => {
     (_label, d) => {
       const { result } = renderHook(() => useCampaignDisplay())
       const { name, tierLabel, fullLabel } = result.current
-      expect(fullLabel(d)).toBe(`${name(d)} ${tierLabel(d)}`)
+      expect(fullLabel(d)).toBe(
+        [name(d), tierLabel(d)].filter(Boolean).join(" ")
+      )
     }
   )
 })
 
 describe("useCampaignDisplay().campaignName / difficultyLabel", () => {
   it.each([
-    [
-      "standard storyline",
-      descriptor({}),
-      "indomitus",
-      "campaigns:difficulties.standard",
-    ],
+    ["standard storyline", descriptor({}), "indomitus", ""],
     [
       "elite storyline",
       descriptor({ difficultyToken: "elite" }),
@@ -220,7 +215,7 @@ describe("useCampaignDisplay().campaignName / difficultyLabel", () => {
       "mirror base tier",
       descriptor({ isMirror: true }),
       "indomitus campaigns:difficulties.mirror",
-      "campaigns:difficulties.standard",
+      "",
     ],
     [
       "elite mirror",

@@ -343,6 +343,35 @@ describe("GoalTargetDisplay for Rank milestones", () => {
   })
 })
 
+describe("GoalTargetDisplay for a unit that isn't owned yet", () => {
+  it("shows the goal's configured start and target from its preview", () => {
+    render(
+      <GoalTargetDisplay
+        progress={{
+          kind: "Unknown",
+          preview: {
+            kind: "Rank",
+            start: "Stone1",
+            target: "Gold1",
+            targetSlots: 3,
+          },
+        }}
+      />
+    )
+    expect(screen.getByTestId("goal-target-preview")).toBeInTheDocument()
+    expect(screen.getByAltText("Stone I")).toBeInTheDocument()
+    expect(screen.getByAltText("Gold I")).toBeInTheDocument()
+    expect(screen.getByText("(3/6)")).toBeInTheDocument()
+  })
+
+  it("renders nothing without a preview", () => {
+    const { container } = render(
+      <GoalTargetDisplay progress={{ kind: "Unknown" }} />
+    )
+    expect(container).toBeEmptyDOMElement()
+  })
+})
+
 describe("GoalTargetDisplay for Ability goals", () => {
   const ability = (
     currentActive: number,

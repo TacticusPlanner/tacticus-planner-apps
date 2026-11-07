@@ -45,11 +45,17 @@ export type HseTeamPick =
    * whose five strongest sum highest. */
   | { kind: "faction"; factionId: string }
 
+/** The enemy rule a team's roster mirrors: only characters that are `allowed` (any of them), or
+ * that are none of `excluded`. */
+export type HseTeamCriteria = HseEnemyHint
+
 export type HseTeam =
   | {
       status: "ready"
       /** The alliance the team is narrowed to; null for Arena (the whole roster). */
       alliance: AllianceTrack | null
+      /** Set on the extra team built only from characters matching the mode's enemy rule. */
+      criteria?: HseTeamCriteria
       pick: HseTeamPick
       /** The engine's Plan team; `broadened` when non-event units fill it. */
       team: TeamCategory
@@ -58,6 +64,7 @@ export type HseTeam =
       /** Fewer than three owned characters for this team: no team can be built. */
       status: "insufficient"
       alliance: AllianceTrack | null
+      criteria?: HseTeamCriteria
       ownedCount: number
       needed: number
       eligible: TrackEligibleCharacter[]
@@ -67,7 +74,8 @@ export type HseModeTeams = {
   mode: HseTeamMode
   /** Distinct enemy-side rules of the mode's scoring trackers. */
   hints: HseEnemyHint[]
-  /** One team for Arena; one per alliance (Imperial, Chaos, Xenos) otherwise. */
+  /** One team for Arena; one per alliance (Imperial, Chaos, Xenos) otherwise; then, when the mode's
+   * enemy rule names enemies, one more from the characters matching it (`criteria`). */
   teams: HseTeam[]
 }
 

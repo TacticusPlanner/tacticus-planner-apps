@@ -4,7 +4,7 @@ import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
 
-import { LaneOverview } from "./lane-overview"
+import { HowPointsDisclosure, LaneOverviewFigures } from "./lane-overview"
 import type {
   LanePotentialViewModel,
   LanePotentialsViewModel,
@@ -34,54 +34,36 @@ const READY_ALPHA: LanePotentialViewModel = {
 }
 const LOADING: LanePotentialViewModel = { kind: "loading" }
 
-async function renderLanes(
-  laneIds: ("alpha" | "beta" | "gamma")[],
-  lng: "en" | "de" = "en",
+async function renderFigures(
+  laneId: "alpha" | "beta" | "gamma" = "alpha",
   {
     potentials = { alpha: READY_ALPHA, beta: LOADING, gamma: LOADING },
     isMobile = false,
   }: { potentials?: LanePotentialsViewModel; isMobile?: boolean } = {}
 ) {
-  const i18n = await createTestI18n(lng, {
-    // Only English game data is loaded; seed one German trait to show it is followed.
-    de: { traits: { Resilient: "Widerstandsfähig" } },
-  })
+  const i18n = await createTestI18n("en")
   return render(
-    <LaneOverview
-      event={lysanderEvent}
-      isMobile={isMobile}
-      laneIds={laneIds}
-      potentials={potentials}
-    />,
+    <>
+      <LaneOverviewFigures
+        isMobile={isMobile}
+        lane={lysanderEvent[laneId]}
+        laneId={laneId}
+        potential={potentials[laneId]}
+      />
+      <HowPointsDisclosure />
+    </>,
     { wrapper: i18nWrapper(i18n) }
   )
 }
 
-describe("LaneOverview", () => {
-  it("renders Lysander's Alpha lane", async () => {
-    await renderLanes(["alpha"])
-    const alpha = within(screen.getByTestId("legendary-event-lane-panel"))
+describe("LaneOverviewFigures", () => {
+  it("renders Lysander's Alpha lane figures", async () => {
+    await renderFigures()
+    const alpha = within(screen.getByTestId("legendary-event-lane-figures"))
 
-    expect(alpha.getByTestId("legendary-event-lane-label")).toHaveTextContent(
-      "Alpha · No Xenos"
-    )
     expect(
       alpha.getByTestId("legendary-event-lane-kill-points")
     ).toHaveTextContent("32 kill points per battle")
-    expect(
-      alpha
-        .getAllByTestId("legendary-event-objective")
-        .map((chip) => chip.textContent)
-    ).toEqual([
-      "Eviscerate75",
-      "Suppressive Fire95",
-      "Flying80",
-      "≥Min 5 hits85",
-      "No Resilient40",
-    ])
-    for (const chip of alpha.getAllByTestId("legendary-event-objective")) {
-      expect(within(chip).getByTestId("objective-icon")).toBeInTheDocument()
-    }
     expect(alpha.getByTestId("legendary-event-lane-battles")).toHaveTextContent(
       "18 battles"
     )
@@ -97,7 +79,7 @@ describe("LaneOverview", () => {
   })
 
   it("summarises how far the roster gets and where it falls behind", async () => {
-    await renderLanes(["alpha"])
+    await renderFigures()
     const summary = screen.getByTestId("roster-potential-summary")
 
     expect(summary).toHaveTextContent(
@@ -109,7 +91,7 @@ describe("LaneOverview", () => {
   })
 
   it("draws each cell's state and names every state in the legend", async () => {
-    await renderLanes(["alpha"])
+    await renderFigures()
     const states = screen
       .getAllByTestId("roster-potential-column")
       .map((column) =>
@@ -128,7 +110,7 @@ describe("LaneOverview", () => {
   })
 
   it("asks for clear estimates when the potential is unavailable", async () => {
-    await renderLanes(["alpha"], "en", {
+    await renderFigures("alpha", {
       potentials: {
         alpha: { kind: "unavailable", cells: alphaCells },
         beta: LOADING,
@@ -142,13 +124,13 @@ describe("LaneOverview", () => {
   })
 
   it("shows a skeleton while the potential loads", async () => {
-    await renderLanes(["beta"])
+    await renderFigures("beta")
 
     expect(screen.getByTestId("roster-potential-loading")).toBeInTheDocument()
   })
 
   it("numbers every third battle on mobile", async () => {
-    await renderLanes(["alpha"], "en", { isMobile: true })
+    await renderFigures("alpha", { isMobile: true })
     const numbers = screen
       .getAllByTestId("roster-potential-column")
       .map((column) => column.textContent?.trim())
@@ -156,35 +138,12 @@ describe("LaneOverview", () => {
     expect(numbers.slice(0, 4)).toEqual(["1", "", "", "4"])
   })
 
-  it("renders one panel per lane it is given", async () => {
-    await renderLanes(["alpha", "beta", "gamma"])
-
-    expect(
-      screen
-        .getAllByTestId("legendary-event-lane-label")
-        .map((label) => label.textContent)
-    ).toEqual(["Alpha · No Xenos", "Beta · No Imperial", "Gamma · No Chaos"])
-  })
-
   it("keeps the how-points disclosure collapsed until opened", async () => {
-    await renderLanes(["alpha"])
+    await renderFigures()
     const disclosure = screen.getByTestId("legendary-event-how-points")
 
     expect(disclosure).not.toHaveAttribute("open")
     fireEvent.click(within(disclosure).getByText("How points work"))
     expect(disclosure).toHaveAttribute("open")
-  })
-
-  it("labels the No Resilient objective in German", async () => {
-    await renderLanes(["alpha"], "de")
-
-    const chips = screen
-      .getAllByTestId("legendary-event-objective")
-      .map((chip) => chip.textContent)
-    expect(chips).toContain("Ohne Widerstandsfähig40")
-    expect(chips).toContain("≥Mind. 5 Treffer85")
-    expect(screen.getByTestId("legendary-event-lane-label")).toHaveTextContent(
-      "Alpha · Ohne Xenos"
-    )
   })
 })

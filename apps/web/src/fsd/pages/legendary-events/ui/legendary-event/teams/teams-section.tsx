@@ -83,7 +83,7 @@ export interface TeamsViewModel {
 }
 
 /**
- * A lane's Teams section (design D5, D6), between the lane overview and the progress grid: one
+ * A lane's Teams section (design D5, D6), under its Event board column's unit table: one
  * card per team in stored order, an explicit Add team button, Suggest teams (also in the empty
  * state), delete confirmation, and reorder — drag on desktop, Move up / Move down in the card
  * menu on mobile. Add team, Edit and Use this team open the page's single editor through
@@ -110,6 +110,7 @@ export function TeamsSection({
   // The open Suggest teams dialog's mount key (null when closed): a fresh mount resets its toggles.
   const [suggesting, setSuggesting] = useState<number | null>(null)
   const suggestReasonId = useId()
+  const titleId = useId()
   const { state, run, actions, estimates, unitPower } = teams
   const estimateTeam =
     estimates.kind === "ready" ? estimates.byLane[laneId].team : undefined
@@ -221,15 +222,15 @@ export function TeamsSection({
 
   return (
     <section
-      aria-labelledby="legendary-event-teams-title"
+      aria-labelledby={titleId}
       className="flex min-w-0 scroll-mt-[calc(var(--mobile-header-height)+3rem)] flex-col gap-3 md:scroll-mt-4"
       data-lane={laneId}
       data-testid="legendary-event-teams"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold" id="legendary-event-teams-title">
+        <h4 className="font-semibold" id={titleId}>
           {t("teams.title")}
-        </h2>
+        </h4>
         {state.kind === "ready" ? (
           <div className="flex flex-wrap items-center gap-2">
             {estimateInputs ? null : (
@@ -332,7 +333,7 @@ export function TeamsSection({
             <Link
               className="self-start text-sm text-primary underline-offset-4 hover:underline"
               data-testid="team-suggestions-plan-wizard"
-              to={`/legendary-events/${teams.eventId}/plan?from=suggestions`}
+              to={`/legendary-events/${teams.eventId}/plan/edit?from=suggestions`}
             >
               {t("planWizard.openFromSuggestions")}
             </Link>

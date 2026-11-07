@@ -1,6 +1,7 @@
 import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { eventMissions } from "@/entities/legendary-event"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
@@ -38,7 +39,17 @@ const onOpenTeams = vi.fn()
 
 function renderCard(
   view: TokenPlanView,
-  { isMobile = false, canMark = true } = {}
+  {
+    isMobile = false,
+    canMark = true,
+    onViewPlan,
+    missionsInput,
+  }: {
+    isMobile?: boolean
+    canMark?: boolean
+    onViewPlan?: () => void
+    missionsInput?: React.ReactNode
+  } = {}
 ) {
   return render(
     <NextTokenCard
@@ -47,6 +58,8 @@ function renderCard(
       isMobile={isMobile}
       onMarkToken={canMark ? onMarkToken : undefined}
       onOpenTeams={onOpenTeams}
+      missionsInput={missionsInput}
+      onViewPlan={onViewPlan}
       view={view}
     />,
     { wrapper: i18nWrapper(i18n) }
@@ -101,6 +114,7 @@ describe("NextTokenCard", () => {
     i18n = await createTestI18n("en")
   })
   beforeEach(() => {
+    localStorage.clear()
     capture.mockReset()
     onMarkToken.mockReset()
     onOpenTeams.mockReset()
@@ -111,6 +125,12 @@ describe("NextTokenCard", () => {
 
     expect(screen.getByTestId("next-token-team")).toHaveTextContent("Melee")
     expect(
+      screen
+        .getAllByTestId("next-token-team-details-portrait")
+        .map((portrait) => portrait.dataset.unit)
+    ).toEqual(["ultraCalgar", "ultraTitus", "ultraApothecary"])
+    fireEvent.click(screen.getByTestId("next-token-team-details"))
+    expect(
       screen.getAllByTestId("next-token-member").map((m) => m.dataset.unit)
     ).toEqual(["ultraCalgar", "ultraTitus", "ultraApothecary"])
     expect(screen.getByTestId("next-token-battle")).toHaveTextContent(
@@ -119,7 +139,8 @@ describe("NextTokenCard", () => {
     expect(screen.getByTestId("next-token-points")).toHaveTextContent(
       "+240 points"
     )
-    const objectives = within(screen.getByTestId("token-objectives"))
+    // The first objectives list is the next token's; the rest belong to the tokens up next.
+    const objectives = within(screen.getAllByTestId("token-objectives")[0]!)
       .getAllByRole("listitem")
       .map((item) => item.dataset.objective)
     expect(objectives).toEqual(["0", "1", "4"])
@@ -133,6 +154,18 @@ describe("NextTokenCard", () => {
       planLength: 6,
       tokensLeftOver: 94,
     })
+  })
+
+  it("lists the next four tokens after it, with View all opening the plan", () => {
+    const onViewPlan = vi.fn()
+    renderCard(buildTokenPlanView(workedViewInput()), { onViewPlan })
+    const upNext = within(screen.getByTestId("next-token-up-next"))
+
+    expect(upNext.getAllByTestId("token-plan-row")).toHaveLength(4)
+    fireEvent.click(
+      upNext.getByRole("button", { name: "View all 6 planned tokens" })
+    )
+    expect(onViewPlan).toHaveBeenCalledOnce()
   })
 
   it("skips a flagged token and battles not playable yet", () => {
@@ -326,5 +359,115 @@ describe("NextTokenCard", () => {
     renderCard({ kind: "hidden" })
 
     expect(screen.queryByTestId("legendary-event-next-token")).toBeNull()
+  })
+
+  describe("Points / Missions switch", () => {
+    // Uthar regular 2: "Defeat 75 AdMechs".
+    const admech = {
+      track: "regular" as const,
+      mission: eventMissions(utharEvent, "regular").find(
+        (mission) => mission.index === 2
+      )!,
+    }
+    const withMissionOrder = (): TokenPlanView => {
+      const view = buildTokenPlanView(workedViewInput())
+      if (view.kind !== "ready") throw new Error("worked view is not ready")
+      // Missions order puts Alpha battle 2's token first.
+      const second = view.plan.tokens.findIndex(
+        (token) => token.laneId === "alpha" && token.battleIndex === 1
+      )
+      const tokens = [
+        view.plan.tokens[second]!,
+        ...view.plan.tokens.filter((_, index) => index !== second),
+      ]
+      return {
+        ...view,
+        missionOrder: {
+          tokens,
+          markers: [],
+          nextProgress: [],
+          steps: tokens.map(() => [
+            {
+              ref: admech,
+              total: 75,
+              gained: 75,
+              needed: 75,
+              completes: true,
+              estimate: false,
+            },
+          ]),
+          runs: [],
+        },
+      }
+    }
+
+    it("reads the plan in Missions order with the run's mission ticks", () => {
+      renderCard(withMissionOrder(), {
+        missionsInput: <p data-testid="ticks">ticks</p>,
+      })
+      expect(screen.getByTestId("next-token-battle")).toHaveTextContent(
+        "Alpha · Battle 3"
+      )
+      expect(screen.queryByTestId("ticks")).toBeNull()
+
+      fireEvent.click(screen.getByRole("radio", { name: "Missions" }))
+
+      expect(screen.getByTestId("next-token-battle")).toHaveTextContent(
+        "Alpha · Battle 2"
+      )
+      fireEvent.click(screen.getByTestId("next-token-progresses"))
+      expect(
+        screen.getByTestId("next-token-progresses-mission")
+      ).toHaveTextContent(/Defeat 75 .*\+75 · done/)
+      expect(screen.getByTestId("next-token-reason")).toHaveTextContent(
+        "Finishes this run's open missions soonest"
+      )
+      expect(screen.getByTestId("ticks")).toBeInTheDocument()
+      expect(screen.queryByTestId("next-token-missions-alternative")).toBeNull()
+      const upNext = within(screen.getByTestId("next-token-up-next"))
+      expect(upNext.getAllByTestId("token-plan-row")).toHaveLength(4)
+      expect(
+        localStorage.getItem("legendaryEvents.tokenPlan.missionsOrder")
+      ).toBe("true")
+    })
+
+    it("offers the For missions alternative in Missions order when it is another token", () => {
+      const view = withMissionOrder()
+      if (view.kind !== "ready") throw new Error("worked view is not ready")
+      const ordered = view.missionOrder!.tokens[0]!
+      const other = view.plan.tokens.find(
+        (token) =>
+          token.laneId !== ordered.laneId ||
+          token.battleIndex !== ordered.battleIndex
+      )!
+      const alternative = (token: typeof ordered) => ({
+        ...view,
+        missions: {
+          progressed: [],
+          alternative: {
+            token,
+            // A plan position, which can match the Missions order's own position by chance.
+            index: 0,
+            missions: [{ ref: admech, amount: 3, estimate: false }],
+            pointsDifference: -10,
+          },
+        },
+      })
+      const { unmount } = renderCard(alternative(other))
+      fireEvent.click(screen.getByRole("radio", { name: "Missions" }))
+      expect(
+        screen.getByTestId("next-token-missions-alternative")
+      ).toBeInTheDocument()
+      unmount()
+
+      renderCard(alternative(ordered))
+      expect(screen.queryByTestId("next-token-missions-alternative")).toBeNull()
+    })
+
+    it("has no switch without a Missions order", () => {
+      renderCard(buildTokenPlanView(workedViewInput()))
+
+      expect(screen.queryByRole("radio", { name: "Missions" })).toBeNull()
+    })
   })
 })

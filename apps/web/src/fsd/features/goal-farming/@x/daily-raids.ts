@@ -14,6 +14,7 @@ export {
   estimateTodayRun,
   collectFarmNodes,
   selectFarmNodes,
+  shardResourceId,
   type EstimatePlanParams,
   type EstimateBlocker,
   type EstimateResourceId,

@@ -17,7 +17,7 @@ const entryOf = (value: string | null): PlanWizardEntry =>
 const isAscensionStep = (value: string | null): value is AscensionStep =>
   (ASCENSION_STEPS as readonly (string | null)[]).includes(value)
 
-/** `/legendary-events/:eventId/plan` (spec: 1-click plan wizard page). `?target=` preselects a
+/** `/legendary-events/:eventId/plan/edit` (spec: 1-click plan wizard page). `?target=` preselects a
  *  step; `?from=` names the entry point for analytics. Keyed by the event id so a new event starts a fresh draft. */
 export function PlanWizardPage() {
   const { eventId = "" } = useParams()

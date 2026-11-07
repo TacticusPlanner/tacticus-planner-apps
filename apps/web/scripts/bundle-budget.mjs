@@ -28,8 +28,10 @@ const MAX_PRELOADS = 20
 const ROUTES = {
   "/": { budgetKb: 1310, modules: [] },
   "/home": { budgetKb: 2000, modules: ["src/fsd/pages/home/index.ts"] },
+  // 1320: the shell's lazy Legendary Event settings button (its loader and preload list) took the
+  // route from 1310 to 1311 KB.
   "/library/characters": {
-    budgetKb: 1310,
+    budgetKb: 1320,
     modules: [
       "src/fsd/pages/library/ui/library-page.tsx",
       "src/fsd/pages/library/ui/characters/characters-list-page.tsx",

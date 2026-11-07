@@ -3,6 +3,7 @@ import { factionIcon } from "@workspace/game-catalog"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -13,6 +14,11 @@ import { NpcLevelBadge, NpcPortrait, type NpcLevelOption } from "@/entities/npc"
 import { EntityIcon } from "@/shared/ui"
 
 import type { NpcVariationOption } from "./npcs-page.view-model"
+
+// Both selectors share one height, tall enough for the Variation value (mode label over the variation id),
+// so the two fields line up; the value may span two lines and each line truncates instead of overflowing.
+const SELECTOR_TRIGGER =
+  "w-full min-w-0 data-[size=default]:h-11 *:data-[slot=select-value]:line-clamp-none *:data-[slot=select-value]:min-w-0"
 
 export function NpcDetailHeader({
   name,
@@ -73,7 +79,7 @@ export function NpcDetailHeader({
           compact ? "grid-cols-1" : "grid-cols-2"
         )}
       >
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex min-w-0 flex-col gap-1 text-sm">
           <span className="text-muted-foreground">{t("npcs.variation")}</span>
           <Select
             value={selectedVariationId}
@@ -81,30 +87,34 @@ export function NpcDetailHeader({
             disabled={variationOptions.length <= 1}
           >
             <SelectTrigger
-              className="w-full"
+              className={SELECTOR_TRIGGER}
               data-testid="npcs-variation-select"
               aria-label={t("npcs.variation")}
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              {variationOptions.map((option) => (
-                <SelectItem key={option.id} value={option.id}>
-                  <span className="flex flex-col items-start">
-                    <span>{option.label}</span>
-                    {option.label !== option.id ? (
-                      <span className="text-xs text-muted-foreground">
-                        {option.id}
+            <SelectContent position="popper" align="start">
+              <SelectGroup>
+                {variationOptions.map((option) => (
+                  <SelectItem key={option.id} value={option.id}>
+                    <span className="flex min-w-0 flex-col items-start text-left leading-tight">
+                      <span className="max-w-full truncate">
+                        {option.label}
                       </span>
-                    ) : null}
-                  </span>
-                </SelectItem>
-              ))}
+                      {option.label !== option.id ? (
+                        <span className="max-w-full truncate text-xs text-muted-foreground">
+                          {option.id}
+                        </span>
+                      ) : null}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
             </SelectContent>
           </Select>
         </label>
 
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex min-w-0 flex-col gap-1 text-sm">
           <span className="text-muted-foreground">{t("npcs.level")}</span>
           <Select
             value={selectedLevel ? String(selectedLevel.servedIndex) : ""}
@@ -112,24 +122,26 @@ export function NpcDetailHeader({
             disabled={levels.length === 0}
           >
             <SelectTrigger
-              className="w-full"
+              className={SELECTOR_TRIGGER}
               data-testid="npcs-level-select"
               aria-label={t("npcs.level")}
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              {levels.map((level) => (
-                <SelectItem
-                  key={level.servedIndex}
-                  value={String(level.servedIndex)}
-                >
-                  <NpcLevelBadge
-                    row={level.row}
-                    health={level.tie ? level.row.health : undefined}
-                  />
-                </SelectItem>
-              ))}
+            <SelectContent position="popper" align="start">
+              <SelectGroup>
+                {levels.map((level) => (
+                  <SelectItem
+                    key={level.servedIndex}
+                    value={String(level.servedIndex)}
+                  >
+                    <NpcLevelBadge
+                      row={level.row}
+                      health={level.tie ? level.row.health : undefined}
+                    />
+                  </SelectItem>
+                ))}
+              </SelectGroup>
             </SelectContent>
           </Select>
         </label>

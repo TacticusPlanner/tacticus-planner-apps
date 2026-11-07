@@ -73,10 +73,18 @@ export type DailyRaidLocationViewModel = {
   // difficulty — the first line of the location-primary Today/Bonus/Home rendering. Falls back to
   // the raw battle id when the catalog has no descriptor for the battle.
   campaignName: string
-  // Difficulty word + node number + a challenge node's "B" (e.g. "Elite 40", "Extremis 12B") — the
+  // Difficulty word + node number + a challenge node's "B" (e.g. "Elite 40", "Extremis 12B"; a
+  // campaign event's Standard tier has no word, just "12B") — the
   // second line of that same rendering. Empty when the catalog has no descriptor, in which case
   // renderers omit the line entirely rather than inventing one.
   nodeLabel: string
+  /** Identifies the campaign with its difficulty (Indomitus, Indomitus Elite and Indomitus Mirror
+   *  Elite are three campaigns): the campaign group and battle type. Used to keep same-campaign
+   *  upgrades together in Today's order. */
+  campaignKey?: string
+  // Just the difficulty word that opens `nodeLabel` ("Elite", "Extremis"), so renderers can set it
+  // apart (italic) from the campaign name and node number. Absent when the catalog has no descriptor.
+  difficultyLabel?: string
   // Compact "{name} {code} {node}{B?}" form Raids Plan's chips still use verbatim.
   shortLabel: string
   challenge: boolean
@@ -98,13 +106,21 @@ export function campaignLocationLabels(
     campaignName: (descriptor: CampaignDescriptor) => string
     difficultyLabel: (descriptor: CampaignDescriptor) => string
   }
-): Pick<DailyRaidLocationViewModel, "campaignName" | "nodeLabel"> {
+): Pick<
+  DailyRaidLocationViewModel,
+  "campaignName" | "nodeLabel" | "difficultyLabel"
+> {
   if (!descriptor) return { campaignName: battleId, nodeLabel: "" }
+  const node = `${battle.nodeNumber}${battle.challenge ? "B" : ""}`
+  const campaignName = display.campaignName(descriptor)
+  // Empty for a Standard tier, storyline or campaign event ("Saim-Hann 42", "Death Guard 3"): the
+  // location icon already tells it from Elite.
+  const difficultyLabel = display.difficultyLabel(descriptor)
+  if (!difficultyLabel) return { campaignName, nodeLabel: node }
   return {
-    campaignName: display.campaignName(descriptor),
-    nodeLabel: `${display.difficultyLabel(descriptor)} ${battle.nodeNumber}${
-      battle.challenge ? "B" : ""
-    }`,
+    campaignName,
+    nodeLabel: `${difficultyLabel} ${node}`,
+    difficultyLabel,
   }
 }
 

@@ -17,5 +17,12 @@ export { useAnnotations } from "./model/use-annotations"
 export { AnnotationMenu } from "./ui/annotation-menu"
 export { AnnotationMarkIcon } from "./ui/annotation-mark"
 export { BattleAnnotationMenu } from "./ui/battle-annotation-menu"
-export { RunInputsDrawer, RunInputsForm } from "./ui/run-inputs-drawer"
+export {
+  RunInputsDrawer,
+  RunInputsForm,
+  RunInputsInline,
+} from "./ui/run-inputs-drawer"
+export { RunMissionsQuickInput } from "./ui/run-missions-quick-input"
+export { useShowPaidOptions } from "./model/use-show-paid-options"
+export { LegendaryEventSettingsButton } from "./ui/legendary-event-settings"
 export { PlanNotesCard } from "./ui/plan-notes-card"

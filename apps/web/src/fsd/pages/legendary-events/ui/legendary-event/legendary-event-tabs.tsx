@@ -1,31 +1,71 @@
+import { useEffect, useRef } from "react"
 import { useTranslation } from "react-i18next"
+import { CheckIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
   LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEventLaneId,
+  type LegendaryEventLifecycle,
 } from "@/entities/legendary-event"
 
-import type { LegendaryEventTab } from "./legendary-event-page.view-model"
+import {
+  LEGENDARY_EVENT_TABS,
+  type LegendaryEventTab,
+} from "./legendary-event-page.view-model"
+import type { LaneSelection } from "./use-lane-selection"
 
-const TABS: readonly LegendaryEventTab[] = [
-  "overview",
-  ...LEGENDARY_EVENT_LANE_IDS,
-]
+/** The run tab's name: Current run while the event is active, Next run before it, Last run once
+ *  it is archived. */
+const RUN_TAB_LABEL = {
+  active: "tabs.run.current",
+  upcoming: "tabs.run.next",
+  archived: "tabs.run.last",
+} as const
 
-/** The Overview / Alpha / Beta / Gamma strip (design D3). On mobile it sticks under the app
- *  header, so a lane can be switched from anywhere on the page. */
+/** The Overview / Teams / Plan / run strip (design D3). It scrolls sideways when it does not fit,
+ *  and on mobile it sticks under the app header, so a tab can be switched from anywhere on the
+ *  page. */
 export function LegendaryEventTabs({
   selectedTab,
   onSelectTab,
+  lifecycle,
   isMobile,
 }: {
   selectedTab: LegendaryEventTab
   onSelectTab: (tab: LegendaryEventTab) => void
+  lifecycle: LegendaryEventLifecycle["state"]
   isMobile: boolean
 }) {
   const { t } = useTranslation("legendaryEvents")
+  const scroller = useRef<HTMLDivElement>(null)
+  // Keeps the selected tab in view when the strip is scrolled sideways, without scrolling the
+  // page; again whenever the strip's size changes (web fonts landing, a rotation).
+  useEffect(() => {
+    const box = scroller.current
+    const active = box?.querySelector<HTMLElement>(
+      `[data-testid="legendary-event-tab-${selectedTab}"]`
+    )
+    if (!box || !active) return
+    const reveal = () => {
+      const boxRect = box.getBoundingClientRect()
+      const tabRect = active.getBoundingClientRect()
+      if (tabRect.left < boxRect.left)
+        box.scrollLeft -= boxRect.left - tabRect.left
+      else if (tabRect.right > boxRect.right)
+        box.scrollLeft += tabRect.right - boxRect.right
+    }
+    reveal()
+    if (typeof ResizeObserver === "undefined") return
+    const observer = new ResizeObserver(reveal)
+    observer.observe(box.firstElementChild ?? box)
+    return () => observer.disconnect()
+  }, [selectedTab])
   return (
     <div
       className={cn(
@@ -39,25 +79,109 @@ export function LegendaryEventTabs({
         onValueChange={(value) => onSelectTab(value as LegendaryEventTab)}
         value={selectedTab}
       >
-        <TabsList
-          aria-label={t("tabs.label")}
-          className="w-full"
-          data-testid="legendary-event-tab-list"
-          variant="line"
-        >
-          {TABS.map((tab) => (
-            <TabsTrigger
-              data-testid={`legendary-event-tab-${tab}`}
-              key={tab}
-              value={tab}
-            >
-              {tab === "overview"
-                ? t("tabs.overview")
-                : t(`lanes.${tab satisfies LegendaryEventLaneId}`)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        {/* The bottom padding keeps the active tab's underline inside the scroll box. */}
+        <div className="overflow-x-auto pb-1.5" ref={scroller}>
+          <TabsList
+            aria-label={t("tabs.label")}
+            className="w-max min-w-full justify-start"
+            data-testid="legendary-event-tab-list"
+            variant="line"
+          >
+            {LEGENDARY_EVENT_TABS.map((tab) => (
+              <TabsTrigger
+                className="flex-none px-2.5 sm:flex-1"
+                data-testid={`legendary-event-tab-${tab}`}
+                key={tab}
+                value={tab}
+              >
+                {tab === "run" ? t(RUN_TAB_LABEL[lifecycle]) : t(`tabs.${tab}`)}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
       </Tabs>
     </div>
+  )
+}
+
+/**
+ * The page's lane selection (spec: one lane selection): a segmented control above the lane blocks.
+ * Desktop: one toggle per lane, pressed while it shows, any one to three at once (the last pressed
+ * lane stays). Mobile: one lane at a time, as a segmented single choice.
+ */
+export function LaneSelector({
+  lanes,
+  isMobile,
+}: {
+  lanes: LaneSelection
+  isMobile: boolean
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  if (isMobile) {
+    return (
+      <ToggleGroup
+        aria-label={t("tabs.laneLabel")}
+        className="w-full"
+        data-testid="legendary-event-lane-picker"
+        onValueChange={(next) => {
+          // A pressed lane stays pressed: one lane always shows.
+          if (next) lanes.onPick(next as LegendaryEventLaneId)
+        }}
+        spacing={0}
+        type="single"
+        value={lanes.shown[0]}
+        variant="outline"
+      >
+        {LEGENDARY_EVENT_LANE_IDS.map((lane) => (
+          <ToggleGroupItem
+            className="min-h-11 flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            data-testid={`legendary-event-lane-pick-${lane}`}
+            key={lane}
+            value={lane}
+          >
+            {t(`lanes.${lane}`)}
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
+    )
+  }
+  return (
+    <ToggleGroup
+      aria-label={t("tabs.lanesShown")}
+      className="self-start"
+      data-testid="legendary-event-lane-switches"
+      onValueChange={(next) => {
+        // The last shown lane stays: one lane always shows.
+        if (next.length === 0) return
+        for (const laneId of LEGENDARY_EVENT_LANE_IDS) {
+          const on = next.includes(laneId)
+          if (on !== lanes.shown.includes(laneId)) lanes.onToggle(laneId, on)
+        }
+      }}
+      spacing={0}
+      type="multiple"
+      value={[...lanes.shown]}
+      variant="outline"
+    >
+      {LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
+        const shown = lanes.shown.includes(laneId)
+        return (
+          <ToggleGroupItem
+            className="min-w-24 gap-1.5 px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            data-lane={laneId}
+            data-testid="legendary-event-lane-switch"
+            key={laneId}
+            value={laneId}
+          >
+            {shown ? (
+              <CheckIcon aria-hidden className="size-3.5" />
+            ) : (
+              <span aria-hidden className="size-3.5" />
+            )}
+            {t(`lanes.${laneId}`)}
+          </ToggleGroupItem>
+        )
+      })}
+    </ToggleGroup>
   )
 }

@@ -4,12 +4,13 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
 
+import { RARITY_FILL, RARITY_FILL_FAINT } from "@/entities/incursion"
+
 import type { Incursion } from "../../model/incursions.model"
 import {
   tierClearance,
   type TierStars,
 } from "../../model/incursion-progress.model"
-import { RARITY_FILL, RARITY_FILL_FAINT } from "./rarity-classes"
 import { useTierName } from "./use-tier-name"
 
 /**

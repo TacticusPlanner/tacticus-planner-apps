@@ -269,6 +269,46 @@ describe("buildHseTeamRecommendations — player filters", () => {
     ])
   })
 
+  it("adds a Warp Surge Arena team of Chaos characters only, matching its Chaos-enemy rule", () => {
+    const read = hseTeamsFixtureRead()
+    if (read.status !== "ready") throw new Error("fixture read")
+    const arena = modeOf(build("hse-warp-surge"), "Arena")
+
+    expect(arena.teams).toHaveLength(2)
+    expect(arena.teams[0]!.criteria).toBeUndefined()
+    const matching = ready(arena.teams[1]!)
+    expect(matching.criteria).toEqual({
+      allowed: [{ via: "alliance", id: "Chaos" }],
+      excluded: [],
+    })
+    expect(matching.alliance).toBeNull()
+    expect(ids(matching).length).toBeGreaterThan(0)
+    for (const unitId of ids(matching))
+      expect(read.catalog.get(unitId)?.alliance).toBe("Chaos")
+  })
+
+  it("adds a For the Emperor Arena team without Imperial characters, but no extra alliance-track team", () => {
+    const read = hseTeamsFixtureRead()
+    if (read.status !== "ready") throw new Error("fixture read")
+    const result = build("hse-for-the-emperor")
+    const matching = ready(modeOf(result, "Arena").teams[1]!)
+
+    expect(matching.criteria?.excluded).toEqual([
+      { via: "alliance", id: "Imperial" },
+    ])
+    for (const unitId of ids(matching))
+      expect(read.catalog.get(unitId)?.alliance).not.toBe("Imperial")
+    // Onslaught already has a team per alliance.
+    expect(modeOf(result, "Onslaught").teams).toHaveLength(3)
+  })
+
+  it("adds no matching team for a rule that names only enemy units (Squig Smash) or none", () => {
+    expect(modeOf(build("hse-squig-smash"), "Arena").teams).toHaveLength(1)
+    expect(modeOf(build("hse-trait-boost-psyker"), "Arena").teams).toHaveLength(
+      1
+    )
+  })
+
   it("keeps 11th Edition Week 3's Arena team unbroadened: any unit scores, Blood Angels and Orks lead", () => {
     const result = build("hse-11th-edition-week-3")
     const team = ready(teamOf(modeOf(result, "Arena"), null))

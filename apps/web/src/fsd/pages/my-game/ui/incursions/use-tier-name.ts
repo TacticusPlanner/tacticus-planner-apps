@@ -1,25 +1,19 @@
 import { useCallback, useMemo } from "react"
-import { useTranslation } from "react-i18next"
 
-import { tierLabels, type Incursion } from "../../model/incursions.model"
+import { tierLabels, useTierLabelName } from "@/entities/incursion"
+
+import type { Incursion } from "../../model/incursions.model"
 
 /** A tier's display name by index, e.g. "Epic 2"; falls back to its 1-based position. */
 export function useTierName(incursion: Incursion | undefined) {
-  const { t } = useTranslation(["incursions", "progression"])
+  const labelName = useTierLabelName()
   const tiers = incursion?.tiers
   const labels = useMemo(() => tierLabels(tiers ?? []), [tiers])
   return useCallback(
     (index: number) => {
       const label = labels.get(index)
-      return label
-        ? t("card.tierOption", {
-            rarity: t(`progression:rarities.${label.rarity}` as never, {
-              defaultValue: label.rarity,
-            }),
-            number: label.number,
-          })
-        : String(index + 1)
+      return label ? labelName(label) : String(index + 1)
     },
-    [labels, t]
+    [labelName, labels]
   )
 }

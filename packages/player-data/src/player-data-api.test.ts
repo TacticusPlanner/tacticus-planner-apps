@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { PlayerDataHttpClient } from "./player-data-api"
+import { PlayerDataRateLimitError } from "./player-data-errors"
 
 const base = "https://api.example.test"
 const mowsChunk = { key: "mows", hash: "h1", url: "/api/v1/player-data/mows" }
@@ -84,6 +85,21 @@ describe("PlayerDataHttpClient", () => {
     respondWith(manifest)
 
     await expect(createClient().triggerSync()).resolves.toEqual(manifest)
+  })
+
+  it.each([
+    ["with a Retry-After", { "Retry-After": "120" }, 120],
+    ["without a readable Retry-After", {}, undefined],
+  ])("reports a 429 as rate limited %s", async (_, headers, seconds) => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, { status: 429, headers })
+    )
+    const client = new PlayerDataHttpClient(base, async () => "token")
+
+    const error = await client.triggerSync().catch((caught: unknown) => caught)
+
+    expect(error).toBeInstanceOf(PlayerDataRateLimitError)
+    expect((error as PlayerDataRateLimitError).retryAfterSeconds).toBe(seconds)
   })
 
   it("rejects a sync manifest that fails validation", async () => {

@@ -27,7 +27,6 @@ export interface PlanWrites {
   goals: UnitGoalChain[]
   lanes: LaneTeamWrites[]
   runs: { run: LegendaryEventRun; values: LegendaryEventRunInputValues }[]
-  showPaidOptions: boolean | null
 }
 
 const sameValues = (
@@ -88,10 +87,6 @@ export function planWrites({
         ? []
         : [{ run, values }]
     }),
-    showPaidOptions:
-      economy.showPaidOptions === plan.showPaidOptions
-        ? null
-        : economy.showPaidOptions,
   }
 }
 
@@ -103,6 +98,6 @@ export function writeCounts(writes: PlanWrites) {
       (sum, lane) => sum + lane.create.length + lane.update.length,
       0
     ),
-    runs: writes.runs.length > 0 || writes.showPaidOptions !== null,
+    runs: writes.runs.length > 0,
   }
 }

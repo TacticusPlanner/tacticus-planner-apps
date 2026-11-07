@@ -2,46 +2,16 @@ import { useTranslation } from "react-i18next"
 import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  useMissionLabel,
-  type LegendaryEvent,
-  type LegendaryEventMissionRef,
-} from "@/entities/legendary-event"
+import type { LegendaryEvent } from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
 
+import { gainsFromProgress } from "../lib/mission-gains"
 import type { MissionAlternative } from "../lib/token-missions"
+import { BattleInfoButton } from "./battle-info"
 import type { MarkTokenHandler } from "./next-token-card"
 import { TokenMarkButtons } from "./token-mark-buttons"
 import { TokenObjectives } from "./token-objectives"
-
-/** "Progresses: …" naming the missions a token progresses; nothing when it progresses none. */
-export function MissionsProgressed({
-  missions,
-  testId,
-}: {
-  missions: readonly LegendaryEventMissionRef[]
-  testId: string
-}) {
-  const { t } = useTranslation("legendaryEvents")
-  const missionLabel = useMissionLabel()
-  if (missions.length === 0) return null
-  return (
-    <p className="text-xs" data-testid={testId}>
-      <span className="font-medium">
-        {t("tokenPlan.nextToken.missions.progresses")}
-      </span>{" "}
-      {missions
-        .map((entry) =>
-          entry.track === "premium"
-            ? t("tokenPlan.nextToken.missions.premium", {
-                mission: missionLabel(entry.mission),
-              })
-            : missionLabel(entry.mission)
-        )
-        .join(" · ")}
-    </p>
-  )
-}
+import { TokenMissionsPopover } from "./token-popovers"
 
 /**
  * The Next token card's For missions entry (spec: For missions alternative): a playable planned
@@ -85,10 +55,15 @@ export function MissionAlternativeView({
             {token.teamName}
           </span>
           <span data-testid="next-token-missions-battle">
-            {t("tokenPlan.nextToken.battle", {
-              lane,
-              battle: token.battleIndex + 1,
-            })}
+            <BattleInfoButton
+              battleIndex={token.battleIndex}
+              laneId={token.laneId}
+            >
+              {t("tokenPlan.nextToken.battle", {
+                lane,
+                battle: token.battleIndex + 1,
+              })}
+            </BattleInfoButton>
           </span>
           <span
             className="inline-flex items-center gap-1 tabular-nums"
@@ -109,8 +84,8 @@ export function MissionAlternativeView({
           clearedIds={token.clearedIds}
           lane={event[token.laneId]}
         />
-        <MissionsProgressed
-          missions={missions}
+        <TokenMissionsPopover
+          gains={gainsFromProgress(missions)}
           testId="next-token-missions-progresses"
         />
       </div>

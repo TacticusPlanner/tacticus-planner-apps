@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
   isProgression,
@@ -26,6 +26,7 @@ import type { useProgressionPreview } from "../../model/goal-creation-form/use-p
 import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
 import {
   isGoalTargetDraftChanged,
+  withUpgradeRange,
   type GoalTargetDraft,
 } from "../../model/target-edit/goal-target-edit"
 import { AbilityGoalCard } from "../goal-card/ability-goal-card"
@@ -248,26 +249,33 @@ function EditUpgradeCard({
   note?: ReactNode
 }) {
   const { t } = useTranslation()
-  // What the picker offers: the materials the range needs, with how many — as in creation.
-  const choices = useMemo<ReadonlyMap<UpgradeId, number>>(() => {
+  // The materials a range needs, with how many — as in creation.
+  const requiredFor = (
+    ranges: Pick<typeof draft, "rankRange" | "activeRange" | "passiveRange">
+  ): ReadonlyMap<UpgradeId, number> => {
     if (detail.entityType === "Character") {
       const character = units.getCharacter(detail.entityId as never)
       if (!character) return new Map()
       return characterRelevantUpgradeQuantities(
         character,
-        rankAt(draft.rankRange?.start ?? 0),
-        draft.rankRange ? rankAt(draft.rankRange.end) : lastRank,
+        rankAt(ranges.rankRange?.start ?? 0),
+        ranges.rankRange ? rankAt(ranges.rankRange.end) : lastRank,
         upgradesById
       )
     }
     const mow = units.mowsById?.get(detail.entityId)
     return mow
       ? mowRelevantUpgradeQuantities(mow, upgradesById, {
-          activeRange: draft.activeRange,
-          passiveRange: draft.passiveRange,
+          activeRange: ranges.activeRange,
+          passiveRange: ranges.passiveRange,
         })
       : new Map()
-  }, [detail, draft, upgradesById, units])
+  }
+  // What the picker offers: the current range's materials.
+  const choices = requiredFor(draft)
+  // A changed range refreshes the materials for it (see `withUpgradeRange`).
+  const changeRange = (ranges: Parameters<typeof withUpgradeRange>[1]) =>
+    onChange(withUpgradeRange(draft, ranges, requiredFor))
 
   return (
     <UpgradeGoalCard
@@ -303,7 +311,7 @@ function EditUpgradeCard({
           <>
             <OptionalRangeField
               label={t("goals.create.upgrade.range.primary")}
-              onChange={(activeRange) => onChange({ ...draft, activeRange })}
+              onChange={(activeRange) => changeRange({ activeRange })}
               options={abilityLevelOptions}
               portalContainer={portalContainer}
               testId="goal-target-upgrade-range-primary"
@@ -311,7 +319,7 @@ function EditUpgradeCard({
             />
             <OptionalRangeField
               label={t("goals.create.upgrade.range.secondary")}
-              onChange={(passiveRange) => onChange({ ...draft, passiveRange })}
+              onChange={(passiveRange) => changeRange({ passiveRange })}
               options={abilityLevelOptions}
               portalContainer={portalContainer}
               testId="goal-target-upgrade-range-secondary"
@@ -321,7 +329,7 @@ function EditUpgradeCard({
         ) : (
           <OptionalRangeField
             label={t("goals.create.upgrade.range.rank")}
-            onChange={(rankRange) => onChange({ ...draft, rankRange })}
+            onChange={(rankRange) => changeRange({ rankRange })}
             options={rankOptions}
             portalContainer={portalContainer}
             testId="goal-target-upgrade-range-rank"

@@ -22,8 +22,13 @@ beforeAll(async () => {
 
 function renderPage() {
   const router = createMemoryRouter(
-    [{ path: "/legendary-events/:eventId/plan", element: <PlanWizardPage /> }],
-    { initialEntries: [`/legendary-events/${utharEvent.id}/plan`] }
+    [
+      {
+        path: "/legendary-events/:eventId/plan/edit",
+        element: <PlanWizardPage />,
+      },
+    ],
+    { initialEntries: [`/legendary-events/${utharEvent.id}/plan/edit`] }
   )
   render(<RouterProvider router={router} />, { wrapper: i18nWrapper(i18n) })
 }

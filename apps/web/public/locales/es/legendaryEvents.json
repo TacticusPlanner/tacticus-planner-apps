@@ -40,12 +40,14 @@
     "noEntry": "Todavía no hay progreso sincronizado para este evento.",
     "syncedUnavailable": "Datos sincronizados no disponibles",
     "syncedAgo": "Sincronizado {{when}}",
-    "neverSynced": "Aún sin sincronizar"
+    "neverSynced": "Aún sin sincronizar",
+    "goToCurrentRun": "Ir a la ejecución actual",
+    "goToNextRun": "Ir a la próxima ejecución"
   },
   "runInputs": {
     "button": "Datos",
     "title": "Datos por ronda",
-    "description": "Misiones y packs que el juego no informa. Alimentan la previsión de recompensas de la tarjeta Estado de la ronda.",
+    "description": "Misiones y paquetes que el juego no informa para la ejecución actual. Las misiones se completan en orden, así que indica cuántas están hechas. Alimentan la previsión de recompensas de la tarjeta Estado de la ejecución.",
     "run": "Ronda {{run}}",
     "phase": {
       "done": "Hecha",
@@ -69,7 +71,15 @@
     },
     "ticked": "{{done}} de {{total}} hechas",
     "planToComplete": "{{field}} por completar",
-    "planToCompleteShort": "Plan a completar"
+    "planToCompleteShort": "Plan a completar",
+    "doneCount": "{{field}} completadas",
+    "doneShort": "Completadas",
+    "now": "Ahora",
+    "missionState": {
+      "done": "Misión {{number}}, completada: {{mission}}",
+      "current": "Misión {{number}}, actual: {{mission}}",
+      "later": "Misión {{number}}, después: {{mission}}"
+    }
   },
   "notes": {
     "title": "Notas",
@@ -125,18 +135,35 @@
   },
   "tabs": {
     "label": "Secciones del evento",
-    "overview": "Resumen"
+    "overview": "Resumen",
+    "teams": "Equipos",
+    "plan": "Plan",
+    "run": {
+      "current": "Ronda actual",
+      "next": "Próxima ronda",
+      "last": "Última ronda"
+    },
+    "laneLabel": "Carril",
+    "lanesShown": "Carriles mostrados"
+  },
+  "battleInfo": {
+    "open": "Información de la batalla: {{lane}} batalla {{battle}}",
+    "title": "{{lane}} · Batalla {{battle}}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "close": "Cerrar"
   },
   "eventBoard": {
     "title": "Tablero del evento",
-    "description": "Los objetivos y equipos guardados de todas las pistas a la vez. Elige un equipo para editarlo o una pista para abrir su pestaña.",
-    "openLane": "Abrir la pestaña {{lane}}",
-    "teams_one": "{{count}} equipo",
-    "teams_other": "{{count}} equipos",
-    "noTeams": "Aún no hay equipos.",
+    "description": "Los objetivos de cada carril mostrado, las unidades que encajan en cada uno y los equipos del carril lado a lado. Elige objetivos para ver las unidades que los cumplen todos, o una unidad para empezar un equipo con ella.",
     "noTeam": "Sin equipo",
     "cleared": "Cumplido en {{cleared}} de {{total}} batallas",
-    "editTeam": "Editar {{name}}"
+    "clearSelection": "Borrar selección",
+    "columnUnits_one": "{{count}} unidad",
+    "columnUnits_other": "{{count}} unidades",
+    "noUnits": "Sin unidades",
+    "addTeam": "Empezar un equipo con esta unidad",
+    "locked": "Bloqueada"
   },
   "laneSummary": {
     "title": "Resumen de carriles",
@@ -149,7 +176,6 @@
     "rosterReaches": "La plantilla llega a la batalla {{battle}}"
   },
   "laneOverview": {
-    "title": "Resumen de carriles",
     "labelWithRule": "{{lane}} · {{rule}}",
     "killPoints": "{{points}} puntos por bajas por batalla",
     "battles": "{{count}} batallas",
@@ -176,7 +202,9 @@
         "goals": "Con objetivos planificados",
         "out": "Fuera de alcance"
       }
-    }
+    },
+    "viewBattles_one": "{{lane}}: abrir la información de su {{count}} batalla",
+    "viewBattles_other": "{{lane}}: abrir la información de sus {{count}} batallas"
   },
   "leaderboard": {
     "title": "Clasificación de elegibilidad",
@@ -210,7 +238,14 @@
       "notAllowed": "—",
       "notAllowedLabel": "{{lane}}: no permitido",
       "laneFigure": "{{lane}}: {{points}}"
-    }
+    },
+    "filters": "Filtros",
+    "filtersCount": "Filtros ({{count}})",
+    "lanes": "Carriles",
+    "lanesAll": "Todos los carriles",
+    "lanesCount": "{{count}} carriles",
+    "progression": "Progresión",
+    "sortBy": "Ordenar por {{column}}"
   },
   "progress": {
     "title": "Progreso sincronizado",
@@ -232,10 +267,14 @@
     "howPoints": {
       "title": "Cómo funcionan los puntos",
       "body": "Los puntos conseguidos en una batalla son su puntuación de bajas más su puntuación máxima, más la bonificación por derrotar a todos y la puntuación de cada objetivo que superaste en ella. El máximo de una batalla suma su puntuación de bajas completa, su puntuación máxima completa, la bonificación por derrotar a todos y la puntuación de cada objetivo; el máximo del carril suma todas las batallas."
-    }
+    },
+    "editMarks": "Editar marcas",
+    "clearedDivider_one": "{{count}} batalla completada del todo",
+    "clearedDivider_other": "{{count}} batallas completadas del todo"
   },
   "battles": {
     "title": "Batallas",
+    "titleLane": "Batallas · {{lane}}",
     "loading": "Cargando batallas…",
     "error": "No se pudieron cargar los datos de las batallas.",
     "empty": "Todavía no hay datos de batallas para esta línea",
@@ -270,7 +309,8 @@
       "toggle": "Mapa",
       "alt": "Mapa de la batalla {{number}} de {{lane}}",
       "unavailable": "Mapa no disponible"
-    }
+    },
+    "laneLabel": "Carril"
   },
   "annotations": {
     "maybeClear": "Quizá superable",
@@ -394,7 +434,20 @@
     "pointsLeftNeedsDepth": "Fija la profundidad para ver los puntos restantes",
     "clearedThrough": "Ya completado hasta la batalla {{battle}}",
     "pointsLeftCannotClear": "Aún no supera la batalla 1",
-    "laneFull": "Este carril ya tiene el máximo de {{max}} equipos."
+    "laneFull": "Este carril ya tiene el máximo de {{max}} equipos.",
+    "depthBar": {
+      "battles": "Batallas 1–{{depth}}",
+      "cannotClear": "Aún no supera la batalla 1",
+      "unset": "Sin profundidad",
+      "label": "Supera las batallas 1–{{depth}} de {{total}}",
+      "labelNone": "No supera ninguna de {{total}} batallas",
+      "close": "Cerca de la batalla {{battle}}",
+      "manual": "Profundidad fijada por ti"
+    },
+    "editDepth": "Editar profundidad",
+    "details": "Detalles",
+    "objectives": "Objetivos",
+    "objectiveUncovered": "{{objective}}: ningún miembro del equipo lo cubre"
   },
   "objective": {
     "minHits_one": "Mín. {{count}} golpe",
@@ -425,8 +478,8 @@
     "event": {
       "steps": {
         "tabs": {
-          "title": "Resumen y carriles",
-          "content": "El Resumen condensa el evento; Alfa, Beta y Gamma abren un carril cada uno. En el móvil la franja se queda bajo la cabecera mientras te desplazas."
+          "title": "Pestañas del evento",
+          "content": "El Resumen condensa el evento. Equipos muestra los objetivos, unidades y equipos de cada carril; Plan reúne la previsión por ronda, el plan de fichas, el impacto de las mejoras y las batallas; la pestaña de la ronda (Ronda actual durante el evento, si no Próxima o Última ronda) muestra tus próximas fichas y el progreso sincronizado. Los interruptores de carril eligen qué carriles se muestran, uno cada vez en el móvil. En el móvil la franja se queda bajo la cabecera mientras te desplazas."
         },
         "nextToken": {
           "title": "Siguiente ficha",
@@ -438,23 +491,23 @@
         },
         "runInputs": {
           "title": "Datos por ronda",
-          "content": "Marca las misiones que completes en cada ronda e indica cuántas piensas completar, además de los packs que el juego no informa. Alimentan la previsión de recompensas de esta tarjeta, y las misiones abiertas orientan el siguiente token hacia batallas que las hacen avanzar."
+          "content": "Indica cuántas misiones has completado en la ejecución actual (se completan en orden) y cuántas planeas completar, además de los paquetes que el juego no informa. Las ejecuciones futuras asumen todas las misiones gratuitas. Las misiones abiertas dirigen la siguiente ficha a batallas que las hacen avanzar; edita todas las ejecuciones desde la previsión en Plan."
         },
         "tokenPlan": {
           "title": "Plan de fichas",
-          "content": "Todas las fichas que el plan prevé jugar en orden, con los puntos acumulados y los hitos que alcanzan. La previsión por ronda las reparte entre las rondas que quedan."
+          "content": "Todas las fichas que el plan prevé jugar en orden, con los puntos acumulados y los hitos que alcanzan. La previsión por ronda de arriba las reparte entre las rondas que quedan. Elige una batalla para ver su mapa y sus enemigos."
         },
         "laneSummary": {
           "title": "Resumen de carriles",
           "content": "Los puntos conseguidos en cada carril frente a su máximo y cuántas batallas has superado por completo. Elige un carril para saltar a su cuadrícula de progreso."
         },
-        "overviewLeaderboard": {
-          "title": "Elegibilidad entre carriles",
-          "content": "Cada unidad que puede jugar, con los puntos que aún puede conseguir en cada carril. Filtra por objetivo, muestra solo las unidades desbloqueadas o cambia a puntos por batalla."
+        "eventBoard": {
+          "title": "Tablero del evento",
+          "content": "Los objetivos de cada carril mostrado con las unidades que encajan, las más fuertes primero, y debajo los equipos del carril. Elige objetivos para ver las unidades que los cumplen todos y elige una unidad para empezar un equipo con ella."
         },
-        "laneOverview": {
-          "title": "Resumen del carril",
-          "content": "Las unidades permitidas del carril, los puntos por baja y los cinco objetivos con su puntuación, y después un mapa de hasta dónde llega tu plantilla: el derrotar a todos y los objetivos de cada batalla como superados, alcanzados por tus equipos, al alcance de tu plantilla o fuera de alcance."
+        "eligibility": {
+          "title": "Elegibilidad",
+          "content": "Cada unidad que puede jugar, con los puntos que aún puede conseguir en los carriles mostrados. Con un solo carril mostrado indica sus objetivos y las batallas estimadas. Filtra por objetivo, muestra solo las unidades desbloqueadas o usa el menú de una fila para Crear objetivo o Añadir a un equipo nuevo."
         },
         "teams": {
           "title": "Equipos",
@@ -471,10 +524,6 @@
         "battles": {
           "title": "Batallas",
           "content": "Consulta cualquier batalla de la línea antes de jugarla: su mapa, sus oleadas ronda a ronda y cada enemigo con su nivel. Toca un enemigo para ver sus estadísticas. Se abre en tu próxima batalla por jugar."
-        },
-        "leaderboard": {
-          "title": "Clasificación del carril",
-          "content": "Cada unidad que este carril permite, si la tienes, qué objetivos cumple y los puntos que aún puede conseguir aquí. Activa la vista de objetivos para ver las unidades como si hubieras alcanzado tus objetivos activos, y usa el menú de una fila para «Crear objetivo» o «Añadir a un equipo nuevo»."
         },
         "lastRun": {
           "title": "Última ronda",
@@ -598,6 +647,7 @@
   },
   "upgradeImpact": {
     "title": "Impacto de las mejoras",
+    "titleLane": "Impacto de las mejoras · {{lane}}",
     "summary_one": "{{count}} mejora suma puntos · mejor +{{best}}",
     "summary_other": "{{count}} mejoras suman puntos · mejor +{{best}}",
     "hint": "Lo que aporta en este carril un único paso siguiente de un miembro del equipo, por las batallas que permite alcanzar. Basado en tu plantilla sincronizada.",
@@ -622,17 +672,24 @@
   "suggestions": {
     "button": "Sugerir equipos",
     "title": "Equipos sugeridos para {{lane}}",
-    "description": "Equipos de tu plantilla, ordenados por los puntos que suman a tus equipos actuales. No se guarda nada hasta que guardes el equipo.",
+    "description": "Equipos de tu plantilla, ordenados por los puntos que suman a tus equipos actuales y luego por los tokens que ahorran. No se guarda nada hasta que guardes el equipo.",
     "onlyUnlocked": "Solo desbloqueadas",
     "preferGoals": "Preferir unidades con objetivos",
     "reason": "Cubre {{objectives}} · supera ~{{depth}} · +{{points}} puntos sobre tus equipos",
     "use": "Usar este equipo",
     "showMore": "Mostrar más",
-    "empty": "Ningún equipo suma puntos a tus equipos actuales",
+    "empty": "Ningún equipo suma puntos ni ahorra tokens respecto a tus equipos actuales",
     "needsEstimates": "Necesita estimaciones de superación",
     "loading": "Cargando sugerencias…",
     "rank": "Sugerencia {{rank}}",
-    "reasonNoObjectives": "Supera ~{{depth}} · +{{points}} puntos sobre tus equipos"
+    "reasonNoObjectives": "Supera ~{{depth}} · +{{points}} puntos sobre tus equipos",
+    "savesTokens_one": "ahorra {{count}} token",
+    "savesTokens_other": "ahorra {{count}} tokens",
+    "reasonTokens_one": "Cubre {{objectives}} · supera ~{{depth}} · ahorra {{count}} token sobre tus equipos",
+    "reasonTokens_other": "Cubre {{objectives}} · supera ~{{depth}} · ahorra {{count}} tokens sobre tus equipos",
+    "reasonNoObjectivesTokens_one": "Supera ~{{depth}} · ahorra {{count}} token sobre tus equipos",
+    "reasonNoObjectivesTokens_other": "Supera ~{{depth}} · ahorra {{count}} tokens sobre tus equipos",
+    "reasonNoGain": "Cubre {{objectives}} · supera ~{{depth}} · aún sin ganancia sobre tus equipos"
   },
   "tokenPlan": {
     "nextToken": {
@@ -641,7 +698,8 @@
       "points": "+{{points}} puntos",
       "reasons": {
         "mostPoints": "La mayor cantidad de puntos disponible ahora",
-        "mostPointsPlayableNow": "La mayor cantidad de puntos entre las batallas que puedes jugar ahora"
+        "mostPointsPlayableNow": "La mayor cantidad de puntos entre las batallas que puedes jugar ahora",
+        "missionsOrder": "Completa antes las misiones abiertas de esta ronda, con los mismos puntos de ronda"
       },
       "upcoming": "{{reason}} para cuando empiece la ronda {{run}}",
       "upcomingUnknown": "{{reason}} para cuando empiece la próxima ronda",
@@ -662,10 +720,18 @@
       "nothingLeft": "A tus equipos no les queda nada por superar · quedan {{points}} puntos en {{lane}}",
       "missions": {
         "title": "Para misiones",
-        "progresses": "Avanza:",
+        "progresses": "Misiones que hace avanzar",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} puntos ({{difference}})"
-      }
+        "points": "+{{points}} puntos ({{difference}})",
+        "button_one": "Hace avanzar {{count}} misión",
+        "button_other": "Hace avanzar {{count}} misiones",
+        "uncounted": "cuenta",
+        "finishes": "completada"
+      },
+      "upNext": "A continuación",
+      "viewPlan_one": "Ver la {{count}} ficha planificada",
+      "viewPlan_other": "Ver las {{count}} fichas planificadas",
+      "team": "Ver las unidades de {{team}}"
     },
     "plan": {
       "title": "Plan de fichas",
@@ -713,7 +779,13 @@
         },
         "doneCount": "{{done}}/{{total}} completadas",
         "completed": "Completada"
-      }
+      },
+      "battles": "Batallas {{first}}–{{last}}",
+      "expandRun_one": "Mostrar {{count}} batalla",
+      "expandRun_other": "Mostrar {{count}} batallas",
+      "collapseRun_one": "Ocultar {{count}} batalla",
+      "collapseRun_other": "Ocultar {{count}} batallas",
+      "openTeam": "Abrir el equipo {{team}}"
     },
     "forecast": {
       "title": "Previsión por ronda",
@@ -742,7 +814,12 @@
       "ohSoClose": "Oh So Close: {{shards}} fragmentos por {{blackstone}} de piedra negra",
       "leftover_one": "{{count}} ficha sin nada que jugar: añade un equipo o sube una profundidad para usarla",
       "leftover_other": "{{count}} fichas sin nada que jugar: añade un equipo o sube una profundidad para usarlas",
-      "editInputs": "Editar datos"
+      "summary": {
+        "tokens": "Fichas usadas del suministro de la ejecución",
+        "points": "Puntos al final de la ejecución",
+        "chests": "Cofres obtenidos",
+        "shards": "Fragmentos al final de la ejecución"
+      }
     }
   },
   "masterTable": {
@@ -770,7 +847,10 @@
       "teamsUnavailable": "Equipos no disponibles",
       "teamsLoading": "Cargando equipos",
       "noRoster": "Sincroniza tu plantilla",
-      "rosterLoading": "Cargando plantilla"
+      "rosterLoading": "Cargando plantilla",
+      "noTeams_one": "Aún no hay equipos completos planificados para {{events}}, así que su columna está vacía en En equipos.",
+      "noTeams_other": "Aún no hay equipos completos planificados para {{events}}, así que sus columnas están vacías en En equipos.",
+      "showAll": "Mostrar todas las unidades"
     },
     "points": {
       "label": "Puntos",
@@ -803,7 +883,8 @@
       "objectives_one": "{{count}} objetivo",
       "objectives_other": "{{count}} objetivos",
       "teams_one": "{{count}} equipo",
-      "teams_other": "{{count}} equipos"
+      "teams_other": "{{count}} equipos",
+      "noTeams": "aún sin equipos"
     },
     "explanation": {
       "title": "Cómo se cuentan los puntos",
@@ -1070,9 +1151,7 @@
       "nothing": "Nada que cambiar",
       "removeTeam": "Quitar «{{name}}» de {{lane}}",
       "updateTeam": "Actualizar «{{name}}» en {{lane}}",
-      "createTeam": "Crear «{{name}}» en {{lane}}",
-      "paidOn": "Mostrar opciones de pago: activado",
-      "paidOff": "Mostrar opciones de pago: desactivado"
+      "createTeam": "Crear «{{name}}» en {{lane}}"
     },
     "toast": {
       "created": "Plan creado: {{goals}}, {{teams}}",
@@ -1108,5 +1187,11 @@
     "window": "{{start}} – {{end}}",
     "guessed": "quizá ~{{date}}",
     "unknown": "fecha desconocida"
+  },
+  "settings": {
+    "button": "Ajustes de eventos legendarios",
+    "title": "Ajustes de eventos legendarios",
+    "description": "Se aplican al plan de cada evento legendario y se guardan en tu cuenta.",
+    "showPaidOptionsHint": "Activado: planifica con lo que pagas: misiones premium, el paquete de 300 de moneda y los fragmentos Oh So Close. Desactivado: solo recompensas gratuitas."
   }
 }

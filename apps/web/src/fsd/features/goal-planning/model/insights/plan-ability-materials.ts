@@ -52,7 +52,7 @@ function stockOf(inventory: AbilityInventory) {
   return stock
 }
 
-/** The stock as it stands now for what `materials` needs (Machine of War available/needed chips). */
+/** The stock as it stands now for what `materials` needs (the available/needed chips). */
 function availableFor(
   materials: AbilityMaterials,
   stock: ReadonlyMap<string, number>,
@@ -83,7 +83,7 @@ function availableFor(
   }
 }
 
-/** A paused Machine of War goal (outside the plan run): its standalone need against the full stock. */
+/** A paused Ability goal (outside the plan run): its standalone need against the full stock. */
 export function withStandaloneAvailable(
   materials: AbilityMaterials,
   inventory: AbilityInventory,
@@ -183,19 +183,14 @@ export function createAbilityMaterialsPlan(
       covered,
       claim: true,
     })
-    if (materials && stock && isMow) {
-      // Machine of War chips read available/needed: keep the gross need, record the stock at this turn.
+    if (materials && stock) {
+      // The chips read available/needed (V1's "x/y"): keep the gross need, record the stock at this turn.
       const available = availableFor(materials, stock, alliance)
       netAgainstStock(materials, stock, alliance) // consume for lower-priority goals
       byGoalId.set(detail.goalId, { ...materials, available })
       return
     }
-    byGoalId.set(
-      detail.goalId,
-      materials && stock
-        ? netAgainstStock(materials, stock, alliance)
-        : materials
-    )
+    byGoalId.set(detail.goalId, materials)
   }
   return { add, byGoalId }
 }

@@ -30,6 +30,7 @@ export type { GoalStatusFilterValue } from "./ui/status-filter-select"
 export { GoalFilters } from "./ui/goal-filters"
 export type { GoalGroupValue, GoalTypeFilterValue } from "./ui/goal-filters"
 export {
+  compareGoalTypes,
   isGoalGroupValue,
   isGoalStatusFilterValue,
   isGoalTypeFilterValue,

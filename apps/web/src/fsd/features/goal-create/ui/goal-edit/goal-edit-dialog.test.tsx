@@ -642,6 +642,36 @@ describe("GoalEditDialog", () => {
         })
       })
 
+      it("refreshes a Character goal's material quantity for a widened rank range", async () => {
+        goalOnScreen({
+          ...upgradeGoal,
+          entityId: "hero-ladder",
+          config: {
+            ...config,
+            upgrade: {
+              targets: [{ upgradeId: "upgHpC014", quantity: 1 }],
+              rankRange: { start: 0, end: 1 },
+            },
+          },
+        } as unknown as GoalDetail)
+        renderDialog()
+        await loaded()
+
+        fireEvent.click(
+          screen.getByTestId("goal-target-upgrade-range-rank-end")
+        )
+        const options = within(await screen.findByRole("listbox")).getAllByRole(
+          "option"
+        )
+        fireEvent.click(options.at(-1)!)
+        fireEvent.click(screen.getByTestId("goal-edit-save"))
+
+        await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
+        expect(
+          editGoal.mock.calls[0]![1].target?.target.upgrade?.targets
+        ).toEqual([{ upgradeId: "upgHpC014", quantity: 3 }])
+      })
+
       it("sends a changed range together with the targets", async () => {
         goalOnScreen(mowUpgradeGoal)
         renderDialog()

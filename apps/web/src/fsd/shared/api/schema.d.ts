@@ -848,6 +848,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/npc-encounters": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets where each NPC is encountered. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/npc-encounters/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets where each NPC is encountered. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/npcs": {
     parameters: {
       query?: never
@@ -1348,7 +1382,7 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Registers a Tacticus guild using a Guild-scoped API token.
+     * Registers a Tacticus guild using an API token with the Guild and Guild Raid scopes.
      * @description Requires the caller to have a configured Tacticus User ID and to appear as the guild's Leader or Co-Leader in the upstream response. Performs a complete synchronization and persists the encrypted token. Re-registering an already-registered guild updates it rather than duplicating it.
      */
     post: operations["TacticusPlannerApiFeaturesGuildsRegisterGuildEndpoint"]
@@ -1489,7 +1523,7 @@ export interface paths {
     get?: never
     /**
      * Writes one run's inputs (missions, completed missions, bundle, close shards).
-     * @description Upserts the given run (1–3) and leaves the other runs untouched. Completed mission arrays list distinct catalog indices, absent means none, and are stored ascending; each count must be at least its completed array's length. Values equal to the stored run, or all zero for a run with none, succeed without bumping the revision.
+     * @description Upserts the given run (1–3) and leaves the other runs untouched. Completed mission arrays list distinct catalog indices, absent means none, and are stored ascending; each count must be at least its completed array's length. Values equal to the stored run succeed without bumping the revision; all zeros for a run with none are stored.
      */
     put: operations["TacticusPlannerApiFeaturesLegendaryEventPlansUpdateLegendaryEventRunInputsEndpoint"]
     post?: never
@@ -2143,6 +2177,8 @@ export interface components {
       /** Format: int32 */
       stars: number
       rank: string
+      /** Format: int32 */
+      servedIndex: number
     }
     GameCatalogCampaignGuaranteedReward: {
       id: string
@@ -2457,6 +2493,16 @@ export interface components {
       datasetKey: string
       datasetHash: string
       data: null | components["schemas"]["IReadOnlyListOfGameCatalogNpc"]
+    }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data:
+        null | components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounter"]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogOnslaughtReward: {
       version: string
@@ -3143,6 +3189,32 @@ export interface components {
       passiveAbilities: components["schemas"]["IReadOnlyListOfString"]
       stats: components["schemas"]["IReadOnlyListOfGameCatalogNpcStat"]
     }
+    GameCatalogNpcEncounter: {
+      npcId: string
+      source: string
+      groupId: string
+      battles: components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounterBattle"]
+    }
+    GameCatalogNpcEncounterBattle: {
+      battleId: null | string
+      track: null | string
+      /** Format: int32 */
+      tier: null | number
+      /** Format: int32 */
+      number: null | number
+      challenge: boolean
+      role: string
+      rounds: components["schemas"]["IReadOnlyListOfInt32"]
+      /** Format: int32 */
+      count: null | number
+      levels: components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounterLevel"]
+    }
+    GameCatalogNpcEncounterLevel: {
+      /** Format: int32 */
+      servedIndex: null | number
+      /** Format: int32 */
+      count: number
+    }
     GameCatalogNpcStat: {
       /** Format: int32 */
       abilityLevel: number
@@ -3807,6 +3879,9 @@ export interface components {
     IReadOnlyListOfGameCatalogMythicQuestTaskView: components["schemas"]["GameCatalogMythicQuestTaskView"][]
     IReadOnlyListOfGameCatalogMythicQuestView: components["schemas"]["GameCatalogMythicQuestView"][]
     IReadOnlyListOfGameCatalogNpc: components["schemas"]["GameCatalogNpc"][]
+    IReadOnlyListOfGameCatalogNpcEncounter: components["schemas"]["GameCatalogNpcEncounter"][]
+    IReadOnlyListOfGameCatalogNpcEncounterBattle: components["schemas"]["GameCatalogNpcEncounterBattle"][]
+    IReadOnlyListOfGameCatalogNpcEncounterLevel: components["schemas"]["GameCatalogNpcEncounterLevel"][]
     IReadOnlyListOfGameCatalogNpcStat: components["schemas"]["GameCatalogNpcStat"][]
     IReadOnlyListOfGameCatalogOnslaughtReward: components["schemas"]["GameCatalogOnslaughtReward"][]
     IReadOnlyListOfGameCatalogProgressionRules: components["schemas"]["GameCatalogProgressionRules"][]
@@ -4428,7 +4503,7 @@ export interface components {
       xpBookRarity: components["schemas"]["XpBookRarity"]
       /** Format: int64 */
       revision: number
-      watchAds?: null | boolean
+      preferences?: null | components["schemas"]["UserPreferenceArray"]
     }
     UpgradeMaterialTargetRequest: {
       upgradeId: string
@@ -4467,11 +4542,15 @@ export interface components {
     UserJotTokenResponse: {
       token: string
     }
+    /** @enum {string} */
+    UserPreference:
+      "LegendaryEventShowPaidOptions" | "LegendaryEventSkipDailyAds"
+    UserPreferenceArray: components["schemas"]["UserPreference"][]
     UserSettingsResponse: {
       /** Format: int32 */
       dailyEnergy: number
       xpBookRarity: components["schemas"]["XpBookRarity"]
-      watchAds: boolean
+      preferences: components["schemas"]["UserPreferenceArray"]
       /** Format: int64 */
       revision: number
     }
@@ -6828,6 +6907,98 @@ export interface operations {
       }
     }
   }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per npc, source and group naming every battle the npc fights in as an enemy: source is campaign, campaignEvent, legendaryEvent, questEvent, incursion, guildRaid, survival or onslaught; groupId is the campaign group, event id (lreId or featured character), MoW, raid boss / prime unit set, Survival battle set or onslaught; each battle carries the served battle id, track, tier, node or battle number, challenge flag, guild raid role and the wave rounds where the source has them. Ids and numbers only; no schedule. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per npc, source and group naming every battle the npc fights in as an enemy: source is campaign, campaignEvent, legendaryEvent, questEvent, incursion, guildRaid, survival or onslaught; groupId is the campaign group, event id (lreId or featured character), MoW, raid boss / prime unit set, Survival battle set or onslaught; each battle carries the served battle id, track, tier, node or battle number, challenge flag, guild raid role and the wave rounds where the source has them. Ids and numbers only; no schedule. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
   TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcsEndpoint1: {
     parameters: {
       query?: never
@@ -8418,7 +8589,7 @@ export interface operations {
           "application/problem+json": components["schemas"]["ApiProblem"]
         }
       }
-      /** @description The upstream credential or response was rejected. */
+      /** @description The upstream credential (issueCode guildRaidTokenRejected) or response was rejected. */
       502: {
         headers: {
           [name: string]: unknown
@@ -8460,7 +8631,7 @@ export interface operations {
           "application/json": components["schemas"]["RegisteredGuildResponse"]
         }
       }
-      /** @description Blank/invalid token, malformed upstream guild response, or no Tacticus User ID configured. */
+      /** @description Blank/invalid token, a token without Guild Raid access, malformed upstream guild response, or no Tacticus User ID configured. */
       400: {
         headers: {
           [name: string]: unknown

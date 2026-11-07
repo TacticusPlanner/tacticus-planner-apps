@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { selectHreInstance } from "./hre-instance"
+import {
+  listHreInstances,
+  resolveHreSelection,
+  selectHreInstance,
+} from "./hre-instance"
 import { hreRules, hreMissions } from "@/test/fixtures/hre-rules"
 
 import { hreAllDone, hreMission } from "./hre-missions"
@@ -107,6 +111,43 @@ describe("selectHreInstance", () => {
     expect(
       selectHreInstance([hse], definitions, at("2026-10-19T00:00:00Z"))
     ).toBeNull()
+  })
+})
+
+describe("listHreInstances", () => {
+  const nowMs = at("2026-11-10T00:00:00Z")
+  const instances = listHreInstances(
+    [later, hse, zapspitta, zapspitta],
+    definitions,
+    nowMs
+  )
+
+  it("lists each HRE once, by start, with its status", () => {
+    expect(
+      instances.map((instance) => [instance.key, instance.status])
+    ).toEqual([
+      ["occ-zapspitta", "past"],
+      ["occ-later", "upcoming"],
+    ])
+  })
+
+  it("resolves a requested key, else the default, and flags a stale key", () => {
+    const fallback = selectHreInstance([later, zapspitta], definitions, nowMs)
+    expect(resolveHreSelection(instances, fallback, null)).toMatchObject({
+      instance: { key: "occ-later" },
+      stale: false,
+    })
+    expect(
+      resolveHreSelection(instances, fallback, "occ-zapspitta")
+    ).toMatchObject({
+      instance: { key: "occ-zapspitta", status: "past" },
+      defaultInstance: { key: "occ-later" },
+      stale: false,
+    })
+    expect(resolveHreSelection(instances, fallback, "gone")).toMatchObject({
+      instance: { key: "occ-later" },
+      stale: true,
+    })
   })
 })
 

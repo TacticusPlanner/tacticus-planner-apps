@@ -235,12 +235,14 @@ export function crossLaneFigure(
   return figure === "remaining" ? lane.remainingPoints : lane.pointsPerBattle
 }
 
-/** The sum of a cross-lane row's figures over the lanes that allow the unit. */
+/** The sum of a cross-lane row's figures over the lanes (every lane by default) that allow the
+ *  unit. */
 export function crossLaneTotal(
   row: CrossLaneLeaderboardRow,
-  figure: LeaderboardFigure
+  figure: LeaderboardFigure,
+  laneIds: readonly LegendaryEventLaneId[] = LEGENDARY_EVENT_LANE_IDS
 ): number {
-  return LEGENDARY_EVENT_LANE_IDS.reduce(
+  return laneIds.reduce(
     (sum, laneId) => sum + (crossLaneFigure(row, laneId, figure) ?? 0),
     0
   )
@@ -291,16 +293,18 @@ export function buildCrossLaneLeaderboard(
   return sortCrossLaneLeaderboard(rows, "remaining", (row) => row.unit.name)
 }
 
-/** Orders cross-lane rows by the sum of the shown figure descending, then name ascending. */
+/** Orders cross-lane rows by the sum of the shown figure over the shown lanes (every lane by
+ *  default) descending, then name ascending. */
 export function sortCrossLaneLeaderboard(
   rows: readonly CrossLaneLeaderboardRow[],
   figure: LeaderboardFigure,
   nameOf: (row: LeaderboardUnitRow) => string,
-  locale?: string
+  locale?: string,
+  laneIds: readonly LegendaryEventLaneId[] = LEGENDARY_EVENT_LANE_IDS
 ): CrossLaneLeaderboardRow[] {
   return [...rows].sort(
     (a, b) =>
-      crossLaneTotal(b, figure) - crossLaneTotal(a, figure) ||
+      crossLaneTotal(b, figure, laneIds) - crossLaneTotal(a, figure, laneIds) ||
       nameOf(a).localeCompare(nameOf(b), locale)
   )
 }

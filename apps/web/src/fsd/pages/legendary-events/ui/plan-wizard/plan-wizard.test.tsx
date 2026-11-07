@@ -89,7 +89,7 @@ function renderWizard(source = SOURCE, search = "") {
   const router = createMemoryRouter(
     [
       {
-        path: "/legendary-events/:eventId/plan",
+        path: "/legendary-events/:eventId/plan/edit",
         element: <PlanWizard initialTarget={null} source={source} />,
       },
       {
@@ -97,7 +97,9 @@ function renderWizard(source = SOURCE, search = "") {
         element: <div data-testid="event-page" />,
       },
     ],
-    { initialEntries: [`/legendary-events/${utharEvent.id}/plan${search}`] }
+    {
+      initialEntries: [`/legendary-events/${utharEvent.id}/plan/edit${search}`],
+    }
   )
   render(<RouterProvider router={router} />, { wrapper: i18nWrapper(i18n) })
   return router
@@ -421,12 +423,12 @@ describe("PlanWizard", () => {
     const of = utharEvent.regularMissions.length
     expect(
       screen.getByTestId("plan-wizard-run-inputs-summary")
-    ).toHaveTextContent(`Run 2: 0 of ${of} missions`)
+    ).toHaveTextContent(`Run 2: ${of} of ${of} missions`)
     await userEvent.click(screen.getByTestId("plan-wizard-horizon-3"))
     expect(
       screen.getByTestId("plan-wizard-run-inputs-summary")
     ).toHaveTextContent(
-      `Run 2: 0 of ${of} missions · Run 3: 0 of ${of} missions`
+      `Run 2: ${of} of ${of} missions · Run 3: ${of} of ${of} missions`
     )
     expect(screen.queryByTestId("run-inputs-run")).not.toBeInTheDocument()
     await userEvent.click(screen.getByTestId("plan-wizard-run-inputs-toggle"))

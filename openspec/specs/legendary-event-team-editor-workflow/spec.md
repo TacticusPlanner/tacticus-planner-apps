@@ -93,17 +93,17 @@ When creating a team the editor SHALL offer **Save and add another** beside Save
 
 ### Requirement: Leaderboard rows can start a team
 
-A leaderboard row's actions menu SHALL carry **Add to new team** after Create goal. On a lane leaderboard it SHALL open the team editor for that lane with the unit as the first member. On the Overview leaderboard it SHALL list one item per lane that allows the unit ("Add to new team on Alpha"). The editor opens as for a suggestion (derived objectives ticked, default name) and nothing is saved until the user saves.
+A leaderboard row's actions menu SHALL carry **Add to new team** after Create goal. On a lane leaderboard it SHALL open the team editor for that lane with the unit as the first member. On the cross-lane leaderboard it SHALL list one item per shown lane that allows the unit ("Add to new team on Alpha"). The editor opens as for a suggestion (derived objectives ticked, default name) and nothing is saved until the user saves.
 
 #### Scenario: Lane leaderboard
 
 - **WHEN** the user opens Dante's row menu on the Alpha leaderboard and chooses Add to new team
 - **THEN** the editor opens on Alpha with Dante as the first member and his objectives ticked
 
-#### Scenario: Overview leaderboard
+#### Scenario: Cross-lane leaderboard
 
 - **GIVEN** Dante is allowed on Alpha and Gamma but not on Beta
-- **WHEN** the user opens his row menu on Overview
+- **WHEN** the user opens his row menu on the cross-lane leaderboard
 - **THEN** the menu lists "Add to new team on Alpha" and "Add to new team on Gamma", and no Beta item
 
 #### Scenario: Locked unit
@@ -141,29 +141,29 @@ Assumptions:
 
 ### Requirement: Picker tiles show each owned unit's strength
 
-Every tile of a unit the shown roster holds SHALL show its rarity icon and rank badge and, when clear estimates are available, its estimated clears on the lane as "~n" (a team of five like this unit, `legendary-event-clear-estimates`), whether or not Goals Preview is on. With Goals Preview on, these read the preview roster and the tile keeps its preview marker. Locked or unknown units show none of the three. While estimates load the clears show a dash, announced as "Estimating…".
+Every tile SHALL lead with the Event board's unit chip (`legendary-events-hub`) with its stars: for a unit the shown roster holds, its portrait ringed in its rarity colour with its stars above, its rank icon and its active and passive ability levels on a background in its rank colour; a locked unit's chip is greyed and reads "Locked"; with no roster only the portrait shows. The tile keeps its name, goal badge, objective icons, points left, markers and Reserve toggle. Under the chip, when clear estimates are available, an owned unit's tile SHALL show its estimated clears on the lane as "~n" (a team of five like this unit, `legendary-event-clear-estimates`), whether or not Goals Preview is on. With Goals Preview on, the chip and clears read the preview roster and the tile keeps its preview marker. Locked or unknown units show no rank, abilities or clears. While estimates load the clears show a dash, announced as "Estimating…".
 
 #### Scenario: Owned unit at a glance
 
 - **GIVEN** an owned unit at Legendary, Diamond 2 with an estimated clears of 9 on the lane, and Goals Preview off
 - **WHEN** its tile renders
-- **THEN** it shows the Legendary rarity icon, the Diamond 2 rank badge and "~9"
+- **THEN** its chip shows the Legendary rarity ring, its stars, the Diamond 2 rank icon and its ability levels, and "~9" under it
 
 #### Scenario: Locked unit
 
 - **WHEN** a locked unit's tile renders
-- **THEN** it shows the locked styling and no rarity, rank or clears
+- **THEN** its chip reads "Locked" with no rank, abilities or clears
 
 #### Scenario: Estimates unavailable
 
 - **GIVEN** the horde-mode tier read failed
 - **WHEN** an owned unit's tile renders
-- **THEN** it shows rarity and rank and no clears figure
+- **THEN** its chip shows rarity, rank and abilities and no clears figure
 
 #### Scenario: Mobile tile
 
 - **WHEN** the picker renders below 768px in its three-column grid
-- **THEN** rarity, rank and "~n" sit on one line under the name without truncating the points figure
+- **THEN** the chip and "~n" fit the tile without truncating the points figure
 
 ### Requirement: The picker has a Points left / Power sort
 

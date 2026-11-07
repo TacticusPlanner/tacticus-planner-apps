@@ -122,10 +122,9 @@ type LegendaryEventPlanCreatedEvent = {
   ok: boolean
 }
 
-/** The plan's Show paid options switch was turned on or off. */
+/** The account's Show paid options (Legendary Event settings) was turned on or off. */
 type LegendaryEventPaidOptionsToggledEvent = {
   type: "legendary_event_paid_options_toggled"
-  eventId: string
   on: boolean
 }
 

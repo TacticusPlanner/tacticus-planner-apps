@@ -14,9 +14,10 @@ import {
 import { levelRules } from "@/test/fixtures/level-rules"
 
 describe("additionalTargetOptions", () => {
-  it("offers only None and the full top row below Adamantine", () => {
-    expect(additionalTargetOptions("Stone1")).toEqual(["None", "TopRow"])
-    expect(additionalTargetOptions("Diamond3")).toEqual(["None", "TopRow"])
+  it("offers None and 1-3 top-row slots below Adamantine", () => {
+    const topRowOptions = ["None", "TopRow1", "TopRow2", "TopRow"]
+    expect(additionalTargetOptions("Stone1")).toEqual(topRowOptions)
+    expect(additionalTargetOptions("Diamond3")).toEqual(topRowOptions)
   })
 
   it("offers None plus 1-5 applied slots at a non-maximum Adamantine rank", () => {

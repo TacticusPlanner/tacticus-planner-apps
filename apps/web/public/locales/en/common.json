@@ -82,6 +82,7 @@
       "nextAutoSync": "Next auto sync {{time}}",
       "syncProgress": "Syncing {{downloaded}} / {{total}}…",
       "retrySync": "Sync failed — try again",
+      "rateLimited": "Sync limit reached. Try again {{time}}.",
       "reauthRequired": "Sign-in expired — tap to sign in",
       "refreshRequired": "Refresh required · {{lastSync}}",
       "syncNow": "Sync now"
@@ -290,6 +291,7 @@
     "noResults": "No matching pages or actions found.",
     "search": "Search pages and actions",
     "sync": "Sync",
+    "syncCooldown": "{{minutes}} min",
     "syncWithTacticus": "Sync with Tacticus",
     "skipToContent": "Skip to content",
     "primaryNavigation": "Main navigation",
@@ -1577,6 +1579,13 @@
       }
     },
     "estimate": {
+      "checkpoints": {
+        "summary": "{{count}} checkpoints",
+        "next": "Next",
+        "title": "Checkpoints",
+        "ready": "Ready now",
+        "energy": "{{energy}} energy"
+      },
       "none": "—",
       "days": "in {{days}} days",
       "blockedLabel": "Blocked",
@@ -1661,6 +1670,10 @@
       "orbs": "{{rarity}} orbs",
       "abilityBadges": "{{rarity}} ability badges",
       "forgeBadges": "{{rarity}} forge badges",
+      "orbsTotal": "Orbs",
+      "abilityBadgesTotal": "Ability badges",
+      "forgeBadgesTotal": "Forge badges",
+      "byRarityLabel": "{{label}}. Show by rarity",
       "xpBooks": "{{rarity}} XP books",
       "xpBooksValue": "{{available}} of {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
@@ -1679,6 +1692,8 @@
       "levelProgress": "Lv {{current}} → {{target}}",
       "ownedOfRequired": "{{owned}} / {{required}}",
       "upgradeMaterial": "{{name}}: {{owned}} / {{quantity}}",
+      "upgradeMaterialCounted": "Includes {{amount}} held by the {{unit}} {{goalType}} goal (#{{priority}})",
+      "upgradeMaterialTakenFirst": "{{amount}} taken first by the {{unit}} {{goalType}} goal (#{{priority}})",
       "abilityTrack": {
         "active": "Active",
         "passive": "Passive",
@@ -1874,6 +1889,11 @@
       "goalLimitReached": "You already have {{max}} {{type}} goals that are not archived. Archive or delete some first.",
       "goalLimitReachedGeneric": "You can have at most {{max}} goals of one type that are not archived. Archive or delete some first.",
       "projectLimitReached": "You already have {{max}} projects that are not archived. Archive one to make room."
+    },
+    "view": {
+      "label": "Goals view",
+      "cards": "Cards",
+      "table": "Table"
     }
   },
   "language": {
@@ -2010,6 +2030,10 @@
         "seasonFit": {
           "title": "Season fit",
           "content": "Pick a Battle Pass, Guild Raid or Guild War season to see which goals finish in time. A line marks where goals start spilling into the next season."
+        },
+        "viewToggle": {
+          "title": "Cards or table",
+          "content": "Switch between goal cards and the compact table. Your choice is saved on this device."
         }
       }
     },

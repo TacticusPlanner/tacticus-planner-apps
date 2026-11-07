@@ -12,12 +12,11 @@ type StepKey =
   | "projection"
   | "teams"
   | "farm"
-  | "top"
 
 /**
  * Joyride tour for Dailies > HSE: the event switcher, the status line and, when the shown instance
- * has them, the event details, the milestone grid, the points projection, the event teams, the farm
- * list and the top-10 lists. The `has*` flags gate steps whose targets are not rendered (calendar loading or
+ * has them, the event details, the milestone grid, the points projection, the raid list and the
+ * event teams. The `has*` flags gate steps whose targets are not rendered (calendar loading or
  * failed; no scoring data; a past, Global or rule-less event), since react-joyride cannot recover
  * from a target that never appears. Desktop and mobile share the same targets: below 768px the
  * switcher moves to its own row and the sections stack, in the same order (the event teams switch
@@ -53,10 +52,8 @@ export function useHseTutorial({
       ...(hasDetails ? [step("hse-event-details", "details")] : []),
       ...(hasMilestones ? [step("hse-milestones", "milestones")] : []),
       ...(hasProjection ? [step("hse-projection", "projection")] : []),
+      ...(hasLists ? [step("hse-raids", "farm")] : []),
       ...(hasTeams ? [step("hse-teams", "teams")] : []),
-      ...(hasLists
-        ? [step("hse-raids", "farm"), step("hse-top-lists", "top")]
-        : []),
     ]
 
     return { desktop: shared, mobile: shared }

@@ -256,3 +256,93 @@ describe("suggestLaneTeams (objectives already cleared)", () => {
     expect(subsets).toContainEqual([MELEE])
   })
 })
+
+describe("suggestLaneTeams (three-objective subsets)", () => {
+  // Titus at two melee hits joins Max 2 Hits: {Max 2 Hits, Melee} then has Incisus, Titus and
+  // Calgar, who all satisfy Ultramarines too.
+  const widened = units.map((unit) =>
+    unit.id === "ultraTitus" ? { ...unit, meleeHits: 2 } : unit
+  )
+  const TRIPLE = ["ultraApothecary", "ultraTitus", "ultraCalgar"]
+  const triple = (overrides: Partial<TeamSuggestionsInput>) =>
+    suggest({ units: widened, ...overrides }).find(
+      (suggestion) => suggestion.memberUnitIds.join() === TRIPLE.join()
+    )
+
+  it("proposes a team covering three objectives", () => {
+    expect(triple({})?.coveredObjectiveIndexes).toEqual([
+      ULTRAMARINES,
+      MAX_2_HITS,
+      MELEE,
+    ])
+  })
+
+  it("keeps a proposal that adds no points but saves tokens", () => {
+    // Two existing teams split the three objectives over battles 1–5: two tokens per battle.
+    const proposal = triple({
+      existingTeams: [
+        {
+          memberUnitIds: ["a", "b", "c"],
+          depth: 5,
+          coveredObjectiveIndexes: [ULTRAMARINES, MELEE],
+        },
+        {
+          memberUnitIds: ["d", "e", "f"],
+          depth: 5,
+          coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS],
+        },
+      ],
+    })
+    expect(proposal).toMatchObject({ depth: 5, gainPoints: 0 })
+    expect(proposal?.tokensSaved).toBe(5)
+  })
+
+  it("lists a three-objective proposal with no gain last, at 0 points and 0 tokens", () => {
+    const existingTeams = [
+      {
+        memberUnitIds: ["a", "b", "c"],
+        depth: 5,
+        coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS, MELEE],
+      },
+    ]
+    const suggestions = suggest({ units: widened, existingTeams })
+    expect(suggestions.at(-1)).toMatchObject({
+      memberUnitIds: TRIPLE,
+      gainPoints: 0,
+      tokensSaved: 0,
+    })
+    expect(
+      suggestions
+        .slice(0, -1)
+        .every(
+          (suggestion) =>
+            suggestion.gainPoints > 0 || suggestion.tokensSaved > 0
+        )
+    ).toBe(true)
+  })
+
+  it("drops a no-gain proposal covering fewer than three open objectives", () => {
+    // Ultramarines cleared everywhere leaves the triple two open objectives.
+    const progress = {
+      ...UTHAR_ALPHA_PROGRESS,
+      battles: UTHAR_ALPHA_PROGRESS.battles.map((battle) => ({
+        ...battle,
+        cleared: battle.cleared.map((isCleared, column) =>
+          column === ULTRAMARINES + 1 ? true : isCleared
+        ),
+      })),
+    }
+    expect(
+      triple({
+        progress,
+        existingTeams: [
+          {
+            memberUnitIds: ["a", "b", "c"],
+            depth: 5,
+            coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS, MELEE],
+          },
+        ],
+      })
+    ).toBeUndefined()
+  })
+})

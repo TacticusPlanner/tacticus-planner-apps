@@ -246,11 +246,11 @@
     "level": "Niveau du PNJ",
     "variationMode": {
       "standard": "Standard",
-      "lhe": "Événement de héros légendaire",
-      "legendary": "Légendaire",
+      "questEvent": "Événement de quête",
+      "legendary": "Événement Légendaire",
       "survival": "Survie",
       "campaign": "Campagne",
-      "championEvent": "Événement de champion",
+      "campaignEvent": "Événement de campagne",
       "tutorial": "Tutoriel",
       "leviathan": "Flotte-ruche Léviathan",
       "kronos": "Flotte-ruche Kronos",
@@ -276,6 +276,58 @@
     },
     "traits": "Traits",
     "noTraits": "Cette unité n’a aucun trait.",
+    "encounters": {
+      "title": "Rencontré dans",
+      "unavailable": "Les données de rencontre ne sont pas encore disponibles.",
+      "none": "Aucune rencontre n’est enregistrée pour cette variante.",
+      "noneHint": "Le contenu passé ou tournant peut manquer dans les données du jeu : elle peut donc apparaître ailleurs.",
+      "alongside": "Combat aux côtés de ce boss",
+      "boss": "En tant que boss",
+      "prime": "En tant que prime",
+      "challenge": "Défi {{list}}",
+      "battles": "Combats {{list}}",
+      "rounds": "Manches {{list}}",
+      "battle": "Combat {{number}}",
+      "round": "Manche {{number}}",
+      "tier": "Palier {{number}}",
+      "count": "×{{number}}",
+      "upTo": "jusqu’à {{number}}",
+      "matches_one": "{{count}} combat correspondant",
+      "matches_other": "{{count}} combats correspondants",
+      "canAppear": "Peut apparaître aux paliers {{list}}",
+      "tierBattles_one": "Palier {{tiers}} : combats {{battles}}",
+      "tierBattles_other": "Paliers {{tiers}} : combats {{battles}}",
+      "tierRangeBattles": "{{tiers}} : combats {{battles}}",
+      "tracks": {
+        "Standard": "Standard",
+        "Extremis": "Extremis",
+        "alpha": "Alpha",
+        "beta": "Bêta",
+        "gamma": "Gamma"
+      },
+      "source": {
+        "campaign": "Campagne",
+        "campaignEvent": "Événement de campagne",
+        "legendaryEvent": "Événement Légendaire",
+        "questEvent": "Événement de quête",
+        "incursion": "Incursion",
+        "guildRaid": "Raid de guilde",
+        "survival": "Survie",
+        "onslaught": "Onslaught"
+      },
+      "timing": {
+        "always": "Toujours disponible",
+        "rotating": "Tournant",
+        "running": "En cours",
+        "next": "Prochaine session {{date}}",
+        "none": "Aucune session prévue"
+      },
+      "survivalSeason": {
+        "survival_may_2026": "Mai 2026",
+        "survival_september_2026": "Septembre 2026",
+        "survival_crescendo_01": "Crescendo"
+      }
+    },
     "healthAtLevel": "{{health}} PV",
     "noMatchingNpcs": "Aucun PNJ ne correspond aux filtres actuels.",
     "noMatchingOptions": "Aucune option correspondante.",
@@ -286,7 +338,7 @@
       "steps": {
         "filters": {
           "title": "Filtrer la liste",
-          "content": "Recherchez par nom ou affinez la liste par faction, type de dégâts et trait. Un PNJ reste affiché tant que l’une de ses variantes correspond."
+          "content": "Recherchez par nom ou affinez la liste par faction, mode de jeu, lieu, type de dégâts et trait. Un PNJ reste affiché tant que l’une de ses variantes correspond."
         },
         "list": {
           "title": "Choisir un PNJ",
@@ -298,7 +350,7 @@
         },
         "variation": {
           "title": "Variante",
-          "content": "Le jeu fait apparaître la même unité avec des échelles de niveaux différentes selon le mode : Survie, Événements de héros légendaire, campagnes. Passez de l’une à l’autre ici."
+          "content": "Le jeu fait apparaître la même unité avec des échelles de niveaux différentes selon le mode : Survie, Événements de quête, campagnes. Passez de l’une à l’autre ici."
         },
         "level": {
           "title": "Niveau du PNJ",
@@ -307,6 +359,10 @@
         "stats": {
           "title": "Statistiques, puissance, attaques et traits",
           "content": "Points de vie, armure, dégâts, mouvement et puissance estimée au niveau sélectionné, ainsi que les attaques et traits de l’unité."
+        },
+        "encounters": {
+          "title": "Où le combattre",
+          "content": "Chaque campagne, événement et mode où apparaît cette variante, la prochaine session du contenu à durée limitée et un lien vers la page correspondante."
         }
       }
     },
@@ -325,6 +381,11 @@
     },
     "attack": "Attaque",
     "anyAttack": "Toute attaque",
+    "gameMode": "Mode de jeu",
+    "anyGameMode": "Tous les modes de jeu",
+    "location": "Lieu",
+    "anyLocation": "Tous les lieux",
+    "minCount": "Min. dans un combat",
     "meleeOnly": "Corps à corps uniquement",
     "hasRanged": "Avec attaque à distance",
     "clearOne": "Effacer {{name}}",

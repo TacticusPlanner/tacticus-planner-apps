@@ -1,286 +1,140 @@
 import { useTranslation } from "react-i18next"
+import { ChevronDown } from "lucide-react"
 import {
-  abilityBadgeIcon,
-  energyIcon,
-  forgeBadgeIcon,
-  goldIcon,
-  mowComponentIcon,
-  onslaughtTokenIcon,
-  orbAllianceIcon,
-  orbIcon,
-  shardIcon,
-  type GameIcon,
-} from "@workspace/game-catalog"
-import { rarityOrder, type Rarity } from "@workspace/game-domain"
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover"
+import { cn } from "@workspace/ui/lib/utils"
 
-import type { GoalKind } from "@/entities/goal"
-import type { ResourceNeed } from "@/features/goal-farming"
-import { shopCurrencyIcon } from "@/features/shop-rewards"
 import { EntityIcon } from "@/shared/ui"
+import {
+  useGoalResourceChips,
+  type GoalResourceChip,
+  type GoalResourceChipsInput,
+} from "./use-goal-resource-chips"
 
-const EMPTY_AVAILABLE = {
-  badgesByRarity: {},
-  forgeBadgesByRarity: {},
-  components: 0,
-}
-
-type Chip = {
-  key: string
-  icon: GameIcon | undefined
-  /** Alliance emblem drawn over the icon (V1's orb: rarity orb with the alliance on top). */
-  overlay?: string
-  /** Full localized resource name, used in the tooltip and the accessible name. */
-  name: string
-  /** Available/needed quantities (Machine of War materials): shows "a/n", the label reads "a of n". */
-  pool?: { available: number; needed: number }
-  /** Display text beside the icon (a formatted quantity, or ). */
-  text: string
-  /** Shortened text shown instead of `text` when they differ (gold: "42k"); the label keeps the full value. */
-  display?: string
-  /** Extra tooltip line (the energy chip's standalone figures). */
-  hint?: string
-}
-
-/** Icon chips for what a goal still needs, per goal kind (`goal-remaining-resources`): never upgrade
- *  materials; zero quantities omitted. The XP-book figure lives with the level line, not here. */
+/** Icon chips for what a goal still needs (`goal-remaining-resources`). A goal card that splits them
+ *  across rows calls `useGoalResourceChips` itself and renders each row with `GoalResourceChipList`. */
 export function GoalResourceChips({
-  goalType,
-  entityType,
-  remaining,
-  energy,
-  onslaughtTokens,
-  shopSpend,
+  className,
+  ...input
+}: GoalResourceChipsInput & { className?: string }) {
+  const chips = useGoalResourceChips(input)
+  return <GoalResourceChipList chips={chips} className={className} />
+}
+
+/** The chips of one goal, or any subset of them, in the order given. */
+export function GoalResourceChipList({
+  chips,
+  className,
 }: {
-  goalType: GoalKind
-  entityType: string
-  remaining: ResourceNeed | null
-  energy: number | undefined
-  /** Projected Onslaught tokens (runs) from the goal's estimate; absent or 0 shows no chip. */
-  onslaughtTokens?: number
-  /** Projected shop currency still to spend, by currency id (`goal-remaining-resources`); absent or
-   *  empty shows no chip. */
-  shopSpend?: ReadonlyMap<string, number>
+  chips: readonly GoalResourceChip[]
+  className?: string
 }) {
   const { t, i18n } = useTranslation(["common", "shops"])
-  const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n?.resolvedLanguage).format(value)
-  const rarityName = (rarity: Rarity) =>
-    t(`goals.resourceChips.rarity.${rarity}`)
-  const chips: Chip[] = []
-  const add = (
-    key: string,
-    icon: GameIcon | undefined,
-    name: string,
-    quantity: number | undefined,
-    overlay?: string
-  ) => {
-    if (quantity && quantity > 0) {
-      chips.push({ key, icon, overlay, name, text: fmt(quantity) })
-    }
-  }
-  const addPool = (
-    key: string,
-    icon: GameIcon,
-    name: string,
-    needed: number | undefined,
-    available: number | undefined
-  ) => {
-    if (!needed || needed <= 0) return
-    const pool = { available: available ?? 0, needed }
-    chips.push({
-      key,
-      icon,
-      name,
-      pool,
-      text: `${fmt(pool.available)}/${fmt(needed)}`,
-    })
-  }
-  const addByRarity = (
-    kind: "orbs" | "abilityBadges" | "forgeBadges",
-    amounts: Partial<Record<Rarity, number>> | undefined,
-    icon: (rarity: Rarity) => GameIcon,
-    overlay?: string,
-    available?: Partial<Record<Rarity, number>>
-  ) => {
-    for (const rarity of rarityOrder) {
-      const name = t(`goals.resourceChips.${kind}`, {
-        rarity: rarityName(rarity),
-      })
-      if (available) {
-        addPool(
-          `${kind}-${rarity}`,
-          icon(rarity),
-          name,
-          amounts?.[rarity],
-          available[rarity]
-        )
-      } else {
-        add(`${kind}-${rarity}`, icon(rarity), name, amounts?.[rarity], overlay)
-      }
-    }
-  }
-  const addEnergy = () => {
-    add("energy", energyIcon(), t("goals.resourceChips.energy"), energy)
-    const standalone = remaining?.standalone
-    const chip = chips.find((c) => c.key === "energy")
-    if (chip && standalone) {
-      chip.hint = t("goals.resourceChips.standalone", {
-        slots: fmt(standalone.slots),
-        energy: fmt(standalone.energy),
-      })
-    }
-  }
-  const addTokens = () =>
-    add(
-      "onslaughtTokens",
-      onslaughtTokenIcon(),
-      t("goals.resourceChips.onslaughtTokens"),
-      onslaughtTokens
-    )
-  const addShopCurrency = () => {
-    for (const [currency, amount] of shopSpend ?? []) {
-      add(
-        `shopCurrency-${currency}`,
-        shopCurrencyIcon(currency),
-        t(`shops:currency.${currency}`, { defaultValue: currency }),
-        Math.round(amount)
-      )
-    }
-  }
-  // V1 parity (numberToThousandsString): below 1,000 as is, otherwise floor(value / 1000) + "k".
-  const addGold = (gold: number | undefined) => {
-    if (!gold || gold <= 0) return
-    chips.push({
-      key: "gold",
-      icon: goldIcon(),
-      name: t("goals.resourceChips.gold"),
-      text: fmt(gold),
-      display: gold < 1000 ? fmt(gold) : `${Math.floor(gold / 1000)}k`,
-    })
-  }
-  const addShards = () => {
-    add(
-      "shards",
-      shardIcon("Regular"),
-      t("goals.resourceChips.shards"),
-      remaining?.shards
-    )
-    add(
-      "mythicShards",
-      shardIcon("Mythic"),
-      t("goals.resourceChips.mythicShards"),
-      remaining?.mythicShards
-    )
-  }
-  const materials = remaining?.abilityMaterials
-  // Alliance picks the badge/component/orb art; a unit without one shows the Imperial art.
-  const alliance = remaining?.alliance ?? "Imperial"
-
-  if (goalType === "Rank") {
-    addGold(remaining?.levelGold)
-    addEnergy()
-  } else if (goalType === "Ascension") {
-    addByRarity(
-      "orbs",
-      remaining?.orbsByType,
-      orbIcon,
-      orbAllianceIcon(alliance)
-    )
-    addShards()
-    addEnergy()
-  } else if (goalType === "Unlock") {
-    addShards()
-    addEnergy()
-  } else if (goalType === "Ability") {
-    const isMow = entityType === "Mow"
-    // Machine of War materials read available/needed; a Character's stay net-remaining.
-    const pool = isMow ? (materials?.available ?? EMPTY_AVAILABLE) : undefined
-    addByRarity(
-      "abilityBadges",
-      materials?.badgesByRarity,
-      (rarity) => abilityBadgeIcon(rarity, alliance),
-      undefined,
-      pool?.badgesByRarity
-    )
-    if (isMow) {
-      addByRarity(
-        "forgeBadges",
-        materials?.forgeBadgesByRarity,
-        forgeBadgeIcon,
-        undefined,
-        pool?.forgeBadgesByRarity
-      )
-      addPool(
-        "components",
-        mowComponentIcon(alliance),
-        t("goals.resourceChips.components"),
-        materials?.components,
-        pool?.components
-      )
-    }
-    addGold(materials?.gold)
-    addEnergy()
-  } else if (goalType === "Upgrade") {
-    addEnergy()
-  }
-
-  addTokens()
-  addShopCurrency()
-
   if (chips.length === 0) return null
 
-  // Same leading order on every goal (energy, gold, tokens); the rest keep their per-kind order
-  // (Array.sort is stable).
-  const leading = ["energy", "gold", "onslaughtTokens"]
-  const rank = (chip: Chip) => {
-    const index = leading.indexOf(chip.key)
-    return index === -1 ? leading.length : index
-  }
-  chips.sort((a, b) => rank(a) - rank(b))
-
-  const label = (chip: Chip) =>
+  const format = new Intl.NumberFormat(i18n?.resolvedLanguage)
+  const label = (chip: GoalResourceChip) =>
     chip.pool
       ? t("goals.resourceChips.poolLabel", {
           name: chip.name,
-          available: fmt(chip.pool.available),
-          needed: fmt(chip.pool.needed),
+          available: format.format(chip.pool.available),
+          needed: format.format(chip.pool.needed),
         })
       : t("goals.resourceChips.chipLabel", {
           name: chip.name,
           quantity: chip.text,
         })
-  const tooltip = (chip: Chip) =>
+  const tooltip = (chip: GoalResourceChip) =>
     chip.hint
       ? `${label(chip)}
 ${chip.hint}`
       : label(chip)
   return (
     <ul
-      className="flex flex-wrap gap-x-2.5 gap-y-1 text-sm"
+      className={cn("flex flex-wrap gap-x-2.5 gap-y-1 text-sm", className)}
       data-testid="goal-resource-chips"
     >
       {chips.map((chip) => (
         <li data-testid="goal-resource-chip" key={chip.key}>
-          <span
-            aria-label={tooltip(chip)}
-            className="flex items-center gap-1 tabular-nums"
-            role="img"
-            title={tooltip(chip)}
-          >
-            <span className="relative inline-flex">
-              <EntityIcon alt="" className="size-6" src={chip.icon} />
-              {chip.overlay ? (
-                <img
-                  alt=""
-                  className="absolute top-1/2 left-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 object-contain"
-                  src={chip.overlay}
-                />
-              ) : null}
-            </span>
-            <span aria-hidden>{chip.display ?? chip.text}</span>
-          </span>
+          {chip.parts ? (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  aria-label={t("goals.resourceChips.byRarityLabel", {
+                    label: tooltip(chip),
+                  })}
+                  className="-mx-1 flex items-center gap-0.5 rounded-md px-1 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  data-testid="goal-resource-chip-group"
+                  type="button"
+                >
+                  <ChipFace chip={chip} label={tooltip(chip)} />
+                  <ChevronDown
+                    aria-hidden="true"
+                    className="size-3 text-muted-foreground"
+                  />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="w-auto gap-2 p-3"
+                data-testid="goal-resource-chip-breakdown"
+              >
+                <p className="font-medium">{chip.name}</p>
+                <ul className="grid gap-1.5">
+                  {chip.parts.map((part) => (
+                    <li
+                      className="flex items-center justify-between gap-4"
+                      key={part.key}
+                    >
+                      <span className="flex items-center gap-2">
+                        <ChipIcon chip={part} />
+                        {part.name}
+                      </span>
+                      <span className="tabular-nums">
+                        {part.display ?? part.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <ChipFace chip={chip} label={tooltip(chip)} />
+          )}
         </li>
       ))}
     </ul>
+  )
+}
+
+function ChipIcon({ chip }: { chip: GoalResourceChip }) {
+  return (
+    <span className="relative inline-flex shrink-0">
+      <EntityIcon alt="" className="size-6" src={chip.icon} />
+      {chip.overlay ? (
+        <img
+          alt=""
+          className="absolute top-1/2 left-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 object-contain"
+          src={chip.overlay}
+        />
+      ) : null}
+    </span>
+  )
+}
+
+function ChipFace({ chip, label }: { chip: GoalResourceChip; label: string }) {
+  return (
+    <span
+      aria-label={label}
+      className="flex items-center gap-1 tabular-nums"
+      role="img"
+      title={label}
+    >
+      <ChipIcon chip={chip} />
+      <span aria-hidden>{chip.display ?? chip.text}</span>
+    </span>
   )
 }

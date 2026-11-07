@@ -40,12 +40,14 @@
     "noEntry": "Aucune progression synchronisée pour cet événement pour l'instant.",
     "syncedUnavailable": "Données synchronisées indisponibles",
     "syncedAgo": "Synchronisé {{when}}",
-    "neverSynced": "Pas encore synchronisé"
+    "neverSynced": "Pas encore synchronisé",
+    "goToCurrentRun": "Aller à la session en cours",
+    "goToNextRun": "Aller à la prochaine session"
   },
   "runInputs": {
     "button": "Saisies",
     "title": "Saisies par manche",
-    "description": "Les missions et packs que le jeu ne communique pas. Ils alimentent les prévisions de récompenses de la carte État de la manche.",
+    "description": "Missions et packs que le jeu ne signale pas pour la session en cours. Les missions se terminent dans l'ordre : indiquez combien sont terminées. Ils alimentent les prévisions de récompenses de la carte État de la session.",
     "run": "Manche {{run}}",
     "phase": {
       "done": "Terminée",
@@ -69,7 +71,15 @@
     },
     "ticked": "{{done}} sur {{total}} faites",
     "planToComplete": "{{field}} à accomplir",
-    "planToCompleteShort": "Prévu à accomplir"
+    "planToCompleteShort": "Prévu à accomplir",
+    "doneCount": "{{field}} terminées",
+    "doneShort": "Terminées",
+    "now": "En cours",
+    "missionState": {
+      "done": "Mission {{number}}, terminée : {{mission}}",
+      "current": "Mission {{number}}, en cours : {{mission}}",
+      "later": "Mission {{number}}, plus tard : {{mission}}"
+    }
   },
   "notes": {
     "title": "Notes",
@@ -125,18 +135,35 @@
   },
   "tabs": {
     "label": "Sections de l'événement",
-    "overview": "Aperçu"
+    "overview": "Aperçu",
+    "teams": "Équipes",
+    "plan": "Plan",
+    "run": {
+      "current": "Manche en cours",
+      "next": "Prochaine manche",
+      "last": "Dernière manche"
+    },
+    "laneLabel": "Voie",
+    "lanesShown": "Voies affichées"
+  },
+  "battleInfo": {
+    "open": "Infos du combat : {{lane}} combat {{battle}}",
+    "title": "{{lane}} · Combat {{battle}}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "close": "Fermer"
   },
   "eventBoard": {
     "title": "Tableau de l'événement",
-    "description": "Les objectifs et équipes enregistrées de toutes les voies d'un coup d'œil. Choisissez une équipe pour la modifier, ou une voie pour ouvrir son onglet.",
-    "openLane": "Ouvrir l'onglet {{lane}}",
-    "teams_one": "{{count}} équipe",
-    "teams_other": "{{count}} équipes",
-    "noTeams": "Aucune équipe pour l'instant.",
+    "description": "Les objectifs de chaque voie affichée, les unités qui conviennent à chacun et les équipes de la voie côte à côte. Choisissez des objectifs pour voir les unités qui les remplissent tous, ou une unité pour commencer une équipe avec elle.",
     "noTeam": "Aucune équipe",
     "cleared": "Rempli dans {{cleared}} combats sur {{total}}",
-    "editTeam": "Modifier {{name}}"
+    "clearSelection": "Effacer la sélection",
+    "columnUnits_one": "{{count}} unité",
+    "columnUnits_other": "{{count}} unités",
+    "noUnits": "Aucune unité",
+    "addTeam": "Commencer une équipe avec cette unité",
+    "locked": "Verrouillée"
   },
   "laneSummary": {
     "title": "Résumé des voies",
@@ -149,7 +176,6 @@
     "rosterReaches": "L'effectif atteint le combat {{battle}}"
   },
   "laneOverview": {
-    "title": "Aperçu des voies",
     "labelWithRule": "{{lane}} · {{rule}}",
     "killPoints": "{{points}} points d'élimination par combat",
     "battles": "{{count}} combats",
@@ -176,7 +202,9 @@
         "goals": "Avec les objectifs prévus",
         "out": "Hors de portée"
       }
-    }
+    },
+    "viewBattles_one": "{{lane}} : ouvrir les infos de son {{count}} combat",
+    "viewBattles_other": "{{lane}} : ouvrir les infos de ses {{count}} combats"
   },
   "leaderboard": {
     "title": "Classement d'éligibilité",
@@ -210,7 +238,14 @@
       "notAllowed": "—",
       "notAllowedLabel": "{{lane}} : non autorisé",
       "laneFigure": "{{lane}} : {{points}}"
-    }
+    },
+    "filters": "Filtres",
+    "filtersCount": "Filtres ({{count}})",
+    "lanes": "Voies",
+    "lanesAll": "Toutes les voies",
+    "lanesCount": "{{count}} voies",
+    "progression": "Progression",
+    "sortBy": "Trier par {{column}}"
   },
   "progress": {
     "title": "Progression synchronisée",
@@ -232,10 +267,14 @@
     "howPoints": {
       "title": "Comment fonctionnent les points",
       "body": "Les points gagnés d'un combat sont son score d'éliminations plus son meilleur score, auxquels s'ajoutent le bonus « tout vaincre » et le score de chaque objectif que vous y avez rempli. Le maximum d'un combat additionne son score d'éliminations complet, son meilleur score complet, le bonus « tout vaincre » et le score de chaque objectif ; le maximum de la voie additionne tous les combats."
-    }
+    },
+    "editMarks": "Modifier les marques",
+    "clearedDivider_one": "{{count}} combat entièrement terminé",
+    "clearedDivider_other": "{{count}} combats entièrement terminés"
   },
   "battles": {
     "title": "Combats",
+    "titleLane": "Combats · {{lane}}",
     "loading": "Chargement des combats…",
     "error": "Les données des combats n’ont pas pu être chargées.",
     "empty": "Pas encore de données de combat pour cette voie",
@@ -270,7 +309,8 @@
       "toggle": "Carte",
       "alt": "Carte du combat {{number}} de {{lane}}",
       "unavailable": "Carte non disponible"
-    }
+    },
+    "laneLabel": "Voie"
   },
   "annotations": {
     "maybeClear": "Peut-être faisable",
@@ -394,7 +434,20 @@
     "pointsLeftNeedsDepth": "Définissez la profondeur pour voir les points restants",
     "clearedThrough": "Déjà validé jusqu'au combat {{battle}}",
     "pointsLeftCannotClear": "Ne franchit pas encore le combat 1",
-    "laneFull": "Cette voie contient déjà le maximum de {{max}} équipes."
+    "laneFull": "Cette voie contient déjà le maximum de {{max}} équipes.",
+    "depthBar": {
+      "battles": "Combats 1–{{depth}}",
+      "cannotClear": "Ne passe pas encore le combat 1",
+      "unset": "Aucune profondeur",
+      "label": "Passe les combats 1–{{depth}} sur {{total}}",
+      "labelNone": "Ne passe aucun des {{total}} combats",
+      "close": "Proche du combat {{battle}}",
+      "manual": "Profondeur fixée par vous"
+    },
+    "editDepth": "Modifier la profondeur",
+    "details": "Détails",
+    "objectives": "Objectifs",
+    "objectiveUncovered": "{{objective}} : aucun membre de l’équipe ne le couvre"
   },
   "objective": {
     "minHits_one": "Min. {{count}} coup",
@@ -425,8 +478,8 @@
     "event": {
       "steps": {
         "tabs": {
-          "title": "Aperçu et voies",
-          "content": "L'Aperçu résume l'événement ; Alpha, Bêta et Gamma ouvrent chacune une voie. Sur mobile, la barre reste sous l'en-tête pendant le défilement."
+          "title": "Onglets de l'événement",
+          "content": "L'Aperçu résume l'événement. Équipes présente les objectifs, les unités et les équipes de chaque voie ; Plan réunit la prévision par manche, le plan de jetons, l'impact des améliorations et les combats ; l'onglet de la manche (Manche en cours pendant l'événement, sinon Prochaine ou Dernière manche) montre vos prochains jetons et la progression synchronisée. Les interrupteurs de voie choisissent les voies affichées, une à la fois sur mobile. Sur mobile, la barre reste sous l'en-tête pendant le défilement."
         },
         "nextToken": {
           "title": "Prochain jeton",
@@ -438,23 +491,23 @@
         },
         "runInputs": {
           "title": "Saisies par manche",
-          "content": "Cochez les missions terminées à chaque manche et indiquez combien vous prévoyez d'en accomplir, ainsi que les packs que le jeu ne communique pas. Elles alimentent les prévisions de récompenses de cette carte, et les missions ouvertes orientent le prochain jeton vers les batailles qui les font avancer."
+          "content": "Indiquez combien de missions vous avez terminées dans la session en cours (elles se terminent dans l'ordre) et combien vous prévoyez d'en terminer, ainsi que les packs que le jeu ne signale pas. Les sessions futures supposent toutes les missions gratuites. Les missions ouvertes orientent le prochain jeton vers les combats qui les font avancer ; modifiez chaque session depuis les prévisions dans Plan."
         },
         "tokenPlan": {
           "title": "Plan de jetons",
-          "content": "Tous les jetons que le plan prévoit de jouer dans l'ordre, avec les points cumulés et les paliers franchis. La prévision par manche ci-dessous les répartit sur les manches restantes."
+          "content": "Tous les jetons que le plan prévoit de jouer dans l'ordre, avec les points cumulés et les paliers franchis. La prévision par manche ci-dessus les répartit sur les manches restantes. Choisissez un combat pour voir sa carte et ses ennemis."
         },
         "laneSummary": {
           "title": "Résumé des voies",
           "content": "Les points gagnés de chaque voie par rapport à son maximum et le nombre de combats entièrement terminés. Choisissez une voie pour aller à sa grille de progression."
         },
-        "overviewLeaderboard": {
-          "title": "Éligibilité toutes voies",
-          "content": "Chaque unité pouvant jouer, avec les points qu'elle peut encore marquer dans chaque voie. Filtrez par objectif, n'affichez que les unités débloquées ou passez aux points par combat."
+        "eventBoard": {
+          "title": "Tableau de l'événement",
+          "content": "Les objectifs de chaque voie affichée avec les unités qui conviennent, les plus fortes d'abord, et en dessous les équipes de la voie. Choisissez des objectifs pour voir les unités qui les remplissent tous et choisissez une unité pour commencer une équipe avec elle."
         },
-        "laneOverview": {
-          "title": "Aperçu de la voie",
-          "content": "Les unités autorisées de la voie, les points d'élimination et les cinq objectifs avec leurs scores, puis une carte de jusqu'où va votre effectif : le « tout vaincre » et les objectifs de chaque combat comme réussis, atteints par vos équipes, à portée de votre effectif ou hors de portée."
+        "eligibility": {
+          "title": "Éligibilité",
+          "content": "Chaque unité pouvant jouer, avec les points qu'elle peut encore marquer sur les voies affichées. Avec une seule voie affichée, elle indique ses objectifs et les combats estimés. Filtrez par objectif, n'affichez que les unités débloquées ou utilisez le menu d'une ligne pour Créer un objectif ou Ajouter à une nouvelle équipe."
         },
         "teams": {
           "title": "Équipes",
@@ -471,10 +524,6 @@
         "battles": {
           "title": "Combats",
           "content": "Consultez chaque combat de la voie avant de le jouer : sa carte, ses vagues tour par tour et chaque ennemi avec son niveau. Touchez un ennemi pour voir ses statistiques. Il s’ouvre sur votre prochain combat à jouer."
-        },
-        "leaderboard": {
-          "title": "Classement de la voie",
-          "content": "Chaque unité autorisée dans cette voie, si vous la possédez, les objectifs qu'elle remplit et les points qu'elle peut encore marquer ici. Activez l'aperçu des objectifs pour voir les unités comme si vos objectifs actifs étaient atteints, et utilisez le menu d'une ligne pour « Créer un objectif » ou « Ajouter à une nouvelle équipe »."
         },
         "lastRun": {
           "title": "Dernière manche",
@@ -598,6 +647,7 @@
   },
   "upgradeImpact": {
     "title": "Impact des améliorations",
+    "titleLane": "Impact des améliorations · {{lane}}",
     "summary_one": "{{count}} amélioration rapporte des points · meilleure +{{best}}",
     "summary_other": "{{count}} améliorations rapportent des points · meilleure +{{best}}",
     "hint": "Ce qu'une seule étape suivante d'un membre d'équipe rapporte sur cette voie, par les combats qu'elle permet d'atteindre. D'après votre effectif synchronisé.",
@@ -622,17 +672,24 @@
   "suggestions": {
     "button": "Suggérer des équipes",
     "title": "Équipes suggérées pour {{lane}}",
-    "description": "Des équipes tirées de votre effectif, classées selon les points qu'elles ajoutent à vos équipes actuelles. Rien n'est enregistré tant que vous n'enregistrez pas l'équipe.",
+    "description": "Des équipes tirées de votre effectif, classées selon les points qu'elles ajoutent à vos équipes actuelles, puis les jetons qu'elles économisent. Rien n'est enregistré tant que vous n'enregistrez pas l'équipe.",
     "onlyUnlocked": "Débloquées uniquement",
     "preferGoals": "Privilégier les unités avec objectifs",
     "reason": "Couvre {{objectives}} · franchit ~{{depth}} · +{{points}} points par rapport à vos équipes",
     "use": "Utiliser cette équipe",
     "showMore": "Afficher plus",
-    "empty": "Aucune équipe n'ajoute de points à vos équipes actuelles",
+    "empty": "Aucune équipe n'ajoute de points ni n'économise de jetons par rapport à vos équipes actuelles",
     "needsEstimates": "Nécessite des estimations de progression",
     "loading": "Chargement des suggestions…",
     "rank": "Suggestion {{rank}}",
-    "reasonNoObjectives": "Franchit ~{{depth}} · +{{points}} points par rapport à vos équipes"
+    "reasonNoObjectives": "Franchit ~{{depth}} · +{{points}} points par rapport à vos équipes",
+    "savesTokens_one": "économise {{count}} jeton",
+    "savesTokens_other": "économise {{count}} jetons",
+    "reasonTokens_one": "Couvre {{objectives}} · franchit ~{{depth}} · économise {{count}} jeton par rapport à vos équipes",
+    "reasonTokens_other": "Couvre {{objectives}} · franchit ~{{depth}} · économise {{count}} jetons par rapport à vos équipes",
+    "reasonNoObjectivesTokens_one": "Franchit ~{{depth}} · économise {{count}} jeton par rapport à vos équipes",
+    "reasonNoObjectivesTokens_other": "Franchit ~{{depth}} · économise {{count}} jetons par rapport à vos équipes",
+    "reasonNoGain": "Couvre {{objectives}} · franchit ~{{depth}} · pas encore de gain par rapport à vos équipes"
   },
   "tokenPlan": {
     "nextToken": {
@@ -641,7 +698,8 @@
       "points": "+{{points}} points",
       "reasons": {
         "mostPoints": "Le plus de points disponibles maintenant",
-        "mostPointsPlayableNow": "Le plus de points parmi les combats jouables maintenant"
+        "mostPointsPlayableNow": "Le plus de points parmi les combats jouables maintenant",
+        "missionsOrder": "Termine au plus tôt les missions ouvertes de cette manche, pour les mêmes points de manche"
       },
       "upcoming": "{{reason}} pour le début de la manche {{run}}",
       "upcomingUnknown": "{{reason}} pour le début de la prochaine manche",
@@ -662,10 +720,18 @@
       "nothingLeft": "Vos équipes n'ont plus rien à réussir · {{points}} points restants sur {{lane}}",
       "missions": {
         "title": "Pour les missions",
-        "progresses": "Fait avancer :",
+        "progresses": "Missions qu'il fait avancer",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} points ({{difference}})"
-      }
+        "points": "+{{points}} points ({{difference}})",
+        "button_one": "Fait avancer {{count}} mission",
+        "button_other": "Fait avancer {{count}} missions",
+        "uncounted": "compte",
+        "finishes": "terminée"
+      },
+      "upNext": "Ensuite",
+      "viewPlan_one": "Voir le {{count}} jeton prévu",
+      "viewPlan_other": "Voir les {{count}} jetons prévus",
+      "team": "Voir les unités de {{team}}"
     },
     "plan": {
       "title": "Plan de jetons",
@@ -713,7 +779,13 @@
         },
         "doneCount": "{{done}}/{{total}} terminées",
         "completed": "Terminée"
-      }
+      },
+      "battles": "Combats {{first}}–{{last}}",
+      "expandRun_one": "Afficher {{count}} combat",
+      "expandRun_other": "Afficher {{count}} combats",
+      "collapseRun_one": "Masquer {{count}} combat",
+      "collapseRun_other": "Masquer {{count}} combats",
+      "openTeam": "Ouvrir l’équipe {{team}}"
     },
     "forecast": {
       "title": "Prévision par manche",
@@ -742,7 +814,12 @@
       "ohSoClose": "Oh So Close : {{shards}} fragments pour {{blackstone}} pierre noire",
       "leftover_one": "{{count}} jeton sans combat à jouer : ajoutez une équipe ou augmentez une profondeur pour l'utiliser",
       "leftover_other": "{{count}} jetons sans combat à jouer : ajoutez une équipe ou augmentez une profondeur pour les utiliser",
-      "editInputs": "Modifier les saisies"
+      "summary": {
+        "tokens": "Jetons utilisés sur la réserve de la session",
+        "points": "Points en fin de session",
+        "chests": "Coffres obtenus",
+        "shards": "Éclats en fin de session"
+      }
     }
   },
   "masterTable": {
@@ -770,7 +847,10 @@
       "teamsUnavailable": "Équipes indisponibles",
       "teamsLoading": "Chargement des équipes",
       "noRoster": "Synchronisez votre effectif",
-      "rosterLoading": "Chargement de l'effectif"
+      "rosterLoading": "Chargement de l'effectif",
+      "noTeams_one": "Aucune équipe complète n'est encore prévue pour {{events}}, sa colonne est donc vide dans En équipes.",
+      "noTeams_other": "Aucune équipe complète n'est encore prévue pour {{events}}, leurs colonnes sont donc vides dans En équipes.",
+      "showAll": "Afficher toutes les unités"
     },
     "points": {
       "label": "Points",
@@ -803,7 +883,8 @@
       "objectives_one": "{{count}} objectif",
       "objectives_other": "{{count}} objectifs",
       "teams_one": "{{count}} équipe",
-      "teams_other": "{{count}} équipes"
+      "teams_other": "{{count}} équipes",
+      "noTeams": "pas encore d'équipe"
     },
     "explanation": {
       "title": "Comment les points sont comptés",
@@ -1070,9 +1151,7 @@
       "nothing": "Rien à modifier",
       "removeTeam": "Retirer « {{name}} » de {{lane}}",
       "updateTeam": "Mettre à jour « {{name}} » dans {{lane}}",
-      "createTeam": "Créer « {{name}} » dans {{lane}}",
-      "paidOn": "Afficher les options payantes : activé",
-      "paidOff": "Afficher les options payantes : désactivé"
+      "createTeam": "Créer « {{name}} » dans {{lane}}"
     },
     "toast": {
       "created": "Plan créé : {{goals}}, {{teams}}",
@@ -1108,5 +1187,11 @@
     "window": "{{start}} – {{end}}",
     "guessed": "peut-être ~{{date}}",
     "unknown": "date inconnue"
+  },
+  "settings": {
+    "button": "Paramètres des événements légendaires",
+    "title": "Paramètres des événements légendaires",
+    "description": "Ils s'appliquent au plan de chaque événement légendaire et sont enregistrés dans votre compte.",
+    "showPaidOptionsHint": "Activé : planifie avec ce que vous payez — missions premium, le pack de 300 devises et les éclats Oh So Close. Désactivé : récompenses gratuites uniquement."
   }
 }

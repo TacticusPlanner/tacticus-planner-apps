@@ -66,6 +66,9 @@ const worked = (overrides: Partial<ForecastInput> = {}): ForecastInput => ({
   ...overrides,
 })
 
+/** Every run stored with nothing planned (a run without stored inputs plans all 10 free missions). */
+const NO_RUN_INPUTS = ([1, 2, 3] as const).map((run) => runInputs(run, 0))
+
 describe("forecastRuns", () => {
   it("works the Uthar forecast", () => {
     const { runs, markers } = forecastRuns(worked())
@@ -201,7 +204,7 @@ describe("forecastRuns", () => {
           supply(3, "planned", 68),
         ],
         tokens: [{ points: 100 }],
-        runs: [],
+        runs: NO_RUN_INPUTS,
       })
     )
 
@@ -260,7 +263,7 @@ describe("forecastRuns", () => {
         fromStep: "fourStars",
         // 1,611 points reach milestone 33 at 14,750: payouts 320 + 330 + 340 + 350 + 355.
         tokens: [{ points: 1611 }],
-        runs: [],
+        runs: NO_RUN_INPUTS,
       })
     )
     const run3 = runs[2]!
@@ -334,7 +337,7 @@ describe("forecastRuns", () => {
         ],
         fromStep: "unlock",
         tokens: [],
-        runs: [],
+        runs: NO_RUN_INPUTS,
         showPaidOptions: true,
         ...overrides,
       }).runs[2]

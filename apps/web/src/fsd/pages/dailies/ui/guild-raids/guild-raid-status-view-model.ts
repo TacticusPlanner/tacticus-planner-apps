@@ -99,6 +99,7 @@ export type GuildRaidsViewModel = {
   refresh: () => void
   isRefreshing: boolean
   hasRefreshError: boolean
+  isKeyRejected: boolean
 }
 
 export type GuildRaidTokenBucket = {

@@ -3,6 +3,7 @@ import type { ReactNode } from "react"
 import { EntityIcon } from "@/shared/ui"
 
 import type { DailyRaidLocationViewModel } from "../../model/daily-raids.domain"
+import { RaidLocationName } from "../raid-location-name"
 
 /** One campaign location on the HSE tab: icon, campaign name, tier + node, and trailing badges. */
 export function EventLocationRow({
@@ -25,15 +26,8 @@ export function EventLocationRow({
       {location?.icon ? (
         <EntityIcon alt="" className="size-6 shrink-0" src={location.icon} />
       ) : null}
-      <div className="min-w-32 flex-1 leading-tight">
-        <div className="truncate text-sm font-medium">
-          {location?.campaignName ?? fallbackLabel}
-        </div>
-        {location?.nodeLabel ? (
-          <div className="truncate text-xs text-muted-foreground">
-            {location.nodeLabel}
-          </div>
-        ) : null}
+      <div className="min-w-32 flex-1">
+        <RaidLocationName fallbackLabel={fallbackLabel} location={location} />
       </div>
       <div className="ml-auto flex max-w-full shrink-0 flex-wrap items-center justify-end gap-1.5">
         {children}

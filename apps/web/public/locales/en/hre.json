@@ -9,7 +9,22 @@
     "window": "{{start}} to {{end}}",
     "endsIn": "Ends in {{when}}",
     "startsIn": "Starts in {{when}}",
-    "previewNote": "This event has not started yet. Mission progress, raids and pace open once it runs."
+    "previewNote": "This event has not started yet. Mission progress, raids and pace open once it runs.",
+    "past": "Ended",
+    "pastNote": "This event has ended. Its missions are shown for reference."
+  },
+  "switcher": {
+    "label": "Choose a Hero Release Event",
+    "placeholder": "Choose an event",
+    "empty": "No events in the calendar",
+    "previous": "Previous event",
+    "next": "Next event",
+    "option": "{{name}} · {{dates}}",
+    "groups": {
+      "running": "Running",
+      "upcoming": "Upcoming",
+      "past": "Past"
+    }
   },
   "missions": {
     "number": "Mission {{number}}",
@@ -92,7 +107,6 @@
     "toGo_other": "{{count}} battles to go",
     "note": "Raids for the campaign objective: the cheapest campaign nodes that drop something. Among equal costs, nodes worth more event points come first, then nodes with a drop your goals need, by drop rate, then by gold.",
     "noteLightning": "Raids on the running campaign event's nodes count as lightning victories, so only those nodes are listed.",
-    "budget": "Energy left today: {{energy}}.",
     "raidCount_one": "{{count}} raid",
     "raidCount_other": "{{count}} raids",
     "energy": "{{energy}} energy",
@@ -147,7 +161,8 @@
       "more": "More battles are needed after today's energy.",
       "none": "No campaign node fits this mission's objectives.",
       "rulesTitle": "Node rules"
-    }
+    },
+    "unlimitedEnergy": "Not limited to today's energy: only today's attempts and the objective cap the list."
   },
   "tokens": {
     "title": "Tokens needed",

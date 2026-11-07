@@ -14,8 +14,18 @@ describe("useNpcsTutorial", () => {
       '[data-testid="npcs-variation-select"]',
       '[data-testid="npcs-level-select"]',
       '[data-testid="npcs-stats"]',
+      '[data-testid="npc-encounters"]',
     ])
     expect(result.current.desktop[0]?.title).toBe("Filter the roster")
+  })
+
+  it("ends both tours on the encounters section with translated copy", () => {
+    const { result } = renderHook(() => useNpcsTutorial())
+
+    expect(result.current.desktop.at(-1)?.title).toBe("Where it is fought")
+    expect(result.current.mobile?.at(-1)?.target).toBe(
+      '[data-testid="npc-encounters"]'
+    )
   })
 
   it("targets the mobile combobox, selectors, and stats", () => {
@@ -26,6 +36,7 @@ describe("useNpcsTutorial", () => {
       '[data-testid="npcs-variation-select"]',
       '[data-testid="npcs-level-select"]',
       '[data-testid="npcs-stats"]',
+      '[data-testid="npc-encounters"]',
     ])
     expect(result.current.mobile?.[0]?.content).toBe(
       "Open the picker and search for a unit. Variations of the same unit are grouped under one entry."

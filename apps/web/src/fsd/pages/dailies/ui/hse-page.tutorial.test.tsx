@@ -35,7 +35,7 @@ vi.mock("@/features/daily-raids", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/features/daily-raids")>()),
   useActiveHomeScreenEvent: () => mocks.event,
   EventFarmSection: () => <section data-testid="hse-raids" />,
-  EventTopLocations: () => <section data-testid="hse-top-overall" />,
+  EventLocationsSection: () => <section data-testid="hse-raids" />,
 }))
 vi.mock(
   "@/features/home-screen-event-points/model/use-hse-projection",
@@ -118,7 +118,7 @@ describe("useHseTutorial", () => {
     hasLists: false,
   }
 
-  it("registers localized switcher, status, details, milestones, projection, teams, farm list and top-10 steps on desktop and mobile", () => {
+  it("registers localized switcher, status, details, milestones, projection, farm list and teams steps on desktop and mobile", () => {
     renderHook(() => useHseTutorial(all))
     const steps = lastSteps()
 
@@ -129,9 +129,8 @@ describe("useHseTutorial", () => {
       '[data-testid="hse-event-details"]',
       '[data-testid="hse-milestones"]',
       '[data-testid="hse-projection"]',
-      '[data-testid="hse-teams"]',
       '[data-testid="hse-raids"]',
-      '[data-testid="hse-top-lists"]',
+      '[data-testid="hse-teams"]',
     ])
     for (const step of steps.desktop) {
       expect(step.title).toContain("localized:tour.hse.steps")
@@ -189,7 +188,7 @@ describe("HSE tour targets", () => {
       const steps = stepsForViewport()
       expect(steps[0]?.target).toBe('[data-testid="hse-event-switcher"]')
       // Machine Hunt also scores in Arena and Salvage Run, so it gets a projection and teams.
-      expect(steps).toHaveLength(8)
+      expect(steps).toHaveLength(7)
       expect(steps.map((step) => step.target)).toContain(
         '[data-testid="hse-teams"]'
       )

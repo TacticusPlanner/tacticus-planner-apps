@@ -88,6 +88,7 @@ export {
   type EstimateBlockedReason,
   type EstimateBlocker,
   type EstimateOutcome,
+  type GoalCheckpointEstimate,
   type FarmNodeFilter,
   type FilteredOutNeed,
   type EstimateResourceId,

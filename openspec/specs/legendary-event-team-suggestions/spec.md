@@ -10,14 +10,16 @@ Defines how the planner proposes teams for a Legendary Event lane from the lane'
 
 For a lane, the planner SHALL build proposals, client side and never stored, as follows.
 
-- **Subsets.** Every set of one or two of the lane's objectives.
+- **Subsets.** Every set of one, two or three of the lane's objectives.
 - **Candidates.** For a subset, the units the lane allows that satisfy every objective in it. Units the synced roster lacks are excluded while **Only unlocked** is on.
 - **Order.** Candidates are ordered: units with an Active Unlock, Ascension, Rank or Ability goal first, only while **Prefer units with goals** is on; then effective power on the synced roster (Stage 5), descending; then points per battle, descending; then localized name.
 - **Proposal.** The first five candidates, in that order, with no reserve, when the subset has at least three candidates; a subset with fewer than three has no proposal (a team needs three characters, `legendary-event-team-size`). Its covered objectives are derived from its members (every objective all of them satisfy), and its depth is its Stage 5 team estimate.
 - **Support.** A member is a useful Healer when it has the Healer trait and another member lacks the Mechanical trait, and a useful Mechanic when it has the Mechanic trait and another member has the Mechanical trait. A five-member proposal without a useful Healer takes the first candidate outside it that the player holds with the Healer trait in place of its last member (candidate order) that is neither Healer nor Mechanic and whose swap gives a useful Healer while keeping any useful Mechanic, trying earlier such members if needed; then the same for a Mechanic. Members stay in candidate order.
 - **Merging.** Proposals with the same member set are one proposal. A proposal whose member set equals an existing team's on the lane is dropped.
-- **Gain.** A proposal's gain is the lane's reachable points (see `legendary-event-upgrade-impact`) with the proposal added to the lane's existing teams, minus without it. Proposals with a gain of 0 are dropped.
-- **Ranking.** Gain descending, then depth descending, then member count descending, then the lowest catalog index among its covered objectives.
+- **Gain.** A proposal's gain is the lane's reachable points (see `legendary-event-upgrade-impact`) with the proposal added to the lane's existing teams, minus without it.
+- **Tokens saved.** The lane's tokens needed with the existing teams minus with the proposal added, not below 0. Tokens needed sums, over every battle where a reaching team (depth above the battle's index) still has points to earn, the fewest reaching teams whose covered objectives together include every objective open in that battle that any reaching team covers, and at least one.
+- **Wide coverage.** A proposal with a gain of 0 and no tokens saved is dropped unless its depth is at least 1 and it covers three or more objectives that are not cleared through its depth.
+- **Ranking.** Gain descending, then tokens saved descending, then depth descending, then member count descending, then the lowest catalog index among its covered objectives. Wide-coverage proposals with neither therefore come last.
 
 **Only unlocked** SHALL default to on and **Prefer units with goals** to off. Both SHALL be kept while the dialog is open, including while it is hidden behind the team editor opened by Use this team (cancelling the editor returns to the same proposals and toggles), and reset when the dialog closes. Suggestions read the synced roster, never Goals Preview. Gains are event points anchored to the current roster and progress.
 
@@ -44,6 +46,20 @@ Assumptions:
 - **WHEN** suggestions are rebuilt
 - **THEN** the Melee proposal is gone (same members as a team); the Max 2 Hits team adds Max 2 Hits in battles 1 to 5, +250; the Ultramarines team adds battle 6, 43 + 43 + 30 + 75 = +191
 - **AND** the ranking is +250, +191
+
+#### Scenario: Three-objective team that saves tokens
+
+- **GIVEN** the worked example with Titus at two melee hits, so Incisus, Titus and Calgar all satisfy Ultramarines, Max 2 Hits and Melee
+- **AND** two existing teams reaching battle 5, one covering Ultramarines and Melee and one covering Ultramarines and Max 2 Hits
+- **WHEN** suggestions are built
+- **THEN** Incisus, Titus and Calgar are proposed at depth 5 with a gain of 0 and 5 tokens saved, one per battle 1 to 5
+
+#### Scenario: Three-objective team with no gain yet
+
+- **GIVEN** the same units and one existing team reaching battle 5 that covers Ultramarines, Max 2 Hits and Melee
+- **WHEN** suggestions are built
+- **THEN** Incisus, Titus and Calgar are still proposed, last, with a gain of 0 and no tokens saved, and the reason reads "Covers Ultramarines, Max 2 Hits and Melee · clears ~5 · no gain over your teams yet"
+- **AND** with Ultramarines cleared in every battle, the proposal is dropped, because only two of its objectives are open
 
 #### Scenario: Prefer units with goals
 
@@ -81,12 +97,12 @@ Each lane's Teams section SHALL offer a **Suggest teams** button beside Add team
 
 - its members as portraits in order, each with its goal badge and locked styling;
 - its covered objectives as chips;
-- a one-line reason: "Covers Ultramarines and Melee · clears ~5 · +945 points over your teams";
+- a one-line reason: "Covers Ultramarines and Melee · clears ~5 · +945 points over your teams", followed by " · saves 2 tokens" when it also saves tokens; "Covers … · clears ~5 · saves 2 tokens over your teams" when it saves tokens without a gain; and "Covers … · clears ~5 · no gain over your teams yet" for a wide-coverage proposal with neither;
 - a **Use this team** action.
 
 **Use this team** SHALL open the team editor (`legendary-event-teams`) as a new team with the proposal's members in order, its derived objectives covered, the default name, and the proposal's objective subset selected as the picker's objective chips. Saving SHALL create the team through the existing create call. Cancelling SHALL save nothing and return to the suggestions. No proposal SHALL ever be saved without the user saving the editor.
 
-When clear estimates are unavailable, Suggest teams SHALL be disabled with the reason "Needs clear estimates". With no proposal, the dialog SHALL say "No team adds points over your current teams". While inputs load, it SHALL show a skeleton.
+When clear estimates are unavailable, Suggest teams SHALL be disabled with the reason "Needs clear estimates". With no proposal, the dialog SHALL say "No team adds points or saves tokens over your current teams". While inputs load, it SHALL show a skeleton.
 
 #### Scenario: Use this team
 

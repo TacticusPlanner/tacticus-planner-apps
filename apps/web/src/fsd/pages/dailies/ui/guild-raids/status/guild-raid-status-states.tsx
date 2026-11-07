@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router"
 import {
   Alert,
   AlertDescription,
@@ -46,6 +47,24 @@ export function GuildRaidStatusNeverObserved() {
         <Skeleton className="h-32 w-full" />
       </CardContent>
     </Card>
+  )
+}
+
+/** Replaces the never-observed "syncing" card once Tacticus refuses the key: waiting can't fix this. */
+export function GuildRaidKeyRejected() {
+  const { t } = useTranslation("dailies")
+
+  return (
+    <Alert data-testid="guild-raid-key-rejected" variant="destructive">
+      <AlertTriangle aria-hidden="true" />
+      <AlertTitle>{t("guildRaids.keyRejected.title")}</AlertTitle>
+      <AlertDescription className="flex flex-col items-start gap-3">
+        <p>{t("guildRaids.keyRejected.description")}</p>
+        <Button asChild size="sm" variant="outline">
+          <Link to="/guild/settings">{t("guildRaids.keyRejected.action")}</Link>
+        </Button>
+      </AlertDescription>
+    </Alert>
   )
 }
 

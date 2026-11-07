@@ -948,7 +948,8 @@ describe("CreateGoalSheet", () => {
     // Full campaign battle name (resolved from the "campaign1"/Standard descriptor + node number),
     // not the raw battle id.
     expect(location).toHaveTextContent("Indomitus")
-    expect(location).toHaveTextContent("Indomitus Standard 1")
+    expect(location).toHaveTextContent("Indomitus 1")
+    expect(location).not.toHaveTextContent("Standard")
     // B1's energyCost (10) / guaranteed dropRate (1) = 10 energy per shard.
     expect(location).toHaveTextContent("≈10 energy per shard")
     // B1 is the character's only regular shard location, so it's selected by default without any
@@ -1312,10 +1313,14 @@ describe("CreateGoalSheet", () => {
         name: "None",
       })
     ).toBeInTheDocument()
-    expect(
-      within(listbox).getByRole("option", { name: /Stone II\s*\(3\/6\)/ })
-    ).toBeInTheDocument()
-    expect(within(listbox).getAllByRole("option")).toHaveLength(2)
+    for (const count of [1, 2, 3]) {
+      expect(
+        within(listbox).getByRole("option", {
+          name: new RegExp(String.raw`Stone II\s*\(${count}\/6\)`),
+        })
+      ).toBeInTheDocument()
+    }
+    expect(within(listbox).getAllByRole("option")).toHaveLength(4)
 
     fireEvent.click(
       within(listbox).getByRole("option", {
@@ -3074,6 +3079,40 @@ describe("CreateGoalSheet", () => {
           expect(
             screen.queryByTestId("create-goal-issue-summary")
           ).not.toBeInTheDocument()
+        } finally {
+          restore()
+        }
+      })
+
+      it("returns to Unit after a 'create another' success, showing the newly preselected unit", async () => {
+        createCombinedGoals.mockResolvedValue({
+          goals: [{ goalId: "goal-1", projectIds: [] }],
+        })
+        const restore = asMobile()
+        try {
+          render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
+          await selectCharacter()
+          fireEvent.click(
+            screen.getByRole("combobox", { name: "Select a unit" })
+          )
+          fireEvent.click(await screen.findByText("Hero Two"))
+          fireEvent.click(next())
+          await enable("Rank")
+          await vi.waitFor(() => expect(next()).toBeEnabled())
+          fireEvent.click(next())
+          fireEvent.click(
+            screen.getByRole("checkbox", { name: "Create another goal" })
+          )
+          fireEvent.click(screen.getByRole("button", { name: "Create goal" }))
+
+          await vi.waitFor(() => {
+            expect(currentStep()).toHaveTextContent("Unit")
+          })
+          expect(createCombinedGoals.mock.calls[0]?.[0]).toMatchObject({
+            entityId: "hero2",
+          })
+          // The reset preselects the first character again; the Unit step shows it.
+          await selectCharacter()
         } finally {
           restore()
         }

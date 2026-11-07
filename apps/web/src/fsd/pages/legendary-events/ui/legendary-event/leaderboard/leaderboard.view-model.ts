@@ -75,10 +75,16 @@ export function laneLeaderboardBody(
 }
 
 /** The Overview counterpart of `laneLeaderboardBody`, ordered by the figures' sum. */
+/** The cross-lane body over the shown lanes: a unit no shown lane allows is left out, and the
+ *  order is the sum over the shown lanes. */
 export function crossLaneLeaderboardBody(
-  rows: readonly CrossLaneLeaderboardRow[],
-  input: LeaderboardFilterInput
+  allRows: readonly CrossLaneLeaderboardRow[],
+  input: LeaderboardFilterInput,
+  laneIds: readonly LegendaryEventLaneId[]
 ): LeaderboardBody<CrossLaneLeaderboardRow> {
+  const rows = allRows.filter((row) =>
+    laneIds.some((laneId) => row.lanes[laneId])
+  )
   const filtered = filterLeaderboard(rows, input)
   return (
     classify(rows, input, filtered) ?? {
@@ -87,7 +93,8 @@ export function crossLaneLeaderboardBody(
         filtered,
         input.figure,
         (row) => input.nameOf(row.unit),
-        input.locale
+        input.locale,
+        laneIds
       ),
     }
   )
@@ -193,4 +200,42 @@ export function useClearsText(): (clears: LeaderboardClears) => string {
     },
     [t]
   )
+}
+
+/** The objective selection the shown lanes can draw: keys of a lane the user hid no longer filter
+ *  (their chips are gone), and come back when the lane is shown again. Returns `selected` itself
+ *  when nothing is dropped. */
+function shownObjectiveKeys(
+  event: Pick<LegendaryEvent, LegendaryEventLaneId>,
+  laneIds: readonly LegendaryEventLaneId[]
+): ReadonlySet<string> {
+  return new Set(
+    laneIds.flatMap((laneId) =>
+      event[laneId].unitsRestrictions.map((objective) =>
+        objectiveFilterKey(objective.filter)
+      )
+    )
+  )
+}
+
+export function shownObjectiveSelection(
+  event: Pick<LegendaryEvent, LegendaryEventLaneId>,
+  laneIds: readonly LegendaryEventLaneId[],
+  selected: ReadonlySet<string>
+): ReadonlySet<string> {
+  const shown = shownObjectiveKeys(event, laneIds)
+  return [...selected].every((key) => shown.has(key))
+    ? selected
+    : new Set([...selected].filter((key) => shown.has(key)))
+}
+
+/** Applies an edit made on the shown chips, keeping hidden lanes' picks for when they're shown again. */
+export function mergeShownObjectiveSelection(
+  event: Pick<LegendaryEvent, LegendaryEventLaneId>,
+  laneIds: readonly LegendaryEventLaneId[],
+  selected: ReadonlySet<string>,
+  next: ReadonlySet<string>
+): ReadonlySet<string> {
+  const shown = shownObjectiveKeys(event, laneIds)
+  return new Set([...[...selected].filter((key) => !shown.has(key)), ...next])
 }

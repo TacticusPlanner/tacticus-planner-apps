@@ -282,10 +282,13 @@ describe("Home events (Right now + Upcoming events)", () => {
 
     expect(eventProjectsMock).toHaveBeenCalledWith("votanUthar")
     const [live, upcoming] = screen.getAllByTestId("home-le-plan")
-    expect(live).toHaveAttribute("href", "/legendary-events/astarLysander/plan")
+    expect(live).toHaveAttribute(
+      "href",
+      "/legendary-events/astarLysander/plan/edit"
+    )
     expect(upcoming).toHaveAttribute(
       "href",
-      "/legendary-events/votanUthar/plan"
+      "/legendary-events/votanUthar/plan/edit"
     )
   })
 

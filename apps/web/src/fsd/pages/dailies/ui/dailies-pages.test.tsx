@@ -265,7 +265,7 @@ describe("Dailies raid pages", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("splits a storyline elite node across two lines in Today's schedule", () => {
+  it("shows a storyline elite node as one campaign + tier + node line in Today's schedule", () => {
     useDailyRaids.mockReturnValue(ready())
     renderPage(<TodayPage />)
 

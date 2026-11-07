@@ -1,4 +1,5 @@
 export { EntityIcon } from "./entity-icon"
+export { CampaignLocationName } from "./campaign-location-name"
 export { IconLine } from "./icon-line"
 export { energyIconUrl } from "./energy-icon"
 export { UpgradeIcon } from "./upgrade-icon"
@@ -41,3 +42,9 @@ export { LevelChart } from "./level-chart"
 export { describeSeries } from "./level-chart.model"
 export { FILTER_CHIP_CLASS_NAME } from "./filter-chip"
 export { LegalDocument } from "./legal-document"
+export { EventInstanceSwitcher } from "./event-instance-switcher"
+export {
+  adjacentSwitcherKeys,
+  formatEventWindow,
+  groupSwitcherInstances,
+} from "./event-instance-switcher.model"
