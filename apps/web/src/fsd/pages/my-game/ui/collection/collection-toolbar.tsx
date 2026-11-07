@@ -357,7 +357,7 @@ function FiltersButton({
       <Button
         variant="outline"
         size="icon"
-        className="relative size-8 shrink-0"
+        className="relative size-8 shrink-0 after:absolute after:-inset-1.5 after:content-['']"
         aria-label={label}
         aria-expanded={expanded}
         aria-controls={controls}
@@ -434,7 +434,11 @@ function ViewButtons({
           <ToggleGroupItem
             key={layout}
             value={layout}
-            className={compact ? "h-8 w-9" : "px-3"}
+            className={
+              compact
+                ? "relative h-8 w-9 after:absolute after:inset-x-0 after:-inset-y-1.5 after:content-['']"
+                : "px-3"
+            }
             aria-label={
               compact
                 ? t(`myGame.collection.toolbar.views.${layout}`)

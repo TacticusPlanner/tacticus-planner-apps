@@ -1041,6 +1041,17 @@ describe("CollectionPage snapshots and compare", () => {
         .compareDocumentPosition(screen.getByTestId("snapshot-actions")) &
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
+    // The options come before the comparison's summary, on the page and in the tour.
+    expect(
+      options.compareDocumentPosition(screen.getByTestId("compare-summary")) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    const mobileTargets = tour.steps?.mobile?.map((step) => step.target) ?? []
+    const optionsStep = mobileTargets.indexOf('[data-testid="compare-options"]')
+    expect(optionsStep).toBeGreaterThan(-1)
+    expect(mobileTargets[optionsStep + 1]).toBe(
+      '[data-testid="compare-summary"]'
+    )
   })
 })
 
