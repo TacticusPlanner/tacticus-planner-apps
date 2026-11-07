@@ -76,6 +76,8 @@ export function TakeSnapshotDialog({
 
   const take = (fromLastSync: boolean) => {
     if (nameError) return
+    // A new attempt starts a new failure; an old 429 window must not block it.
+    setRetryAt(null)
     create.mutate(
       { name, fromLastSync },
       {
