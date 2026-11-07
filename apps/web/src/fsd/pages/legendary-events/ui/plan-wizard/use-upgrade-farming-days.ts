@@ -1,13 +1,19 @@
 import { useMemo } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { useIsAuthenticated } from "@azure/msal-react"
 import type { UnitId } from "@workspace/game-domain"
 
 import { useEligibleCampaignBattles } from "@/features/daily-raids"
-import type { FarmingCharacter } from "@/features/goal-farming"
+import {
+  toOnslaughtRunsPerDay,
+  type FarmingCharacter,
+} from "@/features/goal-farming"
 import {
   mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
 } from "@/features/rank-lookup"
+import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
@@ -32,7 +38,9 @@ export type UpgradeFarmingDaysState =
  * The wizard's farming-days estimator, built once its inputs load: the static catalog (characters,
  * upgrades, the account's eligible campaign nodes, ascension and unlock costs, shops — trimmed
  * from the goals page's `useGoalCatalog`), the synced roster, inventory shards and upgrades, and
- * the planning settings' daily energy. `unavailable` when the catalog holds no characters,
+ * the planning settings' daily energy, and the Onslaught progress, rewards and cadence that farm
+ * missing Mythic shards (a failed or signed-out Onslaught read leaves those chains blocked rather
+ * than holding the estimator). `unavailable` when the catalog holds no characters,
  * upgrades or farmable nodes to estimate against.
  */
 export function useUpgradeFarmingDays(): UpgradeFarmingDaysState {
@@ -43,6 +51,30 @@ export function useUpgradeFarmingDays(): UpgradeFarmingDaysState {
   const ascensionCostsRead = useCatalogDataset("ascension-costs", toById)
   const unlockShardCostsRead = useCatalogDataset("unlock-shard-costs", toById)
   const shopsRead = useCatalogDataset("shops")
+  const onslaughtRewardsRead = useCatalogDataset("onslaught-rewards")
+  const onslaughtRunsPerDayRead = useCatalogDataset(
+    "global-values",
+    toOnslaughtRunsPerDay
+  )
+  const isAuthenticated = useIsAuthenticated()
+  const onslaughtProgressQuery = useQuery({
+    ...onslaughtProgressQueries.current(),
+    enabled: isAuthenticated,
+  })
+  const onslaughtProgress = onslaughtProgressQuery.data
+  const onslaughtRewards =
+    onslaughtRewardsRead.status === "ready"
+      ? onslaughtRewardsRead.data
+      : undefined
+  const onslaughtRunsPerDay =
+    onslaughtRunsPerDayRead.status === "ready"
+      ? onslaughtRunsPerDayRead.data
+      : undefined
+  // Optional inputs: wait for them while they load, then estimate with whatever arrived.
+  const onslaughtLoading =
+    (isAuthenticated && onslaughtProgressQuery.isPending) ||
+    onslaughtRewardsRead.status === "loading" ||
+    onslaughtRunsPerDayRead.status === "loading"
   const playerCharactersRead = usePlayerChunk("characters")
   const inventoryShardsRead = usePlayerChunk("inventory-shards")
   const inventoryUpgradesRead = usePlayerChunk("inventory-upgrades")
@@ -86,7 +118,8 @@ export function useUpgradeFarmingDays(): UpgradeFarmingDaysState {
     inventoryShards,
     inventoryUpgrades,
   ] = data ?? []
-  const loading = read.status === "loading" || settingsLoading
+  const loading =
+    read.status === "loading" || settingsLoading || onslaughtLoading
 
   // Memoized whole, so `ready` hands out one estimator (and its cache) until an input changes.
   const state = useMemo((): UpgradeFarmingDaysState => {
@@ -144,6 +177,9 @@ export function useUpgradeFarmingDays(): UpgradeFarmingDaysState {
       ),
       inventoryUpgrades: inventoryUpgrades ?? [],
       dailyEnergy: settings.dailyEnergy,
+      onslaughtProgress,
+      onslaughtRewards,
+      onslaughtRunsPerDay,
     })
     return { status: "ready", estimate }
   }, [
@@ -158,6 +194,9 @@ export function useUpgradeFarmingDays(): UpgradeFarmingDaysState {
     inventoryShards,
     inventoryUpgrades,
     settings.dailyEnergy,
+    onslaughtProgress,
+    onslaughtRewards,
+    onslaughtRunsPerDay,
   ])
   return read.status === "error"
     ? { status: "error", retry: read.retry }
