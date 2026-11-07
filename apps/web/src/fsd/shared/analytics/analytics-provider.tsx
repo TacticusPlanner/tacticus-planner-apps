@@ -364,6 +364,25 @@ export function useAnalyticsActions() {
         case "app_install_card_dismissed":
           client.capture(event.type, { platform: event.platform })
           break
+        case "roster_snapshot_taken":
+          client.capture(event.type, {
+            from_last_sync: event.fromLastSync,
+            count: event.count,
+          })
+          break
+        case "roster_compare_opened":
+          client.capture(event.type, {
+            from_kind: event.fromKind,
+            to_kind: event.toKind,
+          })
+          break
+        case "roster_compare_metric_selected":
+          client.capture(event.type, { metric: event.metric })
+          break
+        case "roster_snapshot_renamed":
+        case "roster_snapshot_deleted":
+          client.capture(event.type)
+          break
         case "client_error": {
           // Rebuilt from the already-sanitised text, so Error Tracking parses the stack into frames
           // (resolved through the uploaded source maps) without seeing the original query strings.

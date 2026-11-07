@@ -1,8 +1,10 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
+import { useIsAuthenticated } from "@azure/msal-react"
 import {
   AlertTriangle,
   Eye,
   EyeOff,
+  History,
   LogIn,
   RefreshCw,
   SearchX,
@@ -24,6 +26,10 @@ import {
   type UnitKind,
   type UnitTileUnit,
 } from "@/entities/unit"
+import {
+  formatRosterSourceId,
+  useRosterSnapshots,
+} from "@/entities/roster-snapshot"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
@@ -39,9 +45,16 @@ import {
 } from "../../model/use-collection-options"
 import { useCollectionQuery } from "../../model/use-collection-query"
 import { useCollectionView } from "../../model/use-collection-view"
+import { COMPARE_CURRENT } from "../../model/compare-query"
+import { useCollectionCompare } from "../../model/use-collection-compare"
+import { useCompareQuery } from "../../model/use-compare-query"
 import { useCollectionTutorial } from "./collection.tutorial"
 import { CollectionRoster, CollectionRosterList } from "./collection-roster"
 import { CollectionToolbar } from "./collection-toolbar"
+import { SnapshotActions } from "./compare/compare-bar"
+import { CompareSection } from "./compare/compare-section"
+import { ManageSnapshotsSheet } from "./compare/manage-snapshots-sheet"
+import { TakeSnapshotDialog } from "./compare/take-snapshot-dialog"
 import { FactionHeader } from "./faction-header"
 
 // Before the catalog is read the toolbar is hidden anyway; this only keeps its props total.
@@ -77,17 +90,33 @@ export function CollectionPage() {
   const { t } = useTranslation("common")
   const options = useCollectionOptions()
   const { query, update, clear } = useCollectionQuery(options)
-  const state = useCollectionView(query)
-  const hasGroups = state.status === "ready" && state.view.groups.length > 0
+  const isAuthenticated = useIsAuthenticated()
+  const compareQuery = useCompareQuery()
+  const { state: compare, toRoster } = useCollectionCompare(compareQuery)
+  const snapshots = useRosterSnapshots(isAuthenticated)
+  const [takeOpen, setTakeOpen] = useState(false)
+  const [manageOpen, setManageOpen] = useState(false)
+  const comparing = compare.mode !== "off" && compare.mode !== "guest"
+  // Compare's non-gain orders are Collection sorts on the "to" state, so they sort the list.
+  const compareOrder = compareQuery.query.order
+  const viewQuery = useMemo(
+    () =>
+      comparing && compareOrder !== "gain"
+        ? { ...query, sort: compareOrder }
+        : query,
+    [comparing, compareOrder, query]
+  )
+  const state = useCollectionView(viewQuery, toRoster)
+  // Compare mode replaces the list, so the list's tour steps are off while it is on.
+  const listing = !comparing && state.status === "ready"
+  const hasGroups = listing && state.view.groups.length > 0
   // Shown even when Hide unowned hides every unit: the counts still include them.
   const hasSummary =
-    state.status === "ready" &&
-    state.view.rosterState === "available" &&
-    state.view.total > 0
-  const hasOwned = state.status === "ready" && state.view.owned > 0
+    listing && state.view.rosterState === "available" && state.view.total > 0
+  const hasOwned = listing && state.view.owned > 0
   // What is listed, not what is counted: Hide unowned keeps unowned units in the counts.
   const hasUnowned =
-    state.status === "ready" &&
+    listing &&
     state.view.units.some((entry) => entry.unit.data.state !== "owned")
   const applied = state.status === "ready" ? state.view.query : query
   const grouped = applied.group === "faction"
@@ -99,6 +128,8 @@ export function CollectionPage() {
       hasGroups,
       hasOwned,
       hasUnowned,
+      hasSnapshotActions: isAuthenticated,
+      compareReady: compare.mode === "ready",
     })
   )
   const view = state.status === "ready" ? state.view : undefined
@@ -114,6 +145,14 @@ export function CollectionPage() {
       ),
     [view, grouped]
   )
+  // Compare lists every unit in one list, in the sort's order without faction grouping.
+  const compareUnits = useMemo(
+    () => view?.units.map((entry) => entry.unit) ?? [],
+    [view]
+  )
+  const usage = snapshots.data
+    ? { count: snapshots.data.count, limit: snapshots.data.limit }
+    : null
 
   if (state.status === "loading") {
     return <CollectionSkeleton />
@@ -143,6 +182,17 @@ export function CollectionPage() {
       {listed.rosterState === "available" ? null : (
         <RosterPrompt rosterState={listed.rosterState} onRetry={retry} />
       )}
+      {isAuthenticated ? (
+        <SnapshotActions
+          compareOn={comparing}
+          onCompareChange={compareQuery.setEnabled}
+          usage={usage}
+          onTake={() => setTakeOpen(true)}
+          onManage={() => setManageOpen(true)}
+        />
+      ) : (
+        <SnapshotsSignInPrompt />
+      )}
       <CollectionToolbar
         // The applied query: a value the page cannot apply yet (no roster, or a quick filter whose
         // data is missing) stays in the URL for later but is not shown as selected.
@@ -154,7 +204,16 @@ export function CollectionPage() {
         quickFilters={quickFilters}
         onRetry={retry}
       />
-      {rosterAvailable && listed.total > 0 ? (
+      {comparing ? (
+        <CompareSection
+          state={compare}
+          compare={compareQuery}
+          units={compareUnits}
+          filtered={listed.filtered}
+          onTake={() => setTakeOpen(true)}
+        />
+      ) : null}
+      {!comparing && rosterAvailable && listed.total > 0 ? (
         <p
           className="text-sm text-muted-foreground"
           data-testid="collection-summary"
@@ -167,7 +226,7 @@ export function CollectionPage() {
           )}
         </p>
       ) : null}
-      {listed.groups.length === 0 ? null : !grouped ? (
+      {comparing || listed.groups.length === 0 ? null : !grouped ? (
         listed.query.view === "roster" ? (
           <CollectionRosterList units={listed.units} origins={origins} />
         ) : (
@@ -191,7 +250,7 @@ export function CollectionPage() {
           ))}
         </div>
       )}
-      {listed.groups.length > 0 ? null : listed.total > 0 ? (
+      {comparing || listed.groups.length > 0 ? null : listed.total > 0 ? (
         <AllHidden
           filtered={listed.filtered}
           onClear={clear}
@@ -200,7 +259,45 @@ export function CollectionPage() {
       ) : (
         <NoMatches onClear={clear} />
       )}
+      {isAuthenticated ? (
+        <>
+          <TakeSnapshotDialog
+            open={takeOpen}
+            onOpenChange={setTakeOpen}
+            count={usage?.count ?? 0}
+            limit={usage?.limit ?? 0}
+            onCompare={(snapshot) =>
+              compareQuery.update({
+                compare: formatRosterSourceId({
+                  kind: "snapshot",
+                  snapshotId: snapshot.id,
+                }),
+                to: COMPARE_CURRENT,
+              })
+            }
+          />
+          <ManageSnapshotsSheet
+            open={manageOpen}
+            onOpenChange={setManageOpen}
+            list={snapshots.data}
+          />
+        </>
+      ) : null}
     </div>
+  )
+}
+
+/** Shown to guests in place of Compare and Take snapshot (snapshots live in the account). */
+function SnapshotsSignInPrompt() {
+  const { t } = useTranslation("common")
+  return (
+    <p
+      className="flex items-center gap-2 text-sm text-muted-foreground"
+      data-testid="snapshots-sign-in-prompt"
+    >
+      <History aria-hidden className="size-4 shrink-0" />
+      {t("myGame.collection.snapshots.signIn")}
+    </p>
   )
 }
 

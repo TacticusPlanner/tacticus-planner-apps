@@ -188,6 +188,23 @@ describe("rosterDeltas", () => {
       rosterDeltas(snapshot, lower, ["ultraCalgar", "ultraTitus"])
     ).toEqual([])
   })
+
+  it("omits a unit whose only changes are outside the LE fields", () => {
+    const [calgar] = snapshot.characters.filter(
+      (unit) => unit.unitId === "ultraCalgar"
+    )
+    const onlyOther = [
+      {
+        ...calgar!,
+        xp: calgar!.xp + 5000,
+        xpLevel: calgar!.xpLevel + 1,
+        shards: calgar!.shards + 100,
+        appliedUpgradeSlots: [0, 1, 2, 3, 4, 5],
+        equippedItems: [{ slotId: "Slot9", equipmentId: "new", level: 9 }],
+      },
+    ] as unknown as LegendaryEventRosterUnit[]
+    expect(rosterDeltas(snapshot, onlyOther, ["ultraCalgar"])).toEqual([])
+  })
 })
 
 describe("recordHistory", () => {

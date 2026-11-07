@@ -35,10 +35,16 @@ import {
 /**
  * Whether a quick filter can be offered: `needsRoster` without a synced roster, `needsInventory`
  * while the inventory it reads has not synced or could not be read, `failed` when its catalog data
- * could not be loaded, `loading` while either is still being read.
+ * could not be loaded, `loading` while either is still being read, `currentOnly` while a stored
+ * roster is listed (its ranks and slots are not the synced roster and inventory the filter reads).
  */
 export type QuickFilterAvailability =
-  "available" | "loading" | "needsRoster" | "needsInventory" | "failed"
+  | "available"
+  | "loading"
+  | "needsRoster"
+  | "needsInventory"
+  | "currentOnly"
+  | "failed"
 
 export type CollectionViewState =
   | { status: "loading" }
@@ -58,6 +64,12 @@ const rosterOnlyQuickFilters = new Set<CollectionQuickFilter>([
   "abilitiesBehindLevel",
 ])
 
+/** A stored roster listed in place of the synced one (compare mode's "to" snapshot). */
+export interface CollectionRosterOverride {
+  characters: PlayerDataChunkDto<"characters">
+  mows: PlayerDataChunkDto<"mows">
+}
+
 const ANONYMOUS: CollectionRoster = { state: "anonymous" }
 const ROSTER_ERROR: CollectionRoster = { state: "error" }
 
@@ -75,7 +87,9 @@ const toUpgradesById = (records: UpgradeStorageModel[]) =>
  * filters. `retry` re-issues the reads.
  */
 export function useCollectionView(
-  query: CollectionQuery = defaultCollectionQuery
+  query: CollectionQuery = defaultCollectionQuery,
+  /** Lists this stored roster (a snapshot's) in place of the synced one; signed-in only. */
+  rosterOverride?: CollectionRosterOverride
 ): CollectionViewState {
   const { t, i18n } = useTranslation(["factions", "characters", "mows"])
   const searchNamesOf = useUnitSearchNames()
@@ -116,6 +130,14 @@ export function useCollectionView(
   const rosterStatus = isAuthenticated ? rosterRead.status : "anonymous"
   const roster = useMemo<CollectionRoster | undefined>(() => {
     if (rosterStatus === "anonymous") return ANONYMOUS
+    if (rosterOverride) {
+      return {
+        state: "signedIn",
+        characters: rosterOverride.characters,
+        mows: rosterOverride.mows,
+        shards: undefined,
+      }
+    }
     if (rosterStatus === "error") return ROSTER_ERROR
     if (rosterStatus === "loading") return undefined
     return {
@@ -124,12 +146,13 @@ export function useCollectionView(
       mows: playerMows ?? undefined,
       shards: shards ?? undefined,
     }
-  }, [rosterStatus, playerCharacters, playerMows, shards])
+  }, [rosterStatus, rosterOverride, playerCharacters, playerMows, shards])
   const rosterAvailable =
     roster?.state === "signedIn" &&
     roster.characters !== undefined &&
     roster.mows !== undefined
 
+  const overridden = rosterOverride !== undefined
   const quickFilters = useMemo(() => {
     const progression = availability(rosterAvailable, ladderRead, inventoryRead)
     const rankUp = availability(
@@ -144,12 +167,15 @@ export function useCollectionView(
           ? rosterAvailable
             ? "available"
             : "needsRoster"
-          : quick === "readyToRankUp"
-            ? rankUp
-            : progression,
+          : overridden
+            ? "currentOnly"
+            : quick === "readyToRankUp"
+              ? rankUp
+              : progression,
       ])
     ) as Record<CollectionQuickFilter, QuickFilterAvailability>
   }, [
+    overridden,
     rosterAvailable,
     ladderRead,
     inventoryRead,

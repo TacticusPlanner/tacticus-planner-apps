@@ -247,6 +247,32 @@ type AppInstallCardDismissedEvent = {
   platform: AppInstallPlatform
 }
 
+/** A roster snapshot was taken from Collection (never its name); `fromLastSync` when it used the
+ *  stored roster after the fresh sync failed. */
+type RosterSnapshotTakenEvent = {
+  type: "roster_snapshot_taken"
+  fromLastSync: boolean
+  count: number
+}
+
+/** Collection's compare mode was turned on, or its sources changed. */
+type RosterCompareOpenedEvent = {
+  type: "roster_compare_opened"
+  fromKind: "snapshot" | "runRecord" | "none"
+  toKind: "current" | "snapshot" | "runRecord"
+}
+
+/** A compare summary metric was selected to narrow the list. */
+type RosterCompareMetricSelectedEvent = {
+  type: "roster_compare_metric_selected"
+  metric: string
+}
+
+/** A personal roster snapshot was renamed or deleted (never its name). */
+type RosterSnapshotManagedEvent = {
+  type: "roster_snapshot_renamed" | "roster_snapshot_deleted"
+}
+
 /** An error nothing else handled (spec: client-error-reporting), sent as PostHog's `$exception` so
  *  it lands in Error Tracking. Message and stack have URL query strings removed; the route is
  *  reported as its nav section, never the URL. */
@@ -293,4 +319,8 @@ export type AnalyticsEvent =
   | AppInstallGuideOpenedEvent
   | AppInstallPromptAnsweredEvent
   | AppInstallCardDismissedEvent
+  | RosterSnapshotTakenEvent
+  | RosterCompareOpenedEvent
+  | RosterCompareMetricSelectedEvent
+  | RosterSnapshotManagedEvent
   | ClientErrorEvent
