@@ -148,7 +148,16 @@ describe("compare fields", () => {
     const calgar = diffs.get("ultraCalgar")!
     expect(
       compareChips(calgar, new Set(compareFields)).map((c) => c.kind)
-    ).toEqual(["rank", "abilities", "power"])
+    ).toEqual(["rank", "ability", "power"])
     expect(compareChips(calgar, new Set()).map((c) => c.kind)).toEqual(["rank"])
+  })
+
+  it("gives each changed ability its own chip, with its slot and id", () => {
+    const calgar = diffs.get("ultraCalgar")!
+    const chips = compareChips(calgar, new Set(["abilities"]))
+    expect(calgar.abilities).toHaveLength(1)
+    expect(chips.filter((chip) => chip.kind === "ability")).toEqual(
+      calgar.abilities.map((ability) => ({ kind: "ability", ...ability }))
+    )
   })
 })

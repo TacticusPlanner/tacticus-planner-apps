@@ -1,24 +1,24 @@
-import {
-  progressionRarity,
-  progressionStarsIndex,
-  type Rank,
-  type Rarity,
-} from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import type { UnitDiff } from "@/entities/roster-snapshot"
 
-import { progressionStarsKey, type ProgressionStarsKey } from "./compare-labels"
 import type { CompareField } from "./compare-view"
 
 /** One change chip on a diff tile or row; the UI localizes it by `kind`. */
 export type CompareChip =
   | { kind: "unlocked" }
-  | { kind: "rarity"; to: Rarity }
-  | { kind: "stars"; count: number }
+  | { kind: "progression"; from: Progression; to: Progression }
   | { kind: "rank"; from: Rank; to: Rank }
   | { kind: "upgrades"; count: number }
   | { kind: "xpLevel"; count: number }
-  | { kind: "abilities"; count: number }
+  | {
+      kind: "ability"
+      /** 0 is the active (primary) ability, 1 the passive (secondary). */
+      slot: number
+      abilityId: string
+      from: number
+      to: number
+    }
   | { kind: "shards"; count: number }
   | { kind: "mythicShards"; count: number }
   | { kind: "equipment"; count: number }
@@ -26,7 +26,8 @@ export type CompareChip =
 
 /**
  * The chips for one unit's changed fields, in a fixed order. Progression and rank always show;
- * the rest follow the fields setting (it hides chips, never units). Shards show what was earned.
+ * the rest follow the fields setting (it hides chips, never units). Each changed ability gets its
+ * own chip; shards show what was earned.
  */
 export function compareChips(
   diff: UnitDiff,
@@ -35,14 +36,7 @@ export function compareChips(
   const chips: CompareChip[] = []
   if (diff.unlocked) chips.push({ kind: "unlocked" })
   if (diff.progression) {
-    const stars =
-      progressionStarsIndex(diff.progression.to) -
-      progressionStarsIndex(diff.progression.from)
-    const rarity = progressionRarity(diff.progression.to)
-    if (rarity !== progressionRarity(diff.progression.from)) {
-      chips.push({ kind: "rarity", to: rarity })
-    }
-    if (stars > 0) chips.push({ kind: "stars", count: stars })
+    chips.push({ kind: "progression", ...diff.progression })
   }
   if (diff.rank) {
     chips.push({ kind: "rank", from: diff.rank.from, to: diff.rank.to })
@@ -59,14 +53,10 @@ export function compareChips(
       count: diff.xpLevel.to - diff.xpLevel.from,
     })
   }
-  if (fields.has("abilities") && diff.abilities.length > 0) {
-    chips.push({
-      kind: "abilities",
-      count: diff.abilities.reduce(
-        (sum, ability) => sum + ability.to - ability.from,
-        0
-      ),
-    })
+  if (fields.has("abilities")) {
+    for (const ability of diff.abilities) {
+      chips.push({ kind: "ability", ...ability })
+    }
   }
   if (fields.has("shards") && diff.shards && diff.shards.earned > 0) {
     chips.push({ kind: "shards", count: diff.shards.earned })
@@ -91,10 +81,16 @@ export function compareChips(
 export type DetailRow =
   | { kind: "unlocked" }
   | { kind: "rank"; from: Rank; to: Rank }
-  | { kind: "stars"; from: ProgressionStarsKey; to: ProgressionStarsKey }
+  | { kind: "progression"; from: Progression; to: Progression }
   | { kind: "upgrades" | "xpLevel" | "power"; from: number; to: number }
   | { kind: "xpGained"; value: number }
-  | { kind: "ability"; slot: number; from: number; to: number }
+  | {
+      kind: "ability"
+      slot: number
+      abilityId: string
+      from: number
+      to: number
+    }
   | {
       kind: "equipment"
       slotId: string
@@ -115,11 +111,7 @@ export function detailRows(
   if (diff.unlocked) rows.push({ kind: "unlocked" })
   if (diff.rank) rows.push({ kind: "rank", ...diff.rank })
   if (diff.progression) {
-    rows.push({
-      kind: "stars",
-      from: progressionStarsKey(diff.progression.from),
-      to: progressionStarsKey(diff.progression.to),
-    })
+    rows.push({ kind: "progression", ...diff.progression })
   }
   if (fields.has("upgrades") && diff.upgrades) {
     rows.push({ kind: "upgrades", ...diff.upgrades })

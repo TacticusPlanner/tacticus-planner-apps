@@ -1,8 +1,13 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { ExternalLink } from "lucide-react"
-import { characterIcon, mowIcon } from "@workspace/game-catalog"
+import {
+  characterIcon,
+  mowIcon,
+  powerIcon,
+  shardIcon,
+} from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 import {
   Popover,
@@ -28,6 +33,13 @@ import {
 } from "../../../model/compare-chips"
 import { formatSigned } from "../../../model/compare-labels"
 import type { CompareField, CompareItem } from "../../../model/compare-view"
+import { useMarkLabels } from "../../../model/use-mark-labels"
+import {
+  AbilityMark,
+  FromToMarks,
+  ProgressionMark,
+  RankMark,
+} from "./compare-marks"
 
 const tileGrid =
   "grid gap-x-1.5 gap-y-3 [grid-template-columns:repeat(auto-fill,minmax(6.5rem,1fr))]"
@@ -89,7 +101,11 @@ function DiffTile({
           data-changed={item.diff.changed}
         >
           <UnitTile unit={item.unit} className="w-full" />
-          <ChipList chips={chips} className="justify-center px-0.5" />
+          <ChipList
+            chips={chips}
+            unitKind={item.unit.kind}
+            className="justify-center px-0.5"
+          />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-80" data-testid="compare-details">
@@ -132,7 +148,10 @@ function MobileList({
                 <span className="truncate text-sm font-semibold">
                   {item.unit.name}
                 </span>
-                <ChipList chips={compareChips(item.diff, fields)} />
+                <ChipList
+                  chips={compareChips(item.diff, fields)}
+                  unitKind={item.unit.kind}
+                />
               </span>
             </button>
           </li>
@@ -167,12 +186,14 @@ function portraitOf(item: CompareItem) {
 
 function ChipList({
   chips,
+  unitKind,
   className,
 }: {
   chips: readonly CompareChip[]
+  unitKind: CompareItem["unit"]["kind"]
   className?: string
 }) {
-  const label = useChipLabel()
+  const render = useChipContent(unitKind)
   if (chips.length === 0) return null
   return (
     <span
@@ -181,50 +202,146 @@ function ChipList({
     >
       {chips.map((chip) => (
         <Badge
-          key={chip.kind}
+          key={chip.kind === "ability" ? `ability-${chip.slot}` : chip.kind}
           variant="secondary"
-          className="px-1.5 text-[11px] tabular-nums"
+          className="gap-1 px-1.5 text-[11px] tabular-nums"
           data-chip={chip.kind}
         >
-          {label(chip)}
+          {render(chip)}
         </Badge>
       ))}
     </span>
   )
 }
 
-function useChipLabel() {
+const chipIconClassName = "size-3.5 shrink-0"
+
+/** An icon and a signed count, with the full text for screen readers. */
+function IconCount({
+  icon,
+  value,
+  label,
+}: {
+  icon: ReactNode
+  value: string
+  label: string
+}) {
+  return (
+    <span className="inline-flex items-center gap-0.5" title={label}>
+      <span aria-hidden className="inline-flex items-center gap-0.5">
+        {icon}
+        {value}
+      </span>
+      <span className="sr-only">{label}</span>
+    </span>
+  )
+}
+
+/** The ability's label by slot: active/passive for a character, primary/secondary for a MoW. */
+function abilityLabelKey(unitKind: CompareItem["unit"]["kind"], slot: number) {
+  if (unitKind === "character") {
+    return slot === 0
+      ? "myGame.collection.compare.details.activeAbility"
+      : "myGame.collection.compare.details.passiveAbility"
+  }
+  return slot === 0
+    ? "myGame.collection.compare.details.primaryAbility"
+    : "myGame.collection.compare.details.secondaryAbility"
+}
+
+function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
   const { t, i18n } = useTranslation(["common", "progression"])
+  const labels = useMarkLabels()
   const signed = (count: number) => formatSigned(count, i18n.language)
-  return (chip: CompareChip): string => {
+  const text = (kind: string, count: number) =>
+    t(`myGame.collection.compare.chips.${kind}`, { value: signed(count) })
+  return (chip: CompareChip): ReactNode => {
     switch (chip.kind) {
       case "unlocked": {
         return t("myGame.collection.compare.chips.unlocked")
       }
-      case "rarity": {
-        return t(`progression:rarities.${chip.to}`)
-      }
-      case "stars": {
-        return t("myGame.collection.compare.chips.stars", {
-          value: signed(chip.count),
-        })
+      case "progression": {
+        return (
+          <FromToMarks
+            from={<ProgressionMark value={chip.from} />}
+            to={<ProgressionMark value={chip.to} />}
+            label={labels.progression(chip.from, chip.to)}
+          />
+        )
       }
       case "rank": {
-        return t("myGame.collection.compare.fromTo", {
-          from: t(`progression:ranks.${chip.from}`),
-          to: t(`progression:ranks.${chip.to}`),
-        })
+        return (
+          <FromToMarks
+            from={<RankMark rank={chip.from} />}
+            to={<RankMark rank={chip.to} />}
+            label={labels.rank(chip.from, chip.to)}
+          />
+        )
+      }
+      case "ability": {
+        const name = t(abilityLabelKey(unitKind, chip.slot))
+        return (
+          <FromToMarks
+            from={
+              <>
+                <AbilityMark abilityId={chip.abilityId} />
+                {chip.from}
+              </>
+            }
+            to={chip.to}
+            label={`${name}: ${labels.fromTo(String(chip.from), String(chip.to))}`}
+          />
+        )
+      }
+      case "shards":
+      case "mythicShards": {
+        return (
+          <IconCount
+            icon={
+              <EntityIcon
+                alt=""
+                src={shardIcon(chip.kind === "shards" ? "Regular" : "Mythic")}
+                className={chipIconClassName}
+              />
+            }
+            value={signed(chip.count)}
+            label={text(chip.kind, chip.count)}
+          />
+        )
+      }
+      case "power": {
+        return (
+          <IconCount
+            icon={
+              <EntityIcon
+                alt=""
+                src={powerIcon()}
+                className={chipIconClassName}
+              />
+            }
+            value={signed(chip.count)}
+            label={text(chip.kind, chip.count)}
+          />
+        )
       }
       default: {
-        return t(`myGame.collection.compare.chips.${chip.kind}`, {
-          value: signed(chip.count),
-        })
+        return text(chip.kind, chip.count)
       }
     }
   }
 }
 
-/** Every changed field before → after, with shards net, spent and earned, and a Library link. */
+interface DetailView {
+  key: string
+  /** A decorative icon before the label (the ability's own, shards, power). */
+  icon?: ReactNode
+  label: string
+  value: ReactNode
+}
+
+/** Every changed field before → after, with shards net, spent and earned, and a Library link.
+ *  Rank and progression show as icons (their text is the accessible name); abilities, shards and
+ *  power lead with their icon. */
 function UnitDiffDetails({
   item,
   fields,
@@ -242,9 +359,9 @@ function UnitDiffDetails({
   const { diff, unit } = item
   const number = (value: number) =>
     new Intl.NumberFormat(i18n.language).format(value)
-  const fromTo = (from: string, to: string) =>
-    t("myGame.collection.compare.fromTo", { from, to })
-  const rows = detailRows(diff, fields).map((row) => {
+  const labels = useMarkLabels()
+  const fromTo = labels.fromTo
+  const rows = detailRows(diff, fields).map((row): DetailView => {
     switch (row.kind) {
       case "unlocked": {
         return {
@@ -257,34 +374,33 @@ function UnitDiffDetails({
         return {
           key: row.kind,
           label: t("myGame.collection.compare.details.rank"),
-          value: fromTo(
-            t(`progression:ranks.${row.from}`),
-            t(`progression:ranks.${row.to}`)
+          value: (
+            <FromToMarks
+              from={<RankMark rank={row.from} large />}
+              to={<RankMark rank={row.to} large />}
+              label={labels.rank(row.from, row.to)}
+            />
           ),
         }
       }
-      case "stars": {
+      case "progression": {
         return {
           key: row.kind,
           label: t("myGame.collection.compare.details.stars"),
-          value: fromTo(
-            t(`progression:stars.${row.from}`),
-            t(`progression:stars.${row.to}`)
+          value: (
+            <FromToMarks
+              from={<ProgressionMark value={row.from} large />}
+              to={<ProgressionMark value={row.to} large />}
+              label={labels.progression(row.from, row.to)}
+            />
           ),
         }
       }
       case "ability": {
         return {
           key: `${row.kind}-${row.slot}`,
-          label: t(
-            unit.kind === "character"
-              ? row.slot === 0
-                ? "myGame.collection.compare.details.activeAbility"
-                : "myGame.collection.compare.details.passiveAbility"
-              : row.slot === 0
-                ? "myGame.collection.compare.details.primaryAbility"
-                : "myGame.collection.compare.details.secondaryAbility"
-          ),
+          icon: <AbilityMark abilityId={row.abilityId} large />,
+          label: t(abilityLabelKey(unit.kind, row.slot)),
           value: fromTo(String(row.from), String(row.to)),
         }
       }
@@ -306,6 +422,13 @@ function UnitDiffDetails({
       case "mythicShards": {
         return {
           key: row.kind,
+          icon: (
+            <EntityIcon
+              alt=""
+              src={shardIcon(row.kind === "shards" ? "Regular" : "Mythic")}
+              className="size-5 shrink-0"
+            />
+          ),
           label: t(`myGame.collection.compare.details.${row.kind}`),
           value: t("myGame.collection.compare.details.shardsBreakdown", {
             net: formatSigned(row.change.net, i18n.language),
@@ -324,6 +447,14 @@ function UnitDiffDetails({
       default: {
         return {
           key: row.kind,
+          icon:
+            row.kind === "power" ? (
+              <EntityIcon
+                alt=""
+                src={powerIcon()}
+                className="size-5 shrink-0"
+              />
+            ) : undefined,
           label: t(`myGame.collection.compare.details.${row.kind}`),
           value: fromTo(number(row.from), number(row.to)),
         }
@@ -341,8 +472,13 @@ function UnitDiffDetails({
         <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
           {rows.map((row) => (
             <div key={row.key} className="contents" data-detail={row.key}>
-              <dt className="text-muted-foreground">{row.label}</dt>
-              <dd className="text-right tabular-nums">{row.value}</dd>
+              <dt className="flex items-center gap-1.5 text-muted-foreground">
+                {row.icon}
+                {row.label}
+              </dt>
+              <dd className="flex items-center justify-end text-right tabular-nums">
+                {row.value}
+              </dd>
             </div>
           ))}
         </dl>
