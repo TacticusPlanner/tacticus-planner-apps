@@ -829,6 +829,22 @@
     "menu": "Location options",
     "cantRaid": "Can't raid {{location}}?"
   },
+  "locationDetails": {
+    "open": "Show enemies",
+    "loading": "Loading battle…",
+    "error": "Couldn't load this battle.",
+    "npcsError": "Couldn't load enemy levels.",
+    "retry": "Retry",
+    "notFound": "This battle isn't in the game data.",
+    "energy_one": "{{formatted}} energy",
+    "energy_other": "{{formatted}} energy",
+    "slots_one": "{{formatted}} unit slot",
+    "slots_other": "{{formatted}} unit slots",
+    "power": "Enemy power {{power}}",
+    "enemies": "Enemies",
+    "enemyCount_one": "{{formatted}} enemy",
+    "enemyCount_other": "{{formatted}} enemies"
+  },
   "battleProgress": {
     "open": "Medals",
     "title": "Battles without 3 medals",

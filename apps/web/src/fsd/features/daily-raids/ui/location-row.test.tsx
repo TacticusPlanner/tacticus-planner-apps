@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest"
+import userEvent from "@testing-library/user-event"
+import { describe, expect, it, vi } from "vitest"
 import { battleIdSchema } from "@workspace/game-domain"
 
 import { render, screen } from "@/test/render"
@@ -71,5 +72,67 @@ describe("LocationRow", () => {
     expect(tier.closest(".break-words")).toHaveTextContent(
       "Indomitus Mirror Elite 36"
     )
+  })
+
+  it("opens the location's battle from its name when it can show one", async () => {
+    const user = userEvent.setup()
+    const onShowLocation = vi.fn()
+    render(
+      <LocationRow
+        entry={{
+          battleId,
+          resourceId: "upgrade-1",
+          raidsToPerform: 3,
+          dailyAttempts: 5,
+          remainingBefore: 4,
+          dropRate: 0.5,
+        }}
+        location={{
+          id: battleId,
+          campaignName: "Indomitus Mirror",
+          nodeLabel: "Elite 36",
+          difficultyLabel: "Elite",
+          shortLabel: "IM E 36",
+          challenge: false,
+        }}
+        onShowLocation={onShowLocation}
+        resourceLabel="Upgrade"
+        resourceVisual={undefined}
+      />
+    )
+
+    const button = screen.getByRole("button", { name: /Indomitus Mirror/ })
+    expect(button).toHaveAttribute("aria-haspopup", "dialog")
+    await user.click(button)
+    expect(onShowLocation).toHaveBeenCalledWith({
+      battleId,
+      title: {
+        campaignName: "Indomitus Mirror",
+        difficultyLabel: "Elite",
+        nodeLabel: "Elite 36",
+      },
+    })
+  })
+
+  it("keeps the name plain text without a way to show the battle", () => {
+    render(
+      <LocationRow
+        entry={{
+          battleId,
+          resourceId: "upgrade-1",
+          raidsToPerform: 3,
+          dailyAttempts: 5,
+          remainingBefore: 4,
+          dropRate: 0.5,
+        }}
+        location={undefined}
+        resourceLabel="Upgrade"
+        resourceVisual={undefined}
+      />
+    )
+
+    expect(
+      screen.queryByTestId(`raid-location-details-${battleId}`)
+    ).not.toBeInTheDocument()
   })
 })

@@ -829,6 +829,22 @@
     "menu": "Options du lieu",
     "cantRaid": "Impossible de raider {{location}} ?"
   },
+  "locationDetails": {
+    "open": "Voir les ennemis",
+    "loading": "Chargement du combat…",
+    "error": "Impossible de charger ce combat.",
+    "npcsError": "Impossible de charger les niveaux des ennemis.",
+    "retry": "Réessayer",
+    "notFound": "Ce combat ne figure pas dans les données du jeu.",
+    "energy_one": "{{formatted}} énergie",
+    "energy_other": "{{formatted}} énergie",
+    "slots_one": "{{formatted}} emplacement d'unité",
+    "slots_other": "{{formatted}} emplacements d'unité",
+    "power": "Puissance ennemie {{power}}",
+    "enemies": "Ennemis",
+    "enemyCount_one": "{{formatted}} ennemi",
+    "enemyCount_other": "{{formatted}} ennemis"
+  },
   "battleProgress": {
     "open": "Médailles",
     "title": "Combats sans 3 médailles",

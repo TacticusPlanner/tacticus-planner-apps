@@ -6,6 +6,7 @@ import {
   RaidSchedule,
   RaidState,
   type DailyRaidsViewModel,
+  type RaidLocationTarget,
 } from "@/features/daily-raids"
 
 import { TodayCard } from "./today-card"
@@ -20,10 +21,12 @@ export const INSET_CARDS_CLASS_NAME = "[&_[data-slot=card]]:bg-background"
  */
 export function TodayPlanCard({
   onCantRaid,
+  onShowLocation,
   raids,
   view,
 }: {
   onCantRaid?: (battleId: BattleId) => void
+  onShowLocation?: (target: RaidLocationTarget) => void
   raids: DailyRaidsViewModel
   view: TodayView | undefined
 }) {
@@ -50,6 +53,7 @@ export function TodayPlanCard({
                 {...view.scheduleProps}
                 entries={view.selection.planEntries}
                 onCantRaid={onCantRaid}
+                onShowLocation={onShowLocation}
                 testId="today-raid-list"
               />
             </div>
