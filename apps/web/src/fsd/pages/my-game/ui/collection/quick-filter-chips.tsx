@@ -40,11 +40,14 @@ export function QuickFilterChips({
   availability,
   onChange,
   onRetry,
+  scroll = false,
 }: {
   value: CollectionQuickFilter | null
   availability: Record<CollectionQuickFilter, QuickFilterAvailability>
   onChange: (next: CollectionQuickFilter | null) => void
   onRetry: () => void
+  /** One row that scrolls sideways instead of wrapping (mobile). */
+  scroll?: boolean
 }) {
   const { t, i18n } = useTranslation("common")
   const noteId = useId()
@@ -88,7 +91,11 @@ export function QuickFilterChips({
         variant="outline"
         size="sm"
         spacing={1}
-        className="flex-wrap"
+        className={
+          scroll
+            ? "w-full flex-nowrap justify-start overflow-x-auto pb-1 [scrollbar-width:none]"
+            : "flex-wrap"
+        }
         aria-labelledby={`${noteId}-label`}
         value={value ?? ""}
         onValueChange={(next) =>
@@ -101,7 +108,11 @@ export function QuickFilterChips({
             <ToggleGroupItem
               key={quick}
               value={quick}
-              className={FILTER_CHIP_CLASS_NAME}
+              className={
+                scroll
+                  ? `${FILTER_CHIP_CLASS_NAME} shrink-0`
+                  : FILTER_CHIP_CLASS_NAME
+              }
               disabled={status !== "available"}
               title={t(`myGame.collection.toolbar.quickHelp.${quick}`)}
               aria-describedby={

@@ -1,6 +1,6 @@
 import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Camera, ListChecks, Settings2 } from "lucide-react"
+import { ClockPlus, ListChecks, Settings2 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
@@ -45,7 +45,8 @@ import { sourceLabel } from "../../../model/compare-labels"
 import { useSourceLabels } from "../../../model/use-source-labels"
 import type { CompareSource } from "../../../model/use-compare-data"
 
-/** The snapshot actions above the toolbar: the Compare switch, Take snapshot and Manage. */
+/** The snapshot actions between the toolbar and the list: the Compare switch, Take snapshot and
+ *  Manage. Compare's options follow right below while it is on, so the mode reads as one block. */
 export function SnapshotActions({
   compareOn,
   onCompareChange,
@@ -70,7 +71,7 @@ export function SnapshotActions({
       disabled={atLimit}
       data-testid="take-snapshot"
     >
-      <Camera aria-hidden />
+      <ClockPlus aria-hidden />
       {t("myGame.collection.snapshots.take")}
     </Button>
   )
@@ -89,7 +90,7 @@ export function SnapshotActions({
           {t("myGame.collection.compare.toggle")}
         </Label>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-2">
         {atLimit ? (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -137,10 +138,11 @@ export interface CompareControlsProps {
 }
 
 /** From/to, Legendary Event filter, order, fields and Show unchanged: inline on desktop, in a
- *  "Compare options" bottom sheet on mobile. */
+ *  "Compare options" bottom sheet on mobile, opened by a button that names the two rosters. */
 export function CompareControls(props: CompareControlsProps) {
-  const { t } = useTranslation("common")
+  const { t, i18n } = useTranslation("common")
   const isMobile = useIsMobile()
+  const labels = useSourceLabels()
   const [open, setOpen] = useState(false)
   if (!isMobile) {
     return (
@@ -152,17 +154,29 @@ export function CompareControls(props: CompareControlsProps) {
       </div>
     )
   }
+  const nameOf = (id: string) => {
+    const source = props.sources.find((candidate) => candidate.id === id)
+    return source ? sourceLabel(source, i18n.language, labels) : null
+  }
+  const fromLabel = nameOf(props.fromId) ?? ""
+  const toLabel =
+    props.toId === COMPARE_CURRENT
+      ? t("myGame.collection.compare.current")
+      : (nameOf(props.toId) ?? "")
   return (
     <>
       <Button
         variant="outline"
-        size="sm"
-        className="self-start"
+        className="h-auto min-h-11 w-full justify-start py-2 text-left"
         onClick={() => setOpen(true)}
+        aria-label={`${t("myGame.collection.compare.options")}: ${t("myGame.collection.compare.fromTo", { from: fromLabel, to: toLabel })}`}
         data-testid="compare-options"
       >
         <Settings2 aria-hidden />
-        {t("myGame.collection.compare.options")}
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="truncate">{fromLabel}</span>
+          <span className="truncate text-muted-foreground">→ {toLabel}</span>
+        </span>
       </Button>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="bottom" data-testid="compare-options-sheet">
