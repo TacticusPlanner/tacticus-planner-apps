@@ -371,6 +371,29 @@ describe("Schedule page", () => {
       expect(tooltip).toHaveTextContent("Ceramite")
       expect(tooltip).toHaveTextContent("Bellator")
       expect(tooltip).toHaveTextContent("Indomitus")
+      expect(
+        screen.queryByTestId("plan-cell-1-U1-alternatives")
+      ).not.toBeInTheDocument()
+    })
+
+    it("lists the material's other campaign locations, marking locked ones", async () => {
+      useDailyRaids.mockReturnValue(
+        ready({
+          farmLocationsByResource: new Map([["U1", [battle, offPlanBattle]]]),
+          eligibleBattleIds: new Set([battle]),
+        })
+      )
+      render(<SchedulePage />)
+
+      act(() => screen.getByTestId("plan-cell-1-U1").focus())
+      await screen.findByRole("tooltip")
+      const alternatives = screen.getByTestId("plan-cell-1-U1-alternatives")
+      expect(alternatives).toHaveTextContent("Also drops at")
+      expect(alternatives).toHaveTextContent("Death Guard")
+      expect(alternatives).not.toHaveTextContent("Indomitus")
+      expect(
+        within(alternatives).getByRole("img", { name: "Locked" })
+      ).toBeInTheDocument()
     })
   })
 

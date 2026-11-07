@@ -44,6 +44,8 @@ export function PlanDayCard({
             selectedUnitId !== undefined &&
             !cell.units.some((unit) => unit.unitId === selectedUnitId)
           }
+          eligibleBattleIds={raids.eligibleBattleIds}
+          farmLocationsByResource={raids.farmLocationsByResource}
           label={raids.resourceLabels.get(cell.resourceId) ?? cell.resourceId}
           locationsByBattleId={raids.locationsByBattleId}
           testId={`plan-cell-${day.day}-${cell.resourceId}`}

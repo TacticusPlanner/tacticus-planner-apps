@@ -245,6 +245,16 @@ Hovering or focusing a material cell, or tapping it on a touch device, SHALL sho
 - **WHEN** the user taps a material cell below the 768px breakpoint
 - **THEN** the same tooltip content is shown, and tapping elsewhere dismisses it
 
+### Requirement: Material cell tooltip lists alternative locations
+
+For an upgrade material, the material cell tooltip SHALL also list, under "Also drops at", every other campaign node the catalog lists as a farm location for that material but that the cell's day does not raid. Nodes the plan could raid SHALL come first, then nodes the plan cannot use (campaign or event not unlocked or progressed far enough), each marked with a lock icon labelled "Locked". At most four alternatives SHALL be listed, followed by "+N more". The section SHALL be omitted when there are no alternatives.
+
+#### Scenario: Locked alternative
+
+- **GIVEN** an upgrade cell scheduled on Indomitus Elite 1, whose material also drops at Death Guard Extremis 3 which the player has not unlocked
+- **WHEN** the user opens the cell's tooltip
+- **THEN** "Also drops at" lists Death Guard Extremis 3 with a "Locked" icon, and does not repeat Indomitus Elite 1
+
 ### Requirement: Every day separates raided materials
 
 Every day card SHALL present its Raided cells in a separate section labelled "Raided", placed after the actionable cells. A cell SHALL be Raided on any day when its merged owned amount is at least its merged target at the start of that day. On Day 1 only, a cell SHALL also be Raided when every node it is scheduled on has real synced attempts left today of exactly zero. Nodes with positive or unknown real attempts SHALL NOT count as exhausted. There SHALL be no control to toggle this.

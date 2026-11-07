@@ -1,3 +1,4 @@
+import { Lock } from "lucide-react"
 import { ResourceIcon } from "../resource-icon"
 import { useTranslation } from "react-i18next"
 import type { BattleId } from "@workspace/game-domain"
@@ -15,15 +16,19 @@ import type {
 } from "../../model/daily-raids.domain"
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 import type { PlanCell } from "../../model/plan-day-cells"
+import { planCellAlternatives } from "../../model/plan-cell-alternatives"
 import { ManualBattleBadge } from "../manual-battle"
 import { UnitIcon } from "../resource-card"
 
 const TOOLTIP_NODE_LIMIT = 4
 const PORTRAIT_LIMIT = 2
+const ALTERNATIVE_LIMIT = 4
 
 export function PlanMaterialCell({
   cell,
   dimmed,
+  eligibleBattleIds,
+  farmLocationsByResource,
   label,
   locationsByBattleId,
   testId,
@@ -31,6 +36,8 @@ export function PlanMaterialCell({
 }: {
   cell: PlanCell
   dimmed: boolean
+  eligibleBattleIds: ReadonlySet<BattleId>
+  farmLocationsByResource: ReadonlyMap<string, readonly BattleId[]>
   label: string
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
   testId: string
@@ -88,25 +95,15 @@ export function PlanMaterialCell({
         <span className="font-semibold">{label}</span>
         <span>{cell.units.map((unit) => unit.unitLabel).join(", ")}</span>
         <ul className="space-y-0.5">
-          {cell.nodes.slice(0, TOOLTIP_NODE_LIMIT).map((node) => {
-            const location = locationsByBattleId.get(node.battleId)
-            return (
-              <li key={node.battleId} className="flex items-center gap-1">
-                {location?.icon ? (
-                  <EntityIcon alt="" className="size-4" src={location.icon} />
-                ) : null}
-                <span>
-                  <CampaignLocationName
-                    campaignName={location?.campaignName ?? node.battleId}
-                    difficultyLabel={location?.difficultyLabel}
-                    nodeLabel={location?.nodeLabel}
-                  />{" "}
-                  {t("plan.cell.nodeRaids", { raids: node.raidsPerformed })}
-                </span>
-                {location?.manual ? <ManualBattleBadge compact /> : null}
-              </li>
-            )
-          })}
+          {cell.nodes.slice(0, TOOLTIP_NODE_LIMIT).map((node) => (
+            <li key={node.battleId} className="flex items-center gap-1">
+              <PlanNodeLocation
+                battleId={node.battleId}
+                location={locationsByBattleId.get(node.battleId)}
+              />{" "}
+              {t("plan.cell.nodeRaids", { raids: node.raidsPerformed })}
+            </li>
+          ))}
         </ul>
         {cell.nodes.length > TOOLTIP_NODE_LIMIT ? (
           <span>
@@ -115,7 +112,98 @@ export function PlanMaterialCell({
             })}
           </span>
         ) : null}
+        <PlanCellAlternatives
+          cell={cell}
+          eligibleBattleIds={eligibleBattleIds}
+          farmLocationsByResource={farmLocationsByResource}
+          locationsByBattleId={locationsByBattleId}
+          testId={`${testId}-alternatives`}
+        />
       </TooltipContent>
     </Tooltip>
+  )
+}
+
+/** The other campaign nodes that drop the cell's material — rendered only while the tooltip is open. */
+function PlanCellAlternatives({
+  cell,
+  eligibleBattleIds,
+  farmLocationsByResource,
+  locationsByBattleId,
+  testId,
+}: {
+  cell: PlanCell
+  eligibleBattleIds: ReadonlySet<BattleId>
+  farmLocationsByResource: ReadonlyMap<string, readonly BattleId[]>
+  locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
+  testId: string
+}) {
+  const { t } = useTranslation("dailies")
+  const alternatives = planCellAlternatives(
+    cell,
+    farmLocationsByResource,
+    eligibleBattleIds
+  )
+  if (alternatives.length === 0) return null
+
+  return (
+    <div className="mt-1 space-y-0.5" data-testid={testId}>
+      <span className="font-semibold">{t("plan.cell.alternatives")}</span>
+      <ul className="space-y-0.5">
+        {alternatives.slice(0, ALTERNATIVE_LIMIT).map((alternative) => (
+          <li
+            key={alternative.battleId}
+            className={cn(
+              "flex items-center gap-1",
+              alternative.locked && "opacity-70"
+            )}
+            data-locked={alternative.locked || undefined}
+          >
+            <PlanNodeLocation
+              battleId={alternative.battleId}
+              location={locationsByBattleId.get(alternative.battleId)}
+            />
+            {alternative.locked ? (
+              <Lock
+                aria-label={t("plan.cell.locked")}
+                className="size-3 shrink-0"
+                role="img"
+              />
+            ) : null}
+          </li>
+        ))}
+      </ul>
+      {alternatives.length > ALTERNATIVE_LIMIT ? (
+        <span>
+          {t("plan.cell.moreNodes", {
+            count: alternatives.length - ALTERNATIVE_LIMIT,
+          })}
+        </span>
+      ) : null}
+    </div>
+  )
+}
+
+function PlanNodeLocation({
+  battleId,
+  location,
+}: {
+  battleId: BattleId
+  location: DailyRaidLocationViewModel | undefined
+}) {
+  return (
+    <>
+      {location?.icon ? (
+        <EntityIcon alt="" className="size-4" src={location.icon} />
+      ) : null}
+      <span>
+        <CampaignLocationName
+          campaignName={location?.campaignName ?? battleId}
+          difficultyLabel={location?.difficultyLabel}
+          nodeLabel={location?.nodeLabel}
+        />
+      </span>
+      {location?.manual ? <ManualBattleBadge compact /> : null}
+    </>
   )
 }

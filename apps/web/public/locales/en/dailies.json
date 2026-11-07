@@ -263,7 +263,9 @@
       "label": "{{material}}, {{owned}} of {{target}} owned",
       "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} more",
-      "moreUnits": "+{{count}}"
+      "moreUnits": "+{{count}}",
+      "alternatives": "Also drops at",
+      "locked": "Locked"
     },
     "filter": {
       "label": "Filter by unit",

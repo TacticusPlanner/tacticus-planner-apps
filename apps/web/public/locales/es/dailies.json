@@ -263,7 +263,9 @@
       "label": "{{material}}, {{owned}} de {{target}} en posesión",
       "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} más",
-      "moreUnits": "+{{count}}"
+      "moreUnits": "+{{count}}",
+      "alternatives": "También se obtiene en",
+      "locked": "Bloqueado"
     },
     "filter": {
       "label": "Filtrar por unidad",

@@ -191,6 +191,11 @@ export type DailyRaidsReadyViewModel = {
   // What every raidable node drops, straight from the catalog and independent of this project's
   // plan — Today's Attempts is account-wide, so it needs an icon for nodes the plan never mentions.
   resourceByBattleId: ReadonlyMap<BattleId, DailyRaidBattleResource>
+  /** Every catalog farm location per upgrade material (keyed by upgrade id), independent of the plan
+   *  — the Schedule tooltip lists the ones a day doesn't raid as alternatives. */
+  farmLocationsByResource: ReadonlyMap<string, readonly BattleId[]>
+  /** The nodes the plan may raid (unlocked and allowed); an alternative outside it reads as locked. */
+  eligibleBattleIds: ReadonlySet<BattleId>
   attemptsUsedByBattle: ReadonlyMap<BattleId, number>
   // Real, account-wide energy spent today per synced attempts at standing (non-event) campaign
   // nodes — independent of this project's simulated plan, and NOT capped at `dailyEnergy`.
@@ -215,6 +220,8 @@ export type DailyRaidsCalculationViewModel = Omit<
   | "locationsByBattleId"
   | "hasManualRaids"
   | "resourceByBattleId"
+  | "farmLocationsByResource"
+  | "eligibleBattleIds"
   | "realEnergyUsedToday"
   | "attemptsLeftByBattle"
   | "todaysAttempts"
