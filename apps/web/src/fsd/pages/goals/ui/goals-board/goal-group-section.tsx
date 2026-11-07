@@ -23,7 +23,7 @@ export function GoalGroupSection({
   const { t } = useTranslation()
   const contentId = useId()
   return (
-    <section className="grid gap-2" data-testid="goal-group">
+    <section className="grid grid-cols-1 gap-2" data-testid="goal-group">
       <h2 className="text-lg font-semibold">
         <button
           aria-controls={contentId}

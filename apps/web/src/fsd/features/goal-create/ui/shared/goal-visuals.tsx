@@ -193,7 +193,14 @@ export function GoalTypeCard({
   )
 }
 
-export function GoalProjectBadges({ projects }: { projects: GoalProject[] }) {
+/** `truncate` caps each badge's width (the goal card's meta line); the full name stays in its tooltip. */
+export function GoalProjectBadges({
+  projects,
+  truncate = false,
+}: {
+  projects: GoalProject[]
+  truncate?: boolean
+}) {
   const { t } = useTranslation()
   if (projects.length === 0) return null
 
@@ -204,9 +211,18 @@ export function GoalProjectBadges({ projects }: { projects: GoalProject[] }) {
       data-testid="goal-project-memberships"
     >
       {projects.map((project) => (
-        <Badge className="gap-1" key={project.projectId} variant="secondary">
+        <Badge
+          className={cn("gap-1", truncate && "max-w-40")}
+          key={project.projectId}
+          title={truncate ? project.name : undefined}
+          variant="secondary"
+        >
           <ProjectColorDot color={project.color} />
-          {project.name}
+          {truncate ? (
+            <span className="truncate">{project.name}</span>
+          ) : (
+            project.name
+          )}
         </Badge>
       ))}
     </div>

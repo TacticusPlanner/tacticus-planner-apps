@@ -13,30 +13,45 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useGoalCatalog } from "@/features/goal-planning"
 import { SortableList } from "@/shared/ui"
+import { ProgressLegend } from "../shared/goal-progress-visuals"
 import { GoalRowCells } from "./goal-table-row"
+import { GoalsCards } from "./goals-cards"
 import {
+  drawsPotentialBar,
   isReachedRow,
   REACHED_ROW_CLASS,
   type GoalsListProps,
 } from "./goal-row-utils"
-import { GoalsMobileCards } from "./goals-mobile-cards"
+import { GoalsReorderCards } from "./goals-reorder-cards"
 import { SEASON_FIT_ROW_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffRow } from "./season-fit-ui"
+import type { GoalsView } from "./use-goals-view"
 
-/** Desktop table + mobile card list for a tab's goal rows — mirrors `guild-members-list.tsx`'s
- * responsive split. The row itself opens nothing; its Edit action opens the Edit goal dialog, and the actions
- * and nested buttons stop activation from bubbling so they keep working independently.
- * `reorderEnabled` shows a drag handle on every desktop row directly (no separate mode); mobile
- * additionally needs `mobileReorderActive` (add-inline-goal-reprioritize). */
-export function GoalsList(props: GoalsListProps) {
+/** A tab's goal rows as the goal cards or the table (goal-list-layout), by this device's stored Goals
+ * view. Mobile reorder mode always shows its collapsed cards. The row itself opens nothing;
+ * its Edit action opens the Edit goal dialog, and the actions and nested buttons stop activation from
+ * bubbling so they keep working independently. `reorderEnabled` shows a drag handle on every desktop
+ * row or card directly (no separate mode); mobile additionally needs `mobileReorderActive`
+ * (add-inline-goal-reprioritize). */
+export function GoalsList({
+  view,
+  ...props
+}: GoalsListProps & { view: GoalsView }) {
   const isMobile = useIsMobile()
-  const { rows } = props
+  const { rows, reorderEnabled, mobileReorderActive } = props
 
   if (rows.length === 0) {
     return null
   }
 
-  return isMobile ? <GoalsMobileCards {...props} /> : <GoalsTable {...props} />
+  if (isMobile && reorderEnabled && mobileReorderActive) {
+    return <GoalsReorderCards {...props} />
+  }
+  return view === "Table" ? (
+    <GoalsTable {...props} isMobile={isMobile} />
+  ) : (
+    <GoalsCards {...props} isMobile={isMobile} />
+  )
 }
 
 const EMPTY_SELECTION: ReadonlySet<string> = new Set()
@@ -46,6 +61,7 @@ const COLUMN_COUNT = 8
 const FIT_COLUMN = "w-px"
 
 function GoalsTable({
+  isMobile,
   rows,
   actions,
   estimates,
@@ -69,9 +85,10 @@ function GoalsTable({
   onToggleSelected,
   visibleIds,
   onSelectAllVisible,
+  selectActive = false,
   seasonFit,
   seasonCutoffGoalId,
-}: GoalsListProps) {
+}: GoalsListProps & { isMobile: boolean }) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
   const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
@@ -81,6 +98,15 @@ function GoalsTable({
   const scopeIds = visibleIds ?? rows.map((row) => row.goalId)
   const selectedCount = scopeIds.filter((id) => selection.has(id)).length
   const allSelected = scopeIds.length > 0 && selectedCount === scopeIds.length
+  // Mobile matches its cards: bulk actions only exist in select mode, and reorder has its own mode.
+  const showCheckboxes = !isMobile || selectActive
+  const showLegend = rows.some((row) =>
+    drawsPotentialBar(
+      row,
+      { metrics, potentialProgress, levelPotentialProgress, reachedByGoalId },
+      "Table"
+    )
+  )
 
   return (
     <Table data-testid="goals-list-table">
@@ -92,18 +118,20 @@ function GoalsTable({
               table layout"). */}
           <TableHead className={FIT_COLUMN}>
             <div className="flex items-center gap-2">
-              <Checkbox
-                aria-label={t("goals.bulk.selectAll")}
-                checked={
-                  allSelected
-                    ? true
-                    : selectedCount > 0
-                      ? "indeterminate"
-                      : false
-                }
-                data-testid="goals-select-all"
-                onCheckedChange={() => onSelectAllVisible?.()}
-              />
+              {showCheckboxes ? (
+                <Checkbox
+                  aria-label={t("goals.bulk.selectAll")}
+                  checked={
+                    allSelected
+                      ? true
+                      : selectedCount > 0
+                        ? "indeterminate"
+                        : false
+                  }
+                  data-testid="goals-select-all"
+                  onCheckedChange={() => onSelectAllVisible?.()}
+                />
+              ) : null}
               <span className="sr-only">{t("goals.columns.reorder")}</span>
             </div>
           </TableHead>
@@ -123,7 +151,17 @@ function GoalsTable({
             {t("goals.columns.doneBy")}
           </TableHead>
           <TableHead>{t("goals.columns.remaining")}</TableHead>
-          <TableHead className="w-40">{t("goals.columns.progress")}</TableHead>
+          <TableHead className="w-40">
+            {showLegend ? (
+              <div className="grid gap-0.5 py-1">
+                {t("goals.columns.progress")}
+                {/* Stacked: side by side it would widen this deliberately narrow column. */}
+                <ProgressLegend className="flex-col items-start gap-0" />
+              </div>
+            ) : (
+              t("goals.columns.progress")
+            )}
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -182,8 +220,9 @@ function GoalsTable({
                     onToggleSelected={onToggleSelected}
                     selected={selection.has(row.goalId)}
                     reachedByGoalId={reachedByGoalId}
-                    reorderEnabled={reorderEnabled}
+                    reorderEnabled={reorderEnabled && !isMobile}
                     row={row}
+                    showCheckbox={showCheckboxes}
                     setOpenPopoverGoalId={setOpenPopoverGoalId}
                     seasonFit={seasonFit}
                     xpBook={xpBook}
