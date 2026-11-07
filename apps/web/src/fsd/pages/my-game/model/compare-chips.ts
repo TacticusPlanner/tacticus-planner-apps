@@ -208,7 +208,7 @@ export function itemSlotType(equipmentId: string): ItemSlotType | null {
   return isItemSlotType(type) ? type : null
 }
 
-export const itemSlotTypes = [
+const itemSlotTypes = [
   "I_Crit",
   "I_Block",
   "I_Booster_Crit",
