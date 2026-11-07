@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { Pencil, Trash2 } from "lucide-react"
+import { BookmarkPlus, Pencil, Trash2 } from "lucide-react"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import {
@@ -11,9 +12,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@workspace/ui/components/sheet"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import {
+  formatSnapshotDate,
+  snapshotLabel,
   useDeleteRosterSnapshot,
+  useKeepRosterSnapshot,
   useRenameRosterSnapshot,
   type PersonalRosterSnapshot,
   type PersonalRosterSnapshotList,
@@ -27,12 +36,14 @@ import {
   ResponsiveDialogTitle,
 } from "@/shared/ui"
 
-import { formatSourceDate } from "../../../model/compare-labels"
+import { canKeep, manageSections } from "../../../model/manage-snapshots"
 import { isValidSnapshotRename } from "../../../model/take-snapshot"
+import { useSourceLabels } from "../../../model/use-source-labels"
 
 /**
- * Lists the personal snapshots newest first (never Legendary Event rosters) with usage, an inline
- * rename (Enter or blur saves, Escape cancels) and a confirmed permanent delete.
+ * The personal snapshots newest first (never Legendary Event rosters) in two sections (design D3):
+ * manual ones with V1 imports, then automatic ones with their quota and Keep. Each row
+ * has an inline rename (Enter or blur saves, Escape cancels) and a confirmed permanent delete.
  */
 export function ManageSnapshotsSheet({
   open,
@@ -45,6 +56,8 @@ export function ManageSnapshotsSheet({
 }) {
   const { t } = useTranslation("common")
   const [deleting, setDeleting] = useState<PersonalRosterSnapshot | null>(null)
+  const sections = manageSections(list)
+  const keepable = canKeep(list)
 
   return (
     <>
@@ -63,21 +76,58 @@ export function ManageSnapshotsSheet({
                 : null}
             </SheetDescription>
           </SheetHeader>
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
-            {list && list.items.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                {t("myGame.collection.snapshots.none")}
-              </p>
-            ) : null}
-            <ul className="flex flex-col divide-y">
-              {list?.items.map((snapshot) => (
-                <SnapshotRow
-                  key={snapshot.id}
-                  snapshot={snapshot}
-                  onDelete={() => setDeleting(snapshot)}
-                />
-              ))}
-            </ul>
+          <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 pb-4">
+            <section data-testid="manage-snapshots-manual">
+              {list && sections.manual.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {t("myGame.collection.snapshots.none")}
+                </p>
+              ) : null}
+              <ul className="flex flex-col divide-y">
+                {sections.manual.map((snapshot) => (
+                  <SnapshotRow
+                    key={snapshot.id}
+                    snapshot={snapshot}
+                    onDelete={() => setDeleting(snapshot)}
+                  />
+                ))}
+              </ul>
+            </section>
+            <section
+              className="flex flex-col gap-2"
+              data-testid="manage-snapshots-auto"
+            >
+              <div className="flex items-baseline justify-between gap-2">
+                <h3 className="text-sm font-semibold">
+                  {t("myGame.collection.snapshots.autoTitle")}
+                </h3>
+                {list ? (
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {t("myGame.collection.snapshots.usage", {
+                      count: list.autoCount,
+                      limit: list.autoLimit,
+                    })}
+                  </span>
+                ) : null}
+              </div>
+              {list ? (
+                <p className="text-xs text-muted-foreground">
+                  {t("myGame.collection.snapshots.autoHint", {
+                    limit: list.autoLimit,
+                  })}
+                </p>
+              ) : null}
+              <ul className="flex flex-col divide-y">
+                {sections.auto.map((snapshot) => (
+                  <SnapshotRow
+                    key={snapshot.id}
+                    snapshot={snapshot}
+                    keepable={keepable}
+                    onDelete={() => setDeleting(snapshot)}
+                  />
+                ))}
+              </ul>
+            </section>
           </div>
         </SheetContent>
       </Sheet>
@@ -91,15 +141,20 @@ export function ManageSnapshotsSheet({
 
 function SnapshotRow({
   snapshot,
+  keepable = false,
   onDelete,
 }: {
   snapshot: PersonalRosterSnapshot
+  /** Automatic rows only: Keep has room under the manual limit. */
+  keepable?: boolean
   onDelete: () => void
 }) {
   const { t, i18n } = useTranslation("common")
+  const labels = useSourceLabels()
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(snapshot.name)
   const rename = useRenameRosterSnapshot()
+  const keep = useKeepRosterSnapshot()
   const { captureEvent } = useAnalyticsActions()
 
   const save = () => {
@@ -120,6 +175,25 @@ function SnapshotRow({
       }
     )
   }
+
+  const keepButton = (
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label={t("myGame.collection.snapshots.keep")}
+      disabled={!keepable || keep.isPending}
+      onClick={() =>
+        keep.mutate(snapshot.id, {
+          onSuccess: () => captureEvent({ type: "roster_snapshot_kept" }),
+          onError: () =>
+            toast.error(t("myGame.collection.snapshots.keepFailed")),
+        })
+      }
+      data-testid="manage-snapshot-keep"
+    >
+      <BookmarkPlus aria-hidden />
+    </Button>
+  )
 
   return (
     <li
@@ -148,15 +222,41 @@ function SnapshotRow({
             data-testid="manage-snapshot-name-input"
           />
         ) : (
-          <span className="truncate text-sm font-medium">
-            {rename.isPending ? draft : snapshot.name}
+          <span className="flex min-w-0 items-center gap-1.5">
+            <span className="truncate text-sm font-medium">
+              {rename.isPending
+                ? draft
+                : snapshotLabel(snapshot, i18n.language, labels)}
+            </span>
+            {snapshot.source === "manual" ? null : (
+              <Badge variant="secondary" data-testid="manage-snapshot-badge">
+                {snapshot.source === "auto"
+                  ? t("myGame.collection.snapshots.autoBadge")
+                  : t("myGame.collection.snapshots.v1ImportBadge")}
+              </Badge>
+            )}
           </span>
         )}
         <span className="text-xs text-muted-foreground">
-          {formatSourceDate(snapshot.takenAt, i18n.language)} ·{" "}
+          {formatSnapshotDate(snapshot.takenAt, i18n.language)} ·{" "}
           {formatRelativeTime(Date.parse(snapshot.takenAt), i18n.language)}
         </span>
       </div>
+      {snapshot.source === "auto" ? (
+        keepable ? (
+          keepButton
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {/* A disabled button fires no pointer events, so the span carries the tooltip. */}
+              <span data-testid="manage-snapshot-keep-limit">{keepButton}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              {t("myGame.collection.snapshots.keepLimitTooltip")}
+            </TooltipContent>
+          </Tooltip>
+        )
+      ) : null}
       <Button
         variant="ghost"
         size="icon"
@@ -191,7 +291,8 @@ function DeleteSnapshotDialog({
   snapshot: PersonalRosterSnapshot | null
   onClose: () => void
 }) {
-  const { t } = useTranslation("common")
+  const { t, i18n } = useTranslation("common")
+  const labels = useSourceLabels()
   const remove = useDeleteRosterSnapshot()
   const { captureEvent } = useAnalyticsActions()
 
@@ -207,7 +308,9 @@ function DeleteSnapshotDialog({
       <ResponsiveDialogHeader>
         <ResponsiveDialogTitle>
           {t("myGame.collection.snapshots.deleteTitle", {
-            name: snapshot?.name ?? "",
+            name: snapshot
+              ? snapshotLabel(snapshot, i18n.language, labels)
+              : "",
           })}
         </ResponsiveDialogTitle>
         <p className="text-sm text-muted-foreground">

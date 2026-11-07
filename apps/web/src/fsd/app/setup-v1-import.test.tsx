@@ -90,6 +90,8 @@ function fullResult(
     outcomes,
     legendaryEventPlans: okPart,
     legendaryEventOutcomes: [],
+    rosterSnapshots: okPart,
+    rosterSnapshotOutcomes: [],
     importProjectId: null,
     profileId: "profile-1",
     playerName: null,
@@ -136,6 +138,7 @@ describe("SetupV1Import", () => {
       onslaughtProgress: true,
       campaignEventProgress: true,
       legendaryEventPlans: true,
+      rosterSnapshots: true,
     })
   })
 

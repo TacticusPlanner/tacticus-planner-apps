@@ -63,3 +63,15 @@ export function deleteRosterSnapshot(snapshotId: string) {
     })
   )
 }
+
+/** Keeps an automatic snapshot as a manual one. 409 `rosterSnapshotLimitReached` at the manual
+ *  limit, 409 `rosterSnapshotNotAutomatic` for any other source. */
+export function keepRosterSnapshot(
+  snapshotId: string
+): Promise<PersonalRosterSnapshot> {
+  return unwrap(
+    apiClient().POST("/api/v1/me/roster-snapshots/{snapshotId}/keep", {
+      params: { path: { snapshotId } },
+    })
+  )
+}

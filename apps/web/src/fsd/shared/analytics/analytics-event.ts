@@ -268,9 +268,12 @@ type RosterCompareMetricSelectedEvent = {
   metric: string
 }
 
-/** A personal roster snapshot was renamed or deleted (never its name). */
+/** A personal roster snapshot was renamed, deleted or (an automatic one) kept (never its name). */
 type RosterSnapshotManagedEvent = {
-  type: "roster_snapshot_renamed" | "roster_snapshot_deleted"
+  type:
+    | "roster_snapshot_renamed"
+    | "roster_snapshot_deleted"
+    | "roster_snapshot_kept"
 }
 
 /** An error nothing else handled (spec: client-error-reporting), sent as PostHog's `$exception` so

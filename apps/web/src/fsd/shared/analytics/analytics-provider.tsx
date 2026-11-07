@@ -381,6 +381,7 @@ export function useAnalyticsActions() {
           break
         case "roster_snapshot_renamed":
         case "roster_snapshot_deleted":
+        case "roster_snapshot_kept":
           client.capture(event.type)
           break
         case "client_error": {

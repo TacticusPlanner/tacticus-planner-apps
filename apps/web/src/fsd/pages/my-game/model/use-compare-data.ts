@@ -13,6 +13,7 @@ import {
   rosterSnapshotQueries,
   useRosterSnapshots,
   type DiffRoster,
+  V1_IMPORT_CATALOG_VERSION,
   type PersonalRosterSnapshotList,
   type RosterDiffContext,
   type RosterSnapshotSource,
@@ -207,7 +208,15 @@ export function useSourceRoster(
     }
     if (sourceId === null) return loading(retry)
     if (stored.status !== "ready") return { ...stored, retry }
-    return { status: "ready", data: stored.data, retry }
+    return {
+      status: "ready",
+      data: {
+        ...stored.data,
+        progressUnknown:
+          stored.data.catalogVersion === V1_IMPORT_CATALOG_VERSION,
+      },
+      retry,
+    }
   }, [sourceId, stored, characters, mows])
 }
 

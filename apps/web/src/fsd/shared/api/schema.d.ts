@@ -119,7 +119,7 @@ export interface paths {
     put?: never
     /**
      * Selectively imports integration data, progress, and goals from V1.
-     * @description V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes.
+     * @description V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes. The rosterSnapshots part rebuilds V1 roster snapshots and stores the live ones as V1Import personal snapshots, newest first within the manual limit, skipping ones an earlier run imported; it reports one outcome per V1 snapshot in rosterSnapshotOutcomes.
      */
     post: operations["TacticusPlannerApiFeaturesV1ImportImportV1ProfileEndpoint"]
     delete?: never
@@ -1603,7 +1603,7 @@ export interface paths {
     }
     /**
      * Lists the caller's personal roster snapshots, newest first, without rosters.
-     * @description count is the number that counts toward limit (manual and V1-imported snapshots). Legendary Event run-record rosters are not listed here.
+     * @description count is the number that counts toward limit (manual and V1-imported snapshots); autoCount the automatic snapshots, kept to autoLimit by replacing the oldest. Legendary Event run-record rosters are not listed here.
      */
     get: operations["TacticusPlannerApiFeaturesRosterSnapshotsListPersonalRosterSnapshotsEndpoint"]
     put?: never
@@ -1644,6 +1644,26 @@ export interface paths {
      * @description The name is trimmed and must be 1–60 characters; it need not be unique. The roster and takenAt do not change.
      */
     patch: operations["TacticusPlannerApiFeaturesRosterSnapshotsRenamePersonalRosterSnapshotEndpoint"]
+    trace?: never
+  }
+  "/api/v1/me/roster-snapshots/{snapshotId}/keep": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Keeps one of the caller's automatic snapshots as a manual one.
+     * @description source becomes manual; the name, takenAt and roster do not change. It then counts toward limit, and the automatic quota can no longer replace it.
+     */
+    post: operations["TacticusPlannerApiFeaturesRosterSnapshotsKeepPersonalRosterSnapshotEndpoint"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
     trace?: never
   }
   "/api/v1/player-data-overrides/battle-progress": {
@@ -3743,6 +3763,8 @@ export interface components {
       outcomes: components["schemas"]["IReadOnlyListOfV1GoalOutcome"]
       legendaryEventPlans: components["schemas"]["ImportPartResult"]
       legendaryEventOutcomes: components["schemas"]["IReadOnlyListOfV1LegendaryEventOutcome"]
+      rosterSnapshots: components["schemas"]["ImportPartResult"]
+      rosterSnapshotOutcomes: components["schemas"]["IReadOnlyListOfV1RosterSnapshotOutcome"]
       /** Format: uuid */
       importProjectId: null | string
       /** Format: uuid */
@@ -3765,6 +3787,8 @@ export interface components {
       automaticPrerequisites?: boolean
       /** @default false */
       legendaryEventPlans?: boolean
+      /** @default false */
+      rosterSnapshots?: boolean
     }
     IncursionBattleProgressOverrideRequest: {
       mowId: string
@@ -3939,6 +3963,7 @@ export interface components {
     IReadOnlyListOfV1GoalOutcome: components["schemas"]["V1GoalOutcome"][]
     IReadOnlyListOfV1LegendaryEventIssue: components["schemas"]["V1LegendaryEventIssue"][]
     IReadOnlyListOfV1LegendaryEventOutcome: components["schemas"]["V1LegendaryEventOutcome"][]
+    IReadOnlyListOfV1RosterSnapshotOutcome: components["schemas"]["V1RosterSnapshotOutcome"][]
     /** @enum {string} */
     LegendaryEventAnnotationStatus: "maybeClear" | "stopHere"
     /** @enum {string} */
@@ -4114,6 +4139,10 @@ export interface components {
       limit: number
       /** Format: int32 */
       count: number
+      /** Format: int32 */
+      autoLimit: number
+      /** Format: int32 */
+      autoCount: number
       items: components["schemas"]["IReadOnlyListOfPersonalRosterSnapshotResponse"]
     }
     PersonalRosterSnapshotResponse: {
@@ -4591,6 +4620,22 @@ export interface components {
       annotationsImported: number
       issues: components["schemas"]["IReadOnlyListOfV1LegendaryEventIssue"]
     }
+    V1RosterSnapshotOutcome: {
+      name: string
+      /** Format: date-time */
+      takenAt: string
+      status: components["schemas"]["V1RosterSnapshotOutcomeStatus"]
+      code: null | string
+      /** Format: int32 */
+      droppedUnits: number
+    }
+    /** @enum {string} */
+    V1RosterSnapshotOutcomeStatus:
+      | "imported"
+      | "skippedDeleted"
+      | "skippedDuplicate"
+      | "skippedLimit"
+      | "failed"
     /** @enum {string} */
     XpBookRarity:
       "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary" | "Mythic"
@@ -9776,6 +9821,64 @@ export interface operations {
       }
       /** @description No snapshot with this id belongs to the caller. */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsKeepPersonalRosterSnapshotEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        snapshotId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PersonalRosterSnapshotResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description No snapshot with this id belongs to the caller. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description rosterSnapshotLimitReached (extensions limit, count) at the limit; rosterSnapshotNotAutomatic (current is the snapshot) when it is not automatic. */
+      409: {
         headers: {
           [name: string]: unknown
         }

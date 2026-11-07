@@ -419,7 +419,7 @@
       "post": {
         "tags": ["Account"],
         "summary": "Selectively imports integration data, progress, and goals from V1.",
-        "description": "V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes.",
+        "description": "V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes. The rosterSnapshots part rebuilds V1 roster snapshots and stores the live ones as V1Import personal snapshots, newest first within the manual limit, skipping ones an earlier run imported; it reports one outcome per V1 snapshot in rosterSnapshotOutcomes.",
         "operationId": "TacticusPlannerApiFeaturesV1ImportImportV1ProfileEndpoint",
         "requestBody": {
           "content": {
@@ -5580,7 +5580,7 @@
       "get": {
         "tags": ["Me"],
         "summary": "Lists the caller's personal roster snapshots, newest first, without rosters.",
-        "description": "count is the number that counts toward limit (manual and V1-imported snapshots). Legendary Event run-record rosters are not listed here.",
+        "description": "count is the number that counts toward limit (manual and V1-imported snapshots); autoCount the automatic snapshots, kept to autoLimit by replacing the oldest. Legendary Event run-record rosters are not listed here.",
         "operationId": "TacticusPlannerApiFeaturesRosterSnapshotsListPersonalRosterSnapshotsEndpoint",
         "responses": {
           "200": {
@@ -5819,6 +5819,81 @@
           },
           "404": {
             "description": "No snapshot with this id belongs to the caller.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/roster-snapshots/{snapshotId}/keep": {
+      "post": {
+        "tags": ["Me"],
+        "summary": "Keeps one of the caller's automatic snapshots as a manual one.",
+        "description": "source becomes manual; the name, takenAt and roster do not change. It then counts toward limit, and the automatic quota can no longer replace it.",
+        "operationId": "TacticusPlannerApiFeaturesRosterSnapshotsKeepPersonalRosterSnapshotEndpoint",
+        "parameters": [
+          {
+            "name": "snapshotId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonalRosterSnapshotResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request is missing required identity claims.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No snapshot with this id belongs to the caller.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "rosterSnapshotLimitReached (extensions limit, count) at the limit; rosterSnapshotNotAutomatic (current is the snapshot) when it is not automatic.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -13220,6 +13295,8 @@
           "outcomes",
           "legendaryEventPlans",
           "legendaryEventOutcomes",
+          "rosterSnapshots",
+          "rosterSnapshotOutcomes",
           "importProjectId",
           "profileId",
           "playerName",
@@ -13256,6 +13333,12 @@
           },
           "legendaryEventOutcomes": {
             "$ref": "#/components/schemas/IReadOnlyListOfV1LegendaryEventOutcome"
+          },
+          "rosterSnapshots": {
+            "$ref": "#/components/schemas/ImportPartResult"
+          },
+          "rosterSnapshotOutcomes": {
+            "$ref": "#/components/schemas/IReadOnlyListOfV1RosterSnapshotOutcome"
           },
           "importProjectId": {
             "type": ["null", "string"],
@@ -13317,6 +13400,10 @@
             "default": true
           },
           "legendaryEventPlans": {
+            "type": "boolean",
+            "default": false
+          },
+          "rosterSnapshots": {
             "type": "boolean",
             "default": false
           }
@@ -14204,6 +14291,12 @@
           "$ref": "#/components/schemas/V1LegendaryEventOutcome"
         }
       },
+      "IReadOnlyListOfV1RosterSnapshotOutcome": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/V1RosterSnapshotOutcome"
+        }
+      },
       "LegendaryEventAnnotationStatus": {
         "enum": ["maybeClear", "stopHere"],
         "type": "string"
@@ -14783,7 +14876,7 @@
         "type": "string"
       },
       "PersonalRosterSnapshotListResponse": {
-        "required": ["limit", "count", "items"],
+        "required": ["limit", "count", "autoLimit", "autoCount", "items"],
         "type": "object",
         "properties": {
           "limit": {
@@ -14791,6 +14884,14 @@
             "format": "int32"
           },
           "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "autoLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "autoCount": {
             "type": "integer",
             "format": "int32"
           },
@@ -16259,6 +16360,39 @@
             "$ref": "#/components/schemas/IReadOnlyListOfV1LegendaryEventIssue"
           }
         }
+      },
+      "V1RosterSnapshotOutcome": {
+        "required": ["name", "takenAt", "status", "code", "droppedUnits"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "takenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/V1RosterSnapshotOutcomeStatus"
+          },
+          "code": {
+            "type": ["null", "string"]
+          },
+          "droppedUnits": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "V1RosterSnapshotOutcomeStatus": {
+        "enum": [
+          "imported",
+          "skippedDeleted",
+          "skippedDuplicate",
+          "skippedLimit",
+          "failed"
+        ],
+        "type": "string"
       },
       "XpBookRarity": {
         "enum": ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"],

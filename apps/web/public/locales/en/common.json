@@ -631,7 +631,16 @@
         "deleteBody": "The snapshot is deleted permanently.",
         "deleteConfirm": "Delete",
         "renameFailed": "The snapshot couldn't be renamed.",
-        "deleteFailed": "The snapshot couldn't be deleted."
+        "deleteFailed": "The snapshot couldn't be deleted.",
+        "autoLabel": "Auto · {{date}}",
+        "v1ImportLabel": "V1 · {{name}}",
+        "autoBadge": "Auto",
+        "v1ImportBadge": "V1",
+        "autoTitle": "Automatic",
+        "autoHint": "Taken after a sync when your roster has no snapshot from the last 30 days. Up to {{limit}} are kept; the oldest is replaced.",
+        "keep": "Keep",
+        "keepLimitTooltip": "Delete a snapshot to keep this one",
+        "keepFailed": "The snapshot couldn't be kept."
       }
     }
   },
@@ -950,12 +959,14 @@
         "goals": "Goals",
         "onslaughtProgress": "Onslaught progress",
         "campaignEventProgress": "Campaign event progress",
-        "legendaryEventPlans": "Legendary Event teams"
+        "legendaryEventPlans": "Legendary Event teams",
+        "rosterSnapshots": "Roster snapshots"
       },
       "partDescriptions": {
         "userId": "Links your planner account to your in-game player, which guild features need.",
         "guildKey": "Used only if you're your guild's Leader or Co-Leader: it registers your guild in the planner so every member can use guild features.",
-        "legendaryEventPlans": "Hand-built teams, notes, per-run mission and pack inputs, and Maybe clear / Stop here marks for the events the planner knows. Event progress is not imported."
+        "legendaryEventPlans": "Hand-built teams, notes, per-run mission and pack inputs, and Maybe clear / Stop here marks for the events the planner knows. Event progress is not imported.",
+        "rosterSnapshots": "Your V1 roster snapshots, newest first, up to the snapshot limit. Total XP and applied upgrades were not recorded in V1, so comparisons leave them out."
       },
       "submit": "Import selected",
       "submitting": "Importing…",
@@ -1085,6 +1096,8 @@
         "goals_other": "{{count}} goals",
         "legendaryEvents_one": "Legendary Event teams for {{count}} event",
         "legendaryEvents_other": "Legendary Event teams for {{count}} events",
+        "rosterSnapshots_one": "{{count}} roster snapshot",
+        "rosterSnapshots_other": "{{count}} roster snapshots",
         "parts": {
           "personalTacticusApiKey": "API key",
           "tacticusUserId": "Tacticus user ID",
@@ -1097,6 +1110,26 @@
       "partReasons": {
         "invalidTacticusUserId": "The V1 Tacticus user ID is not a valid GUID, so it wasn't imported.",
         "tacticusUserIdConflict": "This Tacticus user ID is already linked to another planner account, so it wasn't imported."
+      },
+      "rosterSnapshots": {
+        "title": "Roster snapshots",
+        "unnamed": "Unnamed snapshot",
+        "droppedUnits_one": "{{count}} unit or item the planner does not know was left out",
+        "droppedUnits_other": "{{count}} units or items the planner does not know were left out",
+        "reasons": {
+          "imported": "Imported",
+          "skippedDuplicate": "Already imported",
+          "skippedDeleted": "In the V1 trash",
+          "skippedLimit": "The snapshot limit is reached",
+          "failed": "This snapshot couldn't be read"
+        },
+        "partReasons": {
+          "missing_roster_snapshots": "Your V1 profile has no roster snapshots.",
+          "invalid_roster_snapshots": "Your V1 roster snapshots couldn't be read.",
+          "no_roster_snapshot_imported": "No new roster snapshot came across.",
+          "roster_snapshot_import_failed": "None of your V1 roster snapshots could be read.",
+          "roster_snapshot_import_conflict": "Your snapshots changed during the import. Try again."
+        }
       }
     },
     "empty": {

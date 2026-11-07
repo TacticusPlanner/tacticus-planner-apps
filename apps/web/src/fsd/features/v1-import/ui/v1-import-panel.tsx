@@ -29,6 +29,7 @@ import {
 } from "@/entities/player-data-override"
 
 import { legendaryEventPlanQueries } from "@/entities/legendary-event"
+import { rosterSnapshotQueries } from "@/entities/roster-snapshot"
 
 import { materialSteps } from "../model/outcome-buckets"
 import { V1_IMPORT_PARTS, type V1ImportPartKey } from "../model/parts"
@@ -134,6 +135,11 @@ export function V1ImportPanel({
     if (selection.campaignEventProgress) {
       await queryClient.invalidateQueries({
         queryKey: campaignEventProgressQueries.all(),
+      })
+    }
+    if (selection.rosterSnapshots) {
+      await queryClient.invalidateQueries({
+        queryKey: rosterSnapshotQueries.list().queryKey,
       })
     }
     if (selection.legendaryEventPlans) {

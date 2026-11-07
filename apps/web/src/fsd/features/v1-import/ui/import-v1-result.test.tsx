@@ -4,6 +4,7 @@ import type {
   ImportPartResult,
   ImportV1ProfileResult,
   V1LegendaryEventOutcome,
+  V1RosterSnapshotOutcome,
 } from "@/entities/account"
 import { fireEvent, render, screen, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
@@ -18,6 +19,7 @@ vi.mock("react-i18next", () => ({
               .map(([k, v]) => `${k}=${String(v)}`)
               .join(" ")}`
           : key,
+    i18n: { language: "en" },
   }),
   initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
@@ -103,6 +105,8 @@ function result(
     outcomes: [],
     legendaryEventPlans: part,
     legendaryEventOutcomes,
+    rosterSnapshots: notSelected,
+    rosterSnapshotOutcomes: [],
     importProjectId: null,
     profileId: "profile-1",
     playerName: null,
@@ -649,5 +653,95 @@ describe("PendingMaterialSteps", () => {
       screen.getByTestId("v1-import-pending-material-steps")
     ).toBeInTheDocument()
     clearPendingMaterialSteps()
+  })
+})
+
+describe("ImportResult — roster snapshots", () => {
+  const snapshotOutcome = (
+    overrides: Partial<V1RosterSnapshotOutcome>
+  ): V1RosterSnapshotOutcome => ({
+    name: "Before Ragnar",
+    takenAt: "2026-05-01T09:30:00Z",
+    status: "imported",
+    code: null,
+    droppedUnits: 0,
+    ...overrides,
+  })
+
+  it("buckets each snapshot with its date, reason and dropped units", () => {
+    render(
+      <ImportResult
+        result={{
+          ...result([], notSelected),
+          rosterSnapshots: imported,
+          rosterSnapshotOutcomes: [
+            snapshotOutcome({ droppedUnits: 2 }),
+            snapshotOutcome({ name: "Old", status: "skippedLimit" }),
+            snapshotOutcome({ name: "Broken", status: "failed" }),
+          ],
+        }}
+      />
+    )
+
+    const importedBucket = screen.getByTestId(
+      "v1-import-snapshot-bucket-imported"
+    )
+    expect(importedBucket).toHaveTextContent("Before Ragnar")
+    expect(importedBucket).toHaveTextContent("May 1, 2026")
+    expect(importedBucket).toHaveTextContent(
+      "goals.v1Import.rosterSnapshots.droppedUnits count=2"
+    )
+    expect(
+      screen.getByTestId("v1-import-snapshot-bucket-notImported")
+    ).toHaveTextContent("goals.v1Import.rosterSnapshots.reasons.skippedLimit")
+    // Only the Failed bucket starts open.
+    expect(
+      screen.getByTestId("v1-import-snapshot-bucket-failed")
+    ).toHaveAttribute("open")
+    expect(
+      screen.getByTestId("v1-import-snapshot-bucket-imported")
+    ).not.toHaveAttribute("open")
+    expect(screen.getByTestId("v1-import-result")).toHaveTextContent(
+      "goals.v1Import.parts.rosterSnapshots"
+    )
+  })
+
+  it("translates the part's own code", () => {
+    render(
+      <ImportResult
+        result={{
+          ...result([], notSelected),
+          rosterSnapshots: {
+            status: "Skipped",
+            code: "missing_roster_snapshots",
+            message: "The V1 profile has no roster snapshots.",
+          },
+        }}
+      />
+    )
+
+    expect(screen.getByTestId("v1-import-result")).toHaveTextContent(
+      "goals.v1Import.rosterSnapshots.partReasons.missing_roster_snapshots"
+    )
+    expect(screen.queryByTestId("v1-import-roster-snapshots")).toBeNull()
+  })
+
+  it("keeps the server's message for an unknown part code", () => {
+    render(
+      <ImportResult
+        result={{
+          ...result([], notSelected),
+          rosterSnapshots: {
+            status: "Skipped",
+            code: "something_new",
+            message: "A newer server reason.",
+          },
+        }}
+      />
+    )
+
+    expect(screen.getByTestId("v1-import-result")).toHaveTextContent(
+      "A newer server reason."
+    )
   })
 })

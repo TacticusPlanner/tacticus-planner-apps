@@ -14,6 +14,7 @@ import type { UnitTileUnit } from "@/entities/unit"
 import { useAnalyticsActions } from "@/shared/analytics"
 
 import { sourceLabel } from "../../../model/compare-labels"
+import { useSourceLabels } from "../../../model/use-source-labels"
 import { COMPARE_CURRENT } from "../../../model/compare-query"
 import { buildCompareView } from "../../../model/compare-view"
 import type { CollectionCompareState } from "../../../model/use-collection-compare"
@@ -113,6 +114,7 @@ function ReadyCompare({
   filtered: boolean
 }) {
   const { t, i18n } = useTranslation("common")
+  const labels = useSourceLabels()
   const { captureEvent } = useAnalyticsActions()
   const [metric, setMetric] = useState<RosterDiffMetric | null>(null)
   const [showUnchanged, setShowUnchanged] = useState(false)
@@ -140,9 +142,7 @@ function ReadyCompare({
   }, [fromId, to?.id, captureEvent])
 
   const label = (source: typeof from) =>
-    sourceLabel(source, i18n.language, (values) =>
-      t("myGame.collection.compare.runRecordLabel", values)
-    )
+    sourceLabel(source, i18n.language, labels)
   const events = useMemo(
     () =>
       state.sources.plans.map((plan) => ({

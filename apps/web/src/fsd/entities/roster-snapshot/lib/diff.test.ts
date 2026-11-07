@@ -266,6 +266,46 @@ describe("diffRosters", () => {
   })
 })
 
+describe("diffRosters with a V1 import", () => {
+  it("treats total XP, applied upgrades and MoW XP levels as unknown", () => {
+    const mow: DiffUnit = {
+      unitId: "mow",
+      progressionIndex: "Epic:RedOneStar",
+      xp: 0,
+      xpLevel: 0,
+    }
+    const [calgar, machine] = diffRosters(
+      { characters: [calgarFrom], mows: [mow], progressUnknown: true },
+      {
+        characters: [calgarTo],
+        mows: [{ ...mow, xp: 5000, xpLevel: 20 }],
+      }
+    )
+
+    expect(calgar?.xpGained).toBeNull()
+    expect(calgar?.upgrades).toBeNull()
+    // A character's XP level was recorded, so it still compares.
+    expect(calgar?.xpLevel).toEqual({ from: 45, to: 48 })
+    expect(machine?.xpLevel).toBeNull()
+    expect(machine?.changed).toBe(false)
+  })
+
+  it("leaves the unknown applied upgrades out of both sides' power", () => {
+    const power = (_kind: string, unit: DiffUnit) =>
+      1000 + (unit.appliedUpgradeSlots?.length ?? 0) * 100
+    const v1Side = { ...calgarFrom, appliedUpgradeSlots: [] }
+    const current = { ...calgarFrom, appliedUpgradeSlots: [0, 1, 2] }
+
+    const [diff] = diffRosters(
+      { characters: [v1Side], progressUnknown: true },
+      { characters: [current] },
+      { power }
+    )
+
+    expect(diff?.power).toEqual({ from: 1000, to: 1000, delta: 0 })
+  })
+})
+
 describe("summarizeRosterDiff", () => {
   it("counts the two-unit worked example", () => {
     const diffs = diffRosters(

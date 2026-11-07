@@ -40,7 +40,13 @@ export interface DiffUnit {
 export interface DiffRoster {
   characters?: readonly DiffUnit[]
   mows?: readonly DiffUnit[]
+  /** The roster was reconstructed rather than synced (a V1 import): total XP, applied upgrades and
+   *  MoW XP levels were not recorded, so they are unknown and never produce a change. */
+  progressUnknown?: boolean
 }
+
+/** The catalog version the API stamps on a roster rebuilt from V1 (v1-roster-snapshot-import). */
+export const V1_IMPORT_CATALOG_VERSION = "v1-import"
 
 /** The catalog figures a full diff reads; every member is optional, so a caller that only needs the
  *  progression, rank and ability changes (Legendary Event history) passes none. */
@@ -127,8 +133,9 @@ export function diffRosters(
     ...(to.characters ?? []).map((unit) => ["character", unit] as const),
     ...(to.mows ?? []).map((unit) => ["mow", unit] as const),
   ]
+  const unknown = from.progressUnknown === true || to.progressUnknown === true
   return entries.map(([kind, unit]) =>
-    diffUnit(kind, before.get(unit.unitId), unit, context)
+    diffUnit(kind, before.get(unit.unitId), unit, context, unknown)
   )
 }
 
@@ -136,7 +143,8 @@ function diffUnit(
   kind: DiffUnitKind,
   before: DiffUnit | undefined,
   after: DiffUnit,
-  context: RosterDiffContext
+  context: RosterDiffContext,
+  progressUnknown: boolean
 ): UnitDiff {
   const unlocked = before === undefined
   const endIndex = progressionIndex(after.progressionIndex)
@@ -161,7 +169,15 @@ function diffUnit(
     after.mythicShards,
     stepCosts.mythicShards
   )
-  const power = powerChange(kind, before, after, context)
+  // A V1 import's applied upgrades are unknown, so leave them out of both sides' power.
+  const power = progressUnknown
+    ? powerChange(
+        kind,
+        before && { ...before, appliedUpgradeSlots: [] },
+        { ...after, appliedUpgradeSlots: [] },
+        context
+      )
+    : powerChange(kind, before, after, context)
 
   const changes = before
     ? {
@@ -179,12 +195,15 @@ function diffUnit(
           isRank(after.rank)
             ? later(before.rank, after.rank, rankIndex)
             : null,
-        upgrades: upgradesChange(before, after),
+        upgrades: progressUnknown ? null : upgradesChange(before, after),
         xpLevel:
-          before.xpLevel !== undefined && after.xpLevel !== undefined
+          !(progressUnknown && kind === "mow") &&
+          before.xpLevel !== undefined &&
+          after.xpLevel !== undefined
             ? later(before.xpLevel, after.xpLevel, (level) => level)
             : null,
         xpGained:
+          !progressUnknown &&
           before.xp !== undefined &&
           after.xp !== undefined &&
           after.xp > before.xp

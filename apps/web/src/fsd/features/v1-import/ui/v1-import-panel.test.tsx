@@ -89,6 +89,7 @@ const ALL_SELECTED: V1ImportSelection = {
   onslaughtProgress: true,
   campaignEventProgress: true,
   legendaryEventPlans: true,
+  rosterSnapshots: true,
 }
 
 const imported: ImportPartResult = {
@@ -180,6 +181,7 @@ describe("V1ImportPanel", () => {
             onslaughtProgress: true,
             campaignEventProgress: true,
             legendaryEventPlans: true,
+            rosterSnapshots: true,
             automaticPrerequisites: true,
           },
         },
@@ -197,6 +199,7 @@ describe("V1ImportPanel", () => {
       onslaughtProgress: false,
       campaignEventProgress: false,
       legendaryEventPlans: false,
+      rosterSnapshots: false,
     })
 
     for (const key of [
@@ -207,6 +210,7 @@ describe("V1ImportPanel", () => {
       "onslaughtProgress",
       "campaignEventProgress",
       "legendaryEventPlans",
+      "rosterSnapshots",
     ] as const) {
       expect(screen.getByTestId(`v1-import-${key}`)).toHaveAttribute(
         "data-state",
@@ -780,6 +784,7 @@ describe("V1ImportPanel", () => {
         "onslaughtProgress",
         "campaignEventProgress",
         "legendaryEventPlans",
+        "rosterSnapshots",
       ] as const) {
         fireEvent.click(screen.getByTestId(`v1-import-${key}`))
       }
