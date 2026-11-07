@@ -21,6 +21,7 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@workspace/ui/components/sheet"
@@ -72,15 +73,18 @@ export function SnapshotActions({
       data-testid="take-snapshot"
     >
       <ClockPlus aria-hidden />
-      {t("myGame.collection.snapshots.take")}
+      {/* Icon only on a phone, so both buttons stay on the Compare row. */}
+      <span className="max-sm:sr-only">
+        {t("myGame.collection.snapshots.take")}
+      </span>
     </Button>
   )
   return (
-    <div
-      className="flex flex-wrap items-center gap-x-4 gap-y-2"
-      data-testid="snapshot-actions"
-    >
-      <div className="flex items-center gap-2" data-testid="compare-toggle">
+    <div className="flex items-center gap-x-4" data-testid="snapshot-actions">
+      <div
+        className="flex shrink-0 items-center gap-2"
+        data-testid="compare-toggle"
+      >
         <Switch
           id={switchId}
           checked={compareOn}
@@ -111,7 +115,9 @@ export function SnapshotActions({
           data-testid="manage-snapshots"
         >
           <ListChecks aria-hidden />
-          {t("myGame.collection.snapshots.manage")}
+          <span className="max-sm:sr-only">
+            {t("myGame.collection.snapshots.manage")}
+          </span>
           {usage ? (
             <span className="text-muted-foreground tabular-nums">
               {t("myGame.collection.snapshots.usage", usage)}
@@ -183,9 +189,17 @@ export function CompareControls(props: CompareControlsProps) {
           <SheetHeader>
             <SheetTitle>{t("myGame.collection.compare.options")}</SheetTitle>
           </SheetHeader>
-          <div className="flex flex-col gap-3 overflow-y-auto px-4 pb-4">
+          <div className="flex flex-col gap-3 overflow-y-auto px-4">
             <CompareFields {...props} />
           </div>
+          <SheetFooter className="px-4 pt-2 pb-4">
+            <Button
+              onClick={() => setOpen(false)}
+              data-testid="compare-options-close"
+            >
+              {t("myGame.collection.compare.closeOptions")}
+            </Button>
+          </SheetFooter>
         </SheetContent>
       </Sheet>
     </>

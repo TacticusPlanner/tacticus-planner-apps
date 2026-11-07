@@ -968,7 +968,7 @@ describe("CollectionPage snapshots and compare", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("lists changed units by power gain with their chips", () => {
+  it("lists changed units by power gain with their chips", async () => {
     msal.authenticated = true
     const diff = (unitId: string, delta: number) => ({
       unitId,
@@ -1051,6 +1051,14 @@ describe("CollectionPage snapshots and compare", () => {
     expect(optionsStep).toBeGreaterThan(-1)
     expect(mobileTargets[optionsStep + 1]).toBe(
       '[data-testid="compare-summary"]'
+    )
+    // The options sheet closes from a button at its bottom.
+    fireEvent.click(options)
+    fireEvent.click(await screen.findByTestId("compare-options-close"))
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId("compare-options-sheet")
+      ).not.toBeInTheDocument()
     )
   })
 })
