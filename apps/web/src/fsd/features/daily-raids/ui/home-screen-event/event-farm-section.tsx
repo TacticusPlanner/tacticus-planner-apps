@@ -7,16 +7,29 @@ import { energyIcon } from "@workspace/game-catalog"
 import { EntityIcon } from "@/shared/ui"
 
 import type { DailyRaidGoalViewModel } from "../../model/daily-raids.domain"
-import type { EventFarmEmptyReason } from "../../model/home-screen-event-farm"
+import type {
+  EventFarm,
+  EventFarmEmptyReason,
+  EventFarmOrder,
+} from "../../model/home-screen-event-farm"
 import type { HseRaidRule } from "../../model/home-screen-event-rules"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
+import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/today-quick-filters"
 import { useDailyRaids } from "../../model/use-daily-raids"
+import { useListPaging } from "../../model/use-list-paging"
+import { ListPagingControls } from "../list-paging-controls"
 import { RaidState } from "../raid-state"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
+import {
+  EventFarmOrderSwitch,
+  type HseListView,
+} from "./event-farm-order-switch"
 import { EventGoalIcons } from "./event-goal-icons"
 import { EventLocationRow } from "./event-location-row"
+
+const NO_ROWS: readonly EventFarm["rows"][number][] = []
 
 const EMPTY_KEYS = {
   "no-goals": "hse.raids.empty.noGoals",
@@ -28,23 +41,37 @@ const EMPTY_KEYS = {
 /**
  * The HSE farm list: the point-earning locations that feed the player's goals, chosen over the whole
  * schedule and filled to the energy left today (`planEventFarm`). Each row shows its goals, raids,
- * points, energy and drop. It picks point-earning nodes even where a cheaper node without points
- * exists, so the note under the title says it can cost more energy per item than Today. Memoised: the
- * HSE page re-renders on every projection keystroke, which changes none of its props.
+ * points, energy and drop. The order switch picks points per energy (point-earning nodes even where
+ * a cheaper node without points exists, so it can cost more energy per item than Today) or energy
+ * per item (the cheapest locations for each material first, with their energy per item shown); the
+ * note under it says which. Today's quick filters (`quickFilters`) apply as on Today. Memoised: the HSE page re-renders
+ * on every projection keystroke, which changes none of its props.
  */
 export const EventFarmSection = memo(function EventFarmSection({
   rule,
   projectId,
   pointsIcon,
+  quickFilters,
+  order = "points",
+  onViewChange,
 }: {
   /** The shown event's raid-point rule. */
   rule: HseRaidRule
   projectId?: string
   /** The shown event's points icon. */
   pointsIcon?: string
+  /** Today's quick filters, picked in the raids controls row. */
+  quickFilters?: TodayQuickFilterOptions
+  order?: EventFarmOrder
+  /** Shows the list controls when set (their "Ignore goals" toggle swaps this list out). */
+  onViewChange?: (view: HseListView) => void
 }) {
   const { t } = useTranslation("dailies")
-  const raids = useDailyRaids(projectId, { homeScreenEventRule: rule })
+  const raids = useDailyRaids(projectId, {
+    homeScreenEventRule: rule,
+    eventFarmOrder: order,
+    quickFilters,
+  })
   const view = raids.status === "ready" ? raids : null
   const farm = view?.eventFarm
   const emptyReason: EventFarmEmptyReason | null =
@@ -55,6 +82,7 @@ export const EventFarmSection = memo(function EventFarmSection({
         : farm
           ? farm.empty
           : null
+  const paging = useListPaging(farm?.rows ?? NO_ROWS)
 
   return (
     <section className="space-y-3" data-testid="hse-raids">
@@ -75,59 +103,87 @@ export const EventFarmSection = memo(function EventFarmSection({
           </div>
         ) : null}
       </div>
+      {onViewChange ? (
+        <EventFarmOrderSwitch
+          onViewChange={onViewChange}
+          view={{ order, ignoreGoals: false }}
+        />
+      ) : null}
       <p className="text-sm text-muted-foreground" data-testid="hse-raids-note">
-        {t("hse.raids.note")}
-        {farm ? ` ${t("hse.raids.budget", { energy: farm.energyBudget })}` : ""}
+        {order === "energy" ? t("hse.raids.noteEnergy") : t("hse.raids.note")}
       </p>
       {raids.status === "loading" || raids.status === "error" ? (
         <RaidState state={raids.status} />
       ) : view && farm && farm.rows.length > 0 ? (
-        <ul className="grid gap-2" data-testid="hse-raids-list">
-          {farm.rows.map((row) => {
-            const goals = row.goalIds
-              .map((goalId) => view.goalsById.get(goalId))
-              .filter((goal): goal is DailyRaidGoalViewModel => !!goal)
-            return (
-              <EventLocationRow
-                key={row.battleId}
-                fallbackLabel={row.battleId}
-                location={view.locationsByBattleId.get(row.battleId)}
-                testId={`hse-raid-${row.battleId}`}
-              >
-                <EventGoalIcons
-                  goals={goals}
-                  testId={`hse-raid-${row.battleId}-goals`}
-                />
-                <Badge className="tabular-nums" variant="outline">
-                  {t("hse.raids.raidCount", { count: row.raids })}
-                </Badge>
-                <Badge className="tabular-nums" variant="secondary">
-                  {pointsIcon ? (
-                    <EntityIcon alt="" className="size-3.5" src={pointsIcon} />
+        <>
+          <ul className="grid gap-2" data-testid="hse-raids-list">
+            {paging.visible.map((row) => {
+              const goals = row.goalIds
+                .map((goalId) => view.goalsById.get(goalId))
+                .filter((goal): goal is DailyRaidGoalViewModel => !!goal)
+              return (
+                <EventLocationRow
+                  key={row.battleId}
+                  fallbackLabel={row.battleId}
+                  location={view.locationsByBattleId.get(row.battleId)}
+                  testId={`hse-raid-${row.battleId}`}
+                >
+                  <EventGoalIcons
+                    goals={goals}
+                    testId={`hse-raid-${row.battleId}-goals`}
+                  />
+                  <Badge className="tabular-nums" variant="outline">
+                    {t("hse.raids.raidCount", { count: row.raids })}
+                  </Badge>
+                  <Badge className="tabular-nums" variant="secondary">
+                    {pointsIcon ? (
+                      <EntityIcon
+                        alt=""
+                        className="size-3.5"
+                        src={pointsIcon}
+                      />
+                    ) : null}
+                    {t("hse.raids.points", { points: row.points })}
+                  </Badge>
+                  <Badge className="tabular-nums" variant="outline">
+                    <EntityIcon
+                      alt=""
+                      className="size-3.5"
+                      src={energyIcon()}
+                    />
+                    {t("hse.raids.energy", { energy: row.energy })}
+                  </Badge>
+                  {order === "energy" ? (
+                    <Badge
+                      className="tabular-nums"
+                      data-testid={`hse-raid-${row.battleId}-per-item`}
+                      variant="outline"
+                    >
+                      {t("hse.raids.perItem", {
+                        value: Number(row.energyPerItem.toFixed(1)),
+                      })}
+                    </Badge>
                   ) : null}
-                  {t("hse.raids.points", { points: row.points })}
-                </Badge>
-                <Badge className="tabular-nums" variant="outline">
-                  <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
-                  {t("hse.raids.energy", { energy: row.energy })}
-                </Badge>
-                <span className="flex items-center gap-1">
-                  <ResourceIconWithTooltip
-                    className="size-6"
-                    label={
-                      view.resourceLabels.get(row.resourceId) ?? row.resourceId
-                    }
-                    visual={view.resourceVisuals.get(row.resourceId)}
-                  />
-                  <ResourceStock
-                    progress={view.resourceTotals.get(row.resourceId)}
-                    testId={`hse-raid-${row.battleId}-stock`}
-                  />
-                </span>
-              </EventLocationRow>
-            )
-          })}
-        </ul>
+                  <span className="flex items-center gap-1">
+                    <ResourceIconWithTooltip
+                      className="size-6"
+                      label={
+                        view.resourceLabels.get(row.resourceId) ??
+                        row.resourceId
+                      }
+                      visual={view.resourceVisuals.get(row.resourceId)}
+                    />
+                    <ResourceStock
+                      progress={view.resourceTotals.get(row.resourceId)}
+                      testId={`hse-raid-${row.battleId}-stock`}
+                    />
+                  </span>
+                </EventLocationRow>
+              )
+            })}
+          </ul>
+          <ListPagingControls paging={paging} testId="hse-raids-paging" />
+        </>
       ) : emptyReason ? (
         <EmptyState reason={emptyReason} />
       ) : null}

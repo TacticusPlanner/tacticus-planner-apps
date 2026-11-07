@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -7,27 +8,36 @@ import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 import { BattleMap } from "./battle-map"
 import { BattleSelector } from "./battle-selector"
 import { BattleHeader, BattleWaves } from "./battle-waves"
-import type { BattlesViewModel } from "./battles.view-model"
+import type {
+  BattlePreviewViewModel,
+  BattlesViewModel,
+} from "./battles.view-model"
 
 /**
- * A lane tab's Battles section (spec: legendary-event-battle-preview), after Synced progress and
- * before the leaderboard: the battle selector, then the selected battle's header, map and waves.
- * The heading is the tour target on both forms.
+ * A lane's Battles section on Plan (spec: legendary-event-battle-preview): the lane picker and the
+ * battle selector in one row, then the selected battle's header, map and waves. With `showLane`
+ * the heading names the lane. The heading is the tour target on both forms.
  */
 export function BattlesSection({
   laneId,
   battles,
   isMobile,
+  showLane = false,
+  lanePicker,
 }: {
   laneId: LegendaryEventLaneId
   battles: BattlesViewModel
   isMobile: boolean
+  showLane?: boolean
+  /** Plan's lane dropdown, placed before the battle selector. */
+  lanePicker?: ReactNode
 }) {
   const { t } = useTranslation("legendaryEvents")
   const { state } = battles
+  const titleId = `legendary-event-battles-title-${laneId}`
   return (
     <section
-      aria-labelledby="legendary-event-battles-title"
+      aria-labelledby={titleId}
       className="flex min-w-0 flex-col gap-3"
       data-lane={laneId}
       data-testid="legendary-event-battles-section"
@@ -35,10 +45,15 @@ export function BattlesSection({
       <h2
         className="scroll-mt-[calc(var(--mobile-header-height)+3rem)] text-lg font-semibold md:scroll-mt-4"
         data-testid="legendary-event-battles"
-        id="legendary-event-battles-title"
+        id={titleId}
       >
-        {t("battles.title")}
+        {showLane
+          ? t("battles.titleLane", { lane: t(`lanes.${laneId}`) })
+          : t("battles.title")}
       </h2>
+      {lanePicker && state.kind !== "ready" ? (
+        <div className="flex">{lanePicker}</div>
+      ) : null}
       {state.kind === "loading" ? (
         <div data-testid="battles-loading">
           <span className="sr-only">{t("battles.loading")}</span>
@@ -67,6 +82,7 @@ export function BattlesSection({
           battles={battles}
           isMobile={isMobile}
           laneId={laneId}
+          lanePicker={lanePicker}
           state={state}
         />
       )}
@@ -79,19 +95,63 @@ function ReadyBattles({
   battles,
   state,
   isMobile,
+  lanePicker,
 }: {
   laneId: LegendaryEventLaneId
   battles: BattlesViewModel
   state: Extract<BattlesViewModel["state"], { kind: "ready" }>
   isMobile: boolean
+  lanePicker: ReactNode
 }) {
-  const { t } = useTranslation("legendaryEvents")
   const index = Math.min(
     battles.selectedIndex ?? state.defaultIndex,
     state.battles.length - 1
   )
   const battle = state.battles[index]
   if (!battle) return null
+  return (
+    <div className="flex min-w-0 flex-col gap-3" data-testid="battle-preview">
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        {lanePicker}
+        <div className="min-w-0 flex-1">
+          <BattleSelector
+            battles={state.battles}
+            isMobile={isMobile}
+            onSelect={battles.onSelect}
+            selectedIndex={index}
+          />
+        </div>
+      </div>
+      <BattlePreview
+        battle={battle}
+        isMobile={isMobile}
+        laneId={laneId}
+        mapOpen={battles.mapOpen}
+        onMapOpenChange={battles.onMapOpenChange}
+        retryNpcs={state.retryNpcs}
+      />
+    </div>
+  )
+}
+
+/** One battle's preview: its header, map and waves (the map beside the waves on desktop). The
+ *  Battles section and the battle info dialog both draw it. */
+export function BattlePreview({
+  laneId,
+  battle,
+  retryNpcs,
+  isMobile,
+  mapOpen,
+  onMapOpenChange,
+}: {
+  laneId: LegendaryEventLaneId
+  battle: BattlePreviewViewModel
+  retryNpcs: (() => void) | undefined
+  isMobile: boolean
+  mapOpen: boolean
+  onMapOpenChange: (open: boolean) => void
+}) {
+  const { t } = useTranslation("legendaryEvents")
   const map = (
     <BattleMap
       alt={t("battles.map.alt", {
@@ -100,26 +160,20 @@ function ReadyBattles({
       })}
       isMobile={isMobile}
       mapId={battle.mapId}
-      onOpenChange={battles.onMapOpenChange}
-      open={battles.mapOpen}
+      onOpenChange={onMapOpenChange}
+      open={mapOpen}
     />
   )
   return (
-    <div className="flex min-w-0 flex-col gap-3" data-testid="battle-preview">
-      <BattleSelector
-        battles={state.battles}
-        isMobile={isMobile}
-        onSelect={battles.onSelect}
-        selectedIndex={index}
-      />
+    <>
       <BattleHeader battle={battle} />
-      {state.retryNpcs ? (
+      {retryNpcs ? (
         <div
           className="flex flex-wrap items-center gap-2"
           data-testid="battles-npcs-error"
         >
           <p className="text-sm text-destructive">{t("battles.npcsError")}</p>
-          <Button onClick={state.retryNpcs} size="sm" variant="outline">
+          <Button onClick={retryNpcs} size="sm" variant="outline">
             {t("hub.retry")}
           </Button>
         </div>
@@ -137,6 +191,6 @@ function ReadyBattles({
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }

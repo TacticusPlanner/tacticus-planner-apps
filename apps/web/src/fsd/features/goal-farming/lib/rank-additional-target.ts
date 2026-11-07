@@ -72,15 +72,16 @@ const rowTargets: readonly RankAdditionalTarget[] = [
   "Row5",
 ]
 
-/** Every selectable "Additional target" for `rank`: clean or 3/6 below Adamantine, clean plus
- * 1/6-5/6 at non-maximum Adamantine ranks, and clean only at the current maximum rank. */
+/** Every selectable "Additional target" for `rank`: clean or 1/6-3/6 (the top row) below
+ * Adamantine, clean plus 1/6-5/6 at non-maximum Adamantine ranks, and clean only at the current
+ * maximum rank. */
 export function additionalTargetOptions(
   rank: RankType
 ): readonly RankAdditionalTarget[] {
   if (rank === lastRank) return ["None"]
   return usesNumberedUpgradeTargets(rank)
     ? ["None", ...rowTargets]
-    : ["None", "TopRow"]
+    : ["None", "TopRow1", "TopRow2", "TopRow"]
 }
 
 /** The 1-5 count encoded by a `"RowN"` value, or `null` for every other value. */

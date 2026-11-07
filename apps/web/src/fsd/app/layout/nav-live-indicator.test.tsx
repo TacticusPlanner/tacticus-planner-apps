@@ -43,7 +43,10 @@ vi.mock("@/shared/config", () => ({
   DISCORD_INVITE_URL: "https://discord.example",
   isUiKitEnabled: true,
 }))
-vi.mock("@azure/msal-react", () => ({ useMsal: () => ({ instance: {} }) }))
+vi.mock("@azure/msal-react", () => ({
+  useMsal: () => ({ instance: {} }),
+  useIsAuthenticated: () => false,
+}))
 vi.mock("@/shared/auth", () => ({
   useSignInRedirect: () => ({
     signIn: vi.fn(),
@@ -60,6 +63,8 @@ vi.mock("@/features/player-data-sync", () => ({
     status: "idle",
     isSyncing: false,
     statusText: "Up to date",
+    syncDisabled: false,
+    cooldownMinutes: null,
     syncNow: vi.fn(),
   }),
 }))

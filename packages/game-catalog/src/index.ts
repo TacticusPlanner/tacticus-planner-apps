@@ -71,6 +71,12 @@ export type {
 } from "./record-types"
 
 export { shopDaysOfWeek, type ShopDayOfWeek } from "./schemas/shops"
+export {
+  npcEncounterSources,
+  type NpcEncounterBattle,
+  type NpcEncounterLevel,
+  type NpcEncounterSource,
+} from "./schemas/npc-encounters"
 
 export {
   resolveShopOffersForToday,
@@ -152,6 +158,7 @@ export {
   type ProgressionRulesStorageModel,
   type HreStorageModel,
   type IncursionStorageModel,
+  type NpcEncounterStorageModel,
 } from "./game-catalog.storage"
 
 export {

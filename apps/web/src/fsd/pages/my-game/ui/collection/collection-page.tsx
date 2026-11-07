@@ -32,7 +32,6 @@ import {
 } from "@/entities/roster-snapshot"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
-import { useFeatureFlag } from "@/shared/feature-flags"
 import { useTourPageSteps } from "@/shared/tour"
 
 import type {
@@ -92,12 +91,9 @@ export function CollectionPage() {
   const options = useCollectionOptions()
   const { query, update, clear } = useCollectionQuery(options)
   const isAuthenticated = useIsAuthenticated()
-  // Roster snapshots stay hidden behind their flag: no Compare, Take snapshot or sign-in prompt.
-  const snapshotsOn = useFeatureFlag("RosterSnapshots")
-  const snapshotActions = snapshotsOn && isAuthenticated
   const compareQuery = useCompareQuery()
   const { state: compare, toRoster } = useCollectionCompare(compareQuery)
-  const snapshots = useRosterSnapshots(snapshotActions)
+  const snapshots = useRosterSnapshots(isAuthenticated)
   const [takeOpen, setTakeOpen] = useState(false)
   const [manageOpen, setManageOpen] = useState(false)
   const comparing = compare.mode !== "off" && compare.mode !== "guest"
@@ -132,7 +128,7 @@ export function CollectionPage() {
       hasGroups,
       hasOwned,
       hasUnowned,
-      hasSnapshotActions: snapshotActions,
+      hasSnapshotActions: isAuthenticated,
       compareReady: compare.mode === "ready",
     })
   )
@@ -186,7 +182,7 @@ export function CollectionPage() {
       {listed.rosterState === "available" ? null : (
         <RosterPrompt rosterState={listed.rosterState} onRetry={retry} />
       )}
-      {!snapshotsOn ? null : isAuthenticated ? (
+      {isAuthenticated ? (
         <SnapshotActions
           compareOn={comparing}
           onCompareChange={compareQuery.setEnabled}
@@ -263,7 +259,7 @@ export function CollectionPage() {
       ) : (
         <NoMatches onClear={clear} />
       )}
-      {snapshotActions ? (
+      {isAuthenticated ? (
         <>
           <TakeSnapshotDialog
             open={takeOpen}
@@ -565,14 +561,15 @@ function SignInButton() {
 
 function SyncButton() {
   const { t } = useTranslation("common")
-  const { isSyncing, statusText, syncNow } = usePlayerDataSyncStatus()
+  const { isSyncing, statusText, syncDisabled, syncNow } =
+    usePlayerDataSyncStatus()
 
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Button
         size="sm"
         onClick={() => void syncNow()}
-        disabled={isSyncing}
+        disabled={syncDisabled}
         data-testid="collection-sync"
       >
         <RefreshCw

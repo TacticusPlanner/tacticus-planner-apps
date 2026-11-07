@@ -58,6 +58,7 @@ describe("GoalsList season fit", () => {
   it("puts a non-sortable divider row before the cut-off goal and accents fitted rows", async () => {
     render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         estimates={new Map()}
         reorderEnabled
@@ -85,6 +86,7 @@ describe("GoalsList season fit", () => {
     useIsMobileMock.mockReturnValue(true)
     render(
       <GoalsList
+        view="Cards"
         actions={stubActions}
         mobileReorderActive
         reorderEnabled
@@ -107,7 +109,12 @@ describe("GoalsList season fit", () => {
 
   it("renders no divider or label without a season fit", async () => {
     render(
-      <GoalsList actions={stubActions} estimates={new Map()} rows={rows} />
+      <GoalsList
+        view="Table"
+        actions={stubActions}
+        estimates={new Map()}
+        rows={rows}
+      />
     )
 
     await screen.findAllByTestId("goal-row")

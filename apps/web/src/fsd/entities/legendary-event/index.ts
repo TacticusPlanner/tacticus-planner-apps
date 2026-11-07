@@ -81,6 +81,13 @@ export {
   useObjectiveLabel,
 } from "./model/use-objective-label"
 export { ObjectiveIcon } from "./ui/objective-icon"
+export { EventUnitChip } from "./ui/event-unit-chip"
+export { rankTone } from "./lib/rank-tone"
+export {
+  eventUnitChipData,
+  ownedUnitChipData,
+  type EventUnitChipData,
+} from "./lib/event-unit-chip-data"
 export {
   type CreateTeamRequestDto,
   type LegendaryEventAnnotation,
@@ -115,6 +122,9 @@ export {
   UNTRACKED_MISSION_KINDS,
   battleEnemies,
   completedMissions,
+  currentMissions,
+  doneMissionCount,
+  doneMissionIndexes,
   eventMissions,
   openMissions,
   tokenMissionAmount,

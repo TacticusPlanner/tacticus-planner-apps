@@ -311,7 +311,8 @@ export function calculateGoalFarmingStages(params: GoalRequirementParams) {
           }
           start = end
           return {
-            target: String(end),
+            // Both tracks can stop at the same level, so the track names the checkpoint too.
+            target: `${track}:${end}`,
             needs:
               abilityResourceNeed({
                 detail: stageDetail,

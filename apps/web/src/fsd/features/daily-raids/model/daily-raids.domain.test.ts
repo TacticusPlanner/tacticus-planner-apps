@@ -44,19 +44,21 @@ describe("campaignLocationLabels", () => {
         descriptor({ nameKey: "fall-of-cadia", difficultyToken: "elite" }),
         40
       )
-    ).toEqual({ campaignName: "Fall of Cadia", nodeLabel: "Elite 40" })
+    ).toEqual({
+      campaignName: "Fall of Cadia",
+      nodeLabel: "Elite 40",
+      difficultyLabel: "Elite",
+    })
   })
 
   it("names a mirror campaign apart from its base storyline on the first line", () => {
     const standard = labels(descriptor({}), 22)
     const mirror = labels(descriptor({ isMirror: true }), 12)
-    expect(standard).toEqual({
-      campaignName: "Indomitus",
-      nodeLabel: "Standard 22",
-    })
+    // The Standard tier is left unnamed: the location icon tells it from Elite.
+    expect(standard).toEqual({ campaignName: "Indomitus", nodeLabel: "22" })
     expect(mirror).toEqual({
       campaignName: "Indomitus Mirror",
-      nodeLabel: "Standard 12",
+      nodeLabel: "12",
     })
   })
 
@@ -70,7 +72,11 @@ describe("campaignLocationLabels", () => {
         }),
         40
       )
-    ).toEqual({ campaignName: "Saim-Hann Mirror", nodeLabel: "Elite 40" })
+    ).toEqual({
+      campaignName: "Saim-Hann Mirror",
+      nodeLabel: "Elite 40",
+      difficultyLabel: "Elite",
+    })
   })
 
   it("shows an event node's own tier", () => {
@@ -83,7 +89,24 @@ describe("campaignLocationLabels", () => {
         }),
         3
       )
-    ).toEqual({ campaignName: "Death Guard", nodeLabel: "Extremis 3" })
+    ).toEqual({
+      campaignName: "Death Guard",
+      nodeLabel: "Extremis 3",
+      difficultyLabel: "Extremis",
+    })
+  })
+
+  it("drops the Standard word for a campaign event's standard tier", () => {
+    expect(
+      labels(
+        descriptor({
+          nameKey: "adepta-sororitas-vs-death-guard",
+          isEvent: true,
+          difficultyToken: "eventStandard",
+        }),
+        3
+      )
+    ).toEqual({ campaignName: "Death Guard", nodeLabel: "3" })
   })
 
   it("suffixes a challenge node with B", () => {

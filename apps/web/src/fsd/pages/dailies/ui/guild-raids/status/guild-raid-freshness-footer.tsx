@@ -12,6 +12,7 @@ export function GuildRaidFreshnessFooter({
   refresh,
   isRefreshing,
   hasRefreshError,
+  isKeyRejected,
 }: {
   freshness: GuildRaidFreshness
   observedAtMs: number
@@ -19,6 +20,7 @@ export function GuildRaidFreshnessFooter({
   refresh: () => void
   isRefreshing: boolean
   hasRefreshError: boolean
+  isKeyRejected: boolean
 }) {
   const { t, i18n } = useTranslation("dailies")
   const observed = formatRelativeTime(observedAtMs, i18n.language)
@@ -45,9 +47,13 @@ export function GuildRaidFreshnessFooter({
             {t("guildRaids.status.staleWarning")}
           </span>
         ) : null}
-        {hasRefreshError ? (
+        {hasRefreshError || isKeyRejected ? (
           <span data-testid="guild-raid-refresh-error">
-            {t("guildRaids.status.refreshFailed")}
+            {t(
+              isKeyRejected
+                ? "guildRaids.status.keyRejected"
+                : "guildRaids.status.refreshFailed"
+            )}
           </span>
         ) : null}
       </div>

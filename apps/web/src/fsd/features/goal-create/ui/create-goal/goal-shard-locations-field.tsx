@@ -5,29 +5,38 @@ import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 import type { BattleId } from "@workspace/game-domain"
 
 import { useCampaignDisplay } from "@/shared/lib"
-import { EntityIcon } from "@/shared/ui"
+import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 import { dropRate } from "@/features/goal-farming/@x/goal-create"
 import type {
   Battle,
   FarmLocation,
 } from "@/features/goal-farming/@x/goal-create"
 
-/** The full campaign battle name for a shard-farm location, e.g. "Fall of Cadia Standard 22" or
- *  "Death Guard Extremis 5B" — falls back to the raw battle id when the battle's campaign/type
- *  combination doesn't resolve to a known descriptor (shouldn't happen for real catalog data). */
-function battleLabel(
-  battle: Battle | undefined,
-  battleId: string,
-  fullLabel: ReturnType<typeof useCampaignDisplay>["fullLabel"]
-): string {
-  if (!battle) return battleId
-  const descriptor = campaignDescriptor(
-    battle.campaignGroupId,
-    battle.type,
-    battle.challenge
+/** The campaign battle name for a shard-farm location in the app's one location format, e.g.
+ *  "Fall of Cadia *Standard* 22" or "Death Guard *Extremis* 5B" — falls back to the raw battle id when
+ *  the battle's campaign/type combination doesn't resolve to a known descriptor (shouldn't happen for
+ *  real catalog data). */
+function BattleLabel({
+  battle,
+  battleId,
+}: {
+  battle: Battle | undefined
+  battleId: string
+}) {
+  const { campaignName, difficultyLabel } = useCampaignDisplay()
+  const descriptor = battle
+    ? campaignDescriptor(battle.campaignGroupId, battle.type, battle.challenge)
+    : undefined
+  if (!battle || !descriptor) return battleId
+  const difficulty = difficultyLabel(descriptor)
+  const node = `${battle.nodeNumber}${battle.challenge ? "B" : ""}`
+  return (
+    <CampaignLocationName
+      campaignName={campaignName(descriptor)}
+      difficultyLabel={difficulty}
+      nodeLabel={difficulty ? `${difficulty} ${node}` : node}
+    />
   )
-  if (!descriptor) return battleId
-  return `${fullLabel(descriptor)} ${battle.nodeNumber}${battle.challenge ? "B" : ""}`
 }
 
 /**
@@ -59,7 +68,6 @@ export function GoalShardLocationsField({
   onToggle: (battleId: string, checked: boolean) => void
 }) {
   const { t } = useTranslation()
-  const { fullLabel } = useCampaignDisplay()
   // A node the battle catalog can't resolve isn't offered (it can't be costed or named); one already in
   // the saved selection stays there, shown as an unknown node that can't be picked again.
   const known = shardLocations.filter((location) =>
@@ -135,7 +143,7 @@ export function GoalShardLocationsField({
               className="font-normal"
               htmlFor={`create-goal-shard-location-${shardType}-${location.battleId}`}
             >
-              {battleLabel(battle, location.battleId, fullLabel)}
+              <BattleLabel battle={battle} battleId={location.battleId} />
               {energyPerShard != null
                 ? ` — ${t("goals.create.shardLocations.energyPerShard", {
                     energy: Math.ceil(energyPerShard),

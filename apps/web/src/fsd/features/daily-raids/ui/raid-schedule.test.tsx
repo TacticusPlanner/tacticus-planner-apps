@@ -168,6 +168,64 @@ describe("RaidSchedule location emphasis", () => {
     ])
   })
 
+  it("pulls a same-campaign upgrade within 50 energy up next to the earlier one", () => {
+    const b3 = battleIdSchema.parse("B3")
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        entries={[
+          { ...entry(b1, 1), resourceId: "X" as never },
+          { ...entry(b2, 1), resourceId: "Y" as never },
+          { ...entry(b3, 1), resourceId: "Z" as never },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [
+              b1,
+              {
+                ...location("B1", "Indomitus", "Elite 4"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+            [
+              b2,
+              {
+                ...location("B2", "Fall of Cadia", "Elite 7"),
+                campaignKey: "cadia:Elite",
+              },
+            ],
+            [
+              b3,
+              {
+                ...location("B3", "Indomitus", "Elite 9"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map()}
+        resourceUrgencyByGoalAndResource={
+          new Map([
+            ["g1:X", { days: 3, energyTotal: 90 }],
+            ["g1:Y", { days: 3, energyTotal: 80 }],
+            ["g1:Z", { days: 2, energyTotal: 50 }],
+          ])
+        }
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const resourceIds = [
+      ...screen
+        .getByTestId("raid-resource-grid-g1")
+        .querySelectorAll<HTMLElement>("[data-testid^='raid-card-g1-']"),
+    ].map((element) => element.dataset.testid?.replace("raid-card-g1-", ""))
+    expect(resourceIds).toEqual(["X", "Z", "Y"])
+  })
+
   it("uses the same urgency order for Bonus Raids", () => {
     render(
       <RaidSchedule
@@ -307,9 +365,11 @@ describe("RaidSchedule location emphasis", () => {
 
     const row = within(screen.getByTestId(`raid-location-${b1}`))
     for (const label of [campaignName, nodeLabel]) {
-      const line = row.getByText(label)
-      expect(line).toHaveClass("break-words")
+      // Campaign, tier and node share one line that wraps instead of truncating.
+      const line = row.getByText(label).closest(".break-words")
+      expect(line).not.toBeNull()
       expect(line).not.toHaveClass("truncate")
+      expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
     }
   })
 
@@ -419,6 +479,9 @@ describe("RaidSchedule location emphasis", () => {
     const row = screen.getByTestId(`raid-location-${b1}`)
     expect(row).toHaveTextContent("3 upgrades left")
     expect(row).not.toHaveTextContent(/attempts? used/)
+    // Short visible form so the name keeps the row width on mobile; full wording stays for AT.
+    expect(within(row).getByText("3 more")).toHaveAttribute("aria-hidden")
+    expect(within(row).getByText("3 upgrades left")).toHaveClass("sr-only")
   })
 
   it("excludes a fully-raided location from the card but keeps the card for its other locations", () => {

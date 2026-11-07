@@ -1,5 +1,6 @@
 import {
   currentLegendaryEventRun,
+  isCompleteTeam,
   laneBattlePowers,
   resolveLegendaryEventRunsAt,
   LEGENDARY_EVENT_LANE_IDS,
@@ -266,6 +267,27 @@ export function masterTableEventInputs({
         : undefined,
     }
   })
+}
+
+/** The selected events In teams lists no unit for: none of their plan's teams is complete (or
+ *  there is no plan). Their columns are all zero, which reads as a bug unless it is called out.
+ *  Empty outside In teams. */
+export function eventsWithoutTeams({
+  eventIds,
+  plans,
+  unitSet,
+}: {
+  eventIds: readonly string[]
+  plans: readonly Pick<LegendaryEventPlan, "eventId" | "teams">[] | undefined
+  unitSet: MasterTableUnitSet
+}): string[] {
+  if (unitSet !== "inTeams" || !plans) return []
+  return eventIds.filter(
+    (eventId) =>
+      !plans.some(
+        (plan) => plan.eventId === eventId && plan.teams.some(isCompleteTeam)
+      )
+  )
 }
 
 /** The Total group's second figure: Σ objectives (All, Unlocked) or Σ teams (In teams). */

@@ -46,68 +46,94 @@ export function eventMissions(
 }
 
 /**
- * The missions suggestions can progress (spec: open missions of the current run): the current
- * run's regular missions not ticked Done, and its premium ones only with Show paid options on and
- * the premium track planned. None without a current run.
+ * How many of a track's missions are done (spec: missions are done in order): the game unlocks them
+ * one at a time, so the first `count` missions in order are done. Ticks stored before missions were
+ * ordered count by how many there are.
  */
-export function openMissions({
-  event,
-  runs,
-  currentRun,
-  showPaidOptions,
-}: {
+export function doneMissionCount(
+  missions: readonly LegendaryEventMission[],
+  completed: readonly number[]
+): number {
+  return Math.min(missions.length, new Set(completed).size)
+}
+
+/** The stored Done list for the first `count` missions of a track, in order. */
+export function doneMissionIndexes(
+  missions: readonly LegendaryEventMission[],
+  count: number
+): number[] {
+  return missions.slice(0, Math.max(0, count)).map((mission) => mission.index)
+}
+
+interface RunMissionsInput {
   event: Pick<LegendaryEvent, "regularMissions" | "premiumMissions">
   runs: readonly LegendaryEventRunInputs[] | undefined
   currentRun: LegendaryEventRun | null
   showPaidOptions: boolean
-}): LegendaryEventMissionRef[] {
+}
+
+/** Each counted track of `currentRun` with its missions and how many are done: regular always,
+ *  premium only with Show paid options on and the premium track planned. */
+function runTracks({
+  event,
+  runs,
+  currentRun,
+  showPaidOptions,
+}: RunMissionsInput) {
   if (currentRun === null) return []
   const values = runInputValues(runs, currentRun)
-  const open = (
-    track: LegendaryEventMissionTrack,
-    done: readonly number[]
-  ): LegendaryEventMissionRef[] =>
-    eventMissions(event, track)
-      .filter((mission) => !done.includes(mission.index))
-      .map((mission) => ({ track, mission }))
+  const track = (
+    name: LegendaryEventMissionTrack,
+    completed: readonly number[]
+  ) => {
+    const missions = eventMissions(event, name)
+    return {
+      track: name,
+      missions,
+      done: doneMissionCount(missions, completed),
+    }
+  }
   return [
-    ...open("regular", values.completedRegularMissions),
+    track("regular", values.completedRegularMissions),
     ...(showPaidOptions && values.premiumMissions > 0
-      ? open("premium", values.completedPremiumMissions)
+      ? [track("premium", values.completedPremiumMissions)]
       : []),
   ]
 }
 
 /**
- * The missions of `run` ticked Done in its run inputs (the player's progress): regular ones, and
- * premium ones under the same rule as `openMissions`. None without a run.
+ * The missions of the current run still to do (spec: missions are done in order), per track in
+ * mission order: the first of each track is the one battles progress now, the rest open in turn.
+ * None without a current run.
  */
-export function completedMissions({
-  event,
-  runs,
-  currentRun,
-  showPaidOptions,
-}: {
-  event: Pick<LegendaryEvent, "regularMissions" | "premiumMissions">
-  runs: readonly LegendaryEventRunInputs[] | undefined
-  currentRun: LegendaryEventRun | null
-  showPaidOptions: boolean
-}): LegendaryEventMissionRef[] {
-  if (currentRun === null) return []
-  const values = runInputValues(runs, currentRun)
-  const done = (
-    track: LegendaryEventMissionTrack,
-    indexes: readonly number[]
-  ): LegendaryEventMissionRef[] =>
-    eventMissions(event, track)
-      .filter((mission) => indexes.includes(mission.index))
-      .map((mission) => ({ track, mission }))
-  return [
-    ...done("regular", values.completedRegularMissions),
-    ...(showPaidOptions && values.premiumMissions > 0
-      ? done("premium", values.completedPremiumMissions)
-      : []),
-  ]
+export function openMissions(
+  input: RunMissionsInput
+): LegendaryEventMissionRef[] {
+  return runTracks(input).flatMap(({ track, missions, done }) =>
+    missions.slice(done).map((mission) => ({ track, mission }))
+  )
+}
+
+/** The mission each track's battles progress now: the first open one of each track. */
+export function currentMissions(
+  open: readonly LegendaryEventMissionRef[]
+): LegendaryEventMissionRef[] {
+  const seen = new Set<LegendaryEventMissionTrack>()
+  return open.filter((entry) => {
+    if (seen.has(entry.track)) return false
+    seen.add(entry.track)
+    return true
+  })
+}
+
+/** The missions of `run` already done (the first ones of each track), under the same rule as
+ *  `openMissions`. None without a run. */
+export function completedMissions(
+  input: RunMissionsInput
+): LegendaryEventMissionRef[] {
+  return runTracks(input).flatMap(({ track, missions, done }) =>
+    missions.slice(0, done).map((mission) => ({ track, mission }))
+  )
 }
 
 /** The factions and traits of a battle's enemies, resolved through the `npcs` dataset. */

@@ -9,6 +9,7 @@ import type {
   FarmNode,
   FarmNodeFilter,
   FilteredOutNeed,
+  GoalCheckpointEstimate,
   GoalNeed,
   RaidBreakdownEntry,
   RaidDaySchedule,
@@ -61,8 +62,43 @@ export type EstimatePlanParams = {
 }
 
 type StageState = {
+  /** The source stage's position in the goal's stage list, and its checkpoint target. */
+  index: number
+  target: string
   remaining: Map<EstimateResourceId, number>
   nodesById: Map<EstimateResourceId, FarmNode[]>
+}
+
+/** A checkpoint as the day loop reaches it: the goal's energy total so far, not yet per-checkpoint. */
+type ReachedCheckpoint = {
+  index: number
+  target: string
+  days: number
+  cumulativeEnergy: number
+}
+
+/** The reached checkpoints in stage order, each with its own share of the energy and its date. */
+function toCheckpoints(
+  reached: readonly ReachedCheckpoint[],
+  referenceDate: Date
+): GoalCheckpointEstimate[] {
+  let energyBefore = 0
+  return [...reached]
+    .sort((a, b) => a.index - b.index)
+    .map((checkpoint) => {
+      const energy = Math.max(0, checkpoint.cumulativeEnergy - energyBefore)
+      energyBefore = Math.max(energyBefore, checkpoint.cumulativeEnergy)
+      return {
+        target: checkpoint.target,
+        days: checkpoint.days,
+        date: formatDate(
+          checkpoint.days === 0
+            ? referenceDate
+            : inclusiveCompletionDate(referenceDate, checkpoint.days)
+        ),
+        energy,
+      }
+    })
 }
 
 /**
@@ -79,7 +115,11 @@ function spendPooledDay(
   dailyEnergy: number,
   attemptsUsedByBattle: Map<BattleId, number>,
   attemptsLeftByBattle: ReadonlyMap<BattleId, number> | undefined
-): { energySpent: number; entries: RaidBreakdownEntry[] } {
+): {
+  energySpent: number
+  entries: RaidBreakdownEntry[]
+  doneStages: { goalId: string; stage: StageState }[]
+} {
   const pool = new Map<EstimateResourceId, number>()
   const nodesById = new Map<EstimateResourceId, FarmNode[]>()
   const ownerById = new Map<EstimateResourceId, string>()
@@ -94,7 +134,8 @@ function spendPooledDay(
       }
     }
   }
-  if (energy <= 0 || pool.size === 0) return { energySpent: 0, entries: [] }
+  if (energy <= 0 || pool.size === 0)
+    return { energySpent: 0, entries: [], doneStages: [] }
 
   const before = new Map(pool)
   const spent = spendDay(
@@ -120,13 +161,19 @@ function spendPooledDay(
       }
     }
   }
+  const doneStages: { goalId: string; stage: StageState }[] = []
   for (const goal of goals) {
     const stages = stagesByGoal.get(goal.goalId)
     if (!stages) continue
     const left = stages.filter((stage) => stage.remaining.size > 0)
+    for (const stage of stages) {
+      if (stage.remaining.size === 0)
+        doneStages.push({ goalId: goal.goalId, stage })
+    }
     stages.splice(0, stages.length, ...left)
   }
   return {
+    doneStages,
     energySpent: spent.energySpent,
     entries: spent.breakdown.map((entry) => ({
       goalId: ownerById.get(entry.resourceId)!,
@@ -159,6 +206,9 @@ function runPlanSchedule(
   const filteredOut: FilteredOutNeed[] = []
   const blockersByGoal = new Map<string, EstimateBlocker[]>()
   const actionableByGoal = new Map<string, EstimateResourceId[]>()
+  // Only a goal with more than one stage has checkpoints worth reporting (a farming strategy other
+  // than Total upgrades over a range that spans several of its targets).
+  const checkpointsByGoal = new Map<string, ReachedCheckpoint[]>()
 
   for (const goal of ordered) {
     const stages: StageState[] = []
@@ -167,8 +217,12 @@ function runPlanSchedule(
     const suppliedResourceIds = new Set(
       goal.flatSuppliers?.map((supplier) => supplier.resourceId)
     )
+    const sourceStages = allocation?.stages ?? []
+    const checkpoints: ReachedCheckpoint[] | undefined =
+      sourceStages.length > 1 ? [] : undefined
+    if (checkpoints) checkpointsByGoal.set(goal.goalId, checkpoints)
     // A blocked need is reported and left out of the stage; its actionable peers still schedule.
-    for (const sourceStage of allocation?.stages ?? []) {
+    for (const [index, sourceStage] of sourceStages.entries()) {
       const remaining = new Map<EstimateResourceId, number>()
       const nodesById = new Map<EstimateResourceId, FarmNode[]>()
       for (const need of sourceStage.remaining) {
@@ -202,7 +256,11 @@ function runPlanSchedule(
         remaining.set(need.id, need.count)
         nodesById.set(need.id, nodes)
       }
-      if (remaining.size > 0) stages.push({ remaining, nodesById })
+      const target = sourceStage.target
+      if (remaining.size > 0)
+        stages.push({ index, target, remaining, nodesById })
+      // Inventory already covers this checkpoint's materials: reached before any farming.
+      else checkpoints?.push({ index, target, days: 0, cumulativeEnergy: 0 })
     }
 
     blockersByGoal.set(goal.goalId, blockers)
@@ -221,6 +279,9 @@ function runPlanSchedule(
         raidsTotal: 0,
         flatSupplyTotal: new Map(),
         flatSupplyBySupplier: new Map(),
+        ...(checkpoints && {
+          checkpoints: toCheckpoints(checkpoints, referenceDate),
+        }),
       })
     } else {
       stagesByGoal.set(goal.goalId, stages)
@@ -258,6 +319,23 @@ function runPlanSchedule(
     )
     raidsTotalByGoal.set(goalId, (raidsTotalByGoal.get(goalId) ?? 0) + raids)
   }
+  /** Records a stage the day just finished as a reached checkpoint (staged goals only). */
+  const reachCheckpoint = (
+    goalId: string,
+    stage: StageState,
+    cumulativeEnergy: number
+  ) => {
+    checkpointsByGoal.get(goalId)?.push({
+      index: stage.index,
+      target: stage.target,
+      days,
+      cumulativeEnergy,
+    })
+  }
+  const checkpointsField = (goalId: string) => {
+    const reached = checkpointsByGoal.get(goalId)
+    return reached ? { checkpoints: toCheckpoints(reached, referenceDate) } : {}
+  }
   const completeIfDone = (goal: GoalNeed) => {
     const stages = stagesByGoal.get(goal.goalId)!
     if (stages.length === 0) {
@@ -288,6 +366,7 @@ function runPlanSchedule(
                 flatSupplyBySupplierByGoal.get(goal.goalId) ?? new Map(),
                 goal.flatSuppliers
               ),
+              ...checkpointsField(goal.goalId),
             }
       )
       pending.delete(goal.goalId)
@@ -371,7 +450,11 @@ function runPlanSchedule(
           flatSupplyBySupplierByGoal.set(goal.goalId, goalBySupplier)
         }
         while (stages.length > 0 && stages[0]!.remaining.size === 0) {
-          stages.shift()
+          reachCheckpoint(
+            goal.goalId,
+            stages.shift()!,
+            energyTotalByGoal.get(goal.goalId) ?? 0
+          )
         }
       }
 
@@ -393,6 +476,11 @@ function runPlanSchedule(
         )
         if (stage.remaining.size > 0) break
         stages.shift()
+        reachCheckpoint(
+          goal.goalId,
+          stage,
+          (energyTotalByGoal.get(goal.goalId) ?? 0) + goalEnergySpent
+        )
       }
       addGoalTotals(goal.goalId, goalEnergySpent, goalRaids)
       if (!combineGoals) completeIfDone(goal)
@@ -410,6 +498,10 @@ function runPlanSchedule(
       energy -= spent.energySpent
       for (const entry of spent.entries) {
         addGoalTotals(entry.goalId, entry.energySpent, entry.raidsPerformed)
+      }
+      // The pool spends the day as one, so a checkpoint reached today is credited all of it.
+      for (const { goalId, stage } of spent.doneStages) {
+        reachCheckpoint(goalId, stage, energyTotalByGoal.get(goalId) ?? 0)
       }
       entries.push(...spent.entries)
       for (const goal of ordered) {

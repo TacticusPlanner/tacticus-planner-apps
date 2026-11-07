@@ -107,7 +107,7 @@ describe("runAssumptions", () => {
     }
     expect(runAssumptions(utharEvent, economy, [2, 3])).toEqual([
       { run: 2, missions: 6, of: regular + premium, bundle: true },
-      { run: 3, missions: 0, of: regular + premium, bundle: false },
+      { run: 3, missions: 10, of: regular + premium, bundle: false },
     ])
     expect(
       runAssumptions(utharEvent, { ...economy, showPaidOptions: false }, [2])
@@ -157,7 +157,6 @@ const WRITES: PlanWrites = {
     },
   ],
   runs: [],
-  showPaidOptions: null,
 }
 
 describe("writeCounts", () => {

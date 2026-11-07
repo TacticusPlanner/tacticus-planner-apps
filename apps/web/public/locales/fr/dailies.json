@@ -61,11 +61,17 @@
       "catalogWarning": "Certaines données de raid n'ont pas pu être associées à vos données de jeu locales. Affichage des valeurs de base.",
       "refresh": "Actualiser le statut",
       "refreshing": "Actualisation…",
-      "refreshFailed": "Échec de l'actualisation. Affichage du dernier statut connu."
+      "refreshFailed": "Échec de l'actualisation. Affichage du dernier statut connu.",
+      "keyRejected": "Tacticus a refusé la clé API de cette guilde. Affichage du dernier statut connu. Un chef ou co-chef doit la remplacer dans les paramètres de guilde."
     },
     "noActiveSeason": {
       "title": "Aucune saison de Raid de guilde active",
       "description": "Revenez lorsque la prochaine saison de votre guilde commencera."
+    },
+    "keyRejected": {
+      "title": "Clé API de guilde refusée",
+      "description": "Tacticus a refusé la clé API de cette guilde, le statut du raid ne peut donc pas être mis à jour. Un chef ou co-chef doit la remplacer par une clé disposant des portées Guild et Guild Raid.",
+      "action": "Ouvrir les paramètres de guilde"
     },
     "neverObserved": {
       "title": "Synchronisation du statut du Raid de guilde",
@@ -199,6 +205,8 @@
     "upgradesLeft_other": "{{count}} améliorations restantes",
     "shardsLeft_one": "{{count}} fragment restant",
     "shardsLeft_other": "{{count}} fragments restants",
+    "more_one": "{{count}} de plus",
+    "more_other": "{{count}} de plus",
     "progress": "{{owned}} sur {{target}} possédés",
     "fullyRaided": "Entièrement attaqué"
   },
@@ -253,7 +261,7 @@
     },
     "cell": {
       "label": "{{material}}, {{owned}} sur {{target}} possédés",
-      "node": "{{campaign}} {{node}} × {{raids}}",
+      "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} de plus",
       "moreUnits": "+{{count}}"
     },
@@ -373,16 +381,16 @@
         },
         "farm": {
           "title": "Liste de farm pour les points d'événement",
-          "content": "Où raider aujourd'hui pour gagner des points d'événement tout en faisant avancer vos objectifs, dans la limite de l'énergie qu'il vous reste aujourd'hui."
-        },
-        "top": {
-          "title": "Meilleurs emplacements",
-          "content": "Les emplacements qui rapportent le plus de points d'événement par raid et par énergie, indépendamment de vos objectifs."
+          "content": "Où raider pour gagner des points d'événement tout en faisant avancer vos objectifs, sans limite d'énergie du jour. Triez par points par énergie ou par énergie par objet, ou choisissez Ignorer les objectifs pour voir tous les lieux avec points."
         }
       }
     },
     "hre": {
       "steps": {
+        "switcher": {
+          "title": "Choisir un événement",
+          "content": "L'événement en cours est affiché par défaut. Ouvrez ici n'importe quel autre événement de sortie de héros à venir ou passé, ou parcourez-les avec les flèches. Votre choix reste dans l'adresse de la page : vous pouvez la recharger ou la partager."
+        },
         "header": {
           "title": "L'événement",
           "content": "Le héros de l'événement, son alliance et la fin de l'événement. Avant le début, l'onglet présente un aperçu du prochain événement."
@@ -397,7 +405,7 @@
         },
         "raids": {
           "title": "Raids de campagne",
-          "content": "Où raider aujourd'hui pour l'objectif de campagne de la mission en cours, l'énergie la moins chère d'abord, après les raids déjà prévus dans le plan du jour. Le résumé dessous compte les batailles de campagne restantes sur tout l'événement."
+          "content": "Où raider pour l'objectif de campagne de la mission en cours, l'énergie la moins chère en premier, sans limite d'énergie du jour. Le résumé ci-dessous compte les combats de campagne restants sur tout l'événement."
         },
         "team": {
           "title": "Équipe de mission",
@@ -531,12 +539,12 @@
     },
     "help": {
       "fewerRaids": "Quand plusieurs lieux coûtent la même énergie par objet, ne raider que ceux qui coûtent le plus d'énergie par combat. Mêmes matériaux pour la même énergie, en moins de raids. Utile quand il vous reste peu de tickets de raid.",
-      "combineGoals": "Combine les matériaux restants de tous les objectifs (seulement ceux du projet sélectionné s'il y en a un) et planifie les raids du jour comme s'il s'agissait d'un seul objectif : une seule liste sans groupes par objectif, les matériaux qui demandent le plus d'énergie en premier, et la priorité des objectifs est ignorée.",
+      "combineGoals": "Combine les matériaux restants de tous les objectifs (seulement ceux du projet sélectionné s'il y en a un) et planifie les raids du jour comme s'il s'agissait d'un seul objectif : une seule liste sans groupes par objectif, les matériaux les plus longs à terminer en premier, et la priorité des objectifs est ignorée.",
       "raidableOnly": "Écarte les combats que vous ne pouvez pas encore raider (moins de 3 médailles) et raide d'autres lieux pour les mêmes matériaux. Un matériau sans lieu raidable apparaît comme bloqué."
     },
     "note": {
       "fewerRaids": "Moins de raids : les lieux à égalité qui coûtent plus d'énergie par combat sont utilisés, donc les mêmes matériaux demandent moins de raids.",
-      "combineGoals": "Combiner les objectifs : les raids du jour traitent tous les objectifs comme une seule liste, les matériaux qui demandent le plus d'énergie en premier. Les dates de Plan et Objectifs suivent toujours la priorité des objectifs.",
+      "combineGoals": "Combiner les objectifs : les raids du jour traitent tous les objectifs comme une seule liste, les matériaux les plus longs à terminer en premier. Les dates de Plan et Objectifs suivent toujours la priorité des objectifs.",
       "raidableOnly": "Raidables seulement : les combats à jouer manuellement sont remplacés par des lieux raidables."
     }
   },
@@ -575,7 +583,6 @@
       "total": "{{points}} points d'événement",
       "energy": "{{energy}} énergie",
       "note": "Lieux qui rapportent des points d'événement et font avancer vos objectifs, choisis sur l'ensemble de votre plan. Elle retient des lieux avec points même quand un lieu moins cher sans points existe, ce qui peut coûter plus d'énergie par objet que Raids du jour.",
-      "budget": "Énergie restante aujourd'hui : {{energy}}.",
       "points": "{{points}} pts",
       "raidCount_one": "{{count}} raid",
       "raidCount_other": "{{count}} raids",
@@ -583,18 +590,30 @@
         "noGoals": "Vous n'avez aucun objectif actif, il n'y a donc rien à farmer.",
         "noEnergy": "Il ne reste plus assez d'énergie aujourd'hui pour ces lieux.",
         "nothingContributes": "Aucun lieu rapportant des points d'événement ne donne une ressource dont vos objectifs ont encore besoin. Consultez les meilleurs lieux ci-dessous pour gagner des points.",
-        "filtered": "Aucun lieu ne correspond à vos filtres de raids."
+        "filtered": "Aucun lieu ne correspond à vos filtres de raids.",
+        "noLocations": "Aucun lieu débloqué avec des tentatives restantes ne rapporte de points d'événement."
       },
       "goals": "Objectifs : {{goals}}",
-      "moreGoals": "+{{count}}"
-    },
-    "top": {
-      "overallTitle": "Meilleurs lieux pour les points d'événement",
-      "eventTitle": "Meilleurs lieux de la campagne d'événement",
-      "empty": "Aucun lieu débloqué restant à raider ne rapporte de points d'événement.",
-      "filteredEmpty": "Aucun lieu ne correspond à vos filtres de raids.",
+      "moreGoals": "+{{count}}",
+      "noteEnergy": "Les lieux qui alimentent vos objectifs, les moins chers pour leur matériau en premier (énergie par objet, comme Aujourd'hui les choisit), puis le plus de points par énergie. Un lieu plus cher ne reçoit que les raids encore nécessaires.",
+      "noteIgnoreGoals": "Tous les lieux qui rapportent des points d'événement, objectifs ignorés, le plus de points par énergie en premier.",
+      "noteIgnoreGoalsEnergy": "Tous les lieux qui rapportent des points d'événement, objectifs ignorés, les moins chers pour leur butin en premier (énergie par objet comparée au meilleur lieu pour cet objet), puis le plus de points par énergie.",
+      "owned_one": "{{count}} possédé",
+      "owned_other": "{{count}} possédés",
       "perRaid": "{{points}} pts par raid",
-      "perEnergy": "{{value}} pts par énergie"
+      "perEnergy": "{{value}} pts par énergie",
+      "perItem": "{{value}} énergie par objet",
+      "order": {
+        "label": "Trier",
+        "points": "Points par énergie",
+        "energy": "Énergie par objet",
+        "help": {
+          "points": "Le plus de points d'événement par énergie en premier, même quand un lieu moins cher pour le même matériau n'en rapporte pas.",
+          "energy": "Les lieux les moins chers pour chaque objet en premier, comme Aujourd'hui les choisit, puis le plus de points d'événement par énergie.",
+          "ignoreGoals": "Affiche tous les lieux qui rapportent des points d'événement, quels que soient les besoins de vos objectifs. Fonctionne avec les deux tris. Chaque ligne montre son butin et combien vous en possédez."
+        },
+        "ignoreGoals": "Ignorer les objectifs"
+      }
     },
     "details": {
       "title": "Détails de l'événement",
@@ -796,6 +815,11 @@
         "excluded": "Seules les éliminations d'ennemis qui ne sont pas {{enemies}} comptent.",
         "allowedExcluded": "Seules les éliminations d'ennemis {{enemies}} qui ne sont pas {{excluded}} comptent.",
         "units": "Seules les éliminations de {{units}} comptent."
+      },
+      "matching": {
+        "allowed": "{{units}} seulement",
+        "excluded": "Sans {{units}}",
+        "description": "Seulement les personnages qui correspondent aux ennemis qui comptent, pour une équipe conforme à la règle de l'événement."
       }
     }
   },
@@ -844,5 +868,10 @@
     "edit": "Modifier les médailles",
     "medalsEarned": "Médailles",
     "goldMilestones": "Paliers d'or"
+  },
+  "listPaging": {
+    "showNext_one": "Afficher les {{count}} suivants",
+    "showNext_other": "Afficher les {{count}} suivants",
+    "showAll": "Tout afficher ({{count}})"
   }
 }

@@ -16,6 +16,9 @@ export type PlayerDataContextValue = {
   // silently, so retrying the same sync will just fail the same way. The UI should offer to sign in
   // again (via requestApiAccess/loginRedirect) instead of a plain "try again".
   requiresReauth: boolean
+  // When the API's sync rate limit lifts (epoch ms), or null when it isn't in force. A sync started
+  // before then is a no-op; the controls read this to disable themselves and say why.
+  syncBlockedUntil: number | null
   syncNow: () => void
 }
 

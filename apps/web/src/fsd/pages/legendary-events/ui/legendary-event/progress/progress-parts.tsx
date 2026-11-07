@@ -7,6 +7,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   ObjectiveIcon,
   type LaneProgressView,
+  type LegendaryEventAnnotationStatus,
   type LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
@@ -50,6 +51,30 @@ function ClearedCell({ cleared, label }: { cleared: boolean; label: string }) {
   )
 }
 
+/** A not-cleared cell's saved mark, read-only (marks not being edited). */
+function MarkedCell({
+  label,
+  status,
+}: {
+  label: string
+  status: LegendaryEventAnnotationStatus
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  const text = t(`annotations.cell.${status}`, { objective: label })
+  return (
+    <span
+      className="inline-flex size-6 items-center justify-center rounded-full"
+      data-cleared="false"
+      data-mark={status}
+      data-testid="progress-cell"
+      title={text}
+    >
+      <AnnotationMarkIcon className="size-5" status={status} />
+      <span className="sr-only">{text}</span>
+    </span>
+  )
+}
+
 /** One grid cell: a cleared cell (or any cell without marks) is a plain indicator; a not-cleared
  *  cell with marks is the control for its Maybe clear / Stop here mark. */
 export function ProgressCell({
@@ -68,6 +93,14 @@ export function ProgressCell({
   touch?: boolean
 }) {
   if (cleared || !marks) return <ClearedCell cleared={cleared} label={label} />
+  if (!marks.editable) {
+    const status = marks.statusAt(battleIndex, objectiveId)
+    return status === null ? (
+      <ClearedCell cleared={false} label={label} />
+    ) : (
+      <MarkedCell label={label} status={status} />
+    )
+  }
   return (
     <AnnotationMenu
       battle={battleIndex + 1}

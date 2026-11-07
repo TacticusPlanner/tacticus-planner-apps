@@ -60,7 +60,7 @@ describe("LegendaryEventPlanEntry", () => {
     expect(button).toHaveAttribute("data-planned", "false")
     expect(button).toHaveAttribute(
       "href",
-      "/legendary-events/votanUthar/plan?from=overview"
+      "/legendary-events/votanUthar/plan/edit?from=overview"
     )
     expect(screen.getByTestId("event-projects")).toBeInTheDocument()
   })

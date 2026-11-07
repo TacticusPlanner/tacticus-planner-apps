@@ -1382,7 +1382,7 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Registers a Tacticus guild using a Guild-scoped API token.
+     * Registers a Tacticus guild using an API token with the Guild and Guild Raid scopes.
      * @description Requires the caller to have a configured Tacticus User ID and to appear as the guild's Leader or Co-Leader in the upstream response. Performs a complete synchronization and persists the encrypted token. Re-registering an already-registered guild updates it rather than duplicating it.
      */
     post: operations["TacticusPlannerApiFeaturesGuildsRegisterGuildEndpoint"]
@@ -1523,7 +1523,7 @@ export interface paths {
     get?: never
     /**
      * Writes one run's inputs (missions, completed missions, bundle, close shards).
-     * @description Upserts the given run (1–3) and leaves the other runs untouched. Completed mission arrays list distinct catalog indices, absent means none, and are stored ascending; each count must be at least its completed array's length. Values equal to the stored run, or all zero for a run with none, succeed without bumping the revision.
+     * @description Upserts the given run (1–3) and leaves the other runs untouched. Completed mission arrays list distinct catalog indices, absent means none, and are stored ascending; each count must be at least its completed array's length. Values equal to the stored run succeed without bumping the revision; all zeros for a run with none are stored.
      */
     put: operations["TacticusPlannerApiFeaturesLegendaryEventPlansUpdateLegendaryEventRunInputsEndpoint"]
     post?: never
@@ -4532,7 +4532,7 @@ export interface components {
       xpBookRarity: components["schemas"]["XpBookRarity"]
       /** Format: int64 */
       revision: number
-      watchAds?: null | boolean
+      preferences?: null | components["schemas"]["UserPreferenceArray"]
     }
     UpgradeMaterialTargetRequest: {
       upgradeId: string
@@ -4571,11 +4571,15 @@ export interface components {
     UserJotTokenResponse: {
       token: string
     }
+    /** @enum {string} */
+    UserPreference:
+      "LegendaryEventShowPaidOptions" | "LegendaryEventSkipDailyAds"
+    UserPreferenceArray: components["schemas"]["UserPreference"][]
     UserSettingsResponse: {
       /** Format: int32 */
       dailyEnergy: number
       xpBookRarity: components["schemas"]["XpBookRarity"]
-      watchAds: boolean
+      preferences: components["schemas"]["UserPreferenceArray"]
       /** Format: int64 */
       revision: number
     }
@@ -8630,7 +8634,7 @@ export interface operations {
           "application/problem+json": components["schemas"]["ApiProblem"]
         }
       }
-      /** @description The upstream credential or response was rejected. */
+      /** @description The upstream credential (issueCode guildRaidTokenRejected) or response was rejected. */
       502: {
         headers: {
           [name: string]: unknown
@@ -8672,7 +8676,7 @@ export interface operations {
           "application/json": components["schemas"]["RegisteredGuildResponse"]
         }
       }
-      /** @description Blank/invalid token, malformed upstream guild response, or no Tacticus User ID configured. */
+      /** @description Blank/invalid token, a token without Guild Raid access, malformed upstream guild response, or no Tacticus User ID configured. */
       400: {
         headers: {
           [name: string]: unknown

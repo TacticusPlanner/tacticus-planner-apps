@@ -8,6 +8,7 @@ export {
 export { characterDamageTypes } from "./character-damage-types"
 export {
   formatEstimateDate,
+  localIsoDate,
   formatEventCountdown,
   formatRelativeTime,
   getDeviceFirstDayOfWeek,

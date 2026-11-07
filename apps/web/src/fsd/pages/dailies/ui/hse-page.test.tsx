@@ -29,6 +29,7 @@ const { mocks } = vi.hoisted(() => ({
     raids: undefined as unknown,
     locations: undefined as unknown,
     raidsArgs: [] as unknown[][],
+    locationsArgs: [] as unknown[][],
     hseReads: {} as import("@/test/fixtures/hse-event-points").HseFixtureReads,
     teamsRead: undefined as HseTeamsRead | undefined,
   },
@@ -60,7 +61,10 @@ vi.mock("@/features/daily-raids/model/use-daily-raids", () => ({
   },
 }))
 vi.mock("@/features/daily-raids/model/use-home-screen-event-locations", () => ({
-  useHomeScreenEventLocations: () => mocks.locations,
+  useHomeScreenEventLocations: (...args: unknown[]) => {
+    mocks.locationsArgs.push(args)
+    return mocks.locations
+  },
 }))
 vi.mock(
   "@/features/home-screen-event-points/model/use-hse-projection",
@@ -115,21 +119,31 @@ const locationsByBattleId = new Map([
   [battle, location(battle, "Indomitus")],
   [offPlanBattle, location(offPlanBattle, "Death Guard")],
 ])
-const top = (battleId: typeof battle, perRaid: number, cost: number) => ({
+const eventLocation = (
+  battleId: typeof battle,
+  perRaid: number,
+  cost: number,
+  raids: number | null = 3
+) => ({
   battleId,
   pointsPerRaid: perRaid,
   pointsPerEnergy: perRaid / cost,
   energyCost: cost,
+  raids,
+  points: raids === null ? null : raids * perRaid,
+  energyPerItem: cost * 2,
 })
 const readyLocations = (
   overrides: Partial<{
-    overall: unknown[]
-    eventCampaign: unknown[] | null
+    locations: unknown[]
   }> = {}
 ) => ({
   status: "ready",
-  overall: [top(battle, 12, 6), top(offPlanBattle, 6, 6)],
-  eventCampaign: null,
+  locations: [eventLocation(battle, 12, 6), eventLocation(offPlanBattle, 6, 6)],
+  ownedByBattleId: new Map([
+    [battle, 42],
+    [offPlanBattle, 7],
+  ]),
   locationsByBattleId,
   resourceByBattleId: new Map([
     [
@@ -178,6 +192,7 @@ const row = (
   energy: raids * energyCost,
   goalIds,
   resourceId: "U1" as never,
+  energyPerItem: 7.5,
 })
 // B1 x3 raids at 12 points (18 energy), B2 x2 raids at 6 points (12 energy): 48 points, 30 energy.
 const farmRows = (): ReturnType<typeof row>[] => [
@@ -259,6 +274,7 @@ beforeEach(() => {
   mocks.raids = withFarm(farmRows())
   mocks.locations = readyLocations()
   mocks.raidsArgs.length = 0
+  mocks.locationsArgs.length = 0
   mocks.hseReads = {}
   mocks.teamsRead = hseTeamsFixtureRead()
   act(() => {})
@@ -299,9 +315,8 @@ describe("HSE tab states", () => {
     expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
       "hse.raids.note"
     )
-    expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
-      "hse.raids.budget|energy=100"
-    )
+    // Not bound to today's energy: no budget line.
+    expect(screen.getByTestId("hse-raids-note")).not.toHaveTextContent("budget")
   })
 
   it("lists the farm rows in the order the plan gives them, with the drop icon", () => {
@@ -321,24 +336,10 @@ describe("HSE tab states", () => {
     ).toBeInTheDocument()
   })
 
-  it("lists the overall top 10 and omits the event-campaign list without a campaign event", () => {
+  it("shows no separate best-locations lists: one raid list", () => {
     renderHse()
 
-    expect(screen.getByTestId("hse-top-overall-list").children).toHaveLength(2)
-    expect(screen.queryByTestId("hse-top-event")).not.toBeInTheDocument()
-  })
-
-  it("shows the event-campaign list while a campaign event is active", () => {
-    mocks.locations = readyLocations({
-      eventCampaign: [top(offPlanBattle, 6, 6)],
-    })
-    renderHse()
-
-    const eventList = screen.getByTestId("hse-top-event-list")
-    expect(eventList.children).toHaveLength(1)
-    expect(
-      within(eventList).getByTestId(`hse-top-event-${offPlanBattle}`)
-    ).toBeInTheDocument()
+    expect(screen.getAllByTestId("hse-raids")).toHaveLength(1)
   })
 
   it("previews the next event: countdown status, a not-live banner and the lists", () => {
@@ -356,11 +357,12 @@ describe("HSE tab states", () => {
     expect(banner).toHaveTextContent("events:definitions.hse-warp-surge")
     expect(banner).toHaveTextContent("dailies:hse.preview.body")
     expect(screen.getByTestId("hse-raids")).toBeInTheDocument()
-    expect(screen.getByTestId("hse-top-overall")).toBeInTheDocument()
-    // The lists are computed for the upcoming event's rule.
+    // The list is computed for the upcoming event's rule.
     expect(mocks.raidsArgs.at(-1)).toEqual([
       undefined,
-      { homeScreenEventRule: homeScreenEventRaidRuleOf("hse-warp-surge") },
+      expect.objectContaining({
+        homeScreenEventRule: homeScreenEventRaidRuleOf("hse-warp-surge"),
+      }),
     ])
   })
 
@@ -383,7 +385,6 @@ describe("HSE tab states", () => {
     expect(screen.getByTestId("hse-status-upcoming")).toBeInTheDocument()
     expect(screen.queryByTestId("hse-preview-banner")).toBeNull()
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
   })
 
   it("says nothing is scheduled when no event is active or upcoming", () => {
@@ -408,7 +409,6 @@ describe("HSE tab states", () => {
       "dailies:hse.status.noRaidPoints"
     )
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
   })
 
   it("shows an inline error when the calendar cannot be read", () => {
@@ -428,20 +428,32 @@ describe("HSE tab states", () => {
 })
 
 describe("HSE tab header", () => {
-  it("shows no project, Raids Filters or Planning Settings controls", () => {
+  it("shows the project selector and Raids Filters above the raid lists, not in the title row", () => {
     renderHse()
 
-    expect(screen.queryByTestId("hse-project-select")).toBeNull()
-    expect(screen.queryByTestId("raids-filters")).toBeNull()
+    const title = screen.getByTestId("hse-title-row")
+    expect(within(title).queryByTestId("hse-project-select")).toBeNull()
+    expect(within(title).queryByTestId("hse-raids-filters")).toBeNull()
+    expect(screen.getByTestId("hse-raids-controls")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-project-select")).toBeInTheDocument()
+    expect(screen.getByTestId("hse-raids-filters")).toBeInTheDocument()
     expect(screen.queryByTestId("hse-planning-settings")).toBeNull()
   })
 
-  it("lists for every active goal, whatever project Today has selected", () => {
+  it("lists for the selected Dailies project", () => {
     renderHse("project-1")
 
     expect(mocks.raidsArgs.at(-1)).toEqual([
-      undefined,
-      { homeScreenEventRule: homeScreenEventRaidRuleOf("hse-machine-hunt") },
+      "project-1",
+      {
+        homeScreenEventRule: homeScreenEventRaidRuleOf("hse-machine-hunt"),
+        eventFarmOrder: "points",
+        quickFilters: {
+          fewerRaids: false,
+          combineGoals: false,
+          raidableOnly: false,
+        },
+      },
     ])
   })
 
@@ -469,7 +481,7 @@ describe("HSE farm list", () => {
     ["nothing-contributes", "hse.raids.empty.nothingContributes"],
     ["filtered", "hse.raids.empty.filtered"],
   ])(
-    "explains an empty list (%s) and keeps the status line and top lists",
+    "explains an empty list (%s) and keeps the status line",
     (reason, text) => {
       mocks.raids = withFarm([], reason)
       renderHse()
@@ -480,16 +492,14 @@ describe("HSE farm list", () => {
       expect(screen.queryByTestId("hse-raids-list")).not.toBeInTheDocument()
       expect(screen.queryByTestId("hse-raids-total")).not.toBeInTheDocument()
       expect(screen.getByTestId("hse-status-active")).toBeInTheDocument()
-      expect(screen.getByTestId("hse-top-overall-list")).toBeInTheDocument()
     }
   )
 
-  it("shows the no-goals state when the project has no active goals, without hiding the top lists", () => {
+  it("shows the no-goals state when the project has no active goals", () => {
     mocks.raids = { status: "no-goals" }
     renderHse()
 
     expect(screen.getByTestId("hse-raids-empty-no-goals")).toBeInTheDocument()
-    expect(screen.getByTestId("hse-top-overall")).toBeInTheDocument()
   })
 
   it("shows the nothing-contributes state when there is nothing farmable", () => {
@@ -545,62 +555,161 @@ describe("HSE farm list", () => {
       screen.queryByTestId(`hse-raid-${battle}-goals-more`)
     ).not.toBeInTheDocument()
   })
-
-  it("shows the node's reward icon on top-10 rows of both lists and nothing for gold-only nodes", () => {
-    mocks.locations = readyLocations({
-      overall: [top(battle, 12, 6), top("B3" as typeof battle, 6, 6)],
-      eventCampaign: [top(offPlanBattle, 6, 6)],
-    })
-    renderHse()
-
-    const overall = screen.getByTestId(`hse-top-overall-${battle}`)
-    expect(
-      within(overall).getByRole("button", { name: "Adamantium" })
-    ).toBeInTheDocument()
-    expect(
-      within(screen.getByTestId(`hse-top-event-${offPlanBattle}`)).getByRole(
-        "button",
-        { name: "Bellator shards" }
-      )
-    ).toBeInTheDocument()
-    expect(
-      within(screen.getByTestId("hse-top-overall-B3")).queryByRole("button")
-    ).not.toBeInTheDocument()
-    // Top-10 rows carry no goal icons.
-    expect(screen.queryByTestId(`hse-top-overall-${battle}-goals`)).toBeNull()
-  })
 })
 
-describe("HSE tab layout", () => {
-  const order = () =>
-    ["hse-raids", "hse-top-overall", "hse-top-event"].map((testId) =>
-      screen.getByTestId(testId)
+describe("HSE list controls", () => {
+  it("shows the first 10 rows, then 5 more, then all", async () => {
+    const user = userEvent.setup()
+    const many = Array.from({ length: 17 }, (_, index) =>
+      row(`N${index}` as typeof battle, 1, 10, 5)
+    )
+    mocks.raids = withFarm(many)
+    renderHse()
+
+    const count = () =>
+      within(screen.getByTestId("hse-raids-list")).getAllByRole("listitem")
+        .length
+    expect(count()).toBe(10)
+    expect(screen.getByTestId("hse-raids-paging-next")).toHaveTextContent(
+      "listPaging.showNext|count=5"
+    )
+    await user.click(screen.getByTestId("hse-raids-paging-next"))
+    expect(count()).toBe(15)
+    expect(screen.getByTestId("hse-raids-paging-next")).toHaveTextContent(
+      "count=2"
+    )
+    await user.click(screen.getByTestId("hse-raids-paging-all"))
+    expect(count()).toBe(17)
+    expect(screen.queryByTestId("hse-raids-paging")).not.toBeInTheDocument()
+  })
+
+  it("switches the order to energy per item, kept in the URL", async () => {
+    const user = userEvent.setup()
+    renderHse()
+
+    expect(screen.getByTestId("hse-raids-order-points")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    await user.click(screen.getByTestId("hse-raids-order-energy"))
+
+    expect(screen.getByTestId("location")).toHaveTextContent("order=energy")
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      eventFarmOrder: "energy",
+    })
+    expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
+      "hse.raids.noteEnergy"
+    )
+    expect(screen.getByTestId(`hse-raid-${battle}-per-item`)).toHaveTextContent(
+      "hse.raids.perItem|value=7.5"
+    )
+  })
+
+  it("offers Today's quick filters and passes them to the list", async () => {
+    const user = userEvent.setup()
+    renderHse()
+
+    const controls = screen.getByTestId("hse-raids-controls")
+    for (const quick of ["fewerRaids", "combineGoals", "raidableOnly"])
+      expect(
+        within(controls).getByTestId(`today-quick-filter-${quick}`)
+      ).toBeInTheDocument()
+    expect(
+      within(controls).queryByTestId("today-quick-filter-ignoreGoals")
+    ).toBeNull()
+    await user.click(screen.getByTestId("today-quick-filter-combineGoals"))
+
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "quick=combineGoals"
+    )
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      quickFilters: { combineGoals: true },
+    })
+  })
+
+  it("toggles Ignore goals independently of the sort, both kept in the URL", async () => {
+    const user = userEvent.setup()
+    mocks.locations = readyLocations()
+    renderHse(undefined, "/?order=energy")
+
+    await user.click(screen.getByTestId("hse-raids-ignore-goals"))
+
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "order=energy&ignoreGoals=1"
+    )
+    expect(screen.getByTestId("hse-raids-ignore-goals")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(screen.getByTestId("hse-raids-order-energy")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(mocks.locationsArgs.at(-1)?.[1]).toMatchObject({ order: "energy" })
+    expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
+      "hse.raids.noteIgnoreGoalsEnergy"
+    )
+    expect(screen.getByTestId(`hse-raid-${battle}-per-item`)).toHaveTextContent(
+      "hse.raids.perItem|value=12"
     )
 
-  it.each([false, true])(
-    "keeps the farm list, overall top 10 and event-campaign top 10 in reading order (mobile: %s)",
-    (isMobile) => {
-      mocks.isMobile = isMobile
-      mocks.locations = readyLocations({
-        eventCampaign: [top(offPlanBattle, 6, 6)],
-      })
-      renderHse()
+    await user.click(screen.getByTestId("hse-raids-order-points"))
+    expect(screen.getByTestId("location")).toHaveTextContent("ignoreGoals=1")
+    expect(screen.getByTestId("location")).not.toHaveTextContent("order=")
+    expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
+      "hse.raids.noteIgnoreGoals"
+    )
+    expect(screen.queryByTestId(`hse-raid-${battle}-per-item`)).toBeNull()
 
-      const [raids, overall, event] = order()
-      expect(
-        raids!.compareDocumentPosition(overall!) &
-          Node.DOCUMENT_POSITION_FOLLOWING
-      ).toBeTruthy()
-      expect(
-        overall!.compareDocumentPosition(event!) &
-          Node.DOCUMENT_POSITION_FOLLOWING
-      ).toBeTruthy()
-      // Desktop: the farm list sits beside a column holding both top-10 lists.
-      expect(screen.getByTestId("hse-sections").className).toContain(
-        "md:grid-cols-2"
-      )
-    }
-  )
+    await user.click(screen.getByTestId("hse-raids-ignore-goals"))
+    expect(screen.getByTestId("location")).not.toHaveTextContent("ignoreGoals")
+    expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
+      "hse.raids.note"
+    )
+  })
+
+  it("opens the Ignore goals list from the older order=ignoreGoals link", () => {
+    mocks.locations = readyLocations()
+    renderHse(undefined, "/?order=ignoreGoals")
+
+    expect(screen.getByTestId("hse-raids-ignore-goals")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(screen.getByTestId("hse-raids-order-points")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+  })
+
+  it("lists every point-earning location with Ignore goals: the drop and how many you hold, no goal icons", () => {
+    mocks.locations = readyLocations({
+      locations: [
+        eventLocation(battle, 12, 6),
+        eventLocation("B3" as typeof battle, 6, 6, null),
+      ],
+    })
+    renderHse(undefined, "/?ignoreGoals=1")
+
+    expect(screen.getByTestId("hse-raids-note")).toHaveTextContent(
+      "hse.raids.noteIgnoreGoals"
+    )
+    const first = screen.getByTestId(`hse-raid-${battle}`)
+    expect(
+      within(first).getByRole("button", { name: "Adamantium" })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId(`hse-raid-${battle}-owned`)).toHaveTextContent(
+      "hse.raids.owned|count=42"
+    )
+    expect(first).toHaveTextContent("hse.raids.raidCount|count=3")
+    expect(first).toHaveTextContent("hse.raids.points|points=36")
+    expect(screen.queryByTestId(`hse-raid-${battle}-goals`)).toBeNull()
+    expect(screen.queryByTestId(`hse-raid-${battle}-stock`)).toBeNull()
+    // A gold-only node shows no drop; an uncapped node shows no raid count.
+    const gold = screen.getByTestId("hse-raid-B3")
+    expect(within(gold).queryByRole("button")).not.toBeInTheDocument()
+    expect(gold).not.toHaveTextContent("raidCount")
+  })
 })
 
 describe("HSE tab Raids Filters", () => {
@@ -635,21 +744,19 @@ describe("HSE tab Raids Filters", () => {
     ).not.toMatchObject({ slots: [3] })
   })
 
-  it("shows the filtered-empty message with Reset in each empty top-10 list", async () => {
+  it("shows the filtered-empty message with Reset in the Ignore goals list", async () => {
     const user = userEvent.setup()
-    mocks.locations = readyLocations({ overall: [], eventCampaign: [] })
-    renderHse()
+    mocks.locations = readyLocations({ locations: [] })
+    renderHse(undefined, "/?order=ignoreGoals")
     applyFilter()
 
-    for (const list of ["hse-top-overall", "hse-top-event"]) {
-      expect(screen.getByTestId(`${list}-empty`)).toHaveTextContent(
-        "hse.top.filteredEmpty"
-      )
-    }
-    await user.click(screen.getAllByTestId("hse-top-overall-reset")[0]!)
+    expect(screen.getByTestId("hse-raids-empty-locations")).toHaveTextContent(
+      "hse.raids.empty.filtered"
+    )
+    await user.click(screen.getByTestId("hse-raids-reset"))
 
-    expect(screen.getByTestId("hse-top-overall-empty")).toHaveTextContent(
-      "hse.top.empty"
+    expect(screen.getByTestId("hse-raids-empty-locations")).toHaveTextContent(
+      "hse.raids.empty.noLocations"
     )
   })
 })
@@ -913,7 +1020,6 @@ describe("HSE selected instance states", () => {
     expect(status).toHaveTextContent("events:definitions.hse-machine-hunt")
     expect(status).toHaveTextContent("dailies:hse.status.endedOn")
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-preview-banner")).not.toBeInTheDocument()
   })
 
@@ -942,7 +1048,9 @@ describe("HSE selected instance states", () => {
     )
     expect(mocks.raidsArgs.at(-1)).toEqual([
       undefined,
-      { homeScreenEventRule: homeScreenEventRaidRuleOf("hse-warp-surge") },
+      expect.objectContaining({
+        homeScreenEventRule: homeScreenEventRaidRuleOf("hse-warp-surge"),
+      }),
     ])
 
     await user.click(screen.getByTestId("hse-event-previous"))
@@ -950,7 +1058,9 @@ describe("HSE selected instance states", () => {
     expect(screen.queryByTestId("hse-preview-banner")).not.toBeInTheDocument()
     expect(mocks.raidsArgs.at(-1)).toEqual([
       undefined,
-      { homeScreenEventRule: homeScreenEventRaidRuleOf("hse-machine-hunt") },
+      expect.objectContaining({
+        homeScreenEventRule: homeScreenEventRaidRuleOf("hse-machine-hunt"),
+      }),
     ])
   })
 
@@ -1003,7 +1113,6 @@ describe("HSE event details and projection", () => {
       "hse.projection.notes.upcoming"
     )
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("hse-top-overall")).not.toBeInTheDocument()
     expect(screen.queryByTestId("hse-preview-banner")).not.toBeInTheDocument()
   })
 
@@ -1023,7 +1132,6 @@ describe("HSE event details and projection", () => {
       screen.getByTestId("hse-projection-milestones-done-input")
     ).toBeInTheDocument()
     expect(screen.queryByTestId("hse-raids")).not.toBeInTheDocument()
-    expect(screen.queryByTestId("hse-top-lists")).not.toBeInTheDocument()
   })
 
   it("keeps a past event's details, without the projection or lists", () => {
@@ -1120,7 +1228,7 @@ describe("HSE event details and projection", () => {
   })
 
   it.each([false, true])(
-    "orders Warp Surge's status, details, projection, farm list and top 10 (mobile: %s)",
+    "orders Warp Surge's status, details, projection, farm list and event teams (mobile: %s)",
     (isMobile) => {
       mocks.isMobile = isMobile
       mocks.event = activeEvent("hse-warp-surge")
@@ -1131,7 +1239,7 @@ describe("HSE event details and projection", () => {
         "hse-event-details",
         "hse-projection",
         "hse-raids",
-        "hse-top-overall",
+        "hse-teams",
       ].map((testId) => screen.getByTestId(testId))
       for (let index = 1; index < sections.length; index++)
         expect(below(sections[index - 1]!, sections[index]!)).toBe(true)
@@ -1209,7 +1317,7 @@ describe("HSE event teams", () => {
     }
   })
 
-  it("sits above the raid lists of a rule-bearing event", () => {
+  it("sits below the raid list of a rule-bearing event", () => {
     mocks.event = readyAt(
       [entryOf("hse-machine-hunt", now - DAY, now + DAY)],
       now
@@ -1217,7 +1325,7 @@ describe("HSE event teams", () => {
     renderHse()
 
     expect(
-      below(screen.getByTestId("hse-teams"), screen.getByTestId("hse-sections"))
+      below(screen.getByTestId("hse-sections"), screen.getByTestId("hse-teams"))
     ).toBe(true)
   })
 

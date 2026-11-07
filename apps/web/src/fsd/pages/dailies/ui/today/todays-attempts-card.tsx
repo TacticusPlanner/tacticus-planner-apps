@@ -4,7 +4,7 @@ import {
   ResourceIconWithTooltip,
   type DailyRaidsReadyViewModel,
 } from "@/features/daily-raids"
-import { EntityIcon } from "@/shared/ui"
+import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 
 import { TodayCard } from "./today-card"
 import type { TodayView } from "./today-view-model"
@@ -76,16 +76,12 @@ export function TodaysAttemptsCard({
                     src={location.icon}
                   />
                 ) : null}
-                <span className="min-w-0 flex-1 text-sm break-words">
-                  <span className="font-medium">{campaign}</span>
-                  {location?.nodeLabel ? (
-                    <>
-                      {" "}
-                      <span className="text-muted-foreground">
-                        {location.nodeLabel}
-                      </span>
-                    </>
-                  ) : null}
+                <span className="min-w-0 flex-1 text-sm font-medium break-words">
+                  <CampaignLocationName
+                    campaignName={campaign}
+                    difficultyLabel={location?.difficultyLabel}
+                    nodeLabel={location?.nodeLabel}
+                  />
                 </span>
                 <span className="shrink-0 text-xs whitespace-nowrap text-muted-foreground tabular-nums">
                   {count}

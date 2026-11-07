@@ -1,4 +1,4 @@
-import { MemoryRouter, Outlet, Route, Routes } from "react-router"
+import { MemoryRouter, Outlet, Route, Routes, useLocation } from "react-router"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -13,6 +13,7 @@ const { mocks } = vi.hoisted(() => ({
   mocks: {
     isMobile: false,
     instance: undefined as unknown,
+    instanceKeys: [] as (string | null)[],
     raids: undefined as unknown,
     raidsArgs: [] as unknown[][],
     tokens: null as unknown,
@@ -60,7 +61,12 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => mocks.isMobile,
 }))
 vi.mock("@/features/hre-missions/model/use-hre-instance", () => ({
-  useHreInstance: () => mocks.instance,
+  useHreInstance: (key: string | null) => {
+    mocks.instanceKeys.push(key)
+    return typeof mocks.instance === "function"
+      ? (mocks.instance as (key: string | null) => unknown)(key)
+      : mocks.instance
+  },
   useIsHreLive: () => false,
 }))
 vi.mock("@/features/hre-missions/model/use-hre-tokens", () => ({
@@ -110,9 +116,14 @@ const hero = {
   faction: "Orks",
   initialRarity: "Common",
 }
+const heroes = new Map([[hero.id, hero]])
 const running = () => ({
   status: "ready",
   instance: { ...zapspitta, status: "running" },
+  instances: [{ ...zapspitta, status: "running" }],
+  defaultKey: zapspitta.key,
+  stale: false,
+  heroes,
   hero,
   rules: hreRules,
   nowMs: START + 20 * 3_600_000,
@@ -120,6 +131,10 @@ const running = () => ({
 const preview = () => ({
   status: "ready",
   instance: { ...zapspitta, status: "upcoming" },
+  instances: [{ ...zapspitta, status: "upcoming" }],
+  defaultKey: zapspitta.key,
+  stale: false,
+  heroes,
   hero,
   rules: hreRules,
   nowMs: START - DAY,
@@ -173,22 +188,34 @@ const plan = (overrides = {}) => ({
   ...overrides,
 })
 
-function renderHre(projectId?: string) {
+function LocationProbe() {
+  const location = useLocation()
+  return (
+    <output data-testid="location">{`${location.pathname}${location.search}`}</output>
+  )
+}
+
+function renderHre(
+  projectId?: string,
+  initialEntry = "/dailies/hre",
+  setProjectId = vi.fn()
+) {
   const context: DailiesOutletContext = {
     projects: [],
     projectId,
-    setProjectId: vi.fn(),
+    setProjectId,
     projectsUnavailable: false,
     projectsError: false,
     retryProjects: vi.fn(),
   }
   return render(
-    <MemoryRouter initialEntries={["/dailies/hre"]}>
+    <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
         <Route path="/dailies" element={<Outlet context={context} />}>
           <Route path="hre" element={<HrePage />} />
         </Route>
       </Routes>
+      <LocationProbe />
     </MemoryRouter>
   )
 }
@@ -208,6 +235,7 @@ beforeEach(() => {
     locationsByBattleId: new Map(),
   }
   mocks.raidsArgs.length = 0
+  mocks.instanceKeys.length = 0
   mocks.tokens = null
   mocks.team = { status: "hidden" }
   mocks.homeScreenEvent = { status: "loading" }
@@ -276,9 +304,23 @@ describe("HRE tab", () => {
     )
   })
 
-  it("plans for every active goal, whatever project Today has selected", () => {
+  it("plans for the selected Dailies project", () => {
     renderHre("project-1")
+    expect(mocks.raidsArgs.at(-1)?.[0]).toBe("project-1")
+  })
+
+  it("plans for every active goal without a project", () => {
+    renderHre()
     expect(mocks.raidsArgs.at(-1)?.[0]).toBeUndefined()
+  })
+
+  it("shows the project selector and Raids Filters in the raids section", () => {
+    renderHre()
+    const raids = screen.getByTestId("hre-raids")
+    expect(within(raids).getByTestId("hre-raids-controls")).toBeInTheDocument()
+    expect(within(raids).getByTestId("hre-project-select")).toBeInTheDocument()
+    expect(within(raids).getByTestId("hre-raids-filters")).toBeInTheDocument()
+    expect(screen.queryByTestId("hre-planning-settings")).toBeNull()
   })
 
   it("ignores a running HSE that earns no raid points", () => {
@@ -301,6 +343,10 @@ describe("HRE tab", () => {
     mocks.instance = {
       status: "ready",
       instance: null,
+      instances: [],
+      defaultKey: null,
+      stale: false,
+      heroes: new Map(),
       hero: null,
       rules: hreRules,
       nowMs: START,
@@ -370,6 +416,11 @@ describe("HRE tab", () => {
     expect(screen.getByTestId("hre-mission-complete")).toBeDisabled()
 
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      quickFilters: {
+        fewerRaids: false,
+        combineGoals: false,
+        raidableOnly: false,
+      },
       eventFarm: false,
       missionRaids: {
         battlesToGo: 63,
@@ -396,7 +447,7 @@ describe("HRE tab", () => {
       "raids.planned"
     )
     expect(screen.getByTestId("hre-raids-budget")).toHaveTextContent(
-      "energy=188"
+      "raids.unlimitedEnergy"
     )
     expect(
       within(screen.getByTestId("hre-raids-list")).getAllByRole("listitem")
@@ -430,6 +481,11 @@ describe("HRE tab", () => {
     renderHre()
     expect(screen.getByTestId("hre-objective-0-input")).toHaveValue(12)
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
+      quickFilters: {
+        fewerRaids: false,
+        combineGoals: false,
+        raidableOnly: false,
+      },
       eventFarm: false,
       missionRaids: {
         battlesToGo: 0,
@@ -1030,5 +1086,64 @@ describe("HRE tab", () => {
       expect(screen.queryByTestId("hre-pace-summary")).toBeNull()
       expect(screen.getByTestId("hre-pace")).toBeInTheDocument()
     })
+  })
+})
+
+describe("HRE event switcher", () => {
+  const past = {
+    key: "occ-past",
+    entry: {
+      occurrenceId: "occ-past",
+      definitionId: "new-character-event",
+      startUtc: "2026-09-20T00:00:00Z",
+      endUtc: "2026-10-04T00:00:00Z",
+      parameters: { featuredCharacterId: "orksWeirdboy" },
+    },
+    featuredCharacterId: "orksWeirdboy",
+    status: "past",
+  }
+  const withPast = (key: string | null) => {
+    const base = running()
+    const instances = [past, ...base.instances]
+    if (key === past.key) return { ...base, instances, instance: past }
+    return { ...base, instances, stale: key !== null && key !== zapspitta.key }
+  }
+
+  beforeEach(() => {
+    mocks.instance = withPast
+  })
+
+  it("passes the URL selection to the instance read", () => {
+    renderHre(undefined, "/dailies/hre?event=occ-past")
+    expect(mocks.instanceKeys.at(-1)).toBe("occ-past")
+  })
+
+  it("steps to the previous event, then back to the default, clearing the URL", async () => {
+    renderHre()
+    expect(screen.getByTestId("hre-event-switcher")).toBeInTheDocument()
+    expect(screen.getByTestId("hre-event-next")).toBeDisabled()
+    await userEvent.click(screen.getByTestId("hre-event-previous"))
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/dailies/hre?event=occ-past"
+    )
+    await userEvent.click(screen.getByTestId("hre-event-next"))
+    expect(screen.getByTestId("location")).toHaveTextContent(/^\/dailies\/hre$/)
+  })
+
+  it("shows a past event's header and missions without raids, tracker or pace", () => {
+    renderHre(undefined, "/dailies/hre?event=occ-past")
+    expect(screen.getByTestId("hre-header-past")).toBeInTheDocument()
+    expect(screen.queryByTestId("hre-header-countdown")).toBeNull()
+    expect(screen.getByTestId("hre-past-note")).toBeInTheDocument()
+    expect(screen.queryByTestId("hre-raids")).toBeNull()
+    expect(screen.queryByTestId("hre-tracker")).toBeNull()
+    expect(screen.queryByTestId("hre-pace-section")).toBeNull()
+    expect(screen.getByTestId("hre-mission-1")).toBeInTheDocument()
+  })
+
+  it("drops a key that no longer resolves from the URL", () => {
+    renderHre(undefined, "/dailies/hre?event=gone")
+    expect(screen.getByTestId("location")).toHaveTextContent(/^\/dailies\/hre$/)
+    expect(screen.getByTestId("hre-header")).toBeInTheDocument()
   })
 })

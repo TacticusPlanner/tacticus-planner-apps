@@ -46,7 +46,6 @@ export function RunsStep({
       />
       <RunForecastSection
         defaultOpen
-        editInputs={null}
         eventId={event.id}
         isMobile={isMobile}
         onOpenTeams={(laneId) => onOpenTeams(laneId)}

@@ -8,6 +8,7 @@ import type { FlattenedRaidLocation } from "../model/flatten-today-locations"
 import { plannedRaidNeed } from "../model/planned-raid-need"
 import { ManualBattleBadge } from "./manual-battle"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
+import { RaidLocationName } from "./raid-location-name"
 import { ResourceIconWithTooltip } from "./resource-icon"
 
 /** One flattened battle location: compact location chip, planned raid count, and its primary
@@ -32,18 +33,12 @@ export function LocationRow({
       {location?.icon ? (
         <EntityIcon alt="" className="size-10 shrink-0" src={location.icon} />
       ) : null}
-      <div className="min-w-24 flex-1 leading-tight">
-        <div className="text-sm font-medium break-words">
-          {location?.campaignName ?? entry.battleId}
-        </div>
-        {location?.nodeLabel ? (
-          <div className="text-xs break-words text-muted-foreground">
-            {location.nodeLabel}
-          </div>
-        ) : null}
+      <div className="min-w-24 flex-1">
+        <RaidLocationName fallbackLabel={entry.battleId} location={location} />
       </div>
       {location?.manual ? <ManualBattleBadge /> : null}
       <PlannedRaidNeedBadge
+        compact
         need={plannedRaidNeed({
           resourceId: entry.resourceId,
           raidsPerformed: entry.raidsToPerform,

@@ -40,12 +40,14 @@
     "noEntry": "No synced progress for this event yet.",
     "syncedUnavailable": "Synced data unavailable",
     "syncedAgo": "Synced {{when}}",
-    "neverSynced": "Not synced yet"
+    "neverSynced": "Not synced yet",
+    "goToCurrentRun": "Go to current run",
+    "goToNextRun": "Go to next run"
   },
   "runInputs": {
     "button": "Inputs",
     "title": "Run inputs",
-    "description": "Missions and packs the game does not report. They feed the reward outlook on the Run status card.",
+    "description": "Missions and packs the game does not report for the current run. Missions finish in order, so set how many are done. They feed the reward outlook on the Run status card.",
     "run": "Run {{run}}",
     "phase": {
       "done": "Done",
@@ -69,7 +71,15 @@
     },
     "ticked": "{{done}} of {{total}} done",
     "planToComplete": "{{field}} to complete",
-    "planToCompleteShort": "Plan to complete"
+    "planToCompleteShort": "Plan to complete",
+    "doneCount": "{{field}} done",
+    "doneShort": "Done",
+    "now": "Now",
+    "missionState": {
+      "done": "Mission {{number}}, done: {{mission}}",
+      "current": "Mission {{number}}, current: {{mission}}",
+      "later": "Mission {{number}}, later: {{mission}}"
+    }
   },
   "notes": {
     "title": "Notes",
@@ -125,18 +135,35 @@
   },
   "tabs": {
     "label": "Event sections",
-    "overview": "Overview"
+    "overview": "Overview",
+    "teams": "Teams",
+    "plan": "Plan",
+    "run": {
+      "current": "Current run",
+      "next": "Next run",
+      "last": "Last run"
+    },
+    "laneLabel": "Lane",
+    "lanesShown": "Lanes shown"
+  },
+  "battleInfo": {
+    "open": "Battle info: {{lane}} battle {{battle}}",
+    "title": "{{lane}} · Battle {{battle}}",
+    "previous": "Previous",
+    "next": "Next",
+    "close": "Close"
   },
   "eventBoard": {
     "title": "Event board",
-    "description": "Every lane's objectives and saved teams at once. Pick a team to edit it, or a lane to open its tab.",
-    "openLane": "Open the {{lane}} tab",
-    "teams_one": "{{count}} team",
-    "teams_other": "{{count}} teams",
-    "noTeams": "No teams yet.",
+    "description": "Each shown lane's objectives, the units that fit each and the lane's teams side by side. Pick objectives to see the units that fit all of them, or a unit to start a team with it.",
     "noTeam": "No team",
     "cleared": "Cleared in {{cleared}} of {{total}} battles",
-    "editTeam": "Edit {{name}}"
+    "clearSelection": "Clear selection",
+    "columnUnits_one": "{{count}} unit",
+    "columnUnits_other": "{{count}} units",
+    "noUnits": "No units",
+    "addTeam": "Start a team with this unit",
+    "locked": "Locked"
   },
   "laneSummary": {
     "title": "Lane summary",
@@ -149,7 +176,6 @@
     "rosterReaches": "Roster reaches battle {{battle}}"
   },
   "laneOverview": {
-    "title": "Lane overview",
     "labelWithRule": "{{lane}} · {{rule}}",
     "killPoints": "{{points}} kill points per battle",
     "battles": "{{count}} battles",
@@ -176,7 +202,9 @@
         "goals": "With planned goals",
         "out": "Out of reach"
       }
-    }
+    },
+    "viewBattles_one": "{{lane}}: open the battle info for its {{count}} battle",
+    "viewBattles_other": "{{lane}}: open the battle info for its {{count}} battles"
   },
   "leaderboard": {
     "title": "Eligibility leaderboard",
@@ -210,7 +238,14 @@
       "notAllowed": "—",
       "notAllowedLabel": "{{lane}}: not allowed",
       "laneFigure": "{{lane}}: {{points}}"
-    }
+    },
+    "filters": "Filters",
+    "filtersCount": "Filters ({{count}})",
+    "lanes": "Lanes",
+    "lanesAll": "All lanes",
+    "lanesCount": "{{count}} lanes",
+    "progression": "Progression",
+    "sortBy": "Sort by {{column}}"
   },
   "progress": {
     "title": "Synced progress",
@@ -232,10 +267,14 @@
     "howPoints": {
       "title": "How points work",
       "body": "Each battle's earned points are its kill score plus its high score, plus the defeat-all bonus and the score of every objective you cleared in it. A battle's maximum adds its full kill score, its full high score, the defeat-all bonus and every objective's score; the lane maximum adds every battle."
-    }
+    },
+    "editMarks": "Edit marks",
+    "clearedDivider_one": "{{count}} battle fully cleared",
+    "clearedDivider_other": "{{count}} battles fully cleared"
   },
   "battles": {
     "title": "Battles",
+    "titleLane": "Battles · {{lane}}",
     "loading": "Loading battles…",
     "error": "Battle data could not be loaded.",
     "empty": "No battle data for this lane yet",
@@ -270,7 +309,8 @@
       "toggle": "Map",
       "alt": "Map of {{lane}} battle {{number}}",
       "unavailable": "Map not available"
-    }
+    },
+    "laneLabel": "Lane"
   },
   "annotations": {
     "maybeClear": "Maybe clear",
@@ -394,7 +434,20 @@
     "pointsLeftNeedsDepth": "Set depth to see points left",
     "clearedThrough": "Already cleared through battle {{battle}}",
     "pointsLeftCannotClear": "Can't clear battle 1 yet",
-    "laneFull": "This lane holds the maximum of {{max}} teams."
+    "laneFull": "This lane holds the maximum of {{max}} teams.",
+    "depthBar": {
+      "battles": "Battles 1–{{depth}}",
+      "cannotClear": "Can't clear battle 1 yet",
+      "unset": "No depth set",
+      "label": "Clears battles 1–{{depth}} of {{total}}",
+      "labelNone": "Clears no battle of {{total}}",
+      "close": "Close to battle {{battle}}",
+      "manual": "Depth set by you"
+    },
+    "editDepth": "Edit clear depth",
+    "details": "Details",
+    "objectives": "Objectives",
+    "objectiveUncovered": "{{objective}}: no team member covers it"
   },
   "objective": {
     "minHits_one": "Min {{count}} hit",
@@ -425,8 +478,8 @@
     "event": {
       "steps": {
         "tabs": {
-          "title": "Overview and lanes",
-          "content": "Overview sums up the event; Alpha, Beta and Gamma open one lane each. On a phone the strip stays under the header while you scroll."
+          "title": "Event tabs",
+          "content": "Overview sums up the event. Teams lays out each lane's objectives, units and teams; Plan holds the run forecast, the token plan, upgrade impact and battles; the run tab (Current run while the event is on, otherwise Next or Last run) shows your next tokens and synced progress. The lane switches pick which lanes show, one at a time on a phone. On a phone the strip stays under the header while you scroll."
         },
         "nextToken": {
           "title": "Next token",
@@ -438,23 +491,23 @@
         },
         "runInputs": {
           "title": "Run inputs",
-          "content": "Tick the missions you finish in each run and set how many you plan to complete, plus the packs the game does not report. They feed the reward outlook on this card, and open missions point the Next token at battles that progress them."
+          "content": "Set how many missions you have done in the current run (they finish in order) and how many you plan to complete, plus the packs the game does not report. Future runs assume all free missions. Open missions point the Next token at battles that progress them; edit every run from the Run forecast on Plan."
         },
         "tokenPlan": {
           "title": "Token plan",
-          "content": "Every token the plan expects to play in order, with running points and the milestones it crosses. The run forecast below spreads it across the remaining runs."
+          "content": "Every token the plan expects to play in order, with running points and the milestones it crosses. The run forecast above spreads it across the remaining runs. Pick a battle to see its map and enemies."
         },
         "laneSummary": {
           "title": "Lane summary",
           "content": "Each lane's points earned against its maximum and how many battles you have fully cleared. Pick a lane to jump to its progress grid."
         },
-        "overviewLeaderboard": {
-          "title": "Eligibility across lanes",
-          "content": "Every unit that can play, with the points it can still score in each lane. Filter by objective, show only unlocked units, or switch to points per battle."
+        "eventBoard": {
+          "title": "Event board",
+          "content": "Each shown lane's objectives with the units that fit each, strongest first, and the lane's teams under them. Pick objectives to see the units that fit all of them, and pick a unit to start a team with it."
         },
-        "laneOverview": {
-          "title": "Lane overview",
-          "content": "The lane's allowed units, kill points and five objectives with their scores, then a map of how far your roster can get: each battle's defeat-all and objectives as cleared, reached by your teams, within your roster's reach, or out of reach."
+        "eligibility": {
+          "title": "Eligibility",
+          "content": "Every unit that can play, with the points it can still score on the shown lanes. With one lane shown it lists that lane's objectives and estimated clears. Filter by objective, show only unlocked units, or use a row's menu for Create goal or Add to new team."
         },
         "teams": {
           "title": "Teams",
@@ -471,10 +524,6 @@
         "battles": {
           "title": "Battles",
           "content": "Preview any battle of the lane before you play it: its map, its waves round by round and every enemy with its level. Tap an enemy for its stats. It opens on your next battle to play."
-        },
-        "leaderboard": {
-          "title": "Lane leaderboard",
-          "content": "Every unit this lane allows, whether you own it, which objectives it meets and the points it can still score here. Turn on Goals Preview to see units as if your active goals were reached, and use a row's menu for Create goal or Add to new team."
         },
         "lastRun": {
           "title": "Last run",
@@ -598,6 +647,7 @@
   },
   "upgradeImpact": {
     "title": "Upgrade impact",
+    "titleLane": "Upgrade impact · {{lane}}",
     "summary_one": "{{count}} upgrade adds points · best +{{best}}",
     "summary_other": "{{count}} upgrades add points · best +{{best}}",
     "hint": "What one next step of a team member adds on this lane, through the battles it lets a team reach. Based on your synced roster.",
@@ -622,17 +672,24 @@
   "suggestions": {
     "button": "Suggest teams",
     "title": "Suggested teams for {{lane}}",
-    "description": "Teams from your roster, ranked by the points they add over your current teams. Nothing is saved until you save the team.",
+    "description": "Teams from your roster, ranked by the points they add over your current teams, then the tokens they save. Nothing is saved until you save the team.",
     "onlyUnlocked": "Only unlocked",
     "preferGoals": "Prefer units with goals",
     "reason": "Covers {{objectives}} · clears ~{{depth}} · +{{points}} points over your teams",
     "use": "Use this team",
     "showMore": "Show more",
-    "empty": "No team adds points over your current teams",
+    "empty": "No team adds points or saves tokens over your current teams",
     "needsEstimates": "Needs clear estimates",
     "loading": "Loading suggestions…",
     "rank": "Suggestion {{rank}}",
-    "reasonNoObjectives": "Clears ~{{depth}} · +{{points}} points over your teams"
+    "reasonNoObjectives": "Clears ~{{depth}} · +{{points}} points over your teams",
+    "savesTokens_one": "saves {{count}} token",
+    "savesTokens_other": "saves {{count}} tokens",
+    "reasonTokens_one": "Covers {{objectives}} · clears ~{{depth}} · saves {{count}} token over your teams",
+    "reasonTokens_other": "Covers {{objectives}} · clears ~{{depth}} · saves {{count}} tokens over your teams",
+    "reasonNoObjectivesTokens_one": "Clears ~{{depth}} · saves {{count}} token over your teams",
+    "reasonNoObjectivesTokens_other": "Clears ~{{depth}} · saves {{count}} tokens over your teams",
+    "reasonNoGain": "Covers {{objectives}} · clears ~{{depth}} · no gain over your teams yet"
   },
   "tokenPlan": {
     "nextToken": {
@@ -641,7 +698,8 @@
       "points": "+{{points}} points",
       "reasons": {
         "mostPoints": "Most points available now",
-        "mostPointsPlayableNow": "Most points among battles you can play now"
+        "mostPointsPlayableNow": "Most points among battles you can play now",
+        "missionsOrder": "Finishes this run's open missions soonest, for the same run points"
       },
       "upcoming": "{{reason}} for when run {{run}} starts",
       "upcomingUnknown": "{{reason}} for when the next run starts",
@@ -662,10 +720,18 @@
       "nothingLeft": "Your teams have nothing left to clear · {{points}} points left in {{lane}}",
       "missions": {
         "title": "For missions",
-        "progresses": "Progresses:",
+        "progresses": "Missions it progresses",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} points ({{difference}})"
-      }
+        "points": "+{{points}} points ({{difference}})",
+        "button_one": "Progresses {{count}} mission",
+        "button_other": "Progresses {{count}} missions",
+        "uncounted": "counts",
+        "finishes": "done"
+      },
+      "upNext": "Up next",
+      "viewPlan_one": "View the {{count}} planned token",
+      "viewPlan_other": "View all {{count}} planned tokens",
+      "team": "Show the units of {{team}}"
     },
     "plan": {
       "title": "Token plan",
@@ -713,7 +779,13 @@
         },
         "doneCount": "{{done}}/{{total}} done",
         "completed": "Done"
-      }
+      },
+      "battles": "Battles {{first}}–{{last}}",
+      "expandRun_one": "Show {{count}} battle",
+      "expandRun_other": "Show {{count}} battles",
+      "collapseRun_one": "Hide {{count}} battle",
+      "collapseRun_other": "Hide {{count}} battles",
+      "openTeam": "Open team {{team}}"
     },
     "forecast": {
       "title": "Run forecast",
@@ -742,7 +814,12 @@
       "ohSoClose": "Oh So Close: {{shards}} shards for {{blackstone}} blackstone",
       "leftover_one": "{{count}} token with nothing to play: add a team or raise a depth to use it",
       "leftover_other": "{{count}} tokens with nothing to play: add a team or raise a depth to use them",
-      "editInputs": "Edit inputs"
+      "summary": {
+        "tokens": "Tokens used of the run's supply",
+        "points": "Points at the end of the run",
+        "chests": "Chests claimed",
+        "shards": "Shards at the end of the run"
+      }
     }
   },
   "masterTable": {
@@ -770,7 +847,10 @@
       "teamsUnavailable": "Teams unavailable",
       "teamsLoading": "Loading teams",
       "noRoster": "Sync your roster",
-      "rosterLoading": "Loading roster"
+      "rosterLoading": "Loading roster",
+      "noTeams_one": "No complete teams planned for {{events}} yet, so its column is empty under In teams.",
+      "noTeams_other": "No complete teams planned for {{events}} yet, so their columns are empty under In teams.",
+      "showAll": "Show all units"
     },
     "points": {
       "label": "Points",
@@ -803,7 +883,8 @@
       "objectives_one": "{{count}} objective",
       "objectives_other": "{{count}} objectives",
       "teams_one": "{{count}} team",
-      "teams_other": "{{count}} teams"
+      "teams_other": "{{count}} teams",
+      "noTeams": "no teams yet"
     },
     "explanation": {
       "title": "How points work",
@@ -1070,9 +1151,7 @@
       "nothing": "Nothing to change",
       "removeTeam": "Remove '{{name}}' from {{lane}}",
       "updateTeam": "Update '{{name}}' in {{lane}}",
-      "createTeam": "Create '{{name}}' in {{lane}}",
-      "paidOn": "Show paid options: on",
-      "paidOff": "Show paid options: off"
+      "createTeam": "Create '{{name}}' in {{lane}}"
     },
     "toast": {
       "created": "Plan created: {{goals}}, {{teams}}",
@@ -1108,5 +1187,11 @@
     "window": "{{start}} – {{end}}",
     "guessed": "maybe ~{{date}}",
     "unknown": "date unknown"
+  },
+  "settings": {
+    "button": "Legendary Event settings",
+    "title": "Legendary Event settings",
+    "description": "These apply to every Legendary Event's plan and are saved to your account.",
+    "showPaidOptionsHint": "On: plan with what you pay for — premium missions, the 300 currency bundle and Oh So Close shards. Off: plan with free rewards only."
   }
 }

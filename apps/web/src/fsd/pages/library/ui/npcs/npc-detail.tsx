@@ -6,12 +6,19 @@ import { useNpcLabels, useRarityFromStars } from "@/entities/npc"
 import { NpcAbilities } from "./npc-abilities"
 import { NpcAttacks } from "./npc-attacks"
 import { NpcDetailHeader } from "./npc-detail-header"
+import { NpcEncounters } from "./npc-encounters"
 import { NpcStatCards } from "./npc-stat-cards"
 import { NpcTraits } from "./npc-traits"
 import type { NpcsPageViewProps } from "./npcs-page.view-model"
 
 type NpcDetailProps = Pick<
   NpcsPageViewProps,
+  | "encounters"
+  | "encounterPlaces"
+  | "matchingPlaces"
+  | "onOpenBattleVariation"
+  | "encountersStatus"
+  | "calendar"
   | "selectedGroup"
   | "selectedName"
   | "variationOptions"
@@ -40,6 +47,12 @@ export function NpcDetail({
   onLevelChange,
   onClearFilters,
   power,
+  encounters,
+  encounterPlaces,
+  matchingPlaces,
+  onOpenBattleVariation,
+  encountersStatus,
+  calendar,
   compact = false,
 }: NpcDetailProps) {
   const { t } = useTranslation("library")
@@ -92,6 +105,14 @@ export function NpcDetail({
         compact={compact}
       />
       <NpcTraits traits={selectedVariation.traits} rarity={rarity} />
+      <NpcEncounters
+        encounters={encounters}
+        encounterPlaces={encounterPlaces}
+        matchingPlaces={matchingPlaces}
+        onOpenBattleVariation={onOpenBattleVariation}
+        encountersStatus={encountersStatus}
+        calendar={calendar}
+      />
     </div>
   )
 }

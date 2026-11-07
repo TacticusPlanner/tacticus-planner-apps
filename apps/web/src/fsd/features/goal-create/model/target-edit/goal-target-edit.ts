@@ -350,3 +350,36 @@ export function hasGoalTargetStart(detail: GoalDetail): boolean {
       return false
   }
 }
+
+/**
+ * An Upgrade draft moved to a new range, with its materials refreshed for it: each material the new range
+ * still needs takes the quantity that range requires, and a material it doesn't need is dropped (the
+ * "Add material" picker offers the range's others). A cleared range ("Not set") keeps the materials and
+ * quantities as they are, since the whole remaining ladder is rarely what the owner means, and so does
+ * a range nothing is known to need (the unit isn't in the loaded catalog).
+ */
+export function withUpgradeRange(
+  draft: Extract<GoalTargetDraft, { kind: "Upgrade" }>,
+  ranges: Partial<
+    Pick<
+      Extract<GoalTargetDraft, { kind: "Upgrade" }>,
+      "rankRange" | "activeRange" | "passiveRange"
+    >
+  >,
+  requiredFor: (
+    draft: Extract<GoalTargetDraft, { kind: "Upgrade" }>
+  ) => ReadonlyMap<string, number>
+): Extract<GoalTargetDraft, { kind: "Upgrade" }> {
+  const next = { ...draft, ...ranges }
+  if (Object.values(ranges).every((range) => range === null)) return next
+  const required = requiredFor(next)
+  // Nothing known for the unit (catalog still loading or missing it): leave the materials alone.
+  if (required.size === 0) return next
+  return {
+    ...next,
+    targets: draft.targets.flatMap((target) => {
+      const quantity = required.get(target.upgradeId)
+      return quantity ? [{ ...target, quantity }] : []
+    }),
+  }
+}

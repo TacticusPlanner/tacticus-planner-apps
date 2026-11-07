@@ -306,7 +306,6 @@ export function TargetStep({
               showPaidOptions: draft.economy.showPaidOptions,
               values: draft.runValues,
               change: draft.changeRun,
-              setShowPaidOptions: draft.setShowPaidOptions,
             }}
             runs={source.inputs.resolution}
             touch={isMobile}

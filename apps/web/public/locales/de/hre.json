@@ -9,7 +9,22 @@
     "window": "{{start}} bis {{end}}",
     "endsIn": "Endet in {{when}}",
     "startsIn": "Beginnt in {{when}}",
-    "previewNote": "Dieses Event hat noch nicht begonnen. Missionsfortschritt, Raids und Tempo werden freigeschaltet, sobald es läuft."
+    "previewNote": "Dieses Event hat noch nicht begonnen. Missionsfortschritt, Raids und Tempo werden freigeschaltet, sobald es läuft.",
+    "past": "Beendet",
+    "pastNote": "Dieses Event ist beendet. Seine Missionen werden zur Übersicht angezeigt."
+  },
+  "switcher": {
+    "label": "Helden-Release-Event auswählen",
+    "placeholder": "Event auswählen",
+    "empty": "Keine Events im Kalender",
+    "previous": "Vorheriges Event",
+    "next": "Nächstes Event",
+    "option": "{{name}} · {{dates}}",
+    "groups": {
+      "running": "Läuft",
+      "upcoming": "Demnächst",
+      "past": "Vergangen"
+    }
   },
   "missions": {
     "number": "Mission {{number}}",
@@ -92,7 +107,6 @@
     "toGo_other": "Noch {{count}} Schlachten",
     "note": "Raids für das Kampagnenziel: die günstigsten Kampagnenknoten, die etwas droppen. Bei gleichen Kosten zuerst Knoten mit mehr Eventpunkten, dann Knoten mit einem Drop für deine Ziele, nach Droprate, dann nach Gold.",
     "noteLightning": "Raids auf den Knoten des laufenden Kampagnenevents zählen als Blitzsiege, daher werden nur diese Knoten gezeigt.",
-    "budget": "Heute übrige Energie: {{energy}}.",
     "raidCount_one": "{{count}} Raid",
     "raidCount_other": "{{count}} Raids",
     "energy": "{{energy}} Energie",
@@ -147,7 +161,8 @@
       "more": "Nach der heutigen Energie sind weitere Schlachten nötig.",
       "none": "Kein Kampagnenknoten passt zu den Zielen dieser Mission.",
       "rulesTitle": "Knotenregeln"
-    }
+    },
+    "unlimitedEnergy": "Nicht auf die heutige Energie begrenzt: Nur die heutigen Versuche und das Ziel begrenzen die Liste."
   },
   "tokens": {
     "title": "Benötigte Marken",

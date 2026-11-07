@@ -16,6 +16,7 @@ import { isLocationVisible } from "../model/location-visibility"
 import { CantRaidMenu, ManualBattleBadge } from "./manual-battle"
 import { plannedRaidNeedForEntry } from "../model/planned-raid-need"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
+import { RaidLocationName } from "./raid-location-name"
 import { ResourceIcon, ResourceIconWithTooltip } from "./resource-icon"
 import { EntityIcon, LocationChips, RankBadge } from "@/shared/ui"
 
@@ -133,20 +134,21 @@ export function ResourceCard({
                         src={location.icon}
                       />
                     ) : null}
-                    <div className="min-w-0 flex-1 leading-tight">
-                      <div className="text-sm font-medium break-words">
-                        {location?.campaignName ?? entry.battleId}
+                    {/* Name takes the full row width with the badges below it (same on mobile
+                        and desktop), so a long campaign name never wraps mid-word beside them. */}
+                    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+                      <div className="min-w-0 basis-full">
+                        <RaidLocationName
+                          fallbackLabel={entry.battleId}
+                          location={location}
+                        />
                       </div>
-                      {location?.nodeLabel ? (
-                        <div className="text-xs break-words text-muted-foreground">
-                          {location.nodeLabel}
-                        </div>
-                      ) : null}
+                      {location?.manual ? <ManualBattleBadge /> : null}
+                      <PlannedRaidNeedBadge
+                        compact
+                        need={plannedRaidNeedForEntry(entry)}
+                      />
                     </div>
-                    {location?.manual ? <ManualBattleBadge /> : null}
-                    <PlannedRaidNeedBadge
-                      need={plannedRaidNeedForEntry(entry)}
-                    />
                   </div>
                 )
               })}

@@ -151,7 +151,8 @@ let planGoals: Array<Record<string, unknown>> = []
 let planIsError = false
 const retryPlan = vi.fn()
 
-vi.mock("@/entities/goal", () => ({
+vi.mock("@/entities/goal", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/goal")>()),
   getGoal: (...args: unknown[]) => getGoal(...args),
   useGlobalGoalPlan: () => ({
     inFlight: planGoals,

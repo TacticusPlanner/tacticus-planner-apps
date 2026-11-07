@@ -21,7 +21,6 @@ import {
   type ImportV1ProfileResult,
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
-import { useFeatureFlag } from "@/shared/feature-flags"
 import { goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import {
@@ -92,11 +91,6 @@ export function V1ImportPanel({
   const [password, setPassword] = useState("")
   const [selection, setSelection] =
     useState<V1ImportSelection>(defaultSelection)
-  // Roster snapshots stay hidden behind their flag: no checkbox, and never requested while it is off.
-  const snapshotsOn = useFeatureFlag("RosterSnapshots")
-  const requested: V1ImportSelection = snapshotsOn
-    ? selection
-    : { ...selection, rosterSnapshots: false }
   const [result, setResult] = useState<ImportV1ProfileResult | null>(null)
   // The username the shown result was imported as; "Run again" reopens the form in setup.
   const [importedAs, setImportedAs] = useState<string | null>(null)
@@ -126,7 +120,7 @@ export function V1ImportPanel({
   const canSubmit =
     username.trim().length > 0 &&
     password.length > 0 &&
-    Object.values(requested).some(Boolean) &&
+    Object.values(selection).some(Boolean) &&
     !submitting
 
   async function refreshAfterImport() {
@@ -143,7 +137,7 @@ export function V1ImportPanel({
         queryKey: campaignEventProgressQueries.all(),
       })
     }
-    if (requested.rosterSnapshots) {
+    if (selection.rosterSnapshots) {
       await queryClient.invalidateQueries({
         queryKey: rosterSnapshotQueries.list().queryKey,
       })
@@ -174,7 +168,7 @@ export function V1ImportPanel({
       // Always on — matches the manual create-goal flow's own default (rewrite-v1-goal-import),
       // and offering it as an option users could quietly clear only left goals blocked on missing
       // prerequisites they didn't realize they'd opted out of.
-      import: { ...requested, automaticPrerequisites: true },
+      import: { ...selection, automaticPrerequisites: true },
     })
   }
 
@@ -321,9 +315,7 @@ export function V1ImportPanel({
   )
 
   function partRows() {
-    return V1_IMPORT_PARTS.filter(
-      (part) => snapshotsOn || part.key !== "rosterSnapshots"
-    ).map((part) => {
+    return V1_IMPORT_PARTS.map((part) => {
       const { key } = part
       const locked = lockedParts?.includes(key) ?? false
       return (

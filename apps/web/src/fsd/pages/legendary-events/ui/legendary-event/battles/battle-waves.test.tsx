@@ -54,7 +54,14 @@ describe("BattleWaves", () => {
     expect(wave2).toHaveTextContent("Round 3")
     expect(wave2).toHaveTextContent("Power 132")
     const tiles = within(wave2!).getAllByTestId("battle-enemy-tile")
-    expect(tiles.map((tile) => tile.textContent)).toEqual(["Grot×3", "Ork Boy"])
+    // Name, the ×N count, then the star count beside one star icon (as the roster row shows it).
+    expect(tiles.map((tile) => tile.textContent)).toEqual([
+      "Grot×31",
+      "Ork Boy1",
+    ])
+    expect(within(tiles[0]!).getByTestId("npc-level-stars")).toHaveTextContent(
+      "1"
+    )
     expect(within(tiles[1]!).queryByTestId("battle-enemy-count")).toBeNull()
   })
 

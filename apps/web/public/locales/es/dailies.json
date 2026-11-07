@@ -61,11 +61,17 @@
       "catalogWarning": "Algunos datos de la incursión no coinciden con tus datos locales del juego. Se muestran valores básicos.",
       "refresh": "Actualizar estado",
       "refreshing": "Actualizando…",
-      "refreshFailed": "Error al actualizar. Mostrando el último estado conocido."
+      "refreshFailed": "Error al actualizar. Mostrando el último estado conocido.",
+      "keyRejected": "Tacticus rechazó la clave de API de este gremio. Mostrando el último estado conocido. Un líder o colíder debe reemplazarla en los ajustes del gremio."
     },
     "noActiveSeason": {
       "title": "No hay temporada de Incursión de gremio activa",
       "description": "Vuelve más tarde cuando comience la próxima temporada de tu gremio."
+    },
+    "keyRejected": {
+      "title": "Clave de API del gremio rechazada",
+      "description": "Tacticus rechazó la clave de API de este gremio, por lo que el estado de la incursión no puede actualizarse. Un líder o colíder debe reemplazarla por una clave con los permisos Guild y Guild Raid.",
+      "action": "Abrir ajustes del gremio"
     },
     "neverObserved": {
       "title": "Sincronizando el estado de la Incursión de gremio",
@@ -199,6 +205,8 @@
     "upgradesLeft_other": "Faltan {{count}} mejoras",
     "shardsLeft_one": "Falta {{count}} fragmento",
     "shardsLeft_other": "Faltan {{count}} fragmentos",
+    "more_one": "Falta {{count}}",
+    "more_other": "Faltan {{count}}",
     "progress": "{{owned}} de {{target}} en posesión",
     "fullyRaided": "Completado"
   },
@@ -253,7 +261,7 @@
     },
     "cell": {
       "label": "{{material}}, {{owned}} de {{target}} en posesión",
-      "node": "{{campaign}} {{node}} × {{raids}}",
+      "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} más",
       "moreUnits": "+{{count}}"
     },
@@ -373,16 +381,16 @@
         },
         "farm": {
           "title": "Lista de farmeo para puntos de evento",
-          "content": "Dónde incursionar hoy para ganar puntos de evento mientras avanzas tus objetivos, ajustado a la energía que te queda hoy."
-        },
-        "top": {
-          "title": "Mejores ubicaciones",
-          "content": "Las ubicaciones que dan más puntos de evento por incursión y por energía, sin tener en cuenta tus objetivos."
+          "content": "Dónde incursionar para ganar puntos de evento mientras avanzas tus objetivos, sin límite de la energía de hoy. Ordena por puntos por energía o por energía por objeto, o elige Ignorar objetivos para ver todas las ubicaciones con puntos."
         }
       }
     },
     "hre": {
       "steps": {
+        "switcher": {
+          "title": "Elige un evento",
+          "content": "Por defecto se muestra el evento actual. Abre aquí cualquier otro evento de lanzamiento de héroe próximo o pasado, o recórrelos con las flechas. Tu elección se guarda en la dirección de la página, así que puedes recargarla o compartirla."
+        },
         "header": {
           "title": "El evento",
           "content": "El héroe del evento, su alianza y cuándo termina el evento. Antes de que empiece, la pestaña muestra una vista previa del siguiente."
@@ -397,7 +405,7 @@
         },
         "raids": {
           "title": "Incursiones de campaña",
-          "content": "Dónde hacer incursiones hoy para el objetivo de campaña de la misión actual, primero la energía más barata, tras las incursiones que ya están en el plan de hoy. El resumen de abajo cuenta las batallas de campaña que quedan en todo el evento."
+          "content": "Dónde hacer incursiones para el objetivo de campaña de la misión actual, primero la energía más barata, sin límite de la energía de hoy. El resumen de abajo cuenta las batallas de campaña restantes de todo el evento."
         },
         "team": {
           "title": "Equipo de misión",
@@ -531,12 +539,12 @@
     },
     "help": {
       "fewerRaids": "Cuando varios lugares cuestan la misma energía por objeto, incursiona solo en los de más energía por batalla. Mismos materiales con la misma energía, en menos incursiones. Útil cuando te quedan pocos tickets de incursión.",
-      "combineGoals": "Combina los materiales restantes de todos los objetivos (solo los del proyecto seleccionado si hay uno) y planifica las incursiones de hoy como si fueran un solo objetivo: una lista sin grupos por objetivo, primero los materiales que más energía necesitan, sin tener en cuenta la prioridad.",
+      "combineGoals": "Combina los materiales restantes de todos los objetivos (solo los del proyecto seleccionado si hay uno) y planifica las incursiones de hoy como si fueran un solo objetivo: una lista sin grupos por objetivo, primero los materiales que más tardan en completarse, sin tener en cuenta la prioridad.",
       "raidableOnly": "Omite las batallas que aún no puedes incursionar (menos de 3 medallas) e incursiona otras ubicaciones para los mismos materiales. Un material sin ubicación incursionable aparece como bloqueado."
     },
     "note": {
       "fewerRaids": "Menos incursiones: se usan los lugares empatados con más energía por batalla, así los mismos materiales requieren menos incursiones.",
-      "combineGoals": "Combinar objetivos: las incursiones de hoy tratan todos los objetivos como una sola lista, primero los materiales que más energía necesitan. Las fechas de Plan y Objetivos siguen la prioridad de los objetivos.",
+      "combineGoals": "Combinar objetivos: las incursiones de hoy tratan todos los objetivos como una sola lista, primero los materiales que más tardan en completarse. Las fechas de Plan y Objetivos siguen la prioridad de los objetivos.",
       "raidableOnly": "Solo incursionables: las batallas que hay que jugar manualmente se sustituyen por ubicaciones incursionables."
     }
   },
@@ -575,7 +583,6 @@
       "total": "{{points}} puntos de evento",
       "energy": "{{energy}} de energía",
       "note": "Ubicaciones que dan puntos de evento y avanzan tus objetivos, elegidas con todo tu plan. Elige ubicaciones con puntos incluso cuando existe otra más barata sin puntos, así que puede costar más energía por objeto que Incursiones de hoy.",
-      "budget": "Energía restante hoy: {{energy}}.",
       "points": "{{points}} pts",
       "raidCount_one": "{{count}} incursión",
       "raidCount_other": "{{count}} incursiones",
@@ -583,18 +590,30 @@
         "noGoals": "No tienes objetivos activos, así que no hay nada que farmear.",
         "noEnergy": "Hoy no queda energía para ninguna de estas ubicaciones.",
         "nothingContributes": "Ninguna ubicación que da puntos de evento suelta un recurso que tus objetivos aún necesiten. Consulta abajo las mejores ubicaciones para conseguir puntos.",
-        "filtered": "Ninguna ubicación coincide con tus filtros de incursiones."
+        "filtered": "Ninguna ubicación coincide con tus filtros de incursiones.",
+        "noLocations": "Ninguna ubicación desbloqueada con intentos restantes da puntos de evento."
       },
       "goals": "Objetivos: {{goals}}",
-      "moreGoals": "+{{count}}"
-    },
-    "top": {
-      "overallTitle": "Mejores ubicaciones para puntos de evento",
-      "eventTitle": "Mejores ubicaciones de la campaña del evento",
-      "empty": "Ninguna ubicación desbloqueada pendiente de incursión da puntos de evento.",
-      "filteredEmpty": "Ninguna ubicación coincide con tus filtros de incursiones.",
+      "moreGoals": "+{{count}}",
+      "noteEnergy": "Ubicaciones que alimentan tus objetivos, primero las más baratas para su material (energía por objeto, como las elige Hoy), luego las de más puntos por energía. Una ubicación más cara solo recibe las incursiones que aún faltan.",
+      "noteIgnoreGoals": "Todas las ubicaciones que dan puntos de evento, sin tener en cuenta objetivos, primero las de más puntos por energía.",
+      "noteIgnoreGoalsEnergy": "Todas las ubicaciones que dan puntos de evento, sin tener en cuenta objetivos, primero las más baratas para su botín (energía por objeto frente a la mejor ubicación para ese objeto), luego las de más puntos por energía.",
+      "owned_one": "{{count}} en posesión",
+      "owned_other": "{{count}} en posesión",
       "perRaid": "{{points}} pts por incursión",
-      "perEnergy": "{{value}} pts por energía"
+      "perEnergy": "{{value}} pts por energía",
+      "perItem": "{{value}} de energía por objeto",
+      "order": {
+        "label": "Ordenar",
+        "points": "Puntos por energía",
+        "energy": "Energía por objeto",
+        "help": {
+          "points": "Primero los más puntos de evento por energía, aunque una ubicación más barata para el mismo material no dé ninguno.",
+          "energy": "Primero las ubicaciones más baratas para cada objeto, como las elige Hoy, luego las de más puntos de evento por energía.",
+          "ignoreGoals": "Muestra todas las ubicaciones que dan puntos de evento, sin importar lo que necesiten tus objetivos. Funciona con cualquier orden. Cada fila muestra su botín y cuántos tienes."
+        },
+        "ignoreGoals": "Ignorar objetivos"
+      }
     },
     "details": {
       "title": "Detalles del evento",
@@ -796,6 +815,11 @@
         "excluded": "Solo cuentan las eliminaciones de enemigos que no sean {{enemies}}.",
         "allowedExcluded": "Solo cuentan las eliminaciones de enemigos {{enemies}} que no sean {{excluded}}.",
         "units": "Solo cuentan las eliminaciones de {{units}}."
+      },
+      "matching": {
+        "allowed": "Solo {{units}}",
+        "excluded": "Sin {{units}}",
+        "description": "Solo personajes que coinciden con los enemigos que cuentan, para un equipo que encaje con la regla del evento."
       }
     }
   },
@@ -844,5 +868,10 @@
     "edit": "Editar medallas",
     "medalsEarned": "Medallas",
     "goldMilestones": "Hitos de oro"
+  },
+  "listPaging": {
+    "showNext_one": "Mostrar {{count}} más",
+    "showNext_other": "Mostrar {{count}} más",
+    "showAll": "Mostrar todo ({{count}})"
   }
 }

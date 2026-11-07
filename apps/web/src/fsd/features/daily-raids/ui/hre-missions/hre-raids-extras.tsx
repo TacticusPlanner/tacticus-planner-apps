@@ -20,6 +20,8 @@ import { EventGoalIcons } from "../home-screen-event/event-goal-icons"
 import { EventLocationRow } from "../home-screen-event/event-location-row"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
+import { useListPaging } from "../../model/use-list-paging"
+import { ListPagingControls } from "../list-paging-controls"
 
 /** What the raid rows read: the location labels, and the goal plan for drop icons and stock. */
 export type RaidRowsView = {
@@ -46,77 +48,85 @@ export function RaidRows({
   openEnded?: boolean
 }) {
   const { t } = useTranslation("hre")
+  const paging = useListPaging(rows)
   return (
-    <ul className="grid gap-2" data-testid={testId}>
-      {rows.map((row) => {
-        const resourceId = row.goal?.resourceId
-        const goals = (row.goal?.goalIds ?? [])
-          .map((goalId) => view?.goalsById.get(goalId))
-          .filter((goal): goal is DailyRaidGoalViewModel => !!goal)
-        return (
-          <EventLocationRow
-            key={row.battleId}
-            fallbackLabel={row.battleId}
-            location={locations?.get(row.battleId)}
-            testId={`hre-raid-${row.battleId}`}
-          >
-            <EventGoalIcons
-              goals={goals}
-              testId={`hre-raid-${row.battleId}-goals`}
-            />
-            {resourceId && view ? (
-              <span className="flex items-center gap-1">
-                <ResourceIconWithTooltip
-                  className="size-6"
-                  label={view.resourceLabels.get(resourceId) ?? resourceId}
-                  visual={view.resourceVisuals.get(resourceId)}
-                />
-                <ResourceStock
-                  progress={view.resourceTotals.get(resourceId)}
-                  testId={`hre-raid-${row.battleId}-stock`}
-                />
-              </span>
-            ) : null}
-            {row.eventPoints > 0 ? (
-              <Badge
-                className="tabular-nums"
-                data-testid={`hre-raid-${row.battleId}-event-points`}
-                variant="outline"
-              >
-                {t("raids.eventPoints", { points: row.eventPoints })}
-              </Badge>
-            ) : null}
-            {openEnded ? (
-              <Badge className="tabular-nums" variant="secondary">
-                <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
-                {t("raids.energyPerBattle", { energy: row.energyCost })}
-              </Badge>
-            ) : (
-              <>
-                <Badge className="tabular-nums" variant="outline">
-                  <EntityIcon
-                    alt=""
-                    className="size-3.5"
-                    src={
-                      battles
-                        ? battleGlyphIcon("campaignBattle")
-                        : raidTicketIcon()
-                    }
+    <>
+      <ul className="grid gap-2" data-testid={testId}>
+        {paging.visible.map((row) => {
+          const resourceId = row.goal?.resourceId
+          const goals = (row.goal?.goalIds ?? [])
+            .map((goalId) => view?.goalsById.get(goalId))
+            .filter((goal): goal is DailyRaidGoalViewModel => !!goal)
+          return (
+            <EventLocationRow
+              key={row.battleId}
+              fallbackLabel={row.battleId}
+              location={locations?.get(row.battleId)}
+              testId={`hre-raid-${row.battleId}`}
+            >
+              <EventGoalIcons
+                goals={goals}
+                testId={`hre-raid-${row.battleId}-goals`}
+              />
+              {resourceId && view ? (
+                <span className="flex items-center gap-1">
+                  <ResourceIconWithTooltip
+                    className="size-6"
+                    label={view.resourceLabels.get(resourceId) ?? resourceId}
+                    visual={view.resourceVisuals.get(resourceId)}
                   />
-                  {t(battles ? "raids.battleCount" : "raids.raidCount", {
-                    count: row.raids,
-                  })}
+                  <ResourceStock
+                    progress={view.resourceTotals.get(resourceId)}
+                    testId={`hre-raid-${row.battleId}-stock`}
+                  />
+                </span>
+              ) : null}
+              {row.eventPoints > 0 ? (
+                <Badge
+                  className="tabular-nums"
+                  data-testid={`hre-raid-${row.battleId}-event-points`}
+                  variant="outline"
+                >
+                  {t("raids.eventPoints", { points: row.eventPoints })}
                 </Badge>
+              ) : null}
+              {openEnded ? (
                 <Badge className="tabular-nums" variant="secondary">
                   <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
-                  {t("raids.energy", { energy: row.energy })}
+                  {t("raids.energyPerBattle", { energy: row.energyCost })}
                 </Badge>
-              </>
-            )}
-          </EventLocationRow>
-        )
-      })}
-    </ul>
+              ) : (
+                <>
+                  <Badge className="tabular-nums" variant="outline">
+                    <EntityIcon
+                      alt=""
+                      className="size-3.5"
+                      src={
+                        battles
+                          ? battleGlyphIcon("campaignBattle")
+                          : raidTicketIcon()
+                      }
+                    />
+                    {t(battles ? "raids.battleCount" : "raids.raidCount", {
+                      count: row.raids,
+                    })}
+                  </Badge>
+                  <Badge className="tabular-nums" variant="secondary">
+                    <EntityIcon
+                      alt=""
+                      className="size-3.5"
+                      src={energyIcon()}
+                    />
+                    {t("raids.energy", { energy: row.energy })}
+                  </Badge>
+                </>
+              )}
+            </EventLocationRow>
+          )
+        })}
+      </ul>
+      <ListPagingControls paging={paging} testId={`${testId}-paging`} />
+    </>
   )
 }
 

@@ -57,7 +57,8 @@ export function buildTodayView(
     combined
       ? orderCombinedEntries(
           entries,
-          raids.resourceUrgencyByResource ?? new Map()
+          raids.resourceUrgencyByResource ?? new Map(),
+          raids.locationsByBattleId
         )
       : entries
   const selection = selectTodayRaids({

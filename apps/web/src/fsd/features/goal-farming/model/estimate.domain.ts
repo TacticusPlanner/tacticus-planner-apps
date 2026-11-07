@@ -231,6 +231,22 @@ interface EstimateResult {
   /** Projected shop currency this estimate spends, by currency id: each shop supplier's supplied
    *  shards over its shards per purchase, times its cost. Absent when no shop offer contributed. */
   shopSpend?: ReadonlyMap<string, number>
+  /** When each of the goal's farming-strategy checkpoints (its stages, see `InventoryAllocationGoal.
+   *  stages`) is reached, in order — present only for a goal with more than one stage, so a staged
+   *  goal ("Every step", "Milestones", …) can show its intermediate targets, not just the final one. */
+  checkpoints?: readonly GoalCheckpointEstimate[]
+}
+
+/** One farming-strategy checkpoint of an estimated goal. */
+export interface GoalCheckpointEstimate {
+  /** The stage's `target` (a Rank goal: the rank index; a MoW Ability goal: `track:level`). */
+  target: string
+  /** Days of farming until this checkpoint's materials are all in hand (0: already covered). */
+  days: number
+  /** ISO `yyyy-mm-dd` date the checkpoint is reached, the reference date being Day 1. */
+  date: string
+  /** Energy spent on this checkpoint alone (not cumulative). */
+  energy: number
 }
 
 export type EstimateBlockedReason =

@@ -76,7 +76,7 @@ type MissionRaidsEmptyReason =
 export type MissionRaidPlan = {
   /** Battles still needed for the objective. */
   battlesLeft: number
-  /** Daily energy minus the energy really spent today, never below 0. */
+  /** The energy the suggestions may spend: Infinity from `planHookMissionRaids` (not bound to today), else daily energy minus the energy really spent today, never below 0. */
   energyBudget: number
   /** Suggestions over nodes that drop something. */
   rows: MissionRaidRow[]
@@ -136,6 +136,10 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
   /** Points one raid of a node earns in the running Home Screen Event, when one with a raid rule
    * runs: among equal energy costs, nodes earning more come first, so both events progress. */
   eventPointsByBattle?: ReadonlyMap<BattleId, number>
+  /** Today's "Combine goals": goal priority no longer breaks ties between nodes. */
+  combineGoals?: boolean
+  /** Plan as if energy were unlimited: only attempts and the objective bound the suggestions. */
+  unlimitedEnergy?: boolean
   /** Whether a node may be fought by hand for `battles` (the Raids Filters plus its slots, alliance
    * and faction). */
   passesBattlesFilter?: (battleId: BattleId) => boolean
@@ -149,12 +153,13 @@ const descending = (a: number, b: number) => b - a
 /**
  * Suggestion order: energy cost; then more points in a running Home Screen Event; then more HRE
  * points (a lightning-victory condition, then more enemy power); then a node feeding an in-scope goal; among those, the higher drop rate of the goal's resource (common and
- * uncommon drop more often), then more gold, then the goal's priority; other nodes by gold; then
- * battle id.
+ * uncommon drop more often), then more gold, then the goal's priority (skipped with `combineGoals`);
+ * other nodes by gold; then battle id.
  */
 function compareCandidates(
   goalNodes: ReadonlyMap<BattleId, MissionGoalNode>,
-  eventPoints: ReadonlyMap<BattleId, number> | undefined
+  eventPoints: ReadonlyMap<BattleId, number> | undefined,
+  combineGoals = false
 ): (a: MissionRaidBattle, b: MissionRaidBattle) => number {
   const points = (battle: MissionRaidBattle) => eventPoints?.get(battle.id) ?? 0
   const rate = (
@@ -174,7 +179,7 @@ function compareCandidates(
       descending(a.enemyPower ?? 0, b.enemyPower ?? 0) ||
       descending(rate(a, goalA), rate(b, goalB)) ||
       descending(a.expectedGold, b.expectedGold) ||
-      (goalA?.priority ?? 0) - (goalB?.priority ?? 0) ||
+      (combineGoals ? 0 : (goalA?.priority ?? 0) - (goalB?.priority ?? 0)) ||
       compareIds(a.id, b.id)
     )
   }
@@ -195,13 +200,13 @@ const OPEN_ENDED_NODES = 3
 export function planMissionRaids(
   input: PlanMissionRaidsInput
 ): MissionRaidPlan {
-  const energyBudget = Math.max(
-    0,
-    input.dailyEnergy - input.realEnergyUsedToday
-  )
+  const energyBudget = input.unlimitedEnergy
+    ? Infinity
+    : Math.max(0, input.dailyEnergy - input.realEnergyUsedToday)
   const sort = compareCandidates(
     input.goalNodesByBattle,
-    input.eventPointsByBattle
+    input.eventPointsByBattle,
+    input.combineGoals
   )
   const battles = input.manual
     ? planMissionBattles(input, input.manual, energyBudget, sort)

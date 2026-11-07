@@ -61,11 +61,17 @@
       "catalogWarning": "Einige Raid-Daten konnten nicht deinen lokalen Spieldaten zugeordnet werden. Es werden Basiswerte angezeigt.",
       "refresh": "Status aktualisieren",
       "refreshing": "Wird aktualisiert…",
-      "refreshFailed": "Aktualisierung fehlgeschlagen. Zeigt den letzten bekannten Status."
+      "refreshFailed": "Aktualisierung fehlgeschlagen. Zeigt den letzten bekannten Status.",
+      "keyRejected": "Tacticus hat den API-Schlüssel dieser Gilde abgelehnt. Zeigt den letzten bekannten Status. Der Anführer oder ein Ko-Anführer muss ihn in den Gildeneinstellungen ersetzen."
     },
     "noActiveSeason": {
       "title": "Keine aktive Gilden-Raid-Saison",
       "description": "Schau später wieder vorbei, wenn die nächste Saison deiner Gilde beginnt."
+    },
+    "keyRejected": {
+      "title": "Gilden-API-Schlüssel abgelehnt",
+      "description": "Tacticus hat den API-Schlüssel dieser Gilde abgelehnt, daher kann der Raid-Status nicht aktualisiert werden. Der Anführer oder ein Ko-Anführer muss ihn durch einen Schlüssel mit den Bereichen Guild und Guild Raid ersetzen.",
+      "action": "Gildeneinstellungen öffnen"
     },
     "neverObserved": {
       "title": "Gilden-Raid-Status deiner Gilde wird synchronisiert",
@@ -199,6 +205,8 @@
     "upgradesLeft_other": "Noch {{count}} Upgrades",
     "shardsLeft_one": "Noch {{count}} Scherbe",
     "shardsLeft_other": "Noch {{count}} Scherben",
+    "more_one": "Noch {{count}}",
+    "more_other": "Noch {{count}}",
     "progress": "{{owned}} von {{target}} im Besitz",
     "fullyRaided": "Vollständig geraidet"
   },
@@ -253,7 +261,7 @@
     },
     "cell": {
       "label": "{{material}}, {{owned}} von {{target}} vorhanden",
-      "node": "{{campaign}} {{node}} × {{raids}}",
+      "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} weitere",
       "moreUnits": "+{{count}}"
     },
@@ -373,16 +381,16 @@
         },
         "farm": {
           "title": "Farm-Liste für Event-Punkte",
-          "content": "Wo du heute raiden solltest, um Event-Punkte zu sammeln und gleichzeitig deine Ziele voranzubringen, aufgefüllt bis zu deiner heute verbleibenden Energie."
-        },
-        "top": {
-          "title": "Beste Orte",
-          "content": "Die Orte mit den meisten Event-Punkten pro Raid und pro Energie, unabhängig von deinen Zielen."
+          "content": "Wo du raiden solltest, um Event-Punkte zu sammeln und deine Ziele voranzubringen, ohne Begrenzung auf die heutige Energie. Sortiere nach Punkten pro Energie oder nach Energie pro Gegenstand, oder wähle Ziele ignorieren, um jeden Ort mit Punkten zu sehen."
         }
       }
     },
     "hre": {
       "steps": {
+        "switcher": {
+          "title": "Event auswählen",
+          "content": "Standardmäßig wird das aktuelle Event angezeigt. Hier kannst du jedes andere kommende oder vergangene Helden-Release-Event öffnen oder mit den Pfeilen durchblättern. Deine Auswahl bleibt in der Seitenadresse, sodass du neu laden oder sie teilen kannst."
+        },
         "header": {
           "title": "Das Event",
           "content": "Der Event-Held, seine Allianz und wann das Event endet. Vor dem Start zeigt der Tab das nächste Event als Vorschau."
@@ -397,7 +405,7 @@
         },
         "raids": {
           "title": "Kampagnenraids",
-          "content": "Wo du heute für das Kampagnenziel der aktuellen Mission raidest, günstigste Energie zuerst, nach den Raids, die schon im heutigen Plan stehen. Die Zusammenfassung darunter zählt die Kampagnenschlachten, die im ganzen Event übrig sind."
+          "content": "Wo du für das Kampagnenziel der aktuellen Mission raidest, günstigste Energie zuerst, ohne Begrenzung auf die heutige Energie. Die Übersicht unten zählt die verbleibenden Kampagnenkämpfe des ganzen Events."
         },
         "team": {
           "title": "Missionsteam",
@@ -531,12 +539,12 @@
     },
     "help": {
       "fewerRaids": "Wenn mehrere Orte gleich viel Energie pro Gegenstand kosten, nur die mit der meisten Energie pro Kampf raiden. Gleiche Materialien für gleiche Energie, mit weniger Raids. Praktisch, wenn Raid-Tickets knapp sind.",
-      "combineGoals": "Fasst die restlichen Materialien aller Ziele zusammen (nur die des gewählten Projekts, falls eines gewählt ist) und plant die heutigen Raids, als wären sie ein Ziel: eine Liste ohne Zielgruppen, die Materialien mit dem meisten Energiebedarf zuerst, die Zielpriorität wird ignoriert.",
+      "combineGoals": "Fasst die restlichen Materialien aller Ziele zusammen (nur die des gewählten Projekts, falls eines gewählt ist) und plant die heutigen Raids, als wären sie ein Ziel: eine Liste ohne Zielgruppen, die Materialien mit der längsten Restdauer zuerst, die Zielpriorität wird ignoriert.",
       "raidableOnly": "Lässt Kämpfe weg, die du noch nicht raiden kannst (weniger als 3 Medaillen), und raidet andere Orte für dieselben Materialien. Ein Material ohne raidbaren Ort wird als blockiert angezeigt."
     },
     "note": {
       "fewerRaids": "Weniger Raids: Gleichwertige Orte mit mehr Energie pro Kampf werden genutzt, damit dieselben Materialien weniger Raids brauchen.",
-      "combineGoals": "Ziele kombinieren: Die heutigen Raids behandeln alle Ziele als eine Liste, die Materialien mit dem meisten Energiebedarf zuerst. Daten in Plan und Ziele folgen weiter der Zielpriorität.",
+      "combineGoals": "Ziele kombinieren: Die heutigen Raids behandeln alle Ziele als eine Liste, die Materialien mit der längsten Restdauer zuerst. Daten in Plan und Ziele folgen weiter der Zielpriorität.",
       "raidableOnly": "Nur raidbar: Kämpfe, die manuell gespielt werden müssen, werden durch raidbare Orte ersetzt."
     }
   },
@@ -575,7 +583,6 @@
       "total": "{{points}} Event-Punkte",
       "energy": "{{energy}} Energie",
       "note": "Orte, die Event-Punkte bringen und deine Ziele voranbringen, ausgewählt aus deinem gesamten Plan. Es werden auch dann Orte mit Event-Punkten gewählt, wenn ein günstigerer Ort ohne Punkte existiert; pro Item kann das mehr Energie kosten als bei Heutige Raids.",
-      "budget": "Heute verbleibende Energie: {{energy}}.",
       "points": "{{points}} Pkt.",
       "raidCount_one": "{{count}} Raid",
       "raidCount_other": "{{count}} Raids",
@@ -583,18 +590,30 @@
         "noGoals": "Du hast keine aktiven Ziele, es gibt also nichts zu farmen.",
         "noEnergy": "Heute reicht die Energie für keinen dieser Orte mehr.",
         "nothingContributes": "Kein Ort mit Event-Punkten liefert eine Ressource, die deine Ziele noch brauchen. Die besten Orte für Punkte findest du unten.",
-        "filtered": "Kein Ort entspricht deinen Raid-Filtern."
+        "filtered": "Kein Ort entspricht deinen Raid-Filtern.",
+        "noLocations": "Kein freigeschalteter Ort mit verbleibenden Versuchen bringt Event-Punkte."
       },
       "goals": "Ziele: {{goals}}",
-      "moreGoals": "+{{count}}"
-    },
-    "top": {
-      "overallTitle": "Beste Orte für Event-Punkte",
-      "eventTitle": "Beste Orte der Event-Kampagne",
-      "empty": "Kein freigeschalteter Ort, der noch zu raiden ist, bringt Event-Punkte.",
-      "filteredEmpty": "Kein Ort entspricht deinen Raid-Filtern.",
+      "moreGoals": "+{{count}}",
+      "noteEnergy": "Orte, die deine Ziele versorgen, die günstigsten für ihr Material zuerst (Energie pro Gegenstand, wie Heute sie wählt), dann die meisten Punkte pro Energie. Ein teurerer Ort bekommt nur die noch nötigen Raids.",
+      "noteIgnoreGoals": "Jeder Ort, der Event-Punkte bringt, Ziele ignoriert, die meisten Punkte pro Energie zuerst.",
+      "noteIgnoreGoalsEnergy": "Jeder Ort, der Event-Punkte bringt, Ziele ignoriert, die günstigsten für ihre Beute zuerst (Energie pro Gegenstand im Vergleich zum besten Ort für diesen Gegenstand), dann die meisten Punkte pro Energie.",
+      "owned_one": "{{count}} im Besitz",
+      "owned_other": "{{count}} im Besitz",
       "perRaid": "{{points}} Pkt. pro Raid",
-      "perEnergy": "{{value}} Pkt. pro Energie"
+      "perEnergy": "{{value}} Pkt. pro Energie",
+      "perItem": "{{value}} Energie pro Gegenstand",
+      "order": {
+        "label": "Sortieren",
+        "points": "Punkte pro Energie",
+        "energy": "Energie pro Gegenstand",
+        "help": {
+          "points": "Die meisten Event-Punkte pro Energie zuerst, auch wenn ein günstigerer Ort für dasselbe Material keine bringt.",
+          "energy": "Die günstigsten Orte für jeden Gegenstand zuerst, wie Heute sie wählt, dann die meisten Event-Punkte pro Energie.",
+          "ignoreGoals": "Zeigt jeden Ort, der Event-Punkte bringt, unabhängig davon, was deine Ziele brauchen. Funktioniert mit beiden Sortierungen. Jede Zeile zeigt die Beute und wie viel du davon besitzt."
+        },
+        "ignoreGoals": "Ziele ignorieren"
+      }
     },
     "details": {
       "title": "Event-Details",
@@ -796,6 +815,11 @@
         "excluded": "Nur Abschüsse von Feinden, die nicht {{enemies}} sind, zählen.",
         "allowedExcluded": "Nur Abschüsse von {{enemies}}-Feinden, die nicht {{excluded}} sind, zählen.",
         "units": "Nur Abschüsse von {{units}} zählen."
+      },
+      "matching": {
+        "allowed": "Nur {{units}}",
+        "excluded": "Kein {{units}}",
+        "description": "Nur Charaktere, die zu den zählenden Gegnern passen, für ein Team, das der Event-Regel entspricht."
       }
     }
   },
@@ -844,5 +868,10 @@
     "edit": "Medaillen bearbeiten",
     "medalsEarned": "Medaillen",
     "goldMilestones": "Gold-Meilensteine"
+  },
+  "listPaging": {
+    "showNext_one": "Nächsten {{count}} zeigen",
+    "showNext_other": "Nächste {{count}} zeigen",
+    "showAll": "Alle zeigen ({{count}})"
   }
 }

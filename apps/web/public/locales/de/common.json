@@ -82,6 +82,7 @@
       "nextAutoSync": "Nächste automatische Synchronisierung {{time}}",
       "syncProgress": "Synchronisierung {{downloaded}} / {{total}}…",
       "retrySync": "Synchronisierung fehlgeschlagen — erneut versuchen",
+      "rateLimited": "Sync-Limit erreicht. Erneut versuchen {{time}}.",
       "reauthRequired": "Anmeldung abgelaufen — zum Anmelden tippen",
       "refreshRequired": "Aktualisierung erforderlich · {{lastSync}}",
       "syncNow": "Jetzt synchronisieren"
@@ -290,6 +291,7 @@
     "noResults": "Keine passenden Seiten oder Aktionen gefunden.",
     "search": "Seiten und Aktionen durchsuchen",
     "sync": "Sync",
+    "syncCooldown": "{{minutes}} Min.",
     "syncWithTacticus": "Mit Tacticus synchronisieren",
     "skipToContent": "Zum Inhalt springen",
     "primaryNavigation": "Hauptnavigation",
@@ -1610,6 +1612,13 @@
       }
     },
     "estimate": {
+      "checkpoints": {
+        "summary": "{{count}} Zwischenziele",
+        "next": "Nächstes",
+        "title": "Zwischenziele",
+        "ready": "Schon bereit",
+        "energy": "{{energy}} Energie"
+      },
       "none": "—",
       "days": "in {{days}} Tagen",
       "blockedLabel": "Blockiert",
@@ -1694,6 +1703,10 @@
       "orbs": "{{rarity}} Orbs",
       "abilityBadges": "{{rarity}} Fähigkeitsabzeichen",
       "forgeBadges": "{{rarity}} Schmiedeabzeichen",
+      "orbsTotal": "Orbs",
+      "abilityBadgesTotal": "Fähigkeitsabzeichen",
+      "forgeBadgesTotal": "Schmiedeabzeichen",
+      "byRarityLabel": "{{label}}. Nach Seltenheit anzeigen",
       "xpBooks": "{{rarity}} EP-Bücher",
       "xpBooksValue": "{{available}} von {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
@@ -1712,6 +1725,8 @@
       "levelProgress": "Stufe {{current}} → {{target}}",
       "ownedOfRequired": "{{owned}} / {{required}}",
       "upgradeMaterial": "{{name}}: {{owned}} / {{quantity}}",
+      "upgradeMaterialCounted": "Enthält {{amount}} aus dem {{unit}}-{{goalType}}-Ziel (#{{priority}})",
+      "upgradeMaterialTakenFirst": "{{amount}} zuerst vom {{unit}}-{{goalType}}-Ziel (#{{priority}}) belegt",
       "abilityTrack": {
         "active": "Aktiv",
         "passive": "Passiv",
@@ -1907,6 +1922,11 @@
       "goalLimitReached": "Du hast bereits {{max}} nicht archivierte Ziele vom Typ {{type}}. Archiviere oder lösche zuerst einige.",
       "goalLimitReachedGeneric": "Du kannst höchstens {{max}} nicht archivierte Ziele eines Typs haben. Archiviere oder lösche zuerst einige.",
       "projectLimitReached": "Du hast bereits {{max}} nicht archivierte Projekte. Archiviere eines, um Platz zu schaffen."
+    },
+    "view": {
+      "label": "Zielansicht",
+      "cards": "Karten",
+      "table": "Tabelle"
     }
   },
   "language": {
@@ -2043,6 +2063,10 @@
         "seasonFit": {
           "title": "Saison-Passung",
           "content": "Wähle eine Battle-Pass-, Gildenraid- oder Gildenkriegs-Saison, um zu sehen, welche Ziele rechtzeitig fertig werden. Eine Linie zeigt, ab wo Ziele in die nächste Saison rutschen."
+        },
+        "viewToggle": {
+          "title": "Karten oder Tabelle",
+          "content": "Wechsle zwischen Zielkarten und der kompakten Tabelle. Deine Wahl wird auf diesem Gerät gespeichert."
         }
       }
     },

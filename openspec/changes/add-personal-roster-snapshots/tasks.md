@@ -32,11 +32,7 @@
 - [x] 5.2 i18n keys `collection.compare.*`, `collection.snapshots.*` and `tour.collection.steps.*` in en/de/es/fr `common.json`, with real translations.
 - [x] 5.3 Declare and emit the analytics events (no snapshot names).
 
-## 6. Feature flag
+## 6. Verification
 
-- [x] 6.1 Hide roster snapshots behind the `RosterSnapshots` flag: no Compare, Take snapshot, Manage or guest prompt in Collection, and a compare URL is ignored while it is off. The API gates its endpoints on the same flag.
-
-## 7. Verification
-
-- [x] 7.1 Vitest for the entity, URL model, compare page states and dialogs. `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`.
-- [ ] 7.2 Browser check through the Aspire stack: desktop and a 420px mobile viewport, take → compare → rename → delete.
+- [x] 6.1 Vitest for the entity, URL model, compare page states and dialogs. `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd`.
+- [ ] 6.2 Browser check through the Aspire stack: desktop and a 420px mobile viewport, take → compare → rename → delete.

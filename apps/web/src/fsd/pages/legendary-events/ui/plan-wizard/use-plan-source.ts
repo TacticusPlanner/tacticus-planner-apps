@@ -27,6 +27,7 @@ import {
   type LegendaryEventRunDates,
 } from "../../lib/run-dates"
 import { useLegendaryEventGoalTargets } from "@/features/legendary-event-goals"
+import { useShowPaidOptions } from "@/features/legendary-event-plan"
 import {
   useTokenMissionsSource,
   type TokenPlanMissionsSource,
@@ -112,6 +113,8 @@ export function usePlanSource(eventId: string): PlanSource {
   const syncTimes = useLegendaryEventSyncTimes()
   const config = useClearEstimateConfig(useUnitPowerContext())
   const { query: plan } = usePlanWriteQueue(eventId)
+  // Show paid options is an account setting; the wizard plans with it as the stored plan's own.
+  const paid = useShowPaidOptions()
   const unitName = useUnitName()
   const eventData = event.status === "ready" ? event.data : undefined
   const goalTargets = useLegendaryEventGoalTargets(useAllowedUnitIds(eventData))
@@ -123,6 +126,8 @@ export function usePlanSource(eventId: string): PlanSource {
     reads.every((read) => read.status === "ready") &&
     config.status !== "loading" &&
     plan.status !== "pending" &&
+    !paid.loading &&
+    !paid.failed &&
     goalTargets.status !== "loading"
 
   // The reads hand out a new state object every render; the memo keys on their data, which only
@@ -179,7 +184,7 @@ export function usePlanSource(eventId: string): PlanSource {
       progress: synced,
       progressObservedAtMs,
       eventUnit: rosterUnits.find((unit) => unit.unitId === eventData.id),
-      plan: plan.data,
+      plan: { ...plan.data, showPaidOptions: paid.showPaidOptions },
       runStarts: runDates.starts,
       initialRarityOf: (unitId) =>
         unitsById.get(unitId as never)?.initialRarity,
@@ -213,6 +218,7 @@ export function usePlanSource(eventId: string): PlanSource {
     progressData,
     config,
     plan.data,
+    paid.showPaidOptions,
     progressObservedAtMs,
     nowMs,
     unitName,
@@ -269,12 +275,14 @@ export function usePlanSource(eventId: string): PlanSource {
     }
     return frozenSource
   }
-  if (failed || plan.status === "error") {
+  // A failed settings read would plan with the default Show paid options, not the account's.
+  if (failed || plan.status === "error" || paid.failed) {
     return {
       status: "error",
       retry: () => {
         event.retry?.()
         void plan.refetch()
+        paid.retry()
       },
     }
   }

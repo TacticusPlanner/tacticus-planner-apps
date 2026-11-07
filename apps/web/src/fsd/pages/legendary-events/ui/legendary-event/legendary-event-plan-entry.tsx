@@ -42,7 +42,7 @@ export function LegendaryEventPlanEntry({
           data-testid="legendary-event-plan-wizard"
           variant={planned ? "outline" : "default"}
         >
-          <Link to={`/legendary-events/${eventId}/plan?from=overview`}>
+          <Link to={`/legendary-events/${eventId}/plan/edit?from=overview`}>
             <Sparkles aria-hidden="true" />
             {t(planned ? "planWizard.refine" : "planWizard.open")}
           </Link>

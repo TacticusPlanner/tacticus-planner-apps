@@ -105,7 +105,9 @@ describe("useRunInputs", () => {
   it("shows each change at once and saves the run once its changes settle", async () => {
     const saved = plan(4, [stored(3, { regularMissions: 10 })])
     api.runs.mockResolvedValue(saved)
-    const { result, cached } = setup(plan(3))
+    const { result, cached } = setup(
+      plan(3, [stored(3, { regularMissions: 0 })])
+    )
 
     for (let press = 1; press <= 10; press++) {
       act(() => {
@@ -184,45 +186,6 @@ describe("useRunInputs", () => {
 
     expect(result.current.values(1).regularMissions).toBe(4)
     expect(toast.error).toHaveBeenCalledWith("runInputs.toasts.error")
-  })
-
-  it("keeps paid values when Show paid options is turned off and on, with the notes unchanged", async () => {
-    const initial = plan(3, [stored(2, { premiumMissions: 10 })])
-    api.plan
-      .mockResolvedValueOnce({
-        ...initial,
-        revision: 4,
-        showPaidOptions: false,
-      })
-      .mockResolvedValueOnce({ ...initial, revision: 5, showPaidOptions: true })
-    const { result } = setup(initial)
-
-    await act(async () => {
-      await result.current.setShowPaidOptions(false)
-    })
-    expect(result.current.showPaidOptions).toBe(false)
-    expect(api.plan).toHaveBeenLastCalledWith(EVENT, {
-      expectedRevision: 3,
-      notes: "Alpha first",
-      showPaidOptions: false,
-    })
-    await act(async () => {
-      await result.current.setShowPaidOptions(true)
-    })
-
-    expect(api.plan).toHaveBeenLastCalledWith(EVENT, {
-      expectedRevision: 4,
-      notes: "Alpha first",
-      showPaidOptions: true,
-    })
-    expect(result.current.showPaidOptions).toBe(true)
-    expect(result.current.values(2).premiumMissions).toBe(10)
-    expect(api.runs).not.toHaveBeenCalled()
-    expect(api.capture).toHaveBeenCalledWith({
-      type: "legendary_event_paid_options_toggled",
-      eventId: EVENT,
-      on: true,
-    })
   })
 
   it("saves a settling run at once when the drawer unmounts", async () => {

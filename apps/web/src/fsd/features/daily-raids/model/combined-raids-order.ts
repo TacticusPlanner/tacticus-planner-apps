@@ -1,33 +1,45 @@
+import type { BattleId } from "@workspace/game-domain"
+
 import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
 
-import type { DailyRaidResourceUrgency } from "./daily-raids.domain"
+import { clusterByCampaign, upgradeCampaignKey } from "./campaign-clustering"
+import type {
+  DailyRaidLocationViewModel,
+  DailyRaidResourceUrgency,
+} from "./daily-raids.domain"
 
 /**
- * Combine goals: Today's entries in one combined order, by their resource's pooled urgency: most
- * energy to clear first, as Insights ranks its bottlenecks, then longest to finish. A resource without
- * an urgency goes last; ties keep the run's own order, and a resource's entries stay together.
+ * Combine goals: Today's entries in one combined order, by their resource's pooled urgency: longest
+ * to finish first, then most energy to clear, the same order a goal's own upgrades take. A resource
+ * without an urgency goes last; ties keep the run's own order, and a resource's entries stay
+ * together. Same-campaign resources of similar energy are then pulled together
+ * (`clusterByCampaign`).
  */
 export function orderCombinedEntries<Entry extends RaidBreakdownEntry>(
   entries: readonly Entry[],
-  urgencyByResource: ReadonlyMap<string, DailyRaidResourceUrgency>
+  urgencyByResource: ReadonlyMap<string, DailyRaidResourceUrgency>,
+  locationsByBattleId: ReadonlyMap<
+    BattleId,
+    DailyRaidLocationViewModel
+  > = new Map()
 ): Entry[] {
-  const firstIndex = new Map<string, number>()
-  for (const [index, entry] of entries.entries()) {
-    if (!firstIndex.has(entry.resourceId)) {
-      firstIndex.set(entry.resourceId, index)
-    }
+  const byResource = new Map<string, Entry[]>()
+  for (const entry of entries) {
+    const resourceEntries = byResource.get(entry.resourceId) ?? []
+    resourceEntries.push(entry)
+    byResource.set(entry.resourceId, resourceEntries)
   }
-  return [...entries].sort((left, right) => {
-    const leftUrgency = urgencyByResource.get(left.resourceId)
-    const rightUrgency = urgencyByResource.get(right.resourceId)
-    const byEnergy =
-      (rightUrgency?.energyTotal ?? -1) - (leftUrgency?.energyTotal ?? -1)
-    if (byEnergy !== 0) return byEnergy
+  const resources = [...byResource.entries()].sort(([left], [right]) => {
+    const leftUrgency = urgencyByResource.get(left)
+    const rightUrgency = urgencyByResource.get(right)
     const byDays = (rightUrgency?.days ?? -1) - (leftUrgency?.days ?? -1)
     if (byDays !== 0) return byDays
-    return (
-      (firstIndex.get(left.resourceId) ?? 0) -
-      (firstIndex.get(right.resourceId) ?? 0)
-    )
+    return (rightUrgency?.energyTotal ?? -1) - (leftUrgency?.energyTotal ?? -1)
   })
+  return clusterByCampaign(
+    resources,
+    ([, resourceEntries]) =>
+      upgradeCampaignKey(resourceEntries, locationsByBattleId),
+    ([resourceId]) => urgencyByResource.get(resourceId)?.energyTotal
+  ).flatMap(([, resourceEntries]) => resourceEntries)
 }

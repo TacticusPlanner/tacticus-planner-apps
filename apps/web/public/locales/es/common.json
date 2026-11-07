@@ -82,6 +82,7 @@
       "nextAutoSync": "Próxima sincronización automática {{time}}",
       "syncProgress": "Sincronizando {{downloaded}} / {{total}}…",
       "retrySync": "Error de sincronización — reintentar",
+      "rateLimited": "Límite de sincronización alcanzado. Reintenta {{time}}.",
       "reauthRequired": "Sesión expirada — toca para iniciar sesión",
       "refreshRequired": "Actualización necesaria · {{lastSync}}",
       "syncNow": "Sincronizar ahora"
@@ -290,6 +291,7 @@
     "noResults": "No se encontraron páginas ni acciones coincidentes.",
     "search": "Buscar páginas y acciones",
     "sync": "Sincronizar",
+    "syncCooldown": "{{minutes}} min",
     "syncWithTacticus": "Sincronizar con Tacticus",
     "skipToContent": "Saltar al contenido",
     "primaryNavigation": "Navegación principal",
@@ -1610,6 +1612,13 @@
       }
     },
     "estimate": {
+      "checkpoints": {
+        "summary": "{{count}} puntos de control",
+        "next": "Siguiente",
+        "title": "Puntos de control",
+        "ready": "Listo ya",
+        "energy": "{{energy}} de energía"
+      },
       "none": "—",
       "days": "en {{days}} días",
       "blockedLabel": "Bloqueado",
@@ -1694,6 +1703,10 @@
       "orbs": "Orbes {{rarity}}",
       "abilityBadges": "Insignias de habilidad {{rarity}}",
       "forgeBadges": "Insignias de forja {{rarity}}",
+      "orbsTotal": "Orbes",
+      "abilityBadgesTotal": "Insignias de habilidad",
+      "forgeBadgesTotal": "Insignias de forja",
+      "byRarityLabel": "{{label}}. Ver por rareza",
       "xpBooks": "Libros de XP {{rarity}}",
       "xpBooksValue": "{{available}} de {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
@@ -1712,6 +1725,8 @@
       "levelProgress": "Nv {{current}} → {{target}}",
       "ownedOfRequired": "{{owned}} / {{required}}",
       "upgradeMaterial": "{{name}}: {{owned}} / {{quantity}}",
+      "upgradeMaterialCounted": "Incluye {{amount}} del objetivo de {{goalType}} de {{unit}} (#{{priority}})",
+      "upgradeMaterialTakenFirst": "{{amount}} reservados antes por el objetivo de {{goalType}} de {{unit}} (#{{priority}})",
       "abilityTrack": {
         "active": "Activa",
         "passive": "Pasiva",
@@ -1907,6 +1922,11 @@
       "goalLimitReached": "Ya tienes {{max}} objetivos de tipo {{type}} sin archivar. Archiva o elimina algunos primero.",
       "goalLimitReachedGeneric": "Puedes tener como máximo {{max}} objetivos sin archivar de un mismo tipo. Archiva o elimina algunos primero.",
       "projectLimitReached": "Ya tienes {{max}} proyectos sin archivar. Archiva uno para hacer sitio."
+    },
+    "view": {
+      "label": "Vista de objetivos",
+      "cards": "Tarjetas",
+      "table": "Tabla"
     }
   },
   "language": {
@@ -2043,6 +2063,10 @@
         "seasonFit": {
           "title": "Ajuste a temporada",
           "content": "Elige una temporada del Pase de batalla, de Incursión de gremio o de Guerra de gremios para ver qué objetivos terminan a tiempo. Una línea marca dónde los objetivos pasan a la siguiente temporada."
+        },
+        "viewToggle": {
+          "title": "Tarjetas o tabla",
+          "content": "Cambia entre las tarjetas de objetivos y la tabla compacta. Tu elección se guarda en este dispositivo."
         }
       }
     },

@@ -11,6 +11,10 @@ import {
   type DailyRaidResourceUrgency,
   type DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
+import {
+  clusterByCampaign,
+  upgradeCampaignKey,
+} from "../model/campaign-clustering"
 import { isLocationVisible } from "../model/location-visibility"
 import { GoalTargetBadge, ResourceCard, UnitIcon } from "./resource-card"
 
@@ -73,7 +77,8 @@ export function RaidSchedule({
       : groupEntries(
           groupedEntries,
           goalsById,
-          resourceUrgencyByGoalAndResource
+          resourceUrgencyByGoalAndResource,
+          locationsByBattleId
         )
   const grouped = group(entries)
   const bonusGrouped = bonusEntries ? group(bonusEntries) : []
@@ -241,7 +246,8 @@ function groupEntries(
   resourceUrgencyByGoalAndResource: ReadonlyMap<
     string,
     DailyRaidResourceUrgency
-  >
+  >,
+  locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
 ) {
   const byGoal = new Map<string, Map<string, RaidBreakdownEntry[]>>()
   for (const entry of entries) {
@@ -263,25 +269,36 @@ function groupEntries(
         targetLabel: "",
         goalKind: "Unlock" as const,
       },
-      resources: [...resources.entries()]
-        .map(([resourceId, resourceEntries]) => ({
-          resourceId,
-          entries: resourceEntries,
-        }))
-        .sort((left, right) => {
-          const leftUrgency = resourceUrgencyByGoalAndResource.get(
-            dailyRaidResourceKey(goalId, left.resourceId)
-          )
-          const rightUrgency = resourceUrgencyByGoalAndResource.get(
-            dailyRaidResourceKey(goalId, right.resourceId)
-          )
-          const byDays = (rightUrgency?.days ?? -1) - (leftUrgency?.days ?? -1)
-          if (byDays !== 0) return byDays
-          const byEnergy =
-            (rightUrgency?.energyTotal ?? -1) - (leftUrgency?.energyTotal ?? -1)
-          if (byEnergy !== 0) return byEnergy
-          return left.resourceId.localeCompare(right.resourceId)
-        }),
+      // Longest to finish first, then most energy; then same-campaign upgrades of similar energy
+      // are pulled together so the player stays in one campaign.
+      resources: clusterByCampaign(
+        [...resources.entries()]
+          .map(([resourceId, resourceEntries]) => ({
+            resourceId,
+            entries: resourceEntries,
+          }))
+          .sort((left, right) => {
+            const leftUrgency = resourceUrgencyByGoalAndResource.get(
+              dailyRaidResourceKey(goalId, left.resourceId)
+            )
+            const rightUrgency = resourceUrgencyByGoalAndResource.get(
+              dailyRaidResourceKey(goalId, right.resourceId)
+            )
+            const byDays =
+              (rightUrgency?.days ?? -1) - (leftUrgency?.days ?? -1)
+            if (byDays !== 0) return byDays
+            const byEnergy =
+              (rightUrgency?.energyTotal ?? -1) -
+              (leftUrgency?.energyTotal ?? -1)
+            if (byEnergy !== 0) return byEnergy
+            return left.resourceId.localeCompare(right.resourceId)
+          }),
+        (resource) => upgradeCampaignKey(resource.entries, locationsByBattleId),
+        (resource) =>
+          resourceUrgencyByGoalAndResource.get(
+            dailyRaidResourceKey(goalId, resource.resourceId)
+          )?.energyTotal
+      ),
     }))
     .sort((left, right) => left.goal.priority - right.goal.priority)
 }

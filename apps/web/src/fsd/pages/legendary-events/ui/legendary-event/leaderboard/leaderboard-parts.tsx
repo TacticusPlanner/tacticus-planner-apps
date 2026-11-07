@@ -1,6 +1,11 @@
 import { useTranslation } from "react-i18next"
 import { Eye, Lock, MoreHorizontal } from "lucide-react"
-import { characterIcon, traitIcon } from "@workspace/game-catalog"
+import {
+  characterIcon,
+  progressionVisual,
+  rankIcon,
+  traitIcon,
+} from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
@@ -12,6 +17,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   ObjectiveIcon,
+  rankTone,
   type LeaderboardUnitRow,
   type LegendaryEventLaneId,
   type ObjectiveIconModel,
@@ -165,6 +171,62 @@ export function LeaderboardRarity({ row }: { row: LeaderboardUnitRow }) {
   return (
     <span data-testid="leaderboard-rarity" data-rarity={row.rarity}>
       <RarityIcon className="size-5" rarity={row.rarity} />
+    </span>
+  )
+}
+
+/** The owned unit's progression as the collection's roster view shows it: the rarity icon, then
+ *  the star icon with the star count (or the wings); nothing for a locked or unknown unit. */
+export function LeaderboardProgression({ row }: { row: LeaderboardUnitRow }) {
+  const { t } = useTranslation("progression")
+  if (!row.rarity || !row.progression) return null
+  const visual = progressionVisual(row.progression)
+  return (
+    <span
+      className="inline-flex items-center gap-1 text-xs font-semibold tabular-nums"
+      data-progression={row.progression}
+      data-rarity={row.rarity}
+      data-testid="leaderboard-progression"
+      title={t(`rarities.${row.rarity}`)}
+    >
+      <RarityIcon className="size-5" rarity={row.rarity} />
+      {visual.kind === "stars" ? (
+        <>
+          <EntityIcon alt="" className="size-[13px]" src={visual.icon} />
+          {visual.count}
+        </>
+      ) : visual.kind === "none" ? null : (
+        <>
+          <EntityIcon
+            alt=""
+            className="h-4 w-auto"
+            height={164}
+            src={visual.icon}
+            width={512}
+          />
+          <span className="sr-only">{t("stars.MythicWings")}</span>
+        </>
+      )}
+    </span>
+  )
+}
+
+/** The owned unit's rank icon on a background in its rank colour, as the team tiles draw it;
+ *  nothing for a locked or unknown unit. */
+export function LeaderboardRankTile({ row }: { row: LeaderboardUnitRow }) {
+  const { t } = useTranslation("progression")
+  if (!row.rank) return null
+  const label = t(`ranks.${row.rank}`)
+  return (
+    <span
+      className="inline-flex h-7 w-10 items-center justify-center rounded-md border"
+      data-rank={row.rank}
+      data-testid="leaderboard-rank"
+      style={rankTone(row.rank)}
+      title={label}
+    >
+      <EntityIcon alt="" className="size-5" src={rankIcon(row.rank)} />
+      <span className="sr-only">{label}</span>
     </span>
   )
 }

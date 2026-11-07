@@ -11,7 +11,7 @@ export type HreInstance<TEntry extends HreCalendarEntry = HreCalendarEntry> = {
   /** The storage key of the instance: the occurrence id, else `definitionId@startUtc`. */
   key: string
   entry: TEntry
-  status: "running" | "upcoming"
+  status: "running" | "upcoming" | "past"
   /** The occurrence's `featuredCharacterId`, or null when it has none. */
   featuredCharacterId: string | null
 }
@@ -68,4 +68,65 @@ export function selectHreInstance<TEntry extends HreCalendarEntry>(
         compareIds(instanceKey(a), instanceKey(b))
     )[0]
   return next ? toInstance(next, "upcoming") : null
+}
+
+function statusAt(
+  entry: HreCalendarEntry,
+  nowMs: number
+): HreInstance["status"] {
+  if (nowMs < Date.parse(entry.startUtc)) return "upcoming"
+  return nowMs < Date.parse(entry.endUtc) ? "running" : "past"
+}
+
+/**
+ * Every Hero Release Event instance in the calendar entries, keyed and given a status at `nowMs`
+ * (start inclusive, end exclusive), ordered by start ascending then key. This one list backs the
+ * HRE switcher, its Previous / Next steps and the tab's resolution of the URL selection. Duplicate
+ * keys (a multi-day entry repeated per calendar date) are kept once.
+ */
+export function listHreInstances<TEntry extends HreCalendarEntry>(
+  entries: readonly TEntry[],
+  definitionsById: ReadonlyMap<string, { type: string }>,
+  nowMs: number
+): HreInstance<TEntry>[] {
+  const byKey = new Map<string, HreInstance<TEntry>>()
+  for (const entry of entries) {
+    if (definitionsById.get(entry.definitionId)?.type !== HRE_DEFINITION_TYPE)
+      continue
+    const key = instanceKey(entry)
+    if (!byKey.has(key))
+      byKey.set(key, toInstance(entry, statusAt(entry, nowMs)))
+  }
+  return [...byKey.values()].sort(
+    (a, b) =>
+      Date.parse(a.entry.startUtc) - Date.parse(b.entry.startUtc) ||
+      compareIds(a.key, b.key)
+  )
+}
+
+export type HreSelection<TEntry extends HreCalendarEntry> = {
+  /** The instance to show: the requested one, else the default. */
+  instance: HreInstance<TEntry> | null
+  /** The running one, else the next upcoming one (`selectHreInstance`), from the same list. */
+  defaultInstance: HreInstance<TEntry> | null
+  /** True when a requested key no longer resolves, so the tab drops it from the URL. */
+  stale: boolean
+}
+
+/** Resolves the HRE tab's URL selection against the instance list, falling back to the default. */
+export function resolveHreSelection<TEntry extends HreCalendarEntry>(
+  instances: readonly HreInstance<TEntry>[],
+  defaultInstance: HreInstance<TEntry> | null,
+  requestedKey: string | null
+): HreSelection<TEntry> {
+  const fallback = defaultInstance
+    ? (instances.find((instance) => instance.key === defaultInstance.key) ??
+      defaultInstance)
+    : null
+  if (requestedKey === null)
+    return { instance: fallback, defaultInstance: fallback, stale: false }
+  const requested = instances.find((instance) => instance.key === requestedKey)
+  return requested
+    ? { instance: requested, defaultInstance: fallback, stale: false }
+    : { instance: fallback, defaultInstance: fallback, stale: true }
 }

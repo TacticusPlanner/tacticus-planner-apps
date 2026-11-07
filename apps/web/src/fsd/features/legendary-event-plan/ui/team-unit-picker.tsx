@@ -1,7 +1,6 @@
 import { Fragment, useId, useMemo, useState, type Ref } from "react"
 import { useTranslation } from "react-i18next"
 import { ShieldPlus } from "lucide-react"
-import { characterIcon, lockIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Switch } from "@workspace/ui/components/switch"
@@ -9,7 +8,9 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { UnitGoalBadge } from "@/entities/goal"
 import {
+  EventUnitChip,
   ObjectiveIcon,
+  ownedUnitChipData,
   unitEffectivePower,
   useObjectiveLabel,
   type LaneProgressView,
@@ -17,7 +18,6 @@ import {
   type LegendaryEventRosterUnit,
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
-import { EntityIcon } from "@/shared/ui"
 import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 
 import { MAX_TEAM_MEMBERS } from "../model/team-editor-draft"
@@ -361,22 +361,15 @@ export function TeamUnitPicker({
                         })}
                       </span>
                     ) : null}
-                    <span className="relative">
-                      <EntityIcon
-                        alt=""
-                        className={cn(
-                          "size-10 rounded-full",
-                          tile.owned === false && "opacity-50 grayscale"
-                        )}
-                        src={characterIcon(id)}
+                    <span className="mt-1">
+                      <EventUnitChip
+                        showStars
+                        unit={
+                          shownUnit
+                            ? ownedUnitChipData(id, shownUnit)
+                            : { unitId: id, owned: tile.owned }
+                        }
                       />
-                      {tile.owned === false ? (
-                        <EntityIcon
-                          src={lockIcon()}
-                          alt={t("teams.picker.locked")}
-                          className="absolute -right-1 -bottom-1 size-3.5 rounded-full bg-background p-0.5"
-                        />
-                      ) : null}
                     </span>
                     <span className="flex w-full min-w-0 items-center justify-center gap-0.5">
                       <span className="truncate text-xs font-medium">
@@ -395,7 +388,6 @@ export function TeamUnitPicker({
                       <TeamPickerUnitState
                         clears={clears}
                         previewed={Boolean(previewed)}
-                        unit={shownUnit}
                       />
                     ) : null}
                     <span className="flex flex-wrap justify-center gap-0.5">

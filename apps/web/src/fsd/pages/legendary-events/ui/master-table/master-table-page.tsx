@@ -32,6 +32,7 @@ import { MasterTableTable } from "./master-table-table"
 import { useMasterTableTutorial } from "./master-table.tutorial"
 import {
   estimatedAvailability,
+  eventsWithoutTeams,
   masterTableEventInputs,
   masterTableViewSettled,
   nextMasterTableParams,
@@ -179,6 +180,11 @@ export function MasterTablePage() {
       state.points,
     ]
   )
+  const noTeamEventIds = eventsWithoutTeams({
+    eventIds: state.selectedEventIds,
+    plans: planData,
+    unitSet: state.unitSet,
+  })
   // The search box filters from its own state at once and writes the URL after a pause, so a
   // keystroke does not wait on a navigation; `null` means it shows the URL's `q`.
   const [searchDraft, setSearchDraft] = useState<string | null>(null)
@@ -350,6 +356,10 @@ export function MasterTablePage() {
       />
       <MasterTableNotes
         estimatedFallback={state.estimatedFallback}
+        noTeamEventNames={
+          state.pending ? [] : noTeamEventIds.map((eventId) => nameOf(eventId))
+        }
+        onShowAllUnits={() => controls.onUnitSetChange("all")}
         progressFailed={progress.status === "error" && state.points !== "all"}
       />
       <PointsExplanation />
@@ -391,6 +401,7 @@ export function MasterTablePage() {
         <MasterTableList
           eventIds={state.selectedEventIds}
           eventName={nameOf}
+          noTeamEventIds={noTeamEventIds}
           rows={rows}
           unitName={nameOf}
           unitSet={state.unitSet}
@@ -399,6 +410,7 @@ export function MasterTablePage() {
         <MasterTableTable
           eventIds={state.selectedEventIds}
           eventName={nameOf}
+          noTeamEventIds={noTeamEventIds}
           onSortChange={controls.onSortChange}
           rows={rows}
           sort={state.sort}
@@ -412,15 +424,40 @@ export function MasterTablePage() {
 
 function MasterTableNotes({
   estimatedFallback,
+  noTeamEventNames,
+  onShowAllUnits,
   progressFailed,
 }: {
   estimatedFallback: MasterTableState["estimatedFallback"]
+  /** In teams: the selected events with no complete team, whose columns stay empty. */
+  noTeamEventNames: readonly string[]
+  onShowAllUnits: () => void
   progressFailed: boolean
 }) {
-  const { t } = useTranslation("legendaryEvents")
-  if (!estimatedFallback && !progressFailed) return null
+  const { t, i18n } = useTranslation("legendaryEvents")
+  if (!estimatedFallback && !progressFailed && noTeamEventNames.length === 0) {
+    return null
+  }
   return (
     <div className="flex flex-col gap-1 text-sm text-muted-foreground">
+      {noTeamEventNames.length > 0 ? (
+        <p
+          className="flex flex-wrap items-center gap-x-2 gap-y-1"
+          data-testid="master-table-no-teams"
+        >
+          <span>
+            {t("masterTable.unitSet.noTeams", {
+              count: noTeamEventNames.length,
+              events: new Intl.ListFormat(i18n.language, {
+                type: "conjunction",
+              }).format(noTeamEventNames),
+            })}
+          </span>
+          <Button onClick={onShowAllUnits} size="sm" variant="link">
+            {t("masterTable.unitSet.showAll")}
+          </Button>
+        </p>
+      ) : null}
       {estimatedFallback ? (
         <p data-testid="master-table-estimated-fallback">
           {estimatedFallback === "noRoster"

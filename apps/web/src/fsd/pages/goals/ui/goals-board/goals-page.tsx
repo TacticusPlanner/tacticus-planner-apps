@@ -41,12 +41,15 @@ import { goalMenuMoves, useGoalsPageReorder } from "@/features/goal-planning"
 import { isGoalsListLoading } from "@/features/goal-planning"
 import { useProjects } from "@/entities/project"
 import { useGoalCatalog } from "@/features/goal-planning"
+import { GoalsCardsSelectAll } from "./goals-cards"
 import { GoalsList } from ".//goals-list"
 import { GoalGroupSection } from "./goal-group-section"
 import { GoalsBulkControls } from "./goals-bulk-controls"
 import { useProjectRemovalFlow } from "./project-removal-flow"
 import { GoalsCreateButton } from "./goals-create-button"
 import { GoalsToolbar } from "./goals-toolbar"
+import { GoalsViewToggle } from "./goals-view-toggle"
+import { useGoalsView } from "./use-goals-view"
 import { SeasonFitSelect } from "./season-fit-select"
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
 import { GoalsMobileSelectToggle } from "./goals-mobile-select-toggle"
@@ -66,9 +69,9 @@ import { PageTourButton } from "@/shared/tour"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
 /**
- * The Goals page (plan §1: list on desktop, cards on mobile — no view switcher): the one list of
- * every goal and the editable global priority order. Goals are always in that order (Active/Paused
- * first, by position; then the rest by recency) — there is no other sort — and each Active/Paused
+ * The Goals page: the one list of every goal and the editable global priority order, as goal cards
+ * (the default) or the table — this device's stored Goals view (goal-list-layout). Goals are always
+ * in that order (Active/Paused first, by position; then the rest by recency) — there is no other sort — and each Active/Paused
  * row can be dragged (a dedicated mode on mobile). A drop is saved on its own as a single move, so
  * it works under any status/type/project filter and Group: the goal takes the global position of the
  * goal it displaces and hidden goals keep their relative order. Estimates come from the same plan
@@ -100,6 +103,7 @@ export function GoalsPage() {
   const insights = insightsRun.result
   const stableEstimates = useStableMap(insights.estimates)
   const { settings: planningSettings } = usePlanningSettings()
+  const goalsView = useGoalsView()
   const levelRules = useLevelRules()
   const xpBook = useMemo((): SelectedXpBook | undefined => {
     if (!levelRules) return undefined
@@ -431,6 +435,13 @@ export function GoalsPage() {
         reorderToggle={reorderToggle}
         selectToggle={selectToggle}
         statusFilter={statusFilter}
+        viewToggle={
+          <GoalsViewToggle
+            disabled={isMobile && reorderActive}
+            onViewChange={goalsView.setView}
+            view={goalsView.view}
+          />
+        }
       />
 
       <PendingMaterialSteps />
@@ -457,6 +468,16 @@ export function GoalsPage() {
         ref={listRef}
         tabIndex={-1}
       >
+        {!isLoading &&
+        !isMobile &&
+        goalsView.view === "Cards" &&
+        visibleIds.length > 0 ? (
+          <GoalsCardsSelectAll
+            onSelectAll={selectAllVisible}
+            selection={selection}
+            visibleIds={visibleIds}
+          />
+        ) : null}
         {(isLoading ? [] : rowGroups).map((rowGroup) => {
           if (rowGroup.rows.length === 0) return null
           const list = (
@@ -486,13 +507,14 @@ export function GoalsPage() {
               seasonFit={activeSeasonFit}
               selectActive={selectActive}
               selection={selection}
+              view={goalsView.view}
               visibleIds={visibleIds}
               xpBook={xpBook}
             />
           )
           if (rowGroup.dimension === "none") {
             return (
-              <section className="grid gap-2" key={rowGroup.key}>
+              <section className="grid grid-cols-1 gap-2" key={rowGroup.key}>
                 {list}
               </section>
             )

@@ -1,4 +1,5 @@
 import { render, screen } from "@/test/render"
+import { MemoryRouter } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
 import type { GuildRaidsViewModel } from "../guild-raid-status-view-model"
@@ -88,6 +89,7 @@ function activeViewModel(
     refresh: vi.fn(),
     isRefreshing: false,
     hasRefreshError: false,
+    isKeyRejected: false,
   }
 }
 
@@ -99,6 +101,7 @@ describe("GuildRaidStatusRegion", () => {
       refresh: vi.fn(),
       isRefreshing: false,
       hasRefreshError: false,
+      isKeyRejected: false,
     }
     render(<GuildRaidStatusRegion isMobile={false} viewModel={viewModel} />)
     expect(screen.getByTestId("guild-raid-status-loading")).toBeInTheDocument()
@@ -112,9 +115,33 @@ describe("GuildRaidStatusRegion", () => {
       refresh: vi.fn(),
       isRefreshing: false,
       hasRefreshError: false,
+      isKeyRejected: false,
     }
     render(<GuildRaidStatusRegion isMobile={false} viewModel={viewModel} />)
     expect(screen.getByTestId("guild-raid-status-error")).toBeInTheDocument()
+  })
+
+  it("replaces the syncing state with the fix when the key is rejected", () => {
+    const viewModel: GuildRaidsViewModel = {
+      status: { kind: "neverObserved" },
+      resources: { kind: "unavailable" },
+      refresh: vi.fn(),
+      isRefreshing: false,
+      hasRefreshError: true,
+      isKeyRejected: true,
+    }
+    render(
+      <MemoryRouter>
+        <GuildRaidStatusRegion isMobile={false} viewModel={viewModel} />
+      </MemoryRouter>
+    )
+
+    expect(
+      screen.queryByTestId("guild-raid-status-never-observed")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole("link", { name: "guildRaids.keyRejected.action" })
+    ).toHaveAttribute("href", "/guild/settings")
   })
 
   it("renders the never-observed syncing state", () => {
@@ -124,6 +151,7 @@ describe("GuildRaidStatusRegion", () => {
       refresh: vi.fn(),
       isRefreshing: true,
       hasRefreshError: false,
+      isKeyRejected: false,
     }
     render(<GuildRaidStatusRegion isMobile={false} viewModel={viewModel} />)
     expect(
@@ -143,6 +171,7 @@ describe("GuildRaidStatusRegion", () => {
       refresh: vi.fn(),
       isRefreshing: false,
       hasRefreshError: false,
+      isKeyRejected: false,
     }
     render(<GuildRaidStatusRegion isMobile={false} viewModel={viewModel} />)
     expect(
