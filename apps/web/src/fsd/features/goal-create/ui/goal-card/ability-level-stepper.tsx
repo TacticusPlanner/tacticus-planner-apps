@@ -8,7 +8,8 @@ import { Input } from "@workspace/ui/components/input"
 /**
  * One ability track's target level (goal-target-editing: Ability levels use a stepper): decrease, the
  * level, increase, from `start` (no change on this track) to the highest level of any rarity, and the
- * quick picks "Next", "+5" and "Rarity cap" (hidden once the start is at or above that cap). A typed
+ * quick picks "Next", "+5" and "Rarity cap" (hidden once the start is at or above that cap). "+5" adds
+ * to the current target, so pressing it again keeps going, up to the highest level. A typed
  * value is passed on as is, so a level outside the range reaches the card's issues and shows the
  * range message there.
  */
@@ -38,19 +39,31 @@ export function AbilityLevelStepper({
   const generatedId = useId()
   const inputId = fieldProps?.id ?? generatedId
   const valid = Number.isInteger(value)
+  const target = valid ? Math.max(value, start) : start
   const picks = [
-    { key: "next", label: t("goals.card.ability.next"), level: start + 1 },
     {
-      key: "plusFive",
-      label: t("goals.card.ability.plusFive"),
-      level: Math.min(start + 5, maxAbilityLevel),
+      key: "next",
+      label: t("goals.card.ability.next"),
+      level: start + 1,
+      toggle: true,
     },
+    ...(target < maxAbilityLevel
+      ? [
+          {
+            key: "plusFive",
+            label: t("goals.card.ability.plusFive"),
+            level: Math.min(target + 5, maxAbilityLevel),
+            toggle: false,
+          },
+        ]
+      : []),
     ...(start < rarityCap
       ? [
           {
             key: "rarityCap",
             label: t("goals.card.ability.rarityCap"),
             level: rarityCap,
+            toggle: true,
           },
         ]
       : []),
@@ -109,21 +122,24 @@ export function AbilityLevelStepper({
           className="flex flex-wrap gap-1"
           role="group"
         >
-          {picks.map((pick) => (
-            <Button
-              aria-pressed={value === pick.level}
-              className="h-7 px-2 text-xs max-md:h-11"
-              key={pick.key}
-              onClick={() => onChange(pick.level)}
-              type="button"
-              variant={value === pick.level ? "secondary" : "outline"}
-            >
-              {pick.label}
-              <span className="text-muted-foreground tabular-nums">
-                {pick.level}
-              </span>
-            </Button>
-          ))}
+          {picks.map((pick) => {
+            const pressed = pick.toggle && value === pick.level
+            return (
+              <Button
+                aria-pressed={pick.toggle ? pressed : undefined}
+                className="h-7 px-2 text-xs max-md:h-11"
+                key={pick.key}
+                onClick={() => onChange(pick.level)}
+                type="button"
+                variant={pressed ? "secondary" : "outline"}
+              >
+                {pick.label}
+                <span className="text-muted-foreground tabular-nums">
+                  {pick.level}
+                </span>
+              </Button>
+            )
+          })}
         </div>
       ) : null}
     </div>

@@ -6,6 +6,7 @@ import type {
   Rank as RankId,
   UpgradeId,
 } from "@workspace/game-domain"
+import { maxAbilityLevel } from "@workspace/game-domain"
 
 import { render, screen, within } from "@/test/render"
 
@@ -182,9 +183,25 @@ describe("AbilityGoalCard", () => {
     await pick(/^Next/)
     expect(activeLevel()).toHaveValue(36)
     await pick(/^\+5/)
-    expect(activeLevel()).toHaveValue(40)
+    expect(activeLevel()).toHaveValue(41)
     await pick(/^Rarity cap/)
     expect(activeLevel()).toHaveValue(50)
+  })
+
+  it("keeps adding 5 to the target on each +5 press, up to the highest level", async () => {
+    render(<Ability start={35} />)
+
+    await pick(/^\+5/)
+    expect(activeLevel()).toHaveValue(40)
+    await pick(/^\+5/)
+    expect(activeLevel()).toHaveValue(45)
+    await userEvent.clear(activeLevel())
+    await userEvent.type(activeLevel(), String(maxAbilityLevel - 2))
+    await pick(/^\+5/)
+    expect(activeLevel()).toHaveValue(maxAbilityLevel)
+    expect(
+      within(activeStepper()).queryByRole("button", { name: /^\+5/ })
+    ).not.toBeInTheDocument()
   })
 
   it("hides the rarity cap at the cap, where Next goes past it", async () => {
