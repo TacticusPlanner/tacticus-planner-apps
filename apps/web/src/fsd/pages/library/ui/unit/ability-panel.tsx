@@ -114,7 +114,7 @@ export function AbilityPanel({
 
   return (
     <section
-      className="flex min-w-0 flex-col gap-3 rounded-[10px] border bg-card p-4"
+      className="flex min-w-0 flex-col gap-3 rounded-lg border bg-card p-4"
       aria-labelledby={`${testId}-name`}
       data-testid={testId}
     >
@@ -175,7 +175,7 @@ export function AbilityPanel({
             unitName={unitName}
             factionId={factionId}
             highlightValues
-            className="text-[15px] leading-[1.55]"
+            className="text-base leading-[1.55]"
           />
           {level < maxLevel && changing.length > 0 ? (
             <p

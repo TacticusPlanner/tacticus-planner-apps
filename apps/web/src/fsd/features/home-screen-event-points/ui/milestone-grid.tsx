@@ -101,7 +101,7 @@ export function MilestoneGrid({
                       </span>
                     </span>
                     <span
-                      className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-[11px] font-semibold tabular-nums"
+                      className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs font-semibold tabular-nums"
                       data-testid="hse-milestone-points"
                     >
                       {pointsIcon ? (
@@ -116,7 +116,7 @@ export function MilestoneGrid({
                       })}
                     </span>
                     {cell.endless && cell.cap !== null ? (
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         {td("hse.details.endlessCap", { count: cell.cap })}
                       </span>
                     ) : null}

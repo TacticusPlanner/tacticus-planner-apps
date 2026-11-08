@@ -20,7 +20,7 @@ const EMPTY_SELECTION: ReadonlySet<string> = new Set()
 
 /** Columns at least 380px wide (or the full width, when narrower) filling the row. */
 const GRID_CLASS =
-  "grid [grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr))] items-stretch gap-3"
+  "grid [grid-template-columns:repeat(auto-fill,minmax(min(23.75rem,100%),1fr))] items-stretch gap-3"
 
 /** Cards view's select-all, one above every group: it covers every visible goal across groups
  *  (goal-bulk-actions), so under a group heading it would read as that group's. */

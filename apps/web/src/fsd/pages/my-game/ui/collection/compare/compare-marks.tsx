@@ -146,7 +146,7 @@ export function ItemMark({
         fallback={EquipmentIcons.fallback}
         className="size-full object-contain"
       />
-      <span className="absolute right-0.5 bottom-0 text-[10px] leading-none font-bold text-white tabular-nums [text-shadow:0_0_2px_black]">
+      <span className="absolute right-0.5 bottom-0 text-2xs leading-none font-bold text-white tabular-nums [text-shadow:0_0_2px_black]">
         {level}
       </span>
     </span>

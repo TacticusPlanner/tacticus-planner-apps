@@ -63,7 +63,7 @@ export function CatalogSyncStatusBadge({
               }
             />
             {progressLabel ? (
-              <span className="text-[10px] tabular-nums">{progressLabel}</span>
+              <span className="text-xs tabular-nums">{progressLabel}</span>
             ) : null}
           </div>
         </TooltipTrigger>

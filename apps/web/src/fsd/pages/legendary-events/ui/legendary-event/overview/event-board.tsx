@@ -381,7 +381,7 @@ function UnitTable({
                     key={unit.unitId}
                   >
                     <button
-                      className="block w-full rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+                      className="block w-full rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
                       data-testid="event-board-add-team"
                       onClick={() =>
                         onAddTeam(laneId, column.objectiveIndexes, unit.unitId)
@@ -447,7 +447,7 @@ function ObjectiveHeading({
           <button
             aria-pressed={isSelected}
             className={cn(
-              "relative flex min-w-0 flex-col items-center gap-0.5 rounded-md border border-transparent px-0.5 py-1 text-center transition-colors hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+              "relative flex min-w-0 flex-col items-center gap-0.5 rounded-md border border-transparent px-0.5 py-1 text-center transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
               uncovered && "border-dashed border-muted-foreground/60",
               isSelected && "bg-primary/15"
             )}
@@ -473,17 +473,15 @@ function ObjectiveHeading({
             {entry.cleared === null ? null : (
               <span
                 aria-hidden="true"
-                className="text-[10px] text-muted-foreground tabular-nums"
+                className="text-xs text-muted-foreground tabular-nums"
               >
                 {number.format(entry.cleared)}/{number.format(entry.battles)}
               </span>
             )}
-            <span className="line-clamp-2 text-[11px] leading-tight">
-              {label}
-            </span>
+            <span className="line-clamp-2 text-xs leading-tight">{label}</span>
             {cleared ? <span className="sr-only">{cleared}</span> : null}
             {uncovered ? (
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {t("eventBoard.noTeam")}
               </span>
             ) : null}

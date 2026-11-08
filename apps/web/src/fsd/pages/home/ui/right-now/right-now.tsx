@@ -123,7 +123,7 @@ function LiveEventTile({ row, nowMs }: { row: HomeEventRow; nowMs: number }) {
         </>
       ) : null}
       <Link
-        className="relative flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+        className="relative flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
         data-testid="home-events-row"
         to={row.destination}
       >

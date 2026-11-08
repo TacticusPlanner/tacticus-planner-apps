@@ -42,7 +42,7 @@ export function DailiesLayout() {
 
   return (
     <PageContainer
-      className={isRaids ? "max-w-[150rem]" : undefined}
+      className={isRaids ? "max-w-600" : undefined}
       data-testid="dailies-layout"
     >
       <Outlet context={context} />

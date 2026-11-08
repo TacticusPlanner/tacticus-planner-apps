@@ -13,7 +13,7 @@ export function UnderConstruction({
 }) {
   return (
     <div
-      className="flex min-h-[28rem] items-center justify-center py-8"
+      className="flex min-h-112 items-center justify-center py-8"
       data-testid={testId}
     >
       <Card className="w-full max-w-xl">

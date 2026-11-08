@@ -51,7 +51,7 @@ export function CollectionRoster({
         <section
           key={group.factionId}
           aria-label={group.factionName}
-          className="flex flex-col overflow-hidden rounded-[10px] border bg-card"
+          className="flex flex-col overflow-hidden rounded-lg border bg-card"
           data-testid="collection-roster-section"
           data-faction={group.factionId}
         >
@@ -94,7 +94,7 @@ export function CollectionRosterList({
 }
 
 const ungroupedRows =
-  "grid gap-x-3 rounded-[10px] border bg-card px-1 py-1 [grid-template-columns:repeat(auto-fill,minmax(min(26.25rem,100%),1fr))]"
+  "grid gap-x-3 rounded-lg border bg-card px-1 py-1 [grid-template-columns:repeat(auto-fill,minmax(min(26.25rem,100%),1fr))]"
 
 const rowKey = (unit: UnitTileUnit) => `${unit.kind}:${unit.unitId}`
 

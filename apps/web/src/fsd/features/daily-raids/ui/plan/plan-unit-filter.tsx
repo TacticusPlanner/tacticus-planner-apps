@@ -36,7 +36,7 @@ export function PlanUnitFilter({
               aria-label={unit.unitLabel}
               aria-pressed={pressed}
               className={cn(
-                "rounded-full p-0.5 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+                "rounded-full p-0.5 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
                 pressed && "ring-2 ring-primary"
               )}
               data-testid={`plan-filter-${unit.unitId}`}

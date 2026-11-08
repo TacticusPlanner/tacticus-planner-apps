@@ -222,7 +222,7 @@ function ChipList({
           key={chip.kind === "ability" ? `ability-${chip.slot}` : chip.kind}
           variant="secondary"
           className={cn(
-            "gap-1 px-1.5 text-[11px] tabular-nums",
+            "gap-1 px-1.5 text-xs tabular-nums",
             dimmed && "opacity-45"
           )}
           data-chip={chip.kind}

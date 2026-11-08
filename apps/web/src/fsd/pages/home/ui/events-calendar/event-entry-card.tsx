@@ -45,7 +45,7 @@ function entrySurfaceClass(entry: EventEntryViewModel): string {
     // `relative` anchors the sr-only state text: without it, inside the Ongoing strip's scroller it
     // positions against the page and widens the document (pushing the fixed bottom nav off-screen).
     "relative border border-l-4 text-foreground transition-colors",
-    "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+    "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
     // A break between Guild Raid seasons keeps the guild stripe on a plain surface: nothing to raid.
     isBreak ? "bg-muted/40 hover:bg-muted" : eventFamilySurfaceClass(family),
     eventFamilyStripeClass(family),
@@ -307,7 +307,7 @@ export function EventAgendaRow({
         </span>
         {isOccurrenceStart ? (
           <span
-            className="shrink-0 text-[11px] font-semibold tracking-wide text-primary uppercase"
+            className="shrink-0 text-xs font-semibold tracking-wide text-primary uppercase"
             data-testid="event-occurrence-start-badge"
           >
             {t("badges.starts")}
@@ -315,7 +315,7 @@ export function EventAgendaRow({
         ) : null}
         {isOccurrenceEnd ? (
           <span
-            className="shrink-0 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase"
+            className="shrink-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
             data-testid="event-occurrence-end-badge"
           >
             {t("badges.ends")}

@@ -172,7 +172,7 @@ export function TargetLadder({
                     <span
                       aria-hidden
                       className={cn(
-                        "text-[0.625rem] leading-none",
+                        "text-xs leading-none",
                         !state.selected && "text-muted-foreground"
                       )}
                     >

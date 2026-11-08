@@ -192,7 +192,7 @@ export function LeaderboardProgression({ row }: { row: LeaderboardUnitRow }) {
       <RarityIcon className="size-5" rarity={row.rarity} />
       {visual.kind === "stars" ? (
         <>
-          <EntityIcon alt="" className="size-[13px]" src={visual.icon} />
+          <EntityIcon alt="" className="size-3.5" src={visual.icon} />
           {visual.count}
         </>
       ) : visual.kind === "none" ? null : (

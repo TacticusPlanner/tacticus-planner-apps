@@ -35,7 +35,7 @@ export function UnitCreateGoalButton({
     <Button
       variant="outline"
       size="sm"
-      className={isMobile ? "h-[38px]" : undefined}
+      className={isMobile ? "h-9.5" : undefined}
       disabled={ownership === "loading"}
       aria-label={t("unit.createGoalFor", { name })}
       data-testid="unit-create-goal"

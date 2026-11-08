@@ -50,7 +50,7 @@ export function IncursionTierStrip({
           <span
             key={tier.index}
             className={cn(
-              "flex-1 rounded-[3px] first:rounded-l-full last:rounded-r-full",
+              "flex-1 rounded-xs first:rounded-l-full last:rounded-r-full",
               tier.cleared
                 ? RARITY_FILL[tier.rarity]
                 : cn(

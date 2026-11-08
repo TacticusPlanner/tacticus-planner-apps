@@ -122,7 +122,7 @@ function UpcomingEventRow({
   return (
     <div className="flex items-center gap-2 rounded-lg border p-2">
       <Link
-        className="flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+        className="flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
         data-live={row.live}
         data-testid="home-events-row"
         data-type={row.type}

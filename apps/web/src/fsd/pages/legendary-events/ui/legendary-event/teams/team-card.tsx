@@ -337,7 +337,7 @@ function CoverageStrip({
               title={label}
             >
               <ObjectiveIcon className="size-5" icon={icon} muted />
-              <span aria-hidden="true" className="text-[10px] leading-3">
+              <span aria-hidden="true" className="text-xs leading-3">
                 &nbsp;
               </span>
               <span className="sr-only">
@@ -373,7 +373,7 @@ function CoverageStrip({
             />
             <span
               className={cn(
-                "text-[10px] leading-3 font-semibold tabular-nums",
+                "text-xs leading-3 font-semibold tabular-nums",
                 cleared && "line-through"
               )}
             >

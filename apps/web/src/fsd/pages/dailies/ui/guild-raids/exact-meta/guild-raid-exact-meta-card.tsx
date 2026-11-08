@@ -110,7 +110,7 @@ function SlotTile({
   const empty = slot.picked === null && slot.ideal.owned === false
 
   const role = (
-    <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+    <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
       {slotLabel(slot)}
       {slot.essential ? (
         <span
@@ -208,7 +208,7 @@ function OptionRow({
             {option.unit.name}
           </span>
           {option.isIdeal ? (
-            <Badge variant="outline" className="h-4 px-1.5 text-[10px]">
+            <Badge variant="outline" className="h-4 px-1.5 text-xs">
               {t("guildRaids.exactMeta.ideal")}
             </Badge>
           ) : null}

@@ -70,7 +70,7 @@ export function UnitTabs<Tab extends string>({
             onClick={() => onSelect(tab.id)}
             onKeyDown={(event) => onKeyDown(event, index)}
             className={cn(
-              "-mb-px border-b-[3px] text-[15px] font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "-mb-px border-b-3 text-base font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isMobile ? "h-12 px-2" : "h-11 px-1",
               selected
                 ? "border-ring text-foreground"

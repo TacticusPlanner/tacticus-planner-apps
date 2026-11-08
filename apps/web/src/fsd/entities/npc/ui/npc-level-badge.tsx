@@ -57,7 +57,7 @@ export function NpcLevelBadge({
           className="inline-flex items-center gap-0.5 text-xs font-semibold tabular-nums"
           data-testid="npc-level-stars"
         >
-          <EntityIcon src={visual.icon} alt="" className="size-[13px]" />
+          <EntityIcon src={visual.icon} alt="" className="size-3.5" />
           {visual.count}
         </span>
       )}

@@ -161,7 +161,7 @@ export function StatRadarCard({
           {radar.map((entry, index) => (
             <li
               key={entry.axis}
-              className="grid grid-cols-[minmax(0,200px)_1fr_auto] items-center gap-3 text-sm"
+              className="grid grid-cols-[minmax(0,12.5rem)_1fr_auto] items-center gap-3 text-sm"
               data-testid={`unit-radar-${entry.axis}`}
             >
               <span className="text-muted-foreground">
@@ -175,7 +175,7 @@ export function StatRadarCard({
                   className="absolute inset-y-0 left-0 rounded-full bg-[var(--chart-1)]"
                   style={{ width: `${rounded[index]}%` }}
                 />
-                <span className="absolute inset-y-[-3px] left-1/2 border-l border-dashed border-muted-foreground" />
+                <span className="absolute -inset-y-0.75 left-1/2 border-l border-dashed border-muted-foreground" />
               </span>
               <span className="font-bold tabular-nums">
                 {t("characterUnit.compare.percent", { value: rounded[index] })}
