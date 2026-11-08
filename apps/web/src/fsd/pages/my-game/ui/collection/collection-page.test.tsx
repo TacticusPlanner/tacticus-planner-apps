@@ -1054,12 +1054,16 @@ describe("CollectionPage snapshots and compare", () => {
     )
     // The options sheet closes from a button at its bottom.
     fireEvent.click(options)
-    fireEvent.click(await screen.findByTestId("compare-options-close"))
+    const close = await screen.findByTestId("compare-options-close")
+    expect(close).toHaveAccessibleName("Close")
+    fireEvent.click(close)
     await waitFor(() =>
       expect(
         screen.queryByTestId("compare-options-sheet")
       ).not.toBeInTheDocument()
     )
+    // Focus goes back to the opener.
+    await waitFor(() => expect(options).toHaveFocus())
   })
 })
 
