@@ -1,0 +1,58 @@
+{
+  "thousNpc1PinkHorror": {
+    "threat": "Splits into Blue Horrors when it dies, so every kill adds bodies to the board, and its ranged Psychic attack ignores armour.",
+    "counter": "Overkill it so the split does less, and keep area damage ready for the Blue Horrors."
+  },
+  "blackNpc1Bloodletter": {
+    "threat": "A glass cannon: fast Daemon melee with Piercing damage that cuts through armoured frontliners.",
+    "counter": "Kill it first, before it reaches your line; it falls quickly to focused fire."
+  },
+  "thousNpc2Screamer": {
+    "threat": "Flying, and its Slashing Dive hits every unit along its path.",
+    "counter": "Don't line your characters up; spread out so a dive hits one of them."
+  },
+  "deathNpc3Nurglings": {
+    "threat": "Mischief Makers stops healing on the units next to it for a round, which breaks healer corners; it also teleports in and explodes.",
+    "counter": "Kill it from range before it reaches your healer."
+  },
+  "thousNpc3RubricMarine": {
+    "threat": "Tanky, with a ranged Flame attack; All is Dust makes it hard to wear down.",
+    "counter": "Bring armour-piercing damage and don't trade with it at range."
+  },
+  "worldNpc1Berzerker": {
+    "threat": "Rapid Assault and Blood Surge: it moves when attacked and hits hard in melee.",
+    "counter": "Kill it in one turn or keep out of its reach; chip damage triggers it."
+  },
+  "eldarNpc1Guardian": {
+    "threat": "Ranged grunt that comes in numbers; Plasma Grenade adds burst.",
+    "counter": "Area damage; Battle Fatigue makes them flee when their neighbours die."
+  },
+  "eldarNpc2Warlock": {
+    "threat": "Psyker that raises the damage of the enemies around it.",
+    "counter": "Kill it early to take the buff off the rest of the wave."
+  },
+  "eldarNpc3Harlequin": {
+    "threat": "High mobility, Infiltrate and four Power hits that also hit adjacent allies; Unstoppable.",
+    "counter": "Don't turtle in a tight corner: spread out and focus it before it reaches your squishy units."
+  },
+  "eldarNpc4Wraithguard": {
+    "threat": "Large Energy attacks, Overwatch and Big Target bulk.",
+    "counter": "Don't walk into its Overwatch range; spread out and break it with armour-piercing damage."
+  },
+  "darkaNpc1Infiltrator": {
+    "threat": "Ranged grunt with Overwatch that comes in numbers.",
+    "counter": "Low priority; clear with area damage."
+  },
+  "bloodNpc1Intercessor": {
+    "threat": "Deep-strikes into your line and keeps up melee pressure; flying.",
+    "counter": "Leave a guard on your backline and kill it as it lands."
+  },
+  "darkaNpc2Hellblaster": {
+    "threat": "Heavy Weapon plasma from range 3 that one-shots squishy units; it sits back while others close in.",
+    "counter": "Rush it or out-range it; don't let a wave of them fire freely."
+  },
+  "darkaNpc3Terminator": {
+    "threat": "Deep-strikes in Terminator armour and soaks low-pierce hits.",
+    "counter": "Bring high-pierce damage and don't waste low-damage hits on it."
+  }
+}

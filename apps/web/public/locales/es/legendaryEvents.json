@@ -982,6 +982,27 @@
       "relicAdvice": "Reliquia"
     }
   },
+  "npcTierList": {
+    "kind": {
+      "label": "Lista de niveles",
+      "heroes": "Héroes",
+      "enemies": "Enemigos"
+    },
+    "intro": "Niveles de enemigos de los Eventos Legendarios activos: en las estimaciones de superación, el poder de cada enemigo se multiplica por el valor de su nivel.",
+    "search": "Buscar enemigos",
+    "event": "Evento",
+    "allEvents": "Todos los eventos activos",
+    "noEnemy": "Ningún enemigo",
+    "noActiveEvent": "Ahora mismo no hay ningún Evento Legendario en curso.",
+    "error": "No se pudo cargar la lista de niveles de enemigos.",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "details": {
+      "description": "Nivel, multiplicador y por qué este enemigo es peligroso.",
+      "threat": "Por qué es peligroso",
+      "counter": "Cómo enfrentarlo",
+      "noThreat": "Todavía no hay notas sobre este enemigo."
+    }
+  },
   "missions": {
     "kinds": {
       "anyBattle": "Derrota {{count}} oleadas en cualquier batalla",

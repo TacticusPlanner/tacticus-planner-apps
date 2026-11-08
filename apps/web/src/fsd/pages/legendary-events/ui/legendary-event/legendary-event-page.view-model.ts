@@ -4,7 +4,7 @@ import {
   buildLaneLeaderboard,
   buildLanePointsModel,
   buildSyncedLaneProgress,
-  laneBattlePowers,
+  laneThresholdPowers,
   projectRewards,
   teamClearEstimate,
   unitClearEstimate,
@@ -490,7 +490,11 @@ export function buildClearEstimates({
       : new Map(roster.map((unit) => [unit.unitId as string, unit]))
   const byLane = Object.fromEntries(
     LEGENDARY_EVENT_LANE_IDS.map((laneId): [string, LaneClearEstimator] => {
-      const powers = laneBattlePowers(event[laneId].battleIds, battles)
+      const powers = laneThresholdPowers(
+        event[laneId].battleIds,
+        battles,
+        config.config
+      )
       if (
         !rosterById ||
         !config.config.unitPower ||

@@ -16,6 +16,7 @@ export const servedDatasetKeys = [
   "lres",
   "lre-battles",
   "horde-mode-tiers",
+  "npc-tiers",
   "event-definitions",
   "events-calendar",
   "shops",
@@ -40,6 +41,8 @@ export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
 // longer does) leaves the client ready, and the features reading it treat it as absent.
 export const optionalDatasetKeys: readonly GameCatalogDatasetKey[] = [
   "horde-mode-tiers",
+  // Served once the API ships it; without it every enemy NPC is untiered (multiplier 1.0).
+  "npc-tiers",
   "unit-power",
   "quest-events",
   "quest-crates",

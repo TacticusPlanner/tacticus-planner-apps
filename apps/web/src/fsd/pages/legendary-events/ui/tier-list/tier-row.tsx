@@ -107,6 +107,7 @@ export function TierRow({
   isMobile,
   testId,
   isEmpty,
+  emptyLabel,
   header,
   bodyId,
   collapsed,
@@ -119,6 +120,8 @@ export function TierRow({
   isMobile: boolean
   testId: string
   isEmpty: boolean
+  /** Shown in an empty row; "No character" by default. */
+  emptyLabel?: string
   /** Replaces the heading content (the Untiered row's toggle). */
   header?: (label: ReactNode) => ReactNode
   bodyId?: string
@@ -144,7 +147,7 @@ export function TierRow({
         className="p-3 text-sm text-muted-foreground"
         data-testid="tier-list-row-empty"
       >
-        {t("tierList.noCharacter")}
+        {emptyLabel ?? t("tierList.noCharacter")}
       </p>
     ) : (
       // The list only delegates focus and arrow keys from its tile buttons; it is not a control.

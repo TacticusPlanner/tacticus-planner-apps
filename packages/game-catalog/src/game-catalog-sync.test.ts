@@ -107,6 +107,16 @@ const datasetData: Record<string, unknown> = {
       characters: [{ unitId: "ultraCalgar", tier: "A", multiplier: 1.65 }],
     },
   ],
+  "npc-tiers": [
+    {
+      id: "npc-tiers",
+      tiers: [
+        { tier: "S", multiplier: 1.9 },
+        { tier: "D", multiplier: 1 },
+      ],
+      npcs: [{ npcId: "darkaNpc2Hellblaster", tier: "D" }],
+    },
+  ],
   shops: [
     { id: "guild", slots: [] },
     { id: "war", slots: [] },
@@ -477,6 +487,26 @@ describe("syncGameCatalog", () => {
     expect(await getDatasetRecords("horde-mode-tiers")).toEqual([
       expect.objectContaining({ id: "horde-mode-tiers" }),
     ])
+  })
+
+  it("syncs npc-tiers as its single record, and is ready without it", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    expect(await getDatasetRecords("npc-tiers")).toEqual([
+      expect.objectContaining({ id: "npc-tiers" }),
+    ])
+
+    await resetDb()
+    const manifest = createManifest()
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient({
+        ...manifest,
+        datasets: manifest.datasets.filter(
+          (dataset) => dataset.key !== "npc-tiers"
+        ),
+      })
+    )
+    expect(result.status).toBe("ready")
+    expect(await getDatasetRecords("npc-tiers")).toEqual([])
   })
 
   it("syncs unit-power as its single record, and is ready without it", async () => {

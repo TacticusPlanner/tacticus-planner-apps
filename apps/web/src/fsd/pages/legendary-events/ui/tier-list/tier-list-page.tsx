@@ -4,6 +4,10 @@ import { useSearchParams } from "react-router"
 import { ChevronDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -17,8 +21,16 @@ import {
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
+import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 
+import { NpcTierListView } from "./npc-tier-list-view"
+import {
+  TIER_LIST_KINDS,
+  parseTierListKind,
+  tierListKindSearchParams,
+  type TierListKind,
+} from "./npc-tier-list.view-model"
 import { TierListFiltersBar, TierListFiltersRow } from "./tier-list-filters"
 import { useTierListTutorial } from "./tier-list.tutorial"
 import {
@@ -40,10 +52,68 @@ import { TierTileDetailsSheet } from "./tier-tile-details"
 
 type TierRef = { tier: string; multiplier: number } | null
 
-/** `/legendary-events/tier-list`: the catalog horde-mode tier list (design D5b) — one row per tier
- *  with each character's effective multiplier, then the collapsed Untiered row, filtered by name,
- *  ownership and alliance (kept in the URL query). */
+/** `/legendary-events/tier-list`: the Heroes list (the character horde-mode tier list) or, with
+ *  `?list=enemies`, the Enemies list (the NPC tier list of the active events), switched at the top. */
 export function TierListPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const kind = parseTierListKind(searchParams)
+  return (
+    <div className="flex min-w-0 flex-col gap-4">
+      <TierListKindSwitch
+        kind={kind}
+        onKindChange={(next) =>
+          setSearchParams(
+            (current) => tierListKindSearchParams(current, next),
+            { replace: true }
+          )
+        }
+      />
+      {kind === "enemies" ? <NpcTierListView /> : <HeroTierList />}
+    </div>
+  )
+}
+
+/** The Heroes / Enemies switch. */
+function TierListKindSwitch({
+  kind,
+  onKindChange,
+}: {
+  kind: TierListKind
+  onKindChange: (kind: TierListKind) => void
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  return (
+    <ToggleGroup
+      aria-label={t("npcTierList.kind.label")}
+      data-testid="tier-list-kind"
+      onValueChange={(value) => {
+        const next = TIER_LIST_KINDS.find((item) => item === value)
+        if (next) onKindChange(next)
+      }}
+      size="sm"
+      spacing={1}
+      type="single"
+      value={kind}
+      variant="outline"
+    >
+      {TIER_LIST_KINDS.map((item) => (
+        <ToggleGroupItem
+          className={FILTER_CHIP_CLASS_NAME}
+          data-testid={`tier-list-kind-${item}`}
+          key={item}
+          value={item}
+        >
+          {t(`npcTierList.kind.${item}`)}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
+  )
+}
+
+/** The catalog horde-mode tier list (design D5b) — one row per tier with each character's effective
+ *  multiplier, then the collapsed Untiered row, filtered by name, ownership and alliance (kept in
+ *  the URL query). */
+function HeroTierList() {
   // `hordeStrategy` loads with the page so opening a tile's Strategy section never suspends.
   const { t, i18n } = useTranslation([
     "legendaryEvents",

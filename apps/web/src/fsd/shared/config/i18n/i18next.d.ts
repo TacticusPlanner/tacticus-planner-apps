@@ -75,6 +75,10 @@ declare module "i18next" {
       // content for the Tier List. Read via `i18n.getResource` — see `entities/legendary-event`
       // use-horde-strategy-text.
       hordeStrategy: Record<string, unknown>
+      // Why an enemy NPC is dangerous in horde modes (npc id -> threat / counter), curated content for
+      // the Tier List's Enemies view. English only for now (other locales fall back to it). Read via
+      // `i18n.getResource` — see pages/legendary-events use-npc-threat-text.
+      npcThreats: Record<string, unknown>
     }
   }
 }

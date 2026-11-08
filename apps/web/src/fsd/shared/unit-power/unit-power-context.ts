@@ -12,6 +12,7 @@ import {
   type PowerItem,
   type PowerMow,
   type PowerNpc,
+  type PowerNpcRow,
   type UnitPowerTables,
   type UpgradeStat,
 } from "@workspace/game-domain"
@@ -21,7 +22,8 @@ export type UnitPowerContext = {
   tables: UnitPowerTables
   characters: ReadonlyMap<string, PowerCharacter>
   mows: ReadonlyMap<string, PowerMow>
-  npcs: ReadonlyMap<string, PowerNpc>
+  /** Each NPC with its served `stats` ladder (absent in hand-built contexts). */
+  npcs: ReadonlyMap<string, PowerNpc & { stats?: readonly PowerNpcRow[] }>
   items: ReadonlyMap<string, PowerItem>
   upgradeStats: ReadonlyMap<string, UpgradeStat>
 }

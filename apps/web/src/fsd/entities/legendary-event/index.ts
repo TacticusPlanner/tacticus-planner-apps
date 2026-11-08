@@ -168,6 +168,7 @@ export { type NamedTeam, withLanePrefix } from "./lib/team-display-name"
 export { useTeamDisplayName } from "./model/use-team-display-name"
 export {
   laneBattlePowers,
+  laneThresholdPowers,
   teamClearEstimate,
   teamEffectiveDepth,
   teamPower,
@@ -231,4 +232,10 @@ export {
 } from "./lib/horde-tier-list"
 export { useLegendaryEventsBattles } from "./model/use-legendary-events-battles"
 export { useHordeModeTiers } from "./model/use-horde-mode-tiers"
+export {
+  buildNpcTierList,
+  npcEventIds,
+  type NpcTierTile,
+} from "./lib/npc-tier-list"
+export { useNpcTiers } from "./model/use-npc-tiers"
 export { tierToneClass } from "./lib/tier-tone"

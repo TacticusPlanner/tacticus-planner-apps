@@ -1,4 +1,5 @@
 import {
+  npcPowerAtLadder,
   rosterCharacterPower,
   type UnitPowerContext,
 } from "@/shared/unit-power"
@@ -10,6 +11,12 @@ import {
   hordeTierName,
   type HordeModeTierList,
 } from "./horde-tier-list"
+import {
+  npcAdjustedBattlePower,
+  npcTierMultipliers,
+  type NpcTierListRecord,
+  type NpcTieredBattle,
+} from "./npc-tier-list"
 
 /**
  * Effective power ≥ this × a battle's catalog power clears it. A web constant, not catalog data:
@@ -36,6 +43,9 @@ export interface ClearEstimateConfig {
   hordeTiers?: ReadonlyMap<string, string>
   /** The power formula's game data; null when the `unit-power` dataset is absent (no estimate). */
   unitPower: UnitPowerContext | null
+  /** Each tiered enemy NPC's multiplier on its power (catalog `npc-tiers`); an NPC absent here, or
+   *  every NPC when this is absent (hand-built configs), uses 1.0. */
+  npcMultipliers?: ReadonlyMap<string, number>
 }
 
 /** The config fields a power figure reads. */
@@ -61,16 +71,18 @@ export type ClearEstimateRoster = ReadonlyMap<string, LegendaryEventRosterUnit>
 
 /**
  * The config from the power-ratio constants, the catalog `horde-mode-tiers` list (null when that
- * dataset is absent: every character is then untiered) and the power context (null when the
- * `unit-power` dataset is absent: nothing is estimated). A character's own `multiplier` overrides
- * its tier's.
+ * dataset is absent: every character is then untiered), the power context (null when the
+ * `unit-power` dataset is absent: nothing is estimated) and the catalog `npc-tiers` list (null when
+ * absent: every enemy NPC is untiered). A character's or NPC's own `multiplier` overrides its tier's.
  */
 export function clearEstimateConfig(
   hordeModeTiers: HordeModeTierList | null,
-  unitPower: UnitPowerContext | null
+  unitPower: UnitPowerContext | null,
+  npcTiers: NpcTierListRecord | null = null
 ): ClearEstimateConfig {
   return {
     unitPower,
+    npcMultipliers: npcTierMultipliers(npcTiers),
     powerRatio: CLEAR_ESTIMATE_POWER_RATIO,
     calibrated: CLEAR_ESTIMATE_CALIBRATED,
     hordeMultipliers: new Map(
@@ -258,6 +270,30 @@ export function teamEffectiveDepth(
   estimate: Pick<ClearEstimate, "depth"> | null
 ): number | null {
   return manualDepth ?? estimate?.depth ?? null
+}
+
+/**
+ * A lane's battle powers in battle order, each scaled by its enemies' NPC tier multipliers
+ * (`npcAdjustedBattlePower`, weighted by each enemy's estimated power at its ladder row): the
+ * thresholds a team's effective power is compared with. Equal to `laneBattlePowers` while every
+ * enemy is untiered or at 1.0. Null while any of the lane's battles is missing.
+ */
+export function laneThresholdPowers(
+  battleIds: readonly string[],
+  battles: readonly (NpcTieredBattle & { id: string })[],
+  config: Pick<ClearEstimateConfig, "npcMultipliers" | "unitPower">
+): number[] | null {
+  const multipliers = config.npcMultipliers ?? new Map<string, number>()
+  const context = config.unitPower
+  const enemyPower = (npcId: string, ladderIndex: number) =>
+    context ? npcPowerAtLadder(npcId, ladderIndex, context) : null
+  return laneBattlePowers(
+    battleIds,
+    battles.map((battle) => ({
+      id: battle.id,
+      power: npcAdjustedBattlePower(battle, multipliers, enemyPower),
+    }))
+  )
 }
 
 /** A lane's battle powers in battle order; null while any of its battles is missing. */

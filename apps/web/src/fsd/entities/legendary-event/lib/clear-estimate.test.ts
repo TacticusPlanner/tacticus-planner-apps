@@ -6,6 +6,7 @@ import {
   clearEstimateConfig,
   estimateClearDepth,
   laneBattlePowers,
+  laneThresholdPowers,
   lockedMemberCount,
   teamClearEstimate,
   teamEffectiveDepth,
@@ -297,5 +298,36 @@ describe("clear estimate (spec worked examples)", () => {
     expect(
       laneBattlePowers(["votanUthar-alpha-1", "votanUthar-alpha-3"], battles)
     ).toBeNull()
+  })
+
+  it("scales a lane's battle powers by its enemies' NPC multipliers (count-weighted without power data)", () => {
+    const battles = [
+      {
+        id: "b-2",
+        power: 2000,
+        waves: [
+          {
+            enemies: [
+              { id: "grunt", ladderIndex: 1, count: 3 },
+              { id: "heavy", ladderIndex: 1, count: 1 },
+            ],
+          },
+        ],
+      },
+      {
+        id: "b-1",
+        power: 1000,
+        waves: [{ enemies: [{ id: "grunt", ladderIndex: 1, count: 4 }] }],
+      },
+    ]
+    const config = { unitPower: null, npcMultipliers: new Map([["heavy", 2]]) }
+    // b-2: 3 grunts at 1.0 and 1 heavy at 2.0 → 1.25 × 2000.
+    expect(laneThresholdPowers(["b-1", "b-2"], battles, config)).toEqual([
+      1000, 2500,
+    ])
+    expect(
+      laneThresholdPowers(["b-1", "b-2"], battles, { unitPower: null })
+    ).toEqual([1000, 2000])
+    expect(laneThresholdPowers(["b-1", "b-3"], battles, config)).toBeNull()
   })
 })

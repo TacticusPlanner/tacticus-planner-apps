@@ -159,6 +159,7 @@ export function MasterTablePage() {
               progress: progressData,
               battles: battlesData,
               nowMs,
+              config: estimateConfig,
             }),
             units: unitsData,
             roster: rosterData,
