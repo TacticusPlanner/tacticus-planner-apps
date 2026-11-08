@@ -68,30 +68,30 @@ export function ProgressionMark({
           emphasis === "stars" && fadedPart
         )}
       />
-      <span
-        className={cn(
-          "inline-flex items-center gap-0.5",
-          emphasis === "rarity" && fadedPart
-        )}
-        data-part="stars"
-      >
-        {visual.kind === "stars" ? (
-          <>
-            <EntityIcon
-              alt=""
-              src={visual.icon}
-              className={large ? "size-3.5" : "size-3"}
-            />
-            {visual.count}
-          </>
-        ) : visual.kind === "wings" ? (
+      {visual.kind === "none" ? null : (
+        <span
+          className={cn(
+            "inline-flex items-center gap-0.5",
+            emphasis === "rarity" && fadedPart
+          )}
+          data-part="stars"
+        >
           <EntityIcon
             alt=""
             src={visual.icon}
-            className={large ? "h-4 w-auto" : "h-3 w-auto"}
+            className={
+              visual.kind === "wings"
+                ? large
+                  ? "h-4 w-auto"
+                  : "h-3 w-auto"
+                : large
+                  ? "size-3.5"
+                  : "size-3"
+            }
           />
-        ) : null}
-      </span>
+          {visual.kind === "stars" ? visual.count : null}
+        </span>
+      )}
     </span>
   )
 }
