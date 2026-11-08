@@ -15,6 +15,7 @@ export const collectionSorts = [
   "rank",
   "abilities",
   "shards",
+  "power",
 ] as const
 export type CollectionSort = (typeof collectionSorts)[number]
 export const defaultCollectionSort: CollectionSort = "rarity"

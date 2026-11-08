@@ -402,7 +402,8 @@
           "rarity": "Rareté",
           "rank": "Rang",
           "abilities": "Capacités",
-          "shards": "Éclats"
+          "shards": "Éclats",
+          "power": "Puissance"
         },
         "view": "Affichage",
         "views": {
