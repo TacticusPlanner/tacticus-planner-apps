@@ -75,6 +75,8 @@ export type RecommendationsState =
       upgradedCeiling: number
     }
 
+const NO_ALLIANCES: readonly string[] = []
+
 /** How long run-input edits wait before they reach the verdicts and the search (spec: run-input
  *  edits settle before they are planned). */
 export const ECONOMY_SETTLE_MS = 400
@@ -88,6 +90,8 @@ function useRecommendations(
   syncedCeiling: number | null
 ): {
   state: RecommendationsState
+  /** Alliances whose Mythic ascensions the search left out for want of a saved Onslaught sector. */
+  missingOnslaughtAlliances: readonly string[]
   lowerPriority: () => void
   progress: SearchProgressStore
 } {
@@ -100,6 +104,7 @@ function useRecommendations(
     )
     return {
       syncedCeiling,
+      missingOnslaught: farming.estimate.missingOnslaughtAlliances,
       start: () =>
         recommendUpgrades({
           inputs,
@@ -127,6 +132,7 @@ function useRecommendations(
   const [progress, setProgress] = useState<{
     job: object
     state: RecommendationsState
+    missingOnslaughtAlliances: readonly string[]
   } | null>(null)
   const run = useRef<SlicedRun | null>(null)
   const [tracker] = useState(() => createSearchProgressTracker())
@@ -141,6 +147,7 @@ function useRecommendations(
         if (step.kind !== "round") return
         setProgress({
           job,
+          missingOnslaughtAlliances: [...job.missingOnslaught].toSorted(),
           state: {
             status: "running",
             recommendations: step.recommendations,
@@ -153,6 +160,7 @@ function useRecommendations(
         tracker.stop()
         setProgress({
           job,
+          missingOnslaughtAlliances: [...job.missingOnslaught].toSorted(),
           state: {
             status: "done",
             recommendations: result.recommendations,
@@ -185,7 +193,9 @@ function useRecommendations(
       upgradedCeiling: job.syncedCeiling,
     }
   }, [job, progress, farmingStatus])
-  return { state, lowerPriority, progress: tracker }
+  const missingOnslaughtAlliances =
+    progress?.job === job ? progress.missingOnslaughtAlliances : NO_ALLIANCES
+  return { state, missingOnslaughtAlliances, lowerPriority, progress: tracker }
 }
 
 /** Whether the chosen target's recommendations are final (spec: a step's recommendations are final
@@ -323,6 +333,7 @@ export function usePlanDraft(
   )
   const {
     state: recommendations,
+    missingOnslaughtAlliances,
     lowerPriority,
     progress: searchProgress,
   } = useRecommendations(source, evaluator, syncedCeiling)
@@ -481,6 +492,8 @@ export function usePlanDraft(
     chosenTarget,
     syncedCeiling,
     recommendations,
+    /** Alliances to ask the player to set an Onslaught sector for (Mythic ascensions left out). */
+    missingOnslaughtAlliances,
     /** The upgrade search's progress while it runs (spec: the search shows its progress). */
     searchProgress,
     ticked: tickedSet,

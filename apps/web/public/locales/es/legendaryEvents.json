@@ -1099,7 +1099,10 @@
       "group": "Lista para la ronda {{run}}",
       "ceilingAfter": "→ {{ceiling}}",
       "ceilingAfterTarget": "→ {{ceiling}} / {{points}}",
-      "ceilingNote": "El techo de cada fila supone que todas las filas anteriores están marcadas."
+      "ceilingNote": "El techo de cada fila supone que todas las filas anteriores están marcadas.",
+      "onslaughtMissing_one": "Las mejoras a estrellas míticas de unidades {{alliances}} se omiten: indica tu sector de Onslaught para que el planificador cuente el tiempo de Onslaught para los fragmentos míticos.",
+      "onslaughtMissing_other": "Las mejoras a estrellas míticas de unidades {{alliances}} se omiten: indica tus sectores de Onslaught para que el planificador cuente el tiempo de Onslaught para los fragmentos míticos.",
+      "onslaughtLink": "Indicar progreso de Onslaught"
     },
     "teams": {
       "yours": "Tuyo",

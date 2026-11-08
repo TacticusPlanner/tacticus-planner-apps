@@ -315,6 +315,7 @@ describe("createFarmingDaysEstimator", () => {
       )
 
       expect(estimate(ascend)).toBeNull()
+      expect([...estimate.missingOnslaughtAlliances]).toEqual(["Xenos"])
     })
 
     it("counts the Onslaught runs to farm the missing shards", () => {
@@ -330,6 +331,7 @@ describe("createFarmingDaysEstimator", () => {
 
       // 19 missing shards at one per run and 1.5 runs a day.
       expect(estimate(ascend)?.days).toBe(Math.ceil(19 / 1.5))
+      expect(estimate.missingOnslaughtAlliances.size).toBe(0)
     })
 
     it("stays ready today once the Mythic shards are owned", () => {

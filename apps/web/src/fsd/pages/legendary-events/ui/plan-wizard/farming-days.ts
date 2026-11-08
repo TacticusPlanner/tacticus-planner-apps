@@ -20,7 +20,10 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { CombinedGoalSpec, GoalDetail } from "@/entities/goal"
 import type { LegendaryEventRosterUnit } from "@/entities/legendary-event"
-import type { OnslaughtProgress } from "@/entities/player-data-override"
+import {
+  progressForAlliance,
+  type OnslaughtProgress,
+} from "@/entities/player-data-override"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
@@ -53,6 +56,13 @@ export interface UpgradeChainRequest {
 
 /** `null` means the chain is blocked (a need with no farmable source) or cannot be estimated. */
 export type FarmingDays = { days: number; date: string } | null
+
+/** The memoized estimate, plus the alliances whose chains it blocked because they needed Mythic
+ *  shards and the account has no saved Onslaught sector for that alliance (so the wizard can ask
+ *  the player to set one). The set grows as the search estimates chains. */
+export type FarmingDaysEstimator = ((
+  request: UpgradeChainRequest
+) => FarmingDays) & { missingOnslaughtAlliances: ReadonlySet<string> }
 
 /** The catalog and account inputs the estimator costs a chain against. */
 export interface FarmingDaysInputs {
@@ -219,16 +229,20 @@ function requestKey(request: UpgradeChainRequest) {
  */
 export function createFarmingDaysEstimator(
   inputs: FarmingDaysInputs
-): (request: UpgradeChainRequest) => FarmingDays {
+): FarmingDaysEstimator {
   const cache = new Map<string, FarmingDays>()
   const shared = sharedEstimateInputs(inputs)
-  return (request) => {
+  const missingOnslaughtAlliances = new Set<string>()
+  const estimate = (request: UpgradeChainRequest) => {
     const key = requestKey(request)
     if (cache.has(key)) return cache.get(key) ?? null
-    const result = estimateChain(inputs, shared, request)
+    const result = estimateChain(inputs, shared, request, (alliance) =>
+      missingOnslaughtAlliances.add(alliance)
+    )
     cache.set(key, result)
     return result
   }
+  return Object.assign(estimate, { missingOnslaughtAlliances })
 }
 
 interface SharedEstimateInputs {
@@ -266,7 +280,8 @@ function sharedEstimateInputs(inputs: FarmingDaysInputs): SharedEstimateInputs {
 function estimateChain(
   inputs: FarmingDaysInputs,
   shared: SharedEstimateInputs,
-  request: UpgradeChainRequest
+  request: UpgradeChainRequest,
+  onMissingOnslaught: (alliance: string) => void
 ): FarmingDays {
   const characterView = inputs.charactersById.get(request.unitId)
   if (!characterView) return null
@@ -349,6 +364,11 @@ function estimateChain(
       referenceDate,
     })
     if (mythicShards > 0 && !acquisition.mythicShardNeed) {
+      const alliance = characterView.alliance ?? "Imperial"
+      const progress =
+        inputs.onslaughtProgress &&
+        progressForAlliance(inputs.onslaughtProgress, alliance)
+      if (!progress) onMissingOnslaught(alliance)
       blocked = true
       return
     }

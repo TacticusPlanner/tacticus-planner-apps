@@ -20,8 +20,7 @@ import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import {
   createFarmingDaysEstimator,
-  type FarmingDays,
-  type UpgradeChainRequest,
+  type FarmingDaysEstimator,
 } from "./farming-days"
 
 export type UpgradeFarmingDaysState =
@@ -31,7 +30,7 @@ export type UpgradeFarmingDaysState =
   | { status: "error"; retry: () => void }
   | {
       status: "ready"
-      estimate: (request: UpgradeChainRequest) => FarmingDays
+      estimate: FarmingDaysEstimator
     }
 
 /**
