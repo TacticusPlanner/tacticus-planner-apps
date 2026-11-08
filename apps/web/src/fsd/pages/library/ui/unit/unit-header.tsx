@@ -40,6 +40,7 @@ export function UnitHeader({
   onModeChange,
   customControls,
   power,
+  action,
   isMobile,
 }: {
   portraitSrc: string
@@ -64,6 +65,8 @@ export function UnitHeader({
   customControls: ReactNode
   /** The unit's power at the shown values (`UnitPowerValue`), first in the values area. */
   power?: ReactNode
+  /** The unit's Create goal, under the unit's lines; absent when signed out. */
+  action?: ReactNode
   isMobile: boolean
 }) {
   const { t } = useTranslation(["library", "factions"])
@@ -143,6 +146,7 @@ export function UnitHeader({
               </span>
             </div>
           ) : null}
+          {action ? <div className="pt-1.5">{action}</div> : null}
         </div>
         <div
           className={cn(

@@ -2,6 +2,7 @@ import type { InitialEntry } from "react-router"
 import { useLocation } from "react-router"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { CreateGoalLauncherContext } from "@/entities/goal"
 import { unitOriginState } from "@/entities/unit"
 import type { ReadState } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
@@ -214,6 +215,9 @@ function holdPlayerDataReads() {
   }
 }
 
+const launchCreateGoal = vi.fn()
+beforeEach(() => launchCreateGoal.mockClear())
+
 function Where() {
   const location = useLocation()
   return (
@@ -253,10 +257,10 @@ async function renderUnit(
     state,
   }
   const { queryClient } = render(
-    <>
+    <CreateGoalLauncherContext.Provider value={launchCreateGoal}>
       <MowUnitPage />
       <Where />
-    </>,
+    </CreateGoalLauncherContext.Provider>,
     {
       route: "/library/machines-of-war/:entityId",
       // The harness types entries as paths; the memory router also takes a location with state.
@@ -614,8 +618,32 @@ describe("MowUnitPage", () => {
     expect(screen.getByTestId("unit-values-base")).toHaveTextContent("Starting")
   })
 
+  it("opens goal creation for an owned MoW with only the unit prefilled", async () => {
+    await renderUnit("/library/machines-of-war/ultraDreadnought", {
+      player: { mows: [ownedGalatian] },
+    })
+    fireEvent.click(screen.getByTestId("unit-create-goal"))
+    expect(launchCreateGoal).toHaveBeenCalledWith({
+      entityType: "Mow",
+      entityId: "ultraDreadnought",
+    })
+  })
+
+  it("opens goal creation on Unlock for an unowned MoW", async () => {
+    await renderUnit("/library/machines-of-war/ultraDreadnought", {
+      player: { mows: [] },
+    })
+    fireEvent.click(screen.getByTestId("unit-create-goal"))
+    expect(launchCreateGoal).toHaveBeenCalledWith({
+      entityType: "Mow",
+      entityId: "ultraDreadnought",
+      goalType: "Unlock",
+    })
+  })
+
   it("shows the sign-in banner signed out", async () => {
     await renderUnit("/library/machines-of-war/ultraDreadnought")
+    expect(screen.queryByTestId("unit-create-goal")).not.toBeInTheDocument()
     expect(screen.getByTestId("unit-showing-starting")).toHaveTextContent(
       "Showing Common, abilities level 1."
     )

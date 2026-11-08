@@ -433,7 +433,9 @@
     },
     "notFound": "This unit isn't in the Library.",
     "loadFailed": "Character data could not be loaded.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "createGoal": "Create goal",
+    "createGoalFor": "Create goal for {{name}}"
   },
   "charactersList": {
     "title": "Characters",
@@ -571,7 +573,7 @@
       "steps": {
         "header": {
           "title": "The unit",
-          "content": "Its portrait, faction and the values the page shows. Signed in and synced, they start at your own unit; choose Custom to try other values. The header also shows the unit's power at those values."
+          "content": "Its portrait, faction and the values the page shows. Signed in and synced, they start at your own unit; choose Custom to try other values. The header also shows the unit's power at those values. Signed in, Create goal opens goal creation for this unit."
         },
         "tabs": {
           "title": "Details and rank-up",
@@ -663,7 +665,7 @@
       "steps": {
         "header": {
           "title": "Machine of War",
-          "content": "Your Machine of War's rarity and ability levels. Switch to Custom to look at other rarities. The header also shows its power at the values shown."
+          "content": "Your Machine of War's rarity and ability levels. Switch to Custom to look at other rarities. The header also shows its power at the values shown. Signed in, Create goal opens goal creation for it."
         },
         "tabs": {
           "title": "Details and upgrades",

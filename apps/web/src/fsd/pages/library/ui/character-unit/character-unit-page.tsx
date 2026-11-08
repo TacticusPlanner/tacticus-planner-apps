@@ -28,6 +28,7 @@ import { CharacterRankUpTab } from "../character/character-rank-up-tab"
 import { useCharacterListItems } from "../characters/use-character-list-items"
 import { useCharactersCatalog } from "../characters/use-characters-catalog"
 import { AbilityPanel } from "../unit/ability-panel"
+import { UnitCreateGoalButton } from "../unit/unit-create-goal-button"
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { UnitPowerValue } from "../unit/unit-power-value"
 import { UnitTabs } from "../unit/unit-tabs"
@@ -357,6 +358,17 @@ function CharacterUnit({
                     unlockCosts?.get(character.initialRarity)?.shards ?? 0,
                 }
               : undefined
+          }
+          action={
+            isAuthenticated ? (
+              <UnitCreateGoalButton
+                entityType="Character"
+                unitId={unitId}
+                name={name}
+                ownership={ownership}
+                isMobile={isMobile}
+              />
+            ) : undefined
           }
           isMobile={isMobile}
         />

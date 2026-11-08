@@ -433,7 +433,9 @@
     },
     "notFound": "Esta unidad no está en la Biblioteca.",
     "loadFailed": "No se pudieron cargar los datos de personajes.",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "createGoal": "Crear objetivo",
+    "createGoalFor": "Crear objetivo para {{name}}"
   },
   "charactersList": {
     "title": "Personajes",
@@ -571,7 +573,7 @@
       "steps": {
         "header": {
           "title": "La unidad",
-          "content": "Su retrato, facción y los valores que muestra la página. Con la sesión iniciada y sincronizada, empiezan en tu propia unidad; elige «Personalizados» para probar otros valores. La cabecera también muestra el poder de la unidad con esos valores."
+          "content": "Su retrato, facción y los valores que muestra la página. Con la sesión iniciada y sincronizada, empiezan en tu propia unidad; elige «Personalizados» para probar otros valores. La cabecera también muestra el poder de la unidad con esos valores. Con la sesión iniciada, «Crear objetivo» abre la creación de objetivos para esta unidad."
         },
         "tabs": {
           "title": "Detalles y rango",
@@ -663,7 +665,7 @@
       "steps": {
         "header": {
           "title": "Máquina de Guerra",
-          "content": "La rareza y los niveles de habilidad de tu Máquina de Guerra. Cambia a Personalizados para ver otras rarezas. La cabecera también muestra su poder con los valores mostrados."
+          "content": "La rareza y los niveles de habilidad de tu Máquina de Guerra. Cambia a Personalizados para ver otras rarezas. La cabecera también muestra su poder con los valores mostrados. Con la sesión iniciada, «Crear objetivo» abre la creación de objetivos para ella."
         },
         "tabs": {
           "title": "Detalles y mejoras",
