@@ -45,10 +45,16 @@ describe("SectionActions", () => {
     save.mockReset().mockResolvedValue(undefined)
   })
 
+  // The settings button is lazy-loaded with the legendary-event feature, whose first load can
+  // take longer than the default 1s wait.
   it("loads the Legendary Event settings on its section and saves Show paid options as a flag", async () => {
     renderActions("/legendary-events")
 
-    fireEvent.click(await screen.findByTestId("legendary-event-settings"))
+    fireEvent.click(
+      await screen.findByTestId("legendary-event-settings", undefined, {
+        timeout: 10_000,
+      })
+    )
     expect(
       screen.getByTestId("legendary-event-settings-dialog")
     ).toHaveTextContent("Legendary Event settings")
@@ -69,7 +75,11 @@ describe("SectionActions", () => {
       })
     )
     renderActions("/legendary-events")
-    fireEvent.click(await screen.findByTestId("legendary-event-settings"))
+    fireEvent.click(
+      await screen.findByTestId("legendary-event-settings", undefined, {
+        timeout: 10_000,
+      })
+    )
     fireEvent.click(screen.getByTestId("legendary-event-settings-paid"))
 
     // A second change now would be built from the settings before the first save.

@@ -31,6 +31,7 @@ vi.mock("@/shared/analytics", () => ({
 }))
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => (_type: string | null, id: string | null) => id ?? "",
+  useUnitSearchNames: () => () => [],
 }))
 
 let i18n: I18n

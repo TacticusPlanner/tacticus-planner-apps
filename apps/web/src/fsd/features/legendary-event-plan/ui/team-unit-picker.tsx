@@ -363,7 +363,7 @@ export function TeamUnitPicker({
                     ) : null}
                     <span className="mt-1">
                       <EventUnitChip
-                        showStars
+                        showName={false}
                         unit={
                           shownUnit
                             ? ownedUnitChipData(id, shownUnit)

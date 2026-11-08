@@ -1,12 +1,14 @@
 import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
-import type {
-  LegendaryEventLaneId,
-  LegendaryEventPlan,
-  LegendaryEventRosterUnit,
-  LegendaryEventTeam,
+import {
+  RankShadingProvider,
+  type LegendaryEventLaneId,
+  type LegendaryEventPlan,
+  type LegendaryEventRosterUnit,
+  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
+import { safeStorage } from "@/shared/lib"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
@@ -82,23 +84,26 @@ function renderBoard(
   laneIds: readonly LegendaryEventLaneId[] = ["alpha", "beta", "gamma"]
 ) {
   const onAddTeam = vi.fn()
-  render(
-    <EventBoard
-      catalog={catalog}
-      event={lysanderEvent}
-      laneFigures={(laneId) => <p data-testid="lane-figures">{laneId}</p>}
-      laneIds={laneIds}
-      laneTeamsSection={(laneId) => (
-        <p data-testid="lane-teams">{`${laneId} teams`}</p>
-      )}
-      onAddTeam={onAddTeam}
-      progressGrid={{ kind: "unavailable" }}
-      teams={teams}
-      unitPower={null}
-    />,
+  // The page provides Rank shading around the board.
+  const { unmount } = render(
+    <RankShadingProvider>
+      <EventBoard
+        catalog={catalog}
+        event={lysanderEvent}
+        laneFigures={(laneId) => <p data-testid="lane-figures">{laneId}</p>}
+        laneIds={laneIds}
+        laneTeamsSection={(laneId) => (
+          <p data-testid="lane-teams">{`${laneId} teams`}</p>
+        )}
+        onAddTeam={onAddTeam}
+        progressGrid={{ kind: "unavailable" }}
+        teams={teams}
+        unitPower={null}
+      />
+    </RankShadingProvider>,
     { wrapper: i18nWrapper(i18n) }
   )
-  return { onAddTeam }
+  return { onAddTeam, unmount }
 }
 
 const lane = (laneId: string) =>
@@ -110,6 +115,30 @@ describe("EventBoard", () => {
   beforeAll(async () => {
     i18n = await createTestI18n("en")
   })
+
+  it("turns Rank shading off for every chip and keeps it off after a remount", () => {
+    safeStorage.remove("legendaryEvents.unitChips.rankShading")
+    const shaded = () =>
+      screen
+        .getAllByTestId("event-board-unit")
+        .filter((chip) => chip.dataset.shaded === "true").length
+    const { unmount } = renderBoard(withUnits)
+    const toggle = screen.getByRole("switch", { name: "Rank shading" })
+    expect(toggle).toBeChecked()
+    expect(shaded()).toBeGreaterThan(0)
+
+    fireEvent.click(toggle)
+    expect(toggle).not.toBeChecked()
+    expect(shaded()).toBe(0)
+
+    unmount()
+    renderBoard(withUnits)
+    expect(
+      screen.getByRole("switch", { name: "Rank shading" })
+    ).not.toBeChecked()
+    expect(shaded()).toBe(0)
+    safeStorage.remove("legendaryEvents.unitChips.rankShading")
+  }, 15_000)
 
   it("shows every given lane with its objectives, figures and Teams section", () => {
     renderBoard()
@@ -133,11 +162,14 @@ describe("EventBoard", () => {
     renderBoard(ready, undefined, ["alpha"])
     const table = within(lane("alpha")).getByTestId("event-board-table")
     const content = within(table).getByTestId("event-board-table-content")
-    // The scroll box holds one content block sized to the columns (w-max, at least the box), and
+    // The scroll box holds one content block at least as wide as the columns' minimum, and
     // the sticky heading row and the columns both sit inside it.
     expect(content.parentElement).toBe(table)
-    expect(table).toHaveClass("overflow-auto")
-    expect(content).toHaveClass("w-max", "min-w-full")
+    // Sideways it always scrolls; up and down only from 768px (on a phone the page scrolls).
+    expect(table).toHaveClass("overflow-x-auto", "md:overflow-y-auto")
+    expect(content).toHaveClass("w-full")
+    const columnCount = lysanderEvent.alpha.unitsRestrictions.length
+    expect(content.style.minWidth).toContain(`${columnCount * 5.9}rem`)
     const heading = within(content).getByRole("group", { name: "Objectives" })
     expect(heading).toHaveClass("sticky")
     expect(content).toContainElement(
@@ -197,6 +229,58 @@ describe("EventBoard", () => {
     )
   })
 
+  it("makes each unit table one Tab stop and moves between its units with the arrow keys", () => {
+    renderBoard(withUnits)
+    const alpha = within(lane("alpha"))
+    const columns = alpha.getAllByTestId("event-board-column")
+    const cells = columns.map((column) =>
+      within(column).queryAllByTestId("event-board-add-team")
+    )
+    const all = cells.flat()
+    expect(all.filter((cell) => cell.tabIndex === 0)).toEqual([cells[0]![0]])
+    expect(
+      alpha.getByRole("group", {
+        description: "Use the arrow keys to move between units.",
+      })
+    ).toContainElement(cells[0]![0]!)
+
+    const first = cells[0]![0]!
+    first.focus()
+    fireEvent.keyDown(first, { key: "ArrowDown" })
+    expect(cells[0]![1]).toHaveFocus()
+    fireEvent.keyDown(cells[0]![1]!, { key: "ArrowRight" })
+    const right = cells.findIndex(
+      (column, index) => index > 0 && column.length > 0
+    )
+    expect(cells[right]![Math.min(1, cells[right]!.length - 1)]).toHaveFocus()
+    fireEvent.keyDown(document.activeElement!, { key: "End" })
+    expect(cells[right]!.at(-1)).toHaveFocus()
+    fireEvent.keyDown(document.activeElement!, { key: "Home" })
+    expect(cells[right]![0]).toHaveFocus()
+
+    // The focused unit is the table's Tab stop from now on.
+    expect(all.filter((cell) => cell.tabIndex === 0)).toEqual([
+      cells[right]![0],
+    ])
+  })
+
+  it("lists each column's best seven and shows the rest on request", () => {
+    renderBoard(withUnits)
+    const columns = () =>
+      within(lane("alpha")).getAllByTestId("event-board-column")
+    const counts = () =>
+      columns().map(
+        (column) => within(column).queryAllByTestId("event-board-unit").length
+      )
+    expect(Math.max(...counts())).toBe(7)
+
+    const showAll = within(lane("alpha")).getByTestId("event-board-show-all")
+    expect(showAll).toHaveTextContent(/Show all units/)
+    fireEvent.click(showAll)
+    expect(Math.max(...counts())).toBeGreaterThan(7)
+    expect(showAll).toHaveTextContent("Show the best 7")
+  })
+
   it("merges the selected objectives into one column and clears them", () => {
     renderBoard(withUnits)
     const alpha = within(lane("alpha"))
@@ -212,7 +296,7 @@ describe("EventBoard", () => {
     ).toHaveLength(2)
     fireEvent.click(alpha.getByRole("button", { name: "Clear selection" }))
     expect(alpha.getAllByTestId("event-board-column")).toHaveLength(count)
-  })
+  }, 15_000) // Renders every lane's full unit table, which runs past 5s under a parallel run.
 
   it("lists units for a signed-out visitor, with ownership unknown", () => {
     renderBoard(

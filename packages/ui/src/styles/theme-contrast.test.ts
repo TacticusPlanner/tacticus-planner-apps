@@ -205,3 +205,18 @@ describe("collection tile tokens", () => {
     }
   )
 })
+
+describe("unit chip tokens", () => {
+  const ranks = Object.keys(light).filter((name) => name.startsWith("rank-"))
+
+  // The chip's rank shading: the rank colour at 30% over the card.
+  it.each(Object.entries(themes))(
+    "%s: text on every 30% rank tint >= 4.5",
+    (_name, t) => {
+      for (const rank of ranks) {
+        const tint = t.mix(rank, 0.3, "card")
+        expect(ratio(t.get("foreground"), tint)).toBeGreaterThanOrEqual(4.5)
+      }
+    }
+  )
+})

@@ -331,8 +331,8 @@ describe("TeamCard", () => {
     expect(owned).toHaveAttribute("data-rank", "Gold1")
     expect(owned).toHaveAttribute("data-owned", "true")
     expect(
-      within(owned!).getByTestId("event-board-unit-stars")
-    ).toBeInTheDocument()
+      within(owned!).queryByTestId("event-board-unit-stars")
+    ).not.toBeInTheDocument()
     expect(owned!.getAttribute("aria-label")).toContain(
       "Active ability level 35, passive ability level 28"
     )

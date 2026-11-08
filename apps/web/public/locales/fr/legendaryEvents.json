@@ -153,6 +153,12 @@
     "next": "Suivant",
     "close": "Fermer"
   },
+  "unitChip": {
+    "abilities": "Active niv. {{active}} · Passive niv. {{passive}}",
+    "notOwned": "Non possédée",
+    "rankShading": "Teinte de rang",
+    "rankShadingHint": "Teinter les unités de la couleur de leur rang"
+  },
   "eventBoard": {
     "title": "Tableau de l'événement",
     "description": "Les objectifs de chaque voie affichée, les unités qui conviennent à chacun et les équipes de la voie côte à côte. Choisissez des objectifs pour voir les unités qui les remplissent tous, ou une unité pour commencer une équipe avec elle.",
@@ -163,6 +169,9 @@
     "columnUnits_other": "{{count}} unités",
     "noUnits": "Aucune unité",
     "addTeam": "Commencer une équipe avec cette unité",
+    "showBest": "Afficher les {{count}} meilleures",
+    "keysHint": "Utilisez les flèches pour passer d’une unité à l’autre.",
+    "showAll": "Afficher toutes les unités (jusqu'à {{count}})",
     "locked": "Verrouillée"
   },
   "laneSummary": {
