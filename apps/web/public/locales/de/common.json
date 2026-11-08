@@ -402,7 +402,8 @@
           "rarity": "Seltenheit",
           "rank": "Rang",
           "abilities": "Fähigkeiten",
-          "shards": "Scherben"
+          "shards": "Scherben",
+          "power": "Macht"
         },
         "view": "Ansicht",
         "views": {

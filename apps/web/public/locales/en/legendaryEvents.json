@@ -1099,7 +1099,10 @@
       "group": "Ready for run {{run}}",
       "ceilingAfter": "→ {{ceiling}}",
       "ceilingAfterTarget": "→ {{ceiling}} / {{points}}",
-      "ceilingNote": "Each row's ceiling assumes every row above it is ticked."
+      "ceilingNote": "Each row's ceiling assumes every row above it is ticked.",
+      "onslaughtMissing_one": "Mythic-star upgrades for {{alliances}} units are left out: set your Onslaught sector so the planner can count Onslaught time for the Mythic shards.",
+      "onslaughtMissing_other": "Mythic-star upgrades for {{alliances}} units are left out: set your Onslaught sectors so the planner can count Onslaught time for the Mythic shards.",
+      "onslaughtLink": "Set Onslaught progress"
     },
     "teams": {
       "yours": "Yours",

@@ -1099,7 +1099,10 @@
       "group": "Bereit für Durchlauf {{run}}",
       "ceilingAfter": "→ {{ceiling}}",
       "ceilingAfterTarget": "→ {{ceiling}} / {{points}}",
-      "ceilingNote": "Die Obergrenze jeder Zeile setzt voraus, dass alle Zeilen darüber ausgewählt sind."
+      "ceilingNote": "Die Obergrenze jeder Zeile setzt voraus, dass alle Zeilen darüber ausgewählt sind.",
+      "onslaughtMissing_one": "Upgrades auf mythische Sterne für {{alliances}}-Einheiten werden ausgelassen: Lege deinen Onslaught-Sektor fest, damit der Planer die Onslaught-Zeit für die mythischen Splitter einrechnen kann.",
+      "onslaughtMissing_other": "Upgrades auf mythische Sterne für {{alliances}}-Einheiten werden ausgelassen: Lege deine Onslaught-Sektoren fest, damit der Planer die Onslaught-Zeit für die mythischen Splitter einrechnen kann.",
+      "onslaughtLink": "Onslaught-Fortschritt festlegen"
     },
     "teams": {
       "yours": "Deins",

@@ -17,6 +17,12 @@ import {
 import { combineReadStates, type ReadState } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { useUnitSearchNames } from "@/shared/unit-name"
+import {
+  mowPowerAt,
+  rosterCharacterPower,
+  useUnitPowerContext,
+  type UnitPowerContext,
+} from "@/shared/unit-power"
 
 import {
   collectionQuickFilters,
@@ -28,6 +34,7 @@ import { ascensionLadder } from "./collection-quick-filters"
 import {
   buildCollectionView,
   type CollectionCatalog,
+  type CollectionPower,
   type CollectionRoster,
   type CollectionView,
 } from "./collection-view"
@@ -110,6 +117,7 @@ export function useCollectionView(
   const upgradesRead = useCatalogDataset("upgrades", toUpgradesById)
   const inventoryRead = usePlayerChunk("inventory")
   const inventoryUpgradesRead = usePlayerChunk("inventory-upgrades")
+  const unitPowerRead = useUnitPowerContext()
 
   const [characters, mows, unlockShardCosts, equipmentRarity] =
     catalogRead.status === "ready" ? catalogRead.data : []
@@ -220,6 +228,16 @@ export function useCollectionView(
     ]
   )
 
+  // Only the Power sort reads power, so other sorts never wait on (or recompute for) it.
+  const sortsByPower = effectiveQuery.sort === "power"
+  const unitPower =
+    unitPowerRead.status === "ready" ? unitPowerRead.data : undefined
+  const power = useMemo(
+    () => (sortsByPower && unitPower ? collectionPower(unitPower) : undefined),
+    [sortsByPower, unitPower]
+  )
+  const powerLoading = sortsByPower && unitPowerRead.status === "loading"
+
   const retry = () => {
     catalogRead.retry()
     rosterRead.retry()
@@ -227,6 +245,7 @@ export function useCollectionView(
     upgradesRead.retry()
     inventoryRead.retry()
     inventoryUpgradesRead.retry()
+    unitPowerRead.retry()
   }
 
   const view = useMemo(() => {
@@ -246,7 +265,7 @@ export function useCollectionView(
         locale: i18n.language,
       },
       effectiveQuery,
-      { ladder, orbs, rankUpReady }
+      { ladder, orbs, rankUpReady, power }
     )
   }, [
     catalog,
@@ -258,11 +277,30 @@ export function useCollectionView(
     ladder,
     orbs,
     rankUpReady,
+    power,
   ])
 
   if (catalogRead.status === "error") return { status: "catalogError", retry }
-  if (!view || quickStatus === "loading") return { status: "loading" }
+  if (!view || quickStatus === "loading" || powerLoading)
+    return { status: "loading" }
   return { status: "ready", view, quickFilters, retry }
+}
+
+/** The Power sort's figures: the in-game power, equipped items included. */
+function collectionPower(context: UnitPowerContext): CollectionPower {
+  return {
+    character: (record) => rosterCharacterPower(record, context),
+    mow: (record) =>
+      mowPowerAt(
+        record.unitId,
+        {
+          progression: record.progressionIndex,
+          primaryAbilityLevel: record.abilities[0]?.level ?? 1,
+          secondaryAbilityLevel: record.abilities[1]?.level ?? 1,
+        },
+        context
+      ),
+  }
 }
 
 /** A quick filter's availability from the catalog data and the inventory chunk it reads. */

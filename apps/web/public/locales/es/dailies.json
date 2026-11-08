@@ -263,7 +263,16 @@
       "label": "{{material}}, {{owned}} de {{target}} en posesión",
       "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} más",
-      "moreUnits": "+{{count}}"
+      "moreUnits": "+{{count}}",
+      "alternatives": "También disponible en",
+      "alternativeGroups": {
+        "campaigns": "Campañas",
+        "events": "Eventos de campaña",
+        "shops": "Tiendas"
+      },
+      "locked": "Bloqueado",
+      "shopQty": "{{qty}}× por",
+      "shopPrice": "{{qty}} por {{cost}} {{currency}}"
     },
     "filter": {
       "label": "Filtrar por unidad",

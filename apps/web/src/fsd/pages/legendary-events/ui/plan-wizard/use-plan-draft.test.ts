@@ -17,7 +17,9 @@ import {
 // Stable across renders, like the real hook.
 const FARMING = vi.hoisted(() => ({
   status: "ready",
-  estimate: () => ({ days: 10, date: "2026-10-16" }),
+  estimate: Object.assign(() => ({ days: 10, date: "2026-10-16" }), {
+    missingOnslaughtAlliances: new Set<string>(),
+  }),
 }))
 vi.mock("./use-upgrade-farming-days", () => ({
   useUpgradeFarmingDays: () => FARMING,

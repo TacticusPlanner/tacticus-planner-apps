@@ -402,7 +402,8 @@
           "rarity": "Rareza",
           "rank": "Rango",
           "abilities": "Habilidades",
-          "shards": "Fragmentos"
+          "shards": "Fragmentos",
+          "power": "Poder"
         },
         "view": "Vista",
         "views": {

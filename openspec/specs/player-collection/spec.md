@@ -338,14 +338,15 @@ On mobile (below 768px):
 
 ### Requirement: Collection sorts units within each faction
 
-The Sort control SHALL offer Rarity (the default), Rank, Abilities and Shards. The selected sort SHALL order owned units within each faction group; every sort SHALL keep owned units before unowned units, keep unowned units nearest to unlock first, and keep the faction group order. Ties under any sort SHALL fall back to the Rarity order (progression descending, then rank descending), then localized name.
+The Sort control SHALL offer Rarity (the default), Rank, Abilities, Shards and Power. The selected sort SHALL order owned units within each faction group; every sort SHALL keep owned units before unowned units, keep unowned units nearest to unlock first, and keep the faction group order. Ties under any sort SHALL fall back to the Rarity order (progression descending, then rank descending), then localized name.
 
 - **Rarity:** progression (rarity, then stars) descending, then rank descending.
 - **Rank:** rank descending; owned Machines of War, which have no rank, after the owned characters of their group.
 - **Abilities:** the sum of the unit's two ability levels (active plus passive for a character, primary plus secondary for a Machine of War) descending.
 - **Shards:** owned units at or past one blue star (Legendary one blue star and every Mythic step) first, ordered by mythic shards descending; then the remaining owned units ordered by shards descending.
+- **Power:** the unit's in-game power, equipped items included, descending; characters and Machines of War are ordered together. An owned unit whose power cannot be computed (its game data is missing) SHALL follow the owned units whose power is known. While the power data is still loading under this sort, the page SHALL show its loading placeholders rather than the list in another order.
 
-Power, Blackstone value and faction-total sorts SHALL NOT be offered.
+Blackstone value and faction-total sorts SHALL NOT be offered.
 
 #### Scenario: Sort by rank
 
@@ -364,6 +365,12 @@ Power, Blackstone value and faction-total sorts SHALL NOT be offered.
 - **GIVEN** owned units in one faction: A at Legendary red five stars with 480 shards, B at Legendary one blue star with 12 mythic shards and 300 shards, C at Mythic two blue stars with 40 mythic shards
 - **WHEN** the user selects sort Shards
 - **THEN** the order is C (40 mythic), B (12 mythic), A (480 shards), because units at or past one blue star sort by mythic shards ahead of those below it
+
+#### Scenario: Sort by power
+
+- **GIVEN** an Ultramarines group where the player owns Calgar (power 3,400), the Ultramarines Machine of War (power 2,000), Titus (power 1,200) and Tigurius, whose power cannot be computed
+- **WHEN** the user selects sort Power
+- **THEN** the group lists Calgar, the Machine of War, Titus, then Tigurius, then the unowned units
 
 #### Scenario: Unowned order is fixed
 

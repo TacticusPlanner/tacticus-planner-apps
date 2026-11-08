@@ -34,6 +34,7 @@ import { buildRaidsFilterBattles } from "./raids-filters/campaign-type"
 import { useRaidsFilters } from "./raids-filters/use-raids-filters"
 import { useScopedGoalPlan } from "./use-scoped-goal-plan"
 import { buildLocationsByBattleId } from "./daily-raid-locations"
+import { buildResourceSources } from "./plan-cell-alternatives"
 import type {
   DailyRaidResourceLabels,
   DailyRaidsCalculationViewModel,
@@ -249,6 +250,20 @@ export function useDailyRaids(
       ),
     [upgradesById, charactersById, labelResource]
   )
+  const sourcesByResource = useMemo(
+    () =>
+      buildResourceSources({
+        upgrades: upgradesById?.values() ?? [],
+        characters: charactersById?.values() ?? [],
+        shops: shops ?? [],
+        knownBattleIds: new Set(allBattlesById.keys()),
+      }),
+    [upgradesById, charactersById, shops, allBattlesById]
+  )
+  const eligibleBattleIds = useMemo(
+    () => new Set(battlesById.keys()),
+    [battlesById]
+  )
   const battleAttemptIndex = useMemo(
     () => buildBattleAttemptIndex(allBattlesById),
     [allBattlesById]
@@ -415,6 +430,8 @@ export function useDailyRaids(
             manualBattleIds.has(entry.battleId)
           ),
           resourceByBattleId,
+          sourcesByResource,
+          eligibleBattleIds,
           realEnergyUsedToday,
           attemptsLeftByBattle,
           todaysAttempts,
@@ -435,11 +452,13 @@ export function useDailyRaids(
     combineGoals,
     dailyEnergy,
     eligibilityReady,
+    eligibleBattleIds,
     enemyStatsByBattleId,
     eventFarmOff,
     eventFarmOrder,
     eventPointsByBattleId,
     failed,
+    sourcesByResource,
     fewerRaids,
     filterBattlesById,
     goalEntries,
