@@ -217,6 +217,38 @@ describe("tokenProgressesMission", () => {
   })
 })
 
+describe("battleEnemies", () => {
+  it("counts each served entry as many enemies as its count", () => {
+    const npcs = new Map([
+      ["pinkHorror", { factionId: "Tzeentch", traits: ["Daemon"] }],
+      ["bloodletter", { factionId: "Khorne", traits: ["Daemon"] }],
+    ])
+    const wave = (horrors: number, letters: number) => ({
+      round: 1,
+      power: 100,
+      enemies: [
+        { id: "pinkHorror", ladderIndex: 1, count: horrors },
+        { id: "bloodletter", ladderIndex: 1, count: letters },
+      ],
+    })
+    const battle = battleEnemies(
+      {
+        waves: [wave(4, 3), wave(3, 2), wave(2, 3), wave(2, 2)],
+      } as Parameters<typeof battleEnemies>[0],
+      npcs
+    )
+    expect(battle.counts).toEqual({
+      waves: 4,
+      enemies: 21,
+      byFaction: new Map([
+        ["Tzeentch", 11],
+        ["Khorne", 10],
+      ]),
+      byTrait: new Map([["Daemon", 21]]),
+    })
+  })
+})
+
 describe("tokenMissionAmount", () => {
   const imperial = [
     fixtureCharacter("astarCyrus"),

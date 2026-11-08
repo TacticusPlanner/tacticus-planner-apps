@@ -153,7 +153,8 @@ interface BattleEnemyCounts {
   byTrait: ReadonlyMap<string, number>
 }
 
-/** Every wave's enemies of `battle`; an id the dataset cannot resolve adds nothing. */
+/** Every wave's enemies of `battle`, each entry counted `count` times (a served entry stacks
+ *  identical enemies, shown as "×N"); an id the dataset cannot resolve adds only to `enemies`. */
 export function battleEnemies(
   battle: Pick<LegendaryEventBattle, "waves">,
   npcsById: ReadonlyMap<
@@ -168,14 +169,15 @@ export function battleEnemies(
   let enemies = 0
   for (const wave of battle.waves) {
     for (const enemy of wave.enemies) {
-      enemies += 1
+      const count = enemy.count
+      enemies += count
       const npc = npcsById.get(enemy.id)
       if (!npc) continue
       factions.add(npc.factionId)
-      byFaction.set(npc.factionId, (byFaction.get(npc.factionId) ?? 0) + 1)
+      byFaction.set(npc.factionId, (byFaction.get(npc.factionId) ?? 0) + count)
       for (const trait of new Set(npc.traits)) {
         traits.add(trait)
-        byTrait.set(trait, (byTrait.get(trait) ?? 0) + 1)
+        byTrait.set(trait, (byTrait.get(trait) ?? 0) + count)
       }
     }
   }
