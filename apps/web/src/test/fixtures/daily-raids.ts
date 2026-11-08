@@ -185,6 +185,8 @@ export function ready(
         },
       ],
     ]),
+    sourcesByResource: new Map(),
+    eligibleBattleIds: new Set([battle]),
     attemptsUsedByBattle: new Map([[battle, 7]]),
     realEnergyUsedToday: 120,
     attemptsLeftByBattle: new Map([[battle, 3]]),

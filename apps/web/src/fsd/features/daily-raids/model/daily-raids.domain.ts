@@ -90,6 +90,8 @@ export type DailyRaidLocationViewModel = {
   challenge: boolean
   /** Must be played, not raided: raids need 3 medals (see `manualBattleIds`). */
   manual?: boolean
+  /** A campaign event's node rather than a standing campaign's. */
+  isEvent?: boolean
   icon?: string
 }
 
@@ -149,6 +151,22 @@ export type DailyRaidResourceLabels = {
   shards?: (unitId: UnitId, characterName: string) => string
 }
 
+/** One shop that sells a resource: its cheapest listing per item, as sold. */
+export type ResourceShopSource = {
+  shopId: string
+  rewardQty: number
+  currency: string
+  cost: number
+}
+
+/** Every catalog source of one plan resource (an upgrade, `shard:<unit>` or `mythic-shard:<unit>`). */
+export type ResourceSources = {
+  /** Campaign nodes (standing campaigns and campaign events) that drop it, in catalog order. */
+  battleIds: readonly BattleId[]
+  /** Shops that sell it, by shop id. */
+  shops: readonly ResourceShopSource[]
+}
+
 export type DailyRaidsReadyViewModel = {
   status: "ready"
   today: RaidDaySchedule
@@ -191,6 +209,11 @@ export type DailyRaidsReadyViewModel = {
   // What every raidable node drops, straight from the catalog and independent of this project's
   // plan — Today's Attempts is account-wide, so it needs an icon for nodes the plan never mentions.
   resourceByBattleId: ReadonlyMap<BattleId, DailyRaidBattleResource>
+  /** Every catalog source (campaign and event nodes, shops) per plan resource id, independent of the
+   *  plan — the Schedule tooltip lists the ones a day doesn't use as alternatives. */
+  sourcesByResource: ReadonlyMap<string, ResourceSources>
+  /** The nodes the plan may raid (unlocked and allowed); an alternative outside it reads as locked. */
+  eligibleBattleIds: ReadonlySet<BattleId>
   attemptsUsedByBattle: ReadonlyMap<BattleId, number>
   // Real, account-wide energy spent today per synced attempts at standing (non-event) campaign
   // nodes — independent of this project's simulated plan, and NOT capped at `dailyEnergy`.
@@ -215,6 +238,8 @@ export type DailyRaidsCalculationViewModel = Omit<
   | "locationsByBattleId"
   | "hasManualRaids"
   | "resourceByBattleId"
+  | "sourcesByResource"
+  | "eligibleBattleIds"
   | "realEnergyUsedToday"
   | "attemptsLeftByBattle"
   | "todaysAttempts"

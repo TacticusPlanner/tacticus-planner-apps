@@ -371,6 +371,62 @@ describe("Schedule page", () => {
       expect(tooltip).toHaveTextContent("Ceramite")
       expect(tooltip).toHaveTextContent("Bellator")
       expect(tooltip).toHaveTextContent("Indomitus")
+      expect(
+        screen.queryByTestId("plan-cell-1-U1-alternatives")
+      ).not.toBeInTheDocument()
+    })
+
+    it("groups the material's other sources into campaign events and shops, marking locked nodes", async () => {
+      const base = ready()
+      const locationsByBattleId = new Map(base.locationsByBattleId)
+      locationsByBattleId.set(offPlanBattle, {
+        ...locationsByBattleId.get(offPlanBattle)!,
+        isEvent: true,
+      })
+      useDailyRaids.mockReturnValue(
+        ready({
+          locationsByBattleId,
+          sourcesByResource: new Map([
+            [
+              "U1",
+              {
+                battleIds: [battle, offPlanBattle],
+                shops: [
+                  {
+                    shopId: "arena",
+                    rewardQty: 2,
+                    currency: "arenaTokens",
+                    cost: 150,
+                  },
+                ],
+              },
+            ],
+          ]),
+          eligibleBattleIds: new Set([battle]),
+        })
+      )
+      render(<SchedulePage />)
+
+      act(() => screen.getByTestId("plan-cell-1-U1").focus())
+      await screen.findByRole("tooltip")
+      const alternatives = screen.getByTestId("plan-cell-1-U1-alternatives")
+      expect(alternatives).toHaveTextContent("Also available from")
+      expect(alternatives).not.toHaveTextContent("Indomitus")
+      expect(
+        screen.queryByTestId("plan-cell-1-U1-alternatives-campaigns")
+      ).not.toBeInTheDocument()
+      const events = screen.getByTestId("plan-cell-1-U1-alternatives-events")
+      expect(events).toHaveTextContent("Campaign events")
+      expect(events).toHaveTextContent("Death Guard")
+      expect(
+        within(events).getByRole("img", { name: "Locked" })
+      ).toBeInTheDocument()
+      const shops = screen.getByTestId("plan-cell-1-U1-alternatives-shops")
+      expect(shops).toHaveTextContent("Shops")
+      expect(shops).toHaveTextContent("2× for")
+      expect(
+        within(shops).getByRole("img", { name: /^2 for 150 / })
+      ).toBeInTheDocument()
     })
   })
 
