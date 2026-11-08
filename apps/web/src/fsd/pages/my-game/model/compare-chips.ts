@@ -180,6 +180,7 @@ const orderChip: Record<CompareOrder, CompareChip["kind"] | null> = {
   rank: "rank",
   abilities: "ability",
   shards: "shards",
+  power: "power",
 }
 
 /** The chips with the focused kind first and the rest dimmed; unchanged without a focus or when
