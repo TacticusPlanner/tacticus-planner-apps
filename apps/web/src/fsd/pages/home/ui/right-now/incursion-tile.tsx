@@ -29,7 +29,7 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
 
   return (
     <Link
-      className="flex h-full items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="flex h-full items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
       data-testid="home-incursion"
       to={INCURSIONS_PATH}
     >

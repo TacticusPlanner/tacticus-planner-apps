@@ -47,10 +47,7 @@ export function BetaBadge({ className }: { className?: string }) {
   const { t } = useTranslation()
   return (
     <Badge
-      className={cn(
-        "shrink-0 px-1.5 text-[0.625rem] tracking-wider",
-        className
-      )}
+      className={cn("shrink-0 px-1.5 text-xs tracking-wider", className)}
       data-testid="app-beta-badge"
       variant="outline"
     >

@@ -69,7 +69,7 @@ function LandingHero({
       <img
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute top-16 -right-36 -z-10 w-[22rem] [mask-image:radial-gradient(circle,#000_55%,transparent_72%)] opacity-50 md:top-10 md:-right-32 md:w-[36rem]"
+        className="pointer-events-none absolute top-16 -right-36 -z-10 w-88 [mask-image:radial-gradient(circle,#000_55%,transparent_72%)] opacity-50 md:top-10 md:-right-32 md:w-xl"
         src={landingArt.heroPlanet}
       />
       <div
@@ -99,7 +99,7 @@ function LandingHero({
               </div>
             </div>
           ) : null}
-          <p className="text-xs font-semibold tracking-[0.12em] text-chart-4 uppercase">
+          <p className="text-xs font-semibold tracking-widest text-chart-4 uppercase">
             {t("hero.eyebrow")}
           </p>
           <h1

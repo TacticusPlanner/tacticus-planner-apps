@@ -523,7 +523,7 @@ describe("Goal cards grid", () => {
 
     const grid = await screen.findByTestId("goals-list-cards")
     expect(grid.className).toContain(
-      "[grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr))]"
+      "[grid-template-columns:repeat(auto-fill,minmax(min(23.75rem,100%),1fr))]"
     )
     expect(within(grid).getAllByTestId("goal-row")).toHaveLength(3)
     expect(screen.queryByTestId("goals-list-table")).not.toBeInTheDocument()

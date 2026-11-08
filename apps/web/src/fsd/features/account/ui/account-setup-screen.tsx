@@ -294,7 +294,7 @@ function PathCard({
           <span className="flex items-center gap-2">
             <span className="text-sm font-semibold">{name}</span>
             {badge ? (
-              <span className="rounded-full bg-accent px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide text-accent-foreground uppercase">
+              <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold tracking-wide text-accent-foreground uppercase">
                 {badge}
               </span>
             ) : null}

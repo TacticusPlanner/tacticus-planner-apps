@@ -204,7 +204,7 @@ function ChipList({
         <Badge
           key={chip.kind === "ability" ? `ability-${chip.slot}` : chip.kind}
           variant="secondary"
-          className="gap-1 px-1.5 text-[11px] tabular-nums"
+          className="gap-1 px-1.5 text-xs tabular-nums"
           data-chip={chip.kind}
         >
           {render(chip)}

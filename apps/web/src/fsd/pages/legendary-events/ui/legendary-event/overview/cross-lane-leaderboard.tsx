@@ -302,7 +302,7 @@ function SortHead({
       className={className}
     >
       <button
-        className="inline-flex items-center gap-1 rounded-sm hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+        className="inline-flex items-center gap-1 rounded-sm hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
         data-sort={sortKey}
         data-testid="leaderboard-sort"
         onClick={() => onSort(sortKey)}
@@ -343,7 +343,7 @@ function CrossLaneTable({
   const { t } = useTranslation("legendaryEvents")
   const laneFigure = useLaneFigure(figure)
   return (
-    <div className="max-h-[36rem] min-w-0 overflow-y-auto rounded-lg border">
+    <div className="max-h-144 min-w-0 overflow-y-auto rounded-lg border">
       <Table data-testid="cross-lane-table">
         <TableHeader className="sticky top-0 z-10 bg-card">
           <TableRow>

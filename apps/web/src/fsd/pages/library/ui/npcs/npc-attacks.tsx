@@ -37,7 +37,7 @@ function AttackKindIcon({
       />
       <span
         aria-hidden
-        className="relative text-[10px] leading-none font-bold text-foreground"
+        className="relative text-2xs leading-none font-bold text-foreground"
       >
         {range}
       </span>

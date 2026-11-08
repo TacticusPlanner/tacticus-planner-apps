@@ -24,7 +24,7 @@ export function GoalDragHandle({
       {...listeners}
       aria-label={t("goals.columns.reorderHandle", { entity: entityName })}
       className={cn(
-        "cursor-grab touch-none rounded-md text-muted-foreground outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring active:cursor-grabbing",
+        "cursor-grab touch-none rounded-md text-muted-foreground outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring active:cursor-grabbing",
         size === "touch" ? "p-2" : "p-1"
       )}
       data-testid="goal-row-drag-handle"

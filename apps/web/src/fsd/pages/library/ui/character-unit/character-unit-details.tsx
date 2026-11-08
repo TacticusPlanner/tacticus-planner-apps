@@ -144,7 +144,7 @@ export function CharacterUnitDetails({
         className="scroll-mt-28 outline-none"
         data-testid={`unit-section-${value}`}
       >
-        <AccordionTrigger className="min-h-[52px] items-center">
+        <AccordionTrigger className="min-h-13 items-center">
           <span className="flex min-w-0 flex-1 flex-col text-left">
             <span className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
               {kind}
@@ -236,7 +236,7 @@ export function CharacterUnitDetails({
   return (
     <div className="flex flex-col gap-5" data-testid="unit-details">
       <div
-        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(460px,100%),1fr))]`}
+        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(28.75rem,100%),1fr))]`}
       >
         <DetailsCard title={t("characterUnit.glance.title")}>
           {glance}
@@ -259,7 +259,7 @@ export function CharacterUnitDetails({
             {t("characterUnit.abilities.title")}
           </h2>
           <div
-            className={`${row} grid-cols-[repeat(auto-fit,minmax(min(520px,100%),1fr))]`}
+            className={`${row} grid-cols-[repeat(auto-fit,minmax(min(32.5rem,100%),1fr))]`}
           >
             {activePanel}
             {passivePanel}
@@ -267,7 +267,7 @@ export function CharacterUnitDetails({
         </section>
       ) : null}
       <div
-        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(520px,100%),1fr))]`}
+        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(32.5rem,100%),1fr))]`}
       >
         <DetailsCard
           title={t("characterUnit.compare.title")}
@@ -294,7 +294,7 @@ export function CharacterUnitDetails({
         </DetailsCard>
       </div>
       <div
-        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(460px,100%),1fr))]`}
+        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(28.75rem,100%),1fr))]`}
       >
         <div
           id={relicAnchorId}

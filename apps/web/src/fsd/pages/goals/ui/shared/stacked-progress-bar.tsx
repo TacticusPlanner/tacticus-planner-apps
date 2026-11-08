@@ -58,7 +58,7 @@ export function StackedProgressBar({
         aria-valuetext={valueText}
         className={cn(
           "relative w-full overflow-hidden rounded-full bg-muted",
-          mobile ? "h-[5px]" : "h-1.5"
+          mobile ? "h-1.5" : "h-1.5"
         )}
         data-testid="goal-progress-bar"
         role="progressbar"

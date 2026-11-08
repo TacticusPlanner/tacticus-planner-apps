@@ -44,7 +44,7 @@ export function EventsCalendarLegend({ days }: { days: EventsCalendarDay[] }) {
             aria-hidden="true"
             // A miniature entry (tinted fill, family stripe), so the legend matches the bars.
             className={cn(
-              "size-3.5 shrink-0 rounded-[3px] border-l-4",
+              "size-3.5 shrink-0 rounded-xs border-l-4",
               eventFamilySurfaceClass(family),
               eventFamilyStripeClass(family)
             )}

@@ -122,7 +122,7 @@ export function MowUpgradesTab({
           "grid gap-4",
           isMobile
             ? "grid-cols-1"
-            : "grid-cols-[repeat(auto-fit,minmax(min(380px,100%),1fr))]"
+            : "grid-cols-[repeat(auto-fit,minmax(min(23.75rem,100%),1fr))]"
         )}
         data-testid="mow-upgrades-ranges"
       >
@@ -188,7 +188,7 @@ export function MowUpgradesTab({
             "grid gap-2",
             isMobile
               ? "grid-cols-2"
-              : "grid-cols-[repeat(auto-fit,minmax(150px,1fr))]"
+              : "grid-cols-[repeat(auto-fit,minmax(9.375rem,1fr))]"
           )}
         >
           {boxes.map((box) => (
@@ -218,7 +218,7 @@ export function MowUpgradesTab({
             {t("mowUnit.upgrades.nothing")}
           </p>
         ) : (
-          <ul className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2">
+          <ul className="grid grid-cols-[repeat(auto-fill,minmax(12.5rem,1fr))] gap-2">
             {result.materials.map((line) => {
               const count = includeOwned ? line.remaining : line.needed
               const covered = includeOwned && line.remaining === 0
@@ -258,7 +258,7 @@ export function MowUpgradesTab({
       >
         {hasSteps ? (
           <div className="overflow-x-auto" data-testid="mow-upgrades-table-box">
-            <table className="w-full min-w-[640px] text-sm tabular-nums">
+            <table className="w-full min-w-160 text-sm tabular-nums">
               <thead>
                 <tr className="text-left text-xs text-muted-foreground">
                   {(

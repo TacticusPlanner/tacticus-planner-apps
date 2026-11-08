@@ -21,7 +21,7 @@ export function FactionHeader({
 
   return (
     <header
-      className="flex h-[30px] shrink-0 items-center gap-2 px-2.5 text-overlay-foreground"
+      className="flex h-7.5 shrink-0 items-center gap-2 px-2.5 text-overlay-foreground"
       style={{
         background: `var(--faction-${group.factionId}, var(--muted-foreground))`,
       }}
@@ -30,14 +30,14 @@ export function FactionHeader({
       <EntityIcon
         src={factionIcon(group.factionId)}
         alt=""
-        className="size-[22px] shrink-0"
+        className="size-6 shrink-0"
       />
-      <h2 className="min-w-0 flex-1 truncate text-[13px] font-bold tracking-[0.06em] uppercase">
+      <h2 className="min-w-0 flex-1 truncate text-sm font-bold tracking-wider uppercase">
         {group.factionName}
       </h2>
       {showOwned ? (
         <span
-          className="shrink-0 text-[13px] font-semibold tabular-nums"
+          className="shrink-0 text-sm font-semibold tabular-nums"
           aria-label={t("myGame.collection.factionOwned", {
             owned: group.owned,
             total,

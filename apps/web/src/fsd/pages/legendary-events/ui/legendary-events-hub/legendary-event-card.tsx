@@ -38,7 +38,7 @@ export function LegendaryEventCard({
       className={cn(
         "flex min-w-0 items-start gap-3 rounded-xl border bg-card p-3 text-card-foreground transition-colors",
         "border-l-4 border-l-(--event-legendary) hover:bg-muted/50",
-        "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+        "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
       )}
       data-state={card.lifecycle.state}
       data-testid={testId ?? "legendary-event-card"}

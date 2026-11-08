@@ -77,7 +77,7 @@ const unitSlots =
   "grid grid-cols-5 gap-x-1.5 gap-y-3 px-2 pt-3 pb-2.5 md:grid-cols-7"
 // Without faction groups: one card of slots about as wide as a faction card's.
 const ungroupedSlots =
-  "grid gap-x-1.5 gap-y-3 rounded-[10px] border bg-card px-2 pt-3 pb-2.5 [grid-template-columns:repeat(auto-fill,minmax(4.25rem,1fr))]"
+  "grid gap-x-1.5 gap-y-3 rounded-lg border bg-card px-2 pt-3 pb-2.5 [grid-template-columns:repeat(auto-fill,minmax(4.25rem,1fr))]"
 
 /**
  * My Game's Collection: every catalog unit grouped by faction, owned units with their synced
@@ -307,7 +307,7 @@ function NoMatches({ onClear }: { onClear: () => void }) {
 
   return (
     <div
-      className="flex flex-col items-center gap-3 rounded-[10px] border border-dashed px-4 py-10 text-center"
+      className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center"
       role="status"
       data-testid="collection-empty"
     >
@@ -340,7 +340,7 @@ function AllHidden({
 
   return (
     <div
-      className="flex flex-col items-center gap-3 rounded-[10px] border border-dashed px-4 py-10 text-center"
+      className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center"
       role="status"
       data-testid="collection-all-hidden"
     >
@@ -427,7 +427,7 @@ function FactionGroupCard({
   return (
     <section
       aria-label={group.factionName}
-      className="flex flex-col overflow-hidden rounded-[10px] border bg-card"
+      className="flex flex-col overflow-hidden rounded-lg border bg-card"
       data-testid="collection-faction-group"
       data-faction={group.factionId}
     >
@@ -465,11 +465,8 @@ function CollectionSkeleton() {
       </p>
       <div className={factionGrid} aria-busy="true">
         {Array.from({ length: 6 }, (_, card) => (
-          <div
-            key={card}
-            className="overflow-hidden rounded-[10px] border bg-card"
-          >
-            <Skeleton className="h-[30px] rounded-none motion-reduce:animate-none" />
+          <div key={card} className="overflow-hidden rounded-lg border bg-card">
+            <Skeleton className="h-7.5 rounded-none motion-reduce:animate-none" />
             <div className={unitSlots}>
               {Array.from({ length: 5 }, (_, slot) => (
                 <div key={slot} className="flex flex-col items-center gap-2">

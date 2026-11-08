@@ -67,7 +67,7 @@ export function GuildRaidPrimeCompCard({
                   <span className="w-full truncate text-xs">
                     {slot.hero.name}
                   </span>
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     {slot.role.label}
                   </span>
                 </div>
