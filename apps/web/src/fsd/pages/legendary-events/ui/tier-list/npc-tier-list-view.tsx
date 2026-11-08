@@ -242,7 +242,7 @@ function NpcTile({
         name={name}
         variationId={tile.npcId}
       />
-      <span className="line-clamp-2 w-16 text-xs leading-tight">{name}</span>
+      <span className="line-clamp-2 w-16 text-xs/tight">{name}</span>
       <span className="text-xs text-muted-foreground tabular-nums">
         {multiplier}
         {tile.overridden ? "*" : ""}
