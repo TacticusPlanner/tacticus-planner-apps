@@ -152,25 +152,35 @@ export function detailRows(
 const hasShardChange = (change: NonNullable<UnitDiff["shards"]>) =>
   change.net !== 0 || change.spent !== 0
 
+/** Which half of a progression change a focus is about: the rarity (ascensions) or the stars
+ *  (promotions). One change such as L1★ → M2★ is both, so the half tells the two views apart. */
+export type ProgressionPart = "rarity" | "stars"
+
+export interface CompareFocus {
+  kind: CompareChip["kind"]
+  part?: ProgressionPart
+}
+
 /** The chip a summary metric or a list order is about; null when none is singled out. */
 export function compareFocus(
   metric: RosterDiffMetric | null,
   order: CompareOrder
-): CompareChip["kind"] | null {
-  if (metric) return metricChip[metric]
-  return orderChip[order]
+): CompareFocus | null {
+  if (metric) return metricFocus[metric]
+  const kind = orderChip[order]
+  return kind ? { kind } : null
 }
 
-const metricChip: Record<RosterDiffMetric, CompareChip["kind"]> = {
-  unlocked: "unlocked",
-  ascensions: "progression",
-  promotions: "progression",
-  rankUps: "rank",
-  abilityLevels: "ability",
-  upgradesApplied: "upgrades",
-  shardsEarned: "shards",
-  mythicShardsEarned: "mythicShards",
-  power: "power",
+const metricFocus: Record<RosterDiffMetric, CompareFocus> = {
+  unlocked: { kind: "unlocked" },
+  ascensions: { kind: "progression", part: "rarity" },
+  promotions: { kind: "progression", part: "stars" },
+  rankUps: { kind: "rank" },
+  abilityLevels: { kind: "ability" },
+  upgradesApplied: { kind: "upgrades" },
+  shardsEarned: { kind: "shards" },
+  mythicShardsEarned: { kind: "mythicShards" },
+  power: { kind: "power" },
 }
 
 // Power gain is the default order, so it singles nothing out.
@@ -180,21 +190,23 @@ const orderChip: Record<CompareOrder, CompareChip["kind"] | null> = {
   rank: "rank",
   abilities: "ability",
   shards: "shards",
+  power: "power",
 }
 
 /** The chips with the focused kind first and the rest dimmed; unchanged without a focus or when
  *  the unit has no chip of that kind. */
 export function focusChips(
   chips: readonly CompareChip[],
-  focus: CompareChip["kind"] | null
+  focus: CompareFocus | null
 ): { chip: CompareChip; dimmed: boolean }[] {
-  if (!focus || !chips.some((chip) => chip.kind === focus)) {
+  const kind = focus?.kind
+  if (!kind || !chips.some((chip) => chip.kind === kind)) {
     return chips.map((chip) => ({ chip, dimmed: false }))
   }
   return [
-    ...chips.filter((chip) => chip.kind === focus),
-    ...chips.filter((chip) => chip.kind !== focus),
-  ].map((chip) => ({ chip, dimmed: chip.kind !== focus }))
+    ...chips.filter((chip) => chip.kind === kind),
+    ...chips.filter((chip) => chip.kind !== kind),
+  ].map((chip) => ({ chip, dimmed: chip.kind !== kind }))
 }
 
 /** The equipment slot type an item goes in ("I_Crit_E002" → "I_Crit", "R_Booster_Block_…" →
