@@ -15,6 +15,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, RarityIcon } from "@/shared/ui"
 
+import type { ProgressionPart } from "../../../model/compare-chips"
+
 /**
  * A before → after pair drawn with icons. The icons are decorative; `label` is the text a screen
  * reader (and a hover) gets instead, such as "Diamond I → Diamond III".
@@ -45,40 +47,56 @@ export function FromToMarks({
   )
 }
 
-/** A progression as its rarity icon plus one star icon and the star count (or the wings). */
+/** A progression as its rarity icon plus one star icon and the star count (or the wings). With
+ *  `emphasis`, the other half is faded: the rarity for ascensions, the stars for promotions. */
 export function ProgressionMark({
   value,
   large = false,
+  emphasis,
 }: {
   value: Progression
   large?: boolean
+  emphasis?: ProgressionPart
 }) {
   const visual = progressionVisual(value)
   return (
     <span className="inline-flex items-center gap-0.5 tabular-nums">
       <RarityIcon
         rarity={progressionRarity(value)}
-        className={large ? "size-5" : "size-4"}
+        className={cn(
+          large ? "size-5" : "size-4",
+          emphasis === "stars" && fadedPart
+        )}
       />
-      {visual.kind === "stars" ? (
-        <>
+      {visual.kind === "none" ? null : (
+        <span
+          className={cn(
+            "inline-flex items-center gap-0.5",
+            emphasis === "rarity" && fadedPart
+          )}
+          data-part="stars"
+        >
           <EntityIcon
             alt=""
             src={visual.icon}
-            className={large ? "size-3.5" : "size-3"}
+            className={
+              visual.kind === "wings"
+                ? large
+                  ? "h-4 w-auto"
+                  : "h-3 w-auto"
+                : large
+                  ? "size-3.5"
+                  : "size-3"
+            }
           />
-          {visual.count}
-        </>
-      ) : visual.kind === "wings" ? (
-        <EntityIcon
-          alt=""
-          src={visual.icon}
-          className={large ? "h-4 w-auto" : "h-3 w-auto"}
-        />
-      ) : null}
+          {visual.kind === "stars" ? visual.count : null}
+        </span>
+      )}
     </span>
   )
 }
+
+const fadedPart = "opacity-35"
 
 export function RankMark({
   rank,
