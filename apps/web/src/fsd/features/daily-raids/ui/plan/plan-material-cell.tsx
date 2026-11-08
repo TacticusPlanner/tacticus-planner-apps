@@ -35,6 +35,7 @@ export function PlanMaterialCell({
   cell,
   dimmed,
   eligibleBattleIds,
+  exhaustedBattleIds,
   sourcesByResource,
   label,
   locationsByBattleId,
@@ -44,6 +45,7 @@ export function PlanMaterialCell({
   cell: PlanCell
   dimmed: boolean
   eligibleBattleIds: ReadonlySet<BattleId>
+  exhaustedBattleIds: ReadonlySet<BattleId>
   sourcesByResource: ReadonlyMap<string, ResourceSources>
   label: string
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
@@ -122,6 +124,7 @@ export function PlanMaterialCell({
         <PlanCellAlternatives
           cell={cell}
           eligibleBattleIds={eligibleBattleIds}
+          exhaustedBattleIds={exhaustedBattleIds}
           sourcesByResource={sourcesByResource}
           locationsByBattleId={locationsByBattleId}
           testId={`${testId}-alternatives`}
@@ -136,12 +139,14 @@ export function PlanMaterialCell({
 function PlanCellAlternatives({
   cell,
   eligibleBattleIds,
+  exhaustedBattleIds,
   sourcesByResource,
   locationsByBattleId,
   testId,
 }: {
   cell: PlanCell
   eligibleBattleIds: ReadonlySet<BattleId>
+  exhaustedBattleIds: ReadonlySet<BattleId>
   sourcesByResource: ReadonlyMap<string, ResourceSources>
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
   testId: string
@@ -151,7 +156,8 @@ function PlanCellAlternatives({
     cell,
     sourcesByResource,
     eligibleBattleIds,
-    (battleId) => locationsByBattleId.get(battleId)?.isEvent ?? false
+    (battleId) => locationsByBattleId.get(battleId)?.isEvent ?? false,
+    exhaustedBattleIds
   )
   if (campaigns.length + events.length + shops.length === 0) return null
 

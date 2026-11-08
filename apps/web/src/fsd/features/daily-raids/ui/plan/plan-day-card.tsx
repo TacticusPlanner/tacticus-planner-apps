@@ -34,6 +34,14 @@ export function PlanDayCard({
   const date = new Date()
   date.setDate(date.getDate() + day.day - 1)
 
+  // Today only: nodes whose real attempts are spent can't be an alternative until tomorrow.
+  const exhaustedBattleIds = new Set(
+    day.day === 1
+      ? [...raids.attemptsLeftByBattle]
+          .filter(([, left]) => left === 0)
+          .map(([battleId]) => battleId)
+      : []
+  )
   const renderCells = (list: PlanCell[], testId: string) => (
     <div className="grid grid-cols-3 gap-1.5" data-testid={testId}>
       {list.map((cell) => (
@@ -45,6 +53,7 @@ export function PlanDayCard({
             !cell.units.some((unit) => unit.unitId === selectedUnitId)
           }
           eligibleBattleIds={raids.eligibleBattleIds}
+          exhaustedBattleIds={exhaustedBattleIds}
           sourcesByResource={raids.sourcesByResource}
           label={raids.resourceLabels.get(cell.resourceId) ?? cell.resourceId}
           locationsByBattleId={raids.locationsByBattleId}

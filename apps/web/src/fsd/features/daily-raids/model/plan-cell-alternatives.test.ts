@@ -7,9 +7,14 @@ import {
 } from "./plan-cell-alternatives"
 
 const battle = (id: string) => id as BattleId
-const shopVariant = (type: string, qty: number, amount: number) => ({
+const shopVariant = (
+  type: string,
+  qty: number,
+  amount: number,
+  currency = "coins"
+) => ({
   reward: { type, qty },
-  cost: { currency: "coins", amount },
+  cost: { currency, amount },
 })
 
 describe("buildResourceSources", () => {
@@ -44,7 +49,7 @@ describe("buildResourceSources", () => {
     expect(sources.get("mythic-shard:calgar")?.battleIds).toEqual(["E1"])
   })
 
-  it("lists each shop selling a resource once, at its cheapest price per item", () => {
+  it("lists each shop selling a resource at its cheapest price per item in each currency", () => {
     const sources = buildResourceSources({
       upgrades: [],
       characters: [],
@@ -54,6 +59,8 @@ describe("buildResourceSources", () => {
           slots: [
             { variants: [shopVariant("shards_calgar", 5, 500)] },
             { variants: [shopVariant("shards_calgar", 10, 600)] },
+            { variants: [shopVariant("shards_calgar", 5, 400)] },
+            { variants: [shopVariant("shards_calgar", 10, 5, "gems")] },
           ],
         },
         { id: "arena", slots: [{ variants: [shopVariant("U1", 1, 50)] }] },
@@ -63,7 +70,10 @@ describe("buildResourceSources", () => {
 
     expect(sources.get("shard:calgar")).toEqual({
       battleIds: [],
-      shops: [{ shopId: "guild", rewardQty: 10, currency: "coins", cost: 600 }],
+      shops: [
+        { shopId: "guild", rewardQty: 10, currency: "coins", cost: 600 },
+        { shopId: "guild", rewardQty: 10, currency: "gems", cost: 5 },
+      ],
     })
     expect(sources.get("U1")?.shops).toEqual([
       { shopId: "arena", rewardQty: 1, currency: "coins", cost: 50 },
@@ -106,6 +116,23 @@ describe("planCellAlternatives", () => {
     expect(result.shops).toEqual([
       { shopId: "arena", rewardQty: 1, currency: "coins", cost: 50 },
     ])
+  })
+
+  it("leaves out nodes whose attempts are spent today", () => {
+    const result = planCellAlternatives(
+      { resourceId: "U1", nodes: [] },
+      sources,
+      new Set(["B1", "B2", "E1"].map(battle)),
+      isEvent,
+      new Set(["B2", "E1"].map(battle))
+    )
+
+    expect(result.campaigns.map((node) => node.battleId)).toEqual([
+      "B1",
+      "B3",
+      "B4",
+    ])
+    expect(result.events.map((node) => node.battleId)).toEqual(["E2"])
   })
 
   it("returns empty groups for a resource without catalog sources", () => {

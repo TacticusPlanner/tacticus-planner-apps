@@ -59,7 +59,7 @@ function shopRewardResourceId(rewardType: string): string {
  * characters' `shardLocations` (mythic ones feed `mythic-shard:<unit>`); a node the battle catalog
  * doesn't know is dropped, and one listed twice (guaranteed + potential drops) appears once. Shops
  * come from every slot variant whose reward is the resource, keeping each shop's cheapest price per
- * item.
+ * item in each currency.
  */
 export function buildResourceSources({
   upgrades,
@@ -102,10 +102,12 @@ export function buildResourceSources({
         const byShop =
           shopsByResource.get(resourceId) ??
           new Map<string, ResourceShopSource>()
-        const current = byShop.get(shop.id)
+        // Prices in different currencies aren't comparable, so each currency keeps its own listing.
+        const key = `${shop.id}|${variant.cost.currency}`
+        const current = byShop.get(key)
         const perItem = variant.cost.amount / variant.reward.qty
         if (current && current.cost / current.rewardQty <= perItem) continue
-        byShop.set(shop.id, {
+        byShop.set(key, {
           shopId: shop.id,
           rewardQty: variant.reward.qty,
           currency: variant.cost.currency,
@@ -138,20 +140,23 @@ const byLock = (alternatives: PlanCellAlternative[]) => [
  * The other sources of a plan cell's resource (feature request "Show alternative retrieval campaigns
  * for upgrades"): every catalog campaign node the day doesn't already raid for it, split into
  * standing campaigns and campaign events — within each, the nodes the plan could raid first, then
- * the locked ones, catalog order otherwise — plus every shop that sells it.
+ * the locked ones, catalog order otherwise — plus every shop that sells it. `exhaustedBattleIds`
+ * (Today only: nodes with no real attempts left) are left out — the plan dropped them for that reason,
+ * not because another node is better.
  */
 export function planCellAlternatives(
   cell: Pick<PlanCell, "resourceId" | "nodes">,
   sourcesByResource: ReadonlyMap<string, ResourceSources>,
   eligibleBattleIds: ReadonlySet<BattleId>,
-  isEventBattle: (battleId: BattleId) => boolean
+  isEventBattle: (battleId: BattleId) => boolean,
+  exhaustedBattleIds: ReadonlySet<BattleId> = new Set()
 ): PlanCellAlternatives {
   const sources = sourcesByResource.get(cell.resourceId)
   const planned = new Set(cell.nodes.map((node) => node.battleId))
   const campaigns: PlanCellAlternative[] = []
   const events: PlanCellAlternative[] = []
   for (const battleId of sources?.battleIds ?? []) {
-    if (planned.has(battleId)) continue
+    if (planned.has(battleId) || exhaustedBattleIds.has(battleId)) continue
     const alternative = { battleId, locked: !eligibleBattleIds.has(battleId) }
     ;(isEventBattle(battleId) ? events : campaigns).push(alternative)
   }

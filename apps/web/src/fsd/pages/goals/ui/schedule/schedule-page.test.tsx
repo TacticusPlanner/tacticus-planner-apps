@@ -423,7 +423,10 @@ describe("Schedule page", () => {
       ).toBeInTheDocument()
       const shops = screen.getByTestId("plan-cell-1-U1-alternatives-shops")
       expect(shops).toHaveTextContent("Shops")
-      expect(shops).toHaveTextContent("150")
+      expect(shops).toHaveTextContent("2× for")
+      expect(
+        within(shops).getByRole("img", { name: /^2 for 150 / })
+      ).toBeInTheDocument()
     })
   })
 
