@@ -16,6 +16,7 @@ import {
   upgradeCampaignKey,
 } from "../model/campaign-clustering"
 import { isLocationVisible } from "../model/location-visibility"
+import type { RaidLocationTarget } from "./raid-location-name"
 import { GoalTargetBadge, ResourceCard, UnitIcon } from "./resource-card"
 
 // Stable default so callers that never use "location" emphasis (Raids Plan) don't need to pass
@@ -41,6 +42,7 @@ export function RaidSchedule({
   resourceVisuals,
   emphasis = "material",
   onCantRaid,
+  onShowLocation,
   grouping = "goal",
   testId,
 }: {
@@ -66,6 +68,8 @@ export function RaidSchedule({
   emphasis?: "material" | "location"
   /** Offers "Can't raid this?" on each card, opening the battle progress dialog. */
   onCantRaid?: (battleId: BattleId) => void
+  /** Makes each location's name open its battle and enemies ("location" emphasis). */
+  onShowLocation?: (target: RaidLocationTarget) => void
   // "combined" (Today's Combine goals): one list with no goal headers, in the entries' own order,
   // with `resourceProgress` keyed by resource alone.
   grouping?: "goal" | "combined"
@@ -135,6 +139,7 @@ export function RaidSchedule({
               attemptsUsedByBattle={attemptsUsedByBattle}
               emphasis={emphasis}
               onCantRaid={onCantRaid}
+              onShowLocation={onShowLocation}
               goal={combinesShardIdentity ? goal : undefined}
               label={resourceLabels.get(resourceId) ?? resourceId}
               locationsByBattleId={locationsByBattleId}

@@ -8,7 +8,7 @@ import type { FlattenedRaidLocation } from "../model/flatten-today-locations"
 import { plannedRaidNeed } from "../model/planned-raid-need"
 import { ManualBattleBadge } from "./manual-battle"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
-import { RaidLocationName } from "./raid-location-name"
+import { RaidLocationName, type RaidLocationTarget } from "./raid-location-name"
 import { ResourceIconWithTooltip } from "./resource-icon"
 
 /** One flattened battle location: compact location chip, planned raid count, and its primary
@@ -17,11 +17,14 @@ import { ResourceIconWithTooltip } from "./resource-icon"
 export function LocationRow({
   entry,
   location,
+  onShowLocation,
   resourceLabel,
   resourceVisual,
 }: {
   entry: FlattenedRaidLocation
   location: DailyRaidLocationViewModel | undefined
+  /** Makes the location's name open its battle and enemies. */
+  onShowLocation?: (target: RaidLocationTarget) => void
   resourceLabel: string
   resourceVisual: DailyRaidResourceVisual | undefined
 }) {
@@ -34,7 +37,12 @@ export function LocationRow({
         <EntityIcon alt="" className="size-10 shrink-0" src={location.icon} />
       ) : null}
       <div className="min-w-24 flex-1">
-        <RaidLocationName fallbackLabel={entry.battleId} location={location} />
+        <RaidLocationName
+          battleId={entry.battleId}
+          fallbackLabel={entry.battleId}
+          location={location}
+          onShow={onShowLocation}
+        />
       </div>
       {location?.manual ? <ManualBattleBadge /> : null}
       <PlannedRaidNeedBadge

@@ -829,6 +829,22 @@
     "menu": "Opciones de ubicación",
     "cantRaid": "¿No puedes incursionar {{location}}?"
   },
+  "locationDetails": {
+    "open": "Ver enemigos",
+    "loading": "Cargando batalla…",
+    "error": "No se pudo cargar esta batalla.",
+    "npcsError": "No se pudieron cargar los niveles de los enemigos.",
+    "retry": "Reintentar",
+    "notFound": "Esta batalla no está en los datos del juego.",
+    "energy_one": "{{formatted}} de energía",
+    "energy_other": "{{formatted}} de energía",
+    "slots_one": "{{formatted}} espacio de unidad",
+    "slots_other": "{{formatted}} espacios de unidad",
+    "power": "Poder enemigo {{power}}",
+    "enemies": "Enemigos",
+    "enemyCount_one": "{{formatted}} enemigo",
+    "enemyCount_other": "{{formatted}} enemigos"
+  },
   "battleProgress": {
     "open": "Medallas",
     "title": "Batallas sin 3 medallas",
