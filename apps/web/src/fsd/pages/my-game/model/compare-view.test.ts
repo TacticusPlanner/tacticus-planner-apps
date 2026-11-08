@@ -181,15 +181,30 @@ describe("chip focus", () => {
   const chips = compareChips(diffs.get("ultraCalgar")!, new Set(compareFields))
 
   it("follows the selected metric, then a non-default order", () => {
-    expect(compareFocus("ascensions", "gain")).toBe("progression")
-    expect(compareFocus("power", "rank")).toBe("power")
-    expect(compareFocus(null, "rank")).toBe("rank")
+    expect(compareFocus("power", "rank")).toEqual({ kind: "power" })
+    expect(compareFocus(null, "rank")).toEqual({ kind: "rank" })
+    expect(compareFocus(null, "rarity")).toEqual({ kind: "progression" })
     expect(compareFocus(null, "gain")).toBeNull()
+  })
+
+  it("tells ascensions and promotions apart by the half of the progression", () => {
+    // L1 → M2 is both an ascension and a promotion: each view highlights its own half.
+    expect(compareFocus("ascensions", "gain")).toEqual({
+      kind: "progression",
+      part: "rarity",
+    })
+    expect(compareFocus("promotions", "gain")).toEqual({
+      kind: "progression",
+      part: "stars",
+    })
   })
 
   it("moves the focused chip first and dims the rest", () => {
     expect(
-      focusChips(chips, "power").map(({ chip, dimmed }) => [chip.kind, dimmed])
+      focusChips(chips, { kind: "power" }).map(({ chip, dimmed }) => [
+        chip.kind,
+        dimmed,
+      ])
     ).toEqual([
       ["power", false],
       ["rank", true],
@@ -200,7 +215,7 @@ describe("chip focus", () => {
   it("leaves the chips alone without a focus or a chip of that kind", () => {
     const plain = chips.map((chip) => ({ chip, dimmed: false }))
     expect(focusChips(chips, null)).toEqual(plain)
-    expect(focusChips(chips, "shards")).toEqual(plain)
+    expect(focusChips(chips, { kind: "shards" })).toEqual(plain)
   })
 })
 

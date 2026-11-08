@@ -31,6 +31,8 @@ import {
   compareChips,
   detailRows,
   focusChips,
+  type CompareFocus,
+  type ProgressionPart,
   itemSlotType,
   type CompareChip,
 } from "../../../model/compare-chips"
@@ -64,8 +66,8 @@ export function CompareList({
   unchanged: readonly CompareItem[]
   showUnchanged: boolean
   fields: ReadonlySet<CompareField>
-  /** The chip kind the selected metric or order is about: listed first, the rest dimmed. */
-  focus?: CompareChip["kind"] | null
+  /** The chip the selected metric or order is about: listed first, the rest dimmed. */
+  focus?: CompareFocus | null
 }) {
   const isMobile = useIsMobile()
   const items = [
@@ -96,7 +98,7 @@ function DiffTile({
 }: {
   item: CompareItem
   fields: ReadonlySet<CompareField>
-  focus: CompareChip["kind"] | null
+  focus: CompareFocus | null
 }) {
   const chips = compareChips(item.diff, fields)
   return (
@@ -132,7 +134,7 @@ function MobileList({
 }: {
   items: { item: CompareItem; dimmed: boolean }[]
   fields: ReadonlySet<CompareField>
-  focus: CompareChip["kind"] | null
+  focus: CompareFocus | null
 }) {
   // The id, not the item, so the sheet follows a refreshed diff and closes when the unit leaves.
   const [openId, setOpenId] = useState<string | null>(null)
@@ -205,7 +207,7 @@ function ChipList({
 }: {
   chips: readonly CompareChip[]
   unitKind: CompareItem["unit"]["kind"]
-  focus: CompareChip["kind"] | null
+  focus: CompareFocus | null
   className?: string
 }) {
   const render = useChipContent(unitKind)
@@ -224,9 +226,9 @@ function ChipList({
             dimmed && "opacity-45"
           )}
           data-chip={chip.kind}
-          data-focused={focus === chip.kind ? "" : undefined}
+          data-focused={focus?.kind === chip.kind ? "" : undefined}
         >
-          {render(chip)}
+          {render(chip, focus?.part)}
         </Badge>
       ))}
     </span>
@@ -276,7 +278,7 @@ function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
     kind: Extract<CompareChip, { count: number }>["kind"],
     count: number
   ) => t(`myGame.collection.compare.chips.${kind}`, { value: signed(count) })
-  return (chip: CompareChip): ReactNode => {
+  return (chip: CompareChip, part?: ProgressionPart): ReactNode => {
     switch (chip.kind) {
       case "unlocked": {
         return t("myGame.collection.compare.chips.unlocked")
@@ -284,8 +286,8 @@ function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
       case "progression": {
         return (
           <FromToMarks
-            from={<ProgressionMark value={chip.from} />}
-            to={<ProgressionMark value={chip.to} />}
+            from={<ProgressionMark value={chip.from} emphasis={part} />}
+            to={<ProgressionMark value={chip.to} emphasis={part} />}
             label={labels.progression(chip.from, chip.to)}
           />
         )
