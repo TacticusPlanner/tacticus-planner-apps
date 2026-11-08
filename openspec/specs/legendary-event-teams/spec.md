@@ -8,7 +8,7 @@ Defines the per-lane Teams section of a Legendary Event page: the team card, the
 
 ### Requirement: Each Event board lane column has a Teams section with one card per team
 
-Each lane column of the Teams tab's Event board SHALL show a Teams section, under its unit table, listing that lane's teams in their stored order as one card per team. A card SHALL show the team name, its members in position order as Event board unit chips (rank, stars and ability levels when owned) with a count badge ("N/5") whenever fewer than five members, the reserve member marked as such when present, a **coverage strip** with one fixed slot per lane objective in objective order (a covered objective shows its icon and points; a stored objective the current members no longer derive shows muted and does not count toward points; an uncovered one shows faint, so teams scan down by column), the clear depth as a **depth bar** of one segment per lane battle filled through the depth with a "Battles 1–n" headline (toned: set by you, room to spare, or within 10% of the next battle; "No depth set" when null) and an edit button that reveals the depth stepper (shown at once when there is no depth), a **Details** fold with the team's **points left** (see the points-left requirement), its **total power** and the last-run line, and an actions menu with Edit, Delete and, on mobile, Move up / Move down. The same team SHALL never be rendered more than once, whatever the number of objectives it covers. The section SHALL carry an explicit **Add team** button; no scroll, swipe or other gesture SHALL create or open a team.
+Each lane column of the Teams tab's Event board SHALL show a Teams section, under its unit table, listing that lane's teams in their stored order as one card per team. A card SHALL show the team name, its members in position order as unit chips (the `legendary-events-hub` unit chip, with rank shading per the Rank shading setting and the unit details) with a count badge ("N/5") whenever fewer than five members, the reserve member as a unit chip marked as the reserve when present, a **coverage strip** beside the team name when the card is at least 28rem wide, and on a line of its own under the name on narrower cards, never squeezing the name out (so five named member chips keep a line of their own), with one fixed slot per lane objective in objective order (a covered objective shows its icon and points; a stored objective the current members no longer derive shows muted and does not count toward points; an uncovered one shows faint, so teams scan down by column), the clear depth as a **depth bar** of one segment per lane battle filled through the depth with a "Battles 1–n" headline (toned: set by you, room to spare, or within 10% of the next battle; "No depth set" when null) and an edit button that reveals the depth stepper (shown at once when there is no depth), a **Details** fold with the team's **points left** (see the points-left requirement), its **total power** and the last-run line, and an actions menu with Edit, Delete and, on mobile, Move up / Move down. The same team SHALL never be rendered more than once, whatever the number of objectives it covers. The section SHALL carry an explicit **Add team** button; no scroll, swipe or other gesture SHALL create or open a team. A member chip SHALL be a button that opens the member's details (see the `legendary-events-hub` details requirement).
 
 #### Scenario: Teams render in order on a lane
 
@@ -20,7 +20,14 @@ Each lane column of the Teams tab's Event board SHALL show a Teams section, unde
 
 - **GIVEN** a team with three members
 - **WHEN** its card renders
-- **THEN** three portraits and a "3/5" badge show, and the card is not styled as an error
+- **THEN** three member chips and a "3/5" badge show, and the card is not styled as an error
+
+#### Scenario: Members show as named chips
+
+- **GIVEN** a team whose members include `templHelbrecht`, owned at Legendary with 4 red stars, rank Diamond 1, active 8 and passive 8, and whose reserve is `templAncient`, not owned
+- **WHEN** its card renders in English
+- **THEN** Helbrecht's chip shows "Helbrecht" beside his portrait with an "L" badge and the Diamond 1 rank icon, and "A8" and "P8" side by side under the name
+- **AND** the reserve shows as a locked "Thoread" chip marked as the reserve
 
 #### Scenario: Points per battle on the card
 
