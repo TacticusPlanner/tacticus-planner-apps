@@ -68,7 +68,8 @@ function TabsTrigger({
       // keyboard focus keeps its ring.
       onMouseDown={(event) => {
         onMouseDown?.(event)
-        if (event.button === 0 && !event.ctrlKey)
+        // A consumer that cancels the mousedown also cancels Radix's own focus and activation.
+        if (!event.defaultPrevented && event.button === 0 && !event.ctrlKey)
           event.currentTarget.focus({ focusVisible: false })
       }}
       className={cn(
