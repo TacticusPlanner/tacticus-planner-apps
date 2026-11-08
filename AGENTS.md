@@ -140,7 +140,7 @@ something to hand-edit.
 
 Sizes come from the theme scale only: no arbitrary `text-[…]`, `size-[…px]`,
 `h-[…px]`, `rounded-[…px]` or px grid tracks. `text-xs` (12px) is the smallest
-text; `text-2xs` (10px) is only for numerals on a solid badge over art. Touch
+text; `text-2xs` (10px) is only for numerals or glyphs on a solid badge over art. Touch
 targets are 48px (Material 3), mouse controls 32px. The
 `better-tailwindcss/no-restricted-classes` lint rule enforces this — see the
 `ui-sizing` skill for the full guideline and what to use instead.

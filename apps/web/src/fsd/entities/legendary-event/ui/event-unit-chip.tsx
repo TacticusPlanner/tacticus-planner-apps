@@ -139,13 +139,13 @@ export function EventUnitChip({
       {owned ? (
         <span
           aria-hidden="true"
-          className="flex flex-col text-2xs leading-3 font-semibold tabular-nums"
+          className="flex flex-col text-xs leading-3 font-semibold tabular-nums"
         >
           <span>A{unit.activeLevel}</span>
           <span>P{unit.passiveLevel}</span>
         </span>
       ) : unit.owned === false ? (
-        <span aria-hidden="true" className="truncate text-2xs">
+        <span aria-hidden="true" className="truncate text-xs">
           {t("legendaryEvents:eventBoard.locked")}
         </span>
       ) : null}

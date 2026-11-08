@@ -11,8 +11,9 @@ const entryPoint = fileURLToPath(
   new URL("./src/styles/globals.css", import.meta.url)
 )
 
-// Optional variant prefix (`md:`, `group-hover:`, `[&_svg]:`…) and optional negative sign.
-const prefix = String.raw`^(?:[^\s]*:)?-?`
+// Optional variant prefix (`md:`, `group-hover:`, `[&_svg]:`…), legacy leading `!`, and negative sign.
+// Patterns also accept the trailing `!` important modifier (`h-[22px]!`).
+const prefix = String.raw`^(?:[^\s]*:)?!?-?`
 // An arbitrary length: `[13px]`, `[0.65rem]`, `[-1.5px]`, `[1em]`.
 const length = String.raw`\[-?[\d.]+(?:px|rem|em)\]`
 
@@ -63,7 +64,7 @@ export const tailwindSizingConfig = {
       {
         restrict: [
           {
-            pattern: `${prefix}text-${length}$`,
+            pattern: `${prefix}text-${length}!?$`,
             message:
               "Hardcoded text size. Use text-2xs (badge numerals only) or text-xs … text-4xl — see the ui-sizing skill.",
           },
@@ -73,7 +74,7 @@ export const tailwindSizingConfig = {
               "Hardcoded px in a grid template. Use rem tracks (28px → 1.75rem) so they follow the root size.",
           },
           {
-            pattern: `${prefix}(?:${sizeUtilities})-${length}$`,
+            pattern: `${prefix}(?:${sizeUtilities})-${length}!?$`,
             message:
               "Hardcoded length. Use the spacing/radius scale (e.g. size-3.5, h-6, w-105, rounded-lg) — see the ui-sizing skill.",
           },

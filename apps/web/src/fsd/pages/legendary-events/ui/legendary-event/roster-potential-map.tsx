@@ -111,7 +111,7 @@ export function RosterPotentialMap({
                 ))}
                 <span
                   aria-hidden
-                  className="text-center text-2xs leading-3 text-muted-foreground tabular-nums"
+                  className="text-center text-xs leading-3 text-muted-foreground tabular-nums"
                 >
                   {!isMobile || battle % 3 === 0 ? battle + 1 : " "}
                 </span>

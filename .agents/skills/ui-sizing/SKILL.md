@@ -19,25 +19,25 @@ screen width.
 
 ## Allowed sizes
 
-| Role                                  | Touch                      | Mouse                        | Class                         |
-| ------------------------------------- | -------------------------- | ---------------------------- | ----------------------------- |
-| Page title                            | 24px                       | 24px                         | `text-2xl`                    |
-| Section / card title                  | 18px                       | 18px                         | `text-lg`                     |
-| Reading text, inputs                  | 16px                       | 14px                         | `text-base md:text-sm`        |
-| Default UI text (labels, table cells) | 14px                       | 14px                         | `text-sm`                     |
-| Caption, metadata — the floor         | 12px                       | 12px                         | `text-xs`                     |
-| Numerals on a solid badge over art    | 10px                       | 10px                         | `text-2xs` (badges only)      |
-| Icon inline with text                 | 16px                       | 16px                         | `size-4`                      |
-| Icon in a button / nav item           | 20px                       | 16px                         | `size-5` / `size-4`           |
-| Standalone icon                       | 24px                       | 20px                         | `size-6` / `size-5`           |
-| Decorative icon inside a badge        | 12–14px                    | 12–14px                      | `size-3` / `size-3.5`         |
-| Button / input height                 | 40px visual, 48px hit area | 32px (`sm` 28px in toolbars) | `h-10` / `h-8`                |
-| Smallest tap target                   | 48px                       | 24px                         | —                             |
-| Portrait in a list or lane            | ≥ 40px                     | ≥ 36px                       | `size-10` / `size-9`          |
-| Portrait in a card                    | 88–96px                    | 88–96px                      | `size-22` / `size-24`         |
-| Spacing                               | 4px grid                   | 4px grid                     | `gap-2` / `gap-3` / `gap-4` … |
+| Role                                         | Touch                      | Mouse                        | Class                            |
+| -------------------------------------------- | -------------------------- | ---------------------------- | -------------------------------- |
+| Page title                                   | 24px                       | 24px                         | `text-2xl`                       |
+| Section / card title                         | 18px                       | 18px                         | `text-lg`                        |
+| Reading text, inputs                         | 16px                       | 14px                         | `text-base pointer-fine:text-sm` |
+| Default UI text (labels, table cells)        | 14px                       | 14px                         | `text-sm`                        |
+| Caption, metadata — the floor                | 12px                       | 12px                         | `text-xs`                        |
+| Numerals or glyphs on a solid badge over art | 10px                       | 10px                         | `text-2xs` (badges only)         |
+| Icon inline with text                        | 16px                       | 16px                         | `size-4`                         |
+| Icon in a button / nav item                  | 20px                       | 16px                         | `size-5` / `size-4`              |
+| Standalone icon                              | 24px                       | 20px                         | `size-6` / `size-5`              |
+| Decorative icon inside a badge               | 12–14px                    | 12–14px                      | `size-3` / `size-3.5`            |
+| Button / input height                        | 40px visual, 48px hit area | 32px (`sm` 28px in toolbars) | `h-10` / `h-8`                   |
+| Smallest tap target                          | 48px                       | 24px                         | —                                |
+| Portrait in a list or lane                   | ≥ 40px                     | ≥ 36px                       | `size-10` / `size-9`             |
+| Portrait in a card                           | 88–96px                    | 88–96px                      | `size-22` / `size-24`            |
+| Spacing                                      | 4px grid                   | 4px grid                     | `gap-2` / `gap-3` / `gap-4` …    |
 
-Text classes: `text-2xs` (badge numerals only), `text-xs`, `text-sm`,
+Text classes: `text-2xs` (only numerals or glyphs such as ≥ on a solid badge over art; labels and captions never), `text-xs`, `text-sm`,
 `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`. Never
 an arbitrary `text-[…]`. Line height: the class default, a `leading-*` step,
 or the `text-sm/5` shorthand.

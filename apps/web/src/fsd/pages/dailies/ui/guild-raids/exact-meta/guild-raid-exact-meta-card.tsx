@@ -208,7 +208,7 @@ function OptionRow({
             {option.unit.name}
           </span>
           {option.isIdeal ? (
-            <Badge variant="outline" className="h-4 px-1.5 text-2xs">
+            <Badge variant="outline" className="h-4 px-1.5 text-xs">
               {t("guildRaids.exactMeta.ideal")}
             </Badge>
           ) : null}
