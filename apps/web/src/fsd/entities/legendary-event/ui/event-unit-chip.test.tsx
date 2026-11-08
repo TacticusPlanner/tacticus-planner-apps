@@ -127,6 +127,9 @@ describe("EventUnitChip details", () => {
     const details = visibleDetails()!
     expect(details).toHaveTextContent("High Marshal Helbrecht")
     expect(details).toHaveTextContent("Legendary")
+    // Four red stars, as art and, for screen readers, in words.
+    expect(details.querySelectorAll('img[src*="star"]')).toHaveLength(4)
+    expect(details).toHaveTextContent("Red Four Stars")
     expect(details).toHaveTextContent("Diamond I")
     expect(details).toHaveTextContent("Active 8 · Passive 8")
   })
@@ -180,6 +183,17 @@ describe("EventUnitChip details", () => {
     expect(await screen.findByRole("dialog")).toHaveTextContent(
       "High Marshal Helbrecht"
     )
+  })
+
+  it("returns focus to a focusable chip when its details close with Escape", async () => {
+    render(<UnitChip focusable unit={helbrecht} />)
+    const button = await screen.findByRole("button", { name: HELBRECHT_LABEL })
+    button.focus()
+    fireEvent.click(button)
+    const dialog = await screen.findByRole("dialog")
+    fireEvent.keyDown(dialog, { key: "Escape" })
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
+    expect(button).toHaveFocus()
   })
 
   it("keeps a plain chip out of the Tab order", async () => {

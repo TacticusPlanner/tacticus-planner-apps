@@ -268,17 +268,35 @@ describe("EventBoard", () => {
     renderBoard(withUnits)
     const columns = () =>
       within(lane("alpha")).getAllByTestId("event-board-column")
-    const counts = () =>
-      columns().map(
-        (column) => within(column).queryAllByTestId("event-board-unit").length
+    const shown = () =>
+      columns().map((column) =>
+        within(column)
+          .queryAllByTestId("event-board-unit")
+          .map((chip) => chip.dataset.unitId)
       )
-    expect(Math.max(...counts())).toBe(7)
+    // Each column's full list, in order, as the column names its count ("12 units").
+    const totals = columns().map((column) =>
+      Number(column.getAttribute("aria-label")!.match(/\d+/)![0])
+    )
+    const collapsed = shown()
+    expect(Math.max(...totals)).toBeGreaterThan(7)
+    collapsed.forEach((units, index) =>
+      expect(units).toHaveLength(Math.min(totals[index]!, 7))
+    )
 
     const showAll = within(lane("alpha")).getByTestId("event-board-show-all")
     expect(showAll).toHaveTextContent(/Show all units/)
     fireEvent.click(showAll)
-    expect(Math.max(...counts())).toBeGreaterThan(7)
+    const expanded = shown()
+    expanded.forEach((units, index) => {
+      expect(units).toHaveLength(totals[index]!)
+      // The best seven stay first, in the same order.
+      expect(units.slice(0, collapsed[index]!.length)).toEqual(collapsed[index])
+    })
     expect(showAll).toHaveTextContent("Show the best 7")
+
+    fireEvent.click(showAll)
+    expect(shown()).toEqual(collapsed)
   })
 
   it("merges the selected objectives into one column and clears them", () => {

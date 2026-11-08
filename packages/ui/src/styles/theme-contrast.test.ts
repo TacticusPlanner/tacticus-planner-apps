@@ -43,6 +43,35 @@ const oklch = (value: string): Rgb => {
     return 255 * (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)
   }) as Rgb
 }
+// sRGB (0-255) to Oklab and back, for `color-mix(in oklab, …)`.
+const toOklab = (c: Rgb): Rgb => {
+  const [r, g, b] = c.map((v) => {
+    v /= 255
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+  }) as Rgb
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ]
+}
+const fromOklab = ([L, a, b]: Rgb): Rgb => {
+  const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3
+  const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3
+  const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3
+  const lin = [
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+  ]
+  return lin.map((v) => {
+    const c = Math.min(1, Math.max(0, v))
+    return 255 * (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)
+  }) as Rgb
+}
 // `#rrggbb` or `#rrggbbaa`; alpha is returned separately so callers composite it explicitly.
 const hex = (value: string): { rgb: Rgb; alpha: number } => {
   const n = (i: number) => parseInt(value.slice(i, i + 2), 16)
@@ -76,7 +105,12 @@ const theme = (tokens: Record<string, string>) => {
     const b = typeof bg === "string" ? get(bg) : bg
     return f.map((v, i) => v * alpha + b[i]! * (1 - alpha)) as Rgb
   }
-  return { get, mix, L: (n: string) => lum(get(n)) }
+  // `color-mix(in oklab, fg share, bg)`: interpolated in Oklab, not in encoded RGB.
+  const mixOklab = (fg: string, share: number, bg: string): Rgb => {
+    const [f, b] = [toOklab(get(fg)), toOklab(get(bg))]
+    return fromOklab(f.map((v, i) => v * share + b[i]! * (1 - share)) as Rgb)
+  }
+  return { get, mix, mixOklab, L: (n: string) => lum(get(n)) }
 }
 const themes = { light: theme(light), dark: theme(dark) }
 
@@ -209,12 +243,12 @@ describe("collection tile tokens", () => {
 describe("unit chip tokens", () => {
   const ranks = Object.keys(light).filter((name) => name.startsWith("rank-"))
 
-  // The chip's rank shading: the rank colour at 30% over the card.
+  // The chip's rank shading: `color-mix(in oklab, var(--rank-x) 30%, var(--card))`.
   it.each(Object.entries(themes))(
     "%s: text on every 30% rank tint >= 4.5",
     (_name, t) => {
       for (const rank of ranks) {
-        const tint = t.mix(rank, 0.3, "card")
+        const tint = t.mixOklab(rank, 0.3, "card")
         expect(ratio(t.get("foreground"), tint)).toBeGreaterThanOrEqual(4.5)
       }
     }

@@ -46,7 +46,7 @@ describe("SectionActions", () => {
   })
 
   // The settings button is lazy-loaded with the legendary-event feature, whose first load can
-  // take longer than the default 1s wait.
+  // take longer than the default 1s wait, and the test deadline is longer than that wait.
   it("loads the Legendary Event settings on its section and saves Show paid options as a flag", async () => {
     renderActions("/legendary-events")
 
@@ -65,7 +65,7 @@ describe("SectionActions", () => {
         preferences: ["LegendaryEventShowPaidOptions"],
       })
     )
-  })
+  }, 15_000)
 
   it("holds both switches while a save is in flight", async () => {
     let finish = () => {}
@@ -88,7 +88,7 @@ describe("SectionActions", () => {
     await waitFor(() =>
       expect(screen.getByTestId("legendary-event-settings-ads")).toBeEnabled()
     )
-  })
+  }, 15_000)
 
   it("shows nothing on another section", () => {
     const { container } = renderActions("/library")

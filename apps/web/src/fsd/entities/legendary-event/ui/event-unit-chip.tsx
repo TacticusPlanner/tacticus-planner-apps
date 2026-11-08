@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useId,
   useRef,
   useState,
@@ -150,6 +151,14 @@ export function EventUnitChip({
   const { shaded } = useRankShading()
   const [detailsOpen, setDetailsOpen] = useState(false)
   const anchorRef = useRef<HTMLElement>(null)
+  // Escape closes the panel and returns focus to the chip (the panel is anchored, not triggered,
+  // so the popover can't restore it); an outside click leaves focus where the user clicked.
+  const refocusOnClose = useRef(false)
+  useEffect(() => {
+    if (detailsOpen || !refocusOnClose.current) return
+    refocusOnClose.current = false
+    anchorRef.current?.focus()
+  }, [detailsOpen])
   const longPress = useLongPress({ onLongPress: () => setDetailsOpen(true) })
   const hintId = useId()
   const owned = unit.owned === true
@@ -186,7 +195,8 @@ export function EventUnitChip({
       className={cn(
         "grid min-w-0 grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center rounded-md border text-left text-foreground",
         looks.root,
-        fill ? "w-full" : "max-w-40 min-w-24",
+        // A named chip keeps room for a short name; a nameless one (the picker) is as wide as its parts.
+        fill ? "w-full" : cn("max-w-40", showName && "min-w-24"),
         locked ? "border-transparent bg-muted/40" : "border-border bg-card",
         className
       )}
@@ -338,7 +348,9 @@ export function EventUnitChip({
       aria-expanded={detailsOpen}
       aria-haspopup="dialog"
       className={cn(
-        "flex min-w-0 rounded-md select-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none",
+        "relative flex min-w-0 rounded-md select-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none",
+        // A 48px hit area for touch on the ~41px chip, reaching into the gap between rows.
+        "pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-1",
         fill && "w-full"
       )}
       onClick={() => setDetailsOpen(true)}
@@ -375,7 +387,12 @@ export function EventUnitChip({
       {detailsOpen ? (
         <Popover onOpenChange={setDetailsOpen} open>
           <PopoverAnchor virtualRef={anchorRef} />
-          <PopoverContent className="w-auto max-w-64 rounded-xl p-3">
+          <PopoverContent
+            className="w-auto max-w-64 rounded-xl p-3"
+            onEscapeKeyDown={() => {
+              refocusOnClose.current = true
+            }}
+          >
             {details}
           </PopoverContent>
         </Popover>

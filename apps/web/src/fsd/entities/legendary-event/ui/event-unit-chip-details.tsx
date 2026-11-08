@@ -22,6 +22,8 @@ export function EventUnitChipDetails({
   const { t } = useTranslation(["legendaryEvents", "progression"])
   const rarity = unit.progression ? progressionRarity(unit.progression) : null
   const visual = unit.progression ? progressionVisual(unit.progression) : null
+  // The stars or wings as words ("Red Four Stars"), for screen readers: the art is decorative.
+  const stars = unit.progression?.split(":")[1]
   return (
     <span
       className="flex max-w-60 flex-col items-start gap-1 text-left text-xs"
@@ -35,6 +37,13 @@ export function EventUnitChipDetails({
         <span className="flex items-center gap-1.5">
           <RarityBadge rarity={rarity} />
           <span>{t(`progression:rarities.${rarity}`)}</span>
+          {stars && visual && visual.kind !== "none" ? (
+            <span className="sr-only">
+              {t(`progression:stars.${stars}` as never, {
+                defaultValue: stars,
+              })}
+            </span>
+          ) : null}
           {visual && visual.kind === "stars" ? (
             <span className="flex items-center">
               {Array.from({ length: visual.count }, (_, index) => (
