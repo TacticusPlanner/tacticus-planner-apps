@@ -264,8 +264,15 @@
       "nodeRaids": "× {{raids}}",
       "moreNodes": "+{{count}} más",
       "moreUnits": "+{{count}}",
-      "alternatives": "También se obtiene en",
-      "locked": "Bloqueado"
+      "alternatives": "También disponible en",
+      "alternativeGroups": {
+        "campaigns": "Campañas",
+        "events": "Eventos de campaña",
+        "shops": "Tiendas"
+      },
+      "locked": "Bloqueado",
+      "shopQty": "{{qty}}× por",
+      "shopPrice": "{{qty}} por {{cost}} {{currency}}"
     },
     "filter": {
       "label": "Filtrar por unidad",

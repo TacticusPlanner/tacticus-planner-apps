@@ -245,15 +245,27 @@ Hovering or focusing a material cell, or tapping it on a touch device, SHALL sho
 - **WHEN** the user taps a material cell below the 768px breakpoint
 - **THEN** the same tooltip content is shown, and tapping elsewhere dismisses it
 
-### Requirement: Material cell tooltip lists alternative locations
+### Requirement: Material cell tooltip lists alternative sources
 
-For an upgrade material, the material cell tooltip SHALL also list, under "Also drops at", every other campaign node the catalog lists as a farm location for that material but that the cell's day does not raid. Nodes the plan could raid SHALL come first, then nodes the plan cannot use (campaign or event not unlocked or progressed far enough), each marked with a lock icon labelled "Locked". At most four alternatives SHALL be listed, followed by "+N more". The section SHALL be omitted when there are no alternatives.
+For an upgrade material or character shards, the material cell tooltip SHALL also list, under "Also available from", the resource's other catalog sources in three separately labelled groups, each omitted when empty:
 
-#### Scenario: Locked alternative
+- "Campaigns": standing-campaign nodes that drop it,
+- "Campaign events": campaign-event nodes that drop it,
+- "Shops": shops that sell it, each with its cheapest listing (quantity and price in the shop's currency).
 
-- **GIVEN** an upgrade cell scheduled on Indomitus Elite 1, whose material also drops at Death Guard Extremis 3 which the player has not unlocked
+Campaign and campaign-event groups SHALL exclude nodes the cell's day already raids for it, list nodes the plan could raid first, then nodes the plan cannot use (campaign not unlocked or progressed far enough, campaign event not running or reached), each marked with a lock icon labelled "Locked". Each group SHALL list at most four entries, followed by "+N more". The whole section SHALL be omitted when every group is empty.
+
+#### Scenario: Grouped sources
+
+- **GIVEN** an upgrade cell scheduled on Indomitus Elite 1, whose material also drops at a campaign-event node the player hasn't reached and is sold in the Arena shop
 - **WHEN** the user opens the cell's tooltip
-- **THEN** "Also drops at" lists Death Guard Extremis 3 with a "Locked" icon, and does not repeat Indomitus Elite 1
+- **THEN** "Also available from" shows a "Campaign events" group with that node and a "Locked" icon, and a "Shops" group with the Arena shop and its price; there is no "Campaigns" group and Indomitus Elite 1 is not repeated
+
+#### Scenario: Shard cell
+
+- **GIVEN** a shard cell for a character whose shards also drop at an unraided campaign node and are sold in a shop
+- **WHEN** the user opens the cell's tooltip
+- **THEN** the same grouped sources are listed for that character's shards
 
 ### Requirement: Every day separates raided materials
 

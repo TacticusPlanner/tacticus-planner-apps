@@ -185,7 +185,7 @@ export function ready(
         },
       ],
     ]),
-    farmLocationsByResource: new Map(),
+    sourcesByResource: new Map(),
     eligibleBattleIds: new Set([battle]),
     attemptsUsedByBattle: new Map([[battle, 7]]),
     realEnergyUsedToday: 120,

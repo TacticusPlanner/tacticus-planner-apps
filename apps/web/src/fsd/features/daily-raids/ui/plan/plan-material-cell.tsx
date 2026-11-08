@@ -13,10 +13,17 @@ import { cn } from "@workspace/ui/lib/utils"
 import type {
   DailyRaidLocationViewModel,
   DailyRaidResourceVisual,
+  ResourceShopSource,
+  ResourceSources,
 } from "../../model/daily-raids.domain"
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 import type { PlanCell } from "../../model/plan-day-cells"
-import { planCellAlternatives } from "../../model/plan-cell-alternatives"
+import {
+  planCellAlternatives,
+  type PlanCellAlternative,
+} from "../../model/plan-cell-alternatives"
+import { shopCurrencyIcon } from "@/features/shop-rewards/@x/daily-raids"
+import { shopIcon } from "@workspace/game-catalog"
 import { ManualBattleBadge } from "../manual-battle"
 import { UnitIcon } from "../resource-card"
 
@@ -28,7 +35,7 @@ export function PlanMaterialCell({
   cell,
   dimmed,
   eligibleBattleIds,
-  farmLocationsByResource,
+  sourcesByResource,
   label,
   locationsByBattleId,
   testId,
@@ -37,7 +44,7 @@ export function PlanMaterialCell({
   cell: PlanCell
   dimmed: boolean
   eligibleBattleIds: ReadonlySet<BattleId>
-  farmLocationsByResource: ReadonlyMap<string, readonly BattleId[]>
+  sourcesByResource: ReadonlyMap<string, ResourceSources>
   label: string
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
   testId: string
@@ -115,7 +122,7 @@ export function PlanMaterialCell({
         <PlanCellAlternatives
           cell={cell}
           eligibleBattleIds={eligibleBattleIds}
-          farmLocationsByResource={farmLocationsByResource}
+          sourcesByResource={sourcesByResource}
           locationsByBattleId={locationsByBattleId}
           testId={`${testId}-alternatives`}
         />
@@ -124,63 +131,166 @@ export function PlanMaterialCell({
   )
 }
 
-/** The other campaign nodes that drop the cell's material — rendered only while the tooltip is open. */
+/** The cell resource's other sources, grouped as standing campaigns, campaign events and shops —
+ *  rendered only while the tooltip is open. */
 function PlanCellAlternatives({
   cell,
   eligibleBattleIds,
-  farmLocationsByResource,
+  sourcesByResource,
   locationsByBattleId,
   testId,
 }: {
   cell: PlanCell
   eligibleBattleIds: ReadonlySet<BattleId>
-  farmLocationsByResource: ReadonlyMap<string, readonly BattleId[]>
+  sourcesByResource: ReadonlyMap<string, ResourceSources>
   locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
   testId: string
 }) {
   const { t } = useTranslation("dailies")
-  const alternatives = planCellAlternatives(
+  const { campaigns, events, shops } = planCellAlternatives(
     cell,
-    farmLocationsByResource,
-    eligibleBattleIds
+    sourcesByResource,
+    eligibleBattleIds,
+    (battleId) => locationsByBattleId.get(battleId)?.isEvent ?? false
   )
-  if (alternatives.length === 0) return null
+  if (campaigns.length + events.length + shops.length === 0) return null
 
   return (
-    <div className="mt-1 space-y-0.5" data-testid={testId}>
+    <div className="mt-1 space-y-1" data-testid={testId}>
       <span className="font-semibold">{t("plan.cell.alternatives")}</span>
-      <ul className="space-y-0.5">
-        {alternatives.slice(0, ALTERNATIVE_LIMIT).map((alternative) => (
-          <li
-            key={alternative.battleId}
-            className={cn(
-              "flex items-center gap-1",
-              alternative.locked && "opacity-70"
-            )}
-            data-locked={alternative.locked || undefined}
-          >
-            <PlanNodeLocation
-              battleId={alternative.battleId}
-              location={locationsByBattleId.get(alternative.battleId)}
-            />
-            {alternative.locked ? (
-              <Lock
-                aria-label={t("plan.cell.locked")}
-                className="size-3 shrink-0"
-                role="img"
-              />
-            ) : null}
-          </li>
-        ))}
-      </ul>
-      {alternatives.length > ALTERNATIVE_LIMIT ? (
+      <BattleGroup
+        alternatives={campaigns}
+        label={t("plan.cell.alternativeGroups.campaigns")}
+        locationsByBattleId={locationsByBattleId}
+        testId={`${testId}-campaigns`}
+      />
+      <BattleGroup
+        alternatives={events}
+        label={t("plan.cell.alternativeGroups.events")}
+        locationsByBattleId={locationsByBattleId}
+        testId={`${testId}-events`}
+      />
+      <ShopGroup shops={shops} testId={`${testId}-shops`} />
+    </div>
+  )
+}
+
+function AlternativeGroup({
+  count,
+  label,
+  testId,
+  children,
+}: {
+  count: number
+  label: string
+  testId: string
+  children: React.ReactNode
+}) {
+  const { t } = useTranslation("dailies")
+  if (count === 0) return null
+  return (
+    <div data-testid={testId}>
+      <span className="text-[0.7rem] tracking-wide uppercase opacity-80">
+        {label}
+      </span>
+      <ul className="space-y-0.5">{children}</ul>
+      {count > ALTERNATIVE_LIMIT ? (
         <span>
-          {t("plan.cell.moreNodes", {
-            count: alternatives.length - ALTERNATIVE_LIMIT,
-          })}
+          {t("plan.cell.moreNodes", { count: count - ALTERNATIVE_LIMIT })}
         </span>
       ) : null}
     </div>
+  )
+}
+
+function BattleGroup({
+  alternatives,
+  label,
+  locationsByBattleId,
+  testId,
+}: {
+  alternatives: PlanCellAlternative[]
+  label: string
+  locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
+  testId: string
+}) {
+  const { t } = useTranslation("dailies")
+  return (
+    <AlternativeGroup count={alternatives.length} label={label} testId={testId}>
+      {alternatives.slice(0, ALTERNATIVE_LIMIT).map((alternative) => (
+        <li
+          key={alternative.battleId}
+          className={cn(
+            "flex items-center gap-1",
+            alternative.locked && "opacity-70"
+          )}
+          data-locked={alternative.locked || undefined}
+        >
+          <PlanNodeLocation
+            battleId={alternative.battleId}
+            location={locationsByBattleId.get(alternative.battleId)}
+          />
+          {alternative.locked ? (
+            <Lock
+              aria-label={t("plan.cell.locked")}
+              className="size-3 shrink-0"
+              role="img"
+            />
+          ) : null}
+        </li>
+      ))}
+    </AlternativeGroup>
+  )
+}
+
+function ShopGroup({
+  shops,
+  testId,
+}: {
+  shops: readonly ResourceShopSource[]
+  testId: string
+}) {
+  const { t, i18n } = useTranslation(["dailies", "shops"])
+  const number = new Intl.NumberFormat(i18n.language)
+  return (
+    <AlternativeGroup
+      count={shops.length}
+      label={t("dailies:plan.cell.alternativeGroups.shops")}
+      testId={testId}
+    >
+      {shops.slice(0, ALTERNATIVE_LIMIT).map((shop) => {
+        const currency = t(`shops:currency.${shop.currency}`, {
+          defaultValue: shop.currency,
+        })
+        return (
+          <li key={shop.shopId} className="flex items-center gap-1">
+            <EntityIcon alt="" className="size-4" src={shopIcon(shop.shopId)} />
+            <span>
+              {t(`shops:shopName.${shop.shopId}`, {
+                defaultValue: shop.shopId,
+              })}
+            </span>
+            <span
+              aria-label={t("dailies:plan.cell.shopPrice", {
+                qty: shop.rewardQty,
+                cost: number.format(shop.cost),
+                currency,
+              })}
+              className="flex items-center gap-0.5 tabular-nums"
+              role="img"
+            >
+              {t("dailies:plan.cell.shopQty", { qty: shop.rewardQty })}
+              <EntityIcon
+                alt=""
+                className="size-3.5"
+                src={shopCurrencyIcon(shop.currency)}
+              />
+              {number.format(shop.cost)}
+            </span>
+          </li>
+        )
+      })}
+    </AlternativeGroup>
   )
 }
 

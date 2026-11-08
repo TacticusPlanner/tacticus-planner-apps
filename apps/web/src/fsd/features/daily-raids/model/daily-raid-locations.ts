@@ -49,6 +49,7 @@ export function buildLocationsByBattleId(
             : battle.campaignGroupId,
           challenge: battle.challenge,
           manual: manualBattleIds.has(battleId),
+          isEvent: descriptor?.isEvent ?? false,
           icon: campaignIcon(
             battle.campaignGroupId,
             battle.type,
