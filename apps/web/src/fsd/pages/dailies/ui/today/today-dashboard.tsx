@@ -5,7 +5,9 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   FilteredOutNotice,
   type DailyRaidsViewModel,
+  type RaidLocationTarget,
 } from "@/features/daily-raids"
+import { CampaignBattleDialog } from "@/widgets/battle-preview"
 
 import { TodayShops } from "../today-shops"
 import { TodayBonusCard } from "./today-bonus-card"
@@ -32,6 +34,10 @@ export function TodayDashboard({
   onCantRaid?: (battleId: BattleId) => void
 }) {
   const [bonusShownCount, setBonusShownCount] = useState(BONUS_LIMIT)
+  // The planned location whose battle and enemies are open (tapping its name).
+  const [shownLocation, setShownLocation] = useState<RaidLocationTarget | null>(
+    null
+  )
   const view =
     raids.status === "ready"
       ? buildTodayView(raids, { bonusShownCount })
@@ -58,6 +64,7 @@ export function TodayDashboard({
         }
         onShowLess={() => setBonusShownCount(BONUS_LIMIT)}
         onShowMore={() => setBonusShownCount((shown) => shown + BONUS_STEP)}
+        onShowLocation={setShownLocation}
         view={view}
         wide={wide}
       />
@@ -81,7 +88,12 @@ export function TodayDashboard({
           {bonusInPlanArea ? (
             bonusCard(true)
           ) : (
-            <TodayPlanCard onCantRaid={onCantRaid} raids={raids} view={view} />
+            <TodayPlanCard
+              onCantRaid={onCantRaid}
+              onShowLocation={setShownLocation}
+              raids={raids}
+              view={view}
+            />
           )}
         </div>
         <div className="flex min-w-0 flex-col gap-3.5">
@@ -107,6 +119,10 @@ export function TodayDashboard({
           </div>
         ) : null}
       </div>
+      <CampaignBattleDialog
+        onClose={() => setShownLocation(null)}
+        target={shownLocation}
+      />
     </div>
   )
 }

@@ -16,7 +16,7 @@ import { isLocationVisible } from "../model/location-visibility"
 import { CantRaidMenu, ManualBattleBadge } from "./manual-battle"
 import { plannedRaidNeedForEntry } from "../model/planned-raid-need"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
-import { RaidLocationName } from "./raid-location-name"
+import { RaidLocationName, type RaidLocationTarget } from "./raid-location-name"
 import { ResourceIcon, ResourceIconWithTooltip } from "./resource-icon"
 import { EntityIcon, LocationChips, RankBadge } from "@/shared/ui"
 
@@ -51,6 +51,7 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
 
 export function ResourceCard({
   onCantRaid,
+  onShowLocation,
   attemptsLeftByBattle,
   attemptsUsedByBattle,
   emphasis,
@@ -64,6 +65,8 @@ export function ResourceCard({
 }: {
   /** Opens the battle progress dialog for a planned location (Today's plan only). */
   onCantRaid?: (battleId: BattleId) => void
+  /** Opens a planned location's battle and enemies (the "location" emphasis only). */
+  onShowLocation?: (target: RaidLocationTarget) => void
   // Real, per-node attempts remaining today (see daily-raids-energy.ts) — the "location" emphasis
   // path de-dupes a location out of this list once it hits zero, deferring to Today's Attempts.
   attemptsLeftByBattle: ReadonlyMap<BattleId, number>
@@ -139,8 +142,10 @@ export function ResourceCard({
                     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
                       <div className="min-w-0 basis-full">
                         <RaidLocationName
+                          battleId={entry.battleId}
                           fallbackLabel={entry.battleId}
                           location={location}
+                          onShow={onShowLocation}
                         />
                       </div>
                       {location?.manual ? <ManualBattleBadge /> : null}

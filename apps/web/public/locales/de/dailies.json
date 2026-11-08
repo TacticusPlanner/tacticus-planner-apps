@@ -829,6 +829,22 @@
     "menu": "Ortsoptionen",
     "cantRaid": "{{location}} nicht raidbar?"
   },
+  "locationDetails": {
+    "open": "Gegner anzeigen",
+    "loading": "Kampf wird geladen…",
+    "error": "Dieser Kampf konnte nicht geladen werden.",
+    "npcsError": "Gegnerstufen konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "notFound": "Dieser Kampf ist nicht in den Spieldaten.",
+    "energy_one": "{{formatted}} Energie",
+    "energy_other": "{{formatted}} Energie",
+    "slots_one": "{{formatted}} Einheitenplatz",
+    "slots_other": "{{formatted}} Einheitenplätze",
+    "power": "Gegnerstärke {{power}}",
+    "enemies": "Gegner",
+    "enemyCount_one": "{{formatted}} Gegner",
+    "enemyCount_other": "{{formatted}} Gegner"
+  },
   "battleProgress": {
     "open": "Medaillen",
     "title": "Kämpfe ohne 3 Medaillen",
