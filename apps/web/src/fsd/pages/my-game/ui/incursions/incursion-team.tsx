@@ -113,7 +113,7 @@ export function IncursionTeam({
               <EntityIcon
                 src={characterIcon(member.id as UnitId)}
                 alt=""
-                className="size-7 rounded"
+                className="size-7 rounded-sm"
               />
               <span className="max-w-28 truncate">{name}</span>
             </li>

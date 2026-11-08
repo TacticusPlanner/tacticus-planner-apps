@@ -12,7 +12,7 @@ export function Section({
   return (
     <section className="space-y-2">
       <h3 className="text-sm font-semibold">{title}</h3>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-3">{children}</div>
+      <div className="grid grid-cols-2 gap-3">{children}</div>
     </section>
   )
 }

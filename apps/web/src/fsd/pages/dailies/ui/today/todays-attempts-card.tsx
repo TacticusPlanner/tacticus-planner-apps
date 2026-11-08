@@ -76,7 +76,7 @@ export function TodaysAttemptsCard({
                     src={location.icon}
                   />
                 ) : null}
-                <span className="min-w-0 flex-1 text-sm font-medium break-words">
+                <span className="min-w-0 flex-1 text-sm font-medium wrap-break-word">
                   <CampaignLocationName
                     campaignName={campaign}
                     difficultyLabel={location?.difficultyLabel}

@@ -160,7 +160,7 @@ function TooltipContent({
       >
         {children}
         {/* eslint-disable-next-line better-tailwindcss/no-restricted-classes -- shadcn hairline offset, off the spacing scale */}
-        <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-xs bg-foreground fill-foreground data-[side=left]:translate-x-[-1.5px] data-[side=right]:translate-x-[1.5px]" />
+        <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-xs bg-foreground fill-foreground data-[side=left]:translate-x-[-1.5px] data-[side=right]:translate-x-[1.5px]" />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   )

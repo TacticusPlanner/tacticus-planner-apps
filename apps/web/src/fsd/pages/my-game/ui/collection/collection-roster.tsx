@@ -19,7 +19,7 @@ import { FactionHeader } from "./faction-header"
 // Faction sections flow in equal columns at least 420px wide (the full width when narrower), with
 // the same gaps as the Cards grid.
 const sectionGrid =
-  "grid items-start gap-2.5 sm:gap-3 [grid-template-columns:repeat(auto-fill,minmax(min(26.25rem,100%),1fr))]"
+  "grid items-start gap-2.5 sm:gap-3 grid-cols-[repeat(auto-fill,minmax(min(26.25rem,100%),1fr))]"
 
 // Every row draws its bottom divider; this covers the dividers of the bottom row, which in a
 // multi-column list is more than the last item. It sits on the list's 4px bottom padding edge.
@@ -56,7 +56,7 @@ export function CollectionRoster({
           data-faction={group.factionId}
         >
           <FactionHeader group={group} showOwned={showOwned} />
-          <ul className={cn("flex flex-col px-1 py-1", hideBottomDivider)}>
+          <ul className={cn("flex flex-col p-1", hideBottomDivider)}>
             {group.units.map((unit) => row(unit))}
           </ul>
         </section>

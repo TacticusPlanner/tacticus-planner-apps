@@ -65,7 +65,7 @@ export function UpgradeQuantityRow({
           id={upgradeId}
           rarity={upgrade?.rarity}
         />
-        <span className="min-w-0 flex-1 text-sm break-words">
+        <span className="min-w-0 flex-1 text-sm wrap-break-word">
           {upgrade?.label ?? upgradeId}
         </span>
         {owned !== undefined ? (

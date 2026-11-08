@@ -130,7 +130,7 @@ export function IncursionsOverview() {
                 <EntityIcon
                   src={mowIcon(incursion.mowId as UnitId)}
                   alt=""
-                  className="size-14 shrink-0 rounded"
+                  className="size-14 shrink-0 rounded-sm"
                 />
                 <div className="min-w-0 flex-1 space-y-1.5">
                   <p className="truncate font-semibold">{name}</p>

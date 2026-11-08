@@ -132,7 +132,7 @@ export function AbilityPanel({
           </p>
           <Heading
             id={`${testId}-name`}
-            className="text-base leading-tight font-semibold"
+            className="text-base/tight font-semibold"
           >
             {name}
           </Heading>

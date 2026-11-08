@@ -331,7 +331,7 @@ function MissingRow({
                   {item.overlay ? (
                     <img
                       alt=""
-                      className="absolute top-1/2 left-1/2 size-4 -translate-x-1/2 -translate-y-1/2 object-contain"
+                      className="absolute top-1/2 left-1/2 size-4 -translate-1/2 object-contain"
                       src={item.overlay}
                     />
                   ) : null}

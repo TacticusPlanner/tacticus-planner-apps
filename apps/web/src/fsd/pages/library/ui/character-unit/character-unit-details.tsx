@@ -299,7 +299,7 @@ export function CharacterUnitDetails({
         <div
           id={relicAnchorId}
           tabIndex={-1}
-          className="flex scroll-mt-28 flex-col outline-none [&>*]:flex-1"
+          className="flex scroll-mt-28 flex-col outline-none *:flex-1"
         >
           {relicPanel}
         </div>

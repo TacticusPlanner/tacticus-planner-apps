@@ -139,7 +139,7 @@ export function ItemMark({
   level: number
 }) {
   return (
-    <span className="relative inline-flex size-7 shrink-0 overflow-hidden rounded border bg-muted">
+    <span className="relative inline-flex size-7 shrink-0 overflow-hidden rounded-sm border bg-muted">
       <EntityIcon
         alt=""
         src={EquipmentIcons.icon(equipmentIdSchema.parse(equipmentId))}

@@ -1714,7 +1714,7 @@ describe("NpcsPage encounters", () => {
     )
     expect(screen.getByTestId(`${id}-location`)).toHaveClass(
       "min-w-0",
-      "break-words"
+      "wrap-break-word"
     )
     expect(screen.getByTestId("npc-encounters")).toHaveClass("min-w-0")
   })

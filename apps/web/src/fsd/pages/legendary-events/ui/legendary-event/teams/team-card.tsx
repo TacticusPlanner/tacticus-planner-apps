@@ -337,7 +337,7 @@ function CoverageStrip({
               title={label}
             >
               <ObjectiveIcon className="size-5" icon={icon} muted />
-              <span aria-hidden="true" className="text-xs leading-3">
+              <span aria-hidden="true" className="text-xs/3">
                 &nbsp;
               </span>
               <span className="sr-only">
@@ -373,7 +373,7 @@ function CoverageStrip({
             />
             <span
               className={cn(
-                "text-xs leading-3 font-semibold tabular-nums",
+                "text-xs/3 font-semibold tabular-nums",
                 cleared && "line-through"
               )}
             >
@@ -487,7 +487,7 @@ function DragHandle({
       {...attributes}
       {...listeners}
       aria-label={label}
-      className="-ml-1 cursor-grab touch-none rounded p-0.5 text-muted-foreground"
+      className="-ml-1 cursor-grab touch-none rounded-sm p-0.5 text-muted-foreground"
       data-testid="team-card-drag-handle"
       ref={ref}
       type="button"

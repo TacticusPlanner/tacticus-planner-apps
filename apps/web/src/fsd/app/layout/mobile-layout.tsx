@@ -339,7 +339,7 @@ function MobileBottomNav({
             <DrawerTitle className="text-xl">{t("nav.navigation")}</DrawerTitle>
             <DrawerDescription>{t("nav.navigationHint")}</DrawerDescription>
           </DrawerHeader>
-          <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+          <div className="flex-1 space-y-3 overflow-y-auto p-4">
             <QuickActionsGroup
               actions={filteredActions}
               onSelect={(id) => {

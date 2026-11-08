@@ -13,7 +13,7 @@ import { TodayCard } from "./today-card"
 import type { TodayView } from "./today-view-model"
 
 // Resource cards inside a card read as items one step darker than the card around them.
-export const INSET_CARDS_CLASS_NAME = "[&_[data-slot=card]]:bg-background"
+export const INSET_CARDS_CLASS_NAME = "**:data-[slot=card]:bg-background"
 
 /**
  * Today's plan: the raids the daily energy covers, goal by goal. While the raids load or fail, it
