@@ -1099,7 +1099,10 @@
       "group": "Prête pour la manche {{run}}",
       "ceilingAfter": "→ {{ceiling}}",
       "ceilingAfterTarget": "→ {{ceiling}} / {{points}}",
-      "ceilingNote": "Le plafond de chaque ligne suppose que toutes les lignes au-dessus sont cochées."
+      "ceilingNote": "Le plafond de chaque ligne suppose que toutes les lignes au-dessus sont cochées.",
+      "onslaughtMissing_one": "Les améliorations vers les étoiles mythiques des unités {{alliances}} sont ignorées : indiquez votre secteur d'Onslaught pour que le planificateur compte le temps d'Onslaught pour les fragments mythiques.",
+      "onslaughtMissing_other": "Les améliorations vers les étoiles mythiques des unités {{alliances}} sont ignorées : indiquez vos secteurs d'Onslaught pour que le planificateur compte le temps d'Onslaught pour les fragments mythiques.",
+      "onslaughtLink": "Indiquer la progression d'Onslaught"
     },
     "teams": {
       "yours": "La vôtre",

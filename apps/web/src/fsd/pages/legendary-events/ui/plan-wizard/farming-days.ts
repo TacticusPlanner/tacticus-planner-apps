@@ -2,6 +2,7 @@ import type {
   AscensionCostStorageModel,
   CharacterStorageModel,
   GameCatalogShop,
+  OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import {
@@ -19,6 +20,10 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { CombinedGoalSpec, GoalDetail } from "@/entities/goal"
 import type { LegendaryEventRosterUnit } from "@/entities/legendary-event"
+import {
+  progressForAlliance,
+  type OnslaughtProgress,
+} from "@/entities/player-data-override"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
@@ -50,7 +55,14 @@ export interface UpgradeChainRequest {
 }
 
 /** `null` means the chain is blocked (a need with no farmable source) or cannot be estimated. */
-export type FarmingDays = { days: number; date: string } | null
+type FarmingDays = { days: number; date: string } | null
+
+/** The memoized estimate, plus the alliances whose chains it blocked because they needed Mythic
+ *  shards and the account has no saved Onslaught sector for that alliance (so the wizard can ask
+ *  the player to set one). The set grows as the search estimates chains. */
+export type FarmingDaysEstimator = ((
+  request: UpgradeChainRequest
+) => FarmingDays) & { missingOnslaughtAlliances: ReadonlySet<string> }
 
 /** The catalog and account inputs the estimator costs a chain against. */
 export interface FarmingDaysInputs {
@@ -68,6 +80,12 @@ export interface FarmingDaysInputs {
   inventoryShardById: ReadonlyMap<string, InventoryShard>
   inventoryUpgrades: readonly { upgradeId: string; amount: number }[]
   dailyEnergy: number
+  /** The account's saved Onslaught sectors, the rewards table and the game's runs per day: the
+   *  only source of Mythic shards the estimate farms. Without all three, a chain that still needs
+   *  Mythic shards is blocked rather than estimated as if it had them. */
+  onslaughtProgress?: OnslaughtProgress
+  onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
+  onslaughtRunsPerDay?: number
   referenceDate?: Date
 }
 
@@ -211,16 +229,20 @@ function requestKey(request: UpgradeChainRequest) {
  */
 export function createFarmingDaysEstimator(
   inputs: FarmingDaysInputs
-): (request: UpgradeChainRequest) => FarmingDays {
+): FarmingDaysEstimator {
   const cache = new Map<string, FarmingDays>()
   const shared = sharedEstimateInputs(inputs)
-  return (request) => {
+  const missingOnslaughtAlliances = new Set<string>()
+  const estimate = (request: UpgradeChainRequest) => {
     const key = requestKey(request)
     if (cache.has(key)) return cache.get(key) ?? null
-    const result = estimateChain(inputs, shared, request)
+    const result = estimateChain(inputs, shared, request, (alliance) =>
+      missingOnslaughtAlliances.add(alliance)
+    )
     cache.set(key, result)
     return result
   }
+  return Object.assign(estimate, { missingOnslaughtAlliances })
 }
 
 interface SharedEstimateInputs {
@@ -258,7 +280,8 @@ function sharedEstimateInputs(inputs: FarmingDaysInputs): SharedEstimateInputs {
 function estimateChain(
   inputs: FarmingDaysInputs,
   shared: SharedEstimateInputs,
-  request: UpgradeChainRequest
+  request: UpgradeChainRequest,
+  onMissingOnslaught: (alliance: string) => void
 ): FarmingDays {
   const characterView = inputs.charactersById.get(request.unitId)
   if (!characterView) return null
@@ -284,6 +307,7 @@ function estimateChain(
   )
   const goals: GoalNeed[] = []
   const shardEntries = new Map<EstimateResourceId, EstimateUpgrade>()
+  let blocked = false
 
   details.forEach((detail, priority) => {
     const needParams = {
@@ -312,22 +336,48 @@ function estimateChain(
             upgrades: stages.flatMap((stage) => stage.needs),
             shardId: null,
             shards: 0,
+            mythicShards: 0,
           }
     if (!need) return
 
-    const { flatSuppliers } = computeGoalAcquisition({
-      detail,
-      need: { ...need, mythicShards: 0 },
+    // Missing Mythic shards farm only through Onslaught (the goals page's Mythic route): the
+    // Ascension goal takes an Onslaught source for them, while regular shards stay campaign-only.
+    const { mythicShards } = need
+    const acquisition = computeGoalAcquisition({
+      detail:
+        mythicShards > 0
+          ? {
+              ...detail,
+              config: { ...detail.config, acquisitionSources: onslaughtOnly },
+            }
+          : detail,
+      need,
       mowsById: new Map(),
       charactersById: inputs.charactersById,
       playerCharacterById,
       playerMowById: new Map(),
       upgradesById: inputs.upgradesById,
+      onslaughtProgress: inputs.onslaughtProgress,
+      onslaughtRewards: inputs.onslaughtRewards,
+      onslaughtRunsPerDay: inputs.onslaughtRunsPerDay,
       shops: inputs.shops,
       referenceDate,
     })
+    if (mythicShards > 0 && !acquisition.mythicShardNeed) {
+      const alliance = characterView.alliance ?? "Imperial"
+      const progress =
+        inputs.onslaughtProgress &&
+        progressForAlliance(inputs.onslaughtProgress, alliance)
+      if (!progress) onMissingOnslaught(alliance)
+      blocked = true
+      return
+    }
+    const flatSuppliers = acquisition.flatSuppliers.filter(
+      (supplier) => supplier.key !== REGULAR_ONSLAUGHT_KEY
+    )
 
     const needs: UpgradeNeed[] = [...need.upgrades]
+    if (acquisition.mythicShardNeed) needs.push(acquisition.mythicShardNeed)
     if (need.shardId && need.shards > 0) {
       needs.push({ id: need.shardId, count: need.shards })
       shardEntries.set(need.shardId, {
@@ -345,6 +395,7 @@ function estimateChain(
     })
   })
 
+  if (blocked) return null
   if (goals.length === 0) return { days: 0, date: today }
 
   const outcomes = estimatePlan({
@@ -366,6 +417,11 @@ function estimateChain(
   }
   return { days, date }
 }
+
+/** The acquisition sources a chain's Ascension takes when it still needs Mythic shards. */
+const onslaughtOnly = [{ kind: "Onslaught" as const, ids: [] }]
+/** `projectOnslaughtSupply`'s key for regular shards, which the estimate keeps campaign-only. */
+const REGULAR_ONSLAUGHT_KEY = "onslaught:regular"
 
 /** Where an unowned unit starts ascending once unlocked: the first ladder step of its starting
  *  rarity (`startingProgression`, without its throw on an unknown rarity). */

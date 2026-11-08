@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest"
 import type {
   AscensionCostStorageModel,
   CharacterStorageModel,
+  OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import {
@@ -14,6 +15,7 @@ import {
 } from "@workspace/game-domain"
 
 import type { LegendaryEventRosterUnit } from "@/entities/legendary-event"
+import type { OnslaughtProgress } from "@/entities/player-data-override"
 import type { Battle, FarmingCharacter } from "@/features/goal-farming"
 import type { UpgradeWithFarmLocations } from "@/features/rank-lookup"
 
@@ -250,5 +252,97 @@ describe("createFarmingDaysEstimator", () => {
         createFarmingDaysEstimator(inputs())(request)
       )
     }
+  })
+
+  describe("missing Mythic shards", () => {
+    const mythicSteps = new Map<string, AscensionCostStorageModel>([
+      [
+        "Mythic:TwoBlueStars",
+        {
+          id: "Mythic:TwoBlueStars",
+          shards: 0,
+          mythicShards: 20,
+          orbs: 0,
+        } as unknown as AscensionCostStorageModel,
+      ],
+    ])
+    const mythicUnit = owned({
+      rank: "Diamond3",
+      progressionIndex: "Mythic:OneBlueStar",
+    })
+    const ascend = {
+      unitId: "hero1",
+      from: mythicUnit,
+      progressionEnd: "Mythic:TwoBlueStars",
+    } as const
+    const rewards = [
+      {
+        id: "Gold-3",
+        sector: "Gold",
+        tier: 3,
+        regular: [],
+        mythic: { min: 1, max: 1 },
+      },
+    ] as unknown as OnslaughtRewardStorageModel[]
+    const xenosGold = {
+      xenos: { sector: "Gold", tier: 3, isSet: true },
+    } as unknown as OnslaughtProgress
+    const synced = (mythicShards: number) =>
+      new Map([
+        [
+          "hero1",
+          {
+            unitId: "hero1",
+            rank: "Diamond3",
+            progressionIndex: "Mythic:OneBlueStar",
+            shards: 0,
+            mythicShards,
+            xp: 0,
+            xpLevel: 1,
+            abilities: [],
+            equippedItems: [],
+            appliedUpgradeSlots: [],
+          },
+        ],
+      ]) as unknown as FarmingDaysInputs["playerCharacterById"]
+
+    it("blocks the ascension instead of reporting it ready today without an Onslaught source", () => {
+      const estimate = createFarmingDaysEstimator(
+        inputs({
+          ascensionCostsById: mythicSteps,
+          playerCharacterById: synced(1),
+        })
+      )
+
+      expect(estimate(ascend)).toBeNull()
+      expect([...estimate.missingOnslaughtAlliances]).toEqual(["Xenos"])
+    })
+
+    it("counts the Onslaught runs to farm the missing shards", () => {
+      const estimate = createFarmingDaysEstimator(
+        inputs({
+          ascensionCostsById: mythicSteps,
+          playerCharacterById: synced(1),
+          onslaughtProgress: xenosGold,
+          onslaughtRewards: rewards,
+          onslaughtRunsPerDay: 1.5,
+        })
+      )
+
+      // 19 missing shards at one per run and 1.5 runs a day.
+      expect(estimate(ascend)?.days).toBe(Math.ceil(19 / 1.5))
+      expect(estimate.missingOnslaughtAlliances.size).toBe(0)
+    })
+
+    it("stays ready today once the Mythic shards are owned", () => {
+      const estimate = createFarmingDaysEstimator(
+        inputs({
+          ascensionCostsById: mythicSteps,
+          playerCharacterById: synced(20),
+        })
+      )
+
+      expect(estimate(ascend)).toEqual({ days: 0, date: "2026-01-01" })
+    })
   })
 })

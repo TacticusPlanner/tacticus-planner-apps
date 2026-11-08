@@ -20,9 +20,12 @@ import { PlanWizard } from "./plan-wizard"
 import { EMPTY_PLAN, RUN_3_START_MS, planInputs } from "./plan.fixtures"
 import type { PlanSource } from "./use-plan-source"
 
+const MISSING_ONSLAUGHT = new Set<string>()
 const FARMING: { status: string; estimate: () => unknown } = {
   status: "ready",
-  estimate: () => ({ days: 10, date: "2026-10-16" }),
+  estimate: Object.assign(() => ({ days: 10, date: "2026-10-16" }), {
+    missingOnslaughtAlliances: MISSING_ONSLAUGHT,
+  }),
 }
 vi.mock("./use-upgrade-farming-days", () => ({
   useUpgradeFarmingDays: () => FARMING,
@@ -76,6 +79,7 @@ beforeAll(async () => {
 beforeEach(() => {
   run.mockReset()
   FARMING.status = "ready"
+  MISSING_ONSLAUGHT.clear()
   createState.items = []
   capture.mockReset()
   run.mockResolvedValue({ ok: true, projectId: "project-1" })
@@ -700,6 +704,29 @@ describe("PlanWizard", () => {
     await userEvent.click(screen.getByRole("button", { name: "Just enough" }))
     expect(
       screen.queryByTestId("plan-wizard-upgrades-new")
+    ).not.toBeInTheDocument()
+  })
+
+  it("asks for the Onslaught sector when Mythic ascensions were left out", async () => {
+    MISSING_ONSLAUGHT.add("Xenos")
+    renderWizard()
+    await userEvent.click(screen.getByTestId("plan-wizard-horizon-3"))
+    await searchOver()
+    await next()
+    const notice = screen.getByTestId("plan-wizard-upgrades-onslaught")
+    expect(notice).toHaveTextContent(/Xenos units are left out/)
+    expect(
+      within(notice).getByRole("link", { name: "Set Onslaught progress" })
+    ).toHaveAttribute("href", "/my-game/onslaught")
+  })
+
+  it("shows no Onslaught notice when nothing was left out", async () => {
+    renderWizard()
+    await userEvent.click(screen.getByTestId("plan-wizard-horizon-3"))
+    await searchOver()
+    await next()
+    expect(
+      screen.queryByTestId("plan-wizard-upgrades-onslaught")
     ).not.toBeInTheDocument()
   })
 
