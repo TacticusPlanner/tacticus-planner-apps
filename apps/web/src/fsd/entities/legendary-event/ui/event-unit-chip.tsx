@@ -89,6 +89,7 @@ const AUTO: LayoutLooks = {
   ...PARTS,
 }
 
+/** The classes for a layout's parts: row (N1), stack (N4) or auto (a board column's choice). */
 function layoutClasses(layout: EventUnitChipLayout): LayoutLooks {
   if (layout.kind === "row") return ROW
   if (layout.kind === "stack") return STACK

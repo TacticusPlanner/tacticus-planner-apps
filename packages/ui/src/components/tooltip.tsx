@@ -57,6 +57,10 @@ function Tooltip({
   )
 }
 
+/**
+ * A tooltip trigger that also opens on touch: a tap toggles the tooltip (a link still navigates).
+ * With `disableTouchToggle` a tap only runs the trigger's own action.
+ */
 function TooltipTrigger({
   onClick,
   onPointerDown,
@@ -139,6 +143,7 @@ function TooltipContent({
   // a tick so the very tap that opened it doesn't immediately close it too.
   React.useEffect(() => {
     if (!context?.open) return
+    /** Closes the tooltip on a tap anywhere; mouse and pen clicks are left to Radix. */
     const handlePointerDown = (event: PointerEvent) => {
       if (event.pointerType !== "touch") return
       context.setOpen(false)

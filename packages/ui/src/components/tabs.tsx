@@ -55,6 +55,10 @@ function TabsList({
   )
 }
 
+/**
+ * A tab. A click or tap focuses it without the keyboard focus ring (Radix focuses it by script,
+ * which Chrome treats as keyboard focus); keyboard focus keeps the ring.
+ */
 function TabsTrigger({
   className,
   onMouseDown,

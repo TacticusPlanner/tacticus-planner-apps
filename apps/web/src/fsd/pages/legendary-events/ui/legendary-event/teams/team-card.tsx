@@ -492,6 +492,7 @@ function DragHandle({
   )
 }
 
+/** A team member (or the reserve, marked with its label) as a unit chip that opens its details. */
 function MemberPortrait({
   member,
   reserveLabel,

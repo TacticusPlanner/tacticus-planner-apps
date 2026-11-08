@@ -227,6 +227,11 @@ function RankShadingSwitch() {
   )
 }
 
+/**
+ * One shown lane on the Event board: its name and allowed-units rule, its figures, its unit table
+ * (the board's columns for the lane, or the selected objectives merged into one) and its Teams
+ * section.
+ */
 function EventBoardColumn({
   event,
   laneId,
@@ -335,6 +340,11 @@ function EventBoardColumn({
   )
 }
 
+/**
+ * A lane's unit table: one column per objective (or the merged selection), each listing the units
+ * that satisfy it, best first. Each column shows its best seven until "Show all"; a unit starts a
+ * team on activation; the table is one Tab stop with arrow-key movement (`useBoardGridFocus`).
+ */
 function UnitTable({
   laneId,
   columns,
@@ -522,9 +532,11 @@ function useBoardGridFocus(counts: readonly number[]) {
     stopColumn === active.column
       ? Math.min(active.row, (counts[stopColumn] ?? 1) - 1)
       : 0
+  /** The table's columns, in order. */
   const columnsOf = (grid: HTMLElement) => [
     ...grid.querySelectorAll<HTMLElement>(":scope > ul"),
   ]
+  /** The column and row of a focused unit button in the table, or null for anything else. */
   const positionOf = (grid: HTMLElement, target: EventTarget) => {
     if (!(target instanceof HTMLButtonElement) || !target.matches(CELL))
       return null
@@ -534,6 +546,7 @@ function useBoardGridFocus(counts: readonly number[]) {
     const row = [...list.querySelectorAll(CELL)].indexOf(target)
     return column < 0 || row < 0 ? null : { column, row }
   }
+  /** The next column with units in a direction, or `from` when there is none. */
   const nextColumn = (from: number, step: 1 | -1) => {
     for (
       let column = from + step;

@@ -7,6 +7,7 @@ import { RankShadingContext, type RankShading } from "./rank-shading-context"
 const RANK_SHADING_KEY = "legendaryEvents.unitChips.rankShading"
 
 type OnOff = "on" | "off"
+/** Whether a stored value is a valid Rank shading setting. */
 const isOnOff = (value: unknown): value is OnOff =>
   value === "on" || value === "off"
 
