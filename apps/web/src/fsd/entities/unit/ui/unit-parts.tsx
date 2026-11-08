@@ -18,7 +18,7 @@ export function EquipmentSlot({ item }: { item: UnitTileEquipment }) {
 
   return (
     <span
-      className="relative h-6 overflow-hidden rounded border-2 bg-muted"
+      className="relative h-6 overflow-hidden rounded-sm border-2 bg-muted"
       style={style}
       data-testid="unit-tile-item"
     >

@@ -215,7 +215,7 @@ export function IncursionMowPage() {
         <EntityIcon
           src={mowIcon(incursion.mowId as UnitId)}
           alt=""
-          className="size-16 shrink-0 rounded"
+          className="size-16 shrink-0 rounded-sm"
         />
         <div className="min-w-0 flex-1 space-y-1">
           <h2 className="text-xl font-semibold">{name}</h2>

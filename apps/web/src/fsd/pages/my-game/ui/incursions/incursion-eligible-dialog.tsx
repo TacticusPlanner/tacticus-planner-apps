@@ -110,7 +110,7 @@ export function IncursionEligibleDialog({
                   <EntityIcon
                     src={characterIcon(unit.id as UnitId)}
                     alt=""
-                    className="size-8 shrink-0 rounded"
+                    className="size-8 shrink-0 rounded-sm"
                   />
                   <span className="min-w-0 flex-1 space-y-0.5">
                     <span className="block truncate">{name}</span>

@@ -73,7 +73,7 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
           >
             <EntityIcon
               alt=""
-              className="size-5 rounded"
+              className="size-5 rounded-sm"
               src={mowIcon(featured.mowId as UnitId)}
             />
             {featured.arrivesMs === null

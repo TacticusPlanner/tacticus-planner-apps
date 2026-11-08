@@ -62,6 +62,18 @@ export const tailwindSizingConfig = {
     // One spelling per class: `px-1 py-1` → `p-1`, `text-xs leading-tight` → `text-xs/tight`,
     // `h-[32px]` → `h-8`. Autofixable with `eslint --fix`.
     "better-tailwindcss/enforce-canonical-classes": "error",
+    // `p-2 p-4`, `flex grid`: two classes setting the same property in one string.
+    "better-tailwindcss/no-conflicting-classes": "error",
+    // v3 spellings with a v4 replacement: `rounded` → `rounded-sm`, `backdrop-blur` → `backdrop-blur-sm`.
+    "better-tailwindcss/no-deprecated-classes": "error",
+    // `px-2 py-2` → `p-2`, `w-4 h-4` → `size-4`.
+    "better-tailwindcss/enforce-shorthand-classes": "error",
+    // Responsive variant first: `sm:data-[side=right]:max-w-sm`, not `data-[side=right]:sm:max-w-sm`.
+    "better-tailwindcss/enforce-consistent-variant-order": "error",
+    // Tailwind v4 puts `!` at the end: `h-8!`, not `!h-8`.
+    "better-tailwindcss/enforce-consistent-important-position": "error",
+    // `bg-(--primary)`, not `bg-[var(--primary)]`.
+    "better-tailwindcss/enforce-consistent-variable-syntax": "error",
     "better-tailwindcss/no-restricted-classes": [
       "error",
       {

@@ -487,7 +487,7 @@ function DragHandle({
       {...attributes}
       {...listeners}
       aria-label={label}
-      className="-ml-1 cursor-grab touch-none rounded p-0.5 text-muted-foreground"
+      className="-ml-1 cursor-grab touch-none rounded-sm p-0.5 text-muted-foreground"
       data-testid="team-card-drag-handle"
       ref={ref}
       type="button"

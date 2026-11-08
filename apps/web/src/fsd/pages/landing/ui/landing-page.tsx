@@ -80,7 +80,7 @@ function LandingHero({
         <div className="flex flex-col items-start gap-5">
           {signInRequired && !isAuthenticated ? (
             <div
-              className="flex w-full max-w-xl items-start gap-3 rounded-lg border border-ring bg-card/80 p-4 text-card-foreground backdrop-blur"
+              className="flex w-full max-w-xl items-start gap-3 rounded-lg border border-ring bg-card/80 p-4 text-card-foreground backdrop-blur-sm"
               data-testid="landing-sign-in-required"
               role="status"
             >
@@ -138,7 +138,7 @@ function LandingHero({
             )}
             {isAuthenticated ? null : (
               <Button
-                className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur"
+                className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur-sm"
                 data-testid="landing-sign-in"
                 disabled={disabled}
                 onClick={signIn}
@@ -152,7 +152,7 @@ function LandingHero({
             )}
             <Button
               asChild
-              className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur"
+              className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur-sm"
               variant="outline"
             >
               <Link to="/library/characters">{t("hero.browseLibrary")}</Link>
@@ -180,7 +180,7 @@ function ExamplePlanCard() {
   return (
     <figure
       aria-labelledby="landing-example-plan-title"
-      className="hidden flex-col rounded-2xl border bg-card/85 p-4 shadow-2xl backdrop-blur md:flex"
+      className="hidden flex-col rounded-2xl border bg-card/85 p-4 shadow-2xl backdrop-blur-sm md:flex"
       data-testid="landing-example-plan"
     >
       <figcaption

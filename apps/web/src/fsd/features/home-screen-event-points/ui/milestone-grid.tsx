@@ -101,7 +101,7 @@ export function MilestoneGrid({
                       </span>
                     </span>
                     <span
-                      className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs font-semibold tabular-nums"
+                      className="inline-flex items-center gap-1 rounded-sm bg-muted px-1.5 py-0.5 text-xs font-semibold tabular-nums"
                       data-testid="hse-milestone-points"
                     >
                       {pointsIcon ? (

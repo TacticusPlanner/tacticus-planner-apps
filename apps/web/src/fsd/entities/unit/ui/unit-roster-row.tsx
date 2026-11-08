@@ -313,7 +313,7 @@ function EquipmentCells({
         ) : (
           <span
             key={index}
-            className="h-6 rounded border-2 border-dashed"
+            className="h-6 rounded-sm border-2 border-dashed"
             data-testid="unit-tile-empty-slot"
           />
         )

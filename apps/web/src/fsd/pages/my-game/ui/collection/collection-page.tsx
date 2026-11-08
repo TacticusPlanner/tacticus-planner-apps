@@ -471,8 +471,8 @@ function CollectionSkeleton() {
               {Array.from({ length: 5 }, (_, slot) => (
                 <div key={slot} className="flex flex-col items-center gap-2">
                   <Skeleton className="aspect-square w-full max-w-18 rounded-full motion-reduce:animate-none" />
-                  <Skeleton className="h-3 w-4/5 rounded motion-reduce:animate-none" />
-                  <Skeleton className="h-5 w-full rounded motion-reduce:animate-none" />
+                  <Skeleton className="h-3 w-4/5 rounded-sm motion-reduce:animate-none" />
+                  <Skeleton className="h-5 w-full rounded-sm motion-reduce:animate-none" />
                 </div>
               ))}
             </div>

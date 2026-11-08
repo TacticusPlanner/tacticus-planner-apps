@@ -50,7 +50,7 @@ function RewardIcon({
           alt=""
           src={iconUrl}
           className={cn(
-            "size-full rounded border",
+            "size-full rounded-sm border",
             mythic ? "border-(--rarity-mythic)" : "border-(--rarity-legendary)"
           )}
         />
