@@ -49,6 +49,14 @@ type LegendaryEventCreateGoalOpenedEvent = {
   goalType: "Unlock" | "Ascension" | "Rank" | null
 }
 
+/** The goal-creation sheet was opened from a Library character or Machine of War page's Create
+ *  goal; `goalType` is the type it preselects (Unlock for a unit the roster doesn't hold). */
+type LibraryUnitCreateGoalOpenedEvent = {
+  type: "library_unit_create_goal_opened"
+  entityType: "Character" | "Mow"
+  goalType: "Unlock" | null
+}
+
 /** A lane's Upgrade impact section was expanded. */
 type LegendaryEventUpgradeImpactExpandedEvent = {
   type: "legendary_event_upgrade_impact_expanded"
@@ -299,6 +307,7 @@ export type AnalyticsEvent =
   | LegendaryEventTeamCreatedEvent
   | LegendaryEventGoalsPreviewToggledEvent
   | LegendaryEventCreateGoalOpenedEvent
+  | LibraryUnitCreateGoalOpenedEvent
   | LegendaryEventUpgradeImpactExpandedEvent
   | LegendaryEventTeamSuggestionsOpenedEvent
   | LegendaryEventDepthSetEvent
