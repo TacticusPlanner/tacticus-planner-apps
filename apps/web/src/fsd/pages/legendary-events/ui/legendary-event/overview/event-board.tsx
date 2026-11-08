@@ -478,7 +478,7 @@ function ObjectiveHeading({
                 {number.format(entry.cleared)}/{number.format(entry.battles)}
               </span>
             )}
-            <span className="line-clamp-2 text-xs leading-tight">{label}</span>
+            <span className="line-clamp-2 text-xs/tight">{label}</span>
             {cleared ? <span className="sr-only">{cleared}</span> : null}
             {uncovered ? (
               <span className="text-xs text-muted-foreground">

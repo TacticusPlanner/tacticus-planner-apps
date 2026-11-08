@@ -59,6 +59,9 @@ export const tailwindSizingConfig = {
     },
   },
   rules: {
+    // One spelling per class: `px-1 py-1` → `p-1`, `text-xs leading-tight` → `text-xs/tight`,
+    // `h-[32px]` → `h-8`. Autofixable with `eslint --fix`.
+    "better-tailwindcss/enforce-canonical-classes": "error",
     "better-tailwindcss/no-restricted-classes": [
       "error",
       {

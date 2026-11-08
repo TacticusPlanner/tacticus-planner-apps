@@ -109,7 +109,7 @@ export function UnitTile({
       </div>
       <span
         className={cn(
-          "mt-1.5 w-full truncate text-center text-xs leading-4 font-semibold",
+          "mt-1.5 w-full truncate text-center text-xs/4 font-semibold",
           !owned && "text-muted-foreground"
         )}
       >
@@ -191,7 +191,7 @@ function PortraitOverlays({
       )}
       {kind === "character" && data.rank ? (
         <span
-          className="absolute -bottom-1.5 -left-1.5 h-6 w-6 drop-shadow-[0_1px_2px_rgb(0_0_0/0.7)]"
+          className="absolute -bottom-1.5 -left-1.5 size-6 drop-shadow-[0_1px_2px_rgb(0_0_0/0.7)]"
           data-testid="unit-tile-rank"
         >
           <EntityIcon src={rankIcon(data.rank)} alt="" className="size-full" />

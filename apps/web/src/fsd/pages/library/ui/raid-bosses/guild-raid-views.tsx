@@ -39,7 +39,7 @@ function Unit({ unit }: { unit: GuildRaidMetaUnitPresentation }) {
         />
         {!unit.portraitUrl ? unit.name.slice(0, 2).toUpperCase() : null}
       </span>
-      <span className="max-w-20 text-xs leading-tight">{unit.name}</span>
+      <span className="max-w-20 text-xs/tight">{unit.name}</span>
     </div>
   )
 }

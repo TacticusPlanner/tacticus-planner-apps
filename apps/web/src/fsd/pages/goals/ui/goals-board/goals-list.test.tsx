@@ -637,7 +637,7 @@ describe("GoalsList", () => {
 
       const row = screen.getAllByTestId("goal-row")[0]!
       expect(row.className).not.toMatch(/opacity/)
-      expect(row).toHaveClass("data-[dragging]:bg-card")
+      expect(row).toHaveClass("data-dragging:bg-card")
     })
   })
 })

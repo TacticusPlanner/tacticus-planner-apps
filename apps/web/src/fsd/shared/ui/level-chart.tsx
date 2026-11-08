@@ -233,7 +233,7 @@ export function LevelChart({
           {markerIndex !== undefined && points[markerIndex] && (
             <div className="relative h-0">
               <span
-                className="absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-[var(--chart-1)]"
+                className="absolute size-2.5 -translate-1/2 rounded-full border-2 border-card bg-(--chart-1)"
                 style={{
                   left: `${((markerIndex + 0.5) / count) * 100}%`,
                   top: -height * chartY(upper(points[markerIndex]), scale),

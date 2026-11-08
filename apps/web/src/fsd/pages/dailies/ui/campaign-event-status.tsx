@@ -57,7 +57,7 @@ export function CampaignEventTile() {
         {active && icon ? (
           <EntityIcon alt="" className="size-5 shrink-0" src={icon} />
         ) : null}
-        <span className="min-w-0 break-words">{detail}</span>
+        <span className="min-w-0 wrap-break-word">{detail}</span>
       </span>
     </GlanceTile>
   )

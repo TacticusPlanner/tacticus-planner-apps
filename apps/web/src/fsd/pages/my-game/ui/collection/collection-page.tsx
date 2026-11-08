@@ -72,7 +72,7 @@ const EMPTY_OPTIONS: CollectionOptions = {
 // share one height. Inside a card, fixed unit slots (5 on mobile, 7 on desktop) line portraits up
 // across cards - no current faction has more than seven units, so each fits one desktop row.
 const factionGrid =
-  "grid items-stretch gap-2.5 sm:gap-3 [grid-template-columns:repeat(auto-fill,minmax(min(30rem,100%),1fr))]"
+  "grid items-stretch gap-2.5 sm:gap-3 grid-cols-[repeat(auto-fill,minmax(min(30rem,100%),1fr))]"
 const unitSlots =
   "grid grid-cols-5 gap-x-1.5 gap-y-3 px-2 pt-3 pb-2.5 md:grid-cols-7"
 // Without faction groups: one card of slots about as wide as a faction card's.

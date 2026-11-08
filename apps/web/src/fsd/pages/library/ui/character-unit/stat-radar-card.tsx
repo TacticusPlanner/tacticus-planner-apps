@@ -172,7 +172,7 @@ export function StatRadarCard({
                 aria-hidden="true"
               >
                 <span
-                  className="absolute inset-y-0 left-0 rounded-full bg-[var(--chart-1)]"
+                  className="absolute inset-y-0 left-0 rounded-full bg-(--chart-1)"
                   style={{ width: `${rounded[index]}%` }}
                 />
                 <span className="absolute -inset-y-0.75 left-1/2 border-l border-dashed border-muted-foreground" />

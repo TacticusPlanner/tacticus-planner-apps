@@ -340,7 +340,7 @@ describe("RaidSchedule location emphasis", () => {
 
     const lines = screen
       .getByTestId(`raid-location-${b1}`)
-      .querySelectorAll(".break-words")
+      .querySelectorAll(".wrap-break-word")
     expect([...lines].map((line) => line.textContent)).toEqual(["B1"])
   })
 
@@ -366,7 +366,7 @@ describe("RaidSchedule location emphasis", () => {
     const row = within(screen.getByTestId(`raid-location-${b1}`))
     for (const label of [campaignName, nodeLabel]) {
       // Campaign, tier and node share one line that wraps instead of truncating.
-      const line = row.getByText(label).closest(".break-words")
+      const line = row.getByText(label).closest(".wrap-break-word")
       expect(line).not.toBeNull()
       expect(line).not.toHaveClass("truncate")
       expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)

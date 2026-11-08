@@ -95,9 +95,7 @@ export function QuickFilterChips({
       {/* On mobile the row scrolls sideways; the edges hiding chips fade out to show there is more. */}
       <div
         ref={scroll ? scrollRef : undefined}
-        className={
-          scroll ? "overflow-x-auto pb-1 [scrollbar-width:none]" : undefined
-        }
+        className={scroll ? "scrollbar-none overflow-x-auto pb-1" : undefined}
         style={mask ? { maskImage: mask, WebkitMaskImage: mask } : undefined}
       >
         <ToggleGroup

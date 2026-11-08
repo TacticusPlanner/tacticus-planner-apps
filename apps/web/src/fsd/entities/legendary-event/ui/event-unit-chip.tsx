@@ -139,7 +139,7 @@ export function EventUnitChip({
       {owned ? (
         <span
           aria-hidden="true"
-          className="flex flex-col text-xs leading-3 font-semibold tabular-nums"
+          className="flex flex-col text-xs/3 font-semibold tabular-nums"
         >
           <span>A{unit.activeLevel}</span>
           <span>P{unit.passiveLevel}</span>

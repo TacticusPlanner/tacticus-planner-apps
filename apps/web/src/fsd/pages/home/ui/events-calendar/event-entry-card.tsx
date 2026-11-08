@@ -230,7 +230,7 @@ export function EventBar({
     <EventDetailsPopover entry={entry}>
       <button
         className={cn(
-          "isolate flex h-full w-full min-w-0 items-center gap-1.5 overflow-hidden rounded-md pr-2 pl-0.5 text-left text-xs font-medium",
+          "isolate flex size-full min-w-0 items-center gap-1.5 overflow-hidden rounded-md pr-2 pl-0.5 text-left text-xs font-medium",
           showIconOnly && "justify-center px-0",
           isBreak && "justify-center pl-1 text-muted-foreground",
           entrySurfaceClass(entry)
@@ -341,7 +341,7 @@ export function OngoingEventTile({
     <EventDetailsPopover entry={entry}>
       <button
         className={cn(
-          "flex w-28 shrink-0 flex-col items-center gap-1 rounded-lg px-1.5 py-2 text-center text-xs leading-tight",
+          "flex w-28 shrink-0 flex-col items-center gap-1 rounded-lg px-1.5 py-2 text-center text-xs/tight",
           entrySurfaceClass(entry)
         )}
         data-active={entry.isActiveNow}

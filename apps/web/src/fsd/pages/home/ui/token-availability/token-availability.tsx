@@ -150,7 +150,7 @@ function TokenRow({
       ) : null}
       {fullInSeconds > 0 ? (
         <span
-          className="text-xs leading-tight text-muted-foreground uppercase tabular-nums"
+          className="text-xs/tight text-muted-foreground uppercase tabular-nums"
           data-testid={`token-full-in-${entry.key}`}
         >
           {t("home.tokens.fullIn", {

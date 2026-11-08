@@ -117,7 +117,7 @@ function ChipIcon({ chip }: { chip: GoalResourceChip }) {
       {chip.overlay ? (
         <img
           alt=""
-          className="absolute top-1/2 left-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 object-contain"
+          className="absolute top-1/2 left-1/2 size-3.5 -translate-1/2 object-contain"
           src={chip.overlay}
         />
       ) : null}

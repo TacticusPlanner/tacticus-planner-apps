@@ -69,14 +69,14 @@ function LandingHero({
       <img
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute top-16 -right-36 -z-10 w-88 [mask-image:radial-gradient(circle,#000_55%,transparent_72%)] opacity-50 md:top-10 md:-right-32 md:w-xl"
+        className="pointer-events-none absolute top-16 -right-36 -z-10 w-88 mask-[radial-gradient(circle,#000_55%,transparent_72%)] opacity-50 md:top-10 md:-right-32 md:w-xl"
         src={landingArt.heroPlanet}
       />
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-10 bg-linear-to-b from-transparent from-30% to-background"
       />
-      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-12 pb-16 md:grid-cols-[1.1fr_0.9fr] md:px-6 md:pt-20 md:pb-20">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-12 pb-16 md:grid-cols-[1.1fr_0.9fr] md:px-6 md:py-20">
         <div className="flex flex-col items-start gap-5">
           {signInRequired && !isAuthenticated ? (
             <div
