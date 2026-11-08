@@ -55,7 +55,7 @@ export interface UpgradeChainRequest {
 }
 
 /** `null` means the chain is blocked (a need with no farmable source) or cannot be estimated. */
-export type FarmingDays = { days: number; date: string } | null
+type FarmingDays = { days: number; date: string } | null
 
 /** The memoized estimate, plus the alliances whose chains it blocked because they needed Mythic
  *  shards and the account has no saved Onslaught sector for that alliance (so the wizard can ask
