@@ -258,6 +258,7 @@
     "points": "Punkte",
     "battlePoints": "{{earned}} / {{max}}",
     "highScore": "Highscore {{score}}",
+    "highScoreShort": "HS {{score}}",
     "cellCleared": "{{objective}}: erledigt",
     "cellNotCleared": "{{objective}}: nicht erledigt",
     "complete": "Abgeschlossen",
@@ -731,7 +732,11 @@
       "upNext": "Danach",
       "viewPlan_one": "Den {{count}} geplanten Token ansehen",
       "viewPlan_other": "Alle {{count}} geplanten Tokens ansehen",
-      "team": "Einheiten von {{team}} anzeigen"
+      "team": "Einheiten von {{team}} anzeigen",
+      "depth": {
+        "estimated": "Schätzung",
+        "manual": "von dir gesetzt"
+      }
     },
     "plan": {
       "title": "Token-Plan",

@@ -187,10 +187,10 @@ export function LaneProgressHeader({
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
       <div className="flex items-baseline justify-between gap-2">
-        {/* The scroll margin keeps the heading below the mobile header and the sticky tab strip
+        {/* The scroll margin keeps the heading below the mobile header, the sticky tab strip and lane picker
             when the Overview lane summary scrolls to it. */}
         <h3
-          className="scroll-mt-[calc(var(--mobile-header-height)+3rem)] font-semibold md:scroll-mt-4"
+          className="scroll-mt-[calc(var(--mobile-header-height)+6.25rem)] font-semibold md:scroll-mt-4"
           id={progressHeadingId(laneId)}
         >
           {lane}

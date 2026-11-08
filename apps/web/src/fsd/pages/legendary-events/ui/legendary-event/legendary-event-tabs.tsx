@@ -107,7 +107,8 @@ export function LegendaryEventTabs({
 /**
  * The page's lane selection (spec: one lane selection): a segmented control above the lane blocks.
  * Desktop: one toggle per lane, pressed while it shows, any one to three at once (the last pressed
- * lane stays). Mobile: one lane at a time, as a segmented single choice.
+ * lane stays). Mobile: one lane at a time, as a segmented single choice that sticks under the tab
+ * strip.
  */
 export function LaneSelector({
   lanes,
@@ -118,31 +119,38 @@ export function LaneSelector({
 }) {
   const { t } = useTranslation("legendaryEvents")
   if (isMobile) {
+    // Sticks under the sticky tab strip, so the lane can be switched far down a long tab.
     return (
-      <ToggleGroup
-        aria-label={t("tabs.laneLabel")}
-        className="w-full"
-        data-testid="legendary-event-lane-picker"
-        onValueChange={(next) => {
-          // A pressed lane stays pressed: one lane always shows.
-          if (next) lanes.onPick(next as LegendaryEventLaneId)
-        }}
-        spacing={0}
-        type="single"
-        value={lanes.shown[0]}
-        variant="outline"
+      <div
+        className="sticky top-[calc(var(--mobile-header-height)+2.875rem)] z-20 -mx-4 bg-background px-4 py-1"
+        data-sticky="true"
+        data-testid="legendary-event-lane-picker-bar"
       >
-        {LEGENDARY_EVENT_LANE_IDS.map((lane) => (
-          <ToggleGroupItem
-            className="min-h-11 flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            data-testid={`legendary-event-lane-pick-${lane}`}
-            key={lane}
-            value={lane}
-          >
-            {t(`lanes.${lane}`)}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+        <ToggleGroup
+          aria-label={t("tabs.laneLabel")}
+          className="w-full"
+          data-testid="legendary-event-lane-picker"
+          onValueChange={(next) => {
+            // A pressed lane stays pressed: one lane always shows.
+            if (next) lanes.onPick(next as LegendaryEventLaneId)
+          }}
+          spacing={0}
+          type="single"
+          value={lanes.shown[0]}
+          variant="outline"
+        >
+          {LEGENDARY_EVENT_LANE_IDS.map((lane) => (
+            <ToggleGroupItem
+              className="min-h-11 flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+              data-testid={`legendary-event-lane-pick-${lane}`}
+              key={lane}
+              value={lane}
+            >
+              {t(`lanes.${lane}`)}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      </div>
     )
   }
   return (

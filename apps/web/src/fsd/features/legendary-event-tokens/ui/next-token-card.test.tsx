@@ -133,6 +133,9 @@ describe("NextTokenCard", () => {
     expect(
       screen.getAllByTestId("next-token-member").map((m) => m.dataset.unit)
     ).toEqual(["ultraCalgar", "ultraTitus", "ultraApothecary"])
+    expect(
+      screen.getByTestId("next-token-team-details-depth")
+    ).toHaveTextContent("Clears battles 1–5 of 18 · set by you")
     expect(screen.getByTestId("next-token-battle")).toHaveTextContent(
       "Alpha · Battle 3"
     )

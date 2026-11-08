@@ -258,6 +258,7 @@
     "points": "Puntos",
     "battlePoints": "{{earned}} / {{max}}",
     "highScore": "Mejor puntuación {{score}}",
+    "highScoreShort": "MP {{score}}",
     "cellCleared": "{{objective}}: completado",
     "cellNotCleared": "{{objective}}: no completado",
     "complete": "Completa",
@@ -731,7 +732,11 @@
       "upNext": "A continuación",
       "viewPlan_one": "Ver la {{count}} ficha planificada",
       "viewPlan_other": "Ver las {{count}} fichas planificadas",
-      "team": "Ver las unidades de {{team}}"
+      "team": "Ver las unidades de {{team}}",
+      "depth": {
+        "estimated": "estimación",
+        "manual": "fijada por ti"
+      }
     },
     "plan": {
       "title": "Plan de fichas",
