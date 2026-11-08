@@ -258,6 +258,7 @@
     "points": "Points",
     "battlePoints": "{{earned}} / {{max}}",
     "highScore": "Meilleur score {{score}}",
+    "highScoreShort": "MS {{score}}",
     "cellCleared": "{{objective}} : accompli",
     "cellNotCleared": "{{objective}} : non accompli",
     "complete": "Terminé",
@@ -731,7 +732,11 @@
       "upNext": "Ensuite",
       "viewPlan_one": "Voir le {{count}} jeton prévu",
       "viewPlan_other": "Voir les {{count}} jetons prévus",
-      "team": "Voir les unités de {{team}}"
+      "team": "Voir les unités de {{team}}",
+      "depth": {
+        "estimated": "estimation",
+        "manual": "fixée par vous"
+      }
     },
     "plan": {
       "title": "Plan de jetons",

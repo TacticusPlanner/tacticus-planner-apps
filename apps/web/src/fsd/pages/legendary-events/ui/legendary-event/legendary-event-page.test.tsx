@@ -1308,6 +1308,13 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       expect(await screen.findByTestId("leaderboard-list")).toBeInTheDocument()
       expect(screen.queryByTestId("leaderboard-table")).toBeNull()
       expect(lanesOf("event-board-lane")).toEqual(["alpha"])
+      // The lane picker sticks under the tab strip, so a lane can be switched far down the tab.
+      expect(
+        screen.getByTestId("legendary-event-lane-picker-bar")
+      ).toHaveAttribute("data-sticky", "true")
+      expect(screen.getByTestId("legendary-event-lane-picker-bar")).toHaveClass(
+        "sticky"
+      )
       act(() => pickLane("beta"))
       expect(pickedLane()).toHaveTextContent("Beta")
       expect(lanesOf("event-board-lane")).toEqual(["beta"])

@@ -223,7 +223,7 @@ export function TeamsSection({
   return (
     <section
       aria-labelledby={titleId}
-      className="flex min-w-0 scroll-mt-[calc(var(--mobile-header-height)+3rem)] flex-col gap-3 md:scroll-mt-4"
+      className="flex min-w-0 scroll-mt-[calc(var(--mobile-header-height)+6.25rem)] flex-col gap-3 md:scroll-mt-4"
       data-lane={laneId}
       data-testid="legendary-event-teams"
     >

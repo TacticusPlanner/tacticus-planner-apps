@@ -53,6 +53,11 @@ describe("buildTokenPlanView", () => {
       "ultraTitus",
       "ultraApothecary",
     ])
+    expect(view.depthByTeam.get("melee")).toEqual({
+      depth: 5,
+      estimated: false,
+      total: 18,
+    })
     expect(view.fullClear).toEqual([
       {
         laneId: "alpha",
