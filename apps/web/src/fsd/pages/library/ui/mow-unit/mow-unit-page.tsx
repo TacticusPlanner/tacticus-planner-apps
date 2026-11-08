@@ -27,6 +27,7 @@ import { MOWS_PATH } from "../mows/mows-list-page"
 import { useMowListItems, useMowsCatalog } from "../mows/use-mows-catalog"
 import { AbilityPanel } from "../unit/ability-panel"
 import { UnitHeader, type ValuesMode } from "../unit/unit-header"
+import { UnitCreateGoalButton } from "../unit/unit-create-goal-button"
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { UnitPowerValue } from "../unit/unit-power-value"
 import { UnitTabs } from "../unit/unit-tabs"
@@ -375,6 +376,17 @@ function MowUnit({
                 onChange={setCustom}
               />
             </div>
+          }
+          action={
+            isAuthenticated ? (
+              <UnitCreateGoalButton
+                entityType="Mow"
+                unitId={unitId}
+                name={name}
+                ownership={ownership}
+                isMobile={isMobile}
+              />
+            ) : undefined
           }
           isMobile={isMobile}
         />

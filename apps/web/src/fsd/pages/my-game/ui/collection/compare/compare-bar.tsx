@@ -21,8 +21,10 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
 } from "@workspace/ui/components/sheet"
 import { Switch } from "@workspace/ui/components/switch"
 import {
@@ -72,15 +74,22 @@ export function SnapshotActions({
       data-testid="take-snapshot"
     >
       <ClockPlus aria-hidden />
-      {t("myGame.collection.snapshots.take")}
+      {/* Icon only on a phone, so both buttons stay on the Compare row. */}
+      <span className="max-sm:sr-only">
+        {t("myGame.collection.snapshots.take")}
+      </span>
     </Button>
   )
   return (
     <div
+      // Wraps only as a last resort (e.g. enlarged text): the phone labels are hidden to keep one row.
       className="flex flex-wrap items-center gap-x-4 gap-y-2"
       data-testid="snapshot-actions"
     >
-      <div className="flex items-center gap-2" data-testid="compare-toggle">
+      <div
+        className="flex shrink-0 items-center gap-2"
+        data-testid="compare-toggle"
+      >
         <Switch
           id={switchId}
           checked={compareOn}
@@ -111,7 +120,9 @@ export function SnapshotActions({
           data-testid="manage-snapshots"
         >
           <ListChecks aria-hidden />
-          {t("myGame.collection.snapshots.manage")}
+          <span className="max-sm:sr-only">
+            {t("myGame.collection.snapshots.manage")}
+          </span>
           {usage ? (
             <span className="text-muted-foreground tabular-nums">
               {t("myGame.collection.snapshots.usage", usage)}
@@ -164,31 +175,39 @@ export function CompareControls(props: CompareControlsProps) {
       ? t("myGame.collection.compare.current")
       : (nameOf(props.toId) ?? "")
   return (
-    <>
-      <Button
-        variant="outline"
-        className="h-auto min-h-11 w-full justify-start py-2 text-left"
-        onClick={() => setOpen(true)}
-        aria-label={`${t("myGame.collection.compare.options")}: ${t("myGame.collection.compare.fromTo", { from: fromLabel, to: toLabel })}`}
-        data-testid="compare-options"
-      >
-        <Settings2 aria-hidden />
-        <span className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate">{fromLabel}</span>
-          <span className="truncate text-muted-foreground">→ {toLabel}</span>
-        </span>
-      </Button>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="bottom" data-testid="compare-options-sheet">
-          <SheetHeader>
-            <SheetTitle>{t("myGame.collection.compare.options")}</SheetTitle>
-          </SheetHeader>
-          <div className="flex flex-col gap-3 overflow-y-auto px-4 pb-4">
-            <CompareFields {...props} />
-          </div>
-        </SheetContent>
-      </Sheet>
-    </>
+    <Sheet open={open} onOpenChange={setOpen}>
+      {/* The trigger gets focus back when the sheet closes. */}
+      <SheetTrigger asChild>
+        <Button
+          variant="outline"
+          className="h-auto min-h-11 w-full justify-start py-2 text-left"
+          aria-label={`${t("myGame.collection.compare.options")}: ${t("myGame.collection.compare.fromTo", { from: fromLabel, to: toLabel })}`}
+          data-testid="compare-options"
+        >
+          <Settings2 aria-hidden />
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate">{fromLabel}</span>
+            <span className="truncate text-muted-foreground">→ {toLabel}</span>
+          </span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="bottom" data-testid="compare-options-sheet">
+        <SheetHeader>
+          <SheetTitle>{t("myGame.collection.compare.options")}</SheetTitle>
+        </SheetHeader>
+        <div className="flex flex-col gap-3 overflow-y-auto px-4">
+          <CompareFields {...props} />
+        </div>
+        <SheetFooter className="px-4 pt-2 pb-4">
+          <Button
+            onClick={() => setOpen(false)}
+            data-testid="compare-options-close"
+          >
+            {t("myGame.collection.compare.closeOptions")}
+          </Button>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }
 

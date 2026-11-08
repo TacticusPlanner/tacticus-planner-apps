@@ -13,6 +13,7 @@ import type { RosterDiffMetric } from "@/entities/roster-snapshot"
 import type { UnitTileUnit } from "@/entities/unit"
 import { useAnalyticsActions } from "@/shared/analytics"
 
+import { compareFocus } from "../../../model/compare-chips"
 import { sourceLabel } from "../../../model/compare-labels"
 import { useSourceLabels } from "../../../model/use-source-labels"
 import { COMPARE_CURRENT } from "../../../model/compare-query"
@@ -199,6 +200,7 @@ function ReadyCompare({
           unchanged={view.unchanged}
           showUnchanged={showUnchanged}
           fields={fields}
+          focus={compareFocus(metric, query.order)}
         />
       )}
     </div>

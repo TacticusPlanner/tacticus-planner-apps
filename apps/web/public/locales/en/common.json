@@ -576,7 +576,7 @@
           "xpLevel": "{{value}} levels",
           "shards": "{{value}} shards",
           "mythicShards": "{{value}} mythic",
-          "equipment": "{{value}} gear",
+          "equipment": "{{value}} items",
           "power": "{{value}} power"
         },
         "details": {
@@ -594,10 +594,18 @@
           "shards": "Shards",
           "mythicShards": "Mythic shards",
           "shardsBreakdown": "net {{net}} · spent {{spent}} · earned {{earned}}",
-          "equipment": "Equipment",
+          "equipment": "Item",
           "power": "Power",
-          "openLibrary": "Open in Library"
-        }
+          "openLibrary": "Open in Library",
+          "items": {
+            "I_Crit": "Crit item",
+            "I_Block": "Block item",
+            "I_Booster_Crit": "Crit booster",
+            "I_Booster_Block": "Block booster",
+            "I_Defensive": "Defensive item"
+          }
+        },
+        "closeOptions": "Close"
       },
       "snapshots": {
         "signIn": "Sign in to save snapshots of your roster and compare them.",

@@ -433,7 +433,9 @@
     },
     "notFound": "Diese Einheit ist nicht in der Bibliothek.",
     "loadFailed": "Charakterdaten konnten nicht geladen werden.",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "createGoal": "Ziel erstellen",
+    "createGoalFor": "Ziel für {{name}} erstellen"
   },
   "charactersList": {
     "title": "Charaktere",
@@ -571,7 +573,7 @@
       "steps": {
         "header": {
           "title": "Die Einheit",
-          "content": "Porträt, Fraktion und die Werte, die die Seite zeigt. Angemeldet und synchronisiert beginnen sie bei deiner eigenen Einheit; wähle „Eigene“, um andere Werte auszuprobieren. Der Kopfbereich zeigt außerdem die Stärke der Einheit bei diesen Werten."
+          "content": "Porträt, Fraktion und die Werte, die die Seite zeigt. Angemeldet und synchronisiert beginnen sie bei deiner eigenen Einheit; wähle „Eigene“, um andere Werte auszuprobieren. Der Kopfbereich zeigt außerdem die Stärke der Einheit bei diesen Werten. Angemeldet öffnet „Ziel erstellen“ die Zielerstellung für diese Einheit."
         },
         "tabs": {
           "title": "Details und Rangaufstieg",
@@ -663,7 +665,7 @@
       "steps": {
         "header": {
           "title": "Kriegsmaschine",
-          "content": "Seltenheit und Fähigkeitsstufen deiner Kriegsmaschine. Wechsle zu Eigene, um andere Seltenheiten anzusehen. Der Kopfbereich zeigt außerdem ihre Stärke bei den gezeigten Werten."
+          "content": "Seltenheit und Fähigkeitsstufen deiner Kriegsmaschine. Wechsle zu Eigene, um andere Seltenheiten anzusehen. Der Kopfbereich zeigt außerdem ihre Stärke bei den gezeigten Werten. Angemeldet öffnet „Ziel erstellen“ die Zielerstellung für sie."
         },
         "tabs": {
           "title": "Details und Upgrades",

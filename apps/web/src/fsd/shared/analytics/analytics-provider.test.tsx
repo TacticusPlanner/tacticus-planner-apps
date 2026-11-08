@@ -296,6 +296,21 @@ describe("useAnalyticsActions", () => {
     )
   })
 
+  it("captures the Library unit page's Create goal with only the declared properties", async () => {
+    const { result } = await renderReady()
+
+    result.current.captureEvent({
+      type: "library_unit_create_goal_opened",
+      entityType: "Mow",
+      goalType: "Unlock",
+    })
+
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "library_unit_create_goal_opened",
+      { entity_type: "Mow", goal_type: "Unlock" }
+    )
+  })
+
   it("captures the Legendary Event run input, paid options and mark events with only the declared properties", async () => {
     const { result } = await renderReady()
 

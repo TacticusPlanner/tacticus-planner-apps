@@ -576,7 +576,7 @@
           "xpLevel": "{{value}} niveles",
           "shards": "{{value}} fragmentos",
           "mythicShards": "{{value}} míticos",
-          "equipment": "{{value}} equipo",
+          "equipment": "{{value}} objetos",
           "power": "{{value}} poder"
         },
         "details": {
@@ -594,10 +594,18 @@
           "shards": "Fragmentos",
           "mythicShards": "Fragmentos míticos",
           "shardsBreakdown": "neto {{net}} · gastados {{spent}} · obtenidos {{earned}}",
-          "equipment": "Equipo",
+          "equipment": "Objeto",
           "power": "Poder",
-          "openLibrary": "Abrir en la Biblioteca"
-        }
+          "openLibrary": "Abrir en la Biblioteca",
+          "items": {
+            "I_Crit": "Objeto de crítico",
+            "I_Block": "Objeto de bloqueo",
+            "I_Booster_Crit": "Potenciador de crítico",
+            "I_Booster_Block": "Potenciador de bloqueo",
+            "I_Defensive": "Objeto defensivo"
+          }
+        },
+        "closeOptions": "Cerrar"
       },
       "snapshots": {
         "signIn": "Inicia sesión para guardar instantáneas de tu plantilla y compararlas.",
