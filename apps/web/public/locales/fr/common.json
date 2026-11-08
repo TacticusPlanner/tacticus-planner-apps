@@ -576,7 +576,7 @@
           "xpLevel": "{{value}} niveaux",
           "shards": "{{value}} fragments",
           "mythicShards": "{{value}} mythiques",
-          "equipment": "{{value}} équipement",
+          "equipment": "{{value}} objets",
           "power": "{{value}} puissance"
         },
         "details": {
@@ -594,10 +594,18 @@
           "shards": "Fragments",
           "mythicShards": "Fragments mythiques",
           "shardsBreakdown": "net {{net}} · dépensés {{spent}} · gagnés {{earned}}",
-          "equipment": "Équipement",
+          "equipment": "Objet",
           "power": "Puissance",
-          "openLibrary": "Ouvrir dans la Bibliothèque"
-        }
+          "openLibrary": "Ouvrir dans la Bibliothèque",
+          "items": {
+            "I_Crit": "Objet critique",
+            "I_Block": "Objet de blocage",
+            "I_Booster_Crit": "Amplificateur critique",
+            "I_Booster_Block": "Amplificateur de blocage",
+            "I_Defensive": "Objet défensif"
+          }
+        },
+        "closeOptions": "Fermer"
       },
       "snapshots": {
         "signIn": "Connectez-vous pour enregistrer des instantanés de votre effectif et les comparer.",

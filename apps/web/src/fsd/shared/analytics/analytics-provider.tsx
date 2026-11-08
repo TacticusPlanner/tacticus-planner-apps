@@ -280,6 +280,12 @@ export function useAnalyticsActions() {
             goal_type: event.goalType,
           })
           break
+        case "library_unit_create_goal_opened":
+          client.capture(event.type, {
+            entity_type: event.entityType,
+            goal_type: event.goalType,
+          })
+          break
         case "legendary_event_upgrade_impact_expanded":
           client.capture(event.type, {
             event_id: event.eventId,

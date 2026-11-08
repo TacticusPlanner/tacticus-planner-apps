@@ -1,10 +1,12 @@
 import type { ReactNode } from "react"
 import {
   abilityIcon,
+  EquipmentIcons,
   progressionVisual,
   rankIcon,
 } from "@workspace/game-catalog"
 import {
+  equipmentIdSchema,
   progressionRarity,
   type Progression,
   type Rank,
@@ -107,5 +109,28 @@ export function AbilityMark({
       src={abilityIcon(abilityId)}
       className={cn("shrink-0 rounded-sm", large ? "size-5" : "size-4")}
     />
+  )
+}
+
+/** An item's icon with its level in the corner, as the unit tiles draw equipped items. */
+export function ItemMark({
+  equipmentId,
+  level,
+}: {
+  equipmentId: string
+  level: number
+}) {
+  return (
+    <span className="relative inline-flex size-7 shrink-0 overflow-hidden rounded border bg-muted">
+      <EntityIcon
+        alt=""
+        src={EquipmentIcons.icon(equipmentIdSchema.parse(equipmentId))}
+        fallback={EquipmentIcons.fallback}
+        className="size-full object-contain"
+      />
+      <span className="absolute right-0.5 bottom-0 text-2xs leading-none font-bold text-white tabular-nums [text-shadow:0_0_2px_black]">
+        {level}
+      </span>
+    </span>
   )
 }

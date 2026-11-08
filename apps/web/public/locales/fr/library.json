@@ -433,7 +433,9 @@
     },
     "notFound": "Cette unité n'est pas dans la Bibliothèque.",
     "loadFailed": "Impossible de charger les données des personnages.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "createGoal": "Créer un objectif",
+    "createGoalFor": "Créer un objectif pour {{name}}"
   },
   "charactersList": {
     "title": "Personnages",
@@ -572,7 +574,7 @@
       "steps": {
         "header": {
           "title": "L'unité",
-          "content": "Son portrait, sa faction et les valeurs affichées par la page. Connecté et synchronisé, elles partent de votre propre unité ; choisissez « Personnalisées » pour essayer d'autres valeurs. L’en-tête affiche aussi la puissance de l’unité à ces valeurs."
+          "content": "Son portrait, sa faction et les valeurs affichées par la page. Connecté et synchronisé, elles partent de votre propre unité ; choisissez « Personnalisées » pour essayer d'autres valeurs. L’en-tête affiche aussi la puissance de l’unité à ces valeurs. Une fois connecté, « Créer un objectif » ouvre la création d’objectif pour cette unité."
         },
         "tabs": {
           "title": "Détails et rang",
@@ -665,7 +667,7 @@
       "steps": {
         "header": {
           "title": "Machine de guerre",
-          "content": "La rareté et les niveaux de capacité de votre Machine de guerre. Passez à Personnalisées pour voir d’autres raretés. L’en-tête affiche aussi sa puissance aux valeurs affichées."
+          "content": "La rareté et les niveaux de capacité de votre Machine de guerre. Passez à Personnalisées pour voir d’autres raretés. L’en-tête affiche aussi sa puissance aux valeurs affichées. Une fois connecté, « Créer un objectif » ouvre la création d’objectif pour elle."
         },
         "tabs": {
           "title": "Détails et améliorations",
