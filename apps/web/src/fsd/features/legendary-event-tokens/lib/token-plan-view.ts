@@ -155,7 +155,7 @@ export interface TokenPlanReady {
   kind: "ready"
   plan: TokenPlan
   next: NextTokenChoice | null
-  /** The Next token's open missions and its For missions alternative; null without a next token
+  /** The current missions the Next token progresses; null without a next token
    *  or a missions source. */
   missions: NextTokenMissions | null
   empty: NextTokenEmpty | null
@@ -350,7 +350,6 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
   const missions =
     next && source
       ? nextTokenMissions({
-          plan: tokenPlan,
           next,
           open: missionsOf(missionRun),
           membersOf,

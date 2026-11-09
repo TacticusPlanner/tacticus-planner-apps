@@ -20,7 +20,7 @@ import type {
 
 import { gainsFromProgress, type MissionGain } from "../lib/mission-gains"
 import type { TokenMissionStep } from "../lib/mission-order"
-import { samePlannedToken, type PlannedToken } from "../lib/token-plan"
+import type { PlannedToken } from "../lib/token-plan"
 import {
   missionsNextToken,
   upNextTokens,
@@ -31,7 +31,6 @@ import {
 import { useMissionsOrder } from "../model/token-plan-order"
 import { useNextTokenShown } from "../model/use-next-token-shown"
 import { TokenPlanOrderSwitch } from "./mission-order-view"
-import { MissionAlternativeView } from "./next-token-missions"
 import { BattleInfoButton } from "./battle-info"
 import { TokenMarkButtons } from "./token-mark-buttons"
 import { TokenRow } from "./token-plan-rows"
@@ -143,18 +142,6 @@ export function NextTokenCard({
               token={ordered.token}
               view={view}
             />
-            {view.missions?.alternative &&
-            !samePlannedToken(
-              view.missions.alternative.token,
-              ordered.token
-            ) ? (
-              <MissionAlternativeView
-                alternative={view.missions.alternative}
-                event={event}
-                isMobile={isMobile}
-                onMarkToken={view.upcoming === null ? onMarkToken : undefined}
-              />
-            ) : null}
             {missionsInput ? (
               <div
                 className="flex min-w-0 flex-col gap-2 border-t pt-3"

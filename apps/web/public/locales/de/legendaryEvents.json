@@ -743,10 +743,8 @@
       "noDepth": "Lege fest, wie weit {{team}} kommt",
       "nothingLeft": "Deine Teams können nichts mehr abschließen · {{points}} Punkte offen auf {{lane}}",
       "missions": {
-        "title": "Für Missionen",
         "progresses": "Missionen, die er voranbringt",
         "premium": "{{mission}} (Premium)",
-        "points": "+{{points}} Punkte ({{difference}})",
         "button_one": "Bringt {{count}} Mission voran",
         "button_other": "Bringt {{count}} Missionen voran",
         "uncounted": "zählt",
