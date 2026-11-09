@@ -743,10 +743,8 @@
       "noDepth": "Indica hasta dónde llega {{team}}",
       "nothingLeft": "A tus equipos no les queda nada por superar · quedan {{points}} puntos en {{lane}}",
       "missions": {
-        "title": "Para misiones",
         "progresses": "Misiones que hace avanzar",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} puntos ({{difference}})",
         "button_one": "Hace avanzar {{count}} misión",
         "button_other": "Hace avanzar {{count}} misiones",
         "uncounted": "cuenta",
