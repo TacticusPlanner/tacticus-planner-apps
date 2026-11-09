@@ -135,7 +135,8 @@ describe("NextTokenCard missions", () => {
       "beta",
       3,
       expect.any(Array),
-      "stopHere"
+      "stopHere",
+      expect.any(String)
     )
   })
 

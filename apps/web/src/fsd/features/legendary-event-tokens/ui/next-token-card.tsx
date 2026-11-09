@@ -42,7 +42,9 @@ export type MarkTokenHandler = (
   laneId: LegendaryEventLaneId,
   battleIndex: number,
   objectiveIds: number[],
-  status: LegendaryEventAnnotationStatus
+  status: LegendaryEventAnnotationStatus,
+  /** The token's team: it fell short, so its depth drops to the battles before this one. */
+  teamId: string
 ) => void
 
 /** Opens a lane's Teams section, scrolled to one team's card when `teamId` is given. */

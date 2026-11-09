@@ -32,7 +32,8 @@ export function TokenMarkButtons({
       token.laneId,
       token.battleIndex,
       tokenMarkIds(token.clearedIds, status),
-      status
+      status,
+      token.teamId
     )
   return (
     <div
