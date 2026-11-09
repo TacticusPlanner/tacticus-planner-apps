@@ -51,6 +51,10 @@ export {
   type PlanInsightsTotals,
   type PlanMissingResources,
 } from "./model/insights/use-plan-insights.domain"
+export {
+  useFarmUnlockPaths,
+  type FarmUnlockPathViewModel,
+} from "./model/unlock-paths/use-farm-unlock-paths"
 export { isOnlyMemberOf } from "./model/projects/project-removal"
 export { useGoalsProjectScope } from "./model/projects/use-goals-project-scope"
 export { useProjectsByGoalId } from "./model/projects/use-projects-by-goal-id"

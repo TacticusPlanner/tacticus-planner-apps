@@ -1629,7 +1629,15 @@
         "SimulationLimit": "El objetivo no pudo completarse dentro del horizonte de planificación.",
         "UnsupportedCost": "El cálculo detallado de coste no es compatible con este objetivo.",
         "FilteredOut": "Todos los lugares de farmeo están excluidos por tus filtros de incursiones."
-      }
+      },
+      "unlockAt": "Se desbloquea en",
+      "battlesToGo_one": "falta {{count}} batalla",
+      "battlesToGo_other": "faltan {{count}} batallas",
+      "battlesToGoNotStarted_one": "sin empezar, falta {{count}} batalla",
+      "battlesToGoNotStarted_other": "sin empezar, faltan {{count}} batallas",
+      "unlockDuringEvent": "durante el evento de campaña",
+      "unlockMore_one": "+{{count}} ubicación más",
+      "unlockMore_other": "+{{count}} ubicaciones más"
     },
     "unlockFlavor": "Reúne los fragmentos del personaje y prepáralo para unirse a tu plantel.",
     "filters": {

@@ -19,6 +19,7 @@ import type { GoalProgress } from "@/features/goal-planning"
 import { blockerReasonText, type GoalBlockers } from "@/features/goal-planning"
 import { useGoalCatalog } from "@/features/goal-planning"
 import { reachableCeilingLabel } from "./ceiling-marker"
+import { FarmUnlockPaths } from "./farm-unlock-paths"
 
 const VARIANT_BY_STATUS: Record<
   GoalStatus,
@@ -248,12 +249,18 @@ function UnavailableMaterials({ estimate }: { estimate: EstimateOutcome }) {
       data-testid="goal-unavailable-materials"
     >
       {estimate.blockers.map((blocker) => (
-        <li key={blocker.resourceId}>
+        <li className="grid gap-0.5" key={blocker.resourceId}>
           {t("common:goals.estimate.unavailableRow", {
             material: label(blocker.resourceId),
             count: blocker.remaining,
             reason: t(`common:goals.estimate.blocked.${blocker.reason}`),
           })}
+          {blocker.reason === "NoFarmLocation" ? (
+            <FarmUnlockPaths
+              resourceId={blocker.resourceId}
+              testId={`goal-unlock-paths-${blocker.resourceId}`}
+            />
+          ) : null}
         </li>
       ))}
     </ul>

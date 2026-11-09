@@ -1629,7 +1629,15 @@
         "SimulationLimit": "Das Ziel konnte innerhalb des Planungshorizonts nicht abgeschlossen werden.",
         "UnsupportedCost": "Für dieses Ziel wird keine detaillierte Kostenberechnung unterstützt.",
         "FilteredOut": "Jeder Farm-Ort wird von deinen Raid-Filtern ausgeschlossen."
-      }
+      },
+      "unlockAt": "Freigeschaltet bei",
+      "battlesToGo_one": "noch {{count}} Kampf",
+      "battlesToGo_other": "noch {{count}} Kämpfe",
+      "battlesToGoNotStarted_one": "nicht begonnen, noch {{count}} Kampf",
+      "battlesToGoNotStarted_other": "nicht begonnen, noch {{count}} Kämpfe",
+      "unlockDuringEvent": "während des Kampagnen-Events",
+      "unlockMore_one": "+{{count}} weiterer Ort",
+      "unlockMore_other": "+{{count}} weitere Orte"
     },
     "unlockFlavor": "Sammle die Scherben des Charakters und bereite ihn darauf vor, deinem Kader beizutreten.",
     "filters": {

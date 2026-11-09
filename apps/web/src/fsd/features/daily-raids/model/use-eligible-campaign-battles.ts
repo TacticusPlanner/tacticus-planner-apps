@@ -92,6 +92,7 @@ export function useEligibleCampaignBattles(
   return {
     availableBattles: reachedBattles,
     manualBattleIds: manualIds,
+    campaignProgressByKey,
     liveProgress,
     ready:
       liveProgressRead.status === "ready" &&

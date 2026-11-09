@@ -1629,7 +1629,15 @@
         "SimulationLimit": "L'objectif n'a pas pu être terminé dans l'horizon de planification.",
         "UnsupportedCost": "Le calcul détaillé du coût n'est pas pris en charge pour cet objectif.",
         "FilteredOut": "Tous les lieux de farming sont exclus par vos filtres de raids."
-      }
+      },
+      "unlockAt": "Se débloque à",
+      "battlesToGo_one": "encore {{count}} combat",
+      "battlesToGo_other": "encore {{count}} combats",
+      "battlesToGoNotStarted_one": "non commencé, encore {{count}} combat",
+      "battlesToGoNotStarted_other": "non commencé, encore {{count}} combats",
+      "unlockDuringEvent": "pendant l'événement de campagne",
+      "unlockMore_one": "+{{count}} autre lieu",
+      "unlockMore_other": "+{{count}} autres lieux"
     },
     "unlockFlavor": "Rassemblez les éclats du personnage et préparez-le à rejoindre votre effectif.",
     "filters": {

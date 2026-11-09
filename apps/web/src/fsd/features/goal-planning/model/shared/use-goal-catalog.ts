@@ -57,16 +57,26 @@ export function useGoalCatalog() {
   // reached; event nodes only for the active event and once reached), applied through the
   // daily-raids public API so every estimate consumer (Goals, Insights, blockers, per-project)
   // chooses from the same set. Not-yet-loaded event inputs mean no event node is eligible.
-  const { availableBattles } = useEligibleCampaignBattles(
-    campaignBattles,
-    campaignDefinitions
-  )
+  const { availableBattles, campaignProgressByKey } =
+    useEligibleCampaignBattles(campaignBattles, campaignDefinitions)
   const battlesById = useMemo(
     () =>
       new Map(
         availableBattles.map((b) => [b.id, mapCampaignBattleStorageToDomain(b)])
       ),
     [availableBattles]
+  )
+  // Every catalog battle, reached or not: what a blocked resource could be farmed from once unlocked
+  // (`useFarmUnlockPaths`). Estimates never read it.
+  const allBattlesById = useMemo(
+    () =>
+      new Map(
+        (campaignBattles ?? []).map((b) => [
+          b.id,
+          mapCampaignBattleStorageToDomain(b),
+        ])
+      ),
+    [campaignBattles]
   )
 
   const characterGroups = useMemo(
@@ -151,6 +161,8 @@ export function useGoalCatalog() {
     mowsById,
     upgradesById,
     battlesById,
+    allBattlesById,
+    campaignProgressByKey,
     ascensionCostsById,
     unlockShardCostsById,
     mowUpgradeCostsByLevel,
