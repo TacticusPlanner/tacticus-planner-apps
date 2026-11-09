@@ -606,12 +606,17 @@ Assumptions:
 ### Requirement: Upgrade goals do not double-charge slots a Rank or Ability goal already claims
 
 When an Upgrade goal carries a range and an earlier or later Rank/Ability goal on the same unit
-charges slots of a targeted upgrade inside that range, the Upgrade goal's need for that upgrade
-SHALL be reduced by the number of such overlapping slots, capped at the Upgrade goal's own
-quantity for that upgrade. The Upgrade goal SHALL claim up to its quantity of those slots so that
-a later goal sees them covered, making the total independent of goal order. Slots the player has
-already applied SHALL NOT count as overlap. A goal without a range (or, for a Machine of War,
-without a range on a track) SHALL be additive for that scope.
+charges pieces of a targeted upgrade inside that range, the Upgrade goal's need for that upgrade
+SHALL be reduced by the number of such overlapping pieces, capped at the Upgrade goal's own
+quantity for that upgrade. A piece is a range slot holding the targeted upgrade, or one unit of a
+targeted base material inside a crafted slot's recipe (expanded recursively), so a base-material
+pre-farm overlaps a Rank goal whose slots are all crafted. The Upgrade goal SHALL claim up to its
+quantity of those pieces so that a later goal sees them covered, making the total independent of
+goal order. A Rank/Ability goal SHALL charge a slot with claimed pieces only its unclaimed base
+pieces, and SHALL charge a Machine of War transition's other recipe entries even when an Upgrade
+goal claimed one of them. Slots the player has already applied SHALL NOT count as overlap. A goal
+without a range (or, for a Machine of War, without a range on a track) SHALL be additive for that
+scope.
 
 Assumptions:
 
@@ -653,6 +658,16 @@ Assumptions:
 - **WHEN** the plan is calculated
 - **THEN** the Ability goal charges 1 `upgDmgC002` (row 0); the Upgrade goal overlaps 1 slot, so
   its need is 3 − 1 = 2; total 3, not 4
+
+#### Scenario: Base material inside crafted Rank slots (pre-farm)
+
+- **GIVEN** a character whose Stone1 and Stone2 rows each hold one crafted item made of 2
+  `upgArmC002` + 1 `upgDmgC002`; an Upgrade goal with `rankRange` Stone1→Stone3 targeting
+  `upgArmC002` × 3 (priority 1) and a Rank goal Stone1→Stone3 (priority 2)
+- **WHEN** the plan is calculated
+- **THEN** the Upgrade goal needs 3 `upgArmC002` and claims 3 of the 4 pieces in the range; the
+  Rank goal charges 1 `upgArmC002` and 2 `upgDmgC002`; total 4 `upgArmC002`, not 7
+- **AND** with the Rank goal first, the Rank goal charges 4 and the Upgrade goal 0
 
 #### Scenario: No range is additive
 
