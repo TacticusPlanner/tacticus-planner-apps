@@ -217,7 +217,13 @@ describe("NextTokenCard", () => {
       })
     )
 
-    expect(onMarkToken).toHaveBeenCalledWith("alpha", 2, [0, 1, 4], "stopHere")
+    expect(onMarkToken).toHaveBeenCalledWith(
+      "alpha",
+      2,
+      [0, 1, 4],
+      "stopHere",
+      expect.any(String)
+    )
   })
 
   it("marks the objective cells Maybe clear with Partly cleared", () => {
@@ -229,7 +235,13 @@ describe("NextTokenCard", () => {
       })
     )
 
-    expect(onMarkToken).toHaveBeenCalledWith("alpha", 2, [1, 4], "maybeClear")
+    expect(onMarkToken).toHaveBeenCalledWith(
+      "alpha",
+      2,
+      [1, 4],
+      "maybeClear",
+      expect.any(String)
+    )
   })
 
   it("stacks touch-sized actions on mobile", () => {

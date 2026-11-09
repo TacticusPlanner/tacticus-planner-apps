@@ -24,6 +24,7 @@ import {
 } from "@/features/legendary-event-plan"
 import {
   type MarkTokenHandler,
+  tokenMarkOutcome,
   useTokenMissionsSource,
   useTokenPlan,
 } from "@/features/legendary-event-tokens"
@@ -375,10 +376,28 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     (laneId, battle, status) => void markBattle(laneId, battle, status),
     [markBattle]
   )
+  const planTeams = plan.query.data?.teams
+  const { setDepth } = plan
   const markTokenVoid = useCallback<MarkTokenHandler>(
-    (laneId, battleIndex, objectiveIds, status) =>
-      void markToken(laneId, battleIndex, objectiveIds, status),
-    [markToken]
+    (laneId, battleIndex, objectiveIds, status, teamId) => {
+      const team = planTeams?.find((entry) => entry.id === teamId)
+      const outcome = tokenMarkOutcome({
+        teamId,
+        laneId,
+        battleIndex,
+        teams: planTeams ?? [],
+        depthOf: (id) =>
+          tokenPlan.kind === "ready"
+            ? (tokenPlan.depthByTeam.get(id)?.depth ?? null)
+            : null,
+      })
+      const dropped = team !== undefined && outcome.depth !== null
+      if (dropped) void setDepth(team, outcome.depth)
+      if (!dropped || outcome.markCells) {
+        void markToken(laneId, battleIndex, objectiveIds, status)
+      }
+    },
+    [markToken, planTeams, setDepth, tokenPlan]
   )
   const pickerPreview = useCallback(
     (laneId: LegendaryEventLaneId) =>

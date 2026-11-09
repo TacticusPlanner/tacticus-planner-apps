@@ -1216,7 +1216,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       )
     })
 
-    it("re-plans at once when a card action marks the token", async () => {
+    it("re-plans at once when a card action lowers the token's team depth", async () => {
       await seedProgress(runOneProgress)
       planApi.teams = [deepTeam]
       planApi.put.mockReturnValue(new Promise(() => {}))
@@ -1227,19 +1227,17 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
         fireEvent.click(screen.getByTestId("next-token-could-not"))
       })
 
+      // Deep fell short on battle 2 and no other Alpha team reaches it: its depth drops to 1 (the
+      // battles before), then the cells are marked; the first write is still in flight.
       await vi.waitFor(() => expect(planApi.put).toHaveBeenCalledTimes(1))
-      expect(planApi.put).toHaveBeenCalledWith({
-        path: "/api/v1/legendary-event-plans/{eventId}/annotations",
-        params: { path: { eventId: "astarLysander" } },
-        body: {
-          expectedRevision: 0,
-          laneId: "alpha",
-          battleIndex: 1,
-          objectiveIds: [0],
-          status: "stopHere",
-        },
-      })
-      // Battle 2's defeat-all is Stop here: Alpha stops there, leaving battle 1's kill score.
+      expect(planApi.put).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: "/api/v1/legendary-event-plans/{eventId}/teams/{teamId}",
+          params: { path: { eventId: "astarLysander", teamId: "deep" } },
+          body: expect.objectContaining({ expectedBattleClears: 1 }),
+        })
+      )
+      // Alpha now stops at battle 1, leaving battle 1's kill score.
       const card = await screen.findByTestId("next-token-view")
       await vi.waitFor(() => expect(card).toHaveAttribute("data-battle", "0"))
       act(() => selectTab("plan"))
