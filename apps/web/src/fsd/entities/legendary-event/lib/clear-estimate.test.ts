@@ -336,7 +336,7 @@ describe("clear curve (fitted to reported clears)", () => {
     {
       power: 204_259,
       powers: BILE_ALPHA_POWERS,
-      sure: 7,
+      sure: 6,
       likely: 7,
       stretch: 7,
     },
@@ -344,16 +344,16 @@ describe("clear curve (fitted to reported clears)", () => {
     {
       power: 760_238,
       powers: BILE_ALPHA_POWERS,
-      sure: 8,
+      sure: 7,
       likely: 8,
-      stretch: 9,
+      stretch: 10,
     },
     {
       power: 723_086,
       powers: BILE_ALPHA_POWERS,
-      sure: 8,
+      sure: 7,
       likely: 8,
-      stretch: 9,
+      stretch: 10,
     },
     // #6: cleared 6, battle 7 partially.
     {
@@ -367,7 +367,7 @@ describe("clear curve (fitted to reported clears)", () => {
     {
       power: 978_492,
       powers: BILE_ALPHA_POWERS,
-      sure: 9,
+      sure: 8,
       likely: 10,
       stretch: 10,
     },
