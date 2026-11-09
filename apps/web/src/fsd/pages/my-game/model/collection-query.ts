@@ -33,6 +33,7 @@ export const defaultCollectionGrouping: CollectionGrouping = "faction"
 export const collectionQuickFilters = [
   "readyToRankUp",
   "needToAscend",
+  "canPromote",
   "canAscend",
   "needToLevel",
   "blueStarReady",

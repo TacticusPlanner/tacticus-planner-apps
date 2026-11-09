@@ -472,10 +472,11 @@ Assumption: a character's damage types come from the catalog's melee and ranged 
 
 ### Requirement: Collection quick filters follow defined progression rules
 
-The quick filters SHALL be Ready to rank up, Need to ascend, Can ascend, Need to level, Blue star ready, Missing equipment and Abilities behind level. A quick filter SHALL match only owned units and SHALL be evaluated for each unit on its own, against the player's whole synced inventory (the same items count toward every unit). Each SHALL follow exactly the rule below; "maximum rank for its rarity" is Iron 1 for Common, Bronze 1 for Uncommon, Silver 1 for Rare, Gold 1 for Epic, Diamond 3 for Legendary and Adamantine 2 for Mythic, and "level cap for its rarity" is 8, 17, 26, 35, 50 and 60 respectively.
+The quick filters SHALL be Ready to rank up, Need to ascend, Can promote, Can ascend, Need to level, Blue star ready, Missing equipment and Abilities behind level. A quick filter SHALL match only owned units and SHALL be evaluated for each unit on its own, against the player's whole synced inventory (the same items count toward every unit). Each SHALL follow exactly the rule below; "maximum rank for its rarity" is Iron 1 for Common, Bronze 1 for Uncommon, Silver 1 for Rare, Gold 1 for Epic, Diamond 3 for Legendary and Adamantine 2 for Mythic, and "level cap for its rarity" is 8, 17, 26, 35, 50 and 60 respectively.
 
 - **Need to ascend** (V1 rule extended to Mythic): an owned character whose rank equals the maximum rank for its rarity and that still has an ascension step ahead (every unit except one at Mythic wings). A Mythic character at Adamantine 2 below Mythic wings matches. Machines of War never match.
 - **Need to level** (V1 rule, with V2's caps): an owned character that does not need to ascend and whose XP level is below the level cap for its rarity. Machines of War never match.
+- **Can promote** (new in V2; V1 has no such filter): an owned character or Machine of War whose next step on the ascension ladder stays within its current rarity (one more star, or the next Mythic step) and whose held shards, mythic shards and ascension orbs cover that one step's cost. A unit on its rarity's last step (Common two stars, Uncommon four stars, Rare red one star, Epic red three stars, Legendary one blue star) never matches, since its next step is an ascension (see Can ascend); a unit at Mythic wings never matches.
 - **Can ascend** (V1 rule extended to Mythic, with orbs): an owned character or Machine of War with an ascension step ahead whose held shards, mythic shards and ascension orbs all cover the ascension cost from its current step up to and including the target step. Below Mythic the target is the first step of the next rarity; for a Mythic unit it is the next Mythic step (two blue stars, three blue stars, then Mythic wings). A unit at Mythic wings never matches.
 - **Blue star ready** (V1 rule, with orbs): an owned character or Machine of War below Legendary one blue star (and not Mythic) whose held shards and ascension orbs cover the ascension cost from its current step up to and including Legendary one blue star.
 - **Missing equipment** (new in V2): an owned character with fewer equipped items than the equipment slots the catalog gives it. Machines of War never match.
@@ -489,6 +490,12 @@ Assumptions:
 - Machines of War ascend along the same ladder as characters and spend orbs of their alliance (as in V1).
 - A Mythic character's maximum rank (Adamantine 2) does not change between Mythic steps; a Mythic character at Adamantine 2 is still listed by Need to ascend until it reaches Mythic wings.
 - Applied upgrades of the current rank come from the synced roster's applied upgrade slots; the upgrades of every rank below the current one are applied.
+
+#### Scenario: Can promote — worked example
+
+- **GIVEN** an Imperial unit is owned at Legendary red three stars with 150 shards, and the player holds 10 Imperial Legendary orbs
+- **WHEN** the Can promote quick filter is selected
+- **THEN** the next step, Legendary red four stars, costs 150 shards and 10 Legendary orbs; both are covered and the unit is listed; with 9 Imperial Legendary orbs it is not; a unit at Epic red three stars is never listed, however many shards it holds
 
 #### Scenario: Can ascend — worked example
 

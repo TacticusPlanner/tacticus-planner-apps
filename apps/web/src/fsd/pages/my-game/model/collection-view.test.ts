@@ -901,6 +901,8 @@ describe("buildCollectionView with a query", () => {
 
     expect(view("canAscend", { ladder, orbs })).toEqual(["ultraTitus"])
     expect(view("canAscend", { ladder })).toEqual([])
+    expect(view("canPromote", { ladder, orbs })).toEqual(["ultraTitus"])
+    expect(view("canPromote")).toEqual([])
     expect(view("needToAscend")).toEqual(["ultraTigurius"])
     expect(
       view("readyToRankUp", {
