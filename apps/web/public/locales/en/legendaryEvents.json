@@ -453,8 +453,8 @@
       "labelNone": "Clears no battle of {{total}}",
       "close": "Close to battle {{battle}}",
       "bands": {
-        "sure": "Clears battles 1–{{sure}} for sure",
-        "sureNone": "No battle for sure",
+        "sure": "Clears battles 1–{{sure}} safely",
+        "sureNone": "No battle safely",
         "likely": "{{battle}} likely",
         "likelyRange": "{{from}}–{{to}} likely",
         "stretch": "up to {{stretch}} at best"
@@ -621,10 +621,10 @@
     "disclaimer": "All estimates compare raw power only. Real battle results may differ.",
     "estimated": "estimated",
     "uncalibrated": "Uncalibrated: the estimate's power ratio has not been fitted to real clears yet, so treat it as a rough guide.",
-    "howItWorks": "Estimated from your synced roster's power, equipment included, against each battle's power on a curve fitted to reported clears: later battles need more than their power, earlier ones less. The range runs from what clears for sure to what clears at best. Synergy and hard objectives aren't modelled; set a depth to override it.",
+    "howItWorks": "Estimated from your synced roster's power, equipment included, against each battle's power on a curve fitted to reported clears: later battles need more than their power, earlier ones less. The range runs from what clears safely to what clears at best. Synergy and hard objectives aren't modelled; set a depth to override it.",
     "marginAbove": "{{percent}}% above battle {{battle}}",
     "shortfallNext": "{{percent}}% short of battle {{battle}}",
-    "range": "sure through {{sure}}, up to {{stretch}}",
+    "range": "safe through {{sure}}, up to {{stretch}}",
     "notEnough": "Not enough for battle 1 yet",
     "useEstimate": "Use estimate",
     "estimateHint": "estimate ~{{depth}}",
@@ -723,6 +723,11 @@
       "upcoming": "{{reason}} for when run {{run}} starts",
       "upcomingUnknown": "{{reason}} for when the next run starts",
       "maybe": "Maybe clear",
+      "clear": {
+        "sure": "Safe clear",
+        "likely": "Likely clear",
+        "likelySure": "Likely clear · safe through battle {{sure}}"
+      },
       "members": "Members",
       "objectives": "Clears",
       "actions": {

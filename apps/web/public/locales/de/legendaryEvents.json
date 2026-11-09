@@ -723,6 +723,11 @@
       "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",
       "upcomingUnknown": "{{reason}}, sobald der nächste Durchlauf beginnt",
       "maybe": "Vielleicht schaffbar",
+      "clear": {
+        "sure": "Sicher geschafft",
+        "likely": "Wahrscheinlich geschafft",
+        "likelySure": "Wahrscheinlich geschafft · sicher bis Kampf {{sure}}"
+      },
       "members": "Mitglieder",
       "objectives": "Erfüllt",
       "actions": {

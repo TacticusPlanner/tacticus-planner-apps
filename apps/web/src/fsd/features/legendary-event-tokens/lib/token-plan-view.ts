@@ -58,7 +58,10 @@ import type { TokenMarker } from "./run-forecast"
 type LaneTeamEstimator = {
   team: (
     memberUnitIds: readonly string[]
-  ) => Pick<ClearEstimate, "depth"> | null
+  ) =>
+    | (Pick<ClearEstimate, "depth"> &
+        Partial<Pick<ClearEstimate, "sureDepth" | "stretchDepth">>)
+    | null
 }
 
 /** The clear estimates the depth fallback reads (design D8): `hidden` degrades to manual depths. */
@@ -74,6 +77,22 @@ export interface TeamClearDepth {
   estimated: boolean
   /** The lane's battle count. */
   total: number
+  /** The estimate's sure depth when `estimated` (battles 1..sure clear for sure); null with a
+   *  manual depth or an estimate without bands. */
+  sureDepth: number | null
+}
+
+/** How sure the estimate is that a team clears a battle: `sure` within its sure depth, `likely`
+ *  past it (within the headline depth); null for a manual depth or an estimate without bands. */
+export type TokenClearBand = "sure" | "likely"
+
+/** The band of the estimate a token's battle (0-based `battleIndex`) falls in. */
+export function tokenClearBand(
+  depth: TeamClearDepth | undefined,
+  battleIndex: number
+): TokenClearBand | null {
+  if (!depth?.estimated || depth.sureDepth === null) return null
+  return battleIndex < depth.sureDepth ? "sure" : "likely"
 }
 
 /** What matching tokens with missions reads; without it the card shows no mission lines. */
@@ -202,10 +221,17 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     .filter(isCompleteTeam)
     .sort((a, b) => a.sortOrder - b.sortOrder)
 
+  const estimateByTeam = new Map<
+    string,
+    ReturnType<LaneTeamEstimator["team"]>
+  >()
   const lanes = LEGENDARY_EVENT_LANE_IDS.map((laneId): TokenPlanLane => {
     const synced = entry ? entry[laneId] : undefined
     const estimator =
       estimates.kind === "ready" ? estimates.byLane[laneId] : undefined
+    for (const team of teams)
+      if (team.laneId === laneId)
+        estimateByTeam.set(team.id, estimator?.team(team.memberUnitIds) ?? null)
     return {
       laneId,
       model: buildLanePointsModel(event[laneId]),
@@ -218,7 +244,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
           objectiveIndexes: team.objectiveIndexes,
           depth: teamEffectiveDepth(
             teamDepthForRun(team, run)?.expectedBattleClears ?? null,
-            estimator?.team(team.memberUnitIds) ?? null
+            estimateByTeam.get(team.id) ?? null
           ),
           ...(input.perRunDepths
             ? {
@@ -293,6 +319,10 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
             depth: team.depth,
             estimated: manual === null,
             total: lane.model.battles.length,
+            sureDepth:
+              manual === null
+                ? (estimateByTeam.get(team.id)?.sureDepth ?? null)
+                : null,
           },
         ]
       })
