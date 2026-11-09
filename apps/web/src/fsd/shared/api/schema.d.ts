@@ -1297,7 +1297,7 @@ export interface paths {
     get: operations["TacticusPlannerApiFeaturesGoalsGetGoalEndpoint"]
     /**
      * Edits a goal's target, details, project memberships and priority in one atomic request.
-     * @description Every section is optional and an absent section leaves that aspect unchanged; a request with no section is a no-op. Sections apply in the order target, details, projectIds, priority; if any fails nothing is saved. target carries its own expectedRevision (the goal revision); priority.position is the 1-based position among the account's Active/Paused goals and priority.expectedOrderRevision the order revision the client computed it from. The response carries the updated goal and the new order (null unless priority was supplied).
+     * @description Every section is optional and an absent section leaves that aspect unchanged; a request with no section is a no-op. Sections apply in the order target, details, projectIds, linkedGoalIds, priority; if any fails nothing is saved. target carries its own expectedRevision (the goal revision); priority.position is the 1-based position among the account's Active/Paused goals and priority.expectedOrderRevision the order revision the client computed it from. The response carries the updated goal and the new order (null unless priority was supplied).
      */
     put: operations["TacticusPlannerApiFeaturesGoalsEditGoalEndpoint"]
     post?: never
@@ -2010,6 +2010,7 @@ export interface components {
       snapshot?: null | components["schemas"]["CreateGoalSnapshotRequest"]
       dependsOnGoalIds?: null | components["schemas"]["ListOfGuid"]
       notes?: null | string
+      linkedGoalIds?: null | components["schemas"]["ListOfGuid"]
     }
     CreateCombinedGoalsRequest: {
       entityType: components["schemas"]["GoalEntityType"]
@@ -2097,6 +2098,7 @@ export interface components {
       details?: null | components["schemas"]["UpdateGoalRequest"]
       projectIds?: null | components["schemas"]["ListOfGuid"]
       priority?: null | components["schemas"]["EditGoalPriorityRequest"]
+      linkedGoalIds?: null | components["schemas"]["ListOfGuid"]
     }
     EditGoalResponse: {
       goal: components["schemas"]["GoalDetailResponse"]
@@ -3592,6 +3594,7 @@ export interface components {
       config: components["schemas"]["GoalConfigResponse"]
       snapshot: null | components["schemas"]["GoalSnapshotResponse"]
       dependsOn: components["schemas"]["ListOfGuid"]
+      linkedGoalIds: components["schemas"]["ListOfGuid"]
       projectIds: components["schemas"]["ListOfGuid"]
       /** Format: date-time */
       createdAt: string

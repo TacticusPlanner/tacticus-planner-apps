@@ -14,6 +14,7 @@ import type { ResourcePreview } from "../goal-card/card-parts"
 import { RankGoalCard } from "../goal-card/rank-goal-card"
 import { UnlockGoalCard } from "../goal-card/unlock-goal-card"
 import { UpgradeGoalCard } from "../goal-card/upgrade-goal-card"
+import { GoalLinksField } from "../shared/goal-links-field"
 import { GoalRangeSummary } from "../shared/goal-range-summary"
 import { GoalTypeCard } from "../shared/goal-visuals"
 import { OptionalRangeField } from "../shared/optional-range-field"
@@ -411,6 +412,7 @@ function CreateUpgradeCard(args: CardArgs) {
     <UpgradeGoalCard
       choices={form.relevantUpgradeQuantities}
       issues={form.issues}
+      links={<GoalLinksField {...form.upgradeLinks} />}
       mode="create"
       mythic={mythic(args, "Upgrade")}
       note={note(form, "Upgrade")}

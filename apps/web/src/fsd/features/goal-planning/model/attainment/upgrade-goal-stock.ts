@@ -2,7 +2,11 @@ import type { MowStorageModel } from "@workspace/game-catalog"
 import type { UnitId, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { inFlightInGlobalOrder, type GoalDetail } from "@/entities/goal"
+import {
+  inFlightInGlobalOrder,
+  resolveGoalLinks,
+  type GoalDetail,
+} from "@/entities/goal"
 import {
   mowAbilityGoalSlotItems,
   rankGoalSlotItems,
@@ -119,7 +123,8 @@ export function splitUpgradeGoalStock(
     return drawn
   }
 
-  const ordered = inFlightInGlobalOrder([...goals])
+  // A linked Upgrade goal's range is its linked goals' span, so it counts toward exactly those slots.
+  const ordered = inFlightInGlobalOrder(resolveGoalLinks([...goals]))
   const drawOrder = [
     ...ordered.filter((goal) => goal.status === "Active"),
     ...ordered.filter((goal) => goal.status !== "Active"),

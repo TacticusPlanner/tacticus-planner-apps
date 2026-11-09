@@ -9,6 +9,13 @@ export { goalQueries } from "./api/goal.queries"
 export { useGlobalGoalPlan } from "./model/use-global-goal-plan"
 export { useGoalsById } from "./model/use-goals-by-id"
 export {
+  linkCandidates,
+  linkedGoalIdsOf,
+  linkedGoalsOf,
+  resolveGoalLinks,
+  withLinkedRanges,
+} from "./model/goal-links"
+export {
   CreateGoalLauncherContext,
   useCreateGoalLauncher,
   type CreateGoalPrefill,

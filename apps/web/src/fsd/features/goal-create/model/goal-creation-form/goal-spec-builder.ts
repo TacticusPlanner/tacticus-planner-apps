@@ -324,6 +324,8 @@ export function buildCombinedGoalSpecs(params: {
   upgradeTargets: { upgradeId: UpgradeId; quantity: number }[]
   /** The progression range(s) the Upgrade goal is created against; absent groups mean no range. */
   upgradeRanges?: UpgradeRanges
+  /** The unit's existing goals the Upgrade goal counts toward (`linkedGoalIds`). */
+  upgradeLinkedGoalIds?: string[]
   /** The acquisition-source picker's selection (plan: Campaigns/Onslaught/Shops picker,
    * tacticus-planner-apps#103) — the same plan feeds both Unlock and Ascension specs; each is
    * translated to the wire `acquisitionSources` set independently since they're separate goals. */
@@ -497,6 +499,9 @@ export function buildCombinedGoalSpecs(params: {
         upgrade: { targets: params.upgradeTargets, ...params.upgradeRanges },
       },
       dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
+      ...(params.upgradeLinkedGoalIds?.length && {
+        linkedGoalIds: params.upgradeLinkedGoalIds,
+      }),
     })
   }
 

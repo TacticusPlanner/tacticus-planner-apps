@@ -169,7 +169,10 @@ function invalidSections(
       ? [root]
       : root === "projectids"
         ? ["projects"]
-        : []
+        : // The links sit on the target card.
+          root === "linkedgoalids"
+          ? ["target"]
+          : []
   })
   return [...new Set(sections)]
 }

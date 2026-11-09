@@ -1,8 +1,9 @@
-import type {
-  AcquisitionSource,
-  EditGoalRequest,
-  FarmingStrategy,
-  GoalDetail,
+import {
+  linkedGoalIdsOf,
+  type AcquisitionSource,
+  type EditGoalRequest,
+  type FarmingStrategy,
+  type GoalDetail,
 } from "@/entities/goal"
 
 import {
@@ -24,6 +25,8 @@ export type GoalEditDraft = {
   projectIds: string[]
   /** 1-based position in the account-wide order of in-flight goals. */
   priorityPosition: number | null
+  /** Upgrade goals only: the same unit's goals it counts toward (empty: the implicit link). */
+  linkedGoalIds: string[]
 }
 
 /** Which request sections differ from the loaded goal — exactly the sections `editGoal` is sent. */
@@ -32,6 +35,7 @@ export type GoalEditChanges = {
   details: boolean
   projects: boolean
   priority: boolean
+  links: boolean
 }
 
 /** Order-independent comparison key for an acquisition-source set — a saved goal's entry order and a
@@ -74,6 +78,7 @@ export function baselineGoalEditDraft(
     acquisitionSources: extras.acquisitionSources,
     projectIds: detail.projectIds,
     priorityPosition: extras.priorityPosition,
+    linkedGoalIds: [...linkedGoalIdsOf(detail)],
   }
 }
 
@@ -94,6 +99,7 @@ export function goalEditChanges(
         normalizeAcquisitionSources(draft.acquisitionSources),
     projects: hasSelectionChanged(baseline.projectIds, draft.projectIds),
     priority: baseline.priorityPosition !== draft.priorityPosition,
+    links: hasSelectionChanged(baseline.linkedGoalIds, draft.linkedGoalIds),
   }
 }
 
@@ -141,6 +147,7 @@ export function buildEditGoalRequest(
     }
   }
   if (changes.projects) request.projectIds = draft.projectIds
+  if (changes.links) request.linkedGoalIds = draft.linkedGoalIds
   if (changes.priority && draft.priorityPosition !== null) {
     request.priority = {
       position: draft.priorityPosition,

@@ -1527,6 +1527,12 @@
         "addRarity": {
           "label": "Add all:",
           "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Counts toward",
+          "hint": "Its materials count toward these goals instead of being farmed on top of them.",
+          "option": "{{type}} → {{target}}",
+          "empty": "No in-flight goal on this unit to count toward."
         }
       },
       "previewTitle": "Resources needed",

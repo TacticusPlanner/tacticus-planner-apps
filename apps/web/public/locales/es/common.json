@@ -1527,6 +1527,12 @@
         "addRarity": {
           "label": "Añadir todos:",
           "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Cuenta para",
+          "hint": "Sus materiales cuentan para estos objetivos en lugar de farmearse aparte.",
+          "option": "{{type}} → {{target}}",
+          "empty": "No hay un objetivo en curso de esta unidad para el que pueda contar."
         }
       },
       "previewTitle": "Recursos necesarios",

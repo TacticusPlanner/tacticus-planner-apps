@@ -190,6 +190,7 @@ const base = {
   status: "Active",
   notes: "Old note",
   dependsOn: [],
+  linkedGoalIds: [],
   events: [{ at: "2026-01-01T00:00:00Z", type: "Created" }],
   projectIds: ["project-1"],
   snapshot: null,
