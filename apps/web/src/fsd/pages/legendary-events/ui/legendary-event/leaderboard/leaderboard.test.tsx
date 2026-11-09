@@ -188,6 +188,8 @@ const eviscerateKey = objectiveFilterKey({
 
 const estimateFor = (depth: number) => ({
   depth,
+  sureDepth: depth,
+  stretchDepth: depth,
   battleCount: 18,
   marginAbovePct: 10,
   shortfallToNextPct: 10,
