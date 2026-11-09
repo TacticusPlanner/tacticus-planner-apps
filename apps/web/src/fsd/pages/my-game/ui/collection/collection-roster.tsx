@@ -10,11 +10,13 @@ import {
   type UnitTileUnit,
 } from "@/entities/unit"
 
+import type { CollectionSelection } from "../../model/collection-selection"
 import type {
   CollectionFactionGroup,
   CollectionListedUnit,
 } from "../../model/collection-view"
 import { FactionHeader } from "./faction-header"
+import { SelectableUnit } from "./selectable-unit"
 
 // Faction sections flow in equal columns at least 420px wide (the full width when narrower), with
 // the same gaps as the Cards grid.
@@ -35,14 +37,17 @@ export function CollectionRoster({
   groups,
   showOwned,
   origins,
+  selection,
 }: {
   groups: readonly CollectionFactionGroup[]
   showOwned: boolean
   origins: Record<UnitKind, unknown>
+  selection?: CollectionSelection
 }) {
   const row = useRosterRow(
     groups.flatMap((group) => group.units),
-    origins
+    origins,
+    selection
   )
 
   return (
@@ -72,13 +77,16 @@ export function CollectionRoster({
 export function CollectionRosterList({
   units,
   origins,
+  selection,
 }: {
   units: readonly CollectionListedUnit[]
   origins: Record<UnitKind, unknown>
+  selection?: CollectionSelection
 }) {
   const row = useRosterRow(
     units.map((entry) => entry.unit),
-    origins
+    origins,
+    selection
   )
 
   return (
@@ -104,7 +112,8 @@ const rowKey = (unit: UnitTileUnit) => `${unit.kind}:${unit.unitId}`
  */
 function useRosterRow(
   units: readonly UnitTileUnit[],
-  origins: Record<UnitKind, unknown>
+  origins: Record<UnitKind, unknown>,
+  selection: CollectionSelection | undefined
 ) {
   const isMobile = useIsMobile()
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -119,22 +128,26 @@ function useRosterRow(
     const key = rowKey(unit)
     return (
       <li key={key} className="min-w-0 border-b">
-        <UnitRosterRow
-          unit={unit}
-          faction={faction}
-          link={{
-            to: unitLibraryPath(unit.kind, unit.unitId),
-            state: origins[unit.kind],
-          }}
-          form={isMobile ? "expandable" : "link"}
-          expanded={expandedId === key}
-          onToggle={() => setExpandedId((open) => (open === key ? null : key))}
-          testId={
-            unit.data.state === "owned"
-              ? "collection-owned-row"
-              : "collection-unowned-row"
-          }
-        />
+        <SelectableUnit unit={unit} selection={selection}>
+          <UnitRosterRow
+            unit={unit}
+            faction={faction}
+            link={{
+              to: unitLibraryPath(unit.kind, unit.unitId),
+              state: origins[unit.kind],
+            }}
+            form={isMobile ? "expandable" : "link"}
+            expanded={expandedId === key}
+            onToggle={() =>
+              setExpandedId((open) => (open === key ? null : key))
+            }
+            testId={
+              unit.data.state === "owned"
+                ? "collection-owned-row"
+                : "collection-unowned-row"
+            }
+          />
+        </SelectableUnit>
       </li>
     )
   }

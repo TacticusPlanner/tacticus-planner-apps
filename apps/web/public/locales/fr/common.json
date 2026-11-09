@@ -648,6 +648,16 @@
         "keep": "Conserver",
         "keepLimitTooltip": "Supprimez un instantané pour conserver celui-ci",
         "keepFailed": "L'instantané n'a pas pu être conservé."
+      },
+      "select": {
+        "start": "Sélectionner des unités",
+        "unit": "Sélectionner {{name}}",
+        "count_one": "{{count}} sélectionnée",
+        "count_other": "{{count}} sélectionnées",
+        "selectAll": "Tout sélectionner (affichées)",
+        "clear": "Effacer",
+        "createGoals": "Créer des objectifs",
+        "done": "Terminé"
       }
     }
   },
@@ -1938,6 +1948,53 @@
       "label": "Affichage des objectifs",
       "cards": "Cartes",
       "table": "Tableau"
+    },
+    "bulkCreate": {
+      "title_one": "Créer des objectifs pour {{count}} unité",
+      "title_other": "Créer des objectifs pour {{count}} unités",
+      "targets": {
+        "unlock": "Débloquer les unités que vous n'avez pas",
+        "ascension": "Ascension",
+        "ascensionTo": "Ascension jusqu'à",
+        "rank": "Rang",
+        "rankTo": "Monter de rang jusqu'à",
+        "ability": "Compétences",
+        "abilityTo": "Niveau de compétence",
+        "abilityDecrease": "Baisser le niveau de compétence",
+        "abilityIncrease": "Augmenter le niveau de compétence"
+      },
+      "project": "Projet",
+      "summary_one": "{{count}} objectif pour {{units}}",
+      "summary_other": "{{count}} objectifs pour {{units}}",
+      "unitCount_one": "{{count}} unité",
+      "unitCount_other": "{{count}} unités",
+      "created_one": "{{count}} objectif créé.",
+      "created_other": "{{count}} objectifs créés.",
+      "overLimit": "Cela dépasserait la limite de {{max}} objectifs par type pour : {{types}}. Retirez d'abord des unités ou des objectifs.",
+      "cancel": "Annuler",
+      "submit_one": "Créer {{count}} objectif",
+      "submit_other": "Créer {{count}} objectifs",
+      "retryFailed_one": "Réessayer {{count}} échec",
+      "retryFailed_other": "Réessayer {{count}} échecs",
+      "done": "Terminé",
+      "status": {
+        "pending": "création en cours",
+        "done": "créé",
+        "failed": "échec"
+      },
+      "skipped": "{{type}} ignoré : {{reason}}",
+      "skipReasons": {
+        "reached": "déjà atteint",
+        "alreadyGoal": "déjà un objectif",
+        "notForMow": "pas pour les Machines de guerre",
+        "notOwned": "non possédée (activez Débloquer)"
+      },
+      "nothingToCreate": "Rien à créer pour cette unité.",
+      "removeUnit": "Retirer {{name}}",
+      "goal": {
+        "range": "{{type}} {{start}} → {{end}}",
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (nécessaire)"
+      }
     }
   },
   "language": {
@@ -2215,6 +2272,10 @@
         "unownedRosterMobile": {
           "title": "Pas encore débloquée",
           "content": "Les lignes grisées ne sont pas dans votre effectif. Touchez une ligne pour voir où vous en êtes de son déblocage, puis ouvrez de là ses détails dans la Bibliothèque."
+        },
+        "selectUnits": {
+          "title": "Des objectifs pour plusieurs unités",
+          "content": "Sélectionnez plusieurs unités, puis créez d'un coup le même objectif d'Ascension, de Rang, de Compétences ou de Déblocage pour toutes."
         }
       }
     },
