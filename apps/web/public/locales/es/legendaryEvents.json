@@ -723,6 +723,11 @@
       "upcoming": "{{reason}} para cuando empiece la ronda {{run}}",
       "upcomingUnknown": "{{reason}} para cuando empiece la próxima ronda",
       "maybe": "Quizá superable",
+      "clear": {
+        "sure": "Se supera seguro",
+        "likely": "Probablemente se supera",
+        "likelySure": "Probablemente se supera · seguro hasta la batalla {{sure}}"
+      },
       "members": "Miembros",
       "objectives": "Supera",
       "actions": {

@@ -453,8 +453,8 @@
       "labelNone": "Ne passe aucun des {{total}} combats",
       "close": "Proche du combat {{battle}}",
       "bands": {
-        "sure": "Passe les combats 1–{{sure}} à coup sûr",
-        "sureNone": "Aucun combat à coup sûr",
+        "sure": "Passe les combats 1–{{sure}} sans risque",
+        "sureNone": "Aucun combat sans risque",
         "likely": "{{battle}} probablement",
         "likelyRange": "{{from}}–{{to}} probablement",
         "stretch": "jusqu’à {{stretch}} au mieux"
@@ -621,10 +621,10 @@
     "disclaimer": "Toutes les estimations comparent uniquement la puissance brute. Les résultats réels des combats peuvent différer.",
     "estimated": "estimé",
     "uncalibrated": "Non calibré : le rapport de puissance de l'estimation n'a pas encore été ajusté sur de vrais résultats, considérez-la comme une indication approximative.",
-    "howItWorks": "Estimé à partir de la puissance de ton effectif synchronisé, équipement compris, face à la puissance de chaque combat sur une courbe ajustée aux résultats signalés : les derniers combats demandent plus que leur puissance, les premiers moins. La plage va de ce qui passe à coup sûr à ce qui passe au mieux. Les synergies et les objectifs difficiles ne sont pas modélisés ; fixe une profondeur pour la remplacer.",
+    "howItWorks": "Estimé à partir de la puissance de ton effectif synchronisé, équipement compris, face à la puissance de chaque combat sur une courbe ajustée aux résultats signalés : les derniers combats demandent plus que leur puissance, les premiers moins. La plage va de ce qui passe sans risque à ce qui passe au mieux. Les synergies et les objectifs difficiles ne sont pas modélisés ; fixe une profondeur pour la remplacer.",
     "marginAbove": "{{percent}} % au-dessus du combat {{battle}}",
     "shortfallNext": "{{percent}} % en dessous du combat {{battle}}",
-    "range": "sûr jusqu’à {{sure}}, au mieux {{stretch}}",
+    "range": "sans risque jusqu’à {{sure}}, au mieux {{stretch}}",
     "notEnough": "Pas encore assez pour le combat 1",
     "useEstimate": "Utiliser l'estimation",
     "estimateHint": "estimation ~{{depth}}",
@@ -723,6 +723,11 @@
       "upcoming": "{{reason}} pour le début de la manche {{run}}",
       "upcomingUnknown": "{{reason}} pour le début de la prochaine manche",
       "maybe": "Peut-être faisable",
+      "clear": {
+        "sure": "Passe sans risque",
+        "likely": "Passe probablement",
+        "likelySure": "Passe probablement · sans risque jusqu’au combat {{sure}}"
+      },
       "members": "Membres",
       "objectives": "Réussit",
       "actions": {

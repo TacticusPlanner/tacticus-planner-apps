@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 
 import type {
   EventUnitChipData,
@@ -23,6 +24,7 @@ import { samePlannedToken, type PlannedToken } from "../lib/token-plan"
 import {
   missionsNextToken,
   upNextTokens,
+  tokenClearBand,
   type NextTokenEmpty,
   type TokenPlanView,
 } from "../lib/token-plan-view"
@@ -235,6 +237,8 @@ function TokenView({
           })
   const canMark =
     onMarkToken !== undefined && view.upcoming === null && token.playableNow
+  const teamDepth = view.depthByTeam.get(token.teamId)
+  const band = tokenClearBand(teamDepth, token.battleIndex)
 
   return (
     <div
@@ -250,7 +254,7 @@ function TokenView({
             {token.teamName}
           </span>
           <TokenTeamPopover
-            depth={view.depthByTeam.get(token.teamId)}
+            depth={teamDepth}
             members={members.map((unitId) => chipOf(unitId))}
             teamName={token.teamName}
             testId="next-token-team-details"
@@ -274,6 +278,26 @@ function TokenView({
               points: number.format(token.points),
             })}
           </span>
+          {band ? (
+            <span
+              className={cn(
+                "text-xs font-medium",
+                band === "sure"
+                  ? "text-success-foreground"
+                  : "text-(--season-fit-caution)"
+              )}
+              data-band={band}
+              data-testid="next-token-clear-band"
+            >
+              {band === "sure"
+                ? t("tokenPlan.nextToken.clear.sure")
+                : teamDepth?.sureDepth
+                  ? t("tokenPlan.nextToken.clear.likelySure", {
+                      sure: teamDepth.sureDepth,
+                    })
+                  : t("tokenPlan.nextToken.clear.likely")}
+            </span>
+          ) : null}
           {token.maybe ? (
             <span
               className="text-xs text-muted-foreground"

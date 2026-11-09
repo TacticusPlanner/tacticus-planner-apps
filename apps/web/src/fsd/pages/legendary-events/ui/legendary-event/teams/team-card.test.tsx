@@ -396,7 +396,7 @@ describe("TeamCard", () => {
       { run: 2 }
     )
     expect(screen.getByTestId("team-card-bands")).toHaveTextContent(
-      "Clears battles 1–5 for sure, 6 likely, up to 7 at best"
+      "Clears battles 1–5 safely, 6 likely, up to 7 at best"
     )
     const segments = [
       ...screen

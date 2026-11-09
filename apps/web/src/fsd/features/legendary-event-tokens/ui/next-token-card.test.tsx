@@ -160,6 +160,30 @@ describe("NextTokenCard", () => {
     })
   })
 
+  it("says how sure an estimated team's clear is, and nothing for a manual depth", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const { unmount } = renderCard(view)
+    expect(screen.queryByTestId("next-token-clear-band")).toBeNull()
+    unmount()
+
+    // Five's token on battle 6: estimated depth 6, sure through 5.
+    const fiveIndex = view.plan.tokens.findIndex(
+      (token) => token.teamId === "five"
+    )
+    renderCard({
+      ...view,
+      next: {
+        ...view.next,
+        index: fiveIndex,
+        token: view.plan.tokens[fiveIndex]!,
+      },
+    })
+    const band = screen.getByTestId("next-token-clear-band")
+    expect(band).toHaveAttribute("data-band", "likely")
+    expect(band).toHaveTextContent("Likely clear · safe through battle 5")
+  })
+
   it("lists the next four tokens after it, with View all opening the plan", () => {
     const onViewPlan = vi.fn()
     renderCard(buildTokenPlanView(workedViewInput()), { onViewPlan })
