@@ -1523,7 +1523,11 @@
         },
         "owned": "own {{count}}",
         "alreadyMet": "You already own this many, so this target is already met.",
-        "noResources": "You already own every material in these quantities."
+        "noResources": "You already own every material in these quantities.",
+        "addRarity": {
+          "label": "Add all:",
+          "option": "{{rarity}} ({{count}})"
+        }
       },
       "previewTitle": "Resources needed",
       "showAll": "Show all ({{count}})",

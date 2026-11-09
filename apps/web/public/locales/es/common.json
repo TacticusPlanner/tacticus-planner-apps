@@ -1523,7 +1523,11 @@
         },
         "owned": "tienes {{count}}",
         "alreadyMet": "Ya tienes esa cantidad, así que este objetivo ya está cumplido.",
-        "noResources": "Ya tienes todos los materiales en estas cantidades."
+        "noResources": "Ya tienes todos los materiales en estas cantidades.",
+        "addRarity": {
+          "label": "Añadir todos:",
+          "option": "{{rarity}} ({{count}})"
+        }
       },
       "previewTitle": "Recursos necesarios",
       "showAll": "Mostrar todo ({{count}})",

@@ -414,7 +414,7 @@ function CreateUpgradeCard(args: CardArgs) {
       mode="create"
       mythic={mythic(args, "Upgrade")}
       note={note(form, "Upgrade")}
-      onAdd={form.addUpgradeTarget}
+      onAdd={form.addUpgradeTargets}
       onQuantityChange={form.setUpgradeTargetQuantity}
       onRemove={form.removeUpgradeTarget}
       ownedQuantities={

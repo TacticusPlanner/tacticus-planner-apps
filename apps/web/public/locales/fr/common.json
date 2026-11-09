@@ -1523,7 +1523,11 @@
         },
         "owned": "{{count}} possédés",
         "alreadyMet": "Vous en possédez déjà autant : cet objectif est donc déjà atteint.",
-        "noResources": "Vous possédez déjà tous les matériaux dans ces quantités."
+        "noResources": "Vous possédez déjà tous les matériaux dans ces quantités.",
+        "addRarity": {
+          "label": "Tout ajouter :",
+          "option": "{{rarity}} ({{count}})"
+        }
       },
       "previewTitle": "Ressources nécessaires",
       "showAll": "Tout afficher ({{count}})",
