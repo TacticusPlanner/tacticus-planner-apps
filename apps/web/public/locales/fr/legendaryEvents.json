@@ -452,7 +452,13 @@
       "label": "Passe les combats 1–{{depth}} sur {{total}}",
       "labelNone": "Ne passe aucun des {{total}} combats",
       "close": "Proche du combat {{battle}}",
-      "bands": "Passe les combats 1–{{sure}} à coup sûr, {{depth}} probablement, jusqu’à {{stretch}} au mieux",
+      "bands": {
+        "sure": "Passe les combats 1–{{sure}} à coup sûr",
+        "sureNone": "Aucun combat à coup sûr",
+        "likely": "{{battle}} probablement",
+        "likelyRange": "{{from}}–{{to}} probablement",
+        "stretch": "jusqu’à {{stretch}} au mieux"
+      },
       "manual": "Profondeur fixée par vous"
     },
     "editDepth": "Modifier la profondeur",

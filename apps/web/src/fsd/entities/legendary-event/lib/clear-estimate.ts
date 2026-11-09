@@ -15,8 +15,9 @@ import {
  * The clear curve, fitted to reported clears (Fabius Bile, Nov 2026: reports #2, #5, #6, #8 and
  * #9 land on their headline depth; see the PR). A team clears a battle of catalog power P when its
  * power reaches r × (P / reference)^exponent × P: early battles need less than their power, late
- * ones more. Three r values bound what the reports allow, giving the
- * three depths. The estimate applies it to effective power (horde-mode multipliers included),
+ * ones more. The likely ratio is the fit; the sure and stretch ratios sit about one late-battle
+ * step either side of it (×1.8 and ÷1.7), so most teams read one battle of margin each way and
+ * every report bar the unbalanced #4 lands inside its band. The estimate applies it to effective power (horde-mode multipliers included),
  * though the fit used raw power. Web constants, not catalog data: refit them from new reports and ship a release.
  */
 export const CLEAR_ESTIMATE_CURVE = {
@@ -24,12 +25,12 @@ export const CLEAR_ESTIMATE_CURVE = {
   referencePower: 100_000,
   /** How fast the requirement outgrows battle power (0 is the linear rule). */
   exponent: 0.25,
-  /** The most demanding fit: a battle within it clears for sure. */
-  sureRatio: 1.36,
-  /** The central fit: the estimate's headline depth. */
+  /** About one battle step above the fit: a battle within it clears for sure. */
+  sureRatio: 2.2,
+  /** The fit: the estimate's headline depth. */
   likelyRatio: 1.21,
-  /** The most lenient fit: a battle past it is out of reach. */
-  stretchRatio: 1.05,
+  /** About one battle step below the fit: a battle past it is out of reach. */
+  stretchRatio: 0.7,
 } as const
 
 /** True once the curve is fitted to observed clears. */

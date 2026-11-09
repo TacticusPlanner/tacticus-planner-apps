@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { teamDepthBar } from "./team-depth-bar"
+import { depthBandClauses, teamDepthBar } from "./team-depth-bar"
 
 const estimate = (
   depth: number,
@@ -85,5 +85,42 @@ describe("teamDepthBar", () => {
         18
       ).filled
     ).toBe(18)
+  })
+})
+
+describe("depthBandClauses", () => {
+  const bar = (sure: number, filled: number, stretch: number) => ({
+    filled,
+    sure,
+    stretch,
+    total: 14,
+    tone: "room" as const,
+  })
+
+  it("is empty when the bands agree or the depth is manual", () => {
+    expect(depthBandClauses(bar(10, 10, 10))).toEqual([])
+    expect(depthBandClauses({ ...bar(9, 10, 11), tone: "manual" })).toEqual([])
+  })
+
+  it("leaves out an at-best band equal to the likely depth", () => {
+    expect(depthBandClauses(bar(10, 11, 11))).toEqual([
+      { key: "sure", values: { sure: 10 } },
+      { key: "likely", values: { battle: 11 } },
+    ])
+  })
+
+  it("leaves out a likely band equal to the sure depth", () => {
+    expect(depthBandClauses(bar(11, 11, 12))).toEqual([
+      { key: "sure", values: { sure: 11 } },
+      { key: "stretch", values: { stretch: 12 } },
+    ])
+  })
+
+  it("spans several likely battles and a team sure of none", () => {
+    expect(depthBandClauses(bar(0, 2, 3))).toEqual([
+      { key: "sureNone", values: {} },
+      { key: "likelyRange", values: { from: 1, to: 2 } },
+      { key: "stretch", values: { stretch: 3 } },
+    ])
   })
 })
