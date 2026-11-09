@@ -91,13 +91,16 @@ type LegendaryEventDepthSetEvent = {
   }
 
 /** The clear estimate the player saw for a team, for tuning the curve: its safe and best depths
- *  (the headline is `estimate`), the effective and raw team power, the member count, and the curve
- *  version so results under different curves are not mixed. Null where unknown. */
+ *  (the headline is `estimate`), the effective and raw team power, the member count, the member
+ *  unit ids and objective indexes (catalog `index` on the lane), and the curve version so results
+ *  under different curves are not mixed. Null where unknown. */
 export type LegendaryEventEstimateSnapshot = {
   sureDepth: number | null
   stretchDepth: number | null
   effectivePower: number | null
   teamPower: number | null
+  unitIds: readonly string[] | null
+  objectiveIndexes: readonly number[] | null
   memberCount: number | null
   curveVersion: string
 }

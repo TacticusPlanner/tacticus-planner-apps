@@ -17,6 +17,8 @@ export interface DepthEstimateContext {
   effectivePower?: number | null
   teamPower?: number | null
   memberCount?: number | null
+  unitIds?: readonly string[] | null
+  objectiveIndexes?: readonly number[] | null
   source?: DepthSetSource
 }
 
@@ -27,6 +29,8 @@ export function depthEstimateContext(
     fromEstimate: boolean
     teamPower: number | null
     memberCount: number | null
+    unitIds: readonly string[] | null
+    objectiveIndexes: readonly number[] | null
     source: DepthSetSource
   }
 ): DepthEstimateContext {
@@ -47,6 +51,8 @@ export function estimateSnapshot(shown: DepthEstimateContext) {
     effectivePower: shown.effectivePower ?? null,
     teamPower: shown.teamPower ?? null,
     memberCount: shown.memberCount ?? null,
+    unitIds: shown.unitIds ?? null,
+    objectiveIndexes: shown.objectiveIndexes ?? null,
     curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
   }
 }

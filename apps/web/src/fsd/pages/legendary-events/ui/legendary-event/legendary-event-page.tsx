@@ -402,7 +402,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       const shown = tokenActionEstimateContext(
         clearEstimates,
         laneId,
-        team?.memberUnitIds ?? [],
+        team,
         depthBefore?.estimated ?? false
       )
       const dropped = team !== undefined && outcome.depth !== null

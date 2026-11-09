@@ -12,6 +12,8 @@ const shown = {
   effectivePower: 600_000,
   teamPower: 574_641,
   memberCount: 4,
+  unitIds: ["trajann", "incisus", "tarvakh", "hascule"],
+  objectiveIndexes: [0, 1, 4],
   source: "tokenAction" as const,
 }
 
@@ -46,6 +48,8 @@ describe("tokenResultEvent", () => {
       effectivePower: 600_000,
       teamPower: 574_641,
       memberCount: 4,
+      unitIds: ["trajann", "incisus", "tarvakh", "hascule"],
+      objectiveIndexes: [0, 1, 4],
       curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
     })
   })
@@ -69,6 +73,8 @@ describe("tokenResultEvent", () => {
       sureDepth: null,
       teamPower: null,
       memberCount: null,
+      unitIds: null,
+      objectiveIndexes: null,
     })
   })
 })

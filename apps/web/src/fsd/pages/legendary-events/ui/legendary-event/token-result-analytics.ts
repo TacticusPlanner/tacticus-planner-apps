@@ -14,15 +14,18 @@ import type { ClearEstimatesViewModel } from "./legendary-event-page.view-model"
 
 /**
  * The estimate a team's player saw on a lane, as a depth edit's context from a Next token card
- * action: the headline, safe and best depths, effective and raw power and the member count (null
- * where the estimates or the roster are unavailable).
+ * action: the headline, safe and best depths, effective and raw power, the member count, unit ids
+ * and objective indexes (null where the estimates, the roster or the team are unavailable).
  */
 export function tokenActionEstimateContext(
   clears: ClearEstimatesViewModel,
   laneId: LegendaryEventLaneId,
-  memberUnitIds: readonly string[],
+  team:
+    | { memberUnitIds: readonly string[]; objectiveIndexes: readonly number[] }
+    | undefined,
   fromEstimate: boolean
 ): DepthEstimateContext {
+  const memberUnitIds = team?.memberUnitIds ?? []
   const lane = clears.kind === "ready" ? clears.byLane[laneId] : undefined
   const inputs = lane?.inputs
   return depthEstimateContext(lane?.team(memberUnitIds) ?? null, {
@@ -31,6 +34,8 @@ export function tokenActionEstimateContext(
       ? teamPower(memberUnitIds, inputs.roster, inputs.config.unitPower)
       : null,
     memberCount: memberUnitIds.length,
+    unitIds: team ? memberUnitIds : null,
+    objectiveIndexes: team?.objectiveIndexes ?? null,
     source: "tokenAction",
   })
 }
