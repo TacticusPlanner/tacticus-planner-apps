@@ -64,14 +64,19 @@ const actions = () => ({
 const NO_ESTIMATE = { estimate: null, fromEstimate: false }
 
 /** The worked Uthar Alpha team's estimate (spec: 6, 21% above, 32% short). */
-const estimateOf = (overrides: Partial<ClearEstimate> = {}): ClearEstimate => ({
-  depth: 6,
-  battleCount: 18,
-  marginAbovePct: 21,
-  shortfallToNextPct: 32,
-  calibrated: true,
-  ...overrides,
-})
+const estimateOf = (overrides: Partial<ClearEstimate> = {}): ClearEstimate => {
+  const depth = overrides.depth ?? 6
+  return {
+    depth,
+    sureDepth: depth,
+    stretchDepth: depth,
+    battleCount: 18,
+    marginAbovePct: 21,
+    shortfallToNextPct: 32,
+    calibrated: true,
+    ...overrides,
+  }
+}
 
 const ownedRoster = (unitIds: readonly string[]): LegendaryEventRosterUnit[] =>
   unitIds.map((unitId) => ({

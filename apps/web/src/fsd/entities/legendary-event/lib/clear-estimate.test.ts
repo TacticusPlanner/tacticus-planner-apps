@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest"
 
 import {
   CLEAR_ESTIMATE_CALIBRATED,
-  CLEAR_ESTIMATE_POWER_RATIO,
+  CLEAR_ESTIMATE_CURVE,
   clearEstimateConfig,
   estimateClearDepth,
   laneBattlePowers,
   lockedMemberCount,
+  requiredClearPower,
   teamClearEstimate,
   teamEffectiveDepth,
   teamEffectivePower,
@@ -53,6 +54,8 @@ describe("clear estimate (spec worked examples)", () => {
       estimateClearDepth(power!, UTHAR_ALPHA_POWERS, WORKED_CONFIG)
     ).toEqual({
       depth: 6,
+      sureDepth: 6,
+      stretchDepth: 6,
       battleCount: 7,
       marginAbovePct: 12,
       shortfallToNextPct: 37,
@@ -209,6 +212,8 @@ describe("clear estimate (spec worked examples)", () => {
   it("is depth 0 with no margin above when battle 1 already fails", () => {
     expect(estimateClearDepth(965, UTHAR_ALPHA_POWERS, WORKED_CONFIG)).toEqual({
       depth: 0,
+      sureDepth: 0,
+      stretchDepth: 0,
       battleCount: 7,
       marginAbovePct: null,
       shortfallToNextPct: 21,
@@ -255,7 +260,7 @@ describe("clear estimate (spec worked examples)", () => {
       },
       WORKED_CONFIG.unitPower
     )
-    expect(config.powerRatio).toBe(CLEAR_ESTIMATE_POWER_RATIO)
+    expect(config.powerRatio).toBe(CLEAR_ESTIMATE_CURVE.likelyRatio)
     expect(config.calibrated).toBe(CLEAR_ESTIMATE_CALIBRATED)
     expect(unitHordeMultiplier(config, "ultraTigurius")).toBe(1.55)
     expect(unitHordeMultiplier(config, "custoBladeChampion")).toBe(2)
@@ -297,5 +302,92 @@ describe("clear estimate (spec worked examples)", () => {
     expect(
       laneBattlePowers(["votanUthar-alpha-1", "votanUthar-alpha-3"], battles)
     ).toBeNull()
+  })
+})
+
+// Fabius Bile Alpha / Gamma battle powers (datamine `legendary_event_16_lane_{1,3}`).
+const BILE_ALPHA_POWERS = [
+  1184, 3728, 9902, 24711, 49842, 92887, 136056, 280510, 437871, 527461, 919925,
+]
+const BILE_GAMMA_POWERS = [
+  1035, 3036, 8060, 20153, 40460, 75563, 135741, 225078, 350510,
+]
+
+describe("clear curve (fitted to reported clears)", () => {
+  const config = clearEstimateConfig(null, null)
+
+  it("needs r × (P / 100k)^0.25 × P: less than the power early, more late", () => {
+    const curve = config.curve!
+    expect(requiredClearPower(100_000, 1.2, curve)).toBeCloseTo(120_000, 6)
+    expect(requiredClearPower(25_000, 1.2, curve)).toBeCloseTo(
+      1.2 * Math.SQRT1_2 * 25_000,
+      6
+    )
+    expect(requiredClearPower(400_000, 1.2, curve)).toBeCloseTo(
+      1.2 * Math.SQRT2 * 400_000,
+      6
+    )
+    expect(requiredClearPower(100_000, 1.2, undefined)).toBe(120_000)
+  })
+
+  // Each report: team power (horde multipliers at 1.0), lane, observed depth, expected bands.
+  it.each([
+    // #2: cleared 7, about half of 8.
+    {
+      power: 204_259,
+      powers: BILE_ALPHA_POWERS,
+      sure: 7,
+      likely: 7,
+      stretch: 7,
+    },
+    // #5 and #8: cleared 8, 9 out of reach.
+    {
+      power: 760_238,
+      powers: BILE_ALPHA_POWERS,
+      sure: 8,
+      likely: 8,
+      stretch: 9,
+    },
+    {
+      power: 723_086,
+      powers: BILE_ALPHA_POWERS,
+      sure: 8,
+      likely: 8,
+      stretch: 9,
+    },
+    // #6: cleared 6, battle 7 partially.
+    {
+      power: 157_384,
+      powers: BILE_GAMMA_POWERS,
+      sure: 6,
+      likely: 6,
+      stretch: 7,
+    },
+    // #9: cleared 10, failed 11.
+    {
+      power: 978_492,
+      powers: BILE_ALPHA_POWERS,
+      sure: 9,
+      likely: 10,
+      stretch: 10,
+    },
+  ])(
+    "puts a reported clear in its band: $power → $sure / $likely / $stretch",
+    ({ power, powers, sure, likely, stretch }) => {
+      const estimate = estimateClearDepth(power, powers, config)
+      expect([
+        estimate.sureDepth,
+        estimate.depth,
+        estimate.stretchDepth,
+      ]).toEqual([sure, likely, stretch])
+    }
+  )
+
+  it("orders the bands sure ≤ likely ≤ stretch", () => {
+    for (const power of [5_000, 50_000, 150_000, 300_000, 2_000_000]) {
+      const estimate = estimateClearDepth(power, BILE_ALPHA_POWERS, config)
+      expect(estimate.sureDepth).toBeLessThanOrEqual(estimate.depth)
+      expect(estimate.depth).toBeLessThanOrEqual(estimate.stretchDepth)
+    }
   })
 })

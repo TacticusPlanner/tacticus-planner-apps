@@ -322,6 +322,8 @@ describe("TeamEditorDialog", () => {
     })
     const estimateTeam = (memberUnitIds: readonly string[]): ClearEstimate => ({
       depth: memberUnitIds.length,
+      sureDepth: memberUnitIds.length,
+      stretchDepth: memberUnitIds.length,
       battleCount: 18,
       marginAbovePct: 0,
       shortfallToNextPct: 0,
@@ -357,6 +359,8 @@ describe("TeamEditorDialog", () => {
     // One battle per member: a three-member team is estimated at 3.
     const estimateTeam = (memberUnitIds: readonly string[]): ClearEstimate => ({
       depth: memberUnitIds.length,
+      sureDepth: memberUnitIds.length,
+      stretchDepth: memberUnitIds.length,
       battleCount: 18,
       marginAbovePct: 12,
       shortfallToNextPct: 30,
@@ -430,6 +434,8 @@ describe("TeamEditorDialog", () => {
   describe("footer summary (spec: the editor keeps its summary and actions in view)", () => {
     const estimateTeam = (memberUnitIds: readonly string[]): ClearEstimate => ({
       depth: memberUnitIds.length,
+      sureDepth: memberUnitIds.length,
+      stretchDepth: memberUnitIds.length,
       battleCount: 18,
       marginAbovePct: 12,
       shortfallToNextPct: 30,
