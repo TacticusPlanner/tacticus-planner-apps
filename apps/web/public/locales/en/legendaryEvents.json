@@ -452,7 +452,13 @@
       "label": "Clears battles 1–{{depth}} of {{total}}",
       "labelNone": "Clears no battle of {{total}}",
       "close": "Close to battle {{battle}}",
-      "bands": "Clears battles 1–{{sure}} for sure, {{depth}} likely, up to {{stretch}} at best",
+      "bands": {
+        "sure": "Clears battles 1–{{sure}} for sure",
+        "sureNone": "No battle for sure",
+        "likely": "{{battle}} likely",
+        "likelyRange": "{{from}}–{{to}} likely",
+        "stretch": "up to {{stretch}} at best"
+      },
       "manual": "Depth set by you"
     },
     "editDepth": "Edit clear depth",

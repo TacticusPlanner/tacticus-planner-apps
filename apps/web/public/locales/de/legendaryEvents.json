@@ -452,7 +452,13 @@
       "label": "Schafft Kämpfe 1–{{depth}} von {{total}}",
       "labelNone": "Schafft keinen von {{total}} Kämpfen",
       "close": "Knapp vor Kampf {{battle}}",
-      "bands": "Schafft Kämpfe 1–{{sure}} sicher, {{depth}} wahrscheinlich, bestenfalls bis {{stretch}}",
+      "bands": {
+        "sure": "Schafft Kämpfe 1–{{sure}} sicher",
+        "sureNone": "Kein Kampf sicher",
+        "likely": "{{battle}} wahrscheinlich",
+        "likelyRange": "{{from}}–{{to}} wahrscheinlich",
+        "stretch": "bestenfalls bis {{stretch}}"
+      },
       "manual": "Von dir gesetzte Tiefe"
     },
     "editDepth": "Tiefe bearbeiten",

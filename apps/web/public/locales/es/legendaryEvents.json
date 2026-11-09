@@ -452,7 +452,13 @@
       "label": "Supera las batallas 1–{{depth}} de {{total}}",
       "labelNone": "No supera ninguna de {{total}} batallas",
       "close": "Cerca de la batalla {{battle}}",
-      "bands": "Supera las batallas 1–{{sure}} seguro, {{depth}} probablemente, hasta {{stretch}} en el mejor caso",
+      "bands": {
+        "sure": "Supera las batallas 1–{{sure}} seguro",
+        "sureNone": "Ninguna batalla segura",
+        "likely": "{{battle}} probablemente",
+        "likelyRange": "{{from}}–{{to}} probablemente",
+        "stretch": "hasta {{stretch}} en el mejor caso"
+      },
       "manual": "Profundidad fijada por ti"
     },
     "editDepth": "Editar profundidad",

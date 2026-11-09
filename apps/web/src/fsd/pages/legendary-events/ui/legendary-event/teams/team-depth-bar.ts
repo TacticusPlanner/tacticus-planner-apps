@@ -47,3 +47,32 @@ export function teamDepthBar(
   const stretch = Math.max(clamp(card.estimate?.stretchDepth ?? filled), filled)
   return { filled, sure, stretch, total, tone }
 }
+
+/** One clause of the bands sentence, as a `teams.depthBar.bands.*` key and its values. */
+export type DepthBandClause =
+  | { key: "sure"; values: { sure: number } }
+  | { key: "sureNone"; values: Record<string, never> }
+  | { key: "likely"; values: { battle: number } }
+  | { key: "likelyRange"; values: { from: number; to: number } }
+  | { key: "stretch"; values: { stretch: number } }
+
+/** The estimate's bands as clauses ("1–10 for sure", "11 likely", "up to 12 at best"), leaving out
+ *  a band that adds nothing; empty for a manual depth or when the three depths agree. */
+export function depthBandClauses(bar: DepthBar): DepthBandClause[] {
+  if (bar.tone === "manual" || bar.tone === "none") return []
+  const { sure, filled, stretch } = bar
+  if (sure === filled && stretch === filled) return []
+  const clauses: DepthBandClause[] = [
+    sure > 0
+      ? { key: "sure", values: { sure } }
+      : { key: "sureNone", values: {} },
+  ]
+  if (sure < filled)
+    clauses.push(
+      sure + 1 === filled
+        ? { key: "likely", values: { battle: filled } }
+        : { key: "likelyRange", values: { from: sure + 1, to: filled } }
+    )
+  if (stretch > filled) clauses.push({ key: "stretch", values: { stretch } })
+  return clauses
+}
