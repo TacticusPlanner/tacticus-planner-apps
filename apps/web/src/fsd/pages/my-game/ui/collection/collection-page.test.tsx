@@ -215,6 +215,7 @@ function quickFilters(
   return {
     readyToRankUp: availability,
     needToAscend: availability,
+    canPromote: availability,
     canAscend: availability,
     needToLevel: availability,
     blueStarReady: availability,
