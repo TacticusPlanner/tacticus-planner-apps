@@ -145,6 +145,7 @@ export {
   PREMIUM_BONUS_CURRENCY,
   nextAscensionStep,
   projectRewards,
+  syncedChestsClaimed,
   unitNextAscensionStep,
   type AscensionGoal,
   type AscensionStep,

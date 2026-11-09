@@ -325,10 +325,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       buildRunStatusViewModel({
         progress,
         rewards,
+        unit: runs.eventUnit,
         progressObservedAtMs,
         nowMs,
       }),
-    [progress, rewards, progressObservedAtMs, nowMs]
+    [progress, rewards, runs.eventUnit, progressObservedAtMs, nowMs]
   )
   const outlook = useMemo(
     () =>

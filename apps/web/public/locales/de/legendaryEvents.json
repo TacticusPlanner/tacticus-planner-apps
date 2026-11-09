@@ -106,8 +106,8 @@
       "twoBlueStars": "Zwei blaue Sterne"
     },
     "next": "Als Nächstes: {{step}} · {{shards}} / {{threshold}} Splitter",
-    "chests_one": "Noch {{chests}} Truhe ({{currency}} Währung insgesamt)",
-    "chests_other": "Noch {{chests}} Truhen ({{currency}} Währung insgesamt)",
+    "chests_one": "Noch {{chests}} Truhe für {{currency}} Währung",
+    "chests_other": "Noch {{chests}} Truhen für {{currency}} Währung",
     "points": "Noch {{points}} Punkte bis {{target}} · etwa {{battles}} Kämpfe pro Bahn",
     "fullyAscended": "Alle Belohnungsstufen erreicht",
     "beyondChests": "In diesem Event nicht erreichbar (benötigt {{required}} Truhen, das Event hat {{ladder}})",

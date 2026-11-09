@@ -106,8 +106,8 @@
       "twoBlueStars": "Deux étoiles bleues"
     },
     "next": "Prochaine étape : {{step}} · {{shards}} / {{threshold}} fragments",
-    "chests_one": "Encore {{chests}} coffre ({{currency}} de monnaie au total)",
-    "chests_other": "Encore {{chests}} coffres ({{currency}} de monnaie au total)",
+    "chests_one": "Encore {{chests}} coffre pour {{currency}} de monnaie",
+    "chests_other": "Encore {{chests}} coffres pour {{currency}} de monnaie",
     "points": "{{points}} points pour atteindre {{target}} · environ {{battles}} combats par voie",
     "fullyAscended": "Toutes les étapes de récompense atteintes",
     "beyondChests": "Hors de portée pour cet événement ({{required}} coffres nécessaires, l'événement en compte {{ladder}})",

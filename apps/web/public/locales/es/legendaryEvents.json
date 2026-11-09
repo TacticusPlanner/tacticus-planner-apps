@@ -106,8 +106,8 @@
       "twoBlueStars": "Dos estrellas azules"
     },
     "next": "Siguiente: {{step}} · {{shards}} / {{threshold}} fragmentos",
-    "chests_one": "{{chests}} cofre más ({{currency}} de moneda en total)",
-    "chests_other": "{{chests}} cofres más ({{currency}} de moneda en total)",
+    "chests_one": "{{chests}} cofre más por {{currency}} de moneda",
+    "chests_other": "{{chests}} cofres más por {{currency}} de moneda",
     "points": "{{points}} puntos para llegar a {{target}} · unas {{battles}} batallas por carril",
     "fullyAscended": "Todas las recompensas alcanzadas",
     "beyondChests": "No alcanzable en este evento (necesita {{required}} cofres y el evento tiene {{ladder}})",
