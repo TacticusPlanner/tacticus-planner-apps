@@ -36,6 +36,7 @@ vi.mock("@/shared/unit-name", () => ({
 
 let i18n: I18n
 const onMarkToken = vi.fn()
+const onStopTeam = vi.fn()
 const onOpenTeams = vi.fn()
 
 function renderCard(
@@ -58,6 +59,7 @@ function renderCard(
       eventId="votanUthar"
       isMobile={isMobile}
       onMarkToken={canMark ? onMarkToken : undefined}
+      onStopTeam={canMark ? onStopTeam : undefined}
       onOpenTeams={onOpenTeams}
       missionsInput={missionsInput}
       onViewPlan={onViewPlan}
@@ -118,6 +120,7 @@ describe("NextTokenCard", () => {
     localStorage.clear()
     capture.mockReset()
     onMarkToken.mockReset()
+    onStopTeam.mockReset()
     onOpenTeams.mockReset()
   })
 
@@ -182,6 +185,27 @@ describe("NextTokenCard", () => {
     const band = screen.getByTestId("next-token-clear-band")
     expect(band).toHaveAttribute("data-band", "likely")
     expect(band).toHaveTextContent("Likely clear · safe through battle 5")
+  })
+
+  it("offers Stop here only on a likely clear, ending the team after the battle before", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const { unmount } = renderCard(view)
+    expect(screen.queryByTestId("next-token-stop")).toBeNull()
+    unmount()
+
+    const fiveIndex = view.plan.tokens.findIndex(
+      (token) => token.teamId === "five"
+    )
+    const five = { ...view.plan.tokens[fiveIndex]!, playableNow: true }
+    renderCard({
+      ...view,
+      next: { ...view.next, index: fiveIndex, token: five },
+    })
+    fireEvent.click(screen.getByTestId("next-token-stop"))
+
+    expect(onStopTeam).toHaveBeenCalledWith(five.laneId, 5, "five")
+    expect(onMarkToken).not.toHaveBeenCalled()
   })
 
   it("lists the next four tokens after it, with View all opening the plan", () => {

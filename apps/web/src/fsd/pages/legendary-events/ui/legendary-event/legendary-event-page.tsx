@@ -24,6 +24,7 @@ import {
 } from "@/features/legendary-event-plan"
 import {
   type MarkTokenHandler,
+  type StopTeamHandler,
   tokenMarkOutcome,
   useTokenMissionsSource,
   useTokenPlan,
@@ -416,7 +417,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           run: runs.run,
           laneId,
           battleIndex,
-          status,
+          action: status,
           shown,
           depthBefore,
           depthAfter: dropped ? outcome.depth : (depthBefore?.depth ?? null),
@@ -429,6 +430,47 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       clearEstimates,
       eventId,
       markToken,
+      planTeams,
+      runs.run,
+      setDepth,
+      tokenPlan,
+    ]
+  )
+  // Stop here: the player ends the token's team before this battle (no cells marked), so its
+  // depth becomes the battles before it and the plan moves on to other teams.
+  const stopTeamVoid = useCallback<StopTeamHandler>(
+    (laneId, battleIndex, teamId) => {
+      const team = planTeams?.find((entry) => entry.id === teamId)
+      if (!team || battleIndex < 1) return
+      const depthBefore =
+        tokenPlan.kind === "ready"
+          ? tokenPlan.depthByTeam.get(teamId)
+          : undefined
+      const shown = tokenActionEstimateContext(
+        clearEstimates,
+        laneId,
+        team,
+        depthBefore?.estimated ?? false
+      )
+      void setDepth(team, battleIndex, shown)
+      captureEvent(
+        tokenResultEvent({
+          eventId,
+          run: runs.run,
+          laneId,
+          battleIndex,
+          action: "stopEarly",
+          shown,
+          depthBefore,
+          depthAfter: battleIndex,
+          otherTeamReaches: false,
+        })
+      )
+    },
+    [
+      captureEvent,
+      clearEstimates,
+      eventId,
       planTeams,
       runs.run,
       setDepth,
@@ -518,6 +560,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       tokens: {
         view: tokenPlan,
         onMarkToken: marksEditable ? markTokenVoid : undefined,
+        onStopTeam: marksEditable ? stopTeamVoid : undefined,
         onOpenTeams: openTeams,
       },
       teams: {
@@ -588,6 +631,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     markBattleVoid,
     tokenPlan,
     markTokenVoid,
+    stopTeamVoid,
     openTeams,
     unitPower,
     eventId,

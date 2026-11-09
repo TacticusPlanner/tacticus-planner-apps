@@ -302,6 +302,7 @@ export function LegendaryEventPageView({
                 eventId={props.event.id}
                 isMobile={isMobile}
                 onMarkToken={tokens.onMarkToken}
+                onStopTeam={tokens.onStopTeam}
                 onOpenTeams={tokens.onOpenTeams}
                 missionsInput={missionsInput}
                 onViewPlan={props.onViewPlan}
