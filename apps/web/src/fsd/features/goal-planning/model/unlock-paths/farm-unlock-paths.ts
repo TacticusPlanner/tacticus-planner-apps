@@ -1,4 +1,4 @@
-import type { BattleId } from "@workspace/game-domain"
+import type { BattleId, CampaignId } from "@workspace/game-domain"
 
 import type { Battle, FarmLocation } from "@/shared/lib"
 
@@ -37,7 +37,7 @@ export function farmUnlockPaths(params: {
   allBattlesById: ReadonlyMap<BattleId, Battle>
   eligibleBattleIds: ReadonlySet<BattleId>
   campaignProgressByKey: ReadonlyMap<string, TrackProgress>
-  isEventGroup: (campaignGroupId: string) => boolean
+  isEventGroup: (campaignGroupId: CampaignId) => boolean
 }): FarmUnlockPath[] {
   const campaign: Extract<FarmUnlockPath, { kind: "campaign" }>[] = []
   const event: Extract<FarmUnlockPath, { kind: "event" }>[] = []
