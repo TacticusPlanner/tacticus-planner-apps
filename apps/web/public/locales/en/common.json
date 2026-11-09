@@ -1829,7 +1829,20 @@
       "farmingSpot_other": "{{count}} resources · {{days}}",
       "farmingSpotHint": "Ranked by how much of what your goals still need drops per energy. Each row shows how many needed resources drop there and the days to farm them all there, at your daily energy and each node's daily attempts.",
       "openSchedule": "Day-by-day plan",
-      "helpsGoals": "Helps these goals"
+      "helpsGoals": "Helps these goals",
+      "progressionTitle": "Campaigns to push",
+      "progressionDescription": "Uncleared campaigns that unblock your goals or make their farming cheaper, with what still stops you from playing them.",
+      "battlesLeft_one": "{{count}} battle left",
+      "battlesLeft_other": "{{count}} battles left",
+      "battlesLeftNotStarted_one": "Not started, {{count}} battle",
+      "battlesLeftNotStarted_other": "Not started, {{count}} battles",
+      "unblocks_one": "Unblocks {{material}} in {{count}} battle",
+      "unblocks_other": "Unblocks {{material}} in {{count}} battles",
+      "energySaved": "About {{energy}} energy saved once cleared",
+      "lockMissingCore": "Unlock {{units}} to play it",
+      "lockRequiredCampaign_one": "Clear {{campaign}} first ({{count}} battle left)",
+      "lockRequiredCampaign_other": "Clear {{campaign}} first ({{count}} battles left)",
+      "lockPowerLevel": "Reach Power Level {{required}} (you're at {{current}})"
     },
     "target": {
       "title": "Target",

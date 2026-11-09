@@ -1829,7 +1829,20 @@
       "farmingSpot_other": "{{count}} ressources · {{days}}",
       "farmingSpotHint": "Classé selon la part de ce dont vos objectifs ont encore besoin qui tombe par point d'énergie. Chaque ligne indique combien de ressources nécessaires y tombent et les jours pour toutes les y farmer, selon votre énergie quotidienne et les tentatives quotidiennes de chaque nœud.",
       "openSchedule": "Plan jour par jour",
-      "helpsGoals": "Aide ces objectifs"
+      "helpsGoals": "Aide ces objectifs",
+      "progressionTitle": "Campagnes à faire avancer",
+      "progressionDescription": "Campagnes non terminées qui débloquent vos objectifs ou rendent leur farm moins cher, avec ce qui vous empêche encore de les jouer.",
+      "battlesLeft_one": "encore {{count}} combat",
+      "battlesLeft_other": "encore {{count}} combats",
+      "battlesLeftNotStarted_one": "Non commencée, {{count}} combat",
+      "battlesLeftNotStarted_other": "Non commencée, {{count}} combats",
+      "unblocks_one": "Débloque {{material}} en {{count}} combat",
+      "unblocks_other": "Débloque {{material}} en {{count}} combats",
+      "energySaved": "Environ {{energy}} d'énergie économisée une fois terminée",
+      "lockMissingCore": "Débloquez {{units}} pour la jouer",
+      "lockRequiredCampaign_one": "Terminez d'abord {{campaign}} (encore {{count}} combat)",
+      "lockRequiredCampaign_other": "Terminez d'abord {{campaign}} (encore {{count}} combats)",
+      "lockPowerLevel": "Atteignez le niveau de puissance {{required}} (actuellement {{current}})"
     },
     "target": {
       "title": "Objectif",

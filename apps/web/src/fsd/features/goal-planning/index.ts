@@ -43,6 +43,8 @@ export {
 export { computePlanInsights } from "./model/insights/plan-insights-calc"
 export { usePlanInsights } from "./model/insights/use-plan-insights"
 export {
+  type PlanCampaignLockReason,
+  type PlanCampaignProgression,
   type PlanInsightsBlocker,
   type PlanInsightsBottleneck,
   type PlanFarmingSpot,

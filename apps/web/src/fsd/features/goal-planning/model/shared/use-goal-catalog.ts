@@ -163,6 +163,7 @@ export function useGoalCatalog() {
     battlesById,
     allBattlesById,
     campaignProgressByKey,
+    campaignDefinitions,
     ascensionCostsById,
     unlockShardCostsById,
     mowUpgradeCostsByLevel,

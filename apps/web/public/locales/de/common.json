@@ -1829,7 +1829,20 @@
       "farmingSpot_other": "{{count}} Ressourcen · {{days}}",
       "farmingSpotHint": "Sortiert danach, wie viel von dem, was deine Ziele noch brauchen, pro Energie dort droppt. Jede Zeile zeigt, wie viele benötigte Ressourcen dort droppen und wie viele Tage es dauert, sie alle dort zu farmen – bei deiner täglichen Energie und den täglichen Versuchen jedes Knotens.",
       "openSchedule": "Tag-für-Tag-Plan",
-      "helpsGoals": "Hilft diesen Zielen"
+      "helpsGoals": "Hilft diesen Zielen",
+      "progressionTitle": "Kampagnen zum Vorantreiben",
+      "progressionDescription": "Nicht abgeschlossene Kampagnen, die deine Ziele freischalten oder ihr Farmen günstiger machen, und was dich noch daran hindert, sie zu spielen.",
+      "battlesLeft_one": "noch {{count}} Kampf",
+      "battlesLeft_other": "noch {{count}} Kämpfe",
+      "battlesLeftNotStarted_one": "Nicht begonnen, {{count}} Kampf",
+      "battlesLeftNotStarted_other": "Nicht begonnen, {{count}} Kämpfe",
+      "unblocks_one": "Schaltet {{material}} in {{count}} Kampf frei",
+      "unblocks_other": "Schaltet {{material}} in {{count}} Kämpfen frei",
+      "energySaved": "Etwa {{energy}} Energie gespart, sobald abgeschlossen",
+      "lockMissingCore": "Schalte {{units}} frei, um sie zu spielen",
+      "lockRequiredCampaign_one": "Schließe zuerst {{campaign}} ab (noch {{count}} Kampf)",
+      "lockRequiredCampaign_other": "Schließe zuerst {{campaign}} ab (noch {{count}} Kämpfe)",
+      "lockPowerLevel": "Erreiche Machtstufe {{required}} (aktuell {{current}})"
     },
     "target": {
       "title": "Ziel",

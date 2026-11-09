@@ -1,2 +1,6 @@
 // Exposed to features/goal-planning.
-export { type CampaignInsight, computeCampaignInsights } from "../index"
+export {
+  type CampaignInsight,
+  computeCampaignInsights,
+  dropRate,
+} from "../index"
