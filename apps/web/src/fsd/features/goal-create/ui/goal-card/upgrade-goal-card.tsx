@@ -36,6 +36,7 @@ export function UpgradeGoalCard({
   onRemove,
   onQuantityChange,
   ranges,
+  links,
   issues,
   preview,
   sources,
@@ -54,6 +55,8 @@ export function UpgradeGoalCard({
   onRemove: (id: UpgradeId) => void
   onQuantityChange: (id: UpgradeId, quantity: number) => void
   ranges?: ReactNode
+  /** "Counts toward": the goals this one links to. */
+  links?: ReactNode
   issues: readonly GoalFormIssueView[]
   preview: ResourcePreview
   sources?: ReactNode
@@ -93,6 +96,7 @@ export function UpgradeGoalCard({
   return (
     <div className="grid gap-3">
       {ranges}
+      {links}
       <div className="grid gap-2" data-testid="goal-card-target">
         {targets.length > 0 ? (
           targets.map((target) => {

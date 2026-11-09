@@ -34,6 +34,7 @@ function goal(
     status: "Active",
     notes: "Old note",
     dependsOn: [],
+    linkedGoalIds: [],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
     globalPriority: 3,
@@ -85,6 +86,7 @@ describe("goal edit draft", () => {
       details: false,
       projects: false,
       priority: false,
+      links: false,
     })
   })
 
@@ -253,5 +255,22 @@ describe("buildEditGoalRequest", () => {
     expect(
       buildEditGoalRequest(rankGoal, draft, goalEditChanges(baseline, draft), 1)
     ).toEqual({ projectIds: ["project-1", "project-2"] })
+  })
+
+  it("sends the replacement links, and nothing when only their order differs", () => {
+    const linked = { ...rankGoal, linkedGoalIds: ["rank-1", "rank-2"] }
+    const baseline = base(linked)
+    const reordered = { ...baseline, linkedGoalIds: ["rank-2", "rank-1"] }
+    expect(goalEditChanges(baseline, reordered).links).toBe(false)
+
+    const unlinked = { ...baseline, linkedGoalIds: [] }
+    expect(
+      buildEditGoalRequest(
+        linked,
+        unlinked,
+        goalEditChanges(baseline, unlinked),
+        1
+      )
+    ).toEqual({ linkedGoalIds: [] })
   })
 })

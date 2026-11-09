@@ -7,6 +7,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
   goalTargetKeyOf,
+  linkCandidates,
   useGlobalGoalPlan,
   type GoalDetail,
 } from "@/entities/goal"
@@ -37,6 +38,7 @@ import { GoalEditPriorityField } from "./goal-edit-priority-field"
 import { MythicMaterialSourceField } from "../create-goal/mythic-material-source-field"
 import { GoalEditTarget } from "./goal-edit-target"
 import { GoalEditCard } from "./goal-edit-card"
+import { GoalLinksField } from "../shared/goal-links-field"
 import { useGoalEditEstimate } from "./use-goal-edit-estimate"
 import { usePlayerChunk } from "@/shared/local-data"
 import {
@@ -244,6 +246,15 @@ export function GoalEditForm({
                   draft={draft.target}
                   farmingStrategy={draft.farmingStrategy}
                   issues={issues}
+                  links={
+                    detail.goalType === "Upgrade" ? (
+                      <GoalLinksField
+                        candidates={linkCandidates(plan.inFlight, detail)}
+                        onChange={(linkedGoalIds) => edit({ linkedGoalIds })}
+                        selected={draft.linkedGoalIds}
+                      />
+                    ) : undefined
+                  }
                   mythic={mythicField}
                   note={notesField}
                   onChange={(target) => edit({ target })}

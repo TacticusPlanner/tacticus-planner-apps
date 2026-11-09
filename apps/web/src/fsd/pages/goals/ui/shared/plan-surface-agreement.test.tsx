@@ -134,6 +134,7 @@ function rankGoal(): GoalDetail {
     snapshot: null,
     events: [],
     dependsOn: [],
+    linkedGoalIds: [],
     projectIds: ["project-1"],
     revision: 1,
     globalPriority: 1,

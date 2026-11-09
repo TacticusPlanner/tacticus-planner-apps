@@ -66,6 +66,7 @@ function member(
       status,
       notes: null,
       dependsOn: [],
+      linkedGoalIds: [],
       createdAt: "",
       updatedAt: "",
       globalPriority: priority,

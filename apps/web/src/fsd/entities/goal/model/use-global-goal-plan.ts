@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
 import { goalQueries } from "../api/goal.queries"
+import { resolveGoalLinks } from "./goal-links"
 import { inFlightInGlobalOrder } from "./goal-order"
 import type { GoalDetail } from "./types"
 
@@ -22,7 +23,8 @@ export function useGlobalGoalPlan() {
 
   const { goals, inFlight, active, entries } = useMemo(() => {
     const goals: GoalDetail[] = query.data?.goals ?? []
-    const inFlight = inFlightInGlobalOrder(goals)
+    // Planning reads each linked Upgrade goal with its linked goals' span as its range.
+    const inFlight = inFlightInGlobalOrder(resolveGoalLinks(goals))
     const active = inFlight.filter((goal) => goal.status === "Active")
     return {
       goals,
@@ -33,7 +35,8 @@ export function useGlobalGoalPlan() {
   }, [query.data])
 
   return {
-    /** Active and Paused goals in global order (what the Goals page reorders). */
+    /** Active and Paused goals in global order (what the Goals page reorders), each linked Upgrade
+     *  goal carrying its linked goals' span as its range (see `withLinkedRanges`). */
     inFlight,
     /** Active goals only, in global order (what planning consumes). */
     active,

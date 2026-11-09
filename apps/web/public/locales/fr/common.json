@@ -1529,6 +1529,12 @@
         "addRarity": {
           "label": "Tout ajouter :",
           "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Compte pour",
+          "hint": "Ses matériaux comptent pour ces objectifs au lieu d'être farmés en plus.",
+          "option": "{{type}} → {{target}}",
+          "empty": "Aucun objectif en cours pour cette unité."
         }
       },
       "previewTitle": "Ressources nécessaires",

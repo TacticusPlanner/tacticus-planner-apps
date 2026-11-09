@@ -1529,6 +1529,12 @@
         "addRarity": {
           "label": "Alle hinzufügen:",
           "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Zählt für",
+          "hint": "Seine Materialien zählen für diese Ziele, statt zusätzlich gefarmt zu werden.",
+          "option": "{{type}} → {{target}}",
+          "empty": "Kein laufendes Ziel dieser Einheit, für das es zählen kann."
         }
       },
       "previewTitle": "Benötigte Ressourcen",
