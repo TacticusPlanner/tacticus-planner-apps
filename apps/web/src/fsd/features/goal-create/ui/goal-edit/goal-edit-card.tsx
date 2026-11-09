@@ -284,11 +284,8 @@ function EditUpgradeCard({
       mode="edit"
       mythic={mythic}
       note={note}
-      onAdd={(id, quantity) =>
-        onChange({
-          ...draft,
-          targets: [...draft.targets, { upgradeId: id, quantity }],
-        })
+      onAdd={(added) =>
+        onChange({ ...draft, targets: [...draft.targets, ...added] })
       }
       onQuantityChange={(id, quantity) =>
         onChange({

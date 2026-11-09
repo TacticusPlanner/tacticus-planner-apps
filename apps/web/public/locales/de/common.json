@@ -1523,7 +1523,11 @@
         },
         "owned": "{{count}} im Besitz",
         "alreadyMet": "Du besitzt bereits so viele, das Ziel ist also schon erreicht.",
-        "noResources": "Du besitzt bereits alle Materialien in diesen Mengen."
+        "noResources": "Du besitzt bereits alle Materialien in diesen Mengen.",
+        "addRarity": {
+          "label": "Alle hinzufügen:",
+          "option": "{{rarity}} ({{count}})"
+        }
       },
       "previewTitle": "Benötigte Ressourcen",
       "showAll": "Alle anzeigen ({{count}})",

@@ -1,6 +1,7 @@
 import { useMemo, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import type { UpgradeId } from "@workspace/game-domain"
+import { Button } from "@workspace/ui/components/button"
 
 import type { UpgradeWithFarmLocations } from "@/features/rank-lookup/@x/goal-create"
 import {
@@ -9,6 +10,7 @@ import {
   type RarityComboboxItem,
 } from "@/shared/ui"
 
+import { upgradeRarityGroups } from "../../model/goal-creation-form/upgrade-rarity-groups"
 import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
 import { FieldIssues } from "../create-goal/goal-form-issues"
 import {
@@ -47,7 +49,8 @@ export function UpgradeGoalCard({
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
   /** How many of each material the account owns (undefined until loaded). */
   ownedQuantities?: ReadonlyMap<string, number>
-  onAdd: (id: UpgradeId, quantity: number) => void
+  /** Adds materials at the given quantities: one from the picker, or every one of a rarity. */
+  onAdd: (added: { upgradeId: UpgradeId; quantity: number }[]) => void
   onRemove: (id: UpgradeId) => void
   onQuantityChange: (id: UpgradeId, quantity: number) => void
   ranges?: ReactNode
@@ -76,6 +79,15 @@ export function UpgradeGoalCard({
         }
       })
   }, [choices, targets, upgradesById, t])
+  const rarityGroups = useMemo(
+    () =>
+      upgradeRarityGroups(
+        choices,
+        targets,
+        (id) => upgradesById.get(id)?.rarity
+      ),
+    [choices, targets, upgradesById]
+  )
   const lastLocked = mode === "edit" && targets.length <= 1
 
   return (
@@ -119,7 +131,11 @@ export function UpgradeGoalCard({
           <RarityCombobox
             emptyText={t("goals.create.upgrade.addEmpty")}
             items={available}
-            onChange={(id) => onAdd(id, Math.max(1, choices.get(id) ?? 1))}
+            onChange={(id) =>
+              onAdd([
+                { upgradeId: id, quantity: Math.max(1, choices.get(id) ?? 1) },
+              ])
+            }
             placeholder={t("goals.create.upgrade.add")}
             triggerProps={fieldIssueProps(issues, "Upgrade", "materials")}
             renderIcon={(id) => {
@@ -134,6 +150,33 @@ export function UpgradeGoalCard({
               )
             }}
           />
+        ) : null}
+        {rarityGroups.length > 0 ? (
+          <div
+            className="flex flex-wrap items-center gap-1.5"
+            data-testid="create-goal-upgrade-add-rarity"
+          >
+            <span className="text-xs text-muted-foreground">
+              {t("goals.create.upgrade.addRarity.label")}
+            </span>
+            {rarityGroups.map((group) => (
+              <Button
+                key={group.rarity}
+                onClick={() => onAdd(group.upgrades)}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                {t("goals.create.upgrade.addRarity.option", {
+                  rarity: t(`rarities.${group.rarity}`, {
+                    ns: "progression",
+                    defaultValue: group.rarity,
+                  }),
+                  count: group.upgrades.length,
+                })}
+              </Button>
+            ))}
+          </div>
         ) : null}
         <FieldIssues field="materials" issues={issues} kind="Upgrade" />
       </div>

@@ -165,13 +165,25 @@ export function useUpgradeFields({
 
   // `quantity` prefills from the picker's own required-amount hint (relevantUpgradeQuantities) —
   // still freely editable afterward via setUpgradeTargetQuantity, same as a manually typed value.
-  const addUpgradeTarget = (upgradeId: UpgradeId, quantity: number) => {
-    setUpgradeTargets((current) =>
-      current.some((target) => target.upgradeId === upgradeId)
+  const addUpgradeTargets = (
+    added: readonly { upgradeId: UpgradeId; quantity: number }[]
+  ) => {
+    setUpgradeTargets((current) => {
+      const picked = new Set(current.map((target) => target.upgradeId))
+      const fresh = added.filter(({ upgradeId }) => !picked.has(upgradeId))
+      return fresh.length === 0
         ? current
-        : [...current, { upgradeId, quantity: Math.max(1, quantity) }]
-    )
+        : [
+            ...current,
+            ...fresh.map(({ upgradeId, quantity }) => ({
+              upgradeId,
+              quantity: Math.max(1, quantity),
+            })),
+          ]
+    })
   }
+  const addUpgradeTarget = (upgradeId: UpgradeId, quantity: number) =>
+    addUpgradeTargets([{ upgradeId, quantity }])
 
   const removeUpgradeTarget = (upgradeId: UpgradeId) => {
     setUpgradeTargets((current) =>
@@ -249,6 +261,7 @@ export function useUpgradeFields({
       upgradeRanges,
       upgradeTargets,
       addUpgradeTarget,
+      addUpgradeTargets,
       removeUpgradeTarget,
       setUpgradeTargetQuantity,
       relevantUpgradeQuantities,
