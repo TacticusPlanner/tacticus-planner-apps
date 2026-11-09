@@ -407,7 +407,7 @@ export function HrePage() {
           <h2 className="text-lg font-semibold">{t("hre:title")}</h2>
           {ready ? (
             <HreEventSwitcher
-              className="order-last md:order-none md:ml-auto"
+              className="order-last md:order-0 md:ml-auto"
               heroes={ready.heroes}
               instances={ready.instances}
               onSelect={selectInstance}

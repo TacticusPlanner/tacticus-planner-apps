@@ -92,6 +92,34 @@ function freshLoginPrompt(): { prompt?: string } {
   return safeStorage.get(FRESH_LOGIN_KEY) ? { prompt: PromptValue.LOGIN } : {}
 }
 
+// Quiet renewal (spec: silent-sign-in): SPA refresh tokens last 24h, fixed by Entra. Past that, the
+// hidden frame is the only silent path, and it fails wherever the browser keeps the identity
+// provider's cookies out of third-party frames (Safari, Firefox, Brave, installed apps), even though
+// the "Stay signed in" session is still alive. A top-level `prompt=none` redirect carries those
+// cookies first-party: with a live session it comes straight back signed in, with none it comes
+// back with an error and the user lands signed out as before. Recorded here so the return trip is
+// recognized, and so a failed attempt is not repeated on every load.
+const QUIET_RENEWAL_KEY = "tp.auth.quietRenewal"
+export const QUIET_RENEWAL_COOLDOWN_MS = 12 * 60 * 60 * 1000
+
+function readQuietRenewalStartedAt(): number | null {
+  const startedAt = Number(safeStorage.get(QUIET_RENEWAL_KEY))
+  return Number.isFinite(startedAt) && startedAt > 0 ? startedAt : null
+}
+
+/** Called whenever an interactive flow starts, so its own response is never taken for a quiet
+ *  renewal's, and on sign-out. */
+export function forgetQuietRenewal() {
+  safeStorage.remove(QUIET_RENEWAL_KEY)
+}
+
+function quietRenewalCoolingDown(): boolean {
+  const startedAt = readQuietRenewalStartedAt()
+  return (
+    startedAt !== null && Date.now() - startedAt < QUIET_RENEWAL_COOLDOWN_MS
+  )
+}
+
 function activateAccount(
   instance: IPublicClientApplication,
   account: AccountInfo | null
@@ -205,9 +233,19 @@ export function takeSignInRedirectFailure(): SignInRedirectFailure | null {
 // from starting: the user lands signed out and can try again. Entra reports a deliberate cancel as
 // `access_denied`; anything else is a real failure the user is told about.
 async function completeRedirect(instance: PublicClientApplication) {
+  // Read before handling: a quiet renewal that started recently is what this response answers.
+  const quietRenewal = quietRenewalCoolingDown()
   try {
-    return await instance.handleRedirectPromise()
+    const result = await instance.handleRedirectPromise()
+    if (result) safeStorage.remove(QUIET_RENEWAL_KEY)
+    return { result, quietRenewal }
   } catch (error) {
+    if (quietRenewal && isInteractionRequired(error)) {
+      // No live session to renew from: not a failed sign-in. The cached account and hint stay, the
+      // marker stays as the cooldown, and the user lands signed out with no toast.
+      return { result: null, quietRenewal }
+    }
+    safeStorage.remove(QUIET_RENEWAL_KEY)
     console.warn("[MSAL] sign-in redirect did not complete", error)
     signInRedirectFailure =
       error instanceof AuthError && error.errorCode === "access_denied"
@@ -222,7 +260,7 @@ async function completeRedirect(instance: PublicClientApplication) {
     }
     forgetAccountHint()
     safeStorage.set(FRESH_LOGIN_KEY, "1")
-    return null
+    return { result: null, quietRenewal: false }
   }
 }
 
@@ -250,12 +288,14 @@ export async function initializeAuthentication() {
   // The redirect bridge (apps/web/redirect.html) already caches the response and navigates back to
   // where the flow was initiated before this ever runs, so navigateToLoginRequestUrl's default
   // (true) is a no-op safety net here, not a second navigation.
-  const redirectResult = await completeRedirect(msalInstance)
+  const { result: redirectResult, quietRenewal } =
+    await completeRedirect(msalInstance)
 
   if (redirectResult) {
     forgetFreshLogin()
     activateAccount(msalInstance, redirectResult.account)
-    returnHomeAfterLandingSignIn()
+    // A quiet renewal returns to whatever page was open, the landing page included.
+    if (!quietRenewal) returnHomeAfterLandingSignIn()
   }
 
   if (!msalInstance.getActiveAccount()) {
@@ -308,7 +348,7 @@ export async function acquireAccessToken() {
   const result = await instance.acquireTokenSilent({
     account,
     scopes: loginRequest.scopes,
-    ...(restoreOutcome === "failed"
+    ...(restoreOutcome === "failed" || restoreOutcome === "redirecting"
       ? { cacheLookupPolicy: CacheLookupPolicy.AccessTokenAndRefreshToken }
       : {}),
   })
@@ -336,7 +376,17 @@ export function isInteractionRequired(error: unknown) {
   // With the hidden frame skipped (see acquireTokenSilent's cacheLookupPolicy above) a rejected
   // refresh token surfaces as the token endpoint's own `invalid_grant` (e.g. the 24h SPA refresh
   // token lifetime ran out). Only a fresh authorization can replace it.
-  return error instanceof AuthError && error.errorCode === "invalid_grant"
+  // A `prompt=none` redirect that finds no usable session comes back with one of the OIDC
+  // interaction errors.
+  return (
+    error instanceof AuthError &&
+    [
+      "invalid_grant",
+      "login_required",
+      "interaction_required",
+      "consent_required",
+    ].includes(error.errorCode)
+  )
 }
 
 // One interactive redirect per page load (spec: redirect-authentication): the API request handler,
@@ -363,14 +413,15 @@ export function requestInteraction(): Promise<void> {
  *  ("'google' pair is not an external identity provider"). If the redirect cannot start, the
  *  account is put back. */
 async function redirectToGoogle(
-  instance: PublicClientApplication,
-  account: AccountInfo | null
+  instance: IPublicClientApplication,
+  account: AccountInfo | null,
+  prompt: { prompt?: string } = freshLoginPrompt()
 ) {
   instance.setActiveAccount(null)
   try {
     await instance.loginRedirect({
       scopes: loginRequest.scopes,
-      ...freshLoginPrompt(),
+      ...prompt,
     })
   } catch (error) {
     if (account) instance.setActiveAccount(account)
@@ -379,6 +430,7 @@ async function redirectToGoogle(
 }
 
 function startInteraction() {
+  forgetQuietRenewal()
   const instance = getAuthentication()
   const account = instance.getActiveAccount() ?? instance.getAllAccounts()[0]
   if (account) {
@@ -402,7 +454,9 @@ function startInteraction() {
   })
 }
 
-export type SilentSignInOutcome = "success" | "no-cached-account" | "failed"
+// "redirecting": a quiet renewal is leaving the page; the restore is still in progress.
+export type SilentSignInOutcome =
+  "success" | "no-cached-account" | "failed" | "redirecting"
 
 // The in-flight (or settled) app-load restore, shared with acquireAccessToken.
 let silentRestore: Promise<SilentSignInOutcome> | undefined
@@ -425,9 +479,11 @@ async function restoreSession(
     // A cleared or expired token cache holds no account; the account hint says whose IdP session
     // to check.
     const hint = readAccountHint()
-    return hint
-      ? checkIdentityProviderSession(instance, { loginHint: hint.username })
-      : "no-cached-account"
+    if (!hint) return "no-cached-account"
+    const outcome = await checkIdentityProviderSession(instance, {
+      loginHint: hint.username,
+    })
+    return outcome === "failed" ? renewQuietly(instance, null, hint) : outcome
   }
 
   // Cached tokens first: a valid access token or refresh token restores the session with no
@@ -448,10 +504,61 @@ async function restoreSession(
     // Expected once the refresh token has expired; fall through to the IdP session check.
   }
 
+  // A quiet renewal that came back empty-handed earlier: the identity provider has no session to
+  // give, through a frame or otherwise, so the user signs in by hand.
+  if (quietRenewalCoolingDown()) return "failed"
+
   // Without an account/sid/loginHint, ssoSilent can't tell which session to restore once more
   // than one account is cached, and fails with an ambiguity error even though a valid session
   // exists for one of them.
-  return checkIdentityProviderSession(instance, { account: cachedAccount })
+  const outcome = await checkIdentityProviderSession(instance, {
+    account: cachedAccount,
+  })
+  return outcome === "failed"
+    ? renewQuietly(instance, cachedAccount, readAccountHint())
+    : outcome
+}
+
+/** One top-level `prompt=none` redirect (see QUIET_RENEWAL_KEY), joined by any caller that asks for
+ *  interaction meanwhile. Skipped while cooling down, or while a fresh login is required. */
+async function renewQuietly(
+  instance: IPublicClientApplication,
+  account: AccountInfo | null,
+  hint: AccountHint | null
+): Promise<SilentSignInOutcome> {
+  if (interaction || quietRenewalCoolingDown() || freshLoginPrompt().prompt) {
+    return "failed"
+  }
+  safeStorage.set(QUIET_RENEWAL_KEY, String(Date.now()))
+  const none = { prompt: PromptValue.NONE }
+  const isGoogle = account
+    ? getSignInMethod(account) === "google"
+    : hint !== null && hintSignInMethod(hint) === "google"
+  // Same hint rules as the interactive re-authentication: never the generated Google username.
+  const request = Promise.resolve().then(() => {
+    if (isGoogle) return redirectToGoogle(instance, account, none)
+    if (account) {
+      return instance.acquireTokenRedirect({
+        account,
+        scopes: loginRequest.scopes,
+        ...none,
+      })
+    }
+    return instance.loginRedirect({
+      scopes: loginRequest.scopes,
+      ...(hint ? { loginHint: hint.username } : {}),
+      ...none,
+    })
+  })
+  interaction = request
+  try {
+    await request
+    return "redirecting"
+  } catch (error) {
+    console.warn("[MSAL] quiet session renewal could not start", error)
+    if (interaction === request) interaction = null
+    return "failed"
+  }
 }
 
 /** One hidden IdP session check (bounded by SILENT_FRAME_TIMEOUT_MS). */

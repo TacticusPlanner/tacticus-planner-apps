@@ -155,7 +155,7 @@ describe("CampaignEventTile", () => {
     const tile = await renderWith(knownId, unconfirmedWindow)
     const text = screen.getByText(/end time not confirmed/)
     expect(tile).toContainElement(text)
-    expect(text).toHaveClass("break-words")
+    expect(text).toHaveClass("wrap-break-word")
     expect(text).not.toHaveClass("truncate")
   })
 

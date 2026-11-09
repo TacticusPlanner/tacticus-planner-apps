@@ -182,7 +182,7 @@ export function TierRow({
           toneClass,
           isMobile
             ? "gap-1 border-l-4 px-3 py-2 text-sm"
-            : "w-24 flex-col justify-center border-r-4 p-2 text-center text-sm break-words"
+            : "w-24 flex-col justify-center border-r-4 p-2 text-center text-sm wrap-break-word"
         )}
         data-testid="tier-list-row-label"
       >

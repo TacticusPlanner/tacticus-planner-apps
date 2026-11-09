@@ -153,6 +153,12 @@
     "next": "Suivant",
     "close": "Fermer"
   },
+  "unitChip": {
+    "abilities": "Active niv. {{active}} · Passive niv. {{passive}}",
+    "notOwned": "Non possédée",
+    "rankShading": "Teinte de rang",
+    "rankShadingHint": "Teinter les unités de la couleur de leur rang"
+  },
   "eventBoard": {
     "title": "Tableau de l'événement",
     "description": "Les objectifs de chaque voie affichée, les unités qui conviennent à chacun et les équipes de la voie côte à côte. Choisissez des objectifs pour voir les unités qui les remplissent tous, ou une unité pour commencer une équipe avec elle.",
@@ -163,6 +169,9 @@
     "columnUnits_other": "{{count}} unités",
     "noUnits": "Aucune unité",
     "addTeam": "Commencer une équipe avec cette unité",
+    "showBest": "Afficher les {{count}} meilleures",
+    "keysHint": "Utilisez les flèches pour passer d’une unité à l’autre.",
+    "showAll": "Afficher toutes les unités (jusqu'à {{count}})",
     "locked": "Verrouillée"
   },
   "laneSummary": {
@@ -258,6 +267,7 @@
     "points": "Points",
     "battlePoints": "{{earned}} / {{max}}",
     "highScore": "Meilleur score {{score}}",
+    "highScoreShort": "MS {{score}}",
     "cellCleared": "{{objective}} : accompli",
     "cellNotCleared": "{{objective}} : non accompli",
     "complete": "Terminé",
@@ -731,7 +741,11 @@
       "upNext": "Ensuite",
       "viewPlan_one": "Voir le {{count}} jeton prévu",
       "viewPlan_other": "Voir les {{count}} jetons prévus",
-      "team": "Voir les unités de {{team}}"
+      "team": "Voir les unités de {{team}}",
+      "depth": {
+        "estimated": "estimation",
+        "manual": "fixée par vous"
+      }
     },
     "plan": {
       "title": "Plan de jetons",

@@ -48,7 +48,7 @@ import {
 } from "./compare-marks"
 
 const tileGrid =
-  "grid gap-x-1.5 gap-y-3 [grid-template-columns:repeat(auto-fill,minmax(6.5rem,1fr))]"
+  "grid gap-x-1.5 gap-y-3 grid-cols-[repeat(auto-fill,minmax(6.5rem,1fr))]"
 
 /**
  * Compare mode's flat list: changed units first in the chosen order, then (with "Show unchanged")

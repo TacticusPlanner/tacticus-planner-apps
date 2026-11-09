@@ -71,7 +71,7 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
             label={t("today.energyUsage.label")}
             testId="energy-usage-loading"
           >
-            <Skeleton className="ms-auto h-[1lh] w-20 @[42rem]:ms-0" />
+            <Skeleton className="ms-auto h-lh w-20 @[42rem]:ms-0" />
           </GlanceTile>
         )}
         {view && hasOnslaught ? (

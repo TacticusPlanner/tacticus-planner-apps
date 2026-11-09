@@ -82,6 +82,8 @@ export {
 } from "./model/use-objective-label"
 export { ObjectiveIcon } from "./ui/objective-icon"
 export { EventUnitChip } from "./ui/event-unit-chip"
+export { RankShadingProvider } from "./model/rank-shading"
+export { useRankShading } from "./model/rank-shading-context"
 export { rankTone } from "./lib/rank-tone"
 export {
   eventUnitChipData,

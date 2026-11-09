@@ -149,6 +149,21 @@ describe("ProgressSection", () => {
     ).toBeInTheDocument()
   })
 
+  it("shortens the high score on mobile rows and lines the rows up on one grid", () => {
+    renderProgress(entry, "rows")
+    const [first] = rowsIn("alpha")
+    const highScore = within(first!).getByTestId("progress-row-high-score")
+    // "HS 31" shows; the full wording stays for screen readers.
+    expect(highScore).toHaveTextContent("HS 31")
+    expect(highScore).toHaveTextContent("High score 31")
+    // Every row is a subgrid of the one table grid, so the columns align row to row.
+    expect(screen.getByTestId("progress-rows")).toHaveClass("grid")
+    expect(first).toHaveClass("grid-cols-subgrid")
+    expect(screen.getByTestId("progress-rows-header")).toHaveClass(
+      "grid-cols-subgrid"
+    )
+  })
+
   it("maps a partly cleared battle: 269 / 471 and high score 31", () => {
     renderProgress(entry)
     const [first] = rowsIn("alpha")

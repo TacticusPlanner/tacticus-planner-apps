@@ -13,7 +13,11 @@ import type { LaneMarks } from "./progress-marks"
 import { splitClearedBattles } from "./progress-order"
 import { ProgressCell, ProgressColumnIcon } from "./progress-parts"
 
-const ROW_GRID = "grid grid-cols-[2.5rem_repeat(6,minmax(0,1fr))_auto] gap-1"
+// One grid for the header and every row (rows are subgrids), so the auto-sized points column is
+// as wide as its widest entry and the six cell columns line up from row to row.
+const TABLE_GRID =
+  "grid grid-cols-[2.5rem_repeat(6,minmax(0,1fr))_auto] gap-x-1"
+const ROW_GRID = "col-span-full grid grid-cols-subgrid"
 
 /** Mobile: one compact row per battle (number, six cells, points earned) under a sticky header
  *  row that shows the column icons once; open battles first, then the fully cleared ones struck
@@ -101,16 +105,24 @@ export function ProgressRows({
             className="block text-muted-foreground"
             data-testid="progress-row-high-score"
           >
-            {t("progress.highScore", {
-              score: number.format(battle.highScore),
-            })}
+            {/* Shortened ("HS 31") so the points column stays narrow on a phone. */}
+            <span aria-hidden="true">
+              {t("progress.highScoreShort", {
+                score: number.format(battle.highScore),
+              })}
+            </span>
+            <span className="sr-only">
+              {t("progress.highScore", {
+                score: number.format(battle.highScore),
+              })}
+            </span>
           </span>
         ) : null}
       </span>
     </li>
   )
   return (
-    <div className="flex min-w-0 flex-col" data-testid="progress-rows">
+    <div className={cn(TABLE_GRID, "min-w-0")} data-testid="progress-rows">
       <div
         aria-hidden="true"
         className={cn(
@@ -132,11 +144,11 @@ export function ProgressRows({
         ))}
         <span className="text-right">{t("progress.points")}</span>
       </div>
-      <ol className="flex min-w-0 flex-col">
+      <ol className={cn(ROW_GRID, "min-w-0")}>
         {open.map(renderRow)}
         {cleared.length > 0 ? (
           <li
-            className="border-t-2 border-border pt-2 pb-0.5 text-xs text-muted-foreground"
+            className="col-span-full border-t-2 border-border pt-2 pb-0.5 text-xs text-muted-foreground"
             data-testid="progress-cleared-divider"
           >
             {t("progress.clearedDivider", { count: cleared.length })}

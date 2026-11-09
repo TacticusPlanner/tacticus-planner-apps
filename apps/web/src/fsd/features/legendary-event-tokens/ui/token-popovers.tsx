@@ -18,6 +18,7 @@ import {
 import { EntityIcon } from "@/shared/ui"
 
 import type { MissionGain } from "../lib/mission-gains"
+import type { TeamClearDepth } from "../lib/token-plan-view"
 
 /**
  * A token's missions behind an icon button with their count: the popover lists each mission it
@@ -101,15 +102,18 @@ export function TokenMissionsPopover({
   )
 }
 
-/** A token's team behind an icon button: the popover shows its units as the Teams view's chips
- *  (rank, rarity, ability levels). */
+/** A token's team behind an icon button: the popover shows its clear depth (the battles it
+ *  reaches, marked as the estimate or set by you) and its units as the Teams view's chips (rank,
+ *  rarity, ability levels). */
 export function TokenTeamPopover({
   teamName,
   members,
+  depth,
   testId,
 }: {
   teamName: string
   members: readonly EventUnitChipData[]
+  depth?: TeamClearDepth
   testId: string
 }) {
   const { t } = useTranslation("legendaryEvents")
@@ -151,6 +155,7 @@ export function TokenTeamPopover({
         data-testid={`${testId}-popover`}
       >
         <h4 className="text-sm font-semibold">{teamName}</h4>
+        {depth ? <TeamDepthLine depth={depth} testId={testId} /> : null}
         <ul
           aria-label={t("tokenPlan.nextToken.members")}
           className="flex flex-wrap gap-1"
@@ -161,11 +166,44 @@ export function TokenTeamPopover({
               data-unit={unit.unitId}
               key={unit.unitId}
             >
-              <EventUnitChip showStars unit={unit} />
+              <EventUnitChip unit={unit} />
             </li>
           ))}
         </ul>
       </PopoverContent>
     </Popover>
+  )
+}
+
+/** The team's clear depth in its popover, worded as the team card's depth bar. */
+function TeamDepthLine({
+  depth,
+  testId,
+}: {
+  depth: TeamClearDepth
+  testId: string
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  const text =
+    depth.depth === null
+      ? t("teams.depthBar.unset")
+      : depth.depth <= 0
+        ? t("teams.depthBar.cannotClear")
+        : t("teams.depthBar.label", {
+            depth: Math.min(depth.depth, depth.total),
+            total: depth.total,
+          })
+  return (
+    <p className="text-xs" data-testid={`${testId}-depth`}>
+      {text}
+      {depth.depth === null ? null : (
+        <span className="text-muted-foreground">
+          {" · "}
+          {depth.estimated
+            ? t("tokenPlan.nextToken.depth.estimated")
+            : t("tokenPlan.nextToken.depth.manual")}
+        </span>
+      )}
+    </p>
   )
 }

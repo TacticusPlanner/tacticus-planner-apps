@@ -153,6 +153,12 @@
     "next": "Next",
     "close": "Close"
   },
+  "unitChip": {
+    "abilities": "Active {{active}} · Passive {{passive}}",
+    "notOwned": "Not owned",
+    "rankShading": "Rank shading",
+    "rankShadingHint": "Tint units in their rank colour"
+  },
   "eventBoard": {
     "title": "Event board",
     "description": "Each shown lane's objectives, the units that fit each and the lane's teams side by side. Pick objectives to see the units that fit all of them, or a unit to start a team with it.",
@@ -163,6 +169,9 @@
     "columnUnits_other": "{{count}} units",
     "noUnits": "No units",
     "addTeam": "Start a team with this unit",
+    "showBest": "Show the best {{count}}",
+    "keysHint": "Use the arrow keys to move between units.",
+    "showAll": "Show all units (up to {{count}})",
     "locked": "Locked"
   },
   "laneSummary": {
@@ -258,6 +267,7 @@
     "points": "Points",
     "battlePoints": "{{earned}} / {{max}}",
     "highScore": "High score {{score}}",
+    "highScoreShort": "HS {{score}}",
     "cellCleared": "{{objective}}: cleared",
     "cellNotCleared": "{{objective}}: not cleared",
     "complete": "Complete",
@@ -731,7 +741,11 @@
       "upNext": "Up next",
       "viewPlan_one": "View the {{count}} planned token",
       "viewPlan_other": "View all {{count}} planned tokens",
-      "team": "Show the units of {{team}}"
+      "team": "Show the units of {{team}}",
+      "depth": {
+        "estimated": "estimate",
+        "manual": "set by you"
+      }
     },
     "plan": {
       "title": "Token plan",

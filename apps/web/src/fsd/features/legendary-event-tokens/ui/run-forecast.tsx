@@ -91,7 +91,7 @@ export function RunForecastSection({
         <Button
           aria-controls={REGION_ID}
           aria-expanded={open}
-          className="h-auto w-full justify-between px-1 py-1 text-left whitespace-normal"
+          className="h-auto w-full justify-between p-1 text-left whitespace-normal"
           data-testid="run-forecast-toggle"
           onClick={toggle}
           type="button"

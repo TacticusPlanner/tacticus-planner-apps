@@ -250,6 +250,7 @@ function TokenView({
             {token.teamName}
           </span>
           <TokenTeamPopover
+            depth={view.depthByTeam.get(token.teamId)}
             members={members.map((unitId) => chipOf(unitId))}
             teamName={token.teamName}
             testId="next-token-team-details"

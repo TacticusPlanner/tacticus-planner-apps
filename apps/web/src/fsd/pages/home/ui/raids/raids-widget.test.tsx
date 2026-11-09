@@ -298,7 +298,7 @@ describe("RaidsWidget", () => {
 
     const lines = screen
       .getByTestId("home-raid-location-node-1")
-      .querySelectorAll(".break-words")
+      .querySelectorAll(".wrap-break-word")
     expect([...lines].map((line) => line.textContent)).toEqual(["node-1"])
   })
 

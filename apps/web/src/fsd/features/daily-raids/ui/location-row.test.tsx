@@ -36,7 +36,7 @@ describe("LocationRow", () => {
 
     for (const label of [campaignName, nodeLabel]) {
       // Campaign, tier and node share one line that wraps instead of truncating.
-      const line = screen.getByText(label).closest(".break-words")
+      const line = screen.getByText(label).closest(".wrap-break-word")
       expect(line).not.toBeNull()
       expect(line).not.toHaveClass("truncate")
       expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
@@ -69,7 +69,7 @@ describe("LocationRow", () => {
 
     const tier = screen.getByText("Elite")
     expect(tier.tagName).toBe("EM")
-    expect(tier.closest(".break-words")).toHaveTextContent(
+    expect(tier.closest(".wrap-break-word")).toHaveTextContent(
       "Indomitus Mirror Elite 36"
     )
   })

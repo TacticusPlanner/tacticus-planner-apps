@@ -493,11 +493,11 @@ function DisclosureRow({
         data-testid={testId}
       >
         <span className="flex min-w-0 items-baseline gap-2">
-          <span className={cn("min-w-0 break-words", labelClassName)}>
+          <span className={cn("min-w-0 wrap-break-word", labelClassName)}>
             {label}
           </span>
           {detail ? (
-            <span className="min-w-0 text-xs break-words text-muted-foreground">
+            <span className="min-w-0 text-xs wrap-break-word text-muted-foreground">
               {detail}
             </span>
           ) : null}
@@ -616,13 +616,13 @@ function EncounterRow({
         {href ? (
           <Link
             to={href}
-            className="min-w-0 font-medium break-words underline-offset-4 hover:underline"
+            className="min-w-0 font-medium wrap-break-word underline-offset-4 hover:underline"
             data-testid={`${testId}-link`}
           >
             {name}
           </Link>
         ) : (
-          <span className="min-w-0 font-medium break-words">{name}</span>
+          <span className="min-w-0 font-medium wrap-break-word">{name}</span>
         )}
         <button
           type="button"
@@ -632,7 +632,7 @@ function EncounterRow({
           data-testid={`${testId}-toggle`}
         >
           <span
-            className="min-w-0 break-words text-muted-foreground"
+            className="min-w-0 wrap-break-word text-muted-foreground"
             data-testid={`${testId}-location`}
           >
             {matching

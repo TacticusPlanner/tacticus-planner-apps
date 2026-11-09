@@ -281,8 +281,9 @@ export function TeamUnitPicker({
           {t("teams.picker.empty")}
         </p>
       ) : (
+        // Two columns below 384px: a picker chip needs ~94px plus the tile padding.
         <ul
-          className="grid grid-cols-3 gap-2 md:grid-cols-5"
+          className="grid grid-cols-2 gap-2 min-[24rem]:grid-cols-3 md:grid-cols-5"
           data-testid="team-picker-grid"
         >
           {shown.map((tile, at) => {
@@ -349,7 +350,7 @@ export function TeamUnitPicker({
                     )}
                     aria-describedby={dimmed ? missingId : undefined}
                     aria-pressed={isMember}
-                    className="flex min-w-0 flex-col items-center gap-1 p-1.5 text-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="flex min-w-0 flex-col items-center gap-1 p-1 text-center outline-none focus-visible:ring-2 focus-visible:ring-ring md:p-1.5"
                     data-testid="team-picker-toggle"
                     onClick={() => onToggleMember(id)}
                     type="button"
@@ -363,7 +364,7 @@ export function TeamUnitPicker({
                     ) : null}
                     <span className="mt-1">
                       <EventUnitChip
-                        showStars
+                        showName={false}
                         unit={
                           shownUnit
                             ? ownedUnitChipData(id, shownUnit)

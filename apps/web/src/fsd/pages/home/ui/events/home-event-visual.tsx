@@ -27,7 +27,7 @@ export function HomeEventVisual({
       <EntityIcon
         alt=""
         className={cn(
-          "shrink-0 rounded-full ring-2 ring-[var(--event-family-heroes)]",
+          "shrink-0 rounded-full ring-2 ring-(--event-family-heroes)",
           className
         )}
         src={characterIcon(row.unitId as UnitId)}

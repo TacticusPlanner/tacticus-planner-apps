@@ -153,6 +153,12 @@
     "next": "Siguiente",
     "close": "Cerrar"
   },
+  "unitChip": {
+    "abilities": "Activa {{active}} · Pasiva {{passive}}",
+    "notOwned": "No obtenida",
+    "rankShading": "Color de rango",
+    "rankShadingHint": "Colorear las unidades con el color de su rango"
+  },
   "eventBoard": {
     "title": "Tablero del evento",
     "description": "Los objetivos de cada carril mostrado, las unidades que encajan en cada uno y los equipos del carril lado a lado. Elige objetivos para ver las unidades que los cumplen todos, o una unidad para empezar un equipo con ella.",
@@ -163,6 +169,9 @@
     "columnUnits_other": "{{count}} unidades",
     "noUnits": "Sin unidades",
     "addTeam": "Empezar un equipo con esta unidad",
+    "showBest": "Mostrar las {{count}} mejores",
+    "keysHint": "Usa las flechas para moverte entre las unidades.",
+    "showAll": "Mostrar todas las unidades (hasta {{count}})",
     "locked": "Bloqueada"
   },
   "laneSummary": {
@@ -258,6 +267,7 @@
     "points": "Puntos",
     "battlePoints": "{{earned}} / {{max}}",
     "highScore": "Mejor puntuación {{score}}",
+    "highScoreShort": "MP {{score}}",
     "cellCleared": "{{objective}}: completado",
     "cellNotCleared": "{{objective}}: no completado",
     "complete": "Completa",
@@ -731,7 +741,11 @@
       "upNext": "A continuación",
       "viewPlan_one": "Ver la {{count}} ficha planificada",
       "viewPlan_other": "Ver las {{count}} fichas planificadas",
-      "team": "Ver las unidades de {{team}}"
+      "team": "Ver las unidades de {{team}}",
+      "depth": {
+        "estimated": "estimación",
+        "manual": "fijada por ti"
+      }
     },
     "plan": {
       "title": "Plan de fichas",

@@ -287,7 +287,7 @@ describe("Dailies raid pages", () => {
 
     const lines = screen
       .getByTestId(`todays-attempt-${battle}`)
-      .querySelectorAll(".break-words")
+      .querySelectorAll(".wrap-break-word")
     expect([...lines].map((line) => line.textContent)).toEqual([battle])
   })
 
@@ -318,7 +318,7 @@ describe("Dailies raid pages", () => {
     const attempt = within(screen.getByTestId(`todays-attempt-${battle}`))
     // Campaign and node share one compact line that wraps instead of truncating.
     for (const label of [campaignName, nodeLabel]) {
-      const line = attempt.getByText(label).closest(".break-words")
+      const line = attempt.getByText(label).closest(".wrap-break-word")
       expect(line).not.toBeNull()
       expect(line).not.toHaveClass("truncate")
       expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)

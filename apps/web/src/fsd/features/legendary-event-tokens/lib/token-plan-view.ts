@@ -67,6 +67,15 @@ type TokenPlanEstimates =
   | { kind: "pending" }
   | { kind: "ready"; byLane: Record<LegendaryEventLaneId, LaneTeamEstimator> }
 
+/** A team's clear depth as the Next token's team popover shows it. */
+export interface TeamClearDepth {
+  depth: number | null
+  /** True when no manual depth is set, so `depth` is the clear estimate. */
+  estimated: boolean
+  /** The lane's battle count. */
+  total: number
+}
+
 /** What matching tokens with missions reads; without it the card shows no mission lines. */
 export interface TokenPlanMissionsSource {
   event: Pick<LegendaryEvent, "regularMissions" | "premiumMissions">
@@ -133,6 +142,10 @@ export interface TokenPlanReady {
   empty: NextTokenEmpty | null
   /** Non-reserve members by team id, for the card's portraits. */
   membersByTeam: ReadonlyMap<string, readonly string[]>
+  /** Each played team's clear depth for the team popover: the battles it reaches this run (the
+   *  manual depth, else the estimate; null with neither), whether that is the estimate, and the
+   *  lane's battle count. */
+  depthByTeam: ReadonlyMap<string, TeamClearDepth>
   /** One per lane with a team that has a depth, in lane order. */
   fullClear: LaneFullClear[]
   /** Null when the event's reward ladder is missing (a record cached before rewards were served). */
@@ -266,6 +279,25 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
   const membersByTeam = new Map(
     teams.map((team) => [team.id, team.memberUnitIds])
   )
+  const teamById = new Map(teams.map((team) => [team.id, team]))
+  const depthByTeam = new Map(
+    lanes.flatMap((lane) =>
+      lane.teams.map((team): [string, TeamClearDepth] => {
+        const stored = teamById.get(team.id)
+        const manual = stored
+          ? (teamDepthForRun(stored, run)?.expectedBattleClears ?? null)
+          : null
+        return [
+          team.id,
+          {
+            depth: team.depth,
+            estimated: manual === null,
+            total: lane.model.battles.length,
+          },
+        ]
+      })
+    )
+  )
   const source = input.missions
   const membersOf = (teamId: string) =>
     source
@@ -342,6 +374,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     missions,
     empty: tokenPlan.tokens.length > 0 ? null : emptyReason(tokenPlan, lanes),
     membersByTeam,
+    depthByTeam,
     fullClear: lanes.flatMap((lane) => {
       const figure = fewestTokensForFullClear(
         lane.teams,
