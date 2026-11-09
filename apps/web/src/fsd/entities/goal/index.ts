@@ -11,9 +11,7 @@ export { useGoalsById } from "./model/use-goals-by-id"
 export {
   linkCandidates,
   linkedGoalIdsOf,
-  linkedGoalsOf,
   resolveGoalLinks,
-  withLinkedRanges,
 } from "./model/goal-links"
 export {
   CreateGoalLauncherContext,

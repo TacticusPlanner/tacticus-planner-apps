@@ -44,7 +44,7 @@ export function linkedGoalsOf(
  * Upgrade goal whose links are all gone, or that has none, keeps its own ranges (the implicit link).
  * Every other goal is returned as is.
  */
-export function withLinkedRanges(
+function withLinkedRanges(
   goal: GoalDetail,
   goalsById: ReadonlyMap<string, GoalDetail>
 ): GoalDetail {
