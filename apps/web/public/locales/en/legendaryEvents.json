@@ -106,8 +106,8 @@
       "twoBlueStars": "Two blue stars"
     },
     "next": "Next: {{step}} · {{shards}} / {{threshold}} shards",
-    "chests_one": "{{chests}} more chest ({{currency}} currency in total)",
-    "chests_other": "{{chests}} more chests ({{currency}} currency in total)",
+    "chests_one": "{{chests}} more chest costing {{currency}} currency",
+    "chests_other": "{{chests}} more chests costing {{currency}} currency",
     "points": "{{points}} points to reach {{target}} · about {{battles}} battles per lane",
     "fullyAscended": "Every reward step reached",
     "beyondChests": "Not reachable this event (needs {{required}} chests, the event has {{ladder}})",
