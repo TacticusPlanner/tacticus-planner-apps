@@ -103,6 +103,8 @@ export function TeamCard({
         ),
         teamPower: card.teamPower,
         memberCount: card.memberCount,
+        unitIds: card.team.memberUnitIds,
+        objectiveIndexes: card.team.objectiveIndexes,
         source: "card",
       })
     )

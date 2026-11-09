@@ -10,6 +10,8 @@ export function estimateSnapshotProperties(
     effective_power: snapshot.effectivePower,
     team_power: snapshot.teamPower,
     member_count: snapshot.memberCount,
+    unit_ids: snapshot.unitIds,
+    objective_indexes: snapshot.objectiveIndexes,
     curve_version: snapshot.curveVersion,
   }
 }

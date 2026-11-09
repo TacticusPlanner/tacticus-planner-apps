@@ -215,6 +215,8 @@ describe("useAnalyticsActions", () => {
       effectivePower: 412_000,
       teamPower: 380_000,
       memberCount: 4,
+      unitIds: ["trajann", "incisus"],
+      objectiveIndexes: [0, 2],
       curveVersion: "2026-11-09-e0.25",
     })
     result.current.captureEvent({
@@ -249,6 +251,8 @@ describe("useAnalyticsActions", () => {
         effective_power: 412_000,
         team_power: 380_000,
         member_count: 4,
+        unit_ids: ["trajann", "incisus"],
+        objective_indexes: [0, 2],
         curve_version: "2026-11-09-e0.25",
       }
     )
@@ -374,6 +378,8 @@ describe("useAnalyticsActions", () => {
       effectivePower: 574_641,
       teamPower: 574_641,
       memberCount: 4,
+      unitIds: ["trajann", "incisus"],
+      objectiveIndexes: [0, 2],
       curveVersion: "2026-11-09-e0.25",
     })
 
@@ -430,6 +436,8 @@ describe("useAnalyticsActions", () => {
         effective_power: 574_641,
         team_power: 574_641,
         member_count: 4,
+        unit_ids: ["trajann", "incisus"],
+        objective_indexes: [0, 2],
         curve_version: "2026-11-09-e0.25",
       }
     )

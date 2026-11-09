@@ -554,6 +554,8 @@ describe("TeamCard", () => {
           sureDepth: 6,
           stretchDepth: 6,
           effectivePower: 100_000,
+          unitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+          objectiveIndexes: [0, 1],
           source: "card",
         })
       )

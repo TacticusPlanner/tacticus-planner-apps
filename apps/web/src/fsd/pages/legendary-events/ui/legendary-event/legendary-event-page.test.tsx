@@ -1249,6 +1249,8 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
           depthAfter: 1,
           otherTeamReaches: false,
           memberCount: 3,
+          unitIds: expect.arrayContaining([expect.any(String)]),
+          objectiveIndexes: expect.any(Array),
           curveVersion: expect.any(String),
         })
       )
