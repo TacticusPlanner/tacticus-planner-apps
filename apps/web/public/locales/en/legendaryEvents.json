@@ -988,12 +988,12 @@
       "heroes": "Heroes",
       "enemies": "Enemies"
     },
-    "intro": "Enemy tiers for the active Legendary Events: each enemy's power is multiplied by its tier's value in the clear estimates.",
+    "intro": "Enemy tiers for the current and upcoming Legendary Events (regular enemies, no bosses): each enemy's power is multiplied by its tier's value in the clear estimates.",
     "search": "Search enemies",
     "event": "Event",
     "allEvents": "All active events",
     "noEnemy": "No enemy",
-    "noActiveEvent": "No Legendary Event is running right now.",
+    "noEvent": "No Legendary Event is scheduled.",
     "error": "Couldn't load the enemy tier list.",
     "tileLabel": "{{name}}, {{multiplier}}",
     "details": {

@@ -102,10 +102,11 @@ describe("buildNpcTierList", () => {
     ["guardian", ["bile", "lysander"]],
     ["mystery", ["lysander"]],
     ["grot", ["lysander"]],
+    ["warboss", ["lysander"]],
   ])
   const nameOf = (npcId: string) => npcId
 
-  it("places NPCs in their tier rows, multiplier first, then the untiered by name", () => {
+  it("places listed NPCs in their tier rows, multiplier first, then the unknown-tier ones; unlisted ones (bosses) are left out", () => {
     const list = buildNpcTierList(
       record,
       npcEvents,
@@ -119,7 +120,6 @@ describe("buildNpcTierList", () => {
     ])
     expect(list.rows[2]!.npcs.map((tile) => tile.npcId)).toEqual(["guardian"])
     expect(list.untiered).toEqual([
-      { npcId: "grot", multiplier: 1, overridden: false },
       { npcId: "mystery", multiplier: 1.2, overridden: true },
     ])
   })
@@ -137,7 +137,7 @@ describe("buildNpcTierList", () => {
     expect(list.untiered).toEqual([])
   })
 
-  it("leaves every NPC untiered without a record", () => {
+  it("is empty without a record", () => {
     const list = buildNpcTierList(
       null,
       npcEvents,
@@ -145,6 +145,6 @@ describe("buildNpcTierList", () => {
       nameOf
     )
     expect(list.rows).toEqual([])
-    expect(list.untiered).toHaveLength(5)
+    expect(list.untiered).toEqual([])
   })
 })

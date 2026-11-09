@@ -149,7 +149,7 @@ interface NpcTierRow {
 interface NpcTierList {
   /** One row per catalog tier, in catalog order, even when the filters leave it empty. */
   rows: NpcTierRow[]
-  /** The listed NPCs the record does not tier, by localized name. */
+  /** The listed NPCs naming a tier the record lacks, by localized name. */
   untiered: NpcTierTile[]
 }
 
@@ -161,9 +161,11 @@ interface NpcTierListFilters {
 }
 
 /**
- * The NPC Tier List: the NPCs of the listed events (`npcEvents`: NPC id → its event ids), one row per
- * catalog tier with each NPC's effective multiplier, then the untiered ones, filtered by event and
- * name. Every NPC is untiered when the record is absent.
+ * The NPC Tier List: the NPCs the record lists that fight in the given events (`npcEvents`: NPC id →
+ * its event ids), one row per catalog tier with each NPC's effective multiplier, then the listed ones
+ * naming a tier the record lacks; filtered by event and name. The record is the list: it names only
+ * regular NPCs (the catalog rejects bosses), so a wave enemy it leaves out is not shown. Empty
+ * without a record.
  */
 export function buildNpcTierList(
   record: NpcTierListRecord | null,
@@ -173,9 +175,11 @@ export function buildNpcTierList(
   locale?: string
 ): NpcTierList {
   const needle = normalizeSearchText(filters.query, locale)
+  const listed = new Set(record?.npcs.map((npc) => npc.npcId))
   const npcIds = [...npcEvents]
     .filter(
       ([npcId, events]) =>
+        listed.has(npcId) &&
         (filters.eventId === "all" || events.includes(filters.eventId)) &&
         (!needle || anyNameIncludes([nameOf(npcId)], needle, locale))
     )

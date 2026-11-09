@@ -50,14 +50,22 @@ export function npcTierListSearchParams(
   return next
 }
 
-/** The ids of the events with a run window open at `nowMs`, in catalog order. */
-export function activeEventIds(
+/**
+ * The ids of the events still in rotation at `nowMs` (running or with a run to come, not archived):
+ * the running ones first, then catalog order.
+ */
+export function rotationEventIds(
   events: readonly (LegendaryEventSchedule & { id: string })[],
   nowMs: number
 ): string[] {
-  return events
-    .filter(
-      (event) => deriveLegendaryEventLifecycle(event, nowMs).state === "active"
-    )
-    .map((event) => event.id)
+  const states = events
+    .map((event) => ({
+      id: event.id,
+      state: deriveLegendaryEventLifecycle(event, nowMs).state,
+    }))
+    .filter(({ state }) => state !== "archived")
+  return [
+    ...states.filter(({ state }) => state === "active"),
+    ...states.filter(({ state }) => state !== "active"),
+  ].map(({ id }) => id)
 }

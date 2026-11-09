@@ -988,12 +988,12 @@
       "heroes": "Héros",
       "enemies": "Ennemis"
     },
-    "intro": "Rangs des ennemis des Événements légendaires en cours : dans les estimations de progression, la puissance de chaque ennemi est multipliée par la valeur de son rang.",
+    "intro": "Rangs des ennemis des Événements légendaires en cours et à venir (ennemis ordinaires, sans les boss) : dans les estimations de progression, la puissance de chaque ennemi est multipliée par la valeur de son rang.",
     "search": "Rechercher un ennemi",
     "event": "Événement",
     "allEvents": "Tous les événements en cours",
     "noEnemy": "Aucun ennemi",
-    "noActiveEvent": "Aucun Événement légendaire n'est en cours.",
+    "noEvent": "Aucun Événement légendaire n'est prévu.",
     "error": "Impossible de charger le classement des ennemis.",
     "tileLabel": "{{name}}, {{multiplier}}",
     "details": {

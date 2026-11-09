@@ -23,7 +23,8 @@ vi.mock("@/shared/analytics", () => ({
 
 let i18n: I18n
 
-// Lysander's run opened yesterday (active); Uthar's fixture dates are in the future (upcoming).
+// Lysander's run opened yesterday (active); Uthar's fixture dates are in the future (upcoming), so
+// both are in rotation.
 const activeLysander = {
   ...lysanderEvent,
   eventStageStartDatesUtc: [new Date(Date.now() - 86_400_000).toUTCString()],
@@ -41,6 +42,7 @@ const npcTiers = {
   npcs: [
     { npcId: "orksNpc3GrotTank", tier: "A" },
     { npcId: "orksNpc1Grot", tier: "D" },
+    { npcId: "blackNpc4Havoc", tier: "Z" },
   ],
 }
 
@@ -91,7 +93,7 @@ describe("Tier List Enemies view", () => {
     expect(screen.getByTestId("search")).toHaveTextContent("?list=enemies")
   })
 
-  it("lists the active event's NPCs in their tier rows, the rest untiered", async () => {
+  it("lists the record's NPCs in their tier rows and leaves the bosses out", async () => {
     renderPage()
     await screen.findByTestId("npc-tier-list")
 
@@ -106,9 +108,10 @@ describe("Tier List Enemies view", () => {
         "tier-list-row-empty"
       )
     ).toHaveTextContent("No enemy")
-    const untiered = tileIds(screen.getByTestId("npc-tier-list-untiered"))
-    expect(untiered).toContain("blackNpc4Havoc")
-    expect(untiered).not.toContain("orksNpc1Grot")
+    expect(tileIds(screen.getByTestId("npc-tier-list-untiered"))).toEqual([
+      "blackNpc4Havoc",
+    ])
+    expect(screen.queryAllByTestId("npc-tier-tile")).toHaveLength(3)
   })
 
   it("filters by name", async () => {
@@ -144,10 +147,28 @@ describe("Tier List Enemies view", () => {
     )
   })
 
-  it("says so when no event is running", async () => {
+  it("lists an upcoming event in the event filter", async () => {
+    renderPage()
+    await screen.findByTestId("npc-tier-list")
+    fireEvent.click(screen.getByTestId("npc-tier-list-event"))
+    expect(
+      (await screen.findAllByRole("option")).map((option) => option.textContent)
+    ).toHaveLength(3)
+  })
+
+  it("says so when every event is archived", async () => {
     await seedGameCatalog({
       characters: legendaryEventCharacters,
-      lres: [utharEvent],
+      lres: [
+        {
+          ...lysanderEvent,
+          eventStageStartDatesUtc: [
+            "2024-01-07T00:00:00Z",
+            "2024-03-03T00:00:00Z",
+            "2024-04-28T00:00:00Z",
+          ],
+        },
+      ],
       "lre-battles": lysanderBattles,
       "npc-tiers": [npcTiers],
     })

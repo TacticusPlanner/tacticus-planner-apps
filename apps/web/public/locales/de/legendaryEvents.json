@@ -988,12 +988,12 @@
       "heroes": "Helden",
       "enemies": "Gegner"
     },
-    "intro": "Gegnerstufen für die laufenden Legendären Events: In den Abschlussschätzungen wird die Stärke jedes Gegners mit dem Wert seiner Stufe multipliziert.",
+    "intro": "Gegnerstufen für die laufenden und kommenden Legendären Events (normale Gegner, keine Bosse): In den Abschlussschätzungen wird die Stärke jedes Gegners mit dem Wert seiner Stufe multipliziert.",
     "search": "Gegner suchen",
     "event": "Event",
     "allEvents": "Alle laufenden Events",
     "noEnemy": "Kein Gegner",
-    "noActiveEvent": "Gerade läuft kein Legendäres Event.",
+    "noEvent": "Es ist kein Legendäres Event geplant.",
     "error": "Die Gegner-Stufenliste konnte nicht geladen werden.",
     "tileLabel": "{{name}}, {{multiplier}}",
     "details": {

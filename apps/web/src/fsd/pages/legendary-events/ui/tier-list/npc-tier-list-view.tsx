@@ -38,18 +38,18 @@ import { useUnitName } from "@/shared/unit-name"
 
 import { useNpcThreatText } from "../../model/use-npc-threat-text"
 import {
-  activeEventIds,
   npcTierListSearchParams,
   parseNpcTierListFilters,
+  rotationEventIds,
   type NpcTierListUrlFilters,
 } from "./npc-tier-list.view-model"
 import { formatMultiplier } from "./tier-list.view-model"
 import { TierRow } from "./tier-row"
 
 /**
- * The Enemies view of the Tier List: every enemy NPC of the active Legendary Events, one row per
- * catalog `npc-tiers` tier with each NPC's multiplier on its power in the clear estimates, then the
- * untiered ones; filtered by event and name (kept in the URL query).
+ * The Enemies view of the Tier List: the regular enemy NPCs (bosses are left out) of the Legendary
+ * Events still in rotation that the catalog `npc-tiers` record lists, one row per tier with each NPC's
+ * multiplier on its power in the clear estimates; filtered by event and name (kept in the URL query).
  */
 export function NpcTierListView() {
   // `npcThreats` loads with the view so opening a tile never suspends.
@@ -63,7 +63,7 @@ export function NpcTierListView() {
   const filters = parseNpcTierListFilters(searchParams)
 
   const eventIds =
-    events.status === "ready" ? activeEventIds(events.data, events.nowMs) : []
+    events.status === "ready" ? rotationEventIds(events.data, events.nowMs) : []
   const battles = useLegendaryEventsBattles(eventIds)
   const nameOf = (npcId: string) => variationName(npcId, npcId)
   const eventName = (eventId: string) => unitName("Character", eventId)
@@ -123,7 +123,7 @@ export function NpcTierListView() {
         className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground"
         data-testid="npc-tier-list-no-event"
       >
-        {t("npcTierList.noActiveEvent")}
+        {t("npcTierList.noEvent")}
       </p>
     )
   }
