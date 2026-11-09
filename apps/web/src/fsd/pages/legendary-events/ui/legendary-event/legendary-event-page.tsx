@@ -449,7 +449,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       const shown = tokenActionEstimateContext(
         clearEstimates,
         laneId,
-        team.memberUnitIds,
+        team,
         depthBefore?.estimated ?? false
       )
       void setDepth(team, battleIndex, shown)
