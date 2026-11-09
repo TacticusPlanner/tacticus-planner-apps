@@ -743,10 +743,8 @@
       "noDepth": "Set how far {{team}} clears",
       "nothingLeft": "Your teams have nothing left to clear · {{points}} points left in {{lane}}",
       "missions": {
-        "title": "For missions",
         "progresses": "Missions it progresses",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} points ({{difference}})",
         "button_one": "Progresses {{count}} mission",
         "button_other": "Progresses {{count}} missions",
         "uncounted": "counts",
