@@ -27,6 +27,7 @@ import {
 } from "@/entities/legendary-event"
 import {
   ClearDepthField,
+  depthEstimateContext,
   editStartsFromEstimate,
   type DepthEstimateContext,
 } from "@/features/legendary-event-plan"
@@ -93,13 +94,18 @@ export function TeamCard({
       actions.onUseEstimate(card.estimate.depth)
       return
     }
-    actions.onDepthChange(next, {
-      estimate: card.estimate?.depth ?? null,
-      fromEstimate: editStartsFromEstimate(
-        card.expectedBattleClears,
-        card.estimate
-      ),
-    })
+    actions.onDepthChange(
+      next,
+      depthEstimateContext(card.estimate, {
+        fromEstimate: editStartsFromEstimate(
+          card.expectedBattleClears,
+          card.estimate
+        ),
+        teamPower: card.teamPower,
+        memberCount: card.memberCount,
+        source: "card",
+      })
+    )
   }
   const [depth, setDepth] = useDebouncedCommit(
     card.expectedBattleClears,

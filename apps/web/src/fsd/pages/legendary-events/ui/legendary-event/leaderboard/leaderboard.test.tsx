@@ -191,6 +191,7 @@ const estimateFor = (depth: number) => ({
   sureDepth: depth,
   stretchDepth: depth,
   battleCount: 18,
+  power: 100_000,
   marginAbovePct: 10,
   shortfallToNextPct: 10,
   calibrated: true,
