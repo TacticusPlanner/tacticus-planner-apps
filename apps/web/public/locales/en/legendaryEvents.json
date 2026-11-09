@@ -153,6 +153,12 @@
     "next": "Next",
     "close": "Close"
   },
+  "unitChip": {
+    "abilities": "Active {{active}} · Passive {{passive}}",
+    "notOwned": "Not owned",
+    "rankShading": "Rank shading",
+    "rankShadingHint": "Tint units in their rank colour"
+  },
   "eventBoard": {
     "title": "Event board",
     "description": "Each shown lane's objectives, the units that fit each and the lane's teams side by side. Pick objectives to see the units that fit all of them, or a unit to start a team with it.",
@@ -163,6 +169,9 @@
     "columnUnits_other": "{{count}} units",
     "noUnits": "No units",
     "addTeam": "Start a team with this unit",
+    "showBest": "Show the best {{count}}",
+    "keysHint": "Use the arrow keys to move between units.",
+    "showAll": "Show all units (up to {{count}})",
     "locked": "Locked"
   },
   "laneSummary": {

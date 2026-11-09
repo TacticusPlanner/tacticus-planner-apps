@@ -57,12 +57,21 @@ function Tooltip({
   )
 }
 
+/**
+ * A tooltip trigger that also opens on touch: a tap toggles the tooltip (a link still navigates).
+ * With `disableTouchToggle` a tap only runs the trigger's own action.
+ */
 function TooltipTrigger({
   onClick,
   onPointerDown,
   onFocus,
+  disableTouchToggle = false,
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
+}: React.ComponentProps<typeof TooltipPrimitive.Trigger> & {
+  /** Skip the tap-to-open behaviour below: a trigger whose own tap action must stay the only
+   *  thing a tap does (it offers its details to touch users some other way, e.g. long-press). */
+  disableTouchToggle?: boolean
+}) {
   const context = React.useContext(TooltipTouchContext)
   const isTouchRef = React.useRef(false)
   // Our own record of whether a tap opened the tooltip, kept independent of Radix's internal
@@ -90,13 +99,13 @@ function TooltipTrigger({
       }}
       onFocus={(event) => {
         onFocus?.(event)
-        if (isTouchRef.current) {
+        if (isTouchRef.current && !disableTouchToggle) {
           openedByFocusRef.current = true
         }
       }}
       onClick={(event) => {
         onClick?.(event)
-        if (!isTouchRef.current) return
+        if (!isTouchRef.current || disableTouchToggle) return
         // A link trigger (e.g. a sidebar nav item) must navigate on tap, not toggle its tooltip:
         // the preventDefault below would also cancel the link's navigation, leaving taps dead on
         // touch devices (only long-press > Open in new tab worked).
@@ -134,6 +143,7 @@ function TooltipContent({
   // a tick so the very tap that opened it doesn't immediately close it too.
   React.useEffect(() => {
     if (!context?.open) return
+    /** Closes the tooltip on a tap anywhere; mouse and pen clicks are left to Radix. */
     const handlePointerDown = (event: PointerEvent) => {
       if (event.pointerType !== "touch") return
       context.setOpen(false)

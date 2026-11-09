@@ -166,7 +166,7 @@ export function TokenTeamPopover({
               data-unit={unit.unitId}
               key={unit.unitId}
             >
-              <EventUnitChip showStars unit={unit} />
+              <EventUnitChip unit={unit} />
             </li>
           ))}
         </ul>

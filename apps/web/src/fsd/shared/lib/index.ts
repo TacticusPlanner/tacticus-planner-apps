@@ -46,6 +46,7 @@ export {
   reportError,
   safeStorage,
   setErrorReporter,
+  useLongPress,
   usePersistedSelection,
   useSearchParamState,
 } from "./browser"
