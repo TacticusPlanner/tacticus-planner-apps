@@ -147,7 +147,7 @@ export function CollectionPage() {
       hasUnowned,
       hasSnapshotActions: isAuthenticated,
       compareReady: compare.mode === "ready",
-      hasSelectToggle: hasSummary && isAuthenticated,
+      hasSelectToggle: hasSummary && isAuthenticated && !selection.active,
     })
   )
   const view = state.status === "ready" ? state.view : undefined

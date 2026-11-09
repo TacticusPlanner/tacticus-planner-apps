@@ -117,6 +117,9 @@ function BulkGoalDialogContent({
   const { t } = useTranslation()
   const form = useBulkGoalForm(units)
   const plans = sent?.plans ?? form.plans
+  // Counted from the rows shown: after a run the form re-plans sent units as "already a goal".
+  const goalCount = plans.reduce((sum, plan) => sum + plan.specs.length, 0)
+  const unitCount = plans.filter((plan) => plan.specs.length > 0).length
 
   return (
     <>
@@ -156,9 +159,9 @@ function BulkGoalDialogContent({
                 ),
               })
             : t("goals.bulkCreate.summary", {
-                count: form.goalCount,
+                count: goalCount,
                 units: t("goals.bulkCreate.unitCount", {
-                  count: form.unitCount,
+                  count: unitCount,
                 }),
               })}
         </p>
