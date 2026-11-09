@@ -38,6 +38,7 @@ export {
   resourceLabel,
   type ResourceNeed,
   selectFarmNodes,
+  targetUnitsInSlots,
   type UnitCoverage,
   type UpgradeNeed,
   upgradeGoalRangeSlotItems,

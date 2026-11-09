@@ -208,4 +208,129 @@ describe("Upgrade goal need", () => {
       expect([ability, upgrade]).toEqual([1, 3])
     })
   })
+
+  describe("base materials inside crafted slots", () => {
+    // `upgCrafted` is crafted from 2 armor + 1 damage. Stone1 and Stone2 each hold one of it, so a
+    // Rank goal to Stone3 needs 4 armor, 2 damage and 2 `upgOther`.
+    const crafted = upgradeIdSchema.parse("upgCrafted")
+    const craftedUpgrades = new Map(upgradesById).set(crafted, {
+      id: crafted,
+      label: crafted,
+      rarity: "Uncommon",
+      stat: "health",
+      crafted: true,
+      recipe: [
+        { material: armor, count: 2 },
+        { material: damage, count: 1 },
+      ],
+      farmLocations: [],
+    } as unknown as FarmingUpgrade)
+    const craftedCharacter: FarmingCharacter = {
+      ...character,
+      rankUpUpgrades: [
+        { rank: "Stone1", upgradeIds: [crafted, other] },
+        { rank: "Stone2", upgradeIds: [crafted, other] },
+      ],
+    }
+    const craftedMow = {
+      primaryAbility: { recipes: [[crafted], [crafted]] },
+      secondaryAbility: { recipes: [] },
+    } as unknown as MowStorageModel
+    const craftedNeed = (detail: GoalDetail, coverage: Coverage) =>
+      calculateGoalResourceNeed({
+        detail,
+        character: craftedCharacter,
+        characterView: undefined,
+        mow: craftedMow,
+        playerCharacter: undefined,
+        playerMow: undefined,
+        inventoryShard: undefined,
+        upgradesById: craftedUpgrades,
+        ascensionCostsById: new Map(),
+        unlockShardCostsById: new Map(),
+        coveredAbilityTransitions: coverage,
+        coveredRankSlots: coverage.rankSlots,
+      })
+    const fullRange = { start: 0, end: 3 }
+    const amounts = (result: ReturnType<typeof need>) =>
+      [armor, damage, other].map((id) => count(result, id))
+
+    it("lowers the Rank goal's need when the Upgrade goal comes first", () => {
+      const coverage = createUnitCoverage()
+      const upgrade = craftedNeed(characterUpgrade(3, fullRange), coverage)
+      const rank = craftedNeed(rankGoal(3), coverage)
+      expect(amounts(upgrade)).toEqual([3, 0, 0])
+      expect(amounts(rank)).toEqual([1, 2, 2])
+    })
+
+    it("counts the Rank goal's pieces when the Rank goal comes first", () => {
+      const coverage = createUnitCoverage()
+      const rank = craftedNeed(rankGoal(3), coverage)
+      const upgrade = craftedNeed(characterUpgrade(3, fullRange), coverage)
+      expect(amounts(rank)).toEqual([4, 2, 2])
+      expect(amounts(upgrade)).toEqual([0, 0, 0])
+    })
+
+    it("adds what the range can't hold, in either order (6 armor)", () => {
+      const first = createUnitCoverage()
+      const upgradeFirst = [
+        craftedNeed(characterUpgrade(6, fullRange), first),
+        craftedNeed(rankGoal(3), first),
+      ]
+      const second = createUnitCoverage()
+      const rankFirst = [
+        craftedNeed(rankGoal(3), second),
+        craftedNeed(characterUpgrade(6, fullRange), second),
+      ]
+      for (const results of [upgradeFirst, rankFirst])
+        expect(count(results[0] ?? null) + count(results[1] ?? null)).toBe(6)
+      expect(amounts(upgradeFirst[1] ?? null)).toEqual([0, 2, 2])
+    })
+
+    it("lowers a MoW Ability goal's need on the same track", () => {
+      const coverage = createUnitCoverage()
+      const upgrade = craftedNeed(
+        upgradeGoal("Mow", {
+          targets: [{ upgradeId: armor, quantity: 3 }],
+          activeRange: { start: 1, end: 3 },
+        }),
+        coverage
+      )
+      const ability = craftedNeed(abilityGoal(3), coverage)
+      expect(amounts(upgrade)).toEqual([3, 0, 0])
+      expect(amounts(ability)).toEqual([1, 2, 0])
+    })
+  })
+
+  it("leaves the rest of a MoW transition to the Ability goal", () => {
+    // Row 0 holds `upgDmgC002`; the Upgrade goal claims it but not the row's other entries.
+    const rowMow = {
+      primaryAbility: { recipes: [[damage, other]] },
+      secondaryAbility: { recipes: [] },
+    } as unknown as MowStorageModel
+    const coverage = createUnitCoverage()
+    const run = (detail: GoalDetail) =>
+      calculateGoalResourceNeed({
+        detail,
+        character,
+        characterView: undefined,
+        mow: rowMow,
+        playerCharacter: undefined,
+        playerMow: undefined,
+        inventoryShard: undefined,
+        upgradesById,
+        ascensionCostsById: new Map(),
+        unlockShardCostsById: new Map(),
+        coveredAbilityTransitions: coverage,
+        coveredRankSlots: coverage.rankSlots,
+      })
+    run(
+      upgradeGoal("Mow", {
+        targets: [{ upgradeId: damage, quantity: 1 }],
+        activeRange: { start: 1, end: 2 },
+      })
+    )
+    const ability = run(abilityGoal(2))
+    expect([count(ability, damage), count(ability, other)]).toEqual([0, 1])
+  })
 })

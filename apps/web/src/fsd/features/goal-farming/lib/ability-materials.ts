@@ -29,7 +29,7 @@ type LadderRung = Pick<CharacterAbilityCostStorageModel, "gold" | "badges"> &
   Partial<Pick<MowUpgradeCostStorageModel, "forgeBadges" | "components">>
 
 /** Source levels whose transition (L -> L + 1) is still uncovered: not yet reached by the player and
- *  not claimed by a higher-priority goal. The same filter `uncoveredMowAbilityUpgradeIds` applies.
+ *  not claimed by a higher-priority goal. The same filter `abilityResourceNeed` applies.
  *  Claims the levels in `covered` when `claim` is set. */
 function uncoveredAbilityLevels(
   start: number,
