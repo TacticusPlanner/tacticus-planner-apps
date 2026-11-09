@@ -75,7 +75,7 @@ vi.mock("@azure/msal-browser", () => {
     InteractionRequiredAuthError,
     InteractionType: { Redirect: "redirect", Silent: "silent" },
     LogLevel: { Error: 0, Warning: 1, Info: 2, Verbose: 3 },
-    PromptValue: { CREATE: "create", LOGIN: "login" },
+    PromptValue: { CREATE: "create", LOGIN: "login", NONE: "none" },
     PublicClientApplication,
   }
 })
@@ -593,7 +593,7 @@ describe("authentication", () => {
       })
     })
 
-    it("skips the hidden frame once the restore has failed, so the caller can redirect at once", async () => {
+    it("skips the hidden frame once the restore has failed or is renewing, so the caller can redirect at once", async () => {
       const expired = new InteractionRequiredAuthError(
         "refresh_token_expired",
         "message"
@@ -606,7 +606,7 @@ describe("authentication", () => {
 
       await expect(
         auth.attemptSilentSignIn(mocks.instance as never)
-      ).resolves.toBe("failed")
+      ).resolves.toBe("redirecting")
       await expect(auth.acquireAccessToken()).rejects.toBe(expired)
       expect(mocks.instance.acquireTokenSilent).toHaveBeenLastCalledWith({
         account,
@@ -705,7 +705,7 @@ describe("authentication", () => {
       )
     })
 
-    it("fails silently, without logging, on an interaction-required error", async () => {
+    it("falls back to a quiet renewal, without logging, on an interaction-required error", async () => {
       mocks.instance.getAllAccounts.mockReturnValue([
         { homeAccountId: "cached" },
       ] as never)
@@ -718,11 +718,11 @@ describe("authentication", () => {
 
       await expect(
         auth.attemptSilentSignIn(mocks.instance as never)
-      ).resolves.toBe("failed")
+      ).resolves.toBe("redirecting")
       expect(error).not.toHaveBeenCalled()
     })
 
-    it("fails silently, without logging, on a silent-iframe timeout", async () => {
+    it("falls back to a quiet renewal, without logging, on a silent-iframe timeout", async () => {
       mocks.instance.getAllAccounts.mockReturnValue([
         { homeAccountId: "cached" },
       ] as never)
@@ -735,11 +735,11 @@ describe("authentication", () => {
 
       await expect(
         auth.attemptSilentSignIn(mocks.instance as never)
-      ).resolves.toBe("failed")
+      ).resolves.toBe("redirecting")
       expect(error).not.toHaveBeenCalled()
     })
 
-    it("fails silently but logs an unexpected error", async () => {
+    it("falls back to a quiet renewal but logs an unexpected error", async () => {
       mocks.instance.getAllAccounts.mockReturnValue([
         { homeAccountId: "cached" },
       ] as never)
@@ -750,11 +750,184 @@ describe("authentication", () => {
 
       await expect(
         auth.attemptSilentSignIn(mocks.instance as never)
-      ).resolves.toBe("failed")
+      ).resolves.toBe("redirecting")
       expect(error).toHaveBeenCalledWith(
         "[MSAL] silent sign-in failed unexpectedly",
         expect.any(Error)
       )
+    })
+  })
+
+  describe("quiet renewal", () => {
+    const emailAccount = { homeAccountId: "e", username: "user@example.test" }
+    const googleAccount = {
+      homeAccountId: "g",
+      username: "e4e360d1-0535-41be-8587-beaac444f7ee@tacticusplanner.test",
+      idTokenClaims: { idp: "google.com" },
+    }
+
+    beforeEach(() => {
+      mocks.instance.acquireTokenSilent.mockRejectedValue(
+        new InteractionRequiredAuthError("refresh_token_expired", "message")
+      )
+      mocks.instance.ssoSilent.mockRejectedValue(
+        new InteractionRequiredAuthError("login_required", "message")
+      )
+      mocks.instance.acquireTokenRedirect.mockResolvedValue(undefined)
+      mocks.instance.loginRedirect.mockResolvedValue(undefined)
+    })
+
+    it("renews a cached account with a top-level prompt=none redirect once the frame fails", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("redirecting")
+
+      expect(mocks.instance.ssoSilent).toHaveBeenCalledOnce()
+      expect(
+        mocks.instance.acquireTokenRedirect
+      ).toHaveBeenCalledExactlyOnceWith({
+        account: emailAccount,
+        scopes: ["api://planner/access", "email"],
+        prompt: "none",
+      })
+      expect(
+        Number(localStorage.getItem("tp.auth.quietRenewal"))
+      ).toBeGreaterThan(0)
+    })
+
+    it("renews a Google account without hinting its generated username", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([googleAccount] as never)
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("redirecting")
+
+      expect(mocks.instance.acquireTokenRedirect).not.toHaveBeenCalled()
+      expect(mocks.instance.setActiveAccount).toHaveBeenLastCalledWith(null)
+      expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
+        scopes: ["api://planner/access", "email"],
+        prompt: "none",
+      })
+    })
+
+    it("renews from the account hint when the tab holds no account", async () => {
+      localStorage.setItem(
+        "tp.auth.accountHint",
+        JSON.stringify({ homeAccountId: "e", username: "user@example.test" })
+      )
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("redirecting")
+
+      expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
+        scopes: ["api://planner/access", "email"],
+        loginHint: "user@example.test",
+        prompt: "none",
+      })
+    })
+
+    it("is not repeated while a recent attempt is cooling down", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+      localStorage.setItem("tp.auth.quietRenewal", String(Date.now() - 60_000))
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("failed")
+
+      expect(mocks.instance.ssoSilent).not.toHaveBeenCalled()
+      expect(mocks.instance.acquireTokenRedirect).not.toHaveBeenCalled()
+    })
+
+    it("runs again once the cooldown has passed", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+      localStorage.setItem(
+        "tp.auth.quietRenewal",
+        String(Date.now() - auth.QUIET_RENEWAL_COOLDOWN_MS - 1)
+      )
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("redirecting")
+    })
+
+    it("is skipped while a fresh login is required", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+      localStorage.setItem("tp.auth.freshLogin", "1")
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("failed")
+
+      expect(mocks.instance.acquireTokenRedirect).not.toHaveBeenCalled()
+    })
+
+    it("fails the restore when the redirect cannot start", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+      mocks.instance.acquireTokenRedirect.mockRejectedValueOnce(
+        new Error("blocked")
+      )
+      vi.spyOn(console, "warn").mockImplementation(() => {})
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("failed")
+    })
+
+    it("is joined by a caller that asks for interaction meanwhile", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+      await auth.initializeAuthentication()
+
+      await auth.attemptSilentSignIn(mocks.instance as never)
+      await auth.requestInteraction()
+
+      expect(mocks.instance.acquireTokenRedirect).toHaveBeenCalledOnce()
+    })
+
+    it("comes back without a session quietly: no toast, no fresh login, nothing forgotten", async () => {
+      const hint = JSON.stringify({ homeAccountId: "e", username: "u@x.test" })
+      localStorage.setItem("tp.auth.accountHint", hint)
+      localStorage.setItem("tp.auth.quietRenewal", String(Date.now() - 2000))
+      mocks.instance.handleRedirectPromise.mockRejectedValue(
+        new InteractionRequiredAuthError("login_required", "AADSTS50058")
+      )
+
+      await auth.initializeAuthentication()
+
+      expect(auth.takeSignInRedirectFailure()).toBeNull()
+      expect(mocks.instance.clearCache).not.toHaveBeenCalled()
+      expect(localStorage.getItem("tp.auth.freshLogin")).toBeNull()
+      expect(localStorage.getItem("tp.auth.accountHint")).toBe(hint)
+      expect(localStorage.getItem("tp.auth.quietRenewal")).not.toBeNull()
+    })
+
+    it("comes back signed in on the page it left, the landing page included", async () => {
+      window.history.replaceState(null, "", "/")
+      localStorage.setItem("tp.auth.quietRenewal", String(Date.now() - 2000))
+      mocks.instance.handleRedirectPromise.mockResolvedValue({
+        account: emailAccount,
+      })
+
+      await auth.initializeAuthentication()
+
+      expect(window.location.pathname).toBe("/")
+      expect(mocks.instance.setActiveAccount).toHaveBeenCalledWith(emailAccount)
+      expect(localStorage.getItem("tp.auth.quietRenewal")).toBeNull()
+    })
+
+    it("treats any other error on the way back as a failed sign-in", async () => {
+      vi.spyOn(console, "warn").mockImplementation(() => {})
+      localStorage.setItem("tp.auth.quietRenewal", String(Date.now() - 2000))
+      mocks.instance.handleRedirectPromise.mockRejectedValue(
+        new AuthError("server_error", "message")
+      )
+
+      await auth.initializeAuthentication()
+
+      expect(auth.takeSignInRedirectFailure()).toBe("failed")
+      expect(localStorage.getItem("tp.auth.quietRenewal")).toBeNull()
     })
   })
 })
