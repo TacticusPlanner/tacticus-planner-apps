@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
+  CLEAR_ESTIMATE_CURVE_VERSION,
   currentLegendaryEventRun,
   legendaryEventPlanQueries,
   resolveLegendaryEventRunsAt,
@@ -355,6 +356,13 @@ describe("useLegendaryEventPlan", () => {
       depth: 9,
       estimate: null,
       fromEstimate: false,
+      source: "card",
+      sureDepth: null,
+      stretchDepth: null,
+      effectivePower: null,
+      teamPower: null,
+      memberCount: null,
+      curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
     })
   })
 
@@ -477,6 +485,13 @@ describe("useLegendaryEventPlan", () => {
       depth: 7,
       estimate: 6,
       fromEstimate: true,
+      source: "card",
+      sureDepth: null,
+      stretchDepth: null,
+      effectivePower: null,
+      teamPower: null,
+      memberCount: null,
+      curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
     })
   })
 
@@ -506,6 +521,13 @@ describe("useLegendaryEventPlan", () => {
           depth: 4,
           estimate: 3,
           fromEstimate: true,
+          source: "editor",
+          sureDepth: null,
+          stretchDepth: null,
+          effectivePower: null,
+          teamPower: null,
+          memberCount: null,
+          curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
         },
       ])
     })

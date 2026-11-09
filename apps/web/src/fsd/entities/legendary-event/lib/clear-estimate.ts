@@ -33,6 +33,10 @@ export const CLEAR_ESTIMATE_CURVE = {
   stretchRatio: 0.7,
 } as const
 
+/** Names the curve above in analytics, so results logged under different curves are not mixed.
+ *  Bump it whenever a ratio or the exponent changes. */
+export const CLEAR_ESTIMATE_CURVE_VERSION = "2026-11-09-e0.25"
+
 /** True once the curve is fitted to observed clears. */
 export const CLEAR_ESTIMATE_CALIBRATED = true
 
@@ -79,6 +83,8 @@ export interface ClearEstimate {
   /** The depth at the most lenient ratio: battles past it are out of reach (≥ depth). */
   stretchDepth: number
   battleCount: number
+  /** The power the estimate read: effective power for a team (horde-mode multipliers included). */
+  power: number
   /** How far above battle `depth`'s threshold, in whole percent; null when `depth` is 0. */
   marginAbovePct: number | null
   /** How far short of battle `depth + 1`'s threshold, in whole percent; null at the last battle. */
@@ -274,6 +280,7 @@ export function estimateClearDepth(
       ? Math.max(depth, depthAt(power, battlePowers, curve.stretchRatio, curve))
       : depth,
     battleCount: battlePowers.length,
+    power,
     marginAbovePct:
       depth > 0 ? Math.round((power / threshold(depth - 1) - 1) * 100) : null,
     shortfallToNextPct:

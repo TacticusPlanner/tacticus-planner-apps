@@ -1237,6 +1237,21 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
           body: expect.objectContaining({ expectedBattleClears: 1 }),
         })
       )
+      expect(analytics.capture).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "legendary_event_token_result",
+          eventId: "astarLysander",
+          laneId: "alpha",
+          battleIndex: 1,
+          outcome: "couldNotClear",
+          depthBefore: 3,
+          depthBeforeManual: true,
+          depthAfter: 1,
+          otherTeamReaches: false,
+          memberCount: 3,
+          curveVersion: expect.any(String),
+        })
+      )
       // Alpha now stops at battle 1, leaving battle 1's kill score.
       const card = await screen.findByTestId("next-token-view")
       await vi.waitFor(() => expect(card).toHaveAttribute("data-battle", "0"))

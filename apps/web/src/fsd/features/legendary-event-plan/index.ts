@@ -4,9 +4,13 @@
 // write queue.
 export {
   useLegendaryEventPlan,
-  type DepthEstimateContext,
   type LegendaryEventPlanActions,
 } from "./model/use-legendary-event-plan"
+export {
+  depthEstimateContext,
+  estimateSnapshot,
+  type DepthEstimateContext,
+} from "./model/depth-estimate-context"
 export type { PickerEstimates, PickerGoalsPreview } from "./model/team-picker"
 export { assertLaneHasRoom, laneTeams } from "./model/plan-patches"
 export { TeamEditorDialog } from "./ui/team-editor-dialog"

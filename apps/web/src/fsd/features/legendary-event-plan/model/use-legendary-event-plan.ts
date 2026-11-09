@@ -18,6 +18,10 @@ import {
 import { useAnalyticsActions } from "@/shared/analytics"
 
 import {
+  estimateSnapshot,
+  type DepthEstimateContext,
+} from "./depth-estimate-context"
+import {
   assertLaneHasRoom,
   draftOfTeam,
   isCurrentLaneOrder,
@@ -91,6 +95,8 @@ export function useLegendaryEventPlan({
       depth,
       estimate: shown.estimate,
       fromEstimate: shown.fromEstimate,
+      source: shown.source ?? "editor",
+      ...estimateSnapshot(shown),
     })
   }
 
@@ -223,6 +229,8 @@ export function useLegendaryEventPlan({
         depth,
         estimate: shown.estimate,
         fromEstimate: shown.fromEstimate,
+        source: shown.source ?? "card",
+        ...estimateSnapshot(shown),
       })
     )
 
@@ -248,12 +256,6 @@ export function useLegendaryEventPlan({
     setDepth,
     restoreEstimate,
   }
-}
-
-/** The estimate shown when a depth was edited (null when none was shown). */
-export interface DepthEstimateContext {
-  estimate: number | null
-  fromEstimate: boolean
 }
 
 /** Where a new team came from: the editor from scratch, or a team suggestion (1-based rank). */

@@ -19,10 +19,8 @@ import { seedGameCatalog } from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
 
 import type { TeamDraft } from "../model/plan-patches"
-import type {
-  DepthEstimateContext,
-  PlanMutationOutcome,
-} from "../model/use-legendary-event-plan"
+import type { DepthEstimateContext } from "../model/depth-estimate-context"
+import type { PlanMutationOutcome } from "../model/use-legendary-event-plan"
 import { TeamEditorDialog } from "./team-editor-dialog"
 
 beforeEach(async () => {
@@ -151,7 +149,7 @@ describe("TeamEditorDialog", () => {
         objectiveIndexes: [0, 1],
         name: "α · Melee · Min 5 hits",
       }),
-      { estimate: null, fromEstimate: false }
+      expect.objectContaining({ estimate: null, fromEstimate: false })
     )
   })
 
@@ -222,7 +220,7 @@ describe("TeamEditorDialog", () => {
         objectiveIndexes: [],
         expectedBattleClears: 1,
       },
-      { estimate: null, fromEstimate: false }
+      expect.objectContaining({ estimate: null, fromEstimate: false })
     )
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
@@ -325,6 +323,7 @@ describe("TeamEditorDialog", () => {
       sureDepth: memberUnitIds.length,
       stretchDepth: memberUnitIds.length,
       battleCount: 18,
+      power: 100_000,
       marginAbovePct: 0,
       shortfallToNextPct: 0,
       calibrated: true,
@@ -362,6 +361,7 @@ describe("TeamEditorDialog", () => {
       sureDepth: memberUnitIds.length,
       stretchDepth: memberUnitIds.length,
       battleCount: 18,
+      power: 100_000,
       marginAbovePct: 12,
       shortfallToNextPct: 30,
       calibrated: true,
@@ -389,7 +389,7 @@ describe("TeamEditorDialog", () => {
       })
       expect(onSubmit).toHaveBeenLastCalledWith(
         expect.objectContaining({ expectedBattleClears: null }),
-        { estimate: 3, fromEstimate: true }
+        expect.objectContaining({ estimate: 3, fromEstimate: true })
       )
 
       fireEvent.click(
@@ -402,7 +402,7 @@ describe("TeamEditorDialog", () => {
       // The override log gets the estimate the depth was stepped from.
       expect(onSubmit).toHaveBeenLastCalledWith(
         expect.objectContaining({ expectedBattleClears: 4 }),
-        { estimate: 3, fromEstimate: true }
+        expect.objectContaining({ estimate: 3, fromEstimate: true })
       )
     })
 
@@ -437,6 +437,7 @@ describe("TeamEditorDialog", () => {
       sureDepth: memberUnitIds.length,
       stretchDepth: memberUnitIds.length,
       battleCount: 18,
+      power: 100_000,
       marginAbovePct: 12,
       shortfallToNextPct: 30,
       calibrated: true,

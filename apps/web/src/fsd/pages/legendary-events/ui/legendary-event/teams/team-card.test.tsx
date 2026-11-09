@@ -61,7 +61,10 @@ const actions = () => ({
   onUseEstimate: vi.fn(),
 })
 
-const NO_ESTIMATE = { estimate: null, fromEstimate: false }
+const NO_ESTIMATE = expect.objectContaining({
+  estimate: null,
+  fromEstimate: false,
+})
 
 /** The worked Uthar Alpha team's estimate (spec: 6, 21% above, 32% short). */
 const estimateOf = (overrides: Partial<ClearEstimate> = {}): ClearEstimate => {
@@ -71,6 +74,7 @@ const estimateOf = (overrides: Partial<ClearEstimate> = {}): ClearEstimate => {
     sureDepth: depth,
     stretchDepth: depth,
     battleCount: 18,
+    power: 100_000,
     marginAbovePct: 21,
     shortfallToNextPct: 32,
     calibrated: true,
@@ -542,10 +546,17 @@ describe("TeamCard", () => {
       act(() => {
         vi.advanceTimersByTime(400)
       })
-      expect(cardActions.onDepthChange).toHaveBeenCalledWith(7, {
-        estimate: 6,
-        fromEstimate: true,
-      })
+      expect(cardActions.onDepthChange).toHaveBeenCalledWith(
+        7,
+        expect.objectContaining({
+          estimate: 6,
+          fromEstimate: true,
+          sureDepth: 6,
+          stretchDepth: 6,
+          effectivePower: 100_000,
+          source: "card",
+        })
+      )
     } finally {
       vi.useRealTimers()
     }
