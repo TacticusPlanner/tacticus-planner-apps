@@ -196,6 +196,8 @@ export function TeamEditorDialog({
         fromEstimate: editStartsFromEstimate(initialDraft.depth, estimate),
         teamPower: null,
         memberCount: draft.memberUnitIds.length,
+        unitIds: draft.memberUnitIds,
+        objectiveIndexes: checked,
         source: "editor",
       })
     )

@@ -362,6 +362,8 @@ describe("useLegendaryEventPlan", () => {
       effectivePower: null,
       teamPower: null,
       memberCount: null,
+      unitIds: null,
+      objectiveIndexes: null,
       curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
     })
   })
@@ -491,6 +493,8 @@ describe("useLegendaryEventPlan", () => {
       effectivePower: null,
       teamPower: null,
       memberCount: null,
+      unitIds: null,
+      objectiveIndexes: null,
       curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
     })
   })
@@ -527,6 +531,8 @@ describe("useLegendaryEventPlan", () => {
           effectivePower: null,
           teamPower: null,
           memberCount: null,
+          unitIds: null,
+          objectiveIndexes: null,
           curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
         },
       ])
