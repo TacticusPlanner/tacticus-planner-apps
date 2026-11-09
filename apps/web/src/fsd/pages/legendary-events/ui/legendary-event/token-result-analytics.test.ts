@@ -23,7 +23,7 @@ describe("tokenResultEvent", () => {
         run: 2,
         laneId: "beta",
         battleIndex: 8,
-        status: "stopHere",
+        action: "stopHere",
         shown,
         depthBefore: { depth: 9, estimated: true },
         depthAfter: 8,
@@ -56,7 +56,7 @@ describe("tokenResultEvent", () => {
       run: null,
       laneId: "alpha",
       battleIndex: 0,
-      status: "maybeClear",
+      action: "maybeClear",
       shown: { estimate: null, fromEstimate: false },
       depthBefore: undefined,
       depthAfter: null,
@@ -70,5 +70,21 @@ describe("tokenResultEvent", () => {
       teamPower: null,
       memberCount: null,
     })
+  })
+
+  it("labels Stop here as a team stopped early", () => {
+    expect(
+      tokenResultEvent({
+        eventId: "fabiusBile",
+        run: 1,
+        laneId: "gamma",
+        battleIndex: 8,
+        action: "stopEarly",
+        shown,
+        depthBefore: { depth: 10, estimated: true },
+        depthAfter: 8,
+        otherTeamReaches: false,
+      })
+    ).toMatchObject({ outcome: "stoppedEarly", depthBefore: 10, depthAfter: 8 })
   })
 })

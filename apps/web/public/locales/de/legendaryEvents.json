@@ -734,7 +734,10 @@
         "partly": "Teilweise geschafft",
         "couldNot": "Nicht geschafft",
         "partlyLabel": "Teilweise geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Vielleicht schaffbar“ markieren",
-        "couldNotLabel": "Nicht geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Hier aufhören“ markieren"
+        "couldNotLabel": "Nicht geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Hier aufhören“ markieren",
+        "stop": "Hier aufhören",
+        "stopLabel": "Hier aufhören: {{team}} auf {{lane}} nach Kampf {{previous}} beenden und andere Teams planen",
+        "stopHint": "Beendet dieses Team nach Kampf {{previous}} und plant mit anderen Teams weiter"
       },
       "loading": "Token-Plan wird geladen…",
       "unavailable": "Synchronisierter Fortschritt ist nicht verfügbar, daher gibt es keinen Token-Plan",

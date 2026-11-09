@@ -115,7 +115,8 @@ type LegendaryEventTokenResultEvent = {
   laneId: string
   /** 0-based. */
   battleIndex: number
-  outcome: "partlyCleared" | "couldNotClear"
+  /** `stoppedEarly`: Stop here, the player ended the team before trying this battle. */
+  outcome: "partlyCleared" | "couldNotClear" | "stoppedEarly"
   /** The headline estimate (null without one). */
   estimate: number | null
   depthBefore: number | null

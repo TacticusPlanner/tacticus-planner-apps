@@ -37,6 +37,7 @@ import type { RunHistory } from "../../lib/run-history"
 import type { UpgradeImpactState } from "@/features/legendary-event-goals"
 import type {
   MarkTokenHandler,
+  StopTeamHandler,
   OpenTeamsHandler,
   TokenPlanView,
 } from "@/features/legendary-event-tokens"
@@ -191,6 +192,8 @@ interface TokensViewModel {
   view: TokenPlanView
   /** Absent while marks cannot be written (signed out, or the plan has not loaded). */
   onMarkToken: MarkTokenHandler | undefined
+  /** Stop here on a likely-clear token; absent while depths cannot be written. */
+  onStopTeam: StopTeamHandler | undefined
   /** Opens Teams with the lane shown and scrolls its Teams section (or one team's card) into view. */
   onOpenTeams: OpenTeamsHandler
 }
