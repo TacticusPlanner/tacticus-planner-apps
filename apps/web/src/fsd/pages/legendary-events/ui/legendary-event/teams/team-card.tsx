@@ -422,12 +422,25 @@ function TeamDepthBar({
       : depth === 0
         ? t("teams.depthBar.cannotClear")
         : t("teams.depthBar.battles", { depth })
+  const bands =
+    bar.tone !== "manual" && (bar.sure < bar.filled || bar.stretch > bar.filled)
+      ? t("teams.depthBar.bands", {
+          sure: bar.sure,
+          depth: bar.filled,
+          stretch: bar.stretch,
+        })
+      : undefined
   const hint =
     bar.tone === "manual"
       ? t("teams.depthBar.manual")
-      : bar.tone === "close" && depth !== null
-        ? t("teams.depthBar.close", { battle: depth + 1 })
-        : undefined
+      : [
+          bar.tone === "close" && depth !== null
+            ? t("teams.depthBar.close", { battle: depth + 1 })
+            : undefined,
+          bands,
+        ]
+          .filter(Boolean)
+          .join(" · ") || undefined
   const label =
     depth === null
       ? headline
@@ -459,8 +472,23 @@ function TeamDepthBar({
           <span
             className={cn(
               "h-full flex-1 first:rounded-l-full last:rounded-r-full",
-              index < bar.filled ? TONE_CLASS[bar.tone] : "bg-muted"
+              index < bar.filled || index < bar.stretch
+                ? TONE_CLASS[bar.tone]
+                : "bg-muted",
+              // Sure battles are solid; close ones (past sure, within the depth) and stretch ones
+              // (past the depth) fade.
+              index >= bar.sure && index < bar.filled && "opacity-60",
+              index >= bar.filled && index < bar.stretch && "opacity-25"
             )}
+            data-band={
+              index < bar.sure
+                ? "sure"
+                : index < bar.filled
+                  ? "close"
+                  : index < bar.stretch
+                    ? "stretch"
+                    : undefined
+            }
             key={index}
           />
         ))}

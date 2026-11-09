@@ -4,14 +4,14 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { ClearEstimate } from "@/entities/legendary-event"
 
-import { clearDepthDisplay } from "../model/clear-depth-display"
+import { clearDepthDisplay, hasRange } from "../model/clear-depth-display"
 import { ClearDepthStepper } from "./clear-depth-stepper"
 
 /**
  * A team's clear depth for the current run with its estimate (design D5): without a manual depth
  * the stepper shows the estimate marked "estimated" (with "uncalibrated" in its tooltip while the
  * dataset has no samples) and its margin line, and − / + start from it; with a manual depth it
- * shows a muted "estimate ~n" hint and Use estimate, which clears the manual depth (`onChange`
+ * shows a muted "estimate ~n" hint (with its sure–stretch range when it has one) and Use estimate, which clears the manual depth (`onChange`
  * null). Without an estimate it is the plain manual stepper with its clear control.
  */
 export function ClearDepthField({
@@ -104,6 +104,12 @@ export function ClearDepthField({
                   percent: number.format(display.estimate.shortfallToNextPct),
                   battle: display.estimate.depth + 1,
                 }),
+            hasRange(display.estimate)
+              ? t("estimates.range", {
+                  sure: display.estimate.sureDepth,
+                  stretch: display.estimate.stretchDepth,
+                })
+              : null,
           ]
             .filter(Boolean)
             .join(" · ")}
@@ -120,7 +126,13 @@ export function ClearDepthField({
             className="text-xs text-muted-foreground tabular-nums"
             data-testid={`${testId}-hint`}
           >
-            {t("estimates.estimateHint", { depth: estimate.depth })}
+            {hasRange(estimate)
+              ? t("estimates.estimateHintRange", {
+                  depth: estimate.depth,
+                  sure: estimate.sureDepth,
+                  stretch: estimate.stretchDepth,
+                })
+              : t("estimates.estimateHint", { depth: estimate.depth })}
           </span>
           <Button
             className="h-auto px-1.5 py-0.5 text-xs"
