@@ -3,7 +3,7 @@ import type { DailyRaidsViewModel } from "@/features/daily-raids"
 import { questDropNeed } from "./quest-drop-need"
 
 /** A quest drop the player's goals still need, with every battle that drops it. */
-export type QuestGoalDrop<TId extends string = string> = {
+type QuestGoalDrop<TId extends string = string> = {
   upgradeId: TId
   have: number
   need: number
