@@ -182,5 +182,6 @@ Pull requests should include a brief summary, validation steps run (`pnpm lint`,
 Open short-lived topic branches from `main` and squash-merge reviewed pull
 requests back into `main`. Delete topic branches after merging. For supported
 releases, fix defects on `main` first and backport the squash commit through a
-pull request into `release/X.Y`. See `RELEASING.md` for the complete release
-and patch process.
+pull request into the release branch (`release/X.Y` or `release/X.Y.Z`), then
+run the Release workflow's `hotfix` bump from it. See `RELEASING.md` for the
+complete release, patch and hotfix process.
