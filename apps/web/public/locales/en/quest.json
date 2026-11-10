@@ -38,7 +38,8 @@
     "perfect": "Perfect",
     "tierPoints": "{{points}} / {{max}}",
     "show": "Show battle {{number}}",
-    "dropOdds": "Drops {{name}}, {{numerator}} in {{denominator}}"
+    "dropOdds": "Drops {{name}}, {{numerator}} in {{denominator}}",
+    "hint": "Open a battle for its team, enemies and drop."
   },
   "entry": {
     "title": "Your best attempt",
@@ -133,7 +134,15 @@
     "orbsNote": "Ascensions also need orbs, which are not counted here.",
     "shardsOnly": "Sync your account to see what these shards mean for {{hero}}.",
     "createGoal": "Create goal",
-    "openGoal": "Open goal"
+    "openGoal": "Open goal",
+    "left": {
+      "title": "Still to earn",
+      "medals": "Medals left",
+      "shards": "{{hero}} shards left",
+      "crates_one": "{{count}} crate left",
+      "crates_other": "{{count}} crates left",
+      "none": "Every one-time reward is earned."
+    }
   },
   "tokens": {
     "title": "Attempts",
@@ -181,7 +190,13 @@
       "MinHits": "{{hero}} has fewer than {{count}} hits",
       "UseNoSummons": "{{hero}} summons",
       "DoNoHealOrRepair": "{{hero}} heals or repairs"
-    }
+    },
+    "allOptions": "All {{count}} options",
+    "optionsTitle": "Eligible units for battle {{number}}",
+    "optionsHint": "Strongest first at the tier cap. Pick units to compare team power; picks are not saved.",
+    "optionsSelected": "{{count}} of {{slots}} picked · team power {{power}}",
+    "optionsReset": "Reset to suggested",
+    "optionsClose": "Close"
   },
   "estimate": {
     "title": "Clear estimate",
@@ -205,5 +220,11 @@
     "capGain": "{{name}}: +{{gain}} power at the cap",
     "projected": "Projected: {{total}} / {{max}} · {{opened}} of {{count}} crates (estimate, uncalibrated)",
     "projectedShards": "Projected: {{shards}} shards (estimate, uncalibrated)"
+  },
+  "goalDrops": {
+    "title": "Drops for your goals",
+    "empty": "Your goals need none of this quest's drops.",
+    "have": "{{have}} / {{need}}",
+    "battles": "Battles"
   }
 }
