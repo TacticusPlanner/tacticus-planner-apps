@@ -22,6 +22,7 @@ import {
   QuestHeader,
   QuestPicker,
   QuestSummary,
+  questRewardsLeft,
   questShards,
   questTokenPlan,
   RewardsCard,
@@ -50,9 +51,11 @@ import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import type { EnemyNpcs } from "@/widgets/battle-preview"
 
 import { questDropNeed } from "../model/quest-drop-need"
+import { questGoalDrops } from "../model/quest-goal-drops"
 import { questGoalAction } from "../model/quest-goal-action"
 
 import { QuestBattleDetail } from "./quest/quest-battle-detail"
+import { QuestGoalDrops } from "./quest/quest-goal-drops"
 import { useQuestTutorial } from "./quest-page.tutorial"
 
 const NO_FACTIONS: readonly string[] = []
@@ -323,7 +326,11 @@ export function QuestPage() {
   )
   const team = (
     <>
-      <QuestTeamSection nameOf={unitName} view={teamView} />
+      <QuestTeamSection
+        battleNumber={selected?.number ?? null}
+        nameOf={unitName}
+        view={teamView}
+      />
       {selected ? (
         <QuestEstimateBlock
           estimate={selectedPlan?.estimate ?? null}
@@ -427,11 +434,12 @@ export function QuestPage() {
         tokens={editable ? progress.tokens : null}
       />
     ) : null
+    const crateViews = crateList && score ? crateTrack(crateList, score) : null
     const rewardsCard = (
       <RewardsCard
         alliance={heroRecord?.alliance ?? null}
         bundle={bundle}
-        crates={crateList && score ? crateTrack(crateList, score) : null}
+        crates={crateViews}
         goalAction={
           goalAction ? (
             <Button
@@ -451,6 +459,9 @@ export function QuestPage() {
         }
         hero={shownHeroLabel}
         isMobile={isMobile}
+        left={
+          browsing || !crateViews ? null : questRewardsLeft(shards, crateViews)
+        }
         meaning={meaning}
         onBundleChange={editable ? progress.actions.setBundle : null}
         onOpenChange={setRewardsOpen}
@@ -460,6 +471,13 @@ export function QuestPage() {
         }
         retryCrates={crates.retry}
         shards={shards}
+      />
+    )
+    const goalDrops = (
+      <QuestGoalDrops
+        drops={questGoalDrops(raids, battles)}
+        onSelect={select}
+        upgradesById={upgradesById}
       />
     )
     const list = (
@@ -481,6 +499,7 @@ export function QuestPage() {
           {summary}
           {tokensCard}
           {rewardsCard}
+          {goalDrops}
           {list}
           <Sheet onOpenChange={setSheetOpen} open={sheetOpen && !!selected}>
             <SheetContent data-testid="quest-battle-sheet" side="bottom">
@@ -514,6 +533,7 @@ export function QuestPage() {
         <div className="space-y-5">
           {summary}
           {tokensCard}
+          {goalDrops}
           {list}
         </div>
         <div className="space-y-5">

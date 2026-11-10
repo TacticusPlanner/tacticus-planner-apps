@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon, ChevronRightIcon } from "lucide-react"
 import {
   heroStarIcon,
   rarityIcon,
@@ -52,6 +52,12 @@ export function BattleList({
       className="flex min-w-0 flex-col gap-3"
       data-testid="quest-battle-list"
     >
+      <p
+        className="text-sm text-muted-foreground"
+        data-testid="quest-battle-hint"
+      >
+        {t("quest:battles.hint")}
+      </p>
       {battlesByTier(battles).map((group) => {
         const tierScore = score?.tiers.find((tier) => tier.tier === group.tier)
         const tierName = t(`progression:rarities.${group.tier}`)
@@ -210,6 +216,10 @@ export function BattleList({
                               </span>
                             ) : null}
                           </span>
+                          <ChevronRightIcon
+                            aria-hidden
+                            className="size-4 shrink-0 self-center text-muted-foreground"
+                          />
                         </button>
                       </li>
                     )
