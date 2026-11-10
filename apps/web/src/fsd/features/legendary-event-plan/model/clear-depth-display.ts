@@ -43,3 +43,13 @@ export function clearDepthSummary(
   if (estimate) return { kind: "estimate", depth: estimate.depth }
   return { kind: "unset" }
 }
+
+/** Whether the estimate's sure and stretch depths differ from its headline depth. */
+export function hasRange(
+  estimate: Pick<ClearEstimate, "depth" | "sureDepth" | "stretchDepth">
+): boolean {
+  return (
+    estimate.sureDepth !== estimate.depth ||
+    estimate.stretchDepth !== estimate.depth
+  )
+}

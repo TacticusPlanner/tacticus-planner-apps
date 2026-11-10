@@ -59,6 +59,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
     },
     snapshot: null,
     dependsOn: [],
+    linkedGoalIds: [],
     projectIds: [],
     revision: 1,
     ...overrides,

@@ -11,13 +11,14 @@ import {
 } from "@workspace/game-domain"
 import type { MowStorageModel } from "@workspace/game-catalog"
 
-import type { UpgradeRange } from "@/entities/goal"
+import { useGlobalGoalPlan, type UpgradeRange } from "@/entities/goal"
 import type {
   UpgradeWithFarmLocations,
   Character,
 } from "@/features/rank-lookup/@x/goal-create"
 
 import { isValidUpgradeQuantity } from "../target-edit/goal-target-edit"
+import { useUpgradeLinks } from "./upgrade-links"
 import {
   characterRelevantUpgradeQuantities,
   computeUpgradeGoalNeed,
@@ -149,6 +150,15 @@ export function useUpgradeFields({
     mowPassiveRange,
   ])
 
+  // "Counts toward": the unit's in-flight Rank (or MoW Ability) goals the new goal links to.
+  const upgradeLinks = useUpgradeLinks(
+    useGlobalGoalPlan().inFlight,
+    character
+      ? { entityType: "Character", entityId: character.id }
+      : { entityType: "Mow", entityId: mow?.id ?? "" },
+    upgradeRanges
+  )
+
   const upgradeGoalNeed = useMemo(
     () =>
       computeUpgradeGoalNeed({
@@ -165,13 +175,25 @@ export function useUpgradeFields({
 
   // `quantity` prefills from the picker's own required-amount hint (relevantUpgradeQuantities) —
   // still freely editable afterward via setUpgradeTargetQuantity, same as a manually typed value.
-  const addUpgradeTarget = (upgradeId: UpgradeId, quantity: number) => {
-    setUpgradeTargets((current) =>
-      current.some((target) => target.upgradeId === upgradeId)
+  const addUpgradeTargets = (
+    added: readonly { upgradeId: UpgradeId; quantity: number }[]
+  ) => {
+    setUpgradeTargets((current) => {
+      const picked = new Set(current.map((target) => target.upgradeId))
+      const fresh = added.filter(({ upgradeId }) => !picked.has(upgradeId))
+      return fresh.length === 0
         ? current
-        : [...current, { upgradeId, quantity: Math.max(1, quantity) }]
-    )
+        : [
+            ...current,
+            ...fresh.map(({ upgradeId, quantity }) => ({
+              upgradeId,
+              quantity: Math.max(1, quantity),
+            })),
+          ]
+    })
   }
+  const addUpgradeTarget = (upgradeId: UpgradeId, quantity: number) =>
+    addUpgradeTargets([{ upgradeId, quantity }])
 
   const removeUpgradeTarget = (upgradeId: UpgradeId) => {
     setUpgradeTargets((current) =>
@@ -247,8 +269,15 @@ export function useUpgradeFields({
       mowPassiveRange,
       setMowPassiveRange,
       upgradeRanges,
+      upgradeLinks,
+      // What the spec builder takes for the Upgrade goal's range(s) and links.
+      upgradeSpec: {
+        upgradeRanges,
+        upgradeLinkedGoalIds: upgradeLinks.selected,
+      },
       upgradeTargets,
       addUpgradeTarget,
+      addUpgradeTargets,
       removeUpgradeTarget,
       setUpgradeTargetQuantity,
       relevantUpgradeQuantities,

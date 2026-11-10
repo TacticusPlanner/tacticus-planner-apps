@@ -46,10 +46,11 @@ import {
   editStartsFromEstimate,
 } from "../model/clear-depth-display"
 import type { PickerEstimates, PickerGoalsPreview } from "../model/team-picker"
-import type {
-  DepthEstimateContext,
-  PlanMutationOutcome,
-} from "../model/use-legendary-event-plan"
+import {
+  depthEstimateContext,
+  type DepthEstimateContext,
+} from "../model/depth-estimate-context"
+import type { PlanMutationOutcome } from "../model/use-legendary-event-plan"
 import { ClearDepthField } from "./clear-depth-field"
 import { TeamEditorSummary } from "./team-editor-summary"
 import { TeamMemberCount } from "./team-member-count"
@@ -189,10 +190,17 @@ export function TeamEditorDialog({
     if (!canSave) return
     setSaving(true)
     setReloaded(false)
-    const outcome = await onSubmit(toTeamDraft(draft, name), {
-      estimate: estimate?.depth ?? null,
-      fromEstimate: editStartsFromEstimate(initialDraft.depth, estimate),
-    })
+    const outcome = await onSubmit(
+      toTeamDraft(draft, name),
+      depthEstimateContext(estimate, {
+        fromEstimate: editStartsFromEstimate(initialDraft.depth, estimate),
+        teamPower: null,
+        memberCount: draft.memberUnitIds.length,
+        unitIds: draft.memberUnitIds,
+        objectiveIndexes: checked,
+        source: "editor",
+      })
+    )
     setSaving(false)
     setReloaded(outcome === "conflict")
     if (outcome !== "saved") return

@@ -75,6 +75,7 @@ export function GoalEditCard({
   sources,
   mythic,
   note,
+  links,
 }: {
   detail: GoalDetail
   draft: GoalTargetDraft | null
@@ -96,6 +97,8 @@ export function GoalEditCard({
   sources?: ReactNode
   mythic?: ReactNode
   note?: ReactNode
+  /** Upgrade goals: the "Counts toward" field. */
+  links?: ReactNode
 }) {
   const resourcePreview = previews.resourcePreview ?? LOADING
 
@@ -206,6 +209,7 @@ export function GoalEditCard({
           detail={detail}
           draft={draft}
           issues={issues}
+          links={links}
           mythic={mythic}
           note={note}
           onChange={onChange}
@@ -234,6 +238,7 @@ function EditUpgradeCard({
   sources,
   mythic,
   note,
+  links,
 }: {
   detail: GoalDetail
   draft: Extract<GoalTargetDraft, { kind: "Upgrade" }>
@@ -247,6 +252,8 @@ function EditUpgradeCard({
   sources?: ReactNode
   mythic?: ReactNode
   note?: ReactNode
+  /** Upgrade goals: the "Counts toward" field. */
+  links?: ReactNode
 }) {
   const { t } = useTranslation()
   // The materials a range needs, with how many — as in creation.
@@ -281,14 +288,12 @@ function EditUpgradeCard({
     <UpgradeGoalCard
       choices={choices}
       issues={issues}
+      links={links}
       mode="edit"
       mythic={mythic}
       note={note}
-      onAdd={(id, quantity) =>
-        onChange({
-          ...draft,
-          targets: [...draft.targets, { upgradeId: id, quantity }],
-        })
+      onAdd={(added) =>
+        onChange({ ...draft, targets: [...draft.targets, ...added] })
       }
       onQuantityChange={(id, quantity) =>
         onChange({

@@ -40,13 +40,11 @@ export function RaidLocationName({
 
   if (!onShow || !battleId) {
     return (
-      <div className="text-sm leading-tight font-medium break-words">
-        {name}
-      </div>
+      <div className="text-sm/tight font-medium wrap-break-word">{name}</div>
     )
   }
   return (
-    <div className="text-sm leading-tight font-medium break-words">
+    <div className="text-sm/tight font-medium wrap-break-word">
       <button
         aria-haspopup="dialog"
         className="cursor-pointer rounded-sm text-left underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"

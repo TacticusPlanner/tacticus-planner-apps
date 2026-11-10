@@ -95,7 +95,7 @@ export function GoalsReorderCards({
             ) : null}
             <li
               className={cn(
-                "flex items-center gap-3 rounded-2xl border bg-card p-3 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:border-ring data-[dragging]:shadow-lg",
+                "flex items-center gap-3 rounded-2xl border bg-card p-3 data-dragging:relative data-dragging:z-10 data-dragging:border-ring data-dragging:shadow-lg",
                 seasonFitAccent(row.goalId)
               )}
               data-dragging={sortable.isDragging || undefined}

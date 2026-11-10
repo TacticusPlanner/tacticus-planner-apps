@@ -23,7 +23,7 @@ files there.
   progress, removals) used by `game-catalog` and `player-data` sync.
 - `.agents/skills` (canonical) / `.claude/skills` (generated mirror, kept in
   sync manually or via `skills-lock.json`): local agent skill docs — FSD,
-  shadcn, naming conventions, i18n, tanstack-query, vitest, joyride tours,
+  shadcn, naming conventions, UI sizing, i18n, tanstack-query, vitest, joyride tours,
   and `vulnerabilities-scan` (pnpm audit + fix process for this repo).
   Read the relevant skill before touching an area it covers. The V1→V2 page
   migration workflow (`tp-reimplement-v1-page`) lives in the `tacticus-planner-dev`
@@ -138,6 +138,13 @@ Generated shared components should land in `packages/ui/src/components`.
 and previews for the design system — treat them as read-only output, not
 something to hand-edit.
 
+Sizes come from the theme scale only: no arbitrary `text-[…]`, `size-[…px]`,
+`h-[…px]`, `rounded-[…px]` or px grid tracks. `text-xs` (12px) is the smallest
+text; `text-2xs` (10px) is only for numerals or glyphs on a solid badge over art. Touch
+targets are 48px (Material 3), mouse controls 32px. The
+`better-tailwindcss/no-restricted-classes` lint rule enforces this — see the
+`ui-sizing` skill for the full guideline and what to use instead.
+
 ## Internationalization
 
 User-facing strings go through `react-i18next`; translation resources live in
@@ -175,5 +182,6 @@ Pull requests should include a brief summary, validation steps run (`pnpm lint`,
 Open short-lived topic branches from `main` and squash-merge reviewed pull
 requests back into `main`. Delete topic branches after merging. For supported
 releases, fix defects on `main` first and backport the squash commit through a
-pull request into `release/X.Y`. See `RELEASING.md` for the complete release
-and patch process.
+pull request into the release branch (`release/X.Y` or `release/X.Y.Z`), then
+run the Release workflow's `hotfix` bump from it. See `RELEASING.md` for the
+complete release, patch and hotfix process.

@@ -3,7 +3,12 @@ import { describe, expect, it } from "vitest"
 import { diffRosters, type DiffUnit } from "@/entities/roster-snapshot"
 import type { UnitTileUnit } from "@/entities/unit"
 
-import { compareChips } from "./compare-chips"
+import {
+  compareChips,
+  compareFocus,
+  focusChips,
+  itemSlotType,
+} from "./compare-chips"
 import {
   buildCompareView,
   compareFields,
@@ -169,5 +174,59 @@ describe("compare fields", () => {
       { kind: "ability", slot: 0, abilityId: "active", from: 10, to: 12 },
       { kind: "ability", slot: 1, abilityId: "passive", from: 8, to: 11 },
     ])
+  })
+})
+
+describe("chip focus", () => {
+  const chips = compareChips(diffs.get("ultraCalgar")!, new Set(compareFields))
+
+  it("follows the selected metric, then a non-default order", () => {
+    expect(compareFocus("power", "rank")).toEqual({ kind: "power" })
+    expect(compareFocus(null, "rank")).toEqual({ kind: "rank" })
+    expect(compareFocus(null, "rarity")).toEqual({ kind: "progression" })
+    expect(compareFocus(null, "gain")).toBeNull()
+  })
+
+  it("tells ascensions and promotions apart by the half of the progression", () => {
+    // L1 → M2 is both an ascension and a promotion: each view highlights its own half.
+    expect(compareFocus("ascensions", "gain")).toEqual({
+      kind: "progression",
+      part: "rarity",
+    })
+    expect(compareFocus("promotions", "gain")).toEqual({
+      kind: "progression",
+      part: "stars",
+    })
+  })
+
+  it("moves the focused chip first and dims the rest", () => {
+    expect(
+      focusChips(chips, { kind: "power" }).map(({ chip, dimmed }) => [
+        chip.kind,
+        dimmed,
+      ])
+    ).toEqual([
+      ["power", false],
+      ["rank", true],
+      ["ability", true],
+    ])
+  })
+
+  it("leaves the chips alone without a focus or a chip of that kind", () => {
+    const plain = chips.map((chip) => ({ chip, dimmed: false }))
+    expect(focusChips(chips, null)).toEqual(plain)
+    expect(focusChips(chips, { kind: "shards" })).toEqual(plain)
+  })
+})
+
+describe("itemSlotType", () => {
+  it("reads the slot type from an item id", () => {
+    expect(itemSlotType("I_Crit_E002")).toBe("I_Crit")
+    expect(itemSlotType("I_Block_C001")).toBe("I_Block")
+    expect(itemSlotType("I_Booster_Block_E002")).toBe("I_Booster_Block")
+    expect(itemSlotType("R_Booster_Crit_Foo")).toBe("I_Booster_Crit")
+    expect(itemSlotType("R_Crit_DawnBlade")).toBe("I_Crit")
+    expect(itemSlotType("I_Defensive_M001")).toBe("I_Defensive")
+    expect(itemSlotType("Something")).toBeNull()
   })
 })

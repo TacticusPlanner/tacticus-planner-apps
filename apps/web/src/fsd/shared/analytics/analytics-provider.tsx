@@ -12,6 +12,7 @@ import type { PostHog, PostHogConfig } from "posthog-js"
 
 import type { AnalyticsEvent } from "./analytics-event"
 import { sanitizeCapture, setReportedRoutePattern } from "./capture-sanitizer"
+import { estimateSnapshotProperties } from "./estimate-snapshot"
 
 // Read fresh (not cached at module scope) so tests can flip VITE_ANALYTICS_ENABLED /
 // VITE_POSTHOG_PROJECT_TOKEN with vi.stubEnv without needing vi.resetModules() + a dynamic re-import.
@@ -206,6 +207,23 @@ export function useAnalyticsActions() {
             depth: event.depth,
             estimate: event.estimate,
             from_estimate: event.fromEstimate,
+            source: event.source,
+            ...estimateSnapshotProperties(event),
+          })
+          break
+        case "legendary_event_token_result":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            run: event.run,
+            lane_id: event.laneId,
+            battle_index: event.battleIndex,
+            outcome: event.outcome,
+            estimate: event.estimate,
+            depth_before: event.depthBefore,
+            depth_before_manual: event.depthBeforeManual,
+            depth_after: event.depthAfter,
+            other_team_reaches: event.otherTeamReaches,
+            ...estimateSnapshotProperties(event),
           })
           break
         case "legendary_event_depth_estimate_restored":
@@ -277,6 +295,12 @@ export function useAnalyticsActions() {
             event_id: event.eventId,
             lane_id: event.laneId,
             source: event.source,
+            goal_type: event.goalType,
+          })
+          break
+        case "library_unit_create_goal_opened":
+          client.capture(event.type, {
+            entity_type: event.entityType,
             goal_type: event.goalType,
           })
           break

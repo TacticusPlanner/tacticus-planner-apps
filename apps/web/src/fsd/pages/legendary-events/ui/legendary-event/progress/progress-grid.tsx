@@ -57,7 +57,7 @@ export function ProgressGrid({
         ) : null}
       </th>
       {battle.cleared.map((cleared, index) => (
-        <td className="px-0.5 py-0.5 text-center" key={index}>
+        <td className="p-0.5 text-center" key={index}>
           <ProgressCell
             battleIndex={battle.index}
             cleared={cleared}

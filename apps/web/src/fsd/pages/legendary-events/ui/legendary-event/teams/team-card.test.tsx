@@ -61,17 +61,26 @@ const actions = () => ({
   onUseEstimate: vi.fn(),
 })
 
-const NO_ESTIMATE = { estimate: null, fromEstimate: false }
+const NO_ESTIMATE = expect.objectContaining({
+  estimate: null,
+  fromEstimate: false,
+})
 
 /** The worked Uthar Alpha team's estimate (spec: 6, 21% above, 32% short). */
-const estimateOf = (overrides: Partial<ClearEstimate> = {}): ClearEstimate => ({
-  depth: 6,
-  battleCount: 18,
-  marginAbovePct: 21,
-  shortfallToNextPct: 32,
-  calibrated: true,
-  ...overrides,
-})
+const estimateOf = (overrides: Partial<ClearEstimate> = {}): ClearEstimate => {
+  const depth = overrides.depth ?? 6
+  return {
+    depth,
+    sureDepth: depth,
+    stretchDepth: depth,
+    battleCount: 18,
+    power: 100_000,
+    marginAbovePct: 21,
+    shortfallToNextPct: 32,
+    calibrated: true,
+    ...overrides,
+  }
+}
 
 const ownedRoster = (unitIds: readonly string[]): LegendaryEventRosterUnit[] =>
   unitIds.map((unitId) => ({
@@ -331,8 +340,8 @@ describe("TeamCard", () => {
     expect(owned).toHaveAttribute("data-rank", "Gold1")
     expect(owned).toHaveAttribute("data-owned", "true")
     expect(
-      within(owned!).getByTestId("event-board-unit-stars")
-    ).toBeInTheDocument()
+      within(owned!).queryByTestId("event-board-unit-stars")
+    ).not.toBeInTheDocument()
     expect(owned!.getAttribute("aria-label")).toContain(
       "Active ability level 35, passive ability level 28"
     )
@@ -382,6 +391,37 @@ describe("TeamCard", () => {
     expect(screen.getByTestId("team-card-points")).toHaveTextContent(
       "Can't clear battle 1 yet"
     )
+  })
+
+  it("spells out the estimate's bands in Details and stripes the close and stretch battles", () => {
+    renderEstimatedCard(
+      team(),
+      estimateOf({ depth: 6, sureDepth: 5, stretchDepth: 7 }),
+      { run: 2 }
+    )
+    expect(screen.getByTestId("team-card-bands")).toHaveTextContent(
+      "Clears battles 1–5 safely, 6 likely, up to 7 at best"
+    )
+    const segments = [
+      ...screen
+        .getByTestId("team-card-depth-bar")
+        .querySelectorAll("[data-band]"),
+    ]
+    expect(
+      segments.map((segment) => segment.getAttribute("data-band"))
+    ).toEqual(["sure", "sure", "sure", "sure", "sure", "close", "stretch"])
+    expect((segments[5] as HTMLElement).style.backgroundImage).toContain(
+      "repeating-linear-gradient"
+    )
+    expect((segments[6] as HTMLElement).style.backgroundImage).toContain(
+      "repeating-linear-gradient"
+    )
+  })
+
+  it("leaves the bands out of Details when they match the depth", () => {
+    renderEstimatedCard(team(), estimateOf(), { run: 2 })
+    expect(screen.getByTestId("team-card-details")).toBeInTheDocument()
+    expect(screen.queryByTestId("team-card-bands")).toBeNull()
   })
 
   it("shows a plain dash for an incomplete team", () => {
@@ -506,10 +546,19 @@ describe("TeamCard", () => {
       act(() => {
         vi.advanceTimersByTime(400)
       })
-      expect(cardActions.onDepthChange).toHaveBeenCalledWith(7, {
-        estimate: 6,
-        fromEstimate: true,
-      })
+      expect(cardActions.onDepthChange).toHaveBeenCalledWith(
+        7,
+        expect.objectContaining({
+          estimate: 6,
+          fromEstimate: true,
+          sureDepth: 6,
+          stretchDepth: 6,
+          effectivePower: 100_000,
+          unitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+          objectiveIndexes: [0, 1],
+          source: "card",
+        })
+      )
     } finally {
       vi.useRealTimers()
     }

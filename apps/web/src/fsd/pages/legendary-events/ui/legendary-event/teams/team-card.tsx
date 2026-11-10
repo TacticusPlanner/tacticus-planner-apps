@@ -27,15 +27,20 @@ import {
 } from "@/entities/legendary-event"
 import {
   ClearDepthField,
+  depthEstimateContext,
   editStartsFromEstimate,
   type DepthEstimateContext,
 } from "@/features/legendary-event-plan"
 import { useDebouncedCommit } from "@/shared/lib"
 import type { SortableRenderProps } from "@/shared/ui"
-import { useUnitName } from "@/shared/unit-name"
 
 import { PointsLeft, TeamPower } from "./team-card-figures"
-import { teamDepthBar, type DepthBar, type DepthTone } from "./team-depth-bar"
+import {
+  depthBandClauses,
+  teamDepthBar,
+  type DepthBar,
+  type DepthTone,
+} from "./team-depth-bar"
 import type { TeamCardViewModel } from "./teams.view-model"
 
 const FULL_TEAM = 5
@@ -81,7 +86,6 @@ export function TeamCard({
   sortable?: SortableRenderProps
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const unitName = useUnitName()
   const number = new Intl.NumberFormat(i18n.language)
   const style: CSSProperties | undefined = sortable?.style
   // The settled write: clearing the manual depth while an estimate exists is Use estimate.
@@ -90,13 +94,20 @@ export function TeamCard({
       actions.onUseEstimate(card.estimate.depth)
       return
     }
-    actions.onDepthChange(next, {
-      estimate: card.estimate?.depth ?? null,
-      fromEstimate: editStartsFromEstimate(
-        card.expectedBattleClears,
-        card.estimate
-      ),
-    })
+    actions.onDepthChange(
+      next,
+      depthEstimateContext(card.estimate, {
+        fromEstimate: editStartsFromEstimate(
+          card.expectedBattleClears,
+          card.estimate
+        ),
+        teamPower: card.teamPower,
+        memberCount: card.memberCount,
+        unitIds: card.team.memberUnitIds,
+        objectiveIndexes: card.team.objectiveIndexes,
+        source: "card",
+      })
+    )
   }
   const [depth, setDepth] = useDebouncedCommit(
     card.expectedBattleClears,
@@ -110,7 +121,7 @@ export function TeamCard({
   return (
     <li
       className={cn(
-        "flex min-w-0 scroll-mt-[calc(var(--mobile-header-height)+3rem)] flex-col gap-3 rounded-xl border bg-card p-3 md:scroll-mt-4",
+        "@container/card flex min-w-0 scroll-mt-[calc(var(--mobile-header-height)+6.25rem)] flex-col gap-3 rounded-xl border bg-card p-3 md:scroll-mt-4",
         sortable?.isDragging && "relative z-10 shadow-lg"
       )}
       data-team={card.id}
@@ -118,32 +129,41 @@ export function TeamCard({
       ref={sortable?.setNodeRef}
       style={style}
     >
-      <div className="flex min-w-0 items-center gap-2">
+      {/* The restrictions sit beside the name on a card wide enough for both (from 28rem), so five
+          named member chips keep their own line; a narrower card (phones, three lanes on a laptop)
+          gives them a line of their own under the name rather than squeezing the name out. */}
+      <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
         {sortable ? (
           <DragHandle
             handle={sortable.dragHandle}
             label={t("teams.dragHandle", { name: card.name })}
           />
         ) : null}
-        <h3
-          className="min-w-0 truncate font-semibold"
-          data-testid="team-card-name"
-          title={card.name}
-        >
-          {card.name}
-        </h3>
-        {card.memberCount < FULL_TEAM ? (
-          <span
-            className="shrink-0 rounded-full border px-1.5 text-xs text-muted-foreground tabular-nums"
-            data-testid="team-card-count"
+        <span className="flex min-w-0 flex-1 items-center gap-2">
+          <h3
+            className="min-w-0 truncate font-semibold"
+            data-testid="team-card-name"
+            title={card.name}
           >
-            {t("teams.partialBadge", {
-              members: card.memberCount,
-              max: FULL_TEAM,
-            })}
-          </span>
-        ) : null}
-        <span className="ml-auto" />
+            {card.name}
+          </h3>
+          {card.memberCount < FULL_TEAM ? (
+            <span
+              className="shrink-0 rounded-full border px-1.5 text-xs text-muted-foreground tabular-nums"
+              data-testid="team-card-count"
+            >
+              {t("teams.partialBadge", {
+                members: card.memberCount,
+                max: FULL_TEAM,
+              })}
+            </span>
+          ) : null}
+        </span>
+        <CoverageStrip
+          card={card}
+          format={(value) => number.format(value)}
+          lane={lane}
+        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -189,33 +209,21 @@ export function TeamCard({
         </DropdownMenu>
       </div>
 
-      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
-        <ul
-          aria-label={t("teams.members")}
-          className="flex min-w-0 flex-wrap items-center gap-1.5"
-          data-testid="team-card-members"
-        >
-          {card.members.map((member) => (
-            <MemberPortrait
-              key={member.unitId}
-              member={member}
-              name={unitName("Character", member.unitId)}
-            />
-          ))}
-          {card.reserve ? (
-            <MemberPortrait
-              member={card.reserve}
-              name={unitName("Character", card.reserve.unitId)}
-              reserveLabel={t("teams.reserve")}
-            />
-          ) : null}
-        </ul>
-        <CoverageStrip
-          card={card}
-          format={(value) => number.format(value)}
-          lane={lane}
-        />
-      </div>
+      <ul
+        aria-label={t("teams.members")}
+        className="flex min-w-0 flex-wrap items-center gap-1.5"
+        data-testid="team-card-members"
+      >
+        {card.members.map((member) => (
+          <MemberPortrait key={member.unitId} member={member} />
+        ))}
+        {card.reserve ? (
+          <MemberPortrait
+            member={card.reserve}
+            reserveLabel={t("teams.reserve")}
+          />
+        ) : null}
+      </ul>
 
       {card.incomplete ? (
         <span
@@ -283,6 +291,7 @@ export function TeamCard({
         <div className="mt-1.5 flex flex-wrap items-baseline gap-x-3 gap-y-1 font-medium tabular-nums">
           <PointsLeft card={card} format={(value) => number.format(value)} />
           <TeamPower card={card} format={(value) => number.format(value)} />
+          <DepthBands bar={bar} />
           {lastRunClearedBattle === undefined ? null : (
             <span
               className="text-xs font-normal text-muted-foreground"
@@ -322,7 +331,7 @@ function CoverageStrip({
   return (
     <ul
       aria-label={t("teams.objectives")}
-      className="ml-auto flex shrink-0 items-center gap-1"
+      className="order-last flex min-w-0 basis-full items-center justify-end gap-1 @min-[28rem]/card:order-0 @min-[28rem]/card:shrink-0 @min-[28rem]/card:basis-auto"
       data-testid="team-card-objectives"
     >
       {objectives.map((objective) => {
@@ -331,13 +340,13 @@ function CoverageStrip({
         if (!entry)
           return (
             <li
-              className="flex w-9 flex-col items-center opacity-25"
+              className="flex w-9 min-w-0 shrink flex-col items-center opacity-25"
               data-testid="team-card-objective-slot"
               key={objective.index}
               title={label}
             >
               <ObjectiveIcon className="size-5" icon={icon} muted />
-              <span aria-hidden="true" className="text-[10px] leading-3">
+              <span aria-hidden="true" className="text-xs/3">
                 &nbsp;
               </span>
               <span className="sr-only">
@@ -354,7 +363,7 @@ function CoverageStrip({
         return (
           <li
             className={cn(
-              "relative flex w-9 flex-col items-center rounded-md border border-transparent py-0.5",
+              "relative flex w-9 min-w-0 shrink flex-col items-center rounded-md border border-transparent py-0.5",
               muted && "border-dashed border-border text-muted-foreground",
               cleared && "text-muted-foreground"
             )}
@@ -373,7 +382,7 @@ function CoverageStrip({
             />
             <span
               className={cn(
-                "text-[10px] leading-3 font-semibold tabular-nums",
+                "text-xs/3 font-semibold tabular-nums",
                 cleared && "line-through"
               )}
             >
@@ -406,6 +415,47 @@ const TONE_CLASS: Record<DepthTone, string> = {
   none: "bg-muted",
 }
 
+/** Diagonal gaps of the card colour across a toned segment: a close battle. */
+const CLOSE_STRIPES =
+  "repeating-linear-gradient(135deg, transparent 0 4px, var(--card) 4px 5.5px)"
+
+const TONE_COLOR: Record<DepthTone, string> = {
+  manual: "var(--primary)",
+  room: "var(--success-foreground)",
+  close: "var(--season-fit-caution)",
+  none: "var(--muted)",
+}
+
+/** Thin diagonal stripes of the tone across an empty segment: a stretch battle. */
+function stretchStripes(tone: DepthTone): string {
+  return `repeating-linear-gradient(135deg, ${TONE_COLOR[tone]} 0 1.25px, transparent 1.25px 5px)`
+}
+
+/** The estimate's bands as one sentence ("Clears battles 1–10 for sure, 11 likely, up to 12 at
+ *  best"); undefined when they add nothing to the headline depth. */
+function useDepthBandsText(bar: DepthBar): string | undefined {
+  const { t } = useTranslation("legendaryEvents")
+  const clauses = depthBandClauses(bar)
+  if (clauses.length === 0) return undefined
+  return clauses
+    .map(({ key, values }) => t(`teams.depthBar.bands.${key}`, values))
+    .join(", ")
+}
+
+/** The estimate's bands in the Details fold, so they read without hovering the bar. */
+function DepthBands({ bar }: { bar: DepthBar }) {
+  const text = useDepthBandsText(bar)
+  if (text === undefined) return null
+  return (
+    <span
+      className="basis-full text-xs font-normal text-muted-foreground"
+      data-testid="team-card-bands"
+    >
+      {text}
+    </span>
+  )
+}
+
 /** The team's depth as one segment per lane battle, filled through the depth and toned by where
  *  it comes from (see `teamDepthBar`), with "Battles 1–n" as the headline figure. */
 function TeamDepthBar({
@@ -427,12 +477,18 @@ function TeamDepthBar({
       : depth === 0
         ? t("teams.depthBar.cannotClear")
         : t("teams.depthBar.battles", { depth })
+  const bands = useDepthBandsText(bar)
   const hint =
     bar.tone === "manual"
       ? t("teams.depthBar.manual")
-      : bar.tone === "close" && depth !== null
-        ? t("teams.depthBar.close", { battle: depth + 1 })
-        : undefined
+      : [
+          bar.tone === "close" && depth !== null
+            ? t("teams.depthBar.close", { battle: depth + 1 })
+            : undefined,
+          bands,
+        ]
+          .filter(Boolean)
+          .join(" · ") || undefined
   const label =
     depth === null
       ? headline
@@ -466,6 +522,24 @@ function TeamDepthBar({
               "h-full flex-1 first:rounded-l-full last:rounded-r-full",
               index < bar.filled ? TONE_CLASS[bar.tone] : "bg-muted"
             )}
+            // Sure battles are solid; close ones (past sure, within the depth) are striped with
+            // gaps, and stretch ones (past the depth) are empty with thin stripes of the tone.
+            style={
+              index >= bar.sure && index < bar.filled
+                ? { backgroundImage: CLOSE_STRIPES }
+                : index >= bar.filled && index < bar.stretch
+                  ? { backgroundImage: stretchStripes(bar.tone) }
+                  : undefined
+            }
+            data-band={
+              index < bar.sure
+                ? "sure"
+                : index < bar.filled
+                  ? "close"
+                  : index < bar.stretch
+                    ? "stretch"
+                    : undefined
+            }
             key={index}
           />
         ))}
@@ -487,7 +561,7 @@ function DragHandle({
       {...attributes}
       {...listeners}
       aria-label={label}
-      className="-ml-1 cursor-grab touch-none rounded p-0.5 text-muted-foreground"
+      className="-ml-1 cursor-grab touch-none rounded-sm p-0.5 text-muted-foreground"
       data-testid="team-card-drag-handle"
       ref={ref}
       type="button"
@@ -497,13 +571,12 @@ function DragHandle({
   )
 }
 
+/** A team member (or the reserve, marked with its label) as a unit chip that opens its details. */
 function MemberPortrait({
   member,
-  name,
   reserveLabel,
 }: {
   member: EventUnitChipData
-  name: string
   reserveLabel?: string
 }) {
   return (
@@ -515,11 +588,10 @@ function MemberPortrait({
       data-reserve={reserveLabel ? "true" : undefined}
       data-testid="team-card-member"
       data-unit={member.unitId}
-      title={reserveLabel ? `${name} · ${reserveLabel}` : name}
     >
       <EventUnitChip
         className={cn(reserveLabel && "border-dashed border-border")}
-        showStars
+        focusable
         unit={member}
       />
       {reserveLabel ? (

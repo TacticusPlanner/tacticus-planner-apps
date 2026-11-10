@@ -106,8 +106,8 @@
       "twoBlueStars": "Dos estrellas azules"
     },
     "next": "Siguiente: {{step}} · {{shards}} / {{threshold}} fragmentos",
-    "chests_one": "{{chests}} cofre más ({{currency}} de moneda en total)",
-    "chests_other": "{{chests}} cofres más ({{currency}} de moneda en total)",
+    "chests_one": "{{chests}} cofre más por {{currency}} de moneda",
+    "chests_other": "{{chests}} cofres más por {{currency}} de moneda",
     "points": "{{points}} puntos para llegar a {{target}} · unas {{battles}} batallas por carril",
     "fullyAscended": "Todas las recompensas alcanzadas",
     "beyondChests": "No alcanzable en este evento (necesita {{required}} cofres y el evento tiene {{ladder}})",
@@ -153,6 +153,12 @@
     "next": "Siguiente",
     "close": "Cerrar"
   },
+  "unitChip": {
+    "abilities": "Activa {{active}} · Pasiva {{passive}}",
+    "notOwned": "No obtenida",
+    "rankShading": "Color de rango",
+    "rankShadingHint": "Colorear las unidades con el color de su rango"
+  },
   "eventBoard": {
     "title": "Tablero del evento",
     "description": "Los objetivos de cada carril mostrado, las unidades que encajan en cada uno y los equipos del carril lado a lado. Elige objetivos para ver las unidades que los cumplen todos, o una unidad para empezar un equipo con ella.",
@@ -163,6 +169,9 @@
     "columnUnits_other": "{{count}} unidades",
     "noUnits": "Sin unidades",
     "addTeam": "Empezar un equipo con esta unidad",
+    "showBest": "Mostrar las {{count}} mejores",
+    "keysHint": "Usa las flechas para moverte entre las unidades.",
+    "showAll": "Mostrar todas las unidades (hasta {{count}})",
     "locked": "Bloqueada"
   },
   "laneSummary": {
@@ -258,6 +267,7 @@
     "points": "Puntos",
     "battlePoints": "{{earned}} / {{max}}",
     "highScore": "Mejor puntuación {{score}}",
+    "highScoreShort": "MP {{score}}",
     "cellCleared": "{{objective}}: completado",
     "cellNotCleared": "{{objective}}: no completado",
     "complete": "Completa",
@@ -442,6 +452,13 @@
       "label": "Supera las batallas 1–{{depth}} de {{total}}",
       "labelNone": "No supera ninguna de {{total}} batallas",
       "close": "Cerca de la batalla {{battle}}",
+      "bands": {
+        "sure": "Supera las batallas 1–{{sure}} seguro",
+        "sureNone": "Ninguna batalla segura",
+        "likely": "{{battle}} probablemente",
+        "likelyRange": "{{from}}–{{to}} probablemente",
+        "stretch": "hasta {{stretch}} en el mejor caso"
+      },
       "manual": "Profundidad fijada por ti"
     },
     "editDepth": "Editar profundidad",
@@ -604,12 +621,14 @@
     "disclaimer": "Todas las estimaciones comparan solo el poder bruto. Los resultados reales de las batallas pueden variar.",
     "estimated": "estimado",
     "uncalibrated": "Sin calibrar: la proporción de poder de la estimación aún no se ha ajustado con resultados reales, así que tómala como una guía aproximada.",
-    "howItWorks": "Estimado a partir del poder de tu plantilla sincronizada, con el equipo incluido, frente al poder de cada batalla. No se tienen en cuenta las sinergias ni los objetivos difíciles; fija una profundidad para sustituirla.",
+    "howItWorks": "Estimado a partir del poder de tu plantilla sincronizada, equipo incluido, frente al poder de cada batalla en una curva ajustada a superaciones reportadas: las batallas tardías necesitan más que su poder y las tempranas, menos. El rango va de lo que se supera seguro a lo que se supera en el mejor caso. La sinergia y los objetivos difíciles no se modelan; fija una profundidad para sustituirla.",
     "marginAbove": "{{percent}} % por encima de la batalla {{battle}}",
     "shortfallNext": "{{percent}} % por debajo de la batalla {{battle}}",
+    "range": "seguro hasta {{sure}}, como mucho {{stretch}}",
     "notEnough": "Aún no basta para la batalla 1",
     "useEstimate": "Usar estimación",
     "estimateHint": "estimación ~{{depth}}",
+    "estimateHintRange": "estimación ~{{depth}} ({{sure}}–{{stretch}})",
     "lockedNotCounted_one": "{{count}} miembro bloqueado no contado",
     "lockedNotCounted_other": "{{count}} miembros bloqueados no contados",
     "clears": "Batallas",
@@ -704,13 +723,21 @@
       "upcoming": "{{reason}} para cuando empiece la ronda {{run}}",
       "upcomingUnknown": "{{reason}} para cuando empiece la próxima ronda",
       "maybe": "Quizá superable",
+      "clear": {
+        "sure": "Se supera seguro",
+        "likely": "Probablemente se supera",
+        "likelySure": "Probablemente se supera · seguro hasta la batalla {{sure}}"
+      },
       "members": "Miembros",
       "objectives": "Supera",
       "actions": {
         "partly": "Superada en parte",
         "couldNot": "No superada",
         "partlyLabel": "Superada en parte: marcar {{team}} en {{lane}} batalla {{battle}} como Quizá superable",
-        "couldNotLabel": "No superada: marcar {{team}} en {{lane}} batalla {{battle}} como Parar aquí"
+        "couldNotLabel": "No superada: marcar {{team}} en {{lane}} batalla {{battle}} como Parar aquí",
+        "stop": "Parar aquí",
+        "stopLabel": "Parar aquí: terminar {{team}} en {{lane}} tras la batalla {{previous}} y planificar otros equipos",
+        "stopHint": "Termina este equipo tras la batalla {{previous}} y pasa el plan a otros equipos"
       },
       "loading": "Cargando el plan de fichas…",
       "unavailable": "El progreso sincronizado no está disponible, así que no hay plan de fichas",
@@ -719,10 +746,8 @@
       "noDepth": "Indica hasta dónde llega {{team}}",
       "nothingLeft": "A tus equipos no les queda nada por superar · quedan {{points}} puntos en {{lane}}",
       "missions": {
-        "title": "Para misiones",
         "progresses": "Misiones que hace avanzar",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} puntos ({{difference}})",
         "button_one": "Hace avanzar {{count}} misión",
         "button_other": "Hace avanzar {{count}} misiones",
         "uncounted": "cuenta",
@@ -731,7 +756,11 @@
       "upNext": "A continuación",
       "viewPlan_one": "Ver la {{count}} ficha planificada",
       "viewPlan_other": "Ver las {{count}} fichas planificadas",
-      "team": "Ver las unidades de {{team}}"
+      "team": "Ver las unidades de {{team}}",
+      "depth": {
+        "estimated": "estimación",
+        "manual": "fijada por ti"
+      }
     },
     "plan": {
       "title": "Plan de fichas",

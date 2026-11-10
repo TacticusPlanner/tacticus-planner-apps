@@ -9,17 +9,11 @@ import {
   type LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
-import {
-  playableNext,
-  type NextTokenChoice,
-  type PlannedToken,
-  type TokenPlan,
-} from "./token-plan"
+import type { NextTokenChoice, PlannedToken } from "./token-plan"
 
 /** What the planner reads to match tokens with missions (spec: legendary-event-missions). */
 export interface TokenMissionsInput {
-  plan: Pick<TokenPlan, "tokens">
-  next: Pick<NextTokenChoice, "token" | "index">
+  next: Pick<NextTokenChoice, "token">
   /** The current run's open missions (`openMissions`); only each track's current one counts. */
   open: readonly LegendaryEventMissionRef[]
   /** A team's non-reserve members; the reserve never counts towards a mission. */
@@ -40,61 +34,21 @@ export interface MissionProgress {
   estimate: boolean
 }
 
-export interface MissionAlternative {
-  token: PlannedToken
-  /** Its position in the plan (0-based). */
-  index: number
-  missions: MissionProgress[]
-  /** Its points minus the Next token's (zero or negative in a points-first plan). */
-  pointsDifference: number
-}
-
 export interface NextTokenMissions {
   /** The current missions the Next token progresses, untracked kinds left out. */
   progressed: MissionProgress[]
-  /** A playable planned token progressing more open missions, or null. */
-  alternative: MissionAlternative | null
 }
 
 /**
- * The Next token card's missions (spec: Next token card shows missions it progresses and a For
- * missions alternative; design D4): the current missions (missions are done in order, so only each
- * track's current one counts) the Next token progresses with what it adds, and the eligible planned
- * token progressing the most of them when that is more, ties broken by points then plan order.
- * Untracked kinds (`anyBattle`, `winWithoutSummon`) progress every token, so they never pick one.
- * The plan order stays.
+ * The Next token card's missions (spec: Next token card shows missions it progresses): the current
+ * missions (missions are done in order, so only each track's current one counts) the Next token
+ * progresses, with what it adds. The card shows one token only; the Missions order is the
+ * missions-first answer.
  */
 export function nextTokenMissions(
   input: TokenMissionsInput
 ): NextTokenMissions {
-  const progressedBy = (token: PlannedToken) =>
-    tokenMissionProgress(input, token)
-  const { tokens } = input.plan
-  const next = input.next.token
-  const progressed = progressedBy(next)
-
-  let best: MissionAlternative | null = null
-  for (const [index, token] of tokens.entries()) {
-    if (index === input.next.index || !playableNext(tokens, index)) continue
-    const missions = progressedBy(token)
-    if (missions.length <= progressed.length) continue
-    // Tokens come in plan order, so an equal count with equal points keeps the earlier one.
-    if (
-      best &&
-      (missions.length < best.missions.length ||
-        (missions.length === best.missions.length &&
-          token.points <= best.token.points))
-    ) {
-      continue
-    }
-    best = {
-      token,
-      index,
-      missions,
-      pointsDifference: token.points - next.points,
-    }
-  }
-  return { progressed, alternative: best }
+  return { progressed: tokenMissionProgress(input, input.next.token) }
 }
 
 /** The current missions (each track's first open one, untracked kinds left out) `token`

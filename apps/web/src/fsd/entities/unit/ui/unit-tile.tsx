@@ -109,7 +109,7 @@ export function UnitTile({
       </div>
       <span
         className={cn(
-          "mt-1.5 w-full truncate text-center text-xs leading-[15px] font-semibold",
+          "mt-1.5 w-full truncate text-center text-xs/4 font-semibold",
           !owned && "text-muted-foreground"
         )}
       >
@@ -165,7 +165,7 @@ function PortraitOverlays({
     <>
       {visual.kind === "none" ? null : (
         <span
-          className="absolute -top-2.5 left-1/2 flex h-4.5 w-max -translate-x-1/2 items-center gap-px rounded-[5px] bg-overlay px-[3px]"
+          className="absolute -top-2.5 left-1/2 flex h-4.5 w-max -translate-x-1/2 items-center gap-px rounded-sm bg-overlay px-0.75"
           data-testid="unit-tile-stars"
           data-count={visual.kind === "stars" ? visual.count : undefined}
         >
@@ -175,7 +175,7 @@ function PortraitOverlays({
                 key={index}
                 src={visual.icon}
                 alt=""
-                className="size-[13px]"
+                className="size-3.5"
               />
             ))
           ) : (
@@ -191,7 +191,7 @@ function PortraitOverlays({
       )}
       {kind === "character" && data.rank ? (
         <span
-          className="absolute -bottom-1.5 -left-1.5 h-[25px] w-[26px] drop-shadow-[0_1px_2px_rgb(0_0_0/0.7)]"
+          className="absolute -bottom-1.5 -left-1.5 size-6 drop-shadow-[0_1px_2px_rgb(0_0_0/0.7)]"
           data-testid="unit-tile-rank"
         >
           <EntityIcon src={rankIcon(data.rank)} alt="" className="size-full" />
@@ -225,7 +225,7 @@ function ShardCrystal({
 }) {
   return (
     <span
-      className="absolute -right-1.5 -bottom-1.5 grid h-5 w-[22px] place-items-center"
+      className="absolute -right-1.5 -bottom-1.5 grid h-5 w-6 place-items-center"
       data-testid={testId}
     >
       <EntityIcon
@@ -235,7 +235,7 @@ function ShardCrystal({
       />
       <span
         className={cn(
-          "relative text-[10px] leading-none font-bold text-overlay-foreground tabular-nums",
+          "relative text-2xs leading-none font-bold text-overlay-foreground tabular-nums",
           outlinedText
         )}
       >
@@ -264,12 +264,12 @@ function OwnedDetails({
         data-testid="unit-tile-numbers"
       >
         {/* As in game: abilities on the sides, the XP level (characters only) in the middle. */}
-        <span className="grid h-5 place-items-center rounded border font-semibold">
+        <span className="grid h-5 place-items-center rounded-sm border font-semibold">
           {first}
         </span>
         {kind === "character" ? (
           <span
-            className="grid h-5 place-items-center rounded bg-overlay font-bold text-overlay-foreground"
+            className="grid h-5 place-items-center rounded-sm bg-overlay font-bold text-overlay-foreground"
             data-testid="unit-tile-xp-level"
           >
             {data.xpLevel}
@@ -277,7 +277,7 @@ function OwnedDetails({
         ) : (
           <span />
         )}
-        <span className="grid h-5 place-items-center rounded border font-semibold">
+        <span className="grid h-5 place-items-center rounded-sm border font-semibold">
           {second}
         </span>
       </div>
@@ -292,7 +292,7 @@ function OwnedDetails({
             ) : (
               <span
                 key={index}
-                className="h-[22px] rounded border-2 border-dashed"
+                className="h-6 rounded-sm border-2 border-dashed"
                 data-testid="unit-tile-empty-slot"
               />
             )

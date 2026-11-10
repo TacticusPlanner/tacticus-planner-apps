@@ -4,6 +4,7 @@ import { Link } from "react-router"
 import { ExternalLink } from "lucide-react"
 import {
   characterIcon,
+  equipmentSlotIcon,
   mowIcon,
   powerIcon,
   shardIcon,
@@ -29,6 +30,10 @@ import { EntityIcon } from "@/shared/ui"
 import {
   compareChips,
   detailRows,
+  focusChips,
+  type CompareFocus,
+  type ProgressionPart,
+  itemSlotType,
   type CompareChip,
 } from "../../../model/compare-chips"
 import { formatSigned } from "../../../model/compare-labels"
@@ -37,12 +42,13 @@ import { useMarkLabels } from "../../../model/use-mark-labels"
 import {
   AbilityMark,
   FromToMarks,
+  ItemMark,
   ProgressionMark,
   RankMark,
 } from "./compare-marks"
 
 const tileGrid =
-  "grid gap-x-1.5 gap-y-3 [grid-template-columns:repeat(auto-fill,minmax(6.5rem,1fr))]"
+  "grid gap-x-1.5 gap-y-3 grid-cols-[repeat(auto-fill,minmax(6.5rem,1fr))]"
 
 /**
  * Compare mode's flat list: changed units first in the chosen order, then (with "Show unchanged")
@@ -54,11 +60,14 @@ export function CompareList({
   unchanged,
   showUnchanged,
   fields,
+  focus = null,
 }: {
   changed: readonly CompareItem[]
   unchanged: readonly CompareItem[]
   showUnchanged: boolean
   fields: ReadonlySet<CompareField>
+  /** The chip the selected metric or order is about: listed first, the rest dimmed. */
+  focus?: CompareFocus | null
 }) {
   const isMobile = useIsMobile()
   const items = [
@@ -66,7 +75,7 @@ export function CompareList({
     ...(showUnchanged ? unchanged.map((item) => ({ item, dimmed: true })) : []),
   ]
   if (isMobile) {
-    return <MobileList items={items} fields={fields} />
+    return <MobileList items={items} fields={fields} focus={focus} />
   }
   return (
     <ul className={tileGrid} data-testid="compare-list">
@@ -75,7 +84,7 @@ export function CompareList({
           key={item.unit.unitId}
           className={cn("min-w-0", dimmed && "opacity-50")}
         >
-          <DiffTile item={item} fields={fields} />
+          <DiffTile item={item} fields={fields} focus={focus} />
         </li>
       ))}
     </ul>
@@ -85,9 +94,11 @@ export function CompareList({
 function DiffTile({
   item,
   fields,
+  focus,
 }: {
   item: CompareItem
   fields: ReadonlySet<CompareField>
+  focus: CompareFocus | null
 }) {
   const chips = compareChips(item.diff, fields)
   return (
@@ -104,6 +115,7 @@ function DiffTile({
           <ChipList
             chips={chips}
             unitKind={item.unit.kind}
+            focus={focus}
             className="justify-center px-0.5"
           />
         </button>
@@ -118,9 +130,11 @@ function DiffTile({
 function MobileList({
   items,
   fields,
+  focus,
 }: {
   items: { item: CompareItem; dimmed: boolean }[]
   fields: ReadonlySet<CompareField>
+  focus: CompareFocus | null
 }) {
   // The id, not the item, so the sheet follows a refreshed diff and closes when the unit leaves.
   const [openId, setOpenId] = useState<string | null>(null)
@@ -151,6 +165,7 @@ function MobileList({
                 <ChipList
                   chips={compareChips(item.diff, fields)}
                   unitKind={item.unit.kind}
+                  focus={focus}
                 />
               </span>
             </button>
@@ -187,10 +202,12 @@ function portraitOf(item: CompareItem) {
 function ChipList({
   chips,
   unitKind,
+  focus,
   className,
 }: {
   chips: readonly CompareChip[]
   unitKind: CompareItem["unit"]["kind"]
+  focus: CompareFocus | null
   className?: string
 }) {
   const render = useChipContent(unitKind)
@@ -200,14 +217,18 @@ function ChipList({
       className={cn("mt-1 flex flex-wrap gap-1", className)}
       data-testid="compare-chips"
     >
-      {chips.map((chip) => (
+      {focusChips(chips, focus).map(({ chip, dimmed }) => (
         <Badge
           key={chip.kind === "ability" ? `ability-${chip.slot}` : chip.kind}
           variant="secondary"
-          className="gap-1 px-1.5 text-[11px] tabular-nums"
+          className={cn(
+            "gap-1 px-1.5 text-xs tabular-nums",
+            dimmed && "opacity-45"
+          )}
           data-chip={chip.kind}
+          data-focused={focus?.kind === chip.kind ? "" : undefined}
         >
-          {render(chip)}
+          {render(chip, focus?.part)}
         </Badge>
       ))}
     </span>
@@ -257,7 +278,7 @@ function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
     kind: Extract<CompareChip, { count: number }>["kind"],
     count: number
   ) => t(`myGame.collection.compare.chips.${kind}`, { value: signed(count) })
-  return (chip: CompareChip): ReactNode => {
+  return (chip: CompareChip, part?: ProgressionPart): ReactNode => {
     switch (chip.kind) {
       case "unlocked": {
         return t("myGame.collection.compare.chips.unlocked")
@@ -265,8 +286,8 @@ function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
       case "progression": {
         return (
           <FromToMarks
-            from={<ProgressionMark value={chip.from} />}
-            to={<ProgressionMark value={chip.to} />}
+            from={<ProgressionMark value={chip.from} emphasis={part} />}
+            to={<ProgressionMark value={chip.to} emphasis={part} />}
             label={labels.progression(chip.from, chip.to)}
           />
         )
@@ -409,15 +430,39 @@ function UnitDiffDetails({
       case "equipment": {
         const name = (id: string) =>
           t(`equipmentItems:${id}`, { defaultValue: id })
+        const item = (entry: { equipmentId: string; level: number }) =>
+          `${name(entry.equipmentId)} ${entry.level}`
+        const type = itemSlotType(row.to.equipmentId)
+        const slotIcon = type ? equipmentSlotIcon(type) : undefined
         return {
           key: `${row.kind}-${row.slotId}`,
-          label: t("myGame.collection.compare.details.equipment"),
-          value: row.from
-            ? fromTo(
-                `${name(row.from.equipmentId)} ${row.from.level}`,
-                `${name(row.to.equipmentId)} ${row.to.level}`
-              )
-            : `${name(row.to.equipmentId)} ${row.to.level}`,
+          icon: slotIcon ? (
+            <EntityIcon alt="" src={slotIcon} className="size-5 shrink-0" />
+          ) : undefined,
+          label: t(
+            type
+              ? `myGame.collection.compare.details.items.${type}`
+              : "myGame.collection.compare.details.equipment"
+          ),
+          value: (
+            <span className="flex min-w-0 flex-col items-end">
+              {row.from ? (
+                <FromToMarks
+                  from={<ItemMark {...row.from} />}
+                  to={<ItemMark {...row.to} />}
+                  label={fromTo(item(row.from), item(row.to))}
+                />
+              ) : (
+                <ItemMark {...row.to} />
+              )}
+              <span
+                aria-hidden
+                className="max-w-full truncate text-xs text-muted-foreground"
+              >
+                {name(row.to.equipmentId)}
+              </span>
+            </span>
+          ),
         }
       }
       case "shards":

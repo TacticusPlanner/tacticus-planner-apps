@@ -49,6 +49,14 @@ type LegendaryEventCreateGoalOpenedEvent = {
   goalType: "Unlock" | "Ascension" | "Rank" | null
 }
 
+/** The goal-creation sheet was opened from a Library character or Machine of War page's Create
+ *  goal; `goalType` is the type it preselects (Unlock for a unit the roster doesn't hold). */
+type LibraryUnitCreateGoalOpenedEvent = {
+  type: "library_unit_create_goal_opened"
+  entityType: "Character" | "Mow"
+  goalType: "Unlock" | null
+}
+
 /** A lane's Upgrade impact section was expanded. */
 type LegendaryEventUpgradeImpactExpandedEvent = {
   type: "legendary_event_upgrade_impact_expanded"
@@ -76,7 +84,49 @@ type LegendaryEventDepthSetEvent = {
   depth: number | null
   estimate: number | null
   fromEstimate: boolean
+} & LegendaryEventEstimateSnapshot & {
+    /** Where the depth was set: the team card's stepper, the team editor, or a Next token card
+     *  action (Partly cleared / Couldn't clear). */
+    source: "card" | "editor" | "tokenAction"
+  }
+
+/** The clear estimate the player saw for a team, for tuning the curve: its safe and best depths
+ *  (the headline is `estimate`), the effective and raw team power, the member count, the member
+ *  unit ids and objective indexes (catalog `index` on the lane), and the curve version so results
+ *  under different curves are not mixed. Null where unknown. */
+export type LegendaryEventEstimateSnapshot = {
+  sureDepth: number | null
+  stretchDepth: number | null
+  effectivePower: number | null
+  teamPower: number | null
+  unitIds: readonly string[] | null
+  objectiveIndexes: readonly number[] | null
+  memberCount: number | null
+  curveVersion: string
 }
+
+/**
+ * A Next token card action: the token's team fell short on a battle (Partly cleared or Couldn't
+ * clear). The direct "this team failed at battle N" label for tuning clear estimates, with the
+ * estimate the player saw, the team's depth before and after, and whether another team of the lane
+ * reaches the battle (then the cells stay unmarked).
+ */
+type LegendaryEventTokenResultEvent = {
+  type: "legendary_event_token_result"
+  eventId: string
+  run: number | null
+  laneId: string
+  /** 0-based. */
+  battleIndex: number
+  /** `stoppedEarly`: Stop here, the player ended the team before trying this battle. */
+  outcome: "partlyCleared" | "couldNotClear" | "stoppedEarly"
+  /** The headline estimate (null without one). */
+  estimate: number | null
+  depthBefore: number | null
+  depthBeforeManual: boolean
+  depthAfter: number | null
+  otherTeamReaches: boolean
+} & LegendaryEventEstimateSnapshot
 
 /** Use estimate was pressed: the manual depth was cleared so the estimate shows again. */
 type LegendaryEventDepthEstimateRestoredEvent = {
@@ -299,9 +349,11 @@ export type AnalyticsEvent =
   | LegendaryEventTeamCreatedEvent
   | LegendaryEventGoalsPreviewToggledEvent
   | LegendaryEventCreateGoalOpenedEvent
+  | LibraryUnitCreateGoalOpenedEvent
   | LegendaryEventUpgradeImpactExpandedEvent
   | LegendaryEventTeamSuggestionsOpenedEvent
   | LegendaryEventDepthSetEvent
+  | LegendaryEventTokenResultEvent
   | LegendaryEventRunInputsSavedEvent
   | LegendaryEventPaidOptionsToggledEvent
   | LegendaryEventNotesSavedEvent

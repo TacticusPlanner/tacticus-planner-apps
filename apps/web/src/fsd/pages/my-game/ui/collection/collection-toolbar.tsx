@@ -4,7 +4,7 @@ import {
   LayoutGrid,
   List,
   Search,
-  SlidersHorizontal,
+  Funnel,
   X,
   type LucideIcon,
 } from "lucide-react"
@@ -363,11 +363,11 @@ function FiltersButton({
         aria-controls={controls}
         onClick={onClick}
       >
-        <SlidersHorizontal aria-hidden />
+        <Funnel aria-hidden />
         {count > 0 ? (
           <span
             aria-hidden
-            className="absolute -top-1.5 -right-1.5 flex min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs leading-5 font-semibold text-primary-foreground tabular-nums"
+            className="absolute -top-1.5 -right-1.5 flex min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs/5 font-semibold text-primary-foreground tabular-nums"
           >
             {count}
           </span>
@@ -382,7 +382,7 @@ function FiltersButton({
       aria-controls={controls}
       onClick={onClick}
     >
-      <SlidersHorizontal aria-hidden />
+      <Funnel aria-hidden />
       {label}
     </Button>
   )

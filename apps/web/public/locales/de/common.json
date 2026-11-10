@@ -442,6 +442,7 @@
         "quick": {
           "readyToRankUp": "Bereit zum Rangaufstieg",
           "needToAscend": "Aufstieg nötig",
+          "canPromote": "Beförderung möglich",
           "canAscend": "Aufstieg möglich",
           "needToLevel": "Stufe erhöhen",
           "blueStarReady": "Bereit für blauen Stern",
@@ -451,6 +452,7 @@
         "quickHelp": {
           "readyToRankUp": "Dein Verbesserungsinventar deckt alle Materialien, die im aktuellen Rang noch fehlen.",
           "needToAscend": "Auf dem höchsten Rang seiner Seltenheit, mit einem noch ausstehenden Aufstieg.",
+          "canPromote": "Deine Scherben und Orbs reichen für den nächsten Stern innerhalb der aktuellen Seltenheit.",
           "canAscend": "Deine Scherben und Orbs reichen für die nächste Seltenheit (bei Mythisch für den nächsten Stern).",
           "needToLevel": "Unter der Stufenobergrenze seiner Seltenheit.",
           "blueStarReady": "Deine Scherben und Orbs reichen für alle Schritte bis zum ersten blauen Stern.",
@@ -576,7 +578,7 @@
           "xpLevel": "{{value}} Stufen",
           "shards": "{{value}} Splitter",
           "mythicShards": "{{value}} mythisch",
-          "equipment": "{{value}} Ausrüstung",
+          "equipment": "{{value}} Gegenstände",
           "power": "{{value}} Macht"
         },
         "details": {
@@ -594,10 +596,18 @@
           "shards": "Splitter",
           "mythicShards": "Mythische Splitter",
           "shardsBreakdown": "netto {{net}} · ausgegeben {{spent}} · erhalten {{earned}}",
-          "equipment": "Ausrüstung",
+          "equipment": "Gegenstand",
           "power": "Macht",
-          "openLibrary": "In der Bibliothek öffnen"
-        }
+          "openLibrary": "In der Bibliothek öffnen",
+          "items": {
+            "I_Crit": "Krit-Gegenstand",
+            "I_Block": "Block-Gegenstand",
+            "I_Booster_Crit": "Krit-Verstärker",
+            "I_Booster_Block": "Block-Verstärker",
+            "I_Defensive": "Defensiv-Gegenstand"
+          }
+        },
+        "closeOptions": "Schließen"
       },
       "snapshots": {
         "signIn": "Melde dich an, um Snapshots deines Kaders zu speichern und zu vergleichen.",
@@ -1515,7 +1525,17 @@
         },
         "owned": "{{count}} im Besitz",
         "alreadyMet": "Du besitzt bereits so viele, das Ziel ist also schon erreicht.",
-        "noResources": "Du besitzt bereits alle Materialien in diesen Mengen."
+        "noResources": "Du besitzt bereits alle Materialien in diesen Mengen.",
+        "addRarity": {
+          "label": "Alle hinzufügen:",
+          "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Zählt für",
+          "hint": "Seine Materialien zählen für diese Ziele, statt zusätzlich gefarmt zu werden.",
+          "option": "{{type}} → {{target}}",
+          "empty": "Kein laufendes Ziel dieser Einheit, für das es zählen kann."
+        }
       },
       "previewTitle": "Benötigte Ressourcen",
       "showAll": "Alle anzeigen ({{count}})",

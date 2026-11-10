@@ -187,7 +187,7 @@ function GoalsTable({
                 ) : null}
                 <TableRow
                   className={cn(
-                    "h-16 transition-colors duration-700 data-[dragging]:relative data-[dragging]:z-10 data-[dragging]:bg-card data-[dragging]:outline-2 data-[dragging]:-outline-offset-2 data-[dragging]:outline-ring data-[just-moved]:bg-accent",
+                    "h-16 transition-colors duration-700 data-dragging:relative data-dragging:z-10 data-dragging:bg-card data-dragging:outline-2 data-dragging:-outline-offset-2 data-dragging:outline-ring data-just-moved:bg-accent",
                     reached && REACHED_ROW_CLASS,
                     fit && SEASON_FIT_ROW_ACCENT[fit.offset]
                   )}

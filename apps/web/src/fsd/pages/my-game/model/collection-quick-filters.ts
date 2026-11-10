@@ -125,6 +125,21 @@ export function abilitiesBehindLevel(unit: QuickFilterUnit): boolean {
   )
 }
 
+/** Can pay for its next star within its current rarity from what it holds. A unit on its rarity's
+ *  last star promotes no further: its next step is an ascension (see `canAscend`). */
+export function canPromote(
+  unit: QuickFilterUnit,
+  ladder: AscensionLadder,
+  orbs: HeldOrbs
+): boolean {
+  if (unit.progression === lastProgression) return false
+  const next = progressionAt(progressionIndex(unit.progression) + 1)
+  return (
+    progressionRarity(next) === progressionRarity(unit.progression) &&
+    covers(unit, ladder, orbs, next)
+  )
+}
+
 /** Can pay for the next rarity's first step (the next step within Mythic) from what it holds. */
 export function canAscend(
   unit: QuickFilterUnit,

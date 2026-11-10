@@ -3843,7 +3843,7 @@
       "put": {
         "tags": ["Goals"],
         "summary": "Edits a goal's target, details, project memberships and priority in one atomic request.",
-        "description": "Every section is optional and an absent section leaves that aspect unchanged; a request with no section is a no-op. Sections apply in the order target, details, projectIds, priority; if any fails nothing is saved. target carries its own expectedRevision (the goal revision); priority.position is the 1-based position among the account's Active/Paused goals and priority.expectedOrderRevision the order revision the client computed it from. The response carries the updated goal and the new order (null unless priority was supplied).",
+        "description": "Every section is optional and an absent section leaves that aspect unchanged; a request with no section is a no-op. Sections apply in the order target, details, projectIds, linkedGoalIds, priority; if any fails nothing is saved. target carries its own expectedRevision (the goal revision); priority.position is the 1-based position among the account's Active/Paused goals and priority.expectedOrderRevision the order revision the client computed it from. The response carries the updated goal and the new order (null unless priority was supplied).",
         "operationId": "TacticusPlannerApiFeaturesGoalsEditGoalEndpoint",
         "parameters": [
           {
@@ -7460,6 +7460,16 @@
           },
           "notes": {
             "type": ["null", "string"]
+          },
+          "linkedGoalIds": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ListOfGuid"
+              }
+            ]
           }
         },
         "additionalProperties": false
@@ -7832,6 +7842,16 @@
               },
               {
                 "$ref": "#/components/schemas/EditGoalPriorityRequest"
+              }
+            ]
+          },
+          "linkedGoalIds": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ListOfGuid"
               }
             ]
           }
@@ -12733,6 +12753,7 @@
           "config",
           "snapshot",
           "dependsOn",
+          "linkedGoalIds",
           "projectIds",
           "createdAt",
           "updatedAt",
@@ -12774,6 +12795,9 @@
             ]
           },
           "dependsOn": {
+            "$ref": "#/components/schemas/ListOfGuid"
+          },
+          "linkedGoalIds": {
             "$ref": "#/components/schemas/ListOfGuid"
           },
           "projectIds": {

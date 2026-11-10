@@ -130,7 +130,7 @@ function TokenRow({
           />
         </div>
       </div>
-      <span className="w-full truncate text-[11px] text-muted-foreground">
+      <span className="w-full truncate text-xs text-muted-foreground">
         {t(tokenLabelI18nKeys[entry.labelKey])}
       </span>
       <span className="text-sm leading-none font-semibold tabular-nums">
@@ -139,7 +139,7 @@ function TokenRow({
       {countdownText ? (
         <span
           className={cn(
-            "text-[11px] tabular-nums",
+            "text-xs tabular-nums",
             isCapped
               ? "font-semibold tracking-wide text-destructive uppercase"
               : "text-muted-foreground"
@@ -150,7 +150,7 @@ function TokenRow({
       ) : null}
       {fullInSeconds > 0 ? (
         <span
-          className="text-[10px] leading-tight text-muted-foreground uppercase tabular-nums"
+          className="text-xs/tight text-muted-foreground uppercase tabular-nums"
           data-testid={`token-full-in-${entry.key}`}
         >
           {t("home.tokens.fullIn", {

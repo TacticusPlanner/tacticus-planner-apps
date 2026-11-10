@@ -58,7 +58,10 @@ import type { TokenMarker } from "./run-forecast"
 type LaneTeamEstimator = {
   team: (
     memberUnitIds: readonly string[]
-  ) => Pick<ClearEstimate, "depth"> | null
+  ) =>
+    | (Pick<ClearEstimate, "depth"> &
+        Partial<Pick<ClearEstimate, "sureDepth" | "stretchDepth">>)
+    | null
 }
 
 /** The clear estimates the depth fallback reads (design D8): `hidden` degrades to manual depths. */
@@ -66,6 +69,31 @@ type TokenPlanEstimates =
   | { kind: "hidden" }
   | { kind: "pending" }
   | { kind: "ready"; byLane: Record<LegendaryEventLaneId, LaneTeamEstimator> }
+
+/** A team's clear depth as the Next token's team popover shows it. */
+export interface TeamClearDepth {
+  depth: number | null
+  /** True when no manual depth is set, so `depth` is the clear estimate. */
+  estimated: boolean
+  /** The lane's battle count. */
+  total: number
+  /** The estimate's sure depth when `estimated` (battles 1..sure clear for sure); null with a
+   *  manual depth or an estimate without bands. */
+  sureDepth: number | null
+}
+
+/** How sure the estimate is that a team clears a battle: `sure` within its sure depth, `likely`
+ *  past it (within the headline depth); null for a manual depth or an estimate without bands. */
+export type TokenClearBand = "sure" | "likely"
+
+/** The band of the estimate a token's battle (0-based `battleIndex`) falls in. */
+export function tokenClearBand(
+  depth: TeamClearDepth | undefined,
+  battleIndex: number
+): TokenClearBand | null {
+  if (!depth?.estimated || depth.sureDepth === null) return null
+  return battleIndex < depth.sureDepth ? "sure" : "likely"
+}
 
 /** What matching tokens with missions reads; without it the card shows no mission lines. */
 export interface TokenPlanMissionsSource {
@@ -127,12 +155,16 @@ export interface TokenPlanReady {
   kind: "ready"
   plan: TokenPlan
   next: NextTokenChoice | null
-  /** The Next token's open missions and its For missions alternative; null without a next token
+  /** The current missions the Next token progresses; null without a next token
    *  or a missions source. */
   missions: NextTokenMissions | null
   empty: NextTokenEmpty | null
   /** Non-reserve members by team id, for the card's portraits. */
   membersByTeam: ReadonlyMap<string, readonly string[]>
+  /** Each played team's clear depth for the team popover: the battles it reaches this run (the
+   *  manual depth, else the estimate; null with neither), whether that is the estimate, and the
+   *  lane's battle count. */
+  depthByTeam: ReadonlyMap<string, TeamClearDepth>
   /** One per lane with a team that has a depth, in lane order. */
   fullClear: LaneFullClear[]
   /** Null when the event's reward ladder is missing (a record cached before rewards were served). */
@@ -189,10 +221,17 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     .filter(isCompleteTeam)
     .sort((a, b) => a.sortOrder - b.sortOrder)
 
+  const estimateByTeam = new Map<
+    string,
+    ReturnType<LaneTeamEstimator["team"]>
+  >()
   const lanes = LEGENDARY_EVENT_LANE_IDS.map((laneId): TokenPlanLane => {
     const synced = entry ? entry[laneId] : undefined
     const estimator =
       estimates.kind === "ready" ? estimates.byLane[laneId] : undefined
+    for (const team of teams)
+      if (team.laneId === laneId)
+        estimateByTeam.set(team.id, estimator?.team(team.memberUnitIds) ?? null)
     return {
       laneId,
       model: buildLanePointsModel(event[laneId]),
@@ -205,7 +244,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
           objectiveIndexes: team.objectiveIndexes,
           depth: teamEffectiveDepth(
             teamDepthForRun(team, run)?.expectedBattleClears ?? null,
-            estimator?.team(team.memberUnitIds) ?? null
+            estimateByTeam.get(team.id) ?? null
           ),
           ...(input.perRunDepths
             ? {
@@ -266,6 +305,29 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
   const membersByTeam = new Map(
     teams.map((team) => [team.id, team.memberUnitIds])
   )
+  const teamById = new Map(teams.map((team) => [team.id, team]))
+  const depthByTeam = new Map(
+    lanes.flatMap((lane) =>
+      lane.teams.map((team): [string, TeamClearDepth] => {
+        const stored = teamById.get(team.id)
+        const manual = stored
+          ? (teamDepthForRun(stored, run)?.expectedBattleClears ?? null)
+          : null
+        return [
+          team.id,
+          {
+            depth: team.depth,
+            estimated: manual === null,
+            total: lane.model.battles.length,
+            sureDepth:
+              manual === null
+                ? (estimateByTeam.get(team.id)?.sureDepth ?? null)
+                : null,
+          },
+        ]
+      })
+    )
+  )
   const source = input.missions
   const membersOf = (teamId: string) =>
     source
@@ -288,7 +350,6 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
   const missions =
     next && source
       ? nextTokenMissions({
-          plan: tokenPlan,
           next,
           open: missionsOf(missionRun),
           membersOf,
@@ -342,6 +403,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     missions,
     empty: tokenPlan.tokens.length > 0 ? null : emptyReason(tokenPlan, lanes),
     membersByTeam,
+    depthByTeam,
     fullClear: lanes.flatMap((lane) => {
       const figure = fewestTokensForFullClear(
         lane.teams,

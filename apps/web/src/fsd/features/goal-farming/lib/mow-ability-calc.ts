@@ -44,28 +44,6 @@ export function mowAbilityUpgradeIds(
   return recipes.slice(levelStart - 1, levelEnd - 1).flat()
 }
 
-/** Returns only level-transition recipes not already assigned to a higher-priority goal and marks
- * newly claimed transitions in `covered`. Transition keys are their source level. */
-export function uncoveredMowAbilityUpgradeIds(
-  recipes: readonly UpgradeId[][],
-  levelStart: number,
-  levelEnd: number,
-  currentLevel: number,
-  covered: Set<number>
-): UpgradeId[] {
-  const result: UpgradeId[] = []
-  for (
-    let level = Math.max(levelStart, currentLevel);
-    level < levelEnd;
-    level++
-  ) {
-    if (covered.has(level)) continue
-    covered.add(level)
-    result.push(...mowAbilityUpgradeIds(recipes, level, level + 1))
-  }
-  return result
-}
-
 /**
  * The player's current level for one ability track. The MoW catalog carries no id linking
  * `primaryAbility`/`secondaryAbility` to a synced `abilities[].abilityId` (those are Tacticus's own

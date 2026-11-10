@@ -75,10 +75,13 @@ embedded in browser JavaScript and must not contain secrets.
   - From `main` with `minor` (or `major`): creates `release/X.Y` from `main`,
     tags `vX.Y.0`, creates a GitHub release with generated notes, and deploys
     the tag.
-  - From `release/X.Y` with `patch`: tags the next `vX.Y.Z` on that branch,
-    creates its release (notes since the previous `vX.Y.*`), and deploys it.
-    Land a fix on `main` first, then cherry-pick it into the release branch
-    with a PR (CI runs on PRs to `release/**`) before running the patch.
+  - From `main` with `patch`: creates `release/X.Y.Z` from `main`, tags the
+    next `vX.Y.Z` on the newest line, creates its release, and deploys it.
+  - From `release/X.Y` or `release/X.Y.Z` with `hotfix`: tags the next
+    `vX.Y.Z` on that branch, creates its release (notes since the previous
+    `vX.Y.*`), and deploys it. Land a fix on `main` first, then cherry-pick it
+    into the release branch with a PR (CI runs on PRs to `release/**`) before
+    running the hotfix.
 - `CD Prod` deploys a release tag. `Release` calls it; run it by hand only to
   redeploy an existing tag. It refuses to deploy while a required value in
   `.env.production` is empty.

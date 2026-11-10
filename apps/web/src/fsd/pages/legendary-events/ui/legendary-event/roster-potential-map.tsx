@@ -103,10 +103,7 @@ export function RosterPotentialMap({
               >
                 {cells.map((state, row) => (
                   <span
-                    className={cn(
-                      "h-3.5 w-full rounded-[2px]",
-                      CELL_CLASS[state]
-                    )}
+                    className={cn("h-3.5 w-full rounded-xs", CELL_CLASS[state])}
                     data-state={state}
                     data-testid="roster-potential-cell"
                     key={row}
@@ -114,7 +111,7 @@ export function RosterPotentialMap({
                 ))}
                 <span
                   aria-hidden
-                  className="text-center text-[10px] leading-3 text-muted-foreground tabular-nums"
+                  className="text-center text-xs/3 text-muted-foreground tabular-nums"
                 >
                   {!isMobile || battle % 3 === 0 ? battle + 1 : " "}
                 </span>
@@ -153,7 +150,7 @@ export function RosterPotentialMap({
           <li className="flex items-center gap-1" key={state}>
             <span
               aria-hidden
-              className={cn("size-3 rounded-[2px]", CELL_CLASS[state])}
+              className={cn("size-3 rounded-xs", CELL_CLASS[state])}
             />
             {t(`laneOverview.potential.states.${state}`)}
           </li>

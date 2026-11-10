@@ -46,7 +46,7 @@ export function ObjectiveIcon({
       {badge ? (
         <span
           className={cn(
-            "absolute -right-1 -bottom-1 flex size-3 items-center justify-center rounded-full text-[8px] leading-none font-bold",
+            "absolute -right-1 -bottom-1 flex size-3 items-center justify-center rounded-full text-2xs leading-none font-bold",
             badge.className
           )}
           data-testid={`objective-icon-badge-${icon.badge}`}

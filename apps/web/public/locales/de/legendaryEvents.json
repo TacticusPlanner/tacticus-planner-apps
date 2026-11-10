@@ -106,8 +106,8 @@
       "twoBlueStars": "Zwei blaue Sterne"
     },
     "next": "Als Nächstes: {{step}} · {{shards}} / {{threshold}} Splitter",
-    "chests_one": "Noch {{chests}} Truhe ({{currency}} Währung insgesamt)",
-    "chests_other": "Noch {{chests}} Truhen ({{currency}} Währung insgesamt)",
+    "chests_one": "Noch {{chests}} Truhe für {{currency}} Währung",
+    "chests_other": "Noch {{chests}} Truhen für {{currency}} Währung",
     "points": "Noch {{points}} Punkte bis {{target}} · etwa {{battles}} Kämpfe pro Bahn",
     "fullyAscended": "Alle Belohnungsstufen erreicht",
     "beyondChests": "In diesem Event nicht erreichbar (benötigt {{required}} Truhen, das Event hat {{ladder}})",
@@ -153,6 +153,12 @@
     "next": "Weiter",
     "close": "Schließen"
   },
+  "unitChip": {
+    "abilities": "Aktiv {{active}} · Passiv {{passive}}",
+    "notOwned": "Nicht im Besitz",
+    "rankShading": "Rangfärbung",
+    "rankShadingHint": "Einheiten in ihrer Rangfarbe einfärben"
+  },
   "eventBoard": {
     "title": "Eventübersicht",
     "description": "Die Ziele jeder angezeigten Bahn, die passenden Einheiten und die Teams der Bahn nebeneinander. Wähle Ziele, um die Einheiten zu sehen, die alle erfüllen, oder eine Einheit, um damit ein Team zu beginnen.",
@@ -163,6 +169,9 @@
     "columnUnits_other": "{{count}} Einheiten",
     "noUnits": "Keine Einheiten",
     "addTeam": "Team mit dieser Einheit beginnen",
+    "showBest": "Nur die besten {{count}} zeigen",
+    "keysHint": "Mit den Pfeiltasten zwischen den Einheiten wechseln.",
+    "showAll": "Alle Einheiten zeigen (bis zu {{count}})",
     "locked": "Gesperrt"
   },
   "laneSummary": {
@@ -258,6 +267,7 @@
     "points": "Punkte",
     "battlePoints": "{{earned}} / {{max}}",
     "highScore": "Highscore {{score}}",
+    "highScoreShort": "HS {{score}}",
     "cellCleared": "{{objective}}: erledigt",
     "cellNotCleared": "{{objective}}: nicht erledigt",
     "complete": "Abgeschlossen",
@@ -442,6 +452,13 @@
       "label": "Schafft Kämpfe 1–{{depth}} von {{total}}",
       "labelNone": "Schafft keinen von {{total}} Kämpfen",
       "close": "Knapp vor Kampf {{battle}}",
+      "bands": {
+        "sure": "Schafft Kämpfe 1–{{sure}} sicher",
+        "sureNone": "Kein Kampf sicher",
+        "likely": "{{battle}} wahrscheinlich",
+        "likelyRange": "{{from}}–{{to}} wahrscheinlich",
+        "stretch": "bestenfalls bis {{stretch}}"
+      },
       "manual": "Von dir gesetzte Tiefe"
     },
     "editDepth": "Tiefe bearbeiten",
@@ -604,12 +621,14 @@
     "disclaimer": "Alle Schätzungen vergleichen nur die reine Stärke. Echte Kampfergebnisse können abweichen.",
     "estimated": "geschätzt",
     "uncalibrated": "Unkalibriert: Das Stärkeverhältnis der Schätzung wurde noch nicht an echten Ergebnissen ausgerichtet, nimm sie also nur als grobe Orientierung.",
-    "howItWorks": "Geschätzt aus der Stärke deines synchronisierten Kaders, Ausrüstung eingeschlossen, im Vergleich zur Stärke jedes Kampfes. Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",
+    "howItWorks": "Geschätzt aus der Stärke deines synchronisierten Kaders, Ausrüstung eingeschlossen, gegen die Stärke jedes Kampfes auf einer Kurve, die an gemeldete Abschlüsse angepasst ist: Spätere Kämpfe brauchen mehr als ihre Stärke, frühere weniger. Der Bereich reicht von dem, was sicher klappt, bis zum bestmöglichen Ergebnis. Synergien und schwere Ziele werden nicht berücksichtigt; lege eine Tiefe fest, um sie zu überschreiben.",
     "marginAbove": "{{percent}} % über Kampf {{battle}}",
     "shortfallNext": "{{percent}} % unter Kampf {{battle}}",
+    "range": "sicher bis {{sure}}, höchstens {{stretch}}",
     "notEnough": "Reicht noch nicht für Kampf 1",
     "useEstimate": "Schätzung verwenden",
     "estimateHint": "Schätzung ~{{depth}}",
+    "estimateHintRange": "Schätzung ~{{depth}} ({{sure}}–{{stretch}})",
     "lockedNotCounted_one": "{{count}} gesperrtes Mitglied nicht gezählt",
     "lockedNotCounted_other": "{{count}} gesperrte Mitglieder nicht gezählt",
     "clears": "Kämpfe",
@@ -704,13 +723,21 @@
       "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",
       "upcomingUnknown": "{{reason}}, sobald der nächste Durchlauf beginnt",
       "maybe": "Vielleicht schaffbar",
+      "clear": {
+        "sure": "Sicher geschafft",
+        "likely": "Wahrscheinlich geschafft",
+        "likelySure": "Wahrscheinlich geschafft · sicher bis Kampf {{sure}}"
+      },
       "members": "Mitglieder",
       "objectives": "Erfüllt",
       "actions": {
         "partly": "Teilweise geschafft",
         "couldNot": "Nicht geschafft",
         "partlyLabel": "Teilweise geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Vielleicht schaffbar“ markieren",
-        "couldNotLabel": "Nicht geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Hier aufhören“ markieren"
+        "couldNotLabel": "Nicht geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Hier aufhören“ markieren",
+        "stop": "Hier aufhören",
+        "stopLabel": "Hier aufhören: {{team}} auf {{lane}} nach Kampf {{previous}} beenden und andere Teams planen",
+        "stopHint": "Beendet dieses Team nach Kampf {{previous}} und plant mit anderen Teams weiter"
       },
       "loading": "Token-Plan wird geladen…",
       "unavailable": "Synchronisierter Fortschritt ist nicht verfügbar, daher gibt es keinen Token-Plan",
@@ -719,10 +746,8 @@
       "noDepth": "Lege fest, wie weit {{team}} kommt",
       "nothingLeft": "Deine Teams können nichts mehr abschließen · {{points}} Punkte offen auf {{lane}}",
       "missions": {
-        "title": "Für Missionen",
         "progresses": "Missionen, die er voranbringt",
         "premium": "{{mission}} (Premium)",
-        "points": "+{{points}} Punkte ({{difference}})",
         "button_one": "Bringt {{count}} Mission voran",
         "button_other": "Bringt {{count}} Missionen voran",
         "uncounted": "zählt",
@@ -731,7 +756,11 @@
       "upNext": "Danach",
       "viewPlan_one": "Den {{count}} geplanten Token ansehen",
       "viewPlan_other": "Alle {{count}} geplanten Tokens ansehen",
-      "team": "Einheiten von {{team}} anzeigen"
+      "team": "Einheiten von {{team}} anzeigen",
+      "depth": {
+        "estimated": "Schätzung",
+        "manual": "von dir gesetzt"
+      }
     },
     "plan": {
       "title": "Token-Plan",

@@ -45,7 +45,7 @@ function entrySurfaceClass(entry: EventEntryViewModel): string {
     // `relative` anchors the sr-only state text: without it, inside the Ongoing strip's scroller it
     // positions against the page and widens the document (pushing the fixed bottom nav off-screen).
     "relative border border-l-4 text-foreground transition-colors",
-    "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+    "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
     // A break between Guild Raid seasons keeps the guild stripe on a plain surface: nothing to raid.
     isBreak ? "bg-muted/40 hover:bg-muted" : eventFamilySurfaceClass(family),
     eventFamilyStripeClass(family),
@@ -230,7 +230,7 @@ export function EventBar({
     <EventDetailsPopover entry={entry}>
       <button
         className={cn(
-          "isolate flex h-full w-full min-w-0 items-center gap-1.5 overflow-hidden rounded-md pr-2 pl-0.5 text-left text-xs font-medium",
+          "isolate flex size-full min-w-0 items-center gap-1.5 overflow-hidden rounded-md pr-2 pl-0.5 text-left text-xs font-medium",
           showIconOnly && "justify-center px-0",
           isBreak && "justify-center pl-1 text-muted-foreground",
           entrySurfaceClass(entry)
@@ -307,7 +307,7 @@ export function EventAgendaRow({
         </span>
         {isOccurrenceStart ? (
           <span
-            className="shrink-0 text-[11px] font-semibold tracking-wide text-primary uppercase"
+            className="shrink-0 text-xs font-semibold tracking-wide text-primary uppercase"
             data-testid="event-occurrence-start-badge"
           >
             {t("badges.starts")}
@@ -315,7 +315,7 @@ export function EventAgendaRow({
         ) : null}
         {isOccurrenceEnd ? (
           <span
-            className="shrink-0 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase"
+            className="shrink-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
             data-testid="event-occurrence-end-badge"
           >
             {t("badges.ends")}
@@ -341,7 +341,7 @@ export function OngoingEventTile({
     <EventDetailsPopover entry={entry}>
       <button
         className={cn(
-          "flex w-28 shrink-0 flex-col items-center gap-1 rounded-lg px-1.5 py-2 text-center text-xs leading-tight",
+          "flex w-28 shrink-0 flex-col items-center gap-1 rounded-lg px-1.5 py-2 text-center text-xs/tight",
           entrySurfaceClass(entry)
         )}
         data-active={entry.isActiveNow}

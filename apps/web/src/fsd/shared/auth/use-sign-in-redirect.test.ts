@@ -24,7 +24,10 @@ vi.mock("@azure/msal-react", () => ({
 const loginRequest = vi.hoisted((): { scopes: string[]; prompt?: string } => ({
   scopes: ["api"],
 }))
-vi.mock("./authentication", () => ({ loginRequest }))
+vi.mock("./authentication", () => ({
+  forgetQuietRenewal: () => undefined,
+  loginRequest,
+}))
 
 vi.mock("./silent-sign-in", () => ({
   useSilentSignInStatus: () => silentSignInStatus(),

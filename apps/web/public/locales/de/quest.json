@@ -38,7 +38,8 @@
     "perfect": "Perfekt",
     "tierPoints": "{{points}} / {{max}}",
     "show": "Kampf {{number}} anzeigen",
-    "dropOdds": "Lässt {{name}} fallen, {{numerator}} zu {{denominator}}"
+    "dropOdds": "Lässt {{name}} fallen, {{numerator}} zu {{denominator}}",
+    "hint": "Tippe auf eine Schlacht für Team, Gegner und Beute."
   },
   "entry": {
     "title": "Dein bester Versuch",
@@ -60,6 +61,7 @@
     "nextCrate": "{{points}} Punkte bis Kiste {{number}}",
     "pointsLeft": "Offene Punkte",
     "pointsLeftRow": "noch {{left}}",
+    "pointsLeftMore": "+{{count}} weitere",
     "saveFailed": "Der Fortschritt kann in diesem Browser nicht gespeichert werden"
   },
   "objectives": {
@@ -110,6 +112,8 @@
     "cratePoints": "{{points}} Punkte",
     "opened": "Geöffnet",
     "pointsToGo": "noch {{points}} Punkte",
+    "showAllCrates": "Alle {{count}} Kisten anzeigen",
+    "showFewerCrates": "Weniger Kisten anzeigen",
     "reward": {
       "Coins": "Münzen",
       "RaidTicket": "Raid-Tickets",
@@ -133,7 +137,15 @@
     "orbsNote": "Aufstiege brauchen auch Kugeln, die hier nicht gezählt werden.",
     "shardsOnly": "Synchronisiere dein Konto, um zu sehen, was diese Splitter für {{hero}} bedeuten.",
     "createGoal": "Ziel erstellen",
-    "openGoal": "Ziel öffnen"
+    "openGoal": "Ziel öffnen",
+    "left": {
+      "title": "Noch zu verdienen",
+      "medals": "Verbleibende Medaillen",
+      "shards": "Verbleibende {{hero}}-Splitter",
+      "crates_one": "{{count}} Kiste übrig",
+      "crates_other": "{{count}} Kisten übrig",
+      "none": "Alle einmaligen Belohnungen sind verdient."
+    }
   },
   "tokens": {
     "title": "Versuche",
@@ -181,7 +193,13 @@
       "MinHits": "{{hero}} hat weniger als {{count}} Treffer",
       "UseNoSummons": "{{hero}} beschwört",
       "DoNoHealOrRepair": "{{hero}} heilt oder repariert"
-    }
+    },
+    "allOptions": "Alle {{count}} Optionen",
+    "optionsTitle": "Erlaubte Einheiten für Schlacht {{number}}",
+    "optionsHint": "Stärkste zuerst, auf Stufenobergrenze. Wähle Einheiten, um die Teamstärke zu vergleichen; die Auswahl wird nicht gespeichert.",
+    "optionsSelected": "{{count}} von {{slots}} gewählt · Teamstärke {{power}}",
+    "optionsReset": "Auf Vorschlag zurücksetzen",
+    "optionsClose": "Schließen"
   },
   "estimate": {
     "title": "Siegesschätzung",
@@ -205,5 +223,13 @@
     "capGain": "{{name}}: +{{gain}} Stärke am Limit",
     "projected": "Prognose: {{total}} / {{max}} · {{opened}} von {{count}} Kisten (Schätzung, unkalibriert)",
     "projectedShards": "Prognose: {{shards}} Splitter (Schätzung, unkalibriert)"
+  },
+  "goalDrops": {
+    "title": "Beute für deine Ziele",
+    "empty": "Deine Ziele brauchen keine Beute dieser Quest.",
+    "have": "{{have}} / {{need}}",
+    "battles": "Schlachten",
+    "showAll": "Alle {{count}} anzeigen",
+    "showFewer": "Weniger anzeigen"
   }
 }

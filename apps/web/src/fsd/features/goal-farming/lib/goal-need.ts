@@ -17,13 +17,9 @@ import {
   additionalTargetFromWire,
   additionalTargetSelection,
 } from "./rank-additional-target"
+import { mowAbilityTrackLevel } from "./mow-ability-calc"
+import { slotsBaseNeed } from "./slot-components"
 import {
-  mowAbilityTrackLevel,
-  uncoveredMowAbilityUpgradeIds,
-} from "./mow-ability-calc"
-import {
-  aggregateBaseUpgrades,
-  aggregateBaseUpgradesWithCraftedInventory,
   rankUpSlotOccurrences,
   type CraftedInventoryPool,
   type RankSlotOccurrence,
@@ -33,6 +29,15 @@ import {
 // (plan-insights-calc.ts), shared with goal-requirements.ts and upgrade-goal-need.ts.
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
+
+/** What a unit's MoW Ability goals have claimed: transitions by source level per track, plus the
+ *  single recipe entries (`${track}:${level}:${index}`) and base pieces inside them that Upgrade goals
+ *  claimed (`mowSlots`). Without `mowSlots`, an Upgrade goal's MoW claims stay local to that goal. */
+export type AbilityCoverage = {
+  primary: Set<number>
+  secondary: Set<number>
+  mowSlots?: Set<string>
+}
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
 
 /** A farmable resource's display label — an upgrade's catalog label, or a shard resource's owning
@@ -161,16 +166,13 @@ export function rankResourceNeed(params: {
   })
   for (const occurrence of uncovered)
     params.coveredRankSlots?.add(occurrence.key)
-  const unappliedIds = uncovered.map((occurrence) => occurrence.id)
-  const required = params.craftedInventory
-    ? aggregateBaseUpgradesWithCraftedInventory(
-        unappliedIds,
-        params.upgradesById,
-        params.craftedInventory
-      )
-    : aggregateBaseUpgrades(unappliedIds, params.upgradesById)
-
-  return required.map((need) => ({ id: need.id, count: need.count }))
+  // Base pieces an Upgrade goal on this character already claimed inside these slots aren't charged.
+  return slotsBaseNeed(
+    uncovered,
+    params.upgradesById,
+    params.coveredRankSlots,
+    params.craftedInventory
+  )
 }
 
 /**
@@ -237,10 +239,9 @@ export function abilityResourceNeed(params: {
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
   /** Mutated in place; share one pool and invoke needs in stage/priority order. */
   craftedInventory?: CraftedInventoryPool
-  coveredTransitions?: {
-    primary: Set<number>
-    secondary: Set<number>
-  }
+  /** Mutated in place: this goal's transitions are claimed. Recipe entries and base pieces an Upgrade
+   *  goal claimed (`mowSlots`) are skipped. */
+  coveredTransitions?: AbilityCoverage
 }): UpgradeNeed[] | null {
   const abilityTarget = params.detail.config.ability
   if (!abilityTarget || !params.mow) return null
@@ -249,23 +250,29 @@ export function abilityResourceNeed(params: {
     primary: new Set<number>(),
     secondary: new Set<number>(),
   }
-  const requiredIds: UpgradeId[] = []
+  // Each unclaimed transition, minus the recipe entries an Upgrade goal on this MoW claimed whole.
+  const items: { key: string; id: UpgradeId }[] = []
   const appendUncovered = (
     track: "primary" | "secondary",
     recipes: readonly UpgradeId[][],
     start: number,
     end: number
   ) => {
-    const current = mowAbilityTrackLevel(params.playerMow, track)
-    requiredIds.push(
-      ...uncoveredMowAbilityUpgradeIds(
-        recipes,
+    for (
+      let level = Math.max(
         start,
-        end,
-        current,
-        covered[track]
-      )
-    )
+        mowAbilityTrackLevel(params.playerMow, track)
+      );
+      level < end;
+      level++
+    ) {
+      if (covered[track].has(level)) continue
+      covered[track].add(level)
+      ;(recipes[level - 1] ?? []).forEach((id, index) => {
+        const key = `${track}:${level}:${index}`
+        if (!covered.mowSlots?.has(key)) items.push({ key, id })
+      })
+    }
   }
   appendUncovered(
     "primary",
@@ -279,13 +286,12 @@ export function abilityResourceNeed(params: {
     abilityTarget.passiveStart,
     abilityTarget.passiveEnd
   )
-  if (requiredIds.length === 0) return null
-  const required = params.craftedInventory
-    ? aggregateBaseUpgradesWithCraftedInventory(
-        requiredIds,
-        params.upgradesById,
-        params.craftedInventory
-      )
-    : aggregateBaseUpgrades(requiredIds, params.upgradesById)
-  return required.map((entry) => ({ id: entry.id, count: entry.count }))
+  if (items.length === 0) return null
+  // Base pieces an Upgrade goal on this MoW already claimed inside these entries aren't charged.
+  return slotsBaseNeed(
+    items,
+    params.upgradesById,
+    covered.mowSlots,
+    params.craftedInventory
+  )
 }

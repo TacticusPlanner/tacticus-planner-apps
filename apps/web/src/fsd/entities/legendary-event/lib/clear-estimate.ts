@@ -12,20 +12,49 @@ import {
 } from "./horde-tier-list"
 
 /**
- * Effective power ≥ this × a battle's catalog power clears it. A web constant, not catalog data:
- * re-derive it with `calibratePowerRatio` from observed clears and ship the change as a release.
+ * The clear curve, fitted to reported clears (Fabius Bile, Nov 2026: reports #2, #5, #6, #8 and
+ * #9 land on their headline depth; see the PR). A team clears a battle of catalog power P when its
+ * power reaches r × (P / reference)^exponent × P: early battles need less than their power, late
+ * ones more. The likely ratio is the fit; the sure and stretch ratios sit about one late-battle
+ * step either side of it (×1.8 and ÷1.7), so most teams read one battle of margin each way and
+ * every report bar the unbalanced #4 lands inside its band. The estimate applies it to effective power (horde-mode multipliers included),
+ * though the fit used raw power. Web constants, not catalog data: refit them from new reports and ship a release.
  */
-export const CLEAR_ESTIMATE_POWER_RATIO = 1
+export const CLEAR_ESTIMATE_CURVE = {
+  /** The battle power at which the requirement is exactly r × P. */
+  referencePower: 100_000,
+  /** How fast the requirement outgrows battle power (0 is the linear rule). */
+  exponent: 0.25,
+  /** About one battle step above the fit: a battle within it clears for sure. */
+  sureRatio: 2.2,
+  /** The fit: the estimate's headline depth. */
+  likelyRatio: 1.21,
+  /** About one battle step below the fit: a battle past it is out of reach. */
+  stretchRatio: 0.7,
+} as const
 
-/** False until `CLEAR_ESTIMATE_POWER_RATIO` is calibrated from observed clears ("uncalibrated"). */
-export const CLEAR_ESTIMATE_CALIBRATED = false
+/** Names the curve above in analytics, so results logged under different curves are not mixed.
+ *  Bump it whenever a ratio or the exponent changes. */
+export const CLEAR_ESTIMATE_CURVE_VERSION = "2026-11-09-e0.25"
 
-/** The power ratio, the catalog `horde-mode-tiers` list and the unit power formula's inputs in the
+/** True once the curve is fitted to observed clears. */
+export const CLEAR_ESTIMATE_CALIBRATED = true
+
+/** The clear curve, the catalog `horde-mode-tiers` list and the unit power formula's inputs in the
  *  shape the calculation reads. */
 export interface ClearEstimateConfig {
-  /** A battle is cleared when effective power ≥ `powerRatio` × its catalog power. */
+  /** The headline ratio r: a battle of power P clears when power ≥ r × P (× (P / reference)^exponent
+   *  with a `curve`). */
   powerRatio: number
-  /** False while the power ratio is uncalibrated. */
+  /** The clear curve and its sure / stretch ratios; absent in hand-built configs, which then use the
+   *  plain linear rule and one depth for all three bands. */
+  curve?: {
+    referencePower: number
+    exponent: number
+    sureRatio: number
+    stretchRatio: number
+  }
+  /** False while the curve is uncalibrated. */
   calibrated: boolean
   /** Each tiered character's horde-mode multiplier; an untiered character has 1.0. */
   hordeMultipliers: ReadonlyMap<string, number>
@@ -46,9 +75,16 @@ type PowerConfig = Pick<
 
 /** How far a team (or a single unit) is estimated to clear on a lane (design D3). */
 export interface ClearEstimate {
-  /** Consecutive battles from battle 1 the effective power reaches; 0 when battle 1 fails. */
+  /** Consecutive battles from battle 1 the power reaches at the headline ratio; 0 when battle 1
+   *  fails. */
   depth: number
+  /** The depth at the most demanding ratio: battles 1..sureDepth clear for sure (≤ depth). */
+  sureDepth: number
+  /** The depth at the most lenient ratio: battles past it are out of reach (≥ depth). */
+  stretchDepth: number
   battleCount: number
+  /** The power the estimate read: effective power for a team (horde-mode multipliers included). */
+  power: number
   /** How far above battle `depth`'s threshold, in whole percent; null when `depth` is 0. */
   marginAbovePct: number | null
   /** How far short of battle `depth + 1`'s threshold, in whole percent; null at the last battle. */
@@ -60,7 +96,7 @@ export interface ClearEstimate {
 export type ClearEstimateRoster = ReadonlyMap<string, LegendaryEventRosterUnit>
 
 /**
- * The config from the power-ratio constants, the catalog `horde-mode-tiers` list (null when that
+ * The config from the clear-curve constants, the catalog `horde-mode-tiers` list (null when that
  * dataset is absent: every character is then untiered) and the power context (null when the
  * `unit-power` dataset is absent: nothing is estimated). A character's own `multiplier` overrides
  * its tier's.
@@ -71,7 +107,13 @@ export function clearEstimateConfig(
 ): ClearEstimateConfig {
   return {
     unitPower,
-    powerRatio: CLEAR_ESTIMATE_POWER_RATIO,
+    powerRatio: CLEAR_ESTIMATE_CURVE.likelyRatio,
+    curve: {
+      referencePower: CLEAR_ESTIMATE_CURVE.referencePower,
+      exponent: CLEAR_ESTIMATE_CURVE.exponent,
+      sureRatio: CLEAR_ESTIMATE_CURVE.sureRatio,
+      stretchRatio: CLEAR_ESTIMATE_CURVE.stretchRatio,
+    },
     calibrated: CLEAR_ESTIMATE_CALIBRATED,
     hordeMultipliers: new Map(
       (hordeModeTiers?.characters ?? []).flatMap(({ unitId }) => {
@@ -184,31 +226,66 @@ function sumUnlessUnavailable(
   return sum
 }
 
-/**
- * The largest n such that the effective power reaches `powerRatio` × the power of every battle
- * 1..n (battles are played in order), with the margin above battle n and the shortfall to battle
- * n + 1 as whole percents.
- */
-export function estimateClearDepth(
-  effectivePower: number,
+/** The power a battle of catalog power `battlePower` needs at ratio `ratio`: r × P, times
+ *  (P / reference)^exponent on the curve. */
+export function requiredClearPower(
+  battlePower: number,
+  ratio: number,
+  curve: ClearEstimateConfig["curve"]
+): number {
+  return curve
+    ? ratio *
+        (battlePower / curve.referencePower) ** curve.exponent *
+        battlePower
+    : ratio * battlePower
+}
+
+/** Consecutive battles from battle 1 whose requirement at `ratio` the power reaches. */
+function depthAt(
+  power: number,
   battlePowers: readonly number[],
-  config: Pick<ClearEstimateConfig, "powerRatio" | "calibrated">
-): ClearEstimate {
-  const threshold = (index: number) => config.powerRatio * battlePowers[index]!
+  ratio: number,
+  curve: ClearEstimateConfig["curve"]
+): number {
   let depth = 0
-  while (depth < battlePowers.length && effectivePower >= threshold(depth)) {
+  while (
+    depth < battlePowers.length &&
+    power >= requiredClearPower(battlePowers[depth]!, ratio, curve)
+  ) {
     depth++
   }
+  return depth
+}
+
+/**
+ * The largest n such that the power reaches the requirement of every battle 1..n (battles are
+ * played in order) at the headline ratio, with the margin above battle n and the shortfall to
+ * battle n + 1 as whole percents, and the sure and stretch depths at the curve's other ratios.
+ */
+export function estimateClearDepth(
+  power: number,
+  battlePowers: readonly number[],
+  config: Pick<ClearEstimateConfig, "powerRatio" | "curve" | "calibrated">
+): ClearEstimate {
+  const { curve } = config
+  const threshold = (index: number) =>
+    requiredClearPower(battlePowers[index]!, config.powerRatio, curve)
+  const depth = depthAt(power, battlePowers, config.powerRatio, curve)
   return {
     depth,
+    sureDepth: curve
+      ? Math.min(depth, depthAt(power, battlePowers, curve.sureRatio, curve))
+      : depth,
+    stretchDepth: curve
+      ? Math.max(depth, depthAt(power, battlePowers, curve.stretchRatio, curve))
+      : depth,
     battleCount: battlePowers.length,
+    power,
     marginAbovePct:
-      depth > 0
-        ? Math.round((effectivePower / threshold(depth - 1) - 1) * 100)
-        : null,
+      depth > 0 ? Math.round((power / threshold(depth - 1) - 1) * 100) : null,
     shortfallToNextPct:
       depth < battlePowers.length
-        ? Math.round((1 - effectivePower / threshold(depth)) * 100)
+        ? Math.round((1 - power / threshold(depth)) * 100)
         : null,
     calibrated: config.calibrated,
   }

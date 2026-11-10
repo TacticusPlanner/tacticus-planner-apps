@@ -80,7 +80,7 @@ export function StatusBadge({
           >
             <button
               aria-label={`${t(`goals.status.${status}`)} — ${label}`}
-              className="cursor-pointer hover:opacity-80 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:cursor-default"
+              className="cursor-pointer hover:opacity-80 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:cursor-default"
               disabled={disabled}
               onClick={() => onToggle(next)}
               type="button"
@@ -183,7 +183,7 @@ export function BlockedIndicator({
             variant="outline"
           >
             <button
-              className="focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+              className="focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
               type="button"
             >
               <Link2 className="size-3.5" />
@@ -208,7 +208,7 @@ export function BlockedIndicator({
           variant="outline"
         >
           <button
-            className="focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+            className="focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
             type="button"
           >
             <LockKeyhole className="size-3.5" />

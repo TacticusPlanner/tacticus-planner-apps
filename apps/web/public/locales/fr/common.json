@@ -442,6 +442,7 @@
         "quick": {
           "readyToRankUp": "Prête à monter en rang",
           "needToAscend": "Doit être ascensionnée",
+          "canPromote": "Peut être promue",
           "canAscend": "Peut être ascensionnée",
           "needToLevel": "Doit monter de niveau",
           "blueStarReady": "Prête pour l'étoile bleue",
@@ -451,6 +452,7 @@
         "quickHelp": {
           "readyToRankUp": "Votre inventaire d'améliorations couvre tous les matériaux encore nécessaires au rang actuel.",
           "needToAscend": "Au rang maximum de sa rareté, avec une Ascension encore à venir.",
+          "canPromote": "Vos éclats et orbes suffisent pour l'étoile suivante dans la rareté actuelle.",
           "canAscend": "Vos éclats et orbes suffisent pour la rareté suivante (l'étoile suivante en Mythique).",
           "needToLevel": "Sous le niveau maximum de sa rareté.",
           "blueStarReady": "Vos éclats et orbes suffisent pour toutes les étapes jusqu'à la première étoile bleue.",
@@ -576,7 +578,7 @@
           "xpLevel": "{{value}} niveaux",
           "shards": "{{value}} fragments",
           "mythicShards": "{{value}} mythiques",
-          "equipment": "{{value}} équipement",
+          "equipment": "{{value}} objets",
           "power": "{{value}} puissance"
         },
         "details": {
@@ -594,10 +596,18 @@
           "shards": "Fragments",
           "mythicShards": "Fragments mythiques",
           "shardsBreakdown": "net {{net}} · dépensés {{spent}} · gagnés {{earned}}",
-          "equipment": "Équipement",
+          "equipment": "Objet",
           "power": "Puissance",
-          "openLibrary": "Ouvrir dans la Bibliothèque"
-        }
+          "openLibrary": "Ouvrir dans la Bibliothèque",
+          "items": {
+            "I_Crit": "Objet critique",
+            "I_Block": "Objet de blocage",
+            "I_Booster_Crit": "Amplificateur critique",
+            "I_Booster_Block": "Amplificateur de blocage",
+            "I_Defensive": "Objet défensif"
+          }
+        },
+        "closeOptions": "Fermer"
       },
       "snapshots": {
         "signIn": "Connectez-vous pour enregistrer des instantanés de votre effectif et les comparer.",
@@ -1515,7 +1525,17 @@
         },
         "owned": "{{count}} possédés",
         "alreadyMet": "Vous en possédez déjà autant : cet objectif est donc déjà atteint.",
-        "noResources": "Vous possédez déjà tous les matériaux dans ces quantités."
+        "noResources": "Vous possédez déjà tous les matériaux dans ces quantités.",
+        "addRarity": {
+          "label": "Tout ajouter :",
+          "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Compte pour",
+          "hint": "Ses matériaux comptent pour ces objectifs au lieu d'être farmés en plus.",
+          "option": "{{type}} → {{target}}",
+          "empty": "Aucun objectif en cours pour cette unité."
+        }
       },
       "previewTitle": "Ressources nécessaires",
       "showAll": "Tout afficher ({{count}})",

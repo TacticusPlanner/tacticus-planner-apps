@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest"
 import { questEventsFixture } from "@workspace/game-catalog/testing"
 
-import { crateTrack, questShards, shardMeaning } from "./quest-rewards"
+import {
+  crateTrack,
+  questRewardsLeft,
+  questShards,
+  shardMeaning,
+} from "./quest-rewards"
 import { questTokenPlan } from "./quest-token-plan"
 
 const crates = [
@@ -171,6 +176,52 @@ describe("questTokenPlan", () => {
     })
     expect(questTokenPlan({ ...params, phase: "claim" })).toEqual({
       kind: "closed",
+    })
+  })
+})
+
+describe("questRewardsLeft", () => {
+  const crate = (
+    number: number,
+    points: number,
+    rewards: { type: string; min: number; max: number; rarity?: string }[]
+  ) => ({ number, points, rewards })
+  const crates = [
+    crate(1, 100, [{ type: "Coins", min: 1000, max: 1000 }]),
+    crate(2, 200, [
+      { type: "Coins", min: 2000, max: 2000 },
+      { type: "XpBook", min: 1, max: 2, rarity: "Rare" },
+    ]),
+    crate(3, 300, [
+      { type: "XpBook", min: 2, max: 3, rarity: "Rare" },
+      { type: "XpBook", min: 1, max: 1, rarity: "Epic" },
+    ]),
+  ]
+
+  it("sums the unopened crates and counts the medals and shards still to win", () => {
+    const left = questRewardsLeft(
+      questShards([3, 2], true),
+      crateTrack(crates, { total: 150, nextCrate: null })
+    )
+
+    expect(left).toEqual({
+      medals: 46,
+      shards: 138,
+      crates: 2,
+      rewards: [
+        { type: "Coins", min: 2000, max: 2000 },
+        { type: "XpBook", min: 3, max: 5, rarity: "Rare" },
+        { type: "XpBook", min: 1, max: 1, rarity: "Epic" },
+      ],
+    })
+  })
+
+  it("counts no crates when the crate track is unavailable", () => {
+    expect(questRewardsLeft(questShards([], false), null)).toMatchObject({
+      medals: 51,
+      shards: 51,
+      crates: 0,
+      rewards: [],
     })
   })
 })

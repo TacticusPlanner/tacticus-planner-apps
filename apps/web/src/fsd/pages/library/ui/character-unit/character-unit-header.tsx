@@ -35,6 +35,7 @@ export function CharacterUnitHeader({
   yourUnitLine,
   power,
   shards,
+  action,
   isMobile,
 }: {
   unitId: UnitId
@@ -55,6 +56,8 @@ export function CharacterUnitHeader({
   power: ReactNode
   /** Shard progress towards unlocking, for a unit the player doesn't own. */
   shards?: { owned: number; needed: number }
+  /** The unit's Create goal, passed through to the header. */
+  action?: ReactNode
   isMobile: boolean
 }) {
   const { t } = useTranslation(["library", "factions", "progression"])
@@ -107,6 +110,7 @@ export function CharacterUnitHeader({
       mode={mode}
       onModeChange={onModeChange}
       power={power}
+      action={action}
       isMobile={isMobile}
       customControls={
         <>

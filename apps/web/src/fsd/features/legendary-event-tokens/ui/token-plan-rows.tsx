@@ -189,7 +189,7 @@ function TeamName({
   return (
     <button
       aria-label={t("tokenPlan.plan.openTeam", { team: teamName })}
-      className="rounded-sm text-left underline decoration-dotted underline-offset-4 hover:decoration-solid focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="rounded-sm text-left underline decoration-dotted underline-offset-4 hover:decoration-solid focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
       data-testid="token-plan-team"
       onClick={() => onOpenTeam(laneId, teamId)}
       type="button"
@@ -237,7 +237,7 @@ function TokenBattleRunRow({
         expanded ? "tokenPlan.plan.collapseRun" : "tokenPlan.plan.expandRun",
         { count: tokens.length }
       )}
-      className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
       data-testid="token-plan-run-toggle"
       onClick={() => setExpanded(!expanded)}
       type="button"

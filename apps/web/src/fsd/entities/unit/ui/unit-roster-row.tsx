@@ -31,15 +31,15 @@ import { usesMythicShards, useUnitTileLabel } from "./unit-tile-label"
 // Fixed columns so every row of a list lines up: portrait, name (the only flexible column), rank,
 // stars, XP level, the two ability levels, then three equipment squares.
 const linkColumns =
-  "grid-cols-[28px_minmax(0,1fr)_26px_3rem_2.75rem_2rem_2rem_70px]"
+  "grid-cols-[1.75rem_minmax(0,1fr)_1.625rem_3rem_2.75rem_2rem_2rem_4.375rem]"
 // Mobile keeps the columns that fit 420px; the rest move into the expanded panel.
 const expandableColumns =
-  "grid-cols-[28px_minmax(0,1fr)_26px_3rem_2.75rem_16px]"
+  "grid-cols-[1.75rem_minmax(0,1fr)_1.625rem_3rem_2.75rem_1rem]"
 // The same with a leading faction icon column, for a list not grouped by faction.
 const linkColumnsWithFaction =
-  "grid-cols-[18px_28px_minmax(0,1fr)_26px_3rem_2.75rem_2rem_2rem_70px]"
+  "grid-cols-[1.25rem_1.75rem_minmax(0,1fr)_1.625rem_3rem_2.75rem_2rem_2rem_4.375rem]"
 const expandableColumnsWithFaction =
-  "grid-cols-[18px_28px_minmax(0,1fr)_26px_3rem_2.75rem_16px]"
+  "grid-cols-[1.25rem_1.75rem_minmax(0,1fr)_1.625rem_3rem_2.75rem_1rem]"
 const cellBox =
   "grid h-5 place-items-center rounded border text-xs font-semibold tabular-nums"
 
@@ -190,7 +190,7 @@ export function UnitRosterRow({
 function FactionCell({ faction }: { faction: UnitFaction }) {
   return (
     <span
-      className="block size-[18px]"
+      className="block size-5"
       data-testid="unit-row-faction"
       data-faction={faction.id}
     >
@@ -245,7 +245,7 @@ function Name({ unit }: { unit: UnitTileUnit }) {
 
 function RankCell({ kind, data }: { kind: UnitKind; data: OwnedUnitTileData }) {
   return kind === "character" && data.rank ? (
-    <span className="block h-[25px] w-[26px]" data-testid="unit-row-rank">
+    <span className="block size-6" data-testid="unit-row-rank">
       <EntityIcon src={rankIcon(data.rank)} alt="" className="size-full" />
     </span>
   ) : (
@@ -263,7 +263,7 @@ function StarsCell({ data }: { data: OwnedUnitTileData }) {
     >
       {visual.kind === "stars" ? (
         <>
-          <EntityIcon src={visual.icon} alt="" className="size-[13px]" />
+          <EntityIcon src={visual.icon} alt="" className="size-3.5" />
           {visual.count}
         </>
       ) : (
@@ -313,7 +313,7 @@ function EquipmentCells({
         ) : (
           <span
             key={index}
-            className="h-[22px] rounded border-2 border-dashed"
+            className="h-6 rounded-sm border-2 border-dashed"
             data-testid="unit-tile-empty-slot"
           />
         )
@@ -350,7 +350,7 @@ function ExpandedPanel({
           </PanelEntry>
           {character ? (
             <PanelEntry term={t("unitRow.equipment")}>
-              <span className="block w-[70px]">
+              <span className="block w-17.5">
                 <EquipmentCells equipment={owned.equipment} />
               </span>
             </PanelEntry>

@@ -340,7 +340,7 @@ export const GoalCard = memo(
         {row.notes ? (
           <div className="border-t pt-2.5">
             <p
-              className="line-clamp-2 border-l-2 border-primary/40 pl-2 text-xs leading-snug text-muted-foreground"
+              className="line-clamp-2 border-l-2 border-primary/40 pl-2 text-xs/snug text-muted-foreground"
               data-testid="goal-row-notes"
               title={row.notes}
             >

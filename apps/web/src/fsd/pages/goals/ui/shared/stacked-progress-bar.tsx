@@ -58,7 +58,7 @@ export function StackedProgressBar({
         aria-valuetext={valueText}
         className={cn(
           "relative w-full overflow-hidden rounded-full bg-muted",
-          mobile ? "h-[5px]" : "h-1.5"
+          mobile ? "h-1.25" : "h-1.5"
         )}
         data-testid="goal-progress-bar"
         role="progressbar"
@@ -87,7 +87,7 @@ export function StackedProgressBar({
           <TooltipTrigger asChild>
             <div
               aria-hidden="true"
-              className="absolute -top-1.5 -bottom-1.5 z-10 flex w-3 -translate-x-1/2 cursor-help items-center justify-center"
+              className="absolute -inset-y-1.5 z-10 flex w-3 -translate-x-1/2 cursor-help items-center justify-center"
               data-testid="goal-progress-bar-ceiling"
               style={{ left: `${ceilingPct}%` }}
             >

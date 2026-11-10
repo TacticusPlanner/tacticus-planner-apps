@@ -106,8 +106,8 @@
       "twoBlueStars": "Deux étoiles bleues"
     },
     "next": "Prochaine étape : {{step}} · {{shards}} / {{threshold}} fragments",
-    "chests_one": "Encore {{chests}} coffre ({{currency}} de monnaie au total)",
-    "chests_other": "Encore {{chests}} coffres ({{currency}} de monnaie au total)",
+    "chests_one": "Encore {{chests}} coffre pour {{currency}} de monnaie",
+    "chests_other": "Encore {{chests}} coffres pour {{currency}} de monnaie",
     "points": "{{points}} points pour atteindre {{target}} · environ {{battles}} combats par voie",
     "fullyAscended": "Toutes les étapes de récompense atteintes",
     "beyondChests": "Hors de portée pour cet événement ({{required}} coffres nécessaires, l'événement en compte {{ladder}})",
@@ -153,6 +153,12 @@
     "next": "Suivant",
     "close": "Fermer"
   },
+  "unitChip": {
+    "abilities": "Active niv. {{active}} · Passive niv. {{passive}}",
+    "notOwned": "Non possédée",
+    "rankShading": "Teinte de rang",
+    "rankShadingHint": "Teinter les unités de la couleur de leur rang"
+  },
   "eventBoard": {
     "title": "Tableau de l'événement",
     "description": "Les objectifs de chaque voie affichée, les unités qui conviennent à chacun et les équipes de la voie côte à côte. Choisissez des objectifs pour voir les unités qui les remplissent tous, ou une unité pour commencer une équipe avec elle.",
@@ -163,6 +169,9 @@
     "columnUnits_other": "{{count}} unités",
     "noUnits": "Aucune unité",
     "addTeam": "Commencer une équipe avec cette unité",
+    "showBest": "Afficher les {{count}} meilleures",
+    "keysHint": "Utilisez les flèches pour passer d’une unité à l’autre.",
+    "showAll": "Afficher toutes les unités (jusqu'à {{count}})",
     "locked": "Verrouillée"
   },
   "laneSummary": {
@@ -258,6 +267,7 @@
     "points": "Points",
     "battlePoints": "{{earned}} / {{max}}",
     "highScore": "Meilleur score {{score}}",
+    "highScoreShort": "MS {{score}}",
     "cellCleared": "{{objective}} : accompli",
     "cellNotCleared": "{{objective}} : non accompli",
     "complete": "Terminé",
@@ -442,6 +452,13 @@
       "label": "Passe les combats 1–{{depth}} sur {{total}}",
       "labelNone": "Ne passe aucun des {{total}} combats",
       "close": "Proche du combat {{battle}}",
+      "bands": {
+        "sure": "Passe les combats 1–{{sure}} sans risque",
+        "sureNone": "Aucun combat sans risque",
+        "likely": "{{battle}} probablement",
+        "likelyRange": "{{from}}–{{to}} probablement",
+        "stretch": "jusqu’à {{stretch}} au mieux"
+      },
       "manual": "Profondeur fixée par vous"
     },
     "editDepth": "Modifier la profondeur",
@@ -604,12 +621,14 @@
     "disclaimer": "Toutes les estimations comparent uniquement la puissance brute. Les résultats réels des combats peuvent différer.",
     "estimated": "estimé",
     "uncalibrated": "Non calibré : le rapport de puissance de l'estimation n'a pas encore été ajusté sur de vrais résultats, considérez-la comme une indication approximative.",
-    "howItWorks": "Estimé à partir de la puissance de votre effectif synchronisé, équipement compris, comparée à la puissance de chaque combat. Les synergies et les objectifs difficiles ne sont pas pris en compte ; définissez une profondeur pour la remplacer.",
+    "howItWorks": "Estimé à partir de la puissance de ton effectif synchronisé, équipement compris, face à la puissance de chaque combat sur une courbe ajustée aux résultats signalés : les derniers combats demandent plus que leur puissance, les premiers moins. La plage va de ce qui passe sans risque à ce qui passe au mieux. Les synergies et les objectifs difficiles ne sont pas modélisés ; fixe une profondeur pour la remplacer.",
     "marginAbove": "{{percent}} % au-dessus du combat {{battle}}",
     "shortfallNext": "{{percent}} % en dessous du combat {{battle}}",
+    "range": "sans risque jusqu’à {{sure}}, au mieux {{stretch}}",
     "notEnough": "Pas encore assez pour le combat 1",
     "useEstimate": "Utiliser l'estimation",
     "estimateHint": "estimation ~{{depth}}",
+    "estimateHintRange": "estimation ~{{depth}} ({{sure}}–{{stretch}})",
     "lockedNotCounted_one": "{{count}} membre verrouillé non compté",
     "lockedNotCounted_other": "{{count}} membres verrouillés non comptés",
     "clears": "Combats",
@@ -704,13 +723,21 @@
       "upcoming": "{{reason}} pour le début de la manche {{run}}",
       "upcomingUnknown": "{{reason}} pour le début de la prochaine manche",
       "maybe": "Peut-être faisable",
+      "clear": {
+        "sure": "Passe sans risque",
+        "likely": "Passe probablement",
+        "likelySure": "Passe probablement · sans risque jusqu’au combat {{sure}}"
+      },
       "members": "Membres",
       "objectives": "Réussit",
       "actions": {
         "partly": "Réussi en partie",
         "couldNot": "Échec",
         "partlyLabel": "Réussi en partie : marquer {{team}} sur {{lane}} combat {{battle}} comme Peut-être faisable",
-        "couldNotLabel": "Échec : marquer {{team}} sur {{lane}} combat {{battle}} comme S'arrêter ici"
+        "couldNotLabel": "Échec : marquer {{team}} sur {{lane}} combat {{battle}} comme S'arrêter ici",
+        "stop": "S'arrêter ici",
+        "stopLabel": "S'arrêter ici : arrêter {{team}} sur {{lane}} après le combat {{previous}} et planifier d'autres équipes",
+        "stopHint": "Arrête cette équipe après le combat {{previous}} et passe le plan aux autres équipes"
       },
       "loading": "Chargement du plan de jetons…",
       "unavailable": "La progression synchronisée est indisponible, il n'y a donc pas de plan de jetons",
@@ -719,10 +746,8 @@
       "noDepth": "Indiquez jusqu'où {{team}} progresse",
       "nothingLeft": "Vos équipes n'ont plus rien à réussir · {{points}} points restants sur {{lane}}",
       "missions": {
-        "title": "Pour les missions",
         "progresses": "Missions qu'il fait avancer",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} points ({{difference}})",
         "button_one": "Fait avancer {{count}} mission",
         "button_other": "Fait avancer {{count}} missions",
         "uncounted": "compte",
@@ -731,7 +756,11 @@
       "upNext": "Ensuite",
       "viewPlan_one": "Voir le {{count}} jeton prévu",
       "viewPlan_other": "Voir les {{count}} jetons prévus",
-      "team": "Voir les unités de {{team}}"
+      "team": "Voir les unités de {{team}}",
+      "depth": {
+        "estimated": "estimation",
+        "manual": "fixée par vous"
+      }
     },
     "plan": {
       "title": "Plan de jetons",

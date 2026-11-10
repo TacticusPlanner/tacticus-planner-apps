@@ -111,3 +111,4 @@ export {
   upgradeGoalRangeSlotItems,
   type GoalSlotItem,
 } from "./lib/upgrade-goal-need"
+export { targetUnitsInSlots } from "./lib/slot-components"

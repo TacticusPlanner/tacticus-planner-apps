@@ -6,6 +6,8 @@ import {
   buildSyncedLaneProgress,
   laneBattlePowers,
   projectRewards,
+  syncedChestsClaimed,
+  unitNextAscensionStep,
   teamClearEstimate,
   unitClearEstimate,
   type ClearEstimate,
@@ -37,6 +39,7 @@ import type { RunHistory } from "../../lib/run-history"
 import type { UpgradeImpactState } from "@/features/legendary-event-goals"
 import type {
   MarkTokenHandler,
+  StopTeamHandler,
   OpenTeamsHandler,
   TokenPlanView,
 } from "@/features/legendary-event-tokens"
@@ -191,6 +194,8 @@ interface TokensViewModel {
   view: TokenPlanView
   /** Absent while marks cannot be written (signed out, or the plan has not loaded). */
   onMarkToken: MarkTokenHandler | undefined
+  /** Stop here on a likely-clear token; absent while depths cannot be written. */
+  onStopTeam: StopTeamHandler | undefined
   /** Opens Teams with the lane shown and scrolls its Teams section (or one team's card) into view. */
   onOpenTeams: OpenTeamsHandler
 }
@@ -348,12 +353,16 @@ export function buildProgressGridViewModel(
 export function buildRunStatusViewModel({
   progress,
   rewards,
+  unit,
   progressObservedAtMs,
   nowMs,
 }: {
   progress: ReadState<LegendaryEventProgress | undefined>
   /** `undefined` for a catalog record cached before rewards were served. */
   rewards: LegendaryEventRewards | undefined
+  /** The event unit's roster record (`eventUnitRecord`), or the roster read's status. Only a
+   *  roster known to lack the unit caps the claimed chests by the shards held. */
+  unit: ReadValue<LegendaryEventRosterUnit | undefined>
   progressObservedAtMs: number | null
   nowMs: number
 }): RunStatusViewModel {
@@ -378,9 +387,12 @@ export function buildRunStatusViewModel({
     tokens: bucket ? { current: bucket.current, max: bucket.max, next } : null,
     points: entry.currentPoints,
     currency: entry.currentCurrency,
-    // The Tacticus API sends a 1-based count of chests opened (2 = two opened), and -1 when it
-    // omits the field (V1 token-estimation-service documents the same), so clamp at zero.
-    chestsClaimed: Math.max(0, entry.currentClaimedChestIndex),
+    // The same count the Reward outlook starts from (`syncedChestsClaimed`).
+    chestsClaimed: syncedChestsClaimed(
+      entry,
+      rewards?.shardsPerChest ?? 0,
+      typeof unit === "string" ? "fullyAscended" : unitNextAscensionStep(unit)
+    ),
     shards: entry.currentShards,
     milestone: nextPointsMilestone(rewards, entry.currentPoints),
   }

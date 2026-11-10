@@ -82,6 +82,8 @@ export {
 } from "./model/use-objective-label"
 export { ObjectiveIcon } from "./ui/objective-icon"
 export { EventUnitChip } from "./ui/event-unit-chip"
+export { RankShadingProvider } from "./model/rank-shading"
+export { useRankShading } from "./model/rank-shading-context"
 export { rankTone } from "./lib/rank-tone"
 export {
   eventUnitChipData,
@@ -143,6 +145,7 @@ export {
   PREMIUM_BONUS_CURRENCY,
   nextAscensionStep,
   projectRewards,
+  syncedChestsClaimed,
   unitNextAscensionStep,
   type AscensionGoal,
   type AscensionStep,
@@ -167,6 +170,7 @@ export {
 export { type NamedTeam, withLanePrefix } from "./lib/team-display-name"
 export { useTeamDisplayName } from "./model/use-team-display-name"
 export {
+  CLEAR_ESTIMATE_CURVE_VERSION,
   laneBattlePowers,
   teamClearEstimate,
   teamEffectiveDepth,

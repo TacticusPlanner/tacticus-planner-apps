@@ -89,7 +89,7 @@ function OutlookBody({ projection }: { projection: RewardProjection }) {
       text: t("outlook.chests", {
         count: chests.toGo,
         chests: number.format(chests.toGo),
-        currency: number.format(currency.required),
+        currency: number.format(currency.forChestsToGo),
       }),
     })
   }

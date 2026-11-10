@@ -27,7 +27,7 @@ export function ShardProgressBars({
   return (
     // One grid for both lines, so the Shards and Mythic shards bars start and end at the same x.
     <div
-      className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-2 gap-y-2 text-xs text-muted-foreground"
+      className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 text-xs text-muted-foreground"
       data-testid="goal-shard-progress"
     >
       {bars.map((bar) => {

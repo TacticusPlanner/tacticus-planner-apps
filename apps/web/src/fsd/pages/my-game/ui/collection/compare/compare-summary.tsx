@@ -91,7 +91,7 @@ export function CompareSummary({
   return (
     <section
       aria-label={title}
-      className="flex flex-col gap-3 rounded-[10px] border bg-card p-4"
+      className="flex flex-col gap-3 rounded-lg border bg-card p-4"
       data-testid="compare-summary"
     >
       <div className="flex flex-wrap items-baseline gap-x-2">

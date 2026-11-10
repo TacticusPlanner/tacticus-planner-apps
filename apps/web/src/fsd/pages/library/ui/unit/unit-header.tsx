@@ -40,6 +40,7 @@ export function UnitHeader({
   onModeChange,
   customControls,
   power,
+  action,
   isMobile,
 }: {
   portraitSrc: string
@@ -64,6 +65,8 @@ export function UnitHeader({
   customControls: ReactNode
   /** The unit's power at the shown values (`UnitPowerValue`), first in the values area. */
   power?: ReactNode
+  /** The unit's Create goal, under the unit's lines; absent when signed out. */
+  action?: ReactNode
   isMobile: boolean
 }) {
   const { t } = useTranslation(["library", "factions"])
@@ -85,13 +88,13 @@ export function UnitHeader({
           <h1
             className={cn(
               "font-heading leading-tight font-bold",
-              isMobile ? "text-[26px]" : "text-[34px]"
+              isMobile ? "text-2xl" : "text-4xl"
             )}
           >
             {name}
           </h1>
           <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1 rounded-sm bg-muted px-2 py-0.5 text-xs font-bold tracking-[.06em] text-foreground uppercase">
+            <span className="inline-flex items-center gap-1 rounded-sm bg-muted px-2 py-0.5 text-xs font-bold tracking-wider text-foreground uppercase">
               <EntityIcon
                 src={factionIcon(factionId)}
                 alt=""
@@ -103,7 +106,7 @@ export function UnitHeader({
           </p>
           {ownership === "owned" && yourUnit ? (
             <p
-              className={isMobile ? "text-[13px]" : "text-sm"}
+              className={isMobile ? "text-sm" : "text-sm"}
               data-testid="unit-your-line"
             >
               <span className="font-semibold">{yourUnit.label}</span>{" "}
@@ -143,6 +146,7 @@ export function UnitHeader({
               </span>
             </div>
           ) : null}
+          {action ? <div className="pt-1.5">{action}</div> : null}
         </div>
         <div
           className={cn(
@@ -168,7 +172,7 @@ export function UnitHeader({
                 key={option}
                 value={option}
                 size="sm"
-                className={cn("px-3", isMobile && "h-[38px]")}
+                className={cn("px-3", isMobile && "h-9.5")}
                 data-testid={`unit-values-${option}`}
               >
                 {option === "base" ? baseLabel : t("unit.values.custom")}

@@ -171,7 +171,7 @@ export function useCreateGoalForm({
     upgradeEnabled: enabledTypes.has("Upgrade"),
     inventoryUpgrades,
   })
-  const { upgradeTargets, upgradeRanges } = upgradeFields.state
+  const { upgradeTargets, upgradeSpec } = upgradeFields.state
 
   const { resetPrefillGuard } = useEntityPrefillEffect({
     entityId,
@@ -403,7 +403,7 @@ export function useCreateGoalForm({
     ...abilityFields.state,
     farmingStrategy,
     upgradeTargets,
-    upgradeRanges,
+    ...upgradeSpec,
     plan: acquisitionPlan,
     mythicMaterialSources: mythicMaterialSelection.acquisitionSources,
     isMow: entityType === "Mow",

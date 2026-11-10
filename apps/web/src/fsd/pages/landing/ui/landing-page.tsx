@@ -69,18 +69,18 @@ function LandingHero({
       <img
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute top-16 -right-36 -z-10 w-[22rem] [mask-image:radial-gradient(circle,#000_55%,transparent_72%)] opacity-50 md:top-10 md:-right-32 md:w-[36rem]"
+        className="pointer-events-none absolute top-16 -right-36 -z-10 w-88 mask-[radial-gradient(circle,#000_55%,transparent_72%)] opacity-50 md:top-10 md:-right-32 md:w-xl"
         src={landingArt.heroPlanet}
       />
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-10 bg-linear-to-b from-transparent from-30% to-background"
       />
-      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-12 pb-16 md:grid-cols-[1.1fr_0.9fr] md:px-6 md:pt-20 md:pb-20">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-12 pb-16 md:grid-cols-[1.1fr_0.9fr] md:px-6 md:py-20">
         <div className="flex flex-col items-start gap-5">
           {signInRequired && !isAuthenticated ? (
             <div
-              className="flex w-full max-w-xl items-start gap-3 rounded-lg border border-ring bg-card/80 p-4 text-card-foreground backdrop-blur"
+              className="flex w-full max-w-xl items-start gap-3 rounded-lg border border-ring bg-card/80 p-4 text-card-foreground backdrop-blur-sm"
               data-testid="landing-sign-in-required"
               role="status"
             >
@@ -99,7 +99,7 @@ function LandingHero({
               </div>
             </div>
           ) : null}
-          <p className="text-xs font-semibold tracking-[0.12em] text-chart-4 uppercase">
+          <p className="text-xs font-semibold tracking-widest text-chart-4 uppercase">
             {t("hero.eyebrow")}
           </p>
           <h1
@@ -138,7 +138,7 @@ function LandingHero({
             )}
             {isAuthenticated ? null : (
               <Button
-                className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur"
+                className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur-sm"
                 data-testid="landing-sign-in"
                 disabled={disabled}
                 onClick={signIn}
@@ -152,7 +152,7 @@ function LandingHero({
             )}
             <Button
               asChild
-              className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur"
+              className="h-11 rounded-full bg-card/60 px-6 text-base backdrop-blur-sm"
               variant="outline"
             >
               <Link to="/library/characters">{t("hero.browseLibrary")}</Link>
@@ -180,7 +180,7 @@ function ExamplePlanCard() {
   return (
     <figure
       aria-labelledby="landing-example-plan-title"
-      className="hidden flex-col rounded-2xl border bg-card/85 p-4 shadow-2xl backdrop-blur md:flex"
+      className="hidden flex-col rounded-2xl border bg-card/85 p-4 shadow-2xl backdrop-blur-sm md:flex"
       data-testid="landing-example-plan"
     >
       <figcaption

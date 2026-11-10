@@ -159,6 +159,7 @@ function useComputedGoalsOverviewMetrics(
         getMow,
         playerCharacterById,
         playerMowById,
+        upgradesById,
       })
     const namedHolders = (goalId: string) => {
       const byMaterial = upgradeStockHolders.get(goalId)

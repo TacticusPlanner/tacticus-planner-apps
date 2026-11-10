@@ -9,6 +9,7 @@ import type {
 import { maxAbilityLevel } from "@workspace/game-domain"
 
 import { render, screen, within } from "@/test/render"
+import type { UpgradeWithFarmLocations } from "@/features/rank-lookup/@x/goal-create"
 
 import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
 import { AbilityGoalCard } from "./ability-goal-card"
@@ -318,5 +319,40 @@ describe("UpgradeGoalCard", () => {
     )
 
     expect(screen.getByRole("button", { name: "Remove" })).toBeDisabled()
+  })
+
+  it("adds every unpicked material of a rarity at the range's quantities", async () => {
+    const onAdd = vi.fn()
+    const upgrade = (rarity: string) =>
+      ({ rarity, label: rarity }) as unknown as UpgradeWithFarmLocations
+    render(
+      <UpgradeGoalCard
+        choices={
+          new Map([
+            ["chip", 45],
+            ["gear", 12],
+            ["bolt", 3],
+          ] as [UpgradeId, number][])
+        }
+        issues={[]}
+        mode="create"
+        onAdd={onAdd}
+        onQuantityChange={vi.fn()}
+        onRemove={vi.fn()}
+        preview={content(0)}
+        targets={[{ upgradeId: "gear", quantity: 12 }]}
+        upgradesById={
+          new Map([
+            ["chip", upgrade("Legendary")],
+            ["gear", upgrade("Legendary")],
+            ["bolt", upgrade("Common")],
+          ] as [UpgradeId, UpgradeWithFarmLocations][])
+        }
+      />
+    )
+
+    await userEvent.click(screen.getByRole("button", { name: "Legendary (1)" }))
+
+    expect(onAdd).toHaveBeenCalledWith([{ upgradeId: "chip", quantity: 45 }])
   })
 })

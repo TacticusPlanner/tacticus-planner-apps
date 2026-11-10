@@ -149,7 +149,7 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
       <button
         type="button"
         aria-label={t("nav.addGoal")}
-        className="flex flex-1 flex-col items-center justify-center gap-1 text-[0.65rem] font-semibold text-primary"
+        className="flex flex-1 flex-col items-center justify-center gap-1 text-xs font-semibold text-primary"
         data-testid="mobile-create-goal-button"
         onClick={onCreateGoal}
         title={t("nav.addGoal")}
@@ -162,7 +162,7 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
       <button
         type="button"
         aria-label={syncLabel}
-        className="flex flex-1 flex-col items-center justify-center gap-1 text-[0.65rem] font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex flex-1 flex-col items-center justify-center gap-1 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50"
         data-testid="mobile-sync-button"
         disabled={syncDisabled}
         onClick={syncNow}
@@ -214,7 +214,7 @@ function MobileGuestNavAction() {
   return (
     <button
       type="button"
-      className="flex flex-1 flex-col items-center justify-center gap-1 text-[0.65rem] font-semibold text-primary disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex flex-1 flex-col items-center justify-center gap-1 text-xs font-semibold text-primary disabled:cursor-not-allowed disabled:opacity-50"
       data-testid="mobile-sign-up-button"
       disabled={disabled}
       onClick={signUp}
@@ -312,7 +312,7 @@ function MobileBottomNav({
             type="button"
             aria-label={t("nav.menu")}
             className={cn(
-              "flex flex-1 flex-col items-center justify-center gap-1 text-[0.65rem] font-medium transition-colors",
+              "flex flex-1 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors",
               menuOpen || isMenuItemActive
                 ? "text-primary"
                 : "text-muted-foreground hover:text-foreground"
@@ -339,7 +339,7 @@ function MobileBottomNav({
             <DrawerTitle className="text-xl">{t("nav.navigation")}</DrawerTitle>
             <DrawerDescription>{t("nav.navigationHint")}</DrawerDescription>
           </DrawerHeader>
-          <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+          <div className="flex-1 space-y-3 overflow-y-auto p-4">
             <QuickActionsGroup
               actions={filteredActions}
               onSelect={(id) => {

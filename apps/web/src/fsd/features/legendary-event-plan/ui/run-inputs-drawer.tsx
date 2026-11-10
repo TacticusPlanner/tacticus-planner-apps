@@ -108,7 +108,7 @@ export function RunInputsDrawer({
     <Sheet>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent
-        className="w-[420px] data-[side=right]:sm:max-w-[420px]"
+        className="w-105 sm:data-[side=right]:max-w-105"
         data-testid="run-inputs-drawer"
         side="right"
       >

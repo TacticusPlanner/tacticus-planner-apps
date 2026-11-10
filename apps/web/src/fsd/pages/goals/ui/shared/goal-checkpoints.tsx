@@ -48,7 +48,7 @@ export function GoalCheckpoints({
     <Popover>
       <PopoverTrigger asChild>
         <button
-          className="mt-1 flex items-center gap-1 rounded-md text-xs text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
+          className="mt-1 flex items-center gap-1 rounded-md text-xs text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring"
           data-testid="goal-checkpoints-trigger"
           type="button"
         >

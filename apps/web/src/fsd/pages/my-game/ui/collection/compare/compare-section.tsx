@@ -13,6 +13,7 @@ import type { RosterDiffMetric } from "@/entities/roster-snapshot"
 import type { UnitTileUnit } from "@/entities/unit"
 import { useAnalyticsActions } from "@/shared/analytics"
 
+import { compareFocus } from "../../../model/compare-chips"
 import { sourceLabel } from "../../../model/compare-labels"
 import { useSourceLabels } from "../../../model/use-source-labels"
 import { COMPARE_CURRENT } from "../../../model/compare-query"
@@ -51,8 +52,8 @@ export function CompareSection({
         <p className="sr-only" role="status">
           {t("myGame.collection.compare.loading")}
         </p>
-        <Skeleton className="h-28 w-full rounded-[10px] motion-reduce:animate-none" />
-        <Skeleton className="h-64 w-full rounded-[10px] motion-reduce:animate-none" />
+        <Skeleton className="h-28 w-full rounded-lg motion-reduce:animate-none" />
+        <Skeleton className="h-64 w-full rounded-lg motion-reduce:animate-none" />
       </div>
     )
   }
@@ -73,7 +74,7 @@ export function CompareSection({
   if (state.mode === "empty") {
     return (
       <div
-        className="flex flex-col items-center gap-3 rounded-[10px] border border-dashed px-4 py-10 text-center"
+        className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center"
         data-testid="compare-empty"
       >
         <History aria-hidden className="size-8 text-muted-foreground" />
@@ -187,7 +188,7 @@ function ReadyCompare({
       />
       {view.changed.length === 0 && !showUnchanged ? (
         <p
-          className="rounded-[10px] border border-dashed px-4 py-8 text-center text-sm text-muted-foreground"
+          className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground"
           role="status"
           data-testid="compare-no-changes"
         >
@@ -199,6 +200,7 @@ function ReadyCompare({
           unchanged={view.unchanged}
           showUnchanged={showUnchanged}
           fields={fields}
+          focus={compareFocus(metric, query.order)}
         />
       )}
     </div>

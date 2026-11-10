@@ -58,6 +58,37 @@ after at most 6 seconds.
 - **THEN** the system does not attempt a silent session restore and shows
   the unauthenticated experience exactly as it does today
 
+### Requirement: Quiet top-level renewal when the hidden check fails
+
+When the hidden identity-provider session check fails for a previously
+cached account (or account hint), the system SHALL make one top-level
+redirect to the identity provider with `prompt=none` before falling back to
+manual sign-in, because a top-level navigation carries the identity
+provider's cookies even where the browser keeps them out of hidden frames.
+The redirect SHALL use the same account-hint rules as interactive
+re-authentication (no generated Google username as a hint). It SHALL be
+skipped while a fresh login is required, and for 12 hours after an attempt
+that did not come back signed in. A response that reports no usable session
+SHALL NOT count as a failed sign-in: no error toast, no fresh-login prompt,
+and the cached account and hint are kept. Sign-in controls keep showing the
+in-progress state while the redirect leaves the page.
+
+#### Scenario: Live session the hidden frame cannot see
+
+- **GIVEN** a user who chose to stay signed in, whose refresh token expired
+  more than 24 hours after sign-in, in a browser that blocks third-party
+  cookies
+- **WHEN** they open the app
+- **THEN** the page bounces through the identity provider and returns signed
+  in, on the page they opened, with no prompt
+
+#### Scenario: No session left
+
+- **WHEN** the quiet redirect comes back reporting that interaction is
+  required
+- **THEN** the user lands signed out with the normal sign-in control and no
+  error, and the next loads within 12 hours do not repeat the redirect
+
 ### Requirement: Successful restore requires no further user action
 
 When the automatic silent restore succeeds, the user SHALL be taken directly

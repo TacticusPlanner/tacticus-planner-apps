@@ -8,7 +8,8 @@ import { useUnitName } from "@/shared/unit-name"
 import type { HomeEventRow } from "../../model/select-home-events"
 
 /** A Home event's display name: the featured hero for a Legendary Event, the running campaign (else
- *  "Campaign Event") for a Campaign Event, Incursion, else the HSE's name. */
+ *  "Campaign Event") for a Campaign Event, Incursion, "Quest: <hero>" for a Quest Event, else the
+ *  HSE's name. */
 export function useHomeEventName(): (row: HomeEventRow) => string {
   const { t } = useTranslation("events")
   const unitName = useUnitName()
@@ -22,6 +23,14 @@ export function useHomeEventName(): (row: HomeEventRow) => string {
       ? campaign.name(descriptor)
       : t("definitions.campaign-event")
   }
+  // Reads like the events calendar's "Quest: <hero>".
+  const questName = (featuredCharacterId: string | null) =>
+    featuredCharacterId
+      ? t("withCharacter", {
+          name: t("definitions.quest"),
+          character: unitName("Character", featuredCharacterId),
+        })
+      : t("definitions.quest")
   return (row) =>
     row.type === "legendaryEvent"
       ? unitName("Character", row.unitId)
@@ -29,7 +38,9 @@ export function useHomeEventName(): (row: HomeEventRow) => string {
         ? campaignEventName(row.campaignId)
         : row.type === "incursion"
           ? t("definitions.incursion")
-          : t(`definitions.${row.definitionId}`, {
-              defaultValue: row.definitionId,
-            })
+          : row.type === "quest"
+            ? questName(row.featuredCharacterId)
+            : t(`definitions.${row.definitionId}`, {
+                defaultValue: row.definitionId,
+              })
 }

@@ -106,8 +106,8 @@
       "twoBlueStars": "Two blue stars"
     },
     "next": "Next: {{step}} · {{shards}} / {{threshold}} shards",
-    "chests_one": "{{chests}} more chest ({{currency}} currency in total)",
-    "chests_other": "{{chests}} more chests ({{currency}} currency in total)",
+    "chests_one": "{{chests}} more chest costing {{currency}} currency",
+    "chests_other": "{{chests}} more chests costing {{currency}} currency",
     "points": "{{points}} points to reach {{target}} · about {{battles}} battles per lane",
     "fullyAscended": "Every reward step reached",
     "beyondChests": "Not reachable this event (needs {{required}} chests, the event has {{ladder}})",
@@ -153,6 +153,12 @@
     "next": "Next",
     "close": "Close"
   },
+  "unitChip": {
+    "abilities": "Active {{active}} · Passive {{passive}}",
+    "notOwned": "Not owned",
+    "rankShading": "Rank shading",
+    "rankShadingHint": "Tint units in their rank colour"
+  },
   "eventBoard": {
     "title": "Event board",
     "description": "Each shown lane's objectives, the units that fit each and the lane's teams side by side. Pick objectives to see the units that fit all of them, or a unit to start a team with it.",
@@ -163,6 +169,9 @@
     "columnUnits_other": "{{count}} units",
     "noUnits": "No units",
     "addTeam": "Start a team with this unit",
+    "showBest": "Show the best {{count}}",
+    "keysHint": "Use the arrow keys to move between units.",
+    "showAll": "Show all units (up to {{count}})",
     "locked": "Locked"
   },
   "laneSummary": {
@@ -258,6 +267,7 @@
     "points": "Points",
     "battlePoints": "{{earned}} / {{max}}",
     "highScore": "High score {{score}}",
+    "highScoreShort": "HS {{score}}",
     "cellCleared": "{{objective}}: cleared",
     "cellNotCleared": "{{objective}}: not cleared",
     "complete": "Complete",
@@ -442,6 +452,13 @@
       "label": "Clears battles 1–{{depth}} of {{total}}",
       "labelNone": "Clears no battle of {{total}}",
       "close": "Close to battle {{battle}}",
+      "bands": {
+        "sure": "Clears battles 1–{{sure}} safely",
+        "sureNone": "No battle safely",
+        "likely": "{{battle}} likely",
+        "likelyRange": "{{from}}–{{to}} likely",
+        "stretch": "up to {{stretch}} at best"
+      },
       "manual": "Depth set by you"
     },
     "editDepth": "Edit clear depth",
@@ -604,12 +621,14 @@
     "disclaimer": "All estimates compare raw power only. Real battle results may differ.",
     "estimated": "estimated",
     "uncalibrated": "Uncalibrated: the estimate's power ratio has not been fitted to real clears yet, so treat it as a rough guide.",
-    "howItWorks": "Estimated from your synced roster's power, equipment included, against each battle's power. Synergy and hard objectives aren't modelled; set a depth to override it.",
+    "howItWorks": "Estimated from your synced roster's power, equipment included, against each battle's power on a curve fitted to reported clears: later battles need more than their power, earlier ones less. The range runs from what clears safely to what clears at best. Synergy and hard objectives aren't modelled; set a depth to override it.",
     "marginAbove": "{{percent}}% above battle {{battle}}",
     "shortfallNext": "{{percent}}% short of battle {{battle}}",
+    "range": "safe through {{sure}}, up to {{stretch}}",
     "notEnough": "Not enough for battle 1 yet",
     "useEstimate": "Use estimate",
     "estimateHint": "estimate ~{{depth}}",
+    "estimateHintRange": "estimate ~{{depth}} ({{sure}}–{{stretch}})",
     "lockedNotCounted_one": "{{count}} locked member not counted",
     "lockedNotCounted_other": "{{count}} locked members not counted",
     "clears": "Clears",
@@ -704,13 +723,21 @@
       "upcoming": "{{reason}} for when run {{run}} starts",
       "upcomingUnknown": "{{reason}} for when the next run starts",
       "maybe": "Maybe clear",
+      "clear": {
+        "sure": "Safe clear",
+        "likely": "Likely clear",
+        "likelySure": "Likely clear · safe through battle {{sure}}"
+      },
       "members": "Members",
       "objectives": "Clears",
       "actions": {
         "partly": "Partly cleared",
         "couldNot": "Couldn't clear",
         "partlyLabel": "Partly cleared: mark {{team}} on {{lane}} battle {{battle}} as Maybe clear",
-        "couldNotLabel": "Couldn't clear: mark {{team}} on {{lane}} battle {{battle}} as Stop here"
+        "couldNotLabel": "Couldn't clear: mark {{team}} on {{lane}} battle {{battle}} as Stop here",
+        "stop": "Stop here",
+        "stopLabel": "Stop here: end {{team}} on {{lane}} after battle {{previous}} and plan other teams",
+        "stopHint": "Ends this team after battle {{previous}} and moves the plan on to other teams"
       },
       "loading": "Loading the token plan…",
       "unavailable": "Synced progress is unavailable, so there is no token plan",
@@ -719,10 +746,8 @@
       "noDepth": "Set how far {{team}} clears",
       "nothingLeft": "Your teams have nothing left to clear · {{points}} points left in {{lane}}",
       "missions": {
-        "title": "For missions",
         "progresses": "Missions it progresses",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} points ({{difference}})",
         "button_one": "Progresses {{count}} mission",
         "button_other": "Progresses {{count}} missions",
         "uncounted": "counts",
@@ -731,7 +756,11 @@
       "upNext": "Up next",
       "viewPlan_one": "View the {{count}} planned token",
       "viewPlan_other": "View all {{count}} planned tokens",
-      "team": "Show the units of {{team}}"
+      "team": "Show the units of {{team}}",
+      "depth": {
+        "estimated": "estimate",
+        "manual": "set by you"
+      }
     },
     "plan": {
       "title": "Token plan",

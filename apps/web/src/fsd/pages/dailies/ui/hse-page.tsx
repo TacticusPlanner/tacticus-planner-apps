@@ -146,7 +146,7 @@ export function HsePage() {
           <h2 className="text-lg font-semibold">{t("hse.title")}</h2>
           {state.status === "ready" ? (
             <EventSwitcher
-              className="order-last md:order-none md:ml-auto"
+              className="order-last md:order-0 md:ml-auto"
               instances={state.instances}
               onSelect={selectInstance}
               selectedKey={instance?.key ?? null}

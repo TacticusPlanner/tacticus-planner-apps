@@ -13,7 +13,8 @@ import { EntityIcon, EventIcon } from "@/shared/ui"
 import type { HomeEventRow } from "../../model/select-home-events"
 
 /** A Home event's picture: the featured hero's portrait for a Legendary Event, the running
- *  campaign's icon (else the Campaign Events menu icon) for a Campaign Event, Incursion's icon, else
+ *  campaign's icon (else the Campaign Events menu icon) for a Campaign Event, Incursion's icon, the
+ *  featured hero's portrait (else the Quests menu icon) for a Quest Event, else
  *  the Home Screen Event's game medallion. Decorative; the row names the event. */
 export function HomeEventVisual({
   row,
@@ -27,7 +28,7 @@ export function HomeEventVisual({
       <EntityIcon
         alt=""
         className={cn(
-          "shrink-0 rounded-full ring-2 ring-[var(--event-family-heroes)]",
+          "shrink-0 rounded-full ring-2 ring-(--event-family-heroes)",
           className
         )}
         src={characterIcon(row.unitId as UnitId)}
@@ -44,6 +45,24 @@ export function HomeEventVisual({
             ? campaignIcon(row.campaignId as CampaignId, "Standard")
             : gameMenuIcon("campaignEvent")
         }
+      />
+    )
+  }
+  if (row.type === "quest") {
+    return row.featuredCharacterId ? (
+      <EntityIcon
+        alt=""
+        className={cn(
+          "shrink-0 rounded-full ring-2 ring-(--event-family-campaigns)",
+          className
+        )}
+        src={characterIcon(row.featuredCharacterId as UnitId)}
+      />
+    ) : (
+      <EntityIcon
+        alt=""
+        className={cn("shrink-0", className)}
+        src={gameMenuIcon("quests")}
       />
     )
   }

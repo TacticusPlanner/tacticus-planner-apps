@@ -340,20 +340,6 @@ export interface NextTokenChoice {
 
 /** The planned token at `index` could be played next: not flagged Maybe, playable now and no
  *  earlier planned token on its battle. */
-/** Whether two planned tokens are the same play: one team on one battle clearing the same cells.
- *  Positions differ between the plan and its Missions order, so they cannot tell tokens apart. */
-export function samePlannedToken(
-  a: Pick<PlannedToken, "laneId" | "battleIndex" | "teamId" | "clearedIds">,
-  b: Pick<PlannedToken, "laneId" | "battleIndex" | "teamId" | "clearedIds">
-): boolean {
-  return (
-    a.laneId === b.laneId &&
-    a.battleIndex === b.battleIndex &&
-    a.teamId === b.teamId &&
-    a.clearedIds.join() === b.clearedIds.join()
-  )
-}
-
 export function playableNext(
   tokens: readonly PlannedToken[],
   index: number
