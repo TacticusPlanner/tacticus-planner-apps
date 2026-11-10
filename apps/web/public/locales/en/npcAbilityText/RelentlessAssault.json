@@ -1,0 +1,8 @@
+{
+  "RelentlessAssault": {
+    "description": "The first time each turn that this unit defeats an enemy unit, it immediately performs a <style=\"NormalAttack\">normal ranged attack</style>, if possible.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

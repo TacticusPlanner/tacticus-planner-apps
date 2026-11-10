@@ -1,6 +1,6 @@
 {
   "GeminaeSuperia": {
-    "description": "Wenn diese Einheit angegriffen wird, beschwört sie eine <style=\"Summon\"><style=\"Faction_Sisterhood\">Geminae Superia</style></style> auf einem angrenzenden, freien Feld und löst sofort ihre passive Fähigkeit <link=\"tooltip:Keywords/Lifewards><style=\"KEY\">Lebensschutz</style></link> aus. Kann zweimal pro Kampf ausgelöst werden.\n\nWerte der Geminae Superia:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n<style=\"Stat_Armor\">{[summonArmor]} Rüstung</style>",
+    "description": "Wenn diese Einheit angegriffen wird, beschwört sie eine <style=\"Summon\"><style=\"Faction_Sisterhood\">Geminae Superia</style></style> auf einem angrenzenden, freien Feld und löst sofort ihre passive Fähigkeit <link=\"tooltip:Keywords/Lifewards\"><style=\"KEY\">Lebensschutz</style></link> aus. Kann zweimal pro Kampf ausgelöst werden.\n\nWerte der Geminae Superia:\n<style=\"Stat_Health\">{[summonHp]} Lebenspunkte</style>\n<style=\"Stat_Damage\">{[summonDmg]} Schaden</style>\n<style=\"Stat_Armor\">{[summonArmor]} Rüstung</style>",
     "variables": {
       "summonHp": [
         48, 58, 67, 77, 86, 97, 108, 120, 131, 142, 153, 164, 175, 186, 197,

@@ -1,0 +1,8 @@
+{
+  "PunishmentInescapable": {
+    "description": "Enemy units that enter a hex adjacent to <style=\"Faction_Custodes\">Boudicari</style> end their movement, excluding units with <style=\"Flying\">Flying</style>, <style=\"Unstoppable\">Unstoppable</style>, <style=\"Vehicle\">Vehicle</style>, or <style=\"Immune\">Immune</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

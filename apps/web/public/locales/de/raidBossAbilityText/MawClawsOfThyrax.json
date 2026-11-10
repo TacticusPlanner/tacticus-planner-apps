@@ -1,0 +1,10 @@
+{
+  "MawClawsOfThyrax": {
+    "description": "Der Reliktträger verursacht <style=\"Stat_CritDamage\">+{[extraCritDmg]} Kritischen Schaden</style> pro angrenzender <style=\"Summon\">Beschwörung</style>.",
+    "variables": {
+      "extraCritDmg": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}
