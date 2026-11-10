@@ -61,6 +61,7 @@
     "nextCrate": "{{points}} puntos para la caja {{number}}",
     "pointsLeft": "Puntos pendientes",
     "pointsLeftRow": "faltan {{left}}",
+    "pointsLeftMore": "+{{count}} más",
     "saveFailed": "El progreso no se puede guardar en este navegador"
   },
   "objectives": {
@@ -111,6 +112,8 @@
     "cratePoints": "{{points}} puntos",
     "opened": "Abierta",
     "pointsToGo": "faltan {{points}} puntos",
+    "showAllCrates": "Mostrar los {{count}} cofres",
+    "showFewerCrates": "Mostrar menos cofres",
     "reward": {
       "Coins": "Monedas",
       "RaidTicket": "Tickets de incursión",
@@ -225,6 +228,8 @@
     "title": "Botín para tus objetivos",
     "empty": "Tus objetivos no necesitan ningún botín de esta misión.",
     "have": "{{have}} / {{need}}",
-    "battles": "Batallas"
+    "battles": "Batallas",
+    "showAll": "Mostrar los {{count}}",
+    "showFewer": "Mostrar menos"
   }
 }

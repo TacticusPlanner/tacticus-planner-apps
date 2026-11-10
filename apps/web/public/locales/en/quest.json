@@ -61,6 +61,7 @@
     "nextCrate": "{{points}} points to crate {{number}}",
     "pointsLeft": "Points left",
     "pointsLeftRow": "{{left}} left",
+    "pointsLeftMore": "+{{count}} more",
     "saveFailed": "Progress can't be saved in this browser"
   },
   "objectives": {
@@ -111,6 +112,8 @@
     "cratePoints": "{{points}} points",
     "opened": "Opened",
     "pointsToGo": "{{points}} points to go",
+    "showAllCrates": "Show all {{count}} crates",
+    "showFewerCrates": "Show fewer crates",
     "reward": {
       "Coins": "Coins",
       "RaidTicket": "Raid tickets",
@@ -225,6 +228,8 @@
     "title": "Drops for your goals",
     "empty": "Your goals need none of this quest's drops.",
     "have": "{{have}} / {{need}}",
-    "battles": "Battles"
+    "battles": "Battles",
+    "showAll": "Show all {{count}}",
+    "showFewer": "Show fewer"
   }
 }
