@@ -106,6 +106,10 @@ const tokensOf = (description) =>
 const hasKey = (record, name) =>
   Object.keys(record ?? {}).some((key) => key.trim() === name)
 
+// Values shared by a status effect rather than set per ability (since 1.44, e.g. `poisonedNrOfHits`
+// for Poisoned). A description may reference them; they are written into that ability's constants.
+const unitEffectVariables = config("globalValues.json").unitEffectVariables ?? {}
+
 /** The tokens the renderer could not resolve from the ability's own tables. */
 function unresolvedTokens(ability, tokens) {
   return [...tokens].filter((token) => {
@@ -114,10 +118,25 @@ function unresolvedTokens(ability, tokens) {
     if (profile)
       return !hasKey(ability.constants, `damageProfile${profile[1] ?? ""}`)
     return (
-      !hasKey(ability.variables, token) && !hasKey(ability.constants, token)
+      !hasKey(ability.variables, token) &&
+      !hasKey(ability.constants, token) &&
+      !hasKey(unitEffectVariables, token)
     )
   })
 }
+
+/** Shared effect values the description references and the ability does not set itself. */
+const sharedConstants = (ability, tokens) =>
+  Object.fromEntries(
+    Object.entries(unitEffectVariables)
+      .filter(
+        ([key]) =>
+          tokens.has(key) &&
+          !hasKey(ability.variables, key) &&
+          !hasKey(ability.constants, key)
+      )
+      .map(([key, value]) => [key, String(value)])
+  )
 
 const pick = (record, keep) =>
   Object.fromEntries(
@@ -146,10 +165,13 @@ for (const id of [...referenced].sort()) {
   }
 
   const variables = pick(ability.variables, (key) => tokens.has(key))
-  const constants = pick(
-    ability.constants,
-    (key) => tokens.has(key) || key.startsWith("damageProfile")
-  )
+  const constants = {
+    ...pick(
+      ability.constants,
+      (key) => tokens.has(key) || key.startsWith("damageProfile")
+    ),
+    ...sharedConstants(ability, tokens),
+  }
   const scaled = (ability.variablesAffectedByRarityBonus ?? []).filter((name) =>
     hasKey(variables, name.trim())
   )
