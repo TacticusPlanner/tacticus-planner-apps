@@ -3,9 +3,12 @@ import { useTranslation } from "react-i18next"
 import { CheckIcon, ChevronDownIcon } from "lucide-react"
 import {
   abilityBadgeIcon,
+  chestIcon,
   goldIcon,
+  heroStarIcon,
   orbIcon,
   raidTicketIcon,
+  shardIcon,
   xpBookIcon,
   type QuestCrateStorageModel,
 } from "@workspace/game-catalog"
@@ -19,6 +22,7 @@ import { EntityIcon } from "@/shared/ui"
 
 import type {
   QuestCrateView,
+  QuestRewardsLeft,
   QuestShards,
   ShardMeaning,
 } from "../model/quest-rewards"
@@ -87,6 +91,68 @@ function CrateRewards({
         )
       })}
     </ul>
+  )
+}
+
+/** The one-time rewards still to earn, as game icons with counts: shown even while collapsed. */
+function RewardsLeftStrip({
+  left,
+  hero,
+  alliance,
+}: {
+  left: QuestRewardsLeft<CrateReward>
+  hero: string
+  alliance: string | null
+}) {
+  const { t, i18n } = useTranslation("quest")
+  const number = new Intl.NumberFormat(i18n.language)
+  if (left.medals === 0 && left.crates === 0) {
+    return (
+      <p
+        className="text-sm text-muted-foreground"
+        data-testid="quest-rewards-left"
+      >
+        {t("rewards.left.none")}
+      </p>
+    )
+  }
+  return (
+    <div className="flex flex-col gap-2" data-testid="quest-rewards-left">
+      <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+        {t("rewards.left.title")}
+      </p>
+      <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-semibold tabular-nums">
+        <li
+          className="inline-flex items-center gap-1"
+          title={t("rewards.left.medals")}
+        >
+          <EntityIcon alt="" className="size-5" src={heroStarIcon()} />
+          <span className="sr-only">{t("rewards.left.medals")}</span>
+          <span data-testid="quest-left-medals">
+            {number.format(left.medals)}
+          </span>
+        </li>
+        <li
+          className="inline-flex items-center gap-1"
+          title={t("rewards.left.shards", { hero })}
+        >
+          <EntityIcon alt="" className="size-5" src={shardIcon("Regular")} />
+          <span className="sr-only">{t("rewards.left.shards", { hero })}</span>
+          <span data-testid="quest-left-shards">
+            {number.format(left.shards)}
+          </span>
+        </li>
+        <li className="inline-flex items-center gap-1">
+          <EntityIcon alt="" className="size-5" src={chestIcon("wood")} />
+          <span data-testid="quest-left-crates">
+            {t("rewards.left.crates", { count: left.crates })}
+          </span>
+        </li>
+      </ul>
+      {left.rewards.length > 0 ? (
+        <CrateRewards alliance={alliance} rewards={left.rewards} />
+      ) : null}
+    </div>
   )
 }
 
@@ -164,8 +230,9 @@ function ShardsMeaningLine({
 /**
  * What the quest pays (spec: quest-event-rewards): the crate track against the score (opened marked,
  * the next one highlighted with the points it needs), the featured hero's shards from medals with
- * the Quest Bundle toggle, what they mean for the hero, and the goal action. On mobile the card is a
- * disclosure, collapsed by default. `crates` null shows the crate error with Retry only.
+ * the Quest Bundle toggle, what they mean for the hero, and the goal action. A strip of what is still
+ * to earn (medals, shards, crates and their summed contents) stays visible even when the card is
+ * collapsed. On mobile the card is a disclosure, collapsed by default. `crates` null shows the crate error with Retry only.
  */
 export function RewardsCard({
   crates,
@@ -181,6 +248,7 @@ export function RewardsCard({
   open,
   onOpenChange,
   projectedShards = null,
+  left = null,
 }: {
   crates: QuestCrateView<QuestCrateStorageModel>[] | null
   retryCrates: () => void
@@ -197,6 +265,8 @@ export function RewardsCard({
   onOpenChange: (open: boolean) => void
   /** Shards from the projected medals (an estimate), or null without a projection. */
   projectedShards?: number | null
+  /** The one-time rewards still to earn; null hides the strip (a browsed quest). */
+  left?: QuestRewardsLeft<CrateReward> | null
 }) {
   const { t, i18n } = useTranslation("quest")
   const number = new Intl.NumberFormat(i18n.language)
@@ -321,6 +391,9 @@ export function RewardsCard({
           {t("rewards.title")}
         </h3>
       )}
+      {left ? (
+        <RewardsLeftStrip alliance={alliance} hero={hero} left={left} />
+      ) : null}
       <div hidden={isMobile && !open} id="quest-rewards-body">
         {!isMobile || open ? body : null}
       </div>

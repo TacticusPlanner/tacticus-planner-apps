@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
@@ -6,6 +7,7 @@ import { Button } from "@workspace/ui/components/button"
 
 import type { QuestTeam } from "../model/quest-team"
 import type { QuestTeamViewModel } from "../model/use-quest-plan"
+import { QuestTeamOptionsDialog } from "./quest-team-options-dialog"
 
 /** Every quest battle needs at least this many units deployed. */
 const MIN_TEAM = 3
@@ -13,14 +15,17 @@ const MIN_TEAM = 3
 /**
  * The suggested team for a quest battle (spec: quest-event-teams): the featured hero pinned, then
  * the strongest eligible units, each with its power at the tier's cap and whether it reaches the cap,
- * with notes for a short roster, an unsynced account and unavailable power.
+ * with notes for a short roster, an unsynced account and unavailable power, and every eligible unit
+ * one press away to compare other lineups.
  */
 export function QuestTeamSection({
   view,
   nameOf,
+  battleNumber = null,
 }: {
   view: QuestTeamViewModel
   nameOf: (unitId: string) => string
+  battleNumber?: number | null
 }) {
   const { t } = useTranslation("quest")
   return (
@@ -43,6 +48,7 @@ export function QuestTeamSection({
         </div>
       ) : (
         <TeamBody
+          battleNumber={battleNumber}
           nameOf={nameOf}
           team={view.team}
           unsynced={view.status === "unsynced"}
@@ -56,12 +62,15 @@ function TeamBody({
   team,
   unsynced,
   nameOf,
+  battleNumber,
 }: {
   team: QuestTeam
   unsynced: boolean
   nameOf: (unitId: string) => string
+  battleNumber: number | null
 }) {
   const { t, i18n } = useTranslation("quest")
+  const [optionsOpen, setOptionsOpen] = useState(false)
   const number = new Intl.NumberFormat(i18n.language)
   const members = unsynced
     ? team.members.filter((member) => member.featured)
@@ -101,10 +110,36 @@ function TeamBody({
           </li>
         ))}
       </ul>
-      {!unsynced && team.totalPower !== null ? (
-        <p className="text-sm tabular-nums" data-testid="quest-team-total">
-          {t("team.total", { power: number.format(team.totalPower) })}
-        </p>
+      {!unsynced && (team.totalPower !== null || team.eligibleCount > 0) ? (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          {team.totalPower === null ? (
+            <span />
+          ) : (
+            <p className="text-sm tabular-nums" data-testid="quest-team-total">
+              {t("team.total", { power: number.format(team.totalPower) })}
+            </p>
+          )}
+          {team.eligibleCount > 0 ? (
+            <Button
+              data-testid="quest-team-all-options"
+              onClick={() => setOptionsOpen(true)}
+              size="sm"
+              variant="outline"
+            >
+              {t("team.allOptions", { count: team.eligibleCount })}
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+      {optionsOpen ? (
+        <QuestTeamOptionsDialog
+          battleNumber={battleNumber}
+          key={battleNumber ?? "none"}
+          nameOf={nameOf}
+          onOpenChange={setOptionsOpen}
+          open
+          team={team}
+        />
       ) : null}
       {unsynced ? (
         <p

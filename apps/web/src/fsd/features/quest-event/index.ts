@@ -19,6 +19,7 @@ export { ScoreEntry } from "./ui/score-entry"
 export { ObjectiveChips } from "./ui/objective-chips"
 export {
   crateTrack,
+  questRewardsLeft,
   questShards,
   shardMeaning,
   type ShardMeaning,

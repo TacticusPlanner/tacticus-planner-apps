@@ -47,6 +47,56 @@ export function questShards(
   return { earned, max, reachable: Math.max(0, max - earned) }
 }
 
+type CrateRewardLike = {
+  type: string
+  min: number
+  max: number
+  rarity?: string | null
+  maxRarity?: string | null
+}
+
+export type QuestRewardsLeft<TReward extends CrateRewardLike> = {
+  /** Medals not yet won across the quest's battles (each pays its shards once). */
+  medals: number
+  /** The featured hero's shards those medals still pay. */
+  shards: number
+  /** Crates not opened yet. */
+  crates: number
+  /** What the unopened crates hold, summed by reward type and rarity, in first-seen order. */
+  rewards: TReward[]
+}
+
+/**
+ * The one-time rewards still to earn: the shards of the medals not won yet and the contents of the
+ * crates not opened yet, summed so the whole remainder reads at a glance.
+ */
+export function questRewardsLeft<TReward extends CrateRewardLike>(
+  shards: QuestShards,
+  crates: readonly QuestCrateView<{ rewards: readonly TReward[] }>[] | null
+): QuestRewardsLeft<TReward> {
+  const perMedal = shards.max / MEDALS_PER_QUEST
+  const unopened = (crates ?? []).filter((view) => !view.opened)
+  const summed = new Map<string, TReward>()
+  for (const { crate } of unopened) {
+    for (const reward of crate.rewards) {
+      const key = `${reward.type}:${reward.rarity ?? ""}:${reward.maxRarity ?? ""}`
+      const seen = summed.get(key)
+      summed.set(
+        key,
+        seen
+          ? { ...seen, min: seen.min + reward.min, max: seen.max + reward.max }
+          : { ...reward }
+      )
+    }
+  }
+  return {
+    medals: perMedal > 0 ? Math.round(shards.reachable / perMedal) : 0,
+    shards: shards.reachable,
+    crates: unopened.length,
+    rewards: [...summed.values()],
+  }
+}
+
 export type ShardMeaning =
   | {
       kind: "unlock"
