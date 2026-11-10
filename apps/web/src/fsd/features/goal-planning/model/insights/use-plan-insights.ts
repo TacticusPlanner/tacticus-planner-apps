@@ -143,6 +143,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   // And the "Campaigns to push" inputs, which can land after the first run.
   const progressionKey = [
     allBattlesById?.size,
+    campaignDefinitions?.length,
     [...campaignProgressByKey]
       .map(([key, entry]) => `${key}=${entry.highestCompletedBattleIndex}`)
       .join(","),
