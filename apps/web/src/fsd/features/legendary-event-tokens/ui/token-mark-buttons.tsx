@@ -6,19 +6,21 @@ import type { LegendaryEventAnnotationStatus } from "@/entities/legendary-event"
 
 import { tokenMarkIds } from "../lib/token-marks"
 import type { PlannedToken } from "../lib/token-plan"
-import type { MarkTokenHandler } from "./next-token-card"
+import type { MarkTokenHandler, StopTeamHandler } from "./next-token-card"
 
 /** A shown token's Partly cleared / Couldn't clear actions (`testIdPrefix-partly`,
- *  `testIdPrefix-could-not`). */
+ *  `testIdPrefix-could-not`), and Stop here (`testIdPrefix-stop`) when `onStopTeam` is given. */
 export function TokenMarkButtons({
   token,
   isMobile,
   onMarkToken,
+  onStopTeam,
   testIdPrefix,
 }: {
   token: PlannedToken
   isMobile: boolean
   onMarkToken: MarkTokenHandler
+  onStopTeam?: StopTeamHandler
   testIdPrefix: string
 }) {
   const { t } = useTranslation("legendaryEvents")
@@ -26,13 +28,15 @@ export function TokenMarkButtons({
     team: token.teamName,
     lane: t(`lanes.${token.laneId}`),
     battle: token.battleIndex + 1,
+    previous: token.battleIndex,
   }
   const mark = (status: LegendaryEventAnnotationStatus) =>
     onMarkToken(
       token.laneId,
       token.battleIndex,
       tokenMarkIds(token.clearedIds, status),
-      status
+      status,
+      token.teamId
     )
   return (
     <div
@@ -58,6 +62,21 @@ export function TokenMarkButtons({
       >
         {t("tokenPlan.nextToken.actions.couldNot")}
       </Button>
+      {onStopTeam ? (
+        <Button
+          aria-label={t("tokenPlan.nextToken.actions.stopLabel", labels)}
+          className={cn(isMobile && "h-11 w-full")}
+          data-testid={`${testIdPrefix}-stop`}
+          onClick={() =>
+            onStopTeam(token.laneId, token.battleIndex, token.teamId)
+          }
+          title={t("tokenPlan.nextToken.actions.stopHint", labels)}
+          type="button"
+          variant="outline"
+        >
+          {t("tokenPlan.nextToken.actions.stop")}
+        </Button>
+      ) : null}
     </div>
   )
 }

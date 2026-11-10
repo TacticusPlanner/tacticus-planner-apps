@@ -209,6 +209,15 @@ describe("useAnalyticsActions", () => {
       depth: 4,
       estimate: 6,
       fromEstimate: true,
+      source: "card",
+      sureDepth: 5,
+      stretchDepth: 7,
+      effectivePower: 412_000,
+      teamPower: 380_000,
+      memberCount: 4,
+      unitIds: ["trajann", "incisus"],
+      objectiveIndexes: [0, 2],
+      curveVersion: "2026-11-09-e0.25",
     })
     result.current.captureEvent({
       type: "legendary_event_depth_estimate_restored",
@@ -236,6 +245,15 @@ describe("useAnalyticsActions", () => {
         depth: 4,
         estimate: 6,
         from_estimate: true,
+        source: "card",
+        sure_depth: 5,
+        stretch_depth: 7,
+        effective_power: 412_000,
+        team_power: 380_000,
+        member_count: 4,
+        unit_ids: ["trajann", "incisus"],
+        objective_indexes: [0, 2],
+        curve_version: "2026-11-09-e0.25",
       }
     )
     expect(sdk.client.capture).toHaveBeenCalledWith(
@@ -343,6 +361,27 @@ describe("useAnalyticsActions", () => {
       status: "maybeClear",
       scope: "battle",
     })
+    result.current.captureEvent({
+      type: "legendary_event_token_result",
+      eventId: "astarLysander",
+      run: 2,
+      laneId: "beta",
+      battleIndex: 8,
+      outcome: "couldNotClear",
+      estimate: 9,
+      depthBefore: 9,
+      depthBeforeManual: false,
+      depthAfter: 8,
+      otherTeamReaches: false,
+      sureDepth: 7,
+      stretchDepth: 10,
+      effectivePower: 574_641,
+      teamPower: 574_641,
+      memberCount: 4,
+      unitIds: ["trajann", "incisus"],
+      objectiveIndexes: [0, 2],
+      curveVersion: "2026-11-09-e0.25",
+    })
 
     expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_run_inputs_saved",
@@ -377,6 +416,29 @@ describe("useAnalyticsActions", () => {
         cell_count: 5,
         status: "maybeClear",
         scope: "battle",
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_token_result",
+      {
+        event_id: "astarLysander",
+        run: 2,
+        lane_id: "beta",
+        battle_index: 8,
+        outcome: "couldNotClear",
+        estimate: 9,
+        depth_before: 9,
+        depth_before_manual: false,
+        depth_after: 8,
+        other_team_reaches: false,
+        sure_depth: 7,
+        stretch_depth: 10,
+        effective_power: 574_641,
+        team_power: 574_641,
+        member_count: 4,
+        unit_ids: ["trajann", "incisus"],
+        objective_indexes: [0, 2],
+        curve_version: "2026-11-09-e0.25",
       }
     )
   })

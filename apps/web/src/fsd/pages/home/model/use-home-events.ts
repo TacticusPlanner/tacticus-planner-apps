@@ -7,11 +7,13 @@ import { useIncursionWindow } from "@/entities/incursion"
 import { useHomeScreenEventCalendar } from "@/features/daily-raids"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
-import { calendarWindow } from "./calendar-window"
+import { calendarWindow, calendarWindowEntry } from "./calendar-window"
 import { selectHomeEvents, type HomeEventRow } from "./select-home-events"
 
 /** The calendar's definition id for a Campaign Event window; it names no campaign. */
 const CAMPAIGN_EVENT_DEFINITION_ID = "campaign-event"
+/** The calendar's definition id for a Quest Event; its occurrence names the featured hero. */
+const QUEST_DEFINITION_ID = "quest"
 
 export type HomeEventsState =
   | { status: "loading" }
@@ -55,6 +57,11 @@ export function useHomeEvents(): HomeEventsState {
     calendar.status === "ready"
       ? calendarWindow(calendar.data, CAMPAIGN_EVENT_DEFINITION_ID, nowMs)
       : null
+  const questEntry =
+    calendar.status === "ready"
+      ? calendarWindowEntry(calendar.data, QUEST_DEFINITION_ID, nowMs)
+      : null
+  const featuredCharacterId = questEntry?.entry.parameters?.featuredCharacterId
   const { live, upcoming } = selectHomeEvents({
     homeScreen: homeScreen.status === "ready" ? homeScreen : null,
     legendary:
@@ -72,6 +79,11 @@ export function useHomeEvents(): HomeEventsState {
           : null,
     },
     incursion,
+    quest: questEntry && {
+      ...questEntry.window,
+      featuredCharacterId:
+        typeof featuredCharacterId === "string" ? featuredCharacterId : null,
+    },
     nowMs,
   })
 

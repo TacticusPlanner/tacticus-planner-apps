@@ -734,7 +734,10 @@
         "partly": "Superada en parte",
         "couldNot": "No superada",
         "partlyLabel": "Superada en parte: marcar {{team}} en {{lane}} batalla {{battle}} como Quizá superable",
-        "couldNotLabel": "No superada: marcar {{team}} en {{lane}} batalla {{battle}} como Parar aquí"
+        "couldNotLabel": "No superada: marcar {{team}} en {{lane}} batalla {{battle}} como Parar aquí",
+        "stop": "Parar aquí",
+        "stopLabel": "Parar aquí: terminar {{team}} en {{lane}} tras la batalla {{previous}} y planificar otros equipos",
+        "stopHint": "Termina este equipo tras la batalla {{previous}} y pasa el plan a otros equipos"
       },
       "loading": "Cargando el plan de fichas…",
       "unavailable": "El progreso sincronizado no está disponible, así que no hay plan de fichas",
@@ -743,10 +746,8 @@
       "noDepth": "Indica hasta dónde llega {{team}}",
       "nothingLeft": "A tus equipos no les queda nada por superar · quedan {{points}} puntos en {{lane}}",
       "missions": {
-        "title": "Para misiones",
         "progresses": "Misiones que hace avanzar",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} puntos ({{difference}})",
         "button_one": "Hace avanzar {{count}} misión",
         "button_other": "Hace avanzar {{count}} misiones",
         "uncounted": "cuenta",

@@ -36,6 +36,7 @@ vi.mock("@/shared/unit-name", () => ({
 
 let i18n: I18n
 const onMarkToken = vi.fn()
+const onStopTeam = vi.fn()
 const onOpenTeams = vi.fn()
 
 function renderCard(
@@ -58,6 +59,7 @@ function renderCard(
       eventId="votanUthar"
       isMobile={isMobile}
       onMarkToken={canMark ? onMarkToken : undefined}
+      onStopTeam={canMark ? onStopTeam : undefined}
       onOpenTeams={onOpenTeams}
       missionsInput={missionsInput}
       onViewPlan={onViewPlan}
@@ -118,6 +120,7 @@ describe("NextTokenCard", () => {
     localStorage.clear()
     capture.mockReset()
     onMarkToken.mockReset()
+    onStopTeam.mockReset()
     onOpenTeams.mockReset()
   })
 
@@ -184,6 +187,27 @@ describe("NextTokenCard", () => {
     expect(band).toHaveTextContent("Likely clear · safe through battle 5")
   })
 
+  it("offers Stop here only on a likely clear, ending the team after the battle before", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const { unmount } = renderCard(view)
+    expect(screen.queryByTestId("next-token-stop")).toBeNull()
+    unmount()
+
+    const fiveIndex = view.plan.tokens.findIndex(
+      (token) => token.teamId === "five"
+    )
+    const five = { ...view.plan.tokens[fiveIndex]!, playableNow: true }
+    renderCard({
+      ...view,
+      next: { ...view.next, index: fiveIndex, token: five },
+    })
+    fireEvent.click(screen.getByTestId("next-token-stop"))
+
+    expect(onStopTeam).toHaveBeenCalledWith(five.laneId, 5, "five")
+    expect(onMarkToken).not.toHaveBeenCalled()
+  })
+
   it("lists the next four tokens after it, with View all opening the plan", () => {
     const onViewPlan = vi.fn()
     renderCard(buildTokenPlanView(workedViewInput()), { onViewPlan })
@@ -217,7 +241,13 @@ describe("NextTokenCard", () => {
       })
     )
 
-    expect(onMarkToken).toHaveBeenCalledWith("alpha", 2, [0, 1, 4], "stopHere")
+    expect(onMarkToken).toHaveBeenCalledWith(
+      "alpha",
+      2,
+      [0, 1, 4],
+      "stopHere",
+      expect.any(String)
+    )
   })
 
   it("marks the objective cells Maybe clear with Partly cleared", () => {
@@ -229,7 +259,13 @@ describe("NextTokenCard", () => {
       })
     )
 
-    expect(onMarkToken).toHaveBeenCalledWith("alpha", 2, [1, 4], "maybeClear")
+    expect(onMarkToken).toHaveBeenCalledWith(
+      "alpha",
+      2,
+      [1, 4],
+      "maybeClear",
+      expect.any(String)
+    )
   })
 
   it("stacks touch-sized actions on mobile", () => {
@@ -451,45 +487,11 @@ describe("NextTokenCard", () => {
         "Finishes this run's open missions soonest"
       )
       expect(screen.getByTestId("ticks")).toBeInTheDocument()
-      expect(screen.queryByTestId("next-token-missions-alternative")).toBeNull()
       const upNext = within(screen.getByTestId("next-token-up-next"))
       expect(upNext.getAllByTestId("token-plan-row")).toHaveLength(4)
       expect(
         localStorage.getItem("legendaryEvents.tokenPlan.missionsOrder")
       ).toBe("true")
-    })
-
-    it("offers the For missions alternative in Missions order when it is another token", () => {
-      const view = withMissionOrder()
-      if (view.kind !== "ready") throw new Error("worked view is not ready")
-      const ordered = view.missionOrder!.tokens[0]!
-      const other = view.plan.tokens.find(
-        (token) =>
-          token.laneId !== ordered.laneId ||
-          token.battleIndex !== ordered.battleIndex
-      )!
-      const alternative = (token: typeof ordered) => ({
-        ...view,
-        missions: {
-          progressed: [],
-          alternative: {
-            token,
-            // A plan position, which can match the Missions order's own position by chance.
-            index: 0,
-            missions: [{ ref: admech, amount: 3, estimate: false }],
-            pointsDifference: -10,
-          },
-        },
-      })
-      const { unmount } = renderCard(alternative(other))
-      fireEvent.click(screen.getByRole("radio", { name: "Missions" }))
-      expect(
-        screen.getByTestId("next-token-missions-alternative")
-      ).toBeInTheDocument()
-      unmount()
-
-      renderCard(alternative(ordered))
-      expect(screen.queryByTestId("next-token-missions-alternative")).toBeNull()
     })
 
     it("has no switch without a Missions order", () => {

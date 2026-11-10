@@ -734,7 +734,10 @@
         "partly": "Réussi en partie",
         "couldNot": "Échec",
         "partlyLabel": "Réussi en partie : marquer {{team}} sur {{lane}} combat {{battle}} comme Peut-être faisable",
-        "couldNotLabel": "Échec : marquer {{team}} sur {{lane}} combat {{battle}} comme S'arrêter ici"
+        "couldNotLabel": "Échec : marquer {{team}} sur {{lane}} combat {{battle}} comme S'arrêter ici",
+        "stop": "S'arrêter ici",
+        "stopLabel": "S'arrêter ici : arrêter {{team}} sur {{lane}} après le combat {{previous}} et planifier d'autres équipes",
+        "stopHint": "Arrête cette équipe après le combat {{previous}} et passe le plan aux autres équipes"
       },
       "loading": "Chargement du plan de jetons…",
       "unavailable": "La progression synchronisée est indisponible, il n'y a donc pas de plan de jetons",
@@ -743,10 +746,8 @@
       "noDepth": "Indiquez jusqu'où {{team}} progresse",
       "nothingLeft": "Vos équipes n'ont plus rien à réussir · {{points}} points restants sur {{lane}}",
       "missions": {
-        "title": "Pour les missions",
         "progresses": "Missions qu'il fait avancer",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} points ({{difference}})",
         "button_one": "Fait avancer {{count}} mission",
         "button_other": "Fait avancer {{count}} missions",
         "uncounted": "compte",

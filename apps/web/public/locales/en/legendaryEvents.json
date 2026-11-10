@@ -734,7 +734,10 @@
         "partly": "Partly cleared",
         "couldNot": "Couldn't clear",
         "partlyLabel": "Partly cleared: mark {{team}} on {{lane}} battle {{battle}} as Maybe clear",
-        "couldNotLabel": "Couldn't clear: mark {{team}} on {{lane}} battle {{battle}} as Stop here"
+        "couldNotLabel": "Couldn't clear: mark {{team}} on {{lane}} battle {{battle}} as Stop here",
+        "stop": "Stop here",
+        "stopLabel": "Stop here: end {{team}} on {{lane}} after battle {{previous}} and plan other teams",
+        "stopHint": "Ends this team after battle {{previous}} and moves the plan on to other teams"
       },
       "loading": "Loading the token plan…",
       "unavailable": "Synced progress is unavailable, so there is no token plan",
@@ -743,10 +746,8 @@
       "noDepth": "Set how far {{team}} clears",
       "nothingLeft": "Your teams have nothing left to clear · {{points}} points left in {{lane}}",
       "missions": {
-        "title": "For missions",
         "progresses": "Missions it progresses",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} points ({{difference}})",
         "button_one": "Progresses {{count}} mission",
         "button_other": "Progresses {{count}} missions",
         "uncounted": "counts",

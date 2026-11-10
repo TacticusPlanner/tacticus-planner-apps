@@ -27,7 +27,6 @@ const ref = (
 const ANY_BATTLE = ref("regular", 0)
 const ADMECH = ref("regular", 2)
 const NO_BIG_TARGET = ref("premium", 4)
-const CHAOS = ref("premium", 1)
 
 const token = (fields: Partial<PlannedToken>): PlannedToken => ({
   laneId: "alpha",
@@ -68,12 +67,10 @@ const enemies: Record<string, BattleEnemies> = {
 
 function input(
   tokens: PlannedToken[],
-  open: LegendaryEventMissionRef[],
-  nextIndex = 0
+  open: LegendaryEventMissionRef[]
 ): TokenMissionsInput {
   return {
-    plan: { tokens },
-    next: { token: tokens[nextIndex]!, index: nextIndex },
+    next: { token: tokens[0]! },
     open,
     membersOf: (teamId) => teams[teamId] ?? [],
     enemiesOf: (laneId, battleIndex) => enemies[`${laneId}-${battleIndex}`],
@@ -84,80 +81,29 @@ describe("nextTokenMissions", () => {
   const alpha3 = token({ teamId: "big", battleIndex: 2, points: 240 })
   const beta4 = token({ laneId: "beta", battleIndex: 3, points: 210 })
 
-  it("offers a playable token progressing more open missions, with the points it gives up", () => {
-    const result = nextTokenMissions(
-      input([alpha3, beta4], [ADMECH, NO_BIG_TARGET])
-    )
-    expect(result.progressed).toEqual([])
-    expect(result.alternative).toEqual({
-      token: beta4,
-      index: 1,
-      missions: [
+  it("lists the current missions the Next token progresses, with what it adds", () => {
+    expect(
+      nextTokenMissions(input([beta4, alpha3], [ADMECH, NO_BIG_TARGET]))
+    ).toEqual({
+      progressed: [
         { ref: ADMECH, amount: 40, estimate: false },
         { ref: NO_BIG_TARGET, amount: 1, estimate: false },
       ],
-      pointsDifference: -30,
     })
   })
 
-  it("counts only each track's current mission", () => {
+  it("counts only each track's current mission and leaves untracked kinds out", () => {
     // "Any battle" is the current regular mission, so AdMechs waits; it is untracked, so only the
     // premium mission counts.
     const result = nextTokenMissions(
-      input([alpha3, beta4], [ANY_BATTLE, ADMECH, NO_BIG_TARGET])
+      input([beta4], [ANY_BATTLE, ADMECH, NO_BIG_TARGET])
     )
-    expect(result.alternative?.missions.map((entry) => entry.ref)).toEqual([
-      NO_BIG_TARGET,
-    ])
-  })
-
-  it("shows no alternative when the Next token already progresses the most", () => {
-    const next = token({ laneId: "beta", battleIndex: 3, points: 300 })
-    const result = nextTokenMissions(
-      input([next, token({ battleIndex: 2 })], [ADMECH, NO_BIG_TARGET])
-    )
-    expect(result.progressed.map((entry) => entry.ref)).toEqual([
-      ADMECH,
-      NO_BIG_TARGET,
-    ])
-    expect(result.alternative).toBeNull()
+    expect(result.progressed.map((entry) => entry.ref)).toEqual([NO_BIG_TARGET])
   })
 
   it("has nothing to show without open missions", () => {
     expect(nextTokenMissions(input([alpha3, beta4], []))).toEqual({
       progressed: [],
-      alternative: null,
     })
-  })
-
-  it("never picks a token for any-battle missions alone", () => {
-    const result = nextTokenMissions(input([alpha3, beta4], [ANY_BATTLE]))
-    expect(result.alternative).toBeNull()
-  })
-
-  it("skips tokens the Next token's eligibility rules out", () => {
-    const maybe = token({ laneId: "beta", battleIndex: 3, maybe: true })
-    const later = token({ laneId: "beta", battleIndex: 3, points: 50 })
-    const locked = token({
-      laneId: "beta",
-      battleIndex: 3,
-      playableNow: false,
-    })
-    expect(
-      nextTokenMissions(input([alpha3, maybe, later], [ADMECH])).alternative
-    ).toBeNull()
-    expect(
-      nextTokenMissions(input([alpha3, locked], [ADMECH])).alternative
-    ).toBeNull()
-  })
-
-  it("breaks a tie on missions by points, then plan order", () => {
-    const low = token({ laneId: "beta", battleIndex: 3, points: 150 })
-    const high = token({ battleIndex: 5, points: 180 })
-    const same = token({ battleIndex: 6, points: 180 })
-    const result = nextTokenMissions(
-      input([alpha3, low, high, same], [NO_BIG_TARGET, CHAOS])
-    )
-    expect(result.alternative?.index).toBe(2)
   })
 })
