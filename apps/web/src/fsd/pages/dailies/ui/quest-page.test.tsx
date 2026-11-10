@@ -227,6 +227,13 @@ describe("QuestPage", () => {
     expect(screen.getByTestId("quest-summary-total")).toHaveTextContent(
       "500 / 8,800"
     )
+    // The score names the three battles with the most points left and counts the rest.
+    expect(
+      within(screen.getByTestId("quest-points-left")).getAllByRole("button")
+    ).toHaveLength(3)
+    expect(screen.getByTestId("quest-points-left-more")).toHaveTextContent(
+      "+14 more"
+    )
     unmount()
 
     renderPage()
@@ -270,6 +277,15 @@ describe("QuestPage", () => {
     )
     expect(screen.getByTestId("quest-left-medals")).toHaveTextContent("48")
     expect(screen.getByTestId("quest-left-shards")).toHaveTextContent("144")
+
+    // The track shows the next few crates; "Show all" lists every one.
+    expect(screen.getAllByTestId("quest-crate").length).toBeLessThanOrEqual(3)
+    await user.click(screen.getByTestId("quest-crates-toggle"))
+    expect(screen.getAllByTestId("quest-crate")).toHaveLength(
+      questCratesFixture.length
+    )
+    await user.click(screen.getByRole("button", { name: "Show fewer crates" }))
+    expect(screen.getAllByTestId("quest-crate").length).toBeLessThanOrEqual(3)
   })
 
   it("previews the attempts of a quest that has not started", async () => {

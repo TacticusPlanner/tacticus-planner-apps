@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { ChevronDownIcon, ChevronRightIcon } from "lucide-react"
+import { ChevronDownIcon, ChevronRightIcon, UsersIcon } from "lucide-react"
 import {
   heroStarIcon,
   rarityIcon,
@@ -16,8 +16,8 @@ import type { QuestScore } from "../model/quest-score"
 import { ObjectiveChips } from "./objective-chips"
 
 /**
- * The quest's battles under their tier, Common first, each row with its number, deploy slots, compact
- * objective chips, the drop's icon (odds as accessible text), its points against the maximum and a
+ * The quest's battles under their tier, Common first, each a single dense row: its number, deploy
+ * slots, compact objective chips, the drop's icon (odds as accessible text), its points against the maximum and a
  * "perfect" mark. Tier headings show the tier's points. On mobile each tier is a disclosure (the
  * first tier that is not perfect open by default, kept by the caller in `openTiers`).
  */
@@ -118,7 +118,7 @@ export function BattleList({
               )}
             </h3>
             <ul
-              className="flex min-w-0 flex-col gap-2"
+              className="flex min-w-0 flex-col gap-1.5"
               hidden={!open}
               id={`${headingId}-battles`}
             >
@@ -141,7 +141,7 @@ export function BattleList({
                             number: battle.number,
                           })}
                           className={cn(
-                            "flex w-full min-w-0 items-start gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                            "flex w-full min-w-0 items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                             selected === battle.number &&
                               "border-primary bg-muted"
                           )}
@@ -150,51 +150,46 @@ export function BattleList({
                           onClick={() => onSelect(battle.number)}
                           type="button"
                         >
-                          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold tabular-nums">
+                          <span
+                            aria-hidden
+                            className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold tabular-nums"
+                          >
                             {battle.number}
                           </span>
-                          <span className="flex min-w-0 flex-1 flex-col gap-1">
-                            <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-                              <span className="font-medium">
-                                {t("quest:battles.battle", {
-                                  number: battle.number,
-                                })}
-                              </span>
-                              <span
-                                className="text-muted-foreground"
-                                data-testid="quest-battle-slots"
-                              >
-                                {t("quest:battles.slots", {
-                                  count: battle.deploySlots,
-                                })}
-                              </span>
+                          <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+                            <span
+                              className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground"
+                              data-testid="quest-battle-slots"
+                            >
+                              <UsersIcon aria-hidden className="size-3.5" />
+                              {t("quest:battles.slots", {
+                                count: battle.deploySlots,
+                              })}
                             </span>
                             <ObjectiveChips
                               compact
                               objectives={battle.objectives}
                             />
                           </span>
-                          <span className="flex shrink-0 flex-col items-end gap-1">
-                            <span className="flex items-center gap-1.5">
-                              <UpgradeIcon
-                                className="size-7"
-                                id={battle.loot.upgradeId}
-                                rarity={upgrade?.rarity}
-                              />
-                              <span className="sr-only">
-                                {t("quest:battles.dropOdds", {
-                                  name: dropName,
-                                  numerator: battle.loot.chanceNumerator,
-                                  denominator: battle.loot.chanceDenominator,
-                                })}
-                              </span>
-                            </span>
+                          <UpgradeIcon
+                            className="size-7 shrink-0"
+                            id={battle.loot.upgradeId}
+                            rarity={upgrade?.rarity}
+                          />
+                          <span className="sr-only">
+                            {t("quest:battles.dropOdds", {
+                              name: dropName,
+                              numerator: battle.loot.chanceNumerator,
+                              denominator: battle.loot.chanceDenominator,
+                            })}
+                          </span>
+                          <span className="flex min-w-14 shrink-0 flex-col items-end gap-0.5">
                             <VerdictBadge
                               verdict={verdicts?.get(battle.number)}
                             />
                             {battleScore ? (
                               <span
-                                className="flex items-center gap-1 text-sm tabular-nums"
+                                className="flex items-center gap-1 text-xs tabular-nums"
                                 data-testid="quest-battle-points"
                               >
                                 {perfect ? (
