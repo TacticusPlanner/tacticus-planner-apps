@@ -96,6 +96,7 @@ const team = (
   })),
   totalPower,
   eligibleCount: members.length - 1,
+  eligible: [],
   openSlots: 2,
   badges,
   breakers,

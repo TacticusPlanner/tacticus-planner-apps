@@ -227,6 +227,13 @@ describe("QuestPage", () => {
     expect(screen.getByTestId("quest-summary-total")).toHaveTextContent(
       "500 / 8,800"
     )
+    // The score names the three battles with the most points left and counts the rest.
+    expect(
+      within(screen.getByTestId("quest-points-left")).getAllByRole("button")
+    ).toHaveLength(3)
+    expect(screen.getByTestId("quest-points-left-more")).toHaveTextContent(
+      "+14 more"
+    )
     unmount()
 
     renderPage()
@@ -261,10 +268,24 @@ describe("QuestPage", () => {
     expect(screen.getByTestId("quest-shards-line")).toHaveTextContent(
       "3 earned · 51 max · 48 still reachable"
     )
+    // The one-time rewards still to earn, at a glance.
+    expect(screen.getByTestId("quest-left-medals")).toHaveTextContent("48")
+    expect(screen.getByTestId("quest-left-shards")).toHaveTextContent("48")
     await user.click(screen.getByRole("switch", { name: /Quest Bundle/ }))
     expect(screen.getByTestId("quest-shards-line")).toHaveTextContent(
       "9 earned · 153 max · 144 still reachable"
     )
+    expect(screen.getByTestId("quest-left-medals")).toHaveTextContent("48")
+    expect(screen.getByTestId("quest-left-shards")).toHaveTextContent("144")
+
+    // The track shows the next few crates; "Show all" lists every one.
+    expect(screen.getAllByTestId("quest-crate").length).toBeLessThanOrEqual(3)
+    await user.click(screen.getByTestId("quest-crates-toggle"))
+    expect(screen.getAllByTestId("quest-crate")).toHaveLength(
+      questCratesFixture.length
+    )
+    await user.click(screen.getByRole("button", { name: "Show fewer crates" }))
+    expect(screen.getAllByTestId("quest-crate").length).toBeLessThanOrEqual(3)
   })
 
   it("previews the attempts of a quest that has not started", async () => {
@@ -316,6 +337,26 @@ describe("QuestPage", () => {
       "A battle needs at least 3 units"
     )
     expect(screen.getByTestId("quest-team-no-power")).toBeVisible()
+    await user.click(screen.getByTestId("quest-team-all-options"))
+    const options = await screen.findByRole("dialog")
+    expect(
+      within(options)
+        .getAllByTestId("quest-team-option")
+        .map((option) => option.textContent)
+    ).toEqual([
+      expect.stringContaining("Nubari"),
+      expect.stringContaining("Calgar"),
+    ])
+    expect(
+      within(options).getByTestId("quest-team-options-power")
+    ).toHaveTextContent("1 of 4 picked")
+    await user.click(within(options).getByRole("button", { pressed: true }))
+    expect(
+      within(options).getByTestId("quest-team-options-power")
+    ).toHaveTextContent("0 of 4 picked")
+    await user.click(
+      within(options).getAllByRole("button", { name: "Close" }).at(-1)!
+    )
     // Without unit power there is no verdict, estimate or projection.
     expect(screen.queryAllByTestId("quest-battle-verdict")).toHaveLength(0)
     expect(screen.queryByTestId("quest-estimate")).toBeNull()

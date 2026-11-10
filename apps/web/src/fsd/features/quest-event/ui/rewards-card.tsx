@@ -1,11 +1,14 @@
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { CheckIcon, ChevronDownIcon } from "lucide-react"
 import {
   abilityBadgeIcon,
+  chestIcon,
   goldIcon,
+  heroStarIcon,
   orbIcon,
   raidTicketIcon,
+  shardIcon,
   xpBookIcon,
   type QuestCrateStorageModel,
 } from "@workspace/game-catalog"
@@ -19,11 +22,15 @@ import { EntityIcon } from "@/shared/ui"
 
 import type {
   QuestCrateView,
+  QuestRewardsLeft,
   QuestShards,
   ShardMeaning,
 } from "../model/quest-rewards"
 
 type CrateReward = QuestCrateStorageModel["rewards"][number]
+
+/** The unopened crates the track shows before "Show all"; the next one leads. */
+const CRATES_SHOWN = 3
 
 function rewardIcon(reward: CrateReward, alliance: string | null) {
   const rarity = reward.rarity ?? "Common"
@@ -53,7 +60,7 @@ function CrateRewards({
   const rarity = (value: string | null | undefined) =>
     value ? t(`progression:rarities.${value as Rarity}`) : ""
   return (
-    <ul className="flex flex-wrap gap-x-3 gap-y-1">
+    <ul className="flex flex-wrap gap-x-2.5 gap-y-1">
       {rewards.map((reward, index) => {
         const name =
           reward.type === "AbilityBadge" && reward.maxRarity
@@ -73,20 +80,83 @@ function CrateRewards({
               })
         return (
           <li
-            className="inline-flex items-center gap-1 text-sm"
+            className="inline-flex items-center gap-0.5 text-sm"
             key={`${reward.type}-${index}`}
+            title={name}
           >
             <EntityIcon
               alt=""
               className="size-5 object-contain"
               src={rewardIcon(reward, alliance)}
             />
-            <span>{name}</span>
+            <span className="sr-only">{name}</span>
             <span className="text-muted-foreground tabular-nums">{amount}</span>
           </li>
         )
       })}
     </ul>
+  )
+}
+
+/** The one-time rewards still to earn, as game icons with counts: shown even while collapsed. */
+function RewardsLeftStrip({
+  left,
+  hero,
+  alliance,
+}: {
+  left: QuestRewardsLeft<CrateReward>
+  hero: string
+  alliance: string | null
+}) {
+  const { t, i18n } = useTranslation("quest")
+  const number = new Intl.NumberFormat(i18n.language)
+  if (left.medals === 0 && left.crates === 0) {
+    return (
+      <p
+        className="text-sm text-muted-foreground"
+        data-testid="quest-rewards-left"
+      >
+        {t("rewards.left.none")}
+      </p>
+    )
+  }
+  return (
+    <div className="flex flex-col gap-2" data-testid="quest-rewards-left">
+      <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+        {t("rewards.left.title")}
+      </p>
+      <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-semibold tabular-nums">
+        <li
+          className="inline-flex items-center gap-1"
+          title={t("rewards.left.medals")}
+        >
+          <EntityIcon alt="" className="size-5" src={heroStarIcon()} />
+          <span className="sr-only">{t("rewards.left.medals")}</span>
+          <span data-testid="quest-left-medals">
+            {number.format(left.medals)}
+          </span>
+        </li>
+        <li
+          className="inline-flex items-center gap-1"
+          title={t("rewards.left.shards", { hero })}
+        >
+          <EntityIcon alt="" className="size-5" src={shardIcon("Regular")} />
+          <span className="sr-only">{t("rewards.left.shards", { hero })}</span>
+          <span data-testid="quest-left-shards">
+            {number.format(left.shards)}
+          </span>
+        </li>
+        <li className="inline-flex items-center gap-1">
+          <EntityIcon alt="" className="size-5" src={chestIcon("wood")} />
+          <span data-testid="quest-left-crates">
+            {t("rewards.left.crates", { count: left.crates })}
+          </span>
+        </li>
+      </ul>
+      {left.rewards.length > 0 ? (
+        <CrateRewards alliance={alliance} rewards={left.rewards} />
+      ) : null}
+    </div>
   )
 }
 
@@ -162,10 +232,13 @@ function ShardsMeaningLine({
 }
 
 /**
- * What the quest pays (spec: quest-event-rewards): the crate track against the score (opened marked,
- * the next one highlighted with the points it needs), the featured hero's shards from medals with
- * the Quest Bundle toggle, what they mean for the hero, and the goal action. On mobile the card is a
- * disclosure, collapsed by default. `crates` null shows the crate error with Retry only.
+ * What the quest pays (spec: quest-event-rewards): the crate track against the score (the next three
+ * unopened crates, the next highlighted with the points it needs; "Show all" lists every crate with
+ * the opened ones marked), each reward as its game icon and amount (the name on hover and for screen
+ * readers), the featured hero's shards from medals with
+ * the Quest Bundle toggle, what they mean for the hero, and the goal action. A strip of what is still
+ * to earn (medals, shards, crates and their summed contents) stays visible even when the card is
+ * collapsed. On mobile the card is a disclosure, collapsed by default. `crates` null shows the crate error with Retry only.
  */
 export function RewardsCard({
   crates,
@@ -181,6 +254,7 @@ export function RewardsCard({
   open,
   onOpenChange,
   projectedShards = null,
+  left = null,
 }: {
   crates: QuestCrateView<QuestCrateStorageModel>[] | null
   retryCrates: () => void
@@ -197,9 +271,17 @@ export function RewardsCard({
   onOpenChange: (open: boolean) => void
   /** Shards from the projected medals (an estimate), or null without a projection. */
   projectedShards?: number | null
+  /** The one-time rewards still to earn; null hides the strip (a browsed quest). */
+  left?: QuestRewardsLeft<CrateReward> | null
 }) {
   const { t, i18n } = useTranslation("quest")
   const number = new Intl.NumberFormat(i18n.language)
+  const [allCrates, setAllCrates] = useState(false)
+  const shownCrates = crates
+    ? allCrates
+      ? crates
+      : crates.filter((view) => !view.opened).slice(0, CRATES_SHOWN)
+    : []
   const body = (
     <div className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-col gap-2" data-testid="quest-rewards-shards">
@@ -248,45 +330,63 @@ export function RewardsCard({
           </Button>
         </div>
       ) : (
-        <ol className="flex flex-col gap-2" data-testid="quest-crate-track">
-          {crates.map(({ crate, opened, next, pointsToGo }) => (
-            <li
-              className={cn(
-                "flex flex-col gap-1 rounded-lg border p-2",
-                next && "border-primary bg-muted",
-                opened && "opacity-80"
-              )}
-              data-next={next ? "true" : undefined}
-              data-opened={opened ? "true" : undefined}
-              data-testid="quest-crate"
-              key={crate.number}
-            >
-              <p className="flex flex-wrap items-center gap-x-2 text-sm">
-                <span className="font-semibold">
-                  {t("rewards.crate", { number: crate.number })}
-                </span>
-                <span className="text-muted-foreground tabular-nums">
-                  {t("rewards.cratePoints", {
-                    points: number.format(crate.points),
-                  })}
-                </span>
-                {opened ? (
-                  <span className="inline-flex items-center gap-0.5 text-green-700 dark:text-green-400">
-                    <CheckIcon aria-hidden className="size-3.5" />
-                    {t("rewards.opened")}
+        <div className="flex flex-col gap-2">
+          <ol className="flex flex-col gap-1.5" data-testid="quest-crate-track">
+            {shownCrates.map(({ crate, opened, next, pointsToGo }) => (
+              <li
+                className={cn(
+                  "flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border px-2 py-1.5",
+                  next && "border-primary bg-muted",
+                  opened && "opacity-80"
+                )}
+                data-next={next ? "true" : undefined}
+                data-opened={opened ? "true" : undefined}
+                data-testid="quest-crate"
+                key={crate.number}
+              >
+                <p className="flex flex-wrap items-center gap-x-2 text-sm">
+                  <span className="font-semibold">
+                    {t("rewards.crate", { number: crate.number })}
                   </span>
-                ) : next ? (
-                  <span className="font-medium" data-testid="quest-crate-to-go">
-                    {t("rewards.pointsToGo", {
-                      points: number.format(pointsToGo),
+                  <span className="text-muted-foreground tabular-nums">
+                    {t("rewards.cratePoints", {
+                      points: number.format(crate.points),
                     })}
                   </span>
-                ) : null}
-              </p>
-              <CrateRewards alliance={alliance} rewards={crate.rewards} />
-            </li>
-          ))}
-        </ol>
+                  {opened ? (
+                    <span className="inline-flex items-center gap-0.5 text-green-700 dark:text-green-400">
+                      <CheckIcon aria-hidden className="size-3.5" />
+                      {t("rewards.opened")}
+                    </span>
+                  ) : next ? (
+                    <span
+                      className="font-medium"
+                      data-testid="quest-crate-to-go"
+                    >
+                      {t("rewards.pointsToGo", {
+                        points: number.format(pointsToGo),
+                      })}
+                    </span>
+                  ) : null}
+                </p>
+                <CrateRewards alliance={alliance} rewards={crate.rewards} />
+              </li>
+            ))}
+          </ol>
+          {shownCrates.length < crates.length || allCrates ? (
+            <Button
+              className="self-start"
+              data-testid="quest-crates-toggle"
+              onClick={() => setAllCrates(!allCrates)}
+              size="sm"
+              variant="ghost"
+            >
+              {allCrates
+                ? t("rewards.showFewerCrates")
+                : t("rewards.showAllCrates", { count: crates.length })}
+            </Button>
+          ) : null}
+        </div>
       )}
     </div>
   )
@@ -321,6 +421,9 @@ export function RewardsCard({
           {t("rewards.title")}
         </h3>
       )}
+      {left ? (
+        <RewardsLeftStrip alliance={alliance} hero={hero} left={left} />
+      ) : null}
       <div hidden={isMobile && !open} id="quest-rewards-body">
         {!isMobile || open ? body : null}
       </div>

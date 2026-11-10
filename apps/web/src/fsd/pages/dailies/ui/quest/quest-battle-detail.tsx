@@ -1,6 +1,14 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { battleBoardImage } from "@workspace/game-catalog"
+import { UsersIcon } from "lucide-react"
+import {
+  battleBoardImage,
+  battleGlyphIcon,
+  chanceIcon,
+  powerIcon,
+  questEventPointsIcon,
+  rarityIcon,
+} from "@workspace/game-catalog"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 
@@ -14,7 +22,7 @@ import {
   type QuestTierCap,
 } from "@/features/quest-event"
 import type { NpcRecord } from "@/entities/npc"
-import { UpgradeIcon } from "@/shared/ui"
+import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 import {
   BoardMap,
   buildEnemyTile,
@@ -153,33 +161,36 @@ export function QuestBattleDetail({
         <h3 className="text-lg font-semibold" id="quest-battle-detail-title">
           {t("quest:detail.title", { number: battle.number, tier: tierName })}
         </h3>
-        <ul className="flex flex-col gap-0.5 text-sm text-muted-foreground">
-          <li data-testid="quest-battle-slots-line">
+        <ul className="flex flex-col gap-1 text-sm text-muted-foreground">
+          <IconLine
+            icon={<UsersIcon aria-hidden className="size-4" />}
+            testId="quest-battle-slots-line"
+          >
             {t("quest:detail.slots", {
               count: battle.deploySlots,
               hero: heroName,
             })}
-          </li>
-          <li data-testid="quest-battle-cap">
+          </IconLine>
+          <IconLine icon={rarityIcon(battle.tier)} testId="quest-battle-cap">
             {cap.itemLevel === null
               ? t("quest:detail.capNoItems", capValues)
               : t("quest:detail.cap", capValues)}
-          </li>
-          <li>
+          </IconLine>
+          <IconLine icon={battleGlyphIcon("lightningVictory")}>
             {t("quest:detail.lightning", {
               count: battle.lightningVictoryTurns,
             })}
-          </li>
-          <li data-testid="quest-battle-power">
+          </IconLine>
+          <IconLine icon={powerIcon()} testId="quest-battle-power">
             {battle.power === null || battle.power === undefined
               ? t("quest:detail.powerUnknown")
               : t("quest:detail.power", { power: number.format(battle.power) })}
-          </li>
-          <li data-testid="quest-battle-max">
+          </IconLine>
+          <IconLine icon={questEventPointsIcon()} testId="quest-battle-max">
             {t("quest:detail.maxPoints", {
               points: number.format(battleMax(battle, scoring)),
             })}
-          </li>
+          </IconLine>
         </ul>
       </header>
       {team}
@@ -226,9 +237,10 @@ export function QuestBattleDetail({
           <div className="min-w-0">
             <p className="truncate font-medium">{dropName}</p>
             <p
-              className="text-sm text-muted-foreground tabular-nums"
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground tabular-nums"
               data-testid="quest-battle-odds"
             >
+              <EntityIcon alt="" className="size-4" src={chanceIcon()} />
               {t("quest:detail.odds", {
                 numerator: battle.loot.chanceNumerator,
                 denominator: battle.loot.chanceDenominator,
@@ -241,6 +253,30 @@ export function QuestBattleDetail({
         <p className="text-xs text-muted-foreground">{t("quest:detail.jar")}</p>
       </section>
     </article>
+  )
+}
+
+/** A header fact with a leading game icon (a URL) or a glyph element. */
+function IconLine({
+  icon,
+  testId,
+  children,
+}: {
+  icon: string | ReactNode
+  testId?: string
+  children: ReactNode
+}) {
+  return (
+    <li className="flex items-start gap-2" data-testid={testId}>
+      <span className="flex size-5 shrink-0 items-center justify-center">
+        {typeof icon === "string" ? (
+          <EntityIcon alt="" className="size-5 object-contain" src={icon} />
+        ) : (
+          icon
+        )}
+      </span>
+      <span className="min-w-0">{children}</span>
+    </li>
   )
 }
 
