@@ -14,8 +14,10 @@ const {
   legendaryMock,
   progressMock,
   incursionWindowMock,
+  calendarMock,
 } = vi.hoisted(() => ({
   incursionWindowMock: vi.fn((): unknown => null),
+  calendarMock: vi.fn((): unknown => ({ status: "loading" })),
   eventProjectsMock: vi.fn(),
   hseMock: vi.fn(),
   legendaryMock: vi.fn(),
@@ -56,6 +58,19 @@ vi.mock("@/features/project-management", async (importOriginal) => {
     useEventProjects: (eventId: string) => eventProjectsMock(eventId),
   }
 })
+vi.mock("@/shared/local-data", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/shared/local-data")>()
+  return {
+    ...actual,
+    useCatalogDataset: (dataset: string, ...rest: unknown[]) =>
+      dataset === "events-calendar"
+        ? calendarMock()
+        : (actual.useCatalogDataset as (...args: unknown[]) => unknown)(
+            dataset,
+            ...rest
+          ),
+  }
+})
 vi.mock("@/entities/incursion", () => ({
   useIncursionWindow: () => incursionWindowMock(),
 }))
@@ -68,7 +83,11 @@ vi.mock("../token-availability/token-availability", () => ({
 }))
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => (_type: string, id: string) =>
-    ({ astarLysander: "Lysander", votanUthar: "Uthar" })[id] ?? id,
+    ({
+      astarLysander: "Lysander",
+      votanUthar: "Uthar",
+      votanChampion: "Kîmm",
+    })[id] ?? id,
 }))
 
 const NOW = Date.parse("2026-10-03T12:00:00Z")
@@ -244,6 +263,44 @@ describe("Home events (Right now + Upcoming events)", () => {
     expect(screen.getByTestId("home-incursion")).toBeInTheDocument()
     expect(screen.queryByTestId("home-live-none")).toBeNull()
     incursionWindowMock.mockReturnValue(null)
+  })
+
+  it("lists a live Quest Event in Right now as Quest: <hero>, opening the Quest tab", async () => {
+    calendarMock.mockReturnValue({
+      status: "ready",
+      data: [
+        {
+          ...entry("quest", "2026-10-03T00:00:00Z", "2026-10-06T00:00:00Z"),
+          parameters: { featuredCharacterId: "votanChampion" },
+        },
+      ],
+    })
+    hseMock.mockReturnValue(hseReady(null, [rush]))
+    legendaryMock.mockReturnValue(legendaryReady([uthar]))
+    renderWidget()
+
+    const tile = liveTiles().find((item) => item.dataset.type === "quest")
+    expect(tile).toBeDefined()
+    expect(tile).toHaveTextContent("withCharacter:definitions.quest,Kîmm")
+    await userEvent.click(within(tile!).getByTestId("home-events-row"))
+    expect(currentPath()).toBe("/dailies/quest")
+    calendarMock.mockReturnValue({ status: "loading" })
+  })
+
+  it("lists an upcoming Quest Event without a hero in Upcoming events", () => {
+    calendarMock.mockReturnValue({
+      status: "ready",
+      data: [entry("quest", "2026-10-07T00:00:00Z", "2026-10-10T00:00:00Z")],
+    })
+    hseMock.mockReturnValue(hseReady(null, [rush]))
+    legendaryMock.mockReturnValue(legendaryReady([uthar]))
+    renderWidget()
+
+    expect(
+      screen.getAllByTestId("home-events-row").map((row) => row.dataset.type)
+    ).toEqual(["quest", "homeScreen", "legendaryEvent"])
+    expect(upcomingItems()[0]).toHaveTextContent("definitions.quest")
+    calendarMock.mockReturnValue({ status: "loading" })
   })
 
   it("lists an upcoming Incursion in Upcoming events, not Right now", () => {
