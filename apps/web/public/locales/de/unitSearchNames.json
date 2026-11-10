@@ -78,6 +78,7 @@
   "genesMagus": ["Xybia Kheiser"],
   "genesPatriarch": ["The Patermine"],
   "genesPrimus": ["Isaak Starn"],
+  "lostaFearmonger": ["Daras Carrow"],
   "necroDestroyer": [
     "Hexjäger-Destruktor Imospekh",
     "Hexmark Destroyer Imospekh"
@@ -185,6 +186,7 @@
   "worldTerminator": ["Wrask der Schlächter", "Wrask, the Butcher"],
   "astraOrdnanceBattery": ["Malleus Rocket Launcher"],
   "blackForgefiend": ["Forgefiend"],
+  "custoDreadnought": ["Boudicari Feldorus"],
   "darkaStormSpeeder": ["Storm Speeder Hailstrike"],
   "deathCrawler": ["Plagueburst Crawler"],
   "necroReanimator": ["Kanoptech-Reanimator", "Canoptek Reanimator"],

@@ -1,0 +1,8 @@
+{
+  "PunishmentInescapable": {
+    "description": "Las unidades enemigas que entren en un hexágono adyacente a <style=\"Faction_Custodes\">Boudicari</style> terminan su movimiento, excluyendo las unidades con <style=\"Flying\">Vuelo</style>, <style=\"Unstoppable\">Imparable</style>, <style=\"Vehicle\">Vehículo</style> o <style=\"Immune\">Inmune</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}
