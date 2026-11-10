@@ -61,6 +61,7 @@
     "nextCrate": "{{points}} points avant la caisse {{number}}",
     "pointsLeft": "Points restants",
     "pointsLeftRow": "encore {{left}}",
+    "pointsLeftMore": "+{{count}} de plus",
     "saveFailed": "La progression ne peut pas être enregistrée dans ce navigateur"
   },
   "objectives": {
@@ -111,6 +112,8 @@
     "cratePoints": "{{points}} points",
     "opened": "Ouverte",
     "pointsToGo": "encore {{points}} points",
+    "showAllCrates": "Afficher les {{count}} coffres",
+    "showFewerCrates": "Afficher moins de coffres",
     "reward": {
       "Coins": "Pièces",
       "RaidTicket": "Tickets de raid",
@@ -225,6 +228,8 @@
     "title": "Butin pour vos objectifs",
     "empty": "Vos objectifs n'ont besoin d'aucun butin de cette quête.",
     "have": "{{have}} / {{need}}",
-    "battles": "Batailles"
+    "battles": "Batailles",
+    "showAll": "Tout afficher ({{count}})",
+    "showFewer": "Afficher moins"
   }
 }

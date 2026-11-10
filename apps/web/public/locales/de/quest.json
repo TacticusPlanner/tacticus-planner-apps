@@ -61,6 +61,7 @@
     "nextCrate": "{{points}} Punkte bis Kiste {{number}}",
     "pointsLeft": "Offene Punkte",
     "pointsLeftRow": "noch {{left}}",
+    "pointsLeftMore": "+{{count}} weitere",
     "saveFailed": "Der Fortschritt kann in diesem Browser nicht gespeichert werden"
   },
   "objectives": {
@@ -111,6 +112,8 @@
     "cratePoints": "{{points}} Punkte",
     "opened": "Geöffnet",
     "pointsToGo": "noch {{points}} Punkte",
+    "showAllCrates": "Alle {{count}} Kisten anzeigen",
+    "showFewerCrates": "Weniger Kisten anzeigen",
     "reward": {
       "Coins": "Münzen",
       "RaidTicket": "Raid-Tickets",
@@ -225,6 +228,8 @@
     "title": "Beute für deine Ziele",
     "empty": "Deine Ziele brauchen keine Beute dieser Quest.",
     "have": "{{have}} / {{need}}",
-    "battles": "Schlachten"
+    "battles": "Schlachten",
+    "showAll": "Alle {{count}} anzeigen",
+    "showFewer": "Weniger anzeigen"
   }
 }
