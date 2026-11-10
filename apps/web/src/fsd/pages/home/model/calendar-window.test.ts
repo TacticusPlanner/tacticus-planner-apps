@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { calendarWindow } from "./calendar-window"
+import { calendarWindow, calendarWindowEntry } from "./calendar-window"
 
 const entry = (definitionId: string, startUtc: string, endUtc: string) => ({
   definitionId,
@@ -58,5 +58,26 @@ describe("calendarWindow", () => {
         Date.parse("2026-10-26T00:00:00Z")
       )
     ).toBeNull()
+  })
+})
+
+describe("calendarWindowEntry", () => {
+  it("returns the matched entry with its window", () => {
+    const quest = {
+      ...entry("quest", "2026-11-10T00:00:00Z", "2026-11-13T00:00:00Z"),
+      parameters: { featuredCharacterId: "votanChampion" },
+    }
+    const found = calendarWindowEntry(
+      [...entries, quest],
+      "quest",
+      Date.parse("2026-11-09T00:00:00Z")
+    )
+
+    expect(found?.window).toEqual({
+      status: "upcoming",
+      startMs: Date.parse("2026-11-10T00:00:00Z"),
+      endMs: Date.parse("2026-11-13T00:00:00Z"),
+    })
+    expect(found?.entry).toBe(quest)
   })
 })
