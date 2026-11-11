@@ -6,6 +6,7 @@ import {
   sanitizeCapture,
   setReportedRoutePattern,
 } from "./capture-sanitizer"
+import { recordInteraction } from "./web-vitals-routes"
 
 function capture(overrides: Partial<CaptureResult> = {}): CaptureResult {
   return {
@@ -24,7 +25,14 @@ function capture(overrides: Partial<CaptureResult> = {}): CaptureResult {
 
 afterEach(() => {
   resetReportedRoutePattern()
+  vi.restoreAllMocks()
 })
+
+/** Reports `routePattern` as if its page view were sent at `atMs` (performance.now() time). */
+function visit(routePattern: string, atMs: number) {
+  vi.spyOn(performance, "now").mockReturnValueOnce(atMs)
+  setReportedRoutePattern(routePattern, routePattern)
+}
 
 describe("sanitizeCapture", () => {
   it("tags every event with the app version", () => {
@@ -210,5 +218,113 @@ describe("sanitizeCapture", () => {
     const { properties } = sanitizeCapture(capture())
 
     expect(properties.route_pattern).toBe("/library/characters/:entityId")
+  })
+
+  describe("CLS and INP sent after the user moved on", () => {
+    const homeUrl = "https://tacticusplanner.app/home"
+
+    it("labels CLS with the route of its largest shift", () => {
+      visit("/legendary-events/:eventId/:tab", 1000)
+      visit("/home", 5000)
+
+      const { properties } = sanitizeCapture(
+        capture({
+          event: "$web_vitals",
+          properties: {
+            $current_url: homeUrl,
+            $pathname: "/home",
+            $web_vitals_CLS_value: 0.4,
+            $web_vitals_CLS_event: {
+              name: "CLS",
+              $current_url: homeUrl,
+              attribution: {
+                largestShiftTarget: "#le-tab",
+                largestShiftTime: 2400,
+              },
+            },
+          },
+        })
+      )
+
+      expect(properties.web_vitals_cls_route).toBe(
+        "/legendary-events/:eventId/:tab"
+      )
+      expect(properties.$pathname).toBe("/legendary-events/:eventId/:tab")
+      expect(properties.$current_url).toBe(
+        "https://tacticusplanner.app/legendary-events/:eventId/:tab"
+      )
+      expect(
+        (properties.$web_vitals_CLS_event as { $current_url: string })
+          .$current_url
+      ).toBe("https://tacticusplanner.app/legendary-events/:eventId/:tab")
+    })
+
+    it("labels INP with the route of the interaction it reports", () => {
+      visit("/plan/goals", 1000)
+      recordInteraction(7, 480, 1500)
+      visit("/home", 5000)
+      recordInteraction(8, 120, 6000)
+
+      const { properties } = sanitizeCapture(
+        capture({
+          event: "$web_vitals",
+          properties: {
+            $current_url: homeUrl,
+            $web_vitals_INP_value: 480,
+            $web_vitals_INP_event: { name: "INP", $current_url: homeUrl },
+          },
+        })
+      )
+
+      expect(properties.web_vitals_inp_route).toBe("/plan/goals")
+      expect(properties.$pathname).toBe("/plan/goals")
+    })
+
+    it("keeps one label per metric when CLS and INP come from different pages", () => {
+      visit("/legendary-events/:eventId", 1000)
+      visit("/home", 5000)
+      recordInteraction(3, 600, 5500)
+
+      const { properties } = sanitizeCapture(
+        capture({
+          event: "$web_vitals",
+          properties: {
+            $current_url: homeUrl,
+            $pathname: "/home",
+            $web_vitals_CLS_value: 0.3,
+            $web_vitals_CLS_event: {
+              name: "CLS",
+              $current_url: homeUrl,
+              attribution: { largestShiftTime: 1200 },
+            },
+            $web_vitals_INP_value: 600,
+            $web_vitals_INP_event: { name: "INP", $current_url: homeUrl },
+          },
+        })
+      )
+
+      expect(properties.web_vitals_cls_route).toBe("/legendary-events/:eventId")
+      expect(properties.web_vitals_inp_route).toBe("/home")
+      // No single page: the event keeps the route open when it was sent.
+      expect(properties.$pathname).toBe("/home")
+    })
+
+    it("falls back to the metric's own URL when the interaction is unknown", () => {
+      visit("/plan/goals", 1000)
+      visit("/home", 5000)
+
+      const { properties } = sanitizeCapture(
+        capture({
+          event: "$web_vitals",
+          properties: {
+            $current_url: homeUrl,
+            $web_vitals_INP_value: 999,
+            $web_vitals_INP_event: { name: "INP", $current_url: homeUrl },
+          },
+        })
+      )
+
+      expect(properties.web_vitals_inp_route).toBe("/home")
+    })
   })
 })
