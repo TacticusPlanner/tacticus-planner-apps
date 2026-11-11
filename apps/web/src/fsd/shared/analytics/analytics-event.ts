@@ -102,7 +102,18 @@ export type LegendaryEventEstimateSnapshot = {
   unitIds: readonly string[] | null
   objectiveIndexes: readonly number[] | null
   memberCount: number | null
+  /** Each member's power without horde-mode multipliers, in `unitIds` order. */
+  memberPowers: readonly number[] | null
+  /** The strongest member's share of `teamPower` (0–1): low means no carry. */
+  topMemberShare: number | null
   curveVersion: string
+}
+
+/** The battle a Next token was for: its catalog power and the curve ratio the team's effective power
+ *  reaches on it (the estimate reads sure from `sureRatio`, out of reach below `stretchRatio`). */
+export type LegendaryEventBattleSnapshot = {
+  battlePower: number | null
+  powerRatio: number | null
 }
 
 /**
@@ -126,7 +137,28 @@ type LegendaryEventTokenResultEvent = {
   depthBeforeManual: boolean
   depthAfter: number | null
   otherTeamReaches: boolean
-} & LegendaryEventEstimateSnapshot
+} & LegendaryEventEstimateSnapshot &
+  LegendaryEventBattleSnapshot
+
+/**
+ * A Next token the card showed was later cleared in sync (every cell it planned to clear): the
+ * success label that pairs with `legendary_event_token_result`, so estimate hit rates are not read
+ * from failures alone. Carries the estimate and the team's depth as they were when the token showed.
+ */
+type LegendaryEventTokenClearedEvent = {
+  type: "legendary_event_token_cleared"
+  eventId: string
+  run: number | null
+  laneId: string
+  /** 0-based. */
+  battleIndex: number
+  /** The headline estimate (null without one). */
+  estimate: number | null
+  /** The team's depth when the token showed, and whether it was manual. */
+  depth: number | null
+  depthManual: boolean
+} & LegendaryEventEstimateSnapshot &
+  LegendaryEventBattleSnapshot
 
 /** Use estimate was pressed: the manual depth was cleared so the estimate shows again. */
 type LegendaryEventDepthEstimateRestoredEvent = {
@@ -354,6 +386,7 @@ export type AnalyticsEvent =
   | LegendaryEventTeamSuggestionsOpenedEvent
   | LegendaryEventDepthSetEvent
   | LegendaryEventTokenResultEvent
+  | LegendaryEventTokenClearedEvent
   | LegendaryEventRunInputsSavedEvent
   | LegendaryEventPaidOptionsToggledEvent
   | LegendaryEventNotesSavedEvent

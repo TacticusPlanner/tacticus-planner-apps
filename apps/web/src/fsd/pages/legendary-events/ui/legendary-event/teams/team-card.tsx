@@ -105,6 +105,7 @@ export function TeamCard({
         memberCount: card.memberCount,
         unitIds: card.team.memberUnitIds,
         objectiveIndexes: card.team.objectiveIndexes,
+        memberPowers: card.memberPowers,
         source: "card",
       })
     )

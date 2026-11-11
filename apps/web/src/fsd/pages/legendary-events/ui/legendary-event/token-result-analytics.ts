@@ -1,4 +1,6 @@
 import {
+  battlePowerRatio,
+  memberPowers,
   teamPower,
   type LegendaryEventAnnotationStatus,
   type LegendaryEventLaneId,
@@ -36,8 +38,39 @@ export function tokenActionEstimateContext(
     memberCount: memberUnitIds.length,
     unitIds: team ? memberUnitIds : null,
     objectiveIndexes: team?.objectiveIndexes ?? null,
+    memberPowers: inputs
+      ? memberPowers(memberUnitIds, inputs.roster, inputs.config.unitPower)
+      : null,
     source: "tokenAction",
   })
+}
+
+/** The token's battle: its catalog power and the curve ratio the shown effective power reaches on it
+ *  (rounded to 3 decimals); null where the battles or the estimate are unavailable. */
+export function tokenBattleSnapshot(
+  clears: ClearEstimatesViewModel,
+  laneId: LegendaryEventLaneId,
+  battleIndex: number,
+  shown: Pick<DepthEstimateContext, "effectivePower">
+): TokenBattleSnapshot {
+  const battlePower =
+    clears.kind === "ready"
+      ? (clears.byLane[laneId].inputs?.battlePowers[battleIndex] ?? null)
+      : null
+  const effectivePower = shown.effectivePower ?? null
+  return {
+    battlePower,
+    powerRatio:
+      battlePower && effectivePower !== null
+        ? Math.round(battlePowerRatio(effectivePower, battlePower) * 1000) /
+          1000
+        : null,
+  }
+}
+
+export interface TokenBattleSnapshot {
+  battlePower: number | null
+  powerRatio: number | null
 }
 
 /** The `legendary_event_token_result` event of a Next token card action. */
@@ -49,6 +82,7 @@ export function tokenResultEvent(input: {
   /** The card action: Partly cleared / Couldn't clear (their mark status) or Stop here. */
   action: LegendaryEventAnnotationStatus | "stopEarly"
   shown: DepthEstimateContext
+  battle: TokenBattleSnapshot
   depthBefore: { depth: number | null; estimated: boolean } | undefined
   depthAfter: number | null
   otherTeamReaches: boolean
@@ -66,6 +100,7 @@ export function tokenResultEvent(input: {
     depthAfter: input.depthAfter,
     otherTeamReaches: input.otherTeamReaches,
     ...estimateSnapshot(input.shown),
+    ...input.battle,
   }
 }
 
