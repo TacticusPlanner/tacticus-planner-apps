@@ -1,8 +1,8 @@
 import type { LegendaryEventAnnotationStatus } from "@/entities/legendary-event"
 
 /**
- * The cells a Next token card action marks (design D5): Couldn't clear marks every cell the token
- * clears Stop here; Partly cleared marks its objective cells Maybe clear, or its defeat-all cell
+ * The cells a Next token card action marks (design D5): Stop here marks every cell the token
+ * clears Stop here; Maybe clear marks its objective cells Maybe clear, or its defeat-all cell
  * when it clears no objective.
  */
 export function tokenMarkIds(
@@ -26,7 +26,7 @@ export interface TokenMarkOutcome {
 }
 
 /**
- * A Partly cleared / Couldn't clear on a token means its team can't clear that battle, not that
+ * A Maybe clear / Stop here on a token means its team can't clear that battle, not that
  * nobody can: the team's depth becomes manual at the battles before it (battle number − 1), and the
  * cells are marked only when no other team of the lane reaches the battle. Otherwise the plan moves
  * the battle to that team.

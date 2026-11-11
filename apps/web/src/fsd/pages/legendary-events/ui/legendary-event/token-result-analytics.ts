@@ -79,8 +79,8 @@ export function tokenResultEvent(input: {
   run: number | null
   laneId: LegendaryEventLaneId
   battleIndex: number
-  /** The card action: Partly cleared / Couldn't clear (their mark status) or Stop here. */
-  action: LegendaryEventAnnotationStatus | "stopEarly"
+  /** The card action, as the mark it sets: Maybe clear or Stop here. */
+  action: LegendaryEventAnnotationStatus
   shown: DepthEstimateContext
   battle: TokenBattleSnapshot
   depthBefore: { depth: number | null; estimated: boolean } | undefined
@@ -93,7 +93,7 @@ export function tokenResultEvent(input: {
     run: input.run,
     laneId: input.laneId,
     battleIndex: input.battleIndex,
-    outcome: tokenResultOutcome(input.action),
+    outcome: input.action === "stopHere" ? "couldNotClear" : "partlyCleared",
     estimate: input.shown.estimate,
     depthBefore: input.depthBefore?.depth ?? null,
     depthBeforeManual: input.depthBefore ? !input.depthBefore.estimated : false,
@@ -102,11 +102,4 @@ export function tokenResultEvent(input: {
     ...estimateSnapshot(input.shown),
     ...input.battle,
   }
-}
-
-function tokenResultOutcome(
-  action: LegendaryEventAnnotationStatus | "stopEarly"
-): "partlyCleared" | "couldNotClear" | "stoppedEarly" {
-  if (action === "stopEarly") return "stoppedEarly"
-  return action === "stopHere" ? "couldNotClear" : "partlyCleared"
 }

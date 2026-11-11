@@ -5,7 +5,6 @@ export { useTokenMissionsSource } from "./model/use-token-missions-source"
 export {
   NextTokenCard,
   type MarkTokenHandler,
-  type StopTeamHandler,
   type TokenShownHandler,
   type OpenTeamsHandler,
 } from "./ui/next-token-card"

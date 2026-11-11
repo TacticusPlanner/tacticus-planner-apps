@@ -500,7 +500,7 @@
         },
         "nextToken": {
           "title": "Nächster Token",
-          "content": "Der Kampf für deinen nächsten Token: das Team, die Bahn und der Kampf mit den meisten Punkten, berechnet aus deiner Synchronisierung, deinen Teams, Tiefen und Markierungen. Lief es nicht nach Plan, markiere ihn als „Teilweise geschafft“ oder „Nicht geschafft“, und der Plan passt sich an."
+          "content": "Der Kampf für deinen nächsten Token: das Team, die Bahn und der Kampf mit den meisten Punkten, berechnet aus deiner Synchronisierung, deinen Teams, Tiefen und Markierungen. Lief es nicht nach Plan, markiere ihn als „Vielleicht schaffbar“ oder „Hier aufhören“, und der Plan passt sich an."
         },
         "runStatus": {
           "title": "Durchlaufstatus",
@@ -731,13 +731,12 @@
       "members": "Mitglieder",
       "objectives": "Erfüllt",
       "actions": {
-        "partly": "Teilweise geschafft",
-        "couldNot": "Nicht geschafft",
-        "partlyLabel": "Teilweise geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Vielleicht schaffbar“ markieren",
-        "couldNotLabel": "Nicht geschafft: {{team}} auf {{lane}} Kampf {{battle}} als „Hier aufhören“ markieren",
+        "maybe": "Vielleicht schaffbar",
+        "maybeHint": "Mit erneutem Versuch vielleicht schaffbar",
+        "maybeLabel": "Vielleicht schaffbar: {{team}} schafft {{lane}} Kampf {{battle}} vielleicht mit erneutem Versuch",
         "stop": "Hier aufhören",
-        "stopLabel": "Hier aufhören: {{team}} auf {{lane}} nach Kampf {{previous}} beenden und andere Teams planen",
-        "stopHint": "Beendet dieses Team nach Kampf {{previous}} und plant mit anderen Teams weiter"
+        "stopHint": "Keine Chance mit diesem Team",
+        "stopLabel": "Hier aufhören: {{team}} hat keine Chance auf {{lane}} Kampf {{battle}}"
       },
       "loading": "Token-Plan wird geladen…",
       "unavailable": "Synchronisierter Fortschritt ist nicht verfügbar, daher gibt es keinen Token-Plan",

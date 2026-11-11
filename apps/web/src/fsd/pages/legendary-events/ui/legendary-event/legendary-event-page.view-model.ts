@@ -39,7 +39,6 @@ import type { RunHistory } from "../../lib/run-history"
 import type { UpgradeImpactState } from "@/features/legendary-event-goals"
 import type {
   MarkTokenHandler,
-  StopTeamHandler,
   TokenShownHandler,
   OpenTeamsHandler,
   TokenPlanView,
@@ -191,8 +190,6 @@ interface TokensViewModel {
   view: TokenPlanView
   /** Absent while marks cannot be written (signed out, or the plan has not loaded). */
   onMarkToken: MarkTokenHandler | undefined
-  /** Stop here on a likely-clear token; absent while depths cannot be written. */
-  onStopTeam: StopTeamHandler | undefined
   /** Remembers a shown token for the cleared-in-sync analytics; absent while marks are not editable. */
   onTokenShown: TokenShownHandler | undefined
   /** The current run, keying when a shown token is remembered again. */

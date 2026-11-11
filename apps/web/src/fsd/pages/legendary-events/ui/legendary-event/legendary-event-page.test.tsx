@@ -1224,7 +1224,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
       await screen.findByTestId("next-token-view")
 
       act(() => {
-        fireEvent.click(screen.getByTestId("next-token-could-not"))
+        fireEvent.click(screen.getByTestId("next-token-stop"))
       })
 
       // Deep fell short on battle 2 and no other Alpha team reaches it: its depth drops to 1 (the

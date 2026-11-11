@@ -84,23 +84,6 @@ describe("tokenResultEvent", () => {
       objectiveIndexes: null,
     })
   })
-
-  it("labels Stop here as a team stopped early", () => {
-    expect(
-      tokenResultEvent({
-        eventId: "fabiusBile",
-        run: 1,
-        laneId: "gamma",
-        battleIndex: 8,
-        action: "stopEarly",
-        shown,
-        battle: { battlePower: 350_333, powerRatio: 1.012 },
-        depthBefore: { depth: 10, estimated: true },
-        depthAfter: 8,
-        otherTeamReaches: false,
-      })
-    ).toMatchObject({ outcome: "stoppedEarly", depthBefore: 10, depthAfter: 8 })
-  })
 })
 
 describe("tokenBattleSnapshot", () => {

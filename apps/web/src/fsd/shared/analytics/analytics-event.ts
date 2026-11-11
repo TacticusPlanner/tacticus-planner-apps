@@ -95,7 +95,7 @@ type LegendaryEventDepthSetEvent = {
   fromEstimate: boolean
 } & LegendaryEventEstimateSnapshot & {
     /** Where the depth was set: the team card's stepper, the team editor, or a Next token card
-     *  action (Partly cleared / Couldn't clear). */
+     *  action (Maybe clear / Stop here). */
     source: "card" | "editor" | "tokenAction"
   }
 
@@ -126,8 +126,8 @@ export type LegendaryEventBattleSnapshot = {
 }
 
 /**
- * A Next token card action: the token's team fell short on a battle (Partly cleared or Couldn't
- * clear). The direct "this team failed at battle N" label for tuning clear estimates, with the
+ * A Next token card action: the token's team fell short on a battle (Maybe clear, logged as
+ * `partlyCleared`, or Stop here, logged as `couldNotClear`). The direct "this team failed at battle N" label for tuning clear estimates, with the
  * estimate the player saw, the team's depth before and after, and whether another team of the lane
  * reaches the battle (then the cells stay unmarked).
  */
@@ -138,8 +138,7 @@ type LegendaryEventTokenResultEvent = {
   laneId: string
   /** 0-based. */
   battleIndex: number
-  /** `stoppedEarly`: Stop here, the player ended the team before trying this battle. */
-  outcome: "partlyCleared" | "couldNotClear" | "stoppedEarly"
+  outcome: "partlyCleared" | "couldNotClear"
   /** The headline estimate (null without one). */
   estimate: number | null
   depthBefore: number | null

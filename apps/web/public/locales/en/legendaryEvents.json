@@ -500,7 +500,7 @@
         },
         "nextToken": {
           "title": "Next token",
-          "content": "The battle to play with your next token: the team, lane and battle worth the most points now, from your sync, teams, depths and marks. If it didn't go to plan, mark it Partly cleared or Couldn't clear and the plan updates."
+          "content": "The battle to play with your next token: the team, lane and battle worth the most points now, from your sync, teams, depths and marks. If it didn't go to plan, mark it Maybe clear or Stop here and the plan updates."
         },
         "runStatus": {
           "title": "Run status",
@@ -731,13 +731,12 @@
       "members": "Members",
       "objectives": "Clears",
       "actions": {
-        "partly": "Partly cleared",
-        "couldNot": "Couldn't clear",
-        "partlyLabel": "Partly cleared: mark {{team}} on {{lane}} battle {{battle}} as Maybe clear",
-        "couldNotLabel": "Couldn't clear: mark {{team}} on {{lane}} battle {{battle}} as Stop here",
+        "maybe": "Maybe clear",
+        "maybeHint": "Might clear with a retry",
+        "maybeLabel": "Maybe clear: {{team}} might clear {{lane}} battle {{battle}} with a retry",
         "stop": "Stop here",
-        "stopLabel": "Stop here: end {{team}} on {{lane}} after battle {{previous}} and plan other teams",
-        "stopHint": "Ends this team after battle {{previous}} and moves the plan on to other teams"
+        "stopHint": "No chance with this team",
+        "stopLabel": "Stop here: {{team}} has no chance on {{lane}} battle {{battle}}"
       },
       "loading": "Loading the token plan…",
       "unavailable": "Synced progress is unavailable, so there is no token plan",

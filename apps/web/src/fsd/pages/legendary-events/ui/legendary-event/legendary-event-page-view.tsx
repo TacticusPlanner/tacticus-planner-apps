@@ -310,7 +310,6 @@ function LegendaryEventPageBody({
               eventId={props.event.id}
               isMobile={isMobile}
               onMarkToken={tokens.onMarkToken}
-              onStopTeam={tokens.onStopTeam}
               onTokenShown={tokens.onTokenShown}
               run={tokens.run}
               onOpenTeams={tokens.onOpenTeams}

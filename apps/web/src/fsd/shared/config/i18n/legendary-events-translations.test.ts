@@ -102,8 +102,11 @@ describe("Legendary Events translations", () => {
       expect(resource.tokenPlan.nextToken.reasons.mostPoints).not.toBe(
         en.tokenPlan.nextToken.reasons.mostPoints
       )
-      expect(resource.tokenPlan.nextToken.actions.couldNot).not.toBe(
-        en.tokenPlan.nextToken.actions.couldNot
+      expect(resource.tokenPlan.nextToken.actions.stopHint).not.toBe(
+        en.tokenPlan.nextToken.actions.stopHint
+      )
+      expect(resource.tokenPlan.nextToken.actions.maybeHint).not.toBe(
+        en.tokenPlan.nextToken.actions.maybeHint
       )
       expect(resource.tokenPlan.plan.title).not.toBe(en.tokenPlan.plan.title)
       expect(resource.tokenPlan.forecast.header).not.toBe(

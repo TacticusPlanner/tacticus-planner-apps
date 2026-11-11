@@ -500,7 +500,7 @@
         },
         "nextToken": {
           "title": "Siguiente ficha",
-          "content": "La batalla para tu siguiente ficha: el equipo, el carril y la batalla que más puntos dan ahora, según tu sincronización, equipos, profundidades y marcas. Si no salió según el plan, márcala como Superada en parte o No superada y el plan se actualiza."
+          "content": "La batalla para tu siguiente ficha: el equipo, el carril y la batalla que más puntos dan ahora, según tu sincronización, equipos, profundidades y marcas. Si no salió según el plan, márcala como Quizá superable o Parar aquí y el plan se actualiza."
         },
         "runStatus": {
           "title": "Estado de la tirada",
@@ -731,13 +731,12 @@
       "members": "Miembros",
       "objectives": "Supera",
       "actions": {
-        "partly": "Superada en parte",
-        "couldNot": "No superada",
-        "partlyLabel": "Superada en parte: marcar {{team}} en {{lane}} batalla {{battle}} como Quizá superable",
-        "couldNotLabel": "No superada: marcar {{team}} en {{lane}} batalla {{battle}} como Parar aquí",
+        "maybe": "Quizá superable",
+        "maybeHint": "Podría superarse con otro intento",
+        "maybeLabel": "Quizá superable: {{team}} podría superar {{lane}} batalla {{battle}} con otro intento",
         "stop": "Parar aquí",
-        "stopLabel": "Parar aquí: terminar {{team}} en {{lane}} tras la batalla {{previous}} y planificar otros equipos",
-        "stopHint": "Termina este equipo tras la batalla {{previous}} y pasa el plan a otros equipos"
+        "stopHint": "Sin opciones con este equipo",
+        "stopLabel": "Parar aquí: {{team}} no tiene opciones en {{lane}} batalla {{battle}}"
       },
       "loading": "Cargando el plan de fichas…",
       "unavailable": "El progreso sincronizado no está disponible, así que no hay plan de fichas",
