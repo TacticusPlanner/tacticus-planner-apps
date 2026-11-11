@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
-import { render, screen } from "@/test/render"
+import { render, screen, waitFor } from "@/test/render"
 
 import { GoalsViewToggle } from "./goals-view-toggle"
 
@@ -20,7 +20,7 @@ describe("GoalsViewToggle", () => {
     )
   })
 
-  it("reports a switch, and ignores a click on the already-pressed option", async () => {
+  it("shows a switch at once and reports it after the paint, and ignores a click on the already-pressed option", async () => {
     const onViewChange = vi.fn()
     const user = userEvent.setup()
     render(<GoalsViewToggle onViewChange={onViewChange} view="Cards" />)
@@ -29,6 +29,7 @@ describe("GoalsViewToggle", () => {
     expect(onViewChange).not.toHaveBeenCalled()
 
     await user.click(screen.getByRole("radio", { name: "Table" }))
-    expect(onViewChange).toHaveBeenCalledWith("Table")
+    expect(screen.getByRole("radio", { name: "Table" })).toBeChecked()
+    await waitFor(() => expect(onViewChange).toHaveBeenCalledWith("Table"))
   })
 })
