@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useId, useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, Copy } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -24,7 +24,8 @@ import {
   minutesUntil,
   type StagingTransferMode,
 } from "../model/staging-transfer"
-import { primaryActionClassName } from "./dialog-actions"
+import { dialogActionClassName } from "./dialog-action-slot"
+import { DialogAction } from "./dialog-actions"
 
 /**
  * The account dialog's Transfer tab: mint a code in production, or redeem one on staging. Deliberately
@@ -106,25 +107,28 @@ function ExportPanel() {
         </FieldError>
       ) : null}
 
-      <Button
-        className={`${primaryActionClassName} self-start`}
-        data-testid="manage-account-staging-create"
-        disabled={create.isPending}
-        type="button"
-        variant={create.data ? "outline" : "default"}
-        onClick={() => create.mutate()}
-      >
-        {create.isPending ? <Spinner /> : null}
-        {create.data
-          ? t("manageAccount.staging.createAnother")
-          : t("manageAccount.staging.create")}
-      </Button>
+      <DialogAction>
+        <Button
+          className={dialogActionClassName}
+          data-testid="manage-account-staging-create"
+          disabled={create.isPending}
+          type="button"
+          variant={create.data ? "outline" : "default"}
+          onClick={() => create.mutate()}
+        >
+          {create.isPending ? <Spinner /> : null}
+          {create.data
+            ? t("manageAccount.staging.createAnother")
+            : t("manageAccount.staging.create")}
+        </Button>
+      </DialogAction>
     </div>
   )
 }
 
 function ImportPanel() {
   const { t } = useTranslation()
+  const formId = useId()
   const queryClient = useQueryClient()
   const [code, setCode] = useState("")
   const [confirmed, setConfirmed] = useState(false)
@@ -146,7 +150,11 @@ function ImportPanel() {
   }
 
   return (
-    <form className="flex flex-col gap-4 pt-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col gap-4 pt-4"
+      id={formId}
+      onSubmit={handleSubmit}
+    >
       <Field data-invalid={Boolean(importData.error)}>
         <FieldLabel htmlFor="manage-account-staging-import-code">
           {t("manageAccount.staging.codeLabel")}
@@ -201,15 +209,18 @@ function ImportPanel() {
         </p>
       ) : null}
 
-      <Button
-        className={primaryActionClassName}
-        data-testid="manage-account-staging-import-submit"
-        disabled={!canImport}
-        type="submit"
-      >
-        {importData.isPending ? <Spinner /> : null}
-        {t("manageAccount.staging.apply")}
-      </Button>
+      <DialogAction>
+        <Button
+          className={dialogActionClassName}
+          data-testid="manage-account-staging-import-submit"
+          disabled={!canImport}
+          form={formId}
+          type="submit"
+        >
+          {importData.isPending ? <Spinner /> : null}
+          {t("manageAccount.staging.apply")}
+        </Button>
+      </DialogAction>
     </form>
   )
 }

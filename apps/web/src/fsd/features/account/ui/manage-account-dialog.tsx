@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useId, useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { ExternalLink } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -49,7 +49,11 @@ import {
 
 import { rememberSignInAccountKept } from "../model/sign-in-account-kept-notice"
 import { stagingTransferMode } from "../model/staging-transfer"
-import { primaryActionClassName } from "./dialog-actions"
+import {
+  DialogActionSlotContext,
+  dialogActionClassName,
+} from "./dialog-action-slot"
+import { DialogAction } from "./dialog-actions"
 import { ProfileTab } from "./profile-tab"
 import { StagingTransferTab } from "./staging-transfer-tab"
 
@@ -92,6 +96,7 @@ export function ManageAccountDialog({
   const account = instance.getActiveAccount() ?? accounts[0]
   const { state } = useCurrentUser()
   const stagingMode = stagingTransferMode(appEnvironment)
+  const [actionSlot, setActionSlot] = useState<HTMLDivElement | null>(null)
 
   if (!account || state.status !== "success") {
     return null
@@ -110,68 +115,72 @@ export function ManageAccountDialog({
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
       <ResponsiveDialogBody className="pb-4">
-        <Tabs className="min-w-0" defaultValue={initialTab}>
-          <TabsList className="w-full max-sm:grid max-sm:grid-cols-2 max-sm:group-data-horizontal/tabs:h-auto">
-            <TabsTrigger
-              className={tabTriggerClassName}
-              data-testid="manage-account-tab-integration"
-              value="integration"
-            >
-              {t("manageAccount.tabs.integration")}
-            </TabsTrigger>
-            <TabsTrigger
-              className={tabTriggerClassName}
-              data-testid="manage-account-tab-profile"
-              value="profile"
-            >
-              {t("manageAccount.tabs.profile")}
-            </TabsTrigger>
-            <TabsTrigger
-              className={tabTriggerClassName}
-              data-testid="manage-account-tab-account"
-              value="account"
-            >
-              {t("manageAccount.tabs.account")}
-            </TabsTrigger>
-            {stagingMode ? (
+        <DialogActionSlotContext value={actionSlot}>
+          <Tabs className="min-w-0" defaultValue={initialTab}>
+            <TabsList className="w-full max-sm:grid max-sm:grid-cols-2 max-sm:group-data-horizontal/tabs:h-auto">
               <TabsTrigger
                 className={tabTriggerClassName}
-                data-testid="manage-account-tab-staging"
-                value="staging"
+                data-testid="manage-account-tab-integration"
+                value="integration"
               >
-                {t("manageAccount.tabs.staging")}
+                {t("manageAccount.tabs.integration")}
               </TabsTrigger>
-            ) : null}
-          </TabsList>
-          <TabsContent value="integration">
-            <TacticusIntegrationTab user={state.user} />
-          </TabsContent>
-          <TabsContent value="profile">
-            <ProfileTab user={state.user} />
-          </TabsContent>
-          <TabsContent value="account">
-            <AccountTab
-              account={account}
-              instance={instance}
-              onPurged={() => onOpenChange(false)}
-            />
-          </TabsContent>
-          {stagingMode ? (
-            <TabsContent value="staging">
-              <StagingTransferTab mode={stagingMode} />
+              <TabsTrigger
+                className={tabTriggerClassName}
+                data-testid="manage-account-tab-profile"
+                value="profile"
+              >
+                {t("manageAccount.tabs.profile")}
+              </TabsTrigger>
+              <TabsTrigger
+                className={tabTriggerClassName}
+                data-testid="manage-account-tab-account"
+                value="account"
+              >
+                {t("manageAccount.tabs.account")}
+              </TabsTrigger>
+              {stagingMode ? (
+                <TabsTrigger
+                  className={tabTriggerClassName}
+                  data-testid="manage-account-tab-staging"
+                  value="staging"
+                >
+                  {t("manageAccount.tabs.staging")}
+                </TabsTrigger>
+              ) : null}
+            </TabsList>
+            <TabsContent value="integration">
+              <TacticusIntegrationTab user={state.user} />
             </TabsContent>
-          ) : null}
-        </Tabs>
+            <TabsContent value="profile">
+              <ProfileTab user={state.user} />
+            </TabsContent>
+            <TabsContent value="account">
+              <AccountTab
+                account={account}
+                instance={instance}
+                onPurged={() => onOpenChange(false)}
+              />
+            </TabsContent>
+            {stagingMode ? (
+              <TabsContent value="staging">
+                <StagingTransferTab mode={stagingMode} />
+              </TabsContent>
+            ) : null}
+          </Tabs>
+        </DialogActionSlotContext>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="border-t">
+      {/* Close and the open tab's main button (rendered here through `DialogAction`) share one row. */}
+      <ResponsiveDialogFooter className="grid grid-cols-2 border-t">
         <Button
-          className={`${primaryActionClassName} w-full md:w-auto`}
+          className={dialogActionClassName}
           data-testid="manage-account-close"
           variant="outline"
           onClick={() => onOpenChange(false)}
         >
           {t("common.close")}
         </Button>
+        <div className="contents" ref={setActionSlot} />
       </ResponsiveDialogFooter>
     </ResponsiveDialog>
   )
@@ -180,6 +189,7 @@ export function ManageAccountDialog({
 /** Saving writes the response's masked key/user id into the cached current user (no `GET /account`). */
 function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
   const { t } = useTranslation()
+  const formId = useId()
   const queryClient = useQueryClient()
   const [apiKey, setApiKey] = useState("")
   const [userId, setUserId] = useState("")
@@ -222,7 +232,11 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
   }
 
   return (
-    <form className="flex flex-col gap-4 pt-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col gap-4 pt-4"
+      id={formId}
+      onSubmit={handleSubmit}
+    >
       <div className="grid grid-cols-1 gap-2 rounded-2xl border p-3 text-sm">
         <div className="flex items-center justify-between gap-2">
           <span className="shrink-0 text-muted-foreground">
@@ -338,15 +352,18 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
         </p>
       ) : null}
 
-      <Button
-        className={primaryActionClassName}
-        data-testid="manage-account-integration-submit"
-        disabled={updateIntegration.isPending || userIdFormatInvalid}
-        type="submit"
-      >
-        {updateIntegration.isPending ? <Spinner /> : null}
-        {t("manageAccount.integration.save")}
-      </Button>
+      <DialogAction>
+        <Button
+          className={dialogActionClassName}
+          data-testid="manage-account-integration-submit"
+          disabled={updateIntegration.isPending || userIdFormatInvalid}
+          form={formId}
+          type="submit"
+        >
+          {updateIntegration.isPending ? <Spinner /> : null}
+          {t("manageAccount.integration.save")}
+        </Button>
+      </DialogAction>
     </form>
   )
 }
@@ -488,16 +505,18 @@ function AccountTab({
         </FieldError>
       ) : null}
 
-      <Button
-        className={primaryActionClassName}
-        data-testid="manage-account-purge-submit"
-        disabled={!canPurge || purge.isPending}
-        variant="destructive"
-        onClick={handlePurge}
-      >
-        {purge.isPending ? <Spinner /> : null}
-        {t("manageAccount.account.purgeSubmit")}
-      </Button>
+      <DialogAction>
+        <Button
+          className={dialogActionClassName}
+          data-testid="manage-account-purge-submit"
+          disabled={!canPurge || purge.isPending}
+          variant="destructive"
+          onClick={handlePurge}
+        >
+          {purge.isPending ? <Spinner /> : null}
+          {t("manageAccount.account.purgeSubmit")}
+        </Button>
+      </DialogAction>
     </div>
   )
 }
