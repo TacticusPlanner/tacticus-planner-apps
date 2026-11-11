@@ -8,10 +8,10 @@ import type { FarmingStrategy, GoalKind } from "@/entities/goal"
 import { goalKindsForEntity } from "@/features/goal-planning/@x/goal-create"
 import type {
   useAbilityFields,
-  useAscensionFields,
   useProjectSelection,
   useRankFields,
 } from "./use-create-goal-form"
+import type { useAscensionFields } from "./use-ascension-fields"
 import type { useAcquisitionSourceSelection } from "./use-acquisition-source-selection"
 import type { useUpgradeFields } from "./use-upgrade-fields"
 import type { useGoalMilestones } from "./use-goal-milestones"
