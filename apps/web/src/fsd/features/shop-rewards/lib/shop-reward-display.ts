@@ -26,7 +26,7 @@ import { unitIdSchema } from "@workspace/game-domain"
 // Dailies recommendations page and the public Library browsing page. Icons come from
 // `@workspace/game-catalog`'s helpers and the app's `public/game_catalog/**` images, ported to cover
 // every reward vocabulary the four daily shops use (V1 `reward-icon.ts` + `reward-info.tsx`); anything
-// still without a V2 asset falls back to a prettified text label (EntityIcon hides a missing src).
+// still without a V2 asset falls back to a prettified text label (EntityIcon draws a placeholder for a missing image).
 
 export type ShopRewardKind =
   | "shard"

@@ -10,6 +10,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
+import { EntityIcon } from "@/shared/ui"
+
 import type { EventTargetOption } from "../model/event-target-options"
 
 const NO_TARGET = "__none__"
@@ -67,9 +69,8 @@ export function ProjectTargetField({
 function EventPortrait({ eventId }: { eventId: string }) {
   const portrait = characterIcon(eventId as UnitId)
   return portrait ? (
-    <img
+    <EntityIcon
       alt=""
-      aria-hidden="true"
       className="size-5 shrink-0 rounded-full object-cover"
       src={portrait}
     />

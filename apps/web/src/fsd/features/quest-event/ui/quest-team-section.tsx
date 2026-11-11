@@ -5,6 +5,8 @@ import type { UnitId } from "@workspace/game-domain"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Button } from "@workspace/ui/components/button"
 
+import { EntityIcon } from "@/shared/ui"
+
 import type { QuestTeam } from "../model/quest-team"
 import type { QuestTeamViewModel } from "../model/use-quest-plan"
 import { QuestTeamOptionsDialog } from "./quest-team-options-dialog"
@@ -85,7 +87,7 @@ function TeamBody({
             data-testid="quest-team-member"
             key={member.unitId}
           >
-            <img
+            <EntityIcon
               alt=""
               className="size-8 shrink-0 rounded-full bg-portrait"
               src={characterIcon(member.unitId as UnitId)}
