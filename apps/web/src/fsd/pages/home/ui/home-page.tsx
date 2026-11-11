@@ -28,6 +28,7 @@ export function HomePage() {
       <div
         className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3"
         data-testid="home-widgets-row"
+        id="home-widgets"
       >
         <div className="min-w-0 lg:order-1">
           <RaidsWidget />

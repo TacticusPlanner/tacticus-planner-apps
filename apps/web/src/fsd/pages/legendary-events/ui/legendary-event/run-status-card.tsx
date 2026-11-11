@@ -151,7 +151,7 @@ export function RunStatusCard({
   })()
 
   return (
-    <Card data-testid="legendary-event-run-status">
+    <Card data-testid="legendary-event-run-status" id="le-run-status">
       <CardHeader>
         <CardTitle>
           <h2>{t("runStatus.title")}</h2>
