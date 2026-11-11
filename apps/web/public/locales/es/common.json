@@ -1871,7 +1871,7 @@
       "battlesLeftNotStarted_other": "Sin empezar, {{count}} batallas",
       "unblocks_one": "Desbloquea {{material}} en {{count}} batalla",
       "unblocks_other": "Desbloquea {{material}} en {{count}} batallas",
-      "energySaved": "Ahorra unos {{energy}}",
+      "energySaved": "Ahorra unos {{energy}} de energía",
       "lockMissingCore": "Desbloquea a {{units}} para jugarla",
       "lockRequiredCampaign_one": "Completa antes {{campaign}} (falta {{count}} batalla)",
       "lockRequiredCampaign_other": "Completa antes {{campaign}} (faltan {{count}} batallas)",

@@ -1871,7 +1871,7 @@
       "battlesLeftNotStarted_other": "Non commencée, {{count}} combats",
       "unblocks_one": "Débloque {{material}} en {{count}} combat",
       "unblocks_other": "Débloque {{material}} en {{count}} combats",
-      "energySaved": "Économise environ {{energy}}",
+      "energySaved": "Économise environ {{energy}} d'énergie",
       "lockMissingCore": "Débloquez {{units}} pour la jouer",
       "lockRequiredCampaign_one": "Terminez d'abord {{campaign}} (encore {{count}} combat)",
       "lockRequiredCampaign_other": "Terminez d'abord {{campaign}} (encore {{count}} combats)",

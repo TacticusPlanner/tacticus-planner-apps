@@ -1871,7 +1871,7 @@
       "battlesLeftNotStarted_other": "Not started, {{count}} battles",
       "unblocks_one": "Unblocks {{material}} in {{count}} battle",
       "unblocks_other": "Unblocks {{material}} in {{count}} battles",
-      "energySaved": "Saves about {{energy}}",
+      "energySaved": "Saves about {{energy}} energy",
       "lockMissingCore": "Unlock {{units}} to play it",
       "lockRequiredCampaign_one": "Clear {{campaign}} first ({{count}} battle left)",
       "lockRequiredCampaign_other": "Clear {{campaign}} first ({{count}} battles left)",

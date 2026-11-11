@@ -1871,7 +1871,7 @@
       "battlesLeftNotStarted_other": "Nicht begonnen, {{count}} Kämpfe",
       "unblocks_one": "Schaltet {{material}} in {{count}} Kampf frei",
       "unblocks_other": "Schaltet {{material}} in {{count}} Kämpfen frei",
-      "energySaved": "Spart etwa {{energy}}",
+      "energySaved": "Spart etwa {{energy}} Energie",
       "lockMissingCore": "Schalte {{units}} frei, um sie zu spielen",
       "lockRequiredCampaign_one": "Schließe zuerst {{campaign}} ab (noch {{count}} Kampf)",
       "lockRequiredCampaign_other": "Schließe zuerst {{campaign}} ab (noch {{count}} Kämpfe)",

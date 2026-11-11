@@ -79,6 +79,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     getCharacter,
     upgradesReady,
     battlesReady,
+    catalogReadError,
+    retryCatalogReads,
   } = useGoalCatalog()
   const { name: campaignName, fullLabel: campaignFullLabel } =
     useCampaignDisplay()
@@ -174,12 +176,14 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   ].join(",")
   const serverDataReady =
     !globalPlan.loading && onslaughtProgressQuery.isSuccess
-  // A failed goals/progress read would otherwise leave `loading` true forever.
+  // A failed goals/progress or catalog read would otherwise leave `loading` true forever.
   const isError =
-    hasQuery && (globalPlan.isError || onslaughtProgressQuery.isError)
+    hasQuery &&
+    (globalPlan.isError || onslaughtProgressQuery.isError || catalogReadError)
   const retry = () => {
     if (globalPlan.isError) globalPlan.retry()
     if (onslaughtProgressQuery.isError) void onslaughtProgressQuery.refetch()
+    if (catalogReadError) retryCatalogReads()
   }
   // Upgrades and the eligible battles load separately and start out as empty maps, so without
   // waiting on them a run can see every crafted material as unfarmable and never redo it.

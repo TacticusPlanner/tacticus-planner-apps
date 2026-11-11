@@ -7,7 +7,9 @@ const catalog = vi.hoisted(() => ({
   upgradesReady: false,
   battlesReady: false,
   battlesById: new Map<string, unknown>(),
+  catalogReadError: false,
 }))
+const retryCatalogReads = vi.hoisted(() => vi.fn())
 const compute = vi.hoisted(() => vi.fn())
 // Every other read returns the same objects on each render, as the real memoised hooks do.
 const stable = vi.hoisted(() => ({
@@ -83,6 +85,8 @@ vi.mock("../shared/use-goal-catalog", () => ({
     battlesById: catalog.battlesById,
     upgradesReady: catalog.upgradesReady,
     battlesReady: catalog.battlesReady,
+    catalogReadError: catalog.catalogReadError,
+    retryCatalogReads,
   }),
 }))
 vi.mock("../unlock-paths/use-campaign-gate-context", () => ({
@@ -98,6 +102,8 @@ describe("usePlanInsights", () => {
     catalog.upgradesReady = false
     catalog.battlesReady = false
     catalog.battlesById = new Map()
+    catalog.catalogReadError = false
+    retryCatalogReads.mockReset()
     compute.mockReset()
     compute.mockImplementation(() => ({
       ...EMPTY_PLAN_INSIGHTS_RESULT,
@@ -135,5 +141,16 @@ describe("usePlanInsights", () => {
     catalog.battlesById = new Map([["node1", {}]])
     rerender()
     await waitFor(() => expect(result.current.result.energyTotal).toBe(1))
+  })
+  it("reports a failed catalog read instead of loading forever, and retries it", async () => {
+    catalog.upgradesReady = true
+    catalog.catalogReadError = true
+    const { result } = renderHook(() => usePlanInsights())
+    await waitFor(() => expect(result.current.isError).toBe(true))
+    expect(result.current.loading).toBe(false)
+    expect(compute).not.toHaveBeenCalled()
+
+    result.current.retry()
+    expect(retryCatalogReads).toHaveBeenCalledTimes(1)
   })
 })

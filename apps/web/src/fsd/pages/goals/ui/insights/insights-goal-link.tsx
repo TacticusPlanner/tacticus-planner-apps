@@ -43,9 +43,9 @@ export function GoalLink({
     <Link
       aria-label={t("goals.insights.goalLabel", label)}
       className={cn(
-        "group flex min-w-0 items-center underline-offset-4",
+        "group relative flex min-w-0 items-center underline-offset-4 pointer-coarse:min-h-10 pointer-coarse:after:absolute pointer-coarse:after:-inset-y-1",
         variant === "chip"
-          ? "gap-1.5 rounded-full border bg-muted/40 py-0.5 pr-2.5 pl-0.5 text-xs hover:bg-muted pointer-coarse:min-h-10"
+          ? "gap-1.5 rounded-full border bg-muted/40 py-0.5 pr-2.5 pl-0.5 text-xs hover:bg-muted"
           : "gap-2.5 text-sm"
       )}
       to={goalHref(goalId)}

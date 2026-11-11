@@ -66,9 +66,13 @@ export function useCampaignGateContext(): CampaignGateContext {
   )
 }
 
+/** Undefined before the roster's first sync, so the core-hero check waits instead of listing all. */
 const toOwnedUnitIds = (
   characters: readonly { unitId: string }[] | null | undefined
-) => new Set((characters ?? []).map((character) => character.unitId))
+) =>
+  characters
+    ? new Set(characters.map((character) => character.unitId))
+    : undefined
 
 const toEliteCampaignMinPowerLevel = (
   values: readonly { eliteCampaignMinPowerLevel?: number }[]

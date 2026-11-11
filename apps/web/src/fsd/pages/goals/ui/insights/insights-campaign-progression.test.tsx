@@ -47,7 +47,7 @@ describe("InsightsCampaignProgression", () => {
     expect(campaign).toHaveTextContent("Fall of Cadia Elite")
     expect(campaign).toHaveTextContent("Not started, 40 battles")
     expect(campaign).toHaveTextContent("Unblocks Material B in 8 battles")
-    expect(campaign).toHaveTextContent("Saves about 1,250")
+    expect(campaign).toHaveTextContent("Saves about 1,250 energy")
     expect(campaign).toHaveTextContent(
       "Clear Fall of Cadia Standard first (12 battles left)"
     )

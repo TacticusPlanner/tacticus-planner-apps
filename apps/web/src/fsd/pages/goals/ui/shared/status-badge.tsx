@@ -184,23 +184,22 @@ export function BlockedIndicator({
     return (
       <Popover>
         <PopoverTrigger asChild>
-          <Badge
-            asChild
-            className={cn(
-              "gap-1 border-transparent bg-amber-400 text-amber-950",
-              className
-            )}
+          <button
+            className={indicatorTriggerClassName}
             data-testid="goal-restricted-indicator"
-            variant="outline"
+            type="button"
           >
-            <button
-              className="cursor-pointer focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-              type="button"
+            <Badge
+              className={cn(
+                "gap-1 border-transparent bg-amber-400 text-amber-950",
+                className
+              )}
+              variant="outline"
             >
               <Link2 className="size-3.5" />
               {t("goals.blocked.restrictedLabel")}
-            </button>
-          </Badge>
+            </Badge>
+          </button>
         </PopoverTrigger>
         <PopoverContent
           className="max-h-(--radix-popover-content-available-height) w-80 overflow-y-auto"
@@ -216,20 +215,22 @@ export function BlockedIndicator({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Badge
-          asChild
-          className={cn("gap-1 text-amber-800 dark:text-amber-400", className)}
+        <button
+          className={indicatorTriggerClassName}
           data-testid="goal-blocked-indicator"
-          variant="outline"
+          type="button"
         >
-          <button
-            className="cursor-pointer focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-            type="button"
+          <Badge
+            className={cn(
+              "gap-1 text-amber-800 dark:text-amber-400",
+              className
+            )}
+            variant="outline"
           >
             <LockKeyhole className="size-3.5" />
             {t("goals.blocked.label")}
-          </button>
-        </Badge>
+          </Badge>
+        </button>
       </PopoverTrigger>
       <PopoverContent
         className="max-h-(--radix-popover-content-available-height) w-80 overflow-y-auto"
@@ -304,3 +305,8 @@ function UnavailableMaterials({
     </ul>
   )
 }
+
+/** The badge stays compact in a goal's card or row; an invisible overhang gives it a 36px hit area
+ *  for a mouse and 48px for touch (the Badge clips its own overflow, so the overhang sits here). */
+const indicatorTriggerClassName =
+  "relative inline-flex cursor-pointer rounded-2xl after:absolute after:-inset-x-1 after:-inset-y-2 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none pointer-coarse:after:-inset-y-3.5"

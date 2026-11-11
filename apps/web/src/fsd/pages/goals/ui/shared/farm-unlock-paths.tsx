@@ -76,7 +76,7 @@ export function FarmUnlockPaths({
       {hidden > 0 ? (
         <Button
           aria-expanded={expanded}
-          className="h-auto justify-self-start p-0 text-xs pointer-coarse:min-h-10"
+          className="relative h-auto justify-self-start p-0 text-xs after:absolute after:-inset-y-2 pointer-coarse:after:-inset-y-4"
           onClick={() => setExpanded((value) => !value)}
           type="button"
           variant="link"
