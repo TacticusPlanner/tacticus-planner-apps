@@ -135,20 +135,32 @@ export function suggestLaneTeams(
     const subsetCandidates = candidates.filter((candidate) =>
       subset.every((index) => candidate.satisfied.has(index))
     )
+    const strongest = subsetCandidates
+      .slice(0, SUGGESTION_TEAM_SIZE)
+      .map((candidate) => candidate.id)
+    if (strongest.length < MIN_TEAM_MEMBERS) continue
+    const depthOf = (ids: readonly string[]) =>
+      teamClearEstimate(ids, battlePowers, roster, config)?.depth ?? 0
     // A useful Healer or Mechanic the player holds replaces the weakest plain member (spec:
-    // Support); a locked one would add no power and could not be fielded.
-    const members = withSupport(
+    // Support); a locked one would add no power and could not be fielded. The swap only breaks
+    // ties: a weaker support that lowers the estimate gives way to the stronger member, since
+    // players clear deeper with the stronger unit (UserJot: LRE team picks favour weaker
+    // healers).
+    const supported = withSupport(
       subsetCandidates.slice(0, SUGGESTION_TEAM_SIZE),
       subsetCandidates,
       SUGGESTION_TEAM_SIZE,
       (candidate) => roster.has(candidate.id)
     ).map((candidate) => candidate.id)
-    if (members.length < MIN_TEAM_MEMBERS) continue
+    const strongestDepth = depthOf(strongest)
+    const supportedDepth = depthOf(supported)
+    const [members, depth] =
+      supportedDepth >= strongestDepth
+        ? [supported, supportedDepth]
+        : [strongest, strongestDepth]
     const key = memberKey(members)
     if (seen.has(key) || existingKeys.has(key)) continue
     const covered = derivedTeamCoverage(members, lane, input.units)
-    const depth =
-      teamClearEstimate(members, battlePowers, roster, config)?.depth ?? 0
     // A subset objective already cleared through the depth narrowed the candidates for nothing
     // (spec: suggestions do not rely on objectives already cleared). The drop does not claim the
     // member set, so a later subset picking the same members still proposes it.
