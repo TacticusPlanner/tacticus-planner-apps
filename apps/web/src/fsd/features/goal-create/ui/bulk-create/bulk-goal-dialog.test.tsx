@@ -183,4 +183,37 @@ describe("BulkGoalDialog", () => {
       { projectId: "new-project" },
     ])
   })
+
+  it("starts the targets above the lowest current value, snapping the default up", () => {
+    const veteran: BulkGoalUnit = {
+      ...ragnar,
+      progression: "Mythic:OneBlueStar",
+      rank: "Diamond3",
+      abilityLevels: [50, 50],
+    }
+    renderDialog([veteran])
+
+    // The default Diamond III is already reached, so Rank starts at Adamantine I.
+    expect(rows()[0]).toHaveTextContent("Diamond III → Adamantine I")
+    expect(screen.getByTestId("bulk-goal-summary")).toHaveTextContent(
+      "1 goal for 1 unit"
+    )
+  })
+
+  it("disables a target every listed unit has already reached", () => {
+    const maxed: BulkGoalUnit = {
+      ...ragnar,
+      progression: "Mythic:MythicWings",
+      rank: "Adamantine2",
+      abilityLevels: [60, 60],
+    }
+    renderDialog([maxed])
+
+    expect(screen.getByTestId("bulk-goal-rank-toggle")).toBeDisabled()
+    expect(screen.getByTestId("bulk-goal-ascension-toggle")).toBeDisabled()
+    expect(screen.getByTestId("bulk-goal-ability-toggle")).toBeDisabled()
+    expect(
+      screen.getAllByText("Every selected unit is already at the top.")
+    ).toHaveLength(3)
+  })
 })

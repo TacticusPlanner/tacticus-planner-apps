@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import {
-  progressionOrder,
-  rankOrder,
+  progressionIndex,
+  rankIndex,
   type Progression,
   type Rank,
 } from "@workspace/game-domain"
@@ -15,6 +15,7 @@ import {
   type BulkGoalTargets,
   type BulkGoalUnit,
 } from "./bulk-goal-plan"
+import { bulkTargetOptions, snapUp } from "./bulk-target-options"
 
 /** One shared target type the dialog turns on with its value. */
 type Toggled<T> = { on: boolean; value: T }
@@ -55,10 +56,24 @@ export function useBulkGoalForm(units: readonly BulkGoalUnit[]) {
 
   const hasUnowned = units.some((unit) => !unit.owned)
   const hasCharacter = units.some((unit) => unit.kind === "character")
+  // Each picker starts above the lowest current value of the listed units; a chosen (or default)
+  // value below that snaps up to the first option, and a type with no option left can't be on.
+  const { rankOptions, progressionOptions, abilityMin } = useMemo(
+    () => bulkTargetOptions(units),
+    [units]
+  )
+  const ascensionValue = snapUp(
+    ascension.value,
+    progressionOptions,
+    progressionIndex
+  )
+  const rankValue = snapUp(rank.value, rankOptions, rankIndex)
+  const abilityValue =
+    abilityMin === null ? null : Math.max(ability.value, abilityMin)
   const targetUnlock = hasUnowned && unlock
-  const targetAscension = ascension.on ? ascension.value : null
-  const targetRank = hasCharacter && rank.on ? rank.value : null
-  const targetAbility = ability.on ? ability.value : null
+  const targetAscension = ascension.on ? ascensionValue : null
+  const targetRank = hasCharacter && rank.on ? rankValue : null
+  const targetAbility = ability.on ? abilityValue : null
   const plans = useMemo(() => {
     const targets: BulkGoalTargets = {
       unlock: targetUnlock,
@@ -91,14 +106,24 @@ export function useBulkGoalForm(units: readonly BulkGoalUnit[]) {
     hasCharacter,
     unlock,
     setUnlock,
-    ascension,
+    ascension: {
+      on: ascension.on && ascensionValue !== null,
+      value: ascensionValue ?? ascension.value,
+    },
+    ascensionAvailable: ascensionValue !== null,
     setAscension,
-    rank,
+    rank: { on: rank.on && rankValue !== null, value: rankValue ?? rank.value },
+    rankAvailable: rankValue !== null,
     setRank,
-    ability,
+    ability: {
+      on: ability.on && abilityValue !== null,
+      value: abilityValue ?? ability.value,
+    },
+    abilityAvailable: abilityValue !== null,
+    abilityMin: abilityMin ?? 1,
     setAbility,
-    progressionOptions: progressionOrder,
-    rankOptions: [...rankOrder],
+    progressionOptions,
+    rankOptions,
     plans,
     overLimit,
     goalCount,

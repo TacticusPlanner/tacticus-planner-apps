@@ -1991,7 +1991,8 @@
         "ability": "Compétences",
         "abilityTo": "Niveau de compétence",
         "abilityDecrease": "Baisser le niveau de compétence",
-        "abilityIncrease": "Augmenter le niveau de compétence"
+        "abilityIncrease": "Augmenter le niveau de compétence",
+        "allAtTop": "Toutes les unités sélectionnées sont déjà au maximum."
       },
       "summary_one": "{{count}} objectif pour {{units}}",
       "summary_other": "{{count}} objectifs pour {{units}}",

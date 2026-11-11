@@ -253,6 +253,11 @@ function TargetFields({
       ) : null}
       <TargetToggle
         checked={form.ascension.on}
+        disabledHint={
+          form.ascensionAvailable
+            ? undefined
+            : t("goals.bulkCreate.targets.allAtTop")
+        }
         id="bulk-goal-ascension"
         label={t("goals.bulkCreate.targets.ascension")}
         onCheckedChange={(on) => form.setAscension({ ...form.ascension, on })}
@@ -267,6 +272,11 @@ function TargetFields({
       {form.hasCharacter ? (
         <TargetToggle
           checked={form.rank.on}
+          disabledHint={
+            form.rankAvailable
+              ? undefined
+              : t("goals.bulkCreate.targets.allAtTop")
+          }
           id="bulk-goal-rank"
           label={t("goals.bulkCreate.targets.rank")}
           onCheckedChange={(on) => form.setRank({ ...form.rank, on })}
@@ -281,6 +291,11 @@ function TargetFields({
       ) : null}
       <TargetToggle
         checked={form.ability.on}
+        disabledHint={
+          form.abilityAvailable
+            ? undefined
+            : t("goals.bulkCreate.targets.allAtTop")
+        }
         id="bulk-goal-ability"
         label={t("goals.bulkCreate.targets.ability")}
         onCheckedChange={(on) => form.setAbility({ ...form.ability, on })}
@@ -293,7 +308,7 @@ function TargetFields({
             increase: t("goals.bulkCreate.targets.abilityIncrease"),
           }}
           max={maxAbilityLevel}
-          min={1}
+          min={form.abilityMin}
           onChange={(value) =>
             form.setAbility({ on: true, value: value ?? form.ability.value })
           }
@@ -316,21 +331,27 @@ function TargetToggle({
   id,
   label,
   checked,
+  disabledHint,
   onCheckedChange,
   children,
 }: {
   id: string
   label: string
   checked: boolean
+  /** Why the type can't be turned on (every listed unit is already at the top); disables it. */
+  disabledHint?: string
   onCheckedChange: (checked: boolean) => void
   children?: ReactNode
 }) {
+  const hintId = `${id}-hint`
   return (
     <div className="grid gap-2 sm:grid-cols-[12rem_1fr] sm:items-end">
       <div className="flex min-h-11 items-center gap-2 md:min-h-9">
         <Checkbox
+          aria-describedby={disabledHint ? hintId : undefined}
           checked={checked}
           data-testid={`${id}-toggle`}
+          disabled={disabledHint !== undefined}
           id={id}
           onCheckedChange={(value) => onCheckedChange(value === true)}
         />
@@ -338,7 +359,13 @@ function TargetToggle({
           {label}
         </Label>
       </div>
-      {checked ? children : null}
+      {disabledHint ? (
+        <p className="text-xs text-muted-foreground" id={hintId}>
+          {disabledHint}
+        </p>
+      ) : checked ? (
+        children
+      ) : null}
     </div>
   )
 }

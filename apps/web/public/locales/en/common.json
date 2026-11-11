@@ -1991,7 +1991,8 @@
         "ability": "Abilities",
         "abilityTo": "Ability level",
         "abilityDecrease": "Lower the ability level",
-        "abilityIncrease": "Raise the ability level"
+        "abilityIncrease": "Raise the ability level",
+        "allAtTop": "Every selected unit is already at the top."
       },
       "summary_one": "{{count}} goal for {{units}}",
       "summary_other": "{{count}} goals for {{units}}",

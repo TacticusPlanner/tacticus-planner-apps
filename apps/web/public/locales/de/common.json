@@ -1991,7 +1991,8 @@
         "ability": "Fähigkeiten",
         "abilityTo": "Fähigkeitsstufe",
         "abilityDecrease": "Fähigkeitsstufe senken",
-        "abilityIncrease": "Fähigkeitsstufe erhöhen"
+        "abilityIncrease": "Fähigkeitsstufe erhöhen",
+        "allAtTop": "Alle ausgewählten Einheiten sind bereits am Maximum."
       },
       "summary_one": "{{count}} Ziel für {{units}}",
       "summary_other": "{{count}} Ziele für {{units}}",

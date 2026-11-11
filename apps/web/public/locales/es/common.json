@@ -1991,7 +1991,8 @@
         "ability": "Habilidades",
         "abilityTo": "Nivel de habilidad",
         "abilityDecrease": "Bajar el nivel de habilidad",
-        "abilityIncrease": "Subir el nivel de habilidad"
+        "abilityIncrease": "Subir el nivel de habilidad",
+        "allAtTop": "Todas las unidades seleccionadas ya están al máximo."
       },
       "summary_one": "{{count}} objetivo para {{units}}",
       "summary_other": "{{count}} objetivos para {{units}}",
