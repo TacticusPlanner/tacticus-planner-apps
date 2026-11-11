@@ -125,7 +125,7 @@
     "amount": "×{{amount}}",
     "amountRange": "×{{min}}–{{max}}",
     "shardsTitle": "Fragmentos de {{hero}}",
-    "bundle": "Paquete de Misión (3 fragmentos por medalla)",
+    "bundle": "Paquete de Misión (+2 fragmentos por medalla)",
     "shards": "{{earned}} conseguidos · {{max}} máx. · {{reachable}} aún alcanzables",
     "unlocks": "Desbloquea a {{hero}} y sobran {{spare}} fragmentos",
     "unlocksExact": "Desbloquea a {{hero}}",

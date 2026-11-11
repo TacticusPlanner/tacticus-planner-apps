@@ -125,7 +125,7 @@
     "amount": "×{{amount}}",
     "amountRange": "×{{min}}–{{max}}",
     "shardsTitle": "{{hero}} shards",
-    "bundle": "Quest Bundle (3 shards per medal)",
+    "bundle": "Quest Bundle (+2 shards per medal)",
     "shards": "{{earned}} earned · {{max}} max · {{reachable}} still reachable",
     "unlocks": "Unlocks {{hero}}, with {{spare}} shards to spare",
     "unlocksExact": "Unlocks {{hero}}",

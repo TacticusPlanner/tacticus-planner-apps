@@ -20,19 +20,19 @@ The Quest tab SHALL show a rewards card listing the 17 `quest-crates` records in
 - **GIVEN** `quest-crates` failed to load
 - **THEN** the card shows an error with Retry, and the shard section still renders
 
-### Requirement: Featured-hero shards come from medals, tripled by the bundle
+### Requirement: Featured-hero shards come from won battles, plus 2 per medal with the bundle
 
-Shards **earned** SHALL be the sum of medals over the 17 battles times the multiplier: 1 without the Quest Bundle and 3 with it. The **maximum** SHALL be 51 times the multiplier. The card SHALL show earned, maximum and still reachable (maximum minus earned). The bundle toggle SHALL be stored in the occurrence's progress entry as `bundle` and default to off.
+Shards **earned** SHALL be 1 for each of the 17 battles with at least 1 medal, plus, with the Quest Bundle, 2 for each medal. The **maximum** SHALL be 17 without the bundle and 17 + 2 × 51 = 119 with it. The card SHALL show earned, maximum and still reachable (maximum minus earned). The bundle toggle SHALL be stored in the occurrence's progress entry as `bundle` and default to off.
 
 Assumptions:
 
-- 1 shard per medal, and the bundle adds 2 per medal (wiki).
+- A battle's featured-hero shard is its first-medal reward, x1 (datamine `linearHeroEvent` `loot.star1`; the second and third medals pay XP and an ability badge), and the bundle adds 2 shards per medal (`offerBundleBonus.rewardsPerStar`; wiki Quest page).
 
 #### Scenario: Bundle on
 
-- **GIVEN** 30 medals entered
+- **GIVEN** 30 medals entered over 10 battles
 - **WHEN** the player turns the bundle on
-- **THEN** the card shows "90 earned · 153 max · 63 still reachable"
+- **THEN** the card shows "70 earned · 119 max · 49 still reachable"
 
 ### Requirement: The card says what the shards mean for the featured hero
 
@@ -41,7 +41,7 @@ When the hero is not owned, the card SHALL compare the player's shards plus the 
 #### Scenario: Not owned
 
 - **GIVEN** Nubari is not owned, the player has 12 shards, the unlock costs 40 and the bundle is off
-- **THEN** the card says "Unlocks Nubari, with 23 shards to spare" (12 + 51 − 40)
+- **THEN** the card says "11 shards short of unlocking Nubari" (12 + 17 − 40)
 
 ### Requirement: A goal can be created or opened for the featured hero
 

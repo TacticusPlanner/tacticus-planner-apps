@@ -467,7 +467,9 @@ export function QuestPage() {
         onOpenChange={setRewardsOpen}
         open={rewardsOpen}
         projectedShards={
-          projection ? questShards([projection.medals], bundle).earned : null
+          projection
+            ? questShards(projection.battleMedals, bundle).earned
+            : null
         }
         retryCrates={crates.retry}
         shards={shards}
