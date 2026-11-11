@@ -226,7 +226,10 @@
     "meta_other": "{{count}} nodes · {{attempts}}",
     "count_one": "{{count}} attempt",
     "count_other": "{{count}} attempts",
-    "rowLabel": "{{material}}, {{campaign}} {{node}}, {{attempts}}"
+    "rowLabel": "{{material}}, {{campaign}} {{node}}, {{attempts}}",
+    "rowLabelProgress": "{{material}}, {{campaign}} {{node}}, {{attempts}}, {{progress}}",
+    "progressDone": "{{owned}} of {{target}} owned, done",
+    "done": "Done"
   },
   "resource": {
     "shards": "{{unit}} shards"
