@@ -31,3 +31,12 @@
 ## 8. Mobile verification
 
 - [ ] 8.1 <768px: select mode on Cards and Roster, the bar above the bottom nav, the dialog as a sheet
+
+## 9. Fixes after verification
+
+- [x] 9.1 Select bar sits above the mobile bottom nav and clear of the scroll-to-top button
+- [x] 9.2 Shared `goalCreateErrorText` for the sheet and the dialog: no raw "API request failed with status" text
+- [x] 9.3 Project field with inline project creation and several projects
+- [x] 9.4 Target pickers start above the lowest current value; snap up; disable when nobody can advance
+- [x] 9.5 Planned goals as icon rows (shared `CompactStars`, rank icons, a row per ability track)
+- [x] 9.6 Unowned MoW Unlock: API accepts it (`allow-mow-unlock-goals` in tacticus-planner-api); no apps change
