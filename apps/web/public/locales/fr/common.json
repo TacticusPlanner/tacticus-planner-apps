@@ -1560,6 +1560,7 @@
       "submit": "Créer l'objectif",
       "close": "Fermer",
       "genericError": "Impossible de créer l'objectif. Veuillez réessayer.",
+      "serverError": "Impossible de joindre le serveur. Veuillez réessayer.",
       "previewEstimate": "≈ {{days}} jours",
       "previewEnergy": "{{energy}} énergie",
       "reviewTitle": "Ce qui sera créé",
@@ -1990,9 +1991,9 @@
         "ability": "Compétences",
         "abilityTo": "Niveau de compétence",
         "abilityDecrease": "Baisser le niveau de compétence",
-        "abilityIncrease": "Augmenter le niveau de compétence"
+        "abilityIncrease": "Augmenter le niveau de compétence",
+        "allAtTop": "Toutes les unités sélectionnées sont déjà au maximum."
       },
-      "project": "Projet",
       "summary_one": "{{count}} objectif pour {{units}}",
       "summary_other": "{{count}} objectifs pour {{units}}",
       "unitCount_one": "{{count}} unité",
@@ -2022,7 +2023,10 @@
       "removeUnit": "Retirer {{name}}",
       "goal": {
         "range": "{{type}} {{start}} → {{end}}",
-        "ascensionAdded": "{{type}} {{start}} → {{end}} (nécessaire)"
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (nécessaire)",
+        "active": "Active",
+        "passive": "Passive",
+        "needed": "nécessaire"
       }
     }
   },

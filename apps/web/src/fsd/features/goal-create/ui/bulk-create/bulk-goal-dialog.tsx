@@ -7,8 +7,7 @@ import { Label } from "@workspace/ui/components/label"
 import { cn } from "@workspace/ui/lib/utils"
 import { maxAbilityLevel } from "@workspace/game-domain"
 
-import { MAX_GOALS_PER_TYPE, progressionLabel } from "@/entities/goal"
-import { ProjectSelect } from "@/entities/project"
+import { MAX_GOALS_PER_TYPE } from "@/entities/goal"
 import {
   NumberStepper,
   ProgressionSelect,
@@ -23,12 +22,18 @@ import {
 import {
   bulkUnitKey,
   type BulkGoalUnit,
-  type BulkPlannedGoal,
   type BulkUnitPlan,
 } from "../../model/bulk-create/bulk-goal-plan"
 import type { BulkUnitStatus } from "../../model/bulk-create/bulk-goal-submit"
 import { useBulkGoalForm } from "../../model/bulk-create/use-bulk-goal-form"
 import { useBulkGoalSubmit } from "../../model/bulk-create/use-bulk-goal-submit"
+import { GoalProjectsField } from "../projects/goal-projects-field"
+import { BulkPlannedGoalRows } from "./bulk-planned-goal-rows"
+
+type SentPlans = {
+  plans: readonly BulkUnitPlan[]
+  projectIds: readonly string[]
+}
 
 const STATUS_ICON = { pending: CircleDashed, done: Check, failed: X } as const
 
@@ -51,12 +56,13 @@ export function BulkGoalDialog({
   onCreated: () => void
 }) {
   const submit = useBulkGoalSubmit()
-  // The plans as sent, with their project: the goals list refreshes after each run, which would
+  // The plans as sent, with their projects: the goals list refreshes after each run, which would
   // re-plan sent units as "already a goal".
-  const [sent, setSent] = useState<{
-    plans: readonly BulkUnitPlan[]
-    projectId: string | undefined
-  } | null>(null)
+  const [sent, setSent] = useState<SentPlans | null>(null)
+  // The project picker's popover portals here, inside the dialog's focus trap.
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(
+    null
+  )
   const allDone = sent !== null && !submit.running && submit.failedCount === 0
 
   const close = () => {
@@ -70,6 +76,7 @@ export function BulkGoalDialog({
 
   return (
     <ResponsiveDialog
+      contentRef={setPortalContainer}
       data-testid="bulk-goal-dialog"
       desktopClassName="sm:max-w-2xl"
       onOpenChange={(next) => (next ? onOpenChange(true) : close())}
@@ -80,11 +87,12 @@ export function BulkGoalDialog({
         <BulkGoalDialogContent
           allDone={allDone}
           onClose={close}
-          onCreate={(plans, projectId) => {
-            setSent({ plans, projectId })
-            void submit.submit(plans, projectId)
+          onCreate={(plans, projectIds) => {
+            setSent({ plans, projectIds })
+            void submit.submit(plans, projectIds)
           }}
           onRemoveUnit={onRemoveUnit}
+          portalContainer={portalContainer}
           sent={sent}
           submit={submit}
           units={units}
@@ -99,18 +107,20 @@ function BulkGoalDialogContent({
   sent,
   submit,
   allDone,
+  portalContainer,
   onRemoveUnit,
   onCreate,
   onClose,
 }: {
   units: readonly BulkGoalUnit[]
-  sent: { plans: readonly BulkUnitPlan[]; projectId: string | undefined } | null
+  sent: SentPlans | null
   submit: ReturnType<typeof useBulkGoalSubmit>
   allDone: boolean
+  portalContainer: HTMLElement | null
   onRemoveUnit: (key: string) => void
   onCreate: (
     plans: readonly BulkUnitPlan[],
-    projectId: string | undefined
+    projectIds: readonly string[]
   ) => void
   onClose: () => void
 }) {
@@ -129,7 +139,9 @@ function BulkGoalDialogContent({
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
       <ResponsiveDialogBody className="gap-4 pb-4">
-        {sent === null ? <TargetFields form={form} /> : null}
+        {sent === null ? (
+          <TargetFields form={form} portalContainer={portalContainer} />
+        ) : null}
         <ul className="flex flex-col divide-y rounded-lg border">
           {plans.map((plan) => (
             <UnitRow
@@ -187,7 +199,7 @@ function BulkGoalDialogContent({
             <Button
               data-testid="bulk-goal-create"
               disabled={!form.canCreate}
-              onClick={() => onCreate(form.plans, form.projectId)}
+              onClick={() => onCreate(form.plans, form.projectIds)}
             >
               {t("goals.bulkCreate.submit", { count: form.goalCount })}
             </Button>
@@ -198,7 +210,7 @@ function BulkGoalDialogContent({
               <Button
                 data-testid="bulk-goal-retry"
                 onClick={() =>
-                  void submit.retryFailed(sent.plans, sent.projectId)
+                  void submit.retryFailed(sent.plans, sent.projectIds)
                 }
                 variant="outline"
               >
@@ -221,7 +233,13 @@ function BulkGoalDialogContent({
   )
 }
 
-function TargetFields({ form }: { form: ReturnType<typeof useBulkGoalForm> }) {
+function TargetFields({
+  form,
+  portalContainer,
+}: {
+  form: ReturnType<typeof useBulkGoalForm>
+  portalContainer: HTMLElement | null
+}) {
   const { t } = useTranslation()
   return (
     <section className="grid gap-3" data-testid="bulk-goal-targets">
@@ -235,6 +253,11 @@ function TargetFields({ form }: { form: ReturnType<typeof useBulkGoalForm> }) {
       ) : null}
       <TargetToggle
         checked={form.ascension.on}
+        disabledHint={
+          form.ascensionAvailable
+            ? undefined
+            : t("goals.bulkCreate.targets.allAtTop")
+        }
         id="bulk-goal-ascension"
         label={t("goals.bulkCreate.targets.ascension")}
         onCheckedChange={(on) => form.setAscension({ ...form.ascension, on })}
@@ -249,6 +272,11 @@ function TargetFields({ form }: { form: ReturnType<typeof useBulkGoalForm> }) {
       {form.hasCharacter ? (
         <TargetToggle
           checked={form.rank.on}
+          disabledHint={
+            form.rankAvailable
+              ? undefined
+              : t("goals.bulkCreate.targets.allAtTop")
+          }
           id="bulk-goal-rank"
           label={t("goals.bulkCreate.targets.rank")}
           onCheckedChange={(on) => form.setRank({ ...form.rank, on })}
@@ -263,6 +291,11 @@ function TargetFields({ form }: { form: ReturnType<typeof useBulkGoalForm> }) {
       ) : null}
       <TargetToggle
         checked={form.ability.on}
+        disabledHint={
+          form.abilityAvailable
+            ? undefined
+            : t("goals.bulkCreate.targets.allAtTop")
+        }
         id="bulk-goal-ability"
         label={t("goals.bulkCreate.targets.ability")}
         onCheckedChange={(on) => form.setAbility({ ...form.ability, on })}
@@ -275,25 +308,21 @@ function TargetFields({ form }: { form: ReturnType<typeof useBulkGoalForm> }) {
             increase: t("goals.bulkCreate.targets.abilityIncrease"),
           }}
           max={maxAbilityLevel}
-          min={1}
+          min={form.abilityMin}
           onChange={(value) =>
             form.setAbility({ on: true, value: value ?? form.ability.value })
           }
           value={form.ability.value}
         />
       </TargetToggle>
-      <div className="grid gap-1.5">
-        <Label className="text-xs text-muted-foreground">
-          {t("goals.bulkCreate.project")}
-        </Label>
-        <ProjectSelect
-          compact={false}
-          onProjectIdChange={form.setProjectId}
-          projectId={form.projectId}
-          projects={form.projects}
-          testId="bulk-goal-project"
-        />
-      </div>
+      <GoalProjectsField
+        onSelectionChange={form.setProjectIds}
+        portalContainer={portalContainer}
+        projects={form.projects}
+        projectsValid={form.projectIds.length > 0}
+        selectedProjectIds={[...form.projectIds]}
+        testIdPrefix="bulk-goal"
+      />
     </section>
   )
 }
@@ -302,21 +331,27 @@ function TargetToggle({
   id,
   label,
   checked,
+  disabledHint,
   onCheckedChange,
   children,
 }: {
   id: string
   label: string
   checked: boolean
+  /** Why the type can't be turned on (every listed unit is already at the top); disables it. */
+  disabledHint?: string
   onCheckedChange: (checked: boolean) => void
   children?: ReactNode
 }) {
+  const hintId = `${id}-hint`
   return (
     <div className="grid gap-2 sm:grid-cols-[12rem_1fr] sm:items-end">
       <div className="flex min-h-11 items-center gap-2 md:min-h-9">
         <Checkbox
+          aria-describedby={disabledHint ? hintId : undefined}
           checked={checked}
           data-testid={`${id}-toggle`}
+          disabled={disabledHint !== undefined}
           id={id}
           onCheckedChange={(value) => onCheckedChange(value === true)}
         />
@@ -324,7 +359,13 @@ function TargetToggle({
           {label}
         </Label>
       </div>
-      {checked ? children : null}
+      {disabledHint ? (
+        <p className="text-xs text-muted-foreground" id={hintId}>
+          {disabledHint}
+        </p>
+      ) : checked ? (
+        children
+      ) : null}
     </div>
   )
 }
@@ -362,9 +403,7 @@ function UnitRow({
           ) : null}
         </span>
         {plan.goals.length > 0 ? (
-          <span className="text-muted-foreground">
-            {plan.goals.map((goal) => plannedGoalLabel(t, goal)).join(" · ")}
-          </span>
+          <BulkPlannedGoalRows goals={plan.goals} />
         ) : null}
         {plan.skipped.map((skip) => (
           <span className="text-xs text-muted-foreground" key={skip.goalType}>
@@ -399,44 +438,4 @@ function UnitRow({
       ) : null}
     </li>
   )
-}
-
-function plannedGoalLabel(
-  t: ReturnType<typeof useTranslation>["t"],
-  goal: BulkPlannedGoal
-): string {
-  const type = t(`goals.create.goalTypes.${goal.goalType}`)
-  switch (goal.goalType) {
-    case "Unlock":
-      return type
-    case "Ascension":
-      return t(
-        goal.added
-          ? "goals.bulkCreate.goal.ascensionAdded"
-          : "goals.bulkCreate.goal.range",
-        {
-          type,
-          start: progressionLabel(t, goal.start),
-          end: progressionLabel(t, goal.end),
-        }
-      )
-    case "Rank":
-      return t("goals.bulkCreate.goal.range", {
-        type,
-        start: t(`ranks.${goal.start}`, {
-          ns: "progression",
-          defaultValue: goal.start,
-        }),
-        end: t(`ranks.${goal.end}`, {
-          ns: "progression",
-          defaultValue: goal.end,
-        }),
-      })
-    case "Ability":
-      return t("goals.bulkCreate.goal.range", {
-        type,
-        start: `${goal.activeStart}/${goal.passiveStart}`,
-        end: `${goal.activeEnd}/${goal.passiveEnd}`,
-      })
-  }
 }

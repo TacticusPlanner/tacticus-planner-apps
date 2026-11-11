@@ -2,21 +2,14 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
 
-import {
-  createCombinedGoals,
-  goalQueries,
-  isGoalLimitError,
-  MAX_GOALS_PER_TYPE,
-} from "@/entities/goal"
+import { createCombinedGoals, goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { ApiError } from "@/shared/api"
+import { useUnitName } from "@/shared/unit-name"
 
+import { goalCreateErrorText } from "../goal-create-error"
 import { bulkUnitKey, type BulkUnitPlan } from "./bulk-goal-plan"
 import { sendBulkPlans, type BulkUnitStatus } from "./bulk-goal-submit"
-
-const errorText = (error: unknown) =>
-  error instanceof ApiError || error instanceof Error ? error.message : ""
 
 /**
  * Creates the plans' goals one unit at a time, keeping each unit's status for the dialog. Retry
@@ -24,6 +17,7 @@ const errorText = (error: unknown) =>
  */
 export function useBulkGoalSubmit() {
   const { t } = useTranslation()
+  const getUnitName = useUnitName()
   const queryClient = useQueryClient()
   const { captureEvent } = useAnalyticsActions()
   const [statuses, setStatuses] = useState<ReadonlyMap<string, BulkUnitStatus>>(
@@ -32,20 +26,18 @@ export function useBulkGoalSubmit() {
   const [running, setRunning] = useState(false)
 
   const describeError = (error: unknown) =>
-    isGoalLimitError(error)
-      ? t("goals.limits.goalLimitReachedGeneric", { max: MAX_GOALS_PER_TYPE })
-      : errorText(error)
+    goalCreateErrorText(t, error, getUnitName)
 
   const run = async (
     plans: readonly BulkUnitPlan[],
-    projectId: string | undefined,
+    projectIds: readonly string[],
     only?: ReadonlySet<string>
   ) => {
     setRunning(true)
     try {
       const { sent, failed } = await sendBulkPlans({
         plans,
-        projectId,
+        projectIds,
         only,
         send: createCombinedGoals,
         describeError,
@@ -80,15 +72,15 @@ export function useBulkGoalSubmit() {
     /** Whether a submit has started (the dialog then shows statuses, not the editor). */
     started: statuses.size > 0,
     failedCount: failedKeys.size,
-    submit: (plans: readonly BulkUnitPlan[], projectId: string | undefined) =>
-      run(plans, projectId),
+    submit: (plans: readonly BulkUnitPlan[], projectIds: readonly string[]) =>
+      run(plans, projectIds),
     retryFailed: (
       plans: readonly BulkUnitPlan[],
-      projectId: string | undefined
+      projectIds: readonly string[]
     ) =>
       run(
         plans.filter((plan) => failedKeys.has(bulkUnitKey(plan.unit))),
-        projectId,
+        projectIds,
         failedKeys
       ),
     reset: () => setStatuses(new Map()),

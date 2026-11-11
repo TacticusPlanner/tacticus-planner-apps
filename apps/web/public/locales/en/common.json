@@ -1560,6 +1560,7 @@
       "submit": "Create goal",
       "close": "Close",
       "genericError": "Couldn't create the goal. Please try again.",
+      "serverError": "Couldn't reach the server. Please try again.",
       "previewEstimate": "≈ {{days}} days",
       "previewEnergy": "{{energy}} energy",
       "reviewTitle": "What will be created",
@@ -1990,9 +1991,9 @@
         "ability": "Abilities",
         "abilityTo": "Ability level",
         "abilityDecrease": "Lower the ability level",
-        "abilityIncrease": "Raise the ability level"
+        "abilityIncrease": "Raise the ability level",
+        "allAtTop": "Every selected unit is already at the top."
       },
-      "project": "Project",
       "summary_one": "{{count}} goal for {{units}}",
       "summary_other": "{{count}} goals for {{units}}",
       "unitCount_one": "{{count}} unit",
@@ -2022,7 +2023,10 @@
       "removeUnit": "Remove {{name}}",
       "goal": {
         "range": "{{type}} {{start}} → {{end}}",
-        "ascensionAdded": "{{type}} {{start}} → {{end}} (needed)"
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (needed)",
+        "active": "Active",
+        "passive": "Passive",
+        "needed": "needed"
       }
     }
   },

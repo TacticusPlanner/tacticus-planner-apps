@@ -1560,6 +1560,7 @@
       "submit": "Crear objetivo",
       "close": "Cerrar",
       "genericError": "No se pudo crear el objetivo. Inténtalo de nuevo.",
+      "serverError": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
       "previewEstimate": "≈ {{days}} días",
       "previewEnergy": "{{energy}} energía",
       "reviewTitle": "Lo que se creará",
@@ -1990,9 +1991,9 @@
         "ability": "Habilidades",
         "abilityTo": "Nivel de habilidad",
         "abilityDecrease": "Bajar el nivel de habilidad",
-        "abilityIncrease": "Subir el nivel de habilidad"
+        "abilityIncrease": "Subir el nivel de habilidad",
+        "allAtTop": "Todas las unidades seleccionadas ya están al máximo."
       },
-      "project": "Proyecto",
       "summary_one": "{{count}} objetivo para {{units}}",
       "summary_other": "{{count}} objetivos para {{units}}",
       "unitCount_one": "{{count}} unidad",
@@ -2022,7 +2023,10 @@
       "removeUnit": "Quitar {{name}}",
       "goal": {
         "range": "{{type}} {{start}} → {{end}}",
-        "ascensionAdded": "{{type}} {{start}} → {{end}} (necesaria)"
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (necesaria)",
+        "active": "Activa",
+        "passive": "Pasiva",
+        "needed": "necesaria"
       }
     }
   },

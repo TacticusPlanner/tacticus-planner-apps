@@ -1560,6 +1560,7 @@
       "submit": "Ziel erstellen",
       "close": "Schließen",
       "genericError": "Das Ziel konnte nicht erstellt werden. Bitte versuche es erneut.",
+      "serverError": "Der Server war nicht erreichbar. Bitte versuche es erneut.",
       "previewEstimate": "≈ {{days}} Tage",
       "previewEnergy": "{{energy}} Energie",
       "reviewTitle": "Was erstellt wird",
@@ -1990,9 +1991,9 @@
         "ability": "Fähigkeiten",
         "abilityTo": "Fähigkeitsstufe",
         "abilityDecrease": "Fähigkeitsstufe senken",
-        "abilityIncrease": "Fähigkeitsstufe erhöhen"
+        "abilityIncrease": "Fähigkeitsstufe erhöhen",
+        "allAtTop": "Alle ausgewählten Einheiten sind bereits am Maximum."
       },
-      "project": "Projekt",
       "summary_one": "{{count}} Ziel für {{units}}",
       "summary_other": "{{count}} Ziele für {{units}}",
       "unitCount_one": "{{count}} Einheit",
@@ -2022,7 +2023,10 @@
       "removeUnit": "{{name}} entfernen",
       "goal": {
         "range": "{{type}} {{start}} → {{end}}",
-        "ascensionAdded": "{{type}} {{start}} → {{end}} (benötigt)"
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (benötigt)",
+        "active": "Aktiv",
+        "passive": "Passiv",
+        "needed": "benötigt"
       }
     }
   },
