@@ -442,6 +442,38 @@ describe("TeamsSection", () => {
     expect(button).toHaveAccessibleDescription("Needs clear estimates")
   })
 
+  it("shows no suggestion count while estimates are unavailable", () => {
+    renderSection(ready())
+    expect(
+      screen.queryByTestId("legendary-event-suggest-teams-count")
+    ).toBeNull()
+  })
+
+  it("shows on Suggest teams how many proposals the dialog lists", async () => {
+    const user = userEvent.setup()
+    renderSection(ready(), { laneId: "gamma", estimates: readyEstimates })
+    const header = screen.getByTestId("legendary-event-suggest-teams")
+    const count = Number(
+      within(header).getByTestId("legendary-event-suggest-teams-count")
+        .textContent
+    )
+    expect(count).toBeGreaterThan(0)
+    expect(header).toHaveAccessibleName(
+      `Suggest teams (${count} suggestion${count === 1 ? "" : "s"})`
+    )
+    expect(
+      within(
+        screen.getByTestId("legendary-event-suggest-teams-empty")
+      ).getByTestId("legendary-event-suggest-teams-count")
+    ).toHaveTextContent(String(count))
+
+    await user.click(header)
+    await screen.findAllByTestId("team-suggestion")
+    const showMore = screen.queryByTestId("team-suggestions-show-more")
+    if (showMore) await user.click(showMore)
+    expect(screen.getAllByTestId("team-suggestion")).toHaveLength(count)
+  })
+
   it("opens a suggestion in the editor as a new team, and returns to the suggestions on cancel", async () => {
     const user = userEvent.setup()
     const actions = renderSection(ready(), {

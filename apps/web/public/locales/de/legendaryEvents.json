@@ -690,6 +690,8 @@
   },
   "suggestions": {
     "button": "Teams vorschlagen",
+    "buttonWithCount_one": "Teams vorschlagen ({{count}} Vorschlag)",
+    "buttonWithCount_other": "Teams vorschlagen ({{count}} Vorschläge)",
     "title": "Vorgeschlagene Teams für {{lane}}",
     "description": "Teams aus deinem Kader, sortiert nach den Punkten, die sie zu deinen aktuellen Teams hinzufügen, dann nach den gesparten Token. Nichts wird gespeichert, bis du das Team speicherst.",
     "onlyUnlocked": "Nur freigeschaltete",

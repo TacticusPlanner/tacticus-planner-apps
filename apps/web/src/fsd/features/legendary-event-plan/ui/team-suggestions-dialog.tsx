@@ -34,10 +34,12 @@ import { useUnitName } from "@/shared/unit-name"
 
 import { suggestionReason } from "../model/suggestion-reason"
 import type { TeamSuggestionsSource } from "../model/team-suggestions-state"
-import { useTeamSuggestions } from "../model/use-team-suggestions"
+import {
+  MAX_SUGGESTIONS_SHOWN,
+  useTeamSuggestions,
+} from "../model/use-team-suggestions"
 
 const FIRST_SHOWN = 3
-const MAX_SHOWN = 10
 
 /**
  * Suggest teams (spec: Suggest teams dialog): a dialog on desktop and a bottom sheet on mobile with
@@ -106,7 +108,10 @@ export function TeamSuggestionsDialog({
   }, [readyCount, captureEvent, source.eventId, source.laneId])
 
   const suggestions = state.kind === "ready" ? state.suggestions : []
-  const shown = suggestions.slice(0, showMore ? MAX_SHOWN : FIRST_SHOWN)
+  const shown = suggestions.slice(
+    0,
+    showMore ? MAX_SUGGESTIONS_SHOWN : FIRST_SHOWN
+  )
 
   return (
     <ResponsiveDialog

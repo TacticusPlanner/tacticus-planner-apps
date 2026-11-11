@@ -1,7 +1,8 @@
-import { useId, useMemo, useState } from "react"
+import { useCallback, useId, useMemo, useState } from "react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Plus, Sparkles } from "lucide-react"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
@@ -14,15 +15,19 @@ import {
   type LegendaryEventLaneId,
   type LegendaryEventRun,
   type LegendaryEventTeam,
+  type LegendaryEventUnit,
   type TeamSuggestion,
 } from "@/entities/legendary-event"
 import {
   TeamSuggestionsDialog,
   laneTeams,
+  useTeamSuggestionCount,
   type LegendaryEventPlanActions,
   type PickerGoalsPreview,
+  type TeamSuggestionsSource,
 } from "@/features/legendary-event-plan"
 import { ConfirmationDialog, SortableList } from "@/shared/ui"
+import { useUnitName } from "@/shared/unit-name"
 
 import {
   laneEstimateInputs,
@@ -44,6 +49,8 @@ import {
   type TeamPowerSource,
   type TeamsSectionState,
 } from "./teams.view-model"
+
+const NO_UNITS: readonly LegendaryEventUnit[] = []
 
 type TeamsActions = Pick<
   LegendaryEventPlanActions,
@@ -124,6 +131,41 @@ export function TeamsSection({
   // A lane holds at most MAX_TEAMS_PER_LANE teams (the API refuses one more).
   const laneFull = savedTeams.length >= MAX_TEAMS_PER_LANE
 
+  // What Suggest teams reads; the button shows how many proposals the dialog opens with.
+  const unitName = useUnitName()
+  const nameOfUnit = useCallback(
+    (unit: { id: string }) => unitName("Character", unit.id),
+    [unitName]
+  )
+  const suggestionsSource: TeamSuggestionsSource = useMemo(
+    () => ({
+      eventId: teams.eventId,
+      laneId,
+      lane,
+      units: state.kind === "ready" ? state.units : NO_UNITS,
+      teams: savedTeams,
+      run,
+      model,
+      progress: teams.progressByLane?.[laneId],
+      // Nothing to count until the section's data is ready.
+      estimates: state.kind === "ready" ? estimateInputs : undefined,
+      goalUnitIds: teams.goals.goalUnitIds,
+    }),
+    [
+      teams.eventId,
+      laneId,
+      lane,
+      state,
+      savedTeams,
+      run,
+      model,
+      teams.progressByLane,
+      estimateInputs,
+      teams.goals.goalUnitIds,
+    ]
+  )
+  const suggestionCount = useTeamSuggestionCount(suggestionsSource, nameOfUnit)
+
   const displayName = useTeamDisplayName()
   const nameOf = (team: LegendaryEventTeam) =>
     displayName(team, lane, savedTeams)
@@ -187,6 +229,11 @@ export function TeamsSection({
   const suggestButton = (testId: string) => (
     <Button
       aria-describedby={estimateInputs ? undefined : suggestReasonId}
+      aria-label={
+        suggestionCount === null
+          ? undefined
+          : t("suggestions.buttonWithCount", { count: suggestionCount })
+      }
       data-testid={testId}
       disabled={!estimateInputs}
       onClick={openSuggestions}
@@ -195,6 +242,16 @@ export function TeamsSection({
     >
       <Sparkles />
       {t("suggestions.button")}
+      {suggestionCount === null ? null : (
+        <Badge
+          aria-hidden
+          className="min-w-5 px-1.5 tabular-nums"
+          data-testid="legendary-event-suggest-teams-count"
+          variant={suggestionCount > 0 ? "default" : "secondary"}
+        >
+          {suggestionCount}
+        </Badge>
+      )}
     </Button>
   )
   const ids = cards.map((card) => card.id)
@@ -343,18 +400,7 @@ export function TeamsSection({
           onClose={() => setSuggesting(null)}
           onUseSuggestion={acceptSuggestion}
           open={editor.editor?.suggestionRank === undefined}
-          source={{
-            eventId: teams.eventId,
-            laneId,
-            lane,
-            units: state.units,
-            teams: savedTeams,
-            run,
-            model,
-            progress: teams.progressByLane?.[laneId],
-            estimates: estimateInputs,
-            goalUnitIds: teams.goals.goalUnitIds,
-          }}
+          source={suggestionsSource}
         />
       ) : null}
 

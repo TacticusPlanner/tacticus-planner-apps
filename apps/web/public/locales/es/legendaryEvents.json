@@ -690,6 +690,8 @@
   },
   "suggestions": {
     "button": "Sugerir equipos",
+    "buttonWithCount_one": "Sugerir equipos ({{count}} sugerencia)",
+    "buttonWithCount_other": "Sugerir equipos ({{count}} sugerencias)",
     "title": "Equipos sugeridos para {{lane}}",
     "description": "Equipos de tu plantilla, ordenados por los puntos que suman a tus equipos actuales y luego por los tokens que ahorran. No se guarda nada hasta que guardes el equipo.",
     "onlyUnlocked": "Solo desbloqueadas",
