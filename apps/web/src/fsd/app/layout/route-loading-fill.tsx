@@ -6,10 +6,16 @@ import { Spinner } from "@workspace/ui/components/spinner"
 
 import { PageContainer } from "@/widgets/page-container"
 
+// An event page (`/legendary-events/:eventId` and its tabs), not the hub's static children.
+const LEGENDARY_EVENT_PAGE =
+  /^\/legendary-events\/(?!master-table\/?$|tier-list\/?$)[^/]+(?:\/(?:overview|teams|plan|run))?\/?$/
+const PLAN_LIST_PAGES = new Set(["/plan/goals", "/plan/projects"])
+
 /**
  * The shell's fallback while a lazy page chunk loads. Home, where every launch of the installed app
- * lands, gets a skeleton of its own layout so its cards fill in where they will stay; other pages
- * keep the centred spinner (spec: app-startup).
+ * lands, an event page and Plan's Goals and Projects get a skeleton shaped like their own loading
+ * state, so the page fills in where the skeleton stood; other pages keep the centred spinner
+ * (spec: app-startup-rendering).
  */
 export function RouteLoadingFill() {
   const { t } = useTranslation()
@@ -17,6 +23,12 @@ export function RouteLoadingFill() {
 
   if (pathname === "/home") {
     return <HomeSkeleton label={t("common.loading")} />
+  }
+  if (LEGENDARY_EVENT_PAGE.test(pathname)) {
+    return <LegendaryEventSkeleton label={t("common.loading")} />
+  }
+  if (PLAN_LIST_PAGES.has(pathname)) {
+    return <PlanListSkeleton label={t("common.loading")} />
   }
 
   return (
@@ -80,6 +92,38 @@ function HomeSkeleton({ label }: { label: string }) {
         </div>
       </div>
       <SkeletonCard rowClassName="h-40 w-full rounded-lg" rows={1} />
+    </PageContainer>
+  )
+}
+
+/** Mirrors the event page's own loading state (pages/legendary-events' LegendaryEventPage) in the
+ *  section's full-width container, so the page's own skeleton replaces this one in place. */
+function LegendaryEventSkeleton({ label }: { label: string }) {
+  return (
+    <PageContainer
+      aria-label={label}
+      className="max-w-none"
+      data-testid="legendary-event-skeleton"
+      role="status"
+    >
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-12 w-1/2 rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-xl" />
+      </div>
+    </PageContainer>
+  )
+}
+
+/** Plan's Goals and Projects: a toolbar row over two list rows, like their own loading states. */
+function PlanListSkeleton({ label }: { label: string }) {
+  return (
+    <PageContainer aria-label={label} data-testid="plan-skeleton" role="status">
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-9 w-full rounded-lg sm:w-2/3" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
     </PageContainer>
   )
 }

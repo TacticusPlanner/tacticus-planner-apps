@@ -40,6 +40,7 @@ export {
 export {
   accountStorageKey,
   accountStoragePrefix,
+  afterNextPaint,
   installGlobalErrorCapture,
   isMacPlatform,
   migrateLegacyAccountKeys,

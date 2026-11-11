@@ -39,7 +39,6 @@ import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
-import type { BattleInfoTarget } from "./battles/battle-info-target"
 import { useBattlesSection } from "./battles/use-battles-section"
 import { LegendaryEventPageView } from "./legendary-event-page-view"
 import {
@@ -274,14 +273,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     initialRarityOf,
   })
   const impactTeamName = useImpactTeamName(eventData, plan.query.data)
-  const [battleInfo, setBattleInfo] = useState<BattleInfoTarget | null>(null)
   const battlesLanes = useMemo(
-    () =>
-      [
-        ...(selectedTab === "plan" ? [battlesLane] : []),
-        ...(battleInfo ? [battleInfo.laneId] : []),
-      ] as LegendaryEventLaneId[],
-    [selectedTab, battlesLane, battleInfo]
+    () => (selectedTab === "plan" ? [battlesLane] : NO_LANES),
+    [selectedTab, battlesLane]
   )
   const battlesSection = useBattlesSection({
     event: eventData,
@@ -642,7 +636,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           }
         : null,
       battles: battlesSection,
-      battleInfo: { target: battleInfo, onChange: setBattleInfo },
+      battlesRead,
       potentials,
       eventBoard: { units, roster: syncedRoster },
     }
@@ -702,7 +696,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     goalTargetsByUnit,
     impactTeamName,
     battlesSection,
-    battleInfo,
+    battlesRead,
     potentials,
     units,
     syncedRoster,

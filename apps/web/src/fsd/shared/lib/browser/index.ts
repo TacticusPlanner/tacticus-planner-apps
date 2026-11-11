@@ -1,3 +1,4 @@
+export { afterNextPaint } from "./after-next-paint"
 export {
   installGlobalErrorCapture,
   reportError,

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { startTransition, useCallback, useMemo } from "react"
 
 import {
   LEGENDARY_EVENT_LANE_IDS,
@@ -64,12 +64,16 @@ export function useLaneSelection(isMobile: boolean): LaneSelection {
       const next = show
         ? [...selected, laneId]
         : selected.filter((id) => id !== laneId)
-      if (next.length > 0) setRaw(serializeVisibleLanes(next))
+      if (next.length === 0) return
+      // A transition: the switch repaints at once (LaneSelector shows it optimistically) and the
+      // lane blocks re-render after, so a tap never waits on them (web vitals plan item 6).
+      startTransition(() => setRaw(serializeVisibleLanes(next)))
     },
     [selected, setRaw]
   )
   const onPick = useCallback(
-    (laneId: LegendaryEventLaneId) => setMobileLane(laneId),
+    (laneId: LegendaryEventLaneId) =>
+      startTransition(() => setMobileLane(laneId)),
     [setMobileLane]
   )
   const reveal = useCallback(
