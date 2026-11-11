@@ -40,6 +40,7 @@ import type { UpgradeImpactState } from "@/features/legendary-event-goals"
 import type {
   MarkTokenHandler,
   StopTeamHandler,
+  TokenShownHandler,
   OpenTeamsHandler,
   TokenPlanView,
 } from "@/features/legendary-event-tokens"
@@ -196,6 +197,8 @@ interface TokensViewModel {
   onMarkToken: MarkTokenHandler | undefined
   /** Stop here on a likely-clear token; absent while depths cannot be written. */
   onStopTeam: StopTeamHandler | undefined
+  /** Remembers a shown token for the cleared-in-sync analytics; absent while marks are not editable. */
+  onTokenShown: TokenShownHandler | undefined
   /** Opens Teams with the lane shown and scrolls its Teams section (or one team's card) into view. */
   onOpenTeams: OpenTeamsHandler
 }

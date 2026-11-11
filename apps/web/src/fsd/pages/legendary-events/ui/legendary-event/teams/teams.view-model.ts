@@ -5,6 +5,7 @@ import {
   objectiveClearedThrough,
   teamDepthForRun,
   teamEffectiveDepth,
+  memberPowers,
   teamPower,
   type ClearEstimate,
   type ClearEstimateRoster,
@@ -75,6 +76,8 @@ export interface TeamCardViewModel {
    *  dash), `noRoster` when the roster is not synced or unreadable (its own reason, not "power
    *  unavailable"), `unavailable` when the power data is absent or failed. */
   teamPowerStatus: TeamPowerStatus
+  /** Each member's power, in member order, for analytics; null whenever `teamPower` is. */
+  memberPowers: number[] | null
   sortOrder: number
 }
 
@@ -189,18 +192,28 @@ function cardTeamPower(
   memberUnitIds: readonly string[],
   rosterById: ClearEstimateRoster | undefined,
   powerSource: TeamPowerSource
-): Pick<TeamCardViewModel, "teamPower" | "teamPowerStatus"> {
-  if (!rosterById) return { teamPower: null, teamPowerStatus: "noRoster" }
+): Pick<TeamCardViewModel, "teamPower" | "teamPowerStatus" | "memberPowers"> {
+  if (!rosterById) {
+    return { teamPower: null, teamPowerStatus: "noRoster", memberPowers: null }
+  }
   if (powerSource === "loading") {
-    return { teamPower: null, teamPowerStatus: "pending" }
+    return { teamPower: null, teamPowerStatus: "pending", memberPowers: null }
   }
   if (powerSource === "error" || powerSource === null) {
-    return { teamPower: null, teamPowerStatus: "unavailable" }
+    return {
+      teamPower: null,
+      teamPowerStatus: "unavailable",
+      memberPowers: null,
+    }
   }
   const power = teamPower(memberUnitIds, rosterById, powerSource)
   return {
     teamPower: power,
     teamPowerStatus: power === null ? "unavailable" : "ready",
+    memberPowers:
+      power === null
+        ? null
+        : memberPowers(memberUnitIds, rosterById, powerSource),
   }
 }
 

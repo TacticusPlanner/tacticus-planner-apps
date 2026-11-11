@@ -3,10 +3,12 @@ import { describe, expect, it } from "vitest"
 import {
   CLEAR_ESTIMATE_CALIBRATED,
   CLEAR_ESTIMATE_CURVE,
+  battlePowerRatio,
   clearEstimateConfig,
   estimateClearDepth,
   laneBattlePowers,
   lockedMemberCount,
+  memberPowers,
   requiredClearPower,
   teamClearEstimate,
   teamEffectiveDepth,
@@ -208,6 +210,22 @@ describe("clear estimate (spec worked examples)", () => {
 
   it("sums team power without horde-mode multipliers: 98,895", () => {
     expect(teamPower(WORKED_TEAM, roster, WORKED_CONFIG.unitPower)).toBe(98895)
+  })
+
+  it("lists each member's power in member order, summing to the team power", () => {
+    const powers = memberPowers(WORKED_TEAM, roster, WORKED_CONFIG.unitPower)
+    expect(powers).toHaveLength(WORKED_TEAM.length)
+    expect(powers?.reduce((sum, power) => sum + power, 0)).toBe(98895)
+    expect(memberPowers(WORKED_TEAM, roster, null)).toBeNull()
+  })
+
+  it("reads the curve ratio a power reaches on a battle", () => {
+    // At the reference power the requirement is r × P, so power 2.2 × P reads exactly 2.2.
+    const reference = CLEAR_ESTIMATE_CURVE.referencePower
+    expect(battlePowerRatio(2.2 * reference, reference)).toBeCloseTo(2.2)
+    expect(battlePowerRatio(100_000, 400_000)).toBeCloseTo(
+      100_000 / requiredClearPower(400_000, 1, CLEAR_ESTIMATE_CURVE)
+    )
   })
 
   it("is depth 0 with no margin above when battle 1 already fails", () => {
