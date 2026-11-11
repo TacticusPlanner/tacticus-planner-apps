@@ -1680,6 +1680,7 @@
       "groupByLabel": "Agrupar por",
       "groupNone": "Sin agrupar",
       "groupByType": "Agrupar por tipo",
+      "groupByTypePriority": "Agrupar por tipo (por prioridad)",
       "groupByUnit": "Agrupar por unidad",
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos",
       "statusFilterLabel": "Filtro de estado de objetivos",

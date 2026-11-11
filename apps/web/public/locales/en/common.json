@@ -1680,6 +1680,7 @@
       "groupByLabel": "Group by",
       "groupNone": "No grouping",
       "groupByType": "Group by type",
+      "groupByTypePriority": "Group by type (priority order)",
       "groupByUnit": "Group by unit",
       "reachedIndicatorLabel": "Reached goals are waiting to be viewed",
       "statusFilterLabel": "Goal status filter",
