@@ -266,17 +266,17 @@ describe("QuestPage", () => {
       "600 points to go"
     )
     expect(screen.getByTestId("quest-shards-line")).toHaveTextContent(
-      "3 earned · 51 max · 48 still reachable"
+      "1 earned · 17 max · 16 still reachable"
     )
     // The one-time rewards still to earn, at a glance.
     expect(screen.getByTestId("quest-left-medals")).toHaveTextContent("48")
-    expect(screen.getByTestId("quest-left-shards")).toHaveTextContent("48")
+    expect(screen.getByTestId("quest-left-shards")).toHaveTextContent("16")
     await user.click(screen.getByRole("switch", { name: /Quest Bundle/ }))
     expect(screen.getByTestId("quest-shards-line")).toHaveTextContent(
-      "9 earned · 153 max · 144 still reachable"
+      "7 earned · 119 max · 112 still reachable"
     )
     expect(screen.getByTestId("quest-left-medals")).toHaveTextContent("48")
-    expect(screen.getByTestId("quest-left-shards")).toHaveTextContent("144")
+    expect(screen.getByTestId("quest-left-shards")).toHaveTextContent("112")
 
     // The track shows the next few crates; "Show all" lists every one.
     expect(screen.getAllByTestId("quest-crate").length).toBeLessThanOrEqual(3)

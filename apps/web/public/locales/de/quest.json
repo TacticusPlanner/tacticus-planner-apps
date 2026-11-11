@@ -125,7 +125,7 @@
     "amount": "×{{amount}}",
     "amountRange": "×{{min}}–{{max}}",
     "shardsTitle": "Splitter von {{hero}}",
-    "bundle": "Quest-Paket (3 Splitter pro Medaille)",
+    "bundle": "Quest-Paket (+2 Splitter pro Medaille)",
     "shards": "{{earned}} erhalten · {{max}} max. · noch {{reachable}} erreichbar",
     "unlocks": "Schaltet {{hero}} frei, mit {{spare}} Splittern übrig",
     "unlocksExact": "Schaltet {{hero}} frei",

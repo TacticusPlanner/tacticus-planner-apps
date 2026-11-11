@@ -199,6 +199,8 @@ export function questVerdict(
 export type QuestProjection = {
   score: QuestScore
   medals: number
+  /** Projected medals per battle, in battle order (0 for a battle not projected as won). */
+  battleMedals: number[]
 }
 
 /**
@@ -214,30 +216,33 @@ export function projectQuest(
   scoring: QuestScoring
 ): QuestProjection {
   const projected: Record<number, QuestBattleEntry> = {}
-  let medals = 0
-  for (const battle of battles) {
+  const battleMedals = battles.map((battle) => {
     const entry = entries[battle.number]
     if (entry && entry.medals > 0) {
       projected[battle.number] = entry
-      medals += Math.min(entry.medals, MAX_MEDALS)
-      continue
+      return Math.min(entry.medals, MAX_MEDALS)
     }
     const estimate = estimates.get(battle.number)
-    if (estimate?.kind !== "ready") continue
+    if (estimate?.kind !== "ready") return 0
     const clear = estimate.first.clears
       ? estimate.first
       : estimate.second?.clears
         ? estimate.second
         : null
-    if (!clear) continue
+    if (!clear) return 0
     projected[battle.number] = {
       medals: MAX_MEDALS,
       lightning: scoring.maxPointsForLightningVictory,
       objectives: clear.objectives,
     }
-    medals += MAX_MEDALS
+    return MAX_MEDALS
+  })
+  const medals = battleMedals.reduce((sum, count) => sum + count, 0)
+  return {
+    score: scoreQuest(battles, projected, crates, scoring),
+    medals,
+    battleMedals,
   }
-  return { score: scoreQuest(battles, projected, crates, scoring), medals }
 }
 
 export type QuestCalibrationSample = { E: number; B: number; cleared: boolean }

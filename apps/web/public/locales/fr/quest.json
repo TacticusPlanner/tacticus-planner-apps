@@ -125,7 +125,7 @@
     "amount": "×{{amount}}",
     "amountRange": "×{{min}}–{{max}}",
     "shardsTitle": "Fragments de {{hero}}",
-    "bundle": "Pack de Quête (3 fragments par médaille)",
+    "bundle": "Pack de Quête (+2 fragments par médaille)",
     "shards": "{{earned}} obtenus · {{max}} max · encore {{reachable}} atteignables",
     "unlocks": "Débloque {{hero}}, avec {{spare}} fragments en trop",
     "unlocksExact": "Débloque {{hero}}",

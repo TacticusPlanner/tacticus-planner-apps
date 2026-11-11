@@ -30,19 +30,27 @@ describe("crateTrack", () => {
 })
 
 describe("questShards", () => {
-  it("counts a shard per medal, three with the bundle", () => {
-    const medals = Array.from({ length: 10 }, () => 3)
+  it("counts a shard per won battle, plus 2 per medal with the bundle", () => {
+    const medals = [...Array.from({ length: 10 }, () => 3), 1, 0]
 
     expect(questShards(medals, false)).toEqual({
-      earned: 30,
-      max: 51,
-      reachable: 21,
+      earned: 11,
+      max: 17,
+      reachable: 6,
+      medalsLeft: 20,
     })
     expect(questShards(medals, true)).toEqual({
-      earned: 90,
-      max: 153,
-      reachable: 63,
+      earned: 73,
+      max: 119,
+      reachable: 46,
+      medalsLeft: 20,
     })
+  })
+
+  it("pays one shard for a won battle whatever its medals", () => {
+    expect(questShards([1], false).earned).toBe(1)
+    expect(questShards([3], false).earned).toBe(1)
+    expect(questShards([0], false).earned).toBe(0)
   })
 })
 
@@ -68,22 +76,27 @@ describe("shardMeaning", () => {
         owned: null,
         notOwnedShards: 12,
       })
-    ).toEqual({ kind: "unlock", cost: 40, spare: 23, reachedSoFar: false })
+    ).toEqual({ kind: "unlock", cost: 40, spare: -11, reachedSoFar: false })
   })
 
   it("walks the ascension costs an owned hero's shards cover", () => {
     expect(
       shardMeaning({
         ...base,
-        shards: questShards([3, 3], false),
+        shards: questShards([3, 3], true),
         owned: { progression: "Common:None", shards: 5 },
         notOwnedShards: null,
       })
     ).toEqual({
       kind: "ascend",
-      steps: ["Common:OneStar", "Common:TwoStars", "Uncommon:TwoStars"],
+      steps: [
+        "Common:OneStar",
+        "Common:TwoStars",
+        "Uncommon:TwoStars",
+        "Uncommon:ThreeStars",
+      ],
       reachedSoFar: 1,
-      spare: 11,
+      spare: 49,
     })
   })
 
@@ -206,7 +219,7 @@ describe("questRewardsLeft", () => {
 
     expect(left).toEqual({
       medals: 46,
-      shards: 138,
+      shards: 107,
       crates: 2,
       rewards: [
         { type: "Coins", min: 2000, max: 2000 },
@@ -219,7 +232,7 @@ describe("questRewardsLeft", () => {
   it("counts no crates when the crate track is unavailable", () => {
     expect(questRewardsLeft(questShards([], false), null)).toMatchObject({
       medals: 51,
-      shards: 51,
+      shards: 17,
       crates: 0,
       rewards: [],
     })
