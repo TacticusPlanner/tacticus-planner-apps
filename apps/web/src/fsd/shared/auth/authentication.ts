@@ -37,10 +37,13 @@ export const SILENT_FRAME_TIMEOUT_MS = 6000
 const ACCOUNT_HINT_KEY = "tp.auth.accountHint"
 
 // `signInMethod` is absent on hints written before it existed; those are treated as unknown.
+// `sid` is the identity-provider session id from the ID token (when the app registration emits
+// it): the one hint that picks the right account in a session holding several.
 type AccountHint = {
   homeAccountId: string
   username: string
   signInMethod?: SignInMethod
+  sid?: string
 }
 
 export function readAccountHint(): AccountHint | null {
@@ -130,6 +133,9 @@ function activateAccount(
       homeAccountId: account.homeAccountId,
       username: account.username,
       signInMethod: getSignInMethod(account),
+      ...(typeof account.idTokenClaims?.sid === "string"
+        ? { sid: account.idTokenClaims.sid }
+        : {}),
     }
     safeStorage.set(ACCOUNT_HINT_KEY, JSON.stringify(hint))
   }
@@ -242,7 +248,14 @@ async function completeRedirect(instance: PublicClientApplication) {
   } catch (error) {
     if (quietRenewal && isInteractionRequired(error)) {
       // No live session to renew from: not a failed sign-in. The cached account and hint stay, the
-      // marker stays as the cooldown, and the user lands signed out with no toast.
+      // marker stays as the cooldown, and the user lands signed out with no toast. Logged with
+      // Entra's own reason (AADSTS code), which says why the session could not be used.
+      console.info(
+        "[MSAL] quiet session renewal found no usable session",
+        error instanceof AuthError
+          ? `${error.errorCode}: ${error.errorMessage}`
+          : error
+      )
       return { result: null, quietRenewal }
     }
     safeStorage.remove(QUIET_RENEWAL_KEY)
@@ -480,9 +493,10 @@ async function restoreSession(
     // to check.
     const hint = readAccountHint()
     if (!hint) return "no-cached-account"
-    const outcome = await checkIdentityProviderSession(instance, {
-      loginHint: hint.username,
-    })
+    const outcome = await checkIdentityProviderSession(
+      instance,
+      hint.sid ? { sid: hint.sid } : { loginHint: hint.username }
+    )
     return outcome === "failed" ? renewQuietly(instance, null, hint) : outcome
   }
 
@@ -531,12 +545,12 @@ async function renewQuietly(
   }
   safeStorage.set(QUIET_RENEWAL_KEY, String(Date.now()))
   const none = { prompt: PromptValue.NONE }
-  const isGoogle = account
-    ? getSignInMethod(account) === "google"
-    : hint !== null && hintSignInMethod(hint) === "google"
-  // Same hint rules as the interactive re-authentication: never the generated Google username.
+  // Unlike interactive re-authentication, every account keeps its hint here, Google ones included:
+  // `prompt=none` never shows a page, so the generated Google username can't lead to a password
+  // prompt, and without a hint Entra can't pick among several accounts in one session and gives up.
+  // MSAL sends the best hint the account has: the opaque `login_hint` claim, then `sid`, then the
+  // username.
   const request = Promise.resolve().then(() => {
-    if (isGoogle) return redirectToGoogle(instance, account, none)
     if (account) {
       return instance.acquireTokenRedirect({
         account,
@@ -546,7 +560,11 @@ async function renewQuietly(
     }
     return instance.loginRedirect({
       scopes: loginRequest.scopes,
-      ...(hint ? { loginHint: hint.username } : {}),
+      ...(hint?.sid
+        ? { sid: hint.sid }
+        : hint
+          ? { loginHint: hint.username }
+          : {}),
       ...none,
     })
   })
@@ -564,7 +582,7 @@ async function renewQuietly(
 /** One hidden IdP session check (bounded by SILENT_FRAME_TIMEOUT_MS). */
 async function checkIdentityProviderSession(
   instance: IPublicClientApplication,
-  who: { account: AccountInfo } | { loginHint: string }
+  who: { account: AccountInfo } | { loginHint: string } | { sid: string }
 ): Promise<SilentSignInOutcome> {
   try {
     const result = await instance.ssoSilent({
