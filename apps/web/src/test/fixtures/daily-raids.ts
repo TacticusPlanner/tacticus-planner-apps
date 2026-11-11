@@ -175,6 +175,7 @@ export function ready(
       [
         offPlanBattle,
         {
+          resourceId: "adamantium",
           label: "Adamantium",
           visual: {
             kind: "upgrade" as const,

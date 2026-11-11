@@ -5,6 +5,8 @@ import type {
   UpgradeId,
 } from "@workspace/game-domain"
 
+import { shardResourceId } from "@/features/goal-farming/@x/daily-raids"
+
 import type {
   DailyRaidBattleResource,
   DailyRaidResourceLabels,
@@ -58,6 +60,7 @@ export function buildResourceByBattle(
       if (current !== undefined && current <= upgrade.id) continue
       upgradeIdByBattle.set(location.battleId, upgrade.id)
       byBattle.set(location.battleId, {
+        resourceId: upgrade.id,
         label: labels?.upgrade?.(upgrade.id, upgrade.label) ?? upgrade.label,
         visual: {
           kind: "upgrade",
@@ -74,6 +77,7 @@ export function buildResourceByBattle(
       if (location.isMythic) continue
       if (byBattle.has(location.battleId)) continue
       byBattle.set(location.battleId, {
+        resourceId: shardResourceId(character.id),
         label:
           labels?.shards?.(character.id, character.name) ??
           shardResourceLabel(character.name),
