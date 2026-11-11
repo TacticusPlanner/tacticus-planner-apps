@@ -1680,11 +1680,14 @@
       "groupByLabel": "Agrupar por",
       "groupNone": "Sin agrupar",
       "groupByType": "Agrupar por tipo",
+      "groupByTypePriority": "Agrupar por tipo (por prioridad)",
       "groupByUnit": "Agrupar por unidad",
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos",
       "statusFilterLabel": "Filtro de estado de objetivos",
       "groupCount_one": "{{count}} objetivo",
-      "groupCount_other": "{{count}} objetivos"
+      "groupCount_other": "{{count}} objetivos",
+      "collapseAllGroups": "Contraer todo",
+      "expandAllGroups": "Expandir todo"
     },
     "seasonFit": {
       "label": "Ajuste a temporada",

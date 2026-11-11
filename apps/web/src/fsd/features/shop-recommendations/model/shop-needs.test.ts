@@ -276,9 +276,10 @@ describe("aggregateShopNeeds", () => {
         ],
         details: [
           detail("g1", heroId, "Ascension", {
+            // A locked Rare unit's Ascension starts where its Unlock lands (Rare 4 stars).
             progression: {
-              start: "Common:None",
-              end: "Common:OneStar",
+              start: "Rare:FourStars",
+              end: "Rare:FiveStars",
             } as never,
           }),
           detail("g2", heroId, "Unlock"),
@@ -290,7 +291,7 @@ describe("aggregateShopNeeds", () => {
           ],
         ]),
         ascensionCostsById: new Map([
-          ["Common:OneStar", { shards: 20, mythicShards: 0, orbs: 0 } as never],
+          ["Rare:FiveStars", { shards: 20, mythicShards: 0, orbs: 0 } as never],
         ]),
         unlockShardCostsById: new Map([
           ["Rare", { rarity: "Rare", shards: 130 } as never],

@@ -6,7 +6,7 @@ import type {
   MowUpgradeCostStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
-import type { UpgradeId } from "@workspace/game-domain"
+import { startingProgression, type UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal"
@@ -190,7 +190,13 @@ export function calculateGoalResourceNeed(
       isMow,
       ownedShards: owned?.shards ?? 0,
       ownedMythicShards: owned?.mythicShards ?? 0,
-      currentProgression: owned?.progressionIndex,
+      // An unowned character lands on its starting rarity once unlocked: steps below it never cost
+      // orbs, even when the goal was saved starting lower (e.g. a Legendary saved from Common).
+      currentProgression:
+        owned?.progressionIndex ??
+        (!isMow && params.characterView
+          ? startingProgression(params.characterView.initialRarity)
+          : undefined),
       ascensionCostsById: params.ascensionCostsById,
       coverage: params.ascensionCoverage && {
         goalId: detail.goalId,

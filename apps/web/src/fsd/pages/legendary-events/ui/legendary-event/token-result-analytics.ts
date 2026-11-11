@@ -79,7 +79,7 @@ export function tokenResultEvent(input: {
   run: number | null
   laneId: LegendaryEventLaneId
   battleIndex: number
-  /** The card action: Partly cleared / Couldn't clear (their mark status) or Stop here. */
+  /** The card action: Maybe clear / Stop here (their mark status) or Try another team. */
   action: LegendaryEventAnnotationStatus | "stopEarly"
   shown: DepthEstimateContext
   battle: TokenBattleSnapshot

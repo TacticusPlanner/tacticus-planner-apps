@@ -1680,11 +1680,14 @@
       "groupByLabel": "Regrouper par",
       "groupNone": "Aucun regroupement",
       "groupByType": "Regrouper par type",
+      "groupByTypePriority": "Regrouper par type (par priorité)",
       "groupByUnit": "Regrouper par unité",
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés",
       "statusFilterLabel": "Filtre de statut des objectifs",
       "groupCount_one": "{{count}} objectif",
-      "groupCount_other": "{{count}} objectifs"
+      "groupCount_other": "{{count}} objectifs",
+      "collapseAllGroups": "Tout réduire",
+      "expandAllGroups": "Tout développer"
     },
     "seasonFit": {
       "label": "Calage sur la saison",

@@ -1,8 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react"
 import {
   type UnitId,
-  firstProgression,
-  progressionIndex,
+  startingProgression,
   type Progression,
   firstRank,
   rankIndex,
@@ -45,10 +44,8 @@ import { useCreateGoalPrefill } from "./use-create-goal-prefill"
 import { useDefaultUnitPreselect } from "./use-default-unit-preselect"
 import { computeCreationPreview } from "./goal-preview"
 import { firstFreeTarget, useTakenTargets } from "./first-free-target"
-import {
-  progressionEndOptionsFor,
-  rankOptionsAbove,
-} from "../target-edit/goal-target-edit"
+import { rankOptionsAbove } from "../target-edit/goal-target-edit"
+import { useAscensionFields } from "./use-ascension-fields"
 import { useQuery } from "@tanstack/react-query"
 import { useGlobalGoalPlan } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
@@ -137,7 +134,20 @@ export function useCreateGoalForm({
   const { rankUpgradeSlotsTotal, rankAppliedUpgrades } =
     useRankUpgradeSlotsSummary(character, rankStart, playerCharacter)
 
-  const ascensionFields = useAscensionFields(takenTargets.takenFor("Ascension"))
+  const characterView =
+    entityType === "Character" && entityId
+      ? charactersById?.get(entityId)
+      : undefined
+  const unownedCharacterStart =
+    characterView && !playerEntity
+      ? startingProgression(characterView.initialRarity)
+      : undefined
+  const ascensionFields = useAscensionFields(
+    takenTargets.takenFor("Ascension"),
+    // A locked character has no synced progression; unlocking it lands on its starting rarity, so an
+    // Ascension goal starts there rather than at Common (which would charge orbs it never needs).
+    unownedCharacterStart
+  )
   const { progressionStart, progressionEnd } = ascensionFields.state
 
   const abilityFields = useAbilityFields(takenTargets.takenFor("Ability"))
@@ -341,10 +351,7 @@ export function useCreateGoalForm({
     // An existing Unlock goal already unlocks the unit, so no new one is suggested.
     isOwned: isOwned || !!existingUnlockGoalId,
     playerEntity,
-    character:
-      entityType === "Character" && entityId
-        ? charactersById?.get(entityId)
-        : undefined,
+    character: characterView,
     enabledTypes,
     rankEnd,
     abilityActiveEnd,
@@ -598,55 +605,6 @@ export function useAbilityFields(
 }
 
 const NO_TAKEN_TARGETS: ReadonlySet<string> = new Set()
-
-/**
- * The Ascension goal's own target-range state — a read-only start progression (always the unit's
- * live synced progression, never user-editable — see `prefillFrom`) and the target progression
- * step. Until the user picks a target above the start it follows `firstFreeTarget` — the next step,
- * skipping in-flight targets in `taken` — so it never defaults to the current progression. The
- * shard-source selection (Campaigns/Onslaught/Shops) lives in `useAcquisitionSourceSelection`
- * instead — it's shared with Unlock, not Ascension-specific.
- */
-export function useAscensionFields(
-  taken: ReadonlySet<string> = NO_TAKEN_TARGETS
-) {
-  const [progressionStart, setProgressionStart] =
-    useState<Progression>(firstProgression)
-  const [picked, setPicked] = useState<Progression | null>(null)
-
-  const progressionEnd =
-    picked && progressionIndex(picked) > progressionIndex(progressionStart)
-      ? picked
-      : firstFreeTarget("Ascension", progressionStart, taken)
-  const progressionEndOptions = useMemo(
-    () => progressionEndOptionsFor(progressionStart),
-    [progressionStart]
-  )
-
-  const reset = () => {
-    setProgressionStart(firstProgression)
-    setPicked(null)
-  }
-
-  // Applies the synced current-progression prefill once per entity selection — called from the
-  // parent's single ref-guarded prefill effect (see use-create-goal-form.ts), not on every render.
-  // `progressionStart` is never otherwise settable — the "From" field always reflects this synced
-  // value. A target picked (or prefilled) before it arrived stays while it is above the start.
-  const prefillFrom = (progression: Progression) => {
-    setProgressionStart(progression)
-  }
-
-  return {
-    state: {
-      progressionStart,
-      progressionEnd,
-      progressionEndOptions,
-      setProgressionEnd: (value: Progression) => setPicked(value),
-    },
-    reset,
-    prefillFrom,
-  }
-}
 
 /**
  * The Rank goal's own target-range state — a read-only start rank (always the unit's live synced

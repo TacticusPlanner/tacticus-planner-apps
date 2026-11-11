@@ -191,7 +191,7 @@ interface TokensViewModel {
   view: TokenPlanView
   /** Absent while marks cannot be written (signed out, or the plan has not loaded). */
   onMarkToken: MarkTokenHandler | undefined
-  /** Stop here on a likely-clear token; absent while depths cannot be written. */
+  /** Try another team on a likely-clear token; absent while depths cannot be written. */
   onStopTeam: StopTeamHandler | undefined
   /** Remembers a shown token for the cleared-in-sync analytics; absent while marks are not editable. */
   onTokenShown: TokenShownHandler | undefined

@@ -20,6 +20,7 @@ describe("LocationRow", () => {
           raidsToPerform: 3,
           dailyAttempts: 5,
           remainingBefore: 4,
+          materialNeed: 4,
           dropRate: 0.5,
         }}
         location={{
@@ -52,6 +53,7 @@ describe("LocationRow", () => {
           raidsToPerform: 3,
           dailyAttempts: 5,
           remainingBefore: 4,
+          materialNeed: 4,
           dropRate: 0.5,
         }}
         location={{
@@ -85,6 +87,7 @@ describe("LocationRow", () => {
           raidsToPerform: 3,
           dailyAttempts: 5,
           remainingBefore: 4,
+          materialNeed: 4,
           dropRate: 0.5,
         }}
         location={{
@@ -123,6 +126,7 @@ describe("LocationRow", () => {
           raidsToPerform: 3,
           dailyAttempts: 5,
           remainingBefore: 4,
+          materialNeed: 4,
           dropRate: 0.5,
         }}
         location={undefined}

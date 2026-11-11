@@ -51,11 +51,12 @@ const levelOptions = (maxLevel: number) =>
 export function GoalTypeCards({
   form,
   goalKinds,
-  cardRefs,
+  scrollTarget,
 }: {
   form: GoalForm
   goalKinds: GoalKind[]
-  cardRefs: RefObject<Map<GoalKind, HTMLDivElement>>
+  /** A just-enabled kind whose card scrolls into view once it is attached. */
+  scrollTarget: RefObject<GoalKind | null>
 }) {
   const { issues } = form
   // Each card's own goal (the first spec of its type; later ones are its milestones), for the summary.
@@ -74,8 +75,10 @@ export function GoalTypeCards({
       issueCount: issues.filter((issue) => issue.kind === kind).length,
       headerId: goalCardHeaderId(kind),
       ref: (node: HTMLDivElement | null) => {
-        if (node) cardRefs.current.set(kind, node)
-        else cardRefs.current.delete(kind)
+        if (node && scrollTarget.current === kind) {
+          scrollTarget.current = null
+          node.scrollIntoView?.({ block: "nearest" })
+        }
       },
     }
   }

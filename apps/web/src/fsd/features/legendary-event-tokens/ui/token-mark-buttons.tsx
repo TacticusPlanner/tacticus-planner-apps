@@ -1,15 +1,20 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { LegendaryEventAnnotationStatus } from "@/entities/legendary-event"
+import {
+  AnnotationMarkIcon,
+  type LegendaryEventAnnotationStatus,
+} from "@/entities/legendary-event"
 
 import { tokenMarkIds } from "../lib/token-marks"
 import type { PlannedToken } from "../lib/token-plan"
 import type { MarkTokenHandler, StopTeamHandler } from "./next-token-card"
 
-/** A shown token's Partly cleared / Couldn't clear actions (`testIdPrefix-partly`,
- *  `testIdPrefix-could-not`), and Stop here (`testIdPrefix-stop`) when `onStopTeam` is given. */
+/** A shown token's Maybe clear / Stop here actions (`testIdPrefix-partly`, `testIdPrefix-could-not`),
+ *  each named after the mark it sets with its icon and a line on what it means, and Try another
+ *  team (`testIdPrefix-stop`) when `onStopTeam` is given. */
 export function TokenMarkButtons({
   token,
   isMobile,
@@ -42,41 +47,78 @@ export function TokenMarkButtons({
     <div
       className={cn("flex gap-2", isMobile ? "flex-col" : "shrink-0 flex-row")}
     >
-      <Button
-        aria-label={t("tokenPlan.nextToken.actions.partlyLabel", labels)}
-        className={cn(isMobile && "h-11 w-full")}
-        data-testid={`${testIdPrefix}-partly`}
+      <ActionButton
+        ariaLabel={t("tokenPlan.nextToken.actions.maybeLabel", labels)}
+        hint={t("tokenPlan.nextToken.actions.maybeHint")}
+        icon={<AnnotationMarkIcon status="maybeClear" />}
+        isMobile={isMobile}
         onClick={() => mark("maybeClear")}
-        type="button"
-        variant="outline"
+        testId={`${testIdPrefix}-partly`}
       >
-        {t("tokenPlan.nextToken.actions.partly")}
-      </Button>
-      <Button
-        aria-label={t("tokenPlan.nextToken.actions.couldNotLabel", labels)}
-        className={cn(isMobile && "h-11 w-full")}
-        data-testid={`${testIdPrefix}-could-not`}
+        {t("tokenPlan.nextToken.actions.maybe")}
+      </ActionButton>
+      <ActionButton
+        ariaLabel={t("tokenPlan.nextToken.actions.stopHereLabel", labels)}
+        hint={t("tokenPlan.nextToken.actions.stopHereHint")}
+        icon={<AnnotationMarkIcon status="stopHere" />}
+        isMobile={isMobile}
         onClick={() => mark("stopHere")}
-        type="button"
-        variant="outline"
+        testId={`${testIdPrefix}-could-not`}
       >
-        {t("tokenPlan.nextToken.actions.couldNot")}
-      </Button>
+        {t("tokenPlan.nextToken.actions.stopHere")}
+      </ActionButton>
       {onStopTeam ? (
-        <Button
-          aria-label={t("tokenPlan.nextToken.actions.stopLabel", labels)}
-          className={cn(isMobile && "h-11 w-full")}
-          data-testid={`${testIdPrefix}-stop`}
+        <ActionButton
+          ariaLabel={t("tokenPlan.nextToken.actions.stopLabel", labels)}
+          hint={t("tokenPlan.nextToken.actions.stopHint", labels)}
+          isMobile={isMobile}
           onClick={() =>
             onStopTeam(token.laneId, token.battleIndex, token.teamId)
           }
-          title={t("tokenPlan.nextToken.actions.stopHint", labels)}
-          type="button"
-          variant="outline"
+          testId={`${testIdPrefix}-stop`}
         >
           {t("tokenPlan.nextToken.actions.stop")}
-        </Button>
+        </ActionButton>
       ) : null}
     </div>
+  )
+}
+
+/** An outline action: its name (after an optional icon) over a short muted line. */
+function ActionButton({
+  ariaLabel,
+  hint,
+  icon,
+  isMobile,
+  onClick,
+  testId,
+  children,
+}: {
+  ariaLabel: string
+  hint: string
+  icon?: ReactNode
+  isMobile: boolean
+  onClick: () => void
+  testId: string
+  children: ReactNode
+}) {
+  return (
+    <Button
+      aria-label={ariaLabel}
+      className={cn(
+        "h-auto flex-col items-start gap-0 py-1.5 text-left",
+        isMobile && "min-h-11 w-full"
+      )}
+      data-testid={testId}
+      onClick={onClick}
+      type="button"
+      variant="outline"
+    >
+      <span className="flex items-center gap-1.5">
+        {icon}
+        {children}
+      </span>
+      <span className="text-xs font-normal text-muted-foreground">{hint}</span>
+    </Button>
   )
 }

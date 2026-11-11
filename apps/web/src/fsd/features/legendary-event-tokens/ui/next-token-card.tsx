@@ -47,7 +47,7 @@ export type MarkTokenHandler = (
   teamId: string
 ) => void
 
-/** Stop here: ends a team before `battleIndex` (its depth becomes the battles before it) without
+/** Try another team: ends a team before `battleIndex` (its depth becomes the battles before it) without
  *  marking any cell, so the plan moves on to other teams. */
 export type StopTeamHandler = (
   laneId: LegendaryEventLaneId,
@@ -68,8 +68,8 @@ type ReadyView = Extract<TokenPlanView, { kind: "ready" }>
 
 /**
  * The run tab's Next token card (spec: Next token card heads the run tab): the battle to play next
- * with its team, points, cleared cells and reason, and the Partly cleared / Couldn't clear
- * actions (plus Stop here on a likely clear), then the next few planned tokens with View full plan; or what is missing for a plan.
+ * with its team, points, cleared cells and reason, and the Maybe clear / Stop here mark
+ * actions (plus Try another team on a likely clear), then the next few planned tokens with View full plan; or what is missing for a plan.
  * A Points / Missions switch (shared with the Token plan) reads the plan in Missions order, with
  * the missions each token moves and the run's mission ticks. Hidden on an archived event and when
  * signed out.
@@ -94,7 +94,7 @@ export function NextTokenCard({
   isMobile: boolean
   /** Absent while marks cannot be written (the plan has not loaded). */
   onMarkToken: MarkTokenHandler | undefined
-  /** Stop here on a likely-clear token; absent while depths cannot be written. */
+  /** Try another team on a likely-clear token; absent while depths cannot be written. */
   onStopTeam?: StopTeamHandler
   /** The shown token, once per battle and team while it can be marked. */
   onTokenShown?: TokenShownHandler
