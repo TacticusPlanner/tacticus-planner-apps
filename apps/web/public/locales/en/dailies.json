@@ -205,8 +205,8 @@
     "upgradesLeft_other": "{{count}} upgrades left",
     "shardsLeft_one": "{{count}} shard left",
     "shardsLeft_other": "{{count}} shards left",
-    "more_one": "{{count}} more",
-    "more_other": "{{count}} more",
+    "more_one": "{{count}} still needed",
+    "more_other": "{{count}} still needed",
     "progress": "{{owned}} of {{target}} owned",
     "fullyRaided": "Fully raided"
   },
