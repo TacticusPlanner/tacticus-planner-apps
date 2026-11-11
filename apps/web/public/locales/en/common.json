@@ -1993,7 +1993,6 @@
         "abilityDecrease": "Lower the ability level",
         "abilityIncrease": "Raise the ability level"
       },
-      "project": "Project",
       "summary_one": "{{count}} goal for {{units}}",
       "summary_other": "{{count}} goals for {{units}}",
       "unitCount_one": "{{count}} unit",

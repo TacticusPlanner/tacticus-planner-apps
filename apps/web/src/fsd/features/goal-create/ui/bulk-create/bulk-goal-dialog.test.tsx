@@ -7,12 +7,14 @@ import type { CreateCombinedGoalsRequest, GoalDetail } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 import { createTestI18n } from "@/test/i18n"
 import { fireEvent, render, screen, waitFor, within } from "@/test/render"
+import userEvent from "@testing-library/user-event"
 
 import type { BulkGoalUnit } from "../../model/bulk-create/bulk-goal-plan"
 
 const api = vi.hoisted(() => ({
   goals: new Map<string, GoalDetail>(),
   create: vi.fn<(request: CreateCombinedGoalsRequest) => Promise<unknown>>(),
+  createProject: vi.fn<(request: { name: string }) => Promise<unknown>>(),
 }))
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
@@ -22,6 +24,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   useProjects: () => ({ projects: [], defaultProjectId: "default" }),
+  createProject: api.createProject,
 }))
 
 import { BulkGoalDialog } from "./bulk-goal-dialog"
@@ -62,6 +65,15 @@ beforeAll(async () => {
 beforeEach(() => {
   api.goals = new Map()
   api.create.mockReset().mockResolvedValue({})
+  api.createProject.mockReset().mockImplementation(async ({ name }) => ({
+    projectId: "new-project",
+    name,
+    description: null,
+    color: null,
+    isDefault: false,
+    status: "Active",
+    goalIds: [],
+  }))
 })
 
 function renderDialog(units: BulkGoalUnit[]) {
@@ -149,5 +161,26 @@ describe("BulkGoalDialog", () => {
     const { onRemoveUnit } = renderDialog([ragnar, tigurius])
     fireEvent.click(screen.getByRole("button", { name: "Remove Tigurius" }))
     expect(onRemoveUnit).toHaveBeenCalledWith("character:ultraTigurius")
+  })
+
+  it("creates a new project from the dialog and adds the goals to it", async () => {
+    const user = userEvent.setup()
+    renderDialog([ragnar])
+
+    await user.click(screen.getByTestId("bulk-goal-add-project"))
+    await user.type(screen.getByPlaceholderText("Search projects"), "Raids")
+    await user.click(screen.getByTestId("bulk-goal-create-project"))
+    await waitFor(() =>
+      expect(api.createProject).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Raids" })
+      )
+    )
+
+    await user.click(screen.getByTestId("bulk-goal-create"))
+    await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1))
+    expect(api.create.mock.calls[0]![0].projects).toEqual([
+      { projectId: "default" },
+      { projectId: "new-project" },
+    ])
   })
 })

@@ -1993,7 +1993,6 @@
         "abilityDecrease": "Baisser le niveau de compétence",
         "abilityIncrease": "Augmenter le niveau de compétence"
       },
-      "project": "Projet",
       "summary_one": "{{count}} objectif pour {{units}}",
       "summary_other": "{{count}} objectifs pour {{units}}",
       "unitCount_one": "{{count}} unité",

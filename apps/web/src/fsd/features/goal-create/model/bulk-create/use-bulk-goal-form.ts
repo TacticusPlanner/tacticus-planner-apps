@@ -44,8 +44,14 @@ export function useBulkGoalForm(units: readonly BulkGoalUnit[]) {
     on: false,
     value: DEFAULT_ABILITY,
   })
-  const [chosenProjectId, setProjectId] = useState<string | undefined>()
-  const projectId = chosenProjectId ?? defaultProjectId
+  // The create sheet's project rule: the user's own choice, else the Default project.
+  const [chosenProjectIds, setProjectIds] = useState<readonly string[]>([])
+  const projectIds: readonly string[] =
+    chosenProjectIds.length > 0
+      ? chosenProjectIds
+      : defaultProjectId
+        ? [defaultProjectId]
+        : []
 
   const hasUnowned = units.some((unit) => !unit.owned)
   const hasCharacter = units.some((unit) => unit.kind === "character")
@@ -79,8 +85,8 @@ export function useBulkGoalForm(units: readonly BulkGoalUnit[]) {
   return {
     goalsLoading,
     projects,
-    projectId,
-    setProjectId,
+    projectIds,
+    setProjectIds,
     hasUnowned,
     hasCharacter,
     unlock,

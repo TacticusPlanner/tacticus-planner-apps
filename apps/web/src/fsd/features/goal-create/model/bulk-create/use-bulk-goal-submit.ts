@@ -30,14 +30,14 @@ export function useBulkGoalSubmit() {
 
   const run = async (
     plans: readonly BulkUnitPlan[],
-    projectId: string | undefined,
+    projectIds: readonly string[],
     only?: ReadonlySet<string>
   ) => {
     setRunning(true)
     try {
       const { sent, failed } = await sendBulkPlans({
         plans,
-        projectId,
+        projectIds,
         only,
         send: createCombinedGoals,
         describeError,
@@ -72,15 +72,15 @@ export function useBulkGoalSubmit() {
     /** Whether a submit has started (the dialog then shows statuses, not the editor). */
     started: statuses.size > 0,
     failedCount: failedKeys.size,
-    submit: (plans: readonly BulkUnitPlan[], projectId: string | undefined) =>
-      run(plans, projectId),
+    submit: (plans: readonly BulkUnitPlan[], projectIds: readonly string[]) =>
+      run(plans, projectIds),
     retryFailed: (
       plans: readonly BulkUnitPlan[],
-      projectId: string | undefined
+      projectIds: readonly string[]
     ) =>
       run(
         plans.filter((plan) => failedKeys.has(bulkUnitKey(plan.unit))),
-        projectId,
+        projectIds,
         failedKeys
       ),
     reset: () => setStatuses(new Map()),

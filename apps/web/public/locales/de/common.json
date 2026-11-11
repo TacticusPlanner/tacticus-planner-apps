@@ -1993,7 +1993,6 @@
         "abilityDecrease": "Fähigkeitsstufe senken",
         "abilityIncrease": "Fähigkeitsstufe erhöhen"
       },
-      "project": "Projekt",
       "summary_one": "{{count}} Ziel für {{units}}",
       "summary_other": "{{count}} Ziele für {{units}}",
       "unitCount_one": "{{count}} Einheit",

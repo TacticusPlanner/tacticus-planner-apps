@@ -33,15 +33,20 @@ function plan(
 
 describe("bulkCreateRequest", () => {
   it("targets the unit and the chosen project", () => {
-    const request = bulkCreateRequest(plan("mow", "galatian", 1), "p1")
+    const request = bulkCreateRequest(plan("mow", "galatian", 1), ["p1"])
     expect(request.entityType).toBe("Mow")
     expect(request.entityId).toBe("galatian")
     expect(request.projects).toEqual([{ projectId: "p1" }])
     expect(request.goals).toHaveLength(1)
   })
 
+  it("adds the goals to every chosen project", () => {
+    const request = bulkCreateRequest(plan("mow", "galatian", 1), ["p1", "p2"])
+    expect(request.projects).toEqual([{ projectId: "p1" }, { projectId: "p2" }])
+  })
+
   it("leaves projects null without a project (Default)", () => {
-    const request = bulkCreateRequest(plan("character", "ragnar", 1), undefined)
+    const request = bulkCreateRequest(plan("character", "ragnar", 1), [])
     expect(request.entityType).toBe("Character")
     expect(request.projects).toBeNull()
   })
@@ -62,7 +67,7 @@ describe("sendBulkPlans", () => {
         plan("character", "b", 2),
         plan("mow", "c", 1),
       ],
-      projectId: undefined,
+      projectIds: [],
       send,
       describeError: (error) => (error as Error).message,
       onStatus: (key, status) => statuses.set(key, status),
@@ -83,7 +88,7 @@ describe("sendBulkPlans", () => {
     const send = vi.fn(async () => {})
     const result = await sendBulkPlans({
       plans: [plan("character", "a", 1), plan("character", "b", 1)],
-      projectId: "p1",
+      projectIds: ["p1"],
       only: new Set(["character:b"]),
       send,
       describeError: () => "",

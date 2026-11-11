@@ -8,7 +8,6 @@ import { cn } from "@workspace/ui/lib/utils"
 import { maxAbilityLevel } from "@workspace/game-domain"
 
 import { MAX_GOALS_PER_TYPE, progressionLabel } from "@/entities/goal"
-import { ProjectSelect } from "@/entities/project"
 import {
   NumberStepper,
   ProgressionSelect,
@@ -29,6 +28,12 @@ import {
 import type { BulkUnitStatus } from "../../model/bulk-create/bulk-goal-submit"
 import { useBulkGoalForm } from "../../model/bulk-create/use-bulk-goal-form"
 import { useBulkGoalSubmit } from "../../model/bulk-create/use-bulk-goal-submit"
+import { GoalProjectsField } from "../projects/goal-projects-field"
+
+type SentPlans = {
+  plans: readonly BulkUnitPlan[]
+  projectIds: readonly string[]
+}
 
 const STATUS_ICON = { pending: CircleDashed, done: Check, failed: X } as const
 
@@ -51,12 +56,13 @@ export function BulkGoalDialog({
   onCreated: () => void
 }) {
   const submit = useBulkGoalSubmit()
-  // The plans as sent, with their project: the goals list refreshes after each run, which would
+  // The plans as sent, with their projects: the goals list refreshes after each run, which would
   // re-plan sent units as "already a goal".
-  const [sent, setSent] = useState<{
-    plans: readonly BulkUnitPlan[]
-    projectId: string | undefined
-  } | null>(null)
+  const [sent, setSent] = useState<SentPlans | null>(null)
+  // The project picker's popover portals here, inside the dialog's focus trap.
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(
+    null
+  )
   const allDone = sent !== null && !submit.running && submit.failedCount === 0
 
   const close = () => {
@@ -70,6 +76,7 @@ export function BulkGoalDialog({
 
   return (
     <ResponsiveDialog
+      contentRef={setPortalContainer}
       data-testid="bulk-goal-dialog"
       desktopClassName="sm:max-w-2xl"
       onOpenChange={(next) => (next ? onOpenChange(true) : close())}
@@ -80,11 +87,12 @@ export function BulkGoalDialog({
         <BulkGoalDialogContent
           allDone={allDone}
           onClose={close}
-          onCreate={(plans, projectId) => {
-            setSent({ plans, projectId })
-            void submit.submit(plans, projectId)
+          onCreate={(plans, projectIds) => {
+            setSent({ plans, projectIds })
+            void submit.submit(plans, projectIds)
           }}
           onRemoveUnit={onRemoveUnit}
+          portalContainer={portalContainer}
           sent={sent}
           submit={submit}
           units={units}
@@ -99,18 +107,20 @@ function BulkGoalDialogContent({
   sent,
   submit,
   allDone,
+  portalContainer,
   onRemoveUnit,
   onCreate,
   onClose,
 }: {
   units: readonly BulkGoalUnit[]
-  sent: { plans: readonly BulkUnitPlan[]; projectId: string | undefined } | null
+  sent: SentPlans | null
   submit: ReturnType<typeof useBulkGoalSubmit>
   allDone: boolean
+  portalContainer: HTMLElement | null
   onRemoveUnit: (key: string) => void
   onCreate: (
     plans: readonly BulkUnitPlan[],
-    projectId: string | undefined
+    projectIds: readonly string[]
   ) => void
   onClose: () => void
 }) {
@@ -129,7 +139,9 @@ function BulkGoalDialogContent({
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
       <ResponsiveDialogBody className="gap-4 pb-4">
-        {sent === null ? <TargetFields form={form} /> : null}
+        {sent === null ? (
+          <TargetFields form={form} portalContainer={portalContainer} />
+        ) : null}
         <ul className="flex flex-col divide-y rounded-lg border">
           {plans.map((plan) => (
             <UnitRow
@@ -187,7 +199,7 @@ function BulkGoalDialogContent({
             <Button
               data-testid="bulk-goal-create"
               disabled={!form.canCreate}
-              onClick={() => onCreate(form.plans, form.projectId)}
+              onClick={() => onCreate(form.plans, form.projectIds)}
             >
               {t("goals.bulkCreate.submit", { count: form.goalCount })}
             </Button>
@@ -198,7 +210,7 @@ function BulkGoalDialogContent({
               <Button
                 data-testid="bulk-goal-retry"
                 onClick={() =>
-                  void submit.retryFailed(sent.plans, sent.projectId)
+                  void submit.retryFailed(sent.plans, sent.projectIds)
                 }
                 variant="outline"
               >
@@ -221,7 +233,13 @@ function BulkGoalDialogContent({
   )
 }
 
-function TargetFields({ form }: { form: ReturnType<typeof useBulkGoalForm> }) {
+function TargetFields({
+  form,
+  portalContainer,
+}: {
+  form: ReturnType<typeof useBulkGoalForm>
+  portalContainer: HTMLElement | null
+}) {
   const { t } = useTranslation()
   return (
     <section className="grid gap-3" data-testid="bulk-goal-targets">
@@ -282,18 +300,14 @@ function TargetFields({ form }: { form: ReturnType<typeof useBulkGoalForm> }) {
           value={form.ability.value}
         />
       </TargetToggle>
-      <div className="grid gap-1.5">
-        <Label className="text-xs text-muted-foreground">
-          {t("goals.bulkCreate.project")}
-        </Label>
-        <ProjectSelect
-          compact={false}
-          onProjectIdChange={form.setProjectId}
-          projectId={form.projectId}
-          projects={form.projects}
-          testId="bulk-goal-project"
-        />
-      </div>
+      <GoalProjectsField
+        onSelectionChange={form.setProjectIds}
+        portalContainer={portalContainer}
+        projects={form.projects}
+        projectsValid={form.projectIds.length > 0}
+        selectedProjectIds={[...form.projectIds]}
+        testIdPrefix="bulk-goal"
+      />
     </section>
   )
 }

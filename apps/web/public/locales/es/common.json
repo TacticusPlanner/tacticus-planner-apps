@@ -1993,7 +1993,6 @@
         "abilityDecrease": "Bajar el nivel de habilidad",
         "abilityIncrease": "Subir el nivel de habilidad"
       },
-      "project": "Proyecto",
       "summary_one": "{{count}} objetivo para {{units}}",
       "summary_other": "{{count}} objetivos para {{units}}",
       "unitCount_one": "{{count}} unidad",
