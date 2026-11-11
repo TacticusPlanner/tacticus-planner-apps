@@ -22,11 +22,13 @@ const dist = path.resolve(
 )
 
 // Baseline before trim-startup-bundle: 2430 KB shared, 95 modulepreload links.
-const BUNDLE_BUDGET_KB = Number(process.env.BUNDLE_BUDGET_KB ?? 1310)
+// 1315: the Account settings dialog moved to ResponsiveDialog with a footer action slot (it is
+// statically reachable from the shell's account menu), taking the shared graph from 1309 to 1311 KB.
+const BUNDLE_BUDGET_KB = Number(process.env.BUNDLE_BUDGET_KB ?? 1315)
 const MAX_PRELOADS = 20
 // Route -> manifest keys of the page modules React Router loads for it (beyond the entry).
 const ROUTES = {
-  "/": { budgetKb: 1310, modules: [] },
+  "/": { budgetKb: 1315, modules: [] },
   "/home": { budgetKb: 2000, modules: ["src/fsd/pages/home/index.ts"] },
   // 1320: the shell's lazy Legendary Event settings button (its loader and preload list) took the
   // route from 1310 to 1311 KB.
