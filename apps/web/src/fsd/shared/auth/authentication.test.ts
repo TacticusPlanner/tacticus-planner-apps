@@ -842,9 +842,37 @@ describe("authentication", () => {
       })
     })
 
-    it("remembers the session id from the ID token in the account hint", async () => {
+    it("restores and renews with the remembered login_hint claim first", async () => {
+      localStorage.setItem(
+        "tp.auth.accountHint",
+        JSON.stringify({
+          homeAccountId: "g",
+          username: googleAccount.username,
+          signInMethod: "google",
+          loginHint: "opaque-hint",
+          sid: "session-1",
+        })
+      )
+
+      await auth.attemptSilentSignIn(mocks.instance as never)
+
+      expect(mocks.instance.ssoSilent).toHaveBeenCalledExactlyOnceWith({
+        scopes: ["api://planner/access", "email"],
+        loginHint: "opaque-hint",
+      })
+      expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
+        scopes: ["api://planner/access", "email"],
+        loginHint: "opaque-hint",
+        prompt: "none",
+      })
+    })
+
+    it("remembers the login_hint claim and session id from the ID token in the account hint", async () => {
       mocks.instance.getAllAccounts.mockReturnValue([
-        { ...googleAccount, idTokenClaims: { idp: "google.com", sid: "s-9" } },
+        {
+          ...googleAccount,
+          idTokenClaims: { idp: "google.com", sid: "s-9", login_hint: "lh" },
+        },
       ] as never)
 
       await auth.initializeAuthentication()
@@ -853,6 +881,7 @@ describe("authentication", () => {
         homeAccountId: "g",
         username: googleAccount.username,
         signInMethod: "google",
+        loginHint: "lh",
         sid: "s-9",
       })
     })

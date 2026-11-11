@@ -37,13 +37,22 @@ export const SILENT_FRAME_TIMEOUT_MS = 6000
 const ACCOUNT_HINT_KEY = "tp.auth.accountHint"
 
 // `signInMethod` is absent on hints written before it existed; those are treated as unknown.
-// `sid` is the identity-provider session id from the ID token (when the app registration emits
-// it): the one hint that picks the right account in a session holding several.
+// `loginHint` (the ID token's opaque `login_hint` claim) and `sid` (its session id), when the app
+// registration emits them, pick the right account in an identity-provider session holding several.
 type AccountHint = {
   homeAccountId: string
   username: string
   signInMethod?: SignInMethod
+  loginHint?: string
   sid?: string
+}
+
+/** The best hint a remembered account offers for a silent (`prompt=none`) request. */
+function silentHint(
+  hint: AccountHint
+): { loginHint: string } | { sid: string } {
+  if (hint.loginHint) return { loginHint: hint.loginHint }
+  return hint.sid ? { sid: hint.sid } : { loginHint: hint.username }
 }
 
 export function readAccountHint(): AccountHint | null {
@@ -133,6 +142,9 @@ function activateAccount(
       homeAccountId: account.homeAccountId,
       username: account.username,
       signInMethod: getSignInMethod(account),
+      ...(typeof account.idTokenClaims?.login_hint === "string"
+        ? { loginHint: account.idTokenClaims.login_hint }
+        : {}),
       ...(typeof account.idTokenClaims?.sid === "string"
         ? { sid: account.idTokenClaims.sid }
         : {}),
@@ -495,7 +507,7 @@ async function restoreSession(
     if (!hint) return "no-cached-account"
     const outcome = await checkIdentityProviderSession(
       instance,
-      hint.sid ? { sid: hint.sid } : { loginHint: hint.username }
+      silentHint(hint)
     )
     return outcome === "failed" ? renewQuietly(instance, null, hint) : outcome
   }
@@ -560,11 +572,7 @@ async function renewQuietly(
     }
     return instance.loginRedirect({
       scopes: loginRequest.scopes,
-      ...(hint?.sid
-        ? { sid: hint.sid }
-        : hint
-          ? { loginHint: hint.username }
-          : {}),
+      ...(hint ? silentHint(hint) : {}),
       ...none,
     })
   })
