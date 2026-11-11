@@ -10,6 +10,8 @@ import type {
   RankSlotAllocation,
 } from "@/features/goal-farming/@x/goal-planning"
 
+import type { CampaignLockReason } from "../unlock-paths/campaign-track-gate"
+
 // Input/output shapes for the Insights view's plan-wide aggregation (plan-insights-calc.ts), kept
 // separate from the calc itself — mirrors estimate.domain.ts / estimate.ts.
 
@@ -61,15 +63,7 @@ export interface PlanInsightsBlocker {
 }
 
 /** Why a campaign track can't be played yet. */
-export type PlanCampaignLockReason =
-  | { kind: "MissingCoreCharacters"; unitIds: string[] }
-  | {
-      kind: "RequiredCampaignNotCleared"
-      campaignGroupId: CampaignId
-      type: string
-      battlesLeft: number
-    }
-  | { kind: "PowerLevelTooLow"; required: number; current: number }
+export type PlanCampaignLockReason = CampaignLockReason
 
 /** A standing-campaign track worth pushing for the scoped goals (see `computeCampaignProgression`). */
 export interface PlanCampaignProgression {
@@ -88,6 +82,8 @@ export interface PlanCampaignProgression {
     resourceId: EstimateResourceId
     label: string
     count: number
+    /** Battles to beat to reach the closest node that drops it, including the campaigns that must
+     *  be cleared before this track opens. */
     battlesToGo: number
     goalIds: string[]
   }[]

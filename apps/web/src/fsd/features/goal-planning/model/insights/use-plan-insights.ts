@@ -24,6 +24,7 @@ import {
   type PlanInsightsResult,
 } from "./use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
+import { useCampaignGateContext } from "../unlock-paths/use-campaign-gate-context"
 import {
   chunkOrUndefined,
   readyData,
@@ -76,6 +77,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     characterAbilityCostsByLevel,
     releaseTypeByGroupId,
     getCharacter,
+    upgradesReady,
+    battlesReady,
   } = useGoalCatalog()
   const { name: campaignName, fullLabel: campaignFullLabel } =
     useCampaignDisplay()
@@ -96,13 +99,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   )
   const shops = readyData(useCatalogDataset("shops"))
   // "Campaigns to push": who the player owns, their Power Level and the Elite threshold.
-  const ownedUnitIds = readyData(usePlayerChunk("characters", toOwnedUnitIds))
-  const powerLevel = readyData(
-    usePlayerChunk("player-details", chunkOrUndefined)
-  )?.powerLevel
-  const eliteCampaignMinPowerLevel = readyData(
-    useCatalogDataset("global-values", toEliteCampaignMinPowerLevel)
-  )
+  const { ownedUnitIds, powerLevel, eliteCampaignMinPowerLevel } =
+    useCampaignGateContext()
   const levelRules = useLevelRules()
   const { settings: planningSettings } = usePlanningSettings()
 
@@ -139,6 +137,12 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
       planningSettings.xpBookRarity,
     ]
   )
+  // Which nodes are farmable: event progress, battle overrides and the active event change it
+  // without touching `campaignProgressByKey`.
+  const eligibleBattlesKey = useMemo(
+    () => [...battlesById.keys()].sort().join(","),
+    [battlesById]
+  )
   // The Onslaught cadence too, so a catalog refresh that changes it recomputes.
   // And the "Campaigns to push" inputs, which can land after the first run.
   const progressionKey = [
@@ -151,7 +155,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     powerLevel,
     eliteCampaignMinPowerLevel,
   ].join("|")
-  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}:${progressionKey}`
+  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}:${progressionKey}:${eligibleBattlesKey}`
   // A project scope that holds none of the plan's Active goals has nothing to report.
   const hasQuery = Boolean(
     isAuthenticated &&
@@ -177,7 +181,11 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     if (globalPlan.isError) globalPlan.retry()
     if (onslaughtProgressQuery.isError) void onslaughtProgressQuery.refetch()
   }
+  // Upgrades and the eligible battles load separately and start out as empty maps, so without
+  // waiting on them a run can see every crafted material as unfarmable and never redo it.
   const catalogReady =
+    upgradesReady &&
+    battlesReady &&
     !!charactersById &&
     !!mowsById &&
     !!onslaughtRewards?.length &&
@@ -354,11 +362,3 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     retry,
   }
 }
-
-const toOwnedUnitIds = (
-  characters: readonly { unitId: string }[] | null | undefined
-) => new Set((characters ?? []).map((character) => character.unitId))
-
-const toEliteCampaignMinPowerLevel = (
-  values: readonly { eliteCampaignMinPowerLevel?: number }[]
-) => values[0]?.eliteCampaignMinPowerLevel

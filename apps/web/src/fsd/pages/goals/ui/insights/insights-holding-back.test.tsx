@@ -1,4 +1,5 @@
 import { render, screen, within } from "@/test/render"
+import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 import { upgradeIdSchema } from "@workspace/game-domain"
 
@@ -12,6 +13,8 @@ vi.mock(
               kind: "campaign",
               battleId: "elite2-22",
               battlesToGo: 8,
+              prerequisiteBattles: 0,
+              lockReasons: [],
               started: true,
               campaignName: "Fall of Cadia",
               difficultyLabel: "Elite",
@@ -20,7 +23,9 @@ vi.mock(
             {
               kind: "campaign",
               battleId: "elite3-4",
-              battlesToGo: 5,
+              battlesToGo: 3,
+              prerequisiteBattles: 2,
+              lockReasons: [],
               started: false,
               campaignName: "Octarius",
               difficultyLabel: "Elite",
@@ -45,7 +50,7 @@ const goalInfoById = new Map([
 ])
 
 describe("InsightsHoldingBack", () => {
-  it("lists blockers with the goals they stop, then bottlenecks with energy, days and units", () => {
+  it("lists blockers with the goals they stop, then bottlenecks with energy, days and units", async () => {
     render(
       <InsightsHoldingBack
         blockers={[
@@ -87,14 +92,35 @@ describe("InsightsHoldingBack", () => {
     expect(unlocks).toHaveTextContent(
       "Octarius Elite 5 · not started, 5 battles to go"
     )
-    expect(blockers).toHaveTextContent("+1 more location")
+    // The reason is said once for the section, not on each row.
+    expect(blockers).not.toHaveTextContent("No accessible farming location")
+    expect(
+      screen.getByText(
+        "No accessible farming location provides a required resource."
+      )
+    ).toBeInTheDocument()
+    // The rest of the locations open in place.
+    await userEvent.click(
+      within(blockers).getByRole("button", { name: "+1 more location" })
+    )
+    expect(unlocks).toHaveTextContent(
+      "Death Guard 3 · during the campaign event"
+    )
+    expect(
+      within(blockers).getByRole("button", { name: "Show fewer" })
+    ).toHaveAttribute("aria-expanded", "true")
 
     const bottleneck = within(
       screen.getByRole("list", { name: "Bottlenecks" })
     ).getByTestId("insights-bottleneck")
     expect(bottleneck).toHaveTextContent("Material Two ×12")
     expect(bottleneck).toHaveTextContent("600·3 days")
-    expect(bottleneck).toHaveTextContent("Needed for unit-a and unit-b")
+    const needs = within(bottleneck).getByRole("list", { name: "Needed for" })
+    expect(
+      within(needs)
+        .getAllByRole("link")
+        .map((link) => link.textContent)
+    ).toEqual(["unit-a · Rank", "unit-b · Rank"])
   })
 
   it("says so when nothing holds the plan back", () => {

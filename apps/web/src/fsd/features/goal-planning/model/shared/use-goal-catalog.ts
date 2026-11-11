@@ -57,8 +57,11 @@ export function useGoalCatalog() {
   // reached; event nodes only for the active event and once reached), applied through the
   // daily-raids public API so every estimate consumer (Goals, Insights, blockers, per-project)
   // chooses from the same set. Not-yet-loaded event inputs mean no event node is eligible.
-  const { availableBattles, campaignProgressByKey } =
-    useEligibleCampaignBattles(campaignBattles, campaignDefinitions)
+  const {
+    availableBattles,
+    campaignProgressByKey,
+    ready: eligibilityReady,
+  } = useEligibleCampaignBattles(campaignBattles, campaignDefinitions)
   const battlesById = useMemo(
     () =>
       new Map(
@@ -155,6 +158,13 @@ export function useGoalCatalog() {
 
   const loading =
     charactersById === undefined || upgradesRead.status !== "ready"
+  // `upgradesById` / `battlesById` default to empty maps while they load, which reads as "nothing
+  // drops anywhere": a calculation that can't tell must wait on these.
+  const upgradesReady = upgradesRead.status === "ready"
+  const battlesReady =
+    campaignBattles !== undefined &&
+    campaignDefinitions !== undefined &&
+    eligibilityReady
 
   return {
     charactersById,
@@ -176,6 +186,8 @@ export function useGoalCatalog() {
     getMow,
     getEntityName,
     loading,
+    upgradesReady,
+    battlesReady,
   }
 }
 

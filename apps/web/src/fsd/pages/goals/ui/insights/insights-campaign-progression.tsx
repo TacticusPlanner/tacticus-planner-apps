@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { Badge } from "@workspace/ui/components/badge"
 import {
   Card,
   CardContent,
@@ -6,33 +7,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
-import type { CampaignId } from "@workspace/game-domain"
+import { campaignIcon } from "@workspace/game-catalog"
 
-import type {
-  PlanCampaignLockReason,
-  PlanCampaignProgression,
-} from "@/features/goal-planning"
-import { useCampaignDisplay } from "@/shared/lib"
+import type { PlanCampaignProgression } from "@/features/goal-planning"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 
+import { CampaignLockReasons } from "../shared/campaign-lock-reasons"
+import { useCampaignTrackLabel } from "../shared/campaign-track-label"
+import { GoalResourceIcon } from "../shared/goal-resource-icon"
+
 /** "Campaigns to push" (V1's Campaign Progression): the uncleared campaigns that would unblock the
- *  plan's goals or cut their farming energy, each with the battles left, what it unblocks, the energy
- *  it saves and what stops the player from playing it yet. */
+ *  plan's goals or cut their farming energy, each with the battles left, what it unblocks (by
+ *  material icon), the energy it saves and what stops the player from playing it yet, with an
+ *  Unlock goal shortcut for a missing core hero. */
 export function InsightsCampaignProgression({
   campaigns,
 }: {
   campaigns: PlanCampaignProgression[]
 }) {
   const { t, i18n } = useTranslation()
-  const { fullLabel } = useCampaignDisplay()
-  const listFormat = new Intl.ListFormat(i18n.resolvedLanguage)
+  const label = useCampaignTrackLabel()
   const fmt = (value: number) =>
     new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
-  const label = (groupId: CampaignId, type: string) => {
-    const descriptor = campaignDescriptor(groupId, type)
-    return descriptor ? fullLabel(descriptor) : groupId
-  }
 
   if (campaigns.length === 0) return null
 
@@ -47,41 +43,61 @@ export function InsightsCampaignProgression({
       <CardContent>
         <ol
           aria-label={t("goals.insights.progressionTitle")}
-          className="flex flex-col gap-4 text-sm"
+          className="flex flex-col gap-3 text-sm"
         >
           {campaigns.map((campaign) => {
             const icon = campaignIcon(campaign.campaignGroupId, campaign.type)
             return (
               <li
-                className="flex flex-col gap-1"
+                className="flex flex-col gap-2.5 rounded-xl border p-3"
                 data-testid="insights-campaign-progression"
                 key={campaign.key}
               >
-                <span className="flex justify-between gap-2">
-                  <span className="flex min-w-0 items-center gap-1.5 font-medium">
-                    {icon ? (
+                <span className="flex items-center gap-2.5">
+                  {icon ? (
+                    <EntityIcon alt="" className="size-9 shrink-0" src={icon} />
+                  ) : null}
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate font-medium">
+                      {label(campaign.campaignGroupId, campaign.type)}
+                    </span>
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {campaign.started
+                        ? t("goals.insights.battlesLeft", {
+                            count: campaign.battlesLeft,
+                          })
+                        : t("goals.insights.battlesLeftNotStarted", {
+                            count: campaign.battlesLeft,
+                          })}
+                    </span>
+                  </span>
+                  {campaign.energySaved > 0 ? (
+                    <Badge
+                      className="shrink-0 gap-1 tabular-nums"
+                      variant="secondary"
+                    >
                       <EntityIcon
                         alt=""
-                        className="size-5 shrink-0"
-                        src={icon}
+                        className="size-3.5 shrink-0"
+                        src={energyIconUrl}
                       />
-                    ) : null}
-                    {label(campaign.campaignGroupId, campaign.type)}
-                  </span>
-                  <span className="shrink-0 text-muted-foreground tabular-nums">
-                    {campaign.started
-                      ? t("goals.insights.battlesLeft", {
-                          count: campaign.battlesLeft,
-                        })
-                      : t("goals.insights.battlesLeftNotStarted", {
-                          count: campaign.battlesLeft,
-                        })}
-                  </span>
+                      {t("goals.insights.energySaved", {
+                        energy: fmt(campaign.energySaved),
+                      })}
+                    </Badge>
+                  ) : null}
                 </span>
                 {campaign.unblocks.length > 0 ? (
-                  <ul className="flex flex-col gap-0.5 text-xs">
+                  <ul className="flex flex-col gap-1.5 text-xs">
                     {campaign.unblocks.map((unblock) => (
-                      <li key={unblock.resourceId}>
+                      <li
+                        className="flex items-center gap-2"
+                        key={unblock.resourceId}
+                      >
+                        <GoalResourceIcon
+                          className="size-6"
+                          resourceId={unblock.resourceId}
+                        />
                         {t("goals.insights.unblocks", {
                           material: unblock.label,
                           count: unblock.battlesToGo,
@@ -90,26 +106,7 @@ export function InsightsCampaignProgression({
                     ))}
                   </ul>
                 ) : null}
-                {campaign.energySaved > 0 ? (
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <EntityIcon
-                      alt=""
-                      className="size-4 shrink-0"
-                      src={energyIconUrl}
-                    />
-                    {t("goals.insights.energySaved", {
-                      energy: fmt(campaign.energySaved),
-                    })}
-                  </span>
-                ) : null}
-                {campaign.lockReasons.map((reason) => (
-                  <span
-                    className="text-xs text-amber-800 dark:text-amber-400"
-                    key={reason.kind}
-                  >
-                    {lockReasonText(t, reason, label, listFormat)}
-                  </span>
-                ))}
+                <CampaignLockReasons reasons={campaign.lockReasons} />
               </li>
             )
           })}
@@ -117,32 +114,4 @@ export function InsightsCampaignProgression({
       </CardContent>
     </Card>
   )
-}
-
-function lockReasonText(
-  t: ReturnType<typeof useTranslation>["t"],
-  reason: PlanCampaignLockReason,
-  label: (groupId: CampaignId, type: string) => string,
-  listFormat: Intl.ListFormat
-): string {
-  switch (reason.kind) {
-    case "MissingCoreCharacters":
-      return t("goals.insights.lockMissingCore", {
-        units: listFormat.format(
-          reason.unitIds.map((unitId) =>
-            t(`characters:${unitId}`, { defaultValue: unitId })
-          )
-        ),
-      })
-    case "RequiredCampaignNotCleared":
-      return t("goals.insights.lockRequiredCampaign", {
-        campaign: label(reason.campaignGroupId, reason.type),
-        count: reason.battlesLeft,
-      })
-    case "PowerLevelTooLow":
-      return t("goals.insights.lockPowerLevel", {
-        required: reason.required,
-        current: reason.current,
-      })
-  }
 }

@@ -57,6 +57,8 @@ export function usePerProjectEstimates({
     unlockShardCostsById,
     releaseTypeByGroupId,
     getCharacter,
+    upgradesReady,
+    battlesReady,
   } = useGoalCatalog()
   // A new goal's selected Onslaught/Shop acquisition sources (tacticus-planner-apps#103) need these
   // to contribute to this preview the same way they do for Today/Insights/Raids Plan — mirrors
@@ -83,7 +85,10 @@ export function usePerProjectEstimates({
 
   const detailsReady = projectGoalsReady && !globalPlan.loading
 
+  // Upgrades and eligible battles start out as empty maps (see `useGoalCatalog`).
   const catalogReady =
+    upgradesReady &&
+    battlesReady &&
     !!charactersById &&
     !!mowsById &&
     !!onslaughtRewards?.length &&

@@ -1652,6 +1652,7 @@
       "days": "in {{days}} Tagen",
       "blockedLabel": "Blockiert",
       "unavailableRow": "{{material}} ×{{count}}: {{reason}}",
+      "materialCount": "{{material}} ×{{count}}",
       "blocked": {
         "NoFarmLocation": "Kein erreichbarer Farm-Ort liefert eine benötigte Ressource.",
         "FarmingOverrideUnavailable": "Die gewählten Farm-Orte liefern nicht jede benötigte Ressource.",
@@ -1667,7 +1668,8 @@
       "battlesToGoNotStarted_other": "nicht begonnen, noch {{count}} Kämpfe",
       "unlockDuringEvent": "während des Kampagnen-Events",
       "unlockMore_one": "+{{count}} weiterer Ort",
-      "unlockMore_other": "+{{count}} weitere Orte"
+      "unlockMore_other": "+{{count}} weitere Orte",
+      "unlockFewer": "Weniger anzeigen"
     },
     "unlockFlavor": "Sammle die Scherben des Charakters und bereite ihn darauf vor, deinem Kader beizutreten.",
     "filters": {
@@ -1850,7 +1852,8 @@
       "holdingBackTitle": "Was dich aufhält",
       "holdingBackDescription": "Was kein Farmen löst, danach die Ressourcen, die an deinen gewählten Knoten die meiste Energie kosten.",
       "holdingBackNone": "Nichts hält diese Ziele auf.",
-      "neededFor": "Benötigt für {{units}}",
+      "neededFor": "Benötigt für",
+      "blockedGoals": "Blockierte Ziele",
       "missingFarmed": "Gefarmte Ressourcen",
       "missingUpgrades": "Upgrades",
       "missingShards": "Scherben",
@@ -1868,11 +1871,12 @@
       "battlesLeftNotStarted_other": "Nicht begonnen, {{count}} Kämpfe",
       "unblocks_one": "Schaltet {{material}} in {{count}} Kampf frei",
       "unblocks_other": "Schaltet {{material}} in {{count}} Kämpfen frei",
-      "energySaved": "Etwa {{energy}} Energie gespart, sobald abgeschlossen",
+      "energySaved": "Spart etwa {{energy}}",
       "lockMissingCore": "Schalte {{units}} frei, um sie zu spielen",
       "lockRequiredCampaign_one": "Schließe zuerst {{campaign}} ab (noch {{count}} Kampf)",
       "lockRequiredCampaign_other": "Schließe zuerst {{campaign}} ab (noch {{count}} Kämpfe)",
-      "lockPowerLevel": "Erreiche Machtstufe {{required}} (aktuell {{current}})"
+      "lockPowerLevel": "Erreiche Machtstufe {{required}} (aktuell {{current}})",
+      "createUnlockGoal": "Freischalten-Ziel für {{unit}} anlegen"
     },
     "target": {
       "title": "Ziel",

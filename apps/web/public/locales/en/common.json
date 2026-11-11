@@ -1652,6 +1652,7 @@
       "days": "in {{days}} days",
       "blockedLabel": "Blocked",
       "unavailableRow": "{{material}} ×{{count}}: {{reason}}",
+      "materialCount": "{{material}} ×{{count}}",
       "blocked": {
         "NoFarmLocation": "No accessible farming location provides a required resource.",
         "FarmingOverrideUnavailable": "The selected farming locations do not provide every required resource.",
@@ -1667,7 +1668,8 @@
       "battlesToGoNotStarted_other": "not started, {{count}} battles to go",
       "unlockDuringEvent": "during the campaign event",
       "unlockMore_one": "+{{count}} more location",
-      "unlockMore_other": "+{{count}} more locations"
+      "unlockMore_other": "+{{count}} more locations",
+      "unlockFewer": "Show fewer"
     },
     "unlockFlavor": "Gather the character's shards and prepare them to join your roster.",
     "filters": {
@@ -1850,7 +1852,8 @@
       "holdingBackTitle": "What's holding you back",
       "holdingBackDescription": "What no farming clears, then the resources that take the most energy at your chosen nodes.",
       "holdingBackNone": "Nothing is holding these goals back.",
-      "neededFor": "Needed for {{units}}",
+      "neededFor": "Needed for",
+      "blockedGoals": "Goals it blocks",
       "missingFarmed": "Farmed resources",
       "missingUpgrades": "Upgrades",
       "missingShards": "Shards",
@@ -1868,11 +1871,12 @@
       "battlesLeftNotStarted_other": "Not started, {{count}} battles",
       "unblocks_one": "Unblocks {{material}} in {{count}} battle",
       "unblocks_other": "Unblocks {{material}} in {{count}} battles",
-      "energySaved": "About {{energy}} energy saved once cleared",
+      "energySaved": "Saves about {{energy}}",
       "lockMissingCore": "Unlock {{units}} to play it",
       "lockRequiredCampaign_one": "Clear {{campaign}} first ({{count}} battle left)",
       "lockRequiredCampaign_other": "Clear {{campaign}} first ({{count}} battles left)",
-      "lockPowerLevel": "Reach Power Level {{required}} (you're at {{current}})"
+      "lockPowerLevel": "Reach Power Level {{required}} (you're at {{current}})",
+      "createUnlockGoal": "Add Unlock goal for {{unit}}"
     },
     "target": {
       "title": "Target",
