@@ -4,6 +4,7 @@ import { I18nextProvider } from "react-i18next"
 import type { UnitId } from "@workspace/game-domain"
 
 import type { CreateCombinedGoalsRequest, GoalDetail } from "@/entities/goal"
+import { ApiError } from "@/shared/api"
 import { createTestI18n } from "@/test/i18n"
 import { fireEvent, render, screen, waitFor, within } from "@/test/render"
 
@@ -99,7 +100,8 @@ describe("BulkGoalDialog", () => {
 
   it("sends one request per unit and continues past a failure, then retries only the failed one", async () => {
     api.create.mockImplementation(async (request) => {
-      if (request.entityId === "spaceRagnar") throw new Error("boom")
+      if (request.entityId === "spaceRagnar")
+        throw new ApiError(503, "API request failed with status 503")
       return {}
     })
     const { onCreated, onOpenChange } = renderDialog([ragnar, tigurius])
@@ -115,7 +117,11 @@ describe("BulkGoalDialog", () => {
       projects: [{ projectId: "default" }],
     })
     expect(rows()[0]).toHaveAttribute("data-status", "failed")
-    expect(within(rows()[0]!).getByText("boom")).toBeInTheDocument()
+    expect(
+      within(rows()[0]!).getByText(
+        "Couldn't reach the server. Please try again."
+      )
+    ).toBeInTheDocument()
     expect(rows()[1]).toHaveAttribute("data-status", "done")
 
     api.create.mockResolvedValue({})

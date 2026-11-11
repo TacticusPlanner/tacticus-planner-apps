@@ -8,18 +8,14 @@ import {
   buildCreateGoalSnapshot,
   createCombinedGoals,
   goalQueries,
-  isGoalLimitError,
-  MAX_GOALS_PER_TYPE,
   type GoalKind,
   type ProjectMembership,
 } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
-import { ApiError } from "@/shared/api"
 import { useUnitName } from "@/shared/unit-name"
 
+import { goalCreateErrorText } from "../goal-create-error"
 import { buildCombinedGoalSpecs } from "./goal-spec-builder"
-import { projectConflictText } from "@/features/goal-planning/@x/goal-create"
-import { goalSlotConflict } from "@/features/goal-planning/@x/goal-create"
 import type { EntityType } from "./use-create-goal-form"
 
 type SpecParams = Parameters<typeof buildCombinedGoalSpecs>[0]
@@ -122,22 +118,7 @@ export function useGoalSubmit({
   // conflict raised after the pre-check (another session took the same slot first) names the existing
   // goal holding it rather than the server's generic sentence.
   const error = createGoals.error
-  const conflict = goalSlotConflict(error)
-  const errorMessage = !error
-    ? null
-    : conflict
-      ? projectConflictText(
-          t,
-          conflict.current,
-          getUnitName(conflict.current.entityType, conflict.current.entityId)
-        )
-      : isGoalLimitError(error)
-        ? t("goals.limits.goalLimitReachedGeneric", {
-            max: MAX_GOALS_PER_TYPE,
-          })
-        : error instanceof ApiError
-          ? error.message
-          : t("goals.create.genericError")
+  const errorMessage = error ? goalCreateErrorText(t, error, getUnitName) : null
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
