@@ -484,6 +484,44 @@ describe("RaidSchedule location emphasis", () => {
     expect(within(row).getByText("3 upgrades left")).toHaveClass("sr-only")
   })
 
+  it("shows a later location the goal's whole need, not what is left after an earlier location's expected drops", () => {
+    // Needs 3: B1 is raided out (3 attempts, expected 1.2 drops), leaving 1.8 for B2 in the plan.
+    render(
+      <RaidSchedule
+        attemptsLeftByBattle={
+          new Map([
+            [b1, 3],
+            [b2, 5],
+          ])
+        }
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[
+          { ...entry(b1, 3, 3), itemsFarmed: 1.2, remainingBefore: 3 },
+          { ...entry(b2, 3, 5), itemsFarmed: 1.8, remainingBefore: 1.8 },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Saim-Hann Mirror", "Elite 38")],
+            [b2, location("B2", "Saim-Hann Mirror", "Elite 7")],
+          ])
+        }
+        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    expect(screen.getByTestId(`raid-location-${b1}`)).not.toHaveTextContent(
+      /more/
+    )
+    expect(
+      within(screen.getByTestId(`raid-location-${b2}`)).getByText("3 more")
+    ).toBeInTheDocument()
+  })
+
   it("excludes a fully-raided location from the card but keeps the card for its other locations", () => {
     render(
       <RaidSchedule

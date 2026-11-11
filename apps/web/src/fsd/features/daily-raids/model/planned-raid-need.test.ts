@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest"
 import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
 
-import { plannedRaidNeed, plannedRaidNeedForEntry } from "./planned-raid-need"
+import {
+  materialNeed,
+  plannedRaidNeed,
+  plannedRaidNeedForEntry,
+} from "./planned-raid-need"
 
 const entry = (
   overrides: Partial<Parameters<typeof plannedRaidNeed>[0]> = {}
@@ -66,6 +70,27 @@ describe("plannedRaidNeed", () => {
     ).toBe("shards")
   })
 
+  it("names the goal's whole need, not what is left after earlier nodes' expected drops", () => {
+    // Bonus raids report: 8/11 owned, the first node raided out, the second showed "2 more".
+    expect(
+      plannedRaidNeed(entry({ remainingBefore: 1.8, materialNeed: 3 }))
+    ).toEqual({ count: 3, unit: "upgrades" })
+  })
+
+  it("still hides the count when the node cannot cover what is left at it", () => {
+    expect(
+      plannedRaidNeed(
+        entry({
+          dailyAttempts: 3,
+          raidsPerformed: 2,
+          dropRate: 0.5,
+          remainingBefore: 2,
+          materialNeed: 4,
+        })
+      )
+    ).toBeUndefined()
+  })
+
   it("treats a node without a daily cap as never raided out", () => {
     expect(
       plannedRaidNeed(
@@ -88,5 +113,27 @@ describe("plannedRaidNeedForEntry", () => {
     expect(
       plannedRaidNeedForEntry({ ...base, itemsFarmed: 2, remainingBefore: 6 })
     ).toBeUndefined()
+  })
+})
+
+describe("materialNeed", () => {
+  const need = (goalId: string, remainingBefore: number) => ({
+    goalId,
+    resourceId: "upgrade-1" as RaidBreakdownEntry["resourceId"],
+    remainingBefore,
+  })
+
+  it("takes a goal's need from its first planned node", () => {
+    expect(materialNeed([need("goal-a", 4), need("goal-a", 2.6)])).toBe(4)
+  })
+
+  it("sums the needs of the goals on a combined card", () => {
+    expect(
+      materialNeed([need("goal-a", 4), need("goal-a", 2.6), need("goal-b", 3)])
+    ).toBe(7)
+  })
+
+  it("is 0 without entries", () => {
+    expect(materialNeed([])).toBe(0)
   })
 })

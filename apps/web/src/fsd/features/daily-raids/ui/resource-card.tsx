@@ -14,7 +14,10 @@ import type {
 } from "../model/daily-raids.domain"
 import { isLocationVisible } from "../model/location-visibility"
 import { CantRaidMenu, ManualBattleBadge } from "./manual-battle"
-import { plannedRaidNeedForEntry } from "../model/planned-raid-need"
+import {
+  materialNeed,
+  plannedRaidNeedForEntry,
+} from "../model/planned-raid-need"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
 import { RaidLocationName, type RaidLocationTarget } from "./raid-location-name"
 import { ResourceIcon, ResourceIconWithTooltip } from "./resource-icon"
@@ -91,6 +94,7 @@ export function ResourceCard({
       isLocationVisible(entry, attemptsLeftByBattle)
     )
     if (visibleEntries.length === 0) return null
+    const need = materialNeed(resourceEntries)
 
     return (
       <Card
@@ -151,7 +155,7 @@ export function ResourceCard({
                       {location?.manual ? <ManualBattleBadge /> : null}
                       <PlannedRaidNeedBadge
                         compact
-                        need={plannedRaidNeedForEntry(entry)}
+                        need={plannedRaidNeedForEntry(entry, need)}
                       />
                     </div>
                   </div>
@@ -195,7 +199,10 @@ export function ResourceCard({
             <div className="flex shrink-0 items-center gap-1">
               {resourceEntries[0] ? (
                 <PlannedRaidNeedBadge
-                  need={plannedRaidNeedForEntry(resourceEntries[0])}
+                  need={plannedRaidNeedForEntry(
+                    resourceEntries[0],
+                    materialNeed(resourceEntries)
+                  )}
                 />
               ) : null}
               {onCantRaid ? (

@@ -52,6 +52,7 @@ export function LocationRow({
           raidsPerformed: entry.raidsToPerform,
           dailyAttempts: entry.dailyAttempts,
           remainingBefore: entry.remainingBefore,
+          materialNeed: entry.materialNeed,
           dropRate: entry.dropRate,
         })}
       />
