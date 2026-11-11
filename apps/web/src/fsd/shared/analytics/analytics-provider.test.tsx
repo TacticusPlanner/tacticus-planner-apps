@@ -314,6 +314,22 @@ describe("useAnalyticsActions", () => {
     )
   })
 
+  it("captures Collection's bulk goal creation with only the declared properties", async () => {
+    const { result } = await renderReady()
+
+    result.current.captureEvent({
+      type: "collection_bulk_goals_created",
+      unitCount: 3,
+      goalCount: 5,
+      failedUnitCount: 1,
+    })
+
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "collection_bulk_goals_created",
+      { unit_count: 3, goal_count: 5, failed_unit_count: 1 }
+    )
+  })
+
   it("captures the Library unit page's Create goal with only the declared properties", async () => {
     const { result } = await renderReady()
 

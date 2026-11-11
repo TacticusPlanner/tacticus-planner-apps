@@ -110,6 +110,28 @@ vi.mock("@/shared/player-data-status", () => ({
   usePlayerDataStatus: () => ({ lastSyncedAt: null, syncNow: vi.fn() }),
 }))
 
+// The dialog's own behavior is covered by its feature tests; here it lists the units it was given.
+vi.mock("@/features/goal-create", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/goal-create")>()),
+  BulkGoalDialog: ({
+    open,
+    units,
+    onCreated,
+  }: {
+    open: boolean
+    units: readonly { name: string }[]
+    onCreated: () => void
+  }) =>
+    open ? (
+      <div data-testid="bulk-goal-dialog">
+        {units.map((unit) => unit.name).join(", ")}
+        <button onClick={onCreated} type="button">
+          created
+        </button>
+      </div>
+    ) : null,
+}))
+
 const tour = vi.hoisted(() => ({
   steps: undefined as TourPageSteps | undefined,
 }))
@@ -1475,5 +1497,112 @@ describe("CollectionPage faction grouping", () => {
     expect(
       within(row).getByRole("switch", { name: "Hide unowned" })
     ).toBeInTheDocument()
+  })
+})
+
+describe("CollectionPage select mode", () => {
+  it("is offered beside the summary only when signed in", () => {
+    ready(synced)
+    renderPage(1280)
+    expect(
+      screen.queryByTestId("collection-select-toggle")
+    ).not.toBeInTheDocument()
+    cleanup()
+
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+    expect(screen.getByTestId("collection-select-toggle")).toBeInTheDocument()
+    expect(tour.steps?.desktop.map((step) => step.target)).toContain(
+      '[data-testid="collection-select-toggle"]'
+    )
+  })
+
+  it("selects units instead of opening them and hands them to the dialog", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    fireEvent.click(screen.getByTestId("collection-select-toggle"))
+    expect(screen.getByTestId("collection-select-create")).toBeDisabled()
+    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    fireEvent.click(
+      screen.getByRole("button", { name: "Select Marneus Calgar" })
+    )
+    expect(
+      screen.getByRole("button", { name: "Select Titus" })
+    ).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "2 selected"
+    )
+    expect(screen.queryByTestId("unit-page")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("collection-select-create"))
+    expect(screen.getByTestId("bulk-goal-dialog")).toHaveTextContent(
+      "Titus, Marneus Calgar"
+    )
+  })
+
+  it("selects all shown, clears, and ends with Done", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    fireEvent.click(screen.getByTestId("collection-select-toggle"))
+    fireEvent.click(screen.getByTestId("collection-select-all"))
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "4 selected"
+    )
+    fireEvent.click(screen.getByTestId("collection-select-clear"))
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "0 selected"
+    )
+    fireEvent.click(screen.getByTestId("collection-select-done"))
+    expect(
+      screen.queryByTestId("collection-select-bar")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-select-unit")
+    ).not.toBeInTheDocument()
+  })
+
+  it("ends select mode once the dialog created every unit's goals", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    fireEvent.click(screen.getByTestId("collection-select-toggle"))
+    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    fireEvent.click(screen.getByTestId("collection-select-create"))
+    fireEvent.click(screen.getByRole("button", { name: "created" }))
+    expect(
+      screen.queryByTestId("collection-select-bar")
+    ).not.toBeInTheDocument()
+  })
+
+  it("ends select mode when Compare is turned on", () => {
+    msal.authenticated = true
+    ready(synced)
+    // A fresh element each time, so a rerender reaches the page and reads the new compare state.
+    const tree = () => (
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter initialEntries={["/my-game/collection"]}>
+          <CollectionPage />
+        </MemoryRouter>
+      </I18nextProvider>
+    )
+    setViewportWidth(1280)
+    const view = render(tree())
+
+    fireEvent.click(screen.getByTestId("collection-select-toggle"))
+    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    compareState.current = { mode: "loading" }
+    view.rerender(tree())
+    compareState.current = { mode: "off" }
+    view.rerender(tree())
+    expect(
+      screen.queryByTestId("collection-select-bar")
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId("collection-select-toggle")).toBeInTheDocument()
   })
 })

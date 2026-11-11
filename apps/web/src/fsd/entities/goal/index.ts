@@ -61,6 +61,7 @@ export {
 } from "./model/goal-target-key"
 export type {
   CombinedGoalSpec,
+  CreateCombinedGoalsRequest,
   CreateGoalConfigRequest,
   EditGoalRequest,
   GoalConfig,

@@ -15,6 +15,7 @@ type CollectionStepKey =
   | "view"
   | "quickFilters"
   | "summary"
+  | "selectUnits"
   | "faction"
   | "factionRoster"
   | "owned"
@@ -47,6 +48,7 @@ export function useCollectionTutorial({
   hasUnowned,
   hasSnapshotActions = false,
   compareReady = false,
+  hasSelectToggle = false,
 }: {
   view?: CollectionLayout
   /** Faction grouping on; without it there is no faction group to point at. */
@@ -59,6 +61,8 @@ export function useCollectionTutorial({
   hasSnapshotActions?: boolean
   /** Compare mode shows a comparison (its summary and options are on the page). */
   compareReady?: boolean
+  /** Signed in with a listed roster: the Select units toggle is beside the summary. */
+  hasSelectToggle?: boolean
 }): TourPageSteps {
   const { t } = useTranslation("common")
 
@@ -81,7 +85,12 @@ export function useCollectionTutorial({
       step("quickFilters", "collection-quick-filters", "bottom"),
     ]
     const summary = hasSummary
-      ? [step("summary", "collection-summary", "bottom")]
+      ? [
+          step("summary", "collection-summary", "bottom"),
+          ...(hasSelectToggle
+            ? [step("selectUnits", "collection-select-toggle", "bottom")]
+            : []),
+        ]
       : []
     const faction = (placement: Step["placement"]) =>
       hasGroups && grouped
@@ -151,5 +160,6 @@ export function useCollectionTutorial({
     hasUnowned,
     hasSnapshotActions,
     compareReady,
+    hasSelectToggle,
   ])
 }

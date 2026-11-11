@@ -57,6 +57,15 @@ type LibraryUnitCreateGoalOpenedEvent = {
   goalType: "Unlock" | null
 }
 
+/** Collection's bulk goal creation finished a run (a first Create or a Retry failed). Counts only:
+ *  the units sent, the goals they asked for, and the units whose request failed. */
+type CollectionBulkGoalsCreatedEvent = {
+  type: "collection_bulk_goals_created"
+  unitCount: number
+  goalCount: number
+  failedUnitCount: number
+}
+
 /** A lane's Upgrade impact section was expanded. */
 type LegendaryEventUpgradeImpactExpandedEvent = {
   type: "legendary_event_upgrade_impact_expanded"
@@ -350,6 +359,7 @@ export type AnalyticsEvent =
   | LegendaryEventGoalsPreviewToggledEvent
   | LegendaryEventCreateGoalOpenedEvent
   | LibraryUnitCreateGoalOpenedEvent
+  | CollectionBulkGoalsCreatedEvent
   | LegendaryEventUpgradeImpactExpandedEvent
   | LegendaryEventTeamSuggestionsOpenedEvent
   | LegendaryEventDepthSetEvent

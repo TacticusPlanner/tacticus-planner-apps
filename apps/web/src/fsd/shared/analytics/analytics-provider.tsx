@@ -298,6 +298,13 @@ export function useAnalyticsActions() {
             goal_type: event.goalType,
           })
           break
+        case "collection_bulk_goals_created":
+          client.capture(event.type, {
+            unit_count: event.unitCount,
+            goal_count: event.goalCount,
+            failed_unit_count: event.failedUnitCount,
+          })
+          break
         case "library_unit_create_goal_opened":
           client.capture(event.type, {
             entity_type: event.entityType,
