@@ -797,18 +797,92 @@ describe("authentication", () => {
       ).toBeGreaterThan(0)
     })
 
-    it("renews a Google account without hinting its generated username", async () => {
+    it("renews a Google account with its account, so Entra can pick it among several", async () => {
       mocks.instance.getAllAccounts.mockReturnValue([googleAccount] as never)
 
       await expect(
         auth.attemptSilentSignIn(mocks.instance as never)
       ).resolves.toBe("redirecting")
 
-      expect(mocks.instance.acquireTokenRedirect).not.toHaveBeenCalled()
-      expect(mocks.instance.setActiveAccount).toHaveBeenLastCalledWith(null)
-      expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
+      // MSAL turns the account into the best hint it has (login_hint claim, sid, then username);
+      // prompt=none never shows the password page the username once led to.
+      expect(mocks.instance.loginRedirect).not.toHaveBeenCalled()
+      expect(
+        mocks.instance.acquireTokenRedirect
+      ).toHaveBeenCalledExactlyOnceWith({
+        account: googleAccount,
         scopes: ["api://planner/access", "email"],
         prompt: "none",
+      })
+    })
+
+    it("restores and renews with the remembered session id when the tab holds no account", async () => {
+      localStorage.setItem(
+        "tp.auth.accountHint",
+        JSON.stringify({
+          homeAccountId: "g",
+          username: googleAccount.username,
+          signInMethod: "google",
+          sid: "session-1",
+        })
+      )
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("redirecting")
+
+      expect(mocks.instance.ssoSilent).toHaveBeenCalledExactlyOnceWith({
+        scopes: ["api://planner/access", "email"],
+        sid: "session-1",
+      })
+      expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
+        scopes: ["api://planner/access", "email"],
+        sid: "session-1",
+        prompt: "none",
+      })
+    })
+
+    it("restores and renews with the remembered login_hint claim first", async () => {
+      localStorage.setItem(
+        "tp.auth.accountHint",
+        JSON.stringify({
+          homeAccountId: "g",
+          username: googleAccount.username,
+          signInMethod: "google",
+          loginHint: "opaque-hint",
+          sid: "session-1",
+        })
+      )
+
+      await auth.attemptSilentSignIn(mocks.instance as never)
+
+      expect(mocks.instance.ssoSilent).toHaveBeenCalledExactlyOnceWith({
+        scopes: ["api://planner/access", "email"],
+        loginHint: "opaque-hint",
+      })
+      expect(mocks.instance.loginRedirect).toHaveBeenCalledExactlyOnceWith({
+        scopes: ["api://planner/access", "email"],
+        loginHint: "opaque-hint",
+        prompt: "none",
+      })
+    })
+
+    it("remembers the login_hint claim and session id from the ID token in the account hint", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([
+        {
+          ...googleAccount,
+          idTokenClaims: { idp: "google.com", sid: "s-9", login_hint: "lh" },
+        },
+      ] as never)
+
+      await auth.initializeAuthentication()
+
+      expect(auth.readAccountHint()).toEqual({
+        homeAccountId: "g",
+        username: googleAccount.username,
+        signInMethod: "google",
+        loginHint: "lh",
+        sid: "s-9",
       })
     })
 
