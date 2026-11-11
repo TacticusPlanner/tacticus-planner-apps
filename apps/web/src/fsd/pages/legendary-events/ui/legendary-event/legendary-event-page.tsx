@@ -616,6 +616,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         onMarkToken: marksEditable ? markTokenVoid : undefined,
         onStopTeam: marksEditable ? stopTeamVoid : undefined,
         onTokenShown: marksEditable ? rememberShownToken : undefined,
+        run: runs.run,
         onOpenTeams: openTeams,
       },
       teams: {

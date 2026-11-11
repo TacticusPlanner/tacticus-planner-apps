@@ -258,6 +258,26 @@ describe("NextTokenCard", () => {
     expect(onTokenShown).toHaveBeenCalledOnce()
   })
 
+  it("reports the same token again when the run changes", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const card = (run: number) => (
+      <NextTokenCard
+        event={utharEvent}
+        eventId="votanUthar"
+        isMobile={false}
+        onMarkToken={onMarkToken}
+        onOpenTeams={onOpenTeams}
+        onTokenShown={onTokenShown}
+        run={run}
+        view={view}
+      />
+    )
+    const { rerender } = render(card(1), { wrapper: i18nWrapper(i18n) })
+    rerender(card(2))
+    expect(onTokenShown).toHaveBeenCalledTimes(2)
+  })
+
   it("reports no shown token while marks cannot be written", () => {
     renderCard(buildTokenPlanView(workedViewInput()), { canMark: false })
     expect(onTokenShown).not.toHaveBeenCalled()

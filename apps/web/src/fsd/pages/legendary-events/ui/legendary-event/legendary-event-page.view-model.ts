@@ -197,6 +197,8 @@ interface TokensViewModel {
   onStopTeam: StopTeamHandler | undefined
   /** Remembers a shown token for the cleared-in-sync analytics; absent while marks are not editable. */
   onTokenShown: TokenShownHandler | undefined
+  /** The current run, keying when a shown token is remembered again. */
+  run: number | null
   /** Opens Teams with the lane shown and scrolls its Teams section (or one team's card) into view. */
   onOpenTeams: OpenTeamsHandler
 }
