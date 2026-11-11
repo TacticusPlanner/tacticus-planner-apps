@@ -2,6 +2,7 @@ export {
   ApiError,
   apiClient,
   apiIssue,
+  hasProblemText,
   isTransientApiError,
   unwrap,
 } from "./api-client"

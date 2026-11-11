@@ -81,13 +81,23 @@ const PROBLEM_MEMBERS = new Set([
   "errors",
 ])
 
+/** The untranslated text of an `ApiError` whose response carried no problem sentence. */
+function fallbackErrorText(status: number): string {
+  return `API request failed with status ${status}`
+}
+
+/** Whether the error's text came from the API's problem body rather than the client's fallback. */
+export function hasProblemText(error: ApiError): boolean {
+  return !!error.message && error.message !== fallbackErrorText(error.status)
+}
+
 /**
  * Reads a failed response as one `ApiError`. The text is the first field message of a validation
  * failure (the actionable one), else the problem's `detail`, else its `title`, else a generic
  * "request failed" text — also used for any body that is not a JSON problem (a proxy error page).
  */
 async function readError(response: Response): Promise<ApiError> {
-  const generic = `API request failed with status ${response.status}`
+  const generic = fallbackErrorText(response.status)
   // The API sends delta seconds only (never an HTTP date).
   const retryAfter = Number(response.headers.get("Retry-After") ?? NaN)
   const retryAfterSeconds =

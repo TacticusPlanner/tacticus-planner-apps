@@ -43,7 +43,7 @@ function goalRows(t: TFunction, goal: BulkPlannedGoal): ReactNode[] {
       return [
         <PlannedRow
           end={<ProgressionIcons progression={goal.end} />}
-          key="Ascension"
+          key={`Ascension-${goal.end}`}
           label={plannedGoalLabel(t, goal)}
           start={<ProgressionIcons progression={goal.start} />}
           tag={goal.added ? t("goals.bulkCreate.goal.needed") : undefined}

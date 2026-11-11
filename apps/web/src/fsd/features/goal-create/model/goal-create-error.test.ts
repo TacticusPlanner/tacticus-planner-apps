@@ -42,6 +42,16 @@ describe("goalCreateErrorText", () => {
     ).toBe("The selected unit is already unlocked.")
   })
 
+  it("reads a 4xx without a problem sentence as a generic failure, not raw status text", () => {
+    expect(
+      goalCreateErrorText(
+        t,
+        new ApiError(400, "API request failed with status 400"),
+        unitName
+      )
+    ).toBe("goals.create.genericError")
+  })
+
   it("translates the per-type goal cap", () => {
     expect(
       goalCreateErrorText(

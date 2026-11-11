@@ -9,7 +9,13 @@ vi.mock("@/shared/config", () => ({
 
 import { lastRequest } from "@/test/last-request"
 
-import { ApiError, apiClient, isTransientApiError, unwrap } from "./api-client"
+import {
+  ApiError,
+  apiClient,
+  hasProblemText,
+  isTransientApiError,
+  unwrap,
+} from "./api-client"
 
 describe("API client problem bodies", () => {
   beforeEach(() => {
@@ -236,5 +242,14 @@ describe("typed API client", () => {
     expect(
       isTransientApiError(await failure.catch((error: unknown) => error))
     ).toBe(true)
+  })
+})
+
+describe("hasProblemText", () => {
+  it("tells the API's sentence from the client's status fallback", () => {
+    expect(hasProblemText(new ApiError(400, "Rank is too high."))).toBe(true)
+    expect(
+      hasProblemText(new ApiError(400, "API request failed with status 400"))
+    ).toBe(false)
   })
 })
