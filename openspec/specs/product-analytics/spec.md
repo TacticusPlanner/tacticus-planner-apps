@@ -186,6 +186,13 @@ While a user is identified, the client SHALL report Core Web Vitals (CLS, INP, L
 - **WHEN** the LCP metric is reported
 - **THEN** it is reported against `/library/characters/:entityId`, not `/home`
 
+#### Scenario: A layout shift or slow interaction is sent from a later page
+
+- **GIVEN** an identified user's page shifts, or responds slowly to a tap, on `/legendary-events/:eventId/:tab`, and the user then moves to `/home`
+- **WHEN** the CLS or INP value is sent from `/home` as the page is hidden
+- **THEN** the metric is labelled with `/legendary-events/:eventId/:tab`, the route open at its largest shift or at its slowest interaction, in its own `web_vitals_<metric>_route` property
+- **AND** the event's own path is that route only when every metric it carries was measured there
+
 #### Scenario: A layout shift is attributed
 
 - **WHEN** a CLS value is reported for an identified user

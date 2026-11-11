@@ -143,6 +143,7 @@ export function LaneSelector({
             <ToggleGroupItem
               className="min-h-11 flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
               data-testid={`legendary-event-lane-pick-${lane}`}
+              id={`le-lane-pick-${lane}`}
               key={lane}
               value={lane}
             >
@@ -178,6 +179,7 @@ export function LaneSelector({
             className="min-w-24 gap-1.5 px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
             data-lane={laneId}
             data-testid="legendary-event-lane-switch"
+            id={`le-lane-switch-${laneId}`}
             key={laneId}
             value={laneId}
           >
