@@ -51,7 +51,10 @@ export function TokenObjectives({
             key={id}
             title={label}
           >
-            <ObjectiveIcon className="size-4" icon={icon} />
+            <ObjectiveIcon
+              className={compact ? "size-6" : "size-5"}
+              icon={icon}
+            />
             <span className={cn(compact && "sr-only")}>{label}</span>
           </li>
         )
