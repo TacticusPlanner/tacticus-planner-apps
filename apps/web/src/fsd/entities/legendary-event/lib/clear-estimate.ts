@@ -187,6 +187,34 @@ export function teamPower(
   )
 }
 
+/** Each member's power without horde-mode multipliers, in member order (a locked member is 0);
+ *  null when any member's power is unavailable. */
+export function memberPowers(
+  memberUnitIds: readonly string[],
+  roster: ClearEstimateRoster,
+  context: UnitPowerContext | null
+): number[] | null {
+  const powers: number[] = []
+  for (const unitId of memberUnitIds) {
+    const power = unitPower(unitId, roster, context)
+    if (power === null) return null
+    powers.push(power)
+  }
+  return powers
+}
+
+/** The ratio r at which `effectivePower` exactly meets a battle of catalog power `battlePower` on
+ *  the shipped curve: above `sureRatio` the battle reads as a safe clear, below `stretchRatio` out of
+ *  reach. Analytics compare it with what the team really cleared to refit the ratios. */
+export function battlePowerRatio(
+  effectivePower: number,
+  battlePower: number
+): number {
+  return (
+    effectivePower / requiredClearPower(battlePower, 1, CLEAR_ESTIMATE_CURVE)
+  )
+}
+
 /** Power × the unit's horde-mode multiplier; 0 when the roster does not hold it, null when its
  *  power is unavailable. */
 export function unitEffectivePower(

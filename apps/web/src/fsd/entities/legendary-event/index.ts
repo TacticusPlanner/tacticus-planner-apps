@@ -170,7 +170,9 @@ export { type NamedTeam, withLanePrefix } from "./lib/team-display-name"
 export { useTeamDisplayName } from "./model/use-team-display-name"
 export {
   CLEAR_ESTIMATE_CURVE_VERSION,
+  battlePowerRatio,
   laneBattlePowers,
+  memberPowers,
   teamClearEstimate,
   teamEffectiveDepth,
   teamPower,

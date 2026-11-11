@@ -37,6 +37,7 @@ vi.mock("@/shared/unit-name", () => ({
 let i18n: I18n
 const onMarkToken = vi.fn()
 const onStopTeam = vi.fn()
+const onTokenShown = vi.fn()
 const onOpenTeams = vi.fn()
 
 function renderCard(
@@ -60,6 +61,7 @@ function renderCard(
       isMobile={isMobile}
       onMarkToken={canMark ? onMarkToken : undefined}
       onStopTeam={canMark ? onStopTeam : undefined}
+      onTokenShown={canMark ? onTokenShown : undefined}
       onOpenTeams={onOpenTeams}
       missionsInput={missionsInput}
       onViewPlan={onViewPlan}
@@ -121,6 +123,7 @@ describe("NextTokenCard", () => {
     capture.mockReset()
     onMarkToken.mockReset()
     onStopTeam.mockReset()
+    onTokenShown.mockReset()
     onOpenTeams.mockReset()
   })
 
@@ -230,6 +233,54 @@ describe("NextTokenCard", () => {
     expect(screen.getByTestId("next-token-reason")).toHaveTextContent(
       "Most points among battles you can play now"
     )
+  })
+
+  it("reports the shown token once per battle and team, not on re-renders", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const { rerender } = renderCard(view)
+    expect(onTokenShown).toHaveBeenCalledExactlyOnceWith(view.next.token)
+
+    rerender(
+      <NextTokenCard
+        event={utharEvent}
+        eventId="votanUthar"
+        isMobile={false}
+        onMarkToken={onMarkToken}
+        onOpenTeams={onOpenTeams}
+        onTokenShown={onTokenShown}
+        view={{
+          ...view,
+          next: { ...view.next, token: { ...view.next.token } },
+        }}
+      />
+    )
+    expect(onTokenShown).toHaveBeenCalledOnce()
+  })
+
+  it("reports the same token again when the run changes", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const card = (run: number) => (
+      <NextTokenCard
+        event={utharEvent}
+        eventId="votanUthar"
+        isMobile={false}
+        onMarkToken={onMarkToken}
+        onOpenTeams={onOpenTeams}
+        onTokenShown={onTokenShown}
+        run={run}
+        view={view}
+      />
+    )
+    const { rerender } = render(card(1), { wrapper: i18nWrapper(i18n) })
+    rerender(card(2))
+    expect(onTokenShown).toHaveBeenCalledTimes(2)
+  })
+
+  it("reports no shown token while marks cannot be written", () => {
+    renderCard(buildTokenPlanView(workedViewInput()), { canMark: false })
+    expect(onTokenShown).not.toHaveBeenCalled()
   })
 
   it("marks every cleared cell Stop here with Couldn't clear", () => {

@@ -30,6 +30,7 @@ import {
 } from "../lib/token-plan-view"
 import { useMissionsOrder } from "../model/token-plan-order"
 import { useNextTokenShown } from "../model/use-next-token-shown"
+import { useTokenShown } from "../model/use-token-shown"
 import { TokenPlanOrderSwitch } from "./mission-order-view"
 import { BattleInfoButton } from "./battle-info"
 import { TokenMarkButtons } from "./token-mark-buttons"
@@ -54,6 +55,9 @@ export type StopTeamHandler = (
   teamId: string
 ) => void
 
+/** The card showed a playable Next token (analytics remember it to see whether sync clears it). */
+export type TokenShownHandler = (token: PlannedToken) => void
+
 /** Opens a lane's Teams section, scrolled to one team's card when `teamId` is given. */
 export type OpenTeamsHandler = (
   laneId: LegendaryEventLaneId,
@@ -77,6 +81,8 @@ export function NextTokenCard({
   isMobile,
   onMarkToken,
   onStopTeam,
+  onTokenShown,
+  run = null,
   onOpenTeams,
   onViewPlan,
   missionsInput,
@@ -90,6 +96,10 @@ export function NextTokenCard({
   onMarkToken: MarkTokenHandler | undefined
   /** Stop here on a likely-clear token; absent while depths cannot be written. */
   onStopTeam?: StopTeamHandler
+  /** The shown token, once per battle and team while it can be marked. */
+  onTokenShown?: TokenShownHandler
+  /** The current run, so a token still shown after a run change reports again. */
+  run?: number | null
   onOpenTeams: OpenTeamsHandler
   /** Opens the full token plan. */
   onViewPlan?: () => void
@@ -148,6 +158,8 @@ export function NextTokenCard({
               isMobile={isMobile}
               onMarkToken={onMarkToken}
               onStopTeam={onStopTeam}
+              onTokenShown={onTokenShown}
+              run={run}
               chipOf={chipOf}
               gains={ordered.gains}
               reason={t("tokenPlan.nextToken.reasons.missionsOrder")}
@@ -180,6 +192,8 @@ export function NextTokenCard({
               isMobile={isMobile}
               onMarkToken={onMarkToken}
               onStopTeam={onStopTeam}
+              onTokenShown={onTokenShown}
+              run={run}
               chipOf={chipOf}
               gains={gainsFromProgress(view.missions?.progressed ?? [])}
               reason={t(`tokenPlan.nextToken.reasons.${view.next.reason}`)}
@@ -210,6 +224,8 @@ function TokenView({
   isMobile,
   onMarkToken,
   onStopTeam,
+  onTokenShown,
+  run,
   gains,
   chipOf,
 }: {
@@ -221,6 +237,8 @@ function TokenView({
   isMobile: boolean
   onMarkToken: MarkTokenHandler | undefined
   onStopTeam: StopTeamHandler | undefined
+  onTokenShown: TokenShownHandler | undefined
+  run: number | null
   /** The missions it moves. */
   gains: readonly MissionGain[]
   chipOf: (unitId: string) => EventUnitChipData
@@ -241,6 +259,7 @@ function TokenView({
           })
   const canMark =
     onMarkToken !== undefined && view.upcoming === null && token.playableNow
+  useTokenShown(token, run, canMark ? onTokenShown : undefined)
   const teamDepth = view.depthByTeam.get(token.teamId)
   const band = tokenClearBand(teamDepth, token.battleIndex)
 

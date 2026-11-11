@@ -364,6 +364,8 @@ describe("useLegendaryEventPlan", () => {
       memberCount: null,
       unitIds: null,
       objectiveIndexes: null,
+      memberPowers: null,
+      topMemberShare: null,
       curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
     })
   })
@@ -495,6 +497,8 @@ describe("useLegendaryEventPlan", () => {
       memberCount: null,
       unitIds: null,
       objectiveIndexes: null,
+      memberPowers: null,
+      topMemberShare: null,
       curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
     })
   })
@@ -533,6 +537,8 @@ describe("useLegendaryEventPlan", () => {
           memberCount: null,
           unitIds: null,
           objectiveIndexes: null,
+          memberPowers: null,
+          topMemberShare: null,
           curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
         },
       ])
