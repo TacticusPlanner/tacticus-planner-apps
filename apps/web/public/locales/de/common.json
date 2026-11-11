@@ -1684,7 +1684,9 @@
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden",
       "statusFilterLabel": "Zielstatus-Filter",
       "groupCount_one": "{{count}} Ziel",
-      "groupCount_other": "{{count}} Ziele"
+      "groupCount_other": "{{count}} Ziele",
+      "collapseAllGroups": "Alle einklappen",
+      "expandAllGroups": "Alle ausklappen"
     },
     "seasonFit": {
       "label": "Saison-Passung",

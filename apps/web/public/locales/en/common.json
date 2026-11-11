@@ -1684,7 +1684,9 @@
       "reachedIndicatorLabel": "Reached goals are waiting to be viewed",
       "statusFilterLabel": "Goal status filter",
       "groupCount_one": "{{count}} goal",
-      "groupCount_other": "{{count}} goals"
+      "groupCount_other": "{{count}} goals",
+      "collapseAllGroups": "Collapse all",
+      "expandAllGroups": "Expand all"
     },
     "seasonFit": {
       "label": "Season fit",

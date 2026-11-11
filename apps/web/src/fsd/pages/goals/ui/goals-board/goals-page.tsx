@@ -49,6 +49,7 @@ import { useProjectRemovalFlow } from "./project-removal-flow"
 import { GoalsCreateButton } from "./goals-create-button"
 import { GoalsToolbar } from "./goals-toolbar"
 import { GoalsViewToggle } from "./goals-view-toggle"
+import { GoalsCollapseAllToggle } from "./goals-collapse-all-toggle"
 import { useGoalsView } from "./use-goals-view"
 import { SeasonFitSelect } from "./season-fit-select"
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
@@ -259,7 +260,13 @@ export function GoalsPage() {
       .length,
   }
   const rowGroups = groupRows(rows, group)
-  const { collapsed, toggleCollapsed } = useCollapsedGroups()
+  const { collapsed, toggleCollapsed, setGroupsCollapsed } =
+    useCollapsedGroups()
+  // Collapse/Expand all acts on the sections currently shown (a grouped list only).
+  const shownGroupIds =
+    group === "none" ? [] : rowGroups.map((rowGroup) => rowGroupId(rowGroup))
+  const allGroupsCollapsed =
+    shownGroupIds.length > 0 && shownGroupIds.every((id) => collapsed.has(id))
   // Folded sections are out of view, so select-all and the bulk actions only reach expanded rows.
   const shownRows = expandedRows(rowGroups, collapsed)
   const seasonFit = useSeasonFit(
@@ -435,6 +442,16 @@ export function GoalsPage() {
         reorderToggle={reorderToggle}
         selectToggle={selectToggle}
         statusFilter={statusFilter}
+        collapseToggle={
+          !isLoading && shownGroupIds.length > 0 ? (
+            <GoalsCollapseAllToggle
+              allCollapsed={allGroupsCollapsed}
+              onToggle={() =>
+                setGroupsCollapsed(shownGroupIds, !allGroupsCollapsed)
+              }
+            />
+          ) : null
+        }
         viewToggle={
           <GoalsViewToggle
             disabled={isMobile && reorderActive}

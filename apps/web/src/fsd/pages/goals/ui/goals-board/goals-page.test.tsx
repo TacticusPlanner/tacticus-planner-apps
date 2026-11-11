@@ -878,6 +878,48 @@ describe("GoalsPage", () => {
     window.localStorage.removeItem("goals.overview.collapsedGroups")
   })
 
+  it("collapses and expands every section at once", async () => {
+    window.localStorage.setItem("goals.overview.group", "type")
+    listGoals.mockResolvedValue({
+      goals: [
+        activeGoal,
+        { ...activeGoal, goalId: "goal-2", goalType: "Ability" },
+      ],
+    })
+    const user = userEvent.setup()
+    renderPage()
+
+    const rankToggle = await screen.findByRole("button", {
+      name: "Rank 1 goal",
+    })
+    // One folded section is not all of them: the control still offers Collapse all.
+    await user.click(rankToggle)
+    await user.click(screen.getByRole("button", { name: "Collapse all" }))
+
+    expect(rankToggle).toHaveAttribute("aria-expanded", "false")
+    expect(
+      screen.getByRole("button", { name: "Ability 1 goal" })
+    ).toHaveAttribute("aria-expanded", "false")
+    expect(screen.queryAllByTestId("goal-row")).toHaveLength(0)
+
+    await user.click(screen.getByRole("button", { name: "Expand all" }))
+
+    expect(rankToggle).toHaveAttribute("aria-expanded", "true")
+    expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
+    expect(screen.getByRole("button", { name: "Collapse all" })).toBeVisible()
+
+    window.localStorage.removeItem("goals.overview.group")
+    window.localStorage.removeItem("goals.overview.collapsedGroups")
+  })
+
+  it("offers no Collapse all while the list is not grouped", async () => {
+    listGoals.mockResolvedValue({ goals: [activeGoal] })
+    renderPage()
+
+    await screen.findAllByTestId("goal-row")
+    expect(screen.queryByTestId("goals-collapse-all")).not.toBeInTheDocument()
+  })
+
   it("shows project membership without a project switcher", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     listProjects.mockResolvedValue({ projects: [overviewProject] })
