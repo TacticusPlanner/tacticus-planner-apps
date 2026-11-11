@@ -815,6 +815,8 @@
       "expandRun_other": "{{count}} Kämpfe anzeigen",
       "collapseRun_one": "{{count}} Kampf ausblenden",
       "collapseRun_other": "{{count}} Kämpfe ausblenden",
+      "tokens_one": "{{count}} Token",
+      "tokens_other": "{{count}} Tokens",
       "openTeam": "Team {{team}} öffnen"
     },
     "forecast": {

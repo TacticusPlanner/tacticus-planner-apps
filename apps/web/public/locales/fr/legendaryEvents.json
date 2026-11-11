@@ -815,6 +815,8 @@
       "expandRun_other": "Afficher {{count}} combats",
       "collapseRun_one": "Masquer {{count}} combat",
       "collapseRun_other": "Masquer {{count}} combats",
+      "tokens_one": "{{count}} jeton",
+      "tokens_other": "{{count}} jetons",
       "openTeam": "Ouvrir l’équipe {{team}}"
     },
     "forecast": {

@@ -129,7 +129,12 @@ describe("TokenPlanList", () => {
 
     const run = screen.getByTestId("token-plan-run")
     expect(run).toHaveAttribute("data-count", "3")
-    expect(run).toHaveTextContent("1–3")
+    // The row leads with its token count (the token icon and 3), not the plan range.
+    expect(within(run).getByTestId("token-plan-token-count")).toHaveAttribute(
+      "data-count",
+      "3"
+    )
+    expect(run).toHaveTextContent("3 tokens")
     expect(run).toHaveTextContent("Battles 3–5")
     // Collapsed, it carries the milestone its tokens reach.
     expect(run).toHaveTextContent("Milestone 13 · +85 currency")
