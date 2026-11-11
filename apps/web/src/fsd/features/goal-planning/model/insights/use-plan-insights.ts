@@ -65,6 +65,9 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   const {
     upgradesById,
     battlesById,
+    allBattlesById,
+    campaignProgressByKey,
+    campaignDefinitions,
     charactersById,
     mowsById,
     ascensionCostsById,
@@ -92,6 +95,14 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     useCatalogDataset("global-values", toOnslaughtRunsPerDay)
   )
   const shops = readyData(useCatalogDataset("shops"))
+  // "Campaigns to push": who the player owns, their Power Level and the Elite threshold.
+  const ownedUnitIds = readyData(usePlayerChunk("characters", toOwnedUnitIds))
+  const powerLevel = readyData(
+    usePlayerChunk("player-details", chunkOrUndefined)
+  )?.powerLevel
+  const eliteCampaignMinPowerLevel = readyData(
+    useCatalogDataset("global-values", toEliteCampaignMinPowerLevel)
+  )
   const levelRules = useLevelRules()
   const { settings: planningSettings } = usePlanningSettings()
 
@@ -129,7 +140,18 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     ]
   )
   // The Onslaught cadence too, so a catalog refresh that changes it recomputes.
-  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}`
+  // And the "Campaigns to push" inputs, which can land after the first run.
+  const progressionKey = [
+    allBattlesById?.size,
+    campaignDefinitions?.length,
+    [...campaignProgressByKey]
+      .map(([key, entry]) => `${key}=${entry.highestCompletedBattleIndex}`)
+      .join(","),
+    ownedUnitIds?.size,
+    powerLevel,
+    eliteCampaignMinPowerLevel,
+  ].join("|")
+  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}:${progressionKey}`
   // A project scope that holds none of the plan's Active goals has nothing to report.
   const hasQuery = Boolean(
     isAuthenticated &&
@@ -264,6 +286,21 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             onslaughtRewards: onslaughtRewards,
             onslaughtRunsPerDay,
             shops,
+            campaignProgression: allBattlesById
+              ? {
+                  allBattlesById,
+                  campaignProgressByKey,
+                  definitionsByGroupId: new Map(
+                    (campaignDefinitions ?? []).map((definition) => [
+                      definition.groupId,
+                      definition,
+                    ])
+                  ),
+                  ownedUnitIds,
+                  powerLevel,
+                  eliteCampaignMinPowerLevel,
+                }
+              : undefined,
           })
 
           setFetchState({
@@ -317,3 +354,11 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     retry,
   }
 }
+
+const toOwnedUnitIds = (
+  characters: readonly { unitId: string }[] | null | undefined
+) => new Set((characters ?? []).map((character) => character.unitId))
+
+const toEliteCampaignMinPowerLevel = (
+  values: readonly { eliteCampaignMinPowerLevel?: number }[]
+) => values[0]?.eliteCampaignMinPowerLevel

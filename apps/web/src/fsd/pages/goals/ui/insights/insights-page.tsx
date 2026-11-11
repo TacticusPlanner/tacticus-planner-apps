@@ -13,6 +13,7 @@ import { useGlobalGoalPlan } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
+import { InsightsCampaignProgression } from "./insights-campaign-progression"
 import { InsightsEvents } from "./insights-events"
 import { InsightsHoldingBack } from "./insights-holding-back"
 import { InsightsMissing } from "./insights-missing"
@@ -123,11 +124,16 @@ export function InsightsPage() {
             onslaughtDays={result.onslaughtDays}
           />
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
-            <InsightsHoldingBack
-              blockers={result.blockers}
-              bottlenecks={result.bottlenecks}
-              goalInfoById={goalInfoById}
-            />
+            <div className="flex flex-col gap-6">
+              <InsightsHoldingBack
+                blockers={result.blockers}
+                bottlenecks={result.bottlenecks}
+                goalInfoById={goalInfoById}
+              />
+              <InsightsCampaignProgression
+                campaigns={result.campaignProgression}
+              />
+            </div>
             <div className="flex flex-col gap-6">
               <InsightsEvents
                 benefitingGoalIdsByInsightId={

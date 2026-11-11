@@ -92,4 +92,7 @@ export const campaignDefinitionSchema = z.looseObject({
   coreCharacters: z.array(unitIdSchema),
   types: z.array(z.string()),
   battleIds: z.array(battleIdSchema),
+  // The group that must be fully cleared before this one opens (an Elite group's Standard, a Mirror
+  // Elite group's Mirror), or null. Defaulted so a catalog served before the API added it still parses.
+  requiredCampaignGroupId: campaignIdSchema.nullable().default(null),
 })

@@ -14,6 +14,7 @@ import type {
   PlanInsightsBottleneck,
 } from "@/features/goal-planning"
 
+import { FarmUnlockPaths } from "../shared/farm-unlock-paths"
 import { GoalLink } from "./insights-goal-link"
 import {
   useGoalLabel,
@@ -78,6 +79,14 @@ export function InsightsHoldingBack({
                   <span className="text-xs text-muted-foreground">
                     {t(`goals.estimate.blocked.${blocker.reason}`)}
                   </span>
+                  {blocker.reason === "NoFarmLocation" && blocker.resourceId ? (
+                    <div className="text-xs">
+                      <FarmUnlockPaths
+                        resourceId={blocker.resourceId}
+                        testId="insights-blocker-unlock-paths"
+                      />
+                    </div>
+                  ) : null}
                   <span className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs">
                     {blocker.goalIds.map((goalId) => (
                       <GoalLink

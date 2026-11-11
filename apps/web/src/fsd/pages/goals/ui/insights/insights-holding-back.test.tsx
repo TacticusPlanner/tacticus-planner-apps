@@ -1,6 +1,41 @@
 import { render, screen, within } from "@/test/render"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { upgradeIdSchema } from "@workspace/game-domain"
+
+vi.mock(
+  "@/features/goal-planning/model/unlock-paths/use-farm-unlock-paths",
+  () => ({
+    useFarmUnlockPaths: () => (resourceId: string) =>
+      resourceId === "mat1"
+        ? [
+            {
+              kind: "campaign",
+              battleId: "elite2-22",
+              battlesToGo: 8,
+              started: true,
+              campaignName: "Fall of Cadia",
+              difficultyLabel: "Elite",
+              nodeLabel: "Elite 23",
+            },
+            {
+              kind: "campaign",
+              battleId: "elite3-4",
+              battlesToGo: 5,
+              started: false,
+              campaignName: "Octarius",
+              difficultyLabel: "Elite",
+              nodeLabel: "Elite 5",
+            },
+            {
+              kind: "event",
+              battleId: "event1-3",
+              campaignName: "Death Guard",
+              nodeLabel: "3",
+            },
+          ]
+        : [],
+  })
+)
 
 import { InsightsHoldingBack } from "./insights-holding-back"
 
@@ -44,6 +79,15 @@ describe("InsightsHoldingBack", () => {
       "href",
       "/plan/goals?goal=g1"
     )
+    // How to unblock it: the closest locked nodes, then a count of the rest.
+    const unlocks = within(blockers).getByRole("list", { name: "Unlocks at" })
+    expect(unlocks).toHaveTextContent(
+      "Fall of Cadia Elite 23 · 8 battles to go"
+    )
+    expect(unlocks).toHaveTextContent(
+      "Octarius Elite 5 · not started, 5 battles to go"
+    )
+    expect(blockers).toHaveTextContent("+1 more location")
 
     const bottleneck = within(
       screen.getByRole("list", { name: "Bottlenecks" })

@@ -4,8 +4,46 @@ import { describe, expect, it, vi } from "vitest"
 
 vi.mock("@/features/goal-planning/model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({
-    upgradesById: new Map(),
+    upgradesById: new Map([
+      [
+        "upgHpM004",
+        {
+          id: "upgHpM004",
+          label: "Venerable Battle Mark",
+          farmLocations: [
+            {
+              battleId: "elite2-22",
+              guaranteed: false,
+              effectiveRate: 0.2,
+              numerator: null,
+              denominator: null,
+              isMythic: false,
+            },
+          ],
+        },
+      ],
+    ]),
     charactersById: new Map(),
+    battlesById: new Map(),
+    // Fall of Cadia Elite 23: the player's frontier on that track is battle index 15.
+    allBattlesById: new Map([
+      [
+        "elite2-22",
+        {
+          campaignGroupId: "elite2",
+          type: "Elite",
+          challenge: false,
+          nodeNumber: 23,
+          battleIndex: 22,
+          energyCost: 10,
+          dailyAttempts: 6,
+        },
+      ],
+    ]),
+    campaignProgressByKey: new Map([
+      ["elite2:Elite", { highestCompletedBattleIndex: 15 }],
+    ]),
+    releaseTypeByGroupId: new Map(),
   }),
 }))
 
@@ -173,6 +211,10 @@ describe("BlockedIndicator", () => {
     )
     expect(tooltip).toHaveTextContent(
       "Venerable Battle Mark ×6: No accessible farming location provides a required resource."
+    )
+    // How to get past it: the closest locked node that drops the material.
+    expect(screen.getByRole("list", { name: "Unlocks at" })).toHaveTextContent(
+      "Fall of Cadia Elite 23 · 8 battles to go"
     )
   })
 

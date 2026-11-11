@@ -1659,7 +1659,15 @@
         "SimulationLimit": "L'objectif n'a pas pu être terminé dans l'horizon de planification.",
         "UnsupportedCost": "Le calcul détaillé du coût n'est pas pris en charge pour cet objectif.",
         "FilteredOut": "Tous les lieux de farming sont exclus par vos filtres de raids."
-      }
+      },
+      "unlockAt": "Se débloque à",
+      "battlesToGo_one": "encore {{count}} combat",
+      "battlesToGo_other": "encore {{count}} combats",
+      "battlesToGoNotStarted_one": "non commencé, encore {{count}} combat",
+      "battlesToGoNotStarted_other": "non commencé, encore {{count}} combats",
+      "unlockDuringEvent": "pendant l'événement de campagne",
+      "unlockMore_one": "+{{count}} autre lieu",
+      "unlockMore_other": "+{{count}} autres lieux"
     },
     "unlockFlavor": "Rassemblez les éclats du personnage et préparez-le à rejoindre votre effectif.",
     "filters": {
@@ -1851,7 +1859,20 @@
       "farmingSpot_other": "{{count}} ressources · {{days}}",
       "farmingSpotHint": "Classé selon la part de ce dont vos objectifs ont encore besoin qui tombe par point d'énergie. Chaque ligne indique combien de ressources nécessaires y tombent et les jours pour toutes les y farmer, selon votre énergie quotidienne et les tentatives quotidiennes de chaque nœud.",
       "openSchedule": "Plan jour par jour",
-      "helpsGoals": "Aide ces objectifs"
+      "helpsGoals": "Aide ces objectifs",
+      "progressionTitle": "Campagnes à faire avancer",
+      "progressionDescription": "Campagnes non terminées qui débloquent vos objectifs ou rendent leur farm moins cher, avec ce qui vous empêche encore de les jouer.",
+      "battlesLeft_one": "encore {{count}} combat",
+      "battlesLeft_other": "encore {{count}} combats",
+      "battlesLeftNotStarted_one": "Non commencée, {{count}} combat",
+      "battlesLeftNotStarted_other": "Non commencée, {{count}} combats",
+      "unblocks_one": "Débloque {{material}} en {{count}} combat",
+      "unblocks_other": "Débloque {{material}} en {{count}} combats",
+      "energySaved": "Environ {{energy}} d'énergie économisée une fois terminée",
+      "lockMissingCore": "Débloquez {{units}} pour la jouer",
+      "lockRequiredCampaign_one": "Terminez d'abord {{campaign}} (encore {{count}} combat)",
+      "lockRequiredCampaign_other": "Terminez d'abord {{campaign}} (encore {{count}} combats)",
+      "lockPowerLevel": "Atteignez le niveau de puissance {{required}} (actuellement {{current}})"
     },
     "target": {
       "title": "Objectif",

@@ -1659,7 +1659,15 @@
         "SimulationLimit": "El objetivo no pudo completarse dentro del horizonte de planificación.",
         "UnsupportedCost": "El cálculo detallado de coste no es compatible con este objetivo.",
         "FilteredOut": "Todos los lugares de farmeo están excluidos por tus filtros de incursiones."
-      }
+      },
+      "unlockAt": "Se desbloquea en",
+      "battlesToGo_one": "falta {{count}} batalla",
+      "battlesToGo_other": "faltan {{count}} batallas",
+      "battlesToGoNotStarted_one": "sin empezar, falta {{count}} batalla",
+      "battlesToGoNotStarted_other": "sin empezar, faltan {{count}} batallas",
+      "unlockDuringEvent": "durante el evento de campaña",
+      "unlockMore_one": "+{{count}} ubicación más",
+      "unlockMore_other": "+{{count}} ubicaciones más"
     },
     "unlockFlavor": "Reúne los fragmentos del personaje y prepáralo para unirse a tu plantel.",
     "filters": {
@@ -1851,7 +1859,20 @@
       "farmingSpot_other": "{{count}} recursos · {{days}}",
       "farmingSpotHint": "Ordenado por cuánto de lo que aún necesitan tus objetivos cae por energía. Cada fila muestra cuántos recursos necesarios caen allí y los días para farmearlos todos allí, con tu energía diaria y los intentos diarios de cada nodo.",
       "openSchedule": "Plan día a día",
-      "helpsGoals": "Ayuda a estos objetivos"
+      "helpsGoals": "Ayuda a estos objetivos",
+      "progressionTitle": "Campañas para avanzar",
+      "progressionDescription": "Campañas sin completar que desbloquean tus objetivos o abaratan su farmeo, con lo que aún te impide jugarlas.",
+      "battlesLeft_one": "falta {{count}} batalla",
+      "battlesLeft_other": "faltan {{count}} batallas",
+      "battlesLeftNotStarted_one": "Sin empezar, {{count}} batalla",
+      "battlesLeftNotStarted_other": "Sin empezar, {{count}} batallas",
+      "unblocks_one": "Desbloquea {{material}} en {{count}} batalla",
+      "unblocks_other": "Desbloquea {{material}} en {{count}} batallas",
+      "energySaved": "Unos {{energy}} de energía ahorrados al completarla",
+      "lockMissingCore": "Desbloquea a {{units}} para jugarla",
+      "lockRequiredCampaign_one": "Completa antes {{campaign}} (falta {{count}} batalla)",
+      "lockRequiredCampaign_other": "Completa antes {{campaign}} (faltan {{count}} batallas)",
+      "lockPowerLevel": "Alcanza el nivel de poder {{required}} (tienes {{current}})"
     },
     "target": {
       "title": "Objetivo",
