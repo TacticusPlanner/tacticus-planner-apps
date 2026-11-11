@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react"
 import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 
 import type {
+  EventUnitChipData,
   LegendaryEvent,
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
@@ -15,12 +16,13 @@ import type { TokenMissionStep } from "../lib/mission-order"
 import type { TokenMarker } from "../lib/run-forecast"
 import { groupTokenBattleRuns } from "../lib/token-battle-runs"
 import { groupTokensByTeam } from "../lib/token-groups"
-import type { TokenPlanView } from "../lib/token-plan-view"
+import type { TeamClearDepth, TokenPlanView } from "../lib/token-plan-view"
 import type { RunTokenSection } from "../lib/token-runs"
+import { unknownChip } from "../lib/unit-chips"
 import { BattleInfoButton } from "./battle-info"
 import { TokenMissionSteps } from "./mission-order-view"
 import { TokenObjectives } from "./token-objectives"
-import { TokenMissionsPopover } from "./token-popovers"
+import { TokenMissionsPopover, TokenTeamPopover } from "./token-popovers"
 
 type ReadyView = Extract<TokenPlanView, { kind: "ready" }>
 type PlannedTokenRow = ReadyView["plan"]["tokens"][number]
@@ -95,9 +97,9 @@ export function RunSectionHeader({
   )
 }
 
-/** Plan tokens `start`..`start + count − 1` grouped by consecutive team, each team's consecutive
- *  battles of one lane clearing the same cells folded into one expandable row; numbers are
- *  plan-wide. */
+/** Plan tokens `start`..`start + count − 1` grouped by consecutive team (its name, then its
+ *  members' portraits opening the team's details), each team's consecutive battles of one lane
+ *  clearing the same cells folded into one expandable row; numbers are plan-wide. */
 export function TokenGroups({
   tokens,
   start,
@@ -107,6 +109,9 @@ export function TokenGroups({
   event,
   isMobile,
   onOpenTeam,
+  membersByTeam,
+  depthByTeam,
+  chipOf = unknownChip,
 }: {
   tokens: readonly PlannedTokenRow[]
   start: number
@@ -118,6 +123,12 @@ export function TokenGroups({
   isMobile: boolean
   /** Makes the team names open the team (absent where no editor exists). */
   onOpenTeam?: OpenTeamHandler
+  /** Non-reserve members by team id, shown as portraits beside the team name. */
+  membersByTeam: ReadonlyMap<string, readonly string[]>
+  /** Each team's clear depth, for the team popover. */
+  depthByTeam: ReadonlyMap<string, TeamClearDepth>
+  /** A unit's chip in the team popover (rank, rarity, abilities from the synced roster). */
+  chipOf?: (unitId: string) => EventUnitChipData
 }) {
   return (
     <ol className="flex min-w-0 flex-col gap-3">
@@ -128,14 +139,24 @@ export function TokenGroups({
           data-testid="token-plan-group"
           key={start + group.start}
         >
-          <h4 className="text-sm font-semibold">
-            <TeamName
-              laneId={group.tokens[0]?.laneId}
-              onOpenTeam={onOpenTeam}
-              teamId={group.teamId}
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2">
+            <h4 className="min-w-0 text-sm font-semibold">
+              <TeamName
+                laneId={group.tokens[0]?.laneId}
+                onOpenTeam={onOpenTeam}
+                teamId={group.teamId}
+                teamName={group.teamName}
+              />
+            </h4>
+            <TokenTeamPopover
+              depth={depthByTeam.get(group.teamId)}
+              members={(membersByTeam.get(group.teamId) ?? []).map((unitId) =>
+                chipOf(unitId)
+              )}
               teamName={group.teamName}
+              testId="token-plan-team-members"
             />
-          </h4>
+          </div>
           <ol className="flex min-w-0 flex-col divide-y">
             {groupTokenBattleRuns(group.tokens, start + group.start).map(
               (run) => {

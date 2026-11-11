@@ -96,6 +96,33 @@ describe("TokenPlanList", () => {
     })
   })
 
+  it("shows each team's members as portraits that open the team's details", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    renderList(view)
+    expand()
+
+    const groups = screen.getAllByTestId("token-plan-group")
+    for (const group of groups) {
+      const members =
+        view.kind === "ready"
+          ? view.membersByTeam.get(group.dataset.team!)
+          : undefined
+      expect(
+        within(group)
+          .queryAllByTestId("token-plan-team-members-portrait")
+          .map((portrait) => portrait.dataset.unit)
+      ).toEqual(members ?? [])
+    }
+
+    const five = groups.find((group) => group.dataset.team === "five")!
+    fireEvent.click(within(five).getByTestId("token-plan-team-members"))
+    const popover = screen.getByTestId("token-plan-team-members-popover")
+    expect(popover).toHaveTextContent("Five")
+    expect(within(popover).getAllByTestId("next-token-member")).toHaveLength(
+      view.kind === "ready" ? view.membersByTeam.get("five")!.length : 0
+    )
+  })
+
   it("folds a team's consecutive battles clearing the same cells into one expandable row", () => {
     renderList(buildTokenPlanView(workedViewInput()))
     expand()

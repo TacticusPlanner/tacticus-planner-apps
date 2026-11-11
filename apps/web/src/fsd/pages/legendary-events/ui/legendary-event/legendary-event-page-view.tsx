@@ -278,6 +278,7 @@ function LegendaryEventPageBody({
                 })
               : null}
             <TokenPlanList
+              chipOf={chipOf}
               defaultOpen
               event={props.event}
               eventId={props.event.id}
