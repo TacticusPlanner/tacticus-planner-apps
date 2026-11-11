@@ -123,15 +123,14 @@ export function InsightsPage() {
             goalOutlook={result.goalOutlook}
             onslaughtDays={result.onslaughtDays}
           />
+          {/* Two columns of similar height: what holds the plan back on the left, where to spend
+              energy (farm now, events, campaigns to push) on the right. */}
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
             <div className="flex flex-col gap-6">
               <InsightsHoldingBack
                 blockers={result.blockers}
                 bottlenecks={result.bottlenecks}
                 goalInfoById={goalInfoById}
-              />
-              <InsightsCampaignProgression
-                campaigns={result.campaignProgression}
               />
             </div>
             <div className="flex flex-col gap-6">
@@ -152,6 +151,9 @@ export function InsightsPage() {
                 goalInfoById={goalInfoById}
                 insights={result.eventInsights}
                 title={t("goals.insights.eventsTitle")}
+              />
+              <InsightsCampaignProgression
+                campaigns={result.campaignProgression}
               />
             </div>
           </div>

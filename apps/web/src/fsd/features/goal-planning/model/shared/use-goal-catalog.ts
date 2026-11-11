@@ -45,10 +45,10 @@ export function useGoalCatalog() {
   // Battle economics (energy cost) for the estimation engine (plan §16 phase 4) — mirrors
   // `pages/library/.../use-character-lookup-catalog.ts`'s `battlesById`, duplicated for the same
   // page-can't-import-page reason as the rest of this hook.
-  const campaignBattles = readyData(useCatalogDataset("campaign-battles"))
-  const campaignDefinitions = readyData(
-    useCatalogDataset("campaign-definitions")
-  )
+  const campaignBattlesRead = useCatalogDataset("campaign-battles")
+  const campaignBattles = readyData(campaignBattlesRead)
+  const campaignDefinitionsRead = useCatalogDataset("campaign-definitions")
+  const campaignDefinitions = readyData(campaignDefinitionsRead)
   const releaseTypeByGroupId =
     readyData(
       useCatalogDataset("campaign-definitions", toReleaseTypeByGroupId)
@@ -57,8 +57,13 @@ export function useGoalCatalog() {
   // reached; event nodes only for the active event and once reached), applied through the
   // daily-raids public API so every estimate consumer (Goals, Insights, blockers, per-project)
   // chooses from the same set. Not-yet-loaded event inputs mean no event node is eligible.
-  const { availableBattles, campaignProgressByKey } =
-    useEligibleCampaignBattles(campaignBattles, campaignDefinitions)
+  const {
+    availableBattles,
+    campaignProgressByKey,
+    ready: eligibilityReady,
+    isError: eligibilityError,
+    retry: retryEligibility,
+  } = useEligibleCampaignBattles(campaignBattles, campaignDefinitions)
   const battlesById = useMemo(
     () =>
       new Map(
@@ -155,6 +160,31 @@ export function useGoalCatalog() {
 
   const loading =
     charactersById === undefined || upgradesRead.status !== "ready"
+  // `upgradesById` / `battlesById` default to empty maps while they load, which reads as "nothing
+  // drops anywhere": a calculation that can't tell must wait on these.
+  const upgradesReady = upgradesRead.status === "ready"
+  const battlesReady =
+    campaignBattles !== undefined &&
+    campaignDefinitions !== undefined &&
+    eligibilityReady
+  // A failed read never becomes ready, so callers that wait on the flags above need this to leave
+  // their loading state. A failed override load alone doesn't block (eligibility falls back to
+  // synced progress), so it only counts while eligibility isn't ready.
+  const catalogReadError =
+    upgradesRead.status === "error" ||
+    campaignBattlesRead.status === "error" ||
+    campaignDefinitionsRead.status === "error" ||
+    (eligibilityError && !eligibilityReady)
+  const retryCatalogReads = () => {
+    for (const read of [
+      upgradesRead,
+      campaignBattlesRead,
+      campaignDefinitionsRead,
+    ]) {
+      if (read.status === "error") read.retry()
+    }
+    retryEligibility()
+  }
 
   return {
     charactersById,
@@ -176,6 +206,10 @@ export function useGoalCatalog() {
     getMow,
     getEntityName,
     loading,
+    upgradesReady,
+    battlesReady,
+    catalogReadError,
+    retryCatalogReads,
   }
 }
 

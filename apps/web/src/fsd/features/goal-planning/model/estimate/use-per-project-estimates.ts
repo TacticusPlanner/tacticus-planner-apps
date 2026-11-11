@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { unitIdSchema } from "@workspace/game-domain"
@@ -57,6 +57,9 @@ export function usePerProjectEstimates({
     unlockShardCostsById,
     releaseTypeByGroupId,
     getCharacter,
+    upgradesReady,
+    battlesReady,
+    catalogReadError,
   } = useGoalCatalog()
   // A new goal's selected Onslaught/Shop acquisition sources (tacticus-planner-apps#103) need these
   // to contribute to this preview the same way they do for Today/Insights/Raids Plan — mirrors
@@ -83,7 +86,10 @@ export function usePerProjectEstimates({
 
   const detailsReady = projectGoalsReady && !globalPlan.loading
 
+  // Upgrades and eligible battles start out as empty maps (see `useGoalCatalog`).
   const catalogReady =
+    upgradesReady &&
+    battlesReady &&
     !!charactersById &&
     !!mowsById &&
     !!onslaughtRewards?.length &&
@@ -102,8 +108,13 @@ export function usePerProjectEstimates({
         `${detail.goalId}:${detail.goalType}:${JSON.stringify(detail.config)}`
     )
     .join(",")
+  // Which nodes are farmable: progress and event changes alter it without touching the goals.
+  const eligibleBattlesKey = useMemo(
+    () => [...battlesById.keys()].sort().join(","),
+    [battlesById]
+  )
   // The Onslaught cadence too, so a catalog refresh that changes it re-estimates.
-  const currentKey = `${memberKey}|${newDetailsKey}|${selectedProjectIds.join(",")}|${onslaughtRunsPerDay}`
+  const currentKey = `${memberKey}|${newDetailsKey}|${selectedProjectIds.join(",")}|${onslaughtRunsPerDay}|${eligibleBattlesKey}`
 
   const [state, setState] = useState<{
     key: string
@@ -229,9 +240,19 @@ export function usePerProjectEstimates({
     newDetailsKey,
     dailyEnergy,
     onslaughtRunsPerDay,
+    eligibleBattlesKey,
   ])
 
   if (!hasQuery || newDetails.length === 0) return new Map()
+  // A failed catalog read never becomes ready: say there's no estimate rather than load forever.
+  if (catalogReadError && !catalogReady) {
+    return new Map(
+      selectedProjectIds.map((projectId) => [
+        projectId,
+        { status: "unavailable" },
+      ])
+    )
+  }
 
   if (state.key !== currentKey) {
     return new Map(

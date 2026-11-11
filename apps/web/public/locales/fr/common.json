@@ -1653,6 +1653,7 @@
       "days": "dans {{days}} jours",
       "blockedLabel": "Bloqué",
       "unavailableRow": "{{material}} ×{{count}} : {{reason}}",
+      "materialCount": "{{material}} ×{{count}}",
       "blocked": {
         "NoFarmLocation": "Aucun lieu de farming accessible ne fournit une ressource requise.",
         "FarmingOverrideUnavailable": "Les lieux de farming sélectionnés ne fournissent pas toutes les ressources requises.",
@@ -1668,7 +1669,8 @@
       "battlesToGoNotStarted_other": "non commencé, encore {{count}} combats",
       "unlockDuringEvent": "pendant l'événement de campagne",
       "unlockMore_one": "+{{count}} autre lieu",
-      "unlockMore_other": "+{{count}} autres lieux"
+      "unlockMore_other": "+{{count}} autres lieux",
+      "unlockFewer": "Afficher moins"
     },
     "unlockFlavor": "Rassemblez les éclats du personnage et préparez-le à rejoindre votre effectif.",
     "filters": {
@@ -1851,7 +1853,8 @@
       "holdingBackTitle": "Ce qui vous freine",
       "holdingBackDescription": "Ce qu'aucun farming ne résout, puis les ressources qui coûtent le plus d'énergie sur les nœuds choisis.",
       "holdingBackNone": "Rien ne freine ces objectifs.",
-      "neededFor": "Nécessaire pour {{units}}",
+      "neededFor": "Nécessaire pour",
+      "blockedGoals": "Objectifs bloqués",
       "missingFarmed": "Ressources farmées",
       "missingUpgrades": "Améliorations",
       "missingShards": "Éclats",
@@ -1869,11 +1872,12 @@
       "battlesLeftNotStarted_other": "Non commencée, {{count}} combats",
       "unblocks_one": "Débloque {{material}} en {{count}} combat",
       "unblocks_other": "Débloque {{material}} en {{count}} combats",
-      "energySaved": "Environ {{energy}} d'énergie économisée une fois terminée",
+      "energySaved": "Économise environ {{energy}} d'énergie",
       "lockMissingCore": "Débloquez {{units}} pour la jouer",
       "lockRequiredCampaign_one": "Terminez d'abord {{campaign}} (encore {{count}} combat)",
       "lockRequiredCampaign_other": "Terminez d'abord {{campaign}} (encore {{count}} combats)",
-      "lockPowerLevel": "Atteignez le niveau de puissance {{required}} (actuellement {{current}})"
+      "lockPowerLevel": "Atteignez le niveau de puissance {{required}} (actuellement {{current}})",
+      "createUnlockGoal": "Ajouter un objectif de déblocage pour {{unit}}"
     },
     "target": {
       "title": "Objectif",

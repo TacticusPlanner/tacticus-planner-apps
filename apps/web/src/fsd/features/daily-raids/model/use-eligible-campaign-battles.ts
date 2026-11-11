@@ -105,6 +105,12 @@ export function useEligibleCampaignBattles(
       liveProgressRead.status === "error" ||
       campaignProgressRead.status === "error" ||
       campaignEventProgress.isError,
+    /** Re-reads whatever failed, so a caller's error state can offer a retry. */
+    retry: () => {
+      if (liveProgressRead.status === "error") liveProgressRead.retry()
+      if (campaignProgressRead.status === "error") campaignProgressRead.retry()
+      campaignEventProgress.retry()
+    },
   }
 }
 
@@ -139,5 +145,10 @@ export function useEffectiveCampaignEventProgress(isAuthenticated: boolean) {
       synced.status === "ready" &&
       (!isAuthenticated || overridesQuery.isSuccess || overridesQuery.isError),
     isError: overridesQuery.isError || synced.status === "error",
+    /** Re-reads whatever failed: the synced chunk and the override load. */
+    retry: () => {
+      if (synced.status === "error") synced.retry()
+      if (overridesQuery.isError) void overridesQuery.refetch()
+    },
   }
 }
