@@ -1,6 +1,6 @@
 {
   "PowerVomit": {
-    "description": "Afecta a 3 hexágonos en línea recta en una de 6 direcciones. Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> a todas las unidades en los hexágonos afectados. Inflige <style=\"Stat_Damage\">+{[extraDmg_2]} de Daño</style> a las unidades enemigas por cada <i>carga de ¡Waaagh!</i> que tenga <style=\"Faction_Orks\">Zapspitta</style>. Durante <style=\"STAT\">{[nrOfRounds]} rondas</style>, todo el <style=\"DMG_Psychic\">Daño psíquico</style> recibido e infligido por las unidades afectadas aumenta en <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style>.\n\n{[S/AbilityDamageExplanation]}",
+    "description": "Afecta a 3 hexágonos en línea recta en una de 6 direcciones. Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> a todas las unidades en los hexágonos afectados. Inflige <style=\"Stat_Damage\">+{[extraDmg_2]} de Daño</style> a las unidades enemigas por cada nivel de <i>Energía de ¡Waaagh!</i> que tenga <style=\"Faction_Orks\">Zapspitta</style>. Durante <style=\"STAT\">{[nrOfRounds]} rondas</style>, todo el <style=\"DMG_Psychic\">Daño psíquico</style> recibido e infligido por las unidades afectadas aumenta en <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style>.\n\n{[S/AbilityDamageExplanation]}",
     "variables": {
       "minDmg": [
         12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,

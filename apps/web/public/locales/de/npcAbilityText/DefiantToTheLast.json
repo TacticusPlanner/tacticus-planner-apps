@@ -1,0 +1,10 @@
+{
+  "DefiantToTheLast": {
+    "description": "Verbündete <style=\"Rarity_Mythic\">Mythische</style> <style=\"Character\">Charaktere</style> verursachen <style=\"Stat_Damage\">+{[extraDmgPct]} % Schaden</style>, wenn sie in diesem Kampf eine aktive Fähigkeit eingesetzt haben oder sich neben <style=\"Faction_Custodes\">Boudicari</style> befinden.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

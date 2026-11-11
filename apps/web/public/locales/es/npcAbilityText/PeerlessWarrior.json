@@ -1,0 +1,8 @@
+{
+  "PeerlessWarrior": {
+    "description": "Durante cada turno enemigo, después de que <style=\"Faction_Custodes\">Guardia Centinela</style> sea atacado por una unidad enemiga adyacente, realiza un <style=\"NormalAttack\">ataque normal</style> contra el atacante.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

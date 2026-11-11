@@ -1,0 +1,8 @@
+{
+  "PeerlessWarrior": {
+    "description": "Während jedes gegnerischen Zuges führt die <style=\"Faction_Custodes\">Schildwache</style>, nachdem sie von einer benachbarten feindlichen Einheit angegriffen wurde, einen <style=\"NormalAttack\">normalen Angriff</style> gegen den Angreifer aus.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}
