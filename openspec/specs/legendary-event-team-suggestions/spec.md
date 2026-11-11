@@ -14,7 +14,7 @@ For a lane, the planner SHALL build proposals, client side and never stored, as 
 - **Candidates.** For a subset, the units the lane allows that satisfy every objective in it. Units the synced roster lacks are excluded while **Only unlocked** is on.
 - **Order.** Candidates are ordered: units with an Active Unlock, Ascension, Rank or Ability goal first, only while **Prefer units with goals** is on; then effective power on the synced roster (Stage 5), descending; then points per battle, descending; then localized name.
 - **Proposal.** The first five candidates, in that order, with no reserve, when the subset has at least three candidates; a subset with fewer than three has no proposal (a team needs three characters, `legendary-event-team-size`). Its covered objectives are derived from its members (every objective all of them satisfy), and its depth is its Stage 5 team estimate.
-- **Support.** A member is a useful Healer when it has the Healer trait and another member lacks the Mechanical trait, and a useful Mechanic when it has the Mechanic trait and another member has the Mechanical trait. A five-member proposal without a useful Healer takes the first candidate outside it that the player holds with the Healer trait in place of its last member (candidate order) that is neither Healer nor Mechanic and whose swap gives a useful Healer while keeping any useful Mechanic, trying earlier such members if needed; then the same for a Mechanic. Members stay in candidate order.
+- **Support.** A member is a useful Healer when it has the Healer trait and another member lacks the Mechanical trait, and a useful Mechanic when it has the Mechanic trait and another member has the Mechanical trait. A five-member proposal without a useful Healer takes the first candidate outside it that the player holds with the Healer trait in place of its last member (candidate order) that is neither Healer nor Mechanic and whose swap gives a useful Healer while keeping any useful Mechanic, trying earlier such members if needed; then the same for a Mechanic. Members stay in candidate order. The swap only breaks ties: when the supported team's depth is below the five strongest candidates' depth, the proposal keeps the five strongest.
 - **Merging.** Proposals with the same member set are one proposal. A proposal whose member set equals an existing team's on the lane is dropped.
 - **Gain.** A proposal's gain is the lane's reachable points (see `legendary-event-upgrade-impact`) with the proposal added to the lane's existing teams, minus without it.
 - **Tokens saved.** The lane's tokens needed with the existing teams minus with the proposal added, not below 0. Tokens needed sums, over every battle where a reaching team (depth above the battle's index) still has points to earn, the fewest reaching teams whose covered objectives together include every objective open in that battle that any reaching team covers, and at least one.
@@ -77,7 +77,13 @@ Assumptions:
 
 - **GIVEN** a subset with seven candidates, none Mechanical, the five strongest without the Healer trait and the sixth a Healer
 - **WHEN** suggestions are built
-- **THEN** the proposal holds the four strongest and the Healer
+- **THEN** the proposal holds the four strongest and the Healer, when its depth is not below the five strongest's
+
+#### Scenario: Weak healer gives way to a stronger member
+
+- **GIVEN** a subset whose five strongest candidates clear ~6 without the Healer trait, and a held Healer whose swap would drop the team to ~5
+- **WHEN** suggestions are built
+- **THEN** the proposal is the five strongest, without the Healer
 
 #### Scenario: No healer for a fully mechanical team
 

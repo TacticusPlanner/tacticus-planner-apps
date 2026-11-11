@@ -180,16 +180,26 @@ describe("suggestLaneTeams (spec worked examples)", () => {
           suggestion.objectiveIndexes[0] === ULTRAMARINES
       )?.memberUnitIds
 
-    it("swaps a held Healer in for the weakest plain member", () => {
-      // Incisus (Healer) at Stone 1 is the weakest of six held Ultramarines.
-      const held = new Map([
+    const heldWithHealerAt = (rank: "Stone1" | "Silver3") =>
+      new Map([
         ...rosterOf(plain),
-        [
-          "ultraApothecary",
-          { ...rosterUnit("ultraApothecary"), rank: "Stone1" as const },
-        ],
+        ["ultraApothecary", { ...rosterUnit("ultraApothecary"), rank }],
       ])
-      expect(ultramarinesTeam({ roster: held })).toContain("ultraApothecary")
+
+    it("swaps a held Healer in for the weakest plain member when the depth holds", () => {
+      // Incisus (Healer) at Silver 3 is the weakest of six held Ultramarines; the team still
+      // clears ~6 with it in place of the weakest plain member.
+      const members = ultramarinesTeam({ roster: heldWithHealerAt("Silver3") })
+      expect(members).toHaveLength(5)
+      expect(members).toContain("ultraApothecary")
+    })
+
+    it("keeps the stronger member when the Healer would lower the depth", () => {
+      // Incisus at Stone 1 would drop the team from ~6 to ~5 (UserJot: LRE team picks favour
+      // weaker healers).
+      expect(
+        ultramarinesTeam({ roster: heldWithHealerAt("Stone1") })?.toSorted()
+      ).toEqual(plain.toSorted())
     })
 
     it("does not swap in a Healer the player does not hold", () => {
