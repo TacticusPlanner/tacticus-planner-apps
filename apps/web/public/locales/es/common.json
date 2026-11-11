@@ -1653,6 +1653,7 @@
       "days": "en {{days}} días",
       "blockedLabel": "Bloqueado",
       "unavailableRow": "{{material}} ×{{count}}: {{reason}}",
+      "materialCount": "{{material}} ×{{count}}",
       "blocked": {
         "NoFarmLocation": "Ningún lugar de farmeo accesible proporciona un recurso necesario.",
         "FarmingOverrideUnavailable": "Los lugares de farmeo seleccionados no proporcionan todos los recursos necesarios.",
@@ -1668,7 +1669,8 @@
       "battlesToGoNotStarted_other": "sin empezar, faltan {{count}} batallas",
       "unlockDuringEvent": "durante el evento de campaña",
       "unlockMore_one": "+{{count}} ubicación más",
-      "unlockMore_other": "+{{count}} ubicaciones más"
+      "unlockMore_other": "+{{count}} ubicaciones más",
+      "unlockFewer": "Mostrar menos"
     },
     "unlockFlavor": "Reúne los fragmentos del personaje y prepáralo para unirse a tu plantel.",
     "filters": {
@@ -1851,7 +1853,8 @@
       "holdingBackTitle": "Qué te frena",
       "holdingBackDescription": "Lo que ningún farmeo resuelve y, después, los recursos que más energía cuestan en los nodos que elegiste.",
       "holdingBackNone": "Nada frena estos objetivos.",
-      "neededFor": "Necesario para {{units}}",
+      "neededFor": "Necesario para",
+      "blockedGoals": "Objetivos bloqueados",
       "missingFarmed": "Recursos farmeados",
       "missingUpgrades": "Mejoras",
       "missingShards": "Fragmentos",
@@ -1869,11 +1872,12 @@
       "battlesLeftNotStarted_other": "Sin empezar, {{count}} batallas",
       "unblocks_one": "Desbloquea {{material}} en {{count}} batalla",
       "unblocks_other": "Desbloquea {{material}} en {{count}} batallas",
-      "energySaved": "Unos {{energy}} de energía ahorrados al completarla",
+      "energySaved": "Ahorra unos {{energy}} de energía",
       "lockMissingCore": "Desbloquea a {{units}} para jugarla",
       "lockRequiredCampaign_one": "Completa antes {{campaign}} (falta {{count}} batalla)",
       "lockRequiredCampaign_other": "Completa antes {{campaign}} (faltan {{count}} batallas)",
-      "lockPowerLevel": "Alcanza el nivel de poder {{required}} (tienes {{current}})"
+      "lockPowerLevel": "Alcanza el nivel de poder {{required}} (tienes {{current}})",
+      "createUnlockGoal": "Añadir objetivo de desbloqueo para {{unit}}"
     },
     "target": {
       "title": "Objetivo",

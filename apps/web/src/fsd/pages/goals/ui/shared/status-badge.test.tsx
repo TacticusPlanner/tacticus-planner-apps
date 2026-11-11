@@ -43,6 +43,7 @@ vi.mock("@/features/goal-planning/model/shared/use-goal-catalog", () => ({
     campaignProgressByKey: new Map([
       ["elite2:Elite", { highestCompletedBattleIndex: 15 }],
     ]),
+    campaignDefinitions: [],
     releaseTypeByGroupId: new Map(),
   }),
 }))
@@ -148,7 +149,7 @@ describe("BlockedIndicator", () => {
     expect(screen.queryByTestId("goal-restricted-indicator")).toBeNull()
   })
 
-  it("shows the reason text in a hover tooltip on the Restricted indicator, not a native title", async () => {
+  it("shows the reason text in a popover on the Restricted indicator, not a native title", async () => {
     render(
       <BlockedIndicator
         blockers={{
@@ -159,13 +160,13 @@ describe("BlockedIndicator", () => {
     )
     const badge = screen.getByTestId("goal-restricted-indicator")
     expect(badge).not.toHaveAttribute("title")
-    await userEvent.hover(badge)
-    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    await userEvent.click(badge)
+    expect(await screen.findByRole("dialog")).toHaveTextContent(
       "Waiting on a prerequisite goal to be reached first."
     )
   })
 
-  it("shows the reason text in a hover tooltip on the Blocked indicator, not a native title", async () => {
+  it("shows the reason text in a popover on the Blocked indicator, not a native title", async () => {
     render(
       <BlockedIndicator
         blockers={{
@@ -176,8 +177,8 @@ describe("BlockedIndicator", () => {
     )
     const badge = screen.getByTestId("goal-blocked-indicator")
     expect(badge).not.toHaveAttribute("title")
-    await userEvent.hover(badge)
-    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    await userEvent.click(badge)
+    expect(await screen.findByRole("dialog")).toHaveTextContent(
       "Player data for this goal hasn't synced yet."
     )
   })
@@ -204,17 +205,52 @@ describe("BlockedIndicator", () => {
         }}
       />
     )
-    await userEvent.hover(screen.getByTestId("goal-blocked-indicator"))
-    const tooltip = await screen.findByRole("tooltip")
+    await userEvent.click(screen.getByTestId("goal-blocked-indicator"))
+    const tooltip = await screen.findByRole("dialog")
     expect(tooltip).toHaveTextContent(
       "Player data for this goal hasn't synced yet."
     )
     expect(tooltip).toHaveTextContent(
       "Venerable Battle Mark ×6: No accessible farming location provides a required resource."
     )
+    // The material row only repeats a reason the popover doesn't already state.
     // How to get past it: the closest locked node that drops the material.
     expect(screen.getByRole("list", { name: "Unlocks at" })).toHaveTextContent(
       "Fall of Cadia Elite 23 · 8 battles to go"
+    )
+  })
+
+  it("states the no-farm-location reason once, not again on each material row", async () => {
+    render(
+      <BlockedIndicator
+        blockers={{
+          reasons: [{ kind: "EstimateBlocked", reason: "NoFarmLocation" }],
+          isBlocked: true,
+        }}
+        estimate={{
+          status: "Blocked",
+          reason: "NoFarmLocation",
+          resourceIds: ["upgHpM004" as never],
+          actionableResourceIds: [],
+          blockers: [
+            {
+              resourceId: "upgHpM004" as never,
+              reason: "NoFarmLocation",
+              remaining: 6,
+            },
+          ],
+        }}
+      />
+    )
+    await userEvent.click(screen.getByTestId("goal-blocked-indicator"))
+    const popover = await screen.findByRole("dialog")
+    expect(
+      popover.textContent?.match(
+        /No accessible farming location provides a required resource\./g
+      )
+    ).toHaveLength(1)
+    expect(screen.getByTestId("goal-unavailable-materials")).toHaveTextContent(
+      "Venerable Battle Mark ×6"
     )
   })
 
@@ -231,7 +267,7 @@ describe("BlockedIndicator", () => {
       />
     )
     const badge = screen.getByTestId("goal-restricted-indicator")
-    await userEvent.hover(badge)
+    await userEvent.click(badge)
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     const occurrences = (
       tooltip.textContent?.match(
@@ -250,7 +286,7 @@ describe("BlockedIndicator", () => {
         }}
       />
     )
-    await userEvent.hover(screen.getByTestId("goal-restricted-indicator"))
+    await userEvent.click(screen.getByTestId("goal-restricted-indicator"))
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     expect(tooltip.textContent).toMatch(
       /^Restricted: this goal can only partly progress until the following is resolved\./
@@ -277,7 +313,7 @@ describe("BlockedIndicator", () => {
         }}
       />
     )
-    await userEvent.hover(screen.getByTestId("goal-restricted-indicator"))
+    await userEvent.click(screen.getByTestId("goal-restricted-indicator"))
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     expect(tooltip).toHaveTextContent(
       "Waiting on the Bellator Unlock goal to be reached first."
@@ -296,8 +332,8 @@ describe("BlockedIndicator", () => {
         }}
       />
     )
-    await userEvent.hover(screen.getByTestId("goal-blocked-indicator"))
-    expect(await screen.findByRole("tooltip")).not.toHaveTextContent(
+    await userEvent.click(screen.getByTestId("goal-blocked-indicator"))
+    expect(await screen.findByRole("dialog")).not.toHaveTextContent(
       "Restricted: this goal can only partly progress until the following is resolved."
     )
   })
@@ -323,7 +359,7 @@ describe("BlockedIndicator", () => {
       />
     )
     const badge = screen.getByTestId("goal-restricted-indicator")
-    await userEvent.hover(badge)
+    await userEvent.click(badge)
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     expect(tooltip).toHaveTextContent(
       "Waiting on a prerequisite goal to be reached first."
@@ -333,7 +369,7 @@ describe("BlockedIndicator", () => {
     expect(tooltip).toHaveTextContent("capped by level")
   })
 
-  it("renders both indicators as keyboard-focusable buttons, and Tab reaches and opens their tooltip", async () => {
+  it("renders both indicators as keyboard-focusable buttons that open their popover with Enter", async () => {
     const user = userEvent.setup()
     render(
       <>
@@ -358,12 +394,14 @@ describe("BlockedIndicator", () => {
 
     await user.tab()
     expect(restricted).toHaveFocus()
+    await user.keyboard("{Enter}")
     expect(
       await screen.findByTestId("goal-restricted-tooltip")
     ).toBeInTheDocument()
+    await user.keyboard("{Escape}")
 
-    await user.tab()
-    expect(blocked).toHaveFocus()
+    blocked.focus()
+    await user.keyboard("{Enter}")
     expect(
       await screen.findByTestId("goal-blocked-tooltip")
     ).toBeInTheDocument()
@@ -390,7 +428,7 @@ describe("BlockedIndicator", () => {
       />
     )
     const badge = screen.getByTestId("goal-restricted-indicator")
-    await userEvent.hover(badge)
+    await userEvent.click(badge)
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     expect(tooltip).not.toHaveTextContent("Currently reachable:")
   })

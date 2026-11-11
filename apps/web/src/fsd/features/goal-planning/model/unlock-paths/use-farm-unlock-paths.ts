@@ -6,6 +6,7 @@ import { useCampaignDisplay, type FarmLocation } from "@/shared/lib"
 
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { farmUnlockPaths, type FarmUnlockPath } from "./farm-unlock-paths"
+import { useCampaignGateContext } from "./use-campaign-gate-context"
 
 /** A `FarmUnlockPath` with the node's display labels, as `CampaignLocationName` renders them. */
 export type FarmUnlockPathViewModel = FarmUnlockPath & {
@@ -16,7 +17,6 @@ export type FarmUnlockPathViewModel = FarmUnlockPath & {
 }
 
 const noBattles = new Map()
-const noProgress = new Map()
 
 /**
  * Resolves a blocked resource (an upgrade id or `shard:<unit>`) to the locked nodes that drop it,
@@ -30,9 +30,9 @@ export function useFarmUnlockPaths(): (
     charactersById,
     battlesById,
     allBattlesById,
-    campaignProgressByKey,
     releaseTypeByGroupId,
   } = useGoalCatalog()
+  const gate = useCampaignGateContext()
   const { campaignName, difficultyLabel } = useCampaignDisplay()
 
   return useCallback(
@@ -46,9 +46,9 @@ export function useFarmUnlockPaths(): (
         ),
         allBattlesById: battles,
         eligibleBattleIds: new Set(battlesById?.keys() ?? []),
-        campaignProgressByKey: campaignProgressByKey ?? noProgress,
         isEventGroup: (groupId) =>
           releaseTypeByGroupId?.get(groupId) === "event",
+        gate,
       })
       return paths.map((path) => {
         const battle = battles.get(path.battleId)!
@@ -75,10 +75,10 @@ export function useFarmUnlockPaths(): (
     [
       allBattlesById,
       battlesById,
-      campaignProgressByKey,
       campaignName,
       charactersById,
       difficultyLabel,
+      gate,
       releaseTypeByGroupId,
       upgradesById,
     ]

@@ -9,19 +9,17 @@ import type {
 } from "@/features/goal-farming/@x/goal-planning"
 import type { Battle, FarmLocation } from "@/shared/lib"
 
+import {
+  campaignTrackGate,
+  type GateCampaignDefinition,
+} from "../unlock-paths/campaign-track-gate"
 import { netGoalNeeds } from "./plan-bottlenecks"
 import type { PlanCampaignProgression } from "./use-plan-insights.domain"
 
 const TOP_CAMPAIGNS = 5
 
 /** The parts of a campaign definition the progression reads. */
-export interface ProgressionCampaignDefinition {
-  groupId: CampaignId
-  releaseType: string
-  coreCharacters: readonly string[]
-  types: readonly string[]
-  requiredCampaignGroupId: CampaignId | null
-}
+export type ProgressionCampaignDefinition = GateCampaignDefinition
 
 type Need = { count: number; goalIds: Set<string> }
 
@@ -115,8 +113,13 @@ export function computeCampaignProgression(params: {
 
   const frontierOf = (key: string) =>
     params.campaignProgressByKey.get(key)?.highestCompletedBattleIndex
-  const lastIndexOf = (key: string) =>
-    Math.max(...(tracks.get(key) ?? []).map(({ battle }) => battle.battleIndex))
+  const lastIndexByKey = new Map(
+    [...tracks].map(([key, list]) => [
+      key,
+      Math.max(...list.map(({ battle }) => battle.battleIndex)),
+    ])
+  )
+  const lastIndexOf = (key: string) => lastIndexByKey.get(key) ?? -1
   const isCleared = (key: string) =>
     tracks.has(key) && (frontierOf(key) ?? 0) > lastIndexOf(key)
 
@@ -150,6 +153,18 @@ export function computeCampaignProgression(params: {
     const withTrack = (battleId: BattleId) =>
       params.battlesById.has(battleId) || locked.has(battleId)
 
+    const { lockReasons, prerequisiteBattles } = campaignTrackGate(
+      campaignGroupId,
+      {
+        lastIndexByKey,
+        campaignProgressByKey: params.campaignProgressByKey,
+        definitionsByGroupId: params.definitionsByGroupId,
+        ownedUnitIds: params.ownedUnitIds,
+        powerLevel: params.powerLevel,
+        eliteCampaignMinPowerLevel: params.eliteCampaignMinPowerLevel,
+        isElite: params.isElite,
+      }
+    )
     const unblocks: PlanCampaignProgression["unblocks"] = []
     for (const [id, need] of blocked) {
       let closest: number | undefined
@@ -166,7 +181,7 @@ export function computeCampaignProgression(params: {
         resourceId: id,
         label: params.label(id),
         count: need.count,
-        battlesToGo: Math.max(1, closest - frontier + 1),
+        battlesToGo: prerequisiteBattles + Math.max(1, closest - frontier + 1),
         goalIds: [...need.goalIds],
       })
     }
@@ -181,44 +196,6 @@ export function computeCampaignProgression(params: {
     }
     energySaved = Math.round(energySaved)
     if (unblocks.length === 0 && energySaved <= 0) continue
-
-    const lockReasons: PlanCampaignProgression["lockReasons"] = []
-    const definition = params.definitionsByGroupId.get(campaignGroupId)
-    if (definition && params.ownedUnitIds) {
-      const missing = definition.coreCharacters.filter(
-        (unitId) => !params.ownedUnitIds!.has(unitId)
-      )
-      if (missing.length > 0) {
-        lockReasons.push({ kind: "MissingCoreCharacters", unitIds: missing })
-      }
-    }
-    const required = definition?.requiredCampaignGroupId
-    if (required) {
-      const requiredType =
-        params.definitionsByGroupId.get(required)?.types[0] ?? "Standard"
-      const requiredKey = `${required}:${requiredType}`
-      if (tracks.has(requiredKey) && !isCleared(requiredKey)) {
-        lockReasons.push({
-          kind: "RequiredCampaignNotCleared",
-          campaignGroupId: required,
-          type: requiredType,
-          battlesLeft:
-            lastIndexOf(requiredKey) - (frontierOf(requiredKey) ?? 0) + 1,
-        })
-      }
-    }
-    if (
-      params.isElite(campaignGroupId) &&
-      params.powerLevel !== undefined &&
-      params.eliteCampaignMinPowerLevel !== undefined &&
-      params.powerLevel < params.eliteCampaignMinPowerLevel
-    ) {
-      lockReasons.push({
-        kind: "PowerLevelTooLow",
-        required: params.eliteCampaignMinPowerLevel,
-        current: params.powerLevel,
-      })
-    }
 
     unblocks.sort((a, b) => a.battlesToGo - b.battlesToGo)
     results.push({
