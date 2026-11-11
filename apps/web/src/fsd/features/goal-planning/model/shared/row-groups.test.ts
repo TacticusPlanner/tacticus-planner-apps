@@ -45,6 +45,29 @@ describe("groupRows", () => {
     ])
   })
 
+  it("orders type groups by their highest-priority goal under typePriority", () => {
+    const ability = row({ goalId: "goal-1", goalType: "Ability" })
+    const rank = row({ goalId: "goal-2" })
+    const secondAbility = row({
+      goalId: "goal-3",
+      entityId: "hero2",
+      goalType: "Ability",
+    })
+
+    expect(groupRows([ability, rank, secondAbility], "typePriority")).toEqual([
+      {
+        key: "Ability",
+        dimension: "typePriority",
+        rows: [ability, secondAbility],
+      },
+      { key: "Rank", dimension: "typePriority", rows: [rank] },
+    ])
+    // The fixed order still puts Rank first for the same rows.
+    expect(
+      groupRows([ability, rank, secondAbility], "type").map((g) => g.key)
+    ).toEqual(["Rank", "Ability"])
+  })
+
   it("distinguishes a Character from a Mow sharing an entity id", () => {
     const character = row({ goalId: "goal-1" })
     const mow = row({ goalId: "goal-2", entityType: "Mow" })

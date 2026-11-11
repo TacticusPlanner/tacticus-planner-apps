@@ -528,9 +528,9 @@ export function GoalsPage() {
               key={rowGroup.key}
               onToggle={() => toggleCollapsed(groupId)}
               title={
-                rowGroup.dimension === "type"
-                  ? t(`goals.create.goalTypes.${firstRow.goalType}`)
-                  : getEntityName(firstRow.entityType, firstRow.entityId)
+                rowGroup.dimension === "unit"
+                  ? getEntityName(firstRow.entityType, firstRow.entityId)
+                  : t(`goals.create.goalTypes.${firstRow.goalType}`)
               }
             >
               {list}
