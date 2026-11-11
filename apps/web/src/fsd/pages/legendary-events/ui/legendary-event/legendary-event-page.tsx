@@ -25,6 +25,7 @@ import {
 import {
   type MarkTokenHandler,
   type StopTeamHandler,
+  type TokenShownHandler,
   tokenMarkOutcome,
   useTokenMissionsSource,
   useTokenPlan,
@@ -64,8 +65,10 @@ import { useLanePotentials } from "./use-lane-potentials"
 import { useCreateGoalFromRow } from "./use-create-goal-from-row"
 import {
   tokenActionEstimateContext,
+  tokenBattleSnapshot,
   tokenResultEvent,
 } from "./token-result-analytics"
+import { useShownTokens } from "./use-shown-tokens"
 import { useEventGoals } from "./use-event-goals"
 import { useEventRuns } from "./use-event-runs"
 import { useImpactTeamName, useUpgradeImpact } from "./use-upgrade-impact"
@@ -383,6 +386,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   )
   const planTeams = plan.query.data?.teams
   const { setDepth } = plan
+  const shownTokens = useShownTokens(eventId, runs.run, progressValue)
   const markTokenVoid = useCallback<MarkTokenHandler>(
     (laneId, battleIndex, objectiveIds, status, teamId) => {
       const team = planTeams?.find((entry) => entry.id === teamId)
@@ -407,6 +411,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         depthBefore?.estimated ?? false
       )
       const dropped = team !== undefined && outcome.depth !== null
+      shownTokens.forget({ laneId, battleIndex })
       if (dropped) void setDepth(team, outcome.depth, shown)
       if (!dropped || outcome.markCells) {
         void markToken(laneId, battleIndex, objectiveIds, status)
@@ -419,6 +424,12 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           battleIndex,
           action: status,
           shown,
+          battle: tokenBattleSnapshot(
+            clearEstimates,
+            laneId,
+            battleIndex,
+            shown
+          ),
           depthBefore,
           depthAfter: dropped ? outcome.depth : (depthBefore?.depth ?? null),
           otherTeamReaches: !outcome.markCells,
@@ -433,6 +444,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       planTeams,
       runs.run,
       setDepth,
+      shownTokens,
       tokenPlan,
     ]
   )
@@ -452,6 +464,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         team,
         depthBefore?.estimated ?? false
       )
+      shownTokens.forget({ laneId, battleIndex })
       void setDepth(team, battleIndex, shown)
       captureEvent(
         tokenResultEvent({
@@ -461,6 +474,12 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           battleIndex,
           action: "stopEarly",
           shown,
+          battle: tokenBattleSnapshot(
+            clearEstimates,
+            laneId,
+            battleIndex,
+            shown
+          ),
           depthBefore,
           depthAfter: battleIndex,
           otherTeamReaches: false,
@@ -474,8 +493,43 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       planTeams,
       runs.run,
       setDepth,
+      shownTokens,
       tokenPlan,
     ]
+  )
+  // Remembers the shown Next token so a later sync that clears it is logged as a success.
+  const rememberShownToken = useCallback<TokenShownHandler>(
+    (token) => {
+      const team = planTeams?.find((entry) => entry.id === token.teamId)
+      if (!team) return
+      const depth =
+        tokenPlan.kind === "ready"
+          ? tokenPlan.depthByTeam.get(token.teamId)
+          : undefined
+      const shown = tokenActionEstimateContext(
+        clearEstimates,
+        token.laneId,
+        team,
+        depth?.estimated ?? false
+      )
+      shownTokens.remember({
+        run: runs.run,
+        laneId: token.laneId,
+        battleIndex: token.battleIndex,
+        teamId: token.teamId,
+        clearedIds: token.clearedIds,
+        depth: depth?.depth ?? null,
+        depthManual: depth ? !depth.estimated : false,
+        shown,
+        battle: tokenBattleSnapshot(
+          clearEstimates,
+          token.laneId,
+          token.battleIndex,
+          shown
+        ),
+      })
+    },
+    [clearEstimates, planTeams, runs.run, shownTokens, tokenPlan]
   )
   const pickerPreview = useCallback(
     (laneId: LegendaryEventLaneId) =>
@@ -561,6 +615,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         view: tokenPlan,
         onMarkToken: marksEditable ? markTokenVoid : undefined,
         onStopTeam: marksEditable ? stopTeamVoid : undefined,
+        onTokenShown: marksEditable ? rememberShownToken : undefined,
         onOpenTeams: openTeams,
       },
       teams: {
@@ -632,6 +687,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     tokenPlan,
     markTokenVoid,
     stopTeamVoid,
+    rememberShownToken,
     openTeams,
     unitPower,
     eventId,

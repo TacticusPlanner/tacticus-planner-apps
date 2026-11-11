@@ -19,6 +19,8 @@ export interface DepthEstimateContext {
   memberCount?: number | null
   unitIds?: readonly string[] | null
   objectiveIndexes?: readonly number[] | null
+  /** Each member's power without horde-mode multipliers, in `unitIds` order. */
+  memberPowers?: readonly number[] | null
   source?: DepthSetSource
 }
 
@@ -31,6 +33,7 @@ export function depthEstimateContext(
     memberCount: number | null
     unitIds: readonly string[] | null
     objectiveIndexes: readonly number[] | null
+    memberPowers?: readonly number[] | null
     source: DepthSetSource
   }
 ): DepthEstimateContext {
@@ -53,6 +56,19 @@ export function estimateSnapshot(shown: DepthEstimateContext) {
     memberCount: shown.memberCount ?? null,
     unitIds: shown.unitIds ?? null,
     objectiveIndexes: shown.objectiveIndexes ?? null,
+    memberPowers: shown.memberPowers ?? null,
+    topMemberShare: topMemberShare(shown.memberPowers),
     curveVersion: CLEAR_ESTIMATE_CURVE_VERSION,
   }
+}
+
+/** The strongest member's share of the members' summed power; null without powers or when they sum
+ *  to 0 (no member owned). Rounded to 3 decimals. */
+function topMemberShare(
+  powers: readonly number[] | null | undefined
+): number | null {
+  if (!powers || powers.length === 0) return null
+  const total = powers.reduce((sum, power) => sum + power, 0)
+  if (total <= 0) return null
+  return Math.round((Math.max(...powers) / total) * 1000) / 1000
 }
