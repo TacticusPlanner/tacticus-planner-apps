@@ -2,7 +2,11 @@ import type { BattleId } from "@workspace/game-domain"
 import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
 
 import { isLocationVisible } from "./location-visibility"
-import { entryDropRate } from "./planned-raid-need"
+import {
+  entryDropRate,
+  goalMaterialKey,
+  goalMaterialNeeds,
+} from "./planned-raid-need"
 
 export type FlattenedRaidLocation = {
   battleId: BattleId
@@ -11,6 +15,9 @@ export type FlattenedRaidLocation = {
   dailyAttempts: number
   /** Summed over the merged entries that farm the row's `resourceId` (see `plannedRaidNeed`). */
   remainingBefore: number
+  /** Each merged goal's whole need for `resourceId` before today's raids, summed: the row's count
+   *  (see `plannedRaidNeed`). */
+  materialNeed: number
   /** Expected drops of `resourceId` per raid at this node. */
   dropRate: number
 }
@@ -28,6 +35,7 @@ export function flattenTodayLocations(
   entries: readonly RaidBreakdownEntry[],
   attemptsLeftByBattle: ReadonlyMap<BattleId, number>
 ): FlattenedRaidLocation[] {
+  const needs = goalMaterialNeeds(entries)
   const byBattle = new Map<BattleId, FlattenedRaidLocation>()
   for (const entry of entries) {
     if (entry.raidsPerformed <= 0) continue
@@ -37,6 +45,7 @@ export function flattenTodayLocations(
       existing.raidsToPerform += entry.raidsPerformed
       if (entry.resourceId === existing.resourceId) {
         existing.remainingBefore += entry.remainingBefore
+        existing.materialNeed += needs.get(goalMaterialKey(entry)) ?? 0
       }
     } else {
       byBattle.set(entry.battleId, {
@@ -45,6 +54,7 @@ export function flattenTodayLocations(
         raidsToPerform: entry.raidsPerformed,
         dailyAttempts: entry.dailyAttempts,
         remainingBefore: entry.remainingBefore,
+        materialNeed: needs.get(goalMaterialKey(entry)) ?? 0,
         dropRate: entryDropRate(entry),
       })
     }
