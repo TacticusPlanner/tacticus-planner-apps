@@ -303,6 +303,8 @@ export function LegendaryEventPageView({
                 isMobile={isMobile}
                 onMarkToken={tokens.onMarkToken}
                 onStopTeam={tokens.onStopTeam}
+                onTokenShown={tokens.onTokenShown}
+                run={tokens.run}
                 onOpenTeams={tokens.onOpenTeams}
                 missionsInput={missionsInput}
                 onViewPlan={props.onViewPlan}
