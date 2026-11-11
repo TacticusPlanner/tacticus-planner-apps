@@ -59,7 +59,7 @@ export function CampaignLockReasons({
                         goalType: "Unlock",
                       })
                     }
-                    className="relative h-8 pointer-coarse:h-10 pointer-coarse:after:absolute pointer-coarse:after:-inset-y-1"
+                    className="relative h-8 pointer-coarse:h-10 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-1"
                     size="sm"
                     type="button"
                     variant="outline"
