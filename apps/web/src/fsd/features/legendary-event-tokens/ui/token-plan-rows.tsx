@@ -131,10 +131,10 @@ export function TokenGroups({
   chipOf?: (unitId: string) => EventUnitChipData
 }) {
   return (
-    <ol className="flex min-w-0 flex-col gap-3">
+    <ol className="flex min-w-0 flex-col divide-y">
       {groupTokensByTeam(tokens.slice(start, start + count)).map((group) => (
         <li
-          className="flex min-w-0 flex-col gap-1"
+          className="flex min-w-0 flex-col gap-0.5 py-3 first:pt-0 last:pb-0"
           data-team={group.teamId}
           data-testid="token-plan-group"
           key={start + group.start}
@@ -157,7 +157,7 @@ export function TokenGroups({
               testId="token-plan-team-members"
             />
           </div>
-          <ol className="flex min-w-0 flex-col divide-y">
+          <ol className="flex min-w-0 flex-col divide-y border-l-2 pl-2">
             {groupTokenBattleRuns(group.tokens, start + group.start).map(
               (run) => {
                 const first = run.tokens[0]
