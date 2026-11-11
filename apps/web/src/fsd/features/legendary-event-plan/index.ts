@@ -19,7 +19,6 @@ export { editStartsFromEstimate } from "./model/clear-depth-display"
 export { TeamSuggestionsDialog } from "./ui/team-suggestions-dialog"
 export { useAnnotations } from "./model/use-annotations"
 export { AnnotationMenu } from "./ui/annotation-menu"
-export { AnnotationMarkIcon } from "./ui/annotation-mark"
 export { BattleAnnotationMenu } from "./ui/battle-annotation-menu"
 export {
   RunInputsDrawer,

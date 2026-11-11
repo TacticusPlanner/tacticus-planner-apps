@@ -734,9 +734,12 @@
         "maybe": "Quizá superable",
         "maybeHint": "Podría superarse con otro intento",
         "maybeLabel": "Quizá superable: {{team}} podría superar {{lane}} batalla {{battle}} con otro intento",
-        "stop": "Parar aquí",
-        "stopHint": "Sin opciones con este equipo",
-        "stopLabel": "Parar aquí: {{team}} no tiene opciones en {{lane}} batalla {{battle}}"
+        "stopHere": "Parar aquí",
+        "stopHereHint": "Sin opciones con este equipo",
+        "stopHereLabel": "Parar aquí: {{team}} no tiene opciones en {{lane}} batalla {{battle}}",
+        "stop": "Probar otro equipo",
+        "stopHint": "Terminar este equipo tras la batalla {{previous}}",
+        "stopLabel": "Probar otro equipo: terminar {{team}} en {{lane}} tras la batalla {{previous}} y planificar otros equipos"
       },
       "loading": "Cargando el plan de fichas…",
       "unavailable": "El progreso sincronizado no está disponible, así que no hay plan de fichas",

@@ -19,7 +19,7 @@ const shown = {
 }
 
 describe("tokenResultEvent", () => {
-  it("labels Couldn't clear with the estimate the player saw and the depth change", () => {
+  it("labels Stop here with the estimate the player saw and the depth change", () => {
     expect(
       tokenResultEvent({
         eventId: "fabiusBile",
@@ -60,7 +60,7 @@ describe("tokenResultEvent", () => {
     })
   })
 
-  it("labels Partly cleared and reads a missing depth as unknown", () => {
+  it("labels Maybe clear and reads a missing depth as unknown", () => {
     const event = tokenResultEvent({
       eventId: "fabiusBile",
       run: null,
@@ -83,6 +83,23 @@ describe("tokenResultEvent", () => {
       unitIds: null,
       objectiveIndexes: null,
     })
+  })
+
+  it("labels Try another team as a team stopped early", () => {
+    expect(
+      tokenResultEvent({
+        eventId: "fabiusBile",
+        run: 1,
+        laneId: "gamma",
+        battleIndex: 8,
+        action: "stopEarly",
+        shown,
+        battle: { battlePower: 350_333, powerRatio: 1.012 },
+        depthBefore: { depth: 10, estimated: true },
+        depthAfter: 8,
+        otherTeamReaches: false,
+      })
+    ).toMatchObject({ outcome: "stoppedEarly", depthBefore: 10, depthAfter: 8 })
   })
 })
 

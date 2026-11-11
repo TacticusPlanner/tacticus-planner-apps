@@ -734,9 +734,12 @@
         "maybe": "Vielleicht schaffbar",
         "maybeHint": "Mit erneutem Versuch vielleicht schaffbar",
         "maybeLabel": "Vielleicht schaffbar: {{team}} schafft {{lane}} Kampf {{battle}} vielleicht mit erneutem Versuch",
-        "stop": "Hier aufhören",
-        "stopHint": "Keine Chance mit diesem Team",
-        "stopLabel": "Hier aufhören: {{team}} hat keine Chance auf {{lane}} Kampf {{battle}}"
+        "stopHere": "Hier aufhören",
+        "stopHereHint": "Keine Chance mit diesem Team",
+        "stopHereLabel": "Hier aufhören: {{team}} hat keine Chance auf {{lane}} Kampf {{battle}}",
+        "stop": "Anderes Team versuchen",
+        "stopHint": "Dieses Team nach Kampf {{previous}} beenden",
+        "stopLabel": "Anderes Team versuchen: {{team}} auf {{lane}} nach Kampf {{previous}} beenden und andere Teams planen"
       },
       "loading": "Token-Plan wird geladen…",
       "unavailable": "Synchronisierter Fortschritt ist nicht verfügbar, daher gibt es keinen Token-Plan",

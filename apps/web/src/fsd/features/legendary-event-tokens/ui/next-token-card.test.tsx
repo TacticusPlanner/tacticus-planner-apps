@@ -36,6 +36,7 @@ vi.mock("@/shared/unit-name", () => ({
 
 let i18n: I18n
 const onMarkToken = vi.fn()
+const onStopTeam = vi.fn()
 const onTokenShown = vi.fn()
 const onOpenTeams = vi.fn()
 
@@ -59,6 +60,7 @@ function renderCard(
       eventId="votanUthar"
       isMobile={isMobile}
       onMarkToken={canMark ? onMarkToken : undefined}
+      onStopTeam={canMark ? onStopTeam : undefined}
       onTokenShown={canMark ? onTokenShown : undefined}
       onOpenTeams={onOpenTeams}
       missionsInput={missionsInput}
@@ -120,6 +122,7 @@ describe("NextTokenCard", () => {
     localStorage.clear()
     capture.mockReset()
     onMarkToken.mockReset()
+    onStopTeam.mockReset()
     onTokenShown.mockReset()
     onOpenTeams.mockReset()
   })
@@ -185,6 +188,30 @@ describe("NextTokenCard", () => {
     const band = screen.getByTestId("next-token-clear-band")
     expect(band).toHaveAttribute("data-band", "likely")
     expect(band).toHaveTextContent("Likely clear · safe through battle 5")
+  })
+
+  it("offers Try another team only on a likely clear, ending the team after the battle before", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const { unmount } = renderCard(view)
+    expect(screen.queryByTestId("next-token-stop")).toBeNull()
+    unmount()
+
+    const fiveIndex = view.plan.tokens.findIndex(
+      (token) => token.teamId === "five"
+    )
+    const five = { ...view.plan.tokens[fiveIndex]!, playableNow: true }
+    renderCard({
+      ...view,
+      next: { ...view.next, index: fiveIndex, token: five },
+    })
+    expect(screen.getByTestId("next-token-stop")).toHaveTextContent(
+      "Try another teamEnd this team after battle 5"
+    )
+    fireEvent.click(screen.getByTestId("next-token-stop"))
+
+    expect(onStopTeam).toHaveBeenCalledWith(five.laneId, 5, "five")
+    expect(onMarkToken).not.toHaveBeenCalled()
   })
 
   it("lists the next four tokens after it, with View all opening the plan", () => {
@@ -267,8 +294,11 @@ describe("NextTokenCard", () => {
         name: "Stop here: Melee has no chance on Alpha battle 3",
       })
     )
-    expect(screen.getByTestId("next-token-stop")).toHaveTextContent(
-      "Stop hereNo chance with this team"
+    const button = screen.getByTestId("next-token-could-not")
+    expect(button).toHaveTextContent("Stop hereNo chance with this team")
+    expect(within(button).getByTestId("annotation-mark-icon")).toHaveAttribute(
+      "data-mark",
+      "stopHere"
     )
 
     expect(onMarkToken).toHaveBeenCalledWith(
@@ -288,8 +318,11 @@ describe("NextTokenCard", () => {
         name: "Maybe clear: Melee might clear Alpha battle 3 with a retry",
       })
     )
-    expect(screen.getByTestId("next-token-maybe")).toHaveTextContent(
-      "Maybe clearMight clear with a retry"
+    const button = screen.getByTestId("next-token-partly")
+    expect(button).toHaveTextContent("Maybe clearMight clear with a retry")
+    expect(within(button).getByTestId("annotation-mark-icon")).toHaveAttribute(
+      "data-mark",
+      "maybeClear"
     )
 
     expect(onMarkToken).toHaveBeenCalledWith(
@@ -304,7 +337,7 @@ describe("NextTokenCard", () => {
   it("stacks touch-sized actions on mobile", () => {
     renderCard(buildTokenPlanView(workedViewInput()), { isMobile: true })
 
-    expect(screen.getByTestId("next-token-maybe")).toHaveClass(
+    expect(screen.getByTestId("next-token-partly")).toHaveClass(
       "min-h-11",
       "w-full"
     )
@@ -313,7 +346,7 @@ describe("NextTokenCard", () => {
   it("hides the actions while marks cannot be written", () => {
     renderCard(buildTokenPlanView(workedViewInput()), { canMark: false })
 
-    expect(screen.queryByTestId("next-token-maybe")).toBeNull()
+    expect(screen.queryByTestId("next-token-partly")).toBeNull()
   })
 
   it("adds the next run and hides the actions for Uthar between runs", () => {
@@ -322,7 +355,7 @@ describe("NextTokenCard", () => {
     expect(screen.getByTestId("next-token-reason")).toHaveTextContent(
       /for when run 3 starts$/
     )
-    expect(screen.queryByTestId("next-token-stop")).toBeNull()
+    expect(screen.queryByTestId("next-token-could-not")).toBeNull()
   })
 
   it("names no run when the run is unknown (progress, no dates)", () => {

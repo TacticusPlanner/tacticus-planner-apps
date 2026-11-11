@@ -734,9 +734,12 @@
         "maybe": "Maybe clear",
         "maybeHint": "Might clear with a retry",
         "maybeLabel": "Maybe clear: {{team}} might clear {{lane}} battle {{battle}} with a retry",
-        "stop": "Stop here",
-        "stopHint": "No chance with this team",
-        "stopLabel": "Stop here: {{team}} has no chance on {{lane}} battle {{battle}}"
+        "stopHere": "Stop here",
+        "stopHereHint": "No chance with this team",
+        "stopHereLabel": "Stop here: {{team}} has no chance on {{lane}} battle {{battle}}",
+        "stop": "Try another team",
+        "stopHint": "End this team after battle {{previous}}",
+        "stopLabel": "Try another team: end {{team}} on {{lane}} after battle {{previous}} and plan other teams"
       },
       "loading": "Loading the token plan…",
       "unavailable": "Synced progress is unavailable, so there is no token plan",

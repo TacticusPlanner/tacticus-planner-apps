@@ -24,6 +24,7 @@ import {
 } from "@/features/legendary-event-plan"
 import {
   type MarkTokenHandler,
+  type StopTeamHandler,
   type TokenShownHandler,
   tokenMarkOutcome,
   useTokenMissionsSource,
@@ -442,6 +443,55 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       tokenPlan,
     ]
   )
+  // Try another team: the player ends the token's team before this battle (no cells marked), so its
+  // depth becomes the battles before it and the plan moves on to other teams.
+  const stopTeamVoid = useCallback<StopTeamHandler>(
+    (laneId, battleIndex, teamId) => {
+      const team = planTeams?.find((entry) => entry.id === teamId)
+      if (!team || battleIndex < 1) return
+      const depthBefore =
+        tokenPlan.kind === "ready"
+          ? tokenPlan.depthByTeam.get(teamId)
+          : undefined
+      const shown = tokenActionEstimateContext(
+        clearEstimates,
+        laneId,
+        team,
+        depthBefore?.estimated ?? false
+      )
+      shownTokens.forget({ laneId, battleIndex })
+      void setDepth(team, battleIndex, shown)
+      captureEvent(
+        tokenResultEvent({
+          eventId,
+          run: runs.run,
+          laneId,
+          battleIndex,
+          action: "stopEarly",
+          shown,
+          battle: tokenBattleSnapshot(
+            clearEstimates,
+            laneId,
+            battleIndex,
+            shown
+          ),
+          depthBefore,
+          depthAfter: battleIndex,
+          otherTeamReaches: false,
+        })
+      )
+    },
+    [
+      captureEvent,
+      clearEstimates,
+      eventId,
+      planTeams,
+      runs.run,
+      setDepth,
+      shownTokens,
+      tokenPlan,
+    ]
+  )
   // Remembers the shown Next token so a later sync that clears it is logged as a success.
   const rememberShownToken = useCallback<TokenShownHandler>(
     (token) => {
@@ -559,6 +609,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       tokens: {
         view: tokenPlan,
         onMarkToken: marksEditable ? markTokenVoid : undefined,
+        onStopTeam: marksEditable ? stopTeamVoid : undefined,
         onTokenShown: marksEditable ? rememberShownToken : undefined,
         run: runs.run,
         onOpenTeams: openTeams,
@@ -631,6 +682,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     markBattleVoid,
     tokenPlan,
     markTokenVoid,
+    stopTeamVoid,
     rememberShownToken,
     openTeams,
     unitPower,

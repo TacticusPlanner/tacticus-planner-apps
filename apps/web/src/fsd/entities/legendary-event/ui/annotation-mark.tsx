@@ -1,7 +1,7 @@
 import { CircleMinus, CircleQuestionMark } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { LegendaryEventAnnotationStatus } from "@/entities/legendary-event"
+import type { LegendaryEventAnnotationStatus } from "../model/plan.types"
 
 /** V1's icon and colour for a mark: a question mark in the warning colour for Maybe clear, a minus
  *  in the danger colour for Stop here. Decorative: callers carry the accessible text. */
