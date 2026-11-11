@@ -60,6 +60,10 @@ function isPurgeScope(value: string): value is PurgeScope {
   return (PURGE_SCOPES as readonly string[]).includes(value)
 }
 
+/** On a narrow screen the tabs sit two per row and a long label wraps, so the tab row never widens the dialog. */
+const tabTriggerClassName =
+  "max-sm:h-auto max-sm:text-center max-sm:leading-tight max-sm:whitespace-normal"
+
 export type ManageAccountTab = "integration" | "profile" | "account" | "staging"
 
 type ManageAccountDialogProps = {
@@ -93,28 +97,33 @@ export function ManageAccountDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* On a phone the dialog scrolls rather than running off screen, and its tabs wrap their labels
+          so the tab row never sets the dialog wider than the viewport. */}
       <DialogContent
-        className="sm:max-w-lg"
+        className="max-h-[85dvh] overflow-y-auto sm:max-w-lg"
         data-testid="manage-account-dialog"
       >
         <DialogHeader>
           <DialogTitle>{t("manageAccount.title")}</DialogTitle>
         </DialogHeader>
-        <Tabs defaultValue={initialTab}>
-          <TabsList className="w-full">
+        <Tabs className="min-w-0" defaultValue={initialTab}>
+          <TabsList className="w-full max-sm:grid max-sm:grid-cols-2 max-sm:group-data-horizontal/tabs:h-auto">
             <TabsTrigger
+              className={tabTriggerClassName}
               data-testid="manage-account-tab-integration"
               value="integration"
             >
               {t("manageAccount.tabs.integration")}
             </TabsTrigger>
             <TabsTrigger
+              className={tabTriggerClassName}
               data-testid="manage-account-tab-profile"
               value="profile"
             >
               {t("manageAccount.tabs.profile")}
             </TabsTrigger>
             <TabsTrigger
+              className={tabTriggerClassName}
               data-testid="manage-account-tab-account"
               value="account"
             >
@@ -122,6 +131,7 @@ export function ManageAccountDialog({
             </TabsTrigger>
             {stagingMode ? (
               <TabsTrigger
+                className={tabTriggerClassName}
                 data-testid="manage-account-tab-staging"
                 value="staging"
               >
@@ -199,21 +209,27 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
 
   return (
     <form className="flex flex-col gap-4 pt-4" onSubmit={handleSubmit}>
-      <div className="grid gap-2 rounded-2xl border p-3 text-sm">
+      <div className="grid grid-cols-1 gap-2 rounded-2xl border p-3 text-sm">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-muted-foreground">
+          <span className="shrink-0 text-muted-foreground">
             {t("manageAccount.integration.currentApiKey")}
           </span>
-          <span data-testid="manage-account-current-api-key">
+          <span
+            className="min-w-0 text-right"
+            data-testid="manage-account-current-api-key"
+          >
             {user.tacticusApiKeyMasked ??
               t("manageAccount.integration.notConfigured")}
           </span>
         </div>
         <div className="flex items-center justify-between gap-2">
-          <span className="text-muted-foreground">
+          <span className="shrink-0 text-muted-foreground">
             {t("manageAccount.integration.currentUserId")}
           </span>
-          <span data-testid="manage-account-current-user-id">
+          <span
+            className="min-w-0 text-right"
+            data-testid="manage-account-current-user-id"
+          >
             {user.tacticusUserIdMasked ??
               t("manageAccount.integration.notConfigured")}
           </span>
@@ -363,18 +379,21 @@ function AccountTab({
 
   return (
     <div className="flex flex-col gap-4 pt-4">
-      <div className="grid gap-2 rounded-2xl border p-3 text-sm">
+      <div className="grid grid-cols-1 gap-2 rounded-2xl border p-3 text-sm">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-muted-foreground">
+          <span className="shrink-0 text-muted-foreground">
             {t("manageAccount.account.signInMethod")}
           </span>
-          <span data-testid="manage-account-sign-in-method">
+          <span
+            className="min-w-0 text-right"
+            data-testid="manage-account-sign-in-method"
+          >
             {t(`manageAccount.account.signInMethods.${signInMethod}`)}
           </span>
         </div>
         {accountEmail ? (
           <div className="flex items-center justify-between gap-2">
-            <span className="text-muted-foreground">
+            <span className="shrink-0 text-muted-foreground">
               {t("manageAccount.account.email")}
             </span>
             <span
