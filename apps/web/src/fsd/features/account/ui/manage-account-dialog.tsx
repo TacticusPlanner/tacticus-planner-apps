@@ -5,12 +5,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@workspace/ui/components/dialog"
-import {
   Field,
   FieldContent,
   FieldDescription,
@@ -45,9 +39,17 @@ import {
 import { ApiError } from "@/shared/api"
 import { getAccountEmail, getSignInMethod, signOut } from "@/shared/auth"
 import { appEnvironment } from "@/shared/config"
+import {
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/shared/ui"
 
 import { rememberSignInAccountKept } from "../model/sign-in-account-kept-notice"
 import { stagingTransferMode } from "../model/staging-transfer"
+import { primaryActionClassName } from "./dialog-actions"
 import { ProfileTab } from "./profile-tab"
 import { StagingTransferTab } from "./staging-transfer-tab"
 
@@ -96,16 +98,18 @@ export function ManageAccountDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* On a phone the dialog fills the screen and scrolls, and its tabs wrap their labels so the tab
-          row never sets the dialog wider than the viewport. */}
-      <DialogContent
-        className="max-h-[85dvh] overflow-y-auto max-sm:inset-0 max-sm:h-dvh max-sm:max-h-dvh max-sm:max-w-none max-sm:translate-none max-sm:content-start max-sm:rounded-none max-sm:ring-0 sm:max-w-lg"
-        data-testid="manage-account-dialog"
-      >
-        <DialogHeader>
-          <DialogTitle>{t("manageAccount.title")}</DialogTitle>
-        </DialogHeader>
+    <ResponsiveDialog
+      data-testid="manage-account-dialog"
+      desktopClassName="sm:max-w-lg"
+      open={open}
+      onOpenChange={onOpenChange}
+    >
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>
+          {t("manageAccount.title")}
+        </ResponsiveDialogTitle>
+      </ResponsiveDialogHeader>
+      <ResponsiveDialogBody className="pb-4">
         <Tabs className="min-w-0" defaultValue={initialTab}>
           <TabsList className="w-full max-sm:grid max-sm:grid-cols-2 max-sm:group-data-horizontal/tabs:h-auto">
             <TabsTrigger
@@ -158,8 +162,18 @@ export function ManageAccountDialog({
             </TabsContent>
           ) : null}
         </Tabs>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogBody>
+      <ResponsiveDialogFooter className="border-t">
+        <Button
+          className={`${primaryActionClassName} w-full md:w-auto`}
+          data-testid="manage-account-close"
+          variant="outline"
+          onClick={() => onOpenChange(false)}
+        >
+          {t("common.close")}
+        </Button>
+      </ResponsiveDialogFooter>
+    </ResponsiveDialog>
   )
 }
 
@@ -325,6 +339,7 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
       ) : null}
 
       <Button
+        className={primaryActionClassName}
         data-testid="manage-account-integration-submit"
         disabled={updateIntegration.isPending || userIdFormatInvalid}
         type="submit"
@@ -474,6 +489,7 @@ function AccountTab({
       ) : null}
 
       <Button
+        className={primaryActionClassName}
         data-testid="manage-account-purge-submit"
         disabled={!canPurge || purge.isPending}
         variant="destructive"

@@ -18,6 +18,8 @@ import {
   type CurrentUser,
 } from "@/entities/account"
 
+import { primaryActionClassName } from "./dialog-actions"
+
 /**
  * Edits the confirmed public planner name only — sign-in identity and email are untouched. The
  * shown name stays the saved server value until a save succeeds, and a failed save keeps the draft.
@@ -102,6 +104,7 @@ export function ProfileTab({ user }: { user: CurrentUser }) {
       ) : null}
 
       <Button
+        className={primaryActionClassName}
         data-testid="manage-account-display-name-submit"
         disabled={!canSubmit || value.trim() === user.displayName}
         type="submit"

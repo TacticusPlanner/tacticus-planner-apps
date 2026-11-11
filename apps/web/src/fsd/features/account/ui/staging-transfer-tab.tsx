@@ -24,6 +24,7 @@ import {
   minutesUntil,
   type StagingTransferMode,
 } from "../model/staging-transfer"
+import { primaryActionClassName } from "./dialog-actions"
 
 /**
  * The account dialog's Transfer tab: mint a code in production, or redeem one on staging. Deliberately
@@ -106,7 +107,7 @@ function ExportPanel() {
       ) : null}
 
       <Button
-        className="self-start"
+        className={`${primaryActionClassName} self-start`}
         data-testid="manage-account-staging-create"
         disabled={create.isPending}
         type="button"
@@ -201,6 +202,7 @@ function ImportPanel() {
       ) : null}
 
       <Button
+        className={primaryActionClassName}
         data-testid="manage-account-staging-import-submit"
         disabled={!canImport}
         type="submit"
