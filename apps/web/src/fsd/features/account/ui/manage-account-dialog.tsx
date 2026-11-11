@@ -97,10 +97,10 @@ export function ManageAccountDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* On a phone the dialog scrolls rather than running off screen, and its tabs wrap their labels
-          so the tab row never sets the dialog wider than the viewport. */}
+      {/* On a phone the dialog fills the screen and scrolls, and its tabs wrap their labels so the tab
+          row never sets the dialog wider than the viewport. */}
       <DialogContent
-        className="max-h-[85dvh] overflow-y-auto sm:max-w-lg"
+        className="max-h-[85dvh] overflow-y-auto max-sm:inset-0 max-sm:h-dvh max-sm:max-h-dvh max-sm:max-w-none max-sm:translate-none max-sm:content-start max-sm:rounded-none max-sm:ring-0 sm:max-w-lg"
         data-testid="manage-account-dialog"
       >
         <DialogHeader>
