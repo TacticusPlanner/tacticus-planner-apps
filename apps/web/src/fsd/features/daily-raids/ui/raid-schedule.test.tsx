@@ -4,6 +4,7 @@ import { battleIdSchema } from "@workspace/game-domain"
 
 import { render, screen, within } from "@/test/render"
 
+import { dailyRaidResourceKey } from "../model/daily-raids.domain"
 import { RaidSchedule } from "./raid-schedule"
 
 const b1 = battleIdSchema.parse("B1")
@@ -480,7 +481,9 @@ describe("RaidSchedule location emphasis", () => {
     expect(row).toHaveTextContent("3 upgrades left")
     expect(row).not.toHaveTextContent(/attempts? used/)
     // Short visible form so the name keeps the row width on mobile; full wording stays for AT.
-    expect(within(row).getByText("3 more")).toHaveAttribute("aria-hidden")
+    expect(within(row).getByText("3 still needed")).toHaveAttribute(
+      "aria-hidden"
+    )
     expect(within(row).getByText("3 upgrades left")).toHaveClass("sr-only")
   })
 
@@ -515,11 +518,52 @@ describe("RaidSchedule location emphasis", () => {
     )
 
     expect(screen.getByTestId(`raid-location-${b1}`)).not.toHaveTextContent(
-      /more/
+      /still needed/
     )
     expect(
-      within(screen.getByTestId(`raid-location-${b2}`)).getByText("3 more")
+      within(screen.getByTestId(`raid-location-${b2}`)).getByText(
+        "3 still needed"
+      )
     ).toBeInTheDocument()
+  })
+
+  it("shows no still-needed badge when the card already shows owned / target", () => {
+    render(
+      <RaidSchedule
+        attemptsLeftByBattle={
+          new Map([
+            [b1, 3],
+            [b2, 5],
+          ])
+        }
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[
+          { ...entry(b1, 3, 3), itemsFarmed: 1.2, remainingBefore: 12 },
+          { ...entry(b2, 3, 5), itemsFarmed: 1.8, remainingBefore: 10.8 },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Fall of Cadia", "Elite 12")],
+            [b2, location("B2", "Saim-Hann Mirror", "Elite 1")],
+          ])
+        }
+        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceProgress={
+          new Map([
+            [dailyRaidResourceKey("g1", "upgrade1"), { owned: 0, target: 12 }],
+          ])
+        }
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    expect(screen.getByText("0 / 12")).toBeInTheDocument()
+    expect(screen.getByTestId("schedule")).not.toHaveTextContent(
+      /still needed|upgrades? left/
+    )
   })
 
   it("excludes a fully-raided location from the card but keeps the card for its other locations", () => {

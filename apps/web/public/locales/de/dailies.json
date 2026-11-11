@@ -205,8 +205,8 @@
     "upgradesLeft_other": "Noch {{count}} Upgrades",
     "shardsLeft_one": "Noch {{count}} Scherbe",
     "shardsLeft_other": "Noch {{count}} Scherben",
-    "more_one": "Noch {{count}}",
-    "more_other": "Noch {{count}}",
+    "more_one": "Noch {{count}} nötig",
+    "more_other": "Noch {{count}} nötig",
     "progress": "{{owned}} von {{target}} im Besitz",
     "fullyRaided": "Vollständig geraidet"
   },

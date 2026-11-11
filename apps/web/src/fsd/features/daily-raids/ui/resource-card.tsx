@@ -153,10 +153,13 @@ export function ResourceCard({
                         />
                       </div>
                       {location?.manual ? <ManualBattleBadge /> : null}
-                      <PlannedRaidNeedBadge
-                        compact
-                        need={plannedRaidNeedForEntry(entry, need)}
-                      />
+                      {/* The card's owned/target count already says what is needed. */}
+                      {progress ? null : (
+                        <PlannedRaidNeedBadge
+                          compact
+                          need={plannedRaidNeedForEntry(entry, need)}
+                        />
+                      )}
                     </div>
                   </div>
                 )
@@ -197,7 +200,7 @@ export function ResourceCard({
               )}
             </div>
             <div className="flex shrink-0 items-center gap-1">
-              {resourceEntries[0] ? (
+              {resourceEntries[0] && !progress ? (
                 <PlannedRaidNeedBadge
                   need={plannedRaidNeedForEntry(
                     resourceEntries[0],

@@ -205,8 +205,8 @@
     "upgradesLeft_other": "{{count}} améliorations restantes",
     "shardsLeft_one": "{{count}} fragment restant",
     "shardsLeft_other": "{{count}} fragments restants",
-    "more_one": "{{count}} de plus",
-    "more_other": "{{count}} de plus",
+    "more_one": "Encore {{count}} requis",
+    "more_other": "Encore {{count}} requis",
     "progress": "{{owned}} sur {{target}} possédés",
     "fullyRaided": "Entièrement attaqué"
   },
