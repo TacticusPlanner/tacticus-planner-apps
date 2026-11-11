@@ -108,6 +108,8 @@ Each lane's Teams section SHALL offer a **Suggest teams** button beside Add team
 
 **Use this team** SHALL open the team editor (`legendary-event-teams`) as a new team with the proposal's members in order, its derived objectives covered, the default name, and the proposal's objective subset selected as the picker's objective chips. Saving SHALL create the team through the existing create call. Cancelling SHALL save nothing and return to the suggestions. No proposal SHALL ever be saved without the user saving the editor.
 
+Once its inputs are ready, each Suggest teams button SHALL show as a badge how many proposals the dialog opens with (its default toggles), capped at ten, including 0, so the user need not open it to know; its accessible name SHALL include the count ("Suggest teams (3 suggestions)"). No badge SHALL show while inputs load or when estimates are unavailable.
+
 When clear estimates are unavailable, Suggest teams SHALL be disabled with the reason "Needs clear estimates". With no proposal, the dialog SHALL say "No team adds points or saves tokens over your current teams". While inputs load, it SHALL show a skeleton.
 
 #### Scenario: Use this team
@@ -120,6 +122,12 @@ When clear estimates are unavailable, Suggest teams SHALL be disabled with the r
 
 - **WHEN** the user cancels the editor opened from a proposal
 - **THEN** no team is created and the suggestions are shown again unchanged
+
+#### Scenario: Suggestion count on the button
+
+- **GIVEN** a lane whose dialog would open with two proposals
+- **WHEN** the Teams section renders
+- **THEN** Suggest teams shows a "2" badge and its accessible name reads "Suggest teams (2 suggestions)"
 
 #### Scenario: Estimates unavailable
 

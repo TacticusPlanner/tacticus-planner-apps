@@ -690,6 +690,8 @@
   },
   "suggestions": {
     "button": "Suggérer des équipes",
+    "buttonWithCount_one": "Suggérer des équipes ({{count}} suggestion)",
+    "buttonWithCount_other": "Suggérer des équipes ({{count}} suggestions)",
     "title": "Équipes suggérées pour {{lane}}",
     "description": "Des équipes tirées de votre effectif, classées selon les points qu'elles ajoutent à vos équipes actuelles, puis les jetons qu'elles économisent. Rien n'est enregistré tant que vous n'enregistrez pas l'équipe.",
     "onlyUnlocked": "Débloquées uniquement",

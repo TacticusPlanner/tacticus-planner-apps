@@ -690,6 +690,8 @@
   },
   "suggestions": {
     "button": "Suggest teams",
+    "buttonWithCount_one": "Suggest teams ({{count}} suggestion)",
+    "buttonWithCount_other": "Suggest teams ({{count}} suggestions)",
     "title": "Suggested teams for {{lane}}",
     "description": "Teams from your roster, ranked by the points they add over your current teams, then the tokens they save. Nothing is saved until you save the team.",
     "onlyUnlocked": "Only unlocked",
