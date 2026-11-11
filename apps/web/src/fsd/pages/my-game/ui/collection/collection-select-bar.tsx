@@ -1,10 +1,13 @@
 import { useTranslation } from "react-i18next"
 import { Check, ListChecks, Target, X } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { cn } from "@workspace/ui/lib/utils"
 
 /**
  * Select mode's bar, pinned to the bottom of the viewport: the selected count, Select all shown,
- * Clear, Create goals and Done (player-collection spec).
+ * Clear, Create goals and Done (player-collection spec). On mobile it sits above the fixed bottom nav
+ * and leaves the scroll-to-top button's column free, like `UnsavedChangesBar`.
  */
 export function CollectionSelectBar({
   count,
@@ -20,9 +23,14 @@ export function CollectionSelectBar({
   onDone: () => void
 }) {
   const { t } = useTranslation("common")
+  const isMobile = useIsMobile()
   return (
     <div
-      className="sticky bottom-3 z-20 flex flex-wrap items-center gap-2 rounded-2xl border bg-card p-2 pl-4 shadow-lg"
+      className={cn(
+        "sticky z-20 flex flex-wrap items-center gap-2 rounded-2xl border bg-card p-2 pl-4 shadow-lg",
+        isMobile ? "bottom-[calc(var(--mobile-nav-height)+1rem)] mr-14" : "bottom-3"
+      )}
+      data-mobile={isMobile ? "true" : undefined}
       data-testid="collection-select-bar"
     >
       <p
