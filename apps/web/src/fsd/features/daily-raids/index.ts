@@ -47,6 +47,7 @@ export { orderCombinedEntries } from "./model/combined-raids-order"
 export { isLocationVisible } from "./model/location-visibility"
 export type {
   DailyRaidBattleResource,
+  DailyRaidResourceProgress,
   DailyRaidsReadyViewModel,
   DailyRaidsViewModel,
 } from "./model/daily-raids.domain"

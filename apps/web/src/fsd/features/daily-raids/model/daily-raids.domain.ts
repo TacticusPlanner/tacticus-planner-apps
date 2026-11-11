@@ -45,6 +45,8 @@ export type DailyRaidResourceVisual =
 
 /** What a single campaign node drops, as Today's Attempts renders it (icon + tooltip text). */
 export type DailyRaidBattleResource = {
+  /** The plan's resource id (an upgrade id or `shards_<unit>`), so a row can look up its have/need. */
+  resourceId: string
   label: string
   visual: DailyRaidResourceVisual
 }

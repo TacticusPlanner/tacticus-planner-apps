@@ -44,17 +44,14 @@ export function UnitGoalFormFields({
 }) {
   const { t } = useTranslation()
   const goalKinds = goalKindsForEntity(form.entityType)
-  const cardRefs = useRef(new Map<GoalKind, HTMLDivElement>())
   const unitKind = form.entityType === "Mow" ? "mow" : undefined
 
+  // The toggle renders in a transition, so the new card mounts some time after the tap. Its ref
+  // brings its header into view then, without moving focus off the checkbox.
+  const scrollTarget = useRef<GoalKind | null>(null)
   const toggleType = (kind: GoalKind, enabled: boolean) => {
     form.toggleType(kind, enabled)
-    // Bring the new card's header into view without moving focus off the checkbox.
-    if (enabled) {
-      setTimeout(() => {
-        cardRefs.current.get(kind)?.scrollIntoView?.({ block: "nearest" })
-      }, 0)
-    }
+    scrollTarget.current = enabled ? kind : null
   }
 
   const statusProps = {
@@ -208,7 +205,11 @@ export function UnitGoalFormFields({
         {t("goals.create.emptyTypes")}
       </p>
     ) : (
-      <GoalTypeCards cardRefs={cardRefs} form={form} goalKinds={goalKinds} />
+      <GoalTypeCards
+        form={form}
+        goalKinds={goalKinds}
+        scrollTarget={scrollTarget}
+      />
     )
 
   const error =
