@@ -840,6 +840,25 @@ describe("GoalsPage", () => {
     ).toBeTruthy()
   })
 
+  it("leads with the type holding the top-priority goal under Group by type (priority order)", async () => {
+    window.localStorage.setItem("goals.overview.group", "typePriority")
+    listGoals.mockResolvedValue({
+      goals: [
+        { ...activeGoal, goalId: "goal-2", goalType: "Ability" },
+        activeGoal,
+      ],
+    })
+    renderPage()
+
+    const ability = await screen.findByRole("button", {
+      name: "Ability 1 goal",
+    })
+    const rank = screen.getByRole("button", { name: "Rank 1 goal" })
+    expect(
+      ability.compareDocumentPosition(rank) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
   it("collapses a goal type section and remembers it", async () => {
     window.localStorage.setItem("goals.overview.group", "type")
     listGoals.mockResolvedValue({

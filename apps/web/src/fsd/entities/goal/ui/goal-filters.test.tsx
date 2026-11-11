@@ -93,6 +93,11 @@ describe("GoalFilters", () => {
     expect(
       screen.getByRole("option", { name: "goals.filters.groupByType" })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole("option", {
+        name: "goals.filters.groupByTypePriority",
+      })
+    ).toBeInTheDocument()
   })
 
   it("restricts Group options to groupOptions when supplied (relayout-project-detail-controls)", async () => {

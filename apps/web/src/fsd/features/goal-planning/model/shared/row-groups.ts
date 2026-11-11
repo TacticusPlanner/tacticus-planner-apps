@@ -13,7 +13,7 @@ export type RowGroup = {
 const groupKey = (row: GoalRow, group: GoalGroupValue) =>
   group === "unit"
     ? `${row.entityType}:${row.entityId}`
-    : group === "type"
+    : group === "type" || group === "typePriority"
       ? row.goalType
       : "all"
 
@@ -23,9 +23,11 @@ const groupKey = (row: GoalRow, group: GoalGroupValue) =>
  * project detail — both live in this page slice, so this is an intra-slice extraction.
  *
  * Row order is inherited, never imposed: each group's rows keep their incoming order, so whatever Sort
- * the caller applied survives partitioning. Unit groups come out in first-appearance order; type
+ * the caller applied survives partitioning. Unit groups come out in first-appearance order; `type`
  * groups in the fixed goal-type order (Rank first, as in v1), so the most-used section always
- * leads instead of moving with whichever type holds the top-priority goal. Headings are
+ * leads instead of moving with whichever type holds the top-priority goal. `typePriority` groups
+ * come out in first-appearance order like unit groups, so the type holding the top-priority goal
+ * leads and the sections reorder as goals move up the priority list. Headings are
  * the caller's job — a unit heading needs the catalog and a type heading needs `t`, and both routes
  * already hold those.
  */
