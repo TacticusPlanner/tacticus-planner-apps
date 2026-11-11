@@ -443,7 +443,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       tokenPlan,
     ]
   )
-  // Stop here: the player ends the token's team before this battle (no cells marked), so its
+  // Try another team: the player ends the token's team before this battle (no cells marked), so its
   // depth becomes the battles before it and the plan moves on to other teams.
   const stopTeamVoid = useCallback<StopTeamHandler>(
     (laneId, battleIndex, teamId) => {

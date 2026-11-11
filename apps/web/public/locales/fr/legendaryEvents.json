@@ -500,7 +500,7 @@
         },
         "nextToken": {
           "title": "Prochain jeton",
-          "content": "Le combat à jouer avec votre prochain jeton : l'équipe, la voie et le combat qui rapportent le plus de points maintenant, d'après votre synchronisation, vos équipes, profondeurs et marques. Si cela ne s'est pas passé comme prévu, marquez-le Réussi en partie ou Échec et le plan se met à jour."
+          "content": "Le combat à jouer avec votre prochain jeton : l'équipe, la voie et le combat qui rapportent le plus de points maintenant, d'après votre synchronisation, vos équipes, profondeurs et marques. Si cela ne s'est pas passé comme prévu, marquez-le Peut-être faisable ou S'arrêter ici et le plan se met à jour."
         },
         "runStatus": {
           "title": "État de la manche",
@@ -731,13 +731,15 @@
       "members": "Membres",
       "objectives": "Réussit",
       "actions": {
-        "partly": "Réussi en partie",
-        "couldNot": "Échec",
-        "partlyLabel": "Réussi en partie : marquer {{team}} sur {{lane}} combat {{battle}} comme Peut-être faisable",
-        "couldNotLabel": "Échec : marquer {{team}} sur {{lane}} combat {{battle}} comme S'arrêter ici",
-        "stop": "S'arrêter ici",
-        "stopLabel": "S'arrêter ici : arrêter {{team}} sur {{lane}} après le combat {{previous}} et planifier d'autres équipes",
-        "stopHint": "Arrête cette équipe après le combat {{previous}} et passe le plan aux autres équipes"
+        "maybe": "Peut-être faisable",
+        "maybeHint": "Faisable avec un nouvel essai",
+        "maybeLabel": "Peut-être faisable : {{team}} pourrait réussir {{lane}} combat {{battle}} avec un nouvel essai",
+        "stopHere": "S'arrêter ici",
+        "stopHereHint": "Aucune chance avec cette équipe",
+        "stopHereLabel": "S'arrêter ici : {{team}} n'a aucune chance sur {{lane}} combat {{battle}}",
+        "stop": "Essayer une autre équipe",
+        "stopHint": "Arrêter cette équipe après le combat {{previous}}",
+        "stopLabel": "Essayer une autre équipe : arrêter {{team}} sur {{lane}} après le combat {{previous}} et planifier d'autres équipes"
       },
       "loading": "Chargement du plan de jetons…",
       "unavailable": "La progression synchronisée est indisponible, il n'y a donc pas de plan de jetons",

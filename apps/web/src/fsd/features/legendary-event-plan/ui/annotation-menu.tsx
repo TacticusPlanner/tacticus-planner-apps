@@ -9,9 +9,10 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { LegendaryEventAnnotationStatus } from "@/entities/legendary-event"
-
-import { AnnotationMarkIcon } from "./annotation-mark"
+import {
+  AnnotationMarkIcon,
+  type LegendaryEventAnnotationStatus,
+} from "@/entities/legendary-event"
 
 const CHOICES = ["none", "maybeClear", "stopHere"] as const
 type Choice = (typeof CHOICES)[number]

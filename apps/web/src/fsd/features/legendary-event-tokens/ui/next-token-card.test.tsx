@@ -190,7 +190,7 @@ describe("NextTokenCard", () => {
     expect(band).toHaveTextContent("Likely clear · safe through battle 5")
   })
 
-  it("offers Stop here only on a likely clear, ending the team after the battle before", () => {
+  it("offers Try another team only on a likely clear, ending the team after the battle before", () => {
     const view = buildTokenPlanView(workedViewInput())
     if (view.kind !== "ready" || !view.next) throw new Error("no next token")
     const { unmount } = renderCard(view)
@@ -205,6 +205,9 @@ describe("NextTokenCard", () => {
       ...view,
       next: { ...view.next, index: fiveIndex, token: five },
     })
+    expect(screen.getByTestId("next-token-stop")).toHaveTextContent(
+      "Try another teamEnd this team after battle 5"
+    )
     fireEvent.click(screen.getByTestId("next-token-stop"))
 
     expect(onStopTeam).toHaveBeenCalledWith(five.laneId, 5, "five")
@@ -283,13 +286,19 @@ describe("NextTokenCard", () => {
     expect(onTokenShown).not.toHaveBeenCalled()
   })
 
-  it("marks every cleared cell Stop here with Couldn't clear", () => {
+  it("marks every cleared cell Stop here, explaining there is no chance with this team", () => {
     renderCard(buildTokenPlanView(workedViewInput()))
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Couldn't clear: mark Melee on Alpha battle 3 as Stop here",
+        name: "Stop here: Melee has no chance on Alpha battle 3",
       })
+    )
+    const button = screen.getByTestId("next-token-could-not")
+    expect(button).toHaveTextContent("Stop hereNo chance with this team")
+    expect(within(button).getByTestId("annotation-mark-icon")).toHaveAttribute(
+      "data-mark",
+      "stopHere"
     )
 
     expect(onMarkToken).toHaveBeenCalledWith(
@@ -301,13 +310,19 @@ describe("NextTokenCard", () => {
     )
   })
 
-  it("marks the objective cells Maybe clear with Partly cleared", () => {
+  it("marks the objective cells Maybe clear, explaining it might clear with a retry", () => {
     renderCard(buildTokenPlanView(workedViewInput()))
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Partly cleared: mark Melee on Alpha battle 3 as Maybe clear",
+        name: "Maybe clear: Melee might clear Alpha battle 3 with a retry",
       })
+    )
+    const button = screen.getByTestId("next-token-partly")
+    expect(button).toHaveTextContent("Maybe clearMight clear with a retry")
+    expect(within(button).getByTestId("annotation-mark-icon")).toHaveAttribute(
+      "data-mark",
+      "maybeClear"
     )
 
     expect(onMarkToken).toHaveBeenCalledWith(
@@ -323,7 +338,7 @@ describe("NextTokenCard", () => {
     renderCard(buildTokenPlanView(workedViewInput()), { isMobile: true })
 
     expect(screen.getByTestId("next-token-partly")).toHaveClass(
-      "h-11",
+      "min-h-11",
       "w-full"
     )
   })

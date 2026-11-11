@@ -19,7 +19,7 @@ const shown = {
 }
 
 describe("tokenResultEvent", () => {
-  it("labels Couldn't clear with the estimate the player saw and the depth change", () => {
+  it("labels Stop here with the estimate the player saw and the depth change", () => {
     expect(
       tokenResultEvent({
         eventId: "fabiusBile",
@@ -60,7 +60,7 @@ describe("tokenResultEvent", () => {
     })
   })
 
-  it("labels Partly cleared and reads a missing depth as unknown", () => {
+  it("labels Maybe clear and reads a missing depth as unknown", () => {
     const event = tokenResultEvent({
       eventId: "fabiusBile",
       run: null,
@@ -85,7 +85,7 @@ describe("tokenResultEvent", () => {
     })
   })
 
-  it("labels Stop here as a team stopped early", () => {
+  it("labels Try another team as a team stopped early", () => {
     expect(
       tokenResultEvent({
         eventId: "fabiusBile",
