@@ -217,6 +217,8 @@ describe("useAnalyticsActions", () => {
       memberCount: 4,
       unitIds: ["trajann", "incisus"],
       objectiveIndexes: [0, 2],
+      memberPowers: [300_000, 80_000],
+      topMemberShare: 0.789,
       curveVersion: "2026-11-09-e0.25",
     })
     result.current.captureEvent({
@@ -253,6 +255,8 @@ describe("useAnalyticsActions", () => {
         member_count: 4,
         unit_ids: ["trajann", "incisus"],
         objective_indexes: [0, 2],
+        member_powers: [300_000, 80_000],
+        top_member_share: 0.789,
         curve_version: "2026-11-09-e0.25",
       }
     )
@@ -396,7 +400,33 @@ describe("useAnalyticsActions", () => {
       memberCount: 4,
       unitIds: ["trajann", "incisus"],
       objectiveIndexes: [0, 2],
+      memberPowers: [300_000, 80_000],
+      topMemberShare: 0.789,
       curveVersion: "2026-11-09-e0.25",
+      battlePower: 350_333,
+      powerRatio: 1.012,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_token_cleared",
+      eventId: "astarLysander",
+      run: 2,
+      laneId: "gamma",
+      battleIndex: 6,
+      estimate: 8,
+      depth: 8,
+      depthManual: false,
+      sureDepth: 6,
+      stretchDepth: 9,
+      effectivePower: 400_000,
+      teamPower: 380_000,
+      memberCount: 3,
+      unitIds: ["revas", "volk", "toth"],
+      objectiveIndexes: [1],
+      memberPowers: [140_000, 130_000, 110_000],
+      topMemberShare: 0.368,
+      curveVersion: "2026-11-09-e0.25",
+      battlePower: 135_741,
+      powerRatio: 2.73,
     })
 
     expect(sdk.client.capture).toHaveBeenCalledWith(
@@ -454,7 +484,35 @@ describe("useAnalyticsActions", () => {
         member_count: 4,
         unit_ids: ["trajann", "incisus"],
         objective_indexes: [0, 2],
+        member_powers: [300_000, 80_000],
+        top_member_share: 0.789,
         curve_version: "2026-11-09-e0.25",
+        battle_power: 350_333,
+        power_ratio: 1.012,
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_token_cleared",
+      {
+        event_id: "astarLysander",
+        run: 2,
+        lane_id: "gamma",
+        battle_index: 6,
+        estimate: 8,
+        depth: 8,
+        depth_manual: false,
+        sure_depth: 6,
+        stretch_depth: 9,
+        effective_power: 400_000,
+        team_power: 380_000,
+        member_count: 3,
+        unit_ids: ["revas", "volk", "toth"],
+        objective_indexes: [1],
+        member_powers: [140_000, 130_000, 110_000],
+        top_member_share: 0.368,
+        curve_version: "2026-11-09-e0.25",
+        battle_power: 135_741,
+        power_ratio: 2.73,
       }
     )
   })

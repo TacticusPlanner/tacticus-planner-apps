@@ -19,11 +19,10 @@ export function HomePage() {
   // Read once: Right now shows the live events, Upcoming events what starts next.
   const events = useHomeEvents()
 
-  // Mobile stacks in source order (Right now, Daily Raids, Upcoming, Projects, Calendar); from lg the
+  // Mobile stacks in source order (Right now, Daily Raids, Upcoming, Projects, Install, Calendar); from lg the
   // middle row puts Raids, Projects and Upcoming side by side, in that order.
   return (
     <PageContainer data-testid="home-page">
-      <InstallAppCard />
       <RightNow events={events} />
       <div
         className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3"
@@ -40,6 +39,9 @@ export function HomePage() {
           <ProjectsWidget />
         </div>
       </div>
+      {/* Below the widgets: the card appears only once the browser offers an install prompt,
+          often seconds after load, and above them it pushed the whole page down (layout shift). */}
+      <InstallAppCard />
       <EventsCalendar />
     </PageContainer>
   )

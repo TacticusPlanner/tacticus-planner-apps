@@ -4,14 +4,17 @@ import { I18nextProvider } from "react-i18next"
 import type { UnitId } from "@workspace/game-domain"
 
 import type { CreateCombinedGoalsRequest, GoalDetail } from "@/entities/goal"
+import { ApiError } from "@/shared/api"
 import { createTestI18n } from "@/test/i18n"
 import { fireEvent, render, screen, waitFor, within } from "@/test/render"
+import userEvent from "@testing-library/user-event"
 
 import type { BulkGoalUnit } from "../../model/bulk-create/bulk-goal-plan"
 
 const api = vi.hoisted(() => ({
   goals: new Map<string, GoalDetail>(),
   create: vi.fn<(request: CreateCombinedGoalsRequest) => Promise<unknown>>(),
+  createProject: vi.fn<(request: { name: string }) => Promise<unknown>>(),
 }))
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
@@ -21,6 +24,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 vi.mock("@/entities/project", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/project")>()),
   useProjects: () => ({ projects: [], defaultProjectId: "default" }),
+  createProject: api.createProject,
 }))
 
 import { BulkGoalDialog } from "./bulk-goal-dialog"
@@ -61,6 +65,15 @@ beforeAll(async () => {
 beforeEach(() => {
   api.goals = new Map()
   api.create.mockReset().mockResolvedValue({})
+  api.createProject.mockReset().mockImplementation(async ({ name }) => ({
+    projectId: "new-project",
+    name,
+    description: null,
+    color: null,
+    isDefault: false,
+    status: "Active",
+    goalIds: [],
+  }))
 })
 
 function renderDialog(units: BulkGoalUnit[]) {
@@ -99,7 +112,8 @@ describe("BulkGoalDialog", () => {
 
   it("sends one request per unit and continues past a failure, then retries only the failed one", async () => {
     api.create.mockImplementation(async (request) => {
-      if (request.entityId === "spaceRagnar") throw new Error("boom")
+      if (request.entityId === "spaceRagnar")
+        throw new ApiError(503, "API request failed with status 503")
       return {}
     })
     const { onCreated, onOpenChange } = renderDialog([ragnar, tigurius])
@@ -115,7 +129,11 @@ describe("BulkGoalDialog", () => {
       projects: [{ projectId: "default" }],
     })
     expect(rows()[0]).toHaveAttribute("data-status", "failed")
-    expect(within(rows()[0]!).getByText("boom")).toBeInTheDocument()
+    expect(
+      within(rows()[0]!).getByText(
+        "Couldn't reach the server. Please try again."
+      )
+    ).toBeInTheDocument()
     expect(rows()[1]).toHaveAttribute("data-status", "done")
 
     api.create.mockResolvedValue({})
@@ -143,5 +161,74 @@ describe("BulkGoalDialog", () => {
     const { onRemoveUnit } = renderDialog([ragnar, tigurius])
     fireEvent.click(screen.getByRole("button", { name: "Remove Tigurius" }))
     expect(onRemoveUnit).toHaveBeenCalledWith("character:ultraTigurius")
+  })
+
+  it("creates a new project from the dialog and adds the goals to it", async () => {
+    const user = userEvent.setup()
+    renderDialog([ragnar])
+
+    await user.click(screen.getByTestId("bulk-goal-add-project"))
+    await user.type(screen.getByPlaceholderText("Search projects"), "Raids")
+    await user.click(screen.getByTestId("bulk-goal-create-project"))
+    await waitFor(() =>
+      expect(api.createProject).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Raids" })
+      )
+    )
+
+    await user.click(screen.getByTestId("bulk-goal-create"))
+    await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1))
+    expect(api.create.mock.calls[0]![0].projects).toEqual([
+      { projectId: "default" },
+      { projectId: "new-project" },
+    ])
+  })
+
+  it("starts the targets above the lowest current value, snapping the default up", () => {
+    const veteran: BulkGoalUnit = {
+      ...ragnar,
+      progression: "Mythic:OneBlueStar",
+      rank: "Diamond3",
+      abilityLevels: [50, 50],
+    }
+    renderDialog([veteran])
+
+    // The default Diamond III is already reached, so Rank starts at Adamantine I.
+    expect(rows()[0]).toHaveTextContent("Diamond III → Adamantine I")
+    expect(screen.getByTestId("bulk-goal-summary")).toHaveTextContent(
+      "1 goal for 1 unit"
+    )
+  })
+
+  it("disables a target every listed unit has already reached", () => {
+    const maxed: BulkGoalUnit = {
+      ...ragnar,
+      progression: "Mythic:MythicWings",
+      rank: "Adamantine2",
+      abilityLevels: [60, 60],
+    }
+    renderDialog([maxed])
+
+    expect(screen.getByTestId("bulk-goal-rank-toggle")).toBeDisabled()
+    expect(screen.getByTestId("bulk-goal-ascension-toggle")).toBeDisabled()
+    expect(screen.getByTestId("bulk-goal-ability-toggle")).toBeDisabled()
+    expect(
+      screen.getAllByText("Every selected unit is already at the top.")
+    ).toHaveLength(3)
+  })
+
+  it("shows each planned goal on its own row, with a row per raised ability track", () => {
+    const evenTracks: BulkGoalUnit = { ...ragnar, abilityLevels: [50, 26] }
+    renderDialog([evenTracks])
+    fireEvent.click(screen.getByTestId("bulk-goal-ability-toggle"))
+
+    const planned = within(rows()[0]!).getAllByTestId("bulk-goal-planned")
+    const texts = planned.map((row) => row.textContent ?? "")
+    expect(
+      texts.some((text) => text.includes("Rank Gold I → Diamond III"))
+    ).toBe(true)
+    // Active is already at 50, so only Passive gets a row.
+    expect(texts.filter((text) => text.startsWith("Active"))).toHaveLength(0)
+    expect(texts.some((text) => text.includes("Passive 26 → 50"))).toBe(true)
   })
 })

@@ -427,6 +427,7 @@ vi.mock("@/entities/project", async (importOriginal) => ({
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {},
   apiIssue: () => null,
+  isTransientApiError: () => false,
 }))
 
 import { CreateGoalSheet } from "./create-goal-sheet"

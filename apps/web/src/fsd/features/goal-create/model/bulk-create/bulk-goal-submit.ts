@@ -7,15 +7,18 @@ export type BulkUnitStatus =
   | { status: "done" }
   | { status: "failed"; error: string }
 
-/** The create request for one unit's plan: appended to the order, in `projectId` (else Default). */
+/** The create request for one unit's plan: appended to the order, in `projectIds` (none: Default). */
 export function bulkCreateRequest(
   plan: BulkUnitPlan,
-  projectId: string | undefined
+  projectIds: readonly string[]
 ): CreateCombinedGoalsRequest {
   return {
     entityType: plan.unit.kind === "character" ? "Character" : "Mow",
     entityId: plan.unit.unitId,
-    projects: projectId ? [{ projectId }] : null,
+    projects:
+      projectIds.length > 0
+        ? projectIds.map((projectId) => ({ projectId }))
+        : null,
     goals: plan.specs,
   }
 }
@@ -27,14 +30,14 @@ export function bulkCreateRequest(
  */
 export async function sendBulkPlans({
   plans,
-  projectId,
+  projectIds,
   only,
   send,
   describeError,
   onStatus,
 }: {
   plans: readonly BulkUnitPlan[]
-  projectId: string | undefined
+  projectIds: readonly string[]
   only?: ReadonlySet<string>
   send: (request: CreateCombinedGoalsRequest) => Promise<unknown>
   describeError: (error: unknown) => string
@@ -50,7 +53,7 @@ export async function sendBulkPlans({
   for (const plan of sent) {
     const key = bulkUnitKey(plan.unit)
     try {
-      await send(bulkCreateRequest(plan, projectId))
+      await send(bulkCreateRequest(plan, projectIds))
       onStatus(key, { status: "done" })
     } catch (error) {
       failed += 1
