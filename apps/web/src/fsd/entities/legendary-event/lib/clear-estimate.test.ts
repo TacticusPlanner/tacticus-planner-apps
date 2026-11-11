@@ -214,7 +214,7 @@ describe("clear estimate (spec worked examples)", () => {
 
   it("lists each member's power in member order, summing to the team power", () => {
     const powers = memberPowers(WORKED_TEAM, roster, WORKED_CONFIG.unitPower)
-    expect(powers).toHaveLength(WORKED_TEAM.length)
+    expect(powers).toEqual([21675, 16672, 21883, 24753, 13912])
     expect(powers?.reduce((sum, power) => sum + power, 0)).toBe(98895)
     expect(memberPowers(WORKED_TEAM, roster, null)).toBeNull()
   })

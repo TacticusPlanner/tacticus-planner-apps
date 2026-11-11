@@ -43,17 +43,23 @@ export function useShownTokens(
   run: number | null,
   progress: ReadValue<LegendaryEventProgress | undefined>
 ) {
-  const { captureEvent } = useAnalyticsActions()
+  const { captureEvent, isReady } = useAnalyticsActions()
   useEffect(() => {
     if (progress === "loading" || progress === "error") return
     const tokens = load(eventId)
     if (tokens.length === 0) return
+    if (!isReady) {
+      // A capture before the SDK loads is dropped: keep this run's tokens until it can be sent.
+      const current = tokens.filter((token) => token.run === run)
+      if (current.length !== tokens.length) save(eventId, current)
+      return
+    }
     const { cleared, kept } = settleShownTokens(tokens, progress, run)
     for (const token of cleared) {
       captureEvent(tokenClearedEvent(eventId, token))
     }
     if (kept.length !== tokens.length) save(eventId, kept)
-  }, [captureEvent, eventId, progress, run])
+  }, [captureEvent, eventId, isReady, progress, run])
   const remember = useCallback(
     (token: ShownToken) =>
       save(eventId, rememberShownToken(load(eventId), token)),

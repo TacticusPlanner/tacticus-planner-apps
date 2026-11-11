@@ -7,8 +7,12 @@ import type { ShownToken } from "./token-cleared-analytics"
 import { useShownTokens } from "./use-shown-tokens"
 
 const capture = vi.fn()
+const analytics = { isReady: true }
 vi.mock("@/shared/analytics", () => ({
-  useAnalyticsActions: () => ({ captureEvent: capture }),
+  useAnalyticsActions: () => ({
+    captureEvent: capture,
+    isReady: analytics.isReady,
+  }),
 }))
 
 const shown: ShownToken = {
@@ -39,6 +43,23 @@ describe("useShownTokens", () => {
   beforeEach(() => {
     localStorage.clear()
     capture.mockReset()
+    analytics.isReady = true
+  })
+
+  it("keeps a cleared token until analytics has loaded", () => {
+    analytics.isReady = false
+    const { result, rerender } = renderHook(
+      ({ value }: { value: LegendaryEventProgress }) =>
+        useShownTokens("votanUthar", 1, value),
+      { initialProps: { value: progress([]) } }
+    )
+    act(() => result.current.remember(shown))
+    rerender({ value: progress([0, 1]) })
+    expect(capture).not.toHaveBeenCalled()
+
+    analytics.isReady = true
+    rerender({ value: progress([0, 1]) })
+    expect(capture).toHaveBeenCalledOnce()
   })
 
   it("logs a remembered token once a later sync shows it cleared", () => {
