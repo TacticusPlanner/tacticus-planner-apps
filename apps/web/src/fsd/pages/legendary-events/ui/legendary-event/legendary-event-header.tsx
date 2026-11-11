@@ -4,6 +4,8 @@ import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 
+import { EntityIcon } from "@/shared/ui"
+
 import { EventTimingLines } from "../shared/event-timing-lines"
 import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-model"
 
@@ -28,9 +30,8 @@ export function LegendaryEventHeader({
     <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
       <div className="flex min-w-0 items-center gap-3">
         {portrait ? (
-          <img
+          <EntityIcon
             alt=""
-            aria-hidden="true"
             className="size-12 shrink-0 rounded-full object-cover"
             src={portrait}
           />

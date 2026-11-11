@@ -4,6 +4,8 @@ import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { EntityIcon } from "@/shared/ui"
+
 import { EventTimingLines } from "../shared/event-timing-lines"
 import type { HubCardViewModel } from "./legendary-events-hub.view-model"
 import { useDateLocale } from "@/shared/lib"
@@ -45,9 +47,8 @@ export function LegendaryEventCard({
       to={`/legendary-events/${card.eventId}`}
     >
       {portrait ? (
-        <img
+        <EntityIcon
           alt=""
-          aria-hidden="true"
           className="size-12 shrink-0 rounded-full object-cover"
           src={portrait}
         />
