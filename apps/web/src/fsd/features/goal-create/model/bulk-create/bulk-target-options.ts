@@ -12,7 +12,7 @@ import {
 import type { BulkGoalUnit } from "./bulk-goal-plan"
 
 /** What the bulk dialog's target pickers offer for the listed units. */
-export type BulkTargetOptions = {
+type BulkTargetOptions = {
   /** Ranks above the lowest current rank of the listed characters. */
   rankOptions: Rank[]
   /** Progressions above the lowest current progression of the listed units. */

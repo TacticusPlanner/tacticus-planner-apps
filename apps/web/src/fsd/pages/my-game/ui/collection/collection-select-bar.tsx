@@ -28,7 +28,9 @@ export function CollectionSelectBar({
     <div
       className={cn(
         "sticky z-20 flex flex-wrap items-center gap-2 rounded-2xl border bg-card p-2 pl-4 shadow-lg",
-        isMobile ? "bottom-[calc(var(--mobile-nav-height)+1rem)] mr-14" : "bottom-3"
+        isMobile
+          ? "bottom-[calc(var(--mobile-nav-height)+1rem)] mr-14"
+          : "bottom-3"
       )}
       data-mobile={isMobile ? "true" : undefined}
       data-testid="collection-select-bar"

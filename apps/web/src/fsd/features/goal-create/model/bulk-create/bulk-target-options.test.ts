@@ -70,9 +70,9 @@ describe("bulkTargetOptions", () => {
       unownedCharacter,
     ])
     expect(options.rankOptions[0]).toBe("Stone2")
-    expect(
-      progressionIndex(options.progressionOptions[0]!)
-    ).toBe(progressionIndex("Rare:FourStars") + 1)
+    expect(progressionIndex(options.progressionOptions[0]!)).toBe(
+      progressionIndex("Rare:FourStars") + 1
+    )
     expect(options.abilityMin).toBe(2)
   })
 

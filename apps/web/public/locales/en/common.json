@@ -2023,7 +2023,10 @@
       "removeUnit": "Remove {{name}}",
       "goal": {
         "range": "{{type}} {{start}} → {{end}}",
-        "ascensionAdded": "{{type}} {{start}} → {{end}} (needed)"
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (needed)",
+        "active": "Active",
+        "passive": "Passive",
+        "needed": "needed"
       }
     }
   },

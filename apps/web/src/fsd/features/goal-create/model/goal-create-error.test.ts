@@ -7,7 +7,9 @@ import { goalCreateErrorText } from "./goal-create-error"
 
 // Echoes the key (plus options) so each branch is identifiable without loading translations.
 const t = ((key: string, options?: Record<string, unknown>) =>
-  options && "max" in options ? `${key}:${String(options.max)}` : key) as TFunction
+  options && "max" in options
+    ? `${key}:${String(options.max)}`
+    : key) as TFunction
 const unitName = () => "Bellator"
 
 describe("goalCreateErrorText", () => {
@@ -22,9 +24,9 @@ describe("goalCreateErrorText", () => {
   })
 
   it("reads a rate limit and a network failure the same way", () => {
-    expect(goalCreateErrorText(t, new ApiError(429, "slow down"), unitName)).toBe(
-      "goals.create.serverError"
-    )
+    expect(
+      goalCreateErrorText(t, new ApiError(429, "slow down"), unitName)
+    ).toBe("goals.create.serverError")
     expect(
       goalCreateErrorText(t, new TypeError("Failed to fetch"), unitName)
     ).toBe("goals.create.serverError")

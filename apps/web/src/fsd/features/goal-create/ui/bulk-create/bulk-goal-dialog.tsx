@@ -7,7 +7,7 @@ import { Label } from "@workspace/ui/components/label"
 import { cn } from "@workspace/ui/lib/utils"
 import { maxAbilityLevel } from "@workspace/game-domain"
 
-import { MAX_GOALS_PER_TYPE, progressionLabel } from "@/entities/goal"
+import { MAX_GOALS_PER_TYPE } from "@/entities/goal"
 import {
   NumberStepper,
   ProgressionSelect,
@@ -22,13 +22,13 @@ import {
 import {
   bulkUnitKey,
   type BulkGoalUnit,
-  type BulkPlannedGoal,
   type BulkUnitPlan,
 } from "../../model/bulk-create/bulk-goal-plan"
 import type { BulkUnitStatus } from "../../model/bulk-create/bulk-goal-submit"
 import { useBulkGoalForm } from "../../model/bulk-create/use-bulk-goal-form"
 import { useBulkGoalSubmit } from "../../model/bulk-create/use-bulk-goal-submit"
 import { GoalProjectsField } from "../projects/goal-projects-field"
+import { BulkPlannedGoalRows } from "./bulk-planned-goal-rows"
 
 type SentPlans = {
   plans: readonly BulkUnitPlan[]
@@ -403,9 +403,7 @@ function UnitRow({
           ) : null}
         </span>
         {plan.goals.length > 0 ? (
-          <span className="text-muted-foreground">
-            {plan.goals.map((goal) => plannedGoalLabel(t, goal)).join(" · ")}
-          </span>
+          <BulkPlannedGoalRows goals={plan.goals} />
         ) : null}
         {plan.skipped.map((skip) => (
           <span className="text-xs text-muted-foreground" key={skip.goalType}>
@@ -440,44 +438,4 @@ function UnitRow({
       ) : null}
     </li>
   )
-}
-
-function plannedGoalLabel(
-  t: ReturnType<typeof useTranslation>["t"],
-  goal: BulkPlannedGoal
-): string {
-  const type = t(`goals.create.goalTypes.${goal.goalType}`)
-  switch (goal.goalType) {
-    case "Unlock":
-      return type
-    case "Ascension":
-      return t(
-        goal.added
-          ? "goals.bulkCreate.goal.ascensionAdded"
-          : "goals.bulkCreate.goal.range",
-        {
-          type,
-          start: progressionLabel(t, goal.start),
-          end: progressionLabel(t, goal.end),
-        }
-      )
-    case "Rank":
-      return t("goals.bulkCreate.goal.range", {
-        type,
-        start: t(`ranks.${goal.start}`, {
-          ns: "progression",
-          defaultValue: goal.start,
-        }),
-        end: t(`ranks.${goal.end}`, {
-          ns: "progression",
-          defaultValue: goal.end,
-        }),
-      })
-    case "Ability":
-      return t("goals.bulkCreate.goal.range", {
-        type,
-        start: `${goal.activeStart}/${goal.passiveStart}`,
-        end: `${goal.activeEnd}/${goal.passiveEnd}`,
-      })
-  }
 }

@@ -14,7 +14,7 @@ import { progressionRarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon } from "@/shared/ui"
+import { CompactStars, EntityIcon } from "@/shared/ui"
 
 import type {
   OwnedUnitTileData,
@@ -254,28 +254,10 @@ function RankCell({ kind, data }: { kind: UnitKind; data: OwnedUnitTileData }) {
 }
 
 function StarsCell({ data }: { data: OwnedUnitTileData }) {
-  const visual = progressionVisual(data.progression)
-  if (visual.kind === "none") return <span />
-  return (
-    <span
-      className="flex items-center gap-1 text-xs font-semibold tabular-nums"
-      data-testid="unit-row-stars"
-    >
-      {visual.kind === "stars" ? (
-        <>
-          <EntityIcon src={visual.icon} alt="" className="size-3.5" />
-          {visual.count}
-        </>
-      ) : (
-        <EntityIcon
-          src={visual.icon}
-          alt=""
-          className="h-4 w-auto"
-          width={512}
-          height={164}
-        />
-      )}
-    </span>
+  return progressionVisual(data.progression).kind === "none" ? (
+    <span />
+  ) : (
+    <CompactStars data-testid="unit-row-stars" progression={data.progression} />
   )
 }
 

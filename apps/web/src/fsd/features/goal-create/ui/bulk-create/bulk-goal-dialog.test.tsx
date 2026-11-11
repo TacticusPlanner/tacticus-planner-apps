@@ -216,4 +216,19 @@ describe("BulkGoalDialog", () => {
       screen.getAllByText("Every selected unit is already at the top.")
     ).toHaveLength(3)
   })
+
+  it("shows each planned goal on its own row, with a row per raised ability track", () => {
+    const evenTracks: BulkGoalUnit = { ...ragnar, abilityLevels: [50, 26] }
+    renderDialog([evenTracks])
+    fireEvent.click(screen.getByTestId("bulk-goal-ability-toggle"))
+
+    const planned = within(rows()[0]!).getAllByTestId("bulk-goal-planned")
+    const texts = planned.map((row) => row.textContent ?? "")
+    expect(
+      texts.some((text) => text.includes("Rank Gold I → Diamond III"))
+    ).toBe(true)
+    // Active is already at 50, so only Passive gets a row.
+    expect(texts.filter((text) => text.startsWith("Active"))).toHaveLength(0)
+    expect(texts.some((text) => text.includes("Passive 26 → 50"))).toBe(true)
+  })
 })
