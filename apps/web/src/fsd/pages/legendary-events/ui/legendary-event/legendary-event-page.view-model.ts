@@ -52,7 +52,6 @@ import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamEditorLauncher } from "./teams/team-editor-launcher"
 import type { TeamsViewModel } from "./teams/teams-section"
 import type { LaneSelection } from "./use-lane-selection"
-import type { BattleInfoTarget } from "./battles/battle-info-target"
 
 /** When the next token arrives: at `targetMs`, or already due (the timer ran out since the sync). */
 type NextTokenViewModel =
@@ -149,13 +148,10 @@ export interface LegendaryEventPageViewModel {
   teamEditor: TeamEditorLauncher
   /** Upgrade impact (Stage 6) of every lane on Plan; null on other tabs or signed out. */
   upgradeImpact: UpgradeImpactViewModel | null
-  /** The Battles sections built for Plan's Battles lane and the battle info dialog's lane. */
+  /** The Battles section built for Plan's Battles lane. */
   battles: Partial<ByLane<BattlesViewModel>>
-  /** The battle a token's battle button opened in the battle info dialog (null while closed). */
-  battleInfo: {
-    target: BattleInfoTarget | null
-    onChange: (target: BattleInfoTarget | null) => void
-  }
+  /** The page's `lre-battles` read, for the battle info dialog (it builds its own lane). */
+  battlesRead: ReadState<LegendaryEventBattle[]>
   /** The run tab's Next token card, Plan's Token plan and Run forecast (Stage 4). */
   tokens: TokensViewModel
   /** The run tab's Last run card (run history). */

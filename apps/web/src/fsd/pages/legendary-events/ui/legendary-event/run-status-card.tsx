@@ -62,8 +62,10 @@ export function RunStatusCard({
   const body = (() => {
     if (runStatus.kind === "loading") {
       return (
+        // The loaded values' height (seven one-line rows on a phone, four in two columns
+        // wider), so the panel below doesn't move when they arrive (web vitals plan item 8).
         <Skeleton
-          className="h-16 w-full rounded-lg"
+          className="h-40 w-full rounded-lg sm:h-24"
           data-testid="run-status-loading"
         />
       )

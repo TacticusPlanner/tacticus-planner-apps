@@ -152,6 +152,17 @@ describe("ProjectsListPage", () => {
     expect(intro.closest("[hidden]")).toBeNull()
   })
 
+  it("shows the intro and placeholder rows while the projects load, not the empty state", async () => {
+    listProjects.mockReturnValue(new Promise(() => {}))
+    renderPage()
+
+    expect(
+      await screen.findByTestId("projects-page-loading")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("projects-page-intro")).toBeVisible()
+    expect(screen.queryByTestId("projects-page-empty")).not.toBeInTheDocument()
+  })
+
   it("keeps the dashboard explanation out of the empty state, which carries its own wording", async () => {
     // An unconditional lead paragraph would state the explanation twice on an empty dashboard, whose
     // own copy already answers the same question (task 3.1/3.3).

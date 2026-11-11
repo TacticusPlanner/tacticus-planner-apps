@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { holdsGlobalPosition } from "@/entities/goal"
+import { afterNextPaint } from "@/shared/lib"
 import { useGoalOrderActions } from "../goal-order/use-goal-order-actions"
 import { useMobileReorderMode } from "../goal-order/use-mobile-reorder-mode"
 import { displacedByDrop } from "../projects/goal-order"
@@ -60,16 +61,19 @@ export function useGoalsPageReorder(allRows: readonly GoalRow[]) {
   )
   const highlightTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   // `goalId` takes the position `displacedGoalId` holds (see `goalMenuMoves`).
-  const handleMenuMove = (goalId: string, displacedGoalId: string) => {
-    void orderActions.moveGoal({ goalId, displacedGoalId })
-    setLastMovedGoalId(goalId)
-    setHighlightedGoalId(goalId)
-    clearTimeout(highlightTimer.current)
-    highlightTimer.current = setTimeout(
-      () => setHighlightedGoalId(null),
-      MOVED_HIGHLIGHT_MS
-    )
-  }
+  // The move re-renders the whole list (the cache write is a synchronous store update), so it waits
+  // for the menu's close to paint: the tap's INP is the close, not the list (web vitals plan item 10).
+  const handleMenuMove = (goalId: string, displacedGoalId: string) =>
+    afterNextPaint(() => {
+      void orderActions.moveGoal({ goalId, displacedGoalId })
+      setLastMovedGoalId(goalId)
+      setHighlightedGoalId(goalId)
+      clearTimeout(highlightTimer.current)
+      highlightTimer.current = setTimeout(
+        () => setHighlightedGoalId(null),
+        MOVED_HIGHLIGHT_MS
+      )
+    })
   useEffect(() => () => clearTimeout(highlightTimer.current), [])
 
   return {

@@ -21,8 +21,40 @@ describe("RouteLoadingFill", () => {
     expect(screen.getByRole("status", { name: "Loading…" })).toBeVisible()
   })
 
+  it.each([
+    "/legendary-events/ev-1",
+    "/legendary-events/ev-1/teams",
+    "/legendary-events/ev-1/plan",
+  ])("shows the event page's skeleton while %s loads", (path) => {
+    renderAt(path)
+
+    expect(screen.getByTestId("legendary-event-skeleton")).toBeVisible()
+    expect(screen.getByRole("status", { name: "Loading…" })).toBeVisible()
+  })
+
+  it.each(["/plan/goals", "/plan/projects"])(
+    "shows Plan's list skeleton while %s loads",
+    (path) => {
+      renderAt(path)
+
+      expect(screen.getByTestId("plan-skeleton")).toBeVisible()
+    }
+  )
+
+  it.each([
+    "/legendary-events/master-table",
+    "/legendary-events/ev-1/plan/edit",
+    "/plan/insights",
+  ])("keeps the spinner for %s", (path) => {
+    renderAt(path)
+
+    expect(screen.queryByTestId("legendary-event-skeleton")).toBeNull()
+    expect(screen.queryByTestId("plan-skeleton")).toBeNull()
+    expect(screen.getByRole("status", { name: "Loading…" })).toBeVisible()
+  })
+
   it("keeps the spinner for other pages", () => {
-    renderAt("/plan/goals")
+    renderAt("/settings")
 
     expect(screen.queryByTestId("home-skeleton")).not.toBeInTheDocument()
     expect(screen.getByRole("status", { name: "Loading…" })).toBeVisible()

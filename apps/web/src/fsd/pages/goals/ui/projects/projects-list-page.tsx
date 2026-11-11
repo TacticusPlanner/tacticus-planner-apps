@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
   AddGoalsToProjectSheet,
@@ -41,6 +42,10 @@ export function ProjectsListPage() {
   const projectsWithGoals = useProjectsWithGoals()
   const { projectsRead: projects, goalsRead } = projectsWithGoals
   const hasProjects = projects.projects.length > 0
+  // Until the projects read settles, the page shows its intro and placeholder rows rather than the
+  // empty state, so the intro (the page's LCP text) paints at once and the list fills in below it
+  // without the empty card swapping out (web vitals plan item 10).
+  const projectsPending = projects.loading && !hasProjects
   const [sheetOpen, setSheetOpen] = useState(false)
   const [archivedOpen, setArchivedOpen] = useState(false)
   const [sheetProject, setSheetProject] = useState<ProjectSummary | undefined>(
@@ -129,7 +134,7 @@ export function ProjectsListPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="projects-page">
-      {hasProjects ? (
+      {hasProjects || projectsPending ? (
         <div className="grid gap-8">
           {/* Static page copy, not a tooltip or a dismissible callout: the question it answers is
               asked on arrival, and a dismissed callout stops answering it for exactly the people who
@@ -141,15 +146,27 @@ export function ProjectsListPage() {
           >
             {t("goals.project.dashboardIntro")}
           </p>
-          <ProjectList
-            actions={projectActions}
-            onCreateGoal={createGoalIn}
-            onEdit={openEditProject}
-            onManageGoals={setManageGoalsProject}
-            onSelect={openProjectOnGoals}
-            projects={available}
-            summaries={summaries}
-          />
+          {projectsPending ? (
+            <div
+              className="grid gap-3"
+              data-testid="projects-page-loading"
+              role="status"
+            >
+              <span className="sr-only">{t("common.loading")}</span>
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+            </div>
+          ) : (
+            <ProjectList
+              actions={projectActions}
+              onCreateGoal={createGoalIn}
+              onEdit={openEditProject}
+              onManageGoals={setManageGoalsProject}
+              onSelect={openProjectOnGoals}
+              projects={available}
+              summaries={summaries}
+            />
+          )}
           {archived.length > 0 ? (
             <details
               onToggle={(event) => setArchivedOpen(event.currentTarget.open)}
