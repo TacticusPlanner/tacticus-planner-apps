@@ -99,7 +99,7 @@ export function ProjectsWidget() {
   })()
 
   return (
-    <Card data-testid="home-projects-widget">
+    <Card data-testid="home-projects-widget" id="home-projects">
       <CardHeader>
         <CardTitle>{t("home.projects.title")}</CardTitle>
         <CardAction>

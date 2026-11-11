@@ -12,6 +12,7 @@ import type { PostHog, PostHogConfig } from "posthog-js"
 
 import type { AnalyticsEvent } from "./analytics-event"
 import { sanitizeCapture, setReportedRoutePattern } from "./capture-sanitizer"
+import { startInteractionTracking } from "./web-vitals-routes"
 import {
   battleSnapshotProperties,
   estimateSnapshotProperties,
@@ -129,6 +130,8 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
         .then((posthog) => {
           const id = pendingId.current
           if (!id) return
+          // Lets INP be labelled with the page of the slow tap, not the page open when it's sent.
+          startInteractionTracking()
           const instance = posthog.init(token, initOptions)
           instance.identify(id)
           instance.opt_in_capturing(optInOptions)

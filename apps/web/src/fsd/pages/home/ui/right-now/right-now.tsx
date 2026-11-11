@@ -36,7 +36,7 @@ export function RightNow({ events }: { events: HomeEventsState }) {
   const { t } = useTranslation("common")
 
   return (
-    <Card data-testid="home-right-now">
+    <Card data-testid="home-right-now" id="home-right-now">
       <CardHeader>
         <CardTitle>{t("home.rightNow.title")}</CardTitle>
       </CardHeader>

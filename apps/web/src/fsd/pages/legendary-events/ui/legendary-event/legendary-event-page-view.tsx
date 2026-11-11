@@ -106,6 +106,7 @@ export function LegendaryEventPageView({
         <div
           className="flex min-w-0 flex-col gap-4"
           data-testid="legendary-event-page"
+          id="le-event"
         >
           <LegendaryEventHeader
             {...props}
@@ -361,6 +362,7 @@ function TabPanel({
     <div
       className="flex min-w-0 flex-col gap-6"
       data-tab={tab}
+      id={`le-tab-${tab}`}
       data-testid={
         tab === "overview"
           ? "legendary-event-overview"
