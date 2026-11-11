@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -6,7 +7,12 @@ import {
   TokenPlanList,
 } from "@/features/legendary-event-tokens"
 
-import type { LegendaryEventLaneId } from "@/entities/legendary-event"
+import {
+  eventUnitChipData,
+  type LegendaryEventLaneId,
+} from "@/entities/legendary-event"
+
+import { rosterMap } from "../legendary-event/teams/teams.view-model"
 
 import type { PlanDraft } from "./use-plan-draft"
 import type { PlanSource } from "./use-plan-source"
@@ -32,10 +38,18 @@ export function RunsStep({
   const { t } = useTranslation("legendaryEvents")
   const isMobile = useIsMobile()
   const { event } = source
+  const roster = source.inputs.roster
+  // The team popovers' chips show rank, rarity and abilities from the synced roster.
+  const chipOf = useMemo(() => {
+    // An unsynced roster reads as empty: ownership is then unknown, not "not owned".
+    const rosterById = roster.length > 0 ? rosterMap(roster) : undefined
+    return (unitId: string) => eventUnitChipData(unitId, rosterById)
+  }, [roster])
   return (
     <section className="flex flex-col gap-6" data-testid="plan-wizard-runs">
       <h2 className="text-lg font-semibold">{t("planWizard.steps.runs")}</h2>
       <TokenPlanList
+        chipOf={chipOf}
         event={event}
         eventId={event.id}
         defaultOpen

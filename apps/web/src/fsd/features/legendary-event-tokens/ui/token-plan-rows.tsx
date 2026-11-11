@@ -416,14 +416,26 @@ function TokenMarkerList({
       className="flex flex-wrap gap-x-3 text-xs font-medium text-primary"
       data-testid="token-plan-marker"
     >
-      {milestones.map((entry) => (
-        <li key={`m${entry.milestone}`}>
-          {t("tokenPlan.plan.milestone", {
-            milestone: entry.milestone,
-            currency: number.format(entry.payout),
+      {milestones.length > 1 ? (
+        <li key="milestones">
+          {t("tokenPlan.plan.milestones", {
+            first: milestones[0]!.milestone,
+            last: milestones.at(-1)!.milestone,
+            currency: number.format(
+              milestones.reduce((sum, entry) => sum + entry.payout, 0)
+            ),
           })}
         </li>
-      ))}
+      ) : (
+        milestones.map((entry) => (
+          <li key={`m${entry.milestone}`}>
+            {t("tokenPlan.plan.milestone", {
+              milestone: entry.milestone,
+              currency: number.format(entry.payout),
+            })}
+          </li>
+        ))
+      )}
       {steps.map((step, index) => (
         <li key={`${step}${index}`}>
           {t("tokenPlan.plan.step", { step: t(`outlook.steps.${step}`) })}

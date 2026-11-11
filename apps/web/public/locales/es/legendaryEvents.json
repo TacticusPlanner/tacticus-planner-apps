@@ -771,6 +771,7 @@
       "running": "{{points}} en total",
       "maybe": "Quizá superable",
       "milestone": "Hito {{milestone}} · +{{currency}} de moneda",
+      "milestones": "Hitos {{first}}–{{last}} · +{{currency}} de moneda",
       "step": "{{step}} alcanzado",
       "fullClear_one": "{{lane}}: superar una batalla por completo cuesta {{count}} ficha",
       "fullClear_other": "{{lane}}: superar una batalla por completo cuesta {{count}} fichas",

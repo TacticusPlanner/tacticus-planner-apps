@@ -771,6 +771,7 @@
       "running": "{{points}} gesamt",
       "maybe": "Vielleicht schaffbar",
       "milestone": "Meilenstein {{milestone}} · +{{currency}} Währung",
+      "milestones": "Meilensteine {{first}}–{{last}} · +{{currency}} Währung",
       "step": "{{step}} erreicht",
       "fullClear_one": "{{lane}}: Ein vollständiger Abschluss braucht {{count}} Token pro Kampf",
       "fullClear_other": "{{lane}}: Ein vollständiger Abschluss braucht {{count}} Tokens pro Kampf",

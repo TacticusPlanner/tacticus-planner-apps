@@ -771,6 +771,7 @@
       "running": "{{points}} total",
       "maybe": "Maybe clear",
       "milestone": "Milestone {{milestone}} · +{{currency}} currency",
+      "milestones": "Milestones {{first}}–{{last}} · +{{currency}} currency",
       "step": "{{step}} reached",
       "fullClear_one": "{{lane}}: a full clear takes {{count}} token a battle",
       "fullClear_other": "{{lane}}: a full clear takes {{count}} tokens a battle",

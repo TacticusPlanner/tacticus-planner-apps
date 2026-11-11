@@ -149,6 +149,31 @@ describe("TokenPlanList", () => {
     ).toEqual(["0", "1", "2"])
   })
 
+  it("sums the milestones a row reaches into one line", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.forecast) throw new Error("not ready")
+    const markers = view.plan.tokens.map(() => ({
+      milestones: [] as { milestone: number; payout: number }[],
+      steps: [],
+    }))
+    markers[0]!.milestones.push({ milestone: 1, payout: 25 })
+    markers[2]!.milestones.push(
+      { milestone: 2, payout: 30 },
+      { milestone: 3, payout: 35 }
+    )
+    renderList({ ...view, forecast: { ...view.forecast, markers } })
+    expand()
+
+    const run = screen.getByTestId("token-plan-run")
+    expect(within(run).getByTestId("token-plan-marker")).toHaveTextContent(
+      /^Milestones 1–3 · \+90 currency$/
+    )
+    fireEvent.click(screen.getByTestId("token-plan-run-toggle"))
+    const rows = within(run).getAllByTestId("token-plan-row")
+    expect(rows[0]).toHaveTextContent("Milestone 1 · +25 currency")
+    expect(rows[2]).toHaveTextContent("Milestones 2–3 · +65 currency")
+  })
+
   it("opens the first battle's info from a folded row and the team from its name", () => {
     const openBattle = vi.fn()
     const openTeam = vi.fn()
