@@ -23,7 +23,7 @@ import { splitPlanByRun } from "./token-runs"
 
 /** Why a battle is out of the plan: a Stop here mark (another team may clear it), or a team's
  *  manual depth set below its clear estimate. */
-export type MilestonePushKind = "stopHere" | "belowEstimate"
+type MilestonePushKind = "stopHere" | "belowEstimate"
 
 /** A planned token, as a push names the one it adds or drops. */
 export interface PushToken {
@@ -63,10 +63,10 @@ export interface MilestoneGap {
   combined: { indexes: number[]; gain: number } | null
 }
 
-export const MAX_PUSHES = 5
+const MAX_PUSHES = 5
 
 /** A gap wider than this many chests is not "almost there": a push or two can't close it. */
-export const MAX_GAP_CHESTS = 2
+const MAX_GAP_CHESTS = 2
 
 /** A battle the plan leaves out, and how to put it back. */
 interface PushCandidate {
