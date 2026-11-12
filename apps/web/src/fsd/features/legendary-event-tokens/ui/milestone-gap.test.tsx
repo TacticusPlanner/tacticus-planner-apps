@@ -2,7 +2,7 @@ import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it } from "vitest"
 
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { render, screen } from "@/test/render"
+import { render, screen, within } from "@/test/render"
 
 import type { MilestoneGap, MilestonePush } from "../lib/milestone-push"
 import { MilestoneGapSection } from "./milestone-gap"
@@ -54,14 +54,14 @@ describe("MilestoneGapSection", () => {
     const row = screen.getByTestId("milestone-gap-push")
     expect(row).toHaveTextContent("Beta battle 9+330")
     expect(screen.getByTestId("milestone-gap-details")).toHaveTextContent(
-      "Try another team: Ultras · replaces Beta battle 4 (+90)"
+      /^Ultras\s*Beta battle 4 \(\+90\)$/
     )
     expect(screen.getByRole("img", { name: "Closes the gap" })).toBeVisible()
     expect(screen.getByTestId("milestone-gap-retry")).toHaveTextContent(
       "A failed try costs 1 more token and drops Beta battle 5 (−120)"
     )
     expect(screen.getByTestId("milestone-gap-scope")).toHaveTextContent(
-      "Checks battles marked Maybe clear or Stop here and teams with a lowered depth."
+      "Checks:Maybe clearTry another teamLowered depth"
     )
   })
 
@@ -83,7 +83,7 @@ describe("MilestoneGapSection", () => {
       "Beta battle 6+330"
     )
     expect(screen.getByTestId("milestone-gap-details")).toHaveTextContent(
-      /^Melee · one more battle$/
+      /^Melee$/
     )
     expect(screen.getByTestId("milestone-gap-retry")).toHaveTextContent(
       "A failed try uses a spare token"
@@ -93,9 +93,11 @@ describe("MilestoneGapSection", () => {
   it("names a Maybe clear retry", () => {
     renderGap(gap({ pushes: [push({ kind: "maybeClear" })] }))
 
-    expect(screen.getByTestId("milestone-gap-details")).toHaveTextContent(
-      "Ultras · Maybe clear retry"
-    )
+    expect(
+      within(screen.getByTestId("milestone-gap-push")).getByRole("img", {
+        name: "Maybe clear",
+      })
+    ).toBeInTheDocument()
   })
 
   it("names each row's retry when they differ", () => {
@@ -107,8 +109,8 @@ describe("MilestoneGapSection", () => {
 
     expect(screen.queryByTestId("milestone-gap-retry")).toBeNull()
     const details = screen.getAllByTestId("milestone-gap-details")
-    expect(details[0]).toHaveTextContent("retry drops Beta battle 5")
-    expect(details[1]).toHaveTextContent("retry drops Beta battle 7")
+    expect(details[0]).toHaveTextContent("Beta battle 5")
+    expect(details[1]).toHaveTextContent("Beta battle 7")
   })
 
   it("shows the combination when no push closes the gap alone", () => {
