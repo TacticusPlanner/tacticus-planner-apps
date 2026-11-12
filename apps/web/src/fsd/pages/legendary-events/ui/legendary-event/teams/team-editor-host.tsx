@@ -57,6 +57,7 @@ export function TeamEditorHost({
       goalLines={teams.goals.goalLines}
       goalsPreview={teams.goals.pickerPreview(laneId)}
       initialMemberUnitIds={editor.memberUnitIds}
+      initialReserveUnitId={editor.reserveUnitId}
       initialObjectives={editor.objectiveIndexes}
       key={editor.key}
       lane={event[laneId]}
