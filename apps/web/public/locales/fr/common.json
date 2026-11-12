@@ -1583,7 +1583,7 @@
         "upgradeTargetsRequired": "Sélectionnez au moins une amélioration à farmer pour l'objectif d'amélioration.",
         "rankMaxed": "Ce personnage a déjà atteint le rang maximum.",
         "progressionMaxed": "Cette unité a déjà atteint le niveau d'ascension maximum.",
-        "abilityMaxed": "Les capacités de cette unité ont déjà atteint le niveau maximum pour sa rareté actuelle.",
+        "abilityMaxed": "Les capacités de cette unité ont déjà atteint le niveau maximum.",
         "activeOrPausedGoalExists": "Un objectif {{goalType}} actif ou en pause existe déjà pour cette unité.",
         "upgradeQuantity": "Saisissez un nombre entier de 1 à 10 000.",
         "alreadyUnlocked_mow": "Cette machine de guerre est déjà débloquée.",

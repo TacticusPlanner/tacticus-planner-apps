@@ -2,8 +2,8 @@ import {
   abilityCapByRarity,
   lastProgression,
   lastRank,
+  maxAbilityLevel,
   progressionIndex,
-  progressionRarity,
   rankIndex,
   rarityOrder,
   type Progression,
@@ -66,17 +66,17 @@ export function isAtMaxProgression(
   )
 }
 
-/** True once both ability tracks are already at the level cap for the unit's current rarity — an
- * Ability goal has nowhere left to target until the unit is Ascended into a higher rarity tier
- * (which raises the cap). Undefined progression (no synced/prefill data yet) reads as not-maxed. */
+/** True once both ability tracks are at the highest ability level — an Ability goal has nowhere left
+ * to target. A unit at its current rarity's cap is not maxed: a higher target is planned with an
+ * auto-suggested Ascension, as V1 allowed goals past the rarity cap. */
 export function isAtMaxAbility(
-  currentProgression: Progression | undefined,
   currentActiveAbility: number,
   currentPassiveAbility: number
 ): boolean {
-  if (!currentProgression) return false
-  const cap = abilityCapByRarity[progressionRarity(currentProgression)]
-  return currentActiveAbility >= cap && currentPassiveAbility >= cap
+  return (
+    currentActiveAbility >= maxAbilityLevel &&
+    currentPassiveAbility >= maxAbilityLevel
+  )
 }
 
 export type GoalValidationIssue =

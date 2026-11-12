@@ -183,18 +183,16 @@ describe("isAtMaxProgression", () => {
 })
 
 describe("isAtMaxAbility", () => {
-  it("is false without progression data", () => {
-    expect(isAtMaxAbility(undefined, 60, 60)).toBe(false)
+  it("is false while either track is below the highest level", () => {
+    expect(isAtMaxAbility(60, 59)).toBe(false)
   })
 
-  it("is false when either track still has room under the current rarity's cap", () => {
-    expect(isAtMaxAbility("Legendary:RedThreeStars", 50, 40)).toBe(false)
+  it("is false at a rarity cap below the highest level, so a goal past it can be planned", () => {
+    // Legendary's cap is 50: a target past it is planned with an Ascension.
+    expect(isAtMaxAbility(50, 50)).toBe(false)
   })
 
-  it("is true only once both tracks reach the current rarity's cap", () => {
-    expect(isAtMaxAbility("Legendary:RedThreeStars", 50, 50)).toBe(true)
-    // Mythic's cap (60) is higher than Legendary's (50) — not maxed yet at the Legendary cap.
-    expect(isAtMaxAbility("Mythic:OneBlueStar", 50, 50)).toBe(false)
-    expect(isAtMaxAbility("Mythic:OneBlueStar", 60, 60)).toBe(true)
+  it("is true once both tracks reach the highest level", () => {
+    expect(isAtMaxAbility(60, 60)).toBe(true)
   })
 })

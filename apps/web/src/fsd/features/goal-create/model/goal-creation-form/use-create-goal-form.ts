@@ -839,11 +839,7 @@ function useEntityPrefillEffect({
     // reason as the setState calls above — a conditionally-called setState inside an effect trips
     // the set-state-in-effect rule.
     const rankMaxed = isAtMaxRank(rank)
-    const abilityMaxed = isAtMaxAbility(
-      playerEntity.progressionIndex,
-      activeLevel,
-      passiveLevel
-    )
+    const abilityMaxed = isAtMaxAbility(activeLevel, passiveLevel)
     const progressionMaxed = isAtMaxProgression(playerEntity.progressionIndex)
     setEnabledTypes((current) => {
       const next = new Set(current)
