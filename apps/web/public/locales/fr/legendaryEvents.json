@@ -858,6 +858,19 @@
         "chests": "Coffres obtenus",
         "shards": "Éclats en fin de session"
       }
+    },
+    "closeGap": {
+      "title": "Combler l'écart : +{{points}} points pour {{step}}",
+      "where": "{{lane}} combat {{battle}}",
+      "stopHere": "Essayer {{team}} sur {{where}} (S'arrêter ici)",
+      "belowEstimate": "{{team}} un combat de plus : {{where}} (profondeur sous l'estimation)",
+      "closes": "Comble l'écart",
+      "gain": "+{{points}} points, 1 jeton",
+      "gainReplacing": "+{{points}} points, 1 jeton, remplace {{where}} (+{{lost}})",
+      "retry": "En cas d'échec, une nouvelle tentative coûte 1 jeton de plus et retire {{where}} (−{{lost}})",
+      "retrySpare": "En cas d'échec, une nouvelle tentative utilise un jeton restant",
+      "combined": "Aucun ne le comble seul ; les {{count}} meilleurs ensemble, oui (+{{points}} points)",
+      "short": "Même ensemble, cela ne suffit pas"
     }
   },
   "masterTable": {

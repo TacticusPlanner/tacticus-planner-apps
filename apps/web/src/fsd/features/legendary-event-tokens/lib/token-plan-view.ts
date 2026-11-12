@@ -27,6 +27,7 @@ import {
   type FullClearFigure,
 } from "./minimum-tokens"
 import { forecastRuns, type Forecast } from "./run-forecast"
+import { milestoneGap, type MilestoneGap } from "./milestone-push"
 import {
   nextToken,
   planTokens,
@@ -183,6 +184,9 @@ export interface TokenPlanReady {
         nextProgress: MissionProgress[]
       })
     | null
+  /** The current run's shortfall to its next reward step and the left-out battles that could
+   *  close it; null when it reaches the step, without a forecast, or in the 1-click plan. */
+  milestoneGap: MilestoneGap | null
   /** Tokens left over across runs while the plan is shorter than the supply, with the first lane
    *  that still has points left; null when every token has a battle to play. */
   leftover: { tokens: number; laneId: LegendaryEventLaneId | null } | null
@@ -276,22 +280,34 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     showPaidOptions: plan.data.showPaidOptions,
     watchAds: input.watchAds,
   })
-  const tokenPlan = planTokens({
+  const planInput = {
     lanes,
     startingPoints: entry?.currentPoints ?? 0,
     runSlots: input.perRunDepths && supply ? supplySlots(supply) : undefined,
-  })
-  const forecast =
+  }
+  const tokenPlan = planTokens(planInput)
+  const forecastInput =
     supply && event.rewards
-      ? forecastRuns({
+      ? {
           rewards: event.rewards,
           ohSoCloseOffer: event.ohSoCloseOffer,
           progress: entry,
           supply,
           fromStep: unitNextAscensionStep(input.eventUnit),
-          tokens: tokenPlan.tokens,
           runs: plan.data.runs,
           showPaidOptions: plan.data.showPaidOptions,
+        }
+      : null
+  const forecast = forecastInput
+    ? forecastRuns({ ...forecastInput, tokens: tokenPlan.tokens })
+    : null
+  const gap =
+    forecastInput && !input.perRunDepths
+      ? milestoneGap({
+          plan: planInput,
+          forecast: forecastInput,
+          estimateDepthOf: (teamId) =>
+            estimateByTeam.get(teamId)?.depth ?? null,
         })
       : null
 
@@ -431,6 +447,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
       : null,
     upcoming:
       lifecycle.state !== "upcoming" ? null : { run: resolution.nextRun },
+    milestoneGap: gap,
     leftover:
       tokensLeftOver > 0
         ? { tokens: tokensLeftOver, laneId: firstLaneWithPoints }

@@ -858,6 +858,19 @@
         "chests": "Cofres obtenidos",
         "shards": "Fragmentos al final de la ejecución"
       }
+    },
+    "closeGap": {
+      "title": "Cerrar la brecha: +{{points}} puntos para {{step}}",
+      "where": "{{lane}} batalla {{battle}}",
+      "stopHere": "Prueba {{team}} en {{where}} (Parar aquí)",
+      "belowEstimate": "{{team}} una batalla más: {{where}} (profundidad bajo la estimación)",
+      "closes": "Cierra la brecha",
+      "gain": "+{{points}} puntos, 1 ficha",
+      "gainReplacing": "+{{points}} puntos, 1 ficha, sustituye {{where}} (+{{lost}})",
+      "retry": "Si falla, reintentar cuesta 1 ficha más y quita {{where}} (−{{lost}})",
+      "retrySpare": "Si falla, el reintento usa una ficha sobrante",
+      "combined": "Ninguna la cierra sola; las {{count}} mejores juntas sí (+{{points}} puntos)",
+      "short": "Ni juntas alcanzan"
     }
   },
   "masterTable": {
