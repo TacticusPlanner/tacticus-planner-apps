@@ -94,7 +94,6 @@ export function useGoalValidationState({
   const atMaxRank = isAtMaxRank(playerCharacter?.rank)
   const atMaxProgression = isAtMaxProgression(playerEntity?.progressionIndex)
   const atMaxAbility = isAtMaxAbility(
-    playerEntity?.progressionIndex,
     currentActiveAbility,
     currentPassiveAbility
   )

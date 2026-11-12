@@ -1583,7 +1583,7 @@
         "upgradeTargetsRequired": "Wähle mindestens ein Upgrade aus, das für das Upgrade-Ziel gefarmt werden soll.",
         "rankMaxed": "Dieser Charakter hat bereits den maximalen Rang erreicht.",
         "progressionMaxed": "Diese Einheit hat bereits die maximale Aufstiegsstufe erreicht.",
-        "abilityMaxed": "Die Fähigkeiten dieser Einheit haben bereits die maximale Stufe für ihre aktuelle Seltenheit erreicht.",
+        "abilityMaxed": "Die Fähigkeiten dieser Einheit haben bereits die maximale Stufe erreicht.",
         "activeOrPausedGoalExists": "Für diese Einheit existiert bereits ein aktives oder pausiertes {{goalType}}-Ziel.",
         "upgradeQuantity": "Gib eine ganze Zahl von 1 bis 10.000 ein.",
         "alreadyUnlocked_mow": "Diese Kriegsmaschine ist bereits freigeschaltet.",
