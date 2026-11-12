@@ -862,18 +862,22 @@
     "closeGap": {
       "title": "Close the gap: +{{points}} points for {{step}}",
       "where": "{{lane}} battle {{battle}}",
-      "maybeClear": "{{team}} · Maybe clear retry",
-      "stopHere": "Try another team: {{team}}",
-      "belowEstimate": "{{team}} · one more battle",
+      "kinds": {
+        "maybeClear": "Maybe clear",
+        "stopHere": "Try another team",
+        "belowEstimate": "Lowered depth"
+      },
       "closes": "Closes the gap",
       "gain": "+{{points}}",
-      "replaces": "replaces {{where}} (+{{lost}})",
-      "retryRow": "retry drops {{where}}",
+      "replacesLabel": "Replaces",
+      "replaces": "{{where}} (+{{lost}})",
+      "retryLabel": "A retry drops",
+      "retryRow": "{{where}}",
       "retry": "A failed try costs 1 more token and drops {{where}} (−{{lost}})",
       "retrySpare": "A failed try uses a spare token",
       "combined": "Together the top {{count}} close it (+{{points}})",
       "short": "Even together these fall short",
-      "scope": "Checks battles marked Maybe clear or Stop here and teams with a lowered depth."
+      "scope": "Checks:"
     }
   },
   "masterTable": {

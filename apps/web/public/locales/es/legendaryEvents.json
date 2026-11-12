@@ -862,18 +862,22 @@
     "closeGap": {
       "title": "Cerrar la brecha: +{{points}} puntos para {{step}}",
       "where": "{{lane}} batalla {{battle}}",
-      "maybeClear": "{{team}} · reintento (Quizá superable)",
-      "stopHere": "Probar otro equipo: {{team}}",
-      "belowEstimate": "{{team}} · una batalla más",
+      "kinds": {
+        "maybeClear": "Quizá superable",
+        "stopHere": "Probar otro equipo",
+        "belowEstimate": "Profundidad reducida"
+      },
       "closes": "Cierra la brecha",
       "gain": "+{{points}}",
-      "replaces": "sustituye {{where}} (+{{lost}})",
-      "retryRow": "reintentar quita {{where}}",
+      "replacesLabel": "Sustituye",
+      "replaces": "{{where}} (+{{lost}})",
+      "retryLabel": "Un reintento quita",
+      "retryRow": "{{where}}",
       "retry": "Un intento fallido cuesta 1 ficha más y quita {{where}} (−{{lost}})",
       "retrySpare": "Un intento fallido usa una ficha sobrante",
       "combined": "Las {{count}} mejores juntas la cierran (+{{points}})",
       "short": "Ni juntas alcanzan",
-      "scope": "Revisa batallas marcadas Quizá superable o Parar aquí y equipos con profundidad reducida."
+      "scope": "Revisa:"
     }
   },
   "masterTable": {

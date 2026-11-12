@@ -862,18 +862,22 @@
     "closeGap": {
       "title": "Combler l'écart : +{{points}} points pour {{step}}",
       "where": "{{lane}} combat {{battle}}",
-      "maybeClear": "{{team}} · nouvel essai (Peut-être faisable)",
-      "stopHere": "Essayer une autre équipe : {{team}}",
-      "belowEstimate": "{{team}} · un combat de plus",
+      "kinds": {
+        "maybeClear": "Peut-être faisable",
+        "stopHere": "Essayer une autre équipe",
+        "belowEstimate": "Profondeur réduite"
+      },
       "closes": "Comble l'écart",
       "gain": "+{{points}}",
-      "replaces": "remplace {{where}} (+{{lost}})",
-      "retryRow": "un nouvel essai retire {{where}}",
+      "replacesLabel": "Remplace",
+      "replaces": "{{where}} (+{{lost}})",
+      "retryLabel": "Un nouvel essai retire",
+      "retryRow": "{{where}}",
       "retry": "Un essai raté coûte 1 jeton de plus et retire {{where}} (−{{lost}})",
       "retrySpare": "Un essai raté utilise un jeton restant",
       "combined": "Les {{count}} meilleurs ensemble le comblent (+{{points}})",
       "short": "Même ensemble, cela ne suffit pas",
-      "scope": "Vérifie les combats marqués Peut-être faisable ou S'arrêter ici et les équipes à profondeur réduite."
+      "scope": "Vérifie :"
     }
   },
   "masterTable": {

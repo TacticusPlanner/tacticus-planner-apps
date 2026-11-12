@@ -862,18 +862,22 @@
     "closeGap": {
       "title": "Lücke schließen: +{{points}} Punkte für {{step}}",
       "where": "{{lane}} Kampf {{battle}}",
-      "maybeClear": "{{team}} · erneuter Versuch (Vielleicht schaffbar)",
-      "stopHere": "Anderes Team versuchen: {{team}}",
-      "belowEstimate": "{{team}} · einen Kampf weiter",
+      "kinds": {
+        "maybeClear": "Vielleicht schaffbar",
+        "stopHere": "Anderes Team versuchen",
+        "belowEstimate": "Gesenkte Tiefe"
+      },
       "closes": "Schließt die Lücke",
       "gain": "+{{points}}",
-      "replaces": "ersetzt {{where}} (+{{lost}})",
-      "retryRow": "neuer Versuch streicht {{where}}",
+      "replacesLabel": "Ersetzt",
+      "replaces": "{{where}} (+{{lost}})",
+      "retryLabel": "Ein neuer Versuch streicht",
+      "retryRow": "{{where}}",
       "retry": "Ein Fehlversuch kostet 1 weiteren Token und streicht {{where}} (−{{lost}})",
       "retrySpare": "Ein Fehlversuch nutzt einen übrigen Token",
       "combined": "Die besten {{count}} zusammen schließen sie (+{{points}})",
       "short": "Selbst zusammen reicht es nicht",
-      "scope": "Prüft Kämpfe mit „Vielleicht schaffbar“ oder „Hier aufhören“ und Teams mit gesenkter Tiefe."
+      "scope": "Geprüft:"
     }
   },
   "masterTable": {
