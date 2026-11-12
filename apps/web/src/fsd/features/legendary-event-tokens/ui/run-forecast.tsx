@@ -17,8 +17,10 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { EntityIcon, IconLine } from "@/shared/ui"
 
+import type { MilestoneGap } from "../lib/milestone-push"
 import type { RunForecast } from "../lib/run-forecast"
 import type { TokenPlanView } from "../lib/token-plan-view"
+import { MilestoneGapSection } from "./milestone-gap"
 import { useStoredOpen } from "../model/use-stored-open"
 import type { OpenTeamsHandler } from "./next-token-card"
 
@@ -119,6 +121,9 @@ export function RunForecastSection({
           <ol className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-3">
             {runs.map((run) => (
               <RunBlock
+                gap={
+                  view.milestoneGap?.run === run.run ? view.milestoneGap : null
+                }
                 inputs={runInputs?.(run)}
                 isMobile={isMobile}
                 key={run.run}
@@ -335,16 +340,22 @@ export function CurrentRunForecast({ view }: { view: TokenPlanView }) {
         {t("tokenPlan.forecast.thisRun")}
       </h3>
       <RunDetails run={run} />
+      {view.milestoneGap?.run === run.run ? (
+        <MilestoneGapSection gap={view.milestoneGap} />
+      ) : null}
     </section>
   )
 }
 
 function RunBlock({
   run,
+  gap,
   isMobile,
   inputs,
 }: {
   run: RunForecast
+  /** The run's "Close the gap" pushes (the run in progress only). */
+  gap: MilestoneGap | null
   isMobile: boolean
   inputs: ReactNode
 }) {
@@ -372,7 +383,10 @@ function RunBlock({
         {t("tokenPlan.forecast.finished")}
       </p>
     ) : (
-      <RunDetails run={run} />
+      <div className="flex min-w-0 flex-col gap-2">
+        <RunDetails run={run} />
+        {gap ? <MilestoneGapSection gap={gap} /> : null}
+      </div>
     )
 
   const inputsBlock =

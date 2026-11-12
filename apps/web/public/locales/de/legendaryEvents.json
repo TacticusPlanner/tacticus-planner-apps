@@ -858,6 +858,20 @@
         "chests": "Erhaltene Truhen",
         "shards": "Splitter am Ende des Laufs"
       }
+    },
+    "closeGap": {
+      "title": "Lücke schließen: +{{points}} Punkte für {{step}}",
+      "where": "{{lane}} Kampf {{battle}}",
+      "maybeClear": "{{team}} auf {{where}} erneut versuchen (Vielleicht schaffbar)",
+      "stopHere": "Anderes Team versuchen: {{team}} auf {{where}}",
+      "belowEstimate": "{{team}} einen Kampf weiter: {{where}} (Tiefe unter Schätzung)",
+      "closes": "Schließt die Lücke",
+      "gain": "+{{points}} Punkte, 1 Token",
+      "gainReplacing": "+{{points}} Punkte, 1 Token, ersetzt {{where}} (+{{lost}})",
+      "retry": "Scheitert es, kostet ein neuer Versuch 1 weiteren Token und streicht {{where}} (−{{lost}})",
+      "retrySpare": "Scheitert es, nutzt ein neuer Versuch einen übrigen Token",
+      "combined": "Keiner schließt sie allein; die besten {{count}} zusammen schon (+{{points}} Punkte)",
+      "short": "Selbst zusammen reicht es nicht"
     }
   },
   "masterTable": {

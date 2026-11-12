@@ -858,6 +858,20 @@
         "chests": "Chests claimed",
         "shards": "Shards at the end of the run"
       }
+    },
+    "closeGap": {
+      "title": "Close the gap: +{{points}} points for {{step}}",
+      "where": "{{lane}} battle {{battle}}",
+      "maybeClear": "Retry {{team}} on {{where}} (Maybe clear)",
+      "stopHere": "Try another team: {{team}} on {{where}}",
+      "belowEstimate": "{{team}} one more battle: {{where}} (depth below estimate)",
+      "closes": "Closes the gap",
+      "gain": "+{{points}} points, 1 token",
+      "gainReplacing": "+{{points}} points, 1 token, replaces {{where}} (+{{lost}})",
+      "retry": "If it fails, a retry costs 1 more token and drops {{where}} (−{{lost}})",
+      "retrySpare": "If it fails, a retry uses a spare token",
+      "combined": "None closes it alone; the top {{count}} together do (+{{points}} points)",
+      "short": "Even together these fall short"
     }
   },
   "masterTable": {
