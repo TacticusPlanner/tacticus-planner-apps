@@ -139,7 +139,8 @@
       "replaceWarning": "Applying a code replaces your current goals, plans and settings.",
       "confirm": "I understand",
       "applied": "Code applied.",
-      "apply": "Apply code"
+      "apply": "Apply code",
+      "traceId": "Trace ID: {{traceId}}"
     }
   },
   "accountGate": {

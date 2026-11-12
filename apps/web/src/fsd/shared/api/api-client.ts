@@ -20,6 +20,8 @@ export type ApiProblem = {
   extensions?: Record<string, unknown>
   /** On a 429/503: the `Retry-After` header in whole seconds, when it is a number. */
   retryAfterSeconds?: number
+  /** The request's id in the API's logs; what support needs to find a failure. */
+  traceId?: string
 }
 
 export class ApiError extends Error {
@@ -29,6 +31,7 @@ export class ApiError extends Error {
   readonly errors?: Record<string, string[]>
   readonly extensions: Record<string, unknown>
   readonly retryAfterSeconds?: number
+  readonly traceId?: string
 
   constructor(status: number, message: string, problem: ApiProblem = {}) {
     super(message)
@@ -39,6 +42,7 @@ export class ApiError extends Error {
     this.errors = problem.errors
     this.extensions = problem.extensions ?? {}
     this.retryAfterSeconds = problem.retryAfterSeconds
+    this.traceId = problem.traceId
   }
 }
 
@@ -117,6 +121,7 @@ async function readError(response: Response): Promise<ApiError> {
     issueCode,
     current,
     errors: rawErrors,
+    traceId,
   } = body as Record<string, unknown>
   const extensions = Object.fromEntries(
     Object.entries(body).filter(([key]) => !PROBLEM_MEMBERS.has(key))
@@ -139,6 +144,7 @@ async function readError(response: Response): Promise<ApiError> {
       errors,
       extensions,
       retryAfterSeconds,
+      traceId: text(traceId),
     }
   )
 }

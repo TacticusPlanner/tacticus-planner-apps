@@ -87,6 +87,7 @@ describe("API client problem bodies", () => {
 
     await expect(putGoal()).rejects.toMatchObject({
       extensions: { blockedGoalIds: ["goal-1"] },
+      traceId: "trace",
     })
   })
 
