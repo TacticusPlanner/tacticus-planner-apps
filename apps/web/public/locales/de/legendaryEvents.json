@@ -839,6 +839,8 @@
       },
       "finished": "Abgeschlossen",
       "supply": "{{total}} Tokens: {{free}} kostenlos + {{ad}} Werbung + {{bonus}} Bonuslieferung",
+      "adToday": "Enthält den heutigen Werbe-Token, noch nicht angesehen",
+      "thisRun": "Prognose für diesen Durchlauf",
       "uses": "Nutzt {{used}} · {{left}} übrig",
       "points": "{{points}} Punkte (+{{earned}})",
       "currency": "{{currency}} Währung verfügbar (+{{earned}} verdient)",

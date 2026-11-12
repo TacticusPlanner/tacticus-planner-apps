@@ -36,6 +36,7 @@ const supply = (
   unknownRun: false,
   free: total,
   ad: 0,
+  adTodayPending: false,
   bonusDelivery: 0,
   total,
 })

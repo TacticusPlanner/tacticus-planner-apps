@@ -8,9 +8,10 @@ import { buildTokenPlanView, type TokenPlanView } from "../lib/token-plan-view"
 import {
   UTHAR_RUN_STARTS,
   betweenRunsInput,
+  workedProgress,
   workedViewInput,
 } from "../lib/token-plan-view.fixtures"
-import { RunForecastSection } from "./run-forecast"
+import { CurrentRunForecast, RunForecastSection } from "./run-forecast"
 
 const capture = vi.hoisted(() => vi.fn())
 vi.mock("@/shared/analytics", () => ({
@@ -195,5 +196,61 @@ describe("RunForecastSection on another page", () => {
     expect(
       Object.keys(localStorage).filter((key) => key !== "wizard.open")
     ).toEqual([])
+  })
+})
+
+describe("CurrentRunForecast", () => {
+  beforeAll(async () => {
+    i18n = await createTestI18n("en")
+  })
+
+  const renderCurrent = (view: TokenPlanView) =>
+    render(<CurrentRunForecast view={view} />, {
+      wrapper: i18nWrapper(i18n),
+    })
+
+  it("shows the run in progress and flags today's unwatched ad token", () => {
+    renderCurrent(buildTokenPlanView(workedViewInput()))
+
+    const section = screen.getByTestId("run-status-forecast")
+    expect(section.dataset.run).toBe("2")
+    expect(section).toHaveTextContent("This run's forecast")
+    expect(screen.getByTestId("run-forecast-supply")).toHaveTextContent(
+      "32 tokens: 28 free + 4 ad + 0 bonus delivery"
+    )
+    expect(screen.getByTestId("run-forecast-ad-today")).toHaveTextContent(
+      "Includes today's ad token, not watched yet"
+    )
+    expect(screen.getByTestId("run-forecast-uses")).toHaveTextContent(
+      "Uses 6 · 26 left over"
+    )
+  })
+
+  it("drops the note once today's ad is watched", () => {
+    renderCurrent(
+      buildTokenPlanView(
+        workedViewInput({
+          progress: { ...workedProgress, hasUsedAdForExtraTokenToday: true },
+        })
+      )
+    )
+
+    expect(screen.getByTestId("run-forecast-supply")).toHaveTextContent(
+      "31 tokens: 28 free + 3 ad + 0 bonus delivery"
+    )
+    expect(screen.queryByTestId("run-forecast-ad-today")).toBeNull()
+  })
+
+  it("shows the next run between runs", () => {
+    renderCurrent(buildTokenPlanView(betweenRunsInput(UTHAR_RUN_STARTS)))
+
+    expect(screen.getByTestId("run-status-forecast").dataset.run).toBe("3")
+    expect(screen.queryByTestId("run-forecast-ad-today")).toBeNull()
+  })
+
+  it("renders nothing while the plan loads", () => {
+    const { container } = renderCurrent({ kind: "loading" })
+
+    expect(container).toBeEmptyDOMElement()
   })
 })

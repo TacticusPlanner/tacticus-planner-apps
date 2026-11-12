@@ -45,6 +45,8 @@ export interface RunSupply {
   unknownRun: boolean
   free: number
   ad: number
+  /** True when `ad` counts today's ad token as not watched yet (the Now run only). */
+  adTodayPending: boolean
   bonusDelivery: number
   total: number
 }
@@ -85,7 +87,8 @@ function supply(
   free: number,
   ad: number,
   bonusDelivery: number,
-  unknownRun = false
+  unknownRun = false,
+  adTodayPending = false
 ): RunSupply {
   return {
     run,
@@ -93,6 +96,7 @@ function supply(
     unknownRun,
     free,
     ad,
+    adTodayPending,
     bonusDelivery,
     total: free + ad + bonusDelivery,
   }
@@ -121,17 +125,24 @@ function currentRunSupply(
       Math.max(0, Math.floor((runEndMs - nextTokenMs) / regenMs))) *
       bank.regenAmount
   const remainingMs = runEndMs - nowMs - 1
-  const ad =
-    input.watchAds === false || remainingMs <= 0
-      ? 0
-      : Math.floor(remainingMs / DAY_MS) +
-        (progress?.hasUsedAdForExtraTokenToday === true ? 0 : 1)
+  const countsAds = input.watchAds !== false && remainingMs > 0
+  // The daily ad resets with the run's days (counted back from the run's end). A flag observed in
+  // an earlier day than now is yesterday's, so today's ad is still to watch.
+  const adDay = (atMs: number) => Math.floor((runEndMs - atMs - 1) / DAY_MS)
+  const adUsedToday =
+    progress?.hasUsedAdForExtraTokenToday === true &&
+    (progressObservedAtMs === null ||
+      adDay(progressObservedAtMs) === adDay(nowMs))
+  const adTodayPending = countsAds && !adUsedToday
+  const ad = countsAds
+    ? Math.floor(remainingMs / DAY_MS) + (adTodayPending ? 1 : 0)
+    : 0
   const alreadyBought = (progress?.extraCurrencyPerPayout ?? 0) > 0
   const bonus =
     premiumPlanned(input.runs, run, input.showPaidOptions) && !alreadyBought
       ? BONUS_DELIVERY_TOKENS
       : 0
-  return supply(run, "now", free, ad, bonus)
+  return supply(run, "now", free, ad, bonus, false, adTodayPending)
 }
 
 /**

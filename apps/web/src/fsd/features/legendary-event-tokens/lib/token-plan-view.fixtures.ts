@@ -62,7 +62,7 @@ export const workedTeams: LegendaryEventTeam[] = [
   }),
 ]
 
-const workedProgress = {
+export const workedProgress = {
   id: "votanUthar",
   alpha: workedAlphaRecord,
   beta: null,
