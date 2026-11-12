@@ -91,6 +91,7 @@ export function TeamEditorDialog({
   onSubmit,
   estimateTeam,
   initialMemberUnitIds,
+  initialReserveUnitId,
   initialObjectives,
   goalsPreview,
   goalLines,
@@ -120,6 +121,8 @@ export function TeamEditorDialog({
   estimateTeam?: (memberUnitIds: readonly string[]) => ClearEstimate | null
   /** A new team's members, in order (a team suggestion); ignored when editing a team. */
   initialMemberUnitIds?: readonly string[]
+  /** A new team's reserve (a team suggestion's); ignored when editing a team. */
+  initialReserveUnitId?: string | null
   /** The picker's objective chips selected on opening (a team suggestion's objectives); an edited
    *  team's own objectives when absent. */
   initialObjectives?: readonly number[]
@@ -137,7 +140,14 @@ export function TeamEditorDialog({
   const needsMembersId = useId()
   const context = { lane, units }
   const [initialDraft] = useState(() =>
-    initialEditorDraft(team, run, context, initialMemberUnitIds, teamName)
+    initialEditorDraft(
+      team,
+      run,
+      context,
+      initialMemberUnitIds,
+      teamName,
+      initialReserveUnitId
+    )
   )
   const [draft, setDraft] = useState(initialDraft)
   const [saving, setSaving] = useState(false)

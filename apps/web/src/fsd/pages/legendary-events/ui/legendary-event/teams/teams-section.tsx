@@ -223,6 +223,7 @@ export function TeamsSection({
     editor.openTeamEditor({
       laneId,
       memberUnitIds: suggestion.memberUnitIds,
+      reserveUnitId: suggestion.reserveUnitId,
       objectiveIndexes: suggestion.objectiveIndexes,
       suggestionRank: rank,
     })

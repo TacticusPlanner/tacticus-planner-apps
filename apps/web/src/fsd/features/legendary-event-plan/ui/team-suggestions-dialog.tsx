@@ -225,13 +225,27 @@ export function TeamSuggestionsDialog({
                   key={suggestion.memberUnitIds.join("|")}
                 >
                   <ul className="flex flex-wrap gap-2">
-                    {suggestion.memberUnitIds.map((unitId) => {
+                    {[
+                      ...suggestion.memberUnitIds,
+                      ...(suggestion.reserveUnitId
+                        ? [suggestion.reserveUnitId]
+                        : []),
+                    ].map((unitId) => {
                       const locked = owned ? !owned.has(unitId) : false
+                      const reserve = unitId === suggestion.reserveUnitId
                       return (
                         <li
-                          className="flex items-center gap-1.5 rounded-full border bg-muted/30 py-0.5 pr-2 pl-0.5 text-sm"
+                          className={cn(
+                            "flex items-center gap-1.5 rounded-full border bg-muted/30 py-0.5 pr-2 pl-0.5 text-sm",
+                            reserve && "border-dashed bg-transparent"
+                          )}
                           data-locked={locked ? "true" : undefined}
-                          data-testid="team-suggestion-member"
+                          data-reserve={reserve ? "true" : undefined}
+                          data-testid={
+                            reserve
+                              ? "team-suggestion-reserve"
+                              : "team-suggestion-member"
+                          }
                           data-unit={unitId}
                           key={unitId}
                         >
@@ -246,6 +260,11 @@ export function TeamSuggestionsDialog({
                           <span className="max-w-32 truncate">
                             {nameOf({ id: unitId })}
                           </span>
+                          {reserve ? (
+                            <span className="text-xs text-muted-foreground">
+                              {t("teams.reserve")}
+                            </span>
+                          ) : null}
                           {locked ? (
                             <EntityIcon
                               src={lockIcon()}
