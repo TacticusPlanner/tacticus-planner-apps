@@ -7,15 +7,34 @@ import type {
   PushToken,
 } from "../lib/milestone-push"
 
+const tokenKey = (token: PushToken | null) =>
+  token ? `${token.laneId}:${token.battleIndex}:${token.teamId}` : "spare"
+
+/** "Beta battle 9": a token's lane and 1-based battle. */
+function useWhere() {
+  const { t } = useTranslation("legendaryEvents")
+  return (token: PushToken) =>
+    t("tokenPlan.closeGap.where", {
+      lane: t(`lanes.${token.laneId}`),
+      battle: token.battleIndex + 1,
+    })
+}
+
 /**
  * "Close the gap" (spec: close the gap): when the run in progress falls just short of its next
- * reward step, the left-out battles (Stop here, or a team's depth lowered below its estimate) that
- * could close it, best first, each one token, with what it pushes out and what a retry would cost.
+ * reward step, the left-out battles that could close it, best first, one token each: the battle
+ * and its gain on one line, the team, why it was left out and what it replaces on the next. What a
+ * failed try costs is one footer line when every push shares it.
  */
 export function MilestoneGapSection({ gap }: { gap: MilestoneGap }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
+  const where = useWhere()
   if (gap.pushes.length === 0) return null
+  const retries = new Set(
+    gap.pushes.map((push) => tokenKey(push.retry.displaces))
+  )
+  const sharedRetry = retries.size === 1 ? gap.pushes[0]!.retry : null
   return (
     <section
       aria-labelledby={`milestone-gap-title-${gap.run}`}
@@ -32,82 +51,99 @@ export function MilestoneGapSection({ gap }: { gap: MilestoneGap }) {
           step: t(`outlook.steps.${gap.step}`),
         })}
       </h4>
-      <ol className="flex flex-col gap-2">
+      <ol className="flex flex-col gap-1.5">
         {gap.pushes.map((push, index) => (
-          <PushRow index={index} key={index} push={push} />
+          <PushRow
+            index={index}
+            key={index}
+            push={push}
+            showRetry={sharedRetry === null}
+          />
         ))}
       </ol>
-      {gap.combined ? (
-        <p
-          className="text-xs text-muted-foreground"
-          data-testid="milestone-gap-combined"
-        >
-          {t("tokenPlan.closeGap.combined", {
-            count: gap.combined.indexes.length,
-            points: number.format(gap.combined.gain),
-          })}
-        </p>
-      ) : gap.pushes.some((push) => push.closesGap) ? null : (
-        <p
-          className="text-xs text-muted-foreground"
-          data-testid="milestone-gap-short"
-        >
-          {t("tokenPlan.closeGap.short")}
-        </p>
-      )}
+      <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
+        {gap.combined ? (
+          <p data-testid="milestone-gap-combined">
+            {t("tokenPlan.closeGap.combined", {
+              count: gap.combined.indexes.length,
+              points: number.format(gap.combined.gain),
+            })}
+          </p>
+        ) : gap.pushes.some((push) => push.closesGap) ? null : (
+          <p data-testid="milestone-gap-short">
+            {t("tokenPlan.closeGap.short")}
+          </p>
+        )}
+        {sharedRetry ? (
+          <p data-testid="milestone-gap-retry">
+            {sharedRetry.displaces
+              ? t("tokenPlan.closeGap.retry", {
+                  where: where(sharedRetry.displaces),
+                  lost: number.format(sharedRetry.displaces.points),
+                })
+              : t("tokenPlan.closeGap.retrySpare")}
+          </p>
+        ) : null}
+        <p data-testid="milestone-gap-scope">{t("tokenPlan.closeGap.scope")}</p>
+      </div>
     </section>
   )
 }
 
-function PushRow({ push, index }: { push: MilestonePush; index: number }) {
+function PushRow({
+  push,
+  index,
+  showRetry,
+}: {
+  push: MilestonePush
+  index: number
+  /** The pushes' retries differ, so each row names its own. */
+  showRetry: boolean
+}) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
-  const where = (token: PushToken) =>
-    t("tokenPlan.closeGap.where", {
-      lane: t(`lanes.${token.laneId}`),
-      battle: token.battleIndex + 1,
-    })
+  const where = useWhere()
+  const details = [
+    t(`tokenPlan.closeGap.${push.kind}`, { team: push.token.teamName }),
+    push.displaced
+      ? t("tokenPlan.closeGap.replaces", {
+          where: where(push.displaced),
+          lost: number.format(push.displaced.points),
+        })
+      : null,
+    showRetry && push.retry.displaces
+      ? t("tokenPlan.closeGap.retryRow", {
+          where: where(push.retry.displaces),
+        })
+      : null,
+  ].filter((part) => part !== null)
   return (
     <li
-      className="flex min-w-0 flex-col gap-0.5 text-sm"
+      className="flex min-w-0 flex-col text-sm"
       data-index={index}
       data-kind={push.kind}
       data-testid="milestone-gap-push"
     >
-      <span className="flex flex-wrap items-center gap-x-1.5">
-        {push.closesGap ? (
-          <CircleCheck
-            aria-label={t("tokenPlan.closeGap.closes")}
-            className="size-4 shrink-0 text-emerald-700 dark:text-emerald-400"
-            role="img"
-          />
-        ) : null}
-        <span className="font-medium">
-          {t(`tokenPlan.closeGap.${push.kind}`, {
-            team: push.token.teamName,
-            where: where(push.token),
-          })}
+      <span className="flex items-center justify-between gap-2">
+        <span className="flex min-w-0 items-center gap-1.5 font-medium">
+          {push.closesGap ? (
+            <CircleCheck
+              aria-label={t("tokenPlan.closeGap.closes")}
+              className="size-4 shrink-0 text-emerald-700 dark:text-emerald-400"
+              role="img"
+            />
+          ) : null}
+          {where(push.token)}
         </span>
-      </span>
-      <span className="text-xs text-muted-foreground">
-        {push.displaced
-          ? t("tokenPlan.closeGap.gainReplacing", {
-              points: number.format(push.gain),
-              where: where(push.displaced),
-              lost: number.format(push.displaced.points),
-            })
-          : t("tokenPlan.closeGap.gain", { points: number.format(push.gain) })}
+        <span className="shrink-0 font-semibold tabular-nums">
+          {t("tokenPlan.closeGap.gain", { points: number.format(push.gain) })}
+        </span>
       </span>
       <span
         className="text-xs text-muted-foreground"
-        data-testid="milestone-gap-retry"
+        data-testid="milestone-gap-details"
       >
-        {push.retry.displaces
-          ? t("tokenPlan.closeGap.retry", {
-              where: where(push.retry.displaces),
-              lost: number.format(push.retry.displaces.points),
-            })
-          : t("tokenPlan.closeGap.retrySpare")}
+        {details.join(" · ")}
       </span>
     </li>
   )

@@ -145,13 +145,13 @@ The run tab's Run status card SHALL also show **This run's forecast**: the Now r
 
 When the Now run's forecast ends short of its next reward step by at most two chests of shards, and a points milestone within the event's ladder would reach that step, the Now run's block (on Plan and in the Current run tab's Run status) SHALL show "Close the gap: +N points for {step}", where N is the fewest extra points this run that reach that milestone. Below it, the system SHALL list up to five pushes: battles the plan leaves out, each planned as one extra token by replanning with that battle put back:
 
-- a team stopped right before a battle marked Maybe clear gets that battle back ("Retry {team} on {lane} battle {n} (Maybe clear)")
-- a team whose manual depth is below its clear estimate, with no mark on its next battle, gets one more battle ("{team} one more battle: {lane} battle {n} (depth below estimate)")
-- a Stop here cell is lifted only when another team of the lane reaches the battle ("Try another team: {team} on {lane} battle {n}")
+- a team stopped right before a battle marked Maybe clear gets that battle back ("{team} · Maybe clear retry")
+- a team whose manual depth is below its clear estimate, with no mark on its next battle, gets one more battle ("{team} · one more battle")
+- a Stop here cell is lifted only when another team of the lane reaches the battle ("Try another team: {team}")
 
 A team is never pushed onto a battle marked Stop here, since Stop here means no chance with that team.
 
-Pushes SHALL be ranked by the points they add to the run net of the token the fixed supply pushes out, one token each (a retry is never counted in the ranking). Each push SHALL show its net gain, the run token it replaces when the run has no spare token, a mark when it alone reaches the step, and the cost of a failed attempt: a spare token, or "a retry costs 1 more token and drops {lane} battle {n} (−points)". When no push reaches the step alone, the block SHALL name the fewest top pushes that do together, or say that even together they fall short. The block is hidden in the 1-click plan draft and when no push adds points.
+Pushes SHALL be ranked by the points they add to the run net of the token the fixed supply pushes out, one token each (a retry is never counted in the ranking). Each push SHALL read as two lines: its battle ("{lane} battle {n}") with its net gain on the right, marked when it alone reaches the step; then, smaller, the team and why it was left out, and the run token it replaces when the run has no spare token. The cost of a failed attempt ("A failed try costs 1 more token and drops {lane} battle {n} (−points)", or "uses a spare token") SHALL be one footer line when every push shares it, else a short "retry drops {lane} battle {n}" on each push. When no push reaches the step alone, the footer SHALL name the fewest top pushes that do together, or say that even together they fall short. A last footer line SHALL say which battles are checked (Maybe clear and Stop here marks, lowered depths), so a short list reads as complete. The block is hidden in the 1-click plan draft and when no push adds points.
 
 #### Scenario: One Stop here push closes a one-chest gap
 

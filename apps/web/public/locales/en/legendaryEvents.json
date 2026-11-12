@@ -862,16 +862,18 @@
     "closeGap": {
       "title": "Close the gap: +{{points}} points for {{step}}",
       "where": "{{lane}} battle {{battle}}",
-      "maybeClear": "Retry {{team}} on {{where}} (Maybe clear)",
-      "stopHere": "Try another team: {{team}} on {{where}}",
-      "belowEstimate": "{{team}} one more battle: {{where}} (depth below estimate)",
+      "maybeClear": "{{team}} · Maybe clear retry",
+      "stopHere": "Try another team: {{team}}",
+      "belowEstimate": "{{team}} · one more battle",
       "closes": "Closes the gap",
-      "gain": "+{{points}} points, 1 token",
-      "gainReplacing": "+{{points}} points, 1 token, replaces {{where}} (+{{lost}})",
-      "retry": "If it fails, a retry costs 1 more token and drops {{where}} (−{{lost}})",
-      "retrySpare": "If it fails, a retry uses a spare token",
-      "combined": "None closes it alone; the top {{count}} together do (+{{points}} points)",
-      "short": "Even together these fall short"
+      "gain": "+{{points}}",
+      "replaces": "replaces {{where}} (+{{lost}})",
+      "retryRow": "retry drops {{where}}",
+      "retry": "A failed try costs 1 more token and drops {{where}} (−{{lost}})",
+      "retrySpare": "A failed try uses a spare token",
+      "combined": "Together the top {{count}} close it (+{{points}})",
+      "short": "Even together these fall short",
+      "scope": "Checks battles marked Maybe clear or Stop here and teams with a lowered depth."
     }
   },
   "masterTable": {
