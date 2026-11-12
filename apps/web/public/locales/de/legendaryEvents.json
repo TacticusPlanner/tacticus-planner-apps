@@ -863,7 +863,7 @@
       "title": "Lücke schließen: +{{points}} Punkte für {{step}}",
       "where": "{{lane}} Kampf {{battle}}",
       "maybeClear": "{{team}} auf {{where}} erneut versuchen (Vielleicht schaffbar)",
-      "stopHere": "{{team}} auf {{where}} versuchen („Hier aufhören“ galt einem anderen Team)",
+      "stopHere": "Anderes Team versuchen: {{team}} auf {{where}}",
       "belowEstimate": "{{team}} einen Kampf weiter: {{where}} (Tiefe unter Schätzung)",
       "closes": "Schließt die Lücke",
       "gain": "+{{points}} Punkte, 1 Token",

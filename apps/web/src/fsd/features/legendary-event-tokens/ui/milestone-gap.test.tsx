@@ -52,9 +52,7 @@ describe("MilestoneGapSection", () => {
       "Close the gap: +295 points for Unlock"
     )
     const row = screen.getByTestId("milestone-gap-push")
-    expect(row).toHaveTextContent(
-      "Try Ultras on Beta battle 9 (Stop here for another team)"
-    )
+    expect(row).toHaveTextContent("Try another team: Ultras on Beta battle 9")
     expect(row).toHaveTextContent(
       "+330 points, 1 token, replaces Beta battle 4 (+90)"
     )

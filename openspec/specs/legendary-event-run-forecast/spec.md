@@ -147,7 +147,7 @@ When the Now run's forecast ends short of its next reward step by at most two ch
 
 - a team stopped right before a battle marked Maybe clear gets that battle back ("Retry {team} on {lane} battle {n} (Maybe clear)")
 - a team whose manual depth is below its clear estimate, with no mark on its next battle, gets one more battle ("{team} one more battle: {lane} battle {n} (depth below estimate)")
-- a Stop here cell is lifted only when another team of the lane reaches the battle ("Try {team} on {lane} battle {n} (Stop here for another team)")
+- a Stop here cell is lifted only when another team of the lane reaches the battle ("Try another team: {team} on {lane} battle {n}")
 
 A team is never pushed onto a battle marked Stop here, since Stop here means no chance with that team.
 
