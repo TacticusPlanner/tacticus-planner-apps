@@ -22,6 +22,7 @@ import { ApiError } from "@/shared/api"
 
 import {
   minutesUntil,
+  supportTraceId,
   type StagingTransferMode,
 } from "../model/staging-transfer"
 import { dialogActionClassName } from "./dialog-action-slot"
@@ -33,6 +34,27 @@ import { DialogAction } from "./dialog-actions"
  */
 export function StagingTransferTab({ mode }: { mode: StagingTransferMode }) {
   return mode === "export" ? <ExportPanel /> : <ImportPanel />
+}
+
+/** The API's sentence for a failure, plus the trace id to quote to support when it asks for one. */
+function TransferError({ error, testId }: { error: Error; testId: string }) {
+  const { t } = useTranslation()
+  const traceId = supportTraceId(error)
+  return (
+    <FieldError data-testid={testId}>
+      {error instanceof ApiError
+        ? error.message
+        : t("manageAccount.staging.genericError")}
+      {traceId ? (
+        <span
+          className="mt-1 block font-mono text-xs break-all select-all"
+          data-testid={`${testId}-trace`}
+        >
+          {t("manageAccount.staging.traceId", { traceId })}
+        </span>
+      ) : null}
+    </FieldError>
+  )
 }
 
 type CopyState = "idle" | "copied" | "failed"
@@ -100,11 +122,10 @@ function ExportPanel() {
       ) : null}
 
       {create.error ? (
-        <FieldError data-testid="manage-account-staging-error">
-          {create.error instanceof ApiError
-            ? create.error.message
-            : t("manageAccount.staging.genericError")}
-        </FieldError>
+        <TransferError
+          error={create.error}
+          testId="manage-account-staging-error"
+        />
       ) : null}
 
       <DialogAction>
@@ -172,11 +193,10 @@ function ImportPanel() {
             }}
           />
           {importData.error ? (
-            <FieldError data-testid="manage-account-staging-import-error">
-              {importData.error instanceof ApiError
-                ? importData.error.message
-                : t("manageAccount.staging.genericError")}
-            </FieldError>
+            <TransferError
+              error={importData.error}
+              testId="manage-account-staging-import-error"
+            />
           ) : null}
         </FieldContent>
       </Field>

@@ -139,7 +139,8 @@
       "replaceWarning": "Appliquer un code remplace vos objectifs, plans et réglages actuels.",
       "confirm": "J'ai compris",
       "applied": "Code appliqué.",
-      "apply": "Appliquer le code"
+      "apply": "Appliquer le code",
+      "traceId": "ID de trace : {{traceId}}"
     }
   },
   "accountGate": {

@@ -139,7 +139,8 @@
       "replaceWarning": "Das Anwenden eines Codes ersetzt deine aktuellen Ziele, Pläne und Einstellungen.",
       "confirm": "Verstanden",
       "applied": "Code angewendet.",
-      "apply": "Code anwenden"
+      "apply": "Code anwenden",
+      "traceId": "Trace-ID: {{traceId}}"
     }
   },
   "accountGate": {
