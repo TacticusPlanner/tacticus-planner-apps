@@ -14,6 +14,7 @@ const run = (
   unknownRun,
   free: total,
   ad: 0,
+  adTodayPending: false,
   bonusDelivery: 0,
   total,
 })
