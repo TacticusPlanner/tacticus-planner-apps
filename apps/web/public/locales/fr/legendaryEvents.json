@@ -862,16 +862,18 @@
     "closeGap": {
       "title": "Combler l'écart : +{{points}} points pour {{step}}",
       "where": "{{lane}} combat {{battle}}",
-      "maybeClear": "Réessayer {{team}} sur {{where}} (Peut-être faisable)",
-      "stopHere": "Essayer une autre équipe : {{team}} sur {{where}}",
-      "belowEstimate": "{{team}} un combat de plus : {{where}} (profondeur sous l'estimation)",
+      "maybeClear": "{{team}} · nouvel essai (Peut-être faisable)",
+      "stopHere": "Essayer une autre équipe : {{team}}",
+      "belowEstimate": "{{team}} · un combat de plus",
       "closes": "Comble l'écart",
-      "gain": "+{{points}} points, 1 jeton",
-      "gainReplacing": "+{{points}} points, 1 jeton, remplace {{where}} (+{{lost}})",
-      "retry": "En cas d'échec, une nouvelle tentative coûte 1 jeton de plus et retire {{where}} (−{{lost}})",
-      "retrySpare": "En cas d'échec, une nouvelle tentative utilise un jeton restant",
-      "combined": "Aucun ne le comble seul ; les {{count}} meilleurs ensemble, oui (+{{points}} points)",
-      "short": "Même ensemble, cela ne suffit pas"
+      "gain": "+{{points}}",
+      "replaces": "remplace {{where}} (+{{lost}})",
+      "retryRow": "un nouvel essai retire {{where}}",
+      "retry": "Un essai raté coûte 1 jeton de plus et retire {{where}} (−{{lost}})",
+      "retrySpare": "Un essai raté utilise un jeton restant",
+      "combined": "Les {{count}} meilleurs ensemble le comblent (+{{points}})",
+      "short": "Même ensemble, cela ne suffit pas",
+      "scope": "Vérifie les combats marqués Peut-être faisable ou S'arrêter ici et les équipes à profondeur réduite."
     }
   },
   "masterTable": {

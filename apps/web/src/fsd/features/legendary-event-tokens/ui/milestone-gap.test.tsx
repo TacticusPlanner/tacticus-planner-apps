@@ -45,20 +45,23 @@ describe("MilestoneGapSection", () => {
     i18n = await createTestI18n("en")
   })
 
-  it("lists a push with its gain, the token it replaces and a retry's cost", () => {
+  it("lists a push: battle and gain, then team, why and what it replaces, with a shared retry footer", () => {
     renderGap(gap())
 
     expect(screen.getByTestId("milestone-gap")).toHaveTextContent(
       "Close the gap: +295 points for Unlock"
     )
     const row = screen.getByTestId("milestone-gap-push")
-    expect(row).toHaveTextContent("Try another team: Ultras on Beta battle 9")
-    expect(row).toHaveTextContent(
-      "+330 points, 1 token, replaces Beta battle 4 (+90)"
+    expect(row).toHaveTextContent("Beta battle 9+330")
+    expect(screen.getByTestId("milestone-gap-details")).toHaveTextContent(
+      "Try another team: Ultras · replaces Beta battle 4 (+90)"
     )
     expect(screen.getByRole("img", { name: "Closes the gap" })).toBeVisible()
     expect(screen.getByTestId("milestone-gap-retry")).toHaveTextContent(
-      "If it fails, a retry costs 1 more token and drops Beta battle 5 (−120)"
+      "A failed try costs 1 more token and drops Beta battle 5 (−120)"
+    )
+    expect(screen.getByTestId("milestone-gap-scope")).toHaveTextContent(
+      "Checks battles marked Maybe clear or Stop here and teams with a lowered depth."
     )
   })
 
@@ -76,22 +79,36 @@ describe("MilestoneGapSection", () => {
       })
     )
 
-    const row = screen.getByTestId("milestone-gap-push")
-    expect(row).toHaveTextContent(
-      "Melee one more battle: Beta battle 6 (depth below estimate)"
+    expect(screen.getByTestId("milestone-gap-push")).toHaveTextContent(
+      "Beta battle 6+330"
     )
-    expect(row).toHaveTextContent("+330 points, 1 token")
+    expect(screen.getByTestId("milestone-gap-details")).toHaveTextContent(
+      /^Melee · one more battle$/
+    )
     expect(screen.getByTestId("milestone-gap-retry")).toHaveTextContent(
-      "If it fails, a retry uses a spare token"
+      "A failed try uses a spare token"
     )
   })
 
   it("names a Maybe clear retry", () => {
     renderGap(gap({ pushes: [push({ kind: "maybeClear" })] }))
 
-    expect(screen.getByTestId("milestone-gap-push")).toHaveTextContent(
-      "Retry Ultras on Beta battle 9 (Maybe clear)"
+    expect(screen.getByTestId("milestone-gap-details")).toHaveTextContent(
+      "Ultras · Maybe clear retry"
     )
+  })
+
+  it("names each row's retry when they differ", () => {
+    renderGap(
+      gap({
+        pushes: [push(), push({ retry: { displaces: token(6, 80) } })],
+      })
+    )
+
+    expect(screen.queryByTestId("milestone-gap-retry")).toBeNull()
+    const details = screen.getAllByTestId("milestone-gap-details")
+    expect(details[0]).toHaveTextContent("retry drops Beta battle 5")
+    expect(details[1]).toHaveTextContent("retry drops Beta battle 7")
   })
 
   it("shows the combination when no push closes the gap alone", () => {
@@ -103,7 +120,7 @@ describe("MilestoneGapSection", () => {
     )
 
     expect(screen.getByTestId("milestone-gap-combined")).toHaveTextContent(
-      "None closes it alone; the top 2 together do (+500 points)"
+      "Together the top 2 close it (+500)"
     )
   })
 
