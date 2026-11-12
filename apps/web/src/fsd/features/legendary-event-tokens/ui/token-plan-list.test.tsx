@@ -96,13 +96,45 @@ describe("TokenPlanList", () => {
     })
   })
 
+  it("shows each team's members as portraits that open the team's details", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    renderList(view)
+    expand()
+
+    const groups = screen.getAllByTestId("token-plan-group")
+    for (const group of groups) {
+      const members =
+        view.kind === "ready"
+          ? view.membersByTeam.get(group.dataset.team!)
+          : undefined
+      expect(
+        within(group)
+          .queryAllByTestId("token-plan-team-members-portrait")
+          .map((portrait) => portrait.dataset.unit)
+      ).toEqual(members ?? [])
+    }
+
+    const five = groups.find((group) => group.dataset.team === "five")!
+    fireEvent.click(within(five).getByTestId("token-plan-team-members"))
+    const popover = screen.getByTestId("token-plan-team-members-popover")
+    expect(popover).toHaveTextContent("Five")
+    expect(within(popover).getAllByTestId("next-token-member")).toHaveLength(
+      view.kind === "ready" ? view.membersByTeam.get("five")!.length : 0
+    )
+  })
+
   it("folds a team's consecutive battles clearing the same cells into one expandable row", () => {
     renderList(buildTokenPlanView(workedViewInput()))
     expand()
 
     const run = screen.getByTestId("token-plan-run")
     expect(run).toHaveAttribute("data-count", "3")
-    expect(run).toHaveTextContent("1–3")
+    // The row leads with its token count (the token icon and 3), not the plan range.
+    expect(within(run).getByTestId("token-plan-token-count")).toHaveAttribute(
+      "data-count",
+      "3"
+    )
+    expect(run).toHaveTextContent("3 tokens")
     expect(run).toHaveTextContent("Battles 3–5")
     // Collapsed, it carries the milestone its tokens reach.
     expect(run).toHaveTextContent("Milestone 13 · +85 currency")
@@ -120,6 +152,31 @@ describe("TokenPlanList", () => {
         row.getAttribute("data-index")
       )
     ).toEqual(["0", "1", "2"])
+  })
+
+  it("sums the milestones a row reaches into one line", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.forecast) throw new Error("not ready")
+    const markers = view.plan.tokens.map(() => ({
+      milestones: [] as { milestone: number; payout: number }[],
+      steps: [],
+    }))
+    markers[0]!.milestones.push({ milestone: 1, payout: 25 })
+    markers[2]!.milestones.push(
+      { milestone: 2, payout: 30 },
+      { milestone: 3, payout: 35 }
+    )
+    renderList({ ...view, forecast: { ...view.forecast, markers } })
+    expand()
+
+    const run = screen.getByTestId("token-plan-run")
+    expect(within(run).getByTestId("token-plan-marker")).toHaveTextContent(
+      /^Milestones 1–3 · \+90 currency$/
+    )
+    fireEvent.click(screen.getByTestId("token-plan-run-toggle"))
+    const rows = within(run).getAllByTestId("token-plan-row")
+    expect(rows[0]).toHaveTextContent("Milestone 1 · +25 currency")
+    expect(rows[2]).toHaveTextContent("Milestones 2–3 · +65 currency")
   })
 
   it("opens the first battle's info from a folded row and the team from its name", () => {

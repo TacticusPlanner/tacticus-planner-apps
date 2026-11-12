@@ -1,9 +1,10 @@
 import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, Flag, Pencil } from "lucide-react"
 import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 
 import type {
+  EventUnitChipData,
   LegendaryEvent,
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
@@ -15,12 +16,13 @@ import type { TokenMissionStep } from "../lib/mission-order"
 import type { TokenMarker } from "../lib/run-forecast"
 import { groupTokenBattleRuns } from "../lib/token-battle-runs"
 import { groupTokensByTeam } from "../lib/token-groups"
-import type { TokenPlanView } from "../lib/token-plan-view"
+import type { TeamClearDepth, TokenPlanView } from "../lib/token-plan-view"
 import type { RunTokenSection } from "../lib/token-runs"
+import { unknownChip } from "../lib/unit-chips"
 import { BattleInfoButton } from "./battle-info"
 import { TokenMissionSteps } from "./mission-order-view"
 import { TokenObjectives } from "./token-objectives"
-import { TokenMissionsPopover } from "./token-popovers"
+import { TokenMissionsPopover, TokenTeamPopover } from "./token-popovers"
 
 type ReadyView = Extract<TokenPlanView, { kind: "ready" }>
 type PlannedTokenRow = ReadyView["plan"]["tokens"][number]
@@ -95,9 +97,10 @@ export function RunSectionHeader({
   )
 }
 
-/** Plan tokens `start`..`start + count − 1` grouped by consecutive team, each team's consecutive
- *  battles of one lane clearing the same cells folded into one expandable row; numbers are
- *  plan-wide. */
+/** Plan tokens `start`..`start + count − 1` grouped by consecutive team (its name, then its
+ *  members' portraits opening the team's details), each team's consecutive battles of one lane
+ *  clearing the same cells folded into one expandable row. A team playing a single row carries
+ *  that row on its header (on mobile the team, members and points share the first line). */
 export function TokenGroups({
   tokens,
   start,
@@ -107,6 +110,9 @@ export function TokenGroups({
   event,
   isMobile,
   onOpenTeam,
+  membersByTeam,
+  depthByTeam,
+  chipOf = unknownChip,
 }: {
   tokens: readonly PlannedTokenRow[]
   start: number
@@ -118,28 +124,50 @@ export function TokenGroups({
   isMobile: boolean
   /** Makes the team names open the team (absent where no editor exists). */
   onOpenTeam?: OpenTeamHandler
+  /** Non-reserve members by team id, shown as portraits beside the team name. */
+  membersByTeam: ReadonlyMap<string, readonly string[]>
+  /** Each team's clear depth, for the team popover. */
+  depthByTeam: ReadonlyMap<string, TeamClearDepth>
+  /** A unit's chip in the team popover (rank, rarity, abilities from the synced roster). */
+  chipOf?: (unitId: string) => EventUnitChipData
 }) {
   return (
-    <ol className="flex min-w-0 flex-col gap-3">
-      {groupTokensByTeam(tokens.slice(start, start + count)).map((group) => (
-        <li
-          className="flex min-w-0 flex-col gap-1"
-          data-team={group.teamId}
-          data-testid="token-plan-group"
-          key={start + group.start}
-        >
-          <h4 className="text-sm font-semibold">
-            <TeamName
-              laneId={group.tokens[0]?.laneId}
-              onOpenTeam={onOpenTeam}
-              teamId={group.teamId}
+    <ol className="flex min-w-0 flex-col divide-y">
+      {groupTokensByTeam(tokens.slice(start, start + count)).map((group) => {
+        const runs = groupTokenBattleRuns(group.tokens, start + group.start)
+        const header = (
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2">
+            <h4 className="min-w-0 text-sm font-semibold">
+              <TeamName
+                laneId={group.tokens[0]?.laneId}
+                onOpenTeam={onOpenTeam}
+                teamId={group.teamId}
+                teamName={group.teamName}
+              />
+            </h4>
+            <TokenTeamPopover
+              depth={depthByTeam.get(group.teamId)}
+              members={(membersByTeam.get(group.teamId) ?? []).map((unitId) =>
+                chipOf(unitId)
+              )}
               teamName={group.teamName}
+              testId="token-plan-team-members"
             />
-          </h4>
-          <ol className="flex min-w-0 flex-col divide-y">
-            {groupTokenBattleRuns(group.tokens, start + group.start).map(
-              (run) => {
+          </div>
+        )
+        const single = runs.length === 1
+        return (
+          <li
+            className="flex min-w-0 flex-col gap-1 py-3 first:pt-0 last:pb-0"
+            data-team={group.teamId}
+            data-testid="token-plan-group"
+            key={start + group.start}
+          >
+            {single ? null : header}
+            <ol className="flex min-w-0 flex-col divide-y">
+              {runs.map((run) => {
                 const first = run.tokens[0]
+                const teamHeader = single ? header : undefined
                 if (run.tokens.length === 1 && first) {
                   return (
                     <TokenRow
@@ -148,7 +176,9 @@ export function TokenGroups({
                       isMobile={isMobile}
                       key={run.start}
                       marker={markers[run.start]}
+                      showCount
                       steps={steps?.[run.start]}
+                      teamHeader={teamHeader}
                       token={first}
                     />
                   )
@@ -161,14 +191,15 @@ export function TokenGroups({
                     markers={markers}
                     start={run.start}
                     steps={steps}
+                    teamHeader={teamHeader}
                     tokens={run.tokens}
                   />
                 )
-              }
-            )}
-          </ol>
-        </li>
-      ))}
+              })}
+            </ol>
+          </li>
+        )
+      })}
     </ol>
   )
 }
@@ -189,20 +220,112 @@ function TeamName({
   return (
     <button
       aria-label={t("tokenPlan.plan.openTeam", { team: teamName })}
-      className="rounded-sm text-left underline decoration-dotted underline-offset-4 hover:decoration-solid focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="group inline-flex max-w-full items-center gap-1 rounded-sm text-left hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
       data-testid="token-plan-team"
       onClick={() => onOpenTeam(laneId, teamId)}
       type="button"
     >
-      {teamName}
+      <span className="truncate">{teamName}</span>
+      <Pencil
+        aria-hidden="true"
+        className="size-3.5 shrink-0 text-muted-foreground group-hover:text-foreground"
+      />
     </button>
   )
 }
 
-/** Consecutive battles of one lane clearing the same cells as one row: "Alpha · Battles 1–11"
- *  (opening the first battle's info), the cells, the summed points and the running points after
- *  the last, every milestone reached; a separate button expands the per-battle rows (which then
- *  carry the markers). */
+/** A row's token count: the event's token icon and the number. */
+function TokenCount({ count }: { count: number }) {
+  const { t } = useTranslation("legendaryEvents")
+  const label = t("tokenPlan.plan.tokens", { count })
+  return (
+    <span
+      className="inline-flex shrink-0 items-center gap-0.5 text-muted-foreground tabular-nums"
+      data-count={count}
+      data-testid="token-plan-token-count"
+      title={label}
+    >
+      <EntityIcon
+        alt=""
+        className="size-4 shrink-0"
+        src={legendaryEventResourceIcon("tokens")}
+      />
+      <span aria-hidden="true">{count}</span>
+      <span className="sr-only">{label}</span>
+    </span>
+  )
+}
+
+/** A row's two mobile lines. With the team header (a team's only row) the team and members share
+ *  the first line with the points, then lane, battle, tokens and cells ahead of the running total;
+ *  otherwise lane and battle lead the first line and the cells the second. */
+function MobileRowLines({
+  teamHeader,
+  toggle,
+  count,
+  lane,
+  battle,
+  cells,
+  points,
+  running,
+}: {
+  teamHeader: ReactNode | undefined
+  toggle: ReactNode
+  count: ReactNode
+  lane: string
+  battle: ReactNode
+  cells: ReactNode
+  points: ReactNode
+  running: ReactNode
+}) {
+  if (teamHeader) {
+    return (
+      <>
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <div className="min-w-0">{teamHeader}</div>
+          {points}
+        </div>
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
+            {toggle}
+            <span className="shrink-0">{lane} ·</span>
+            <span className="min-w-0">{battle}</span>
+            {count}
+            {cells}
+          </span>
+          {running}
+        </div>
+      </>
+    )
+  }
+  return (
+    <>
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <span className="flex min-w-0 items-center gap-1.5">
+          {toggle}
+          {count}
+          <span className="shrink-0">· {lane} ·</span>
+          <span className="min-w-0">{battle}</span>
+        </span>
+        {points}
+      </div>
+      <div
+        className={cn(
+          "flex min-w-0 items-center justify-between gap-2",
+          toggle ? "pl-7" : null
+        )}
+      >
+        {cells}
+        {running}
+      </div>
+    </>
+  )
+}
+
+/** Consecutive battles of one lane clearing the same cells as one row: its token count, "Alpha ·
+ *  Battles 1–11" (opening the first battle's info), the cells, the summed points and the running
+ *  points after the last, every milestone reached; a separate button expands the per-battle rows
+ *  (which then carry the markers). */
 function TokenBattleRunRow({
   event,
   tokens,
@@ -210,6 +333,7 @@ function TokenBattleRunRow({
   markers,
   steps,
   isMobile,
+  teamHeader,
 }: {
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
   tokens: readonly PlannedTokenRow[]
@@ -217,6 +341,8 @@ function TokenBattleRunRow({
   markers: readonly (TokenMarker | undefined)[]
   steps: readonly (readonly TokenMissionStep[])[] | undefined
   isMobile: boolean
+  /** The team's header, when this is the team's only row. */
+  teamHeader?: ReactNode
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const [expanded, setExpanded] = useState(false)
@@ -248,11 +374,7 @@ function TokenBattleRunRow({
       />
     </button>
   )
-  const range = (
-    <span className="text-muted-foreground tabular-nums">
-      {start + 1}–{end + 1}
-    </span>
-  )
+  const count = <TokenCount count={tokens.length} />
   const battle = (
     <BattleInfoButton battleIndex={first.battleIndex} laneId={first.laneId}>
       {t("tokenPlan.plan.battles", {
@@ -263,14 +385,16 @@ function TokenBattleRunRow({
   )
   const points = <PointsFigure points={number.format(sum)} />
   const running = <RunningFigure points={number.format(last.runningPoints)} />
-  const objectives = (
-    <TokenObjectives
-      clearedIds={first.clearedIds}
-      compact
-      lane={event[first.laneId]}
-    />
+  const cells = (
+    <span className="flex min-w-0 items-center gap-2">
+      <TokenObjectives
+        clearedIds={first.clearedIds}
+        compact
+        lane={event[first.laneId]}
+      />
+      {tokens.some((token) => token.maybe) ? <MaybeFlag /> : null}
+    </span>
   )
-  const maybe = tokens.some((token) => token.maybe) ? <MaybeFlag /> : null
 
   return (
     <li
@@ -280,39 +404,31 @@ function TokenBattleRunRow({
       data-testid="token-plan-run"
     >
       {isMobile ? (
+        <MobileRowLines
+          battle={battle}
+          cells={cells}
+          count={count}
+          lane={lane}
+          points={points}
+          running={running}
+          teamHeader={teamHeader}
+          toggle={toggle}
+        />
+      ) : (
         <>
-          <div className="flex min-w-0 items-center justify-between gap-2">
-            <span className="flex min-w-0 items-center gap-1">
+          {teamHeader}
+          <div className={ROW_GRID}>
+            <span className="flex items-center gap-1">
               {toggle}
-              <span className="shrink-0">{range}</span>
-              <span className="shrink-0">· {lane} ·</span>
-              <span className="min-w-0">{battle}</span>
+              {count}
             </span>
-            {points}
-          </div>
-          <div className="flex min-w-0 items-center justify-between gap-2 pl-7">
-            <span className="flex min-w-0 items-center gap-2">
-              {objectives}
-              {maybe}
-            </span>
-            {running}
+            <span>{lane}</span>
+            <span>{battle}</span>
+            {cells}
+            <span className="text-right">{points}</span>
+            <span className="text-right">{running}</span>
           </div>
         </>
-      ) : (
-        <div className={ROW_GRID}>
-          <span className="flex items-center gap-1">
-            {toggle}
-            {range}
-          </span>
-          <span>{lane}</span>
-          <span>{battle}</span>
-          <span className="flex min-w-0 items-center gap-2">
-            {objectives}
-            {maybe}
-          </span>
-          <span className="text-right">{points}</span>
-          <span className="text-right">{running}</span>
-        </div>
       )}
       {expanded ? null : (
         <TokenMarkerList
@@ -321,10 +437,7 @@ function TokenBattleRunRow({
         />
       )}
       {expanded ? (
-        <ol
-          className="flex min-w-0 flex-col divide-y border-l pl-2"
-          id={regionId}
-        >
+        <ol className="flex min-w-0 flex-col divide-y" id={regionId}>
           {tokens.map((token, offset) => {
             const index = start + offset
             return (
@@ -348,12 +461,7 @@ function TokenBattleRunRow({
 function PointsFigure({ points }: { points: string }) {
   const { t } = useTranslation("legendaryEvents")
   return (
-    <span className="inline-flex items-center gap-1 font-medium tabular-nums">
-      <EntityIcon
-        alt=""
-        className="size-3.5 shrink-0"
-        src={legendaryEventResourceIcon("points")}
-      />
+    <span className="font-medium tabular-nums">
       {t("tokenPlan.plan.points", { points })}
     </span>
   )
@@ -362,7 +470,7 @@ function PointsFigure({ points }: { points: string }) {
 function RunningFigure({ points }: { points: string }) {
   const { t } = useTranslation("legendaryEvents")
   return (
-    <span className="text-muted-foreground tabular-nums">
+    <span className="shrink-0 text-muted-foreground tabular-nums">
       {t("tokenPlan.plan.running", { points })}
     </span>
   )
@@ -380,6 +488,8 @@ function MaybeFlag() {
   )
 }
 
+/** The milestones a row reaches (muted, one line when several) and the reward steps it reaches
+ *  (highlighted: the moments that matter). */
 function TokenMarkerList({
   milestones,
   steps,
@@ -390,21 +500,42 @@ function TokenMarkerList({
   const { t, i18n } = useTranslation("legendaryEvents")
   if (milestones.length === 0 && steps.length === 0) return null
   const number = new Intl.NumberFormat(i18n.language)
+  const milestoneItem = (key: string, text: string) => (
+    <li
+      className="inline-flex items-center gap-1 text-muted-foreground"
+      key={key}
+    >
+      <Flag aria-hidden="true" className="size-3 shrink-0" />
+      {text}
+    </li>
+  )
   return (
     <ul
-      className="flex flex-wrap gap-x-3 text-xs font-medium text-primary"
+      className="flex flex-wrap gap-x-3 text-xs font-medium"
       data-testid="token-plan-marker"
     >
-      {milestones.map((entry) => (
-        <li key={`m${entry.milestone}`}>
-          {t("tokenPlan.plan.milestone", {
-            milestone: entry.milestone,
-            currency: number.format(entry.payout),
-          })}
-        </li>
-      ))}
+      {milestones.length > 1
+        ? milestoneItem(
+            "milestones",
+            t("tokenPlan.plan.milestones", {
+              first: milestones[0]!.milestone,
+              last: milestones.at(-1)!.milestone,
+              currency: number.format(
+                milestones.reduce((sum, entry) => sum + entry.payout, 0)
+              ),
+            })
+          )
+        : milestones.map((entry) =>
+            milestoneItem(
+              `m${entry.milestone}`,
+              t("tokenPlan.plan.milestone", {
+                milestone: entry.milestone,
+                currency: number.format(entry.payout),
+              })
+            )
+          )}
       {steps.map((step, index) => (
-        <li key={`${step}${index}`}>
+        <li className="text-primary" key={`${step}${index}`}>
           {t("tokenPlan.plan.step", { step: t(`outlook.steps.${step}`) })}
         </li>
       ))}
@@ -412,8 +543,9 @@ function TokenMarkerList({
   )
 }
 
-/** One planned token: its plan number, lane, battle (opening its info on the event page), cleared
- *  objectives, points and running points, then its milestone and step markers. */
+/** One planned token: its token count (a team's or a run's own row) or plan number (Up next), lane,
+ *  battle (opening its info on the event page), cleared objectives, points and running points,
+ *  then its milestone and step markers. */
 export function TokenRow({
   event,
   token,
@@ -422,6 +554,8 @@ export function TokenRow({
   steps,
   isMobile,
   missionsPopover = false,
+  showCount = false,
+  teamHeader,
 }: {
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
   token: PlannedTokenRow
@@ -431,6 +565,10 @@ export function TokenRow({
   isMobile: boolean
   /** Show the missions it moves behind an icon button (the Next token card's Up next). */
   missionsPopover?: boolean
+  /** Lead with the token count (one) instead of nothing (an expanded run's battle rows). */
+  showCount?: boolean
+  /** The team's header, when this is the team's only row. */
+  teamHeader?: ReactNode
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -442,14 +580,6 @@ export function TokenRow({
   )
   const points = <PointsFigure points={number.format(token.points)} />
   const running = <RunningFigure points={number.format(token.runningPoints)} />
-  const objectives = (
-    <TokenObjectives
-      clearedIds={token.clearedIds}
-      compact
-      lane={event[token.laneId]}
-    />
-  )
-  const maybe = token.maybe ? <MaybeFlag /> : null
   const missionsButton =
     missionsPopover && steps ? (
       <TokenMissionsPopover
@@ -457,6 +587,22 @@ export function TokenRow({
         testId={`token-plan-row-missions-${index}`}
       />
     ) : null
+  const cells = (
+    <span className="flex min-w-0 items-center gap-2">
+      <TokenObjectives
+        clearedIds={token.clearedIds}
+        compact
+        lane={event[token.laneId]}
+      />
+      {token.maybe ? <MaybeFlag /> : null}
+      {missionsButton}
+    </span>
+  )
+  const lead = missionsPopover ? (
+    <span className="text-muted-foreground tabular-nums">{index + 1}.</span>
+  ) : showCount ? (
+    <TokenCount count={1} />
+  ) : null
 
   return (
     <li
@@ -465,46 +611,39 @@ export function TokenRow({
       data-testid="token-plan-row"
     >
       {isMobile ? (
+        <MobileRowLines
+          battle={battle}
+          cells={cells}
+          count={lead}
+          lane={lane}
+          points={points}
+          running={running}
+          teamHeader={teamHeader}
+          toggle={null}
+        />
+      ) : (
         <>
-          <div className="flex min-w-0 items-baseline justify-between gap-2">
-            <span className="flex min-w-0 items-baseline gap-1">
-              <span className="text-muted-foreground tabular-nums">
-                {index + 1}.
-              </span>
-              <span className="shrink-0">{lane} ·</span>
-              {battle}
+          {teamHeader}
+          <div className={missionsPopover ? UP_NEXT_GRID : ROW_GRID}>
+            <span
+              className={cn(
+                "flex items-center tabular-nums",
+                !missionsPopover && "pl-7"
+              )}
+            >
+              {missionsPopover ? (
+                <span className="text-muted-foreground">{index + 1}</span>
+              ) : (
+                lead
+              )}
             </span>
-            {points}
-          </div>
-          <div className="flex min-w-0 items-center justify-between gap-2">
-            <span className="flex min-w-0 items-center gap-2">
-              {objectives}
-              {maybe}
-              {missionsButton}
-            </span>
-            {running}
+            <span>{lane}</span>
+            <span>{battle}</span>
+            {cells}
+            <span className="text-right">{points}</span>
+            <span className="text-right">{running}</span>
           </div>
         </>
-      ) : (
-        <div className={missionsPopover ? UP_NEXT_GRID : ROW_GRID}>
-          <span
-            className={cn(
-              "text-muted-foreground tabular-nums",
-              !missionsPopover && "pl-7"
-            )}
-          >
-            {index + 1}
-          </span>
-          <span>{lane}</span>
-          <span>{battle}</span>
-          <span className="flex min-w-0 items-center gap-2">
-            {objectives}
-            {maybe}
-            {missionsButton}
-          </span>
-          <span className="text-right">{points}</span>
-          <span className="text-right">{running}</span>
-        </div>
       )}
       {marker ? (
         <TokenMarkerList milestones={marker.milestones} steps={marker.steps} />

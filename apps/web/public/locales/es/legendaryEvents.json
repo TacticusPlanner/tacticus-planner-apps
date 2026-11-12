@@ -775,6 +775,7 @@
       "running": "{{points}} en total",
       "maybe": "Quizá superable",
       "milestone": "Hito {{milestone}} · +{{currency}} de moneda",
+      "milestones": "Hitos {{first}}–{{last}} · +{{currency}} de moneda",
       "step": "{{step}} alcanzado",
       "fullClear_one": "{{lane}}: superar una batalla por completo cuesta {{count}} ficha",
       "fullClear_other": "{{lane}}: superar una batalla por completo cuesta {{count}} fichas",
@@ -818,6 +819,8 @@
       "expandRun_other": "Mostrar {{count}} batallas",
       "collapseRun_one": "Ocultar {{count}} batalla",
       "collapseRun_other": "Ocultar {{count}} batallas",
+      "tokens_one": "{{count}} ficha",
+      "tokens_other": "{{count}} fichas",
       "openTeam": "Abrir el equipo {{team}}"
     },
     "forecast": {

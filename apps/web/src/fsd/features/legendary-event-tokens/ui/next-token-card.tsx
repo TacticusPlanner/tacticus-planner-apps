@@ -28,6 +28,7 @@ import {
   type NextTokenEmpty,
   type TokenPlanView,
 } from "../lib/token-plan-view"
+import { unknownChip } from "../lib/unit-chips"
 import { useMissionsOrder } from "../model/token-plan-order"
 import { useNextTokenShown } from "../model/use-next-token-shown"
 import { useTokenShown } from "../model/use-token-shown"
@@ -463,10 +464,6 @@ function EmptyState({
       {text}
     </Button>
   )
-}
-
-function unknownChip(unitId: string): EventUnitChipData {
-  return { unitId, owned: undefined }
 }
 
 function Note({ children, testId }: { children: ReactNode; testId: string }) {

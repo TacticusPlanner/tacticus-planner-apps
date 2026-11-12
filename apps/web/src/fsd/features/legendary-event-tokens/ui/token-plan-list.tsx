@@ -5,6 +5,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   useObjectiveLabel,
+  type EventUnitChipData,
   type LegendaryEvent,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
@@ -37,6 +38,7 @@ export function TokenPlanList({
   defaultOpen = false,
   trackExpand = true,
   onOpenTeam,
+  chipOf,
 }: {
   eventId: string
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
@@ -49,6 +51,8 @@ export function TokenPlanList({
   trackExpand?: boolean
   /** Makes the team names open that team's editor (the event page). */
   onOpenTeam?: OpenTeamHandler
+  /** A unit's chip in a team's popover (rank, rarity, abilities from the synced roster). */
+  chipOf?: (unitId: string) => EventUnitChipData
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const { captureEvent } = useAnalyticsActions()
@@ -153,6 +157,9 @@ export function TokenPlanList({
                       isMobile={isMobile}
                       markers={markers}
                       onOpenTeam={onOpenTeam}
+                      membersByTeam={view.membersByTeam}
+                      depthByTeam={view.depthByTeam}
+                      chipOf={chipOf}
                       start={section.start}
                       steps={steps}
                       tokens={plan.tokens}
@@ -183,6 +190,9 @@ export function TokenPlanList({
                     isMobile={isMobile}
                     markers={markers}
                     onOpenTeam={onOpenTeam}
+                    membersByTeam={view.membersByTeam}
+                    depthByTeam={view.depthByTeam}
+                    chipOf={chipOf}
                     start={view.byRun.overflow.start}
                     tokens={plan.tokens}
                   />
@@ -196,6 +206,9 @@ export function TokenPlanList({
               isMobile={isMobile}
               markers={markers}
               onOpenTeam={onOpenTeam}
+              membersByTeam={view.membersByTeam}
+              depthByTeam={view.depthByTeam}
+              chipOf={chipOf}
               start={0}
               tokens={plan.tokens}
             />

@@ -775,6 +775,7 @@
       "running": "{{points}} gesamt",
       "maybe": "Vielleicht schaffbar",
       "milestone": "Meilenstein {{milestone}} · +{{currency}} Währung",
+      "milestones": "Meilensteine {{first}}–{{last}} · +{{currency}} Währung",
       "step": "{{step}} erreicht",
       "fullClear_one": "{{lane}}: Ein vollständiger Abschluss braucht {{count}} Token pro Kampf",
       "fullClear_other": "{{lane}}: Ein vollständiger Abschluss braucht {{count}} Tokens pro Kampf",
@@ -818,6 +819,8 @@
       "expandRun_other": "{{count}} Kämpfe anzeigen",
       "collapseRun_one": "{{count}} Kampf ausblenden",
       "collapseRun_other": "{{count}} Kämpfe ausblenden",
+      "tokens_one": "{{count}} Token",
+      "tokens_other": "{{count}} Tokens",
       "openTeam": "Team {{team}} öffnen"
     },
     "forecast": {

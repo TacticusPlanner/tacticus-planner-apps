@@ -775,6 +775,7 @@
       "running": "{{points}} au total",
       "maybe": "Peut-être faisable",
       "milestone": "Palier {{milestone}} · +{{currency}} de monnaie",
+      "milestones": "Paliers {{first}}–{{last}} · +{{currency}} de monnaie",
       "step": "{{step}} atteint",
       "fullClear_one": "{{lane}} : réussir entièrement un combat demande {{count}} jeton",
       "fullClear_other": "{{lane}} : réussir entièrement un combat demande {{count}} jetons",
@@ -818,6 +819,8 @@
       "expandRun_other": "Afficher {{count}} combats",
       "collapseRun_one": "Masquer {{count}} combat",
       "collapseRun_other": "Masquer {{count}} combats",
+      "tokens_one": "{{count}} jeton",
+      "tokens_other": "{{count}} jetons",
       "openTeam": "Ouvrir l’équipe {{team}}"
     },
     "forecast": {
