@@ -110,15 +110,17 @@ describe("TeamSuggestionsDialog", () => {
 
   it("shows a Healer that would lower the depth as the reserve", async () => {
     // Incisus at Stone 1 gives way to the stronger Inceptor Sgt and is offered as the reserve.
+    const estimates = source.estimates
+    if (!estimates || estimates === "pending") throw new Error("fixture")
     const roster = new Map([
-      ...source.estimates!.roster,
+      ...estimates.roster,
       [
         "ultraApothecary",
         { ...rosterUnit("ultraApothecary"), rank: "Stone1" as const },
       ],
       ["ultraInceptorSgt", rosterUnit("ultraInceptorSgt")],
     ])
-    renderDialog({ estimates: { ...source.estimates!, roster } })
+    renderDialog({ estimates: { ...estimates, roster } })
     await screen.findAllByText("Titus")
     const reserves = screen.getAllByTestId("team-suggestion-reserve")
     expect(reserves.map((element) => element.dataset.unit)).toContain(
