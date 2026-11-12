@@ -839,6 +839,8 @@
       },
       "finished": "Finished",
       "supply": "{{total}} tokens: {{free}} free + {{ad}} ad + {{bonus}} bonus delivery",
+      "adToday": "Includes today's ad token, not watched yet",
+      "thisRun": "This run's forecast",
       "uses": "Uses {{used}} · {{left}} left over",
       "points": "{{points}} points (+{{earned}})",
       "currency": "{{currency}} currency in hand (+{{earned}} earned)",

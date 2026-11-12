@@ -839,6 +839,8 @@
       },
       "finished": "Finalizada",
       "supply": "{{total}} fichas: {{free}} gratis + {{ad}} de anuncio + {{bonus}} de entrega extra",
+      "adToday": "Incluye la ficha de anuncio de hoy, aún sin ver",
+      "thisRun": "Previsión de esta ronda",
       "uses": "Usa {{used}} · sobran {{left}}",
       "points": "{{points}} puntos (+{{earned}})",
       "currency": "{{currency}} de moneda disponible (+{{earned}} ganada)",

@@ -8,6 +8,7 @@ import {
 } from "@/features/legendary-event-plan"
 import {
   BattleInfoContext,
+  CurrentRunForecast,
   NextTokenCard,
   RunForecastSection,
   TokenPlanList,
@@ -319,7 +320,11 @@ function LegendaryEventPageBody({
               onViewPlan={props.onViewPlan}
               view={tokens.view}
             />
-            <RunStatusCard {...props} isMobile={isMobile} />
+            <RunStatusCard
+              {...props}
+              forecast={<CurrentRunForecast view={tokens.view} />}
+              isMobile={isMobile}
+            />
             {laneSelector}
             <ProgressSection
               event={props.event}

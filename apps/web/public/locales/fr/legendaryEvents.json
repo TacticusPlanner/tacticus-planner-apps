@@ -839,6 +839,8 @@
       },
       "finished": "Terminée",
       "supply": "{{total}} jetons : {{free}} gratuits + {{ad}} pub + {{bonus}} livraison bonus",
+      "adToday": "Inclut le jeton pub du jour, pas encore regardé",
+      "thisRun": "Prévision de cette manche",
       "uses": "Utilise {{used}} · {{left}} restants",
       "points": "{{points}} points (+{{earned}})",
       "currency": "{{currency}} de monnaie en main (+{{earned}} gagnée)",

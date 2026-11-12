@@ -11,7 +11,7 @@ Defines how the planner counts the tokens a Legendary Event's remaining runs sup
 The planner SHALL count, for each run 1–3, the tokens still to come:
 
 - **Run states.** With the event active, runs before the resolved current run are **Done** and supply nothing, the current run is **Now**, and later runs are **Planned**. With the event upcoming, the runs that have ended (`legendary-event-run-resolution`) are Done and every later run is Planned; the first Planned run is labelled **Next**. When the run is unknown the supply is one **Next** run with the Planned token count and no other run. An archived event, or one whose three runs have all ended, has no forecast.
-- **Now.** Free tokens = the synced bucket's `current`, + 1 when the next token instant (the instant the chunk was observed + `nextTokenInSeconds`) is before the run's end, + ⌊(run end − next token instant) ÷ `regenDelayInSeconds`⌋ (when the bucket is null, free tokens = ⌊(run end − now) ÷ 10,800 s⌋ with no + 1, as in V1). Ad tokens = ⌊(run end − now − 1 ms) ÷ 1 day⌋, + 1 when `hasUsedAdForExtraTokenToday` is not true. Bonus-delivery tokens = 6 when the run's premium track is planned (stored premium missions > 0 with Show paid options on) and not already bought (synced `extraCurrencyPerPayout` not > 0); else 0.
+- **Now.** Free tokens = the synced bucket's `current`, + 1 when the next token instant (the instant the chunk was observed + `nextTokenInSeconds`) is before the run's end, + ⌊(run end − next token instant) ÷ `regenDelayInSeconds`⌋ (when the bucket is null, free tokens = ⌊(run end − now) ÷ 10,800 s⌋ with no + 1, as in V1). Ad tokens = ⌊(run end − now − 1 ms) ÷ 1 day⌋, + 1 for today's ad unless `hasUsedAdForExtraTokenToday` is true and was observed in the same run day as now (run days count back from the run's end; a flag observed in an earlier run day is yesterday's ad, so today's still counts). When today's ad counts, the run's tokens line SHALL add "Includes today's ad token, not watched yet". Bonus-delivery tokens = 6 when the run's premium track is planned (stored premium missions > 0 with Show paid options on) and not already bought (synced `extraCurrencyPerPayout` not > 0); else 0.
 - **Planned.** 61 free + 7 ad tokens, + 6 bonus-delivery tokens when that run's stored premium missions > 0 and Show paid options is on.
 
 Assumptions:
@@ -105,7 +105,21 @@ Assumptions:
 
 ### Requirement: Run forecast section
 
-The Plan tab SHALL open with a collapsible **Run forecast**, above the Token plan, collapsed by default and remembered per device, headed by the last forecast run's outcome ("By the end of run 3: 6,136 points · Unlock 75 shards short"). Expanded, it SHALL show one block per run 1–3 with its state (Done, Now, Next, Planned); Done blocks show "Finished" only; other blocks open with an icon summary (tokens used of the supply, ending points, chests and shards, each by its game glyph), then show tokens available as free + ad + bonus delivery, "uses N" and "N left over", ending points, currency, chests, shards, the steps reached, the next step with shards missing, and the Oh So Close hint when present, each line with its icon, and, signed in, that run's inputs (`legendary-event-run-inputs`: missions, packs) edited in place. When any run has tokens left over and the plan is shorter than the supply, a line SHALL say "N tokens with nothing to play: add a team or raise a depth to use them" linking to the first lane with points left. The forecast SHALL recompute when a run's inputs save. With an empty plan the forecast SHALL still render (inputs alone can open chests). While supply inputs load the section SHALL show a skeleton; when the event's catalog record failed to load it SHALL be hidden with the Run status card's failure note.
+The Plan tab SHALL open with a collapsible **Run forecast**, above the Token plan, collapsed by default and remembered per device, headed by the last forecast run's outcome ("By the end of run 3: 6,136 points · Unlock 75 shards short"). Expanded, it SHALL show one block per run 1–3 with its state (Done, Now, Next, Planned); Done blocks show "Finished" only; other blocks open with an icon summary (tokens used of the supply, ending points, chests and shards, each by its game glyph), then show tokens available as free + ad + bonus delivery (with the unwatched-ad note when today's ad counts), "uses N" and "N left over", ending points, currency, chests, shards, the steps reached, the next step with shards missing, and the Oh So Close hint when present, each line with its icon, and, signed in, that run's inputs (`legendary-event-run-inputs`: missions, packs) edited in place. When any run has tokens left over and the plan is shorter than the supply, a line SHALL say "N tokens with nothing to play: add a team or raise a depth to use them" linking to the first lane with points left. The forecast SHALL recompute when a run's inputs save. With an empty plan the forecast SHALL still render (inputs alone can open chests). While supply inputs load the section SHALL show a skeleton; when the event's catalog record failed to load it SHALL be hidden with the Run status card's failure note.
+
+The run tab's Run status card SHALL also show **This run's forecast**: the Now run's block (else the Next run's) with the same lines as its Run forecast block, minus the icon summary and inputs, so the forecast reads without switching to Plan. It SHALL be hidden while the plan loads or when there is no forecast.
+
+#### Scenario: This run's forecast in Run status
+
+- **GIVEN** the worked example, today's ad not watched
+- **WHEN** the run tab renders
+- **THEN** Run status shows "This run's forecast" for run 2 with "32 tokens: 28 free + 4 ad + 0 bonus delivery", "Includes today's ad token, not watched yet" and "Uses 6 · 26 left over"
+
+#### Scenario: Stale ad flag
+
+- **GIVEN** the worked example with `hasUsedAdForExtraTokenToday` true observed 21 hours ago (the run day before)
+- **WHEN** the supply is computed
+- **THEN** the Now run counts 4 ad tokens, today's included
 
 #### Scenario: Forecast header on the worked example
 
