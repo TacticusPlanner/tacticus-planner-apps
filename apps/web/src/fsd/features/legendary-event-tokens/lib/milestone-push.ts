@@ -21,9 +21,10 @@ import { splitPlanByRun } from "./token-runs"
 // battles the plan leaves out could close it. Every push is one token, ranked by the points it adds
 // to the run net of the token it pushes out (the forecast spends a fixed supply).
 
-/** Why a battle is out of the plan: a Stop here mark (another team may clear it), or a team's
- *  manual depth set below its clear estimate. */
-type MilestonePushKind = "stopHere" | "belowEstimate"
+/** Why a battle is out of the plan: a Maybe clear stopped its team right before it (a retry may
+ *  clear it), a team's depth was lowered below its estimate, or a Stop here cell blocks a battle
+ *  another team of the lane reaches. */
+type MilestonePushKind = "maybeClear" | "belowEstimate" | "stopHere"
 
 /** A planned token, as a push names the one it adds or drops. */
 export interface PushToken {
@@ -74,7 +75,7 @@ interface PushCandidate {
   laneId: LegendaryEventLaneId
   /** The Stop here cell to lift (`stopHere`). */
   cell?: { battleIndex: number; objectiveId: number }
-  /** The team to give one more battle (`belowEstimate`). */
+  /** The team given one more battle (`maybeClear`, `belowEstimate`). */
   teamId?: string
 }
 
@@ -117,24 +118,44 @@ function candidates(
   lanes: readonly TokenPlanLane[],
   estimateDepthOf: MilestoneGapInput["estimateDepthOf"]
 ): PushCandidate[] {
-  return lanes.flatMap((lane) => [
-    ...lane.annotations
-      .filter((annotation) => annotation.status === "stopHere")
-      .map((annotation): PushCandidate => ({
-        kind: "stopHere",
-        laneId: lane.laneId,
-        cell: {
-          battleIndex: annotation.battleIndex,
-          objectiveId: annotation.objectiveId,
-        },
-      })),
-    ...lane.teams.flatMap((team): PushCandidate[] => {
+  return lanes.flatMap((lane) => {
+    const marksOn = (battleIndex: number) =>
+      lane.annotations.filter(
+        (annotation) => annotation.battleIndex === battleIndex
+      )
+    // One more battle for a team stopped right before it: a Maybe clear there, or a depth lowered
+    // below the estimate. Never past a Stop here ("no chance with this team").
+    const retries = lane.teams.flatMap((team): PushCandidate[] => {
+      if (team.depth === null) return []
+      const marks = marksOn(team.depth)
+      if (marks.some((mark) => mark.status === "stopHere")) return []
+      if (marks.some((mark) => mark.status === "maybeClear")) {
+        return [{ kind: "maybeClear", laneId: lane.laneId, teamId: team.id }]
+      }
       const estimate = estimateDepthOf(team.id)
-      return team.depth !== null && estimate !== null && team.depth < estimate
+      return estimate !== null && team.depth < estimate
         ? [{ kind: "belowEstimate", laneId: lane.laneId, teamId: team.id }]
         : []
-    }),
-  ])
+    })
+    // A Stop here cell blocks every team: lift it only when another team of the lane reaches the
+    // battle, so a different team tries it.
+    const otherTeam = lane.annotations.flatMap((annotation): PushCandidate[] =>
+      annotation.status === "stopHere" &&
+      lane.teams.some((team) => (team.depth ?? 0) > annotation.battleIndex)
+        ? [
+            {
+              kind: "stopHere",
+              laneId: lane.laneId,
+              cell: {
+                battleIndex: annotation.battleIndex,
+                objectiveId: annotation.objectiveId,
+              },
+            },
+          ]
+        : []
+    )
+    return [...retries, ...otherTeam]
+  })
 }
 
 /** The plan's lanes with the candidates' battles put back. */

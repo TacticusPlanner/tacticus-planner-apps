@@ -113,6 +113,36 @@ describe("milestoneGap", () => {
     })
   })
 
+  it("retries the team a Maybe clear stopped", () => {
+    const gap = milestoneGap(
+      input({
+        lanes: workedLanes({
+          teams: [{ ...meleeTeam, depth: 2 }],
+          annotations: [mark(2, 0, "maybeClear")],
+        }),
+      })
+    )
+
+    expect(gap?.pushes[0]).toMatchObject({
+      kind: "maybeClear",
+      token: { laneId: "alpha", battleIndex: 2, teamId: "melee" },
+    })
+  })
+
+  it("never pushes a team past its Stop here, even below its estimate", () => {
+    const gap = milestoneGap(
+      input({
+        lanes: workedLanes({
+          teams: [{ ...meleeTeam, depth: 2 }],
+          annotations: [mark(2, 0, "stopHere")],
+        }),
+        estimateDepthOf: () => 5,
+      })
+    )
+
+    expect(gap?.pushes ?? []).toEqual([])
+  })
+
   it("skips a team whose manual depth matches its estimate", () => {
     const gap = milestoneGap(
       input({

@@ -52,7 +52,9 @@ describe("MilestoneGapSection", () => {
       "Close the gap: +295 points for Unlock"
     )
     const row = screen.getByTestId("milestone-gap-push")
-    expect(row).toHaveTextContent("Try Ultras on Beta battle 9 (Stop here)")
+    expect(row).toHaveTextContent(
+      "Try Ultras on Beta battle 9 (Stop here for another team)"
+    )
     expect(row).toHaveTextContent(
       "+330 points, 1 token, replaces Beta battle 4 (+90)"
     )
@@ -83,6 +85,14 @@ describe("MilestoneGapSection", () => {
     expect(row).toHaveTextContent("+330 points, 1 token")
     expect(screen.getByTestId("milestone-gap-retry")).toHaveTextContent(
       "If it fails, a retry uses a spare token"
+    )
+  })
+
+  it("names a Maybe clear retry", () => {
+    renderGap(gap({ pushes: [push({ kind: "maybeClear" })] }))
+
+    expect(screen.getByTestId("milestone-gap-push")).toHaveTextContent(
+      "Retry Ultras on Beta battle 9 (Maybe clear)"
     )
   })
 

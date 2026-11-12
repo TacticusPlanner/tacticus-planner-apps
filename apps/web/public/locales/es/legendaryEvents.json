@@ -862,7 +862,8 @@
     "closeGap": {
       "title": "Cerrar la brecha: +{{points}} puntos para {{step}}",
       "where": "{{lane}} batalla {{battle}}",
-      "stopHere": "Prueba {{team}} en {{where}} (Parar aquí)",
+      "maybeClear": "Reintenta {{team}} en {{where}} (Quizá superable)",
+      "stopHere": "Prueba {{team}} en {{where}} («Parar aquí» era de otro equipo)",
       "belowEstimate": "{{team}} una batalla más: {{where}} (profundidad bajo la estimación)",
       "closes": "Cierra la brecha",
       "gain": "+{{points}} puntos, 1 ficha",

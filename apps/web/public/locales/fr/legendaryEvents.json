@@ -862,7 +862,8 @@
     "closeGap": {
       "title": "Combler l'écart : +{{points}} points pour {{step}}",
       "where": "{{lane}} combat {{battle}}",
-      "stopHere": "Essayer {{team}} sur {{where}} (S'arrêter ici)",
+      "maybeClear": "Réessayer {{team}} sur {{where}} (Peut-être faisable)",
+      "stopHere": "Essayer {{team}} sur {{where}} (« S'arrêter ici » visait une autre équipe)",
       "belowEstimate": "{{team}} un combat de plus : {{where}} (profondeur sous l'estimation)",
       "closes": "Comble l'écart",
       "gain": "+{{points}} points, 1 jeton",

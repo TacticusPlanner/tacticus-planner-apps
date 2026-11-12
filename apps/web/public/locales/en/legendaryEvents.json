@@ -862,7 +862,8 @@
     "closeGap": {
       "title": "Close the gap: +{{points}} points for {{step}}",
       "where": "{{lane}} battle {{battle}}",
-      "stopHere": "Try {{team}} on {{where}} (Stop here)",
+      "maybeClear": "Retry {{team}} on {{where}} (Maybe clear)",
+      "stopHere": "Try {{team}} on {{where}} (Stop here for another team)",
       "belowEstimate": "{{team}} one more battle: {{where}} (depth below estimate)",
       "closes": "Closes the gap",
       "gain": "+{{points}} points, 1 token",

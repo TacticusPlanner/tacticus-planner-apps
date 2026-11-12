@@ -862,7 +862,8 @@
     "closeGap": {
       "title": "Lücke schließen: +{{points}} Punkte für {{step}}",
       "where": "{{lane}} Kampf {{battle}}",
-      "stopHere": "{{team}} auf {{where}} versuchen („Hier aufhören“)",
+      "maybeClear": "{{team}} auf {{where}} erneut versuchen (Vielleicht schaffbar)",
+      "stopHere": "{{team}} auf {{where}} versuchen („Hier aufhören“ galt einem anderen Team)",
       "belowEstimate": "{{team}} einen Kampf weiter: {{where}} (Tiefe unter Schätzung)",
       "closes": "Schließt die Lücke",
       "gain": "+{{points}} Punkte, 1 Token",

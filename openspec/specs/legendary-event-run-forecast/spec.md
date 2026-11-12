@@ -145,8 +145,11 @@ The run tab's Run status card SHALL also show **This run's forecast**: the Now r
 
 When the Now run's forecast ends short of its next reward step by at most two chests of shards, and a points milestone within the event's ladder would reach that step, the Now run's block (on Plan and in the Current run tab's Run status) SHALL show "Close the gap: +N points for {step}", where N is the fewest extra points this run that reach that milestone. Below it, the system SHALL list up to five pushes: battles the plan leaves out, each planned as one extra token by replanning with that battle put back:
 
-- a Stop here cell lifted, so any team of the lane that reaches the battle may try it ("Try {team} on {lane} battle {n} (Stop here)")
-- a team whose manual depth is below its clear estimate given one more battle ("{team} one more battle: {lane} battle {n} (depth below estimate)")
+- a team stopped right before a battle marked Maybe clear gets that battle back ("Retry {team} on {lane} battle {n} (Maybe clear)")
+- a team whose manual depth is below its clear estimate, with no mark on its next battle, gets one more battle ("{team} one more battle: {lane} battle {n} (depth below estimate)")
+- a Stop here cell is lifted only when another team of the lane reaches the battle ("Try {team} on {lane} battle {n} (Stop here for another team)")
+
+A team is never pushed onto a battle marked Stop here, since Stop here means no chance with that team.
 
 Pushes SHALL be ranked by the points they add to the run net of the token the fixed supply pushes out, one token each (a retry is never counted in the ranking). Each push SHALL show its net gain, the run token it replaces when the run has no spare token, a mark when it alone reaches the step, and the cost of a failed attempt: a spare token, or "a retry costs 1 more token and drops {lane} battle {n} (−points)". When no push reaches the step alone, the block SHALL name the fewest top pushes that do together, or say that even together they fall short. The block is hidden in the 1-click plan draft and when no push adds points.
 
