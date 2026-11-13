@@ -17,6 +17,8 @@
     "hreDescription": "Helden-Release-Event: Verfolge deine Missionen und raide dafür mit möglichst wenig Energie",
     "quest": "Quests",
     "questDescription": "Quest-Event: verfolge deine Punkte je Kampf und sieh Karte, Gegner und Beute jedes Kampfes",
+    "eventShop": "Event-Shop",
+    "eventShopDescription": "Saisonaler Event-Shop: plane deine Käufe pro Tag, halte sie fest und sieh, wie der Shop deine Ziele abdeckt",
     "guild-raids": "Gilden-Raids",
     "guild-raidsDescription": "Sieh dir den aktuellen Gilden-Raid-Status deiner Gilde und deine persönlichen Raid-Ressourcen an."
   },
@@ -474,6 +476,62 @@
         "estimate": {
           "title": "Siegesschätzung",
           "content": "Ob dein Team die Stärke des Kampfes am Limit der Stufe schlägt, mit und ohne Bonusziele. Zeilen zeigen das Urteil, die Übersicht prognostiziert deine Endpunkte."
+        }
+      }
+    },
+    "eventShop": {
+      "steps": {
+        "picker": {
+          "title": "Event wählen",
+          "content": "Wähle, welchen Event-Shop du planst. Das laufende Event öffnet sich standardmäßig; beendete Events bleiben nutzbar, um Käufe nachzutragen."
+        },
+        "calendar": {
+          "title": "Tag wählen",
+          "content": "Jeder Tag zeigt, was du geplant hast, nach Stand gefärbt: gekauft, zu kaufen oder zu prüfen. Klicke auf einen Tag, um seine Angebote zu sehen."
+        },
+        "chips": {
+          "title": "Tag wählen",
+          "content": "Der Punkt unter jedem Tag zeigt, was du geplant hast: gekauft, zu kaufen oder zu prüfen."
+        },
+        "slots": {
+          "title": "Angebote des Tages",
+          "content": "Jeder Platz zeigt das Angebot für deinen Kader mit Paket, Preis und Tageslimit. Lege es in den Warenkorb und markiere es als gekauft, sobald du es im Spiel kaufst."
+        },
+        "tiles": {
+          "title": "Angebote des Tages",
+          "content": "Tippe auf einen Platz, um Pakete zu planen, als gekauft zu markieren oder zu entfernen."
+        },
+        "tick": {
+          "title": "Als gekauft markieren",
+          "content": "Das Kästchen in der Ecke markiert alle geplanten Pakete als gekauft. Erneut tippen macht es rückgängig."
+        },
+        "sideColumn": {
+          "title": "Einkaufsliste",
+          "content": "Was noch zu kaufen ist, was du gekauft und was du verpasst hast. Vergangene Tage, die du nicht als gekauft markiert hast, warten unter „Zu prüfen“."
+        },
+        "listButton": {
+          "title": "Einkaufsliste",
+          "content": "Öffne deine Einkaufsliste und die Abdeckung. Die Schaltfläche zeigt, was noch zu kaufen ist und wie viele Einträge zu prüfen sind."
+        },
+        "planTab": {
+          "title": "Plan",
+          "content": "Deine Einkaufsliste und die Abdeckung. Das Abzeichen zählt die Einträge, die zu prüfen sind."
+        },
+        "stillToBuy": {
+          "title": "Noch zu kaufen",
+          "content": "Was dein Warenkorb noch kostet. Tippe, um deinen Plan zu öffnen."
+        },
+        "coverage": {
+          "title": "Abdeckung",
+          "content": "Wie dein Plan den Bedarf deiner Ziele deckt und was der Rest in Event-Währung kosten würde."
+        },
+        "rewards": {
+          "title": "Belohnungen",
+          "content": "Meilensteine, Fortschrittstruhen und Missionen des Events, zum Nachschlagen."
+        },
+        "search": {
+          "title": "Shop durchsuchen",
+          "content": "Tippe eine Belohnung ein, eine Einheit, ein Upgrade oder Kugeln, um jeden Tag zu sehen, an dem das Event sie verkauft, und springe zu diesem Tag."
         }
       }
     }

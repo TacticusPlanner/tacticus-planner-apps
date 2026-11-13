@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import {
   abilityBadgeIcon,
+  allianceOrbIcon,
   forgeBadgeIcon,
   gameModeTokenIcon,
   goldIcon,
@@ -43,6 +44,24 @@ describe("goal resource icons", () => {
     expect(orbAllianceIcon("Chaos")).toBe(
       "/game_catalog/datamines/atlases/ui_hero_ascension_orbs_chaos.webp"
     )
+    expect(allianceOrbIcon("Mythic", "Imperial")).toEqual({
+      layers: [
+        {
+          src: "/game_catalog/datamines/atlases/ui_hero_ascension_orbs_mythic.webp",
+          left: 0,
+          top: 0,
+          width: 100,
+          height: 100,
+        },
+        {
+          src: "/game_catalog/datamines/atlases/ui_hero_ascension_orbs_imperial.webp",
+          left: 21.4,
+          top: 21.4,
+          width: 57.2,
+          height: 57.2,
+        },
+      ],
+    })
     expect(energyIcon()).toBe(
       "/game_catalog/datamines/atlases/ui_icon_resource_stamina_small.webp"
     )

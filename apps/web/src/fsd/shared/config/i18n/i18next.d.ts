@@ -14,6 +14,7 @@ import type enLegendaryEvents from "../../../../../public/locales/en/legendaryEv
 import type enHre from "../../../../../public/locales/en/hre.json"
 import type enQuest from "../../../../../public/locales/en/quest.json"
 import type enIncursions from "../../../../../public/locales/en/incursions.json"
+import type enEventShops from "../../../../../public/locales/en/eventShops.json"
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -36,6 +37,7 @@ declare module "i18next" {
       hre: typeof enHre
       quest: typeof enQuest
       incursions: typeof enIncursions
+      eventShops: typeof enEventShops
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).
       characters: Record<string, string>
       mows: Record<string, string>
@@ -62,6 +64,14 @@ declare module "i18next" {
       // Mythic quest task templates (loca key -> template), generated from the datamine; read via
       // `i18n.getResource` — see the library character unit page.
       mythicQuestTasks: Record<string, string>
+      // Seasonal event mission game text, generated from the datamine: task templates by task name,
+      // chain name templates by chain key, game-mode names; read via `i18n.getResource` — see the
+      // event shop's Missions.
+      eventMissions: {
+        tasks: Record<string, string>
+        chains: Record<string, string>
+        gameModes: Record<string, string>
+      }
       // Raid-boss game-data namespaces (unitSet / ability / trait ids as keys), in every locale except
       // `raidBosses`, whose names are derived from the ids and so English-only (other locales fall back).
       raidBosses: Record<string, string>

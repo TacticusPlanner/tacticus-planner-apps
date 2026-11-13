@@ -1,0 +1,51 @@
+{
+  "tasks": {
+    "ApplyUpgrades": "[i2p_Plural]Apply {[TARGET_AMOUNT]} Upgrades to your <style=\"Character\">characters</style>[i2p_One]Apply {[TARGET_AMOUNT]} Upgrade to your <style=\"Character\">characters</style>",
+    "AttackUnitsInGameModes": "Attack units {[TARGET_AMOUNT]} times in {[GAME_MODES]}",
+    "DealAbilityDamage": "Deal {[TARGET_AMOUNT]} Damage using Abilities",
+    "DealDamage": "Deal {[TARGET_AMOUNT]} Damage to enemies in battle",
+    "DefeatWaves": "Defeat {[TARGET_AMOUNT]} waves of enemies in any wave-based game mode",
+    "HealHealth": "Restore <style=\"Stat_Health\">{[TARGET_AMOUNT]} Health</style> in battle",
+    "Overkill": "<style=\"Overkill\">Overkill</style> {[TARGET_AMOUNT]} enemies in battle",
+    "PlayBattlesInGameMode": "[i2p_Plural]Play {[TARGET_AMOUNT]} {[GAME_MODE]} battles[i2p_One]Play {[TARGET_AMOUNT]} {[GAME_MODE]} battle",
+    "ScoreCrits": "Score {[TARGET_AMOUNT]} <style=\"Stat_CritDamage\">Crits</style> in battle",
+    "SlayEnemies": "Defeat {[TARGET_AMOUNT]} enemies",
+    "SlayEnemiesFromHigherElevation": "Defeat {[TARGET_AMOUNT]} enemies from higher elevation",
+    "SlayEnemiesOfFactionTrait": "Defeat {[TARGET_AMOUNT]} {[FACTION_TRAIT]} enemies",
+    "SlayEnemiesWithFactionTrait": "Defeat {[TARGET_AMOUNT]} enemies with {[FACTION_TRAIT]} units",
+    "SlayEnemiesWithMeleeAttacks": "Defeat {[TARGET_AMOUNT]} enemies with <style=\"Stat_Melee\">melee</style> attacks",
+    "SlayEnemiesWithRangedAttacks": "Defeat {[TARGET_AMOUNT]} enemies with <style=\"Stat_Range\">ranged</style> attacks",
+    "Summon": "Summon {[TARGET_AMOUNT]} <style=\"Summon\">units</style> in battle",
+    "TraverseHexes": "Traverse {[TARGET_AMOUNT]} hexes with your characters",
+    "UpgradeAbility": "[i2p_Plural]Upgrade {[TARGET_AMOUNT]} abilities of your <style=\"Character\">Characters</style> or <style=\"MoW\">Machines of War</style>[i2p_One]Upgrade {[TARGET_AMOUNT]} ability of your <style=\"Character\">characters</style> or <style=\"MoW\">Machine of War</style>",
+    "UseAbility": "Use abilities {[TARGET_AMOUNT]} times with characters",
+    "UseAbilityWithFactionTrait": "Use abilities {[TARGET_AMOUNT]} times with {[FACTION_TRAIT]} characters"
+  },
+  "chains": {
+    "August2026Week1FreeMissionChain": "War will never end – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "August2026Week1PremiumMissionChain": "Inexhaustible armies – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "August2026Week2FreeMissionChain": "no peace amongst the stars – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "August2026Week2PremiumMissionChain": "This Galaxy is ours – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "Crescendo01FreeMissionChainOne": "HOUR OF CULMINATION – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "Crescendo01PremiumMissionChain": "DEALERS OF DEATH – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week1FreeMissionChain": "Fire Wastes and Deadlands – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week1PremiumMissionChain": "Fire Wastes – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week2FreeMissionChain": "Armageddon Secundus – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week2PremiumMissionChain": "Hive Helsreach – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week3FreeMissionChain": "Armageddon Prime – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week3PremiumMissionChain": "Hive Tempestora – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "May2026FreeMissionChainOne": "FORGED IN BATTLE – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "May2026PremiumMissionChain": "NO THREAT TOO GREAT – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "October2026FreeMissionChain": "TRENCH FIGHTERS – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "October2026PremiumMissionChain": "CLEAR AND SECURE – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "September2026FreeMissionChainOne": "SENTINELS OF ETERNITY – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "September2026PremiumMissionChain": "INGRAINED SUPERIORITY – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}"
+  },
+  "gameModes": {
+    "AllCampaigns": "any Campaign",
+    "LinearHeroEvent": "Character Quests",
+    "PvP": "Arena",
+    "Survival": "Survival",
+    "SyncPVP": "Tournament Arena"
+  }
+}

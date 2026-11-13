@@ -182,6 +182,42 @@ const datasetData: Record<string, unknown> = {
   hre: hrePayload,
   incursions: incursionsPayload,
   "npc-encounters": npcEncountersPayload,
+  "event-shops": [
+    {
+      id: "june-2026",
+      eventKey: "June2026",
+      definitionId: "armageddon-shop",
+      currency: "seasonalEventCurrencyJune2026",
+      startUtc: "2026-06-22T00:00:00+00:00",
+      dayCount: 7,
+      milestones: [],
+      weeks: [
+        {
+          week: 1,
+          slots: [],
+          progressChests: [],
+          missions: { daily: [], free: [], premium: [] },
+        },
+      ],
+    },
+    {
+      id: "october-2026",
+      eventKey: "October2026",
+      definitionId: "armageddon-shop",
+      currency: "seasonalEventCurrencyOctober2026",
+      startUtc: "2026-10-26T00:00:00+00:00",
+      dayCount: 7,
+      milestones: [],
+      weeks: [
+        {
+          week: 1,
+          slots: [],
+          progressChests: [],
+          missions: { daily: [], free: [], premium: [] },
+        },
+      ],
+    },
+  ],
 }
 
 function createManifest(
@@ -579,6 +615,39 @@ describe("syncGameCatalog", () => {
     expect(await getDatasetRecords("npc-encounters")).toHaveLength(
       npcEncountersPayload.length
     )
+    expect(client.downloaded).not.toContain("characters")
+    expect(await getDatasetRecords("characters")).toEqual([syncedCharacter])
+  })
+
+  it("stores one event-shops row per event, and is ready without the dataset", async () => {
+    await syncGameCatalog(new FakeGameCatalogClient(createManifest()))
+    expect(
+      (await getDatasetRecords("event-shops")).map((record) => record.id)
+    ).toEqual(["june-2026", "october-2026"])
+
+    await resetDb()
+    const manifest = createManifest()
+    const result = await syncGameCatalog(
+      new FakeGameCatalogClient({
+        ...manifest,
+        datasets: manifest.datasets.filter(
+          (dataset) => dataset.key !== "event-shops"
+        ),
+      })
+    )
+    expect(result.status).toBe("ready")
+    expect(await getDatasetRecords("event-shops")).toEqual([])
+  })
+
+  it("creates the v20 event-shops store for a client one version behind and keeps its other rows", async () => {
+    const syncedCharacter = { id: "already-synced" }
+    await seedDbMissingStore("event-shops", syncedCharacter)
+    const client = new FakeGameCatalogClient(createManifest())
+
+    const result = await syncGameCatalog(client)
+
+    expect(result.status).toBe("ready")
+    expect(await getDatasetRecords("event-shops")).toHaveLength(2)
     expect(client.downloaded).not.toContain("characters")
     expect(await getDatasetRecords("characters")).toEqual([syncedCharacter])
   })

@@ -116,6 +116,8 @@ export const datasetToStorageModels: Record<
   "events-calendar": byCalendarDate,
   // Plain-array passthrough — each shop record already carries its `id` (guild / war / ...).
   shops: asArray,
+  // Plain-array passthrough — each event shop record carries its `id` (october-2026 / ...).
+  "event-shops": asArray,
   "raid-bosses": (data) => asSingleRow("raid-bosses", data),
   "guild-raid-meta": (data) => asSingleRow("guild-raid-meta", data),
   "mythic-quests": byUnitId,

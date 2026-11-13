@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next"
 import { chanceIcon } from "@workspace/game-catalog"
 
-import { shopCurrencyIcon } from "@/features/shop-rewards"
+import { shopCurrencyIcon } from "@/features/shops/rewards"
 import { EntityIcon } from "@/shared/ui"
-import type { ShopRecommendationCardView } from "@/features/shop-recommendations"
+import type { ShopRecommendationCardView } from "@/features/shops/recommendations"
 
 /** `[currency icon] 1,234` — the amount with its currency icon (V1 shop-card style). */
 function CurrencyAmount({

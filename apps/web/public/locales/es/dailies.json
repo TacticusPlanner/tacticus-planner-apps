@@ -17,6 +17,8 @@
     "hreDescription": "Evento de lanzamiento de héroe: sigue tus misiones y haz incursiones para ellas con la menor energía",
     "quest": "Misiones",
     "questDescription": "Evento de Misión: sigue tu puntuación por batalla y mira el mapa, los enemigos y el botín de cada batalla",
+    "eventShop": "Tienda del evento",
+    "eventShopDescription": "Tienda del evento de temporada: planifica qué comprar cada día, registra tus compras y mira cómo la tienda cubre tus objetivos",
     "guild-raids": "Incursiones de gremio",
     "guild-raidsDescription": "Consulta el estado actual de la Incursión de gremio y tus recursos personales de incursión."
   },
@@ -474,6 +476,62 @@
         "estimate": {
           "title": "Estimación de victoria",
           "content": "Si tu equipo supera el poder de la batalla al límite del nivel, con y sin objetivos extra. Las filas muestran el veredicto y el resumen prevé tus puntos finales."
+        }
+      }
+    },
+    "eventShop": {
+      "steps": {
+        "picker": {
+          "title": "Elige un evento",
+          "content": "Elige qué tienda de evento planificar. El evento en curso se abre por defecto; los eventos terminados siguen disponibles para registrar compras."
+        },
+        "calendar": {
+          "title": "Elige un día",
+          "content": "Cada día muestra lo que planificaste, coloreado por estado: comprado, por comprar o por revisar. Haz clic en un día para ver sus ofertas."
+        },
+        "chips": {
+          "title": "Elige un día",
+          "content": "El punto bajo cada día muestra lo que planificaste: comprado, por comprar o por revisar."
+        },
+        "slots": {
+          "title": "Ofertas del día",
+          "content": "Cada espacio muestra la oferta que te corresponde según tu plantilla, con su paquete, precio y límite diario. Añádela al carrito y márcala como comprada cuando la compres en el juego."
+        },
+        "tiles": {
+          "title": "Ofertas del día",
+          "content": "Toca un espacio para planificar paquetes, marcarlos como comprados o quitarlos."
+        },
+        "tick": {
+          "title": "Márcalo como comprado",
+          "content": "La casilla de la esquina marca como comprados todos los paquetes planificados. Tócala de nuevo para deshacerlo."
+        },
+        "sideColumn": {
+          "title": "Lista de compras",
+          "content": "Lo que queda por comprar, lo que compraste y lo que te perdiste. Los días pasados que no marcaste como comprados esperan en Por revisar."
+        },
+        "listButton": {
+          "title": "Lista de compras",
+          "content": "Abre tu lista de compras y la cobertura. El botón muestra lo que queda por comprar y cuántos elementos hay que revisar."
+        },
+        "planTab": {
+          "title": "Plan",
+          "content": "Tu lista de compras y la cobertura. La insignia cuenta los elementos por revisar."
+        },
+        "stillToBuy": {
+          "title": "Por comprar",
+          "content": "Lo que aún cuesta tu carrito. Toca para abrir tu plan."
+        },
+        "coverage": {
+          "title": "Cobertura",
+          "content": "Cómo cubre tu plan lo que necesitan tus objetivos y cuánto costaría el resto en moneda del evento."
+        },
+        "rewards": {
+          "title": "Recompensas",
+          "content": "Los hitos, cofres de progreso y misiones del evento, como referencia."
+        },
+        "search": {
+          "title": "Buscar en la tienda",
+          "content": "Escribe cualquier recompensa, una unidad, una mejora u orbes, para ver cada día en que el evento la vende y saltar a ese día."
         }
       }
     }

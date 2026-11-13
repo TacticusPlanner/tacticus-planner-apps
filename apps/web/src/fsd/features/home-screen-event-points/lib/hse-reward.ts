@@ -1,7 +1,7 @@
 import {
   shopRewardDisplay,
   type ShopRewardDisplayContext,
-} from "@/features/shop-rewards/@x/home-screen-event-points"
+} from "@/features/shops/rewards/@x/home-screen-event-points"
 import { datamineAssetUrl, type GameIcon } from "@workspace/game-catalog"
 
 export type HseRewardDisplay = {

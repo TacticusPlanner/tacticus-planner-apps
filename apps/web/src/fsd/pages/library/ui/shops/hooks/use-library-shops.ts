@@ -6,7 +6,7 @@ import {
   type ShopDayOfWeek,
 } from "@workspace/game-catalog"
 
-import { shopRewardDisplay } from "@/features/shop-rewards"
+import { shopRewardDisplay } from "@/features/shops/rewards"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 

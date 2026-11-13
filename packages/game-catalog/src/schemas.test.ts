@@ -767,6 +767,105 @@ describe("catalog schemas", () => {
     )
   })
 
+  it("validates an event-shops payload and rejects a malformed week", () => {
+    const validEvent = {
+      id: "october-2026",
+      eventKey: "October2026",
+      definitionId: "armageddon-shop",
+      currency: "seasonalEventCurrencyOctober2026",
+      startUtc: "2026-10-26T00:00:00+00:00",
+      dayCount: 7,
+      milestones: [
+        {
+          requiredProgress: 100,
+          rewards: [
+            { type: "seasonalEventCurrencyOctober2026", min: 15, max: 15 },
+          ],
+        },
+      ],
+      weeks: [
+        {
+          week: 1,
+          slots: [
+            {
+              variants: [
+                {
+                  reward: { type: "shards_astraYarrick", qty: 25 },
+                  unitId: "astraYarrick",
+                  cost: {
+                    currency: "seasonalEventCurrencyOctober2026",
+                    amount: 45,
+                  },
+                  maxPurchasesPerDay: 5,
+                  days: ["MON", "THU", "SUN"],
+                  lockId: "lock_below_max_legendary_astraYarrick",
+                },
+              ],
+            },
+          ],
+          progressChests: [
+            {
+              requiredProgress: 30,
+              rewards: [{ type: "gold", min: 600, max: 660 }],
+            },
+          ],
+          missions: {
+            daily: [
+              {
+                id: "october_2026_daily_04",
+                rewards: [{ type: "xp_seasonal", min: 100, max: 100 }],
+                tasks: [
+                  {
+                    taskId: "PlayBattlesInGameMode",
+                    target: 10,
+                    parameters: { gameModes: ["AllCampaigns"] },
+                  },
+                ],
+              },
+            ],
+            free: [],
+            premium: [],
+          },
+        },
+      ],
+    }
+
+    expect(
+      datasetPayloadSchemas["event-shops"].safeParse([validEvent]).success
+    ).toBe(true)
+    expect(
+      datasetPayloadSchemas["event-shops"].safeParse([
+        {
+          ...validEvent,
+          weeks: [
+            {
+              ...validEvent.weeks[0],
+              estimatedWeeklyIncome: { free: 750, bonusShipment: 1000 },
+            },
+          ],
+        },
+      ]).success
+    ).toBe(true)
+
+    const noWeeks = { ...validEvent, weeks: [] }
+    const badSlot = {
+      ...validEvent,
+      weeks: [
+        {
+          ...validEvent.weeks[0],
+          slots: [{ variants: [{ reward: { type: "gold", qty: 0 } }] }],
+        },
+      ],
+    }
+
+    expect(
+      datasetPayloadSchemas["event-shops"].safeParse([noWeeks]).success
+    ).toBe(false)
+    expect(
+      datasetPayloadSchemas["event-shops"].safeParse([badSlot]).success
+    ).toBe(false)
+  })
+
   it("validates a manifest", () => {
     const result = manifestSchema.safeParse({
       version: "dev-1",

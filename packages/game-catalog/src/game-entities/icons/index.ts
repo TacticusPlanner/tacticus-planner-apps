@@ -92,6 +92,7 @@ export {
   mowComponentIcon,
   orbIcon,
   orbAllianceIcon,
+  allianceOrbIcon,
   energyIcon,
   onslaughtTokenIcon,
   goldIcon,

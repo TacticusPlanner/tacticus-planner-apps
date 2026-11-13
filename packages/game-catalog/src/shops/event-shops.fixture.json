@@ -1,0 +1,1728 @@
+[
+  {
+    "id": "august-2026",
+    "eventKey": "August2026",
+    "definitionId": "anniversary-event",
+    "currency": "seasonalEventCurrencyAugust2026",
+    "startUtc": "2026-08-02T00:00:00+00:00",
+    "dayCount": 14,
+    "milestones": [],
+    "weeks": [
+      {
+        "week": 1,
+        "estimatedWeeklyIncome": {
+          "free": 750,
+          "bonusShipment": 1000
+        },
+        "slots": [],
+        "progressChests": [],
+        "missions": {
+          "daily": [],
+          "free": [],
+          "premium": []
+        }
+      },
+      {
+        "week": 2,
+        "estimatedWeeklyIncome": {
+          "free": 750,
+          "bonusShipment": 1000
+        },
+        "slots": [],
+        "progressChests": [],
+        "missions": {
+          "daily": [],
+          "free": [],
+          "premium": []
+        }
+      }
+    ]
+  },
+  {
+    "id": "october-2026",
+    "eventKey": "October2026",
+    "definitionId": "armageddon-shop",
+    "currency": "seasonalEventCurrencyOctober2026",
+    "startUtc": "2026-10-26T00:00:00+00:00",
+    "dayCount": 7,
+    "milestones": [
+      {
+        "requiredProgress": 100,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyOctober2026",
+            "min": 15,
+            "max": 15
+          }
+        ]
+      },
+      {
+        "requiredProgress": 210,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyOctober2026",
+            "min": 15,
+            "max": 15
+          }
+        ]
+      }
+    ],
+    "weeks": [
+      {
+        "week": 1,
+        "slots": [
+          {
+            "variants": [
+              {
+                "reward": {
+                  "type": "gold",
+                  "qty": 1
+                },
+                "freeOffer": {
+                  "type": "seasonalEventCurrencyOctober2026",
+                  "qty": 5
+                },
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 1
+                },
+                "maxPurchasesPerDay": 1,
+                "weight": 1,
+                "days": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
+              }
+            ]
+          },
+          {
+            "variants": [
+              {
+                "reward": {
+                  "type": "shards_astraYarrick",
+                  "qty": 25
+                },
+                "unitId": "astraYarrick",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON", "THU", "SUN"],
+                "lockId": "lock_below_max_legendary_astraYarrick"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraYarrick",
+                  "qty": 25
+                },
+                "unitId": "astraYarrick",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON", "THU", "SUN"],
+                "lockId": "lock_not_unlocked_astraYarrick"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraYarrick",
+                  "qty": 5
+                },
+                "unitId": "astraYarrick",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON", "THU", "SUN"],
+                "lockId": "lock_max_legendary_astraYarrick"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceRockfist",
+                  "qty": 25
+                },
+                "unitId": "spaceRockfist",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_below_max_legendary_spaceRockfist"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceRockfist",
+                  "qty": 25
+                },
+                "unitId": "spaceRockfist",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_not_unlocked_spaceRockfist"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceRockfist",
+                  "qty": 5
+                },
+                "unitId": "spaceRockfist",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_max_legendary_spaceRockfist"
+              },
+              {
+                "reward": {
+                  "type": "shards_templAggressor",
+                  "qty": 25
+                },
+                "unitId": "templAggressor",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_below_max_legendary_templAggressor"
+              },
+              {
+                "reward": {
+                  "type": "shards_templAggressor",
+                  "qty": 25
+                },
+                "unitId": "templAggressor",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_not_unlocked_templAggressor"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_templAggressor",
+                  "qty": 5
+                },
+                "unitId": "templAggressor",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_max_legendary_templAggressor"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceWulfen",
+                  "qty": 25
+                },
+                "unitId": "spaceWulfen",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_below_max_legendary_spaceWulfen"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceWulfen",
+                  "qty": 25
+                },
+                "unitId": "spaceWulfen",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_not_unlocked_spaceWulfen"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceWulfen",
+                  "qty": 5
+                },
+                "unitId": "spaceWulfen",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_max_legendary_spaceWulfen"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraOrdnance",
+                  "qty": 25
+                },
+                "unitId": "astraOrdnance",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_below_max_legendary_astraOrdnance"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraOrdnance",
+                  "qty": 25
+                },
+                "unitId": "astraOrdnance",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_not_unlocked_astraOrdnance"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraOrdnance",
+                  "qty": 5
+                },
+                "unitId": "astraOrdnance",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_max_legendary_astraOrdnance"
+              }
+            ]
+          },
+          {
+            "variants": [
+              {
+                "reward": {
+                  "type": "shards_templHelbrecht",
+                  "qty": 25
+                },
+                "unitId": "templHelbrecht",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_below_max_legendary_templHelbrecht"
+              },
+              {
+                "reward": {
+                  "type": "shards_templHelbrecht",
+                  "qty": 25
+                },
+                "unitId": "templHelbrecht",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_not_unlocked_templHelbrecht"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_templHelbrecht",
+                  "qty": 5
+                },
+                "unitId": "templHelbrecht",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_max_legendary_templHelbrecht"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraDreir",
+                  "qty": 25
+                },
+                "unitId": "astraDreir",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_below_max_legendary_astraDreir"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraDreir",
+                  "qty": 25
+                },
+                "unitId": "astraDreir",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_not_unlocked_astraDreir"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraDreir",
+                  "qty": 5
+                },
+                "unitId": "astraDreir",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_max_legendary_astraDreir"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceHound",
+                  "qty": 25
+                },
+                "unitId": "spaceHound",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_below_max_legendary_spaceHound"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceHound",
+                  "qty": 25
+                },
+                "unitId": "spaceHound",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_not_unlocked_spaceHound"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceHound",
+                  "qty": 5
+                },
+                "unitId": "spaceHound",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_max_legendary_spaceHound"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceWulfen",
+                  "qty": 25
+                },
+                "unitId": "spaceWulfen",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_below_max_legendary_spaceWulfen"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceWulfen",
+                  "qty": 25
+                },
+                "unitId": "spaceWulfen",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_not_unlocked_spaceWulfen"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceWulfen",
+                  "qty": 5
+                },
+                "unitId": "spaceWulfen",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_max_legendary_spaceWulfen"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraCreed",
+                  "qty": 25
+                },
+                "unitId": "astraCreed",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_below_max_legendary_astraCreed"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraCreed",
+                  "qty": 25
+                },
+                "unitId": "astraCreed",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_not_unlocked_astraCreed"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraCreed",
+                  "qty": 5
+                },
+                "unitId": "astraCreed",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_max_legendary_astraCreed"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceWolfPriest",
+                  "qty": 25
+                },
+                "unitId": "spaceWolfPriest",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_below_max_legendary_spaceWolfPriest"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceWolfPriest",
+                  "qty": 25
+                },
+                "unitId": "spaceWolfPriest",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_not_unlocked_spaceWolfPriest"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceWolfPriest",
+                  "qty": 5
+                },
+                "unitId": "spaceWolfPriest",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_max_legendary_spaceWolfPriest"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceStormcaller",
+                  "qty": 25
+                },
+                "unitId": "spaceStormcaller",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SUN"],
+                "lockId": "lock_below_max_legendary_spaceStormcaller"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceStormcaller",
+                  "qty": 25
+                },
+                "unitId": "spaceStormcaller",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SUN"],
+                "lockId": "lock_not_unlocked_spaceStormcaller"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceStormcaller",
+                  "qty": 5
+                },
+                "unitId": "spaceStormcaller",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SUN"],
+                "lockId": "lock_max_legendary_spaceStormcaller"
+              }
+            ]
+          },
+          {
+            "variants": [
+              {
+                "reward": {
+                  "type": "shards_spaceBlackmane",
+                  "qty": 25
+                },
+                "unitId": "spaceBlackmane",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_below_max_legendary_spaceBlackmane"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceBlackmane",
+                  "qty": 25
+                },
+                "unitId": "spaceBlackmane",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_not_unlocked_spaceBlackmane"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceBlackmane",
+                  "qty": 5
+                },
+                "unitId": "spaceBlackmane",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_max_legendary_spaceBlackmane"
+              },
+              {
+                "reward": {
+                  "type": "shards_templChampion",
+                  "qty": 25
+                },
+                "unitId": "templChampion",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE", "SUN"],
+                "lockId": "lock_below_max_legendary_templChampion"
+              },
+              {
+                "reward": {
+                  "type": "shards_templChampion",
+                  "qty": 25
+                },
+                "unitId": "templChampion",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE", "SUN"],
+                "lockId": "lock_not_unlocked_templChampion"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_templChampion",
+                  "qty": 5
+                },
+                "unitId": "templChampion",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE", "SUN"],
+                "lockId": "lock_max_legendary_templChampion"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraOrdnance",
+                  "qty": 25
+                },
+                "unitId": "astraOrdnance",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_below_max_legendary_astraOrdnance"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraOrdnance",
+                  "qty": 25
+                },
+                "unitId": "astraOrdnance",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_not_unlocked_astraOrdnance"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraOrdnance",
+                  "qty": 5
+                },
+                "unitId": "astraOrdnance",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_max_legendary_astraOrdnance"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceWolfPriest",
+                  "qty": 25
+                },
+                "unitId": "spaceWolfPriest",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_below_max_legendary_spaceWolfPriest"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceWolfPriest",
+                  "qty": 25
+                },
+                "unitId": "spaceWolfPriest",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_not_unlocked_spaceWolfPriest"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceWolfPriest",
+                  "qty": 5
+                },
+                "unitId": "spaceWolfPriest",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_max_legendary_spaceWolfPriest"
+              },
+              {
+                "reward": {
+                  "type": "shards_templAncient",
+                  "qty": 25
+                },
+                "unitId": "templAncient",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_below_max_legendary_templAncient"
+              },
+              {
+                "reward": {
+                  "type": "shards_templAncient",
+                  "qty": 25
+                },
+                "unitId": "templAncient",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_not_unlocked_templAncient"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_templAncient",
+                  "qty": 5
+                },
+                "unitId": "templAncient",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_max_legendary_templAncient"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraBullgryn",
+                  "qty": 25
+                },
+                "unitId": "astraBullgryn",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_below_max_legendary_astraBullgryn"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraBullgryn",
+                  "qty": 25
+                },
+                "unitId": "astraBullgryn",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_not_unlocked_astraBullgryn"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraBullgryn",
+                  "qty": 5
+                },
+                "unitId": "astraBullgryn",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_max_legendary_astraBullgryn"
+              }
+            ]
+          },
+          {
+            "variants": [
+              {
+                "reward": {
+                  "type": "shards_astraCreed",
+                  "qty": 25
+                },
+                "unitId": "astraCreed",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_below_max_legendary_astraCreed"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraCreed",
+                  "qty": 25
+                },
+                "unitId": "astraCreed",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_not_unlocked_astraCreed"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraCreed",
+                  "qty": 5
+                },
+                "unitId": "astraCreed",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_max_legendary_astraCreed"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceStormcaller",
+                  "qty": 25
+                },
+                "unitId": "spaceStormcaller",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_below_max_legendary_spaceStormcaller"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceStormcaller",
+                  "qty": 25
+                },
+                "unitId": "spaceStormcaller",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_not_unlocked_spaceStormcaller"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceStormcaller",
+                  "qty": 5
+                },
+                "unitId": "spaceStormcaller",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_max_legendary_spaceStormcaller"
+              },
+              {
+                "reward": {
+                  "type": "shards_templSwordBrother",
+                  "qty": 25
+                },
+                "unitId": "templSwordBrother",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_below_max_legendary_templSwordBrother"
+              },
+              {
+                "reward": {
+                  "type": "shards_templSwordBrother",
+                  "qty": 25
+                },
+                "unitId": "templSwordBrother",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_not_unlocked_templSwordBrother"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_templSwordBrother",
+                  "qty": 5
+                },
+                "unitId": "templSwordBrother",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_max_legendary_templSwordBrother"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraPrimarisPsy",
+                  "qty": 25
+                },
+                "unitId": "astraPrimarisPsy",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_below_max_legendary_astraPrimarisPsy"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraPrimarisPsy",
+                  "qty": 25
+                },
+                "unitId": "astraPrimarisPsy",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_not_unlocked_astraPrimarisPsy"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraPrimarisPsy",
+                  "qty": 5
+                },
+                "unitId": "astraPrimarisPsy",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_max_legendary_astraPrimarisPsy"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceRockfist",
+                  "qty": 25
+                },
+                "unitId": "spaceRockfist",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_below_max_legendary_spaceRockfist"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceRockfist",
+                  "qty": 25
+                },
+                "unitId": "spaceRockfist",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_not_unlocked_spaceRockfist"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceRockfist",
+                  "qty": 5
+                },
+                "unitId": "spaceRockfist",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_max_legendary_spaceRockfist"
+              },
+              {
+                "reward": {
+                  "type": "shards_templAggressor",
+                  "qty": 25
+                },
+                "unitId": "templAggressor",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_below_max_legendary_templAggressor"
+              },
+              {
+                "reward": {
+                  "type": "shards_templAggressor",
+                  "qty": 25
+                },
+                "unitId": "templAggressor",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_not_unlocked_templAggressor"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_templAggressor",
+                  "qty": 5
+                },
+                "unitId": "templAggressor",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_max_legendary_templAggressor"
+              },
+              {
+                "reward": {
+                  "type": "shards_templHelbrecht",
+                  "qty": 25
+                },
+                "unitId": "templHelbrecht",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SUN"],
+                "lockId": "lock_below_max_legendary_templHelbrecht"
+              },
+              {
+                "reward": {
+                  "type": "shards_templHelbrecht",
+                  "qty": 25
+                },
+                "unitId": "templHelbrecht",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SUN"],
+                "lockId": "lock_not_unlocked_templHelbrecht"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_templHelbrecht",
+                  "qty": 5
+                },
+                "unitId": "templHelbrecht",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SUN"],
+                "lockId": "lock_max_legendary_templHelbrecht"
+              }
+            ]
+          },
+          {
+            "variants": [
+              {
+                "reward": {
+                  "type": "shards_templAncient",
+                  "qty": 25
+                },
+                "unitId": "templAncient",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_below_max_legendary_templAncient"
+              },
+              {
+                "reward": {
+                  "type": "shards_templAncient",
+                  "qty": 25
+                },
+                "unitId": "templAncient",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_not_unlocked_templAncient"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_templAncient",
+                  "qty": 5
+                },
+                "unitId": "templAncient",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON"],
+                "lockId": "lock_max_legendary_templAncient"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraBullgryn",
+                  "qty": 25
+                },
+                "unitId": "astraBullgryn",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_below_max_legendary_astraBullgryn"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraBullgryn",
+                  "qty": 25
+                },
+                "unitId": "astraBullgryn",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_not_unlocked_astraBullgryn"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraBullgryn",
+                  "qty": 5
+                },
+                "unitId": "astraBullgryn",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["TUE"],
+                "lockId": "lock_max_legendary_astraBullgryn"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraPrimarisPsy",
+                  "qty": 25
+                },
+                "unitId": "astraPrimarisPsy",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_below_max_legendary_astraPrimarisPsy"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraPrimarisPsy",
+                  "qty": 25
+                },
+                "unitId": "astraPrimarisPsy",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_not_unlocked_astraPrimarisPsy"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraPrimarisPsy",
+                  "qty": 5
+                },
+                "unitId": "astraPrimarisPsy",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["WED"],
+                "lockId": "lock_max_legendary_astraPrimarisPsy"
+              },
+              {
+                "reward": {
+                  "type": "shards_templSwordBrother",
+                  "qty": 25
+                },
+                "unitId": "templSwordBrother",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_below_max_legendary_templSwordBrother"
+              },
+              {
+                "reward": {
+                  "type": "shards_templSwordBrother",
+                  "qty": 25
+                },
+                "unitId": "templSwordBrother",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_not_unlocked_templSwordBrother"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_templSwordBrother",
+                  "qty": 5
+                },
+                "unitId": "templSwordBrother",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["THU"],
+                "lockId": "lock_max_legendary_templSwordBrother"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraDreir",
+                  "qty": 25
+                },
+                "unitId": "astraDreir",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_below_max_legendary_astraDreir"
+              },
+              {
+                "reward": {
+                  "type": "shards_astraDreir",
+                  "qty": 25
+                },
+                "unitId": "astraDreir",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_not_unlocked_astraDreir"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_astraDreir",
+                  "qty": 5
+                },
+                "unitId": "astraDreir",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["FRI"],
+                "lockId": "lock_max_legendary_astraDreir"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceHound",
+                  "qty": 25
+                },
+                "unitId": "spaceHound",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_below_max_legendary_spaceHound"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceHound",
+                  "qty": 25
+                },
+                "unitId": "spaceHound",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_not_unlocked_spaceHound"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceHound",
+                  "qty": 5
+                },
+                "unitId": "spaceHound",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SAT"],
+                "lockId": "lock_max_legendary_spaceHound"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceBlackmane",
+                  "qty": 25
+                },
+                "unitId": "spaceBlackmane",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SUN"],
+                "lockId": "lock_below_max_legendary_spaceBlackmane"
+              },
+              {
+                "reward": {
+                  "type": "shards_spaceBlackmane",
+                  "qty": 25
+                },
+                "unitId": "spaceBlackmane",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SUN"],
+                "lockId": "lock_not_unlocked_spaceBlackmane"
+              },
+              {
+                "reward": {
+                  "type": "mythicShards_spaceBlackmane",
+                  "qty": 5
+                },
+                "unitId": "spaceBlackmane",
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 45
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["SUN"],
+                "lockId": "lock_max_legendary_spaceBlackmane"
+              }
+            ]
+          },
+          {
+            "variants": [
+              {
+                "reward": {
+                  "type": "heroAscensionOrbMythic_Imperial",
+                  "qty": 5
+                },
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 225
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                "lockId": "lock_mythic_shop_tier_high"
+              },
+              {
+                "reward": {
+                  "type": "heroAscensionOrbLegendary_Imperial",
+                  "qty": 10
+                },
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 200
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                "lockId": "lock_mythic_shop_tier_medium"
+              },
+              {
+                "reward": {
+                  "type": "heroAscensionOrbEpic_Imperial",
+                  "qty": 10
+                },
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 85
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                "lockId": "lock_mythic_shop_tier_low"
+              }
+            ]
+          },
+          {
+            "variants": [
+              {
+                "reward": {
+                  "type": "heroAscensionOrbLegendary_Imperial",
+                  "qty": 10
+                },
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 200
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                "lockId": "lock_mythic_shop_tier_high"
+              },
+              {
+                "reward": {
+                  "type": "heroAscensionOrbEpic_Imperial",
+                  "qty": 10
+                },
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 85
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                "lockId": "lock_mythic_shop_tier_medium"
+              },
+              {
+                "reward": {
+                  "type": "heroAscensionOrbRare_Imperial",
+                  "qty": 10
+                },
+                "cost": {
+                  "currency": "seasonalEventCurrencyOctober2026",
+                  "amount": 35
+                },
+                "maxPurchasesPerDay": 5,
+                "weight": 1,
+                "days": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+                "lockId": "lock_mythic_shop_tier_low"
+              }
+            ]
+          }
+        ],
+        "progressChests": [
+          {
+            "requiredProgress": 30,
+            "rewards": [
+              {
+                "type": "gold",
+                "min": 600,
+                "max": 660
+              },
+              {
+                "type": "shards_astraYarrick",
+                "min": 5,
+                "max": 5
+              }
+            ]
+          }
+        ],
+        "missions": {
+          "daily": [
+            {
+              "id": "october_2026_daily_01",
+              "rewards": [
+                {
+                  "type": "xp_seasonal",
+                  "min": 100,
+                  "max": 100
+                }
+              ],
+              "tasks": [
+                {
+                  "taskId": "TraverseHexes",
+                  "target": 150
+                }
+              ]
+            }
+          ],
+          "free": [
+            {
+              "id": "october_2026_free_1",
+              "missions": [
+                {
+                  "id": "october_2026_free_1_chain_01",
+                  "rewards": [
+                    {
+                      "type": "xp_seasonal",
+                      "min": 90,
+                      "max": 90
+                    }
+                  ],
+                  "tasks": [
+                    {
+                      "taskId": "DealAbilityDamage",
+                      "target": 7500
+                    }
+                  ]
+                },
+                {
+                  "id": "october_2026_free_1_chain_02",
+                  "rewards": [
+                    {
+                      "type": "xp_seasonal",
+                      "min": 90,
+                      "max": 90
+                    }
+                  ],
+                  "tasks": [
+                    {
+                      "taskId": "DealAbilityDamage",
+                      "target": 12000
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "premium": []
+        }
+      }
+    ]
+  }
+]

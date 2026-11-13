@@ -17,6 +17,8 @@
     "hreDescription": "Événement de sortie de héros : suivez vos missions et raidez pour elles avec le moins d'énergie possible",
     "quest": "Quêtes",
     "questDescription": "Événement de Quête : suivez votre score par combat et voyez la carte, les ennemis et le butin de chaque combat",
+    "eventShop": "Boutique d'événement",
+    "eventShopDescription": "Boutique d'événement saisonnier : planifiez vos achats jour par jour, suivez-les et voyez comment la boutique couvre vos objectifs",
     "guild-raids": "Raids de guilde",
     "guild-raidsDescription": "Consultez le statut actuel du Raid de guilde et vos ressources personnelles de raid."
   },
@@ -474,6 +476,62 @@
         "estimate": {
           "title": "Estimation de victoire",
           "content": "Si ton équipe dépasse la puissance de la bataille au plafond du palier, avec et sans objectifs bonus. Les lignes montrent le verdict, le résumé projette tes points finaux."
+        }
+      }
+    },
+    "eventShop": {
+      "steps": {
+        "picker": {
+          "title": "Choisir un événement",
+          "content": "Choisissez la boutique d'événement à planifier. L'événement en cours s'ouvre par défaut ; les événements terminés restent utilisables pour noter vos achats."
+        },
+        "calendar": {
+          "title": "Choisir un jour",
+          "content": "Chaque jour liste ce que vous avez prévu, coloré selon son état : acheté, à acheter ou à vérifier. Cliquez sur un jour pour voir ses offres."
+        },
+        "chips": {
+          "title": "Choisir un jour",
+          "content": "Le point sous chaque jour indique ce que vous avez prévu : acheté, à acheter ou à vérifier."
+        },
+        "slots": {
+          "title": "Offres du jour",
+          "content": "Chaque emplacement montre l'offre que vous obtenez selon votre roster, avec son lot, son prix et sa limite quotidienne. Ajoutez-la au panier et marquez-la achetée une fois achetée en jeu."
+        },
+        "tiles": {
+          "title": "Offres du jour",
+          "content": "Touchez un emplacement pour prévoir des lots, les marquer achetés ou les retirer."
+        },
+        "tick": {
+          "title": "Marquer comme acheté",
+          "content": "La case dans le coin marque tous les lots prévus comme achetés. Touchez-la à nouveau pour annuler."
+        },
+        "sideColumn": {
+          "title": "Liste d'achats",
+          "content": "Ce qu'il reste à acheter, ce que vous avez acheté et ce que vous avez manqué. Les jours passés non marqués attendent dans À vérifier."
+        },
+        "listButton": {
+          "title": "Liste d'achats",
+          "content": "Ouvrez votre liste d'achats et la couverture. Le bouton indique ce qu'il reste à acheter et combien d'éléments sont à vérifier."
+        },
+        "planTab": {
+          "title": "Plan",
+          "content": "Votre liste d'achats et la couverture. Le badge compte les éléments à vérifier."
+        },
+        "stillToBuy": {
+          "title": "Reste à acheter",
+          "content": "Ce que coûte encore votre panier. Touchez pour ouvrir votre plan."
+        },
+        "coverage": {
+          "title": "Couverture",
+          "content": "Comment votre plan couvre les besoins de vos objectifs, et ce que coûterait le reste en monnaie d'événement."
+        },
+        "rewards": {
+          "title": "Récompenses",
+          "content": "Les paliers, coffres de progression et missions de l'événement, pour référence."
+        },
+        "search": {
+          "title": "Rechercher dans la boutique",
+          "content": "Tapez une récompense, une unité, une amélioration ou des orbes, pour voir chaque jour où l'événement la vend, puis passez à ce jour."
         }
       }
     }

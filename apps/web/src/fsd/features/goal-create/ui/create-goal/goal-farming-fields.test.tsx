@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
 
-vi.mock("@/features/shop-rewards/@x/goal-create", () => ({
+vi.mock("@/features/shops/rewards/@x/goal-create", () => ({
   shopCurrencyIcon: () => "/icon.png",
 }))
 
