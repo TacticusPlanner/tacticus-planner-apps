@@ -46,6 +46,8 @@ export const CLEAR_ESTIMATE_CURVE = {
  * of the members' summed power (horde-mode multipliers excluded) counts its effective power ×
  * exp(−slope × (s − neutralShare)). Lopsided teams read shallower (one carry can't cover the rest),
  * balanced ones deeper: share 0.2 (five equal members) ×1.30, 0.6 ×0.77, 0.9 ×0.52.
+ * A team reads at least as well as any copy of it with its strongest members capped at a lower
+ * power (`balancedTeamPower`), so an upgrade never lowers its estimate.
  */
 const TEAM_BALANCE = {
   /** The top-member share at which the correction is ×1. */
@@ -55,7 +57,7 @@ const TEAM_BALANCE = {
 
 /** Names the curve above in analytics, so results logged under different curves are not mixed.
  *  Bump it whenever a ratio, the exponent, the balance correction or the NPC tiers change. */
-export const CLEAR_ESTIMATE_CURVE_VERSION = "2026-11-14-npc-balance"
+export const CLEAR_ESTIMATE_CURVE_VERSION = "2026-11-14-npc-balance-capped"
 
 /** True once the curve is fitted to observed clears. */
 export const CLEAR_ESTIMATE_CALIBRATED = true
@@ -351,7 +353,7 @@ export function estimateClearDepth(
     power,
     balanceFactor,
     marginAbovePct:
-      depth > 0
+      depth > 0 && threshold(depth - 1) > 0
         ? Math.round((adjusted / threshold(depth - 1) - 1) * 100)
         : null,
     shortfallToNextPct:
@@ -379,6 +381,64 @@ export function teamBalanceFactor(
     : 1
 }
 
+/**
+ * The team's effective power × its team-balance factor, at least that of the team with its
+ * strongest members capped at any lower power c: max over c of E(c) × factor(share(c)). A stronger
+ * member can always fight like a weaker one, so raising any member's power never lowers the result
+ * (the uncapped factor alone can: the share it adds can cost more than the power). `power` is each
+ * member's power without horde-mode multipliers, `multiplier` its horde-mode multiplier.
+ */
+export function balancedTeamPower(
+  members: readonly { power: number; multiplier: number }[],
+  balance: ClearEstimateConfig["teamBalance"]
+): number {
+  if (!balance) {
+    return members.reduce(
+      (sum, member) => sum + member.power * member.multiplier,
+      0
+    )
+  }
+  const sorted = members
+    .filter((member) => member.power > 0)
+    .toSorted((a, b) => b.power - a.power)
+  let best = 0
+  // With the top `capped` members at c and the rest unchanged: E(c) = rest + weight × c, share
+  // c / (restRaw + capped × c). Its maximum on each segment is at an end or where the derivative
+  // of ln E − slope × share is 0: weight × (restRaw + capped·c)² = slope × restRaw × E(c).
+  for (let capped = 1; capped <= sorted.length; capped++) {
+    const top = sorted.slice(0, capped)
+    const rest = sorted.slice(capped)
+    const weight = top.reduce((sum, member) => sum + member.multiplier, 0)
+    const restEffective = rest.reduce(
+      (sum, member) => sum + member.power * member.multiplier,
+      0
+    )
+    const restRaw = rest.reduce((sum, member) => sum + member.power, 0)
+    const high = top.at(-1)!.power
+    const low = rest[0]?.power ?? 0
+    const valueAt = (cap: number) =>
+      (restEffective + weight * cap) *
+      teamBalanceFactor(cap / (restRaw + capped * cap), balance)
+    const a = weight * capped ** 2
+    const b = 2 * weight * restRaw * capped - balance.slope * restRaw * weight
+    const c = weight * restRaw ** 2 - balance.slope * restRaw * restEffective
+    const discriminant = b ** 2 - 4 * a * c
+    const roots =
+      discriminant >= 0
+        ? [
+            (-b + Math.sqrt(discriminant)) / (2 * a),
+            (-b - Math.sqrt(discriminant)) / (2 * a),
+          ]
+        : []
+    for (const cap of [high, low, ...roots]) {
+      if (cap > 0 && cap >= low && cap <= high) {
+        best = Math.max(best, valueAt(cap))
+      }
+    }
+  }
+  return best
+}
+
 /** The members the roster does not hold (they add nothing to the estimate). */
 export function lockedMemberCount(
   memberUnitIds: readonly string[],
@@ -403,10 +463,14 @@ export function teamClearEstimate(
   const powers = config.teamBalance
     ? memberPowers(memberUnitIds, roster, config.unitPower)
     : null
-  const factor = teamBalanceFactor(
-    powers ? topMemberShare(powers) : null,
-    config.teamBalance
-  )
+  if (!powers || power <= 0) {
+    return estimateClearDepth(power, battlePowers, config)
+  }
+  const members = memberUnitIds.map((unitId, index) => ({
+    power: powers[index]!,
+    multiplier: unitHordeMultiplier(config, unitId, roster.get(unitId)),
+  }))
+  const factor = balancedTeamPower(members, config.teamBalance) / power
   return estimateClearDepth(power, battlePowers, config, factor)
 }
 

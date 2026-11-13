@@ -88,7 +88,7 @@ describe("Tier List Enemies view", () => {
     renderPage("/legendary-events/tier-list")
     expect(await screen.findByTestId("tier-list")).toBeInTheDocument()
 
-    fireEvent.click(screen.getByTestId("tier-list-kind-enemies"))
+    fireEvent.click(screen.getByRole("radio", { name: "Enemies" }))
     expect(await screen.findByTestId("npc-tier-list")).toBeInTheDocument()
     expect(screen.getByTestId("search")).toHaveTextContent("?list=enemies")
   })
@@ -132,9 +132,9 @@ describe("Tier List Enemies view", () => {
     await screen.findByTestId("npc-tier-list")
 
     fireEvent.click(
-      within(screen.getByTestId("npc-tier-list-row-A")).getByTestId(
-        "npc-tier-tile"
-      )
+      within(screen.getByTestId("npc-tier-list-row-A")).getByRole("button", {
+        name: "orksNpc3GrotTank, 1.7×",
+      })
     )
     const details = await screen.findByTestId("npc-tier-details")
     expect(details).toHaveTextContent("A")
@@ -150,10 +150,24 @@ describe("Tier List Enemies view", () => {
   it("lists an upcoming event in the event filter", async () => {
     renderPage()
     await screen.findByTestId("npc-tier-list")
-    fireEvent.click(screen.getByTestId("npc-tier-list-event"))
+    fireEvent.click(screen.getByRole("combobox", { name: "Event" }))
     expect(
       (await screen.findAllByRole("option")).map((option) => option.textContent)
     ).toHaveLength(3)
+  })
+
+  it("says so when the catalog has no NPC tier list", async () => {
+    await seedGameCatalog({
+      characters: legendaryEventCharacters,
+      lres: [activeLysander, utharEvent],
+      "lre-battles": lysanderBattles,
+      npcs: lysanderBattleNpcs,
+      "npc-tiers": [],
+    })
+    renderPage()
+    expect(
+      await screen.findByTestId("npc-tier-list-unavailable")
+    ).toHaveTextContent("Tier list not available yet.")
   })
 
   it("says so when every event is archived", async () => {

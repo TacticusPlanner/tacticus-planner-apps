@@ -127,6 +127,16 @@ export function NpcTierListView() {
       </p>
     )
   }
+  if (tiers.data === null) {
+    return (
+      <p
+        className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground"
+        data-testid="npc-tier-list-unavailable"
+      >
+        {t("tierList.unavailable")}
+      </p>
+    )
+  }
 
   const eventId = eventIds.includes(filters.eventId) ? filters.eventId : "all"
   const list = buildNpcTierList(

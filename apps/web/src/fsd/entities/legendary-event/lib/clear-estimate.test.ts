@@ -21,6 +21,7 @@ import {
   unitPower,
   teamBalanceFactor,
   topMemberShare,
+  balancedTeamPower,
 } from "./clear-estimate"
 import {
   UNAVAILABLE_CONFIG,
@@ -81,13 +82,18 @@ describe("clear estimate (spec worked examples)", () => {
       roster,
       config
     )
-    // The strongest member (24,753) holds 25% of the members' 98,895 power.
+    // The strongest member (24,753) holds 25% of the members' 98,895 power. Capping it a little
+    // lower (towards the even 0.2 share) reads 0.07% better than the uncapped factor.
     const factor = Math.exp(-1.3 * (24753 / 98895 - 0.4))
-    expect(estimate?.balanceFactor).toBeCloseTo(factor, 9)
+    expect(estimate?.balanceFactor).toBeGreaterThan(factor)
+    expect(estimate?.balanceFactor).toBeCloseTo(factor, 2)
     expect(estimate?.power).toBeCloseTo(102229.4, 6)
     expect(estimate?.depth).toBe(
-      estimateClearDepth(102229.4 * factor, UTHAR_ALPHA_POWERS, WORKED_CONFIG)
-        .depth
+      estimateClearDepth(
+        102229.4 * estimate!.balanceFactor,
+        UTHAR_ALPHA_POWERS,
+        WORKED_CONFIG
+      ).depth
     )
     expect(
       unitClearEstimate("ultraCalgar", UTHAR_ALPHA_POWERS, roster, config)
@@ -493,6 +499,70 @@ describe("clear curve (fitted to battle results)", () => {
     expect(teamBalanceFactor(0.9, undefined)).toBe(1)
     expect(topMemberShare([30, 10, 10])).toBeCloseTo(0.6, 9)
     expect(topMemberShare([0, 0])).toBeNull()
+  })
+
+  it("never lowers a team's balanced power when a member gets stronger", () => {
+    const balance = config.teamBalance
+    const team = (first: number, multipliers: readonly number[]) =>
+      multipliers.map((multiplier, index) => ({
+        power: index === 0 ? first : 10_000,
+        multiplier,
+      }))
+    for (const multipliers of [
+      [1, 2, 2, 2, 2],
+      [1, 1, 1, 1, 1],
+      [2.5, 1, 1, 1, 1],
+    ]) {
+      let previous = 0
+      for (let first = 5000; first <= 60_000; first += 500) {
+        const power = balancedTeamPower(team(first, multipliers), balance)
+        expect(power).toBeGreaterThanOrEqual(previous - 1e-6)
+        previous = power
+      }
+    }
+  })
+
+  it("reads a team at least as well as its uncapped balance factor, equal for a lopsided team", () => {
+    const balance = config.teamBalance
+    const lopsided = [30_000, 10_000, 10_000, 10_000].map((power) => ({
+      power,
+      multiplier: 1,
+    }))
+    expect(balancedTeamPower(lopsided, balance)).toBeCloseTo(
+      60_000 * teamBalanceFactor(0.5, balance),
+      6
+    )
+    // Five equal members: capping them all only loses power.
+    const even = Array.from({ length: 5 }, () => ({
+      power: 10_000,
+      multiplier: 1,
+    }))
+    expect(balancedTeamPower(even, balance)).toBeCloseTo(
+      50_000 * teamBalanceFactor(0.2, balance),
+      6
+    )
+    // The 20,000 carry reads as if capped near the others: above its uncapped 109k.
+    const carry = team20k()
+    expect(balancedTeamPower(carry, balance)).toBeGreaterThan(
+      100_000 * teamBalanceFactor(20 / 60, balance)
+    )
+    expect(balancedTeamPower(carry, undefined)).toBe(100_000)
+    expect(balancedTeamPower([], balance)).toBe(0)
+
+    function team20k() {
+      return [1, 2, 2, 2, 2].map((multiplier, index) => ({
+        power: index === 0 ? 20_000 : 10_000,
+        multiplier,
+      }))
+    }
+  })
+
+  it("leaves the margin unset above a battle of no power", () => {
+    expect(estimateClearDepth(0, [0], config)).toMatchObject({
+      depth: 1,
+      marginAbovePct: null,
+    })
+    expect(estimateClearDepth(50_000, [0], config).marginAbovePct).toBeNull()
   })
 
   it("keeps the effective power and reports the factor it applied", () => {
