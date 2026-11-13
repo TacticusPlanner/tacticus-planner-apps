@@ -4,7 +4,9 @@ import type { BattleId } from "@workspace/game-domain"
 
 import { CampaignLocationName } from "@/shared/ui"
 
+import { locationNodeNumber } from "../model/campaign-groups"
 import type { DailyRaidLocationViewModel } from "../model/daily-raids.domain"
+import { inDigitSlot } from "../model/digit-slot"
 
 /** The battle a raid location's name opens, with the name it shows (Today, Home). */
 export interface RaidLocationTarget {
@@ -17,18 +19,21 @@ export interface RaidLocationTarget {
  * the same size (tier word in italics), so it reads the way the game's campaign picker is navigated
  * (campaign + tier, then node). Wraps between words only; a battle the catalog cannot name shows its
  * raw id. With `onShow`, the name is a button that opens the battle's enemies (V1's tap on a
- * suggested raid location).
+ * suggested raid location). With `nodeOnly`, a row under its campaign's header (`CampaignGroup`)
+ * names just the battle ("Battle 36"); the dialog it opens still has the full name.
  */
 export function RaidLocationName({
   battleId,
   fallbackLabel,
   location,
   onShow,
+  nodeOnly = false,
 }: {
   battleId?: BattleId
   fallbackLabel: string
   location: DailyRaidLocationViewModel | undefined
   onShow?: (target: RaidLocationTarget) => void
+  nodeOnly?: boolean
 }) {
   const { t } = useTranslation("dailies")
   const title = {
@@ -36,7 +41,15 @@ export function RaidLocationName({
     difficultyLabel: location?.difficultyLabel,
     nodeLabel: location?.nodeLabel,
   }
-  const name = <CampaignLocationName {...title} />
+  const node = nodeOnly && location ? locationNodeNumber(location) : undefined
+  const name = node ? (
+    // The number takes a two-digit slot, so "Battle 7" lines up with "Battle 38".
+    <span className="tabular-nums">
+      {t("schedule.battle", { node: inDigitSlot(node) })}
+    </span>
+  ) : (
+    <CampaignLocationName {...title} />
+  )
 
   if (!onShow || !battleId) {
     return (

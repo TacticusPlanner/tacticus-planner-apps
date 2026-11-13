@@ -10,15 +10,15 @@ Tells a player exactly what to raid today for one selected project's active goal
 
 Today SHALL show the relevant unit portrait for each goal group, icons for energy and raid-attempt statistics, and a goal-type icon for each goal's target: a Rank target SHALL show its goal-type icon paired with its rank icon, with no accompanying text; every other goal kind (Ability, Ascension, Unlock, Level, Upgrade) SHALL show its goal-type icon paired with its existing text label, matching the icon/text treatment used by the Create Goal sheet's goal-type picker. The icon treatment SHALL supplement accessible text rather than replace it, except for the Rank case where the icon pair is the accessible representation (with an accessible name available to assistive technology via the rank icon).
 
-When a goal's only scheduled resource is that same unit's shards, Today SHALL combine the goal identity and shard schedule into one row instead of repeating the portrait and unit name in a separate goal header and resource card.
+Each goal group SHALL show its goal header (unit portrait, unit name and target) once, above that goal's campaign groups, whose rows name no unit.
 
-At or above the 768px breakpoint, Today's goal groups SHALL stack one below the other across the full width of their card, and each group's resource cards SHALL fill that width in as many 20rem columns as fit. A group SHALL NOT be confined to one column because it is the only group. Plan › Schedule keeps its own layout.
+At or above the 768px breakpoint, Today's goal groups SHALL stack one below the other across the full width of their card, and each group's campaign groups SHALL fill that width in as many 20rem columns as fit. A group SHALL NOT be confined to one column because it is the only group. Plan › Schedule keeps its own layout.
 
-#### Scenario: Single shard schedule avoids duplicate identity
+#### Scenario: A shard-only goal keeps its header
 
 - **GIVEN** a goal whose only scheduled resource is the goal unit's shards
 - **WHEN** Today renders that goal group
-- **THEN** one combined row shows the unit portrait, unit name, target, raid total, and node details without a separate duplicate goal header or shard portrait
+- **THEN** its goal header shows the unit portrait, unit name and target once, and its campaign groups' rows show the shards' icon and count
 
 #### Scenario: Mobile schedule is compact
 
@@ -28,13 +28,13 @@ At or above the 768px breakpoint, Today's goal groups SHALL stack one below the 
 #### Scenario: Desktop schedule fills the page width
 
 - **WHEN** Today is viewed at or above the 768px desktop breakpoint
-- **THEN** each goal group's resource cards fill the Today's plan card's width in as many 20rem columns as fit, keeping each card compact rather than stretching a single card across the card
+- **THEN** each goal group's campaign groups fill the Today's plan card's width in as many 20rem columns as fit, keeping each group compact rather than stretching a single group across the card
 
 #### Scenario: One goal group fills the plan card
 
-- **GIVEN** today's plan has a single goal group with 11 resource cards, and the Today's plan card is about 1165px wide (four tracks at 2560px)
+- **GIVEN** today's plan has a single goal group with 11 campaign groups, and the Today's plan card is about 1165px wide (four tracks at 2560px)
 - **WHEN** Today renders
-- **THEN** the 11 cards are laid out in 3 columns, not stacked in one
+- **THEN** the 11 groups are laid out in 3 columns, not stacked in one
 
 #### Scenario: Plan › Schedule is unchanged
 
@@ -262,73 +262,63 @@ Assumptions:
 
 ### Requirement: Campaign locations use the Character Lookup presentation
 
-Today, Bonus Raids, and Today's Attempts SHALL render each battle as the primary element of its row: the campaign icon, the campaign's display name, and the node's difficulty-and-number label, ordered ahead of the resource or material it farms — which renders as a secondary caption. Raw battle ids SHALL only be used as a fallback when catalog presentation metadata is unavailable. When a resource is scheduled at more than one location, each location SHALL render as its own row at the same visual weight as a single location would, rather than a compact list of chips. The Raids Plan tab is unaffected by this requirement and continues to render locations as compact chips secondary to the resource.
+Today's plan and Bonus Raids SHALL show their battles in campaign groups (see "Today groups raids by campaign"): each group's header SHALL carry the campaign icon and the campaign's display name with its mirror qualifier and difficulty word ("Indomitus Mirror Elite", "Fall of Cadia Elite", "Indomitus", "Death Guard Extremis"), and each row under it SHALL name just its battle by node number ("Battle 40", "Battle 12B" for a challenge node), ahead of the upgrade or shard it farms there, shown as its icon (named by a tooltip) with the player's owned/target count at the end of the row. The row's name SHALL still open the battle with its full campaign name. When a resource is scheduled at more than one location, each location SHALL render as its own row. Raw battle ids SHALL only be used as a fallback when catalog presentation metadata is unavailable. The Raids Plan tab is unaffected by this requirement and continues to render locations as compact chips secondary to the resource.
 
-The campaign name and the difficulty-and-number label SHALL be split across two lines:
+Today's Attempts SHALL render each battle as the primary element of its row, with the campaign name and the difficulty-and-number label split across two lines:
 
 1. The first line SHALL carry the campaign's display name together with its mirror qualifier, but no difficulty: a mirror track is a campaign of its own, so "Indomitus" and "Indomitus Mirror" SHALL read differently at a glance, while the Standard and Elite tiers of one track share a first line.
-2. The second line SHALL carry the node's difficulty word, followed by the node number: "Standard 22", "Elite 40", "Standard 12" (on an "Indomitus Mirror" row), "Elite 40" (on a "Saim-Hann Mirror" row), "Extremis 3". A challenge node SHALL additionally carry a "B" suffix on its node number ("Extremis 12B"), matching the suffix the Raids Plan chips already show.
-
-The second line SHALL NOT be a generic battle-number label that omits the difficulty: the tier must be recoverable from the two lines together, because a node number alone does not identify a battle.
+2. The second line SHALL carry the node's difficulty word, followed by the node number: "Elite 40", "Extremis 3". A challenge node SHALL additionally carry a "B" suffix on its node number ("Extremis 12B"), matching the suffix the Raids Plan chips already show.
 
 Assumptions this requirement depends on:
 
 - A storyline campaign group's tier is fully described by its difficulty (Standard/Elite) plus whether it is a mirror track; an event campaign group's tier is fully described by its Standard/Extremis difficulty plus its separate challenge flag.
-- Both lines are localized game-data display text, resolved from catalog ids through the `campaigns` namespace rather than stored as display strings.
+- Campaign names, difficulty words and the "Battle N" label are localized, the first two resolved from catalog ids through the `campaigns` namespace rather than stored as display strings.
 
 #### Scenario: A scheduled node has campaign presentation metadata
 
-- **GIVEN** a scheduled battle resolves to catalog campaign metadata
-- **WHEN** Today renders the battle
-- **THEN** its row shows the campaign icon, the campaign name on the first line and the difficulty-and-node label on the second, ordered ahead of the resource it farms, with the resource name and progress rendered as a secondary caption
-
-#### Scenario: A storyline elite node splits its difficulty onto the node line
-
 - **GIVEN** a scheduled battle is node 40 of the Fall of Cadia Elite campaign
 - **WHEN** Today renders the battle
-- **THEN** its first line reads "Fall of Cadia" and its second line reads "Elite 40"
-
-#### Scenario: A mirror track reads as its own campaign on the first line
-
-- **GIVEN** Today's schedule includes node 22 of Indomitus Standard and node 12 of the Indomitus mirror track
-- **WHEN** Today renders both
-- **THEN** their first lines read "Indomitus" and "Indomitus Mirror", and their second lines read "Standard 22" and "Standard 12" respectively
+- **THEN** it is a "Battle 40" row under a "Fall of Cadia Elite" header with the campaign icon, followed by the farmed upgrade's icon and owned/target count
 
 #### Scenario: A mirror elite node keeps both qualifiers
 
 - **GIVEN** a scheduled battle is node 40 of the Saim-Hann elite mirror campaign
 - **WHEN** Today renders the battle
-- **THEN** its first line reads "Saim-Hann Mirror" and its second line reads "Elite 40", retaining both the mirror and the elite qualifier
-
-#### Scenario: An event-campaign node shows its event tier
-
-- **GIVEN** a scheduled battle is node 3 of the Death Guard event campaign's Extremis track
-- **WHEN** Today renders the battle
-- **THEN** its first line reads "Death Guard" and its second line reads "Extremis 3"
+- **THEN** its group's header reads "Saim-Hann Mirror Elite", retaining both the mirror and the elite qualifier
 
 #### Scenario: A challenge node is distinguished from the regular node of the same number
 
 - **GIVEN** a scheduled battle is the challenge node numbered 12 of an event campaign's Extremis track
 - **WHEN** Today renders the battle
-- **THEN** its second line reads "Extremis 12B", distinguishing it from the regular node 12 of that same track
+- **THEN** its row reads "Battle 12B", distinguishing it from the regular node 12 of that same track
 
-#### Scenario: Today's Attempts uses the same two-line presentation
+#### Scenario: Today's Attempts uses the two-line presentation
 
 - **GIVEN** a location appears in Today's Attempts
 - **WHEN** Today renders it
-- **THEN** its campaign name and tier-and-node label are split across two lines by the same rules the schedule's rows use, rather than a differently-formatted label
+- **THEN** its first line reads the campaign name with its mirror qualifier and its second line the tier and node ("Saim-Hann Mirror" / "Elite 40")
 
 #### Scenario: A node with no catalog presentation metadata falls back to its battle id
 
 - **GIVEN** a scheduled battle does not resolve to catalog campaign metadata
 - **WHEN** Today renders the battle
-- **THEN** its row shows the raw battle id in place of the campaign name and omits the second line entirely, rather than rendering a partial campaign name, an empty line, or a node number with no tier word
+- **THEN** it forms a group of its own with no campaign header, and its row shows the raw battle id rather than a partial campaign name or a node number with no tier word
 
 #### Scenario: A resource farmed at multiple locations shows one row per location
 
 - **GIVEN** a resource is scheduled to be farmed at more than one location today
-- **WHEN** Today renders that resource's card
-- **THEN** each location renders as its own full-weight row rather than a compact chip, and the resource's name/progress caption appears once for the card
+- **WHEN** Today renders it
+- **THEN** each location renders as its own row, under its own campaign's header, each with the resource's icon and owned/target count
+
+### Requirement: Today groups raids by campaign
+
+Today's plan and Bonus Raids SHALL group their battles by campaign instead of by upgrade, within each goal group (or the one combined list with Combine goals), so the player can raid one campaign's battles in a row. Groups and rows SHALL keep the schedule's priority order ("Today orders upgrades by urgency", with same-campaign upgrades of similar energy already pulled together): going down that order, a run of consecutive upgrades in one campaign (an upgrade's campaign being that of its first planned location) forms a cluster; within a cluster, every planned location SHALL join its campaign's group, groups in the order their campaign first appears and rows in the upgrades' order. A location of a later cluster SHALL NOT be pulled up into an earlier group; it starts a group of its own, which joins the group right before it only when that is the same campaign. A location listed more than once for one upgrade shows once, and a location with no real attempts left today is left out as before. At or above the 768px breakpoint the campaign groups fill the plan card's width in 20rem columns.
+
+#### Scenario: One header per campaign, one row per battle
+
+- **GIVEN** today's top upgrades are farmed at Saim-Hann Elite 38 and Saim-Hann Mirror Elite 4, Saim-Hann Elite 37 and Saim-Hann Mirror Elite 3, Saim-Hann Elite 36 and Saim-Hann Mirror Elite 2, then Saim-Hann Elite 22, then Indomitus Elite 15 and Indomitus Elite 25, then much later Saim-Hann Mirror Elite 27
+- **WHEN** Today renders
+- **THEN** a "Saim-Hann Elite" group lists Battle 38, 37, 36 and 22, then a "Saim-Hann Mirror Elite" group lists Battle 4, 3 and 2, then an "Indomitus Elite" group lists Battle 15 and 25, and Saim-Hann Mirror Elite 27 comes after them in a group of its own, each row ending with its upgrade's icon and owned/target count
 
 ### Requirement: Only the active campaign event is farmable
 

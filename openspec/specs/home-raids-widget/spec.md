@@ -22,9 +22,9 @@ The authenticated home page SHALL render Daily Raids directly after Right now. A
 
 ### Requirement: The widget shows the real (energy-budget) schedule only, one row per location
 
-The widget SHALL show only the locations included in today's real energy-budget schedule (the same schedule Today's main list computes) — it SHALL NOT include Today's Attempts, and it SHALL NOT include Bonus Raids while today's real energy spend is below the daily energy limit. Once that spend reaches or exceeds the limit, the widget SHALL mirror Today (see `daily-raids-today` — "Bonus Raids"): it SHALL show the Bonus Raids locations instead of the real schedule's, preceded by a short caption stating that the daily energy limit has been reached, and when no Bonus Raids location remains it SHALL show that caption with its explicit empty message. It decides this with the same rule Today uses, so both surfaces always agree. Each row SHALL represent one battle location, not one goal or one character: the location, the same "upgrades left" label Today shows for it (see `daily-raids-today` — "Today's raid schedule shows what is left to farm"; none when the node is planned up to its daily cap or a full day of its attempts would not cover the need), and its primary reward, with no unit portrait, goal-type icon, or character/goal label.
+The widget SHALL show only the locations included in today's real energy-budget schedule (the same schedule Today's main list computes) — it SHALL NOT include Today's Attempts, and it SHALL NOT include Bonus Raids while today's real energy spend is below the daily energy limit. Once that spend reaches or exceeds the limit, the widget SHALL mirror Today (see `daily-raids-today` — "Bonus Raids"): it SHALL show the Bonus Raids locations instead of the real schedule's, preceded by a short caption stating that the daily energy limit has been reached, and when no Bonus Raids location remains it SHALL show that caption with its explicit empty message. It decides this with the same rule Today uses, so both surfaces always agree. Each row SHALL represent one battle location, not one goal or one character: the location, the same "upgrades left" label Today shows for it (see `daily-raids-today` — "Today's raid schedule shows what is left to farm"; none when the node is planned up to its daily cap or a full day of its attempts would not cover the need), and its primary reward's icon followed by what the player holds of it against its target over the goals ("X/Y", as on Today; nothing when no goal targets it), with no unit portrait, goal-type icon, or character/goal label.
 
-Each row SHALL present its location exactly as Today's own rows do (see `daily-raids-today` — "Campaign locations use the Character Lookup presentation"): the campaign icon, the campaign's own display name on the first line, and the node's tier-and-number label — including a challenge node's "B" suffix — on the second. The widget SHALL NOT use a differently-formatted or compact location label, so that a location reads identically on Home and on Today.
+Each row SHALL present its location exactly as Today's own rows do (see `daily-raids-today` — "Campaign locations use the Character Lookup presentation"): each run of consecutive rows in one campaign (with its difficulty) SHALL show under one header with the campaign icon and the campaign's name, mirror qualifier and difficulty word ("Indomitus Mirror Elite"), and each row SHALL name just its battle ("Battle 36", with a challenge node's "B" suffix). The widget SHALL keep its row order; grouping SHALL NOT move a row. The widget SHALL NOT use a differently-formatted or compact location label, so that a location reads identically on Home and on Today.
 
 A node whose real synced attempts today have already reached zero remaining SHALL be excluded, using the same real-attempts-based exclusion Today applies to its own schedule.
 
@@ -38,13 +38,19 @@ Assumptions:
 
 - **GIVEN** a battle location is node 3 of the Indomitus Elite campaign, part of today's real schedule, planned below its daily cap while its goal still needs 3 of the upgrade, and a full day of attempts there is expected to drop at least 3
 - **WHEN** the widget renders that location
-- **THEN** it shows one row with the campaign icon, "Indomitus" on the first line, "Elite 3" on the second, "3 upgrades left", and its primary reward icon — no unit portrait or goal label
+- **THEN** it shows an "Indomitus Elite" header with the campaign icon, and under it one row reading "Battle 3", "3 upgrades left", its primary reward icon and what the player holds of it against the target ("X/Y") — no unit portrait or goal label
 
 #### Scenario: A location reads the same on Home as on Today
 
 - **GIVEN** the same battle location appears both in the widget and in Today's own schedule
 - **WHEN** both render
-- **THEN** its campaign name and tier-and-node label are identical in both places, not a compact form in one and a full form in the other
+- **THEN** its campaign header ("Indomitus Elite") and battle label ("Battle 3") are identical in both places, not a compact form in one and a full form in the other
+
+#### Scenario: Grouping keeps the widget's row order
+
+- **GIVEN** the widget's rows are, in order, a battle of campaign A, a battle of campaign B, then two battles of campaign A
+- **WHEN** the widget renders
+- **THEN** it shows an A group with one row, a B group with one row, then a second A group with two rows, and no row moves
 
 #### Scenario: An exhausted node is not shown
 
@@ -72,7 +78,7 @@ When two or more in-scope goals each plan a raid at the same battle location tod
 
 - **GIVEN** Goal A still needs 2 and Goal B still needs 3 of the same upgrade at node 3 of Indomitus Elite, and their combined planned raids there stay below its daily cap
 - **WHEN** the widget renders
-- **THEN** that node appears once — "Indomitus" / "Elite 3" — showing "5 upgrades left", instead of appearing once under each goal as Today does
+- **THEN** that node appears once — "Battle 3" under the "Indomitus Elite" header — showing "5 upgrades left", instead of appearing once under each goal as Today does
 
 #### Scenario: A single goal's location is unaffected
 

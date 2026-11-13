@@ -97,6 +97,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map([["upgrade-1", "Upgrade"]]),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -118,6 +119,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -141,6 +143,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -167,6 +170,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -200,6 +204,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -225,6 +230,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -238,7 +244,7 @@ describe("RaidsWidget", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("reads a location exactly as Today does — campaign name, then tier and node", () => {
+  it("reads a location exactly as Today does — campaign and tier in the header, the battle in the row", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" })] },
@@ -252,6 +258,8 @@ describe("RaidsWidget", () => {
             id: "node-1",
             campaignName: "Indomitus",
             nodeLabel: "Elite 3",
+            difficultyLabel: "Elite",
+            campaignKey: "indomitus-elite",
             shortLabel: "Indomitus E 3",
             challenge: false,
             icon: undefined,
@@ -260,14 +268,21 @@ describe("RaidsWidget", () => {
       ]),
       resourceLabels: new Map([["upgrade-1", "Upgrade"]]),
       resourceVisuals: new Map(),
+      resourceTotals: new Map([["upgrade-1", { owned: 3, target: 10 }]]),
     })
 
     render(<RaidsWidget />, { route: "/" })
 
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Indomitus Elite" })
+    ).toBeInTheDocument()
     const row = screen.getByTestId("home-raid-location-node-1")
-    expect(row).toHaveTextContent("Indomitus")
-    expect(row).toHaveTextContent("Elite 3")
-    expect(row).not.toHaveTextContent("Indomitus E 3")
+    expect(row).toHaveTextContent('schedule.battle:{"node":" 3"}')
+    expect(row).not.toHaveTextContent("Indomitus")
+    // The reward's owned/target count, as on Today.
+    expect(
+      screen.getByTestId("home-raid-location-node-1-stock")
+    ).toHaveTextContent("3/10")
   })
 
   it("omits the second line entirely for a location the catalog has no descriptor for", () => {
@@ -292,6 +307,7 @@ describe("RaidsWidget", () => {
       ]),
       resourceLabels: new Map([["upgrade-1", "Upgrade"]]),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -329,6 +345,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -343,5 +360,69 @@ describe("RaidsWidget", () => {
     expect(screen.getAllByTestId(/^home-raid-location-/)).toHaveLength(12)
     expect(toggle).toHaveAttribute("aria-expanded", "true")
     expect(toggle).toHaveTextContent("home.raids.showLess")
+  })
+  it("groups consecutive rows by campaign without moving a row, across the show-more boundary", async () => {
+    const user = userEvent.setup()
+    // Campaigns in plan order: A, B, then five more of A. The later A rows stay after B, in their
+    // own group, which the first five rows cut through.
+    const campaigns = ["a", "b", "a", "a", "a", "a", "a"]
+    const location = (index: number, campaign: string) => ({
+      id: `node-${index}`,
+      campaignName: campaign === "a" ? "Indomitus" : "Octarius",
+      nodeLabel: `Elite ${index + 1}`,
+      difficultyLabel: "Elite",
+      campaignKey: `${campaign}-elite`,
+      shortLabel: `${campaign} E ${index + 1}`,
+      challenge: false,
+      icon: undefined,
+    })
+    useDailyRaidsMock.mockReturnValue({
+      status: "ready",
+      today: {
+        entries: campaigns.map((_, index) =>
+          entry({ battleId: `node-${index}` })
+        ),
+      },
+      bonus: { entries: [] },
+      raidsLeftToday: { entries: [] },
+      attemptsLeftByBattle: new Map(),
+      locationsByBattleId: new Map(
+        campaigns.map((campaign, index) => [
+          `node-${index}` as BattleId,
+          location(index, campaign),
+        ])
+      ),
+      resourceLabels: new Map(),
+      resourceVisuals: new Map(),
+      resourceTotals: new Map(),
+    })
+
+    render(<RaidsWidget />, { route: "/" })
+
+    const groupRows = () =>
+      screen
+        .getAllByTestId(/^campaign-group-/)
+        .map((group) =>
+          [...group.querySelectorAll("[data-testid^=home-raid-location-]")].map(
+            (row) => row.getAttribute("data-testid")
+          )
+        )
+    expect(groupRows()).toEqual([
+      ["home-raid-location-node-0"],
+      ["home-raid-location-node-1"],
+      [
+        "home-raid-location-node-2",
+        "home-raid-location-node-3",
+        "home-raid-location-node-4",
+      ],
+    ])
+
+    await user.click(screen.getByTestId("home-raids-toggle"))
+
+    expect(groupRows()).toEqual([
+      ["home-raid-location-node-0"],
+      ["home-raid-location-node-1"],
+      [2, 3, 4, 5, 6].map((index) => `home-raid-location-node-${index}`),
+    ])
   })
 })

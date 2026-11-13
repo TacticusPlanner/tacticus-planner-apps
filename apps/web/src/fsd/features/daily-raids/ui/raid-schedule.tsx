@@ -15,9 +15,12 @@ import {
   clusterByCampaign,
   upgradeCampaignKey,
 } from "../model/campaign-clustering"
+import { groupScheduleByCampaign } from "../model/campaign-groups"
 import { isLocationVisible } from "../model/location-visibility"
+import { CampaignGroup } from "./campaign-group"
 import type { RaidLocationTarget } from "./raid-location-name"
 import { GoalTargetBadge, ResourceCard, UnitIcon } from "./resource-card"
+import { ScheduleLocationRow } from "./schedule-location-row"
 
 // Stable default so callers that never use "location" emphasis (Raids Plan) don't need to pass
 // this prop, and don't allocate a new Map identity on every render.
@@ -108,10 +111,18 @@ export function RaidSchedule({
     const onlyVisual = onlyResource
       ? resourceVisuals.get(onlyResource.resourceId)
       : undefined
+    // Campaign groups name no unit, so only the material cards fold the goal into a shard card.
     const combinesShardIdentity =
+      emphasis === "material" &&
       grouping === "goal" &&
       onlyVisual?.kind === "shard" &&
       onlyVisual.unitId === goal.unitId
+    const progressOf = (resourceId: string) =>
+      resourceProgress.get(
+        grouping === "combined"
+          ? resourceId
+          : dailyRaidResourceKey(goal.goalId, resourceId)
+      )
 
     // A goal group whose every resource has been fully de-duped away (every location's real
     // attempts are exhausted) renders no cards — skip the section entirely instead of leaving an
@@ -132,27 +143,58 @@ export function RaidSchedule({
           className="grid gap-2 md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))] md:gap-3"
           data-testid={`raid-resource-grid-${goal.goalId}`}
         >
-          {resources.map(({ resourceId, entries: resourceEntries }) => (
-            <ResourceCard
-              key={resourceId}
-              attemptsLeftByBattle={attemptsLeftByBattle}
-              attemptsUsedByBattle={attemptsUsedByBattle}
-              emphasis={emphasis}
-              onCantRaid={onCantRaid}
-              onShowLocation={onShowLocation}
-              goal={combinesShardIdentity ? goal : undefined}
-              label={resourceLabels.get(resourceId) ?? resourceId}
-              locationsByBattleId={locationsByBattleId}
-              progress={resourceProgress.get(
-                grouping === "combined"
-                  ? resourceId
-                  : dailyRaidResourceKey(goal.goalId, resourceId)
-              )}
-              resourceEntries={resourceEntries}
-              resourceId={resourceId}
-              visual={resourceVisuals.get(resourceId)}
-            />
-          ))}
+          {emphasis === "location"
+            ? groupScheduleByCampaign(
+                resources,
+                (battleId) => locationsByBattleId.get(battleId)?.campaignKey,
+                (entry) => isLocationVisible(entry, attemptsLeftByBattle)
+              ).map((campaignGroup) => {
+                const first = campaignGroup.items[0]
+                return (
+                  <CampaignGroup
+                    key={campaignGroup.key}
+                    className="bg-background"
+                    location={
+                      first
+                        ? locationsByBattleId.get(first.entry.battleId)
+                        : undefined
+                    }
+                    testId={`raid-campaign-${goal.goalId}-${campaignGroup.key}`}
+                  >
+                    {campaignGroup.items.map(
+                      ({ resourceId, entry, resourceEntries }) => (
+                        <ScheduleLocationRow
+                          key={`${entry.battleId}-${resourceId}`}
+                          entry={entry}
+                          label={resourceLabels.get(resourceId) ?? resourceId}
+                          location={locationsByBattleId.get(entry.battleId)}
+                          onShowLocation={onShowLocation}
+                          progress={progressOf(resourceId)}
+                          resourceEntries={resourceEntries}
+                          visual={resourceVisuals.get(resourceId)}
+                        />
+                      )
+                    )}
+                  </CampaignGroup>
+                )
+              })
+            : resources.map(({ resourceId, entries: resourceEntries }) => (
+                <ResourceCard
+                  key={resourceId}
+                  attemptsLeftByBattle={attemptsLeftByBattle}
+                  attemptsUsedByBattle={attemptsUsedByBattle}
+                  emphasis={emphasis}
+                  onCantRaid={onCantRaid}
+                  onShowLocation={onShowLocation}
+                  goal={combinesShardIdentity ? goal : undefined}
+                  label={resourceLabels.get(resourceId) ?? resourceId}
+                  locationsByBattleId={locationsByBattleId}
+                  progress={progressOf(resourceId)}
+                  resourceEntries={resourceEntries}
+                  resourceId={resourceId}
+                  visual={resourceVisuals.get(resourceId)}
+                />
+              ))}
         </div>
         {footer}
       </section>

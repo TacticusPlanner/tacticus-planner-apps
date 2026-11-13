@@ -19,6 +19,8 @@ import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/to
 import { useDailyRaids } from "../../model/use-daily-raids"
 import { useListPaging } from "../../model/use-list-paging"
 import { ListPagingControls } from "../list-paging-controls"
+import { CampaignGroupedList } from "../campaign-group"
+import type { RaidLocationTarget } from "../raid-location-name"
 import { RaidState } from "../raid-state"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
@@ -54,6 +56,7 @@ export const EventFarmSection = memo(function EventFarmSection({
   quickFilters,
   order = "points",
   onViewChange,
+  onShowLocation,
 }: {
   /** The shown event's raid-point rule. */
   rule: HseRaidRule
@@ -65,6 +68,8 @@ export const EventFarmSection = memo(function EventFarmSection({
   order?: EventFarmOrder
   /** Shows the list controls when set (their "Ignore goals" toggle swaps this list out). */
   onViewChange?: (view: HseListView) => void
+  /** Makes each battle's name open its enemies. */
+  onShowLocation?: (target: RaidLocationTarget) => void
 }) {
   const { t } = useTranslation("dailies")
   const raids = useDailyRaids(projectId, {
@@ -116,14 +121,20 @@ export const EventFarmSection = memo(function EventFarmSection({
         <RaidState state={raids.status} />
       ) : view && farm && farm.rows.length > 0 ? (
         <>
-          <ul className="grid gap-2" data-testid="hse-raids-list">
-            {paging.visible.map((row) => {
+          <CampaignGroupedList
+            battleIdOf={(row) => row.battleId}
+            locationsByBattleId={view.locationsByBattleId}
+            rows={paging.visible}
+            testId="hse-raids-list"
+            renderRow={(row) => {
               const goals = row.goalIds
                 .map((goalId) => view.goalsById.get(goalId))
                 .filter((goal): goal is DailyRaidGoalViewModel => !!goal)
               return (
                 <EventLocationRow
                   key={row.battleId}
+                  battleId={row.battleId}
+                  onShowLocation={onShowLocation}
                   fallbackLabel={row.battleId}
                   location={view.locationsByBattleId.get(row.battleId)}
                   testId={`hse-raid-${row.battleId}`}
@@ -132,9 +143,6 @@ export const EventFarmSection = memo(function EventFarmSection({
                     goals={goals}
                     testId={`hse-raid-${row.battleId}-goals`}
                   />
-                  <Badge className="tabular-nums" variant="outline">
-                    {t("hse.raids.raidCount", { count: row.raids })}
-                  </Badge>
                   <Badge className="tabular-nums" variant="secondary">
                     {pointsIcon ? (
                       <EntityIcon
@@ -144,14 +152,6 @@ export const EventFarmSection = memo(function EventFarmSection({
                       />
                     ) : null}
                     {t("hse.raids.points", { points: row.points })}
-                  </Badge>
-                  <Badge className="tabular-nums" variant="outline">
-                    <EntityIcon
-                      alt=""
-                      className="size-3.5"
-                      src={energyIcon()}
-                    />
-                    {t("hse.raids.energy", { energy: row.energy })}
                   </Badge>
                   {order === "energy" ? (
                     <Badge
@@ -166,7 +166,7 @@ export const EventFarmSection = memo(function EventFarmSection({
                   ) : null}
                   <span className="flex items-center gap-1">
                     <ResourceIconWithTooltip
-                      className="size-6"
+                      className="size-8"
                       label={
                         view.resourceLabels.get(row.resourceId) ??
                         row.resourceId
@@ -180,8 +180,8 @@ export const EventFarmSection = memo(function EventFarmSection({
                   </span>
                 </EventLocationRow>
               )
-            })}
-          </ul>
+            }}
+          />
           <ListPagingControls paging={paging} testId="hse-raids-paging" />
         </>
       ) : emptyReason ? (

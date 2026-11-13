@@ -208,7 +208,8 @@
     "more_one": "Noch {{count}} nötig",
     "more_other": "Noch {{count}} nötig",
     "progress": "{{owned}} von {{target}} im Besitz",
-    "fullyRaided": "Vollständig geraidet"
+    "fullyRaided": "Vollständig geraidet",
+    "battle": "Kampf {{node}}"
   },
   "bonus": {
     "title": "Bonus-Raids",
@@ -596,8 +597,6 @@
       "energy": "{{energy}} Energie",
       "note": "Orte, die Event-Punkte bringen und deine Ziele voranbringen, ausgewählt aus deinem gesamten Plan. Es werden auch dann Orte mit Event-Punkten gewählt, wenn ein günstigerer Ort ohne Punkte existiert; pro Item kann das mehr Energie kosten als bei Heutige Raids.",
       "points": "{{points}} Pkt.",
-      "raidCount_one": "{{count}} Raid",
-      "raidCount_other": "{{count}} Raids",
       "empty": {
         "noGoals": "Du hast keine aktiven Ziele, es gibt also nichts zu farmen.",
         "noEnergy": "Heute reicht die Energie für keinen dieser Orte mehr.",
