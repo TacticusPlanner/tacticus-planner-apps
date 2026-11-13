@@ -291,7 +291,7 @@ describe("Dailies raid pages", () => {
       plan.getAllByRole("heading", { level: 3, name: "Indomitus Elite" })
     ).not.toHaveLength(0)
     const row = within(plan.getAllByTestId(`raid-location-${battle}`)[0]!)
-    expect(row.getByText('schedule.battle:{"node":"1"}')).toBeInTheDocument()
+    expect(row.getByText('schedule.battle:{"node":" 1"}')).toBeInTheDocument()
     expect(row.queryByText("Indomitus")).not.toBeInTheDocument()
   })
 

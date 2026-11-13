@@ -277,7 +277,7 @@ describe("RaidsWidget", () => {
       screen.getByRole("heading", { level: 3, name: "Indomitus Elite" })
     ).toBeInTheDocument()
     const row = screen.getByTestId("home-raid-location-node-1")
-    expect(row).toHaveTextContent('schedule.battle:{"node":"3"}')
+    expect(row).toHaveTextContent('schedule.battle:{"node":" 3"}')
     expect(row).not.toHaveTextContent("Indomitus")
     // The reward's owned/target count, as on Today.
     expect(

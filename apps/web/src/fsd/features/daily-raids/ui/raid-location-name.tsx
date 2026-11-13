@@ -6,6 +6,7 @@ import { CampaignLocationName } from "@/shared/ui"
 
 import { locationNodeNumber } from "../model/campaign-groups"
 import type { DailyRaidLocationViewModel } from "../model/daily-raids.domain"
+import { inDigitSlot } from "../model/digit-slot"
 
 /** The battle a raid location's name opens, with the name it shows (Today, Home). */
 export interface RaidLocationTarget {
@@ -42,7 +43,10 @@ export function RaidLocationName({
   }
   const node = nodeOnly && location ? locationNodeNumber(location) : undefined
   const name = node ? (
-    <span>{t("schedule.battle", { node })}</span>
+    // The number takes a two-digit slot, so "Battle 7" lines up with "Battle 38".
+    <span className="tabular-nums">
+      {t("schedule.battle", { node: inDigitSlot(node) })}
+    </span>
   ) : (
     <CampaignLocationName {...title} />
   )
