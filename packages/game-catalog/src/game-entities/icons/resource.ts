@@ -81,6 +81,17 @@ export function orbAllianceIcon(alliance: string): string {
   )
 }
 
+/** An alliance's ascension orb as the game draws it: the rarity orb with the alliance emblem centred
+ *  on it (the emblem at 4/7 of the orb, as the Goals insights overlay it). */
+export function allianceOrbIcon(rarity: Rarity, alliance: string): LayeredIcon {
+  return {
+    layers: [
+      layer(orbIcon(rarity), [0, 0, 100, 100]),
+      layer(orbAllianceIcon(alliance), [21.4, 21.4, 57.2, 57.2]),
+    ],
+  }
+}
+
 export function energyIcon(): string {
   return datamineAssetUrl(`atlases/ui_icon_resource_stamina_small.webp`)
 }

@@ -8,7 +8,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import type { ShopRewardOffer, ShopShardOffer } from "@workspace/game-catalog"
 import type { BattleId, UpgradeId } from "@workspace/game-domain"
 
-import { shopCurrencyIcon } from "@/features/shop-rewards/@x/goal-create"
+import { shopCurrencyIcon } from "@/features/shops/rewards/@x/goal-create"
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 import {
   shopOfferPerDay,

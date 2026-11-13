@@ -1,0 +1,51 @@
+{
+  "tasks": {
+    "ApplyUpgrades": "[i2p_Plural]Aplica {[TARGET_AMOUNT]} Mejoras a tus <style=\"Character\">personajes</style>[i2p_One]Aplica {[TARGET_AMOUNT]} Mejora a tus <style=\"Character\">personajes</style>",
+    "AttackUnitsInGameModes": "Ataca unidades {[TARGET_AMOUNT]} veces en {[GAME_MODES]}.",
+    "DealAbilityDamage": "Haz {[TARGET_AMOUNT]} de Daño con habilidades.",
+    "DealDamage": "Haz {[TARGET_AMOUNT]} de Daño a enemigos en batalla.",
+    "DefeatWaves": "Derrota {[TARGET_AMOUNT]} oleadas de enemigos en cualquier modo de juego basado en oleadas.",
+    "HealHealth": "Restaura <style=\"Stat_Health\">{[TARGET_AMOUNT]} de Salud</style> en batalla.",
+    "Overkill": "<style=\"Overkill\">Arrasa a </style> {[TARGET_AMOUNT]} enemigos en la batalla.",
+    "PlayBattlesInGameMode": "[i2p_Plural]Juega {[TARGET_AMOUNT]} batallas del modo {[GAME_MODE]}.[i2p_One]Juega {[TARGET_AMOUNT]} batalla del modo {[GAME_MODE]}.",
+    "ScoreCrits": "Asesta {[TARGET_AMOUNT]} <style=\"Stat_CritDamage\">Golpes críticos</style> en la batalla",
+    "SlayEnemies": "Derrota a {[TARGET_AMOUNT]} enemigos",
+    "SlayEnemiesFromHigherElevation": "Derrota a {[TARGET_AMOUNT]} enemigos desde una elevación superior",
+    "SlayEnemiesOfFactionTrait": "Derrota a {[TARGET_AMOUNT]} enemigos {[FACTION_TRAIT]}.",
+    "SlayEnemiesWithFactionTrait": "Derrota a {[TARGET_AMOUNT]} enemigos con unidades {[FACTION_TRAIT]}.",
+    "SlayEnemiesWithMeleeAttacks": "Derrota a {[TARGET_AMOUNT]} enemigos con ataques <style=\"Stat_Melee\">cuerpo a cuerpo</style>.",
+    "SlayEnemiesWithRangedAttacks": "Derrota a {[TARGET_AMOUNT]} enemigos con ataques <style=\"Stat_Range\">a distancia</style>.",
+    "Summon": "Invoca a {[TARGET_AMOUNT]} <style=\"Summon\">unidades</style> en la batalla.",
+    "TraverseHexes": "Recorre {[TARGET_AMOUNT]} hexágonos con tus personajes",
+    "UpgradeAbility": "[i2p_Plural]Mejora {[TARGET_AMOUNT]} habilidades de tus <style=\"Character\">personajes</style> o <style=\"MoW\">máquinas de guerra</style>.[i2p_One]Mejora {[TARGET_AMOUNT]} habilidad de tus <style=\"Character\">personajes</style> o <style=\"MoW\">máquinas de guerra</style>.",
+    "UseAbility": "Usa habilidades {[TARGET_AMOUNT]} veces con personajes.",
+    "UseAbilityWithFactionTrait": "Usa habilidades {[TARGET_AMOUNT]} veces con personajes del rasgo {[FACTION_TRAIT]}."
+  },
+  "chains": {
+    "August2026Week1FreeMissionChain": "La guerra nunca terminará – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "August2026Week1PremiumMissionChain": "Ejércitos inagotables – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "August2026Week2FreeMissionChain": "no hay paz entre las estrellas – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "August2026Week2PremiumMissionChain": "Esta galaxia es nuestra – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "Crescendo01FreeMissionChainOne": "HORA DE CULMINACIÓN – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "Crescendo01PremiumMissionChain": "PORTADORES DE MUERTE – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week1FreeMissionChain": "Baldíos de Fuego y Tierras Muertas – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week1PremiumMissionChain": "Baldíos de Fuego – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week2FreeMissionChain": "Armageddon Secundus – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week2PremiumMissionChain": "Colmena Helsreach – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week3FreeMissionChain": "Armageddon Prime – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week3PremiumMissionChain": "Colmena Tempestora – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "May2026FreeMissionChainOne": "FORJADO EN BATALLA – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "May2026PremiumMissionChain": "NINGUNA AMENAZA TAN GRANDE – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "October2026FreeMissionChain": "COMBATIENTES DE TRINCHERA – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "October2026PremiumMissionChain": "DESPEJADO Y ASEGURADO – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "September2026FreeMissionChainOne": "CENTINELAS DE LA ETERNIDAD – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "September2026PremiumMissionChain": "SUPERIORIDAD ARRAIGADA – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}"
+  },
+  "gameModes": {
+    "AllCampaigns": "cualquier campaña",
+    "LinearHeroEvent": "Misiones de personaje",
+    "PvP": "Arena",
+    "Survival": "Supervivencia",
+    "SyncPVP": "Arena del Torneo"
+  }
+}

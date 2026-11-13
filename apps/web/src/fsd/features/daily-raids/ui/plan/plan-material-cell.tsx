@@ -22,7 +22,7 @@ import {
   planCellAlternatives,
   type PlanCellAlternative,
 } from "../../model/plan-cell-alternatives"
-import { shopCurrencyIcon } from "@/features/shop-rewards/@x/daily-raids"
+import { shopCurrencyIcon } from "@/features/shops/rewards/@x/daily-raids"
 import { shopIcon } from "@workspace/game-catalog"
 import { ManualBattleBadge } from "../manual-battle"
 import { UnitIcon } from "../resource-card"

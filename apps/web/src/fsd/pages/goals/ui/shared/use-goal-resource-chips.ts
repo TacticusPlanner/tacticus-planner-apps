@@ -15,7 +15,7 @@ import { rarityOrder, type Rarity } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 import type { ResourceNeed } from "@/features/goal-farming"
-import { shopCurrencyIcon } from "@/features/shop-rewards"
+import { shopCurrencyIcon } from "@/features/shops/rewards"
 import { sumPools } from "./goal-resource-totals"
 
 const EMPTY_AVAILABLE = {

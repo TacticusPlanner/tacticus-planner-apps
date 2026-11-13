@@ -1,7 +1,7 @@
 import { useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
 
-import { useShopRecommendations } from "@/features/shop-recommendations"
+import { useShopRecommendations } from "@/features/shops/recommendations"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { ShopList } from "./shops/shop-list"
 import { ShopsState } from "./shops/shops-state"

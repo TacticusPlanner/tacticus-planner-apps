@@ -24,6 +24,8 @@ import {
   getOnslaughtRewards,
   getShops,
   getShopsMap,
+  getEventShops,
+  getEventShop,
   getUnlockShardCosts,
   getUnlockShardCostsMap,
   getUnitPower,
@@ -135,6 +137,29 @@ describe("named dataset queries", () => {
     expect(await getShops()).toHaveLength(2)
     const byId = await getShopsMap()
     expect(byId.get("rogue-trader")?.id).toBe("rogue-trader")
+  })
+
+  it("getEventShops orders by start and getEventShop reads one by id", async () => {
+    const event = (id: string, startUtc: string) => ({
+      id,
+      startUtc,
+      weeks: [],
+    })
+    await replaceGameCatalogDataset(
+      "event-shops",
+      [
+        event("october-2026", "2026-10-26T00:00:00+00:00"),
+        event("june-2026", "2026-06-22T00:00:00+00:00"),
+      ],
+      metadata("event-shops")
+    )
+
+    expect((await getEventShops()).map((shop) => shop.id)).toEqual([
+      "june-2026",
+      "october-2026",
+    ])
+    expect((await getEventShop("october-2026"))?.id).toBe("october-2026")
+    expect(await getEventShop("may-2025")).toBeUndefined()
   })
 
   it("getUpgrades returns stored records", async () => {

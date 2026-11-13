@@ -17,6 +17,8 @@
     "hreDescription": "Hero Release Event: track your missions and raid for them with the least energy",
     "quest": "Quests",
     "questDescription": "Quest Event: track your score per battle and see each battle's board, enemies and drop",
+    "eventShop": "Event shop",
+    "eventShopDescription": "Seasonal event shop: plan what to buy each day, track purchases and see how the shop covers your goals",
     "guild-raids": "Guild Raids",
     "guild-raidsDescription": "See your guild's current Guild Raid status and your personal raid resources."
   },
@@ -474,6 +476,62 @@
         "estimate": {
           "title": "Clear estimate",
           "content": "Whether your team beats the battle's power at the tier cap, with and without the bonus objectives. Rows show the verdict; the summary projects your final points."
+        }
+      }
+    },
+    "eventShop": {
+      "steps": {
+        "picker": {
+          "title": "Pick an event",
+          "content": "Choose which event shop to plan. The running event opens by default; ended events stay usable for recording purchases."
+        },
+        "calendar": {
+          "title": "Pick a day",
+          "content": "Each day lists what you planned, coloured by state: bought, to buy or needs review. Click a day to see its offers."
+        },
+        "chips": {
+          "title": "Pick a day",
+          "content": "The dot under each day shows what you planned: bought, to buy or needs review."
+        },
+        "slots": {
+          "title": "The day's offers",
+          "content": "Each slot shows the offer you get for your roster, with its pack, price and daily cap. Add it to your cart and mark it bought once you buy it in game."
+        },
+        "tiles": {
+          "title": "The day's offers",
+          "content": "Tap a slot to plan packs, mark them bought or remove them."
+        },
+        "tick": {
+          "title": "Mark it bought",
+          "content": "The box in the corner marks all planned packs bought. Tap it again to undo."
+        },
+        "sideColumn": {
+          "title": "Shopping list",
+          "content": "What is still to buy, what you bought and what you missed. Past days you didn't mark bought wait in Needs review."
+        },
+        "listButton": {
+          "title": "Shopping list",
+          "content": "Open your shopping list and Coverage. The button shows what is still to buy and how many items need review."
+        },
+        "planTab": {
+          "title": "Plan",
+          "content": "Your shopping list and Coverage. The badge counts items that need review."
+        },
+        "stillToBuy": {
+          "title": "Still to buy",
+          "content": "What your cart still costs. Tap to open your plan."
+        },
+        "coverage": {
+          "title": "Coverage",
+          "content": "How your plan covers your goals' needs, and what buying the rest would cost in event currency."
+        },
+        "rewards": {
+          "title": "Rewards",
+          "content": "The event's milestones, progress chests and missions, for reference."
+        },
+        "search": {
+          "title": "Search the shop",
+          "content": "Type any reward, a unit, an upgrade or orbs, to see every day the event sells it, then jump to that day."
         }
       }
     }

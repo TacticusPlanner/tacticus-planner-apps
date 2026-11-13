@@ -37,6 +37,13 @@ import type {
   shopSchema,
   shopSlotSchema,
   shopVariantSchema,
+  eventShopSchema,
+  eventShopWeekSchema,
+  eventShopMissionSchema,
+  eventShopMissionChainSchema,
+  eventShopRewardTierSchema,
+  eventShopRewardRangeSchema,
+  eventShopTaskSchema,
   upgradeViewSchema,
 } from "./schemas"
 
@@ -84,6 +91,19 @@ export type GameCatalogEventsCalendarEntry = z.infer<
 export type GameCatalogShop = z.infer<typeof shopSchema>
 export type GameCatalogShopSlot = z.infer<typeof shopSlotSchema>
 export type GameCatalogShopVariant = z.infer<typeof shopVariantSchema>
+export type GameCatalogEventShop = z.infer<typeof eventShopSchema>
+export type GameCatalogEventShopWeek = z.infer<typeof eventShopWeekSchema>
+export type GameCatalogEventShopMission = z.infer<typeof eventShopMissionSchema>
+export type GameCatalogEventShopMissionChain = z.infer<
+  typeof eventShopMissionChainSchema
+>
+export type GameCatalogEventShopRewardTier = z.infer<
+  typeof eventShopRewardTierSchema
+>
+export type GameCatalogEventShopRewardRange = z.infer<
+  typeof eventShopRewardRangeSchema
+>
+export type GameCatalogEventShopTask = z.infer<typeof eventShopTaskSchema>
 export type GameCatalogRaidBosses = z.infer<typeof raidBossesPayloadSchema>
 export type GameCatalogRaidBoss = z.infer<typeof raidBossSchema>
 export type GameCatalogRaidBossSeason = z.infer<typeof raidBossSeasonSchema>

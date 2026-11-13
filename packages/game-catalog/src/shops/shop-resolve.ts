@@ -6,6 +6,7 @@ import {
 
 import type { GameCatalogShop, GameCatalogShopVariant } from "../record-types"
 import type { ShopDayOfWeek } from "../schemas/shops"
+import { groupVariantsByRewardType } from "./shop-offers"
 import {
   bpSeasonStartMs,
   crusadeSlotHeroShardReward,
@@ -301,32 +302,7 @@ function groupSlotsByRewardType(
     )
     if (matching.length === 0) continue
 
-    const byRewardType = new Map<string, GameCatalogShopVariant[]>()
-    for (const variant of matching) {
-      const bucket = byRewardType.get(variant.reward.type)
-      if (bucket) {
-        bucket.push(variant)
-      } else {
-        byRewardType.set(variant.reward.type, [variant])
-      }
-    }
-
-    // If all matching variants resolve to the same reward type, the slot is deterministic.
-    const isGuaranteed = byRewardType.size === 1
-
-    const offers: ResolvedShopOffer[] = []
-    for (const [rewardType, variants] of byRewardType) {
-      const first = variants[0]!
-      offers.push({
-        rewardType,
-        unitId: first.unitId,
-        rewardQty: first.reward.qty,
-        cost: { currency: first.cost.currency, amount: first.cost.amount },
-        maxPerDay: first.maxPurchasesPerDay,
-        freeOfferType: first.freeOffer?.type,
-        isGuaranteed,
-      })
-    }
+    const offers = groupVariantsByRewardType(matching)
     slots.push({ offers })
   }
 

@@ -7,6 +7,8 @@
 //   public/locales/{en,de,es,fr}/traits.json            trait id            -> name
 //   public/locales/{en,de,es,fr}/factions.json          faction id          -> name
 //   public/locales/{en,de,es,fr}/mythicQuestTasks.json  task loca key       -> template
+//   public/locales/{en,de,es,fr}/eventMissions.json     seasonal event mission task templates, chain names
+//                                                        and game modes ({ tasks, chains, gameModes })
 //   public/locales/{en,de,es,fr}/unitSearchNames.json   character/MoW id    -> other names to search by
 //
 // Source: the pinned data-mines commit (datamine/REF, see scripts/datamine.mjs): the game config names
@@ -59,6 +61,40 @@ function mythicTaskKeys(node, keys = new Set()) {
   return keys
 }
 
+/** The seasonal event quest groups (daily, free and premium chains) — the missions of event shops. */
+const SEASONAL_QUEST_GROUPS = [
+  "seasonal_daily",
+  "seasonal_seasonal",
+  "seasonal_seasonal_premium",
+]
+const seasonalQuests = SEASONAL_QUEST_GROUPS.flatMap(
+  (group) => config("quests/groups.json")[group]?.quests ?? []
+)
+const seasonalTasks = seasonalQuests.flatMap((quest) => quest.tasks ?? [])
+/** Task name -> its loca key (`TraverseHexes` -> `TraverseHexes_description`). */
+const seasonalTaskKeys = new Map(
+  seasonalTasks.map((task) => [task.name, task.locaKey])
+)
+/** Chain name keys of the free and premium chains (`October2026FreeMissionChain`). */
+const seasonalChainKeys = [
+  ...new Set(
+    seasonalQuests
+      .filter((quest) => quest.category === "seasonal" && quest.locaKey)
+      .map((quest) => quest.locaKey)
+  ),
+]
+/** Game modes the seasonal tasks name (`gameMode` / `gameModes` parameters). */
+const seasonalGameModes = [
+  ...new Set(
+    seasonalTasks.flatMap((task) => {
+      const parameters = task.taskParameters ?? {}
+      return [parameters.gameMode, ...(parameters.gameModes ?? [])].filter(
+        Boolean
+      )
+    })
+  ),
+]
+
 /** Ids named by `<prefix><id><suffix>` English keys. */
 const idsOfKeys = (prefix, suffix) =>
   Object.keys(languages.en)
@@ -103,6 +139,19 @@ const NAMESPACES = {
     ids: [...mythicTaskKeys(config("quests/groups.json"))],
     key: (id) => `Quests/${id}`,
   },
+  // Folded into the nested `eventMissions` namespace below; never written on their own.
+  eventMissionTasks: {
+    ids: [...seasonalTaskKeys.keys()],
+    key: (id) => `Quests/${seasonalTaskKeys.get(id)}`,
+  },
+  eventMissionChains: {
+    ids: seasonalChainKeys,
+    key: (id) => `Quests/${id}`,
+  },
+  eventMissionGameModes: {
+    ids: seasonalGameModes,
+    key: (id) => `Quests/Quest_GameMode_${id}`,
+  },
 }
 
 // ---- resolve -----------------------------------------------------------------------------------------
@@ -144,6 +193,25 @@ if (unnamed.length > 0) {
   for (const id of unnamed) console.log(`  NO TERM   ${id}`)
   process.exit(1)
 }
+
+// ---- event missions ----------------------------------------------------------------------------------
+
+// One nested namespace for the event shop's Missions: `tasks.<taskName>` and `chains.<chainKey>` are the
+// game's templates ({[TARGET_AMOUNT]}, {[GAME_MODE]}, {[CHAIN_POSITION]}… and <style> tags kept; the page
+// fills and strips them), `gameModes.<mode>` the names {[GAME_MODE]} takes.
+tables.eventMissions = Object.fromEntries(
+  LOCALES.map((locale) => [
+    locale,
+    {
+      tasks: tables.eventMissionTasks[locale],
+      chains: tables.eventMissionChains[locale],
+      gameModes: tables.eventMissionGameModes[locale],
+    },
+  ])
+)
+delete tables.eventMissionTasks
+delete tables.eventMissionChains
+delete tables.eventMissionGameModes
 
 // ---- search names ------------------------------------------------------------------------------------
 

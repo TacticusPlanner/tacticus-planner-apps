@@ -29,6 +29,7 @@ import { onslaughtRewardSchema } from "./onslaught"
 import { ascensionCostSchema, unlockShardCostSchema } from "./progression-costs"
 import { raidBossesPayloadSchema } from "./raid-bosses"
 import { questCrateSchema, questEventSchema } from "./quests"
+import { eventShopSchema } from "./event-shops"
 import { shopSchema } from "./shops"
 import { unitPowerSchema } from "./unit-power"
 import { upgradeViewSchema } from "./upgrade"
@@ -56,6 +57,7 @@ export const datasetPayloadSchemas = {
   // The one exception to "every payload is a plain array" — see events.ts.
   "events-calendar": eventsCalendarPayloadSchema,
   shops: z.array(shopSchema),
+  "event-shops": z.array(eventShopSchema),
   // The other non-array payload — an object stored as a single row (see raid-bosses.ts).
   "raid-bosses": raidBossesPayloadSchema,
   // The third non-array payload — another complete object stored as one row.
@@ -97,6 +99,7 @@ export type GameCatalogRecordByKey = {
   // events.ts and game-catalog.mapper.ts's `byCalendarDate`.
   "events-calendar": z.infer<typeof eventsCalendarRowSchema>
   shops: z.infer<typeof shopSchema>
+  "event-shops": z.infer<typeof eventShopSchema>
   // The whole payload object is one stored row (see game-catalog.mapper.ts's `asSingleRow`).
   "raid-bosses": z.infer<typeof raidBossesPayloadSchema>
   "guild-raid-meta": z.infer<typeof guildRaidMetaPayloadSchema>

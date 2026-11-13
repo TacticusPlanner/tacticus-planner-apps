@@ -59,7 +59,7 @@ export interface paths {
     put?: never
     /**
      * Replaces this staging account's planner data with a copy from production.
-     * @description Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, personal roster snapshots, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
+     * @description Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, event shop plans, personal roster snapshots, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
      */
     post: operations["TacticusPlannerApiFeaturesStagingTransferImportFromProductionEndpoint"]
     delete?: never
@@ -123,6 +123,54 @@ export interface paths {
      */
     post: operations["TacticusPlannerApiFeaturesV1ImportImportV1ProfileEndpoint"]
     delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/event-shop-plans": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Lists every stored event shop plan of the caller's profile.
+     * @description Ordered by eventId (ordinal). Events never written are not listed; plans whose event left the catalog are included.
+     */
+    get: operations["TacticusPlannerApiFeaturesEventShopPlansListEventShopPlansEndpoint"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/event-shop-plans/{eventId}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Reads the caller's plan for an event shop.
+     * @description A missing plan reads as revision 0 with no entries, whether or not the event is in the catalog; nothing is created. A stored plan stays readable after its event leaves the catalog.
+     */
+    get: operations["TacticusPlannerApiFeaturesEventShopPlansGetEventShopPlanEndpoint"]
+    /**
+     * Replaces the cart of the caller's event shop plan, creating the plan if needed.
+     * @description Each entry must name a week, day and slot of the current catalog event, a reward that slot offers that day, a quantity within that offer's per-day cap and a purchased quantity up to it. Lock ids and power levels are not checked. A cart equal to the stored one succeeds without bumping the revision.
+     */
+    put: operations["TacticusPlannerApiFeaturesEventShopPlansPutEventShopPlanEndpoint"]
+    post?: never
+    /**
+     * Deletes the caller's plan for an event shop.
+     * @description expectedRevision is required; 0 with no stored plan succeeds. Works whether or not the event is still in the catalog.
+     */
+    delete: operations["TacticusPlannerApiFeaturesEventShopPlansDeleteEventShopPlanEndpoint"]
     options?: never
     head?: never
     patch?: never
@@ -412,6 +460,40 @@ export interface paths {
     }
     /** Gets game catalog event definitions. */
     get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEventDefinitionsEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/event-shops": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the seasonal event shops. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEventShopsEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/event-shops/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the seasonal event shops. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEventShopsEndpoint2"]
     put?: never
     post?: never
     delete?: never
@@ -2121,6 +2203,42 @@ export interface components {
         [key: string]: string[]
       }
     }
+    EventShopCartEntryRequest: {
+      /** Format: int32 */
+      week: number
+      day: null | string
+      /** Format: int32 */
+      slotIndex: number
+      rewardType: null | string
+      /** Format: int32 */
+      quantity: number
+      /** Format: int32 */
+      purchasedQuantity: number
+      draftAlliance: null | string
+    }
+    EventShopCartEntryResponse: {
+      /** Format: int32 */
+      week: number
+      day: string
+      /** Format: int32 */
+      slotIndex: number
+      rewardType: string
+      /** Format: int32 */
+      quantity: number
+      /** Format: int32 */
+      purchasedQuantity: number
+      draftAlliance: null | string
+    }
+    EventShopPlanListResponse: {
+      plans: components["schemas"]["IReadOnlyListOfEventShopPlanResponse"]
+    }
+    EventShopPlanResponse: {
+      eventId: string
+      /** Format: int64 */
+      revision: number
+      catalogVersion: null | string
+      entries: components["schemas"]["IReadOnlyListOfEventShopCartEntryResponse"]
+    }
     /** @enum {string} */
     FarmingStrategy:
       "TotalUpgrades" | "EveryStep" | "Milestones" | "MajorMilestones"
@@ -2190,6 +2308,7 @@ export interface components {
       battleIds: components["schemas"]["IReadOnlyListOfString"]
       /** Format: int32 */
       number: number
+      requiredCampaignGroupId: null | string
     }
     GameCatalogCampaignDetailedEnemy: {
       id: string
@@ -2409,6 +2528,16 @@ export interface components {
       data:
         | null
         | components["schemas"]["IReadOnlyListOfGameCatalogEventDefinition"]
+    }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEventShopView: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data:
+        null | components["schemas"]["IReadOnlyListOfGameCatalogEventShopView"]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogFaction: {
       version: string
@@ -2662,6 +2791,55 @@ export interface components {
         | null
         | components["schemas"]["IReadOnlyDictionaryOfStringAndJsonElement"]
     }
+    GameCatalogEventShopIncomeView: {
+      /** Format: int32 */
+      free: number
+      /** Format: int32 */
+      bonusShipment: number
+    }
+    GameCatalogEventShopMissionChainView: {
+      id: string
+      missions: components["schemas"]["IReadOnlyListOfGameCatalogEventShopMissionView"]
+    }
+    GameCatalogEventShopMissionsView: {
+      daily: components["schemas"]["IReadOnlyListOfGameCatalogEventShopMissionView"]
+      free: components["schemas"]["IReadOnlyListOfGameCatalogEventShopMissionChainView"]
+      premium: components["schemas"]["IReadOnlyListOfGameCatalogEventShopMissionChainView"]
+    }
+    GameCatalogEventShopMissionView: {
+      id: string
+      rewards: components["schemas"]["IReadOnlyListOfGameCatalogRewardRangeView"]
+      tasks: components["schemas"]["IReadOnlyListOfGameCatalogEventShopTaskView"]
+    }
+    GameCatalogEventShopTaskView: {
+      taskId: string
+      /** Format: int32 */
+      target: number
+      parameters:
+        | null
+        | components["schemas"]["IReadOnlyDictionaryOfStringAndJsonElement"]
+    }
+    GameCatalogEventShopView: {
+      id: string
+      eventKey: string
+      definitionId: string
+      currency: string
+      /** Format: date-time */
+      startUtc: string
+      /** Format: int32 */
+      dayCount: number
+      milestones: components["schemas"]["IReadOnlyListOfGameCatalogRewardTierView"]
+      weeks: components["schemas"]["IReadOnlyListOfGameCatalogEventShopWeekView"]
+    }
+    GameCatalogEventShopWeekView: {
+      /** Format: int32 */
+      week: number
+      estimatedWeeklyIncome:
+        null | components["schemas"]["GameCatalogEventShopIncomeView"]
+      slots: components["schemas"]["IReadOnlyListOfGameCatalogShopSlotView"]
+      progressChests: components["schemas"]["IReadOnlyListOfGameCatalogRewardTierView"]
+      missions: components["schemas"]["GameCatalogEventShopMissionsView"]
+    }
     GameCatalogFaction: {
       id: string
       alliance: string
@@ -2715,6 +2893,8 @@ export interface components {
       battleFatigueFleeChanceOverkill: number
       traitVariables: components["schemas"]["IReadOnlyDictionaryOfStringAndJsonElement"]
       staminaShopTiers: components["schemas"]["IReadOnlyListOfGameCatalogStaminaShopTier"]
+      /** Format: int32 */
+      eliteCampaignMinPowerLevel: number
     }
     GameCatalogGuildRaidMetaBossView: {
       bossUnitSetId: string
@@ -3463,6 +3643,18 @@ export interface components {
       /** Format: double */
       midpoint?: number
     }
+    GameCatalogRewardRangeView: {
+      type: string
+      /** Format: int32 */
+      min: number
+      /** Format: int32 */
+      max: number
+    }
+    GameCatalogRewardTierView: {
+      /** Format: int32 */
+      requiredProgress: number
+      rewards: components["schemas"]["IReadOnlyListOfGameCatalogRewardRangeView"]
+    }
     GameCatalogShopCostView: {
       currency: string
       /** Format: double */
@@ -3741,6 +3933,8 @@ export interface components {
       legendaryEventRunRecords: number
       /** Format: int32 */
       personalRosterSnapshots: number
+      /** Format: int32 */
+      eventShopPlans: number
       settings: boolean
       overrides: boolean
     }
@@ -3839,6 +4033,9 @@ export interface components {
     IReadOnlyListOfBattleProgressOverrideResponse: components["schemas"]["BattleProgressOverrideResponse"][]
     IReadOnlyListOfCampaignEventProgressOverrideRequest: components["schemas"]["CampaignEventProgressOverrideRequest"][]
     IReadOnlyListOfCampaignEventProgressOverrideResponse: components["schemas"]["CampaignEventProgressOverrideResponse"][]
+    IReadOnlyListOfEventShopCartEntryRequest: components["schemas"]["EventShopCartEntryRequest"][]
+    IReadOnlyListOfEventShopCartEntryResponse: components["schemas"]["EventShopCartEntryResponse"][]
+    IReadOnlyListOfEventShopPlanResponse: components["schemas"]["EventShopPlanResponse"][]
     IReadOnlyListOfGameCatalogAbilityPowerModifier: components["schemas"]["GameCatalogAbilityPowerModifier"][]
     IReadOnlyListOfGameCatalogAmountByRarity: components["schemas"]["GameCatalogAmountByRarity"][]
     IReadOnlyListOfGameCatalogAscensionCostView: components["schemas"]["GameCatalogAscensionCostView"][]
@@ -3860,6 +4057,11 @@ export interface components {
     IReadOnlyListOfGameCatalogEquipmentView: components["schemas"]["GameCatalogEquipmentView"][]
     IReadOnlyListOfGameCatalogEventDefinition: components["schemas"]["GameCatalogEventDefinition"][]
     IReadOnlyListOfGameCatalogEventsCalendarEntry: components["schemas"]["GameCatalogEventsCalendarEntry"][]
+    IReadOnlyListOfGameCatalogEventShopMissionChainView: components["schemas"]["GameCatalogEventShopMissionChainView"][]
+    IReadOnlyListOfGameCatalogEventShopMissionView: components["schemas"]["GameCatalogEventShopMissionView"][]
+    IReadOnlyListOfGameCatalogEventShopTaskView: components["schemas"]["GameCatalogEventShopTaskView"][]
+    IReadOnlyListOfGameCatalogEventShopView: components["schemas"]["GameCatalogEventShopView"][]
+    IReadOnlyListOfGameCatalogEventShopWeekView: components["schemas"]["GameCatalogEventShopWeekView"][]
     IReadOnlyListOfGameCatalogFaction: components["schemas"]["GameCatalogFaction"][]
     IReadOnlyListOfGameCatalogFarmLocation: components["schemas"]["GameCatalogFarmLocation"][]
     IReadOnlyListOfGameCatalogGlobalValues: components["schemas"]["GameCatalogGlobalValues"][]
@@ -3926,6 +4128,8 @@ export interface components {
     IReadOnlyListOfGameCatalogRaidBossView: components["schemas"]["GameCatalogRaidBossView"][]
     IReadOnlyListOfGameCatalogRaidBossWeaponView: components["schemas"]["GameCatalogRaidBossWeaponView"][]
     IReadOnlyListOfGameCatalogRewardRange: components["schemas"]["GameCatalogRewardRange"][]
+    IReadOnlyListOfGameCatalogRewardRangeView: components["schemas"]["GameCatalogRewardRangeView"][]
+    IReadOnlyListOfGameCatalogRewardTierView: components["schemas"]["GameCatalogRewardTierView"][]
     IReadOnlyListOfGameCatalogShopSlotView: components["schemas"]["GameCatalogShopSlotView"][]
     IReadOnlyListOfGameCatalogShopVariantView: components["schemas"]["GameCatalogShopVariantView"][]
     IReadOnlyListOfGameCatalogShopView: components["schemas"]["GameCatalogShopView"][]
@@ -4236,6 +4440,12 @@ export interface components {
     }
     /** @enum {string} */
     ProjectTargetKind: "legendaryEvent"
+    PutEventShopPlanRequest: {
+      /** Format: int64 */
+      expectedRevision: number
+      entries:
+        null | components["schemas"]["IReadOnlyListOfEventShopCartEntryRequest"]
+    }
     RankEndTargetRequest: {
       /** Format: int32 */
       end: number
@@ -5050,6 +5260,240 @@ export interface operations {
       }
     }
   }
+  TacticusPlannerApiFeaturesEventShopPlansListEventShopPlansEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["EventShopPlanListResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesEventShopPlansGetEventShopPlanEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        eventId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["EventShopPlanResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesEventShopPlansPutEventShopPlanEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        eventId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PutEventShopPlanRequest"]
+      }
+    }
+    responses: {
+      /** @description The whole plan after the write. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["EventShopPlanResponse"]
+        }
+      }
+      /** @description An entry fails validation; the error names the field. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The event is not in the current catalog, or the caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description expectedRevision is stale or another write won (issueCode eventShopPlanStale); current is the plan as it stands. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesEventShopPlansDeleteEventShopPlanEndpoint: {
+    parameters: {
+      query?: {
+        expectedRevision?: null | number
+      }
+      header?: never
+      path: {
+        eventId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The plan is gone. */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description expectedRevision is missing. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description expectedRevision is stale or another write won (issueCode eventShopPlanStale); current is the plan as it stands. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
   TacticusPlannerApiFeaturesFeatureFlagsGetFeatureFlagsEndpoint: {
     parameters: {
       query?: never
@@ -5786,6 +6230,98 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEventDefinition"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEventShopsEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per dated seasonal event shop (start, day count, per-week slots with the shops variant projection, milestone and progress-chest ladders, missions, optional weekly income) — ids and structured values only, no display text or icons. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEventShopView"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogEventShopsEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per dated seasonal event shop (start, day count, per-week slots with the shops variant projection, milestone and progress-chest ladders, missions, optional weekly income) — ids and structured values only, no display text or icons. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEventShopView"]
         }
       }
       /** @description The dataset has not changed. */
