@@ -146,7 +146,6 @@ export function PacksSlider({
         />
         {large ? null : (
           <Button
-            data-testid={`event-shop-max-${slotIndex}`}
             disabled={disabled || atMax}
             onClick={max}
             size="sm"
@@ -161,7 +160,6 @@ export function PacksSlider({
           <span>1</span>
           <button
             className="underline-offset-2 hover:underline disabled:no-underline"
-            data-testid={`event-shop-max-${slotIndex}`}
             disabled={disabled || atMax}
             onClick={max}
             type="button"
@@ -314,7 +312,6 @@ function CardCartRow({
           <Button
             aria-label={t("slot.remove")}
             className={DESTRUCTIVE_TEXT}
-            data-testid={`event-shop-remove-${view.ref.slotIndex}`}
             disabled={disabled}
             onClick={() => controller.remove(view.ref)}
             size="icon-sm"
@@ -407,7 +404,6 @@ export function CartControls({
       <div className="grid">
         <Button
           className={DESTRUCTIVE_TEXT}
-          data-testid={`event-shop-remove-${view.ref.slotIndex}`}
           disabled={disabled}
           onClick={() => controller.remove(view.ref)}
           variant="ghost"

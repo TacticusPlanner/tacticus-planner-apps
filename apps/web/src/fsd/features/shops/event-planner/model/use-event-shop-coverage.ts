@@ -77,10 +77,12 @@ export function useEventShopCoverage({
   const xpRead = useCatalogDataset("progression-rules", toXpPerBook)
   const xpPerBook = xpRead.status === "ready" ? xpRead.data : undefined
 
+  // The ready state is a fresh object each render; its aggregate is stable while the goals are.
+  const shopNeeds = needs.status === "ready" ? needs.needs : null
   const rows = useMemo(() => {
-    if (needs.status !== "ready" || insights.loading || !xpPerBook) return null
+    if (!shopNeeds || insights.loading || !xpPerBook) return null
     return buildCoverage({
-      needs: toCoverageNeeds(needs.needs, insights.result.missing),
+      needs: toCoverageNeeds(shopNeeds, insights.result.missing),
       entries,
       todayIndex,
       dayCount: event.dayCount,
@@ -95,7 +97,7 @@ export function useEventShopCoverage({
       xpPerBook,
     })
   }, [
-    needs,
+    shopNeeds,
     insights.loading,
     insights.result.missing,
     xpPerBook,

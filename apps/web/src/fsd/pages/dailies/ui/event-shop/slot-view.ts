@@ -1,4 +1,5 @@
 import type {
+  GameCatalogShopVariant,
   ResolvedEventSlot,
   ResolvedShopOffer,
   ShopLockContext,
@@ -53,11 +54,19 @@ export function slotViews(controller: EventShopController): SlotView[] {
       slotIndex: slot.slotIndex,
     }
     const entry = entryByKey.get(entryKey(ref)) ?? null
+    // A planned reward the roster no longer resolves to (e.g. shards after the unit hit max legendary)
+    // stays on the card, so the card shows what its controls act on.
+    const plannedVariants =
+      entry &&
+      !options.some((option) => option.rewardType === entry.entry.rewardType)
+        ? plannedRewardVariants(controller, ref, entry.entry.rewardType)
+        : []
     const offer =
       options.find((option) => option.rewardType === entry?.entry.rewardType) ??
+      offerOf(plannedVariants) ??
       options[0]!
     const freeQty =
-      slot.variants.find(
+      [...slot.variants, ...plannedVariants].find(
         (variant) =>
           variant.reward.type === offer.rewardType && variant.freeOffer
       )?.freeOffer?.qty ?? 0
@@ -84,6 +93,39 @@ export function slotViews(controller: EventShopController): SlotView[] {
       },
     ]
   })
+}
+
+/** The slot's variants of `rewardType` sold on the entry's day, locks ignored (as the cart resolves them). */
+function plannedRewardVariants(
+  controller: EventShopController,
+  ref: EntryRef,
+  rewardType: string
+): GameCatalogShopVariant[] {
+  return (
+    controller.event.weeks[ref.week - 1]?.slots[ref.slotIndex]?.variants ?? []
+  ).filter(
+    (variant) =>
+      variant.reward.type === rewardType && variant.days.includes(ref.day)
+  )
+}
+
+/** One offer from one reward's variants; the largest cap, as the cart takes it. */
+function offerOf(
+  variants: readonly GameCatalogShopVariant[]
+): ResolvedShopOffer | null {
+  const first = variants[0]
+  if (!first) return null
+  return {
+    rewardType: first.reward.type,
+    unitId: first.unitId,
+    rewardQty: first.reward.qty,
+    cost: { currency: first.cost.currency, amount: first.cost.amount },
+    maxPerDay: Math.max(
+      ...variants.map((variant) => variant.maxPurchasesPerDay)
+    ),
+    freeOfferType: first.freeOffer?.type,
+    isGuaranteed: false,
+  }
 }
 
 /** The slot's subtitle ("Your tier: High", "Then mythic shards…", "Depends on your tier"). */

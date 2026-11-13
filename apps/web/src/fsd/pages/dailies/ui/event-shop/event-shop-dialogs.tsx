@@ -92,7 +92,6 @@ function AllianceDialog({
           {DRAFT_ALLIANCES.map((alliance) => (
             <Button
               key={alliance}
-              data-testid={`event-shop-alliance-${alliance}`}
               onClick={() => {
                 if (dialog.change) {
                   controller.closeDialog()

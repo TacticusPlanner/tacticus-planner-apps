@@ -103,7 +103,6 @@ function SearchInput({
         aria-label={t("search.title")}
         autoComplete="off"
         className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
-        data-testid="event-shop-search-input"
         onChange={(event) => onQueryChange(event.target.value)}
         onFocus={onFocus}
         onKeyDown={onKeyDown}

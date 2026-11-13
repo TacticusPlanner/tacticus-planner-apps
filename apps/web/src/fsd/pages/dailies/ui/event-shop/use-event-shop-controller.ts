@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
 import {
+  defaultEventDay,
   eventDay,
   eventDayIndex,
   eventStatus,
@@ -119,8 +120,7 @@ export function useEventShopController(
   const [dialog, setDialog] = useState<EventShopDialog | null>(null)
   const todayIndex = eventDayIndex(event, now)
   const status = eventStatus(event, now)
-  const selected =
-    dayIndex ?? Math.min(Math.max(todayIndex, 0), event.dayCount - 1)
+  const selected = dayIndex ?? defaultEventDay(event, now)
   const selectedDay = eventDay(event, selected)
 
   const lockContext = roster.lockContext ?? undefined

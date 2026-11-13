@@ -100,6 +100,8 @@ export function resolveEventDaySlots(
   const day = eventDay(event, dayIndex)
   const week = event.weeks[day.week - 1]
   if (!week) return []
+  // A future day's time-bound locks (season starts, rotations) resolve as of that day, not today.
+  const lockTime = Math.max(now, Date.parse(event.startUtc) + dayIndex * DAY_MS)
 
   const matches = (variant: GameCatalogShopVariant) =>
     variant.days.includes(day.dow) &&
@@ -109,7 +111,7 @@ export function resolveEventDaySlots(
         (variant.maxPowerLevel === undefined ||
           powerLevel <= variant.maxPowerLevel))) &&
     (lockContext === undefined ||
-      resolveEventLockId(variant.lockId, lockContext, now))
+      resolveEventLockId(variant.lockId, lockContext, lockTime))
 
   return week.slots.flatMap((slot, slotIndex) => {
     const variants = slot.variants.filter(matches)

@@ -73,16 +73,28 @@ export function useShopNeeds(projectId: string | undefined): ShopNeedsState {
   // The goals list carries every goal in full and its `projectIds`, so a project scope is a filter of
   // the global plan — no membership or per-goal read.
   const globalPlan = useGlobalGoalPlan()
-  const members =
-    globalPlan.loading || globalPlan.isError
-      ? undefined
-      : projectId
-        ? globalPlan.entries.filter((entry) =>
-            entry.goal.projectIds.includes(projectId)
-          )
-        : globalPlan.entries
-  const activeMembers = activeProjectMembers(members ?? [])
-  const details = activeMembers.map((member) => member.goal)
+  const planReady = !globalPlan.loading && !globalPlan.isError
+  // Memoised so the aggregation below (and consumers memoising on its result) reruns only when the
+  // goals change, not on every render.
+  const members = useMemo(
+    () =>
+      !planReady
+        ? undefined
+        : projectId
+          ? globalPlan.entries.filter((entry) =>
+              entry.goal.projectIds.includes(projectId)
+            )
+          : globalPlan.entries,
+    [planReady, projectId, globalPlan.entries]
+  )
+  const activeMembers = useMemo(
+    () => activeProjectMembers(members ?? []),
+    [members]
+  )
+  const details = useMemo(
+    () => activeMembers.map((member) => member.goal),
+    [activeMembers]
+  )
 
   // Catalog and player data from the shared read cache; whole chunks by unit id, so a goal change
   // reads nothing.

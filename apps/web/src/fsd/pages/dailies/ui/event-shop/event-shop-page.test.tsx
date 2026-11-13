@@ -271,6 +271,15 @@ describe("desktop", () => {
     expect(shards).toHaveTextContent("slot.thenMythic")
   })
 
+  it("keeps a planned reward on its card after the roster resolves the slot to another", () => {
+    // Yarrick at 3 stars resolves slot 0 to shards; the plan still holds mythic shards from before.
+    storedPlan = plan([cartEntry("THU", 0, "mythicShards_astraYarrick", 1)])
+    renderPage("/dailies/event-shop/october-2026")
+    const card = screen.getByTestId("event-shop-slot-0")
+    expect(card).toHaveAttribute("data-in-cart", "true")
+    expect(card).toHaveTextContent(/mythicShards/)
+  })
+
   it("lists every option and the sync notice without player data", () => {
     roster = { lockContext: null, powerLevel: undefined, lastSyncedAt: null }
     renderPage("/dailies/event-shop/october-2026")
@@ -329,14 +338,18 @@ describe("desktop", () => {
     renderPage("/dailies/event-shop/october-2026")
     const card = screen.getByTestId("event-shop-slot-2")
     expect(within(card).queryByRole("button", { name: "slot.more" })).toBeNull()
-    await userEvent.click(screen.getByTestId("event-shop-remove-2"))
+    await userEvent.click(
+      within(card).getByRole("button", { name: "slot.remove" })
+    )
     expect(card).toHaveAttribute("data-in-cart", "false")
   })
 
   it("asks for an alliance before adding a draft reward", async () => {
     renderPage("/dailies/event-shop/october-2026")
     await userEvent.click(screen.getByTestId("event-shop-add-3"))
-    await userEvent.click(screen.getByTestId("event-shop-alliance-xenos"))
+    await userEvent.click(
+      screen.getByRole("button", { name: "alliances.xenos" })
+    )
     expect(screen.getByTestId("event-shop-slot-3")).toHaveTextContent(
       'slot.alliance:{"alliance":"alliances.xenos"}'
     )
@@ -389,7 +402,9 @@ describe("desktop", () => {
 
     await userEvent.click(draftAdd())
     await userEvent.click(screen.getByTestId("confirmation-dialog-confirm"))
-    await userEvent.click(screen.getByTestId("event-shop-alliance-xenos"))
+    await userEvent.click(
+      screen.getByRole("button", { name: "alliances.xenos" })
+    )
     await waitFor(() =>
       expect(mutateAsync).toHaveBeenLastCalledWith({
         expectedRevision: 1,
@@ -542,7 +557,10 @@ describe("daily freebie", () => {
 describe("shop search", () => {
   it("finds a unit's shards as you type and opens a day", async () => {
     renderPage("/dailies/event-shop/october-2026")
-    await userEvent.type(screen.getByTestId("event-shop-search-input"), "yarr")
+    await userEvent.type(
+      screen.getByRole("searchbox", { name: "search.title" }),
+      "yarr"
+    )
     const results = await screen.findByTestId("event-shop-search-results")
     const days = within(results).getAllByRole("button")
     expect(days.length).toBeGreaterThanOrEqual(3)
@@ -555,7 +573,10 @@ describe("shop search", () => {
 
   it("searches every reward, not only units", async () => {
     renderPage("/dailies/event-shop/october-2026")
-    await userEvent.type(screen.getByTestId("event-shop-search-input"), "orb")
+    await userEvent.type(
+      screen.getByRole("searchbox", { name: "search.title" }),
+      "orb"
+    )
     const results = await screen.findByTestId("event-shop-search-results")
     expect(
       within(results).getByTestId(
@@ -566,7 +587,10 @@ describe("shop search", () => {
 
   it("says when nothing matches", async () => {
     renderPage("/dailies/event-shop/october-2026")
-    await userEvent.type(screen.getByTestId("event-shop-search-input"), "zzzz")
+    await userEvent.type(
+      screen.getByRole("searchbox", { name: "search.title" }),
+      "zzzz"
+    )
     expect(
       await screen.findByTestId("event-shop-search-empty")
     ).toBeInTheDocument()

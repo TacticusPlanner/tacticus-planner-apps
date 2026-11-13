@@ -10,6 +10,7 @@ import {
   eventStatus,
   resolveEventDaySlots,
 } from "./event-days"
+import { bpSeasonStartMs } from "./season-locks"
 import { computeShopLockContext } from "./shop-resolve"
 
 // A trimmed copy of the served `event-shops` payload: August 2026 (2 weeks from Sun 2 Aug, no slots) and
@@ -144,6 +145,47 @@ describe("resolveEventDaySlots", () => {
 
     expect(indexes[0]).toBe(0)
     expect(indexes).toEqual([...indexes].sort((a, b) => a - b))
+  })
+
+  it("resolves a future day's season locks as of that day, not today", () => {
+    const dayMs = 86_400_000
+    // The event starts 3 days before the day battle-pass season 41 starts.
+    const start = Math.floor(bpSeasonStartMs(41) / dayMs) * dayMs - 3 * dayMs
+    const week = october.weeks[0]!
+    const template = week.slots[0]!.variants[0]!
+    const variant = (rewardType: string, lockId: string) => ({
+      ...template,
+      days: eventDays(october).map((day) => day.dow),
+      reward: { ...template.reward, type: rewardType },
+      unitId: undefined,
+      lockId,
+    })
+    const event = {
+      ...october,
+      startUtc: new Date(start).toISOString(),
+      weeks: [
+        {
+          ...week,
+          slots: [
+            {
+              ...week.slots[0]!,
+              variants: [
+                variant("gold", "lock_valid_until_bp_season_41_start"),
+                variant("gems", "lock_valid_after_bp_season_41_start"),
+              ],
+            },
+          ],
+        },
+      ],
+    }
+    const offeredOn = (dayIndex: number) =>
+      resolveEventDaySlots(event, dayIndex, {
+        lockContext: computeShopLockContext(50, [], []),
+        now: start + 12 * 3_600_000,
+      })[0]?.offers.map((offer) => offer.rewardType)
+
+    expect(offeredOn(0)).toEqual(["gold"])
+    expect(offeredOn(5)).toEqual(["gems"])
   })
 
   it("returns nothing for a day outside the event", () => {

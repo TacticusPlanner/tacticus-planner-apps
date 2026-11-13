@@ -196,7 +196,11 @@ export function SlotSheet({
                           />
                         </span>
                       </span>
-                      {planned ? null : (
+                      {view.freebieOf(option.rewardType) ? (
+                        <span className="shrink-0 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                          {t("slot.freebieShort")}
+                        </span>
+                      ) : planned ? null : (
                         <Button
                           disabled={!controller.cartReady}
                           onClick={() => controller.add(view.ref, option)}
