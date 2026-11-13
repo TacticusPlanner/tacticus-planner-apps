@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 
 import {
   groupConsecutiveByCampaign,
+  groupRowsByUpgradeCampaign,
   groupScheduleByCampaign,
   locationNodeNumber,
 } from "./campaign-groups"
@@ -50,6 +51,24 @@ describe("groupScheduleByCampaign", () => {
       { campaign: "shme", rows: ["shme:4/r1", "shme:3/r2", "shme:2/r3"] },
       { campaign: "ie", rows: ["ie:15/r5", "ie:25/r6"] },
       { campaign: "shme", rows: ["shme:27/r7"] },
+    ])
+  })
+
+  it("keeps an upgrade in the cluster when any of its locations is in a campaign the cluster holds", () => {
+    // Saim-Hann Elite 33, then an upgrade first at Indomitus Mirror Elite 12 and also at Saim-Hann
+    // Elite 11: both Saim-Hann Elite battles share one group.
+    const groups = groupScheduleByCampaign(
+      [
+        resource("r1", "she:33"),
+        resource("r2", "ime:12", "she:11"),
+        resource("r3", "i:19"),
+      ],
+      campaignOf
+    )
+    expect(shape(groups)).toEqual([
+      { campaign: "she", rows: ["she:33/r1", "she:11/r2"] },
+      { campaign: "ime", rows: ["ime:12/r2"] },
+      { campaign: "i", rows: ["i:19/r3"] },
     ])
   })
 
@@ -109,6 +128,27 @@ describe("groupConsecutiveByCampaign", () => {
       [":y"],
     ])
     expect(new Set(groups.map((group) => group.key)).size).toBe(groups.length)
+  })
+})
+
+describe("groupRowsByUpgradeCampaign", () => {
+  it("groups a flat list the way Today groups the same upgrades", () => {
+    const row = (battleId: string, resourceId: string) => ({
+      battleId: battle(battleId),
+      resourceId,
+    })
+    const groups = groupRowsByUpgradeCampaign(
+      [
+        row("she:33", "r1"),
+        row("ime:12", "r2"),
+        row("she:11", "r2"),
+        row("i:19", "r3"),
+      ],
+      campaignOf
+    )
+    expect(
+      groups.map((group) => group.items.map((item) => item.battleId))
+    ).toEqual([["she:33", "she:11"], ["ime:12"], ["i:19"]])
   })
 })
 

@@ -1,7 +1,9 @@
 import type { ReactNode } from "react"
 import type { BattleId } from "@workspace/game-domain"
+import { cn } from "@workspace/ui/lib/utils"
 
 import type { DailyRaidLocationViewModel } from "../../model/daily-raids.domain"
+import { useIsLoneCampaignRow } from "../campaign-group-context"
 import {
   RaidLocationName,
   type RaidLocationTarget,
@@ -28,12 +30,14 @@ export function EventLocationRow({
   testId: string
   children: ReactNode
 }) {
+  // A lone row names its location in full, so it takes its own line above the badges.
+  const lone = useIsLoneCampaignRow()
   return (
     <li
       className="flex flex-wrap items-center gap-x-2 gap-y-1 py-1.5"
       data-testid={testId}
     >
-      <div className="min-w-20 flex-1">
+      <div className={cn("min-w-20 flex-1", lone && "basis-full")}>
         <RaidLocationName
           battleId={battleId}
           fallbackLabel={fallbackLabel}

@@ -50,9 +50,10 @@ export type ScheduleCampaignRow<Entry extends { battleId: BattleId }> = {
 /**
  * Today's schedule as campaign groups. `resources` is the schedule's upgrade order (longest to finish
  * first, same-campaign upgrades of similar energy already pulled together by `clusterByCampaign`),
- * each with its planned locations. An upgrade's campaign is that of its first location
- * (`upgradeCampaignKey`), so a run of consecutive upgrades in one campaign is one cluster. Within a
- * cluster, every location joins its campaign's group, groups in the order their campaign first
+ * each with its planned locations. A run of consecutive upgrades is one cluster while each next
+ * upgrade is farmed (at any of its locations) in a campaign the cluster already holds: an upgrade at
+ * Saim-Hann Elite 33, then one at Indomitus Mirror Elite 12 and Saim-Hann Elite 11, form one
+ * cluster. Within a cluster, every location joins its campaign's group, groups in the order their campaign first
  * appears and rows in the upgrades' order: two upgrades farmed at Saim-Hann Elite 38 and 37, each
  * also at a Saim-Hann Mirror Elite node, read as a Saim-Hann Elite group then a Saim-Hann Mirror
  * Elite group. A location of a later cluster is never pulled up into an earlier group: it starts a
@@ -66,17 +67,22 @@ export function groupScheduleByCampaign<Entry extends { battleId: BattleId }>(
   isRowVisible: (entry: Entry) => boolean = () => true
 ): CampaignGroup<ScheduleCampaignRow<Entry>>[] {
   const clusters: (typeof resources)[number][][] = []
-  let clusterCampaign: string | undefined
+  // Every campaign the current cluster's upgrades are farmed in.
+  let clusterCampaigns = new Set<string>()
   for (const resource of resources) {
-    const first = resource.entries[0]
-    const campaign = first ? campaignOf(first.battleId) : undefined
+    const campaigns = new Set<string>()
+    for (const entry of resource.entries) {
+      const campaign = campaignOf(entry.battleId)
+      if (campaign !== undefined) campaigns.add(campaign)
+    }
     const current = clusters.at(-1)
-    if (current && campaign !== undefined && campaign === clusterCampaign) {
+    if (current && [...campaigns].some((c) => clusterCampaigns.has(c))) {
       current.push(resource)
+      for (const campaign of campaigns) clusterCampaigns.add(campaign)
     } else {
       clusters.push([resource])
+      clusterCampaigns = campaigns
     }
-    clusterCampaign = campaign
   }
 
   const groups: CampaignGroup<ScheduleCampaignRow<Entry>>[] = []
@@ -121,6 +127,29 @@ export function groupScheduleByCampaign<Entry extends { battleId: BattleId }>(
     }
   }
   return groups
+}
+
+/**
+ * A one-row-per-battle list that follows the schedule's upgrade order (the Home widget) grouped the
+ * way Today groups it (`groupScheduleByCampaign`): each run of consecutive rows for one upgrade is
+ * that upgrade's locations, so a list reads the same on Home as on Today.
+ */
+export function groupRowsByUpgradeCampaign<
+  Row extends { battleId: BattleId; resourceId: string },
+>(
+  rows: readonly Row[],
+  campaignOf: (battleId: BattleId) => string | undefined
+): CampaignGroup<Row>[] {
+  const resources: { resourceId: string; entries: Row[] }[] = []
+  for (const row of rows) {
+    const last = resources.at(-1)
+    if (last && last.resourceId === row.resourceId) last.entries.push(row)
+    else resources.push({ resourceId: row.resourceId, entries: [row] })
+  }
+  return groupScheduleByCampaign(resources, campaignOf).map((group) => ({
+    ...group,
+    items: group.items.map(({ entry }) => entry),
+  }))
 }
 
 /**

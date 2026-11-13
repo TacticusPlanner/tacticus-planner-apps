@@ -264,7 +264,7 @@ describe("Dailies raid pages", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("shows a storyline elite node under its campaign + tier header, the row naming the battle", () => {
+  it("names a storyline elite node in full, with the campaign icon, when it is its campaign's only battle", () => {
     useDailyRaids.mockReturnValue(
       ready({
         locationsByBattleId: new Map([
@@ -288,11 +288,11 @@ describe("Dailies raid pages", () => {
 
     const plan = within(screen.getByTestId("today-raid-list"))
     expect(
-      plan.getAllByRole("heading", { level: 3, name: "Indomitus Elite" })
-    ).not.toHaveLength(0)
-    const row = within(plan.getAllByTestId(`raid-location-${battle}`)[0]!)
-    expect(row.getByText('schedule.battle:{"node":" 1"}')).toBeInTheDocument()
-    expect(row.queryByText("Indomitus")).not.toBeInTheDocument()
+      plan.queryByRole("heading", { level: 3, name: "Indomitus Elite" })
+    ).not.toBeInTheDocument()
+    const row = plan.getAllByTestId(`raid-location-${battle}`)[0]!
+    expect(row).toHaveTextContent("Indomitus Elite 1")
+    expect(row.querySelector('img[src="/campaign.png"]')).not.toBeNull()
   })
 
   it("renders only the battle id, with no second line, for an attempt the catalog cannot name", () => {
