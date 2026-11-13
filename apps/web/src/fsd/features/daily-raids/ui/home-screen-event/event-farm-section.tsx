@@ -20,6 +20,7 @@ import { useDailyRaids } from "../../model/use-daily-raids"
 import { useListPaging } from "../../model/use-list-paging"
 import { ListPagingControls } from "../list-paging-controls"
 import { CampaignGroupedList } from "../campaign-group"
+import type { RaidLocationTarget } from "../raid-location-name"
 import { RaidState } from "../raid-state"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
@@ -55,6 +56,7 @@ export const EventFarmSection = memo(function EventFarmSection({
   quickFilters,
   order = "points",
   onViewChange,
+  onShowLocation,
 }: {
   /** The shown event's raid-point rule. */
   rule: HseRaidRule
@@ -66,6 +68,8 @@ export const EventFarmSection = memo(function EventFarmSection({
   order?: EventFarmOrder
   /** Shows the list controls when set (their "Ignore goals" toggle swaps this list out). */
   onViewChange?: (view: HseListView) => void
+  /** Makes each battle's name open its enemies. */
+  onShowLocation?: (target: RaidLocationTarget) => void
 }) {
   const { t } = useTranslation("dailies")
   const raids = useDailyRaids(projectId, {
@@ -129,6 +133,8 @@ export const EventFarmSection = memo(function EventFarmSection({
               return (
                 <EventLocationRow
                   key={row.battleId}
+                  battleId={row.battleId}
+                  onShowLocation={onShowLocation}
                   fallbackLabel={row.battleId}
                   location={view.locationsByBattleId.get(row.battleId)}
                   testId={`hse-raid-${row.battleId}`}
@@ -160,7 +166,7 @@ export const EventFarmSection = memo(function EventFarmSection({
                   ) : null}
                   <span className="flex items-center gap-1">
                     <ResourceIconWithTooltip
-                      className="size-6"
+                      className="size-8"
                       label={
                         view.resourceLabels.get(row.resourceId) ??
                         row.resourceId

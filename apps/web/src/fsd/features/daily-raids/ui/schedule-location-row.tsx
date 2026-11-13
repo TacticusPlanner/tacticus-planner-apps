@@ -65,7 +65,7 @@ export function ScheduleLocationRow({
         data-testid={`raid-upgrade-${entry.goalId}-${entry.resourceId}`}
       >
         <ResourceIconWithTooltip
-          className="size-6"
+          className="size-8"
           label={label}
           visual={visual}
         />

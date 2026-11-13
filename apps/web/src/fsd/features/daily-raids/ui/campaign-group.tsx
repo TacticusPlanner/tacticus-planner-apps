@@ -34,11 +34,11 @@ export function CampaignGroup({
           {location.icon ? (
             <EntityIcon
               alt=""
-              className="size-6 shrink-0"
+              className="size-10 shrink-0"
               src={location.icon}
             />
           ) : null}
-          <h3 className="min-w-0 text-sm/tight font-semibold wrap-break-word">
+          <h3 className="min-w-0 text-base/tight font-semibold wrap-break-word">
             <CampaignLocationName
               campaignName={location.campaignName}
               difficultyLabel={location.difficultyLabel}

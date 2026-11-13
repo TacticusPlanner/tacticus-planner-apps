@@ -76,7 +76,7 @@ export function RaidRows({
               {resourceId && view ? (
                 <span className="flex items-center gap-1">
                   <ResourceIconWithTooltip
-                    className="size-6"
+                    className="size-8"
                     label={view.resourceLabels.get(resourceId) ?? resourceId}
                     visual={view.resourceVisuals.get(resourceId)}
                   />

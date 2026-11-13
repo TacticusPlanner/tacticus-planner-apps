@@ -706,9 +706,15 @@ describe("HSE list controls", () => {
     expect(first).toHaveTextContent("hse.raids.points|points=36")
     expect(screen.queryByTestId(`hse-raid-${battle}-goals`)).toBeNull()
     expect(screen.queryByTestId(`hse-raid-${battle}-stock`)).toBeNull()
+    // The battle's name opens its enemies, as on the Raids tab.
+    expect(
+      within(first).getByTestId(`raid-location-details-${battle}`)
+    ).toHaveAttribute("aria-haspopup", "dialog")
     // A gold-only node shows no drop.
     const gold = screen.getByTestId("hse-raid-B3")
-    expect(within(gold).queryByRole("button")).not.toBeInTheDocument()
+    expect(
+      within(gold).queryByTestId("raid-resource-icon")
+    ).not.toBeInTheDocument()
   })
 })
 
