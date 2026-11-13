@@ -108,11 +108,6 @@ export function EventLocationsSection({
                       </span>
                     </span>
                   ) : null}
-                  {location.raids !== null ? (
-                    <Badge className="tabular-nums" variant="outline">
-                      {t("hse.raids.raidCount", { count: location.raids })}
-                    </Badge>
-                  ) : null}
                   {location.points !== null ? (
                     <Badge className="tabular-nums" variant="secondary">
                       {pointsIcon ? (

@@ -597,8 +597,6 @@
       "energy": "{{energy}} de energía",
       "note": "Ubicaciones que dan puntos de evento y avanzan tus objetivos, elegidas con todo tu plan. Elige ubicaciones con puntos incluso cuando existe otra más barata sin puntos, así que puede costar más energía por objeto que Incursiones de hoy.",
       "points": "{{points}} pts",
-      "raidCount_one": "{{count}} incursión",
-      "raidCount_other": "{{count}} incursiones",
       "empty": {
         "noGoals": "No tienes objetivos activos, así que no hay nada que farmear.",
         "noEnergy": "Hoy no queda energía para ninguna de estas ubicaciones.",

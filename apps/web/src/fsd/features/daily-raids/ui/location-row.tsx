@@ -1,5 +1,6 @@
 import type {
   DailyRaidLocationViewModel,
+  DailyRaidResourceProgress,
   DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
 import type { FlattenedRaidLocation } from "../model/flatten-today-locations"
@@ -8,6 +9,7 @@ import { ManualBattleBadge } from "./manual-battle"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
 import { RaidLocationName, type RaidLocationTarget } from "./raid-location-name"
 import { ResourceIconWithTooltip } from "./resource-icon"
+import { ResourceStock } from "./resource-stock"
 
 /** One flattened battle location, as a row under its campaign's header (`CampaignGroupedList`): the
  * battle ("Battle 36"), planned raid count, and its primary reward — no unit portrait, goal-type
@@ -19,6 +21,7 @@ export function LocationRow({
   onShowLocation,
   resourceLabel,
   resourceVisual,
+  progress,
 }: {
   entry: FlattenedRaidLocation
   location: DailyRaidLocationViewModel | undefined
@@ -26,6 +29,8 @@ export function LocationRow({
   onShowLocation?: (target: RaidLocationTarget) => void
   resourceLabel: string
   resourceVisual: DailyRaidResourceVisual | undefined
+  /** What the player holds of the reward against its target over the goals ("X/Y"). */
+  progress?: DailyRaidResourceProgress
 }) {
   return (
     <li
@@ -53,11 +58,17 @@ export function LocationRow({
           dropRate: entry.dropRate,
         })}
       />
-      <ResourceIconWithTooltip
-        className="size-8"
-        label={resourceLabel}
-        visual={resourceVisual}
-      />
+      <span className="flex shrink-0 items-center gap-1">
+        <ResourceIconWithTooltip
+          className="size-8"
+          label={resourceLabel}
+          visual={resourceVisual}
+        />
+        <ResourceStock
+          progress={progress}
+          testId={`home-raid-location-${entry.battleId}-stock`}
+        />
+      </span>
     </li>
   )
 }

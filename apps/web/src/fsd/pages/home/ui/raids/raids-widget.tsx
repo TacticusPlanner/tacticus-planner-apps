@@ -131,6 +131,7 @@ export function RaidsWidget() {
               key={entry.battleId}
               location={raids.locationsByBattleId.get(entry.battleId)}
               onShowLocation={setShownLocation}
+              progress={raids.resourceTotals.get(entry.resourceId)}
               resourceLabel={
                 raids.resourceLabels.get(entry.resourceId) ?? entry.resourceId
               }

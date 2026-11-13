@@ -290,7 +290,7 @@ describe("HSE tab states", () => {
     ).toBeInTheDocument()
   })
 
-  it("shows the live event, its farm list with points and energy per location and the day totals", () => {
+  it("shows the live event, its farm list with points per location (no raid or energy counts) and the day totals", () => {
     renderHse()
 
     expect(screen.getByTestId("hse-status-active")).toHaveTextContent(
@@ -302,8 +302,8 @@ describe("HSE tab states", () => {
     expect(screen.getByTestId(`hse-raid-${battle}`)).toHaveTextContent(
       "points=36"
     )
-    expect(screen.getByTestId(`hse-raid-${battle}`)).toHaveTextContent(
-      "energy=18"
+    expect(screen.getByTestId(`hse-raid-${battle}`)).not.toHaveTextContent(
+      "energy="
     )
     expect(screen.getByTestId(`hse-raid-${offPlanBattle}`)).toHaveTextContent(
       "points=12"
@@ -701,14 +701,14 @@ describe("HSE list controls", () => {
     expect(screen.getByTestId(`hse-raid-${battle}-owned`)).toHaveTextContent(
       "hse.raids.owned|count=42"
     )
-    expect(first).toHaveTextContent("hse.raids.raidCount|count=3")
+    // Rows leave out raid and energy counts: they only added noise.
+    expect(first).not.toHaveTextContent("raidCount")
     expect(first).toHaveTextContent("hse.raids.points|points=36")
     expect(screen.queryByTestId(`hse-raid-${battle}-goals`)).toBeNull()
     expect(screen.queryByTestId(`hse-raid-${battle}-stock`)).toBeNull()
-    // A gold-only node shows no drop; an uncapped node shows no raid count.
+    // A gold-only node shows no drop.
     const gold = screen.getByTestId("hse-raid-B3")
     expect(within(gold).queryByRole("button")).not.toBeInTheDocument()
-    expect(gold).not.toHaveTextContent("raidCount")
   })
 })
 

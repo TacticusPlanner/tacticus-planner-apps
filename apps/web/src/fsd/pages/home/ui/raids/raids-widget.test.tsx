@@ -97,6 +97,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map([["upgrade-1", "Upgrade"]]),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -118,6 +119,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -141,6 +143,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -167,6 +170,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -200,6 +204,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -225,6 +230,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -262,6 +268,7 @@ describe("RaidsWidget", () => {
       ]),
       resourceLabels: new Map([["upgrade-1", "Upgrade"]]),
       resourceVisuals: new Map(),
+      resourceTotals: new Map([["upgrade-1", { owned: 3, target: 10 }]]),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -272,6 +279,10 @@ describe("RaidsWidget", () => {
     const row = screen.getByTestId("home-raid-location-node-1")
     expect(row).toHaveTextContent('schedule.battle:{"node":"3"}')
     expect(row).not.toHaveTextContent("Indomitus")
+    // The reward's owned/target count, as on Today.
+    expect(
+      screen.getByTestId("home-raid-location-node-1-stock")
+    ).toHaveTextContent("3/10")
   })
 
   it("omits the second line entirely for a location the catalog has no descriptor for", () => {
@@ -296,6 +307,7 @@ describe("RaidsWidget", () => {
       ]),
       resourceLabels: new Map([["upgrade-1", "Upgrade"]]),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })
@@ -333,6 +345,7 @@ describe("RaidsWidget", () => {
       locationsByBattleId: new Map(),
       resourceLabels: new Map(),
       resourceVisuals: new Map(),
+      resourceTotals: new Map(),
     })
 
     render(<RaidsWidget />, { route: "/" })

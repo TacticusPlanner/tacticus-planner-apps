@@ -597,8 +597,6 @@
       "energy": "{{energy}} énergie",
       "note": "Lieux qui rapportent des points d'événement et font avancer vos objectifs, choisis sur l'ensemble de votre plan. Elle retient des lieux avec points même quand un lieu moins cher sans points existe, ce qui peut coûter plus d'énergie par objet que Raids du jour.",
       "points": "{{points}} pts",
-      "raidCount_one": "{{count}} raid",
-      "raidCount_other": "{{count}} raids",
       "empty": {
         "noGoals": "Vous n'avez aucun objectif actif, il n'y a donc rien à farmer.",
         "noEnergy": "Il ne reste plus assez d'énergie aujourd'hui pour ces lieux.",

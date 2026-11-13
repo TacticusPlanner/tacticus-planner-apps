@@ -597,8 +597,6 @@
       "energy": "{{energy}} energy",
       "note": "Locations that earn event points and feed your goals, chosen from your whole plan. It picks point-earning locations even where a cheaper location without points exists, so it can cost more energy per item than Today.",
       "points": "{{points}} pts",
-      "raidCount_one": "{{count}} raid",
-      "raidCount_other": "{{count}} raids",
       "empty": {
         "noGoals": "You have no active goals, so there is nothing to farm.",
         "noEnergy": "There is no energy left today for any of these locations.",

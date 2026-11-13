@@ -137,9 +137,6 @@ export const EventFarmSection = memo(function EventFarmSection({
                     goals={goals}
                     testId={`hse-raid-${row.battleId}-goals`}
                   />
-                  <Badge className="tabular-nums" variant="outline">
-                    {t("hse.raids.raidCount", { count: row.raids })}
-                  </Badge>
                   <Badge className="tabular-nums" variant="secondary">
                     {pointsIcon ? (
                       <EntityIcon
@@ -149,14 +146,6 @@ export const EventFarmSection = memo(function EventFarmSection({
                       />
                     ) : null}
                     {t("hse.raids.points", { points: row.points })}
-                  </Badge>
-                  <Badge className="tabular-nums" variant="outline">
-                    <EntityIcon
-                      alt=""
-                      className="size-3.5"
-                      src={energyIcon()}
-                    />
-                    {t("hse.raids.energy", { energy: row.energy })}
                   </Badge>
                   {order === "energy" ? (
                     <Badge
