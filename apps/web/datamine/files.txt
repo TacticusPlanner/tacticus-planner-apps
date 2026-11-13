@@ -24,6 +24,8 @@ sprites-webp/guildboss/
 sprites-webp/items/
 sprites-webp/liveevenst/
 sprites-webp/liveevents/
+sprites-webp/offers/
 sprites-webp/root/
+sprites-webp/themes/
 sprites-webp/ui/
 sprites-webp/upgrades/
