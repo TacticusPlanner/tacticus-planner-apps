@@ -47,7 +47,7 @@ export const CLEAR_ESTIMATE_CURVE = {
  * exp(−slope × (s − neutralShare)). Lopsided teams read shallower (one carry can't cover the rest),
  * balanced ones deeper: share 0.2 (five equal members) ×1.30, 0.6 ×0.77, 0.9 ×0.52.
  */
-export const TEAM_BALANCE = {
+const TEAM_BALANCE = {
   /** The top-member share at which the correction is ×1. */
   neutralShare: 0.4,
   slope: 1.3,
