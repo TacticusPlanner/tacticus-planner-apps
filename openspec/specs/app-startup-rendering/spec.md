@@ -58,12 +58,17 @@ Every wait before the first real content SHALL show the same boot screen: transl
 
 ### Requirement: Home shows a skeleton while its page loads
 
-While the lazy Home page is loading, the shell SHALL show a skeleton of Home's layout in its place: Right now, then Daily raids, Upcoming events and Projects stacked below `lg` (Daily raids, Projects and Upcoming events in three columns from `lg`), then the calendar. Other pages SHALL keep the centred loading spinner.
+While the lazy Home page is loading, the shell SHALL show a skeleton of Home's layout in its place: Right now, then Daily raids, Upcoming events and Projects stacked below `lg` (Daily raids, Projects and Upcoming events in three columns from `lg`), then the calendar. A Legendary Event page (`/legendary-events/:eventId` and its tabs) SHALL show a skeleton matching the event page's own loading state, and Plan's Goals and Projects a toolbar row over list rows. Other pages SHALL keep the centred loading spinner.
 
 #### Scenario: Home chunk still downloading
 
 - **WHEN** the shell renders `/home` before the Home page's code has loaded
 - **THEN** the content area shows the Home skeleton, exposed as a status labelled "Loading…"
+
+#### Scenario: Event page chunk still downloading
+
+- **WHEN** the shell renders `/legendary-events/:eventId/teams` before the event page's code has loaded
+- **THEN** the content area shows the event page skeleton, exposed as a status labelled "Loading…", and the event page's own loading state takes its place without moving
 
 ### Requirement: The landing page appears whole
 

@@ -5,6 +5,7 @@ import {
   buildTokenPlanView,
   missionsNextToken,
   nextTokenCardState,
+  tokenClearBand,
   type TokenPlanReady,
   upNextTokens,
 } from "./token-plan-view"
@@ -57,6 +58,13 @@ describe("buildTokenPlanView", () => {
       depth: 5,
       estimated: false,
       total: 18,
+      sureDepth: null,
+    })
+    expect(view.depthByTeam.get("five")).toEqual({
+      depth: 6,
+      estimated: true,
+      total: 18,
+      sureDepth: 5,
     })
     expect(view.fullClear).toEqual([
       {
@@ -402,5 +410,23 @@ describe("missionsNextToken", () => {
       index: 1,
       gains: [{ ref, amount: 12, completes: false }],
     })
+  })
+})
+
+describe("tokenClearBand", () => {
+  const estimated = { depth: 6, estimated: true, total: 18, sureDepth: 4 }
+
+  it("is sure within the sure depth and likely past it", () => {
+    expect(tokenClearBand(estimated, 3)).toBe("sure")
+    expect(tokenClearBand(estimated, 4)).toBe("likely")
+    expect(tokenClearBand(estimated, 5)).toBe("likely")
+  })
+
+  it("has no band for a manual depth or an estimate without bands", () => {
+    expect(
+      tokenClearBand({ ...estimated, estimated: false, sureDepth: null }, 2)
+    ).toBeNull()
+    expect(tokenClearBand({ ...estimated, sureDepth: null }, 2)).toBeNull()
+    expect(tokenClearBand(undefined, 2)).toBeNull()
   })
 })

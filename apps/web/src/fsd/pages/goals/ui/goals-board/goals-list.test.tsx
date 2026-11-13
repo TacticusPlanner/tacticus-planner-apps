@@ -697,7 +697,7 @@ describe("GoalsList reached rows and column layout", () => {
     ["desktop", false],
     ["mobile", true],
   ])(
-    "renders a reached Paused goal as a completed %s row with dashes and no pause/resume",
+    "renders a reached Paused goal as a completed %s row with no pause/resume",
     async (_layout, mobile) => {
       useIsMobileMock.mockReturnValue(mobile)
       const paused: GoalRow = { ...rows[0]!, status: "Paused" }
@@ -722,8 +722,9 @@ describe("GoalsList reached rows and column layout", () => {
       expect(screen.queryByTestId("goal-progress")).toBeNull()
       expect(screen.queryByTestId("goal-row-estimate")).toBeNull()
       expect(screen.queryByTestId("goal-remaining-column")).toBeNull()
-      expect(screen.getAllByTestId("goal-reached-dash").length).toBeGreaterThan(
-        0
+      // The table keeps a "-" in its cells; a card drops the empty rows instead.
+      expect(screen.queryAllByTestId("goal-reached-dash")).toHaveLength(
+        mobile ? 0 : 3
       )
       expect(screen.queryByTestId("goal-row-resume-goal-1")).toBeNull()
       expect(stubActions.setStatus).not.toHaveBeenCalled()

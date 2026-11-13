@@ -205,7 +205,10 @@ export interface RewardProjection {
     | null
   /** `null` unless the goal is reachable. */
   currency: {
+    /** Cumulative cost of chests 1 through `chests.required`. */
     required: number
+    /** What the chests still to open cost (`required` less the chests already claimed). */
+    forChestsToGo: number
     collected: number
     futureMissions: number
     futureBundles: number
@@ -226,6 +229,29 @@ export interface RewardProjection {
 }
 
 const RUNS: readonly LegendaryEventRun[] = [1, 2, 3]
+
+/**
+ * Chests claimed according to the synced entry (spec: reward projection, base). The Tacticus API's
+ * `currentClaimedChestIndex` reads as a count of chests opened, and -1 when it omits the field
+ * (read as 0). Every chest grants `shardsPerChest` event shards and nothing spends them before the
+ * unit unlocks, so while the unit is not unlocked (`fromStep` is `unlock`) the shards held bound the
+ * count: a synced index above `floor(shards / shardsPerChest)` (Farsight: index 5 with 100 shards,
+ * four chests) is capped there. Owned units spend their shards on each step, so no cap applies.
+ */
+export function syncedChestsClaimed(
+  progress:
+    | Pick<LegendaryEventProgress, "currentClaimedChestIndex" | "currentShards">
+    | undefined,
+  shardsPerChest: number,
+  fromStep: AscensionStep | "fullyAscended"
+): number {
+  const index = Math.max(0, progress?.currentClaimedChestIndex ?? 0)
+  if (fromStep !== "unlock" || !(shardsPerChest > 0)) return index
+  const byShards = Math.floor(
+    Math.max(0, progress?.currentShards ?? 0) / shardsPerChest
+  )
+  return Math.min(index, byShards)
+}
 
 function chestCost(rewards: LegendaryEventRewards, chestCount: number): number {
   return rewards.chestsMilestones
@@ -267,14 +293,18 @@ export function projectRewards({
   throughRun,
 }: RewardProjectionInput): RewardProjection {
   // 1. Base from sync.
+  const fromStep = unitNextAscensionStep(unit)
   const base = {
     points: progress?.currentPoints ?? 0,
     currency: progress?.currentCurrency ?? 0,
-    chestsClaimed: Math.max(0, progress?.currentClaimedChestIndex ?? 0),
+    chestsClaimed: syncedChestsClaimed(
+      progress,
+      rewards.shardsPerChest,
+      fromStep
+    ),
     shards: progress?.currentShards ?? 0,
   }
   const currentRun = currentLegendaryEventRun(resolution)
-  const fromStep = unitNextAscensionStep(unit)
 
   // 2–3. Future runs: the runs that have not started (none while the run is unknown).
   const futureRuns = futureRunNumbers(resolution, progress !== undefined)
@@ -355,11 +385,13 @@ export function projectRewards({
 
   // 6. Currency.
   const currencyRequired = chestCost(rewards, required)
-  const collected = chestCost(rewards, base.chestsClaimed) + base.currency
+  const spentOnChests = chestCost(rewards, base.chestsClaimed)
+  const collected = spentOnChests + base.currency
   const fromPoints =
     currencyRequired - collected - futureMissions - futureBundles
   projection.currency = {
     required: currencyRequired,
+    forChestsToGo: currencyRequired - spentOnChests,
     collected,
     futureMissions,
     futureBundles,

@@ -1,0 +1,8 @@
+{
+  "PeerlessWarrior": {
+    "description": "During each enemy turn, after the <style=\"Faction_Custodes\">Sentinel Guard</style> is attacked by an adjacent enemy unit, it performs a <style=\"NormalAttack\">normal attack</style> against the attacker.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

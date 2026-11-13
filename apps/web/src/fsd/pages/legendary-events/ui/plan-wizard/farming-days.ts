@@ -178,6 +178,7 @@ function previewDetails(
     snapshot: null,
     events: [],
     dependsOn: [],
+    linkedGoalIds: [],
     projectIds: [],
     revision: 0,
   }))

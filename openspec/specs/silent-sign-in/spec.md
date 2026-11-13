@@ -65,8 +65,12 @@ cached account (or account hint), the system SHALL make one top-level
 redirect to the identity provider with `prompt=none` before falling back to
 manual sign-in, because a top-level navigation carries the identity
 provider's cookies even where the browser keeps them out of hidden frames.
-The redirect SHALL use the same account-hint rules as interactive
-re-authentication (no generated Google username as a hint). It SHALL be
+The redirect SHALL carry a hint for the account, Google accounts
+included, so the identity provider can pick it in a session that holds
+several accounts: the ID token's session id (`sid`) or opaque `login_hint`
+claim when the app registration emits them, otherwise the username. The
+session id is also kept in the account hint, so a cleared token cache still
+restores the right account. It SHALL be
 skipped while a fresh login is required, and for 12 hours after an attempt
 that did not come back signed in. A response that reports no usable session
 SHALL NOT count as a failed sign-in: no error toast, no fresh-login prompt,
@@ -81,6 +85,14 @@ in-progress state while the redirect leaves the page.
 - **WHEN** they open the app
 - **THEN** the page bounces through the identity provider and returns signed
   in, on the page they opened, with no prompt
+
+#### Scenario: Several Google accounts in one identity-provider session
+
+- **GIVEN** a Google user whose identity-provider session also holds other
+  accounts, and whose refresh token has expired
+- **WHEN** they open the app
+- **THEN** the quiet redirect names their account, and they return signed in
+  without an account picker
 
 #### Scenario: No session left
 

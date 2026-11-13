@@ -154,6 +154,8 @@ export type QuestTeam = {
   /** Null when power is unavailable. */
   totalPower: number | null
   eligibleCount: number
+  /** Every eligible unit besides the featured hero, strongest first: the team's other options. */
+  eligible: Omit<QuestTeamMember, "featured">[]
   /** Slots for units other than the featured hero. */
   openSlots: number
   badges: QuestObjectiveBadge[]
@@ -282,6 +284,11 @@ export function selectQuestTeam(input: {
       ? null
       : team.reduce((sum, member) => sum + (member.power ?? 0), 0),
     eligibleCount: eligible.length,
+    eligible: eligible.map((candidate) => ({
+      unitId: candidate.character.id,
+      power: candidate.power,
+      atCap: candidate.atCap,
+    })),
     openSlots,
     badges,
     breakers: objectives.map((objective) =>
@@ -294,4 +301,32 @@ export function selectQuestTeam(input: {
     ),
     powerUnavailable,
   }
+}
+
+/**
+ * Picks or unpicks a unit in the options list: unpicking always works, picking only while a slot is
+ * free, so the picks never outnumber the battle's open slots.
+ */
+export function toggleQuestPick(
+  picked: readonly string[],
+  unitId: string,
+  openSlots: number
+): string[] {
+  if (picked.includes(unitId)) return picked.filter((id) => id !== unitId)
+  return picked.length >= openSlots ? [...picked] : [...picked, unitId]
+}
+
+/** The power of the featured hero plus the picked options; null when any of them has none. */
+export function questPickedPower(
+  featuredPower: number | null,
+  options: readonly { unitId: string; power: number | null }[],
+  picked: readonly string[]
+): number | null {
+  let total = featuredPower
+  for (const option of options) {
+    if (!picked.includes(option.unitId)) continue
+    total =
+      total === null || option.power === null ? null : total + option.power
+  }
+  return total
 }

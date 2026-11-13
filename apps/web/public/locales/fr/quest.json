@@ -38,7 +38,8 @@
     "perfect": "Parfait",
     "tierPoints": "{{points}} / {{max}}",
     "show": "Afficher le combat {{number}}",
-    "dropOdds": "Donne {{name}}, {{numerator}} sur {{denominator}}"
+    "dropOdds": "Donne {{name}}, {{numerator}} sur {{denominator}}",
+    "hint": "Touchez une bataille pour voir son équipe, ses ennemis et son butin."
   },
   "entry": {
     "title": "Votre meilleure tentative",
@@ -60,6 +61,7 @@
     "nextCrate": "{{points}} points avant la caisse {{number}}",
     "pointsLeft": "Points restants",
     "pointsLeftRow": "encore {{left}}",
+    "pointsLeftMore": "+{{count}} de plus",
     "saveFailed": "La progression ne peut pas être enregistrée dans ce navigateur"
   },
   "objectives": {
@@ -110,6 +112,8 @@
     "cratePoints": "{{points}} points",
     "opened": "Ouverte",
     "pointsToGo": "encore {{points}} points",
+    "showAllCrates": "Afficher les {{count}} coffres",
+    "showFewerCrates": "Afficher moins de coffres",
     "reward": {
       "Coins": "Pièces",
       "RaidTicket": "Tickets de raid",
@@ -121,7 +125,7 @@
     "amount": "×{{amount}}",
     "amountRange": "×{{min}}–{{max}}",
     "shardsTitle": "Fragments de {{hero}}",
-    "bundle": "Pack de Quête (3 fragments par médaille)",
+    "bundle": "Pack de Quête (+2 fragments par médaille)",
     "shards": "{{earned}} obtenus · {{max}} max · encore {{reachable}} atteignables",
     "unlocks": "Débloque {{hero}}, avec {{spare}} fragments en trop",
     "unlocksExact": "Débloque {{hero}}",
@@ -133,7 +137,15 @@
     "orbsNote": "Les ascensions demandent aussi des orbes, non comptés ici.",
     "shardsOnly": "Synchronisez votre compte pour voir ce que ces fragments apportent à {{hero}}.",
     "createGoal": "Créer un objectif",
-    "openGoal": "Ouvrir l'objectif"
+    "openGoal": "Ouvrir l'objectif",
+    "left": {
+      "title": "Reste à gagner",
+      "medals": "Médailles restantes",
+      "shards": "Fragments de {{hero}} restants",
+      "crates_one": "{{count}} coffre restant",
+      "crates_other": "{{count}} coffres restants",
+      "none": "Toutes les récompenses uniques sont gagnées."
+    }
   },
   "tokens": {
     "title": "Tentatives",
@@ -181,7 +193,13 @@
       "MinHits": "{{hero}} a moins de {{count}} coups",
       "UseNoSummons": "{{hero}} invoque",
       "DoNoHealOrRepair": "{{hero}} soigne ou répare"
-    }
+    },
+    "allOptions": "Les {{count}} options",
+    "optionsTitle": "Unités autorisées pour la bataille {{number}}",
+    "optionsHint": "Les plus fortes d'abord, au plafond du palier. Choisissez des unités pour comparer la puissance ; la sélection n'est pas enregistrée.",
+    "optionsSelected": "{{count}} sur {{slots}} choisies · puissance {{power}}",
+    "optionsReset": "Revenir à la suggestion",
+    "optionsClose": "Fermer"
   },
   "estimate": {
     "title": "Estimation de victoire",
@@ -205,5 +223,13 @@
     "capGain": "{{name}} : +{{gain}} de puissance au plafond",
     "projected": "Projection : {{total}} / {{max}} · {{opened}} coffres sur {{count}} (estimation, non calibrée)",
     "projectedShards": "Projection : {{shards}} fragments (estimation, non calibrée)"
+  },
+  "goalDrops": {
+    "title": "Butin pour vos objectifs",
+    "empty": "Vos objectifs n'ont besoin d'aucun butin de cette quête.",
+    "have": "{{have}} / {{need}}",
+    "battles": "Batailles",
+    "showAll": "Tout afficher ({{count}})",
+    "showFewer": "Afficher moins"
   }
 }

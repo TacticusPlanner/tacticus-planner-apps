@@ -7,12 +7,12 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   ObjectiveIcon,
   type LaneProgressView,
+  AnnotationMarkIcon,
   type LegendaryEventAnnotationStatus,
   type LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
 import {
-  AnnotationMarkIcon,
   AnnotationMenu,
   BattleAnnotationMenu,
 } from "@/features/legendary-event-plan"

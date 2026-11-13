@@ -69,6 +69,7 @@ export function buildPreviewGoalDetails(
     snapshot: null,
     events: [],
     dependsOn: [],
+    linkedGoalIds: [],
     projectIds: [],
     revision: 0,
   }))

@@ -103,6 +103,7 @@ describe("runTokenSupply", () => {
         unknownRun: false,
         free: 0,
         ad: 0,
+        adTodayPending: false,
         bonusDelivery: 0,
         total: 0,
       },
@@ -113,6 +114,7 @@ describe("runTokenSupply", () => {
         unknownRun: false,
         free: 28,
         ad: 4,
+        adTodayPending: true,
         bonusDelivery: 0,
         total: 32,
       },
@@ -122,6 +124,7 @@ describe("runTokenSupply", () => {
         unknownRun: false,
         free: 61,
         ad: 7,
+        adTodayPending: false,
         bonusDelivery: 0,
         total: 68,
       },
@@ -163,7 +166,30 @@ describe("runTokenSupply", () => {
       progress: { ...base.progress!, hasUsedAdForExtraTokenToday: true },
     })?.[1]
 
-    expect(now?.ad).toBe(3)
+    expect(now).toMatchObject({ ad: 3, adTodayPending: false })
+  })
+
+  it("trusts today's ad flag when it was synced earlier the same run day", () => {
+    const base = worked()
+    // The run ends 76 h from now, so its days turn 4 h from now and 20 h ago.
+    const now = runTokenSupply({
+      ...base,
+      progress: { ...base.progress!, hasUsedAdForExtraTokenToday: true },
+      progressObservedAtMs: NOW - 19 * HOUR,
+    })?.[1]
+
+    expect(now).toMatchObject({ ad: 3, adTodayPending: false })
+  })
+
+  it("counts today's ad again when the used flag was synced the run day before", () => {
+    const base = worked()
+    const now = runTokenSupply({
+      ...base,
+      progress: { ...base.progress!, hasUsedAdForExtraTokenToday: true },
+      progressObservedAtMs: NOW - 21 * HOUR,
+    })?.[1]
+
+    expect(now).toMatchObject({ ad: 4, adTodayPending: true })
   })
 
   it("counts no ad tokens in any run when the player does not watch ads", () => {
@@ -242,6 +268,7 @@ describe("runTokenSupply", () => {
         unknownRun: true,
         free: 61,
         ad: 7,
+        adTodayPending: false,
         bonusDelivery: 0,
         total: 68,
       },

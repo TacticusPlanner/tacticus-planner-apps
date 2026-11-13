@@ -30,6 +30,7 @@ import {
   abilitiesBehindLevel,
   blueStarReady,
   canAscend,
+  canPromote,
   missingEquipment,
   needToAscend,
   needToLevel,
@@ -525,10 +526,16 @@ function matchesQuick(
       return needToAscend(unit)
     case "needToLevel":
       return needToLevel(unit)
+    case "canPromote":
     case "canAscend":
     case "blueStarReady": {
       if (!extras.ladder) return false
-      const rule = quick === "canAscend" ? canAscend : blueStarReady
+      const rule =
+        quick === "canPromote"
+          ? canPromote
+          : quick === "canAscend"
+            ? canAscend
+            : blueStarReady
       return rule(
         unit,
         extras.ladder,

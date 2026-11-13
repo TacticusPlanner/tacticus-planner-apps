@@ -24,6 +24,9 @@ import {
 } from "@/features/legendary-event-plan"
 import {
   type MarkTokenHandler,
+  type StopTeamHandler,
+  type TokenShownHandler,
+  tokenMarkOutcome,
   useTokenMissionsSource,
   useTokenPlan,
 } from "@/features/legendary-event-tokens"
@@ -36,7 +39,6 @@ import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
-import type { BattleInfoTarget } from "./battles/battle-info-target"
 import { useBattlesSection } from "./battles/use-battles-section"
 import { LegendaryEventPageView } from "./legendary-event-page-view"
 import {
@@ -60,6 +62,12 @@ import { useLaneJump } from "./use-lane-jump"
 import { useLaneSelection } from "./use-lane-selection"
 import { useLanePotentials } from "./use-lane-potentials"
 import { useCreateGoalFromRow } from "./use-create-goal-from-row"
+import {
+  tokenActionEstimateContext,
+  tokenBattleSnapshot,
+  tokenResultEvent,
+} from "./token-result-analytics"
+import { useShownTokens } from "./use-shown-tokens"
 import { useEventGoals } from "./use-event-goals"
 import { useEventRuns } from "./use-event-runs"
 import { useImpactTeamName, useUpgradeImpact } from "./use-upgrade-impact"
@@ -265,14 +273,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     initialRarityOf,
   })
   const impactTeamName = useImpactTeamName(eventData, plan.query.data)
-  const [battleInfo, setBattleInfo] = useState<BattleInfoTarget | null>(null)
   const battlesLanes = useMemo(
-    () =>
-      [
-        ...(selectedTab === "plan" ? [battlesLane] : []),
-        ...(battleInfo ? [battleInfo.laneId] : []),
-      ] as LegendaryEventLaneId[],
-    [selectedTab, battlesLane, battleInfo]
+    () => (selectedTab === "plan" ? [battlesLane] : NO_LANES),
+    [selectedTab, battlesLane]
   )
   const battlesSection = useBattlesSection({
     event: eventData,
@@ -319,10 +322,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       buildRunStatusViewModel({
         progress,
         rewards,
+        unit: runs.eventUnit,
         progressObservedAtMs,
         nowMs,
       }),
-    [progress, rewards, progressObservedAtMs, nowMs]
+    [progress, rewards, runs.eventUnit, progressObservedAtMs, nowMs]
   )
   const outlook = useMemo(
     () =>
@@ -375,10 +379,152 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     (laneId, battle, status) => void markBattle(laneId, battle, status),
     [markBattle]
   )
+  const planTeams = plan.query.data?.teams
+  const { setDepth } = plan
+  const shownTokens = useShownTokens(eventId, runs.run, progressValue)
   const markTokenVoid = useCallback<MarkTokenHandler>(
-    (laneId, battleIndex, objectiveIds, status) =>
-      void markToken(laneId, battleIndex, objectiveIds, status),
-    [markToken]
+    (laneId, battleIndex, objectiveIds, status, teamId) => {
+      const team = planTeams?.find((entry) => entry.id === teamId)
+      const outcome = tokenMarkOutcome({
+        teamId,
+        laneId,
+        battleIndex,
+        teams: planTeams ?? [],
+        depthOf: (id) =>
+          tokenPlan.kind === "ready"
+            ? (tokenPlan.depthByTeam.get(id)?.depth ?? null)
+            : null,
+      })
+      const depthBefore =
+        tokenPlan.kind === "ready"
+          ? tokenPlan.depthByTeam.get(teamId)
+          : undefined
+      const shown = tokenActionEstimateContext(
+        clearEstimates,
+        laneId,
+        team,
+        depthBefore?.estimated ?? false
+      )
+      const dropped = team !== undefined && outcome.depth !== null
+      shownTokens.forget({ laneId, battleIndex })
+      if (dropped) void setDepth(team, outcome.depth, shown)
+      if (!dropped || outcome.markCells) {
+        void markToken(laneId, battleIndex, objectiveIds, status)
+      }
+      captureEvent(
+        tokenResultEvent({
+          eventId,
+          run: runs.run,
+          laneId,
+          battleIndex,
+          action: status,
+          shown,
+          battle: tokenBattleSnapshot(
+            clearEstimates,
+            laneId,
+            battleIndex,
+            shown
+          ),
+          depthBefore,
+          depthAfter: dropped ? outcome.depth : (depthBefore?.depth ?? null),
+          otherTeamReaches: !outcome.markCells,
+        })
+      )
+    },
+    [
+      captureEvent,
+      clearEstimates,
+      eventId,
+      markToken,
+      planTeams,
+      runs.run,
+      setDepth,
+      shownTokens,
+      tokenPlan,
+    ]
+  )
+  // Try another team: the player ends the token's team before this battle (no cells marked), so its
+  // depth becomes the battles before it and the plan moves on to other teams.
+  const stopTeamVoid = useCallback<StopTeamHandler>(
+    (laneId, battleIndex, teamId) => {
+      const team = planTeams?.find((entry) => entry.id === teamId)
+      if (!team || battleIndex < 1) return
+      const depthBefore =
+        tokenPlan.kind === "ready"
+          ? tokenPlan.depthByTeam.get(teamId)
+          : undefined
+      const shown = tokenActionEstimateContext(
+        clearEstimates,
+        laneId,
+        team,
+        depthBefore?.estimated ?? false
+      )
+      shownTokens.forget({ laneId, battleIndex })
+      void setDepth(team, battleIndex, shown)
+      captureEvent(
+        tokenResultEvent({
+          eventId,
+          run: runs.run,
+          laneId,
+          battleIndex,
+          action: "stopEarly",
+          shown,
+          battle: tokenBattleSnapshot(
+            clearEstimates,
+            laneId,
+            battleIndex,
+            shown
+          ),
+          depthBefore,
+          depthAfter: battleIndex,
+          otherTeamReaches: false,
+        })
+      )
+    },
+    [
+      captureEvent,
+      clearEstimates,
+      eventId,
+      planTeams,
+      runs.run,
+      setDepth,
+      shownTokens,
+      tokenPlan,
+    ]
+  )
+  // Remembers the shown Next token so a later sync that clears it is logged as a success.
+  const rememberShownToken = useCallback<TokenShownHandler>(
+    (token) => {
+      const team = planTeams?.find((entry) => entry.id === token.teamId)
+      if (!team) return
+      const depth =
+        tokenPlan.kind === "ready"
+          ? tokenPlan.depthByTeam.get(token.teamId)
+          : undefined
+      const shown = tokenActionEstimateContext(
+        clearEstimates,
+        token.laneId,
+        team,
+        depth?.estimated ?? false
+      )
+      shownTokens.remember({
+        run: runs.run,
+        laneId: token.laneId,
+        battleIndex: token.battleIndex,
+        teamId: token.teamId,
+        clearedIds: token.clearedIds,
+        depth: depth?.depth ?? null,
+        depthManual: depth ? !depth.estimated : false,
+        shown,
+        battle: tokenBattleSnapshot(
+          clearEstimates,
+          token.laneId,
+          token.battleIndex,
+          shown
+        ),
+      })
+    },
+    [clearEstimates, planTeams, runs.run, shownTokens, tokenPlan]
   )
   const pickerPreview = useCallback(
     (laneId: LegendaryEventLaneId) =>
@@ -463,6 +609,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       tokens: {
         view: tokenPlan,
         onMarkToken: marksEditable ? markTokenVoid : undefined,
+        onStopTeam: marksEditable ? stopTeamVoid : undefined,
+        onTokenShown: marksEditable ? rememberShownToken : undefined,
+        run: runs.run,
         onOpenTeams: openTeams,
       },
       teams: {
@@ -487,7 +636,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           }
         : null,
       battles: battlesSection,
-      battleInfo: { target: battleInfo, onChange: setBattleInfo },
+      battlesRead,
       potentials,
       eventBoard: { units, roster: syncedRoster },
     }
@@ -533,6 +682,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     markBattleVoid,
     tokenPlan,
     markTokenVoid,
+    stopTeamVoid,
+    rememberShownToken,
     openTeams,
     unitPower,
     eventId,
@@ -545,7 +696,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     goalTargetsByUnit,
     impactTeamName,
     battlesSection,
-    battleInfo,
+    battlesRead,
     potentials,
     units,
     syncedRoster,

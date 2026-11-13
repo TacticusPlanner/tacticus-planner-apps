@@ -33,7 +33,8 @@
     },
     "constants": {
       "unitId": "thousSmnPinkHorror",
-      "unitId_2": "thousSmnScreamer"
+      "unitId_2": "thousSmnScreamer",
+      "maxSummons": "20"
     },
     "scaled": ["summonHp", "summonDmg", "summonHp_2", "summonDmg_2"]
   }

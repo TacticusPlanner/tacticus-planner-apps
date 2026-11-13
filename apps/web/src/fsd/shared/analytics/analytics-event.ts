@@ -57,6 +57,15 @@ type LibraryUnitCreateGoalOpenedEvent = {
   goalType: "Unlock" | null
 }
 
+/** Collection's bulk goal creation finished a run (a first Create or a Retry failed). Counts only:
+ *  the units sent, the goals they asked for, and the units whose request failed. */
+type CollectionBulkGoalsCreatedEvent = {
+  type: "collection_bulk_goals_created"
+  unitCount: number
+  goalCount: number
+  failedUnitCount: number
+}
+
 /** A lane's Upgrade impact section was expanded. */
 type LegendaryEventUpgradeImpactExpandedEvent = {
   type: "legendary_event_upgrade_impact_expanded"
@@ -84,7 +93,81 @@ type LegendaryEventDepthSetEvent = {
   depth: number | null
   estimate: number | null
   fromEstimate: boolean
+} & LegendaryEventEstimateSnapshot & {
+    /** Where the depth was set: the team card's stepper, the team editor, or a Next token card
+     *  action (Maybe clear / Stop here). */
+    source: "card" | "editor" | "tokenAction"
+  }
+
+/** The clear estimate the player saw for a team, for tuning the curve: its safe and best depths
+ *  (the headline is `estimate`), the effective and raw team power, the member count, the member
+ *  unit ids and objective indexes (catalog `index` on the lane), and the curve version so results
+ *  under different curves are not mixed. Null where unknown. */
+export type LegendaryEventEstimateSnapshot = {
+  sureDepth: number | null
+  stretchDepth: number | null
+  effectivePower: number | null
+  teamPower: number | null
+  unitIds: readonly string[] | null
+  objectiveIndexes: readonly number[] | null
+  memberCount: number | null
+  /** Each member's power without horde-mode multipliers, in `unitIds` order. */
+  memberPowers: readonly number[] | null
+  /** The strongest member's share of `teamPower` (0–1): low means no carry. */
+  topMemberShare: number | null
+  curveVersion: string
 }
+
+/** The battle a Next token was for: its catalog power and the curve ratio the team's effective power
+ *  reaches on it (the estimate reads sure from `sureRatio`, out of reach below `stretchRatio`). */
+export type LegendaryEventBattleSnapshot = {
+  battlePower: number | null
+  powerRatio: number | null
+}
+
+/**
+ * A Next token card action: the token's team fell short on a battle (Maybe clear, logged as
+ * `partlyCleared`, or Stop here, logged as `couldNotClear`). The direct "this team failed at battle N" label for tuning clear estimates, with the
+ * estimate the player saw, the team's depth before and after, and whether another team of the lane
+ * reaches the battle (then the cells stay unmarked).
+ */
+type LegendaryEventTokenResultEvent = {
+  type: "legendary_event_token_result"
+  eventId: string
+  run: number | null
+  laneId: string
+  /** 0-based. */
+  battleIndex: number
+  /** `stoppedEarly`: Try another team, the player ended the team before trying this battle. */
+  outcome: "partlyCleared" | "couldNotClear" | "stoppedEarly"
+  /** The headline estimate (null without one). */
+  estimate: number | null
+  depthBefore: number | null
+  depthBeforeManual: boolean
+  depthAfter: number | null
+  otherTeamReaches: boolean
+} & LegendaryEventEstimateSnapshot &
+  LegendaryEventBattleSnapshot
+
+/**
+ * A Next token the card showed was later cleared in sync (every cell it planned to clear): the
+ * success label that pairs with `legendary_event_token_result`, so estimate hit rates are not read
+ * from failures alone. Carries the estimate and the team's depth as they were when the token showed.
+ */
+type LegendaryEventTokenClearedEvent = {
+  type: "legendary_event_token_cleared"
+  eventId: string
+  run: number | null
+  laneId: string
+  /** 0-based. */
+  battleIndex: number
+  /** The headline estimate (null without one). */
+  estimate: number | null
+  /** The team's depth when the token showed, and whether it was manual. */
+  depth: number | null
+  depthManual: boolean
+} & LegendaryEventEstimateSnapshot &
+  LegendaryEventBattleSnapshot
 
 /** Use estimate was pressed: the manual depth was cleared so the estimate shows again. */
 type LegendaryEventDepthEstimateRestoredEvent = {
@@ -308,9 +391,12 @@ export type AnalyticsEvent =
   | LegendaryEventGoalsPreviewToggledEvent
   | LegendaryEventCreateGoalOpenedEvent
   | LibraryUnitCreateGoalOpenedEvent
+  | CollectionBulkGoalsCreatedEvent
   | LegendaryEventUpgradeImpactExpandedEvent
   | LegendaryEventTeamSuggestionsOpenedEvent
   | LegendaryEventDepthSetEvent
+  | LegendaryEventTokenResultEvent
+  | LegendaryEventTokenClearedEvent
   | LegendaryEventRunInputsSavedEvent
   | LegendaryEventPaidOptionsToggledEvent
   | LegendaryEventNotesSavedEvent

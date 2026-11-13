@@ -1,0 +1,38 @@
+{
+  "TerrorchemPoison": {
+    "description": "Los ataques cuerpo a cuerpo de <style=\"Faction_TheLostAndTheDamned\">Daras</style> aplican <style=\"Debuff_Poisoned\">Envenenado</style> durante {[nrOfRounds]} rondas. Los enemigos afectados reciben <style=\"Stat_Hits\">{[poisonedNrOfHits]}x</style> <style=\"DMG_Toxic\">{[minDmg]}-{[maxDmg]} de Daño tóxico</style> por el efecto de <style=\"Debuff_Poisoned\">Envenenado</style> al inicio y al final de sus turnos. Además, los ataques cuerpo a cuerpo de Daras' aplican <i>Veneno Terrorquímico</i> durante {[nrOfRounds]} rondas. Los enemigos afectados infligen un <style=\"Stat_Damage\">-{[dmgReductionPct]}% de Daño</style> y la <style=\"Stat_Health\">Salud</style> que recuperan se reduce en un <style=\"STAT\">{[healPct]}%</style>.",
+    "variables": {
+      "minDmg": [
+        14, 17, 20, 22, 25, 28, 32, 35, 38, 41, 45, 48, 51, 54, 57, 61, 64, 67,
+        70, 74, 78, 84, 97, 109, 122, 135, 148, 160, 173, 186, 199, 211, 224,
+        237, 249, 262, 275, 288, 300, 318, 344, 370, 399, 430, 488, 545, 603,
+        660, 718, 776, 784, 795, 805, 819, 833, 847, 861, 879, 896, 914, 935,
+        956, 977, 998, 1019
+      ],
+      "maxDmg": [
+        22, 26, 31, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
+        105, 110, 116, 122, 132, 152, 172, 192, 212, 232, 252, 272, 292, 312,
+        332, 352, 372, 392, 412, 432, 452, 472, 500, 540, 581, 626, 676, 766,
+        857, 947, 1038, 1128, 1219, 1232, 1249, 1265, 1287, 1309, 1331, 1353,
+        1381, 1408, 1436, 1469, 1502, 1535, 1568, 1601
+      ],
+      "dmgReductionPct": [
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+      ],
+      "healPct": [
+        60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 70,
+        70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 80,
+        80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80,
+        80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80
+      ]
+    },
+    "constants": {
+      "nrOfRounds": "2",
+      "poisonedNrOfHits": "1"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

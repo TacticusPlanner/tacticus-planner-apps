@@ -42,6 +42,7 @@ describe("flattenTodayLocations", () => {
         raidsToPerform: 5,
         dailyAttempts: 5,
         remainingBefore: 2,
+        materialNeed: 2,
         dropRate: 0.5,
       },
     ])
@@ -61,9 +62,34 @@ describe("flattenTodayLocations", () => {
         raidsToPerform: 4,
         dailyAttempts: 5,
         remainingBefore: 1,
+        materialNeed: 1,
         dropRate: 0.25,
       },
     ])
+  })
+
+  it("counts a goal's whole need at a later node, not what is left after earlier nodes", () => {
+    // Needs 3: the first node is raided out (expected 1.2 drops), so the second node sees 1.8 left.
+    const entries = [
+      entry({
+        battleId: "node-1" as BattleId,
+        raidsPerformed: 3,
+        dailyAttempts: 3,
+        itemsFarmed: 1.2,
+        remainingBefore: 3,
+      }),
+      entry({
+        battleId: "node-2" as BattleId,
+        raidsPerformed: 3,
+        dailyAttempts: 5,
+        itemsFarmed: 1.8,
+        remainingBefore: 1.8,
+      }),
+    ]
+
+    const result = flattenTodayLocations(entries, new Map())
+
+    expect(result.map((row) => row.materialNeed)).toEqual([3, 3])
   })
 
   it("drops a location whose real synced attempts today are exhausted", () => {

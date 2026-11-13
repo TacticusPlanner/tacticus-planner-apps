@@ -1,0 +1,10 @@
+{
+  "MawClawsOfThyrax": {
+    "description": "Le porteur de relique inflige <style=\"Stat_CritDamage\">+{[extraCritDmg]} dégâts critiques</style> pour chaque <style=\"Summon\">invocation</style> adjacente.",
+    "variables": {
+      "extraCritDmg": [295, 311, 327, 343, 359, 375, 391, 406, 422, 438]
+    },
+    "constants": {},
+    "scaled": []
+  }
+}

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, type ReactNode } from "react"
+import { useCallback, useContext, useMemo, type ReactNode } from "react"
 
 import { UpgradeImpactSection } from "@/features/legendary-event-goals"
 import {
@@ -8,10 +8,10 @@ import {
 } from "@/features/legendary-event-plan"
 import {
   BattleInfoContext,
+  CurrentRunForecast,
   NextTokenCard,
   RunForecastSection,
   TokenPlanList,
-  type OpenBattleInfo,
   type OpenTeamHandler,
 } from "@/features/legendary-event-tokens"
 import {
@@ -21,7 +21,7 @@ import {
 } from "@/entities/legendary-event"
 import { useUnitName } from "@/shared/unit-name"
 
-import { BattleInfoDialog } from "./battles/battle-info-dialog"
+import { BattleInfoHost } from "./battles/battle-info-host"
 import { firstOpenBattleIndex } from "./battles/battle-info-target"
 import { BattlesLaneSelect } from "./battles/battles-lane-select"
 import { BattlesSection } from "./battles/battles-section"
@@ -60,18 +60,29 @@ const PLAN_TOKEN_PLAN_OPEN_KEY = "legendaryEvents.planTab.tokenPlan.open"
  * token's battle opens the battle info dialog. The team editor is mounted once here (design D4),
  * so the board, the team cards and the leaderboards open the same instance.
  */
-export function LegendaryEventPageView({
+export function LegendaryEventPageView(
+  props: LegendaryEventPageViewModel & { isMobile: boolean }
+) {
+  return (
+    <BattleInfoHost
+      battlesRead={props.battlesRead}
+      event={props.event}
+      isMobile={props.isMobile}
+      progressGrid={props.progressGrid}
+    >
+      <LegendaryEventPageBody {...props} />
+    </BattleInfoHost>
+  )
+}
+
+function LegendaryEventPageBody({
   isMobile,
   ...props
 }: LegendaryEventPageViewModel & { isMobile: boolean }) {
   const { selectedTab, lanes, tokens } = props
   const shown = lanes.shown
   const unitName = useUnitName()
-  const setBattleInfo = props.battleInfo.onChange
-  const openBattleInfo = useCallback<OpenBattleInfo>(
-    (laneId, battleIndex) => setBattleInfo({ laneId, battleIndex }),
-    [setBattleInfo]
-  )
+  const openBattleInfo = useContext(BattleInfoContext)
   const teamsState = props.teams.state
   const openTeamEditor = props.teamEditor.openTeamEditor
   const openTeam = useCallback<OpenTeamHandler>(
@@ -101,248 +112,245 @@ export function LegendaryEventPageView({
       />
     ) : undefined
   return (
-    <BattleInfoContext.Provider value={openBattleInfo}>
-      <RankShadingProvider>
-        <div
-          className="flex min-w-0 flex-col gap-4"
-          data-testid="legendary-event-page"
-        >
-          <LegendaryEventHeader
-            {...props}
-            actions={
-              <LegendaryEventPlanEntry
-                eventId={props.event.id}
-                showButton={
-                  props.runInputs.enabled &&
-                  props.lifecycle.state !== "archived"
-                }
-                teams={
-                  props.teams.state.kind === "ready"
-                    ? props.teams.state.plan.teams
-                    : undefined
-                }
-              />
-            }
-          />
-          <LegendaryEventTabs
-            isMobile={isMobile}
-            lifecycle={props.lifecycle.state}
-            onSelectTab={props.onSelectTab}
-            selectedTab={selectedTab}
-          />
-          <EstimatesDisclaimer />
-          {selectedTab === "overview" ? (
-            <TabPanel tab="overview">
-              <RunStatusCard
-                {...props}
-                isMobile={isMobile}
-                onGoToRun={
-                  props.lifecycle.state === "archived"
-                    ? undefined
-                    : () => props.onSelectTab("run")
-                }
-              />
-              <LaneSummary
+    <RankShadingProvider>
+      <div
+        className="flex min-w-0 flex-col gap-4"
+        data-testid="legendary-event-page"
+        id="le-event"
+      >
+        <LegendaryEventHeader
+          {...props}
+          actions={
+            <LegendaryEventPlanEntry
+              eventId={props.event.id}
+              showButton={
+                props.runInputs.enabled && props.lifecycle.state !== "archived"
+              }
+              teams={
+                props.teams.state.kind === "ready"
+                  ? props.teams.state.plan.teams
+                  : undefined
+              }
+            />
+          }
+        />
+        <LegendaryEventTabs
+          isMobile={isMobile}
+          lifecycle={props.lifecycle.state}
+          onSelectTab={props.onSelectTab}
+          selectedTab={selectedTab}
+        />
+        <EstimatesDisclaimer />
+        {selectedTab === "overview" ? (
+          <TabPanel tab="overview">
+            <RunStatusCard
+              {...props}
+              isMobile={isMobile}
+              onGoToRun={
+                props.lifecycle.state === "archived"
+                  ? undefined
+                  : () => props.onSelectTab("run")
+              }
+            />
+            <LaneSummary
+              event={props.event}
+              onJumpToLane={props.onJumpToLane}
+              potentials={props.potentials}
+              progressGrid={props.progressGrid}
+            />
+            {isMobile ? (
+              <CrossLaneLeaderboard
                 event={props.event}
-                onJumpToLane={props.onJumpToLane}
-                potentials={props.potentials}
+                layout="list"
+                // Every lane's chips show here, so every lane's selection filters.
+                leaderboard={{
+                  ...props.leaderboard,
+                  selectedObjectives: props.allLanesObjectives.selected,
+                  onSelectedObjectivesChange: props.allLanesObjectives.onChange,
+                }}
                 progressGrid={props.progressGrid}
               />
-              {isMobile ? (
-                <CrossLaneLeaderboard
-                  event={props.event}
-                  layout="list"
-                  // Every lane's chips show here, so every lane's selection filters.
-                  leaderboard={{
-                    ...props.leaderboard,
-                    selectedObjectives: props.allLanesObjectives.selected,
-                    onSelectedObjectivesChange:
-                      props.allLanesObjectives.onChange,
-                  }}
-                  progressGrid={props.progressGrid}
-                />
-              ) : null}
-              {props.runInputs.enabled ? (
-                <PlanNotesCard eventId={props.event.id} />
-              ) : null}
-            </TabPanel>
-          ) : null}
-          {selectedTab === "teams" ? (
-            <TabPanel tab="teams">
-              {laneSelector}
-              <EventBoard
-                catalog={props.eventBoard}
-                event={props.event}
-                laneFigures={(laneId) => (
-                  <LaneOverviewFigures
-                    isMobile={isMobile}
-                    lane={props.event[laneId]}
-                    laneId={laneId}
-                    onViewBattles={() =>
-                      openBattleInfo(
-                        laneId,
-                        firstOpenBattleIndex(
-                          props.progressGrid.kind === "ready"
-                            ? props.progressGrid.lanes[laneId]
-                            : undefined
-                        )
+            ) : null}
+            {props.runInputs.enabled ? (
+              <PlanNotesCard eventId={props.event.id} />
+            ) : null}
+          </TabPanel>
+        ) : null}
+        {selectedTab === "teams" ? (
+          <TabPanel tab="teams">
+            {laneSelector}
+            <EventBoard
+              catalog={props.eventBoard}
+              event={props.event}
+              laneFigures={(laneId) => (
+                <LaneOverviewFigures
+                  isMobile={isMobile}
+                  lane={props.event[laneId]}
+                  laneId={laneId}
+                  onViewBattles={() =>
+                    openBattleInfo?.(
+                      laneId,
+                      firstOpenBattleIndex(
+                        props.progressGrid.kind === "ready"
+                          ? props.progressGrid.lanes[laneId]
+                          : undefined
                       )
-                    }
-                    potential={props.potentials[laneId]}
-                  />
-                )}
-                laneIds={shown}
-                laneTeamsSection={(laneId) => (
-                  <TeamsSection
-                    editor={props.teamEditor}
-                    isMobile={isMobile}
-                    lane={props.event[laneId]}
-                    laneId={laneId}
-                    teams={props.teams}
-                  />
-                )}
-                onAddTeam={(laneId, objectiveIndexes, unitId) =>
-                  props.teamEditor.openTeamEditor({
-                    laneId,
-                    memberUnitIds: [unitId],
-                    objectiveIndexes,
-                  })
-                }
-                progressGrid={props.progressGrid}
-                teams={props.teams.state}
-                unitPower={props.teams.unitPower}
-              />
-              <HowPointsDisclosure />
-              {shown.length === 1 && shown[0] ? (
-                <LeaderboardSection
-                  event={props.event}
-                  laneId={shown[0]}
-                  layout={leaderboardLayout}
-                  leaderboard={props.leaderboard}
-                  progressGrid={props.progressGrid}
-                />
-              ) : (
-                <CrossLaneLeaderboard
-                  event={props.event}
-                  layout={leaderboardLayout}
-                  leaderboard={props.leaderboard}
-                  progressGrid={props.progressGrid}
+                    )
+                  }
+                  potential={props.potentials[laneId]}
                 />
               )}
-            </TabPanel>
-          ) : null}
-          {selectedTab === "plan" ? (
-            <TabPanel tab="plan">
-              <RunForecastSection
-                runInputs={
-                  props.runInputs.enabled
-                    ? (run) => (
-                        <RunInputsInline
-                          event={props.event}
-                          run={run.run}
-                          runs={props.runInputs.runs}
-                          touch={isMobile}
-                        />
-                      )
-                    : undefined
-                }
-                eventId={props.event.id}
-                isMobile={isMobile}
-                onOpenTeams={tokens.onOpenTeams}
-                view={tokens.view}
-              />
-              {props.upgradeImpact
-                ? LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
-                    const state = props.upgradeImpact?.byLane[laneId]
-                    return state && props.upgradeImpact ? (
-                      <UpgradeImpactSection
-                        eventId={props.event.id}
-                        goalTargets={props.upgradeImpact.goalTargets}
-                        key={laneId}
-                        laneId={laneId}
-                        layout={leaderboardLayout}
-                        nameOf={(unitId) => unitName("Character", unitId)}
-                        showLane
-                        state={state}
-                        teamName={props.upgradeImpact.teamName}
-                      />
-                    ) : null
-                  })
-                : null}
-              <TokenPlanList
-                defaultOpen
-                event={props.event}
-                eventId={props.event.id}
-                isMobile={isMobile}
-                onOpenTeam={teamsState.kind === "ready" ? openTeam : undefined}
-                openKey={PLAN_TOKEN_PLAN_OPEN_KEY}
-                view={tokens.view}
-              />
-              {props.battles[props.battlesLane.laneId] ? (
-                <BattlesSection
-                  battles={props.battles[props.battlesLane.laneId]!}
+              laneIds={shown}
+              laneTeamsSection={(laneId) => (
+                <TeamsSection
+                  editor={props.teamEditor}
                   isMobile={isMobile}
-                  laneId={props.battlesLane.laneId}
-                  lanePicker={
-                    <BattlesLaneSelect
-                      isMobile={isMobile}
-                      laneId={props.battlesLane.laneId}
-                      onChange={props.battlesLane.onChange}
-                    />
-                  }
+                  lane={props.event[laneId]}
+                  laneId={laneId}
+                  teams={props.teams}
                 />
-              ) : null}
-            </TabPanel>
-          ) : null}
-          {selectedTab === "run" ? (
-            <TabPanel tab="run">
-              <NextTokenCard
-                chipOf={chipOf}
+              )}
+              onAddTeam={(laneId, objectiveIndexes, unitId) =>
+                props.teamEditor.openTeamEditor({
+                  laneId,
+                  memberUnitIds: [unitId],
+                  objectiveIndexes,
+                })
+              }
+              progressGrid={props.progressGrid}
+              teams={props.teams.state}
+              unitPower={props.teams.unitPower}
+            />
+            <HowPointsDisclosure />
+            {shown.length === 1 && shown[0] ? (
+              <LeaderboardSection
                 event={props.event}
-                eventId={props.event.id}
-                isMobile={isMobile}
-                onMarkToken={tokens.onMarkToken}
-                onOpenTeams={tokens.onOpenTeams}
-                missionsInput={missionsInput}
-                onViewPlan={props.onViewPlan}
-                view={tokens.view}
-              />
-              <RunStatusCard {...props} isMobile={isMobile} />
-              {laneSelector}
-              <ProgressSection
-                event={props.event}
-                laneIds={shown}
-                layout={isMobile ? "rows" : "grid"}
-                marks={props.marks}
+                laneId={shown[0]}
+                layout={leaderboardLayout}
+                leaderboard={props.leaderboard}
                 progressGrid={props.progressGrid}
               />
-              <LastRunCard
-                isMobile={isMobile}
-                lastRun={props.lastRun.state}
-                loadMore={props.lastRun.loadMore}
-                onEarlierEntryToggled={props.lastRun.onEarlierEntryToggled}
-                onEarlierExpanded={props.lastRun.onEarlierExpanded}
-                onViewed={props.lastRun.onViewed}
+            ) : (
+              <CrossLaneLeaderboard
+                event={props.event}
+                layout={leaderboardLayout}
+                leaderboard={props.leaderboard}
+                progressGrid={props.progressGrid}
               />
-            </TabPanel>
-          ) : null}
-          <TeamEditorHost
-            event={props.event}
-            launcher={props.teamEditor}
-            onlyUnlocked={props.leaderboard.onlyUnlocked}
-            teams={props.teams}
-          />
-          <BattleInfoDialog
-            battles={props.battles}
-            isMobile={isMobile}
-            event={props.event}
-            onChange={setBattleInfo}
-            onClose={() => setBattleInfo(null)}
-            target={props.battleInfo.target}
-          />
-        </div>
-      </RankShadingProvider>
-    </BattleInfoContext.Provider>
+            )}
+          </TabPanel>
+        ) : null}
+        {selectedTab === "plan" ? (
+          <TabPanel tab="plan">
+            <RunForecastSection
+              runInputs={
+                props.runInputs.enabled
+                  ? (run) => (
+                      <RunInputsInline
+                        event={props.event}
+                        run={run.run}
+                        runs={props.runInputs.runs}
+                        touch={isMobile}
+                      />
+                    )
+                  : undefined
+              }
+              eventId={props.event.id}
+              isMobile={isMobile}
+              onOpenTeams={tokens.onOpenTeams}
+              view={tokens.view}
+            />
+            {props.upgradeImpact
+              ? LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
+                  const state = props.upgradeImpact?.byLane[laneId]
+                  return state && props.upgradeImpact ? (
+                    <UpgradeImpactSection
+                      eventId={props.event.id}
+                      goalTargets={props.upgradeImpact.goalTargets}
+                      key={laneId}
+                      laneId={laneId}
+                      layout={leaderboardLayout}
+                      nameOf={(unitId) => unitName("Character", unitId)}
+                      showLane
+                      state={state}
+                      teamName={props.upgradeImpact.teamName}
+                    />
+                  ) : null
+                })
+              : null}
+            <TokenPlanList
+              chipOf={chipOf}
+              defaultOpen
+              event={props.event}
+              eventId={props.event.id}
+              isMobile={isMobile}
+              onOpenTeam={teamsState.kind === "ready" ? openTeam : undefined}
+              openKey={PLAN_TOKEN_PLAN_OPEN_KEY}
+              view={tokens.view}
+            />
+            {props.battles[props.battlesLane.laneId] ? (
+              <BattlesSection
+                battles={props.battles[props.battlesLane.laneId]!}
+                isMobile={isMobile}
+                laneId={props.battlesLane.laneId}
+                lanePicker={
+                  <BattlesLaneSelect
+                    isMobile={isMobile}
+                    laneId={props.battlesLane.laneId}
+                    onChange={props.battlesLane.onChange}
+                  />
+                }
+              />
+            ) : null}
+          </TabPanel>
+        ) : null}
+        {selectedTab === "run" ? (
+          <TabPanel tab="run">
+            <NextTokenCard
+              chipOf={chipOf}
+              event={props.event}
+              eventId={props.event.id}
+              isMobile={isMobile}
+              onMarkToken={tokens.onMarkToken}
+              onStopTeam={tokens.onStopTeam}
+              onTokenShown={tokens.onTokenShown}
+              run={tokens.run}
+              onOpenTeams={tokens.onOpenTeams}
+              missionsInput={missionsInput}
+              onViewPlan={props.onViewPlan}
+              view={tokens.view}
+            />
+            <RunStatusCard
+              {...props}
+              forecast={<CurrentRunForecast view={tokens.view} />}
+              isMobile={isMobile}
+            />
+            {laneSelector}
+            <ProgressSection
+              event={props.event}
+              laneIds={shown}
+              layout={isMobile ? "rows" : "grid"}
+              marks={props.marks}
+              progressGrid={props.progressGrid}
+            />
+            <LastRunCard
+              isMobile={isMobile}
+              lastRun={props.lastRun.state}
+              loadMore={props.lastRun.loadMore}
+              onEarlierEntryToggled={props.lastRun.onEarlierEntryToggled}
+              onEarlierExpanded={props.lastRun.onEarlierExpanded}
+              onViewed={props.lastRun.onViewed}
+            />
+          </TabPanel>
+        ) : null}
+        <TeamEditorHost
+          event={props.event}
+          launcher={props.teamEditor}
+          onlyUnlocked={props.leaderboard.onlyUnlocked}
+          teams={props.teams}
+        />
+      </div>
+    </RankShadingProvider>
   )
 }
 
@@ -358,6 +366,7 @@ function TabPanel({
     <div
       className="flex min-w-0 flex-col gap-6"
       data-tab={tab}
+      id={`le-tab-${tab}`}
       data-testid={
         tab === "overview"
           ? "legendary-event-overview"

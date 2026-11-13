@@ -106,8 +106,8 @@
       "twoBlueStars": "Dos estrellas azules"
     },
     "next": "Siguiente: {{step}} · {{shards}} / {{threshold}} fragmentos",
-    "chests_one": "{{chests}} cofre más ({{currency}} de moneda en total)",
-    "chests_other": "{{chests}} cofres más ({{currency}} de moneda en total)",
+    "chests_one": "{{chests}} cofre más por {{currency}} de moneda",
+    "chests_other": "{{chests}} cofres más por {{currency}} de moneda",
     "points": "{{points}} puntos para llegar a {{target}} · unas {{battles}} batallas por carril",
     "fullyAscended": "Todas las recompensas alcanzadas",
     "beyondChests": "No alcanzable en este evento (necesita {{required}} cofres y el evento tiene {{ladder}})",
@@ -452,6 +452,13 @@
       "label": "Supera las batallas 1–{{depth}} de {{total}}",
       "labelNone": "No supera ninguna de {{total}} batallas",
       "close": "Cerca de la batalla {{battle}}",
+      "bands": {
+        "sure": "Supera las batallas 1–{{sure}} seguro",
+        "sureNone": "Ninguna batalla segura",
+        "likely": "{{battle}} probablemente",
+        "likelyRange": "{{from}}–{{to}} probablemente",
+        "stretch": "hasta {{stretch}} en el mejor caso"
+      },
       "manual": "Profundidad fijada por ti"
     },
     "editDepth": "Editar profundidad",
@@ -493,7 +500,7 @@
         },
         "nextToken": {
           "title": "Siguiente ficha",
-          "content": "La batalla para tu siguiente ficha: el equipo, el carril y la batalla que más puntos dan ahora, según tu sincronización, equipos, profundidades y marcas. Si no salió según el plan, márcala como Superada en parte o No superada y el plan se actualiza."
+          "content": "La batalla para tu siguiente ficha: el equipo, el carril y la batalla que más puntos dan ahora, según tu sincronización, equipos, profundidades y marcas. Si no salió según el plan, márcala como Quizá superable o Parar aquí y el plan se actualiza."
         },
         "runStatus": {
           "title": "Estado de la tirada",
@@ -614,12 +621,14 @@
     "disclaimer": "Todas las estimaciones comparan solo el poder bruto. Los resultados reales de las batallas pueden variar.",
     "estimated": "estimado",
     "uncalibrated": "Sin calibrar: la proporción de poder de la estimación aún no se ha ajustado con resultados reales, así que tómala como una guía aproximada.",
-    "howItWorks": "Estimado a partir del poder de tu plantilla sincronizada, con el equipo incluido, frente al poder de cada batalla. No se tienen en cuenta las sinergias ni los objetivos difíciles; fija una profundidad para sustituirla.",
+    "howItWorks": "Estimado a partir del poder de tu plantilla sincronizada, equipo incluido, frente al poder de cada batalla en una curva ajustada a superaciones reportadas: las batallas tardías necesitan más que su poder y las tempranas, menos. El rango va de lo que se supera seguro a lo que se supera en el mejor caso. La sinergia y los objetivos difíciles no se modelan; fija una profundidad para sustituirla.",
     "marginAbove": "{{percent}} % por encima de la batalla {{battle}}",
     "shortfallNext": "{{percent}} % por debajo de la batalla {{battle}}",
+    "range": "seguro hasta {{sure}}, como mucho {{stretch}}",
     "notEnough": "Aún no basta para la batalla 1",
     "useEstimate": "Usar estimación",
     "estimateHint": "estimación ~{{depth}}",
+    "estimateHintRange": "estimación ~{{depth}} ({{sure}}–{{stretch}})",
     "lockedNotCounted_one": "{{count}} miembro bloqueado no contado",
     "lockedNotCounted_other": "{{count}} miembros bloqueados no contados",
     "clears": "Batallas",
@@ -681,6 +690,8 @@
   },
   "suggestions": {
     "button": "Sugerir equipos",
+    "buttonWithCount_one": "Sugerir equipos ({{count}} sugerencia)",
+    "buttonWithCount_other": "Sugerir equipos ({{count}} sugerencias)",
     "title": "Equipos sugeridos para {{lane}}",
     "description": "Equipos de tu plantilla, ordenados por los puntos que suman a tus equipos actuales y luego por los tokens que ahorran. No se guarda nada hasta que guardes el equipo.",
     "onlyUnlocked": "Solo desbloqueadas",
@@ -714,13 +725,23 @@
       "upcoming": "{{reason}} para cuando empiece la ronda {{run}}",
       "upcomingUnknown": "{{reason}} para cuando empiece la próxima ronda",
       "maybe": "Quizá superable",
+      "clear": {
+        "sure": "Se supera seguro",
+        "likely": "Probablemente se supera",
+        "likelySure": "Probablemente se supera · seguro hasta la batalla {{sure}}"
+      },
       "members": "Miembros",
       "objectives": "Supera",
       "actions": {
-        "partly": "Superada en parte",
-        "couldNot": "No superada",
-        "partlyLabel": "Superada en parte: marcar {{team}} en {{lane}} batalla {{battle}} como Quizá superable",
-        "couldNotLabel": "No superada: marcar {{team}} en {{lane}} batalla {{battle}} como Parar aquí"
+        "maybe": "Quizá superable",
+        "maybeHint": "Podría superarse con otro intento",
+        "maybeLabel": "Quizá superable: {{team}} podría superar {{lane}} batalla {{battle}} con otro intento",
+        "stopHere": "Parar aquí",
+        "stopHereHint": "Sin opciones con este equipo",
+        "stopHereLabel": "Parar aquí: {{team}} no tiene opciones en {{lane}} batalla {{battle}}",
+        "stop": "Probar otro equipo",
+        "stopHint": "Terminar este equipo tras la batalla {{previous}}",
+        "stopLabel": "Probar otro equipo: terminar {{team}} en {{lane}} tras la batalla {{previous}} y planificar otros equipos"
       },
       "loading": "Cargando el plan de fichas…",
       "unavailable": "El progreso sincronizado no está disponible, así que no hay plan de fichas",
@@ -729,10 +750,8 @@
       "noDepth": "Indica hasta dónde llega {{team}}",
       "nothingLeft": "A tus equipos no les queda nada por superar · quedan {{points}} puntos en {{lane}}",
       "missions": {
-        "title": "Para misiones",
         "progresses": "Misiones que hace avanzar",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} puntos ({{difference}})",
         "button_one": "Hace avanzar {{count}} misión",
         "button_other": "Hace avanzar {{count}} misiones",
         "uncounted": "cuenta",
@@ -756,6 +775,7 @@
       "running": "{{points}} en total",
       "maybe": "Quizá superable",
       "milestone": "Hito {{milestone}} · +{{currency}} de moneda",
+      "milestones": "Hitos {{first}}–{{last}} · +{{currency}} de moneda",
       "step": "{{step}} alcanzado",
       "fullClear_one": "{{lane}}: superar una batalla por completo cuesta {{count}} ficha",
       "fullClear_other": "{{lane}}: superar una batalla por completo cuesta {{count}} fichas",
@@ -799,6 +819,8 @@
       "expandRun_other": "Mostrar {{count}} batallas",
       "collapseRun_one": "Ocultar {{count}} batalla",
       "collapseRun_other": "Ocultar {{count}} batallas",
+      "tokens_one": "{{count}} ficha",
+      "tokens_other": "{{count}} fichas",
       "openTeam": "Abrir el equipo {{team}}"
     },
     "forecast": {
@@ -817,6 +839,8 @@
       },
       "finished": "Finalizada",
       "supply": "{{total}} fichas: {{free}} gratis + {{ad}} de anuncio + {{bonus}} de entrega extra",
+      "adToday": "Incluye la ficha de anuncio de hoy, aún sin ver",
+      "thisRun": "Previsión de esta ronda",
       "uses": "Usa {{used}} · sobran {{left}}",
       "points": "{{points}} puntos (+{{earned}})",
       "currency": "{{currency}} de moneda disponible (+{{earned}} ganada)",
@@ -834,6 +858,26 @@
         "chests": "Cofres obtenidos",
         "shards": "Fragmentos al final de la ejecución"
       }
+    },
+    "closeGap": {
+      "title": "Cerrar la brecha: +{{points}} puntos para {{step}}",
+      "where": "{{lane}} batalla {{battle}}",
+      "kinds": {
+        "maybeClear": "Quizá superable",
+        "stopHere": "Probar otro equipo",
+        "belowEstimate": "Profundidad reducida"
+      },
+      "closes": "Cierra la brecha",
+      "gain": "+{{points}}",
+      "replacesLabel": "Sustituye",
+      "replaces": "{{where}} (+{{lost}})",
+      "retryLabel": "Un reintento quita",
+      "retryRow": "{{where}}",
+      "retry": "Un intento fallido cuesta 1 ficha más y quita {{where}} (−{{lost}})",
+      "retrySpare": "Un intento fallido usa una ficha sobrante",
+      "combined": "Las {{count}} mejores juntas la cierran (+{{points}})",
+      "short": "Ni juntas alcanzan",
+      "scope": "Revisa:"
     }
   },
   "masterTable": {

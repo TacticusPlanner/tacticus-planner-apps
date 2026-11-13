@@ -24,6 +24,7 @@ import {
   type PlanInsightsResult,
 } from "./use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
+import { useCampaignGateContext } from "../unlock-paths/use-campaign-gate-context"
 import {
   chunkOrUndefined,
   readyData,
@@ -65,6 +66,9 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   const {
     upgradesById,
     battlesById,
+    allBattlesById,
+    campaignProgressByKey,
+    campaignDefinitions,
     charactersById,
     mowsById,
     ascensionCostsById,
@@ -73,6 +77,10 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     characterAbilityCostsByLevel,
     releaseTypeByGroupId,
     getCharacter,
+    upgradesReady,
+    battlesReady,
+    catalogReadError,
+    retryCatalogReads,
   } = useGoalCatalog()
   const { name: campaignName, fullLabel: campaignFullLabel } =
     useCampaignDisplay()
@@ -92,6 +100,9 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     useCatalogDataset("global-values", toOnslaughtRunsPerDay)
   )
   const shops = readyData(useCatalogDataset("shops"))
+  // "Campaigns to push": who the player owns, their Power Level and the Elite threshold.
+  const { ownedUnitIds, powerLevel, eliteCampaignMinPowerLevel } =
+    useCampaignGateContext()
   const levelRules = useLevelRules()
   const { settings: planningSettings } = usePlanningSettings()
 
@@ -128,8 +139,25 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
       planningSettings.xpBookRarity,
     ]
   )
+  // Which nodes are farmable: event progress, battle overrides and the active event change it
+  // without touching `campaignProgressByKey`.
+  const eligibleBattlesKey = useMemo(
+    () => [...battlesById.keys()].sort().join(","),
+    [battlesById]
+  )
   // The Onslaught cadence too, so a catalog refresh that changes it recomputes.
-  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}`
+  // And the "Campaigns to push" inputs, which can land after the first run.
+  const progressionKey = [
+    allBattlesById?.size,
+    campaignDefinitions?.length,
+    [...campaignProgressByKey]
+      .map(([key, entry]) => `${key}=${entry.highestCompletedBattleIndex}`)
+      .join(","),
+    ownedUnitIds?.size,
+    powerLevel,
+    eliteCampaignMinPowerLevel,
+  ].join("|")
+  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}:${progressionKey}:${eligibleBattlesKey}`
   // A project scope that holds none of the plan's Active goals has nothing to report.
   const hasQuery = Boolean(
     isAuthenticated &&
@@ -148,14 +176,20 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   ].join(",")
   const serverDataReady =
     !globalPlan.loading && onslaughtProgressQuery.isSuccess
-  // A failed goals/progress read would otherwise leave `loading` true forever.
+  // A failed goals/progress or catalog read would otherwise leave `loading` true forever.
   const isError =
-    hasQuery && (globalPlan.isError || onslaughtProgressQuery.isError)
+    hasQuery &&
+    (globalPlan.isError || onslaughtProgressQuery.isError || catalogReadError)
   const retry = () => {
     if (globalPlan.isError) globalPlan.retry()
     if (onslaughtProgressQuery.isError) void onslaughtProgressQuery.refetch()
+    if (catalogReadError) retryCatalogReads()
   }
+  // Upgrades and the eligible battles load separately and start out as empty maps, so without
+  // waiting on them a run can see every crafted material as unfarmable and never redo it.
   const catalogReady =
+    upgradesReady &&
+    battlesReady &&
     !!charactersById &&
     !!mowsById &&
     !!onslaughtRewards?.length &&
@@ -264,6 +298,21 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             onslaughtRewards: onslaughtRewards,
             onslaughtRunsPerDay,
             shops,
+            campaignProgression: allBattlesById
+              ? {
+                  allBattlesById,
+                  campaignProgressByKey,
+                  definitionsByGroupId: new Map(
+                    (campaignDefinitions ?? []).map((definition) => [
+                      definition.groupId,
+                      definition,
+                    ])
+                  ),
+                  ownedUnitIds,
+                  powerLevel,
+                  eliteCampaignMinPowerLevel,
+                }
+              : undefined,
           })
 
           setFetchState({

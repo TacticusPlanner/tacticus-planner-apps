@@ -6,7 +6,7 @@ import type {
   MowUpgradeCostStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
-import type { UpgradeId } from "@workspace/game-domain"
+import { startingProgression, type UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal"
@@ -20,6 +20,7 @@ import {
   abilityResourceNeed,
   rankResourceNeed,
   rankSlotsRemaining,
+  type AbilityCoverage,
 } from "./goal-need"
 import { upgradeResourceNeed } from "./upgrade-goal-need"
 import {
@@ -41,6 +42,7 @@ type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 export type UnitCoverage = {
   primary: Set<number>
   secondary: Set<number>
+  mowSlots: Set<string>
   rankSlots: Set<string>
   ascension: AscensionCoverage
 }
@@ -48,6 +50,7 @@ export type UnitCoverage = {
 export const createUnitCoverage = (): UnitCoverage => ({
   primary: new Set(),
   secondary: new Set(),
+  mowSlots: new Set(),
   rankSlots: new Set(),
   ascension: createAscensionCoverage(),
 })
@@ -71,7 +74,7 @@ export type GoalRequirementParams = {
     number,
     CharacterAbilityCostStorageModel
   >
-  coveredAbilityTransitions?: { primary: Set<number>; secondary: Set<number> }
+  coveredAbilityTransitions?: AbilityCoverage
   /** The Rank slots earlier (higher-priority) goals of this character already claimed — one set per
    *  character across the plan, goals invoked in priority order (see `rankResourceNeed`). */
   coveredRankSlots?: Set<string>
@@ -187,7 +190,13 @@ export function calculateGoalResourceNeed(
       isMow,
       ownedShards: owned?.shards ?? 0,
       ownedMythicShards: owned?.mythicShards ?? 0,
-      currentProgression: owned?.progressionIndex,
+      // An unowned character lands on its starting rarity once unlocked: steps below it never cost
+      // orbs, even when the goal was saved starting lower (e.g. a Legendary saved from Common).
+      currentProgression:
+        owned?.progressionIndex ??
+        (!isMow && params.characterView
+          ? startingProgression(params.characterView.initialRarity)
+          : undefined),
       ascensionCostsById: params.ascensionCostsById,
       coverage: params.ascensionCoverage && {
         goalId: detail.goalId,

@@ -43,6 +43,7 @@ export function RunStatusCard({
   syncedAtMs,
   isMobile,
   onGoToRun,
+  forecast,
 }: {
   event: Pick<LegendaryEvent, "id" | "regularMissions" | "premiumMissions">
   lifecycle: LegendaryEventLifecycle
@@ -55,6 +56,8 @@ export function RunStatusCard({
   isMobile: boolean
   /** Opens the run tab (the Overview copy of the card). */
   onGoToRun?: () => void
+  /** The current run's forecast (the run tab's copy of the card), under the synced values. */
+  forecast?: ReactNode
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -62,8 +65,10 @@ export function RunStatusCard({
   const body = (() => {
     if (runStatus.kind === "loading") {
       return (
+        // The loaded values' height (seven one-line rows on a phone, four in two columns
+        // wider), so the panel below doesn't move when they arrive (web vitals plan item 8).
         <Skeleton
-          className="h-16 w-full rounded-lg"
+          className="h-40 w-full rounded-lg sm:h-24"
           data-testid="run-status-loading"
         />
       )
@@ -151,7 +156,7 @@ export function RunStatusCard({
   })()
 
   return (
-    <Card data-testid="legendary-event-run-status">
+    <Card data-testid="legendary-event-run-status" id="le-run-status">
       <CardHeader>
         <CardTitle>
           <h2>{t("runStatus.title")}</h2>
@@ -190,6 +195,7 @@ export function RunStatusCard({
       <CardContent className="flex flex-col gap-3">
         {body}
         <RewardOutlook outlook={outlook} />
+        {forecast}
         {syncedAtMs === undefined ? null : (
           <p
             className="text-xs text-muted-foreground"

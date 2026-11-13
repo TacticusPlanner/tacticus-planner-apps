@@ -139,7 +139,8 @@
       "replaceWarning": "Aplicar un código reemplaza tus objetivos, planes y ajustes actuales.",
       "confirm": "Entendido",
       "applied": "Código aplicado.",
-      "apply": "Aplicar código"
+      "apply": "Aplicar código",
+      "traceId": "ID de traza: {{traceId}}"
     }
   },
   "accountGate": {
@@ -442,6 +443,7 @@
         "quick": {
           "readyToRankUp": "Lista para subir de rango",
           "needToAscend": "Necesita ascender",
+          "canPromote": "Puede promocionar",
           "canAscend": "Puede ascender",
           "needToLevel": "Necesita subir de nivel",
           "blueStarReady": "Lista para la estrella azul",
@@ -451,6 +453,7 @@
         "quickHelp": {
           "readyToRankUp": "Tu inventario de mejoras cubre todos los materiales que aún faltan en el rango actual.",
           "needToAscend": "En el rango más alto de su rareza, con una Ascensión aún pendiente.",
+          "canPromote": "Tus fragmentos y orbes alcanzan para la siguiente estrella dentro de la rareza actual.",
           "canAscend": "Tus fragmentos y orbes alcanzan para la siguiente rareza (la siguiente estrella en Mítico).",
           "needToLevel": "Por debajo del nivel máximo de su rareza.",
           "blueStarReady": "Tus fragmentos y orbes alcanzan para todos los pasos hasta la primera estrella azul.",
@@ -648,6 +651,16 @@
         "keep": "Conservar",
         "keepLimitTooltip": "Elimina una instantánea para conservar esta",
         "keepFailed": "No se pudo conservar la instantánea."
+      },
+      "select": {
+        "start": "Seleccionar unidades",
+        "unit": "Seleccionar {{name}}",
+        "count_one": "{{count}} seleccionada",
+        "count_other": "{{count}} seleccionadas",
+        "selectAll": "Seleccionar todas las mostradas",
+        "clear": "Limpiar",
+        "createGoals": "Crear objetivos",
+        "done": "Listo"
       }
     }
   },
@@ -1203,6 +1216,7 @@
       "pause": "Pausar",
       "resume": "Reanudar",
       "delete": "Eliminar",
+      "deleteGoal": "Eliminar objetivo de {{entity}}",
       "moveToTop": "Mover al principio",
       "moveUp": "Subir",
       "moveDown": "Bajar",
@@ -1523,7 +1537,17 @@
         },
         "owned": "tienes {{count}}",
         "alreadyMet": "Ya tienes esa cantidad, así que este objetivo ya está cumplido.",
-        "noResources": "Ya tienes todos los materiales en estas cantidades."
+        "noResources": "Ya tienes todos los materiales en estas cantidades.",
+        "addRarity": {
+          "label": "Añadir todos:",
+          "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Cuenta para",
+          "hint": "Sus materiales cuentan para estos objetivos en lugar de farmearse aparte.",
+          "option": "{{type}} → {{target}}",
+          "empty": "No hay un objetivo en curso de esta unidad para el que pueda contar."
+        }
       },
       "previewTitle": "Recursos necesarios",
       "showAll": "Mostrar todo ({{count}})",
@@ -1538,6 +1562,7 @@
       "submit": "Crear objetivo",
       "close": "Cerrar",
       "genericError": "No se pudo crear el objetivo. Inténtalo de nuevo.",
+      "serverError": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
       "previewEstimate": "≈ {{days}} días",
       "previewEnergy": "{{energy}} energía",
       "reviewTitle": "Lo que se creará",
@@ -1560,7 +1585,7 @@
         "upgradeTargetsRequired": "Selecciona al menos una mejora para farmear para el objetivo de mejora.",
         "rankMaxed": "Este personaje ya ha alcanzado el rango máximo.",
         "progressionMaxed": "Esta unidad ya ha alcanzado el nivel máximo de ascensión.",
-        "abilityMaxed": "Las habilidades de esta unidad ya han alcanzado el nivel máximo para su rareza actual.",
+        "abilityMaxed": "Las habilidades de esta unidad ya han alcanzado el nivel máximo.",
         "activeOrPausedGoalExists": "Ya existe un objetivo de {{goalType}} activo o pausado para esta unidad.",
         "upgradeQuantity": "Introduce un número entero del 1 al 10.000.",
         "alreadyUnlocked_mow": "Esta máquina de guerra ya está desbloqueada.",
@@ -1630,6 +1655,7 @@
       "days": "en {{days}} días",
       "blockedLabel": "Bloqueado",
       "unavailableRow": "{{material}} ×{{count}}: {{reason}}",
+      "materialCount": "{{material}} ×{{count}}",
       "blocked": {
         "NoFarmLocation": "Ningún lugar de farmeo accesible proporciona un recurso necesario.",
         "FarmingOverrideUnavailable": "Los lugares de farmeo seleccionados no proporcionan todos los recursos necesarios.",
@@ -1637,7 +1663,16 @@
         "SimulationLimit": "El objetivo no pudo completarse dentro del horizonte de planificación.",
         "UnsupportedCost": "El cálculo detallado de coste no es compatible con este objetivo.",
         "FilteredOut": "Todos los lugares de farmeo están excluidos por tus filtros de incursiones."
-      }
+      },
+      "unlockAt": "Se desbloquea en",
+      "battlesToGo_one": "falta {{count}} batalla",
+      "battlesToGo_other": "faltan {{count}} batallas",
+      "battlesToGoNotStarted_one": "sin empezar, falta {{count}} batalla",
+      "battlesToGoNotStarted_other": "sin empezar, faltan {{count}} batallas",
+      "unlockDuringEvent": "durante el evento de campaña",
+      "unlockMore_one": "+{{count}} ubicación más",
+      "unlockMore_other": "+{{count}} ubicaciones más",
+      "unlockFewer": "Mostrar menos"
     },
     "unlockFlavor": "Reúne los fragmentos del personaje y prepáralo para unirse a tu plantel.",
     "filters": {
@@ -1647,11 +1682,14 @@
       "groupByLabel": "Agrupar por",
       "groupNone": "Sin agrupar",
       "groupByType": "Agrupar por tipo",
+      "groupByTypePriority": "Agrupar por tipo (por prioridad)",
       "groupByUnit": "Agrupar por unidad",
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos",
       "statusFilterLabel": "Filtro de estado de objetivos",
       "groupCount_one": "{{count}} objetivo",
-      "groupCount_other": "{{count}} objetivos"
+      "groupCount_other": "{{count}} objetivos",
+      "collapseAllGroups": "Contraer todo",
+      "expandAllGroups": "Expandir todo"
     },
     "seasonFit": {
       "label": "Ajuste a temporada",
@@ -1820,7 +1858,8 @@
       "holdingBackTitle": "Qué te frena",
       "holdingBackDescription": "Lo que ningún farmeo resuelve y, después, los recursos que más energía cuestan en los nodos que elegiste.",
       "holdingBackNone": "Nada frena estos objetivos.",
-      "neededFor": "Necesario para {{units}}",
+      "neededFor": "Necesario para",
+      "blockedGoals": "Objetivos bloqueados",
       "missingFarmed": "Recursos farmeados",
       "missingUpgrades": "Mejoras",
       "missingShards": "Fragmentos",
@@ -1829,7 +1868,21 @@
       "farmingSpot_other": "{{count}} recursos · {{days}}",
       "farmingSpotHint": "Ordenado por cuánto de lo que aún necesitan tus objetivos cae por energía. Cada fila muestra cuántos recursos necesarios caen allí y los días para farmearlos todos allí, con tu energía diaria y los intentos diarios de cada nodo.",
       "openSchedule": "Plan día a día",
-      "helpsGoals": "Ayuda a estos objetivos"
+      "helpsGoals": "Ayuda a estos objetivos",
+      "progressionTitle": "Campañas para avanzar",
+      "progressionDescription": "Campañas sin completar que desbloquean tus objetivos o abaratan su farmeo, con lo que aún te impide jugarlas.",
+      "battlesLeft_one": "falta {{count}} batalla",
+      "battlesLeft_other": "faltan {{count}} batallas",
+      "battlesLeftNotStarted_one": "Sin empezar, {{count}} batalla",
+      "battlesLeftNotStarted_other": "Sin empezar, {{count}} batallas",
+      "unblocks_one": "Desbloquea {{material}} en {{count}} batalla",
+      "unblocks_other": "Desbloquea {{material}} en {{count}} batallas",
+      "energySaved": "Ahorra unos {{energy}} de energía",
+      "lockMissingCore": "Desbloquea a {{units}} para jugarla",
+      "lockRequiredCampaign_one": "Completa antes {{campaign}} (falta {{count}} batalla)",
+      "lockRequiredCampaign_other": "Completa antes {{campaign}} (faltan {{count}} batallas)",
+      "lockPowerLevel": "Alcanza el nivel de poder {{required}} (tienes {{current}})",
+      "createUnlockGoal": "Añadir objetivo de desbloqueo para {{unit}}"
     },
     "target": {
       "title": "Objetivo",
@@ -1934,6 +1987,56 @@
       "label": "Vista de objetivos",
       "cards": "Tarjetas",
       "table": "Tabla"
+    },
+    "bulkCreate": {
+      "title_one": "Crear objetivos para {{count}} unidad",
+      "title_other": "Crear objetivos para {{count}} unidades",
+      "targets": {
+        "unlock": "Desbloquear las unidades que no tienes",
+        "ascension": "Ascensión",
+        "ascensionTo": "Ascender hasta",
+        "rank": "Rango",
+        "rankTo": "Subir de rango hasta",
+        "ability": "Habilidades",
+        "abilityTo": "Nivel de habilidad",
+        "abilityDecrease": "Bajar el nivel de habilidad",
+        "abilityIncrease": "Subir el nivel de habilidad",
+        "allAtTop": "Todas las unidades seleccionadas ya están al máximo."
+      },
+      "summary_one": "{{count}} objetivo para {{units}}",
+      "summary_other": "{{count}} objetivos para {{units}}",
+      "unitCount_one": "{{count}} unidad",
+      "unitCount_other": "{{count}} unidades",
+      "created_one": "Se creó {{count}} objetivo.",
+      "created_other": "Se crearon {{count}} objetivos.",
+      "overLimit": "Se superaría el límite de {{max}} objetivos por tipo en: {{types}}. Quita antes algunas unidades u objetivos.",
+      "cancel": "Cancelar",
+      "submit_one": "Crear {{count}} objetivo",
+      "submit_other": "Crear {{count}} objetivos",
+      "retryFailed_one": "Reintentar {{count}} fallido",
+      "retryFailed_other": "Reintentar {{count}} fallidos",
+      "done": "Listo",
+      "status": {
+        "pending": "creando",
+        "done": "creado",
+        "failed": "fallido"
+      },
+      "skipped": "{{type}} omitido: {{reason}}",
+      "skipReasons": {
+        "reached": "ya alcanzado",
+        "alreadyGoal": "ya es un objetivo",
+        "notForMow": "no aplica a Máquinas de Guerra",
+        "notOwned": "no la tienes (activa Desbloquear)"
+      },
+      "nothingToCreate": "No hay nada que crear para esta unidad.",
+      "removeUnit": "Quitar {{name}}",
+      "goal": {
+        "range": "{{type}} {{start}} → {{end}}",
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (necesaria)",
+        "active": "Activa",
+        "passive": "Pasiva",
+        "needed": "necesaria"
+      }
     }
   },
   "language": {
@@ -2211,6 +2314,10 @@
         "unownedRosterMobile": {
           "title": "Aún no desbloqueada",
           "content": "Las filas en gris no están en tu plantilla. Toca una fila para ver lo cerca que estás de desbloquearla y abre desde ahí sus detalles en la Biblioteca."
+        },
+        "selectUnits": {
+          "title": "Objetivos para muchas unidades",
+          "content": "Selecciona varias unidades y crea a la vez el mismo objetivo de Ascensión, Rango, Habilidades o Desbloqueo para todas."
         }
       }
     },

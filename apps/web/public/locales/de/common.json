@@ -139,7 +139,8 @@
       "replaceWarning": "Das Anwenden eines Codes ersetzt deine aktuellen Ziele, Pläne und Einstellungen.",
       "confirm": "Verstanden",
       "applied": "Code angewendet.",
-      "apply": "Code anwenden"
+      "apply": "Code anwenden",
+      "traceId": "Trace-ID: {{traceId}}"
     }
   },
   "accountGate": {
@@ -442,6 +443,7 @@
         "quick": {
           "readyToRankUp": "Bereit zum Rangaufstieg",
           "needToAscend": "Aufstieg nötig",
+          "canPromote": "Beförderung möglich",
           "canAscend": "Aufstieg möglich",
           "needToLevel": "Stufe erhöhen",
           "blueStarReady": "Bereit für blauen Stern",
@@ -451,6 +453,7 @@
         "quickHelp": {
           "readyToRankUp": "Dein Verbesserungsinventar deckt alle Materialien, die im aktuellen Rang noch fehlen.",
           "needToAscend": "Auf dem höchsten Rang seiner Seltenheit, mit einem noch ausstehenden Aufstieg.",
+          "canPromote": "Deine Scherben und Orbs reichen für den nächsten Stern innerhalb der aktuellen Seltenheit.",
           "canAscend": "Deine Scherben und Orbs reichen für die nächste Seltenheit (bei Mythisch für den nächsten Stern).",
           "needToLevel": "Unter der Stufenobergrenze seiner Seltenheit.",
           "blueStarReady": "Deine Scherben und Orbs reichen für alle Schritte bis zum ersten blauen Stern.",
@@ -648,6 +651,16 @@
         "keep": "Behalten",
         "keepLimitTooltip": "Lösche einen Snapshot, um diesen zu behalten",
         "keepFailed": "Der Snapshot konnte nicht behalten werden."
+      },
+      "select": {
+        "start": "Einheiten auswählen",
+        "unit": "{{name}} auswählen",
+        "count_one": "{{count}} ausgewählt",
+        "count_other": "{{count}} ausgewählt",
+        "selectAll": "Alle angezeigten auswählen",
+        "clear": "Leeren",
+        "createGoals": "Ziele erstellen",
+        "done": "Fertig"
       }
     }
   },
@@ -1203,6 +1216,7 @@
       "pause": "Pausieren",
       "resume": "Fortsetzen",
       "delete": "Löschen",
+      "deleteGoal": "Ziel für {{entity}} löschen",
       "moveToTop": "Ganz nach oben",
       "moveUp": "Nach oben verschieben",
       "moveDown": "Nach unten verschieben",
@@ -1523,7 +1537,17 @@
         },
         "owned": "{{count}} im Besitz",
         "alreadyMet": "Du besitzt bereits so viele, das Ziel ist also schon erreicht.",
-        "noResources": "Du besitzt bereits alle Materialien in diesen Mengen."
+        "noResources": "Du besitzt bereits alle Materialien in diesen Mengen.",
+        "addRarity": {
+          "label": "Alle hinzufügen:",
+          "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Zählt für",
+          "hint": "Seine Materialien zählen für diese Ziele, statt zusätzlich gefarmt zu werden.",
+          "option": "{{type}} → {{target}}",
+          "empty": "Kein laufendes Ziel dieser Einheit, für das es zählen kann."
+        }
       },
       "previewTitle": "Benötigte Ressourcen",
       "showAll": "Alle anzeigen ({{count}})",
@@ -1538,6 +1562,7 @@
       "submit": "Ziel erstellen",
       "close": "Schließen",
       "genericError": "Das Ziel konnte nicht erstellt werden. Bitte versuche es erneut.",
+      "serverError": "Der Server war nicht erreichbar. Bitte versuche es erneut.",
       "previewEstimate": "≈ {{days}} Tage",
       "previewEnergy": "{{energy}} Energie",
       "reviewTitle": "Was erstellt wird",
@@ -1560,7 +1585,7 @@
         "upgradeTargetsRequired": "Wähle mindestens ein Upgrade aus, das für das Upgrade-Ziel gefarmt werden soll.",
         "rankMaxed": "Dieser Charakter hat bereits den maximalen Rang erreicht.",
         "progressionMaxed": "Diese Einheit hat bereits die maximale Aufstiegsstufe erreicht.",
-        "abilityMaxed": "Die Fähigkeiten dieser Einheit haben bereits die maximale Stufe für ihre aktuelle Seltenheit erreicht.",
+        "abilityMaxed": "Die Fähigkeiten dieser Einheit haben bereits die maximale Stufe erreicht.",
         "activeOrPausedGoalExists": "Für diese Einheit existiert bereits ein aktives oder pausiertes {{goalType}}-Ziel.",
         "upgradeQuantity": "Gib eine ganze Zahl von 1 bis 10.000 ein.",
         "alreadyUnlocked_mow": "Diese Kriegsmaschine ist bereits freigeschaltet.",
@@ -1630,6 +1655,7 @@
       "days": "in {{days}} Tagen",
       "blockedLabel": "Blockiert",
       "unavailableRow": "{{material}} ×{{count}}: {{reason}}",
+      "materialCount": "{{material}} ×{{count}}",
       "blocked": {
         "NoFarmLocation": "Kein erreichbarer Farm-Ort liefert eine benötigte Ressource.",
         "FarmingOverrideUnavailable": "Die gewählten Farm-Orte liefern nicht jede benötigte Ressource.",
@@ -1637,7 +1663,16 @@
         "SimulationLimit": "Das Ziel konnte innerhalb des Planungshorizonts nicht abgeschlossen werden.",
         "UnsupportedCost": "Für dieses Ziel wird keine detaillierte Kostenberechnung unterstützt.",
         "FilteredOut": "Jeder Farm-Ort wird von deinen Raid-Filtern ausgeschlossen."
-      }
+      },
+      "unlockAt": "Freigeschaltet bei",
+      "battlesToGo_one": "noch {{count}} Kampf",
+      "battlesToGo_other": "noch {{count}} Kämpfe",
+      "battlesToGoNotStarted_one": "nicht begonnen, noch {{count}} Kampf",
+      "battlesToGoNotStarted_other": "nicht begonnen, noch {{count}} Kämpfe",
+      "unlockDuringEvent": "während des Kampagnen-Events",
+      "unlockMore_one": "+{{count}} weiterer Ort",
+      "unlockMore_other": "+{{count}} weitere Orte",
+      "unlockFewer": "Weniger anzeigen"
     },
     "unlockFlavor": "Sammle die Scherben des Charakters und bereite ihn darauf vor, deinem Kader beizutreten.",
     "filters": {
@@ -1647,11 +1682,14 @@
       "groupByLabel": "Gruppieren nach",
       "groupNone": "Keine Gruppierung",
       "groupByType": "Nach Typ gruppieren",
+      "groupByTypePriority": "Nach Typ gruppieren (Priorität)",
       "groupByUnit": "Nach Einheit gruppieren",
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden",
       "statusFilterLabel": "Zielstatus-Filter",
       "groupCount_one": "{{count}} Ziel",
-      "groupCount_other": "{{count}} Ziele"
+      "groupCount_other": "{{count}} Ziele",
+      "collapseAllGroups": "Alle einklappen",
+      "expandAllGroups": "Alle ausklappen"
     },
     "seasonFit": {
       "label": "Saison-Passung",
@@ -1820,7 +1858,8 @@
       "holdingBackTitle": "Was dich aufhält",
       "holdingBackDescription": "Was kein Farmen löst, danach die Ressourcen, die an deinen gewählten Knoten die meiste Energie kosten.",
       "holdingBackNone": "Nichts hält diese Ziele auf.",
-      "neededFor": "Benötigt für {{units}}",
+      "neededFor": "Benötigt für",
+      "blockedGoals": "Blockierte Ziele",
       "missingFarmed": "Gefarmte Ressourcen",
       "missingUpgrades": "Upgrades",
       "missingShards": "Scherben",
@@ -1829,7 +1868,21 @@
       "farmingSpot_other": "{{count}} Ressourcen · {{days}}",
       "farmingSpotHint": "Sortiert danach, wie viel von dem, was deine Ziele noch brauchen, pro Energie dort droppt. Jede Zeile zeigt, wie viele benötigte Ressourcen dort droppen und wie viele Tage es dauert, sie alle dort zu farmen – bei deiner täglichen Energie und den täglichen Versuchen jedes Knotens.",
       "openSchedule": "Tag-für-Tag-Plan",
-      "helpsGoals": "Hilft diesen Zielen"
+      "helpsGoals": "Hilft diesen Zielen",
+      "progressionTitle": "Kampagnen zum Vorantreiben",
+      "progressionDescription": "Nicht abgeschlossene Kampagnen, die deine Ziele freischalten oder ihr Farmen günstiger machen, und was dich noch daran hindert, sie zu spielen.",
+      "battlesLeft_one": "noch {{count}} Kampf",
+      "battlesLeft_other": "noch {{count}} Kämpfe",
+      "battlesLeftNotStarted_one": "Nicht begonnen, {{count}} Kampf",
+      "battlesLeftNotStarted_other": "Nicht begonnen, {{count}} Kämpfe",
+      "unblocks_one": "Schaltet {{material}} in {{count}} Kampf frei",
+      "unblocks_other": "Schaltet {{material}} in {{count}} Kämpfen frei",
+      "energySaved": "Spart etwa {{energy}} Energie",
+      "lockMissingCore": "Schalte {{units}} frei, um sie zu spielen",
+      "lockRequiredCampaign_one": "Schließe zuerst {{campaign}} ab (noch {{count}} Kampf)",
+      "lockRequiredCampaign_other": "Schließe zuerst {{campaign}} ab (noch {{count}} Kämpfe)",
+      "lockPowerLevel": "Erreiche Machtstufe {{required}} (aktuell {{current}})",
+      "createUnlockGoal": "Freischalten-Ziel für {{unit}} anlegen"
     },
     "target": {
       "title": "Ziel",
@@ -1934,6 +1987,56 @@
       "label": "Zielansicht",
       "cards": "Karten",
       "table": "Tabelle"
+    },
+    "bulkCreate": {
+      "title_one": "Ziele für {{count}} Einheit erstellen",
+      "title_other": "Ziele für {{count}} Einheiten erstellen",
+      "targets": {
+        "unlock": "Nicht freigeschaltete Einheiten freischalten",
+        "ascension": "Aufstieg",
+        "ascensionTo": "Aufsteigen bis",
+        "rank": "Rang",
+        "rankTo": "Rang erhöhen bis",
+        "ability": "Fähigkeiten",
+        "abilityTo": "Fähigkeitsstufe",
+        "abilityDecrease": "Fähigkeitsstufe senken",
+        "abilityIncrease": "Fähigkeitsstufe erhöhen",
+        "allAtTop": "Alle ausgewählten Einheiten sind bereits am Maximum."
+      },
+      "summary_one": "{{count}} Ziel für {{units}}",
+      "summary_other": "{{count}} Ziele für {{units}}",
+      "unitCount_one": "{{count}} Einheit",
+      "unitCount_other": "{{count}} Einheiten",
+      "created_one": "{{count}} Ziel erstellt.",
+      "created_other": "{{count}} Ziele erstellt.",
+      "overLimit": "Damit würde das Limit von {{max}} Zielen pro Typ überschritten für: {{types}}. Entferne zuerst einige Einheiten oder Ziele.",
+      "cancel": "Abbrechen",
+      "submit_one": "{{count}} Ziel erstellen",
+      "submit_other": "{{count}} Ziele erstellen",
+      "retryFailed_one": "{{count}} fehlgeschlagenes wiederholen",
+      "retryFailed_other": "{{count}} fehlgeschlagene wiederholen",
+      "done": "Fertig",
+      "status": {
+        "pending": "wird erstellt",
+        "done": "erstellt",
+        "failed": "fehlgeschlagen"
+      },
+      "skipped": "{{type}} übersprungen: {{reason}}",
+      "skipReasons": {
+        "reached": "bereits erreicht",
+        "alreadyGoal": "bereits ein Ziel",
+        "notForMow": "nicht für Kriegsmaschinen",
+        "notOwned": "nicht freigeschaltet (Freischalten aktivieren)"
+      },
+      "nothingToCreate": "Für diese Einheit gibt es nichts zu erstellen.",
+      "removeUnit": "{{name}} entfernen",
+      "goal": {
+        "range": "{{type}} {{start}} → {{end}}",
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (benötigt)",
+        "active": "Aktiv",
+        "passive": "Passiv",
+        "needed": "benötigt"
+      }
     }
   },
   "language": {
@@ -2211,6 +2314,10 @@
         "unownedRosterMobile": {
           "title": "Noch nicht freigeschaltet",
           "content": "Ausgegraute Zeilen sind nicht in deinem Kader. Tippe auf eine Zeile, um zu sehen, wie nah du an der Freischaltung bist, und öffne von dort ihre Details in der Bibliothek."
+        },
+        "selectUnits": {
+          "title": "Ziele für viele Einheiten",
+          "content": "Wähle mehrere Einheiten aus und erstelle für alle auf einmal dasselbe Aufstiegs-, Rang-, Fähigkeiten- oder Freischaltziel."
         }
       }
     },

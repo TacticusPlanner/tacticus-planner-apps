@@ -27,6 +27,7 @@ import {
 } from "@/entities/legendary-event"
 import {
   ClearDepthField,
+  depthEstimateContext,
   editStartsFromEstimate,
   type DepthEstimateContext,
 } from "@/features/legendary-event-plan"
@@ -34,7 +35,12 @@ import { useDebouncedCommit } from "@/shared/lib"
 import type { SortableRenderProps } from "@/shared/ui"
 
 import { PointsLeft, TeamPower } from "./team-card-figures"
-import { teamDepthBar, type DepthBar, type DepthTone } from "./team-depth-bar"
+import {
+  depthBandClauses,
+  teamDepthBar,
+  type DepthBar,
+  type DepthTone,
+} from "./team-depth-bar"
 import type { TeamCardViewModel } from "./teams.view-model"
 
 const FULL_TEAM = 5
@@ -88,13 +94,21 @@ export function TeamCard({
       actions.onUseEstimate(card.estimate.depth)
       return
     }
-    actions.onDepthChange(next, {
-      estimate: card.estimate?.depth ?? null,
-      fromEstimate: editStartsFromEstimate(
-        card.expectedBattleClears,
-        card.estimate
-      ),
-    })
+    actions.onDepthChange(
+      next,
+      depthEstimateContext(card.estimate, {
+        fromEstimate: editStartsFromEstimate(
+          card.expectedBattleClears,
+          card.estimate
+        ),
+        teamPower: card.teamPower,
+        memberCount: card.memberCount,
+        unitIds: card.team.memberUnitIds,
+        objectiveIndexes: card.team.objectiveIndexes,
+        memberPowers: card.memberPowers,
+        source: "card",
+      })
+    )
   }
   const [depth, setDepth] = useDebouncedCommit(
     card.expectedBattleClears,
@@ -278,6 +292,7 @@ export function TeamCard({
         <div className="mt-1.5 flex flex-wrap items-baseline gap-x-3 gap-y-1 font-medium tabular-nums">
           <PointsLeft card={card} format={(value) => number.format(value)} />
           <TeamPower card={card} format={(value) => number.format(value)} />
+          <DepthBands bar={bar} />
           {lastRunClearedBattle === undefined ? null : (
             <span
               className="text-xs font-normal text-muted-foreground"
@@ -401,6 +416,47 @@ const TONE_CLASS: Record<DepthTone, string> = {
   none: "bg-muted",
 }
 
+/** Diagonal gaps of the card colour across a toned segment: a close battle. */
+const CLOSE_STRIPES =
+  "repeating-linear-gradient(135deg, transparent 0 4px, var(--card) 4px 5.5px)"
+
+const TONE_COLOR: Record<DepthTone, string> = {
+  manual: "var(--primary)",
+  room: "var(--success-foreground)",
+  close: "var(--season-fit-caution)",
+  none: "var(--muted)",
+}
+
+/** Thin diagonal stripes of the tone across an empty segment: a stretch battle. */
+function stretchStripes(tone: DepthTone): string {
+  return `repeating-linear-gradient(135deg, ${TONE_COLOR[tone]} 0 1.25px, transparent 1.25px 5px)`
+}
+
+/** The estimate's bands as one sentence ("Clears battles 1–10 for sure, 11 likely, up to 12 at
+ *  best"); undefined when they add nothing to the headline depth. */
+function useDepthBandsText(bar: DepthBar): string | undefined {
+  const { t } = useTranslation("legendaryEvents")
+  const clauses = depthBandClauses(bar)
+  if (clauses.length === 0) return undefined
+  return clauses
+    .map(({ key, values }) => t(`teams.depthBar.bands.${key}`, values))
+    .join(", ")
+}
+
+/** The estimate's bands in the Details fold, so they read without hovering the bar. */
+function DepthBands({ bar }: { bar: DepthBar }) {
+  const text = useDepthBandsText(bar)
+  if (text === undefined) return null
+  return (
+    <span
+      className="basis-full text-xs font-normal text-muted-foreground"
+      data-testid="team-card-bands"
+    >
+      {text}
+    </span>
+  )
+}
+
 /** The team's depth as one segment per lane battle, filled through the depth and toned by where
  *  it comes from (see `teamDepthBar`), with "Battles 1–n" as the headline figure. */
 function TeamDepthBar({
@@ -422,12 +478,18 @@ function TeamDepthBar({
       : depth === 0
         ? t("teams.depthBar.cannotClear")
         : t("teams.depthBar.battles", { depth })
+  const bands = useDepthBandsText(bar)
   const hint =
     bar.tone === "manual"
       ? t("teams.depthBar.manual")
-      : bar.tone === "close" && depth !== null
-        ? t("teams.depthBar.close", { battle: depth + 1 })
-        : undefined
+      : [
+          bar.tone === "close" && depth !== null
+            ? t("teams.depthBar.close", { battle: depth + 1 })
+            : undefined,
+          bands,
+        ]
+          .filter(Boolean)
+          .join(" · ") || undefined
   const label =
     depth === null
       ? headline
@@ -461,6 +523,24 @@ function TeamDepthBar({
               "h-full flex-1 first:rounded-l-full last:rounded-r-full",
               index < bar.filled ? TONE_CLASS[bar.tone] : "bg-muted"
             )}
+            // Sure battles are solid; close ones (past sure, within the depth) are striped with
+            // gaps, and stretch ones (past the depth) are empty with thin stripes of the tone.
+            style={
+              index >= bar.sure && index < bar.filled
+                ? { backgroundImage: CLOSE_STRIPES }
+                : index >= bar.filled && index < bar.stretch
+                  ? { backgroundImage: stretchStripes(bar.tone) }
+                  : undefined
+            }
+            data-band={
+              index < bar.sure
+                ? "sure"
+                : index < bar.filled
+                  ? "close"
+                  : index < bar.stretch
+                    ? "stretch"
+                    : undefined
+            }
             key={index}
           />
         ))}

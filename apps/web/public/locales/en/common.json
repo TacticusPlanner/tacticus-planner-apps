@@ -139,7 +139,8 @@
       "replaceWarning": "Applying a code replaces your current goals, plans and settings.",
       "confirm": "I understand",
       "applied": "Code applied.",
-      "apply": "Apply code"
+      "apply": "Apply code",
+      "traceId": "Trace ID: {{traceId}}"
     }
   },
   "accountGate": {
@@ -442,6 +443,7 @@
         "quick": {
           "readyToRankUp": "Ready to rank up",
           "needToAscend": "Need to ascend",
+          "canPromote": "Can promote",
           "canAscend": "Can ascend",
           "needToLevel": "Need to level",
           "blueStarReady": "Blue star ready",
@@ -451,6 +453,7 @@
         "quickHelp": {
           "readyToRankUp": "Your upgrade inventory covers every material still needed at the current rank.",
           "needToAscend": "At the highest rank for its rarity, with an ascension still ahead.",
+          "canPromote": "Your shards and orbs pay for the next star within the current rarity.",
           "canAscend": "Your shards and orbs pay for the next rarity (the next star at Mythic).",
           "needToLevel": "Below the level cap for its rarity.",
           "blueStarReady": "Your shards and orbs pay for every step up to one blue star.",
@@ -648,6 +651,16 @@
         "keep": "Keep",
         "keepLimitTooltip": "Delete a snapshot to keep this one",
         "keepFailed": "The snapshot couldn't be kept."
+      },
+      "select": {
+        "start": "Select units",
+        "unit": "Select {{name}}",
+        "count_one": "{{count}} selected",
+        "count_other": "{{count}} selected",
+        "selectAll": "Select all shown",
+        "clear": "Clear",
+        "createGoals": "Create goals",
+        "done": "Done"
       }
     }
   },
@@ -1203,6 +1216,7 @@
       "pause": "Pause",
       "resume": "Resume",
       "delete": "Delete",
+      "deleteGoal": "Delete {{entity}} goal",
       "moveToTop": "Move to top",
       "moveUp": "Move up",
       "moveDown": "Move down",
@@ -1523,7 +1537,17 @@
         },
         "owned": "own {{count}}",
         "alreadyMet": "You already own this many, so this target is already met.",
-        "noResources": "You already own every material in these quantities."
+        "noResources": "You already own every material in these quantities.",
+        "addRarity": {
+          "label": "Add all:",
+          "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Counts toward",
+          "hint": "Its materials count toward these goals instead of being farmed on top of them.",
+          "option": "{{type}} → {{target}}",
+          "empty": "No in-flight goal on this unit to count toward."
+        }
       },
       "previewTitle": "Resources needed",
       "showAll": "Show all ({{count}})",
@@ -1538,6 +1562,7 @@
       "submit": "Create goal",
       "close": "Close",
       "genericError": "Couldn't create the goal. Please try again.",
+      "serverError": "Couldn't reach the server. Please try again.",
       "previewEstimate": "≈ {{days}} days",
       "previewEnergy": "{{energy}} energy",
       "reviewTitle": "What will be created",
@@ -1560,7 +1585,7 @@
         "upgradeTargetsRequired": "Select at least one upgrade to farm for the Upgrade goal.",
         "rankMaxed": "This character has already reached the maximum rank.",
         "progressionMaxed": "This unit has already reached the maximum progression level.",
-        "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",
+        "abilityMaxed": "This unit's abilities have already reached the maximum level.",
         "activeOrPausedGoalExists": "An active or paused {{goalType}} goal already exists for this unit.",
         "upgradeQuantity": "Enter a whole number from 1 to 10,000.",
         "alreadyUnlocked_mow": "This Machine of War is already unlocked.",
@@ -1630,6 +1655,7 @@
       "days": "in {{days}} days",
       "blockedLabel": "Blocked",
       "unavailableRow": "{{material}} ×{{count}}: {{reason}}",
+      "materialCount": "{{material}} ×{{count}}",
       "blocked": {
         "NoFarmLocation": "No accessible farming location provides a required resource.",
         "FarmingOverrideUnavailable": "The selected farming locations do not provide every required resource.",
@@ -1637,7 +1663,16 @@
         "SimulationLimit": "The goal could not complete within the planning horizon.",
         "UnsupportedCost": "Detailed costing is not supported for this goal.",
         "FilteredOut": "Every farming location is excluded by your Raids Filters."
-      }
+      },
+      "unlockAt": "Unlocks at",
+      "battlesToGo_one": "{{count}} battle to go",
+      "battlesToGo_other": "{{count}} battles to go",
+      "battlesToGoNotStarted_one": "not started, {{count}} battle to go",
+      "battlesToGoNotStarted_other": "not started, {{count}} battles to go",
+      "unlockDuringEvent": "during the campaign event",
+      "unlockMore_one": "+{{count}} more location",
+      "unlockMore_other": "+{{count}} more locations",
+      "unlockFewer": "Show fewer"
     },
     "unlockFlavor": "Gather the character's shards and prepare them to join your roster.",
     "filters": {
@@ -1647,11 +1682,14 @@
       "groupByLabel": "Group by",
       "groupNone": "No grouping",
       "groupByType": "Group by type",
+      "groupByTypePriority": "Group by type (priority order)",
       "groupByUnit": "Group by unit",
       "reachedIndicatorLabel": "Reached goals are waiting to be viewed",
       "statusFilterLabel": "Goal status filter",
       "groupCount_one": "{{count}} goal",
-      "groupCount_other": "{{count}} goals"
+      "groupCount_other": "{{count}} goals",
+      "collapseAllGroups": "Collapse all",
+      "expandAllGroups": "Expand all"
     },
     "seasonFit": {
       "label": "Season fit",
@@ -1820,7 +1858,8 @@
       "holdingBackTitle": "What's holding you back",
       "holdingBackDescription": "What no farming clears, then the resources that take the most energy at your chosen nodes.",
       "holdingBackNone": "Nothing is holding these goals back.",
-      "neededFor": "Needed for {{units}}",
+      "neededFor": "Needed for",
+      "blockedGoals": "Goals it blocks",
       "missingFarmed": "Farmed resources",
       "missingUpgrades": "Upgrades",
       "missingShards": "Shards",
@@ -1829,7 +1868,21 @@
       "farmingSpot_other": "{{count}} resources · {{days}}",
       "farmingSpotHint": "Ranked by how much of what your goals still need drops per energy. Each row shows how many needed resources drop there and the days to farm them all there, at your daily energy and each node's daily attempts.",
       "openSchedule": "Day-by-day plan",
-      "helpsGoals": "Helps these goals"
+      "helpsGoals": "Helps these goals",
+      "progressionTitle": "Campaigns to push",
+      "progressionDescription": "Uncleared campaigns that unblock your goals or make their farming cheaper, with what still stops you from playing them.",
+      "battlesLeft_one": "{{count}} battle left",
+      "battlesLeft_other": "{{count}} battles left",
+      "battlesLeftNotStarted_one": "Not started, {{count}} battle",
+      "battlesLeftNotStarted_other": "Not started, {{count}} battles",
+      "unblocks_one": "Unblocks {{material}} in {{count}} battle",
+      "unblocks_other": "Unblocks {{material}} in {{count}} battles",
+      "energySaved": "Saves about {{energy}} energy",
+      "lockMissingCore": "Unlock {{units}} to play it",
+      "lockRequiredCampaign_one": "Clear {{campaign}} first ({{count}} battle left)",
+      "lockRequiredCampaign_other": "Clear {{campaign}} first ({{count}} battles left)",
+      "lockPowerLevel": "Reach Power Level {{required}} (you're at {{current}})",
+      "createUnlockGoal": "Add Unlock goal for {{unit}}"
     },
     "target": {
       "title": "Target",
@@ -1934,6 +1987,56 @@
       "label": "Goals view",
       "cards": "Cards",
       "table": "Table"
+    },
+    "bulkCreate": {
+      "title_one": "Create goals for {{count}} unit",
+      "title_other": "Create goals for {{count}} units",
+      "targets": {
+        "unlock": "Unlock units you don't own",
+        "ascension": "Ascension",
+        "ascensionTo": "Ascend to",
+        "rank": "Rank",
+        "rankTo": "Rank up to",
+        "ability": "Abilities",
+        "abilityTo": "Ability level",
+        "abilityDecrease": "Lower the ability level",
+        "abilityIncrease": "Raise the ability level",
+        "allAtTop": "Every selected unit is already at the top."
+      },
+      "summary_one": "{{count}} goal for {{units}}",
+      "summary_other": "{{count}} goals for {{units}}",
+      "unitCount_one": "{{count}} unit",
+      "unitCount_other": "{{count}} units",
+      "created_one": "Created {{count}} goal.",
+      "created_other": "Created {{count}} goals.",
+      "overLimit": "This would pass the limit of {{max}} goals per type for: {{types}}. Remove some units or goals first.",
+      "cancel": "Cancel",
+      "submit_one": "Create {{count}} goal",
+      "submit_other": "Create {{count}} goals",
+      "retryFailed_one": "Retry {{count}} failed",
+      "retryFailed_other": "Retry {{count}} failed",
+      "done": "Done",
+      "status": {
+        "pending": "creating",
+        "done": "created",
+        "failed": "failed"
+      },
+      "skipped": "{{type}} skipped: {{reason}}",
+      "skipReasons": {
+        "reached": "already reached",
+        "alreadyGoal": "already a goal",
+        "notForMow": "not for Machines of War",
+        "notOwned": "not owned (turn on Unlock)"
+      },
+      "nothingToCreate": "Nothing to create for this unit.",
+      "removeUnit": "Remove {{name}}",
+      "goal": {
+        "range": "{{type}} {{start}} → {{end}}",
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (needed)",
+        "active": "Active",
+        "passive": "Passive",
+        "needed": "needed"
+      }
     }
   },
   "language": {
@@ -2211,6 +2314,10 @@
         "unownedRosterMobile": {
           "title": "Not unlocked yet",
           "content": "Greyed-out rows aren't in your roster. Tap a row to see how close you are to unlocking it, then open its details in the Library from there."
+        },
+        "selectUnits": {
+          "title": "Goals for many units",
+          "content": "Select several units, then create the same Ascension, Rank, Abilities or Unlock goal for all of them at once."
         }
       }
     },

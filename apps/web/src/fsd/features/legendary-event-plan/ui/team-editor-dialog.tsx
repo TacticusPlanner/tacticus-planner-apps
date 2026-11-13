@@ -46,10 +46,11 @@ import {
   editStartsFromEstimate,
 } from "../model/clear-depth-display"
 import type { PickerEstimates, PickerGoalsPreview } from "../model/team-picker"
-import type {
-  DepthEstimateContext,
-  PlanMutationOutcome,
-} from "../model/use-legendary-event-plan"
+import {
+  depthEstimateContext,
+  type DepthEstimateContext,
+} from "../model/depth-estimate-context"
+import type { PlanMutationOutcome } from "../model/use-legendary-event-plan"
 import { ClearDepthField } from "./clear-depth-field"
 import { TeamEditorSummary } from "./team-editor-summary"
 import { TeamMemberCount } from "./team-member-count"
@@ -90,6 +91,7 @@ export function TeamEditorDialog({
   onSubmit,
   estimateTeam,
   initialMemberUnitIds,
+  initialReserveUnitId,
   initialObjectives,
   goalsPreview,
   goalLines,
@@ -119,6 +121,8 @@ export function TeamEditorDialog({
   estimateTeam?: (memberUnitIds: readonly string[]) => ClearEstimate | null
   /** A new team's members, in order (a team suggestion); ignored when editing a team. */
   initialMemberUnitIds?: readonly string[]
+  /** A new team's reserve (a team suggestion's); ignored when editing a team. */
+  initialReserveUnitId?: string | null
   /** The picker's objective chips selected on opening (a team suggestion's objectives); an edited
    *  team's own objectives when absent. */
   initialObjectives?: readonly number[]
@@ -136,7 +140,14 @@ export function TeamEditorDialog({
   const needsMembersId = useId()
   const context = { lane, units }
   const [initialDraft] = useState(() =>
-    initialEditorDraft(team, run, context, initialMemberUnitIds, teamName)
+    initialEditorDraft(
+      team,
+      run,
+      context,
+      initialMemberUnitIds,
+      teamName,
+      initialReserveUnitId
+    )
   )
   const [draft, setDraft] = useState(initialDraft)
   const [saving, setSaving] = useState(false)
@@ -189,10 +200,17 @@ export function TeamEditorDialog({
     if (!canSave) return
     setSaving(true)
     setReloaded(false)
-    const outcome = await onSubmit(toTeamDraft(draft, name), {
-      estimate: estimate?.depth ?? null,
-      fromEstimate: editStartsFromEstimate(initialDraft.depth, estimate),
-    })
+    const outcome = await onSubmit(
+      toTeamDraft(draft, name),
+      depthEstimateContext(estimate, {
+        fromEstimate: editStartsFromEstimate(initialDraft.depth, estimate),
+        teamPower: null,
+        memberCount: draft.memberUnitIds.length,
+        unitIds: draft.memberUnitIds,
+        objectiveIndexes: checked,
+        source: "editor",
+      })
+    )
     setSaving(false)
     setReloaded(outcome === "conflict")
     if (outcome !== "saved") return

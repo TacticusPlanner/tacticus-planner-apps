@@ -13,8 +13,8 @@ For a lane, the planner SHALL build proposals, client side and never stored, as 
 - **Subsets.** Every set of one, two or three of the lane's objectives.
 - **Candidates.** For a subset, the units the lane allows that satisfy every objective in it. Units the synced roster lacks are excluded while **Only unlocked** is on.
 - **Order.** Candidates are ordered: units with an Active Unlock, Ascension, Rank or Ability goal first, only while **Prefer units with goals** is on; then effective power on the synced roster (Stage 5), descending; then points per battle, descending; then localized name.
-- **Proposal.** The first five candidates, in that order, with no reserve, when the subset has at least three candidates; a subset with fewer than three has no proposal (a team needs three characters, `legendary-event-team-size`). Its covered objectives are derived from its members (every objective all of them satisfy), and its depth is its Stage 5 team estimate.
-- **Support.** A member is a useful Healer when it has the Healer trait and another member lacks the Mechanical trait, and a useful Mechanic when it has the Mechanic trait and another member has the Mechanical trait. A five-member proposal without a useful Healer takes the first candidate outside it that the player holds with the Healer trait in place of its last member (candidate order) that is neither Healer nor Mechanic and whose swap gives a useful Healer while keeping any useful Mechanic, trying earlier such members if needed; then the same for a Mechanic. Members stay in candidate order.
+- **Proposal.** The first five candidates, in that order, with no reserve unless Support sets one, when the subset has at least three candidates; a subset with fewer than three has no proposal (a team needs three characters, `legendary-event-team-size`). Its covered objectives are derived from its members (every objective all of them satisfy), and its depth is its Stage 5 team estimate.
+- **Support.** A member is a useful Healer when it has the Healer trait and another member lacks the Mechanical trait, and a useful Mechanic when it has the Mechanic trait and another member has the Mechanical trait. A five-member proposal without a useful Healer takes the first candidate outside it that the player holds with the Healer trait in place of its last member (candidate order) that is neither Healer nor Mechanic and whose swap gives a useful Healer while keeping any useful Mechanic, trying earlier such members if needed; then the same for a Mechanic. Members stay in candidate order. The swap only breaks ties: when the supported team's depth is below the five strongest candidates' depth, the proposal keeps the five strongest. Either way the other side of the swap is the proposal's reserve: the plain member the support replaced when the support joins, or the support when the proposal keeps the five strongest. A proposal with no swap has no reserve; the reserve adds nothing to its depth.
 - **Merging.** Proposals with the same member set are one proposal. A proposal whose member set equals an existing team's on the lane is dropped.
 - **Gain.** A proposal's gain is the lane's reachable points (see `legendary-event-upgrade-impact`) with the proposal added to the lane's existing teams, minus without it.
 - **Tokens saved.** The lane's tokens needed with the existing teams minus with the proposal added, not below 0. Tokens needed sums, over every battle where a reaching team (depth above the battle's index) still has points to earn, the fewest reaching teams whose covered objectives together include every objective open in that battle that any reaching team covers, and at least one.
@@ -77,7 +77,20 @@ Assumptions:
 
 - **GIVEN** a subset with seven candidates, none Mechanical, the five strongest without the Healer trait and the sixth a Healer
 - **WHEN** suggestions are built
-- **THEN** the proposal holds the four strongest and the Healer
+- **THEN** the proposal holds the four strongest and the Healer, when its depth is not below the five strongest's
+
+#### Scenario: Weak healer gives way to a stronger member
+
+- **GIVEN** a subset whose five strongest candidates clear ~6 without the Healer trait, and a held Healer whose swap would drop the team to ~5
+- **WHEN** suggestions are built
+- **THEN** the proposal is the five strongest, without the Healer
+- **AND** the Healer is its reserve
+
+#### Scenario: Replaced member becomes the reserve
+
+- **GIVEN** a held Healer joins a proposal in place of its weakest plain member without lowering its depth
+- **WHEN** suggestions are built
+- **THEN** that plain member is the proposal's reserve
 
 #### Scenario: No healer for a fully mechanical team
 
@@ -95,12 +108,14 @@ Assumptions:
 
 Each lane's Teams section SHALL offer a **Suggest teams** button beside Add team, and in its empty state. It SHALL open a dialog on desktop and a bottom sheet on mobile. The dialog SHALL show the two toggles and the first three proposals, with **Show more** revealing up to ten. Each proposal SHALL show:
 
-- its members as portraits in order, each with its goal badge and locked styling;
+- its members as portraits in order, each with its goal badge and locked styling, then its reserve, if any, with a dashed outline and a "Reserve" label;
 - its covered objectives as chips;
 - a one-line reason: "Covers Ultramarines and Melee · clears ~5 · +945 points over your teams", followed by " · saves 2 tokens" when it also saves tokens; "Covers … · clears ~5 · saves 2 tokens over your teams" when it saves tokens without a gain; and "Covers … · clears ~5 · no gain over your teams yet" for a wide-coverage proposal with neither;
 - a **Use this team** action.
 
-**Use this team** SHALL open the team editor (`legendary-event-teams`) as a new team with the proposal's members in order, its derived objectives covered, the default name, and the proposal's objective subset selected as the picker's objective chips. Saving SHALL create the team through the existing create call. Cancelling SHALL save nothing and return to the suggestions. No proposal SHALL ever be saved without the user saving the editor.
+**Use this team** SHALL open the team editor (`legendary-event-teams`) as a new team with the proposal's members in order, its reserve, its derived objectives covered, the default name, and the proposal's objective subset selected as the picker's objective chips. Saving SHALL create the team through the existing create call. Cancelling SHALL save nothing and return to the suggestions. No proposal SHALL ever be saved without the user saving the editor.
+
+Once its inputs are ready, each Suggest teams button SHALL show as a badge how many proposals the dialog opens with (its default toggles), capped at ten, including 0, so the user need not open it to know; its accessible name SHALL include the count ("Suggest teams (3 suggestions)"). No badge SHALL show while inputs load or when estimates are unavailable.
 
 When clear estimates are unavailable, Suggest teams SHALL be disabled with the reason "Needs clear estimates". With no proposal, the dialog SHALL say "No team adds points or saves tokens over your current teams". While inputs load, it SHALL show a skeleton.
 
@@ -114,6 +129,12 @@ When clear estimates are unavailable, Suggest teams SHALL be disabled with the r
 
 - **WHEN** the user cancels the editor opened from a proposal
 - **THEN** no team is created and the suggestions are shown again unchanged
+
+#### Scenario: Suggestion count on the button
+
+- **GIVEN** a lane whose dialog would open with two proposals
+- **WHEN** the Teams section renders
+- **THEN** Suggest teams shows a "2" badge and its accessible name reads "Suggest teams (2 suggestions)"
 
 #### Scenario: Estimates unavailable
 

@@ -110,7 +110,7 @@ For each lane the planner SHALL compute, from the lane's teams that have a depth
 
 ### Requirement: Next token card heads the run tab
 
-The run tab (Current, Next or Last run) SHALL open with a **Next token** card. With a non-empty plan it SHALL show the next token: the first planned token that is not flagged Maybe, whose battle is playable now (its lane's first battle, or synced progress shows the previous battle's defeat-all cleared) and that has no earlier planned token on the same battle, or the first planned token when none qualifies. It SHALL show the team name with a team button (`data-testid="next-token-team-details"`) showing the members' portraits stacked over one another, whose popover shows the members as the Teams view's unit chips (portrait ringed in rarity colour, stars, rank icon, ability levels), the lane, "Battle N", "+P points", the icon and name of each objective it clears (defeat-all included), and one reason line: "Most points available now" when it is the plan's first token, otherwise "Most points among battles you can play now". When the event is upcoming it SHALL add the next-run suffix of `legendary-event-run-resolution`. It SHALL carry two actions: **Partly cleared**, which marks the token's objective cells Maybe clear (its defeat-all cell too when it clears no objective), and **Couldn't clear**, which marks every cell it clears Stop here; each is one annotation write for the token's battle through the existing marks contract, and the card and plan recompute at once.
+The run tab (Current, Next or Last run) SHALL open with a **Next token** card. With a non-empty plan it SHALL show the next token: the first planned token that is not flagged Maybe, whose battle is playable now (its lane's first battle, or synced progress shows the previous battle's defeat-all cleared) and that has no earlier planned token on the same battle, or the first planned token when none qualifies. It SHALL show the team name with a team button (`data-testid="next-token-team-details"`) showing the members' portraits stacked over one another, whose popover shows the members as the Teams view's unit chips (portrait ringed in rarity colour, stars, rank icon, ability levels), the lane, "Battle N", "+P points", the icon and name of each objective it clears (defeat-all included), and one reason line: "Most points available now" when it is the plan's first token, otherwise "Most points among battles you can play now". When the event is upcoming it SHALL add the next-run suffix of `legendary-event-run-resolution`. It SHALL carry two actions, each named after the mark it sets, with that mark's icon and a short line under the name: **Maybe clear** ("Might clear with a retry") and **Stop here** ("No chance with this team"). Either one means the token's team fell short, not that no team can clear the battle: it SHALL set that team's manual depth for the current run to the battles before this one (battle number − 1) through the team depth contract, so the plan can give the battle to another team. Only when no other team of the lane reaches the battle (its depth, manual or estimated, is not past it), or on battle 1 where no depth fits (a depth is at least 1), SHALL it also mark the cells as before: Maybe clear marks the token's objective cells Maybe clear (its defeat-all cell too when it clears no objective), and Stop here marks every cell it clears Stop here, as one annotation write for the token's battle. The writes go out in order and the card and plan recompute at once. When the token's team depth is estimated and the battle is past its safe depth (the card reads Likely clear) and the battle is not battle 1, the card SHALL add a third action, **Try another team** ("End this team after battle N − 1", `data-testid="next-token-stop"`): the player chooses to end the team before trying the battle, so it SHALL set that team's manual depth for the current run to battle number − 1 through the team depth contract and mark no cell; the card and plan recompute at once and move on to other teams.
 
 When there is no next token the card SHALL name what is missing, checked in this order:
 
@@ -139,11 +139,17 @@ The card SHALL NOT render on an archived event. While the roster, plan or clear 
 - **WHEN** the card renders
 - **THEN** it skips the second token too, because its cells and points assume the first one was played
 
-#### Scenario: Couldn't clear
+#### Scenario: Stop here
 
 - **GIVEN** the card shows Melee → Alpha battle 3
-- **WHEN** the user presses Couldn't clear
-- **THEN** one write sends `laneId` `alpha`, `battleIndex` 2, `objectiveIds` `[0, 1, 4]`, `status` `stopHere`, and the card at once shows Melee → Alpha battle 2, +140
+- **WHEN** the user presses Stop here
+- **THEN** Melee's depth for the run becomes 2; when Ranged on Alpha reaches battle 3 no cell is marked and the plan gives battle 3 to Ranged, and when no other Alpha team reaches it a second write sends `laneId` `alpha`, `battleIndex` 2, `objectiveIds` `[0, 1, 4]`, `status` `stopHere`; either way the card at once shows the new next token
+
+#### Scenario: Try another team on a likely clear
+
+- **GIVEN** the card shows Five → Alpha battle 6, estimated safe through battle 5 (Likely clear)
+- **WHEN** the user presses Try another team
+- **THEN** Five's depth for the run becomes 5 (manual), no annotation is written, and the card at once shows the next token; on a Safe clear or a manual depth the card shows no Try another team
 
 #### Scenario: No teams
 
@@ -234,31 +240,31 @@ Within a section, consecutive tokens of the same team SHALL be grouped under the
 - **WHEN** the plan is expanded below 768px
 - **THEN** each section header wraps to two lines (run and state; tokens, points and ending points) and each token is a two-line row that fits the viewport width without horizontal scroll
 
-### Requirement: Next token card shows missions it progresses and a For missions alternative
+### Requirement: Next token card shows missions it progresses
 
-When the Next token card shows a token, it SHALL add a **missions** icon button with the number of current missions of the current run (`legendary-event-missions`: each track's first open mission) the token progresses, excluding untracked missions (`anyBattle`, `winWithoutSummon`), or nothing when it progresses none. Its popover ("Missions it progresses") SHALL list each such mission, premium ones marked, followed in the accent colour by what one play adds ("+X", "~+X" when estimated). When another planned token that meets the Next token's eligibility (not flagged Maybe, playable now, no earlier planned token on its battle) progresses more such missions, the card SHALL show it under **For missions**, in the Missions order only (see the switch below), with its lane, battle, team, "+P points (−D)" against the Points order's Next token and its own missions button; among several, the one progressing the most wins, then the higher points, then the earlier plan position. The For missions entry SHALL carry the same Partly cleared and Couldn't clear actions. The plan order SHALL NOT change.
+When the Next token card shows a token, it SHALL add a **missions** icon button with the number of current missions of the current run (`legendary-event-missions`: each track's first open mission) the token progresses, excluding untracked missions (`anyBattle`, `winWithoutSummon`), or nothing when it progresses none. Its popover ("Missions it progresses") SHALL list each such mission, premium ones marked, followed in the accent colour by what one play adds ("+X", "~+X" when estimated). The card SHALL show one token only, the Points order's or the Missions order's (see the switch below); it SHALL NOT offer a second, missions-first token beside it. The plan order SHALL NOT change.
 
-#### Scenario: Alternative shown
+#### Scenario: Missions shown
 
-- **GIVEN** the Next token is Melee → Alpha battle 3 (+240), progressing no open mission, and Melee → Beta battle 4 is playable and planned at +210, progressing "Defeat 75 AdMechs" and "Win 5 battles without deploying any Big Target characters"
-- **WHEN** the card renders in Missions order
-- **THEN** under For missions it shows "Beta · Battle 4 · +210 points (−30)" with a missions button of 2; in Points order the card shows Melee → Alpha battle 3 and no For missions entry
-
-#### Scenario: Next token already best for missions
-
-- **GIVEN** the Next token progresses two open missions and no other eligible token progresses more
+- **GIVEN** the Next token progresses two open missions
 - **WHEN** the card renders
-- **THEN** its missions button reads 2, its popover lists both missions with their "+X", and there is no For missions entry
+- **THEN** its missions button reads 2 and its popover lists both missions with their "+X"
+
+#### Scenario: One token in either order
+
+- **GIVEN** the Next token is Melee → Alpha battle 3, progressing no open mission, and Melee → Beta battle 4 is playable and planned for a later run, progressing "Defeat 75 AdMechs"
+- **WHEN** the card renders in Points order or in Missions order
+- **THEN** it shows only that order's Next token, with no second token for missions
 
 #### Scenario: No open missions
 
 - **GIVEN** every mission of the current run is done
 - **WHEN** the card renders
-- **THEN** it shows no missions button and no For missions entry
+- **THEN** it shows no missions button
 
 ### Requirement: Next token card Points / Missions switch
 
-Whenever a Missions order exists and the card shows a token, the Next token card SHALL offer the same Points / Missions switch as the Token plan, sharing its remembered choice. In Missions order the card SHALL show the first token of the Missions order that meets the Next token's eligibility (else its first), with its reason "Finishes this run's open missions soonest, for the same run points" and its missions button listing what it adds to each mission it moves ("done" on the one it finishes); the For missions entry when its token is not this one; then the quick mission inputs for the current run (the next run before run 1 or between runs): its Regular missions, and its Premium missions with Show paid options on, each with the Done and Plan to complete counts, saved like the run inputs drawer (`legendary-event-run-inputs`); then the tokens up next in Missions order, each with its own missions button. The For missions entry's battle SHALL open the battle info dialog, as the Next token's does.
+Whenever a Missions order exists and the card shows a token, the Next token card SHALL offer the same Points / Missions switch as the Token plan, sharing its remembered choice. In Missions order the card SHALL show the first token of the Missions order that meets the Next token's eligibility (else its first), with its reason "Finishes this run's open missions soonest, for the same run points" and its missions button listing what it adds to each mission it moves ("done" on the one it finishes); then the quick mission inputs for the current run (the next run before run 1 or between runs): its Regular missions, and its Premium missions with Show paid options on, each with the Done and Plan to complete counts, saved like the run inputs drawer (`legendary-event-run-inputs`); then the tokens up next in Missions order, each with its own missions button.
 
 #### Scenario: Missions on the card
 

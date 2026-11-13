@@ -14,6 +14,7 @@ import type { ResourcePreview } from "../goal-card/card-parts"
 import { RankGoalCard } from "../goal-card/rank-goal-card"
 import { UnlockGoalCard } from "../goal-card/unlock-goal-card"
 import { UpgradeGoalCard } from "../goal-card/upgrade-goal-card"
+import { GoalLinksField } from "../shared/goal-links-field"
 import { GoalRangeSummary } from "../shared/goal-range-summary"
 import { GoalTypeCard } from "../shared/goal-visuals"
 import { OptionalRangeField } from "../shared/optional-range-field"
@@ -50,11 +51,12 @@ const levelOptions = (maxLevel: number) =>
 export function GoalTypeCards({
   form,
   goalKinds,
-  cardRefs,
+  scrollTarget,
 }: {
   form: GoalForm
   goalKinds: GoalKind[]
-  cardRefs: RefObject<Map<GoalKind, HTMLDivElement>>
+  /** A just-enabled kind whose card scrolls into view once it is attached. */
+  scrollTarget: RefObject<GoalKind | null>
 }) {
   const { issues } = form
   // Each card's own goal (the first spec of its type; later ones are its milestones), for the summary.
@@ -73,8 +75,10 @@ export function GoalTypeCards({
       issueCount: issues.filter((issue) => issue.kind === kind).length,
       headerId: goalCardHeaderId(kind),
       ref: (node: HTMLDivElement | null) => {
-        if (node) cardRefs.current.set(kind, node)
-        else cardRefs.current.delete(kind)
+        if (node && scrollTarget.current === kind) {
+          scrollTarget.current = null
+          node.scrollIntoView?.({ block: "nearest" })
+        }
       },
     }
   }
@@ -411,10 +415,11 @@ function CreateUpgradeCard(args: CardArgs) {
     <UpgradeGoalCard
       choices={form.relevantUpgradeQuantities}
       issues={form.issues}
+      links={<GoalLinksField {...form.upgradeLinks} />}
       mode="create"
       mythic={mythic(args, "Upgrade")}
       note={note(form, "Upgrade")}
-      onAdd={form.addUpgradeTarget}
+      onAdd={form.addUpgradeTargets}
       onQuantityChange={form.setUpgradeTargetQuantity}
       onRemove={form.removeUpgradeTarget}
       ownedQuantities={

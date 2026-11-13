@@ -97,10 +97,11 @@ export function InsightsEvents({
                     <span className="text-xs text-muted-foreground">
                       {t("goals.insights.helpsGoals")}
                     </span>
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                    <div className="flex flex-wrap gap-1.5">
                       {goalIds.map((goalId) => (
                         <GoalLink
                           goalId={goalId}
+                          info={goalInfoById.get(goalId)}
                           key={goalId}
                           label={goalLabel(goalId)}
                         />

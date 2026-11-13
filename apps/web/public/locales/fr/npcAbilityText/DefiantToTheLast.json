@@ -1,0 +1,10 @@
+{
+  "DefiantToTheLast": {
+    "description": "Les <style=\"Character\">personnages</style> <style=\"Rarity_Mythic\">Mythiques</style> alliés infligent <style=\"Stat_Damage\">+{[extraDmgPct]} % de Dégâts</style> s’ils ont utilisé une <style=\"Character\">Capacité Active</style> pendant cette bataille ou s’ils sont adjacents à <style=\"Faction_Custodes\">Boudicari</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

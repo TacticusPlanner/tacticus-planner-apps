@@ -106,8 +106,8 @@
       "twoBlueStars": "Deux étoiles bleues"
     },
     "next": "Prochaine étape : {{step}} · {{shards}} / {{threshold}} fragments",
-    "chests_one": "Encore {{chests}} coffre ({{currency}} de monnaie au total)",
-    "chests_other": "Encore {{chests}} coffres ({{currency}} de monnaie au total)",
+    "chests_one": "Encore {{chests}} coffre pour {{currency}} de monnaie",
+    "chests_other": "Encore {{chests}} coffres pour {{currency}} de monnaie",
     "points": "{{points}} points pour atteindre {{target}} · environ {{battles}} combats par voie",
     "fullyAscended": "Toutes les étapes de récompense atteintes",
     "beyondChests": "Hors de portée pour cet événement ({{required}} coffres nécessaires, l'événement en compte {{ladder}})",
@@ -452,6 +452,13 @@
       "label": "Passe les combats 1–{{depth}} sur {{total}}",
       "labelNone": "Ne passe aucun des {{total}} combats",
       "close": "Proche du combat {{battle}}",
+      "bands": {
+        "sure": "Passe les combats 1–{{sure}} sans risque",
+        "sureNone": "Aucun combat sans risque",
+        "likely": "{{battle}} probablement",
+        "likelyRange": "{{from}}–{{to}} probablement",
+        "stretch": "jusqu’à {{stretch}} au mieux"
+      },
       "manual": "Profondeur fixée par vous"
     },
     "editDepth": "Modifier la profondeur",
@@ -493,7 +500,7 @@
         },
         "nextToken": {
           "title": "Prochain jeton",
-          "content": "Le combat à jouer avec votre prochain jeton : l'équipe, la voie et le combat qui rapportent le plus de points maintenant, d'après votre synchronisation, vos équipes, profondeurs et marques. Si cela ne s'est pas passé comme prévu, marquez-le Réussi en partie ou Échec et le plan se met à jour."
+          "content": "Le combat à jouer avec votre prochain jeton : l'équipe, la voie et le combat qui rapportent le plus de points maintenant, d'après votre synchronisation, vos équipes, profondeurs et marques. Si cela ne s'est pas passé comme prévu, marquez-le Peut-être faisable ou S'arrêter ici et le plan se met à jour."
         },
         "runStatus": {
           "title": "État de la manche",
@@ -614,12 +621,14 @@
     "disclaimer": "Toutes les estimations comparent uniquement la puissance brute. Les résultats réels des combats peuvent différer.",
     "estimated": "estimé",
     "uncalibrated": "Non calibré : le rapport de puissance de l'estimation n'a pas encore été ajusté sur de vrais résultats, considérez-la comme une indication approximative.",
-    "howItWorks": "Estimé à partir de la puissance de votre effectif synchronisé, équipement compris, comparée à la puissance de chaque combat. Les synergies et les objectifs difficiles ne sont pas pris en compte ; définissez une profondeur pour la remplacer.",
+    "howItWorks": "Estimé à partir de la puissance de ton effectif synchronisé, équipement compris, face à la puissance de chaque combat sur une courbe ajustée aux résultats signalés : les derniers combats demandent plus que leur puissance, les premiers moins. La plage va de ce qui passe sans risque à ce qui passe au mieux. Les synergies et les objectifs difficiles ne sont pas modélisés ; fixe une profondeur pour la remplacer.",
     "marginAbove": "{{percent}} % au-dessus du combat {{battle}}",
     "shortfallNext": "{{percent}} % en dessous du combat {{battle}}",
+    "range": "sans risque jusqu’à {{sure}}, au mieux {{stretch}}",
     "notEnough": "Pas encore assez pour le combat 1",
     "useEstimate": "Utiliser l'estimation",
     "estimateHint": "estimation ~{{depth}}",
+    "estimateHintRange": "estimation ~{{depth}} ({{sure}}–{{stretch}})",
     "lockedNotCounted_one": "{{count}} membre verrouillé non compté",
     "lockedNotCounted_other": "{{count}} membres verrouillés non comptés",
     "clears": "Combats",
@@ -681,6 +690,8 @@
   },
   "suggestions": {
     "button": "Suggérer des équipes",
+    "buttonWithCount_one": "Suggérer des équipes ({{count}} suggestion)",
+    "buttonWithCount_other": "Suggérer des équipes ({{count}} suggestions)",
     "title": "Équipes suggérées pour {{lane}}",
     "description": "Des équipes tirées de votre effectif, classées selon les points qu'elles ajoutent à vos équipes actuelles, puis les jetons qu'elles économisent. Rien n'est enregistré tant que vous n'enregistrez pas l'équipe.",
     "onlyUnlocked": "Débloquées uniquement",
@@ -714,13 +725,23 @@
       "upcoming": "{{reason}} pour le début de la manche {{run}}",
       "upcomingUnknown": "{{reason}} pour le début de la prochaine manche",
       "maybe": "Peut-être faisable",
+      "clear": {
+        "sure": "Passe sans risque",
+        "likely": "Passe probablement",
+        "likelySure": "Passe probablement · sans risque jusqu’au combat {{sure}}"
+      },
       "members": "Membres",
       "objectives": "Réussit",
       "actions": {
-        "partly": "Réussi en partie",
-        "couldNot": "Échec",
-        "partlyLabel": "Réussi en partie : marquer {{team}} sur {{lane}} combat {{battle}} comme Peut-être faisable",
-        "couldNotLabel": "Échec : marquer {{team}} sur {{lane}} combat {{battle}} comme S'arrêter ici"
+        "maybe": "Peut-être faisable",
+        "maybeHint": "Faisable avec un nouvel essai",
+        "maybeLabel": "Peut-être faisable : {{team}} pourrait réussir {{lane}} combat {{battle}} avec un nouvel essai",
+        "stopHere": "S'arrêter ici",
+        "stopHereHint": "Aucune chance avec cette équipe",
+        "stopHereLabel": "S'arrêter ici : {{team}} n'a aucune chance sur {{lane}} combat {{battle}}",
+        "stop": "Essayer une autre équipe",
+        "stopHint": "Arrêter cette équipe après le combat {{previous}}",
+        "stopLabel": "Essayer une autre équipe : arrêter {{team}} sur {{lane}} après le combat {{previous}} et planifier d'autres équipes"
       },
       "loading": "Chargement du plan de jetons…",
       "unavailable": "La progression synchronisée est indisponible, il n'y a donc pas de plan de jetons",
@@ -729,10 +750,8 @@
       "noDepth": "Indiquez jusqu'où {{team}} progresse",
       "nothingLeft": "Vos équipes n'ont plus rien à réussir · {{points}} points restants sur {{lane}}",
       "missions": {
-        "title": "Pour les missions",
         "progresses": "Missions qu'il fait avancer",
         "premium": "{{mission}} (premium)",
-        "points": "+{{points}} points ({{difference}})",
         "button_one": "Fait avancer {{count}} mission",
         "button_other": "Fait avancer {{count}} missions",
         "uncounted": "compte",
@@ -756,6 +775,7 @@
       "running": "{{points}} au total",
       "maybe": "Peut-être faisable",
       "milestone": "Palier {{milestone}} · +{{currency}} de monnaie",
+      "milestones": "Paliers {{first}}–{{last}} · +{{currency}} de monnaie",
       "step": "{{step}} atteint",
       "fullClear_one": "{{lane}} : réussir entièrement un combat demande {{count}} jeton",
       "fullClear_other": "{{lane}} : réussir entièrement un combat demande {{count}} jetons",
@@ -799,6 +819,8 @@
       "expandRun_other": "Afficher {{count}} combats",
       "collapseRun_one": "Masquer {{count}} combat",
       "collapseRun_other": "Masquer {{count}} combats",
+      "tokens_one": "{{count}} jeton",
+      "tokens_other": "{{count}} jetons",
       "openTeam": "Ouvrir l’équipe {{team}}"
     },
     "forecast": {
@@ -817,6 +839,8 @@
       },
       "finished": "Terminée",
       "supply": "{{total}} jetons : {{free}} gratuits + {{ad}} pub + {{bonus}} livraison bonus",
+      "adToday": "Inclut le jeton pub du jour, pas encore regardé",
+      "thisRun": "Prévision de cette manche",
       "uses": "Utilise {{used}} · {{left}} restants",
       "points": "{{points}} points (+{{earned}})",
       "currency": "{{currency}} de monnaie en main (+{{earned}} gagnée)",
@@ -834,6 +858,26 @@
         "chests": "Coffres obtenus",
         "shards": "Éclats en fin de session"
       }
+    },
+    "closeGap": {
+      "title": "Combler l'écart : +{{points}} points pour {{step}}",
+      "where": "{{lane}} combat {{battle}}",
+      "kinds": {
+        "maybeClear": "Peut-être faisable",
+        "stopHere": "Essayer une autre équipe",
+        "belowEstimate": "Profondeur réduite"
+      },
+      "closes": "Comble l'écart",
+      "gain": "+{{points}}",
+      "replacesLabel": "Remplace",
+      "replaces": "{{where}} (+{{lost}})",
+      "retryLabel": "Un nouvel essai retire",
+      "retryRow": "{{where}}",
+      "retry": "Un essai raté coûte 1 jeton de plus et retire {{where}} (−{{lost}})",
+      "retrySpare": "Un essai raté utilise un jeton restant",
+      "combined": "Les {{count}} meilleurs ensemble le comblent (+{{points}})",
+      "short": "Même ensemble, cela ne suffit pas",
+      "scope": "Vérifie :"
     }
   },
   "masterTable": {

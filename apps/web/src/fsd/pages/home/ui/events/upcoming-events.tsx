@@ -73,7 +73,7 @@ export function UpcomingEvents({ events }: { events: HomeEventsState }) {
   })()
 
   return (
-    <Card data-testid="home-events-widget">
+    <Card data-testid="home-events-widget" id="home-upcoming">
       <CardHeader>
         <CardTitle>{t("home.events.title")}</CardTitle>
       </CardHeader>

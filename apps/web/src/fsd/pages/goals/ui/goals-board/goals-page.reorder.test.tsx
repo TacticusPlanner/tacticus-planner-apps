@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@/test/render"
+import { fireEvent, render, screen, waitFor } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 // Reordering on the Goals page (spec: `global-goal-priority`, `goals-navigation`). Dragging under
@@ -297,10 +297,13 @@ describe("GoalsPage reordering", () => {
 
     fireEvent.click(screen.getByTestId("menu-up-e"))
 
-    expect(state.moveGoal).toHaveBeenCalledWith({
-      goalId: "e",
-      displacedGoalId: "d",
-    })
+    // The move waits for the menu's close to paint.
+    await waitFor(() =>
+      expect(state.moveGoal).toHaveBeenCalledWith({
+        goalId: "e",
+        displacedGoalId: "d",
+      })
+    )
     expect(
       screen.getAllByTestId("plan-row").find((row) => row.textContent === "e")
     ).toHaveAttribute("data-highlighted", "true")
@@ -315,10 +318,12 @@ describe("GoalsPage reordering", () => {
     expect(screen.queryByTestId("menu-up-a")).not.toBeInTheDocument()
     fireEvent.click(screen.getByTestId("menu-up-e"))
 
-    expect(state.moveGoal).toHaveBeenCalledWith({
-      goalId: "e",
-      displacedGoalId: "c",
-    })
+    await waitFor(() =>
+      expect(state.moveGoal).toHaveBeenCalledWith({
+        goalId: "e",
+        displacedGoalId: "c",
+      })
+    )
   })
 
   it("offers Move to priority over the whole order, even past goals the filter hides", async () => {
@@ -332,14 +337,16 @@ describe("GoalsPage reordering", () => {
     )
   })
 
-  it("announces where a row-menu move put the goal", () => {
+  it("announces where a row-menu move put the goal", async () => {
     render(<GoalsPage />, { route: "/plan/goals" })
 
     fireEvent.click(screen.getByTestId("menu-up-c"))
 
     // The order stub doesn't apply the move, so the goal is announced where it still stands.
-    expect(screen.getByTestId("goals-move-status")).toHaveTextContent(
-      "Moved to priority 3 of 5."
+    await waitFor(() =>
+      expect(screen.getByTestId("goals-move-status")).toHaveTextContent(
+        "Moved to priority 3 of 5."
+      )
     )
   })
 

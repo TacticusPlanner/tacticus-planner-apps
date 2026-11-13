@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 
 import type {
   EventUnitChipData,
@@ -19,17 +20,19 @@ import type {
 
 import { gainsFromProgress, type MissionGain } from "../lib/mission-gains"
 import type { TokenMissionStep } from "../lib/mission-order"
-import { samePlannedToken, type PlannedToken } from "../lib/token-plan"
+import type { PlannedToken } from "../lib/token-plan"
 import {
   missionsNextToken,
   upNextTokens,
+  tokenClearBand,
   type NextTokenEmpty,
   type TokenPlanView,
 } from "../lib/token-plan-view"
+import { unknownChip } from "../lib/unit-chips"
 import { useMissionsOrder } from "../model/token-plan-order"
 import { useNextTokenShown } from "../model/use-next-token-shown"
+import { useTokenShown } from "../model/use-token-shown"
 import { TokenPlanOrderSwitch } from "./mission-order-view"
-import { MissionAlternativeView } from "./next-token-missions"
 import { BattleInfoButton } from "./battle-info"
 import { TokenMarkButtons } from "./token-mark-buttons"
 import { TokenRow } from "./token-plan-rows"
@@ -40,8 +43,21 @@ export type MarkTokenHandler = (
   laneId: LegendaryEventLaneId,
   battleIndex: number,
   objectiveIds: number[],
-  status: LegendaryEventAnnotationStatus
+  status: LegendaryEventAnnotationStatus,
+  /** The token's team: it fell short, so its depth drops to the battles before this one. */
+  teamId: string
 ) => void
+
+/** Try another team: ends a team before `battleIndex` (its depth becomes the battles before it) without
+ *  marking any cell, so the plan moves on to other teams. */
+export type StopTeamHandler = (
+  laneId: LegendaryEventLaneId,
+  battleIndex: number,
+  teamId: string
+) => void
+
+/** The card showed a playable Next token (analytics remember it to see whether sync clears it). */
+export type TokenShownHandler = (token: PlannedToken) => void
 
 /** Opens a lane's Teams section, scrolled to one team's card when `teamId` is given. */
 export type OpenTeamsHandler = (
@@ -53,8 +69,8 @@ type ReadyView = Extract<TokenPlanView, { kind: "ready" }>
 
 /**
  * The run tab's Next token card (spec: Next token card heads the run tab): the battle to play next
- * with its team, points, cleared cells and reason, and the Partly cleared / Couldn't clear
- * actions, then the next few planned tokens with View full plan; or what is missing for a plan.
+ * with its team, points, cleared cells and reason, and the Maybe clear / Stop here mark
+ * actions (plus Try another team on a likely clear), then the next few planned tokens with View full plan; or what is missing for a plan.
  * A Points / Missions switch (shared with the Token plan) reads the plan in Missions order, with
  * the missions each token moves and the run's mission ticks. Hidden on an archived event and when
  * signed out.
@@ -65,6 +81,9 @@ export function NextTokenCard({
   view,
   isMobile,
   onMarkToken,
+  onStopTeam,
+  onTokenShown,
+  run = null,
   onOpenTeams,
   onViewPlan,
   missionsInput,
@@ -76,6 +95,12 @@ export function NextTokenCard({
   isMobile: boolean
   /** Absent while marks cannot be written (the plan has not loaded). */
   onMarkToken: MarkTokenHandler | undefined
+  /** Try another team on a likely-clear token; absent while depths cannot be written. */
+  onStopTeam?: StopTeamHandler
+  /** The shown token, once per battle and team while it can be marked. */
+  onTokenShown?: TokenShownHandler
+  /** The current run, so a token still shown after a run change reports again. */
+  run?: number | null
   onOpenTeams: OpenTeamsHandler
   /** Opens the full token plan. */
   onViewPlan?: () => void
@@ -133,24 +158,15 @@ export function NextTokenCard({
               event={event}
               isMobile={isMobile}
               onMarkToken={onMarkToken}
+              onStopTeam={onStopTeam}
+              onTokenShown={onTokenShown}
+              run={run}
               chipOf={chipOf}
               gains={ordered.gains}
               reason={t("tokenPlan.nextToken.reasons.missionsOrder")}
               token={ordered.token}
               view={view}
             />
-            {view.missions?.alternative &&
-            !samePlannedToken(
-              view.missions.alternative.token,
-              ordered.token
-            ) ? (
-              <MissionAlternativeView
-                alternative={view.missions.alternative}
-                event={event}
-                isMobile={isMobile}
-                onMarkToken={view.upcoming === null ? onMarkToken : undefined}
-              />
-            ) : null}
             {missionsInput ? (
               <div
                 className="flex min-w-0 flex-col gap-2 border-t pt-3"
@@ -176,6 +192,9 @@ export function NextTokenCard({
               event={event}
               isMobile={isMobile}
               onMarkToken={onMarkToken}
+              onStopTeam={onStopTeam}
+              onTokenShown={onTokenShown}
+              run={run}
               chipOf={chipOf}
               gains={gainsFromProgress(view.missions?.progressed ?? [])}
               reason={t(`tokenPlan.nextToken.reasons.${view.next.reason}`)}
@@ -205,6 +224,9 @@ function TokenView({
   reason: reasonText,
   isMobile,
   onMarkToken,
+  onStopTeam,
+  onTokenShown,
+  run,
   gains,
   chipOf,
 }: {
@@ -215,6 +237,9 @@ function TokenView({
   reason: string
   isMobile: boolean
   onMarkToken: MarkTokenHandler | undefined
+  onStopTeam: StopTeamHandler | undefined
+  onTokenShown: TokenShownHandler | undefined
+  run: number | null
   /** The missions it moves. */
   gains: readonly MissionGain[]
   chipOf: (unitId: string) => EventUnitChipData
@@ -235,6 +260,9 @@ function TokenView({
           })
   const canMark =
     onMarkToken !== undefined && view.upcoming === null && token.playableNow
+  useTokenShown(token, run, canMark ? onTokenShown : undefined)
+  const teamDepth = view.depthByTeam.get(token.teamId)
+  const band = tokenClearBand(teamDepth, token.battleIndex)
 
   return (
     <div
@@ -250,7 +278,7 @@ function TokenView({
             {token.teamName}
           </span>
           <TokenTeamPopover
-            depth={view.depthByTeam.get(token.teamId)}
+            depth={teamDepth}
             members={members.map((unitId) => chipOf(unitId))}
             teamName={token.teamName}
             testId="next-token-team-details"
@@ -274,6 +302,26 @@ function TokenView({
               points: number.format(token.points),
             })}
           </span>
+          {band ? (
+            <span
+              className={cn(
+                "text-xs font-medium",
+                band === "sure"
+                  ? "text-success-foreground"
+                  : "text-(--season-fit-caution)"
+              )}
+              data-band={band}
+              data-testid="next-token-clear-band"
+            >
+              {band === "sure"
+                ? t("tokenPlan.nextToken.clear.sure")
+                : teamDepth?.sureDepth
+                  ? t("tokenPlan.nextToken.clear.likelySure", {
+                      sure: teamDepth.sureDepth,
+                    })
+                  : t("tokenPlan.nextToken.clear.likely")}
+            </span>
+          ) : null}
           {token.maybe ? (
             <span
               className="text-xs text-muted-foreground"
@@ -298,6 +346,9 @@ function TokenView({
         <TokenMarkButtons
           isMobile={isMobile}
           onMarkToken={onMarkToken}
+          onStopTeam={
+            band === "likely" && token.battleIndex > 0 ? onStopTeam : undefined
+          }
           testIdPrefix="next-token"
           token={token}
         />
@@ -413,10 +464,6 @@ function EmptyState({
       {text}
     </Button>
   )
-}
-
-function unknownChip(unitId: string): EventUnitChipData {
-  return { unitId, owned: undefined }
 }
 
 function Note({ children, testId }: { children: ReactNode; testId: string }) {

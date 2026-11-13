@@ -1,4 +1,4 @@
-import type { Rarity } from "@workspace/game-domain"
+import type { CampaignId, Rarity } from "@workspace/game-domain"
 
 import type { CampaignInsight } from "@/features/campaign-insights/@x/goal-planning"
 
@@ -9,6 +9,8 @@ import type {
   EstimateResourceId,
   RankSlotAllocation,
 } from "@/features/goal-farming/@x/goal-planning"
+
+import type { CampaignLockReason } from "../unlock-paths/campaign-track-gate"
 
 // Input/output shapes for the Insights view's plan-wide aggregation (plan-insights-calc.ts), kept
 // separate from the calc itself — mirrors estimate.domain.ts / estimate.ts.
@@ -58,6 +60,34 @@ export interface PlanInsightsBlocker {
   label: string | null
   remaining: number
   goalIds: string[]
+}
+
+/** Why a campaign track can't be played yet. */
+export type PlanCampaignLockReason = CampaignLockReason
+
+/** A standing-campaign track worth pushing for the scoped goals (see `computeCampaignProgression`). */
+export interface PlanCampaignProgression {
+  /** `${campaignGroupId}:${type}`. */
+  key: string
+  campaignGroupId: CampaignId
+  type: string
+  /** Battles still to beat to clear the track. */
+  battlesLeft: number
+  /** False when the player has no progress on the track. */
+  started: boolean
+  /** Rough energy the goals' farming saves once the track is open. */
+  energySaved: number
+  /** Needs no reachable node drops that this track's locked nodes do, closest first. */
+  unblocks: {
+    resourceId: EstimateResourceId
+    label: string
+    count: number
+    /** Battles to beat to reach the closest node that drops it, including the campaigns that must
+     *  be cleared before this track opens. */
+    battlesToGo: number
+    goalIds: string[]
+  }[]
+  lockReasons: PlanCampaignLockReason[]
 }
 
 /** One estimated goal's finish, for the outlook's "what sets the date" list. */
@@ -163,6 +193,8 @@ export interface PlanInsightsResult {
    *  "which characters/MoW benefit" list (plan §16 phase 7); resolve goalId -> entity via the
    *  member list itself or `useGoalCatalog().getEntityName`. */
   benefitingGoalIdsByInsightId: Map<string, string[]>
+  /** "Campaigns to push": uncleared campaign tracks that unblock or cheapen the scoped goals. */
+  campaignProgression: PlanCampaignProgression[]
 }
 
 export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
@@ -197,4 +229,5 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   eventInsights: [],
   farmingSpotsByInsightId: new Map(),
   benefitingGoalIdsByInsightId: new Map(),
+  campaignProgression: [],
 }

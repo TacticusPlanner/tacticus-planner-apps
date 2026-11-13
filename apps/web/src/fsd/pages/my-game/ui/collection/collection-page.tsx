@@ -5,6 +5,7 @@ import {
   Eye,
   EyeOff,
   History,
+  ListChecks,
   LogIn,
   RefreshCw,
   SearchX,
@@ -30,6 +31,7 @@ import {
   formatRosterSourceId,
   useRosterSnapshots,
 } from "@/entities/roster-snapshot"
+import { BulkGoalDialog } from "@/features/goal-create"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
@@ -43,6 +45,11 @@ import {
   useCollectionOptions,
   type CollectionOptions,
 } from "../../model/use-collection-options"
+import {
+  toBulkGoalUnit,
+  useCollectionSelection,
+  type CollectionSelection,
+} from "../../model/collection-selection"
 import { useCollectionQuery } from "../../model/use-collection-query"
 import { useCollectionView } from "../../model/use-collection-view"
 import { COMPARE_CURRENT } from "../../model/compare-query"
@@ -50,12 +57,14 @@ import { useCollectionCompare } from "../../model/use-collection-compare"
 import { useCompareQuery } from "../../model/use-compare-query"
 import { useCollectionTutorial } from "./collection.tutorial"
 import { CollectionRoster, CollectionRosterList } from "./collection-roster"
+import { CollectionSelectBar } from "./collection-select-bar"
 import { CollectionToolbar } from "./collection-toolbar"
 import { SnapshotActions } from "./compare/compare-bar"
 import { CompareSection } from "./compare/compare-section"
 import { ManageSnapshotsSheet } from "./compare/manage-snapshots-sheet"
 import { TakeSnapshotDialog } from "./compare/take-snapshot-dialog"
 import { FactionHeader } from "./faction-header"
+import { SelectableUnit } from "./selectable-unit"
 
 // Before the catalog is read the toolbar is hidden anyway; this only keeps its props total.
 const EMPTY_OPTIONS: CollectionOptions = {
@@ -96,7 +105,15 @@ export function CollectionPage() {
   const snapshots = useRosterSnapshots(isAuthenticated)
   const [takeOpen, setTakeOpen] = useState(false)
   const [manageOpen, setManageOpen] = useState(false)
+  const [bulkOpen, setBulkOpen] = useState(false)
+  const selection = useCollectionSelection()
   const comparing = compare.mode !== "off" && compare.mode !== "guest"
+  // Turning Compare on ends select mode and discards the selection.
+  if (comparing && selection.active) selection.end()
+  const bulkUnits = useMemo(
+    () => [...selection.selected.values()].map(toBulkGoalUnit),
+    [selection.selected]
+  )
   // Compare's non-gain orders are Collection sorts on the "to" state, so they sort the list.
   const compareOrder = compareQuery.query.order
   const viewQuery = useMemo(
@@ -130,6 +147,7 @@ export function CollectionPage() {
       hasUnowned,
       hasSnapshotActions: isAuthenticated,
       compareReady: compare.mode === "ready",
+      hasSelectToggle: hasSummary && isAuthenticated && !selection.active,
     })
   )
   const view = state.status === "ready" ? state.view : undefined
@@ -214,29 +232,51 @@ export function CollectionPage() {
         />
       ) : null}
       {!comparing && rosterAvailable && listed.total > 0 ? (
-        <p
-          className="text-sm text-muted-foreground"
-          data-testid="collection-summary"
-        >
-          {t(
-            listed.filtered
-              ? "myGame.collection.summaryFiltered"
-              : "myGame.collection.summary",
-            { owned: listed.owned, total: listed.total }
-          )}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="collection-summary"
+          >
+            {t(
+              listed.filtered
+                ? "myGame.collection.summaryFiltered"
+                : "myGame.collection.summary",
+              { owned: listed.owned, total: listed.total }
+            )}
+          </p>
+          {isAuthenticated && !selection.active ? (
+            <Button
+              data-testid="collection-select-toggle"
+              onClick={selection.start}
+              size="sm"
+              variant="outline"
+            >
+              <ListChecks aria-hidden />
+              {t("myGame.collection.select.start")}
+            </Button>
+          ) : null}
+        </div>
       ) : null}
       {comparing || listed.groups.length === 0 ? null : !grouped ? (
         listed.query.view === "roster" ? (
-          <CollectionRosterList units={listed.units} origins={origins} />
+          <CollectionRosterList
+            units={listed.units}
+            origins={origins}
+            selection={selection}
+          />
         ) : (
-          <UngroupedCards units={listed.units} origins={origins} />
+          <UngroupedCards
+            units={listed.units}
+            origins={origins}
+            selection={selection}
+          />
         )
       ) : listed.query.view === "roster" ? (
         <CollectionRoster
           groups={listed.groups}
           showOwned={rosterAvailable}
           origins={origins}
+          selection={selection}
         />
       ) : (
         <div className={factionGrid}>
@@ -246,6 +286,7 @@ export function CollectionPage() {
               group={group}
               showOwned={rosterAvailable}
               origins={origins}
+              selection={selection}
             />
           ))}
         </div>
@@ -259,8 +300,26 @@ export function CollectionPage() {
       ) : (
         <NoMatches onClear={clear} />
       )}
+      {selection.active && !comparing ? (
+        <CollectionSelectBar
+          count={selection.selected.size}
+          onSelectAll={() =>
+            selection.addAll(listed.units.map((entry) => entry.unit))
+          }
+          onClear={selection.clear}
+          onCreate={() => setBulkOpen(true)}
+          onDone={selection.end}
+        />
+      ) : null}
       {isAuthenticated ? (
         <>
+          <BulkGoalDialog
+            open={bulkOpen}
+            onOpenChange={setBulkOpen}
+            units={bulkUnits}
+            onRemoveUnit={selection.remove}
+            onCreated={selection.end}
+          />
           <TakeSnapshotDialog
             open={takeOpen}
             onOpenChange={setTakeOpen}
@@ -388,27 +447,31 @@ function collectionOrigins(
 function UngroupedCards({
   units,
   origins,
+  selection,
 }: {
   units: readonly CollectionListedUnit[]
   origins: Record<UnitKind, unknown>
+  selection: CollectionSelection
 }) {
   return (
     <ul className={ungroupedSlots} data-testid="collection-ungrouped">
       {units.map(({ unit, factionId, factionName }) => (
         <li key={`${unit.kind}:${unit.unitId}`} className="min-w-0">
-          <UnitTile
-            unit={unit}
-            faction={{ id: factionId, name: factionName }}
-            link={{
-              to: unitLibraryPath(unit.kind, unit.unitId),
-              state: origins[unit.kind],
-            }}
-            testId={
-              unit.data.state === "owned"
-                ? "collection-owned-tile"
-                : "collection-unowned-tile"
-            }
-          />
+          <SelectableUnit unit={unit} selection={selection}>
+            <UnitTile
+              unit={unit}
+              faction={{ id: factionId, name: factionName }}
+              link={{
+                to: unitLibraryPath(unit.kind, unit.unitId),
+                state: origins[unit.kind],
+              }}
+              testId={
+                unit.data.state === "owned"
+                  ? "collection-owned-tile"
+                  : "collection-unowned-tile"
+              }
+            />
+          </SelectableUnit>
         </li>
       ))}
     </ul>
@@ -419,10 +482,12 @@ function FactionGroupCard({
   group,
   showOwned,
   origins,
+  selection,
 }: {
   group: CollectionFactionGroup
   showOwned: boolean
   origins: Record<UnitKind, unknown>
+  selection: CollectionSelection
 }) {
   return (
     <section
@@ -435,18 +500,20 @@ function FactionGroupCard({
       <ul className={unitSlots}>
         {group.units.map((unit) => (
           <li key={unit.unitId} className="min-w-0">
-            <UnitTile
-              unit={unit}
-              link={{
-                to: unitLibraryPath(unit.kind, unit.unitId),
-                state: origins[unit.kind],
-              }}
-              testId={
-                unit.data.state === "owned"
-                  ? "collection-owned-tile"
-                  : "collection-unowned-tile"
-              }
-            />
+            <SelectableUnit unit={unit} selection={selection}>
+              <UnitTile
+                unit={unit}
+                link={{
+                  to: unitLibraryPath(unit.kind, unit.unitId),
+                  state: origins[unit.kind],
+                }}
+                testId={
+                  unit.data.state === "owned"
+                    ? "collection-owned-tile"
+                    : "collection-unowned-tile"
+                }
+              />
+            </SelectableUnit>
           </li>
         ))}
       </ul>

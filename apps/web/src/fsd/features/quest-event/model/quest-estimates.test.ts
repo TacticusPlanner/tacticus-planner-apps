@@ -96,6 +96,7 @@ const team = (
   })),
   totalPower,
   eligibleCount: members.length - 1,
+  eligible: [],
   openSlots: 2,
   badges,
   breakers,
@@ -317,6 +318,14 @@ describe("projectQuest", () => {
     expect(entered.medals).toBe(28)
     expect(projection.score.total).toBe(4600 + 5 * 500 + 400)
     expect(projection.medals).toBe(28 + 18)
+    // Battles 11-16 projected at 3 medals; battle 17 not projected.
+    expect(projection.battleMedals).toEqual([
+      ...Array.from({ length: 8 }, () => 3),
+      2,
+      2,
+      ...Array.from({ length: 6 }, () => 3),
+      0,
+    ])
   })
 })
 

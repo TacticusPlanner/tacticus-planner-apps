@@ -7,6 +7,7 @@ import type {
   OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
+import { campaignDescriptor } from "@workspace/game-catalog"
 import type {
   CampaignId,
   Rarity,
@@ -27,6 +28,7 @@ import {
   allocatePlanInventory,
   createCraftedInventoryPool,
   estimatePlan,
+  resourceLabel,
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
@@ -53,6 +55,7 @@ import {
 } from "./orb-potential-allocation"
 import { buildLevelPotentialProgress } from "./level-potential-progress"
 import { computeBottlenecks, netGoalNeeds } from "./plan-bottlenecks"
+import { computeCampaignProgression } from "./plan-campaign-progression"
 import { summarizeFarmingSpots } from "./plan-farming-spots"
 import { createPlanMissingResources } from "./plan-missing-resources"
 import { createPlanNetResources } from "./plan-net-resources"
@@ -117,6 +120,19 @@ export function computePlanInsights(params: {
    *  goal as if it selected no shop sources — the shared estimate still runs, just without that
    *  contribution. */
   shops?: readonly GameCatalogShop[]
+  /** "Campaigns to push" inputs: every catalog battle, the player's campaign progress, the campaign
+   *  definitions, the owned roster, Power Level and the Elite threshold. Omitted, no campaign
+   *  progression is computed. */
+  campaignProgression?: Omit<
+    Parameters<typeof computeCampaignProgression>[0],
+    | "goalNeeds"
+    | "allocations"
+    | "estimates"
+    | "farmLocationsById"
+    | "battlesById"
+    | "isElite"
+    | "label"
+  >
 }): PlanInsightsResult {
   const totals: PlanInsightsTotals = {
     upgradesByRarity: {},
@@ -469,6 +485,21 @@ export function computePlanInsights(params: {
         : params.campaignFullLabel(descriptor)
   )
 
+  const campaignProgression = params.campaignProgression
+    ? computeCampaignProgression({
+        ...params.campaignProgression,
+        goalNeeds: goalNeeds.filter((goal) => inScope(goal.goalId)),
+        allocations,
+        estimates: estimateResults,
+        farmLocationsById: combinedUpgradesById,
+        battlesById: params.battlesById,
+        isElite: (groupId) =>
+          campaignDescriptor(groupId, "Elite")?.difficultyToken === "elite",
+        label: (id) =>
+          resourceLabel(id, params.upgradesById, params.charactersById),
+      })
+    : []
+
   const farmingSpotsByInsightId = summarizeFarmingSpots(
     [...campaignInsights, ...eventInsights],
     params.battlesById,
@@ -532,5 +563,6 @@ export function computePlanInsights(params: {
     eventInsights,
     farmingSpotsByInsightId,
     benefitingGoalIdsByInsightId,
+    campaignProgression,
   }
 }

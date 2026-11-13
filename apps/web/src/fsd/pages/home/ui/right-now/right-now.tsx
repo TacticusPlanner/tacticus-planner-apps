@@ -11,9 +11,16 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { useEffect, useState } from "react"
+
 import { useMinuteNow } from "@/entities/legendary-event"
 import { formatEventCountdown } from "@/shared/lib"
 
+import {
+  homeRememberedCounts,
+  rememberCount,
+  rememberedCount,
+} from "../../model/remembered-count"
 import type { HomeEventRow } from "../../model/select-home-events"
 import type { HomeEventsState } from "../../model/use-home-events"
 import { CountdownChip, HomeEventVisual } from "../events/home-event-visual"
@@ -29,7 +36,7 @@ export function RightNow({ events }: { events: HomeEventsState }) {
   const { t } = useTranslation("common")
 
   return (
-    <Card data-testid="home-right-now">
+    <Card data-testid="home-right-now" id="home-right-now">
       <CardHeader>
         <CardTitle>{t("home.rightNow.title")}</CardTitle>
       </CardHeader>
@@ -45,15 +52,34 @@ export function RightNow({ events }: { events: HomeEventsState }) {
 function LiveEvents({ events }: { events: HomeEventsState }) {
   const { t } = useTranslation("common")
   const minuteNowMs = useMinuteNow()
+  // As many placeholders as were live last time, so the list doesn't grow or shrink on arrival.
+  const [placeholders] = useState(() =>
+    rememberedCount(homeRememberedCounts.liveEvents)
+  )
+  const liveCount = events.status === "ready" ? events.live.length : null
+  useEffect(() => {
+    if (liveCount !== null) {
+      rememberCount(homeRememberedCounts.liveEvents, liveCount)
+    }
+  }, [liveCount])
 
   if (events.status === "loading") {
+    if (placeholders === 0) {
+      return (
+        <Skeleton
+          className="h-5 w-40 self-center rounded-md"
+          data-testid="home-live-loading"
+        />
+      )
+    }
     return (
       <div
         className="grid gap-2 sm:grid-cols-2"
         data-testid="home-live-loading"
       >
-        <Skeleton className="h-24 w-full rounded-xl" />
-        <Skeleton className="h-24 w-full rounded-xl" />
+        {Array.from({ length: placeholders }, (_, index) => (
+          <Skeleton className="h-24 w-full rounded-xl" key={index} />
+        ))}
       </div>
     )
   }

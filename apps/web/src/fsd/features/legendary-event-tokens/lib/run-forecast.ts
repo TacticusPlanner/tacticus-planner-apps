@@ -7,6 +7,7 @@ import {
   PREMIUM_BONUS_CURRENCY,
   nextAscensionStep,
   runInputValues,
+  syncedChestsClaimed,
   type AscensionGoal,
   type AscensionStep,
   type LegendaryEvent,
@@ -138,7 +139,7 @@ export function forecastRuns({
 
   let points = progress?.currentPoints ?? 0
   let currency = progress?.currentCurrency ?? 0
-  let claimed = Math.max(0, progress?.currentClaimedChestIndex ?? 0)
+  let claimed = syncedChestsClaimed(progress, rewards.shardsPerChest, fromStep)
   let shards = progress?.currentShards ?? 0
   let tokenIndex = 0
   const markers: TokenMarker[] = tokens.map(() => ({

@@ -25,7 +25,7 @@ export function BattleInfoButton({
         lane: t(`lanes.${laneId}`),
         battle: battleIndex + 1,
       })}
-      className="inline-flex max-w-full items-center gap-1 rounded-sm text-left underline decoration-dotted underline-offset-4 hover:decoration-solid focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="inline-flex max-w-full items-center gap-1 rounded-sm text-left hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
       data-testid="token-battle-info"
       onClick={() => open(laneId, battleIndex)}
       type="button"

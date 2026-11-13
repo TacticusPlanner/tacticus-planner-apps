@@ -206,7 +206,7 @@ export function generateLaneTeams(input: LaneGenerationInput): DraftTeam[] {
         storedId: null,
         name: "",
         memberUnitIds: suggestion.memberUnitIds,
-        reserveUnitId: null,
+        reserveUnitId: suggestion.reserveUnitId,
         objectiveIndexes: suggestion.coveredObjectiveIndexes,
         depthByRun: { [run]: suggestion.depth },
         edited: false,

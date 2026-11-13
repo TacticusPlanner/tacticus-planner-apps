@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useId, useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -18,12 +18,16 @@ import {
   type CurrentUser,
 } from "@/entities/account"
 
+import { dialogActionClassName } from "./dialog-action-slot"
+import { DialogAction } from "./dialog-actions"
+
 /**
  * Edits the confirmed public planner name only — sign-in identity and email are untouched. The
  * shown name stays the saved server value until a save succeeds, and a failed save keeps the draft.
  */
 export function ProfileTab({ user }: { user: CurrentUser }) {
   const { t } = useTranslation()
+  const formId = useId()
   const [draft, setDraft] = useState<string | null>(null)
   const [status, setStatus] = useState<"idle" | "error" | "success">("idle")
   const updateDisplayName = useUpdateDisplayName()
@@ -53,6 +57,7 @@ export function ProfileTab({ user }: { user: CurrentUser }) {
   return (
     <form
       className="flex flex-col gap-4 pt-4"
+      id={formId}
       onSubmit={(event) => void handleSubmit(event)}
     >
       <Field data-invalid={problem !== null || status === "error"}>
@@ -101,14 +106,18 @@ export function ProfileTab({ user }: { user: CurrentUser }) {
         </p>
       ) : null}
 
-      <Button
-        data-testid="manage-account-display-name-submit"
-        disabled={!canSubmit || value.trim() === user.displayName}
-        type="submit"
-      >
-        {updateDisplayName.isPending ? <Spinner /> : null}
-        {t("manageAccount.profile.save")}
-      </Button>
+      <DialogAction>
+        <Button
+          className={dialogActionClassName}
+          data-testid="manage-account-display-name-submit"
+          disabled={!canSubmit || value.trim() === user.displayName}
+          form={formId}
+          type="submit"
+        >
+          {updateDisplayName.isPending ? <Spinner /> : null}
+          {t("manageAccount.profile.save")}
+        </Button>
+      </DialogAction>
     </form>
   )
 }

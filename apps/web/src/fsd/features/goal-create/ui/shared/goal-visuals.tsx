@@ -1,4 +1,10 @@
-import { useId, type ReactNode, type Ref } from "react"
+import {
+  startTransition,
+  useId,
+  useOptimistic,
+  type ReactNode,
+  type Ref,
+} from "react"
 import { ChevronDownIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
@@ -60,6 +66,17 @@ export function GoalTypeToggleGroup({
 }) {
   const { t } = useTranslation()
   const idPrefix = useId()
+  // A toggle re-renders the whole creation form (cards, previews, review), so it runs in a
+  // transition and the checkbox shows the tap at once.
+  const [shownTypes, showToggle] = useOptimistic(
+    enabledTypes,
+    (current, change: { kind: GoalKind; enabled: boolean }) => {
+      const next = new Set(current)
+      if (change.enabled) next.add(change.kind)
+      else next.delete(change.kind)
+      return next
+    }
+  )
 
   return (
     <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 rounded-2xl border p-3">
@@ -70,10 +87,16 @@ export function GoalTypeToggleGroup({
           orientation="horizontal"
         >
           <Checkbox
-            checked={enabledTypes.has(kind)}
+            checked={shownTypes.has(kind)}
             disabled={isDisabled?.(kind)}
             id={`${idPrefix}-${kind}`}
-            onCheckedChange={(checked) => onToggle(kind, checked === true)}
+            onCheckedChange={(checked) => {
+              const enabled = checked === true
+              startTransition(() => {
+                showToggle({ kind, enabled })
+                onToggle(kind, enabled)
+              })
+            }}
             data-testid={`create-goal-type-toggle-${kind}`}
           />
           <FieldLabel

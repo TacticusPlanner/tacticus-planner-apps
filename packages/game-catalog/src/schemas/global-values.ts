@@ -32,4 +32,7 @@ export const globalValuesSchema = z.looseObject({
   battleFatigueFleeChanceOverkill: z.number().int(),
   traitVariables: z.record(z.string(), z.union([z.number(), z.string()])),
   staminaShopTiers: z.array(staminaShopTierSchema),
+  // The Power Level that opens the Elite and Mirror Elite campaigns. Optional so a catalog served
+  // before the API added it still parses.
+  eliteCampaignMinPowerLevel: z.number().int().positive().optional(),
 })

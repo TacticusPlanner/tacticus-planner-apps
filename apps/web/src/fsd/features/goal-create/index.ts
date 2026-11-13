@@ -8,3 +8,9 @@ export {
 } from "./model/goal-creation-form/create-goal-launcher-context"
 export { GoalEditDialog } from "./ui/goal-edit/goal-edit-dialog"
 export { GoalProjectBadges, GoalUnitIcon } from "./ui/shared/goal-visuals"
+// Bulk goal creation: one shared target for several units at once (Collection's select mode).
+export { BulkGoalDialog } from "./ui/bulk-create/bulk-goal-dialog"
+export {
+  bulkUnitKey,
+  type BulkGoalUnit,
+} from "./model/bulk-create/bulk-goal-plan"

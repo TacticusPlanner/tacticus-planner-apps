@@ -25,6 +25,10 @@ export interface TeamSuggestion {
   objectiveIndexes: number[]
   /** In candidate order. */
   memberUnitIds: string[]
+  /** The other side of a Healer or Mechanic swap (spec: Support): the plain member it replaced
+   *  when the support joined, or the support when it would have lowered the depth. Null when no
+   *  swap was tried. */
+  reserveUnitId: string | null
   /** Derived from the members (every objective all of them satisfy). */
   coveredObjectiveIndexes: number[]
   /** Its Stage 5 team estimate. */
@@ -84,8 +88,8 @@ const memberKey = (ids: readonly string[]) => [...ids].sort().join("|")
 /**
  * Proposed teams for a lane (spec: team suggestions per lane): for every one- to three-objective
  * subset, the five best units satisfying all of it (none when fewer than three do: a team needs
- * three characters), with a held, useful Healer or Mechanic swapped in where the team lacks one,
- * ranked by the lane reachable points each adds over the existing teams, then the tokens it saves.
+ * three characters), with a held, useful Healer or Mechanic swapped in where the team lacks one
+ * and the swap keeps its depth (the other side of the swap is the reserve), ranked by the lane reachable points each adds over the existing teams, then the tokens it saves.
  * A proposal with neither is kept only when it covers three or more objectives still open within
  * its depth, ranked last. Never stored.
  */
@@ -135,20 +139,36 @@ export function suggestLaneTeams(
     const subsetCandidates = candidates.filter((candidate) =>
       subset.every((index) => candidate.satisfied.has(index))
     )
+    const strongest = subsetCandidates
+      .slice(0, SUGGESTION_TEAM_SIZE)
+      .map((candidate) => candidate.id)
+    if (strongest.length < MIN_TEAM_MEMBERS) continue
+    const depthOf = (ids: readonly string[]) =>
+      teamClearEstimate(ids, battlePowers, roster, config)?.depth ?? 0
     // A useful Healer or Mechanic the player holds replaces the weakest plain member (spec:
-    // Support); a locked one would add no power and could not be fielded.
-    const members = withSupport(
+    // Support); a locked one would add no power and could not be fielded. The swap only breaks
+    // ties: a weaker support that lowers the estimate gives way to the stronger member, since
+    // players clear deeper with the stronger unit (UserJot: LRE team picks favour weaker
+    // healers). Whichever side loses becomes the reserve, so the player sees the alternative.
+    const supported = withSupport(
       subsetCandidates.slice(0, SUGGESTION_TEAM_SIZE),
       subsetCandidates,
       SUGGESTION_TEAM_SIZE,
       (candidate) => roster.has(candidate.id)
     ).map((candidate) => candidate.id)
-    if (members.length < MIN_TEAM_MEMBERS) continue
+    const strongestDepth = depthOf(strongest)
+    const supportedDepth = depthOf(supported)
+    const supportJoins = supportedDepth >= strongestDepth
+    const [members, depth] = supportJoins
+      ? [supported, supportedDepth]
+      : [strongest, strongestDepth]
+    const reserveUnitId =
+      (supportJoins
+        ? strongest.find((id) => !supported.includes(id))
+        : supported.find((id) => !strongest.includes(id))) ?? null
     const key = memberKey(members)
     if (seen.has(key) || existingKeys.has(key)) continue
     const covered = derivedTeamCoverage(members, lane, input.units)
-    const depth =
-      teamClearEstimate(members, battlePowers, roster, config)?.depth ?? 0
     // A subset objective already cleared through the depth narrowed the candidates for nothing
     // (spec: suggestions do not rely on objectives already cleared). The drop does not claim the
     // member set, so a later subset picking the same members still proposes it.
@@ -178,6 +198,7 @@ export function suggestLaneTeams(
     suggestions.push({
       objectiveIndexes: subset,
       memberUnitIds: members,
+      reserveUnitId,
       coveredObjectiveIndexes: covered,
       depth,
       gainPoints,

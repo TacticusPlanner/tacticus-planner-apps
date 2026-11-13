@@ -1,6 +1,6 @@
 {
   "TaintedNarthecium": {
-    "description": "Une unité du <style=\"Aliance_Chaos\">Chaos</style> alliée adjacente qui est vaincue a <style=\"Stat_Chance\">{[chance]} % de chances</style> d'être réanimée avec un maximum de <style=\"Stat_Health\">{[hp]} santé</style>, même si elle a été <style=\"Overkill\">Exterminée</style>. Ne peut être activé qu'une fois par tour.",
+    "description": "Une unité <style=\"Aliance_Chaos\">Chaos</style> alliée adjacente et non-<style=\"Mechanical\">Mécanique</style> qui est vaincue a <style=\"Stat_Chance\">{[chance]} % de chances</style> d’être réanimée avec un maximum de <style=\"Stat_Health\">{[hp]} Santé</style>, même si elle est <style=\"Overkill\">Exterminée</style>. Ne peut être activé qu’une fois par tour.",
     "variables": {
       "hp": [
         49, 59, 69, 78, 88, 99, 111, 122, 133, 145, 156, 167, 178, 190, 201,

@@ -38,7 +38,8 @@
     "perfect": "Perfecta",
     "tierPoints": "{{points}} / {{max}}",
     "show": "Mostrar la batalla {{number}}",
-    "dropOdds": "Suelta {{name}}, {{numerator}} de {{denominator}}"
+    "dropOdds": "Suelta {{name}}, {{numerator}} de {{denominator}}",
+    "hint": "Toca una batalla para ver su equipo, enemigos y botín."
   },
   "entry": {
     "title": "Tu mejor intento",
@@ -60,6 +61,7 @@
     "nextCrate": "{{points}} puntos para la caja {{number}}",
     "pointsLeft": "Puntos pendientes",
     "pointsLeftRow": "faltan {{left}}",
+    "pointsLeftMore": "+{{count}} más",
     "saveFailed": "El progreso no se puede guardar en este navegador"
   },
   "objectives": {
@@ -110,6 +112,8 @@
     "cratePoints": "{{points}} puntos",
     "opened": "Abierta",
     "pointsToGo": "faltan {{points}} puntos",
+    "showAllCrates": "Mostrar los {{count}} cofres",
+    "showFewerCrates": "Mostrar menos cofres",
     "reward": {
       "Coins": "Monedas",
       "RaidTicket": "Tickets de incursión",
@@ -121,7 +125,7 @@
     "amount": "×{{amount}}",
     "amountRange": "×{{min}}–{{max}}",
     "shardsTitle": "Fragmentos de {{hero}}",
-    "bundle": "Paquete de Misión (3 fragmentos por medalla)",
+    "bundle": "Paquete de Misión (+2 fragmentos por medalla)",
     "shards": "{{earned}} conseguidos · {{max}} máx. · {{reachable}} aún alcanzables",
     "unlocks": "Desbloquea a {{hero}} y sobran {{spare}} fragmentos",
     "unlocksExact": "Desbloquea a {{hero}}",
@@ -133,7 +137,15 @@
     "orbsNote": "Las ascensiones también necesitan orbes, que no se cuentan aquí.",
     "shardsOnly": "Sincroniza tu cuenta para ver qué significan estos fragmentos para {{hero}}.",
     "createGoal": "Crear objetivo",
-    "openGoal": "Abrir objetivo"
+    "openGoal": "Abrir objetivo",
+    "left": {
+      "title": "Por ganar",
+      "medals": "Medallas restantes",
+      "shards": "Fragmentos de {{hero}} restantes",
+      "crates_one": "Queda {{count}} cofre",
+      "crates_other": "Quedan {{count}} cofres",
+      "none": "Has ganado todas las recompensas únicas."
+    }
   },
   "tokens": {
     "title": "Intentos",
@@ -181,7 +193,13 @@
       "MinHits": "{{hero}} tiene menos de {{count}} golpes",
       "UseNoSummons": "{{hero}} invoca",
       "DoNoHealOrRepair": "{{hero}} cura o repara"
-    }
+    },
+    "allOptions": "Las {{count}} opciones",
+    "optionsTitle": "Unidades válidas para la batalla {{number}}",
+    "optionsHint": "De más fuerte a más débil, al límite del nivel. Elige unidades para comparar el poder del equipo; la selección no se guarda.",
+    "optionsSelected": "{{count}} de {{slots}} elegidas · poder del equipo {{power}}",
+    "optionsReset": "Volver a la sugerencia",
+    "optionsClose": "Cerrar"
   },
   "estimate": {
     "title": "Estimación de victoria",
@@ -205,5 +223,13 @@
     "capGain": "{{name}}: +{{gain}} de poder en el límite",
     "projected": "Previsión: {{total}} / {{max}} · {{opened}} de {{count}} cofres (estimación, sin calibrar)",
     "projectedShards": "Previsión: {{shards}} fragmentos (estimación, sin calibrar)"
+  },
+  "goalDrops": {
+    "title": "Botín para tus objetivos",
+    "empty": "Tus objetivos no necesitan ningún botín de esta misión.",
+    "have": "{{have}} / {{need}}",
+    "battles": "Batallas",
+    "showAll": "Mostrar los {{count}}",
+    "showFewer": "Mostrar menos"
   }
 }

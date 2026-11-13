@@ -159,7 +159,7 @@ export function RaidsWidget() {
   })()
 
   return (
-    <Card className="h-full" data-testid="home-raids-widget">
+    <Card className="h-full" data-testid="home-raids-widget" id="home-raids">
       <CardHeader>
         <CardTitle>{t("home.raids.title")}</CardTitle>
         <CardAction>

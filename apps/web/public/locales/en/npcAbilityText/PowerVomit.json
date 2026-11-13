@@ -1,6 +1,6 @@
 {
   "PowerVomit": {
-    "description": "Affects 3 hexes in a straight line in one of 6 directions. Deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> to all units on affected hexes. Deals <style=\"Stat_Damage\">+{[extraDmg_2]} Damage</style> to enemy units for each <i>Waaagh! charge</i> <style=\"Faction_Orks\">Zapspitta</style> has. For <style=\"STAT\">{[nrOfRounds]} rounds</style>, all <style=\"DMG_Psychic\">Psychic Damage</style> taken by and dealt by affected units is increased by <style=\"Stat_Damage\">+{[extraDmg]} Damage</style>.\n\n{[S/AbilityDamageExplanation]}",
+    "description": "Affects 3 hexes in a straight line in one of 6 directions. Deals <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> to all units on affected hexes. Deals <style=\"Stat_Damage\">+{[extraDmg_2]} Damage</style> to enemy units for each level of <i>Waaagh! energy</i> <style=\"Faction_Orks\">Zapspitta</style> has. For <style=\"STAT\">{[nrOfRounds]} rounds</style>, all <style=\"DMG_Psychic\">Psychic Damage</style> taken by and dealt by affected units is increased by <style=\"Stat_Damage\">+{[extraDmg]} Damage</style>.\n\n{[S/AbilityDamageExplanation]}",
     "variables": {
       "minDmg": [
         12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,

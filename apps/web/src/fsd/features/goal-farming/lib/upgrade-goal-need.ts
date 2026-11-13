@@ -5,23 +5,22 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import type { GoalDetail } from "@/entities/goal"
 
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
-import { uncoveredRankSlots } from "./goal-need"
+import { uncoveredRankSlots, type AbilityCoverage } from "./goal-need"
 import { mowAbilityTrackLevel, type MowAbilityTrack } from "./mow-ability-calc"
+import { targetUnitsInSlots } from "./slot-components"
 import { aggregateBaseUpgrades, rankUpSlotOccurrences } from "./upgrade-recipe"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
 
-/** A slot of the Upgrade goal's range: the upgrade it holds and the key it claims in the unit's
- *  coverage (a Rank slot key, or a MoW transition's source level). */
-type RangeSlot<Key> = { id: UpgradeId; key: Key }
-
 /**
- * An Upgrade goal's flat need: each target's base upgrade × quantity, minus the slots of its range that a
+ * An Upgrade goal's flat need: each target's base upgrade × quantity, minus the pieces of its range that a
  * Rank/Ability goal on the same unit already claimed (capped at the quantity), then claiming up to the
- * quantity of the range's remaining slots so a later goal sees them covered — which keeps the total
- * independent of goal order. A goal (or MoW track) without a range is additive. Loose inventory is netted
- * later by the plan's priority-ordered allocation. `null` when nothing is needed.
+ * quantity of the range's remaining pieces so a later goal sees them covered — which keeps the total
+ * independent of goal order. A piece is a range slot that holds the target, or one base piece of the
+ * target inside a crafted slot's recipe, so a base-material pre-farm links to a Rank goal whose slots
+ * are all crafted. A goal (or MoW track) without a range is additive. Loose inventory is netted later
+ * by the plan's priority-ordered allocation. `null` when nothing is needed.
  */
 export function upgradeResourceNeed(params: {
   detail: GoalDetail
@@ -30,56 +29,56 @@ export function upgradeResourceNeed(params: {
   playerCharacter: PlayerCharacter | undefined
   playerMow: PlayerMow | undefined
   upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
-  /** Mutated in place: this goal's claimed Rank slots are added. */
+  /** Mutated in place: this goal's claimed Rank slots and base pieces are added. */
   coveredRankSlots?: Set<string>
-  /** Mutated in place: this goal's claimed MoW transitions are added. */
-  coveredAbilityTransitions?: { primary: Set<number>; secondary: Set<number> }
+  /** Mutated in place: this goal's claimed MoW recipe entries and base pieces go into `mowSlots`. */
+  coveredAbilityTransitions?: AbilityCoverage
 }) {
   const upgrade = params.detail.config.upgrade
   if (!upgrade || upgrade.targets.length === 0) return null
 
-  const rankSlots = characterRangeSlots(params)
-  const trackSlots = (track: MowAbilityTrack) => mowRangeSlots(params, track)
-  const primary = trackSlots("primary")
-  const secondary = trackSlots("secondary")
   const coveredRank = params.coveredRankSlots ?? new Set<string>()
-  const coveredTransitions = params.coveredAbilityTransitions ?? {
-    primary: new Set<number>(),
-    secondary: new Set<number>(),
-  }
+  const transitions = params.coveredAbilityTransitions
+  const mowClaims = transitions?.mowSlots ?? new Set<string>()
+  const groups = [
+    {
+      slots: characterRangeSlots(params),
+      claims: coveredRank,
+      wholeCovered: (key: string) => coveredRank.has(key),
+    },
+    ...(["primary", "secondary"] as const).map((track) => {
+      const items = upgradeGoalMowTrackItems(params, track)
+      const levelByKey = new Map(items.map((item) => [item.key, item.level]))
+      return {
+        slots: items,
+        claims: mowClaims,
+        wholeCovered: (key: string) =>
+          mowClaims.has(key) ||
+          (transitions?.[track].has(levelByKey.get(key) ?? -1) ?? false),
+      }
+    }),
+  ]
 
   const ids: UpgradeId[] = []
   for (const target of upgrade.targets) {
     const id = target.upgradeId as UpgradeId
     const quantity = Math.max(0, target.quantity)
-    const groups = [
-      { slots: rankSlots, covered: coveredRank },
-      { slots: primary, covered: coveredTransitions.primary },
-      { slots: secondary, covered: coveredTransitions.secondary },
-    ]
-    const inRange = groups.map((group) => ({
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- widens the per-group Set types so the mixed groups share one element type
-      covered: group.covered as Set<string | number>,
-      slots: group.slots.filter((slot) => slot.id === id),
-    }))
-    const overlap = inRange.reduce(
-      (sum, group) =>
-        sum + group.slots.filter((slot) => group.covered.has(slot.key)).length,
-      0
+    const units = groups.flatMap((group) =>
+      targetUnitsInSlots(group.slots, id, params.upgradesById).map((unit) => ({
+        key: unit.key,
+        claims: group.claims,
+        covered: group.wholeCovered(unit.slotKey) || group.claims.has(unit.key),
+      }))
     )
+    const overlap = units.filter((unit) => unit.covered).length
     const deduction = Math.min(quantity, overlap)
     let toClaim = quantity - deduction
-    for (const group of inRange)
-      for (const slot of group.slots) {
-        if (toClaim === 0) break
-        if (group.covered.has(slot.key)) continue
-        group.covered.add(slot.key)
-        // A MoW transition's key covers every slot of that id in its row.
-        toClaim = Math.max(
-          0,
-          toClaim - group.slots.filter((other) => other.key === slot.key).length
-        )
-      }
+    for (const unit of units) {
+      if (toClaim === 0) break
+      if (unit.covered) continue
+      unit.claims.add(unit.key)
+      toClaim--
+    }
     for (let index = 0; index < quantity - deduction; index++) ids.push(id)
   }
   return ids.length === 0
@@ -92,7 +91,7 @@ function characterRangeSlots(params: {
   detail: GoalDetail
   character: FarmingCharacter | undefined
   playerCharacter: PlayerCharacter | undefined
-}): RangeSlot<string>[] {
+}): GoalSlotItem[] {
   const range = params.detail.config.upgrade?.rankRange
   if (!range || !params.character) return []
   const start = Math.max(
@@ -115,37 +114,6 @@ function characterRangeSlots(params: {
   })
 }
 
-/** One MoW track's range transitions from the current level on; the level `n` → `n+1` transition
- *  uses recipe row `n − 1`, keyed by its source level `n` like `uncoveredMowAbilityUpgradeIds`. */
-function mowRangeSlots(
-  params: {
-    detail: GoalDetail
-    mow: MowStorageModel | undefined
-    playerMow: PlayerMow | undefined
-  },
-  track: MowAbilityTrack
-): RangeSlot<number>[] {
-  const upgrade = params.detail.config.upgrade
-  const range =
-    track === "primary" ? upgrade?.activeRange : upgrade?.passiveRange
-  if (!range || !params.mow) return []
-  const recipes =
-    track === "primary"
-      ? params.mow.primaryAbility.recipes
-      : params.mow.secondaryAbility.recipes
-  const slots: RangeSlot<number>[] = []
-  for (
-    let level = Math.max(
-      range.start,
-      mowAbilityTrackLevel(params.playerMow, track)
-    );
-    level < range.end;
-    level++
-  )
-    for (const id of recipes[level - 1] ?? []) slots.push({ id, key: level })
-  return slots
-}
-
 /** A slot item a goal would fill: a Character rank slot (`${rank}:${slot}`) or one recipe entry of a
  *  MoW ability transition (`${track}:${level}:${index}`), with the upgrade it takes. */
 export type GoalSlotItem = { key: string; id: UpgradeId }
@@ -157,19 +125,19 @@ function mowTrackItems(
   track: MowAbilityTrack,
   start: number,
   end: number
-): GoalSlotItem[] {
+): (GoalSlotItem & { level: number })[] {
   const recipes =
     track === "primary"
       ? mow.primaryAbility.recipes
       : mow.secondaryAbility.recipes
-  const items: GoalSlotItem[] = []
+  const items: (GoalSlotItem & { level: number })[] = []
   for (
     let level = Math.max(start, mowAbilityTrackLevel(playerMow, track));
     level < end;
     level++
   )
     (recipes[level - 1] ?? []).forEach((id, index) => {
-      items.push({ key: `${track}:${level}:${index}`, id })
+      items.push({ key: `${track}:${level}:${index}`, id, level })
     })
   return items
 }
@@ -198,7 +166,29 @@ export function mowAbilityGoalSlotItems(params: {
       target.passiveStart,
       target.passiveEnd
     ),
-  ]
+  ].map(({ key, id }) => ({ key, id }))
+}
+
+/** One MoW track range of an Upgrade goal, as items. Empty without that range or catalog data. */
+function upgradeGoalMowTrackItems(
+  params: {
+    detail: GoalDetail
+    mow: MowStorageModel | undefined
+    playerMow: PlayerMow | undefined
+  },
+  track: MowAbilityTrack
+) {
+  const upgrade = params.detail.config.upgrade
+  const range =
+    track === "primary" ? upgrade?.activeRange : upgrade?.passiveRange
+  if (!range || !params.mow) return []
+  return mowTrackItems(
+    params.mow,
+    params.playerMow,
+    track,
+    range.start,
+    range.end
+  )
 }
 
 /** The unapplied slot items of an Upgrade goal's ranges (its Character rank range and MoW track
@@ -213,28 +203,9 @@ export function upgradeGoalRangeSlotItems(params: {
 }): GoalSlotItem[] {
   const upgrade = params.detail.config.upgrade
   if (!upgrade) return []
-  const items: GoalSlotItem[] = [...characterRangeSlots(params)]
-  if (params.mow) {
-    if (upgrade.activeRange)
-      items.push(
-        ...mowTrackItems(
-          params.mow,
-          params.playerMow,
-          "primary",
-          upgrade.activeRange.start,
-          upgrade.activeRange.end
-        )
-      )
-    if (upgrade.passiveRange)
-      items.push(
-        ...mowTrackItems(
-          params.mow,
-          params.playerMow,
-          "secondary",
-          upgrade.passiveRange.start,
-          upgrade.passiveRange.end
-        )
-      )
-  }
-  return items
+  return [
+    ...characterRangeSlots(params),
+    ...upgradeGoalMowTrackItems(params, "primary"),
+    ...upgradeGoalMowTrackItems(params, "secondary"),
+  ].map(({ key, id }) => ({ key, id }))
 }

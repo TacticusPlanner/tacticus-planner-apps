@@ -43,6 +43,8 @@ export {
 export { computePlanInsights } from "./model/insights/plan-insights-calc"
 export { usePlanInsights } from "./model/insights/use-plan-insights"
 export {
+  type PlanCampaignLockReason,
+  type PlanCampaignProgression,
   type PlanInsightsBlocker,
   type PlanInsightsBottleneck,
   type PlanFarmingSpot,
@@ -51,6 +53,10 @@ export {
   type PlanInsightsTotals,
   type PlanMissingResources,
 } from "./model/insights/use-plan-insights.domain"
+export {
+  useFarmUnlockPaths,
+  type FarmUnlockPathViewModel,
+} from "./model/unlock-paths/use-farm-unlock-paths"
 export { isOnlyMemberOf } from "./model/projects/project-removal"
 export { useGoalsProjectScope } from "./model/projects/use-goals-project-scope"
 export { useProjectsByGoalId } from "./model/projects/use-projects-by-goal-id"

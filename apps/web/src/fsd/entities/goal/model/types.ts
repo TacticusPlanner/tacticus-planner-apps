@@ -6,7 +6,12 @@ import type { GoalStatusFilterValue } from "../ui/status-filter-select"
 /** Type guard for a value read back from persisted storage (`usePersistedSelection`) — callers
  *  that remember the user's Group selection across visits use this to validate what they read. */
 export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
-  return value === "none" || value === "unit" || value === "type"
+  return (
+    value === "none" ||
+    value === "unit" ||
+    value === "type" ||
+    value === "typePriority"
+  )
 }
 
 export const STATUS_VALUES: readonly GoalStatusFilterValue[] = [

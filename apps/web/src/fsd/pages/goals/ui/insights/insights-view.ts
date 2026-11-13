@@ -52,17 +52,3 @@ export function useGoalLabel(
     }
   }
 }
-
-/** The distinct unit names behind a set of goals, in first-seen order. */
-export function useGoalUnitNames(
-  goalInfoById: ReadonlyMap<string, InsightsGoalInfo>
-) {
-  const label = useGoalLabel(goalInfoById)
-  return (goalIds: readonly string[]) => [
-    ...new Set(
-      goalIds
-        .map((goalId) => label(goalId)?.name)
-        .filter((name): name is string => !!name)
-    ),
-  ]
-}

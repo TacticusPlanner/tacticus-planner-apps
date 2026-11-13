@@ -262,7 +262,10 @@ describe("RunsStep", () => {
         draft={{ tokenView: { kind: "loading" } } as unknown as PlanDraft}
         onOpenTeams={onOpenTeams}
         source={
-          { event: utharEvent } as Extract<PlanSource, { status: "ready" }>
+          {
+            event: utharEvent,
+            inputs: { roster: [] },
+          } as unknown as Extract<PlanSource, { status: "ready" }>
         }
       />,
       { wrapper: i18nWrapper(i18n) }

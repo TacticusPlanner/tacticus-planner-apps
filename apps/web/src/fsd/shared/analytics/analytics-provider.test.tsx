@@ -209,6 +209,17 @@ describe("useAnalyticsActions", () => {
       depth: 4,
       estimate: 6,
       fromEstimate: true,
+      source: "card",
+      sureDepth: 5,
+      stretchDepth: 7,
+      effectivePower: 412_000,
+      teamPower: 380_000,
+      memberCount: 4,
+      unitIds: ["trajann", "incisus"],
+      objectiveIndexes: [0, 2],
+      memberPowers: [300_000, 80_000],
+      topMemberShare: 0.789,
+      curveVersion: "2026-11-09-e0.25",
     })
     result.current.captureEvent({
       type: "legendary_event_depth_estimate_restored",
@@ -236,6 +247,17 @@ describe("useAnalyticsActions", () => {
         depth: 4,
         estimate: 6,
         from_estimate: true,
+        source: "card",
+        sure_depth: 5,
+        stretch_depth: 7,
+        effective_power: 412_000,
+        team_power: 380_000,
+        member_count: 4,
+        unit_ids: ["trajann", "incisus"],
+        objective_indexes: [0, 2],
+        member_powers: [300_000, 80_000],
+        top_member_share: 0.789,
+        curve_version: "2026-11-09-e0.25",
       }
     )
     expect(sdk.client.capture).toHaveBeenCalledWith(
@@ -296,6 +318,22 @@ describe("useAnalyticsActions", () => {
     )
   })
 
+  it("captures Collection's bulk goal creation with only the declared properties", async () => {
+    const { result } = await renderReady()
+
+    result.current.captureEvent({
+      type: "collection_bulk_goals_created",
+      unitCount: 3,
+      goalCount: 5,
+      failedUnitCount: 1,
+    })
+
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "collection_bulk_goals_created",
+      { unit_count: 3, goal_count: 5, failed_unit_count: 1 }
+    )
+  })
+
   it("captures the Library unit page's Create goal with only the declared properties", async () => {
     const { result } = await renderReady()
 
@@ -343,6 +381,53 @@ describe("useAnalyticsActions", () => {
       status: "maybeClear",
       scope: "battle",
     })
+    result.current.captureEvent({
+      type: "legendary_event_token_result",
+      eventId: "astarLysander",
+      run: 2,
+      laneId: "beta",
+      battleIndex: 8,
+      outcome: "couldNotClear",
+      estimate: 9,
+      depthBefore: 9,
+      depthBeforeManual: false,
+      depthAfter: 8,
+      otherTeamReaches: false,
+      sureDepth: 7,
+      stretchDepth: 10,
+      effectivePower: 574_641,
+      teamPower: 574_641,
+      memberCount: 4,
+      unitIds: ["trajann", "incisus"],
+      objectiveIndexes: [0, 2],
+      memberPowers: [300_000, 80_000],
+      topMemberShare: 0.789,
+      curveVersion: "2026-11-09-e0.25",
+      battlePower: 350_333,
+      powerRatio: 1.012,
+    })
+    result.current.captureEvent({
+      type: "legendary_event_token_cleared",
+      eventId: "astarLysander",
+      run: 2,
+      laneId: "gamma",
+      battleIndex: 6,
+      estimate: 8,
+      depth: 8,
+      depthManual: false,
+      sureDepth: 6,
+      stretchDepth: 9,
+      effectivePower: 400_000,
+      teamPower: 380_000,
+      memberCount: 3,
+      unitIds: ["revas", "volk", "toth"],
+      objectiveIndexes: [1],
+      memberPowers: [140_000, 130_000, 110_000],
+      topMemberShare: 0.368,
+      curveVersion: "2026-11-09-e0.25",
+      battlePower: 135_741,
+      powerRatio: 2.73,
+    })
 
     expect(sdk.client.capture).toHaveBeenCalledWith(
       "legendary_event_run_inputs_saved",
@@ -377,6 +462,57 @@ describe("useAnalyticsActions", () => {
         cell_count: 5,
         status: "maybeClear",
         scope: "battle",
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_token_result",
+      {
+        event_id: "astarLysander",
+        run: 2,
+        lane_id: "beta",
+        battle_index: 8,
+        outcome: "couldNotClear",
+        estimate: 9,
+        depth_before: 9,
+        depth_before_manual: false,
+        depth_after: 8,
+        other_team_reaches: false,
+        sure_depth: 7,
+        stretch_depth: 10,
+        effective_power: 574_641,
+        team_power: 574_641,
+        member_count: 4,
+        unit_ids: ["trajann", "incisus"],
+        objective_indexes: [0, 2],
+        member_powers: [300_000, 80_000],
+        top_member_share: 0.789,
+        curve_version: "2026-11-09-e0.25",
+        battle_power: 350_333,
+        power_ratio: 1.012,
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "legendary_event_token_cleared",
+      {
+        event_id: "astarLysander",
+        run: 2,
+        lane_id: "gamma",
+        battle_index: 6,
+        estimate: 8,
+        depth: 8,
+        depth_manual: false,
+        sure_depth: 6,
+        stretch_depth: 9,
+        effective_power: 400_000,
+        team_power: 380_000,
+        member_count: 3,
+        unit_ids: ["revas", "volk", "toth"],
+        objective_indexes: [1],
+        member_powers: [140_000, 130_000, 110_000],
+        top_member_share: 0.368,
+        curve_version: "2026-11-09-e0.25",
+        battle_power: 135_741,
+        power_ratio: 2.73,
       }
     )
   })
