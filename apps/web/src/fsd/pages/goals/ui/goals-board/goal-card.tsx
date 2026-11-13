@@ -1,5 +1,7 @@
 import { memo, type Dispatch, type SetStateAction } from "react"
 import { useTranslation } from "react-i18next"
+import { Trash2 } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import { GoalTypeBadge } from "@/entities/goal"
@@ -28,7 +30,6 @@ import {
   EstimateCell,
   GoalNameLink,
   GoalPriorityNumber,
-  ReachedDash,
 } from "./goal-row-shared"
 import {
   isInFlightStatus,
@@ -185,9 +186,8 @@ export const GoalCard = memo(
               className="flex flex-wrap items-center gap-x-2 gap-y-1"
               data-testid="goal-card-meta"
             >
-              {data.reached ? (
-                <ReachedDash />
-              ) : estimates ? (
+              {/* A Reached card has no estimate, so it shows no placeholder for one either. */}
+              {data.reached ? null : estimates ? (
                 <>
                   <EstimateCell estimate={estimate} />
                   <SeasonFitLabel goalId={row.goalId} seasonFit={seasonFit} />
@@ -264,9 +264,8 @@ export const GoalCard = memo(
               goalType={row.goalType}
             />
           )}
-          {data.reached ? (
-            <ReachedDash />
-          ) : kind === "Ascension" ? (
+          {/* A Reached card drops its progress area entirely rather than showing a "-" row. */}
+          {data.reached ? null : kind === "Ascension" ? (
             // V1's Ascension card: the orbs on their own row, then a labelled bar per shard kind.
             <>
               {chipRow((chip) => chip.kind === "orbs")}
@@ -366,6 +365,25 @@ export const GoalCard = memo(
             estimate={estimate}
             progress={data.progress}
           />
+          {data.reached ? (
+            // A Reached goal is done: offer its cleanup on the card itself, acting at once without
+            // the confirmation an unreached goal's Delete asks for.
+            <Button
+              aria-label={t("goals.actions.deleteGoal", { entity: name })}
+              className="ml-auto text-destructive hover:text-destructive"
+              data-testid={`goal-card-delete-${row.goalId}`}
+              disabled={actions.pendingIds.has(row.goalId)}
+              onClick={(event) => {
+                stopRowNavigation(event)
+                void actions.remove(row.goalId)
+              }}
+              size="sm"
+              variant="ghost"
+            >
+              <Trash2 data-icon="inline-start" />
+              {t("goals.actions.delete")}
+            </Button>
+          ) : null}
         </div>
       </>
     )
