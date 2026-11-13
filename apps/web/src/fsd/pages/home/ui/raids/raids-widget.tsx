@@ -12,6 +12,7 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
+  CampaignGroupedList,
   flattenTodayLocations,
   LocationRow,
   selectTodayRaids,
@@ -119,8 +120,12 @@ export function RaidsWidget() {
     const shown = expanded ? locations : locations.slice(0, VISIBLE_LOCATIONS)
     const list = (
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-2" data-testid="home-raids-list">
-          {shown.map((entry) => (
+        <CampaignGroupedList
+          battleIdOf={(entry) => entry.battleId}
+          locationsByBattleId={raids.locationsByBattleId}
+          rows={shown}
+          testId="home-raids-list"
+          renderRow={(entry) => (
             <LocationRow
               entry={entry}
               key={entry.battleId}
@@ -131,8 +136,8 @@ export function RaidsWidget() {
               }
               resourceVisual={raids.resourceVisuals.get(entry.resourceId)}
             />
-          ))}
-        </div>
+          )}
+        />
         {locations.length > VISIBLE_LOCATIONS ? (
           <Button
             aria-expanded={expanded}

@@ -384,3 +384,13 @@ The HSE tab SHALL register a Joyride tour with desktop and mobile steps covering
 
 - **WHEN** the player starts the tour on the HSE tab
 - **THEN** a step highlights the event switcher and explains that other upcoming and past events can be opened
+
+### Requirement: The HSE lists' rows are grouped by campaign
+
+The farm list and the "Ignore goals" list SHALL show each run of consecutive rows in one campaign (with its difficulty, so Indomitus Elite and Indomitus Mirror Elite differ) under one header with the campaign icon and the campaign's name, mirror qualifier and difficulty word ("Indomitus Mirror Elite"); each row SHALL name just its battle ("Battle 7", with a challenge node's "B" suffix) ahead of its badges, goals and drop. Grouping SHALL NOT reorder the list: a later row of a campaign that already had a group earlier starts a new group. Paging counts rows, not groups. A battle the catalog cannot name is a group of its own with no header, showing its raw id.
+
+#### Scenario: Consecutive rows of one campaign share a header
+
+- **GIVEN** the list's rows, in its order, are Octarius Mirror Elite 26, Indomitus Mirror Elite 7, Indomitus Mirror Elite 38, Octarius Mirror Elite 15, 21 and 39
+- **WHEN** the list renders
+- **THEN** it shows an "Octarius Mirror Elite" group with Battle 26, an "Indomitus Mirror Elite" group with Battle 7 and Battle 38, then an "Octarius Mirror Elite" group with Battle 15, 21 and 39, each row keeping its own badges and drop

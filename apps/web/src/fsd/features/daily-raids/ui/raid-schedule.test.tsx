@@ -20,10 +20,16 @@ const goal = {
   goalKind: "Unlock" as const,
 }
 
-const location = (id: string, campaignName: string, nodeLabel: string) => ({
+const location = (
+  id: string,
+  campaignName: string,
+  nodeLabel: string,
+  difficultyLabel?: string
+) => ({
   id,
   campaignName,
   nodeLabel,
+  difficultyLabel,
   shortLabel: `${campaignName} ${nodeLabel}`,
   challenge: false,
   icon: undefined,
@@ -227,6 +233,72 @@ describe("RaidSchedule location emphasis", () => {
     expect(resourceIds).toEqual(["X", "Z", "Y"])
   })
 
+  it("shows each campaign once as a header, with one row per battle and its upgrade", () => {
+    const b3 = battleIdSchema.parse("B3")
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[
+          { ...entry(b1, 1), resourceId: "X" as never },
+          { ...entry(b2, 1), resourceId: "Y" as never },
+          { ...entry(b3, 1), resourceId: "Z" as never },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [
+              b1,
+              {
+                ...location("B1", "Indomitus", "Elite 4", "Elite"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+            [
+              b2,
+              {
+                ...location("B2", "Fall of Cadia", "Elite 7", "Elite"),
+                campaignKey: "cadia:Elite",
+              },
+            ],
+            [
+              b3,
+              {
+                ...location("B3", "Indomitus", "Elite 9", "Elite"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map()}
+        resourceUrgencyByGoalAndResource={
+          new Map([
+            ["g1:X", { days: 3, energyTotal: 90 }],
+            ["g1:Y", { days: 3, energyTotal: 80 }],
+            ["g1:Z", { days: 2, energyTotal: 50 }],
+          ])
+        }
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const grid = screen.getByTestId("raid-resource-grid-g1")
+    expect(
+      within(grid)
+        .getAllByRole("heading", { level: 3 })
+        .map((heading) => heading.textContent)
+    ).toEqual(["Indomitus Elite", "Fall of Cadia Elite"])
+    expect(
+      within(grid)
+        .getAllByRole("listitem")
+        .map((row) => row.dataset.testid)
+    ).toEqual(["raid-location-B1", "raid-location-B3", "raid-location-B2"])
+    expect(screen.getByTestId("raid-location-B3")).toHaveTextContent("Battle 9")
+    expect(screen.getByTestId("raid-upgrade-g1-Z")).toBeInTheDocument()
+  })
+
   it("uses the same urgency order for Bonus Raids", () => {
     render(
       <RaidSchedule
@@ -303,7 +375,7 @@ describe("RaidSchedule location emphasis", () => {
     ])
   })
 
-  it("splits the campaign name and the tier-and-node label across the card's two primary lines", () => {
+  it("names the campaign with its tier once in the group header, and only the battle in its row", () => {
     render(
       <RaidSchedule
         attemptsUsedByBattle={new Map([[b1, 3]])}
@@ -311,7 +383,7 @@ describe("RaidSchedule location emphasis", () => {
         entries={[entry(b1, 3)]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
-          new Map([[b1, location("B1", "Indomitus", "Elite 4")]])
+          new Map([[b1, location("B1", "Indomitus", "Elite 4", "Elite")]])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
         resourceProgress={new Map()}
@@ -320,8 +392,15 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    expect(screen.getByText("Indomitus")).toBeInTheDocument()
-    expect(screen.getByText("Elite 4")).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Indomitus Elite" })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId(`raid-location-${b1}`)).toHaveTextContent(
+      "Battle 4"
+    )
+    expect(screen.getByTestId(`raid-location-${b1}`)).not.toHaveTextContent(
+      "Indomitus"
+    )
   })
 
   it("omits the tier-and-node line for a battle the catalog has no descriptor for", () => {
@@ -355,7 +434,7 @@ describe("RaidSchedule location emphasis", () => {
         entries={[entry(b1, 3)]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
-          new Map([[b1, location("B1", campaignName, nodeLabel)]])
+          new Map([[b1, location("B1", campaignName, nodeLabel, "Extremis")]])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
         resourceProgress={new Map()}
@@ -364,17 +443,22 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    const row = within(screen.getByTestId(`raid-location-${b1}`))
-    for (const label of [campaignName, nodeLabel]) {
-      // Campaign, tier and node share one line that wraps instead of truncating.
-      const line = row.getByText(label).closest(".wrap-break-word")
-      expect(line).not.toBeNull()
-      expect(line).not.toHaveClass("truncate")
-      expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
-    }
+    // The header's campaign and tier, and the row's battle, wrap instead of truncating.
+    const header = screen.getByRole("heading", {
+      level: 3,
+      name: `${campaignName} Extremis`,
+    })
+    expect(header).toHaveClass("wrap-break-word")
+    expect(header).not.toHaveClass("truncate")
+    expect(header).toHaveTextContent(`${campaignName} Extremis`)
+    const line = within(screen.getByTestId(`raid-location-${b1}`))
+      .getByText("Battle 12B (Herausforderungsknoten)")
+      .closest(".wrap-break-word")
+    expect(line).not.toBeNull()
+    expect(line).not.toHaveClass("truncate")
   })
 
-  it("keeps the resource name accessible (sr-only) by default and shows it in a visible tooltip on hover, while keeping progress visible underneath", async () => {
+  it("names the resource by its icon, shows the name in a tooltip on hover, and keeps progress beside it", async () => {
     const user = userEvent.setup()
     render(
       <RaidSchedule
@@ -404,12 +488,12 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    // Visually hidden (sr-only) but still accessible before the tooltip opens.
-    expect(screen.getAllByText("Ceramite")).toHaveLength(1)
-    expect(screen.getByText("5 / 10")).toBeInTheDocument()
+    // Named by the icon's button before the tooltip opens.
+    expect(screen.getByRole("button", { name: "Ceramite" })).toBeInTheDocument()
+    expect(screen.getByText("5/10")).toBeInTheDocument()
 
     await user.hover(screen.getByTestId("raid-resource-icon"))
-    expect((await screen.findAllByText("Ceramite")).length).toBeGreaterThan(1)
+    expect(await screen.findAllByText("Ceramite")).not.toHaveLength(0)
   })
 
   it("renders one full-weight row per location when a resource is farmed at more than one node", () => {
@@ -560,7 +644,8 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    expect(screen.getByText("0 / 12")).toBeInTheDocument()
+    // Each row of the upgrade shows what the player holds of it.
+    expect(screen.getAllByText("0/12")).toHaveLength(2)
     expect(screen.getByTestId("schedule")).not.toHaveTextContent(
       /still needed|upgrades? left/
     )

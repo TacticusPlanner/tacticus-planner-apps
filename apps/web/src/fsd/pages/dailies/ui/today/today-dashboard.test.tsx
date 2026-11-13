@@ -93,7 +93,7 @@ describe("TodayDashboard", () => {
       within(bonus).getByTestId("bonus-energy-limit-reached")
     ).toHaveTextContent("Daily energy limit reached")
     // 2 plan entries + 4 bonus entries, all shown.
-    expect(within(bonus).getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+    expect(within(bonus).getByTestId("raid-upgrade-g2-B4")).toBeInTheDocument()
     expect(
       within(bonus).queryByRole("button", { name: /^Show \d+ more$/ })
     ).not.toBeInTheDocument()
@@ -111,7 +111,7 @@ describe("TodayDashboard", () => {
       within(bonus).queryByTestId("bonus-energy-limit-reached")
     ).not.toBeInTheDocument()
     expect(
-      within(bonus).queryByTestId("raid-card-g2-B4")
+      within(bonus).queryByTestId("raid-upgrade-g2-B4")
     ).not.toBeInTheDocument()
     expect(
       within(bonus).getByRole("button", { name: "Show 1 more" })
@@ -153,15 +153,15 @@ describe("TodayDashboard", () => {
 
     const bonus = within(bonusCards()[0]!)
     expect(bonus.getByText("if energy is left")).toBeInTheDocument()
-    expect(bonus.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
+    expect(bonus.queryByTestId("raid-upgrade-g2-B4")).not.toBeInTheDocument()
     // 4 entries: one more after the top 3.
     await user.click(bonus.getByRole("button", { name: "Show 1 more" }))
-    expect(bonus.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+    expect(bonus.getByTestId("raid-upgrade-g2-B4")).toBeInTheDocument()
     expect(
       bonus.queryByRole("button", { name: /^Show \d+ more$/ })
     ).not.toBeInTheDocument()
     await user.click(bonus.getByRole("button", { name: "Show less" }))
-    expect(bonus.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
+    expect(bonus.queryByTestId("raid-upgrade-g2-B4")).not.toBeInTheDocument()
   })
 
   it("links Bonus raids to Plan > Schedule below the limit, not at the limit", () => {

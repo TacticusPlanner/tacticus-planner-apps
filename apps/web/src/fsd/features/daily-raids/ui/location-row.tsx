@@ -1,5 +1,3 @@
-import { EntityIcon } from "@/shared/ui"
-
 import type {
   DailyRaidLocationViewModel,
   DailyRaidResourceVisual,
@@ -11,9 +9,10 @@ import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
 import { RaidLocationName, type RaidLocationTarget } from "./raid-location-name"
 import { ResourceIconWithTooltip } from "./resource-icon"
 
-/** One flattened battle location: compact location chip, planned raid count, and its primary
- * reward — no unit portrait, goal-type icon, or character/goal label (home-raids-widget spec:
- * "one row per location ... without relation to character"). */
+/** One flattened battle location, as a row under its campaign's header (`CampaignGroupedList`): the
+ * battle ("Battle 36"), planned raid count, and its primary reward — no unit portrait, goal-type
+ * icon, or character/goal label (home-raids-widget spec: "one row per location ... without
+ * relation to character"). */
 export function LocationRow({
   entry,
   location,
@@ -29,18 +28,16 @@ export function LocationRow({
   resourceVisual: DailyRaidResourceVisual | undefined
 }) {
   return (
-    <div
-      className="flex flex-wrap items-center gap-2 rounded-lg border p-2"
+    <li
+      className="flex flex-wrap items-center gap-2 py-1.5"
       data-testid={`home-raid-location-${entry.battleId}`}
     >
-      {location?.icon ? (
-        <EntityIcon alt="" className="size-10 shrink-0" src={location.icon} />
-      ) : null}
-      <div className="min-w-24 flex-1">
+      <div className="min-w-20 flex-1">
         <RaidLocationName
           battleId={entry.battleId}
           fallbackLabel={entry.battleId}
           location={location}
+          nodeOnly
           onShow={onShowLocation}
         />
       </div>
@@ -57,10 +54,10 @@ export function LocationRow({
         })}
       />
       <ResourceIconWithTooltip
-        className="size-10"
+        className="size-8"
         label={resourceLabel}
         visual={resourceVisual}
       />
-    </div>
+    </li>
   )
 }

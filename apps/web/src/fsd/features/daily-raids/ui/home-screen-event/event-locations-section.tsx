@@ -16,6 +16,7 @@ import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/today-quick-filters"
 import { useHomeScreenEventLocations } from "../../model/use-home-screen-event-locations"
 import { useListPaging } from "../../model/use-list-paging"
+import { CampaignGroupedList } from "../campaign-group"
 import { ListPagingControls } from "../list-paging-controls"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import {
@@ -75,8 +76,12 @@ export function EventLocationsSection({
         </div>
       ) : state.locations.length > 0 ? (
         <>
-          <ul className="grid gap-2" data-testid="hse-raids-list">
-            {paging.visible.map((location) => {
+          <CampaignGroupedList
+            battleIdOf={(location) => location.battleId}
+            locationsByBattleId={state.locationsByBattleId}
+            rows={paging.visible}
+            testId="hse-raids-list"
+            renderRow={(location) => {
               const resource = state.resourceByBattleId.get(location.battleId)
               return (
                 <EventLocationRow
@@ -148,8 +153,8 @@ export function EventLocationsSection({
                   </Badge>
                 </EventLocationRow>
               )
-            })}
-          </ul>
+            }}
+          />
           <ListPagingControls paging={paging} testId="hse-raids-paging" />
         </>
       ) : (

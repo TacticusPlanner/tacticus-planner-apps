@@ -356,3 +356,13 @@ The HRE tab SHALL NOT show the project selector, the Raids Filters action or the
 
 - **GIVEN** a project is selected on Today
 - **THEN** the HRE suggestions still rank nodes by every active goal
+
+### Requirement: HRE suggestion rows are grouped by campaign
+
+Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) SHALL show each run of consecutive rows in one campaign (with its difficulty) under one header with the campaign icon and the campaign's name, mirror qualifier and difficulty word; each row SHALL name just its battle ("Battle 7") ahead of its goals, drop and counts. Grouping SHALL NOT reorder the list, and paging counts rows, not groups.
+
+#### Scenario: Consecutive rows of one campaign share a header
+
+- **GIVEN** the list's rows, in its order, are Octarius Mirror Elite 26, Indomitus Mirror Elite 7, Indomitus Mirror Elite 38, Octarius Mirror Elite 15, 21 and 39
+- **WHEN** the list renders
+- **THEN** it shows an "Octarius Mirror Elite" group with Battle 26, an "Indomitus Mirror Elite" group with Battle 7 and Battle 38, then an "Octarius Mirror Elite" group with Battle 15, 21 and 39, each row keeping its own badges and drop

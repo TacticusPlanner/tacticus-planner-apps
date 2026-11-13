@@ -238,7 +238,7 @@ describe("RaidsWidget", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("reads a location exactly as Today does — campaign name, then tier and node", () => {
+  it("reads a location exactly as Today does — campaign and tier in the header, the battle in the row", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" })] },
@@ -252,6 +252,8 @@ describe("RaidsWidget", () => {
             id: "node-1",
             campaignName: "Indomitus",
             nodeLabel: "Elite 3",
+            difficultyLabel: "Elite",
+            campaignKey: "indomitus-elite",
             shortLabel: "Indomitus E 3",
             challenge: false,
             icon: undefined,
@@ -264,10 +266,12 @@ describe("RaidsWidget", () => {
 
     render(<RaidsWidget />, { route: "/" })
 
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Indomitus Elite" })
+    ).toBeInTheDocument()
     const row = screen.getByTestId("home-raid-location-node-1")
-    expect(row).toHaveTextContent("Indomitus")
-    expect(row).toHaveTextContent("Elite 3")
-    expect(row).not.toHaveTextContent("Indomitus E 3")
+    expect(row).toHaveTextContent('schedule.battle:{"node":"3"}')
+    expect(row).not.toHaveTextContent("Indomitus")
   })
 
   it("omits the second line entirely for a location the catalog has no descriptor for", () => {

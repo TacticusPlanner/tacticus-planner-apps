@@ -16,6 +16,7 @@ import type {
   DailyRaidsReadyViewModel,
 } from "../../model/daily-raids.domain"
 import type { MissionRaidPlan } from "../../model/mission-raids"
+import { CampaignGroupedList } from "../campaign-group"
 import { EventGoalIcons } from "../home-screen-event/event-goal-icons"
 import { EventLocationRow } from "../home-screen-event/event-location-row"
 import { ResourceIconWithTooltip } from "../resource-icon"
@@ -51,8 +52,12 @@ export function RaidRows({
   const paging = useListPaging(rows)
   return (
     <>
-      <ul className="grid gap-2" data-testid={testId}>
-        {paging.visible.map((row) => {
+      <CampaignGroupedList
+        battleIdOf={(row) => row.battleId}
+        locationsByBattleId={locations}
+        rows={paging.visible}
+        testId={testId}
+        renderRow={(row) => {
           const resourceId = row.goal?.resourceId
           const goals = (row.goal?.goalIds ?? [])
             .map((goalId) => view?.goalsById.get(goalId))
@@ -123,8 +128,8 @@ export function RaidRows({
               )}
             </EventLocationRow>
           )
-        })}
-      </ul>
+        }}
+      />
       <ListPagingControls paging={paging} testId={`${testId}-paging`} />
     </>
   )

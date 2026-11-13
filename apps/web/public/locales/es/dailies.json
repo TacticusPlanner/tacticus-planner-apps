@@ -208,7 +208,8 @@
     "more_one": "Falta {{count}}",
     "more_other": "Faltan {{count}}",
     "progress": "{{owned}} de {{target}} en posesión",
-    "fullyRaided": "Completado"
+    "fullyRaided": "Completado",
+    "battle": "Batalla {{node}}"
   },
   "bonus": {
     "title": "Incursiones extra",

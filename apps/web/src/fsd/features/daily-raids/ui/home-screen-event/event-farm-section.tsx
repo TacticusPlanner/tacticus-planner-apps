@@ -19,6 +19,7 @@ import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/to
 import { useDailyRaids } from "../../model/use-daily-raids"
 import { useListPaging } from "../../model/use-list-paging"
 import { ListPagingControls } from "../list-paging-controls"
+import { CampaignGroupedList } from "../campaign-group"
 import { RaidState } from "../raid-state"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
@@ -116,8 +117,12 @@ export const EventFarmSection = memo(function EventFarmSection({
         <RaidState state={raids.status} />
       ) : view && farm && farm.rows.length > 0 ? (
         <>
-          <ul className="grid gap-2" data-testid="hse-raids-list">
-            {paging.visible.map((row) => {
+          <CampaignGroupedList
+            battleIdOf={(row) => row.battleId}
+            locationsByBattleId={view.locationsByBattleId}
+            rows={paging.visible}
+            testId="hse-raids-list"
+            renderRow={(row) => {
               const goals = row.goalIds
                 .map((goalId) => view.goalsById.get(goalId))
                 .filter((goal): goal is DailyRaidGoalViewModel => !!goal)
@@ -180,8 +185,8 @@ export const EventFarmSection = memo(function EventFarmSection({
                   </span>
                 </EventLocationRow>
               )
-            })}
-          </ul>
+            }}
+          />
           <ListPagingControls paging={paging} testId="hse-raids-paging" />
         </>
       ) : emptyReason ? (

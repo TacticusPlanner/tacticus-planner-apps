@@ -54,6 +54,7 @@ export type {
 export type { MissionDeployGroup } from "./model/mission-deploy-groups"
 export { ResourceIconWithTooltip } from "./ui/resource-icon"
 export { LocationRow } from "./ui/location-row"
+export { CampaignGroupedList } from "./ui/campaign-group"
 export type { RaidLocationTarget } from "./ui/raid-location-name"
 // Shared by Dailies > Raids (Today) and Plan > Schedule, which live in different page slices.
 export { RaidSchedule } from "./ui/raid-schedule"

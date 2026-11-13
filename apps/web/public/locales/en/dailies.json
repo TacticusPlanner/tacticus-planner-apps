@@ -208,7 +208,8 @@
     "more_one": "{{count}} still needed",
     "more_other": "{{count}} still needed",
     "progress": "{{owned}} of {{target}} owned",
-    "fullyRaided": "Fully raided"
+    "fullyRaided": "Fully raided",
+    "battle": "Battle {{node}}"
   },
   "bonus": {
     "title": "Bonus raids",

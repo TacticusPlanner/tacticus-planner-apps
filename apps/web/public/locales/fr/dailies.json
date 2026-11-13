@@ -208,7 +208,8 @@
     "more_one": "Encore {{count}} requis",
     "more_other": "Encore {{count}} requis",
     "progress": "{{owned}} sur {{target}} possédés",
-    "fullyRaided": "Entièrement attaqué"
+    "fullyRaided": "Entièrement attaqué",
+    "battle": "Bataille {{node}}"
   },
   "bonus": {
     "title": "Raids bonus",
