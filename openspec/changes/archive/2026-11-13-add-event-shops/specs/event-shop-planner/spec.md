@@ -77,7 +77,7 @@ The selected day SHALL be held in the URL as `?day=<index>` (0-based event day);
 
 ### Requirement: The Shop tab lists the selected day's slots
 
-The Shop tab SHALL show every slot available on the selected day (from the event day helper), in the game's slot order, each with its reward icon and name, pack quantity, free bundled offer, cost in the event currency and per-day cap. Locks and power-level bounds SHALL be resolved from the synced roster, so a slot SHALL show the one offer the player gets. A slot resolved by the player's tier SHALL say so ("Your tier: High"), with the tier rule in a tooltip (Low: power level below 20; Mid: 20 or more; High: 20 or more with a character or Machine of War at Legendary one blue star or above). A shard slot resolved by unit progress SHALL say what follows ("Then mythic shards at max legendary"). Without synced player data, a slot SHALL list every option it may show, under "Depends on your tier" or "Depends on unit progress". Display strings and icons SHALL be resolved from ids through the shared shop reward display.
+The Shop tab SHALL show every slot available on the selected day (from the event day helper), in the game's slot order, each with its reward icon and name, pack quantity, free bundled offer, cost in the event currency and per-day cap. Locks and power-level bounds SHALL be resolved from the synced roster, so a slot SHALL show the one offer the player gets; when the cart plans a reward of that slot and day that the roster no longer resolves to (e.g. shards after the unit reached max legendary), the slot SHALL show the planned reward instead, so it shows what its cart controls act on. A slot resolved by the player's tier SHALL say so ("Your tier: High"), with the tier rule in a tooltip (Low: power level below 20; Mid: 20 or more; High: 20 or more with a character or Machine of War at Legendary one blue star or above). A shard slot resolved by unit progress SHALL say what follows ("Then mythic shards at max legendary"). Without synced player data, a slot SHALL list every option it may show, under "Depends on your tier" or "Depends on unit progress". Display strings and icons SHALL be resolved from ids through the shared shop reward display.
 
 Assumptions:
 
@@ -89,6 +89,11 @@ Assumptions:
 
 - **WHEN** the synced roster has Yarrick below max legendary
 - **THEN** the slot offers `shards_astraYarrick` and not `mythicShards_astraYarrick`, with "Then mythic shards at max legendary"
+
+#### Scenario: A planned reward the roster no longer resolves to stays on its slot
+
+- **WHEN** the cart plans `mythicShards_astraYarrick` in the Yarrick slot and the synced roster now resolves that slot to `shards_astraYarrick`
+- **THEN** the slot shows the planned mythic shards, and its cart controls act on that entry
 
 #### Scenario: Tier resolves an orb slot
 

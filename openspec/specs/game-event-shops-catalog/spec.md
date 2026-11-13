@@ -1,8 +1,10 @@
+# game-event-shops-catalog Specification
+
 ## Purpose
 
 Gives the client game-catalog package the seasonal event shops: the synced `event-shops` dataset, a query to read it, and helpers that turn an event plus a moment in time into an event day, its date, and that day's resolved shop slots.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: The `event-shops` dataset is synced and stored one record per event
 
@@ -55,12 +57,17 @@ Assumptions:
 
 ### Requirement: An event day's slots resolve through the shop resolver
 
-The package SHALL provide a helper that, given an event, a day index and an optional power-level and lock context, returns that day's slots by passing the day's week slots and day of week to the permissive shop resolver — grouped "one of these" options per slot, each with reward, free offer, cost and per-day cap, and the slot's index in the week. Without a lock context, roster-dependent locks SHALL count as possibly available, as for daily shops.
+The package SHALL provide a helper that, given an event, a day index and an optional power-level and lock context, returns that day's slots by passing the day's week slots and day of week to the permissive shop resolver — grouped "one of these" options per slot, each with reward, free offer, cost and per-day cap, and the slot's index in the week. Without a lock context, roster-dependent locks SHALL count as possibly available, as for daily shops. Time-bound locks (battle-pass season windows, crusade and featured rotations) SHALL resolve as of the later of the given instant and the start of that event day, so a future day shows what it will sell on that day.
 
 #### Scenario: Day-restricted offer appears only on its days
 
 - **WHEN** week 1 slot 1 offers `shards_astraYarrick` only on `MON`, `THU` and `SUN`
 - **THEN** the helper lists it on Monday, Thursday and Sunday of week 1 and not on the other days
+
+#### Scenario: A season boundary inside the event
+
+- **WHEN** a slot sells gold until battle-pass season 41 starts and gems after it, season 41 starts on day 3 of the event, and the helper is asked on day 0 for day 5
+- **THEN** day 0 lists gold and day 5 lists gems
 
 ### Requirement: The package exposes event shop queries
 
