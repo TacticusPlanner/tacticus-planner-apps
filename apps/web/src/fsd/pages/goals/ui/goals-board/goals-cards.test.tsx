@@ -165,9 +165,38 @@ describe("Goal cards", () => {
     expect(within(card).getByTestId("goal-status-badge")).toHaveTextContent(
       "Reached"
     )
+    expect(within(card).queryByTestId("goal-reached-dash")).toBeNull()
+    expect(within(card).getByTestId("goal-card-meta")).toBeEmptyDOMElement()
+  })
+
+  it("deletes a Reached goal from its card without a confirmation", async () => {
+    const remove = vi.fn(() => Promise.resolve(true))
+    const user = userEvent.setup()
+    render(
+      <GoalsList
+        actions={{ ...stubActions, remove }}
+        reachedByGoalId={new Map([["g1", true]])}
+        rows={[row("g1", 1)]}
+        view="Cards"
+      />
+    )
+
+    const footer = await screen.findByTestId("goal-card-footer")
+    await user.click(within(footer).getByRole("button", { name: /Delete/ }))
+
+    expect(remove).toHaveBeenCalledExactlyOnceWith("g1")
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
+  })
+
+  it("offers no card Delete for an unreached goal", async () => {
+    render(
+      <GoalsList actions={stubActions} rows={[row("g1", 1)]} view="Cards" />
+    )
+
+    const footer = await screen.findByTestId("goal-card-footer")
     expect(
-      within(card).getAllByTestId("goal-reached-dash").length
-    ).toBeGreaterThan(0)
+      within(footer).queryByRole("button", { name: /Delete/ })
+    ).not.toBeInTheDocument()
   })
 
   it("pauses the goal from the footer status chip", async () => {

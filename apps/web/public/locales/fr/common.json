@@ -1216,6 +1216,7 @@
       "pause": "Mettre en pause",
       "resume": "Reprendre",
       "delete": "Supprimer",
+      "deleteGoal": "Supprimer l’objectif de {{entity}}",
       "moveToTop": "Placer en premier",
       "moveUp": "Monter",
       "moveDown": "Descendre",
