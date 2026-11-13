@@ -38,13 +38,19 @@ Assumptions:
 
 - **GIVEN** a battle location is node 3 of the Indomitus Elite campaign, part of today's real schedule, planned below its daily cap while its goal still needs 3 of the upgrade, and a full day of attempts there is expected to drop at least 3
 - **WHEN** the widget renders that location
-- **THEN** it shows one row with the campaign icon, "Indomitus" on the first line, "Elite 3" on the second, "3 upgrades left", and its primary reward icon — no unit portrait or goal label
+- **THEN** it shows an "Indomitus Elite" header with the campaign icon, and under it one row reading "Battle 3", "3 upgrades left", its primary reward icon and what the player holds of it against the target ("X/Y") — no unit portrait or goal label
 
 #### Scenario: A location reads the same on Home as on Today
 
 - **GIVEN** the same battle location appears both in the widget and in Today's own schedule
 - **WHEN** both render
-- **THEN** its campaign name and tier-and-node label are identical in both places, not a compact form in one and a full form in the other
+- **THEN** its campaign header ("Indomitus Elite") and battle label ("Battle 3") are identical in both places, not a compact form in one and a full form in the other
+
+#### Scenario: Grouping keeps the widget's row order
+
+- **GIVEN** the widget's rows are, in order, a battle of campaign A, a battle of campaign B, then two battles of campaign A
+- **WHEN** the widget renders
+- **THEN** it shows an A group with one row, a B group with one row, then a second A group with two rows, and no row moves
 
 #### Scenario: An exhausted node is not shown
 
@@ -72,7 +78,7 @@ When two or more in-scope goals each plan a raid at the same battle location tod
 
 - **GIVEN** Goal A still needs 2 and Goal B still needs 3 of the same upgrade at node 3 of Indomitus Elite, and their combined planned raids there stay below its daily cap
 - **WHEN** the widget renders
-- **THEN** that node appears once — "Indomitus" / "Elite 3" — showing "5 upgrades left", instead of appearing once under each goal as Today does
+- **THEN** that node appears once — "Battle 3" under the "Indomitus Elite" header — showing "5 upgrades left", instead of appearing once under each goal as Today does
 
 #### Scenario: A single goal's location is unaffected
 

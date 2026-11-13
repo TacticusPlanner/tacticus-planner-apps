@@ -361,4 +361,68 @@ describe("RaidsWidget", () => {
     expect(toggle).toHaveAttribute("aria-expanded", "true")
     expect(toggle).toHaveTextContent("home.raids.showLess")
   })
+  it("groups consecutive rows by campaign without moving a row, across the show-more boundary", async () => {
+    const user = userEvent.setup()
+    // Campaigns in plan order: A, B, then five more of A. The later A rows stay after B, in their
+    // own group, which the first five rows cut through.
+    const campaigns = ["a", "b", "a", "a", "a", "a", "a"]
+    const location = (index: number, campaign: string) => ({
+      id: `node-${index}`,
+      campaignName: campaign === "a" ? "Indomitus" : "Octarius",
+      nodeLabel: `Elite ${index + 1}`,
+      difficultyLabel: "Elite",
+      campaignKey: `${campaign}-elite`,
+      shortLabel: `${campaign} E ${index + 1}`,
+      challenge: false,
+      icon: undefined,
+    })
+    useDailyRaidsMock.mockReturnValue({
+      status: "ready",
+      today: {
+        entries: campaigns.map((_, index) =>
+          entry({ battleId: `node-${index}` })
+        ),
+      },
+      bonus: { entries: [] },
+      raidsLeftToday: { entries: [] },
+      attemptsLeftByBattle: new Map(),
+      locationsByBattleId: new Map(
+        campaigns.map((campaign, index) => [
+          `node-${index}` as BattleId,
+          location(index, campaign),
+        ])
+      ),
+      resourceLabels: new Map(),
+      resourceVisuals: new Map(),
+      resourceTotals: new Map(),
+    })
+
+    render(<RaidsWidget />, { route: "/" })
+
+    const groupRows = () =>
+      screen
+        .getAllByTestId(/^campaign-group-/)
+        .map((group) =>
+          [...group.querySelectorAll("[data-testid^=home-raid-location-]")].map(
+            (row) => row.getAttribute("data-testid")
+          )
+        )
+    expect(groupRows()).toEqual([
+      ["home-raid-location-node-0"],
+      ["home-raid-location-node-1"],
+      [
+        "home-raid-location-node-2",
+        "home-raid-location-node-3",
+        "home-raid-location-node-4",
+      ],
+    ])
+
+    await user.click(screen.getByTestId("home-raids-toggle"))
+
+    expect(groupRows()).toEqual([
+      ["home-raid-location-node-0"],
+      ["home-raid-location-node-1"],
+      [2, 3, 4, 5, 6].map((index) => `home-raid-location-node-${index}`),
+    ])
+  })
 })
