@@ -25,7 +25,12 @@ import {
 } from "@/entities/player-data-override"
 
 import { projectOnslaughtSupply, projectShopSupply } from "./shop-supply"
-import type { FlatSupplier, UpgradeNeed } from "../model/estimate.domain"
+import {
+  shardResourceId,
+  type FlatSupplier,
+  type ShardResourceId,
+  type UpgradeNeed,
+} from "../model/estimate.domain"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
@@ -124,6 +129,9 @@ export function computeGoalAcquisition(params: {
   detail: GoalDetail
   /** `upgrades` are the goal's farmable base-material needs; only Mythic-material ones matter here. */
   need: {
+    /** The farmable regular-shard resource, when the unit has campaign shard nodes (Characters only;
+     *  `ResourceNeed.shardId`). */
+    shardId?: ShardResourceId | null
     shards: number
     mythicShards: number
     upgrades?: readonly { id: string }[]
@@ -154,6 +162,10 @@ export function computeGoalAcquisition(params: {
    *  consumer adds it to the goal's needs beside the regular shard need. Without Onslaught, Mythic
    *  shards stay count-only here, as before. */
   mythicShardNeed?: UpgradeNeed
+  /** The goal's regular shard demand for the shared day-loop: a Character's `shardId` need, or a
+   *  Machine of War's shards when a selected source (Onslaught, a shop offer) supplies them. A MoW
+   *  has no campaign shard nodes, so without such a source its shards stay count-only. */
+  shardNeed?: UpgradeNeed
 } {
   const { detail, need } = params
 
@@ -294,5 +306,24 @@ export function computeGoalAcquisition(params: {
     shopOffers,
     onslaughtTokensDelta,
     mythicShardNeed,
+    shardNeed: regularShardNeed(detail, need, flatSuppliers),
   }
+}
+
+/** See `computeGoalAcquisition`'s `shardNeed`. */
+function regularShardNeed(
+  detail: GoalDetail,
+  need: { shardId?: ShardResourceId | null; shards: number },
+  flatSuppliers: readonly FlatSupplier[]
+): UpgradeNeed | undefined {
+  if (need.shardId) {
+    return need.shards > 0 || flatSuppliers.length > 0
+      ? { id: need.shardId, count: need.shards }
+      : undefined
+  }
+  if (!isMowDetail(detail) || need.shards <= 0) return undefined
+  const id = shardResourceId(detail.entityId)
+  return flatSuppliers.some((supplier) => supplier.resourceId === id)
+    ? { id, count: need.shards }
+    : undefined
 }

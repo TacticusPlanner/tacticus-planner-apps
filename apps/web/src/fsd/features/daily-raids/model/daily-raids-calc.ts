@@ -225,6 +225,7 @@ export function calculateDailyRaids(
       flatSuppliers,
       shopOffers,
       mythicShardNeed,
+      shardNeed,
     } = computeGoalAcquisition({
       detail,
       need,
@@ -240,10 +241,11 @@ export function calculateDailyRaids(
       referenceDate,
     })
     for (const offer of shopOffers) shopOffersById.set(offer.offerId, offer)
-    if (need.shardId && (need.shards > 0 || flatSuppliers.length > 0)) {
-      needs.push({ id: need.shardId, count: need.shards })
+    // A Machine of War's shards arrive here only when Onslaught or a shop supplies them.
+    if (shardNeed) {
+      needs.push(shardNeed)
       const character = params.charactersById.get(detail.entityId)
-      if (character) {
+      if (need.shardId && character) {
         const ownedShards =
           detail.goalType === "Unlock"
             ? (params.inventoryShardById.get(detail.entityId)?.amount ?? 0)

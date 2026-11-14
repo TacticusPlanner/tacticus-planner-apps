@@ -168,6 +168,61 @@ describe("computeGoalAcquisition — Onslaught source (harden-app-against-stale-
   })
 })
 
+describe("computeGoalAcquisition — regular shard need", () => {
+  function mowAscension(
+    acquisitionSources: GoalDetail["config"]["acquisitionSources"]
+  ) {
+    return computeGoalAcquisition({
+      detail: {
+        ...goal("Ascension", "Mow", acquisitionSources),
+        entityId: "mow1",
+        config: {
+          acquisitionSources,
+          progression: { start: "Legendary:0", target: "Legendary:3" },
+        },
+      } as unknown as GoalDetail,
+      need: { shardId: null, shards: 100, mythicShards: 0 },
+      mowsById: new Map(),
+      charactersById: new Map(),
+      playerCharacterById: new Map(),
+      playerMowById: new Map(),
+      upgradesById,
+      onslaughtProgress: {
+        imperial: { sector: "Gold", tier: 4, isSet: true },
+      } as unknown as OnslaughtProgress,
+      onslaughtRewards: goldRewards,
+      onslaughtRunsPerDay: 1.5,
+      referenceDate: monday,
+    })
+  }
+
+  it("feeds a Machine of War's shards to the estimate when Onslaught supplies them", () => {
+    expect(mowAscension([{ kind: "Onslaught", ids: [] }]).shardNeed).toEqual({
+      id: "shard:mow1",
+      count: 100,
+    })
+  })
+
+  it("leaves a Machine of War's shards count-only without a supplying source", () => {
+    expect(mowAscension(null).shardNeed).toBeUndefined()
+  })
+
+  it("passes a Character's campaign shard need through", () => {
+    const result = computeGoalAcquisition({
+      detail: goal("Ascension", "Character", null),
+      need: { shardId: "shard:spaceRagnar", shards: 40, mythicShards: 0 },
+      mowsById: new Map(),
+      charactersById: new Map(),
+      playerCharacterById: new Map(),
+      playerMowById: new Map(),
+      upgradesById,
+      referenceDate: monday,
+    })
+
+    expect(result.shardNeed).toEqual({ id: "shard:spaceRagnar", count: 40 })
+  })
+})
+
 describe("computeGoalAcquisition — Mythic materials (add-mythic-material-shop-sources)", () => {
   it("uses every available offer when the goal has no saved selection", () => {
     const result = acquisition(goal("Rank", "Character", null))
