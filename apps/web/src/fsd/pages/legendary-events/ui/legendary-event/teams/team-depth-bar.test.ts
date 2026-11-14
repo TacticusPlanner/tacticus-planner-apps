@@ -13,6 +13,7 @@ const estimate = (
   stretchDepth,
   battleCount: 18,
   power: 100_000,
+  balanceFactor: 1,
   marginAbovePct: 10,
   shortfallToNextPct,
   calibrated: true,

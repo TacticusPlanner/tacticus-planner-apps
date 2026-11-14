@@ -1040,6 +1040,27 @@
       "relicAdvice": "Relique"
     }
   },
+  "npcTierList": {
+    "kind": {
+      "label": "Classement",
+      "heroes": "Héros",
+      "enemies": "Ennemis"
+    },
+    "intro": "Rangs des ennemis des Événements légendaires en cours et à venir (ennemis ordinaires, sans les boss) : dans les estimations de progression, la puissance de chaque ennemi est multipliée par la valeur de son rang.",
+    "search": "Rechercher un ennemi",
+    "event": "Événement",
+    "allEvents": "Tous les événements en cours",
+    "noEnemy": "Aucun ennemi",
+    "noEvent": "Aucun Événement légendaire n'est prévu.",
+    "error": "Impossible de charger le classement des ennemis.",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "details": {
+      "description": "Rang, multiplicateur et pourquoi cet ennemi est dangereux.",
+      "threat": "Pourquoi il est dangereux",
+      "counter": "Comment le gérer",
+      "noThreat": "Pas encore de notes sur cet ennemi."
+    }
+  },
   "missions": {
     "kinds": {
       "anyBattle": "Vaincre {{count}} vagues dans n'importe quelle bataille",

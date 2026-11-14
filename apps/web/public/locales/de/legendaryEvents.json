@@ -1040,6 +1040,27 @@
       "relicAdvice": "Relikt"
     }
   },
+  "npcTierList": {
+    "kind": {
+      "label": "Stufenliste",
+      "heroes": "Helden",
+      "enemies": "Gegner"
+    },
+    "intro": "Gegnerstufen für die laufenden und kommenden Legendären Events (normale Gegner, keine Bosse): In den Abschlussschätzungen wird die Stärke jedes Gegners mit dem Wert seiner Stufe multipliziert.",
+    "search": "Gegner suchen",
+    "event": "Event",
+    "allEvents": "Alle laufenden Events",
+    "noEnemy": "Kein Gegner",
+    "noEvent": "Es ist kein Legendäres Event geplant.",
+    "error": "Die Gegner-Stufenliste konnte nicht geladen werden.",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "details": {
+      "description": "Stufe, Multiplikator und warum dieser Gegner gefährlich ist.",
+      "threat": "Warum er gefährlich ist",
+      "counter": "So gehst du damit um",
+      "noThreat": "Noch keine Hinweise zu diesem Gegner."
+    }
+  },
   "missions": {
     "kinds": {
       "anyBattle": "Besiege {{count}} Wellen in einem beliebigen Kampf",

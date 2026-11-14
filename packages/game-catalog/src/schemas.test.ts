@@ -470,6 +470,29 @@ describe("catalog schemas", () => {
     ).toBe(false)
   })
 
+  it("validates the npc-tiers record and rejects a non-positive multiplier", () => {
+    const record = {
+      id: "npc-tiers",
+      tiers: [
+        { tier: "S", multiplier: 1.9 },
+        { tier: "D", multiplier: 1 },
+      ],
+      npcs: [
+        { npcId: "darkaNpc2Hellblaster", tier: "S", multiplier: 1.8 },
+        { npcId: "eldarNpc1Guardian", tier: "D" },
+      ],
+    }
+    const schema = datasetPayloadSchemas["npc-tiers"]
+
+    expect(schema.safeParse([record]).success).toBe(true)
+    expect(schema.safeParse([{ ...record, npcs: [] }]).success).toBe(true)
+    expect(
+      schema.safeParse([
+        { ...record, npcs: [{ npcId: "x", tier: "D", multiplier: 0 }] },
+      ]).success
+    ).toBe(false)
+  })
+
   it("keeps a horde-mode character's synergies in order and rejects a non-string one", () => {
     const record = {
       id: "horde-mode-tiers",

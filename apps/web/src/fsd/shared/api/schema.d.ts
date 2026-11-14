@@ -882,6 +882,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/npc-tiers": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the horde-mode NPC tier list. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/npc-tiers/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the horde-mode NPC tier list. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/npcs": {
     parameters: {
       query?: never
@@ -2190,6 +2224,7 @@ export interface components {
       battleIds: components["schemas"]["IReadOnlyListOfString"]
       /** Format: int32 */
       number: number
+      requiredCampaignGroupId: null | string
     }
     GameCatalogCampaignDetailedEnemy: {
       id: string
@@ -2526,6 +2561,15 @@ export interface components {
       data:
         null | components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounter"]
     }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data: null | components["schemas"]["IReadOnlyListOfGameCatalogNpcTiers"]
+    }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogOnslaughtReward: {
       version: string
       schemaHash: string
@@ -2715,6 +2759,8 @@ export interface components {
       battleFatigueFleeChanceOverkill: number
       traitVariables: components["schemas"]["IReadOnlyDictionaryOfStringAndJsonElement"]
       staminaShopTiers: components["schemas"]["IReadOnlyListOfGameCatalogStaminaShopTier"]
+      /** Format: int32 */
+      eliteCampaignMinPowerLevel: number
     }
     GameCatalogGuildRaidMetaBossView: {
       bossUnitSetId: string
@@ -3252,6 +3298,17 @@ export interface components {
       rank: number
       /** Format: int32 */
       stars: number
+    }
+    GameCatalogNpcTier: {
+      npcId: string
+      tier: string
+      /** Format: double */
+      multiplier?: null | number
+    }
+    GameCatalogNpcTiers: {
+      id: string
+      tiers: components["schemas"]["IReadOnlyListOfGameCatalogHordeModeTier"]
+      npcs: components["schemas"]["IReadOnlyListOfGameCatalogNpcTier"]
     }
     GameCatalogOhSoCloseOffer: {
       unlock: components["schemas"]["GameCatalogOhSoCloseOfferPrice"]
@@ -3910,6 +3967,8 @@ export interface components {
     IReadOnlyListOfGameCatalogNpcEncounterBattle: components["schemas"]["GameCatalogNpcEncounterBattle"][]
     IReadOnlyListOfGameCatalogNpcEncounterLevel: components["schemas"]["GameCatalogNpcEncounterLevel"][]
     IReadOnlyListOfGameCatalogNpcStat: components["schemas"]["GameCatalogNpcStat"][]
+    IReadOnlyListOfGameCatalogNpcTier: components["schemas"]["GameCatalogNpcTier"][]
+    IReadOnlyListOfGameCatalogNpcTiers: components["schemas"]["GameCatalogNpcTiers"][]
     IReadOnlyListOfGameCatalogOnslaughtReward: components["schemas"]["GameCatalogOnslaughtReward"][]
     IReadOnlyListOfGameCatalogProgressionRules: components["schemas"]["GameCatalogProgressionRules"][]
     IReadOnlyListOfGameCatalogQuestBattleView: components["schemas"]["GameCatalogQuestBattleView"][]
@@ -7018,6 +7077,98 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The single S/A/B/C/D tier list of enemy NPCs for horde modes, with each tier's power multiplier applied to an NPC's power in clear estimates; an NPC may override its tier's multiplier, and one not listed is unrated (multiplier 1.0). */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The single S/A/B/C/D tier list of enemy NPCs for horde modes, with each tier's power multiplier applied to an NPC's power in clear estimates; an NPC may override its tier's multiplier, and one not listed is unrated (multiplier 1.0). */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers"]
         }
       }
       /** @description The dataset has not changed. */

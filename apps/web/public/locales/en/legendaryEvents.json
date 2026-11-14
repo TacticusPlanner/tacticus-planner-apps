@@ -1040,6 +1040,27 @@
       "relicAdvice": "Relic"
     }
   },
+  "npcTierList": {
+    "kind": {
+      "label": "Tier list",
+      "heroes": "Heroes",
+      "enemies": "Enemies"
+    },
+    "intro": "Enemy tiers for the current and upcoming Legendary Events (regular enemies, no bosses): each enemy's power is multiplied by its tier's value in the clear estimates.",
+    "search": "Search enemies",
+    "event": "Event",
+    "allEvents": "All active events",
+    "noEnemy": "No enemy",
+    "noEvent": "No Legendary Event is scheduled.",
+    "error": "Couldn't load the enemy tier list.",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "details": {
+      "description": "The enemy's tier, multiplier and why it is dangerous.",
+      "threat": "Why it's dangerous",
+      "counter": "How to deal with it",
+      "noThreat": "No notes for this enemy yet."
+    }
+  },
   "missions": {
     "kinds": {
       "anyBattle": "Defeat {{count}} waves in any battle",

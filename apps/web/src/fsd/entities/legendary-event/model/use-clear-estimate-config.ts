@@ -7,11 +7,13 @@ import {
   type ClearEstimateConfig,
 } from "../lib/clear-estimate"
 import { useHordeModeTiers } from "./use-horde-mode-tiers"
+import { useNpcTiers } from "./use-npc-tiers"
 import type { ReadState } from "./use-read-state"
 
 /** The clear-estimate config's state (design D6): `failed` when the tier-list or the power-data
  *  read failed. A missing `horde-mode-tiers` record leaves every character untiered (estimates still
- *  show); a missing `unit-power` record leaves `config.unitPower` null (no estimate shows). */
+ *  show); a missing `unit-power` record leaves `config.unitPower` null (no estimate shows). The NPC
+ *  tier list is optional: a failed or missing `npc-tiers` read leaves every enemy at 1.0. */
 export type ClearEstimateConfigState =
   | { status: "loading" }
   | {
@@ -29,6 +31,9 @@ export function useClearEstimateConfig(
   powerRead: ReadState<UnitPowerContext | null>
 ): ClearEstimateConfigState {
   const tiersRead = useHordeModeTiers()
+  const npcTiersRead = useNpcTiers()
+  const npcTiersStatus = npcTiersRead.status
+  const npcTiers = npcTiersRead.status === "ready" ? npcTiersRead.data : null
   const hordeModeTiers =
     tiersRead.status === "ready" ? tiersRead.data : undefined
   const unitPower = powerRead.status === "ready" ? powerRead.data : undefined
@@ -50,12 +55,20 @@ export function useClearEstimateConfig(
         },
       }
     }
-    if (tiersStatus === "loading" || powerStatus === "loading") {
+    if (
+      tiersStatus === "loading" ||
+      powerStatus === "loading" ||
+      npcTiersStatus === "loading"
+    ) {
       return { status: "loading" }
     }
     return {
       status: "ready",
-      config: clearEstimateConfig(hordeModeTiers ?? null, unitPower ?? null),
+      config: clearEstimateConfig(
+        hordeModeTiers ?? null,
+        unitPower ?? null,
+        npcTiers
+      ),
     }
   }, [
     tiersStatus,
@@ -64,5 +77,7 @@ export function useClearEstimateConfig(
     retryPower,
     hordeModeTiers,
     unitPower,
+    npcTiersStatus,
+    npcTiers,
   ])
 }

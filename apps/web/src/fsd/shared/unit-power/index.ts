@@ -8,6 +8,7 @@ export {
   characterStatsAt,
   mowPowerAt,
   npcPowerAt,
+  npcPowerAtLadder,
   rosterCharacterPower,
   type CharacterPowerValues,
 } from "./unit-power"

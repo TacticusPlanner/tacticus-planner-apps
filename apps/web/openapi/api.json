@@ -2527,6 +2527,100 @@
         }
       }
     },
+    "/api/v1/game-catalog/npc-tiers": {
+      "get": {
+        "tags": ["Game-Catalog"],
+        "summary": "Gets the horde-mode NPC tier list.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint1",
+        "responses": {
+          "200": {
+            "description": "The single S/A/B/C/D tier list of enemy NPCs for horde modes, with each tier's power multiplier applied to an NPC's power in clear estimates; an NPC may override its tier's multiplier, and one not listed is unrated (multiplier 1.0).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/game-catalog/npc-tiers/{envelopeHash}": {
+      "get": {
+        "tags": ["Game-Catalog"],
+        "summary": "Gets the horde-mode NPC tier list.",
+        "operationId": "TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint2",
+        "parameters": [
+          {
+            "name": "envelopeHash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The single S/A/B/C/D tier list of enemy NPCs for horde modes, with each tier's power multiplier applied to an NPC's power in clear estimates; an NPC may override its tier's multiplier, and one not listed is unrated (multiplier 1.0).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "The dataset has not changed."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The envelope hash is not the current release's.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/game-catalog/npcs": {
       "get": {
         "tags": ["Game-Catalog"],
@@ -8085,7 +8179,8 @@
           "coreCharacters",
           "types",
           "battleIds",
-          "number"
+          "number",
+          "requiredCampaignGroupId"
         ],
         "type": "object",
         "properties": {
@@ -8110,6 +8205,9 @@
           "number": {
             "type": "integer",
             "format": "int32"
+          },
+          "requiredCampaignGroupId": {
+            "type": ["null", "string"]
           }
         }
       },
@@ -9380,6 +9478,48 @@
           }
         }
       },
+      "GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers": {
+        "required": [
+          "version",
+          "schemaHash",
+          "gameVersion",
+          "sourceHash",
+          "datasetKey",
+          "datasetHash",
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "schemaHash": {
+            "type": "string"
+          },
+          "gameVersion": {
+            "type": "string"
+          },
+          "sourceHash": {
+            "type": "string"
+          },
+          "datasetKey": {
+            "type": "string"
+          },
+          "datasetHash": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogNpcTiers"
+              }
+            ]
+          }
+        }
+      },
       "GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogOnslaughtReward": {
         "required": [
           "version",
@@ -9987,7 +10127,8 @@
           "battleFatigueFleeChance",
           "battleFatigueFleeChanceOverkill",
           "traitVariables",
-          "staminaShopTiers"
+          "staminaShopTiers",
+          "eliteCampaignMinPowerLevel"
         ],
         "type": "object",
         "properties": {
@@ -10052,6 +10193,10 @@
           },
           "staminaShopTiers": {
             "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogStaminaShopTier"
+          },
+          "eliteCampaignMinPowerLevel": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -11687,6 +11832,37 @@
           "stars": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "GameCatalogNpcTier": {
+        "required": ["npcId", "tier"],
+        "type": "object",
+        "properties": {
+          "npcId": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "multiplier": {
+            "type": ["null", "number"],
+            "format": "double"
+          }
+        }
+      },
+      "GameCatalogNpcTiers": {
+        "required": ["id", "tiers", "npcs"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tiers": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogHordeModeTier"
+          },
+          "npcs": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogNpcTier"
           }
         }
       },
@@ -13974,6 +14150,18 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/GameCatalogNpcStat"
+        }
+      },
+      "IReadOnlyListOfGameCatalogNpcTier": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogNpcTier"
+        }
+      },
+      "IReadOnlyListOfGameCatalogNpcTiers": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogNpcTiers"
         }
       },
       "IReadOnlyListOfGameCatalogOnslaughtReward": {

@@ -1,0 +1,178 @@
+{
+  "thousNpc1PinkHorror": {
+    "threat": "Splits into Blue Horrors when it dies, so every kill adds bodies to the board, and its ranged Psychic attack ignores armour.",
+    "counter": "Overkill it so the split does less, and keep area damage ready for the Blue Horrors."
+  },
+  "blackNpc1Bloodletter": {
+    "threat": "A glass cannon: fast Daemon melee with Piercing damage that cuts through armoured frontliners.",
+    "counter": "Kill it first, before it reaches your line; it falls quickly to focused fire."
+  },
+  "thousNpc2Screamer": {
+    "threat": "Flying, and its Slashing Dive hits every unit along its path.",
+    "counter": "Don't line your characters up; spread out so a dive hits one of them."
+  },
+  "deathNpc3Nurglings": {
+    "threat": "Mischief Makers stops healing on the units next to it for a round, which breaks healer corners; it also teleports in and explodes.",
+    "counter": "Kill it from range before it reaches your healer."
+  },
+  "thousNpc3RubricMarine": {
+    "threat": "Tanky, with a ranged Flame attack; All is Dust makes it hard to wear down.",
+    "counter": "Bring armour-piercing damage and don't trade with it at range."
+  },
+  "worldNpc1Berzerker": {
+    "threat": "Rapid Assault and Blood Surge: it moves when attacked and hits hard in melee.",
+    "counter": "Kill it in one turn or keep out of its reach; chip damage triggers it."
+  },
+  "eldarNpc1Guardian": {
+    "threat": "Ranged grunt that comes in numbers; Plasma Grenade adds burst.",
+    "counter": "Area damage; Battle Fatigue makes them flee when their neighbours die."
+  },
+  "eldarNpc2Warlock": {
+    "threat": "Psyker that raises the damage of the enemies around it.",
+    "counter": "Kill it early to take the buff off the rest of the wave."
+  },
+  "eldarNpc3Harlequin": {
+    "threat": "High mobility, Infiltrate and four Power hits that also hit adjacent allies; Unstoppable.",
+    "counter": "Don't turtle in a tight corner: spread out and focus it before it reaches your squishy units."
+  },
+  "eldarNpc4Wraithguard": {
+    "threat": "Large Energy attacks, Overwatch and Big Target bulk.",
+    "counter": "Don't walk into its Overwatch range; spread out and break it with armour-piercing damage."
+  },
+  "darkaNpc1Infiltrator": {
+    "threat": "Ranged grunt with Overwatch that comes in numbers.",
+    "counter": "Low priority; clear with area damage."
+  },
+  "bloodNpc1Intercessor": {
+    "threat": "Deep-strikes into your line and keeps up melee pressure; flying.",
+    "counter": "Leave a guard on your backline and kill it as it lands."
+  },
+  "darkaNpc2Hellblaster": {
+    "threat": "Heavy Weapon plasma from range 3 that one-shots squishy units; it sits back while others close in.",
+    "counter": "Rush it or out-range it; don't let a wave of them fire freely."
+  },
+  "darkaNpc3Terminator": {
+    "threat": "Deep-strikes in Terminator armour and soaks low-pierce hits.",
+    "counter": "Bring high-pierce damage and don't waste low-damage hits on it."
+  },
+  "admecNpc1Vanguard": {
+    "threat": "Toxic ranged fire, and Rad-Saturation leaves Contamination on each hex it moves through or stands on.",
+    "counter": "Kill it early, before Contamination spreads across your approach, and don't stand on its hexes."
+  },
+  "admecNpc2Techpriest": {
+    "threat": "Repairs the Mechanical units around it, and every adjacent Mechanical death gives it Machine Vengeance that it hands to the unit it repairs.",
+    "counter": "Kill it first in a Mechanicus wave; killing its escorts first only stacks Machine Vengeance on the survivors."
+  },
+  "admecNpc3Electropriest": {
+    "threat": "Resilient melee whose Electro-Shock splashes Particle damage onto a second adjacent unit and Suppresses both; heals make it hit harder.",
+    "counter": "Don't stand two characters next to each other in front of it, and don't heal it with splash heals."
+  },
+  "astraNpc1Guardsman": {
+    "threat": "Cheap Las infantry that comes in numbers and chips at range.",
+    "counter": "Area damage clears them; Battle Fatigue makes them weaker as their neighbours die."
+  },
+  "astraNpc4Mortar": {
+    "threat": "Indirect Blast fire at range 5 that hits the target and random adjacent hexes, Suppressing everything it hits, even behind cover.",
+    "counter": "Close the distance fast; it is weak in melee and its Two-Man Team cap doesn't stop Blast damage."
+  },
+  "blackNpc2Terminator": {
+    "threat": "Deep Strikes onto the board, hits hard in melee and at range, and Draw Fire soaks half the hits aimed at its neighbours; Terminator Armour cuts the first attack each turn.",
+    "counter": "Open on it with a weak attack to strip the armour reduction, then hit hard; use Psychic or Direct damage where you can."
+  },
+  "blackNpc3TraitorGuardsman": {
+    "threat": "Las infantry whose Crazed Focus deals extra damage to units standing on any hex effect, such as Despoiled Ground from Let the Galaxy Burn.",
+    "counter": "Move off hex effects before they shoot, and clear them with area damage."
+  },
+  "blackNpc4Havoc": {
+    "threat": "Eight ranged hits with Suppressive Fire and Overwatch; Firing Position keeps it in Overwatch after each kill.",
+    "counter": "Don't walk into its Overwatch: use Infiltrate units, deep strikers or long range to remove it first."
+  },
+  "deathNpc1Poxwalker": {
+    "threat": "Slow and weak alone, but each non-Mechanical character it kills becomes another Poxwalker, and its Nurgle aura lowers your armour.",
+    "counter": "Keep it off low-health characters and kill the pack with area damage before the aura grows."
+  },
+  "deathNpc2PlagueMarine": {
+    "threat": "Resilient, throws Blight Grenades through up to three units in a line, and takes 30% less damage on Contaminated hexes; its aura lowers your armour.",
+    "counter": "Attack it off Contamination, and don't line your characters up behind each other."
+  },
+  "deathNpc4BlightlordTerminator": {
+    "threat": "Terminator Armour with a growing armour-shredding aura; each kill carries over the leftover damage plus Toxic hits to a nearby character.",
+    "counter": "Focus it early with Psychic or Direct damage and keep wounded characters away from it."
+  },
+  "necroNpc1Warrior": {
+    "threat": "Living Metal regenerates every turn, and Reanimation Protocols gives a 35% chance to stand back up while another Warrior lives.",
+    "counter": "Kill the whole squad in the same turn; chip damage and spread fire are wasted."
+  },
+  "necroNpc2FlayedOne": {
+    "threat": "Terrifying melee that attacks twice in a row if it starts its turn next to you, and reanimates like Warriors.",
+    "counter": "Never end a turn adjacent to it; kill it at range or in one turn."
+  },
+  "necroNpc3Deathmark": {
+    "threat": "Spends a turn aiming, then fires one huge Energy shot at its target.",
+    "counter": "Kill it, or move out of its line, during the turn it takes aim."
+  },
+  "necroNpc4Destroyer": {
+    "threat": "Tunnels under the board, pops up next to your back line and attacks at once; takes reduced melee damage.",
+    "counter": "Keep your fragile characters clustered with a tank, and answer it with ranged damage."
+  },
+  "necroNpc5Swarm": {
+    "threat": "Fast flying swarm with five Energy hits that can summon another Swarm, which acts immediately.",
+    "counter": "Kill it quickly with area or multi-hit attacks before the copies stack up."
+  },
+  "orksNpc1Grot": {
+    "threat": "Tiny and weak, but Diminutive takes one hit off every multi-hit attack, and a Grot at full health can summon more Grots.",
+    "counter": "Damage every Grot each turn so none ends at full health, and use single big hits rather than many small ones."
+  },
+  "orksNpc2OrkBoy": {
+    "threat": "Ork melee and shooting backed by a Stikkbomb that also hits the hexes around its target.",
+    "counter": "Spread out to dodge the bomb splash and use area damage on the mob."
+  },
+  "orksNpc3GrotTank": {
+    "threat": "Mechanical vehicle with Blast fire at range 3; Ramshackle cuts damage from low-pierce attacks.",
+    "counter": "Use high-pierce damage; Physical and other low-pierce attacks lose most of their damage."
+  },
+  "orksNpc6Stormboy": {
+    "threat": "Flies straight into any hex on turn one and moves fast; it may blow itself up after a long move.",
+    "counter": "Guard your back line, and don't waste big attacks on a Stormboy that may explode on its own."
+  },
+  "orksNpc7Squig": {
+    "threat": "Hard-hitting melee that can bounce away when hit and damage whoever it lands next to.",
+    "counter": "Kill it in one big hit, or expect it to land on another of your characters."
+  },
+  "tauNpc1FireWarrior": {
+    "threat": "Range 3 Pulse fire that hits harder when nobody is next to it, with Overwatch and Suppressive Fire.",
+    "counter": "Get adjacent to switch off Ranged Specialist; avoid walking into its Overwatch with key characters."
+  },
+  "tauNpc2DroneSniper": {
+    "threat": "Flying range 4 Piercing sniper that takes hits meant for nearby T'au.",
+    "counter": "Kill the drones before the T'au they protect, or your damage goes into the drones."
+  },
+  "tauNpc3DroneShield": {
+    "threat": "Absorbs half of the hits aimed at nearby T'au units.",
+    "counter": "Kill the Shield Drone first; otherwise your burst on key T'au targets gets soaked."
+  },
+  "tauNpc5StealthSuit": {
+    "threat": "Camouflaged and Infiltrating; it Markerlights a target and then teleports to shoot it, taking half damage from ranged attacks while that lasts.",
+    "counter": "Hit it in melee or with abilities, and kill it before it teleports behind your line."
+  },
+  "tauNpc6Carnivore": {
+    "threat": "Camouflaged melee ambusher with Rapid Assault; it gets more damage and toughness in Tall Grass.",
+    "counter": "Keep it out of Tall Grass and use melee; its Camouflage cuts ranged hits against it."
+  },
+  "templNpc1Initiate": {
+    "threat": "Chain melee with an extra Heavy Bolt Pistol hit; its push attack lets it move in and step deeper.",
+    "counter": "Stop it at your front line with a tank before it reaches your shooters."
+  },
+  "templNpc2Neophyte": {
+    "threat": "Its Incendiary Shells deal Flame damage at range.",
+    "counter": "Low priority unless your team is weak to Flame; clean it up with area damage."
+  },
+  "templNpc3InitiatePyreblaster": {
+    "threat": "Its Flame attack also sets the hex behind the target on Fire, so two characters standing in a line both burn.",
+    "counter": "Don't line up behind your front liner, and keep fragile characters away from burning hexes."
+  },
+  "templNpc4Aggressor": {
+    "threat": "Gravis armour makes every hit go through armour twice; Fragstorm splashes Blast damage and its fire Suppresses.",
+    "counter": "Use high-pierce damage, crits or Psychic damage; low-damage multi-hit attacks bounce off."
+  }
+}
