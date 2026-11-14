@@ -2,7 +2,7 @@ import { MemoryRouter, Outlet, Route, Routes } from "react-router"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { render, screen } from "@/test/render"
+import { render, screen, within } from "@/test/render"
 import { ready } from "@/test/fixtures/daily-raids"
 import { seedGameCatalog } from "@/test/seed"
 
@@ -16,7 +16,7 @@ import { TodayPage } from "./today-page"
 const { useIsMobileMock, state, activeEventSpy, dailyRaidsArgs } = vi.hoisted(
   () => ({
     useIsMobileMock: vi.fn(() => false),
-    state: { pinned: false },
+    state: { pinned: false, extraMaterials: 0 },
     // An event is running, yet Today must neither read the calendar nor score by it.
     activeEventSpy: vi.fn(() => ({
       status: "ready",
@@ -60,6 +60,12 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
                 remaining: 3,
                 pinned: state.pinned,
               },
+              ...Array.from({ length: state.extraMaterials }, (_, index) => ({
+                goalId: "g1",
+                resourceId: `X${index + 1}` as never,
+                remaining: 1,
+                pinned: false,
+              })),
             ],
           }
     },
@@ -121,6 +127,7 @@ describe("Today page Raids Filters", () => {
       npcs: [{ id: "bot", traits: ["Mechanical"] }],
     })
     state.pinned = false
+    state.extraMaterials = 0
     activeEventSpy.mockClear()
     dailyRaidsArgs.length = 0
     useIsMobileMock.mockReturnValue(false)
@@ -175,6 +182,22 @@ describe("Today page Raids Filters", () => {
     expect(
       screen.queryByTestId("raids-filters-filtered-out-pinned")
     ).not.toBeInTheDocument()
+    const list = screen.getByRole("list", {
+      name: "Materials your Raids Filters skip",
+    })
+    expect(within(list).getAllByRole("listitem")).toHaveLength(1)
+    expect(list).toHaveTextContent("Ceramite")
+    expect(
+      within(list).getByTestId("raids-filters-filtered-out-stock-U1")
+    ).toHaveTextContent("265/500")
+    expect(
+      within(list).getByTestId("raids-filters-filtered-out-goals-U1")
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("link", {
+        name: "See what can't be farmed in Insights",
+      })
+    ).toHaveAttribute("href", "/plan/insights")
 
     await user.click(screen.getByTestId("raids-filters-filtered-out-reset"))
 
@@ -219,5 +242,36 @@ describe("Today page Raids Filters", () => {
     expect(
       screen.queryByTestId("raids-filters-filtered-out-materials")
     ).not.toBeInTheDocument()
+  })
+
+  it("lists five materials, then shows the rest on demand", async () => {
+    state.extraMaterials = 6
+    const user = userEvent.setup()
+    renderToday()
+
+    await applySlotsFilter(user)
+
+    const list = screen.getByRole("list", {
+      name: "Materials your Raids Filters skip",
+    })
+    expect(within(list).getAllByRole("listitem")).toHaveLength(5)
+
+    await user.click(screen.getByRole("button", { name: "Show all 7" }))
+    expect(within(list).getAllByRole("listitem")).toHaveLength(7)
+
+    await user.click(screen.getByRole("button", { name: "Show less" }))
+    expect(within(list).getAllByRole("listitem")).toHaveLength(5)
+  })
+
+  it("marks a material pinned to an excluded location", async () => {
+    state.pinned = true
+    const user = userEvent.setup()
+    renderToday()
+
+    await applySlotsFilter(user)
+
+    expect(
+      screen.getByRole("list", { name: "Materials your Raids Filters skip" })
+    ).toHaveTextContent("Pinned")
   })
 })

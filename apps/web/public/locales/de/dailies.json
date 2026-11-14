@@ -540,7 +540,12 @@
       "materials_other": "{{count}} Materialien haben mit diesen Filtern keinen erlaubten Ort.",
       "pinned_one": "{{count}} Ziel ist an einen Ort angeheftet, den deine Raid-Filter ausschließen. Setze die Filter zurück oder ändere die Anheftung.",
       "pinned_other": "{{count}} Ziele sind an einen Ort angeheftet, den deine Raid-Filter ausschließen. Setze die Filter zurück oder ändere die Anheftung.",
-      "reset": "Filter zurücksetzen"
+      "reset": "Filter zurücksetzen",
+      "listLabel": "Materialien, die deine Raid-Filter auslassen",
+      "pinnedBadge": "Angeheftet",
+      "showAll": "Alle {{count}} anzeigen",
+      "showLess": "Weniger anzeigen",
+      "insights": "In Insights sehen, was nicht farmbar ist"
     }
   },
   "quickFilters": {
