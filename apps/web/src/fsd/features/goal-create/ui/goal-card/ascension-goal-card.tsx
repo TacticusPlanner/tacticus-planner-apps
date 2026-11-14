@@ -1,6 +1,6 @@
 import { useMemo, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import type { Progression } from "@workspace/game-domain"
+import { progressionIndex, type Progression } from "@workspace/game-domain"
 
 import type { useProgressionPreview } from "../../model/goal-creation-form/use-progression-preview"
 import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
@@ -46,6 +46,11 @@ export function AscensionGoalCard({
   const steps = useMemo(() => progressionLadderSteps(t), [t])
   const name = (step: Progression) =>
     steps.find((candidate) => candidate.key === step)?.name ?? step
+  // The range (and its shards) runs from where the unit is now: the later of its start and live step.
+  const rangeStart =
+    current && progressionIndex(current) > progressionIndex(start)
+      ? current
+      : start
 
   return (
     <div className="grid gap-3">
@@ -75,7 +80,7 @@ export function AscensionGoalCard({
                 })
               : ""
           }
-          start={name(start)}
+          start={name(rangeStart)}
           state={preview ? "content" : "loading"}
         />
       </div>
