@@ -6,7 +6,10 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import { useCurrentUser } from "@/entities/account"
 import { AnalyticsProvider, useAnalyticsActions } from "@/shared/analytics"
+import { takeAuthJournal } from "@/shared/auth"
 import { setErrorReporter } from "@/shared/lib"
+
+import { mapJournaledAuthStepToEvent } from "./auth-step-event"
 
 // The matched route's concrete pathname with each param's value swapped back for its param name
 // (e.g. "/library/characters/abc-123" + { entityId: "abc-123" } -> "/library/characters/:entityId")
@@ -97,6 +100,15 @@ function PostHogIdentity({
     })
     return () => setErrorReporter(null)
   }, [isIdentified, captureEvent, routeGroup])
+
+  // Sign-in steps recorded on this device while nobody was identified (restores, quiet renewals,
+  // redirects) are sent once the user is, dated when they happened (spec: product-analytics).
+  useEffect(() => {
+    if (!isIdentified || !isReady) return
+    for (const entry of takeAuthJournal()) {
+      captureEvent(mapJournaledAuthStepToEvent(entry))
+    }
+  }, [isIdentified, isReady, captureEvent])
 
   const leafMatch = matches.at(-1)
   const routePattern = leafMatch

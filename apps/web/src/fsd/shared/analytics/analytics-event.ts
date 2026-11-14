@@ -384,6 +384,27 @@ type ClientErrorEvent = {
  * than a free-form property bag, so declaring a new event is a type change here rather than an
  * arbitrary payload at a call site - see tacticus-planner-docs/analytics/events-catalog.md.
  */
+/**
+ * One step the sign-in machinery took (restore, quiet renewal, redirect), recorded on the device and
+ * sent once the user is identified, dated when it happened - see specs/product-analytics/spec.md's
+ * "Sign-in steps are reported once identified". Step names, outcomes and protocol error codes only.
+ */
+type AuthStepEvent = {
+  type: "auth_step"
+  step: string
+  /** Epoch ms when the step happened. */
+  occurredAt: number
+  /** Groups the steps of one page load. */
+  pageLoad: string
+  outcome: string | null
+  errorCode: string | null
+  from: string | null
+  reason: string | null
+  trigger: string | null
+  method: string | null
+  freshLogin: boolean | null
+}
+
 export type AnalyticsEvent =
   | PageViewEvent
   | LegendaryEventTeamEvent
@@ -421,4 +442,5 @@ export type AnalyticsEvent =
   | RosterCompareOpenedEvent
   | RosterCompareMetricSelectedEvent
   | RosterSnapshotManagedEvent
+  | AuthStepEvent
   | ClientErrorEvent
