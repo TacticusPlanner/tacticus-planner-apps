@@ -39,10 +39,12 @@ vi.mock("../config/environment", () => ({
 const errors = vi.hoisted(() => {
   class AuthError extends Error {
     errorCode: string
+    errorMessage: string
 
-    constructor(errorCode: string) {
+    constructor(errorCode: string, errorMessage = "") {
       super(errorCode)
       this.errorCode = errorCode
+      this.errorMessage = errorMessage
     }
   }
   class InteractionRequiredAuthError extends AuthError {}
@@ -418,7 +420,11 @@ describe("authentication", () => {
 
       await auth.initializeAuthentication()
 
-      expect(Object.keys(localStorage)).toEqual(["tp.auth.accountHint"])
+      // The auth journal (steps and outcomes only) is the one other key written.
+      expect(Object.keys(localStorage).sort()).toEqual([
+        "tp.auth.accountHint",
+        "tp.auth.journal",
+      ])
       expect(JSON.parse(localStorage.getItem("tp.auth.accountHint")!)).toEqual({
         homeAccountId: "home-id",
         username: "user@example.test",
@@ -1002,6 +1008,120 @@ describe("authentication", () => {
 
       expect(auth.takeSignInRedirectFailure()).toBe("failed")
       expect(localStorage.getItem("tp.auth.quietRenewal")).toBeNull()
+    })
+  })
+
+  describe("auth journal", () => {
+    const emailAccount = { homeAccountId: "e", username: "user@example.test" }
+    const journal = () =>
+      JSON.parse(localStorage.getItem("tp.auth.journal") ?? "[]") as Record<
+        string,
+        unknown
+      >[]
+
+    beforeEach(() => {
+      mocks.instance.acquireTokenSilent.mockRejectedValue(
+        new InteractionRequiredAuthError("invalid_grant", "AADSTS700084")
+      )
+      mocks.instance.ssoSilent.mockRejectedValue(
+        new BrowserAuthError("timed_out", "correlation-id")
+      )
+      mocks.instance.acquireTokenRedirect.mockResolvedValue(undefined)
+      mocks.instance.loginRedirect.mockResolvedValue(undefined)
+    })
+
+    it("records each step of a failed quiet renewal and the automatic redirect after it", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+
+      await auth.initializeAuthentication()
+      await auth.attemptSilentSignIn(mocks.instance as never)
+
+      expect(journal()).toMatchObject([
+        {
+          step: "restore_cache",
+          outcome: "failed",
+          errorCode: "invalid_grant:AADSTS700084",
+        },
+        {
+          step: "restore_frame",
+          outcome: "failed",
+          errorCode: "timed_out",
+          from: "account",
+        },
+        { step: "quiet_renewal_started", from: "account" },
+      ])
+
+      // The page the quiet renewal returns to.
+      vi.resetModules()
+      auth = await import("./authentication")
+      mocks.instance.handleRedirectPromise.mockRejectedValue(
+        new InteractionRequiredAuthError(
+          "login_required",
+          "AADSTS50058: A silent sign-in request was sent but no user is signed in. Trace ID: x"
+        )
+      )
+      await auth.initializeAuthentication()
+      await auth.requestInteraction()
+
+      const [, , , returned, started] = journal()
+      expect(returned).toMatchObject({
+        step: "quiet_renewal_returned",
+        outcome: "no_session",
+        errorCode: "login_required:AADSTS50058",
+      })
+      expect(started).toMatchObject({
+        step: "interactive_redirect_started",
+        trigger: "auto",
+        method: "email",
+        freshLogin: false,
+      })
+      expect(localStorage.getItem("tp.auth.journal")).not.toContain("Trace")
+      expect(localStorage.getItem("tp.auth.journal")).not.toContain(
+        emailAccount.username
+      )
+    })
+
+    it("records a redirect whose response never arrived", async () => {
+      localStorage.setItem("tp.auth.pendingRedirect", "interactive")
+
+      await auth.initializeAuthentication()
+
+      expect(journal()).toMatchObject([
+        { step: "interactive_redirect_returned", outcome: "no_response" },
+      ])
+      expect(localStorage.getItem("tp.auth.pendingRedirect")).toBeNull()
+    })
+
+    it("records a completed interactive redirect", async () => {
+      localStorage.setItem("tp.auth.pendingRedirect", "interactive")
+      mocks.instance.handleRedirectPromise.mockResolvedValue({
+        account: emailAccount,
+      })
+
+      await auth.initializeAuthentication()
+
+      expect(journal()).toMatchObject([
+        { step: "interactive_redirect_returned", outcome: "success" },
+      ])
+    })
+
+    it("records nothing on an ordinary load", async () => {
+      await auth.initializeAuthentication()
+
+      expect(journal()).toEqual([])
+    })
+
+    it("records why a quiet renewal was skipped", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+      localStorage.setItem("tp.auth.quietRenewal", String(Date.now() - 2000))
+
+      await auth.initializeAuthentication()
+      await auth.attemptSilentSignIn(mocks.instance as never)
+
+      expect(journal().at(-1)).toMatchObject({
+        step: "quiet_renewal_skipped",
+        reason: "cooldown",
+      })
     })
   })
 })

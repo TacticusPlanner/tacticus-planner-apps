@@ -435,6 +435,23 @@ export function useAnalyticsActions() {
         case "roster_snapshot_kept":
           client.capture(event.type)
           break
+        case "auth_step":
+          client.capture(
+            event.type,
+            {
+              step: event.step,
+              page_load: event.pageLoad,
+              outcome: event.outcome,
+              error_code: event.errorCode,
+              from: event.from,
+              reason: event.reason,
+              trigger: event.trigger,
+              method: event.method,
+              fresh_login: event.freshLogin,
+            },
+            { timestamp: new Date(event.occurredAt) }
+          )
+          break
         case "client_error": {
           // Rebuilt from the already-sanitised text, so Error Tracking parses the stack into frames
           // (resolved through the uploaded source maps) without seeing the original query strings.
