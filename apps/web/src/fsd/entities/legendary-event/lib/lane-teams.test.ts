@@ -8,7 +8,7 @@ import {
   WORKED_CONFIG,
   rosterOf,
 } from "./clear-estimate.fixtures"
-import { impactTeams, teamReaches } from "./lane-teams"
+import { impactTeams, teamReaches, teamUnitIdsByLane } from "./lane-teams"
 
 const team = {
   id: "melee",
@@ -82,5 +82,26 @@ describe("impactTeams / teamReaches", () => {
         2
       ).map((entry) => entry.id)
     ).toEqual(["melee"])
+  })
+})
+
+describe("teamUnitIdsByLane", () => {
+  it("collects members and reserves per lane, incomplete teams included", () => {
+    const byLane = teamUnitIdsByLane([
+      team,
+      {
+        laneId: "beta",
+        memberUnitIds: ["bloodDante"],
+        reserveUnitId: null,
+      },
+    ])
+    expect([...byLane.alpha].sort()).toEqual([
+      "ultraApothecary",
+      "ultraCalgar",
+      "ultraTigurius",
+      "ultraTitus",
+    ])
+    expect([...byLane.beta]).toEqual(["bloodDante"])
+    expect(byLane.gamma.size).toBe(0)
   })
 })

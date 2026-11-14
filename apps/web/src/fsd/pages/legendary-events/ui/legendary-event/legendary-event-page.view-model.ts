@@ -222,6 +222,12 @@ export type LeaderboardRowsViewModel =
 export interface LeaderboardControlsState {
   onlyUnlocked: boolean
   onOnlyUnlockedChange: (onlyUnlocked: boolean) => void
+  /** "Only in my teams": keep the units the shown lanes' teams use (members and reserve). */
+  onlyInTeams: boolean
+  onOnlyInTeamsChange: (onlyInTeams: boolean) => void
+  /** The unit ids each lane's teams use; absent while the plan is unavailable (signed out,
+   *  loading, failed), which disables "Only in my teams". */
+  teamUnitIds?: ByLane<ReadonlySet<string>>
   deductScored: boolean
   onDeductScoredChange: (deductScored: boolean) => void
   /** `objectiveFilterKey`s every listed unit must satisfy. */

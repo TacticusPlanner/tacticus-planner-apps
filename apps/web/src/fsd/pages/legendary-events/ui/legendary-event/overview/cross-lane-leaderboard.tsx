@@ -35,6 +35,7 @@ import {
   leaderboardFigure,
   mergeShownObjectiveSelection,
   shownObjectiveSelection,
+  shownTeamUnitIds,
   useLeaderboardUnitName,
   useObjectiveChips,
   type ObjectiveChipGroup,
@@ -113,6 +114,7 @@ export function CrossLaneLeaderboard({
       {
         onlyUnlocked: rosterAvailable && leaderboard.onlyUnlocked,
         objectiveKeys: leaderboard.selectedObjectives,
+        teamUnitIds: shownTeamUnitIds(leaderboard, laneIds),
         figure,
         nameOf,
         locale: i18n.language,

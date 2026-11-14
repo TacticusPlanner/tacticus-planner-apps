@@ -1,4 +1,8 @@
-import type { LegendaryEventLane, LegendaryEventUnit } from "../model/types"
+import type {
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventUnit,
+} from "../model/types"
 import type { LegendaryEventRun, LegendaryEventTeam } from "../model/plan.types"
 import {
   teamClearEstimate,
@@ -67,4 +71,27 @@ export function teamReaches(
       )?.depth ??
       0,
   }))
+}
+
+/**
+ * The units each lane's teams use, members and reserve alike, for the leaderboards' "Only in my
+ * teams" filter. Incomplete teams count too: picking a unit is the plan to use it.
+ */
+export function teamUnitIdsByLane(
+  teams: readonly Pick<
+    LegendaryEventTeam,
+    "laneId" | "memberUnitIds" | "reserveUnitId"
+  >[]
+): Record<LegendaryEventLaneId, ReadonlySet<string>> {
+  const byLane: Record<LegendaryEventLaneId, Set<string>> = {
+    alpha: new Set(),
+    beta: new Set(),
+    gamma: new Set(),
+  }
+  for (const team of teams) {
+    const units = byLane[team.laneId]
+    for (const unitId of team.memberUnitIds) units.add(unitId)
+    if (team.reserveUnitId) units.add(team.reserveUnitId)
+  }
+  return byLane
 }

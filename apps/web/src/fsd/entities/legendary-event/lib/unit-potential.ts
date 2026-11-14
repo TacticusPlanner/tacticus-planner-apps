@@ -119,6 +119,8 @@ export interface LeaderboardFilter {
   onlyUnlocked: boolean
   /** `objectiveFilterKey`s the unit must satisfy, all of them. */
   objectiveKeys: ReadonlySet<string>
+  /** "Only in my teams": the unit ids the shown lanes' teams use; absent while the filter is off. */
+  teamUnitIds?: ReadonlySet<string>
 }
 
 function ownershipOf(
@@ -203,7 +205,8 @@ export function sortLeaderboard(
   )
 }
 
-/** Keeps the rows that pass the shared filters (spec: only unlocked, objective multi-select). */
+/** Keeps the rows that pass the shared filters (spec: only unlocked, only in my teams, objective
+ *  multi-select). */
 export function filterLeaderboard<Row extends LeaderboardUnitRow>(
   rows: readonly Row[],
   filter: LeaderboardFilter
@@ -211,6 +214,7 @@ export function filterLeaderboard<Row extends LeaderboardUnitRow>(
   return rows.filter(
     (row) =>
       (!filter.onlyUnlocked || row.ownership !== "locked") &&
+      (!filter.teamUnitIds || filter.teamUnitIds.has(row.unit.id)) &&
       [...filter.objectiveKeys].every((key) => row.satisfiedKeys.includes(key))
   )
 }

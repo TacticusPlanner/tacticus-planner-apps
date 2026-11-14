@@ -94,6 +94,7 @@ function Harness({
   clears = { kind: "hidden" },
   goals = noGoals,
   onAddToTeam,
+  teamUnitIds,
 }: {
   rows: LeaderboardRowsViewModel
   layout: "table" | "list"
@@ -102,8 +103,10 @@ function Harness({
   goals?: LeaderboardGoalsViewModel
   clears?: ClearEstimatesViewModel
   onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
+  teamUnitIds?: Record<LegendaryEventLaneId, ReadonlySet<string>>
 }) {
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
+  const [onlyInTeams, setOnlyInTeams] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
   const [selectedObjectives, setSelectedObjectives] = useState<
     ReadonlySet<string>
@@ -117,6 +120,9 @@ function Harness({
         ...rows,
         onlyUnlocked,
         onOnlyUnlockedChange: setOnlyUnlocked,
+        onlyInTeams,
+        onOnlyInTeamsChange: setOnlyInTeams,
+        teamUnitIds,
         deductScored,
         onDeductScoredChange: setDeductScored,
         selectedObjectives,
@@ -388,6 +394,48 @@ describe("LeaderboardSection", () => {
     })
     expect(rows()).toHaveLength(0)
     expect(screen.getByTestId("leaderboard-no-unlocked")).toBeInTheDocument()
+  })
+
+  it("keeps only the units the lane's teams use with Only in my teams", () => {
+    renderLeaderboard({
+      teamUnitIds: {
+        alpha: new Set(["bloodDante", "ultraCalgar"]),
+        beta: new Set(["ultraTigurius"]),
+        gamma: new Set(),
+      },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    act(() => {
+      fireEvent.click(screen.getByRole("switch", { name: "Only in my teams" }))
+    })
+    expect(units()).toEqual(["bloodDante", "ultraCalgar"])
+  })
+
+  it("shows the none-in-teams body when the lane's teams have no units", () => {
+    renderLeaderboard({
+      laneId: "gamma",
+      teamUnitIds: {
+        alpha: new Set(["bloodDante"]),
+        beta: new Set(),
+        gamma: new Set(),
+      },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    act(() => {
+      fireEvent.click(screen.getByRole("switch", { name: "Only in my teams" }))
+    })
+    expect(rows()).toHaveLength(0)
+    expect(
+      screen.getByText("Your teams here have no units yet.")
+    ).toBeInTheDocument()
+  })
+
+  it("disables Only in my teams while the plan is unavailable", () => {
+    renderLeaderboard()
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    expect(
+      screen.getByRole("switch", { name: "Only in my teams" })
+    ).toBeDisabled()
   })
 
   it("narrows the rows to units satisfying every selected objective", () => {
