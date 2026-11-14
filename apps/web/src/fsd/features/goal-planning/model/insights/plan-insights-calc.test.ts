@@ -1331,6 +1331,54 @@ describe("computePlanInsights", () => {
     ...onslaughtParams,
   })
 
+  // A Machine of War has no campaign shard nodes: Onslaught (or a shop) is its only shard source.
+  const mowAscension = (
+    acquisitionSources: GoalDetail["config"]["acquisitionSources"]
+  ) => {
+    const base = ascensionWithOnslaught(30)
+    return {
+      ...base,
+      details: [
+        goalDetail({
+          entityType: "Mow",
+          entityId: "mow1",
+          goalType: "Ascension",
+          config: { ...base.details[0]!.config, acquisitionSources },
+        }),
+      ],
+      mowsById: new Map([
+        ["mow1", { id: "mow1", alliance: "Xenos" } as MowStorageModel],
+      ]),
+      onslaughtRunsPerDay: 1,
+    }
+  }
+
+  it("dates a Machine-of-War Ascension goal its Onslaught source supplies", () => {
+    const result = computePlanInsights({
+      levelRules,
+      ...baseParams,
+      ...mowAscension([{ kind: "Onslaught", ids: [] }]),
+    })
+
+    // Diamond 1, Common: 3.5 shards a run at 1 run a day → 30 shards in 9 days.
+    expect(result.estimates.get("goal-1")).toMatchObject({
+      status: "Estimated",
+      days: 9,
+      onslaughtTokens: 9,
+    })
+  })
+
+  it("leaves a Machine-of-War Ascension goal with no shard source count-only", () => {
+    const result = computePlanInsights({
+      levelRules,
+      ...baseParams,
+      ...mowAscension(null),
+    })
+
+    expect(result.totals.shards).toBe(30)
+    expect(result.estimates.has("goal-1")).toBe(false)
+  })
+
   const rankRange = {
     start: rankIndex(Rank.Stone1),
     startPointFive: false,
