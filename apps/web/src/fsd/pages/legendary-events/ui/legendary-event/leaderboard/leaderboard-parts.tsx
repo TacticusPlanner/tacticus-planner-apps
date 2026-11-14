@@ -323,20 +323,22 @@ export function LeaderboardEmptyBody({
       </div>
     )
   }
+  const message = {
+    noEligible: "leaderboard.noEligible",
+    noUnlocked: "leaderboard.noUnlocked",
+    noneInTeams: "leaderboard.noneInTeams",
+  } as const
+  const testId = {
+    noEligible: "leaderboard-no-eligible",
+    noUnlocked: "leaderboard-no-unlocked",
+    noneInTeams: "leaderboard-none-in-teams",
+  } as const
   return (
     <p
       className="text-sm text-muted-foreground"
-      data-testid={
-        body.kind === "noEligible"
-          ? "leaderboard-no-eligible"
-          : "leaderboard-no-unlocked"
-      }
+      data-testid={testId[body.kind]}
     >
-      {t(
-        body.kind === "noEligible"
-          ? "leaderboard.noEligible"
-          : "leaderboard.noUnlocked"
-      )}
+      {t(message[body.kind])}
     </p>
   )
 }

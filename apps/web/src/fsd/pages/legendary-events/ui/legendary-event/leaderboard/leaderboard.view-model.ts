@@ -27,35 +27,53 @@ import type {
 export type LeaderboardBody<Row> =
   | { kind: "noEligible" }
   | { kind: "noUnlocked" }
+  | { kind: "noneInTeams" }
   | { kind: "noneMatch" }
   | { kind: "rows"; rows: Row[] }
 
 export interface LeaderboardFilterInput {
   onlyUnlocked: boolean
   objectiveKeys: ReadonlySet<string>
+  /** "Only in my teams": the unit ids the shown lanes' teams use; absent while it is off. */
+  teamUnitIds?: ReadonlySet<string>
   figure: LeaderboardFigure
   nameOf: (unit: LegendaryEventUnit) => string
   locale: string
 }
 
-function classify<Row extends { ownership: string }>(
+function classify<Row extends { ownership: string; unit: { id: string } }>(
   rows: readonly Row[],
-  { onlyUnlocked, objectiveKeys }: LeaderboardFilterInput,
+  { onlyUnlocked, objectiveKeys, teamUnitIds }: LeaderboardFilterInput,
   filtered: Row[]
 ): Exclude<LeaderboardBody<Row>, { kind: "rows" }> | undefined {
   if (rows.length === 0) return { kind: "noEligible" }
   if (filtered.length > 0) return undefined
-  // Which filter emptied the list: the objective selection, or Only unlocked alone.
-  const unlocked = onlyUnlocked
-    ? rows.filter((row) => row.ownership !== "locked")
+  // Which filter emptied the list: Only in my teams, the objective selection, or Only unlocked.
+  const inTeams = teamUnitIds
+    ? rows.filter((row) => teamUnitIds.has(row.unit.id))
     : rows
+  if (inTeams.length === 0) return { kind: "noneInTeams" }
+  const unlocked = onlyUnlocked
+    ? inTeams.filter((row) => row.ownership !== "locked")
+    : inTeams
   return objectiveKeys.size > 0 && unlocked.length > 0
     ? { kind: "noneMatch" }
     : { kind: "noUnlocked" }
 }
 
-/** Applies "Only unlocked" (drops `locked` rows; unknown ownership is never filtered), the
- *  objective selection and the shown figure's order, naming units by their localized name. */
+/** The ids the teams of `laneIds` use while "Only in my teams" is on and the plan is read;
+ *  `undefined` (no filtering) otherwise. */
+export function shownTeamUnitIds(
+  state: Pick<LeaderboardControlsState, "onlyInTeams" | "teamUnitIds">,
+  laneIds: readonly LegendaryEventLaneId[]
+): ReadonlySet<string> | undefined {
+  const byLane = state.teamUnitIds
+  if (!state.onlyInTeams || !byLane) return undefined
+  return new Set(laneIds.flatMap((laneId) => [...byLane[laneId]]))
+}
+
+/** Applies "Only unlocked" (drops `locked` rows; unknown ownership is never filtered), "Only in
+ *  my teams", the objective selection and the shown figure's order, naming units by their localized name. */
 export function laneLeaderboardBody(
   rows: readonly LeaderboardRow[],
   input: LeaderboardFilterInput

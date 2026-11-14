@@ -1,4 +1,5 @@
 import type { PlannedToken } from "./token-plan"
+import { groupTokensByTeam } from "./token-groups"
 
 /** Consecutive tokens of one team that play the next battle of the same lane and clear the same
  *  cells, folded into one row of the Token plan (spec: Token plan list). */
@@ -38,4 +39,19 @@ export function groupTokenBattleRuns(
     }
   }
   return runs
+}
+
+/** Whether any team group in these slices of the plan folds into a row of several battles, i.e.
+ *  whether the Token plan has anything for Expand all to open. */
+export function hasFoldedBattleRuns(
+  tokens: readonly PlannedToken[],
+  slices: readonly { start: number; count: number }[]
+): boolean {
+  return slices.some(({ start, count }) =>
+    groupTokensByTeam(tokens.slice(start, start + count)).some((group) =>
+      groupTokenBattleRuns(group.tokens, start + group.start).some(
+        (run) => run.tokens.length > 1
+      )
+    )
+  )
 }
