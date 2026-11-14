@@ -1960,6 +1960,7 @@
     "card": {
       "ladder": {
         "current": "Actuel",
+        "start": "Départ",
         "taken": "Déjà un objectif"
       },
       "range": {

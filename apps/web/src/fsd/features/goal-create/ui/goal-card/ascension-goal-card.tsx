@@ -19,6 +19,7 @@ import { TargetLadder } from "./target-ladder"
 export function AscensionGoalCard({
   mode,
   start,
+  current,
   value,
   onChange,
   takenKeys,
@@ -30,6 +31,8 @@ export function AscensionGoalCard({
 }: {
   mode: "create" | "edit"
   start: Progression
+  /** The unit's live progression, when known and different from the start (Edit goal). */
+  current?: Progression
   value: Progression
   onChange: (value: Progression) => void
   takenKeys: ReadonlySet<string>
@@ -52,6 +55,7 @@ export function AscensionGoalCard({
         </span>
         <TargetLadder
           fieldProps={fieldIssueProps(issues, "Ascension", "target")}
+          currentKey={current}
           label={t("goals.create.ascension.end")}
           onChange={(key) => onChange(key as Progression)}
           startKey={start}

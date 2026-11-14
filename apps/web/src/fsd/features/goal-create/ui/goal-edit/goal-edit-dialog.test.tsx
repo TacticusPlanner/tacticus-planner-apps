@@ -513,6 +513,39 @@ describe("GoalEditDialog", () => {
       expect(screen.getByTestId("goal-edit-save")).toBeDisabled()
     })
 
+    it("Rank: marks the synced roster rank Current, not the goal's stored start", async () => {
+      await seedPlayerData({
+        characters: [
+          {
+            unitId: "hero-1",
+            rank: "Gold2",
+            progressionIndex: "Epic:RedOneStar",
+            xp: 0,
+            xpLevel: 30,
+            shards: 0,
+            mythicShards: 0,
+            abilities: [],
+            appliedUpgradeSlots: [],
+            equippedItems: [],
+          },
+        ],
+      })
+      renderDialog()
+      await loaded()
+
+      const ladder = screen.getByTestId("create-goal-rank-end")
+      expect(
+        await within(ladder).findByRole(
+          "radio",
+          { name: "Gold II, Current" },
+          { timeout: 5000 }
+        )
+      ).toBeInTheDocument()
+      expect(
+        within(ladder).getByRole("radio", { name: "Stone I, Start" })
+      ).toBeInTheDocument()
+    })
+
     it("Ascension: shows the progression editor inline with no own Save", async () => {
       goalOnScreen(ascensionGoal)
       renderDialog()

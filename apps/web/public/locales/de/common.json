@@ -1960,6 +1960,7 @@
     "card": {
       "ladder": {
         "current": "Aktuell",
+        "start": "Start",
         "taken": "Bereits ein Ziel"
       },
       "range": {

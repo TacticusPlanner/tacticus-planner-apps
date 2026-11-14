@@ -1960,6 +1960,7 @@
     "card": {
       "ladder": {
         "current": "Current",
+        "start": "Start",
         "taken": "Already a goal"
       },
       "range": {

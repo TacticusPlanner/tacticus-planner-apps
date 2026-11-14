@@ -165,13 +165,19 @@ For an Upgrade goal, the Edit goal dialog SHALL let the owner add materials with
 
 ### Requirement: Rank and Ascension targets are picked on a ladder
 
-In the create and Edit goal dialogs, Rank and Ascension targets SHALL be chosen on a ladder that shows every step of the unit's track, grouped by tier. The goal's start step SHALL be marked "Current". The selected target SHALL be marked, and the steps from start to target SHALL be highlighted. Rank's additional target SHALL stay a separate control under the ladder.
+In the create and Edit goal dialogs, Rank and Ascension targets SHALL be chosen on a ladder that shows every step of the unit's track, grouped by tier. The unit's current step SHALL be marked "Current": in the create dialog that is the goal's start; in the Edit goal dialog it is the unit's synced roster rank or progression, falling back to the goal's stored start when the roster has no entry. When the unit has progressed past the stored start, the start step SHALL be marked "Start" instead. The selected target SHALL be marked, and the steps from start to target SHALL be highlighted. Rank's additional target SHALL stay a separate control under the ladder.
 
 #### Scenario: Incisus Rank ladder
 
 - **GIVEN** Incisus is Gold II and the Rank target is Diamond II
 - **WHEN** the Rank card is open
 - **THEN** Gold II is marked Current, Diamond II is marked selected, and Gold II to Diamond II is highlighted
+
+#### Scenario: Edited goal after progress
+
+- **GIVEN** a Rank goal created when Nauseous was Gold I, and Nauseous is now Gold II in the synced roster
+- **WHEN** the Edit goal dialog opens
+- **THEN** Gold II is marked Current and Gold I is marked Start
 
 #### Scenario: Stored target at or below start
 
