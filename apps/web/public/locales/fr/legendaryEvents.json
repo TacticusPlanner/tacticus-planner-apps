@@ -772,6 +772,8 @@
       "summary_other": "{{count}} jetons · +{{points}} points",
       "battle": "Combat {{battle}}",
       "points": "+{{points}}",
+      "battlePoints": "B{{battle}} +{{points}}",
+      "battlePointsLabel": "Points par bataille",
       "running": "{{points}} au total",
       "maybe": "Peut-être faisable",
       "milestone": "Palier {{milestone}} · +{{currency}} de monnaie",
@@ -819,6 +821,8 @@
       "expandRun_other": "Afficher {{count}} combats",
       "collapseRun_one": "Masquer {{count}} combat",
       "collapseRun_other": "Masquer {{count}} combats",
+      "expandAll": "Tout développer",
+      "collapseAll": "Tout réduire",
       "tokens_one": "{{count}} jeton",
       "tokens_other": "{{count}} jetons",
       "openTeam": "Ouvrir l’équipe {{team}}"

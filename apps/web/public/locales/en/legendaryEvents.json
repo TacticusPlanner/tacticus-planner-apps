@@ -772,6 +772,8 @@
       "summary_other": "{{count}} tokens · +{{points}} points",
       "battle": "Battle {{battle}}",
       "points": "+{{points}}",
+      "battlePoints": "B{{battle}} +{{points}}",
+      "battlePointsLabel": "Points per battle",
       "running": "{{points}} total",
       "maybe": "Maybe clear",
       "milestone": "Milestone {{milestone}} · +{{currency}} currency",
@@ -819,6 +821,8 @@
       "expandRun_other": "Show {{count}} battles",
       "collapseRun_one": "Hide {{count}} battle",
       "collapseRun_other": "Hide {{count}} battles",
+      "expandAll": "Expand all",
+      "collapseAll": "Collapse all",
       "tokens_one": "{{count}} token",
       "tokens_other": "{{count}} tokens",
       "openTeam": "Open team {{team}}"

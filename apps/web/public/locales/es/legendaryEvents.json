@@ -772,6 +772,8 @@
       "summary_other": "{{count}} fichas · +{{points}} puntos",
       "battle": "Batalla {{battle}}",
       "points": "+{{points}}",
+      "battlePoints": "B{{battle}} +{{points}}",
+      "battlePointsLabel": "Puntos por batalla",
       "running": "{{points}} en total",
       "maybe": "Quizá superable",
       "milestone": "Hito {{milestone}} · +{{currency}} de moneda",
@@ -819,6 +821,8 @@
       "expandRun_other": "Mostrar {{count}} batallas",
       "collapseRun_one": "Ocultar {{count}} batalla",
       "collapseRun_other": "Ocultar {{count}} batallas",
+      "expandAll": "Expandir todo",
+      "collapseAll": "Contraer todo",
       "tokens_one": "{{count}} ficha",
       "tokens_other": "{{count}} fichas",
       "openTeam": "Abrir el equipo {{team}}"
