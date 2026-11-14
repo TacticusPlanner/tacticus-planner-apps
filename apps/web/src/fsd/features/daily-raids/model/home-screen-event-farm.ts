@@ -92,6 +92,8 @@ type Candidate = {
   drops: Drop[]
   /** Best (lowest) priority among the goals it serves, for the tie-break. */
   priority: number
+  /** The battle's expected gold, Today's last tie-break (`selectFarmNodes`); absent sorts lowest. */
+  expectedGold: number
 }
 
 /**
@@ -102,7 +104,9 @@ type Candidate = {
  * inventory allocation. A location is a candidate when it earns points, can be raided (eligible, energy
  * cost, attempts left), drops a resource some goal still needs there (a goal with pinned locations is
  * only served by them) and passes the filter for that drop. Candidates are filled in order of points
- * per energy (then points per raid, goal priority, battle id) until the budget is used: each gets the
+ * per energy, then points per raid; ties then follow Today's pick (`selectFarmNodes`): the cheaper
+ * drop efficiency, then the more expected gold, then goal priority and battle id. Filled until the
+ * budget is used: each gets the
  * raids its attempts, the budget and the still-unmet need allow, and a location that does not fit is
  * skipped, not a stop. This is a filter-then-pick (an implicit "earns points" filter): it prefers a
  * point-earning node over a cheaper node without points, where Today picks the cheapest passing node.
@@ -110,7 +114,7 @@ type Candidate = {
  * `order: "energy"` fills in order of drop efficiency instead (`dropEfficiency`: the location's
  * energy per item over the cheapest passing location for that resource, Today's pick, with or
  * without points), then points per energy; with `fewerRaids` the costlier battle first among equal
- * efficiency. The cheapest locations fill the need first, so a costlier one only gets the raids
+ * efficiency, and the more expected gold among locations still tied. The cheapest locations fill the need first, so a costlier one only gets the raids
  * still needed. `combineGoals` drops goal priority from the tie-break.
  *
  * ponytail: greedy by ratio, not an optimal packing; shop/Onslaught suppliers and stage order are
@@ -194,6 +198,7 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
         ratio: pointsPerRaid / node.energyCost,
         drops: [],
         priority: Infinity,
+        expectedGold: node.expectedGold ?? -1,
       }
       candidate.drops.push({
         resourceId,
@@ -229,6 +234,9 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
           : 0) ||
         b.ratio - a.ratio ||
         b.pointsPerRaid - a.pointsPerRaid ||
+        // Equal on points: Today's order between two nodes, cheaper per item then more gold.
+        efficiency(a) - efficiency(b) ||
+        b.expectedGold - a.expectedGold ||
         (input.combineGoals ? 0 : a.priority - b.priority) ||
         a.battleId.localeCompare(b.battleId)
     )

@@ -83,7 +83,7 @@ The HSE tab's main list, titled "Farm list for event points", SHALL be computed 
 
 A location SHALL be a candidate only when all of these hold: (1) it earns event points for the active rule (points per raid greater than 0); (2) it is unlocked by the player's campaign progress, has an energy cost above 0 and has attempts left today (the synced attempts left when known, otherwise the node's daily cap, where a cap of 0 means unlimited); (3) it drops a resource that an in-scope goal still needs somewhere in the schedule, where a goal that pins its farm locations is served only by the pinned ones; (4) it passes the persisted Raids Filters, evaluated with the resource it drops.
 
-The energy budget SHALL be the planning-settings daily energy minus the energy the player has really spent today across all campaigns, never below 0. Candidates SHALL be ordered by points per raid divided by energy cost, descending; ties by points per raid descending, then the best (lowest) priority among the goals the location serves, then battle id ascending. The list SHALL be filled in that order: each location gets as many raids as the attempts left, the remaining budget and the remaining need allow (the need is reduced by what earlier locations already farm, so two locations dropping the same resource do not farm it past the need); a location that does not fit is skipped and later candidates are still considered. Locations with no raids SHALL NOT be shown. The day total badges SHALL show the sum of row points and the sum of row energy, and the energy total SHALL never exceed the budget.
+The energy budget SHALL be the planning-settings daily energy minus the energy the player has really spent today across all campaigns, never below 0. Candidates SHALL be ordered by points per raid divided by energy cost, descending; ties by points per raid descending, then as Today picks between two locations (see `daily-raids-today`): the lower drop efficiency (energy per item over the cheapest passing location for that drop), then the higher expected gold, then the best (lowest) priority among the goals the location serves, then battle id ascending. The list SHALL be filled in that order: each location gets as many raids as the attempts left, the remaining budget and the remaining need allow (the need is reduced by what earlier locations already farm, so two locations dropping the same resource do not farm it past the need); a location that does not fit is skipped and later candidates are still considered. Locations with no raids SHALL NOT be shown. The day total badges SHALL show the sum of row points and the sum of row energy, and the energy total SHALL never exceed the budget.
 
 #### Scenario: Only point-earning, goal-contributing locations
 
@@ -98,7 +98,13 @@ The energy budget SHALL be the planning-settings daily energy minus the energy t
 #### Scenario: Ordering and tie-breaks
 
 - **GIVEN** location A with 12 points at energy 6 (ratio 2) and B with 15 points at energy 10 (ratio 1.5)
-- **THEN** A is listed before B; with equal ratio the location with more points per raid is first, then the better goal priority, then the lower battle id
+- **THEN** A is listed before B; with equal ratio the location with more points per raid is first, then the one cheaper per item, then the one with more expected gold, then the better goal priority, then the lower battle id
+
+#### Scenario: Gold breaks a tie on points
+
+- **GIVEN** Octarius Mirror Elite 15 and 39 both cost 10 energy, drop the same upgrade at the same rate and earn 60 points per raid, and Battle 39 pays more gold
+- **WHEN** the farm list is computed
+- **THEN** Battle 39 is listed first and gets its raids, and Battle 15 only gets the raids still needed
 
 #### Scenario: Filled until the budget is used
 
