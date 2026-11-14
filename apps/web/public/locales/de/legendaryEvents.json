@@ -772,6 +772,8 @@
       "summary_other": "{{count}} Tokens · +{{points}} Punkte",
       "battle": "Kampf {{battle}}",
       "points": "+{{points}}",
+      "battlePoints": "K{{battle}} +{{points}}",
+      "battlePointsLabel": "Punkte pro Kampf",
       "running": "{{points}} gesamt",
       "maybe": "Vielleicht schaffbar",
       "milestone": "Meilenstein {{milestone}} · +{{currency}} Währung",
@@ -819,6 +821,8 @@
       "expandRun_other": "{{count}} Kämpfe anzeigen",
       "collapseRun_one": "{{count}} Kampf ausblenden",
       "collapseRun_other": "{{count}} Kämpfe ausblenden",
+      "expandAll": "Alle aufklappen",
+      "collapseAll": "Alle zuklappen",
       "tokens_one": "{{count}} Token",
       "tokens_other": "{{count}} Tokens",
       "openTeam": "Team {{team}} öffnen"
