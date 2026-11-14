@@ -289,7 +289,11 @@ describe("RaidSchedule location emphasis", () => {
       within(grid)
         .getAllByRole("heading", { level: 3 })
         .map((heading) => heading.textContent)
-    ).toEqual(["Indomitus Elite", "Fall of Cadia Elite"])
+    ).toEqual(["Indomitus Elite"])
+    // Fall of Cadia has one battle: no header, its row names it in full.
+    expect(screen.getByTestId("raid-location-B2")).toHaveTextContent(
+      "Fall of Cadia Elite 7"
+    )
     expect(
       within(grid)
         .getAllByRole("listitem")
@@ -375,7 +379,7 @@ describe("RaidSchedule location emphasis", () => {
     ])
   })
 
-  it("names the campaign with its tier once in the group header, and only the battle in its row", () => {
+  it("names a campaign's lone battle in full on its row, with no group header", () => {
     render(
       <RaidSchedule
         attemptsUsedByBattle={new Map([[b1, 3]])}
@@ -393,13 +397,13 @@ describe("RaidSchedule location emphasis", () => {
     )
 
     expect(
-      screen.getByRole("heading", { level: 3, name: "Indomitus Elite" })
-    ).toBeInTheDocument()
+      screen.queryByRole("heading", { level: 3, name: "Indomitus Elite" })
+    ).not.toBeInTheDocument()
     expect(screen.getByTestId(`raid-location-${b1}`)).toHaveTextContent(
-      "Battle 4"
+      "Indomitus Elite 4"
     )
     expect(screen.getByTestId(`raid-location-${b1}`)).not.toHaveTextContent(
-      "Indomitus"
+      "Battle"
     )
   })
 
@@ -443,18 +447,11 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    // The header's campaign and tier, and the row's battle, wrap instead of truncating.
-    const header = screen.getByRole("heading", {
-      level: 3,
-      name: `${campaignName} Extremis`,
-    })
-    expect(header).toHaveClass("wrap-break-word")
-    expect(header).not.toHaveClass("truncate")
-    expect(header).toHaveTextContent(`${campaignName} Extremis`)
-    const line = within(screen.getByTestId(`raid-location-${b1}`))
-      .getByText("Battle 12B (Herausforderungsknoten)")
-      .closest(".wrap-break-word")
-    expect(line).not.toBeNull()
+    // A lone battle names its campaign, tier and node on its row, wrapping instead of truncating.
+    const line = screen
+      .getByTestId(`raid-location-${b1}`)
+      .querySelector(".wrap-break-word")
+    expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
     expect(line).not.toHaveClass("truncate")
   })
 

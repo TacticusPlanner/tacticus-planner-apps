@@ -359,7 +359,7 @@ The HRE tab SHALL NOT show the project selector, the Raids Filters action or the
 
 ### Requirement: HRE suggestion rows are grouped by campaign
 
-Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) SHALL show each run of consecutive rows in one campaign (with its difficulty) under one header with the campaign icon and the campaign's name, mirror qualifier and difficulty word; each row SHALL name just its battle ("Battle 7") ahead of its goals, drop and counts. Grouping SHALL NOT reorder the list, and paging counts rows, not groups. As on the HSE lists, a raid row SHALL NOT show its raid count or energy (a by-hand battle row keeps its battle count, an open-ended row its energy per battle), and each row's battle name SHALL open the battle and its enemies.
+Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) SHALL show each run of consecutive rows in one campaign (with its difficulty) under one header with the campaign icon and the campaign's name, mirror qualifier and difficulty word; each row SHALL name just its battle ("Battle 7") ahead of its goals, drop and counts. A campaign with a single row in a group SHALL show no header: that row SHALL instead name the location in full ("Saim-Hann Elite 33") after the campaign icon, on one line. Grouping SHALL NOT reorder the list, and paging counts rows, not groups. As on the HSE lists, a raid row SHALL NOT show its raid count or energy (a by-hand battle row keeps its battle count, an open-ended row its energy per battle), and each row's battle name SHALL open the battle and its enemies.
 
 #### Scenario: Consecutive rows of one campaign share a header
 

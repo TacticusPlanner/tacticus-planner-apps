@@ -262,7 +262,7 @@ Assumptions:
 
 ### Requirement: Campaign locations use the Character Lookup presentation
 
-Today's plan and Bonus Raids SHALL show their battles in campaign groups (see "Today groups raids by campaign"): each group's header SHALL carry the campaign icon and the campaign's display name with its mirror qualifier and difficulty word ("Indomitus Mirror Elite", "Fall of Cadia Elite", "Indomitus", "Death Guard Extremis"), and each row under it SHALL name just its battle by node number ("Battle 40", "Battle 12B" for a challenge node), ahead of the upgrade or shard it farms there, shown as its icon (named by a tooltip) with the player's owned/target count at the end of the row. The row's name SHALL still open the battle with its full campaign name. When a resource is scheduled at more than one location, each location SHALL render as its own row. Raw battle ids SHALL only be used as a fallback when catalog presentation metadata is unavailable. The Raids Plan tab is unaffected by this requirement and continues to render locations as compact chips secondary to the resource.
+Today's plan and Bonus Raids SHALL show their battles in campaign groups (see "Today groups raids by campaign"): each group's header SHALL carry the campaign icon and the campaign's display name with its mirror qualifier and difficulty word ("Indomitus Mirror Elite", "Fall of Cadia Elite", "Indomitus", "Death Guard Extremis"), and each row under it SHALL name just its battle by node number ("Battle 40", "Battle 12B" for a challenge node), ahead of the upgrade or shard it farms there, shown as its icon (named by a tooltip) with the player's owned/target count at the end of the row. The row's name SHALL still open the battle with its full campaign name. A campaign with a single row in a group SHALL show no header: that row SHALL instead name the location in full ("Saim-Hann Elite 33") after the campaign icon, on one line. When a resource is scheduled at more than one location, each location SHALL render as its own row. Raw battle ids SHALL only be used as a fallback when catalog presentation metadata is unavailable. The Raids Plan tab is unaffected by this requirement and continues to render locations as compact chips secondary to the resource.
 
 Today's Attempts SHALL render each battle as the primary element of its row, with the campaign name and the difficulty-and-number label split across two lines:
 
@@ -312,13 +312,19 @@ Assumptions this requirement depends on:
 
 ### Requirement: Today groups raids by campaign
 
-Today's plan and Bonus Raids SHALL group their battles by campaign instead of by upgrade, within each goal group (or the one combined list with Combine goals), so the player can raid one campaign's battles in a row. Groups and rows SHALL keep the schedule's priority order ("Today orders upgrades by urgency", with same-campaign upgrades of similar energy already pulled together): going down that order, a run of consecutive upgrades in one campaign (an upgrade's campaign being that of its first planned location) forms a cluster; within a cluster, every planned location SHALL join its campaign's group, groups in the order their campaign first appears and rows in the upgrades' order. A location of a later cluster SHALL NOT be pulled up into an earlier group; it starts a group of its own, which joins the group right before it only when that is the same campaign. A location listed more than once for one upgrade shows once, and a location with no real attempts left today is left out as before. At or above the 768px breakpoint the campaign groups fill the plan card's width in 20rem columns.
+Today's plan and Bonus Raids SHALL group their battles by campaign instead of by upgrade, within each goal group (or the one combined list with Combine goals), so the player can raid one campaign's battles in a row. Groups and rows SHALL keep the schedule's priority order ("Today orders upgrades by urgency", with same-campaign upgrades of similar energy already pulled together): going down that order, a run of consecutive upgrades forms a cluster while each next upgrade has a planned location in a campaign the cluster already holds; within a cluster, every planned location SHALL join its campaign's group, groups in the order their campaign first appears and rows in the upgrades' order. A location of a later cluster SHALL NOT be pulled up into an earlier group; it starts a group of its own, which joins the group right before it only when that is the same campaign. A location listed more than once for one upgrade shows once, and a location with no real attempts left today is left out as before. At or above the 768px breakpoint the campaign groups fill the plan card's width in 20rem columns.
 
 #### Scenario: One header per campaign, one row per battle
 
 - **GIVEN** today's top upgrades are farmed at Saim-Hann Elite 38 and Saim-Hann Mirror Elite 4, Saim-Hann Elite 37 and Saim-Hann Mirror Elite 3, Saim-Hann Elite 36 and Saim-Hann Mirror Elite 2, then Saim-Hann Elite 22, then Indomitus Elite 15 and Indomitus Elite 25, then much later Saim-Hann Mirror Elite 27
 - **WHEN** Today renders
 - **THEN** a "Saim-Hann Elite" group lists Battle 38, 37, 36 and 22, then a "Saim-Hann Mirror Elite" group lists Battle 4, 3 and 2, then an "Indomitus Elite" group lists Battle 15 and 25, and Saim-Hann Mirror Elite 27 comes after them in a group of its own, each row ending with its upgrade's icon and owned/target count
+
+#### Scenario: A later upgrade's battle joins its campaign's group
+
+- **GIVEN** today's top upgrade is farmed at Saim-Hann Elite 33, the next at Indomitus Mirror Elite 12 and Saim-Hann Elite 11, then one at Indomitus 19
+- **WHEN** Today renders
+- **THEN** a "Saim-Hann Elite" group lists Battle 33 and 11, followed by Indomitus Mirror Elite 12 and Indomitus 19, each alone in its group as one row naming the location in full
 
 ### Requirement: Only the active campaign event is farmable
 

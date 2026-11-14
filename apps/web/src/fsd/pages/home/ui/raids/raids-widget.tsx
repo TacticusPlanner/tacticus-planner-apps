@@ -14,6 +14,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   CampaignGroupedList,
   flattenTodayLocations,
+  groupRowsByUpgradeCampaign,
   LocationRow,
   selectTodayRaids,
   useDailyRaids,
@@ -122,6 +123,13 @@ export function RaidsWidget() {
       <div className="flex flex-col gap-2">
         <CampaignGroupedList
           battleIdOf={(entry) => entry.battleId}
+          // Grouped as Today groups the same upgrades, so both read alike.
+          groupRows={(rows) =>
+            groupRowsByUpgradeCampaign(
+              rows,
+              (battleId) => raids.locationsByBattleId.get(battleId)?.campaignKey
+            )
+          }
           locationsByBattleId={raids.locationsByBattleId}
           rows={shown}
           testId="home-raids-list"

@@ -244,7 +244,7 @@ describe("RaidsWidget", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("reads a location exactly as Today does — campaign and tier in the header, the battle in the row", () => {
+  it("reads a lone location exactly as Today does — campaign, tier and battle on one row, with its X/Y", () => {
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
       today: { entries: [entry({ battleId: "node-1" })] },
@@ -274,11 +274,11 @@ describe("RaidsWidget", () => {
     render(<RaidsWidget />, { route: "/" })
 
     expect(
-      screen.getByRole("heading", { level: 3, name: "Indomitus Elite" })
-    ).toBeInTheDocument()
+      screen.queryByRole("heading", { level: 3, name: "Indomitus Elite" })
+    ).not.toBeInTheDocument()
     const row = screen.getByTestId("home-raid-location-node-1")
-    expect(row).toHaveTextContent('schedule.battle:{"node":" 3"}')
-    expect(row).not.toHaveTextContent("Indomitus")
+    expect(row).toHaveTextContent("Indomitus Elite 3")
+    expect(row).not.toHaveTextContent("schedule.battle")
     // The reward's owned/target count, as on Today.
     expect(
       screen.getByTestId("home-raid-location-node-1-stock")
@@ -361,35 +361,43 @@ describe("RaidsWidget", () => {
     expect(toggle).toHaveAttribute("aria-expanded", "true")
     expect(toggle).toHaveTextContent("home.raids.showLess")
   })
-  it("groups consecutive rows by campaign without moving a row, across the show-more boundary", async () => {
+  it("groups rows the way Today groups the same upgrades, across the show-more boundary", async () => {
     const user = userEvent.setup()
-    // Campaigns in plan order: A, B, then five more of A. The later A rows stay after B, in their
-    // own group, which the first five rows cut through.
-    const campaigns = ["a", "b", "a", "a", "a", "a", "a"]
-    const location = (index: number, campaign: string) => ({
-      id: `node-${index}`,
-      campaignName: campaign === "a" ? "Indomitus" : "Octarius",
-      nodeLabel: `Elite ${index + 1}`,
-      difficultyLabel: "Elite",
-      campaignKey: `${campaign}-elite`,
-      shortLabel: `${campaign} E ${index + 1}`,
-      challenge: false,
-      icon: undefined,
-    })
+    // [campaign, upgrade] per row in plan order. Upgrade r2 is farmed at B then A, so its A row
+    // joins r1's A group; r4's A rows come after C and stay in a group of their own.
+    const rows = [
+      ["a", "r1"],
+      ["b", "r2"],
+      ["a", "r2"],
+      ["c", "r3"],
+      ["a", "r4"],
+      ["a", "r4"],
+      ["c", "r5"],
+    ] as const
+    const names = { a: "Indomitus", b: "Octarius", c: "Saim-Hann" }
     useDailyRaidsMock.mockReturnValue({
       status: "ready",
       today: {
-        entries: campaigns.map((_, index) =>
-          entry({ battleId: `node-${index}` })
+        entries: rows.map(([, resourceId], index) =>
+          entry({ battleId: `node-${index}`, resourceId })
         ),
       },
       bonus: { entries: [] },
       raidsLeftToday: { entries: [] },
       attemptsLeftByBattle: new Map(),
       locationsByBattleId: new Map(
-        campaigns.map((campaign, index) => [
+        rows.map(([campaign], index) => [
           `node-${index}` as BattleId,
-          location(index, campaign),
+          {
+            id: `node-${index}`,
+            campaignName: names[campaign],
+            nodeLabel: `Elite ${index + 1}`,
+            difficultyLabel: "Elite",
+            campaignKey: `${campaign}-elite`,
+            shortLabel: `${campaign} E ${index + 1}`,
+            challenge: false,
+            icon: undefined,
+          },
         ])
       ),
       resourceLabels: new Map(),
@@ -404,25 +412,17 @@ describe("RaidsWidget", () => {
         .getAllByTestId(/^campaign-group-/)
         .map((group) =>
           [...group.querySelectorAll("[data-testid^=home-raid-location-]")].map(
-            (row) => row.getAttribute("data-testid")
+            (row) => row.getAttribute("data-testid")?.slice(-1)
           )
         )
-    expect(groupRows()).toEqual([
-      ["home-raid-location-node-0"],
-      ["home-raid-location-node-1"],
-      [
-        "home-raid-location-node-2",
-        "home-raid-location-node-3",
-        "home-raid-location-node-4",
-      ],
-    ])
+    expect(groupRows()).toEqual([["0", "2"], ["1"], ["3"], ["4"]])
+    // A campaign's lone row names its location in full, with no header.
+    expect(screen.getByTestId("home-raid-location-node-1")).toHaveTextContent(
+      "Octarius Elite 2"
+    )
 
     await user.click(screen.getByTestId("home-raids-toggle"))
 
-    expect(groupRows()).toEqual([
-      ["home-raid-location-node-0"],
-      ["home-raid-location-node-1"],
-      [2, 3, 4, 5, 6].map((index) => `home-raid-location-node-${index}`),
-    ])
+    expect(groupRows()).toEqual([["0", "2"], ["1"], ["3"], ["4", "5"], ["6"]])
   })
 })
