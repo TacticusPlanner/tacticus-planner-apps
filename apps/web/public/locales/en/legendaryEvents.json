@@ -112,6 +112,7 @@
     "fullyAscended": "Every reward step reached",
     "beyondChests": "Not reachable this event (needs {{required}} chests, the event has {{ladder}})",
     "affordableNow": "Enough currency for the chests now",
+    "coveredByLaterRuns": "{{currency}} currency short today · your later runs' missions and bundles cover it",
     "beyondPoints": "Points alone can't cover it: {{currency}} currency short",
     "noEntry": "No synced progress yet",
     "explain": {
@@ -124,7 +125,7 @@
       "noFutureInputs": "No inputs for later runs",
       "bonus": "+{{currency}} currency on every points milestone (premium track)",
       "noBonus": "No payout bonus on points milestones",
-      "startedRuns": "Counts what you have already earned through sync plus your inputs for later runs; runs already started are not added again."
+      "startedRuns": "Later runs add only the missions and bundle you plan for them; the current run's are already in your synced currency."
     }
   },
   "lanes": {
@@ -830,6 +831,11 @@
       "tokens_one": "{{count}} token",
       "tokens_other": "{{count}} tokens",
       "openTeam": "Open team {{team}}"
+    },
+    "summary": {
+      "nextStep": "{{step}} at token {{token}} (run {{run}})",
+      "tokensLeft_one": "{{count}} token left this run",
+      "tokensLeft_other": "{{count}} tokens left this run"
     },
     "forecast": {
       "title": "Run forecast",

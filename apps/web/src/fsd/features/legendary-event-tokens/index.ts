@@ -17,6 +17,7 @@ export {
   type OpenBattleInfo,
 } from "./ui/battle-info-context"
 export { CurrentRunForecast, RunForecastSection } from "./ui/run-forecast"
+export { PlanSummaryLine } from "./ui/plan-summary-line"
 export {
   buildTokenPlanView,
   type TokenPlanMissionsSource,

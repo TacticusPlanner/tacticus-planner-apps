@@ -9,6 +9,7 @@ import {
 import {
   BattleInfoContext,
   CurrentRunForecast,
+  PlanSummaryLine,
   NextTokenCard,
   RunForecastSection,
   TokenPlanList,
@@ -323,6 +324,7 @@ function LegendaryEventPageBody({
             <RunStatusCard
               {...props}
               forecast={<CurrentRunForecast view={tokens.view} />}
+              summary={<PlanSummaryLine view={tokens.view} />}
               isMobile={isMobile}
             />
             {laneSelector}

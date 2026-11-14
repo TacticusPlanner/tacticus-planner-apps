@@ -112,6 +112,7 @@
     "fullyAscended": "Alle Belohnungsstufen erreicht",
     "beyondChests": "In diesem Event nicht erreichbar (benötigt {{required}} Truhen, das Event hat {{ladder}})",
     "affordableNow": "Genug Währung für die Truhen vorhanden",
+    "coveredByLaterRuns": "Heute fehlen {{currency}} Währung · Missionen und Bundles späterer Durchläufe decken das",
     "beyondPoints": "Punkte allein reichen nicht: Es fehlen {{currency}} Währung",
     "noEntry": "Noch kein synchronisierter Fortschritt",
     "explain": {
@@ -124,7 +125,7 @@
       "noFutureInputs": "Keine Eingaben für spätere Durchläufe",
       "bonus": "+{{currency}} Währung bei jedem Punkte-Meilenstein (Premium-Pfad)",
       "noBonus": "Kein Bonus auf Punkte-Meilensteine",
-      "startedRuns": "Zählt, was du laut Synchronisierung schon verdient hast, plus deine Eingaben für spätere Durchläufe; bereits begonnene Durchläufe werden nicht noch einmal addiert."
+      "startedRuns": "Spätere Durchläufe zählen nur die Missionen und das Bundle, die du für sie planst; die des aktuellen Durchlaufs stecken schon in deiner synchronisierten Währung."
     }
   },
   "lanes": {
@@ -830,6 +831,11 @@
       "tokens_one": "{{count}} Token",
       "tokens_other": "{{count}} Tokens",
       "openTeam": "Team {{team}} öffnen"
+    },
+    "summary": {
+      "nextStep": "{{step}} bei Token {{token}} (Durchlauf {{run}})",
+      "tokensLeft_one": "Noch {{count}} Token in diesem Durchlauf",
+      "tokensLeft_other": "Noch {{count}} Token in diesem Durchlauf"
     },
     "forecast": {
       "title": "Durchlaufprognose",

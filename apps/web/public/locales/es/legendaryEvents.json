@@ -112,6 +112,7 @@
     "fullyAscended": "Todas las recompensas alcanzadas",
     "beyondChests": "No alcanzable en este evento (necesita {{required}} cofres y el evento tiene {{ladder}})",
     "affordableNow": "Ya tienes moneda suficiente para los cofres",
+    "coveredByLaterRuns": "Te faltan {{currency}} de moneda hoy · las misiones y paquetes de rondas posteriores lo cubren",
     "beyondPoints": "Los puntos por sí solos no bastan: faltan {{currency}} de moneda",
     "noEntry": "Todavía no hay progreso sincronizado",
     "explain": {
@@ -124,7 +125,7 @@
       "noFutureInputs": "Sin datos para rondas posteriores",
       "bonus": "+{{currency}} de moneda en cada hito de puntos (pase prémium)",
       "noBonus": "Sin bonificación en los hitos de puntos",
-      "startedRuns": "Cuenta lo que ya ganaste según la sincronización más tus datos para rondas posteriores; las rondas ya empezadas no se suman otra vez."
+      "startedRuns": "Las rondas posteriores solo suman las misiones y el paquete que planees para ellas; los de la ronda actual ya están en tu moneda sincronizada."
     }
   },
   "lanes": {
@@ -830,6 +831,11 @@
       "tokens_one": "{{count}} ficha",
       "tokens_other": "{{count}} fichas",
       "openTeam": "Abrir el equipo {{team}}"
+    },
+    "summary": {
+      "nextStep": "{{step}} en la ficha {{token}} (ronda {{run}})",
+      "tokensLeft_one": "Queda {{count}} ficha en esta ronda",
+      "tokensLeft_other": "Quedan {{count}} fichas en esta ronda"
     },
     "forecast": {
       "title": "Previsión por ronda",

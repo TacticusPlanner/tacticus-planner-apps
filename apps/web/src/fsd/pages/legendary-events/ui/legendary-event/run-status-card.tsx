@@ -44,6 +44,7 @@ export function RunStatusCard({
   isMobile,
   onGoToRun,
   forecast,
+  summary,
 }: {
   event: Pick<LegendaryEvent, "id" | "regularMissions" | "premiumMissions">
   lifecycle: LegendaryEventLifecycle
@@ -58,6 +59,8 @@ export function RunStatusCard({
   onGoToRun?: () => void
   /** The current run's forecast (the run tab's copy of the card), under the synced values. */
   forecast?: ReactNode
+  /** The token plan's one-line summary (run tab), right under the synced values. */
+  summary?: ReactNode
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -194,6 +197,7 @@ export function RunStatusCard({
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {body}
+        {summary}
         <RewardOutlook outlook={outlook} />
         {forecast}
         {syncedAtMs === undefined ? null : (

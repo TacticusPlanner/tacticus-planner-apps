@@ -217,6 +217,8 @@ export interface RewardProjection {
   /** `null` unless the goal is reachable. */
   points:
     | { state: "affordableNow" }
+    /** The currency in hand falls `shortNow` short, but later runs' missions and bundles cover it. */
+    | { state: "coveredByLaterRuns"; shortNow: number }
     | {
         state: "milestone"
         milestone: number
@@ -400,7 +402,12 @@ export function projectRewards({
 
   // 8–9. Points: drain the milestones above the current points until the payouts cover the rest.
   if (fromPoints <= 0) {
-    projection.points = { state: "affordableNow" }
+    // Only currency in hand affords the chests now; later runs' inputs arrive when those runs do.
+    const shortNow = currencyRequired - collected
+    projection.points =
+      shortNow > 0
+        ? { state: "coveredByLaterRuns", shortNow }
+        : { state: "affordableNow" }
     return projection
   }
   let missing = fromPoints
