@@ -298,6 +298,27 @@ function DialogAtGoalParam() {
   )
 }
 
+/** Seeds the synced roster entry for the goals' unit, `hero-1`. */
+async function seedHero(overrides: Record<string, unknown>) {
+  await seedPlayerData({
+    characters: [
+      {
+        unitId: "hero-1",
+        rank: "Stone1",
+        progressionIndex: "Epic:RedOneStar",
+        xp: 0,
+        xpLevel: 30,
+        shards: 0,
+        mythicShards: 0,
+        abilities: [],
+        appliedUpgradeSlots: [],
+        equippedItems: [],
+        ...overrides,
+      },
+    ],
+  })
+}
+
 async function loaded() {
   await screen.findByTestId("goal-edit-form")
 }
@@ -514,22 +535,7 @@ describe("GoalEditDialog", () => {
     })
 
     it("Rank: marks the synced roster rank Current, not the goal's stored start", async () => {
-      await seedPlayerData({
-        characters: [
-          {
-            unitId: "hero-1",
-            rank: "Gold2",
-            progressionIndex: "Epic:RedOneStar",
-            xp: 0,
-            xpLevel: 30,
-            shards: 0,
-            mythicShards: 0,
-            abilities: [],
-            appliedUpgradeSlots: [],
-            equippedItems: [],
-          },
-        ],
-      })
+      await seedHero({ rank: "Gold2" })
       renderDialog()
       await loaded()
 
@@ -544,6 +550,31 @@ describe("GoalEditDialog", () => {
       expect(
         within(ladder).getByRole("radio", { name: "Stone I, Start" })
       ).toBeInTheDocument()
+    })
+
+    it("Ability: counts Next from the synced level once a track has moved past its start", async () => {
+      await seedHero({
+        abilities: [
+          { abilityId: "active-1", level: 20 },
+          { abilityId: "passive-1", level: 2 },
+        ],
+      })
+      goalOnScreen(abilityGoal)
+      renderDialog()
+      await loaded()
+
+      const active = screen.getByTestId("create-goal-ability-active-target")
+      expect(await within(active).findByText("Current 20")).toBeInTheDocument()
+      expect(
+        within(active).getByRole("button", { name: /Next/ })
+      ).toHaveTextContent("21")
+
+      // The passive track is still at its start: no Current note, Next is start + 1.
+      const passive = screen.getByTestId("create-goal-ability-passive-target")
+      expect(within(passive).queryByText(/Current/)).not.toBeInTheDocument()
+      expect(
+        within(passive).getByRole("button", { name: /Next/ })
+      ).toHaveTextContent("3")
     })
 
     it("Ascension: shows the progression editor inline with no own Save", async () => {

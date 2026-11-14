@@ -250,7 +250,7 @@ An Ability goal SHALL be valid when at least one track rises above its start; a 
 
 ### Requirement: Ability steppers offer quick picks
 
-Each ability stepper SHALL offer "Next" (start + 1), "+5" (the current target + 5, capped at 60, so each press adds 5 more), and "Rarity cap" (the ability cap of the unit's current rarity). "Rarity cap" SHALL be hidden when the start is at or above that cap, and "+5" SHALL be hidden once the target is at 60.
+Each ability stepper SHALL offer "Next" (the track's level + 1), "+5" (the current target + 5, capped at 60, so each press adds 5 more), and "Rarity cap" (the ability cap of the unit's current rarity). The track's level is its start; in the Edit goal dialog, when the synced roster shows the track above the goal's stored start, it is that live level, and the stepper SHALL show it as "Current". The lowest choosable level stays the stored start. "Rarity cap" SHALL be hidden when the track's level is at or above that cap, and "+5" SHALL be hidden once the target is at 60.
 
 #### Scenario: Quick picks for a Legendary unit at 35
 
@@ -263,6 +263,12 @@ Each ability stepper SHALL offer "Next" (start + 1), "+5" (the current target + 
 - **GIVEN** the active ability is at 35
 - **WHEN** the user activates "+5" twice
 - **THEN** the target becomes 40, then 45
+
+#### Scenario: Edited goal after levelling
+
+- **GIVEN** an Ability goal created with the active ability at 3, and the synced roster now shows it at 20
+- **WHEN** the Edit goal dialog opens
+- **THEN** the active stepper shows "Current 20" and "Next" sets 21
 
 #### Scenario: At the rarity cap
 

@@ -8,7 +8,9 @@ import { Input } from "@workspace/ui/components/input"
 /**
  * One ability track's target level (goal-target-editing: Ability levels use a stepper): decrease, the
  * level, increase, from `start` (no change on this track) to the highest level of any rarity, and the
- * quick picks "Next", "+5" and "Rarity cap" (hidden once the start is at or above that cap). "+5" adds
+ * quick picks "Next", "+5" and "Rarity cap" (hidden once the level is at or above that cap). In the Edit
+ * goal dialog `current` is the track's live level: when the unit has levelled past the goal's start
+ * it is shown, and "Next" and "Rarity cap" count from it. "+5" adds
  * to the current target, so pressing it again keeps going, up to the highest level. A typed
  * value is passed on as is, so a level outside the range reaches the card's issues and shows the
  * range message there.
@@ -16,6 +18,7 @@ import { Input } from "@workspace/ui/components/input"
 export function AbilityLevelStepper({
   label,
   start,
+  current,
   value,
   onChange,
   rarityCap,
@@ -24,6 +27,8 @@ export function AbilityLevelStepper({
 }: {
   label: string
   start: number
+  /** The track's live level from the synced roster (Edit goal), when known. */
+  current?: number
   value: number
   onChange: (value: number) => void
   /** The ability cap of the unit's current rarity. */
@@ -40,11 +45,14 @@ export function AbilityLevelStepper({
   const inputId = fieldProps?.id ?? generatedId
   const valid = Number.isInteger(value)
   const target = valid ? Math.max(value, start) : start
+  // Where the unit is now: the start, or the live level once it has moved past it.
+  const progressed = current !== undefined && current > start
+  const reached = progressed ? current : start
   const picks = [
     {
       key: "next",
       label: t("goals.card.ability.next"),
-      level: start + 1,
+      level: reached + 1,
       toggle: true,
     },
     ...(target < maxAbilityLevel
@@ -57,7 +65,7 @@ export function AbilityLevelStepper({
           },
         ]
       : []),
-    ...(start < rarityCap
+    ...(reached < rarityCap
       ? [
           {
             key: "rarityCap",
@@ -71,9 +79,16 @@ export function AbilityLevelStepper({
 
   return (
     <div className="grid content-start gap-1.5" data-testid={testId}>
-      <label className="text-xs text-muted-foreground" htmlFor={inputId}>
-        {label}
-      </label>
+      <div className="flex items-baseline gap-2">
+        <label className="text-xs text-muted-foreground" htmlFor={inputId}>
+          {label}
+        </label>
+        {progressed ? (
+          <span className="text-xs text-muted-foreground tabular-nums">
+            {t("goals.card.ability.current", { level: current })}
+          </span>
+        ) : null}
+      </div>
       <div className="flex items-center gap-1.5">
         <Button
           aria-label={t("goals.card.ability.decrease", { track: label })}

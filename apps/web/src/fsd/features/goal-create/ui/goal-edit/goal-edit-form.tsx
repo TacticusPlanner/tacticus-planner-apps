@@ -55,8 +55,9 @@ import { abilityCapForProgression, isProgression } from "@workspace/game-domain"
  * has loaded, so the acquisition picker seeds from the saved goal.
  */
 /** The unit's live state from the synced roster: its progression (the Ability card's "Rarity cap"
- * falls back to where the goal started) and, for the Rank and Ascension ladders, the step marked
- * Current (none when the roster has no entry, so the ladder marks the goal's start). */
+ * falls back to where the goal started) and the live rank, progression and ability levels the Rank
+ * and Ascension ladders mark Current and the Ability steppers count from (none when the roster has
+ * no entry, so the cards fall back to the goal's start). */
 function useUnitProgression(detail: GoalDetail) {
   const characters = readyData(usePlayerChunk("characters", chunkOrUndefined))
   const mows = readyData(usePlayerChunk("mows", chunkOrUndefined))
@@ -74,6 +75,12 @@ function useUnitProgression(detail: GoalDetail) {
     current: {
       rank: character?.rank,
       progression: synced?.progressionIndex,
+      ability: synced
+        ? {
+            active: synced.abilities[0]?.level ?? 1,
+            passive: synced.abilities[1]?.level ?? 1,
+          }
+        : undefined,
     },
   }
 }

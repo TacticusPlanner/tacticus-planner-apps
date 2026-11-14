@@ -1976,6 +1976,7 @@
         "decrease": "Baisser {{track}}",
         "increase": "Augmenter {{track}}",
         "noChange": "Aucun changement",
+        "current": "Actuel {{level}}",
         "quickPicks": "{{track}} : choix rapides"
       }
     },

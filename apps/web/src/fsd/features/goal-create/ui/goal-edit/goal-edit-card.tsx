@@ -83,7 +83,11 @@ export function GoalEditCard({
   detail: GoalDetail
   /** The unit's live rank and progression from the synced roster, for the ladders' Current marker
    * (the goal's stored start may be behind it once the unit has progressed). */
-  current?: { rank?: Rank; progression?: Progression }
+  current?: {
+    rank?: Rank
+    progression?: Progression
+    ability?: { active: number; passive: number }
+  }
   draft: GoalTargetDraft | null
   onChange: (draft: GoalTargetDraft) => void
   issues: readonly GoalFormIssueView[]
@@ -191,6 +195,7 @@ export function GoalEditCard({
       }
       return (
         <AbilityGoalCard
+          current={current?.ability}
           entityType={detail.entityType === "Mow" ? "Mow" : "Character"}
           issues={issues}
           mode="edit"
