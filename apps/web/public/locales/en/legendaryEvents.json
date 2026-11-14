@@ -42,7 +42,33 @@
     "syncedAgo": "Synced {{when}}",
     "neverSynced": "Not synced yet",
     "goToCurrentRun": "Go to current run",
-    "goToNextRun": "Go to next run"
+    "goToNextRun": "Go to next run",
+    "current": {
+      "tokensLeft_one": "{{count}} left this run",
+      "tokensLeft_other": "{{count}} left this run",
+      "fromAds_one": "{{count}} from ads",
+      "fromAds_other": "{{count}} from ads",
+      "bonusDelivery_one": "{{count}} bonus delivery",
+      "bonusDelivery_other": "{{count}} bonus delivery",
+      "unused_one": "{{count}} with nothing to play",
+      "unused_other": "{{count}} with nothing to play",
+      "resource": "Resource",
+      "now": "Now",
+      "end": "End of run {{run}}",
+      "endNext": "End of next run",
+      "gain": "+{{value}}",
+      "stepThisRun": "{{step}} at token {{token}} this run",
+      "then": "then {{step}}, {{shards}} shards short",
+      "later": "Next: {{step}} · {{shards}} shards short at the end of the run",
+      "laterAt": "reached at token {{token}} (run {{run}})",
+      "rows": {
+        "points": "Points",
+        "currency": "Currency",
+        "chests": "Chests",
+        "shards": "Shards"
+      },
+      "gainEarned": "+{{value}} earned"
+    }
   },
   "runInputs": {
     "button": "Inputs",
@@ -831,11 +857,6 @@
       "tokens_one": "{{count}} token",
       "tokens_other": "{{count}} tokens",
       "openTeam": "Open team {{team}}"
-    },
-    "summary": {
-      "nextStep": "{{step}} at token {{token}} (run {{run}})",
-      "tokensLeft_one": "{{count}} token left this run",
-      "tokensLeft_other": "{{count}} tokens left this run"
     },
     "forecast": {
       "title": "Run forecast",

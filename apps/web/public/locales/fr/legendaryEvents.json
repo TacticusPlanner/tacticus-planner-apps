@@ -42,7 +42,33 @@
     "syncedAgo": "Synchronisé {{when}}",
     "neverSynced": "Pas encore synchronisé",
     "goToCurrentRun": "Aller à la session en cours",
-    "goToNextRun": "Aller à la prochaine session"
+    "goToNextRun": "Aller à la prochaine session",
+    "current": {
+      "tokensLeft_one": "{{count}} restant dans cette manche",
+      "tokensLeft_other": "{{count}} restants dans cette manche",
+      "fromAds_one": "{{count}} via les pubs",
+      "fromAds_other": "{{count}} via les pubs",
+      "bonusDelivery_one": "{{count}} livraison bonus",
+      "bonusDelivery_other": "{{count}} livraisons bonus",
+      "unused_one": "{{count}} sans combat à jouer",
+      "unused_other": "{{count}} sans combat à jouer",
+      "resource": "Ressource",
+      "now": "Maintenant",
+      "end": "Fin de la manche {{run}}",
+      "endNext": "Fin de la prochaine manche",
+      "gain": "+{{value}}",
+      "stepThisRun": "{{step}} au jeton {{token}} de cette manche",
+      "then": "puis {{step}}, {{shards}} fragments manquants",
+      "later": "Suivant : {{step}} · {{shards}} fragments manquants en fin de manche",
+      "laterAt": "atteint au jeton {{token}} (manche {{run}})",
+      "rows": {
+        "points": "Points",
+        "currency": "Monnaie",
+        "chests": "Coffres",
+        "shards": "Fragments"
+      },
+      "gainEarned": "+{{value}} gagnés"
+    }
   },
   "runInputs": {
     "button": "Saisies",
@@ -831,11 +857,6 @@
       "tokens_one": "{{count}} jeton",
       "tokens_other": "{{count}} jetons",
       "openTeam": "Ouvrir l’équipe {{team}}"
-    },
-    "summary": {
-      "nextStep": "{{step}} au jeton {{token}} (manche {{run}})",
-      "tokensLeft_one": "{{count}} jeton restant dans cette manche",
-      "tokensLeft_other": "{{count}} jetons restants dans cette manche"
     },
     "forecast": {
       "title": "Prévision par manche",
