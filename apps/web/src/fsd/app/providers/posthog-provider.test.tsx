@@ -355,4 +355,50 @@ describe("PostHogProvider error reporting", () => {
       routeGroup: "/plan",
     })
   })
+
+  describe("sign-in steps recorded on the device", () => {
+    const entry = {
+      step: "quiet_renewal_returned",
+      outcome: "no_session",
+      errorCode: "login_required:AADSTS50058",
+      at: Date.now() - 60_000,
+      load: "load-1",
+    }
+
+    afterEach(() => {
+      localStorage.clear()
+    })
+
+    it("are reported once the user is identified, dated when they happened", () => {
+      localStorage.setItem("tp.auth.journal", JSON.stringify([entry]))
+      useCurrentUserMock.mockReturnValue({ state: successState("analytics-1") })
+
+      renderProvider()
+
+      expect(captureEvent).toHaveBeenCalledWith({
+        type: "auth_step",
+        step: "quiet_renewal_returned",
+        occurredAt: entry.at,
+        pageLoad: "load-1",
+        outcome: "no_session",
+        errorCode: "login_required:AADSTS50058",
+        from: null,
+        reason: null,
+        trigger: null,
+        method: null,
+        freshLogin: null,
+      })
+      expect(localStorage.getItem("tp.auth.journal")).toBeNull()
+    })
+
+    it("stay on the device while nobody is identified", () => {
+      localStorage.setItem("tp.auth.journal", JSON.stringify([entry]))
+      isAuthenticated.mockReturnValue(false)
+
+      renderProvider()
+
+      expect(captureEvent).not.toHaveBeenCalled()
+      expect(localStorage.getItem("tp.auth.journal")).not.toBeNull()
+    })
+  })
 })

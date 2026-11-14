@@ -27,6 +27,7 @@ const loginRequest = vi.hoisted((): { scopes: string[]; prompt?: string } => ({
 vi.mock("./authentication", () => ({
   forgetQuietRenewal: () => undefined,
   loginRequest,
+  recordInteractiveRedirect: () => undefined,
 }))
 
 vi.mock("./silent-sign-in", () => ({
