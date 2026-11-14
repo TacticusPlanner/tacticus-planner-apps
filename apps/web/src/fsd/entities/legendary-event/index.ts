@@ -208,6 +208,7 @@ export {
 export {
   impactTeams,
   teamReaches,
+  teamUnitIdsByLane,
   type LaneEstimateInputs,
 } from "./lib/lane-teams"
 export {
