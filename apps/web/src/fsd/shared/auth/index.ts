@@ -12,6 +12,7 @@ export { signOut } from "./sign-out"
 export { claimAccountLocalData } from "./account-local-data"
 export { startSilentSignInOnce, useSilentSignInStatus } from "./silent-sign-in"
 export { useSignInRedirect } from "./use-sign-in-redirect"
+export { takeAuthJournal, type JournaledAuthStep } from "./auth-journal"
 export {
   getAccountEmail,
   getSignInMethod,
