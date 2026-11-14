@@ -8,6 +8,7 @@ import {
   tokenClearBand,
   type TokenPlanReady,
   upNextTokens,
+  tokenRisk,
 } from "./token-plan-view"
 import {
   UTHAR_RUN_STARTS,
@@ -78,6 +79,7 @@ describe("buildTokenPlanView", () => {
       shardsMissing: 75,
     })
     expect(view.leftover).toEqual({ tokens: 94, laneId: "alpha" })
+    expect(view.runEnd).toBe(view.byRun!.sections[0]!.count)
     expect(view.upcoming).toBeNull()
     expect(nextTokenCardState(view)).toBe("token")
   })
@@ -355,6 +357,14 @@ describe("upNextTokens", () => {
   it("lists nothing for an empty plan", () => {
     expect(upNextTokens({ tokens: [] }, null)).toEqual([])
   })
+
+  it("stops at the tokens the current run still has", () => {
+    // One token left this run: the next one is it, so nothing is up next.
+    expect(upNextTokens(plan, { index: 0 }, undefined, 1)).toEqual([])
+    expect(
+      upNextTokens(plan, { index: 0 }, undefined, 3).map((entry) => entry.index)
+    ).toEqual([1, 2])
+  })
 })
 
 describe("missionsNextToken", () => {
@@ -410,6 +420,19 @@ describe("missionsNextToken", () => {
       index: 1,
       gains: [{ ref, amount: 12, completes: false }],
     })
+  })
+})
+
+describe("tokenRisk", () => {
+  const estimated = { depth: 6, estimated: true, total: 18, sureDepth: 4 }
+
+  it("counts headroom to the sure depth within it, to the depth past it", () => {
+    expect(tokenRisk(estimated, 1)).toEqual({ band: 0, headroom: 2 })
+    expect(tokenRisk(estimated, 4)).toEqual({ band: 1, headroom: 1 })
+    expect(
+      tokenRisk({ ...estimated, estimated: false, sureDepth: null }, 1)
+    ).toEqual({ band: 0, headroom: 4 })
+    expect(tokenRisk({ ...estimated, depth: null }, 1)).toBeNull()
   })
 })
 

@@ -98,6 +98,13 @@ function OutlookBody({ projection }: { projection: RewardProjection }) {
       testId: "reward-outlook-affordable",
       text: t("outlook.affordableNow"),
     })
+  } else if (points?.state === "coveredByLaterRuns") {
+    lines.push({
+      testId: "reward-outlook-covered-later",
+      text: t("outlook.coveredByLaterRuns", {
+        currency: number.format(points.shortNow),
+      }),
+    })
   } else if (points?.state === "milestone") {
     lines.push({
       testId: "reward-outlook-points",

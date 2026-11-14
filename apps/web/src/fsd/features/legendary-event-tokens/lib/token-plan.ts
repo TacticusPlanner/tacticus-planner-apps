@@ -1,5 +1,6 @@
 import {
   buildSyncedLaneProgress,
+  type AscensionStep,
   type LanePointsModel,
   type LegendaryEventAnnotation,
   type LegendaryEventLaneId,
@@ -44,6 +45,17 @@ export interface TokenPlanInput {
    *  valued at its run's `depthByRun`, and a run with nothing left to play leaves its remaining
    *  slots unused, so later runs' deeper teams still get their tokens. */
   runSlots?: readonly RunSlots[]
+  /** Plays this team on this battle first (the safest token to the run's milestone), then plans
+   *  the rest as usual; ignored when that token earns nothing. */
+  first?: TokenChoiceKey
+}
+
+/** One team on one battle of a lane. */
+export interface TokenChoiceKey {
+  laneId: LegendaryEventLaneId
+  /** 0-based battle index. */
+  battleIndex: number
+  teamId: string
 }
 
 /** Slots `start`..`end − 1` are spent in `run`. */
@@ -265,6 +277,7 @@ export function planTokens({
   lanes,
   startingPoints,
   runSlots,
+  first,
 }: TokenPlanInput): TokenPlan {
   const states = lanes.map(initialLaneState)
   const syncedAvailable = states.map((state) =>
@@ -278,10 +291,14 @@ export function planTokens({
   for (;;) {
     const runSlot = runSlots?.find((entry) => slot < entry.end)
     const run = runSlot?.run ?? null
-    const candidates = states.flatMap((state, laneOrder) => {
-      const best = bestInLane(state, laneOrder, run)
-      return best ? [best] : []
-    })
+    const forced =
+      tokens.length === 0 && first ? forcedCandidate(states, first, run) : null
+    const candidates = forced
+      ? [forced]
+      : states.flatMap((state, laneOrder) => {
+          const best = bestInLane(state, laneOrder, run)
+          return best ? [best] : []
+        })
     const chosen = chooseAcrossLanes(candidates, tokens.at(-1))
     if (!chosen) {
       // Nothing left at this run's depths: the next run may reach further.
@@ -329,13 +346,73 @@ export function planTokens({
   }
 }
 
-type NextTokenReason = "mostPoints" | "mostPointsPlayableNow"
+/** The forced first token of `planTokens`, when it is a battle playable now that earns points. */
+function forcedCandidate(
+  states: readonly LaneState[],
+  first: TokenChoiceKey,
+  run: LegendaryEventRun | null
+): Candidate | null {
+  const laneOrder = states.findIndex(
+    (state) => state.lane.laneId === first.laneId
+  )
+  const state = states[laneOrder]
+  const team = state?.lane.teams.find((entry) => entry.id === first.teamId)
+  if (!state || !team) return null
+  const cells = state.cleared[first.battleIndex]
+  if (!cells || isComplete(cells) || !isAvailable(state, first.battleIndex))
+    return null
+  const token = tokenOn(state, first.battleIndex, team, run)
+  return token
+    ? {
+        laneId: first.laneId,
+        laneOrder,
+        battleIndex: first.battleIndex,
+        team,
+        ...token,
+      }
+    : null
+}
+
+/**
+ * Every token that could be played next from synced progress: a team on a battle open in sync
+ * that earns points and clears no Maybe clear cell (the choices the safest next token weighs).
+ */
+export function playableNowChoices(
+  lanes: readonly TokenPlanLane[]
+): TokenChoiceKey[] {
+  return lanes.flatMap((lane) => {
+    const state = initialLaneState(lane)
+    return state.cleared.flatMap((cells, battleIndex) => {
+      if (isComplete(cells) || !isAvailable(state, battleIndex)) return []
+      if (!cells[0] && state.stopHere.has(cellKey(battleIndex, 0))) return []
+      return lane.teams.flatMap((team) => {
+        const token = tokenOn(state, battleIndex, team, null)
+        if (
+          !token ||
+          token.clearedIds.some((id) =>
+            state.maybeClear.has(cellKey(battleIndex, id))
+          )
+        )
+          return []
+        return [{ laneId: lane.laneId, battleIndex, teamId: team.id }]
+      })
+    })
+  })
+}
+
+type NextTokenReason =
+  | "mostPoints"
+  | "mostPointsPlayableNow"
+  /** The safest battle (or path) that still reaches the run's milestone (`safestNextToken`). */
+  | "safestToMilestone"
 
 export interface NextTokenChoice {
   token: PlannedToken
   /** Its position in the plan (0-based). */
   index: number
   reason: NextTokenReason
+  /** What the safest path still reaches this run (`safestToMilestone` only). */
+  goal?: { milestone: number; step: AscensionStep | null }
 }
 
 /** The planned token at `index` could be played next: not flagged Maybe, playable now and no

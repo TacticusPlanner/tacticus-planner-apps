@@ -112,6 +112,7 @@
     "fullyAscended": "Toutes les étapes de récompense atteintes",
     "beyondChests": "Hors de portée pour cet événement ({{required}} coffres nécessaires, l'événement en compte {{ladder}})",
     "affordableNow": "Assez de monnaie pour les coffres dès maintenant",
+    "coveredByLaterRuns": "Il manque {{currency}} de monnaie aujourd'hui · les missions et packs des manches suivantes le couvrent",
     "beyondPoints": "Les points seuls ne suffisent pas : il manque {{currency}} de monnaie",
     "noEntry": "Aucune progression synchronisée pour l'instant",
     "explain": {
@@ -124,7 +125,7 @@
       "noFutureInputs": "Aucune saisie pour les manches suivantes",
       "bonus": "+{{currency}} de monnaie à chaque palier de points (passe premium)",
       "noBonus": "Aucun bonus sur les paliers de points",
-      "startedRuns": "Compte ce que vous avez déjà gagné d'après la synchronisation, plus vos saisies pour les manches suivantes ; les manches déjà commencées ne sont pas ajoutées une seconde fois."
+      "startedRuns": "Les manches suivantes n'ajoutent que les missions et le pack que tu prévois pour elles ; ceux de la manche en cours sont déjà dans ta monnaie synchronisée."
     }
   },
   "lanes": {
@@ -722,6 +723,8 @@
       "reasons": {
         "mostPoints": "Le plus de points disponibles maintenant",
         "mostPointsPlayableNow": "Le plus de points parmi les combats jouables maintenant",
+        "safestToMilestone": "Le combat le plus sûr qui atteint encore le palier {{milestone}} pendant cette manche",
+        "safestToStep": "Le combat le plus sûr qui atteint encore {{step}} (palier {{milestone}}) pendant cette manche",
         "missionsOrder": "Termine au plus tôt les missions ouvertes de cette manche, pour les mêmes points de manche"
       },
       "upcoming": "{{reason}} pour le début de la manche {{run}}",
@@ -828,6 +831,11 @@
       "tokens_one": "{{count}} jeton",
       "tokens_other": "{{count}} jetons",
       "openTeam": "Ouvrir l’équipe {{team}}"
+    },
+    "summary": {
+      "nextStep": "{{step}} au jeton {{token}} (manche {{run}})",
+      "tokensLeft_one": "{{count}} jeton restant dans cette manche",
+      "tokensLeft_other": "{{count}} jetons restants dans cette manche"
     },
     "forecast": {
       "title": "Prévision par manche",

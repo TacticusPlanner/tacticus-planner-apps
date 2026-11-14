@@ -308,6 +308,25 @@ describe("projectRewards", () => {
     expect(projection.points).toEqual({ state: "affordableNow" })
   })
 
+  it("does not call later runs' missions currency in hand", () => {
+    // Enough to cover the chests with the later runs' missions, but not with the currency in hand.
+    const before = projectRewards({ ...utharExample, progress: synced() })
+    const later =
+      before.currency!.futureMissions + before.currency!.futureBundles
+    const projection = projectRewards({
+      ...utharExample,
+      progress: synced({
+        currentCurrency: 120 + before.currency!.fromPoints + later - 100,
+      }),
+    })
+
+    expect(projection.currency?.fromPoints).toBeLessThanOrEqual(0)
+    expect(projection.points).toEqual({
+      state: "coveredByLaterRuns",
+      shortNow: 100,
+    })
+  })
+
   it("reports a goal beyond the chest ladder without currency or points", () => {
     // Uthar has 54 chests; owned at red 3 stars, 51 claimed and 25 shards need 4 more for 4 stars
     // (120): 55.
