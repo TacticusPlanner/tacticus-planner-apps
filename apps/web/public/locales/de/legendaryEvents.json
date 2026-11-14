@@ -42,7 +42,33 @@
     "syncedAgo": "Synchronisiert {{when}}",
     "neverSynced": "Noch nicht synchronisiert",
     "goToCurrentRun": "Zum aktuellen Lauf",
-    "goToNextRun": "Zum nächsten Lauf"
+    "goToNextRun": "Zum nächsten Lauf",
+    "current": {
+      "tokensLeft_one": "Noch {{count}} in diesem Durchlauf",
+      "tokensLeft_other": "Noch {{count}} in diesem Durchlauf",
+      "fromAds_one": "{{count}} aus Werbung",
+      "fromAds_other": "{{count}} aus Werbung",
+      "bonusDelivery_one": "{{count}} Bonuslieferung",
+      "bonusDelivery_other": "{{count}} Bonuslieferungen",
+      "unused_one": "{{count}} ohne spielbaren Kampf",
+      "unused_other": "{{count}} ohne spielbaren Kampf",
+      "resource": "Ressource",
+      "now": "Jetzt",
+      "end": "Ende Durchlauf {{run}}",
+      "endNext": "Ende nächster Durchlauf",
+      "gain": "+{{value}}",
+      "stepThisRun": "{{step}} bei Token {{token}} in diesem Durchlauf",
+      "then": "danach {{step}}, {{shards}} Splitter fehlen",
+      "later": "Nächstes: {{step}} · am Ende des Durchlaufs fehlen {{shards}} Splitter",
+      "laterAt": "erreicht bei Token {{token}} (Durchlauf {{run}})",
+      "rows": {
+        "points": "Punkte",
+        "currency": "Währung",
+        "chests": "Truhen",
+        "shards": "Splitter"
+      },
+      "gainEarned": "+{{value}} verdient"
+    }
   },
   "runInputs": {
     "button": "Eingaben",
@@ -831,11 +857,6 @@
       "tokens_one": "{{count}} Token",
       "tokens_other": "{{count}} Tokens",
       "openTeam": "Team {{team}} öffnen"
-    },
-    "summary": {
-      "nextStep": "{{step}} bei Token {{token}} (Durchlauf {{run}})",
-      "tokensLeft_one": "Noch {{count}} Token in diesem Durchlauf",
-      "tokensLeft_other": "Noch {{count}} Token in diesem Durchlauf"
     },
     "forecast": {
       "title": "Durchlaufprognose",

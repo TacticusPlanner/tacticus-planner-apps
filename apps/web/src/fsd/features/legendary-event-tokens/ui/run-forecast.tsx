@@ -318,35 +318,6 @@ function RunDetails({ run }: { run: RunForecast }) {
   )
 }
 
-/**
- * The run in progress (or the next one) from the Run forecast, for the run tab's Run status, so
- * the forecast reads without switching to Plan. Nothing while loading or without a forecast.
- */
-export function CurrentRunForecast({ view }: { view: TokenPlanView }) {
-  const { t } = useTranslation("legendaryEvents")
-  if (view.kind !== "ready" || !view.forecast) return null
-  const run = view.forecast.runs.find(
-    (entry) => entry.state === "now" || entry.state === "next"
-  )
-  if (!run) return null
-  return (
-    <section
-      aria-labelledby="run-status-forecast-title"
-      className="flex min-w-0 flex-col gap-2 border-t pt-3"
-      data-run={run.run}
-      data-testid="run-status-forecast"
-    >
-      <h3 className="text-sm font-semibold" id="run-status-forecast-title">
-        {t("tokenPlan.forecast.thisRun")}
-      </h3>
-      <RunDetails run={run} />
-      {view.milestoneGap?.run === run.run ? (
-        <MilestoneGapSection gap={view.milestoneGap} />
-      ) : null}
-    </section>
-  )
-}
-
 function RunBlock({
   run,
   gap,

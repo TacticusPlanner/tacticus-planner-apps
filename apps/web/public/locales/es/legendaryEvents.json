@@ -42,7 +42,33 @@
     "syncedAgo": "Sincronizado {{when}}",
     "neverSynced": "Aún sin sincronizar",
     "goToCurrentRun": "Ir a la ejecución actual",
-    "goToNextRun": "Ir a la próxima ejecución"
+    "goToNextRun": "Ir a la próxima ejecución",
+    "current": {
+      "tokensLeft_one": "Queda {{count}} en esta ronda",
+      "tokensLeft_other": "Quedan {{count}} en esta ronda",
+      "fromAds_one": "{{count}} de anuncios",
+      "fromAds_other": "{{count}} de anuncios",
+      "bonusDelivery_one": "{{count}} de entrega extra",
+      "bonusDelivery_other": "{{count}} de entrega extra",
+      "unused_one": "{{count}} sin batalla que jugar",
+      "unused_other": "{{count}} sin batalla que jugar",
+      "resource": "Recurso",
+      "now": "Ahora",
+      "end": "Fin de la ronda {{run}}",
+      "endNext": "Fin de la próxima ronda",
+      "gain": "+{{value}}",
+      "stepThisRun": "{{step}} en la ficha {{token}} de esta ronda",
+      "then": "después {{step}}, faltan {{shards}} fragmentos",
+      "later": "Siguiente: {{step}} · faltan {{shards}} fragmentos al final de la ronda",
+      "laterAt": "se alcanza en la ficha {{token}} (ronda {{run}})",
+      "rows": {
+        "points": "Puntos",
+        "currency": "Moneda",
+        "chests": "Cofres",
+        "shards": "Fragmentos"
+      },
+      "gainEarned": "+{{value}} ganados"
+    }
   },
   "runInputs": {
     "button": "Datos",
@@ -831,11 +857,6 @@
       "tokens_one": "{{count}} ficha",
       "tokens_other": "{{count}} fichas",
       "openTeam": "Abrir el equipo {{team}}"
-    },
-    "summary": {
-      "nextStep": "{{step}} en la ficha {{token}} (ronda {{run}})",
-      "tokensLeft_one": "Queda {{count}} ficha en esta ronda",
-      "tokensLeft_other": "Quedan {{count}} fichas en esta ronda"
     },
     "forecast": {
       "title": "Previsión por ronda",

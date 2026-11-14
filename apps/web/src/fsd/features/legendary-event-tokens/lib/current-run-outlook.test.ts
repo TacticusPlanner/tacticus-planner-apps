@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { planSummary } from "./plan-summary"
+import { currentRunOutlook } from "./current-run-outlook"
 import type { TokenPlanView } from "./token-plan-view"
 
 const marker = (steps: string[] = []) => ({ milestones: [], steps })
@@ -25,23 +25,23 @@ const view = (markers: ReturnType<typeof marker>[]) =>
     },
   }) as unknown as TokenPlanView
 
-describe("planSummary", () => {
-  it("names the current run's tokens and the token that reaches the next step", () => {
+describe("currentRunOutlook", () => {
+  it("reads the run in progress and the token that reaches the next step", () => {
     expect(
-      planSummary(
+      currentRunOutlook(
         view([marker(), marker(), marker(), marker(), marker(["unlock"])])
       )
-    ).toEqual({
-      tokensLeft: 3,
+    ).toMatchObject({
+      run: { run: 2, supply: { total: 3 } },
       nextStep: { step: "unlock", token: 5, run: 3 },
     })
   })
 
   it("has no step when no planned token reaches one", () => {
-    expect(planSummary(view([marker(), marker()]))?.nextStep).toBeNull()
+    expect(currentRunOutlook(view([marker(), marker()]))?.nextStep).toBeNull()
   })
 
   it("is null without a ready plan", () => {
-    expect(planSummary({ kind: "loading" })).toBeNull()
+    expect(currentRunOutlook({ kind: "loading" })).toBeNull()
   })
 })
