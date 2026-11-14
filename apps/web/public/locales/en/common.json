@@ -1960,6 +1960,7 @@
     "card": {
       "ladder": {
         "current": "Current",
+        "start": "Start",
         "taken": "Already a goal"
       },
       "range": {
@@ -1975,6 +1976,7 @@
         "decrease": "Lower {{track}}",
         "increase": "Raise {{track}}",
         "noChange": "No change",
+        "current": "Current {{level}}",
         "quickPicks": "{{track}}: quick picks"
       }
     },

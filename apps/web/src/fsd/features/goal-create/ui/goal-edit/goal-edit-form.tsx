@@ -54,16 +54,35 @@ import { abilityCapForProgression, isProgression } from "@workspace/game-domain"
  * revision keeps the owner's edits. Mounted only once the goal (and, for source pickers, the catalog)
  * has loaded, so the acquisition picker seeds from the saved goal.
  */
-/** The unit's current progression, for the Ability card's "Rarity cap": the synced roster entry, else
- * where the goal started. */
+/** The unit's live state from the synced roster: its progression (the Ability card's "Rarity cap"
+ * falls back to where the goal started) and the live rank, progression and ability levels the Rank
+ * and Ascension ladders mark Current and the Ability steppers count from (none when the roster has
+ * no entry, so the cards fall back to the goal's start). */
 function useUnitProgression(detail: GoalDetail) {
   const characters = readyData(usePlayerChunk("characters", chunkOrUndefined))
   const mows = readyData(usePlayerChunk("mows", chunkOrUndefined))
-  const roster = detail.entityType === "Mow" ? mows : characters
-  const synced = roster?.find((unit) => unit.unitId === detail.entityId)
-  if (synced) return synced.progressionIndex
+  const character =
+    detail.entityType === "Mow"
+      ? undefined
+      : characters?.find((unit) => unit.unitId === detail.entityId)
+  const synced =
+    character ?? mows?.find((unit) => unit.unitId === detail.entityId)
   const start = detail.config.progression?.start
-  return start && isProgression(start) ? start : "Common:None"
+  return {
+    progression:
+      synced?.progressionIndex ??
+      (start && isProgression(start) ? start : "Common:None"),
+    current: {
+      rank: character?.rank,
+      progression: synced?.progressionIndex,
+      ability: synced
+        ? {
+            active: synced.abilities[0]?.level ?? 1,
+            passive: synced.abilities[1]?.level ?? 1,
+          }
+        : undefined,
+    },
+  }
 }
 
 export function GoalEditForm({
@@ -242,6 +261,7 @@ export function GoalEditForm({
             <div className="col-span-full">
               <GoalEditTarget detail={detail}>
                 <GoalEditCard
+                  current={unitProgression.current}
                   detail={detail}
                   draft={draft.target}
                   farmingStrategy={draft.farmingStrategy}
@@ -264,7 +284,9 @@ export function GoalEditForm({
                   ownedQuantities={ownedQuantities}
                   portalContainer={portalContainer}
                   previews={previews}
-                  rarityCap={abilityCapForProgression(unitProgression)}
+                  rarityCap={abilityCapForProgression(
+                    unitProgression.progression
+                  )}
                   sources={sourcesField}
                   takenKeys={takenKeys}
                   units={catalog}

@@ -29,6 +29,7 @@ export function AbilityGoalCard({
   mode,
   entityType,
   start,
+  current,
   value,
   onChange,
   rarityCap,
@@ -43,6 +44,8 @@ export function AbilityGoalCard({
   mode: "create" | "edit"
   entityType: "Character" | "Mow"
   start: AbilityTargetPair
+  /** The unit's live ability levels from the synced roster (Edit goal), when known. */
+  current?: AbilityTargetPair
   value: AbilityTargetPair
   onChange: (value: AbilityTargetPair) => void
   /** The ability cap of the unit's current rarity ("Rarity cap"). */
@@ -66,6 +69,7 @@ export function AbilityGoalCard({
         <div className="grid gap-3 sm:grid-cols-2">
           <AbilityLevelStepper
             fieldProps={targetProps}
+            current={current?.active}
             label={t(labels.active)}
             onChange={(active) => onChange({ ...value, active })}
             rarityCap={rarityCap}
@@ -78,6 +82,7 @@ export function AbilityGoalCard({
               "aria-invalid": targetProps["aria-invalid"],
               "aria-describedby": targetProps["aria-describedby"],
             }}
+            current={current?.passive}
             label={t(labels.passive)}
             onChange={(passive) => onChange({ ...value, passive })}
             rarityCap={rarityCap}

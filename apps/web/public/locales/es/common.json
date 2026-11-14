@@ -1960,6 +1960,7 @@
     "card": {
       "ladder": {
         "current": "Actual",
+        "start": "Inicio",
         "taken": "Ya es un objetivo"
       },
       "range": {
@@ -1975,6 +1976,7 @@
         "decrease": "Bajar {{track}}",
         "increase": "Subir {{track}}",
         "noChange": "Sin cambios",
+        "current": "Actual {{level}}",
         "quickPicks": "{{track}}: selección rápida"
       }
     },

@@ -10,12 +10,14 @@ import { TargetLadder } from "./target-ladder"
 
 function RankLadder({
   start,
+  current,
   initial,
   taken = [],
   startSelectable,
   onChange,
 }: {
   start: string
+  current?: string
   initial: string
   taken?: string[]
   startSelectable?: boolean
@@ -25,6 +27,7 @@ function RankLadder({
   const [value, setValue] = useState(initial)
   return (
     <TargetLadder
+      currentKey={current}
       label="Target rank"
       onChange={(key) => {
         setValue(key)
@@ -52,6 +55,14 @@ describe("TargetLadder", () => {
 
     expect(radio("Gold II, Current")).not.toHaveAttribute("aria-disabled")
     expect(radio("Gold I")).toHaveAttribute("aria-disabled", "true")
+  })
+
+  it("marks the live step Current and the goal's start Start once the unit has progressed", () => {
+    render(<RankLadder current="Gold2" initial="Diamond1" start="Gold1" />)
+
+    expect(radio("Gold I, Start")).toHaveAttribute("aria-disabled", "true")
+    expect(radio("Gold II, Current")).not.toHaveAttribute("aria-disabled")
+    expect(screen.getAllByRole("radio", { name: /Current/ })).toHaveLength(1)
   })
 
   it("marks Incisus' Current step, the taken steps, the selection and the range between", () => {

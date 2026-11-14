@@ -6,6 +6,8 @@ import {
   maxAbilityLevel,
   rankAt,
   rankOrder,
+  type Progression,
+  type Rank,
   type UpgradeId,
 } from "@workspace/game-domain"
 import type { MowStorageModel } from "@workspace/game-catalog"
@@ -60,6 +62,7 @@ const abilityLevelOptions = Array.from(
  */
 export function GoalEditCard({
   detail,
+  current,
   draft,
   onChange,
   issues,
@@ -78,6 +81,13 @@ export function GoalEditCard({
   links,
 }: {
   detail: GoalDetail
+  /** The unit's live rank and progression from the synced roster, for the ladders' Current marker
+   * (the goal's stored start may be behind it once the unit has progressed). */
+  current?: {
+    rank?: Rank
+    progression?: Progression
+    ability?: { active: number; passive: number }
+  }
   draft: GoalTargetDraft | null
   onChange: (draft: GoalTargetDraft) => void
   issues: readonly GoalFormIssueView[]
@@ -142,6 +152,7 @@ export function GoalEditCard({
             })
           }}
           onFarmingStrategyChange={onFarmingStrategyChange}
+          current={current?.rank}
           preview={resourcePreview}
           start={start}
           takenKeys={takenKeys}
@@ -153,6 +164,7 @@ export function GoalEditCard({
       const start = detail.config.progression?.start
       return (
         <AscensionGoalCard
+          current={current?.progression}
           issues={issues}
           mode="edit"
           note={note}
@@ -183,6 +195,7 @@ export function GoalEditCard({
       }
       return (
         <AbilityGoalCard
+          current={current?.ability}
           entityType={detail.entityType === "Mow" ? "Mow" : "Character"}
           issues={issues}
           mode="edit"

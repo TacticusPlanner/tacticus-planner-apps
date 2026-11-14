@@ -39,6 +39,7 @@ export type RankTargetValue = { end: Rank; additional: RankAdditionalTarget }
 export function RankGoalCard({
   mode,
   start,
+  current,
   value,
   onChange,
   additionalTargetChoices,
@@ -55,6 +56,8 @@ export function RankGoalCard({
 }: {
   mode: "create" | "edit"
   start: Rank
+  /** The unit's live rank, when known and different from the start (Edit goal). */
+  current?: Rank
   value: RankTargetValue
   onChange: (value: RankTargetValue) => void
   additionalTargetChoices: readonly RankAdditionalTarget[]
@@ -103,6 +106,7 @@ export function RankGoalCard({
         <TargetLadder
           fieldProps={fieldIssueProps(issues, "Rank", "target")}
           label={t("goals.create.rank.target")}
+          currentKey={current}
           onChange={(key) => onChange({ ...value, end: key as Rank })}
           startKey={start}
           startSelectable={start !== lastRank}

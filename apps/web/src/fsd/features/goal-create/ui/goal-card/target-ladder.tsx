@@ -16,6 +16,8 @@ export type LadderStep = {
 type StepState = {
   index: number
   current: boolean
+  /** The goal's start, when the unit has since moved past it (else the start is the current step). */
+  start: boolean
   taken: boolean
   selected: boolean
   inRange: boolean
@@ -24,7 +26,8 @@ type StepState = {
 
 /**
  * A track's steps as one radio group, grouped by tier (goal-target-editing: targets are picked on a
- * ladder). The start is marked Current, steps an in-flight goal already holds are marked "Already a
+ * ladder). The unit's current step is marked Current (the start, unless an edited goal's unit has
+ * since progressed past it, which then marks its start Start), steps an in-flight goal already holds are marked "Already a
  * goal", and the steps from the start to the selected one are highlighted. Steps at or below the start
  * and taken steps stay announced but `aria-disabled`. Arrow keys move between selectable steps (one
  * tab stop, a roving tabindex); Enter or Space selects. Tiers share one wrapping row at 768px and
@@ -33,6 +36,7 @@ type StepState = {
 export function TargetLadder({
   steps,
   startKey,
+  currentKey,
   valueKey,
   takenKeys,
   onChange,
@@ -43,6 +47,8 @@ export function TargetLadder({
 }: {
   steps: readonly LadderStep[]
   startKey: string
+  /** The unit's live step, when it differs from the start (an edited goal made progress). */
+  currentKey?: string
   valueKey: string
   takenKeys: ReadonlySet<string>
   onChange: (key: string) => void
@@ -60,13 +66,17 @@ export function TargetLadder({
   const { t } = useTranslation()
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
   const startIndex = steps.findIndex((step) => step.key === startKey)
+  const currentIndex = steps.findIndex(
+    (step) => step.key === (currentKey ?? startKey)
+  )
   const valueIndex = steps.findIndex((step) => step.key === valueKey)
 
   const states: StepState[] = steps.map((step, index) => {
     const taken = step.key !== valueKey && takenKeys.has(step.key)
     return {
       index,
-      current: index === startIndex,
+      current: index === currentIndex,
+      start: index === startIndex && index !== currentIndex,
       taken,
       selected: index === valueIndex,
       inRange:
@@ -125,9 +135,11 @@ export function TargetLadder({
               const step = steps[state.index]!
               const note = state.current
                 ? t("goals.card.ladder.current")
-                : state.taken
-                  ? t("goals.card.ladder.taken")
-                  : null
+                : state.start
+                  ? t("goals.card.ladder.start")
+                  : state.taken
+                    ? t("goals.card.ladder.taken")
+                    : null
               return (
                 <button
                   aria-checked={state.selected}
