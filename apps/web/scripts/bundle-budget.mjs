@@ -32,8 +32,9 @@ const ROUTES = {
   "/home": { budgetKb: 2000, modules: ["src/fsd/pages/home/index.ts"] },
   // 1320: the shell's lazy Legendary Event settings button (its loader and preload list) took the
   // route from 1310 to 1311 KB.
+  // 1325: the sign-in step journal (shared/auth/auth-journal) took the route to 1322 KB.
   "/library/characters": {
-    budgetKb: 1320,
+    budgetKb: 1325,
     modules: [
       "src/fsd/pages/library/ui/library-page.tsx",
       "src/fsd/pages/library/ui/characters/characters-list-page.tsx",
