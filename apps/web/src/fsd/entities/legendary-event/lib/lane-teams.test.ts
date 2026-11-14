@@ -86,13 +86,18 @@ describe("impactTeams / teamReaches", () => {
 })
 
 describe("teamUnitIdsByLane", () => {
-  it("collects members and reserves per lane, incomplete teams included", () => {
+  it("collects members and reserves per lane, leaving incomplete teams out", () => {
     const byLane = teamUnitIdsByLane([
       team,
       {
         laneId: "beta",
-        memberUnitIds: ["bloodDante"],
+        memberUnitIds: ["bloodDante", "bloodMephiston", "bloodSanguinor"],
         reserveUnitId: null,
+      },
+      {
+        laneId: "gamma",
+        memberUnitIds: ["ultraCalgar", "ultraTitus"],
+        reserveUnitId: "ultraTigurius",
       },
     ])
     expect([...byLane.alpha].sort()).toEqual([
@@ -101,7 +106,11 @@ describe("teamUnitIdsByLane", () => {
       "ultraTigurius",
       "ultraTitus",
     ])
-    expect([...byLane.beta]).toEqual(["bloodDante"])
+    expect([...byLane.beta]).toEqual([
+      "bloodDante",
+      "bloodMephiston",
+      "bloodSanguinor",
+    ])
     expect(byLane.gamma.size).toBe(0)
   })
 })

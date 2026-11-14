@@ -75,7 +75,8 @@ export function teamReaches(
 
 /**
  * The units each lane's teams use, members and reserve alike, for the leaderboards' "Only in my
- * teams" filter. Incomplete teams count too: picking a unit is the plan to use it.
+ * teams" filter. An incomplete team (fewer than three members) is left out, as in the Master
+ * Table's In teams.
  */
 export function teamUnitIdsByLane(
   teams: readonly Pick<
@@ -88,7 +89,7 @@ export function teamUnitIdsByLane(
     beta: new Set(),
     gamma: new Set(),
   }
-  for (const team of teams) {
+  for (const team of teams.filter(isCompleteTeam)) {
     const units = byLane[team.laneId]
     for (const unitId of team.memberUnitIds) units.add(unitId)
     if (team.reserveUnitId) units.add(team.reserveUnitId)

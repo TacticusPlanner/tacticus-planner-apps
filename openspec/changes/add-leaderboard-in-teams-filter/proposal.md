@@ -7,7 +7,7 @@ No companion API change: the plan's teams are already read on the page.
 ## What Changes
 
 - The leaderboards' Filters panel gains an **Only in my teams** switch (default off), next to "Only unlocked".
-- On a lane leaderboard it keeps the units that lane's teams use, as a member or as the reserve. On the cross-lane leaderboard it keeps the units the teams of the lanes its own lane selector shows use. Incomplete teams count.
+- On a lane leaderboard it keeps the units that lane's teams use, as a member or as the reserve. On the cross-lane leaderboard it keeps the units the teams of the lanes its own lane selector shows use. Incomplete teams (fewer than three members) are left out, as in the Master Table's In teams.
 - It counts as an active filter on the Filters button, shares state with the other filters (all lanes and the Overview, reset on leaving the page) and combines with them.
 - While the plan is unavailable (signed out, loading, failed) the switch is disabled and filters nothing.
 - When it leaves no rows, the body says "Your teams here have no units yet."
