@@ -722,6 +722,8 @@
       "reasons": {
         "mostPoints": "Le plus de points disponibles maintenant",
         "mostPointsPlayableNow": "Le plus de points parmi les combats jouables maintenant",
+        "safestToMilestone": "Le combat le plus sûr qui atteint encore le palier {{milestone}} pendant cette manche",
+        "safestToStep": "Le combat le plus sûr qui atteint encore {{step}} (palier {{milestone}}) pendant cette manche",
         "missionsOrder": "Termine au plus tôt les missions ouvertes de cette manche, pour les mêmes points de manche"
       },
       "upcoming": "{{reason}} pour le début de la manche {{run}}",

@@ -722,6 +722,8 @@
       "reasons": {
         "mostPoints": "Die meisten Punkte, die jetzt verfügbar sind",
         "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst",
+        "safestToMilestone": "Sicherster Kampf, der in diesem Durchlauf noch Meilenstein {{milestone}} erreicht",
+        "safestToStep": "Sicherster Kampf, der in diesem Durchlauf noch {{step}} (Meilenstein {{milestone}}) erreicht",
         "missionsOrder": "Schließt die offenen Missionen dieses Durchlaufs am frühesten ab, bei gleichen Durchlaufpunkten"
       },
       "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",

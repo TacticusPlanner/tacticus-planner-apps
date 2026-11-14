@@ -722,6 +722,8 @@
       "reasons": {
         "mostPoints": "Most points available now",
         "mostPointsPlayableNow": "Most points among battles you can play now",
+        "safestToMilestone": "Safest battle that still reaches milestone {{milestone}} this run",
+        "safestToStep": "Safest battle that still reaches {{step}} (milestone {{milestone}}) this run",
         "missionsOrder": "Finishes this run's open missions soonest, for the same run points"
       },
       "upcoming": "{{reason}} for when run {{run}} starts",

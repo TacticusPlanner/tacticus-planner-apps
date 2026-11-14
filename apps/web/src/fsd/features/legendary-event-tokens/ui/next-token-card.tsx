@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import type { TFunction } from "i18next"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -20,7 +21,7 @@ import type {
 
 import { gainsFromProgress, type MissionGain } from "../lib/mission-gains"
 import type { TokenMissionStep } from "../lib/mission-order"
-import type { PlannedToken } from "../lib/token-plan"
+import type { NextTokenChoice, PlannedToken } from "../lib/token-plan"
 import {
   missionsNextToken,
   upNextTokens,
@@ -180,6 +181,7 @@ export function NextTokenCard({
               isMobile={isMobile}
               nextIndex={ordered.index}
               onViewPlan={onViewPlan}
+              runEnd={view.runEnd}
               steps={view.missionOrder?.steps}
               tokens={view.missionOrder?.tokens ?? []}
               total={view.plan.tokens.length}
@@ -197,7 +199,7 @@ export function NextTokenCard({
               run={run}
               chipOf={chipOf}
               gains={gainsFromProgress(view.missions?.progressed ?? [])}
-              reason={t(`tokenPlan.nextToken.reasons.${view.next.reason}`)}
+              reason={nextTokenReason(t, view.next)}
               token={view.next.token}
               view={view}
             />
@@ -206,6 +208,7 @@ export function NextTokenCard({
               isMobile={isMobile}
               nextIndex={view.next.index}
               onViewPlan={onViewPlan}
+              runEnd={view.runEnd}
               steps={undefined}
               tokens={view.plan.tokens}
               total={view.plan.tokens.length}
@@ -364,6 +367,7 @@ function UpNext({
   nextIndex,
   steps,
   total,
+  runEnd,
   isMobile,
   onViewPlan,
 }: {
@@ -374,11 +378,18 @@ function UpNext({
   /** Per token, the missions it moves (Missions order only). */
   steps: readonly (readonly TokenMissionStep[])[] | undefined
   total: number
+  /** The plan index the current run ends at: Up next stops at the run's tokens. */
+  runEnd: number | null
   isMobile: boolean
   onViewPlan: (() => void) | undefined
 }) {
   const { t } = useTranslation("legendaryEvents")
-  const upcoming = upNextTokens({ tokens }, { index: nextIndex })
+  const upcoming = upNextTokens(
+    { tokens },
+    { index: nextIndex },
+    undefined,
+    runEnd
+  )
   if (upcoming.length === 0) return null
   return (
     <section
@@ -420,6 +431,24 @@ function UpNext({
       </ol>
     </section>
   )
+}
+
+/** Why the Next token is next; the safest path names the milestone (and step) it still reaches. */
+function nextTokenReason(
+  t: TFunction<"legendaryEvents">,
+  next: NextTokenChoice
+) {
+  if (next.reason !== "safestToMilestone" || !next.goal) {
+    return t(`tokenPlan.nextToken.reasons.${next.reason}`)
+  }
+  return next.goal.step
+    ? t("tokenPlan.nextToken.reasons.safestToStep", {
+        milestone: next.goal.milestone,
+        step: t(`outlook.steps.${next.goal.step}`),
+      })
+    : t("tokenPlan.nextToken.reasons.safestToMilestone", {
+        milestone: next.goal.milestone,
+      })
 }
 
 function EmptyState({
