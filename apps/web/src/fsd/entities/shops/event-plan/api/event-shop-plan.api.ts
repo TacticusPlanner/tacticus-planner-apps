@@ -1,9 +1,9 @@
 import { apiClient, unwrap } from "@/shared/api"
 
-import {
-  toEventShopPlan,
-  type EventShopPlan,
-  type PutEventShopPlanRequestDto,
+import { toEventShopPlan } from "../model/plan.types"
+import type {
+  EventShopPlan,
+  PutEventShopPlanRequestDto,
 } from "../model/plan.types"
 
 /** The caller's plan for one event shop; a plan never written reads as revision 0 with no entries. */

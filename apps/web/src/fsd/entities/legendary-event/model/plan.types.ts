@@ -1,4 +1,5 @@
-import { apiIssue, type ApiSchemas } from "@/shared/api"
+import { apiIssue } from "@/shared/api"
+import type { ApiSchemas } from "@/shared/api"
 
 // `/api/v1/legendary-event-plans/{eventId}` (companion API changes add-legendary-event-teams, design
 // D8, and add-legendary-event-run-inputs, design D2, D4, D6). Every endpoint answers with the whole

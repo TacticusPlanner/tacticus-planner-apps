@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { startingProgression } from "@workspace/game-domain"
 
-import { bulkUnitKey, type BulkGoalUnit } from "@/features/goal-planning"
+import { bulkUnitKey } from "@/features/goal-planning"
+import type { BulkGoalUnit } from "@/features/goal-planning"
 import type { UnitTileUnit } from "@/entities/unit"
 
 /** A Collection unit as the bulk dialog plans it: its current values, or where it would start. */

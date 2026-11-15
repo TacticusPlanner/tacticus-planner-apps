@@ -1,6 +1,8 @@
-import { useEffect, type ReactNode } from "react"
+import { useEffect } from "react"
+import type { ReactNode } from "react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
-import { useMatches, type Params } from "react-router"
+import { useMatches } from "react-router"
+import type { Params } from "react-router"
 
 import { useIsAuthenticated } from "@azure/msal-react"
 
@@ -36,7 +38,7 @@ function toRoutePattern(pathname: string, params: Params): string {
 // Error text can carry request URLs; their query strings may hold ids or tokens, so they are cut.
 // A stack frame's trailing `:line:column` is kept: Error Tracking needs it to apply the source map.
 function withoutQueryStrings(text: string): string {
-  return text.replace(
+  return text.replaceAll(
     /(https?:\/\/[^\s?#)]+)[?#][^\s)]*?((?::\d+){1,2})?(?=[\s)]|$)/g,
     "$1$2"
   )

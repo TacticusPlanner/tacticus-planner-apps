@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { rankIndex, type Rank } from "@workspace/game-domain"
+import { rankIndex } from "@workspace/game-domain"
+import type { Rank } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
 

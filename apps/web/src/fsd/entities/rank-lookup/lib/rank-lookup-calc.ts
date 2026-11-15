@@ -156,7 +156,7 @@ export function aggregateBaseUpgrades(
     upgradeIds.map((id) => ({ id, amount: 1 })),
     upgradesById
   )
-  return [...counts.entries()].map(([id, count]) => ({ id, count }))
+  return [...counts].map(([id, count]) => ({ id, count }))
 }
 
 /**
@@ -170,7 +170,7 @@ export function aggregateBaseUpgradeAmounts(
   upgradesById: ReadonlyMap<UpgradeId, Upgrade>
 ): BaseUpgradeNeed[] {
   const counts = reduceToBaseUpgrades(entries, upgradesById)
-  return [...counts.entries()].map(([id, count]) => ({ id, count }))
+  return [...counts].map(([id, count]) => ({ id, count }))
 }
 
 /**
@@ -189,7 +189,7 @@ export function aggregateOwnedBaseUpgrades(
     [...appliedIds.map((id) => ({ id, amount: 1 })), ...inventoryUpgrades],
     upgradesById
   )
-  return [...counts.entries()].map(([id, count]) => ({ id, count }))
+  return [...counts].map(([id, count]) => ({ id, count }))
 }
 
 /**

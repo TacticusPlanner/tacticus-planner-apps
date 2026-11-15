@@ -1,11 +1,11 @@
-import {
-  doneMissionIndexes,
-  type LegendaryEventMission,
-  type LegendaryEventMissionTrack,
-  type LegendaryEventPlan,
-  type LegendaryEventRun,
-  type LegendaryEventRunInputValues,
-  type LegendaryEventRunResolution,
+import { doneMissionIndexes } from "@/entities/legendary-event"
+import type {
+  LegendaryEventMission,
+  LegendaryEventMissionTrack,
+  LegendaryEventPlan,
+  LegendaryEventRun,
+  LegendaryEventRunInputValues,
+  LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 
 /** How a run reads in the drawer: ended, in progress, or still to come. */

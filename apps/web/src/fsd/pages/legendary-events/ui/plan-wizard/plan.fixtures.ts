@@ -3,10 +3,12 @@ import type { Progression } from "@workspace/game-domain"
 import {
   buildLanePointsModel,
   buildSyncedLaneProgress,
-  type ClearEstimateConfig,
-  type LegendaryEventPlan,
-  type LegendaryEventProgress,
-  type LegendaryEventRosterUnit,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimateConfig,
+  LegendaryEventPlan,
+  LegendaryEventProgress,
+  LegendaryEventRosterUnit,
 } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"

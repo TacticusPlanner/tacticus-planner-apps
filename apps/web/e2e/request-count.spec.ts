@@ -9,7 +9,8 @@
  *   E2E_LEGENDARY_EVENT_ID=<eventId> VITE_APP_URL=<app-url> \
  *     pnpm --filter web exec playwright test
  */
-import { expect, test, type Page } from "@playwright/test"
+import { expect, test } from "@playwright/test"
+import type { Page } from "@playwright/test"
 
 type Count = { requests: number; bytes: number }
 

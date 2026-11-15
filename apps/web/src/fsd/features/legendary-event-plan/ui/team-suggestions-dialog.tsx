@@ -1,11 +1,5 @@
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react"
+import { useCallback, useEffect, useId, useRef, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
 import { characterIcon, lockIcon } from "@workspace/game-catalog"
@@ -20,8 +14,8 @@ import {
   ObjectiveIcon,
   objectiveClearedThrough,
   useObjectiveLabel,
-  type TeamSuggestion,
 } from "@/entities/legendary-event"
+import type { TeamSuggestion } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 import {
   EntityIcon,

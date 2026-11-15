@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 
-import { linkCandidates, type GoalDetail } from "@/entities/goal"
+import { linkCandidates } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 
 import type { UpgradeRanges } from "./goal-spec-builder"
 

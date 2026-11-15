@@ -1,8 +1,6 @@
 import { homeScreenEventInstanceKey } from "@/features/daily-raids"
-import {
-  deriveLegendaryEventLifecycle,
-  type LegendaryEventProgress,
-} from "@/entities/legendary-event"
+import { deriveLegendaryEventLifecycle } from "@/entities/legendary-event"
+import type { LegendaryEventProgress } from "@/entities/legendary-event"
 
 import type { CalendarWindow } from "./calendar-window"
 

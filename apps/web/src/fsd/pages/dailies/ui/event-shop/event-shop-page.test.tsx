@@ -1,7 +1,10 @@
 import { MemoryRouter, Outlet, Route, Routes, useLocation } from "react-router"
 import userEvent from "@testing-library/user-event"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import type { GameCatalogEventShop } from "@workspace/game-catalog"
+import type {
+  GameCatalogEventShop,
+  GameCatalogEventShopRecord,
+} from "@workspace/game-catalog"
 
 import type { EventShopPlan } from "@/entities/shops/event-plan"
 import type { RosterShopContext } from "@/features/shops/event-planner"
@@ -16,6 +19,7 @@ import {
   NOW,
   plan,
   runningEvent,
+  undatedEvent,
   upcomingEvent,
 } from "./event-shop.test-fixture"
 import { EventShopPage } from "./event-shop-page"
@@ -48,7 +52,7 @@ vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => registeredTour(steps),
 }))
 
-let events: GameCatalogEventShop[] | "loading" | "error" = []
+let events: GameCatalogEventShopRecord[] | "loading" | "error" = []
 const retryCatalog = vi.fn()
 vi.mock("@/shared/local-data", () => ({
   toById: <T extends { id: string }>(records: T[]) =>
@@ -218,6 +222,46 @@ describe("routes and page states", () => {
       "true"
     )
     expect(screen.getByTestId("event-shop-add-2")).toBeEnabled()
+  })
+})
+
+describe("event with no start date yet", () => {
+  it("keeps the running event as the default", async () => {
+    events = [runningEvent, undatedEvent]
+    renderPage("/dailies/event-shop")
+    await waitFor(() =>
+      expect(location()).toBe("/dailies/event-shop/october-2026")
+    )
+  })
+
+  it("opens the undated event when it is the only one", async () => {
+    events = [undatedEvent]
+    renderPage("/dailies/event-shop")
+    await waitFor(() =>
+      expect(location()).toBe("/dailies/event-shop/january-2027")
+    )
+  })
+
+  it("shows Start date TBA, its weeks and no days or cart", () => {
+    events = [runningEvent, undatedEvent]
+    renderPage("/dailies/event-shop/january-2027")
+    expect(screen.getByTestId("event-shop-status")).toHaveTextContent(
+      "header.tba"
+    )
+    expect(screen.getByTestId("event-shop-undated")).toHaveTextContent(
+      "undated.description"
+    )
+    expect(screen.getByText(/undated\.weeks.*"count":2/)).toBeInTheDocument()
+    expect(screen.queryByTestId("event-shop-day-0")).toBeNull()
+    expect(screen.queryByTestId("event-shop-add-2")).toBeNull()
+  })
+
+  it("names the undated event from the game text and its event month", () => {
+    events = [runningEvent, undatedEvent]
+    renderPage("/dailies/event-shop/january-2027")
+    expect(screen.getByTestId("event-shop-picker")).toHaveTextContent(
+      "eventMissions:events.January2027"
+    )
   })
 })
 

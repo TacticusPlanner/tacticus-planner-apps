@@ -1,6 +1,7 @@
 import type { TFunction } from "i18next"
 
-import { goalTargetLabel, type GoalDetail } from "@/entities/goal"
+import { goalTargetLabel } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 import { projectLastMembership } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 

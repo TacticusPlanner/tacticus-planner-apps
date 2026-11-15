@@ -250,7 +250,7 @@ async function renderUnit(
   } else if (player) {
     await seedPlayerData(player)
   }
-  const [pathname, search] = url.split("?")
+  const [pathname, search] = url.split("?", 2)
   const entry: InitialEntry = {
     pathname,
     search: search ? `?${search}` : "",

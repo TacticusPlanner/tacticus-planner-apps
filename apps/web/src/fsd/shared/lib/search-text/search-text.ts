@@ -6,9 +6,9 @@
 export function normalizeSearchText(text: string, locale?: string): string {
   return text
     .normalize("NFKD")
-    .replace(/\p{M}/gu, "")
+    .replaceAll(/\p{M}/gu, "")
     .toLocaleLowerCase(locale)
-    .replace(/[^\p{L}\p{N}]/gu, "")
+    .replaceAll(/[^\p{L}\p{N}]/gu, "")
 }
 
 /** Whether any of `names` contains `needle`, a query already put through {@link normalizeSearchText}. */

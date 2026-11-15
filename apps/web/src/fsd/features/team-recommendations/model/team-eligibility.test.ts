@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { unitIdSchema, type UnitId } from "@workspace/game-domain"
+import { unitIdSchema } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 

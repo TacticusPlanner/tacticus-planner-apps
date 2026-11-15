@@ -10,7 +10,8 @@ import {
   parseBattleEntry,
   parseQuestProgress,
 } from "./quest-progress"
-import { scoreQuest, type QuestBattleEntry } from "./quest-score"
+import { scoreQuest } from "./quest-score"
+import type { QuestBattleEntry } from "./quest-score"
 
 const scoring = questEventsFixture[0]!.scorePoints
 

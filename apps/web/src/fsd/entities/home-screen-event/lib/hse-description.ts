@@ -70,7 +70,7 @@ const byOrder = (order: readonly string[]) => (a: string, b: string) => {
 
 const humanize = (id: string) =>
   id
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replaceAll(/([a-z0-9])([A-Z])/g, "$1 $2")
     .replace(/^\w/, (c) => c.toUpperCase())
 
 function modeLabel(mode: string): HseText {

@@ -5,18 +5,21 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
-  type ReactNode,
 } from "react"
+import type { ReactNode } from "react"
 
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useQueryClient, type QueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
+import type { QueryClient } from "@tanstack/react-query"
 
 import {
   getManifestMetadata,
   getPlayerDataMetadata,
   PlayerDataRateLimitError,
-  type PlayerDataSyncProgress,
-  type PlayerDataSyncResult,
+} from "@workspace/player-data"
+import type {
+  PlayerDataSyncProgress,
+  PlayerDataSyncResult,
 } from "@workspace/player-data"
 
 import {
@@ -42,8 +45,10 @@ import {
   autoSyncIntervalMs,
   PlayerDataContext,
   PlayerDataProgressContext,
-  type PlayerDataContextValue,
-  type PlayerDataStatus,
+} from "@/shared/player-data-status"
+import type {
+  PlayerDataContextValue,
+  PlayerDataStatus,
 } from "@/shared/player-data-status"
 
 const progressStore = createProgressStore<PlayerDataSyncProgress>()

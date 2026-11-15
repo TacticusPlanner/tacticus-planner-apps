@@ -5,13 +5,15 @@ import {
   laneRosterPotential,
   potentialCellStates,
   teamReaches,
-  type LaneRosterPotential,
-  type LegendaryEvent,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
-  type LegendaryEventRun,
-  type LegendaryEventUnit,
-  type PotentialCellState,
+} from "@/entities/legendary-event"
+import type {
+  LaneRosterPotential,
+  LegendaryEvent,
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
+  LegendaryEventRun,
+  LegendaryEventUnit,
+  PotentialCellState,
 } from "@/entities/legendary-event"
 
 import type {

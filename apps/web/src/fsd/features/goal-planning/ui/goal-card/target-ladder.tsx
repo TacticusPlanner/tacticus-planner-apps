@@ -1,4 +1,5 @@
-import { useRef, useState, type KeyboardEvent, type ReactNode } from "react"
+import { useRef, useState } from "react"
+import type { KeyboardEvent, ReactNode } from "react"
 import { ChevronsLeftRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"

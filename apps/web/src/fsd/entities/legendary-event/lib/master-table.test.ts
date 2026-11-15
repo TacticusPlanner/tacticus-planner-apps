@@ -18,9 +18,8 @@ import {
   buildMasterTable,
   filterMasterTableRows,
   sortMasterTable,
-  type MasterTableEventInput,
-  type MasterTableInput,
 } from "./master-table"
+import type { MasterTableEventInput, MasterTableInput } from "./master-table"
 
 const units = legendaryEventCharacters as unknown as LegendaryEventUnit[]
 const dante = fixtureCharacter("bloodDante") as unknown as LegendaryEventUnit

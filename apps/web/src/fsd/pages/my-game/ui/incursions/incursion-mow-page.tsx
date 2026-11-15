@@ -21,8 +21,8 @@ import {
   tierCleared,
   tierRewards,
   tierStarCount,
-  type TierStars,
 } from "../../model/incursion-progress.model"
+import type { TierStars } from "../../model/incursion-progress.model"
 import type { Incursion, IncursionTier } from "../../model/incursions.model"
 import type { IncursionTierPlan } from "../../model/use-incursion-plans"
 import { IncursionEstimate } from "./incursion-estimate"
@@ -39,8 +39,8 @@ import {
   neighbours,
   tierGroups,
   useIncursionsOutlet,
-  type IncursionProgress,
 } from "./incursions-outlet"
+import type { IncursionProgress } from "./incursions-outlet"
 import { useTierName } from "./use-tier-name"
 
 const NO_STARS: TierStars = () => 0

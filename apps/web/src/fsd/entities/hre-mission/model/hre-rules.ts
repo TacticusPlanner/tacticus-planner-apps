@@ -4,7 +4,8 @@ import type {
 } from "@workspace/game-catalog"
 
 import type { HreMission, HreObjective, HreObjectiveKind } from "./hre-missions"
-import { HRE_RARITY_STEP_IDS, type HreRarityStepId } from "./hre-reward-tables"
+import { HRE_RARITY_STEP_IDS } from "./hre-reward-tables"
+import type { HreRarityStepId } from "./hre-reward-tables"
 
 /** A leaderboard bracket by its last position, with the daily currency payout and the week 1 and
  *  week 2 crates' currency and shards. */

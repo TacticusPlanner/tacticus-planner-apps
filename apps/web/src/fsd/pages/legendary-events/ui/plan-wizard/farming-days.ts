@@ -11,19 +11,19 @@ import {
   progressionOrder,
   progressionRarity,
   rankIndex,
-  type Progression,
-  type Rank,
-  type UnitId,
-  type UpgradeId,
+} from "@workspace/game-domain"
+import type {
+  Progression,
+  Rank,
+  UnitId,
+  UpgradeId,
 } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { CombinedGoalSpec, GoalDetail } from "@/entities/goal"
 import type { LegendaryEventRosterUnit } from "@/entities/legendary-event"
-import {
-  progressForAlliance,
-  type OnslaughtProgress,
-} from "@/entities/player-data-override"
+import { progressForAlliance } from "@/entities/player-data-override"
+import type { OnslaughtProgress } from "@/entities/player-data-override"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
@@ -31,12 +31,14 @@ import {
   createCraftedInventoryPool,
   createUnitCoverage,
   estimatePlan,
-  type EstimateResourceId,
-  type EstimateUpgrade,
-  type FarmingCharacter,
-  type FarmingUpgrade,
-  type GoalNeed,
-  type UpgradeNeed,
+} from "@/entities/goal-farming"
+import type {
+  EstimateResourceId,
+  EstimateUpgrade,
+  FarmingCharacter,
+  FarmingUpgrade,
+  GoalNeed,
+  UpgradeNeed,
 } from "@/entities/goal-farming"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]

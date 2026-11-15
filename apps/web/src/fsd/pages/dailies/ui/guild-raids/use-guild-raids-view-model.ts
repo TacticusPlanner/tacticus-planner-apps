@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react"
-import {
-  getPlayerDataMetadata,
-  type PlayerDataChunkDto,
-} from "@workspace/player-data"
+import { getPlayerDataMetadata } from "@workspace/player-data"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { useGuildRaidStatus } from "@/entities/guild-raid-status"
 import { useReadState } from "@/shared/lib"
@@ -11,8 +9,8 @@ import { usePlayerChunk } from "@/shared/local-data"
 import {
   buildGuildRaidResourcesView,
   buildGuildRaidStatusView,
-  type GuildRaidsViewModel,
 } from "./guild-raid-status-view-model"
+import type { GuildRaidsViewModel } from "./guild-raid-status-view-model"
 import { useGuildRaidCatalog } from "./use-guild-raid-catalog"
 
 // Re-renders live "in 2 hours" / "3 hours ago" style copy without polling any data source — matches

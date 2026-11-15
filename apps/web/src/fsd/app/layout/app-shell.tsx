@@ -10,10 +10,8 @@ import {
   PostHogProvider,
   UserJotProvider,
 } from "../providers"
-import {
-  CreateGoalLauncherProvider,
-  type CreateGoalPrefill,
-} from "@/features/goal-planning"
+import { CreateGoalLauncherProvider } from "@/features/goal-planning"
+import type { CreateGoalPrefill } from "@/features/goal-planning"
 
 import { GameCatalogInitGate } from "../boot/game-catalog-init-gate"
 import { HseLiveProvider } from "./hse-live-provider"
@@ -25,8 +23,8 @@ import {
   filterVisibleNavItems,
   subItemDescription,
   subItemLabel,
-  type NavItem,
 } from "./nav-items"
+import type { NavItem } from "./nav-items"
 import { resolveActiveNavigation } from "./resolve-active-navigation"
 import { createGoalScopeProjectId } from "./create-goal-scope"
 import { useDesktopMenuState } from "./use-desktop-menu-state"

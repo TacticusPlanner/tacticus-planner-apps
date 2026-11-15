@@ -5,7 +5,8 @@ import type {
 } from "@workspace/game-catalog"
 
 import type { ReadState } from "@/shared/lib"
-import { characterPowerAt, type UnitPowerContext } from "@/shared/unit-power"
+import { characterPowerAt } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 
 import {
@@ -14,9 +15,8 @@ import {
   equippableItems,
   itemStatLines,
   ladderRanks,
-  type PlayerCharacter,
-  type ShownValues,
 } from "./character-unit.view-model"
+import type { PlayerCharacter, ShownValues } from "./character-unit.view-model"
 
 const character = {
   id: "ultraTigurius",

@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Info } from "lucide-react"
 import { PL_MEDIUM } from "@workspace/game-catalog"

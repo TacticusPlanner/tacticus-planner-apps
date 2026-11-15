@@ -1,18 +1,14 @@
-import {
-  progressionRarity,
-  type Progression,
-  type Rank,
-  type Rarity,
-} from "@workspace/game-domain"
+import { progressionRarity } from "@workspace/game-domain"
+import type { Progression, Rank, Rarity } from "@workspace/game-domain"
 
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEvent,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventUnit,
-  type LegendaryEventUnitFilter,
+import { LEGENDARY_EVENT_LANE_IDS } from "../model/types"
+import type {
+  LegendaryEvent,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventRosterUnit,
+  LegendaryEventUnit,
+  LegendaryEventUnitFilter,
 } from "../model/types"
 import { isUnitAllowedOnLane, objectivesSatisfied } from "./objective-match"
 import type { LaneProgressView } from "./synced-lane-progress"

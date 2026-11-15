@@ -7,11 +7,8 @@ import {
   hseTeamsFixtureRead,
 } from "@/test/fixtures/hse-teams"
 
-import {
-  buildHreTeam,
-  type BuildHreTeamInput,
-  type HreTeam,
-} from "./hre-team-recommendations"
+import { buildHreTeam } from "./hre-team-recommendations"
+import type { BuildHreTeamInput, HreTeam } from "./hre-team-recommendations"
 import { anyUnitPowerFixture } from "@/test/fixtures/team-power"
 
 type Characters = Parameters<typeof hseTeamsFixtureRead>[0]

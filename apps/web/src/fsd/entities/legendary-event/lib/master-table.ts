@@ -7,36 +7,30 @@ import type {
   LegendaryEventRun,
   LegendaryEventTeam,
 } from "../model/plan.types"
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEvent,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventProgress,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventUnit,
+import { LEGENDARY_EVENT_LANE_IDS } from "../model/types"
+import type {
+  LegendaryEvent,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventProgress,
+  LegendaryEventRosterUnit,
+  LegendaryEventUnit,
 } from "../model/types"
 import {
   teamClearEstimate,
   teamEffectiveDepth,
   unitClearEstimate,
-  type ClearEstimateConfig,
-  type ClearEstimateRoster,
 } from "./clear-estimate"
+import type { ClearEstimateConfig, ClearEstimateRoster } from "./clear-estimate"
 import { teamDepthForRun } from "./current-run"
 import { buildLanePointsModel } from "./lane-points-model"
 import { isUnitAllowedOnLane } from "./objective-match"
-import {
-  buildSyncedLaneProgress,
-  type LaneProgressView,
-} from "./synced-lane-progress"
+import { buildSyncedLaneProgress } from "./synced-lane-progress"
+import type { LaneProgressView } from "./synced-lane-progress"
 import { derivedTeamCoverage } from "./team-coverage"
 import { isCompleteTeam } from "./team-size"
-import {
-  remainingLanePoints,
-  unitLanePotential,
-  type LaneUnitPotential,
-} from "./unit-potential"
+import { remainingLanePoints, unitLanePotential } from "./unit-potential"
+import type { LaneUnitPotential } from "./unit-potential"
 
 /** Which units the master table lists (design D3): every allowed unit, the owned ones, or the
  *  ones a selected event's plan holds in a team. */

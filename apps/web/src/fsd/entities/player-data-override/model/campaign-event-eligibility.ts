@@ -5,10 +5,8 @@
 
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import {
-  campaignEventTrackKey,
-  type EffectiveCampaignEventProgress,
-} from "./campaign-event-progress"
+import { campaignEventTrackKey } from "./campaign-event-progress"
+import type { EffectiveCampaignEventProgress } from "./campaign-event-progress"
 import { isStandingBattleFrontier, isStandingBattleReached } from "@/shared/lib"
 
 export type CampaignEventProgressEntry = EffectiveCampaignEventProgress

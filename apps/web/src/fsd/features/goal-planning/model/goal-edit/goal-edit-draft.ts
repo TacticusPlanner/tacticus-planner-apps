@@ -1,17 +1,17 @@
-import {
-  linkedGoalIdsOf,
-  type AcquisitionSource,
-  type EditGoalRequest,
-  type FarmingStrategy,
-  type GoalDetail,
+import { linkedGoalIdsOf } from "@/entities/goal"
+import type {
+  AcquisitionSource,
+  EditGoalRequest,
+  FarmingStrategy,
+  GoalDetail,
 } from "@/entities/goal"
 
 import {
   goalTargetDraftFromDetail,
   goalTargetEditFromDraft,
   isGoalTargetEditable,
-  type GoalTargetDraft,
 } from "../target-edit/goal-target-edit"
+import type { GoalTargetDraft } from "../target-edit/goal-target-edit"
 
 /** Everything the Edit goal dialog lets the owner change, held as one draft. `null` means the goal has
  * no such field (an Unlock goal has no target, a Completed goal no position, only Unlock/Ascension have

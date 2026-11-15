@@ -3,10 +3,10 @@ import type { UnitId } from "@workspace/game-domain"
 
 import { usePlayerChunk } from "@/shared/local-data"
 
-import {
-  computeGoalBlockers,
-  type GoalBlockers,
-  type PrerequisiteGoalLabel,
+import { computeGoalBlockers } from "../blockers/goal-blockers"
+import type {
+  GoalBlockers,
+  PrerequisiteGoalLabel,
 } from "../blockers/goal-blockers"
 import { implicitPrerequisiteBlockers } from "../blockers/implicit-prerequisite-blockers"
 import type {
@@ -41,10 +41,8 @@ import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "./goal-overview-metrics-defaults"
 import { computeGoalProgress } from "./goal-progress"
 import { milestoneSiblings, withMilestoneStart } from "./milestone-siblings"
 import type { GoalDetail } from "@/entities/goal"
-import {
-  computeLevelRequirementProgress,
-  type LevelRequirementProgress,
-} from "./level-requirement-progress"
+import { computeLevelRequirementProgress } from "./level-requirement-progress"
+import type { LevelRequirementProgress } from "./level-requirement-progress"
 
 export type GoalOverviewMetrics = {
   progress: GoalProgress

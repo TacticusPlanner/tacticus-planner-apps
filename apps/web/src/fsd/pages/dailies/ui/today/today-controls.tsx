@@ -5,8 +5,8 @@ import { ProjectSelect } from "@/entities/project"
 import {
   RaidsFiltersTrigger,
   TodayQuickFilterChips,
-  type useTodayQuickFilters,
 } from "@/features/daily-raids"
+import type { useTodayQuickFilters } from "@/features/daily-raids"
 
 import type { DailiesOutletContext } from "../dailies-layout"
 

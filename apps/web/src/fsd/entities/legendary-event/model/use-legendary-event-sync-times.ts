@@ -3,7 +3,8 @@ import {
   getPlayerDataMetadata,
 } from "@workspace/player-data"
 
-import { useReadState, type ReadState } from "./use-read-state"
+import { useReadState } from "./use-read-state"
+import type { ReadState } from "./use-read-state"
 
 export interface LegendaryEventSyncTimes {
   /** When player data last synced (the manifest's `syncedAt`), `null` before the first sync. */

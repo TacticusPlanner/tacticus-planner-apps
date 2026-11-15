@@ -2,7 +2,8 @@ import { useEffect } from "react"
 
 import { useAnalyticsActions } from "@/shared/analytics"
 
-import { nextTokenCardState, type TokenPlanView } from "../lib/token-plan-view"
+import { nextTokenCardState } from "../lib/token-plan-view"
+import type { TokenPlanView } from "../lib/token-plan-view"
 
 /** Reports `legendary_event_next_token_shown` once per page view and card state (design D9). */
 export function useNextTokenShown(eventId: string, view: TokenPlanView) {

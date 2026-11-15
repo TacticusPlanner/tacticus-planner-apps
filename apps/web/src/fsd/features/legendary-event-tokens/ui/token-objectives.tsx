@@ -5,8 +5,8 @@ import {
   defeatAllIcon,
   ObjectiveIcon,
   useObjectiveLabel,
-  type LegendaryEventLane,
 } from "@/entities/legendary-event"
+import type { LegendaryEventLane } from "@/entities/legendary-event"
 
 /** The cells a token clears: defeat-all as text, each objective with its icon (and name unless
  *  `compact`, where the name is the icon's tooltip). */

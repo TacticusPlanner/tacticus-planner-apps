@@ -4,20 +4,17 @@ import {
   maxAbilityLevel,
   progressionIndex,
   rankIndex,
-  type Progression,
-  type Rank,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalKind } from "@/entities/goal"
 
-import { milestoneOrderIssue, type GoalMilestones } from "./goal-milestones"
+import { milestoneOrderIssue } from "./goal-milestones"
+import type { GoalMilestones } from "./goal-milestones"
 
-import {
-  mowAbilityTrackLevel,
-  type RankAdditionalTarget,
-} from "@/entities/goal-farming"
+import { mowAbilityTrackLevel } from "@/entities/goal-farming"
+import type { RankAdditionalTarget } from "@/entities/goal-farming"
 import {
   getGoalValidationIssues,
   isAtMaxAbility,

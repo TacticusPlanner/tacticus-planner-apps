@@ -21,9 +21,11 @@ import {
   variationDamageTypes,
   variationMode,
   variationModeLabelKey,
-  type NpcEncounter,
-  type NpcEncounterLookup,
-  type NpcFilters,
+} from "@/entities/npc"
+import type {
+  NpcEncounter,
+  NpcEncounterLookup,
+  NpcFilters,
 } from "@/entities/npc"
 import { useMinuteNow } from "@/entities/legendary-event"
 import { useTourPageSteps } from "@/shared/tour"
@@ -38,12 +40,12 @@ import { useNpcEncounters } from "../../model/npcs/use-npc-encounters"
 import { useNpcsCatalog } from "../../model/npcs/use-npcs-catalog"
 import { NpcsMobilePage } from "./mobile/npcs-mobile-page"
 import { useNpcsTutorial } from "./npcs.tutorial"
-import {
-  npcPowerFigure,
-  type NpcFilterOptions,
-  type NpcListItem,
-  type NpcsPageViewProps,
-  type NpcVariationOption,
+import { npcPowerFigure } from "./npcs-page.view-model"
+import type {
+  NpcFilterOptions,
+  NpcListItem,
+  NpcsPageViewProps,
+  NpcVariationOption,
 } from "./npcs-page.view-model"
 
 const COLLECTION_PATH = "/library/npcs"

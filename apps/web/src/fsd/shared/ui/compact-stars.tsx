@@ -1,8 +1,5 @@
-import {
-  progressionVisual,
-  starsVisual,
-  type ProgressionVisual,
-} from "@workspace/game-catalog"
+import { progressionVisual, starsVisual } from "@workspace/game-catalog"
+import type { ProgressionVisual } from "@workspace/game-catalog"
 import type { Progression } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 

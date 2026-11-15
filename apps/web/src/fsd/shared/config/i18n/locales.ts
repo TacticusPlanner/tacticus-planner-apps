@@ -17,7 +17,7 @@ export const supportedLanguageCodes = supportedLocales.map(
 )
 
 export function getSupportedLanguage(language: string): SupportedLanguage {
-  const languageCode = language.split("-")[0]
+  const languageCode = language.split("-", 1)[0]
 
   if (supportedLanguageCodes.includes(languageCode as SupportedLanguage)) {
     return languageCode as SupportedLanguage

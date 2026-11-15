@@ -1,18 +1,18 @@
 import type { CharacterStorageModel } from "@workspace/game-catalog"
 import type { Rarity, UpgradeId } from "@workspace/game-domain"
 
-import {
-  resourceLabel,
-  selectFarmNodes,
-  type EstimateOutcome,
-  type EstimateResourceId,
-  type EstimateUpgrade,
-  type GoalInventoryAllocation,
-  type GoalNeed,
+import { resourceLabel, selectFarmNodes } from "@/entities/goal-farming"
+import type {
+  EstimateOutcome,
+  EstimateResourceId,
+  EstimateUpgrade,
+  GoalInventoryAllocation,
+  GoalNeed,
 } from "@/entities/goal-farming"
 import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 
-import { addRuns, farmingDays, type RunsByBattle } from "./plan-farming-days"
+import { addRuns, farmingDays } from "./plan-farming-days"
+import type { RunsByBattle } from "./plan-farming-days"
 import type {
   PlanInsightsBlocker,
   PlanInsightsBottleneck,
@@ -153,7 +153,7 @@ export function computeBottlenecks(params: {
     }
   }
 
-  const bottlenecks = [...farmable.entries()]
+  const bottlenecks = [...farmable]
     .map(([id, entry]) => ({
       id,
       label: label(id),

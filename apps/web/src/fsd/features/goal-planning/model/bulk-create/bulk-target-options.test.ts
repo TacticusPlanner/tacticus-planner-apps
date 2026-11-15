@@ -3,10 +3,8 @@ import {
   maxAbilityLevel,
   progressionIndex,
   rankIndex,
-  type Progression,
-  type Rank,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 
 import type { BulkGoalUnit } from "./bulk-goal-plan"
 import { bulkTargetOptions, snapUp } from "./bulk-target-options"

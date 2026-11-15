@@ -4,10 +4,12 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { ASCENSION_STEPS, type AscensionStep } from "@/entities/legendary-event"
+import { ASCENSION_STEPS } from "@/entities/legendary-event"
+import type { AscensionStep } from "@/entities/legendary-event"
 import { useUnitName } from "@/shared/unit-name"
 
-import { PlanWizard, type PlanWizardEntry } from "./plan-wizard"
+import { PlanWizard } from "./plan-wizard"
+import type { PlanWizardEntry } from "./plan-wizard"
 import { usePlanSource } from "./use-plan-source"
 
 const ENTRIES: readonly string[] = ["overview", "suggestions"]

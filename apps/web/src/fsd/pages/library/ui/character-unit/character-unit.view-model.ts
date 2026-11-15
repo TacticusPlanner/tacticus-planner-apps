@@ -4,9 +4,8 @@ import {
   rarityRank,
   rankOrder,
   startingProgression,
-  type Progression,
-  type Rank,
 } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 import type {
   CharacterStorageModel,
   EquipmentStorageModel,
@@ -14,14 +13,14 @@ import type {
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { ReadState } from "@/shared/lib"
-import {
-  characterPowerAt,
-  characterStatsAt,
-  type CharacterPowerValues,
-  type UnitPowerContext,
+import { characterPowerAt, characterStatsAt } from "@/shared/unit-power"
+import type {
+  CharacterPowerValues,
+  UnitPowerContext,
 } from "@/shared/unit-power"
 
-import { powerFigure, type PowerFigure } from "../unit/unit-power.model"
+import { powerFigure } from "../unit/unit-power.model"
+import type { PowerFigure } from "../unit/unit-power.model"
 
 export type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 

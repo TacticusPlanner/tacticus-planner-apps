@@ -4,8 +4,8 @@ import { deriveLegendaryEventLifecycle } from "./lifecycle"
 import {
   legendaryEventHasProgress,
   resolveLegendaryEventRuns,
-  type LegendaryEventRunResolutionInput,
 } from "./run-resolution"
+import type { LegendaryEventRunResolutionInput } from "./run-resolution"
 
 const at = (iso: string) => Date.parse(iso)
 const NOW = at("2026-10-16T00:00:00Z")

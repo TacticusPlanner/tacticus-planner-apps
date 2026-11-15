@@ -1,12 +1,15 @@
 import type { MowStorageModel } from "@workspace/game-catalog"
-import { rankAt, rankIndex, type UpgradeId } from "@workspace/game-domain"
+import { rankAt, rankIndex } from "@workspace/game-domain"
+import type { UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal/@x/goal-farming"
 
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
-import { uncoveredRankSlots, type AbilityCoverage } from "./goal-need"
-import { mowAbilityTrackLevel, type MowAbilityTrack } from "./mow-ability-calc"
+import { uncoveredRankSlots } from "./goal-need"
+import type { AbilityCoverage } from "./goal-need"
+import { mowAbilityTrackLevel } from "./mow-ability-calc"
+import type { MowAbilityTrack } from "./mow-ability-calc"
 import { targetUnitsInSlots } from "./slot-components"
 import { aggregateBaseUpgrades, rankUpSlotOccurrences } from "./upgrade-recipe"
 

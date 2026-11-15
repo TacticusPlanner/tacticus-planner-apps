@@ -1,13 +1,13 @@
 import type { AscensionStep } from "@/entities/legendary-event"
 
-import { forecastRuns, type Forecast, type ForecastInput } from "./run-forecast"
-import {
-  planTokens,
-  playableNowChoices,
-  type PlannedToken,
-  type TokenChoiceKey,
-  type TokenPlan,
-  type TokenPlanInput,
+import { forecastRuns } from "./run-forecast"
+import type { Forecast, ForecastInput } from "./run-forecast"
+import { planTokens, playableNowChoices } from "./token-plan"
+import type {
+  PlannedToken,
+  TokenChoiceKey,
+  TokenPlan,
+  TokenPlanInput,
 } from "./token-plan"
 import { splitPlanByRun } from "./token-runs"
 

@@ -4,14 +4,16 @@ import {
   impactTeams,
   isCompleteTeam,
   laneUpgradeImpact,
-  type LaneEstimateInputs,
-  type LanePointsModel,
-  type LaneProgressView,
-  type LegendaryEventLane,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
-  type LegendaryEventUnit,
-  type UpgradeImpact,
+} from "@/entities/legendary-event"
+import type {
+  LaneEstimateInputs,
+  LanePointsModel,
+  LaneProgressView,
+  LegendaryEventLane,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+  LegendaryEventUnit,
+  UpgradeImpact,
 } from "@/entities/legendary-event"
 
 /** The Upgrade impact section's body by data state (design D8). */

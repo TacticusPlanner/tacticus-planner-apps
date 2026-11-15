@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  buildLanePointsModel,
-  type LegendaryEventTeam,
-} from "@/entities/legendary-event"
+import { buildLanePointsModel } from "@/entities/legendary-event"
+import type { LegendaryEventTeam } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"

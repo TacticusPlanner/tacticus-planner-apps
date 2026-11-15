@@ -22,9 +22,8 @@ import {
   sortCrossLaneLeaderboard,
   sortLeaderboard,
   unitLanePotential,
-  type CrossLaneLeaderboardRow,
-  type LeaderboardRow,
 } from "./unit-potential"
+import type { CrossLaneLeaderboardRow, LeaderboardRow } from "./unit-potential"
 
 const alpha = lysanderEvent.alpha
 const alphaModel = buildLanePointsModel(alpha)

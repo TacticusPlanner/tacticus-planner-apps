@@ -1,4 +1,5 @@
-import { useState, type SubmitEvent } from "react"
+import { useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
@@ -19,7 +20,8 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { registerGuild, type RegisteredGuild } from "@/entities/guild"
+import { registerGuild } from "@/entities/guild"
+import type { RegisteredGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
 
 import { GuildApiKeySteps } from "./guild-api-key-steps"

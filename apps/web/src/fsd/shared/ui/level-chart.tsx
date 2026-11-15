@@ -6,8 +6,8 @@ import {
   chartY,
   formatCompact,
   formatPoint,
-  type ChartPoint,
 } from "./level-chart.model"
+import type { ChartPoint } from "./level-chart.model"
 
 const PLOT_WIDTH = 1000
 

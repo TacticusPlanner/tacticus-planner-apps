@@ -24,10 +24,8 @@ import type { RaidLocationTarget } from "../raid-location-name"
 import { RaidState } from "../raid-state"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
-import {
-  EventFarmOrderSwitch,
-  type HseListView,
-} from "./event-farm-order-switch"
+import { EventFarmOrderSwitch } from "./event-farm-order-switch"
+import type { HseListView } from "./event-farm-order-switch"
 import { EventGoalIcons } from "./event-goal-icons"
 import { EventLocationRow } from "./event-location-row"
 

@@ -10,11 +10,8 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  EventUnitChip,
-  useMissionLabel,
-  type EventUnitChipData,
-} from "@/entities/legendary-event"
+import { EventUnitChip, useMissionLabel } from "@/entities/legendary-event"
+import type { EventUnitChipData } from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
 
 import type { MissionGain } from "../lib/mission-gains"

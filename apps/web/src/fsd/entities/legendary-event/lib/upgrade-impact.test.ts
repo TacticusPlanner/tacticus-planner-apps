@@ -11,11 +11,8 @@ import {
   rosterUnit,
   workedInitialRarity,
 } from "./clear-estimate.fixtures"
-import {
-  laneUpgradeImpact,
-  type ImpactTeam,
-  type UpgradeImpactInput,
-} from "./upgrade-impact"
+import { laneUpgradeImpact } from "./upgrade-impact"
+import type { ImpactTeam, UpgradeImpactInput } from "./upgrade-impact"
 
 const ULTRAMARINES = 0
 const MELEE = 3

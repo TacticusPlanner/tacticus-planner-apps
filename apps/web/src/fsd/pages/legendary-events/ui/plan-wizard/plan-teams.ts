@@ -4,11 +4,13 @@ import {
   suggestLaneTeams,
   teamClearEstimate,
   teamDepthForRun,
-  type LegendaryEventLaneId,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
-  type TeamSuggestion,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventLaneId,
+  LegendaryEventRosterUnit,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+  TeamSuggestion,
 } from "@/entities/legendary-event"
 
 import type { PlanInputs, PlanLane } from "./plan-inputs"

@@ -1,8 +1,8 @@
-import {
-  resolveEventDaySlots,
-  type GameCatalogEventShop,
-  type ResolvedEventSlot,
-  type ResolveEventDaySlotsOptions,
+import { resolveEventDaySlots } from "@workspace/game-catalog"
+import type {
+  GameCatalogEventShop,
+  ResolvedEventSlot,
+  ResolveEventDaySlotsOptions,
 } from "@workspace/game-catalog"
 
 import { withoutFreebies } from "./freebie"

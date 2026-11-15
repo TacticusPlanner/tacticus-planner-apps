@@ -1,7 +1,5 @@
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEventLaneId,
-} from "@/entities/legendary-event"
+import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
+import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 
 /** Teams a lane needs before the event counts as planned. */
 const PLANNED_TEAMS_PER_LANE = 2

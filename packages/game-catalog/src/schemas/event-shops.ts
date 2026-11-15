@@ -5,7 +5,9 @@ import { shopSlotSchema } from "./shops"
 // Loose objects preserve unknown (server-added) fields and only fail on genuine shape/type breaks,
 // matching the rest of this package's schemas. Mirrors the API's served seasonal event shop shape
 // (TacticusPlanner.GameCatalog `GameCatalogEventShopView`): ids and structured values only; the client
-// names the event from `definitionId` and derives every date from `startUtc` + `dayCount`.
+// names the event from `definitionId` and derives every date from `startUtc` + `dayCount`. An event the
+// datamine ships before the calendar dates it is served with `startUtc` and `definitionId` null (start
+// date to be announced); its `dayCount` is then an estimate from its known weeks.
 
 // A reward as a type and an inclusive quantity range (`min === max` for a fixed amount).
 export const eventShopRewardRangeSchema = z.looseObject({
@@ -64,9 +66,9 @@ export const eventShopWeekSchema = z.looseObject({
 export const eventShopSchema = z.looseObject({
   id: z.string().min(1),
   eventKey: z.string().min(1),
-  definitionId: z.string().min(1),
+  definitionId: z.string().min(1).nullable(),
   currency: z.string().min(1),
-  startUtc: z.string().min(1),
+  startUtc: z.string().min(1).nullable(),
   dayCount: z.number().int().positive(),
   milestones: z.array(eventShopRewardTierSchema),
   weeks: z.array(eventShopWeekSchema).min(1),

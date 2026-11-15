@@ -7,8 +7,8 @@ import {
   eventFamilyStripeClass,
   eventFamilySurfaceClass,
   resolveEventFamily,
-  type EventFamily,
 } from "@/shared/lib"
+import type { EventFamily } from "@/shared/lib"
 import type { EventsCalendarDay } from "../../model/events-calendar.types"
 
 /** Only the families present in the visible range. */

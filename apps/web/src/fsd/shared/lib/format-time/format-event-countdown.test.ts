@@ -61,7 +61,7 @@ describe("formatEventCountdown", () => {
   it("is localized", () => {
     expect(formatEventCountdown(after(5 * DAY), NOW, "de")).toBe("5 Tage")
     expect(
-      formatEventCountdown(after(5 * DAY), NOW, "fr").replace(/\s/g, " ")
+      formatEventCountdown(after(5 * DAY), NOW, "fr").replaceAll(/\s/g, " ")
     ).toBe("5 jours")
     expect(formatEventCountdown(after(5 * DAY), NOW, "es")).toBe("5 días")
   })

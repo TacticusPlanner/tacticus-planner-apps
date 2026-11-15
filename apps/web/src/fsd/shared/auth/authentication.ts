@@ -10,20 +10,26 @@ import {
   LogLevel,
   PromptValue,
   PublicClientApplication,
-  type AccountInfo,
-  type AuthenticationResult,
-  type Configuration,
-  type EventMessage,
-  type IPublicClientApplication,
-  type RedirectRequest,
+} from "@azure/msal-browser"
+import type {
+  AccountInfo,
+  AuthenticationResult,
+  Configuration,
+  EventMessage,
+  IPublicClientApplication,
+  RedirectRequest,
 } from "@azure/msal-browser"
 
 import { getRequiredEnvironmentValue } from "../config/environment"
+import { getSignInMethod, isGeneratedUsername } from "./account-identity"
+import type { SignInMethod } from "./account-identity"
+import { hiddenFrameCannotSeeSession } from "./hidden-frame-support"
 import {
-  getSignInMethod,
-  isGeneratedUsername,
-  type SignInMethod,
-} from "./account-identity"
+  claimRedirectLock,
+  releaseRedirectLock,
+  reloadPage,
+  waitForRedirectLock,
+} from "./redirect-lock"
 import {
   authErrorCode,
   markRedirectPending,
@@ -270,7 +276,10 @@ async function completeRedirect(instance: PublicClientApplication) {
     ? ("quiet_renewal_returned" as const)
     : ("interactive_redirect_returned" as const)
   try {
-    const result = await instance.handleRedirectPromise()
+    const result = await instance.handleRedirectPromise().finally(
+      // Whatever came back, tabs waiting on this one's redirect can go on.
+      releaseRedirectLock
+    )
     if (result) {
       safeStorage.remove(QUIET_RENEWAL_KEY)
       recordAuthStep({ step: returnStep, outcome: "success" })
@@ -512,6 +521,7 @@ export function requestInteraction(): Promise<void> {
   request.catch(() => {
     // It never left the page: there is no response to wait for.
     takePendingRedirect()
+    releaseRedirectLock()
     if (interaction === request) interaction = null
   })
   return request
@@ -545,7 +555,7 @@ async function redirectToGoogle(
 // The quiet renewal's cooldown is left running: the pending-redirect marker already tells this
 // redirect's response apart from a quiet renewal's, and clearing it let the next load renew quietly
 // again before re-authenticating, which doubled every bounce.
-function startInteraction() {
+async function startInteraction(): Promise<void> {
   const instance = getAuthentication()
   const account = instance.getActiveAccount() ?? instance.getAllAccounts()[0]
   const hint = readAccountHint()
@@ -555,6 +565,13 @@ function startInteraction() {
       ? hintSignInMethod(hint)
       : undefined
   if (method) setAuthJournalMethod(method)
+  if (!(await claimRedirectLock())) {
+    recordAuthStep({
+      step: "interactive_redirect_skipped",
+      reason: "other_tab",
+    })
+    return waitForOtherTabThenReload()
+  }
   claimAutoRedirect()
   recordInteractiveRedirect("auto", {
     method: method ?? "unknown",
@@ -578,6 +595,14 @@ function startInteraction() {
     ...(hint ? { loginHint: hint.username } : {}),
     ...freshLoginPrompt(),
   })
+}
+
+/** Another tab is redirecting for the same session: wait for it to come back, then reload, which
+ *  restores from the tokens it saved to the shared cache (or, if it came back without any, lets this
+ *  tab try on its own). The returned promise never settles; the page reloads. */
+function waitForOtherTabThenReload(): Promise<never> {
+  void waitForRedirectLock().then(reloadPage)
+  return new Promise<never>(() => {})
 }
 
 /** Journals an interactive redirect that is about to leave the page (see auth-journal). */
@@ -618,11 +643,9 @@ async function restoreSession(
     const method = hintSignInMethod(hint)
     setAuthJournalMethod(method)
     if (method === "google") return skipSilentChecksForGoogle()
-    const outcome = await checkIdentityProviderSession(
-      instance,
-      silentHint(hint),
-      "hint"
-    )
+    const outcome = hiddenFrameCannotSeeSession()
+      ? skipHiddenFrame("hint")
+      : await checkIdentityProviderSession(instance, silentHint(hint), "hint")
     return outcome === "failed" ? renewQuietly(instance, null, hint) : outcome
   }
 
@@ -666,11 +689,13 @@ async function restoreSession(
   // Without an account/sid/loginHint, ssoSilent can't tell which session to restore once more
   // than one account is cached, and fails with an ambiguity error even though a valid session
   // exists for one of them.
-  const outcome = await checkIdentityProviderSession(
-    instance,
-    { account: cachedAccount },
-    "account"
-  )
+  const outcome = hiddenFrameCannotSeeSession()
+    ? skipHiddenFrame("account")
+    : await checkIdentityProviderSession(
+        instance,
+        { account: cachedAccount },
+        "account"
+      )
   return outcome === "failed"
     ? renewQuietly(instance, cachedAccount, readAccountHint())
     : outcome
@@ -683,6 +708,13 @@ async function restoreSession(
  *  that redirect; with only a hint, the user lands signed out as before. */
 function skipSilentChecksForGoogle(): SilentSignInOutcome {
   recordAuthStep({ step: "quiet_renewal_skipped", reason: "google" })
+  return "failed"
+}
+
+/** Browsers that keep the identity provider's cookies out of hidden frames go straight to the quiet
+ *  renewal (see hidden-frame-support). */
+function skipHiddenFrame(from: "account" | "hint"): SilentSignInOutcome {
+  recordAuthStep({ step: "restore_frame", outcome: "skipped", from })
   return "failed"
 }
 
@@ -703,6 +735,11 @@ async function renewQuietly(
   if (skipped) {
     recordAuthStep({ step: "quiet_renewal_skipped", reason: skipped })
     return "failed"
+  }
+  if (!(await claimRedirectLock())) {
+    recordAuthStep({ step: "quiet_renewal_skipped", reason: "other_tab" })
+    void waitForRedirectLock().then(reloadPage)
+    return "redirecting"
   }
   safeStorage.set(QUIET_RENEWAL_KEY, String(Date.now()))
   recordAuthStep({
@@ -737,6 +774,7 @@ async function renewQuietly(
   } catch (error) {
     console.warn("[MSAL] quiet session renewal could not start", error)
     takePendingRedirect()
+    releaseRedirectLock()
     if (interaction === request) interaction = null
     return "failed"
   }

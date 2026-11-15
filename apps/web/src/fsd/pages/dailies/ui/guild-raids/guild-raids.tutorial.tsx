@@ -2,7 +2,8 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Step } from "react-joyride"
 
-import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
+import { useTourPageSteps } from "@/shared/tour"
+import type { TourPageSteps } from "@/shared/tour"
 
 /** `hasActiveBoss` gates the exact-Meta step: its target only exists once a boss is active, and
  * react-joyride has no built-in recovery from a step whose target never appears. */

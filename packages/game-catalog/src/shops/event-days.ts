@@ -1,5 +1,6 @@
 import type {
   GameCatalogEventShop,
+  GameCatalogEventShopRecord,
   GameCatalogShopVariant,
 } from "../record-types"
 import type { ShopDayOfWeek } from "../schemas/shops"
@@ -31,6 +32,24 @@ export interface EventShopDay {
 }
 
 type EventTiming = Pick<GameCatalogEventShop, "startUtc" | "dayCount">
+
+/** True when the calendar dates the event; an undated one (start date to be announced) has no days yet. */
+export function isDatedEventShop(
+  event: GameCatalogEventShopRecord
+): event is GameCatalogEventShop {
+  return event.startUtc !== null && event.definitionId !== null
+}
+
+/** Dated events by start, then undated ones in served (month) order. */
+export function compareEventShopsByStart(
+  a: Pick<GameCatalogEventShopRecord, "startUtc">,
+  b: Pick<GameCatalogEventShopRecord, "startUtc">
+): number {
+  if (a.startUtc === null || b.startUtc === null) {
+    return Number(a.startUtc === null) - Number(b.startUtc === null)
+  }
+  return Date.parse(a.startUtc) - Date.parse(b.startUtc)
+}
 
 /** `floor((now − startUtc) / 1 day)`; negative before the event, ≥ `dayCount` after it. */
 export function eventDayIndex(event: EventTiming, now: number): number {

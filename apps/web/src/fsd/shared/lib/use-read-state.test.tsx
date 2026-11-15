@@ -4,11 +4,8 @@ import { describe, expect, it, vi } from "vitest"
 
 import { act, render, screen } from "@/test/render"
 
-import {
-  combineReadStates,
-  useReadState,
-  type ReadState,
-} from "./use-read-state"
+import { combineReadStates, useReadState } from "./use-read-state"
+import type { ReadState } from "./use-read-state"
 
 function Probe({ read }: { read: () => ReadState<string> }) {
   const state = read()

@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -11,13 +12,13 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 
-import {
-  crossLaneFigure,
-  type CrossLaneLeaderboardRow,
-  type LeaderboardFigure,
-  type LegendaryEvent,
-  type LegendaryEventLaneId,
-  type LegendaryEventUnit,
+import { crossLaneFigure } from "@/entities/legendary-event"
+import type {
+  CrossLaneLeaderboardRow,
+  LeaderboardFigure,
+  LegendaryEvent,
+  LegendaryEventLaneId,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
 import { LeaderboardControls } from "../leaderboard/leaderboard-controls"
@@ -28,8 +29,8 @@ import {
   LeaderboardRowActions,
   LeaderboardUnit,
   ObjectiveIndicator,
-  type LeaderboardAddToTeam,
 } from "../leaderboard/leaderboard-parts"
+import type { LeaderboardAddToTeam } from "../leaderboard/leaderboard-parts"
 import {
   crossLaneLeaderboardBody,
   leaderboardFigure,
@@ -38,19 +39,15 @@ import {
   shownTeamUnitIds,
   useLeaderboardUnitName,
   useObjectiveChips,
-  type ObjectiveChipGroup,
 } from "../leaderboard/leaderboard.view-model"
+import type { ObjectiveChipGroup } from "../leaderboard/leaderboard.view-model"
 import type {
   LeaderboardGoalsViewModel,
   LeaderboardViewModel,
   ProgressGridViewModel,
 } from "../legendary-event-page.view-model"
-import {
-  nextCrossLaneSort,
-  sortCrossLaneRows,
-  type CrossLaneSort,
-  type CrossLaneSortKey,
-} from "./cross-lane-sort"
+import { nextCrossLaneSort, sortCrossLaneRows } from "./cross-lane-sort"
+import type { CrossLaneSort, CrossLaneSortKey } from "./cross-lane-sort"
 import { LeaderboardLanePicker } from "./leaderboard-lane-picker"
 import { useLeaderboardLanes } from "./use-leaderboard-lanes"
 

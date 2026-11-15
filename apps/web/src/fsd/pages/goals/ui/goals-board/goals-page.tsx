@@ -35,6 +35,7 @@ import {
   seasonCutoffGoalId,
   useSeasonFit,
   GoalEditDialog,
+  goalRowFromSummary,
 } from "@/features/goal-planning"
 import { PendingMaterialSteps } from "@/features/v1-import"
 import {
@@ -45,7 +46,7 @@ import {
 } from "@/entities/planning-setting"
 import { usePersistedSelection } from "@/shared/lib"
 
-import { goalRowFromSummary, type GoalRow } from "@/features/goal-planning"
+import type { GoalRow } from "@/features/goal-planning"
 import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
 import { useProjects } from "@/entities/project"
@@ -67,7 +68,8 @@ import { GoalsOrderHint } from "./goals-order-hint"
 import { GoalsProjectScope } from "./goals-project-scope"
 import { GoalsMoveProjectGoalsButton } from "./goals-move-project-goals-button"
 import { useLevelRules } from "@/entities/goal-farming"
-import { buildCascadeContext, type SelectedXpBook } from "./goal-row-utils"
+import { buildCascadeContext } from "./goal-row-utils"
+import type { SelectedXpBook } from "./goal-row-utils"
 import { PageTourButton } from "@/shared/tour"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 

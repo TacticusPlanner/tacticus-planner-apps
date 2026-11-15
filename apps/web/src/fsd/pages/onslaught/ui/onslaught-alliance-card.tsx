@@ -1,8 +1,6 @@
 import { useTranslation } from "react-i18next"
-import {
-  onslaughtAllianceIcon,
-  type OnslaughtRewardStorageModel,
-} from "@workspace/game-catalog"
+import { onslaughtAllianceIcon } from "@workspace/game-catalog"
+import type { OnslaughtRewardStorageModel } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 import {
   Card,
@@ -20,12 +18,12 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import {
-  onslaughtSectors,
-  type OnslaughtAlliance,
-  type OnslaughtAllianceProgress,
-  type OnslaughtSector,
-  type OnslaughtTier,
+import { onslaughtSectors } from "@/entities/player-data-override"
+import type {
+  OnslaughtAlliance,
+  OnslaughtAllianceProgress,
+  OnslaughtSector,
+  OnslaughtTier,
 } from "@/entities/player-data-override"
 import { EntityIcon } from "@/shared/ui"
 

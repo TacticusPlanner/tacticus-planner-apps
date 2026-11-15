@@ -1,4 +1,5 @@
-import { useId, useState, type SubmitEvent } from "react"
+import { useId, useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, Copy } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -20,11 +21,8 @@ import {
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 
-import {
-  minutesUntil,
-  supportTraceId,
-  type StagingTransferMode,
-} from "../model/staging-transfer"
+import { minutesUntil, supportTraceId } from "../model/staging-transfer"
+import type { StagingTransferMode } from "../model/staging-transfer"
 import { dialogActionClassName } from "./dialog-action-slot"
 import { DialogAction } from "./dialog-actions"
 

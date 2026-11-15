@@ -15,7 +15,8 @@ import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-
 import { AbilityGoalCard } from "./ability-goal-card"
 import { AscensionGoalCard } from "./ascension-goal-card"
 import type { ResourcePreview } from "./card-parts"
-import { RankGoalCard, type RankTargetValue } from "./rank-goal-card"
+import { RankGoalCard } from "./rank-goal-card"
+import type { RankTargetValue } from "./rank-goal-card"
 import { UpgradeGoalCard } from "./upgrade-goal-card"
 
 const MODES = ["create", "edit"] as const

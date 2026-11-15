@@ -2,14 +2,16 @@ import {
   battlePowerRatio,
   memberPowers,
   teamPower,
-  type LegendaryEventAnnotationStatus,
-  type LegendaryEventLaneId,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventAnnotationStatus,
+  LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 import {
   depthEstimateContext,
   estimateSnapshot,
-  type DepthEstimateContext,
 } from "@/features/legendary-event-plan"
+import type { DepthEstimateContext } from "@/features/legendary-event-plan"
 import type { AnalyticsEvent } from "@/shared/analytics"
 
 import type { ClearEstimatesViewModel } from "./legendary-event-page.view-model"

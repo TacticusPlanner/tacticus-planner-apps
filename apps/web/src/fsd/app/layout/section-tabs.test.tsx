@@ -22,7 +22,8 @@ vi.mock("react-i18next", () => ({
 // `@/shared/config` module, which also calls `initReactI18next` at import time.
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
-import { navItems, type NavItem } from "./nav-items"
+import { navItems } from "./nav-items"
+import type { NavItem } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
 
 /** Reports the current pathname, and offers a Back control so a test can tell one pushed history

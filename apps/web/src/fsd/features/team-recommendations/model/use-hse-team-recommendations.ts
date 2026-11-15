@@ -1,18 +1,16 @@
 import { useMemo } from "react"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import {
-  type HseEventPointsState,
-  type HseInstance,
+import type {
+  HseEventPointsState,
+  HseInstance,
 } from "@/entities/home-screen-event"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import type { HseTeamsViewModel } from "./hse-team-recommendations.types"
-import {
-  buildHseTeamsViewModel,
-  type HseTeamsRead,
-} from "./hse-teams-view-model"
+import { buildHseTeamsViewModel } from "./hse-teams-view-model"
+import type { HseTeamsRead } from "./hse-teams-view-model"
 import { useTeamUnitPower } from "./use-team-unit-power"
 
 const toRoster = (roster: PlayerDataChunkDto<"characters"> | null) =>

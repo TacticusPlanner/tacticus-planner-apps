@@ -15,11 +15,8 @@ import {
   LeaderboardUnit,
   ObjectiveIndicator,
 } from "./leaderboard-parts"
-import {
-  useClearsText,
-  type LeaderboardClears,
-  type ObjectiveChip,
-} from "./leaderboard.view-model"
+import { useClearsText } from "./leaderboard.view-model"
+import type { LeaderboardClears, ObjectiveChip } from "./leaderboard.view-model"
 
 /** Mobile: one lane's leaderboard as row cards (portrait, name, rarity and rank, the actions menu
  *  in the corner, the objective icon indicators, the shown points figure and "Objectives: N ·

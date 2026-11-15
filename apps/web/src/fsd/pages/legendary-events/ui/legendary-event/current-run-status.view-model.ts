@@ -2,10 +2,8 @@ import type {
   AscensionStep,
   LegendaryEventRun,
 } from "@/entities/legendary-event"
-import {
-  currentRunOutlook,
-  type TokenPlanView,
-} from "@/features/legendary-event-tokens"
+import { currentRunOutlook } from "@/features/legendary-event-tokens"
+import type { TokenPlanView } from "@/features/legendary-event-tokens"
 
 import type { RunStatusViewModel } from "./legendary-event-page.view-model"
 

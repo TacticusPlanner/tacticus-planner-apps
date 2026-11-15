@@ -1,11 +1,8 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  ObjectiveIcon,
-  useObjectiveLabel,
-  type LegendaryEventLane,
-} from "@/entities/legendary-event"
+import { ObjectiveIcon, useObjectiveLabel } from "@/entities/legendary-event"
+import type { LegendaryEventLane } from "@/entities/legendary-event"
 
 /**
  * The picker's objective chips (design D1): the lane's objectives as multi-select toggles with

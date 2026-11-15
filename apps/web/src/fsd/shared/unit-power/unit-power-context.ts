@@ -6,15 +6,15 @@ import type {
   UnitPowerStorageModel,
   UpgradeStorageModel,
 } from "@workspace/game-catalog"
-import {
-  unitPowerTables,
-  type PowerCharacter,
-  type PowerItem,
-  type PowerMow,
-  type PowerNpc,
-  type PowerNpcRow,
-  type UnitPowerTables,
-  type UpgradeStat,
+import { unitPowerTables } from "@workspace/game-domain"
+import type {
+  PowerCharacter,
+  PowerItem,
+  PowerMow,
+  PowerNpc,
+  PowerNpcRow,
+  UnitPowerTables,
+  UpgradeStat,
 } from "@workspace/game-domain"
 
 /** Everything the power formula reads, indexed once from the catalog datasets. */

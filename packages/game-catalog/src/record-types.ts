@@ -91,7 +91,13 @@ export type GameCatalogEventsCalendarEntry = z.infer<
 export type GameCatalogShop = z.infer<typeof shopSchema>
 export type GameCatalogShopSlot = z.infer<typeof shopSlotSchema>
 export type GameCatalogShopVariant = z.infer<typeof shopVariantSchema>
-export type GameCatalogEventShop = z.infer<typeof eventShopSchema>
+/** A served event shop, dated or not (see `isDatedEventShop`). */
+export type GameCatalogEventShopRecord = z.infer<typeof eventShopSchema>
+/** An event shop the calendar dates: what the planner works with. */
+export type GameCatalogEventShop = GameCatalogEventShopRecord & {
+  definitionId: string
+  startUtc: string
+}
 export type GameCatalogEventShopWeek = z.infer<typeof eventShopWeekSchema>
 export type GameCatalogEventShopMission = z.infer<typeof eventShopMissionSchema>
 export type GameCatalogEventShopMissionChain = z.infer<

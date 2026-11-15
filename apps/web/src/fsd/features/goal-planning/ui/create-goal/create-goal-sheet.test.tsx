@@ -344,7 +344,7 @@ function seedCatalog() {
         id: "Stone-1",
         sector: "Stone",
         tier: 1,
-        regular: Array(5).fill({ min: 1, max: 1 }),
+        regular: new Array(5).fill({ min: 1, max: 1 }),
         mythic: { min: 1, max: 1 },
       },
     ],

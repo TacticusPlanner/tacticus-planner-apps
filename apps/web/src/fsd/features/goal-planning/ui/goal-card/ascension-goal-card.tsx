@@ -1,6 +1,8 @@
-import { useMemo, type ReactNode } from "react"
+import { useMemo } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { progressionIndex, type Progression } from "@workspace/game-domain"
+import { progressionIndex } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 
 import type { useProgressionPreview } from "../../model/goal-creation-form/use-progression-preview"
 import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"

@@ -6,9 +6,8 @@ import {
   COMPARE_PARAM,
   readCompareQuery,
   serializeCompare,
-  type CompareParamFixes,
-  type CompareQuery,
 } from "./compare-query"
+import type { CompareParamFixes, CompareQuery } from "./compare-query"
 
 export interface CompareQueryState {
   query: CompareQuery

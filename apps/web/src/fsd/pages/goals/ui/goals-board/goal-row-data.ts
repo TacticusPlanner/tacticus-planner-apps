@@ -1,11 +1,7 @@
 import type { TFunction } from "i18next"
 
-import {
-  NO_BLOCKERS,
-  UNKNOWN_PROGRESS,
-  type GoalOverviewMetrics,
-  type GoalRow,
-} from "@/features/goal-planning"
+import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "@/features/goal-planning"
+import type { GoalOverviewMetrics, GoalRow } from "@/features/goal-planning"
 import { formatGoalRemainingText } from "../shared/goal-remaining-text"
 import type { XpBookFigure } from "../shared/level-requirement-display"
 import {
@@ -14,8 +10,8 @@ import {
   estimateShopSpend,
   goalXpBookFigure,
   isReachedRow,
-  type GoalsListProps,
 } from "./goal-row-utils"
+import type { GoalsListProps } from "./goal-row-utils"
 
 /** The per-goal maps a row or card reads its own slice of. */
 export type GoalRowSources = Pick<

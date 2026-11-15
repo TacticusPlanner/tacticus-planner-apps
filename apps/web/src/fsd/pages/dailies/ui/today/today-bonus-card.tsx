@@ -3,7 +3,8 @@ import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
-import { RaidSchedule, type RaidLocationTarget } from "@/features/daily-raids"
+import { RaidSchedule } from "@/features/daily-raids"
+import type { RaidLocationTarget } from "@/features/daily-raids"
 
 import { TodayCard } from "./today-card"
 import { INSET_CARDS_CLASS_NAME } from "./today-plan-card"

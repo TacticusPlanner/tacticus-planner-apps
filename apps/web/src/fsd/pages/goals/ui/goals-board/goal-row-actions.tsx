@@ -13,19 +13,18 @@ import {
 import type { GoalStatus } from "@/entities/goal"
 
 import {
-  AddToAnotherProjectDialog,
-  type GoalMenuMoves,
-  type GoalRow,
-  type useGoalActions,
+  AddToAnotherProjectDialog
+  
+  
+  
 } from "@/features/goal-planning"
+import type {GoalMenuMoves, GoalRow, useGoalActions} from "@/features/goal-planning";
 import { DeleteGoalDialog } from ".//delete-goal-dialog"
 import { MoveToPriorityDialog } from "./move-to-priority-dialog"
-import { toggleGoalStatus, type CascadeContext } from "./goal-row-utils"
-import {
-  canRemoveFromProject,
-  removalMovesRow,
-  type ProjectRemoval,
-} from "./project-removal-flow"
+import { toggleGoalStatus } from "./goal-row-utils"
+import type { CascadeContext } from "./goal-row-utils"
+import { canRemoveFromProject, removalMovesRow } from "./project-removal-flow"
+import type { ProjectRemoval } from "./project-removal-flow"
 
 type MoveDirection = Exclude<keyof GoalMenuMoves, "priorityOrder">
 

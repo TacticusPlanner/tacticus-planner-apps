@@ -9,9 +9,8 @@ import {
   inventoryBaseUpgrades,
   rankUpReadiness,
   rankUpUpgradeIds,
-  type Character,
-  type Upgrade,
 } from "./rank-lookup-calc"
+import type { Character, Upgrade } from "./rank-lookup-calc"
 
 const upgradeId = upgradeIdSchema.parse
 const upgradeIds = (values: string[]) => values.map((value) => upgradeId(value))

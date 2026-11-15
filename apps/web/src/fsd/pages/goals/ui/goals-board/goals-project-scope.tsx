@@ -9,7 +9,8 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
+import { ProjectColorDot } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 import { orderDefaultFirst } from "@/features/project-management"
 
 type Props = {

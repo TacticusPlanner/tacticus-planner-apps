@@ -8,13 +8,12 @@ import {
   progressionRarity,
   rankIndex,
   rankOrder,
-  type Progression,
-  type Rank,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 import { ProgressionSelect, RankSelect, progressionText } from "@/shared/ui"
 
-import { UnitHeader, type ValuesMode } from "../unit/unit-header"
+import { UnitHeader } from "../unit/unit-header"
+import type { ValuesMode } from "../unit/unit-header"
 import type { ShownValues, UnitOwnership } from "./character-unit.view-model"
 
 export type { ValuesMode }

@@ -7,7 +7,8 @@
  * With the stack running:
  *   VITE_APP_URL=<app-url> pnpm --filter web exec playwright test library-units
  */
-import { expect, test, type Page } from "@playwright/test"
+import { expect, test } from "@playwright/test"
+import type { Page } from "@playwright/test"
 
 test.use({ storageState: { cookies: [], origins: [] } })
 
@@ -75,7 +76,7 @@ for (const section of sections) {
           errors.find((error) => /Error:/.test(error)) ??
           errors[0]
         failures.push(
-          `${path}: ${problem} — ${logged?.split("\n")[0] ?? "no error logged"}`
+          `${path}: ${problem} — ${logged?.split("\n", 1)[0] ?? "no error logged"}`
         )
         // The next unit reloads, so a stuck page or the error page cannot carry over.
         previousName = ""

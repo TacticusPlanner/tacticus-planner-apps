@@ -49,9 +49,8 @@ function useNamespaces(namespaces: readonly string[]) {
   const ready = list.every((namespace) => i18n.hasLoadedNamespace(namespace))
   const failed =
     ready &&
-    list.some(
-      (namespace) =>
-        !i18n.languages.some((lng) => i18n.hasResourceBundle(lng, namespace))
+    list.some((namespace) =>
+      i18n.languages.every((lng) => !i18n.hasResourceBundle(lng, namespace))
     )
 
   useEffect(() => {

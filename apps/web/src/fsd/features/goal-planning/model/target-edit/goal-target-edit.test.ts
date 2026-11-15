@@ -16,8 +16,8 @@ import {
   progressionEndOptionsFor,
   abilityLevelOptionsFor,
   withUpgradeRange,
-  type GoalTargetDraft,
 } from "./goal-target-edit"
+import type { GoalTargetDraft } from "./goal-target-edit"
 
 const emptyConfig: GoalConfig = {
   rank: null,

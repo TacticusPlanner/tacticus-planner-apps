@@ -1,5 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react"
-import i18next, { type BackendModule } from "i18next"
+import i18next from "i18next"
+import type { BackendModule } from "i18next"
 import { initReactI18next } from "react-i18next"
 import { describe, expect, it } from "vitest"
 

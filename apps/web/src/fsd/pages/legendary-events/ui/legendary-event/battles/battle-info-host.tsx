@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react"
+import { useCallback, useMemo, useState } from "react"
+import type { ReactNode } from "react"
 
 import type {
   LegendaryEvent,
@@ -6,10 +7,8 @@ import type {
   LegendaryEventLaneId,
   ReadState,
 } from "@/entities/legendary-event"
-import {
-  BattleInfoContext,
-  type OpenBattleInfo,
-} from "@/features/legendary-event-tokens"
+import { BattleInfoContext } from "@/features/legendary-event-tokens"
+import type { OpenBattleInfo } from "@/features/legendary-event-tokens"
 
 import type { ProgressGridViewModel } from "../legendary-event-page.view-model"
 import { BattleInfoDialog } from "./battle-info-dialog"

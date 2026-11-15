@@ -5,7 +5,8 @@ import type {
 
 import type { EventShopCartEntry } from "@/entities/shops/event-plan"
 
-import { resolveEntry, type ResolvedEntry } from "./entry"
+import { resolveEntry } from "./entry"
+import type { ResolvedEntry } from "./entry"
 
 type EntryState = "done" | "needsReview" | "upcoming"
 

@@ -4,8 +4,8 @@ import {
   Rank,
   rankIndex,
   rankOrder,
-  type Rank as RankType,
 } from "@workspace/game-domain"
+import type { Rank as RankType } from "@workspace/game-domain"
 
 import type { LevelRules } from "./level-rules"
 

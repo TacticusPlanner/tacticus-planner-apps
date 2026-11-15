@@ -23,8 +23,12 @@ import {
   battleProgressQueries,
   playerDataOverrideKey,
   updateBattleProgressOverrides,
-  type BattleProgressOverride,
-  type BattleProgressOverrides,
+  campaignEventProgressKey,
+  useEffectiveCampaignEventProgress,
+} from "@/entities/player-data-override"
+import type {
+  BattleProgressOverride,
+  BattleProgressOverrides,
 } from "@/entities/player-data-override"
 import { useRevisionedDraft } from "@/shared/api"
 import { combineReadStates, useCampaignDisplay } from "@/shared/lib"
@@ -50,20 +54,18 @@ import {
   withBattleProgress,
   withBest,
   withMedals,
-  type BattleMilestone,
-  type BattleProgress,
-  type BattleProgressRow,
-  type BattleTraits,
+} from "../model/battle-progress"
+import type {
+  BattleMilestone,
+  BattleProgress,
+  BattleProgressRow,
+  BattleTraits,
 } from "../model/battle-progress"
 import {
   lightningVictoryIcon,
   medalIcon,
   milestoneIcons,
 } from "../lib/battle-progress-icons"
-import {
-  campaignEventProgressKey,
-  useEffectiveCampaignEventProgress,
-} from "@/entities/player-data-override"
 import { OneTimeRewards } from "./one-time-rewards"
 
 const MEDALS = [0, 1, 2, 3] as const

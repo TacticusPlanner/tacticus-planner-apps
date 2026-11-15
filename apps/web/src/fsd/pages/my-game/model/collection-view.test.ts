@@ -4,17 +4,15 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import legendaryEventCharacters from "@/test/fixtures/legendary-event-characters.json"
 
-import {
-  defaultCollectionQuery,
-  type CollectionQuery,
-} from "./collection-query"
+import { defaultCollectionQuery } from "./collection-query"
+import type { CollectionQuery } from "./collection-query"
 import { ascensionLadder } from "./collection-quick-filters"
 
-import {
-  buildCollectionView,
-  type CollectionCatalog,
-  type CollectionRoster,
-  type CollectionLabels,
+import { buildCollectionView } from "./collection-view"
+import type {
+  CollectionCatalog,
+  CollectionRoster,
+  CollectionLabels,
 } from "./collection-view"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]

@@ -1,4 +1,5 @@
-import { useState, type CSSProperties } from "react"
+import { useState } from "react"
+import type { CSSProperties } from "react"
 import { useTranslation } from "react-i18next"
 import {
   Check,
@@ -21,26 +22,24 @@ import {
   MIN_TEAM_MEMBERS,
   ObjectiveIcon,
   useObjectiveLabel,
-  type LegendaryEventLane,
   EventUnitChip,
-  type EventUnitChipData,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventLane,
+  EventUnitChipData,
 } from "@/entities/legendary-event"
 import {
   ClearDepthField,
   depthEstimateContext,
   editStartsFromEstimate,
-  type DepthEstimateContext,
 } from "@/features/legendary-event-plan"
+import type { DepthEstimateContext } from "@/features/legendary-event-plan"
 import { useDebouncedCommit } from "@/shared/lib"
 import type { SortableRenderProps } from "@/shared/ui"
 
 import { PointsLeft, TeamPower } from "./team-card-figures"
-import {
-  depthBandClauses,
-  teamDepthBar,
-  type DepthBar,
-  type DepthTone,
-} from "./team-depth-bar"
+import { depthBandClauses, teamDepthBar } from "./team-depth-bar"
+import type { DepthBar, DepthTone } from "./team-depth-bar"
 import type { TeamCardViewModel } from "./teams.view-model"
 
 const FULL_TEAM = 5

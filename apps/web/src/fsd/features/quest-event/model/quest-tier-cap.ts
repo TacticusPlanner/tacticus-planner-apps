@@ -4,10 +4,8 @@ import {
   maxRankForProgression,
   progressionOrder,
   progressionRarity,
-  type Progression,
-  type Rank,
-  type Rarity,
 } from "@workspace/game-domain"
+import type { Progression, Rank, Rarity } from "@workspace/game-domain"
 
 /** What a tier's rarity cap clamps a deployed unit to (confirmed by Severyn): stars and rank,
  *  ability levels, and items (to the cap rarity's maximum item level). */

@@ -1,4 +1,5 @@
-import { Suspense, useEffect, type ReactNode } from "react"
+import { Suspense, useEffect } from "react"
+import type { ReactNode } from "react"
 import { ExternalLink, LogIn, Settings, UserPlus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"

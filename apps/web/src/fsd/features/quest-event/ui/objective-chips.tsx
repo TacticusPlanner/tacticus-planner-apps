@@ -4,7 +4,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { isRestrictingObjective } from "../model/quest-objectives"
 import type { QuestObjectiveBadge } from "../model/quest-team"
-import { useObjectiveWording, type Objective } from "./use-objective-wording"
+import { useObjectiveWording } from "./use-objective-wording"
+import type { Objective } from "./use-objective-wording"
 
 /**
  * A battle's bonus objectives as chips with their score. Lineup restrictions carry a marker icon and

@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react"
 import { useSearchParams } from "react-router"
-import {
-  progressionIndex,
-  rankIndex,
-  type Rarity,
-} from "@workspace/game-domain"
+import { progressionIndex, rankIndex } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 
 import { usePersistedSelection } from "@/shared/lib"
 
@@ -23,11 +20,13 @@ import {
   isCollectionRank,
   isCollectionRarity,
   isCollectionSort,
-  type CollectionGrouping,
-  type CollectionLayout,
-  type CollectionQuery,
-  type CollectionShardSource,
-  type CollectionSort,
+} from "./collection-query"
+import type {
+  CollectionGrouping,
+  CollectionLayout,
+  CollectionQuery,
+  CollectionShardSource,
+  CollectionSort,
 } from "./collection-query"
 import type { CollectionOptions } from "./use-collection-options"
 

@@ -9,17 +9,13 @@ import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset } from "@/shared/local-data"
 
 import type { GoalRow } from "../shared/types"
-import {
-  computeSeasonFits,
-  type GoalSeasonFit,
-  type SeasonFitMode,
-} from "./season-fit"
+import { computeSeasonFits } from "./season-fit"
+import type { GoalSeasonFit, SeasonFitMode } from "./season-fit"
 import {
   resolveSeasonWindows,
   SEASON_FIT_DEFINITION_TYPES,
-  type SeasonFitSeason,
-  type SeasonWindows,
 } from "./season-windows"
+import type { SeasonFitSeason, SeasonWindows } from "./season-windows"
 
 const SEASONS = Object.keys(SEASON_FIT_DEFINITION_TYPES) as SeasonFitSeason[]
 

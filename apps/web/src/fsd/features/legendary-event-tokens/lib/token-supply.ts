@@ -1,12 +1,14 @@
 import {
   LEGENDARY_EVENT_RUN_DURATION_MS,
   runInputValues,
-  type LegendaryEvent,
-  type LegendaryEventLifecycle,
-  type LegendaryEventProgress,
-  type LegendaryEventRun,
-  type LegendaryEventRunInputs,
-  type LegendaryEventRunResolution,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventLifecycle,
+  LegendaryEventProgress,
+  LegendaryEventRun,
+  LegendaryEventRunInputs,
+  LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 
 // Ported from V1 `LeTokenService` and `LeRoundOutcomeForecastService` token counts (design D6),

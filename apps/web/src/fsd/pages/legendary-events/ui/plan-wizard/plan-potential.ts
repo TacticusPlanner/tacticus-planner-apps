@@ -3,8 +3,10 @@ import {
   laneRosterPotential,
   potentialCellStates,
   teamReaches,
-  type ClearEstimateRoster,
-  type LegendaryEventRun,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimateRoster,
+  LegendaryEventRun,
 } from "@/entities/legendary-event"
 
 import type { LanePotentialsViewModel } from "../legendary-event/lane-potential.view-model"

@@ -13,10 +13,8 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import {
-  useGameCatalogStatus,
-  type GameCatalogStatus,
-} from "@/shared/game-catalog-status"
+import { useGameCatalogStatus } from "@/shared/game-catalog-status"
+import type { GameCatalogStatus } from "@/shared/game-catalog-status"
 
 const statusIcons: Record<GameCatalogStatus, typeof CheckCircle2> = {
   idle: CircleDashed,

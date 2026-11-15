@@ -1,4 +1,5 @@
-import { useEffect, type ReactNode } from "react"
+import { useEffect } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"

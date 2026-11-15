@@ -1,9 +1,5 @@
-import {
-  HRE_REORDERED_MISSIONS,
-  hreAllDone,
-  hreMission,
-  type HreMission,
-} from "./hre-missions"
+import { HRE_REORDERED_MISSIONS, hreAllDone, hreMission } from "./hre-missions"
+import type { HreMission } from "./hre-missions"
 import type { HreOwnedInput } from "./hre-pace"
 import { HRE_RARITY_STEP_IDS } from "./hre-reward-tables"
 

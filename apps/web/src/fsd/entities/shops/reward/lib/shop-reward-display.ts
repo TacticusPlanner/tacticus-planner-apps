@@ -17,8 +17,8 @@ import {
   curatedAssetUrl,
   datamineAssetUrl,
   goldIcon,
-  type GameIcon,
 } from "@workspace/game-catalog"
+import type { GameIcon } from "@workspace/game-catalog"
 import { unitIdSchema } from "@workspace/game-domain"
 
 // The V2 equivalent of V1's `3-features/shops/rewards` `rewardInfo` / `summarizeSlotItems`: resolves a
@@ -93,10 +93,10 @@ const XP_BOOK_INDEX: Record<RaritySuffix, number> = {
 function prettifyRewardType(rewardType: string): string {
   return rewardType
     .replace(/^[a-z]+_/, "")
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/[_-]/g, " ")
-    .replace(/\b\d+\b/g, "")
-    .replace(/\s+/g, " ")
+    .replaceAll(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replaceAll(/[_-]/g, " ")
+    .replaceAll(/\b\d+\b/g, "")
+    .replaceAll(/\s+/g, " ")
     .trim()
     .replace(/^\w/, (character) => character.toUpperCase())
 }

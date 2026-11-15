@@ -24,8 +24,10 @@ import {
   useDeleteRosterSnapshot,
   useKeepRosterSnapshot,
   useRenameRosterSnapshot,
-  type PersonalRosterSnapshot,
-  type PersonalRosterSnapshotList,
+} from "@/entities/roster-snapshot"
+import type {
+  PersonalRosterSnapshot,
+  PersonalRosterSnapshotList,
 } from "@/entities/roster-snapshot"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { formatRelativeTime } from "@/shared/lib"

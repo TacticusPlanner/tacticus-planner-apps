@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest"
 import type { BattleId } from "@workspace/game-domain"
 import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 
-import { selectTodayRaids, type TodayRaidsInput } from "./select-today-raids"
+import { selectTodayRaids } from "./select-today-raids"
+import type { TodayRaidsInput } from "./select-today-raids"
 
 function entry(overrides: Partial<RaidBreakdownEntry>): RaidBreakdownEntry {
   return {

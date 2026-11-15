@@ -2,14 +2,13 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 import type { CharacterStorageModel } from "@workspace/game-catalog"
-import {
-  rankIndex,
-  rarityRank,
-  type BattleId,
-  type CampaignId,
-  type Progression,
-  type Rank,
-  type UpgradeId,
+import { rankIndex, rarityRank } from "@workspace/game-domain"
+import type {
+  BattleId,
+  CampaignId,
+  Progression,
+  Rank,
+  UpgradeId,
 } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
@@ -19,17 +18,17 @@ import {
   appliedUpgradeIds,
   groupUpgradesByRank,
   rankUpUpgradeIds,
-  type Character,
-  type RecipeIngredient,
-  type UpgradeWithFarmLocations,
 } from "@/entities/rank-lookup"
-import {
-  characterDamageTypes,
-  useCampaignDisplay,
-  type Battle,
-} from "@/shared/lib"
+import type {
+  Character,
+  RecipeIngredient,
+  UpgradeWithFarmLocations,
+} from "@/entities/rank-lookup"
+import { characterDamageTypes, useCampaignDisplay } from "@/shared/lib"
+import type { Battle } from "@/shared/lib"
 import { computeCampaignInsights } from "@/entities/campaign-insight"
-import { characterStatsAt, type UnitPowerContext } from "@/shared/unit-power"
+import { characterStatsAt } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import type { LookupSelection } from "./use-lookup-selection"
 import type {

@@ -3,10 +3,8 @@ import { describe, expect, it, vi } from "vitest"
 
 import type { RaidBossListItem } from "@/entities/raid-boss"
 
-import {
-  RaidBossMobilePicker,
-  type RaidBossMobilePickerGroup,
-} from "./raid-boss-mobile-picker"
+import { RaidBossMobilePicker } from "./raid-boss-mobile-picker"
+import type { RaidBossMobilePickerGroup } from "./raid-boss-mobile-picker"
 
 function item(unitSetId: string, name: string): RaidBossListItem {
   return {

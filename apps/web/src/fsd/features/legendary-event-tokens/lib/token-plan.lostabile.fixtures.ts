@@ -1,6 +1,6 @@
-import {
+import type {
   buildLanePointsModel,
-  type LegendaryEventLaneId,
+  LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
 // `lostaBile` (Fabius Bile) lanes from the catalog source (tacticus-planner-api GameCatalog

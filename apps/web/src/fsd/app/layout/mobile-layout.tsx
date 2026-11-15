@@ -40,10 +40,8 @@ import { MobileNavLink } from "./mobile-nav-link"
 import { filterNavigationItems } from "./navigation-filter"
 import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
-import {
-  filterQuickActions,
-  type QuickActionsController,
-} from "./quick-actions"
+import { filterQuickActions } from "./quick-actions"
+import type { QuickActionsController } from "./quick-actions"
 import { QuickActionsGroup } from "./quick-actions-group"
 import { ScrollToTopButton } from "./scroll-to-top-button"
 import { RouteLoadingFill } from "./route-loading-fill"

@@ -6,8 +6,8 @@ import {
   buildLanePointsModel,
   buildSyncedLaneProgress,
   objectiveFilterKey,
-  type LegendaryEventLaneId,
 } from "@/entities/legendary-event"
+import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
@@ -20,12 +20,12 @@ import {
   within,
 } from "@/test/render"
 
-import {
-  buildLeaderboardRows,
-  type ClearEstimatesViewModel,
-  type LeaderboardGoalsViewModel,
-  type LeaderboardRowsViewModel,
-  type ProgressGridViewModel,
+import { buildLeaderboardRows } from "../legendary-event-page.view-model"
+import type {
+  ClearEstimatesViewModel,
+  LeaderboardGoalsViewModel,
+  LeaderboardRowsViewModel,
+  ProgressGridViewModel,
 } from "../legendary-event-page.view-model"
 import { LeaderboardSection } from "./leaderboard-section"
 

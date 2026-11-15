@@ -24,7 +24,8 @@ import type { ClearEstimatesViewModel } from "../legendary-event-page.view-model
 
 import { TeamEditorHost } from "./team-editor-host"
 import { useTeamEditorLauncher } from "./team-editor-launcher"
-import { TeamsSection, type TeamsViewModel } from "./teams-section"
+import { TeamsSection } from "./teams-section"
+import type { TeamsViewModel } from "./teams-section"
 import type { TeamsSectionState } from "./teams.view-model"
 
 beforeEach(async () => {

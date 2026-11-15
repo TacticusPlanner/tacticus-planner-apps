@@ -7,11 +7,8 @@ import {
 
 import type { Battle, FarmLocation } from "@/shared/lib"
 
-import {
-  computeCampaignInsights,
-  dropRate,
-  type CampaignInsightUpgrade,
-} from "./campaign-insights"
+import { computeCampaignInsights, dropRate } from "./campaign-insights"
+import type { CampaignInsightUpgrade } from "./campaign-insights"
 
 type RawBattle = Omit<Battle, "campaignGroupId"> & { campaignGroupId: string }
 type RawUpgrade = Omit<CampaignInsightUpgrade, "id"> & { id: string }

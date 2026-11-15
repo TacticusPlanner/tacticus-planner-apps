@@ -10,8 +10,10 @@ import {
   maxKnownProgressionIndex,
   resolveFieldNpcName,
   resolveFieldNpcRosterId,
-  type RaidBoss,
-  type ResolvedRaidBossEncounterLocation,
+} from "@/entities/raid-boss"
+import type {
+  RaidBoss,
+  ResolvedRaidBossEncounterLocation,
 } from "@/entities/raid-boss"
 import { useCatalogDataset } from "@/shared/local-data"
 

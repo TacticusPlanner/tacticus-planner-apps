@@ -1,20 +1,15 @@
 import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
-import {
-  eventMissions,
-  type LegendaryEventMissionRef,
-} from "@/entities/legendary-event"
+import { eventMissions } from "@/entities/legendary-event"
+import type { LegendaryEventMissionRef } from "@/entities/legendary-event"
 import { fixtureCharacter } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen } from "@/test/render"
 
-import {
-  buildTokenPlanView,
-  type TokenPlanReady,
-  type TokenPlanView,
-} from "../lib/token-plan-view"
+import { buildTokenPlanView } from "../lib/token-plan-view"
+import type { TokenPlanReady, TokenPlanView } from "../lib/token-plan-view"
 import type { MissionProgress } from "../lib/token-missions"
 import { workedPlan, workedViewInput } from "../lib/token-plan-view.fixtures"
 import { NextTokenCard } from "./next-token-card"

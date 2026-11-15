@@ -1,21 +1,16 @@
 import { useMemo } from "react"
 
-import {
-  startingProgression,
-  type Progression,
-  type Rank,
-  type UnitId,
-} from "@workspace/game-domain"
+import { startingProgression } from "@workspace/game-domain"
+import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 
-import { useGoalsById, type GoalKind } from "@/entities/goal"
+import { useGoalsById } from "@/entities/goal"
+import type { GoalKind } from "@/entities/goal"
 
 import { buildReviewItems } from "./goal-spec-builder"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
 import type { GoalMilestones } from "./goal-milestones"
-import {
-  useGoalPrerequisites,
-  type ExistingAscension,
-} from "./use-goal-prerequisites"
+import { useGoalPrerequisites } from "./use-goal-prerequisites"
+import type { ExistingAscension } from "./use-goal-prerequisites"
 import { useProgressionPreview } from "./use-progression-preview"
 
 type ProgressionPreviewParams = Parameters<typeof useProgressionPreview>[0]

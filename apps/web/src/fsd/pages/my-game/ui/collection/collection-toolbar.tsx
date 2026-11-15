@@ -1,13 +1,7 @@
 import { useCallback, useEffect, useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  LayoutGrid,
-  List,
-  Search,
-  Funnel,
-  X,
-  type LucideIcon,
-} from "lucide-react"
+import { LayoutGrid, List, Search, Funnel, X } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
@@ -41,9 +35,11 @@ import {
   collectionSorts,
   isCollectionLayout,
   isCollectionSort,
-  type CollectionLayout,
-  type CollectionQuery,
-  type CollectionQuickFilter,
+} from "../../model/collection-query"
+import type {
+  CollectionLayout,
+  CollectionQuery,
+  CollectionQuickFilter,
 } from "../../model/collection-query"
 import type { CollectionOptions } from "../../model/use-collection-options"
 import type { QuickFilterAvailability } from "../../model/use-collection-view"

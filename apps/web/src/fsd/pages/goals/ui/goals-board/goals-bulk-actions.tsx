@@ -5,10 +5,8 @@ import { Button } from "@workspace/ui/components/button"
 
 import type { CascadeTarget, GoalRow } from "@/features/goal-planning"
 import { isReachedRow } from "./goal-row-utils"
-import {
-  canRemoveFromProject,
-  type ProjectRemoval,
-} from "./project-removal-flow"
+import { canRemoveFromProject } from "./project-removal-flow"
+import type { ProjectRemoval } from "./project-removal-flow"
 
 type Props = {
   /** The selected rows, resolved by the page from its selection set. */

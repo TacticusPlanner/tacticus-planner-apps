@@ -12,8 +12,8 @@ import {
   needToAscend,
   needToLevel,
   orbsForAlliance,
-  type QuickFilterUnit,
 } from "./collection-quick-filters"
+import type { QuickFilterUnit } from "./collection-quick-filters"
 
 // The ladder from the spec's assumption line (shards, mythic shards, orbs and their rarity per step).
 const step = (

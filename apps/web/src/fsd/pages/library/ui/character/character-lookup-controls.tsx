@@ -11,14 +11,8 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import {
-  lastRank,
-  rankAt,
-  rankIndex,
-  rankOrder,
-  type Progression,
-  type Rank,
-} from "@workspace/game-domain"
+import { lastRank, rankAt, rankIndex, rankOrder } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import { ProgressionSelect, RankBadge, RankSelect } from "@/shared/ui"
 

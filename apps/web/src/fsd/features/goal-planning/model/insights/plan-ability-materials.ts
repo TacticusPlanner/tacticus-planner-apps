@@ -11,9 +11,8 @@ import {
   abilityMaterialsNeed,
   createUnitCoverage,
   mowAbilityTrackLevel,
-  type AbilityMaterials,
-  type UnitCoverage,
 } from "@/entities/goal-farming"
+import type { AbilityMaterials, UnitCoverage } from "@/entities/goal-farming"
 
 type Player = Parameters<typeof mowAbilityTrackLevel>[0]
 

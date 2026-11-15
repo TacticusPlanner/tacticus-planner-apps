@@ -3,13 +3,16 @@ import {
   objectivesSatisfied,
   unitEffectivePower,
   unitLanePotential,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
-  type UpgradeStep,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventRosterUnit,
+  LegendaryEventRun,
+  UpgradeStep,
 } from "@/entities/legendary-event"
 
 import type { PlanEvaluation, PlanEvaluator } from "./plan-evaluator"
-import { planRuns, type ChosenUpgrade, type PlanInputs } from "./plan-inputs"
+import { planRuns } from "./plan-inputs"
+import type { ChosenUpgrade, PlanInputs } from "./plan-inputs"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 

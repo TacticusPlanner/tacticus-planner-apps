@@ -1,7 +1,8 @@
 import type { TFunction } from "i18next"
 import { rankAt } from "@workspace/game-domain"
 
-import { progressionLabel, type GoalDetail } from "@/entities/goal"
+import { progressionLabel } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 
 /**
  * A goal's target as the raids pages show it under the unit: "Rank Diamond III", "Ability 50",

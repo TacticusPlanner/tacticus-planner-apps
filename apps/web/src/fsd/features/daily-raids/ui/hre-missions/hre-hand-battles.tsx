@@ -5,7 +5,8 @@ import { battleGlyphIcon, energyIcon } from "@workspace/game-catalog"
 import { EntityIcon } from "@/shared/ui"
 
 import type { MissionBattlesPlan } from "../../model/mission-raids"
-import { RaidRows, type RaidRowsView } from "./hre-raids-extras"
+import { RaidRows } from "./hre-raids-extras"
+import type { RaidRowsView } from "./hre-raids-extras"
 
 /** How the HRE page words the battles to fight by hand. */
 export type HreHandBattlesNotes = {

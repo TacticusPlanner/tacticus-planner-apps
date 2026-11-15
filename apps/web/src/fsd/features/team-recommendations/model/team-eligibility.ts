@@ -1,14 +1,13 @@
-import { levelCapForProgression, type UnitId } from "@workspace/game-domain"
+import { levelCapForProgression } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 
-import {
-  rosterCharacterPower,
-  type UnitPowerContext,
-} from "@/shared/unit-power"
+import { rosterCharacterPower } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
-import {
-  MIN_TEAM_SIZE,
-  type TeamPoolSpec,
-  type TeamRosterCharacter,
+import { MIN_TEAM_SIZE } from "./team-recommendations.types"
+import type {
+  TeamPoolSpec,
+  TeamRosterCharacter,
 } from "./team-recommendations.types"
 
 /** The id of the implicit lowest-priority pool the engine always widens into last. */

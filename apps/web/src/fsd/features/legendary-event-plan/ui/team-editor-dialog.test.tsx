@@ -4,9 +4,11 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import {
   buildLanePointsModel,
   buildSyncedLaneProgress,
-  type ClearEstimate,
-  type LaneProgressView,
-  type LegendaryEventTeam,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimate,
+  LaneProgressView,
+  LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import {
   teamLane,

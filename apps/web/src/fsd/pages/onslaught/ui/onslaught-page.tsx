@@ -13,10 +13,12 @@ import {
   playerDataOverrideKey,
   rewardKeys,
   updateOnslaughtProgress,
-  type OnslaughtAlliance,
-  type OnslaughtProgress,
-  type OnslaughtSector,
-  type OnslaughtTier,
+} from "@/entities/player-data-override"
+import type {
+  OnslaughtAlliance,
+  OnslaughtProgress,
+  OnslaughtSector,
+  OnslaughtTier,
 } from "@/entities/player-data-override"
 import { useRevisionedDraft } from "@/shared/api"
 import { useCatalogDataset } from "@/shared/local-data"

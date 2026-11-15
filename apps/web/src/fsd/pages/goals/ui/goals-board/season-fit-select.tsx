@@ -9,11 +9,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import {
-  SEASON_FIT_MODES,
-  type SeasonFitMode,
-  type SeasonFitState,
-} from "@/features/goal-planning"
+import { SEASON_FIT_MODES } from "@/features/goal-planning"
+import type { SeasonFitMode, SeasonFitState } from "@/features/goal-planning"
 
 /**
  * The Goals toolbar's Season fit select (goal-season-fit spec): labelled on desktop, icon-only with an

@@ -1,8 +1,7 @@
-import {
-  eventMissions,
-  runInputValues,
-  type LegendaryEvent,
-  type LegendaryEventRun,
+import { eventMissions, runInputValues } from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventRun,
 } from "@/entities/legendary-event"
 
 import type { StepTarget } from "./plan-ceiling"

@@ -11,8 +11,8 @@ import {
   resolveRaidBossSeasonId,
   validRaidBossSeasonIds,
   unitDisplayName,
-  type ResolvedRaidBossEncounterLocation,
 } from "@/entities/raid-boss"
+import type { ResolvedRaidBossEncounterLocation } from "@/entities/raid-boss"
 import { useGuildRaidMetaCatalog } from "@/entities/guild-raid-meta"
 import { useTourPageSteps } from "@/shared/tour"
 

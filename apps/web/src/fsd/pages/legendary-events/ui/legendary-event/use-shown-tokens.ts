@@ -9,8 +9,8 @@ import {
   rememberShownToken,
   settleShownTokens,
   tokenClearedEvent,
-  type ShownToken,
 } from "./token-cleared-analytics"
+import type { ShownToken } from "./token-cleared-analytics"
 import type { ReadValue } from "./legendary-event-page.view-model"
 
 function storageKey(eventId: string): string {

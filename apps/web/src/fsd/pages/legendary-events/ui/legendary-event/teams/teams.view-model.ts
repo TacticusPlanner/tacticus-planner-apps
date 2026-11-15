@@ -7,19 +7,21 @@ import {
   teamEffectiveDepth,
   memberPowers,
   teamPower,
-  type ClearEstimate,
-  type ClearEstimateRoster,
-  type LanePointsModel,
-  type LaneProgressView,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
-  type LegendaryEventUnit,
   eventUnitChipData,
-  type EventUnitChipData,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimate,
+  ClearEstimateRoster,
+  LanePointsModel,
+  LaneProgressView,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
+  LegendaryEventRosterUnit,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+  LegendaryEventUnit,
+  EventUnitChipData,
 } from "@/entities/legendary-event"
 import { teamPointsLeft } from "../../../lib/team-points"
 

@@ -1,12 +1,12 @@
 import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
-import {
-  RankShadingProvider,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventTeam,
+import { RankShadingProvider } from "@/entities/legendary-event"
+import type {
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
+  LegendaryEventRosterUnit,
+  LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import { safeStorage } from "@/shared/lib"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"

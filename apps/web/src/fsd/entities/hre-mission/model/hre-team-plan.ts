@@ -1,10 +1,5 @@
-import {
-  hreAllDone,
-  hreMission,
-  type HreMission,
-  type HreObjective,
-  type HreObjectiveKind,
-} from "./hre-missions"
+import { hreAllDone, hreMission } from "./hre-missions"
+import type { HreMission, HreObjective, HreObjectiveKind } from "./hre-missions"
 import { isManualObjective } from "./hre-objectives"
 import type { HreProgress } from "./hre-progress"
 

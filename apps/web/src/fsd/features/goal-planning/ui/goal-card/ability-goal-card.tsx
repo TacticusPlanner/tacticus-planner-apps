@@ -5,7 +5,8 @@ import type { AbilityTargetPair } from "../../model/goal-creation-form/first-fre
 import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
 import { FieldIssues } from "../create-goal/goal-form-issues"
 import { fieldIssueProps } from "../create-goal/goal-form-issue-ids"
-import { ResourcePreviewSection, type ResourcePreview } from "./card-parts"
+import { ResourcePreviewSection } from "./card-parts"
+import type { ResourcePreview } from "./card-parts"
 import { AbilityLevelStepper } from "./ability-level-stepper"
 
 const trackLabels = {

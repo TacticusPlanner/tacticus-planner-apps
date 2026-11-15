@@ -10594,13 +10594,13 @@
             "type": "string"
           },
           "definitionId": {
-            "type": "string"
+            "type": ["null", "string"]
           },
           "currency": {
             "type": "string"
           },
           "startUtc": {
-            "type": "string",
+            "type": ["null", "string"],
             "format": "date-time"
           },
           "dayCount": {

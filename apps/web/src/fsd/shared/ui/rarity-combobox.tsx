@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState, type ReactNode } from "react"
+import { useMemo, useRef, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -17,7 +18,8 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { rarityRank, type Rarity } from "@workspace/game-domain"
+import { rarityRank } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 
 import { normalizeSearchText } from "../lib"
 

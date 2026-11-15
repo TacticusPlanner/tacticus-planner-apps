@@ -9,10 +9,8 @@ import {
   progressionIndex,
   progressionRarity,
   rankIndex,
-  type Alliance,
-  type Rarity,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { Alliance, Rarity, UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { UnitKind, UnitTileUnit } from "@/entities/unit"
@@ -22,9 +20,11 @@ import {
   collectionShardSources,
   defaultCollectionQuery,
   activeFilterCount,
-  type CollectionQuery,
-  type CollectionShardSource,
-  type CollectionSort,
+} from "./collection-query"
+import type {
+  CollectionQuery,
+  CollectionShardSource,
+  CollectionSort,
 } from "./collection-query"
 import {
   abilitiesBehindLevel,
@@ -35,8 +35,10 @@ import {
   needToAscend,
   needToLevel,
   orbsForAlliance,
-  type AscensionLadder,
-  type QuickFilterUnit,
+} from "./collection-quick-filters"
+import type {
+  AscensionLadder,
+  QuickFilterUnit,
 } from "./collection-quick-filters"
 
 type CatalogCharacter = Pick<
@@ -501,7 +503,7 @@ function combatMatcher(
       (combat.rangeDistance === null || !reach(combat.rangeDistance))
     )
       return false
-    if (!query.damageTypes.every((type) => combat.damageTypes.has(type)))
+    if (query.damageTypes.some((type) => !combat.damageTypes.has(type)))
       return false
     const hasTrait = (trait: string) =>
       combat.traits.has(trait) ||

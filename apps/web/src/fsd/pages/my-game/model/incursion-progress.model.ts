@@ -1,11 +1,7 @@
 import type { IncursionProgressOverrides } from "@/entities/player-data-override"
 
-import {
-  shardYield,
-  type Incursion,
-  type IncursionTier,
-  type ShardYield,
-} from "./incursions.model"
+import { shardYield } from "./incursions.model"
+import type { Incursion, IncursionTier, ShardYield } from "./incursions.model"
 
 /** Stars a battle can earn; 3 stars lets later runs raid it. */
 export const MAX_STARS = 3

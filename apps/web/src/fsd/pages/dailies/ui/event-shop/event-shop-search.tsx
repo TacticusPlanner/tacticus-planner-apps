@@ -15,10 +15,8 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  eventOfferGroups,
-  type EventOfferGroup,
-} from "@/features/shops/event-planner"
+import { eventOfferGroups } from "@/features/shops/event-planner"
+import type { EventOfferGroup } from "@/features/shops/event-planner"
 import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 import { useUnitSearchNames } from "@/shared/unit-name"

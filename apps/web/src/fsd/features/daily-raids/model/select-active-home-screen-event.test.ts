@@ -10,8 +10,10 @@ import {
   resolveHomeScreenEventSelection,
   selectActiveHomeScreenEvent,
   selectListTarget,
-  type HomeScreenEventEntry,
-  type HomeScreenEventInstance,
+} from "./select-active-home-screen-event"
+import type {
+  HomeScreenEventEntry,
+  HomeScreenEventInstance,
 } from "./select-active-home-screen-event"
 
 const definitions = new Map(

@@ -4,8 +4,8 @@ import {
   goalTypesOverLimit,
   MAX_GOALS_PER_TYPE,
   useGoalsById,
-  type ProjectMembership,
 } from "@/entities/goal"
+import type { ProjectMembership } from "@/entities/goal"
 import type { ProjectSummary } from "@/entities/project"
 import { useTranslation } from "react-i18next"
 import { useUnitName } from "@/shared/unit-name"

@@ -3,12 +3,8 @@ import { Link, useLocation, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { abilityIcon, mowIcon } from "@workspace/game-catalog"
-import {
-  progressionOrder,
-  progressionRarity,
-  type Progression,
-  type UnitId,
-} from "@workspace/game-domain"
+import { progressionOrder, progressionRarity } from "@workspace/game-domain"
+import type { Progression, UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -26,7 +22,8 @@ import { useUnitPowerContext } from "@/shared/unit-power"
 import { MOWS_PATH } from "../mows/mows-list-page"
 import { useMowListItems, useMowsCatalog } from "../mows/use-mows-catalog"
 import { AbilityPanel } from "../unit/ability-panel"
-import { UnitHeader, type ValuesMode } from "../unit/unit-header"
+import { UnitHeader } from "../unit/unit-header"
+import type { ValuesMode } from "../unit/unit-header"
 import { UnitCreateGoalButton } from "../unit/unit-create-goal-button"
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { UnitPowerValue } from "../unit/unit-power-value"
@@ -45,14 +42,10 @@ import {
   mowPowerFigure,
   mythicLevel,
   toMythicLevels,
-  type MythicLevels,
 } from "./mow-unit.view-model"
-import {
-  calculateMowUpgrades,
-  ownedMowStock,
-  type MowAbility,
-  type MowCostRung,
-} from "./mow-upgrades.model"
+import type { MythicLevels } from "./mow-unit.view-model"
+import { calculateMowUpgrades, ownedMowStock } from "./mow-upgrades.model"
+import type { MowAbility, MowCostRung } from "./mow-upgrades.model"
 import { MowUpgradesTab } from "./mow-upgrades-tab"
 import { useMowPlayerData } from "./use-mow-player-data"
 import { useMowUpgradeRanges } from "./use-mow-upgrade-ranges"

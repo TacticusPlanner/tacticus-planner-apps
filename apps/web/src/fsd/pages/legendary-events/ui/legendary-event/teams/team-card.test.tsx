@@ -5,9 +5,11 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import {
   buildLanePointsModel,
   buildSyncedLaneProgress,
-  type ClearEstimate,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventTeam,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimate,
+  LegendaryEventRosterUnit,
+  LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import {
@@ -21,11 +23,8 @@ import { act, fireEvent, render, screen, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
 import { TeamCard } from "./team-card"
-import {
-  buildTeamCardViewModel,
-  moveTargets,
-  type TeamCardViewModel,
-} from "./teams.view-model"
+import { buildTeamCardViewModel, moveTargets } from "./teams.view-model"
+import type { TeamCardViewModel } from "./teams.view-model"
 
 beforeEach(async () => {
   await seedGameCatalog({ characters: Object.values(teamUnits) })

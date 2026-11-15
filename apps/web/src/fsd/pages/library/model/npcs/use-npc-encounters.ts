@@ -1,12 +1,8 @@
 import { useMemo } from "react"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 
-import {
-  indexEncounterPlaces,
-  indexEncounters,
-  type EncounterPlaceIndex,
-  type NpcEncounterIndex,
-} from "@/entities/npc"
+import { indexEncounterPlaces, indexEncounters } from "@/entities/npc"
+import type { EncounterPlaceIndex, NpcEncounterIndex } from "@/entities/npc"
 import { useCatalogDataset } from "@/shared/local-data"
 
 import { useDatasetSynced } from "../../ui/unit/use-catalog-dataset"

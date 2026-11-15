@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { CheckIcon, ChevronDownIcon } from "lucide-react"
 import {
@@ -10,9 +11,10 @@ import {
   raidTicketIcon,
   shardIcon,
   xpBookIcon,
-  type QuestCrateStorageModel,
 } from "@workspace/game-catalog"
-import { isProgression, type Rarity } from "@workspace/game-domain"
+import type { QuestCrateStorageModel } from "@workspace/game-catalog"
+import { isProgression } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import { Switch } from "@workspace/ui/components/switch"

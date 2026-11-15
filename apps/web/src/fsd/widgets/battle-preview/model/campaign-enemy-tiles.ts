@@ -1,10 +1,7 @@
 import { isRank, rankIndex } from "@workspace/game-domain"
 
-import {
-  buildEnemyTile,
-  type EnemyNpcs,
-  type EnemyTileViewModel,
-} from "./enemy-tile"
+import { buildEnemyTile } from "./enemy-tile"
+import type { EnemyNpcs, EnemyTileViewModel } from "./enemy-tile"
 
 /** A campaign battle's served enemy entry: an NPC at a rank and stars, `count` times. */
 export interface CampaignEnemy {

@@ -1,5 +1,6 @@
-import { type CSSProperties, type ReactNode, useMemo } from "react"
-import { type Rarity } from "@workspace/game-domain"
+import { useMemo } from "react"
+import type { CSSProperties, ReactNode } from "react"
+import type { Rarity } from "@workspace/game-domain"
 
 import {
   ABILITY_COLORS,
@@ -9,10 +10,12 @@ import {
   resolveDynamicStyle,
   resolveI2p,
   resolveVariable,
-  type AbilityContext,
-  type AstNode,
-  type StyledNode,
-  type VariableNode,
+} from "./ability-text"
+import type {
+  AbilityContext,
+  AstNode,
+  StyledNode,
+  VariableNode,
 } from "./ability-text"
 import { useRarityFactor } from "./rarity-factor"
 

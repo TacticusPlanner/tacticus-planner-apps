@@ -9,8 +9,8 @@ import type {
 import {
   buildGuildRaidResourcesView,
   buildGuildRaidStatusView,
-  type GuildRaidCatalogResolver,
 } from "./guild-raid-status-view-model"
+import type { GuildRaidCatalogResolver } from "./guild-raid-status-view-model"
 
 const NOW = new Date("2026-07-12T12:00:00.000Z").getTime()
 

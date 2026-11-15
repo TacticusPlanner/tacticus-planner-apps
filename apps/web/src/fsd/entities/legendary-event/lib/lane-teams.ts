@@ -4,11 +4,8 @@ import type {
   LegendaryEventUnit,
 } from "../model/types"
 import type { LegendaryEventRun, LegendaryEventTeam } from "../model/plan.types"
-import {
-  teamClearEstimate,
-  type ClearEstimateConfig,
-  type ClearEstimateRoster,
-} from "./clear-estimate"
+import { teamClearEstimate } from "./clear-estimate"
+import type { ClearEstimateConfig, ClearEstimateRoster } from "./clear-estimate"
 import { teamDepthForRun } from "./current-run"
 import type { LaneReach } from "./reachable-points"
 import { derivedTeamCoverage } from "./team-coverage"

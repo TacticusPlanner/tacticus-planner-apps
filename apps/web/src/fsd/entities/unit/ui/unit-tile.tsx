@@ -1,4 +1,5 @@
-import { Link, type To } from "react-router"
+import { Link } from "react-router"
+import type { To } from "react-router"
 import {
   characterIcon,
   factionIcon,

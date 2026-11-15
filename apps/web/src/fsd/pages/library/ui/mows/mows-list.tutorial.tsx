@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Step } from "react-joyride"
 
-import { type TourPageSteps } from "@/shared/tour"
+import type { TourPageSteps } from "@/shared/tour"
 
 /** The search field and the tile list; the same targets on desktop and mobile. */
 export function useMowsListTutorial(): TourPageSteps {

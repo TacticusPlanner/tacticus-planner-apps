@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { gameModeTokenIcon, type GameModeToken } from "@workspace/game-catalog"
-import {
-  getPlayerDataMetadata,
-  type PlayerDataChunkDto,
-} from "@workspace/player-data"
+import { gameModeTokenIcon } from "@workspace/game-catalog"
+import type { GameModeToken } from "@workspace/game-catalog"
+import { getPlayerDataMetadata } from "@workspace/player-data"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -23,8 +22,8 @@ import {
   tokenCountdown,
   tokenFillPercent,
   tokenFullAtMs,
-  type TokenBucketData,
 } from "./token-countdown"
+import type { TokenBucketData } from "./token-countdown"
 
 const NOW_TICK_MS = 1000
 
