@@ -29,8 +29,8 @@ import {
   isMissionComplete,
   normalizeHreProgress,
   parseHreProgress,
-  type HreProgress,
 } from "./hre-progress"
+import type { HreProgress } from "./hre-progress"
 
 const DAY_MS = 86_400_000
 const definitions = new Map([

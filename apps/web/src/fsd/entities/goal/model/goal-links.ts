@@ -98,7 +98,8 @@ function withLinkedRanges(
 
 /** {@link withLinkedRanges} over a goal list, looking links up among the same goals. */
 export function resolveGoalLinks(goals: readonly GoalDetail[]): GoalDetail[] {
-  if (!goals.some((goal) => linkedGoalIdsOf(goal).length > 0)) return [...goals]
+  if (goals.every((goal) => linkedGoalIdsOf(goal).length === 0))
+    return [...goals]
   const byId = new Map(goals.map((goal) => [goal.goalId, goal]))
   return goals.map((goal) => withLinkedRanges(goal, byId))
 }

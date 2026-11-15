@@ -1,25 +1,24 @@
 import { useCallback, useMemo } from "react"
-import {
-  hasBlueStarUnit,
-  type EventDefinitionStorageModel,
-} from "@workspace/game-catalog"
-import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
-import {
-  getPlayerDataMetadata,
-  type PlayerDataChunkDto,
-} from "@workspace/player-data"
+import { hasBlueStarUnit } from "@workspace/game-catalog"
+import type { EventDefinitionStorageModel } from "@workspace/game-catalog"
+import { progressionStarsIndex } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
+import { getPlayerDataMetadata } from "@workspace/player-data"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { combineReadStates, useReadState } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import {
   buildHseEventPointsState,
-  type HseCatalogRead,
-  type HseEventPointsState,
-  type HseInstance,
-  type HsePlayerRead,
+  useHseProjectionInputs,
 } from "@/entities/home-screen-event"
-import { useHseProjectionInputs } from "@/entities/home-screen-event"
+import type {
+  HseCatalogRead,
+  HseEventPointsState,
+  HseInstance,
+  HsePlayerRead,
+} from "@/entities/home-screen-event"
 
 const rosterStars = (
   units: readonly { unitId: string; progressionIndex: Progression }[]

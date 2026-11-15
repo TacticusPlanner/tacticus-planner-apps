@@ -4,8 +4,8 @@ import type { FarmingUpgrade } from "../model/estimate.domain"
 import {
   aggregateBaseUpgrades,
   aggregateBaseUpgradesWithCraftedInventory,
-  type CraftedInventoryPool,
 } from "./upgrade-recipe"
+import type { CraftedInventoryPool } from "./upgrade-recipe"
 
 /** A slot a goal fills: its coverage key and the upgrade it takes. */
 type Slot = { key: string; id: UpgradeId }

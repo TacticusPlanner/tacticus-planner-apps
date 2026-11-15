@@ -1,9 +1,4 @@
 import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type ColumnVisibilityState,
-  type RowSelectionState,
-  type SortingState,
   columnFilteringFeature,
   columnVisibilityFeature,
   createFilteredRowModel,
@@ -18,6 +13,13 @@ import {
   sortFn_text,
   tableFeatures,
   useTable,
+} from "@tanstack/react-table"
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  ColumnVisibilityState,
+  RowSelectionState,
+  SortingState,
 } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { useMemo, useState } from "react"
@@ -45,7 +47,8 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 
-import { payments, type Payment } from "../model/ui-kit"
+import { payments } from "../model/ui-kit"
+import type { Payment } from "../model/ui-kit"
 
 const features = tableFeatures({
   columnFilteringFeature,
@@ -231,7 +234,7 @@ export function DataTableShowcase() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length ? (
+            {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   data-state={row.getIsSelected() && "selected"}

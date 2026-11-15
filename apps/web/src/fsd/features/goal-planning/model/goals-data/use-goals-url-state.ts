@@ -1,10 +1,9 @@
 import { useLocation, useNavigate, useSearchParams } from "react-router"
 
-import {
-  isGoalStatusFilterValue,
-  isGoalTypeFilterValue,
-  type GoalStatusFilterValue,
-  type GoalTypeFilterValue,
+import { isGoalStatusFilterValue, isGoalTypeFilterValue } from "@/entities/goal"
+import type {
+  GoalStatusFilterValue,
+  GoalTypeFilterValue,
 } from "@/entities/goal"
 import { useSearchParamState } from "@/shared/lib"
 

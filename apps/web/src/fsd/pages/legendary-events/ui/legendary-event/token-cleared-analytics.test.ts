@@ -8,8 +8,8 @@ import {
   rememberShownToken,
   settleShownTokens,
   tokenClearedEvent,
-  type ShownToken,
 } from "./token-cleared-analytics"
+import type { ShownToken } from "./token-cleared-analytics"
 
 const token = (overrides: Partial<ShownToken> = {}): ShownToken => ({
   run: 2,

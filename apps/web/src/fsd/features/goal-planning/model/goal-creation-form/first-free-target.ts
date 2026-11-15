@@ -6,16 +6,11 @@ import {
   progressionOrder,
   rankIndex,
   rankOrder,
-  type Progression,
-  type Rank,
 } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
-import {
-  goalTargetKeyOf,
-  useGoalsById,
-  type GoalDetail,
-  type GoalKind,
-} from "@/entities/goal"
+import { goalTargetKeyOf, useGoalsById } from "@/entities/goal"
+import type { GoalDetail, GoalKind } from "@/entities/goal"
 
 /** The target keys (`goalTargetKey`) in-flight goals of one unit already hold, per goal type. */
 export type TakenTargets = ReadonlyMap<GoalKind, ReadonlySet<string>>

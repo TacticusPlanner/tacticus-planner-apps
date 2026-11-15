@@ -6,14 +6,13 @@ import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { TierStars } from "../../model/incursion-progress.model"
-import {
-  enhancementSubject,
-  type Incursion,
-  type IncursionBattle,
-  type IncursionNode,
-  type IncursionTier,
-  type RunStep,
-  nodeName,
+import { enhancementSubject, nodeName } from "../../model/incursions.model"
+import type {
+  Incursion,
+  IncursionBattle,
+  IncursionNode,
+  IncursionTier,
+  RunStep,
 } from "../../model/incursions.model"
 import { IncursionNodeCard } from "./incursion-node-card"
 import { IncursionNodeMarker } from "./incursion-node-marker"

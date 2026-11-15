@@ -2,10 +2,12 @@ import { useCallback } from "react"
 import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 import type { BattleId, UpgradeId } from "@workspace/game-domain"
 
-import { useCampaignDisplay, type FarmLocation } from "@/shared/lib"
+import { useCampaignDisplay } from "@/shared/lib"
+import type { FarmLocation } from "@/shared/lib"
 
 import { useGoalCatalog } from "../shared/use-goal-catalog"
-import { farmUnlockPaths, type FarmUnlockPath } from "./farm-unlock-paths"
+import { farmUnlockPaths } from "./farm-unlock-paths"
+import type { FarmUnlockPath } from "./farm-unlock-paths"
 import { useCampaignGateContext } from "./use-campaign-gate-context"
 
 /** A `FarmUnlockPath` with the node's display labels, as `CampaignLocationName` renders them. */

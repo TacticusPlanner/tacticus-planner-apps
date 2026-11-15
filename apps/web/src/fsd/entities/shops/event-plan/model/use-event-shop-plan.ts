@@ -2,10 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { putEventShopPlan } from "../api/event-shop-plan.api"
 import { eventShopPlanQueries } from "../api/event-shop-plan.queries"
-import {
-  toPutEventShopPlanRequest,
-  type EventShopCartEntry,
-} from "./plan.types"
+import { toPutEventShopPlanRequest } from "./plan.types"
+import type { EventShopCartEntry } from "./plan.types"
 
 /** The caller's stored plan for one event shop (revision 0 and no entries when never written). */
 export function useEventShopPlan(eventId: string) {

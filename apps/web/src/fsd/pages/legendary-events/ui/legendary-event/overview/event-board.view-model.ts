@@ -4,15 +4,17 @@ import {
   objectiveClearedCounts,
   objectivesSatisfied,
   teamPower,
-  type ClearEstimateRoster,
-  type LaneProgressView,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventObjective,
-  type LegendaryEventTeam,
-  type LegendaryEventUnit,
   eventUnitChipData,
-  type EventUnitChipData,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimateRoster,
+  LaneProgressView,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventObjective,
+  LegendaryEventTeam,
+  LegendaryEventUnit,
+  EventUnitChipData,
 } from "@/entities/legendary-event"
 import type { UnitPowerContext } from "@/shared/unit-power"
 

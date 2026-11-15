@@ -1,12 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
-import {
-  factionIdSchema,
-  unitIdSchema,
-  type FactionGroup,
-  type UnitId,
-} from "@workspace/game-domain"
+import { factionIdSchema, unitIdSchema } from "@workspace/game-domain"
+import type { FactionGroup, UnitId } from "@workspace/game-domain"
 
 import { UnitCombobox } from "./unit-combobox"
 

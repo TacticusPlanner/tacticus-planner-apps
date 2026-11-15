@@ -139,7 +139,7 @@ export function buildPlanDayCells(
   const priorityOf = (goalId: string) =>
     source.goalsById.get(goalId)?.priority ?? UNKNOWN_GOAL_PRIORITY
 
-  const cells = [...byResource.entries()].map(
+  const cells = [...byResource].map(
     ([resourceId, { goalIds, nodes }], index) => {
       let owned = 0
       let target = 0

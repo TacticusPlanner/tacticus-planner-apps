@@ -12,15 +12,10 @@ import {
   isGoalLimitError,
   MAX_GOALS_PER_TYPE,
   updateGoalsStatus,
-  type GoalDetail,
-  type GoalListResponse,
-  type GoalStatus,
 } from "@/entities/goal"
-import {
-  changeProjectMembership,
-  projectQueries,
-  type ProjectSummary,
-} from "@/entities/project"
+import type { GoalDetail, GoalListResponse, GoalStatus } from "@/entities/goal"
+import { changeProjectMembership, projectQueries } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -32,10 +27,8 @@ import { goalSlotConflict } from "../projects/project-membership"
 import { isOnlyMemberOf } from "../projects/project-removal"
 import type { GoalRow } from "../shared/types"
 import { applyOptimisticGoalRemoval } from "./optimistic-goal-removal"
-import {
-  applyOptimisticGoalStatus,
-  type GoalFieldPatch,
-} from "./optimistic-goal-status"
+import { applyOptimisticGoalStatus } from "./optimistic-goal-status"
+import type { GoalFieldPatch } from "./optimistic-goal-status"
 
 /** A prerequisite cascade target: the id to also transition, and its status immediately before the
  *  transition, needed to revert its row if the transition is rejected. */

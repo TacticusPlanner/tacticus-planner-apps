@@ -1,12 +1,15 @@
 import type { ReadState } from "@/shared/lib"
-import { useUnitPowerContext, type UnitPowerContext } from "@/shared/unit-power"
+import { useUnitPowerContext } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import {
   characterPowerValues,
   characterPowerView,
-  type CharacterPowerView,
-  type PlayerCharacter,
-  type ShownValues,
+} from "./character-unit.view-model"
+import type {
+  CharacterPowerView,
+  PlayerCharacter,
+  ShownValues,
 } from "./character-unit.view-model"
 
 const LOADING: ReadState<UnitPowerContext | null> = {

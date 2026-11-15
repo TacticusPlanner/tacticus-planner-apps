@@ -234,10 +234,8 @@ const records: Record<string, unknown[]> = {
 }
 
 import type { UnitId } from "@workspace/game-domain"
-import {
-  buildUnitPowerContext,
-  type UnitPowerCatalog,
-} from "@/shared/unit-power"
+import { buildUnitPowerContext } from "@/shared/unit-power"
+import type { UnitPowerCatalog } from "@/shared/unit-power"
 import { unitPowerCatalog } from "@/test/fixtures/unit-power"
 
 import { CharacterRankUpTab } from "./character-rank-up-tab"

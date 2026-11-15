@@ -1,17 +1,13 @@
-import {
-  rarityRank,
-  type Alliance,
-  type Rarity,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import { rarityRank } from "@workspace/game-domain"
+import type { Alliance, Rarity, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { mowAbilityUpgradeIds } from "@/entities/goal-farming"
 import {
   aggregateBaseUpgrades,
   aggregateOwnedBaseUpgrades,
-  type UpgradeWithFarmLocations,
 } from "@/entities/rank-lookup"
+import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 
 export type MowAbility = "primary" | "secondary"
 

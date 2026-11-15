@@ -14,11 +14,11 @@ import {
   ManageProjectsSheet,
   NewProjectFab,
   ProjectList,
-  type ProjectCardSummary,
   orderDefaultFirst,
   useProjectActions,
   useProjectsWithGoals,
 } from "@/features/project-management"
+import type { ProjectCardSummary } from "@/features/project-management"
 import type { ProjectSummary } from "@/entities/project"
 
 import {

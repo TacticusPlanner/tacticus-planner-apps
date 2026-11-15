@@ -20,13 +20,8 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import {
-  unitLibraryPath,
-  unitOriginState,
-  UnitTile,
-  type UnitKind,
-  type UnitTileUnit,
-} from "@/entities/unit"
+import { unitLibraryPath, unitOriginState, UnitTile } from "@/entities/unit"
+import type { UnitKind, UnitTileUnit } from "@/entities/unit"
 import {
   formatRosterSourceId,
   useRosterSnapshots,
@@ -41,15 +36,13 @@ import type {
   CollectionListedUnit,
   CollectionRosterState,
 } from "../../model/collection-view"
-import {
-  useCollectionOptions,
-  type CollectionOptions,
-} from "../../model/use-collection-options"
+import { useCollectionOptions } from "../../model/use-collection-options"
+import type { CollectionOptions } from "../../model/use-collection-options"
 import {
   toBulkGoalUnit,
   useCollectionSelection,
-  type CollectionSelection,
 } from "../../model/collection-selection"
+import type { CollectionSelection } from "../../model/collection-selection"
 import { useCollectionQuery } from "../../model/use-collection-query"
 import { useCollectionView } from "../../model/use-collection-view"
 import { COMPARE_CURRENT } from "../../model/compare-query"

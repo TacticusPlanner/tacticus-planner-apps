@@ -6,8 +6,8 @@ import { usePlayerChunk } from "@/shared/local-data"
 import {
   buildGuildRaidExactReadinessView,
   buildGuildRaidRosterInvestment,
-  type GuildRaidExactReadinessView,
 } from "./build-guild-raid-exact-readiness-view"
+import type { GuildRaidExactReadinessView } from "./build-guild-raid-exact-readiness-view"
 import type { GuildRaidInvestmentThreshold } from "./resolve-guild-raid-investment-threshold"
 import { useGuildRaidMetaCatalog } from "./use-guild-raid-meta-presentation"
 

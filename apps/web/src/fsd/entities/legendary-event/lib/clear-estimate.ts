@@ -1,22 +1,15 @@
-import {
-  npcPowerAtLadder,
-  rosterCharacterPower,
-  type UnitPowerContext,
-} from "@/shared/unit-power"
+import { npcPowerAtLadder, rosterCharacterPower } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import type { LegendaryEventRosterUnit } from "../model/types"
 import {
   effectiveHordeMultiplier,
   hordeRelics,
   hordeTierName,
-  type HordeModeTierList,
 } from "./horde-tier-list"
-import {
-  npcAdjustedBattlePower,
-  npcTierMultipliers,
-  type NpcTierListRecord,
-  type NpcTieredBattle,
-} from "./npc-tier-list"
+import type { HordeModeTierList } from "./horde-tier-list"
+import { npcAdjustedBattlePower, npcTierMultipliers } from "./npc-tier-list"
+import type { NpcTierListRecord, NpcTieredBattle } from "./npc-tier-list"
 
 /**
  * The clear curve, refitted (Nov 2026) to about 2,300 Fabius Bile battle attempts logged by the

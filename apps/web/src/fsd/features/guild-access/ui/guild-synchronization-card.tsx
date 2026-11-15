@@ -12,7 +12,8 @@ import {
 } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { useGuildSync, type RegisteredGuild } from "@/entities/guild"
+import { useGuildSync } from "@/entities/guild"
+import type { RegisteredGuild } from "@/entities/guild"
 
 type Props = {
   guild: RegisteredGuild

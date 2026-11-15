@@ -1,11 +1,10 @@
 import { useState } from "react"
 
-import {
-  defaultMowRange,
-  withFrom,
-  type MowAbility,
-  type MowLevelRange,
-  type MowLevelRanges,
+import { defaultMowRange, withFrom } from "./mow-upgrades.model"
+import type {
+  MowAbility,
+  MowLevelRange,
+  MowLevelRanges,
 } from "./mow-upgrades.model"
 
 /**

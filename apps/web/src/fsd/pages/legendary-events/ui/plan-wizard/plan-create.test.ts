@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  EMPTY_RUN_INPUT_VALUES,
-  type LegendaryEventPlan,
-} from "@/entities/legendary-event"
+import { EMPTY_RUN_INPUT_VALUES } from "@/entities/legendary-event"
+import type { LegendaryEventPlan } from "@/entities/legendary-event"
 
 import { planWrites } from "./plan-create"
 import type { UnitGoalChain } from "./plan-draft"

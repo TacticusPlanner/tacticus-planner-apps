@@ -5,11 +5,13 @@ import {
   eventDayIndex,
   eventStatus,
   resolveEventDaySlots,
-  type EventShopDay,
-  type EventShopStatus,
-  type GameCatalogEventShop,
-  type ResolvedEventSlot,
-  type ResolvedShopOffer,
+} from "@workspace/game-catalog"
+import type {
+  EventShopDay,
+  EventShopStatus,
+  GameCatalogEventShop,
+  ResolvedEventSlot,
+  ResolvedShopOffer,
 } from "@workspace/game-catalog"
 
 import type {
@@ -35,11 +37,13 @@ import {
   undoBought,
   useEventShopCart,
   useRosterShopContext,
-  type ClassifiedEntry,
-  type DayState,
-  type EventShopCartState,
-  type RosterShopContext,
-  type ShoppingList,
+} from "@/features/shops/event-planner"
+import type {
+  ClassifiedEntry,
+  DayState,
+  EventShopCartState,
+  RosterShopContext,
+  ShoppingList,
 } from "@/features/shops/event-planner"
 
 type EntryRef = Pick<EventShopCartEntry, "week" | "day" | "slotIndex">

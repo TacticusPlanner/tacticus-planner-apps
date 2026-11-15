@@ -11,7 +11,8 @@ import libraryEn from "../../../../../public/locales/en/library.json"
 
 import type { NpcRecord } from "@/entities/npc"
 
-import { buildEnemyTile, type EnemyTileViewModel } from "../model/enemy-tile"
+import { buildEnemyTile } from "../model/enemy-tile"
+import type { EnemyTileViewModel } from "../model/enemy-tile"
 import { EnemyTile } from "./enemy-tile"
 
 let i18n: I18n

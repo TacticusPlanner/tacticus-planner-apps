@@ -7,8 +7,8 @@ import { computeGoalAttainment } from "./goal-attainment"
 import {
   allocateUpgradeGoalStock,
   splitUpgradeGoalStock,
-  type UpgradeStockUnits,
 } from "./upgrade-goal-stock"
+import type { UpgradeStockUnits } from "./upgrade-goal-stock"
 
 function upgradeGoal(
   goalId: string,

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { chanceIcon, type UpgradeStorageModel } from "@workspace/game-catalog"
+import { chanceIcon } from "@workspace/game-catalog"
+import type { UpgradeStorageModel } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 

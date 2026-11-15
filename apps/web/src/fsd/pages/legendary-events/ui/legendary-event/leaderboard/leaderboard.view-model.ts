@@ -8,13 +8,15 @@ import {
   sortCrossLaneLeaderboard,
   sortLeaderboard,
   useObjectiveLabel,
-  type CrossLaneLeaderboardRow,
-  type LeaderboardFigure,
-  type LeaderboardRow,
-  type LegendaryEvent,
-  type LegendaryEventLaneId,
-  type LegendaryEventUnit,
-  type ObjectiveIconModel,
+} from "@/entities/legendary-event"
+import type {
+  CrossLaneLeaderboardRow,
+  LeaderboardFigure,
+  LeaderboardRow,
+  LegendaryEvent,
+  LegendaryEventLaneId,
+  LegendaryEventUnit,
+  ObjectiveIconModel,
 } from "@/entities/legendary-event"
 
 import type {

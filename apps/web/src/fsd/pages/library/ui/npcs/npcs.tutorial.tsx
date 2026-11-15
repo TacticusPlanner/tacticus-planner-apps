@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Step } from "react-joyride"
 
-import { type TourPageSteps } from "@/shared/tour"
+import type { TourPageSteps } from "@/shared/tour"
 
 /**
  * Desktop steps target the filter panel, the tile list, the two selectors, and the stats; mobile

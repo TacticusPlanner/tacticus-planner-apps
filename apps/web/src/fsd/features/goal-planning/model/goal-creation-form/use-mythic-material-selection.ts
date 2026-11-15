@@ -4,12 +4,12 @@ import type { UpgradeId } from "@workspace/game-domain"
 import type { AcquisitionSource } from "@/entities/goal"
 import {
   estimateGoal,
-  type MythicMaterialCatalog,
   neededMythicMaterialIds,
   projectShopSupply,
   selectMythicMaterialOffers,
   useMythicMaterialShopOffers,
 } from "@/entities/goal-farming"
+import type { MythicMaterialCatalog } from "@/entities/goal-farming"
 import { summariseShopCurrencySpend } from "./use-progression-preview"
 
 function seedShopIds(seed: readonly AcquisitionSource[] | null | undefined) {

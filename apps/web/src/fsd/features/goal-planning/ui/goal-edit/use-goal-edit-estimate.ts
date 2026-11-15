@@ -1,15 +1,14 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { isProgression, type UpgradeId } from "@workspace/game-domain"
+import { isProgression } from "@workspace/game-domain"
+import type { UpgradeId } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
 import { estimateGoal } from "@/entities/goal-farming"
 import type { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 
-import {
-  goalEditMaterialNeeds,
-  type GoalEditLiveProgress,
-} from "../../model/goal-edit/goal-edit-material-needs"
+import { goalEditMaterialNeeds } from "../../model/goal-edit/goal-edit-material-needs"
+import type { GoalEditLiveProgress } from "../../model/goal-edit/goal-edit-material-needs"
 import type { useGoalEditAcquisition } from "../../model/goal-edit/use-goal-edit-acquisition"
 import { useProgressionPreview } from "../../model/goal-creation-form/use-progression-preview"
 import type { GoalTargetDraft } from "../../model/target-edit/goal-target-edit"

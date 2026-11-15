@@ -2,11 +2,8 @@ import { useCallback, useState } from "react"
 
 import { safeStorage } from "@/shared/lib"
 
-import {
-  parseCompareFields,
-  serializeCompareFields,
-  type CompareField,
-} from "./compare-view"
+import { parseCompareFields, serializeCompareFields } from "./compare-view"
+import type { CompareField } from "./compare-view"
 
 const FIELDS_STORAGE_KEY = "collection.compare.fields"
 

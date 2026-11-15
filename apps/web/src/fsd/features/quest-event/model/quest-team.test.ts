@@ -10,9 +10,8 @@ import {
   selectQuestTeam,
   questPickedPower,
   toggleQuestPick,
-  type QuestTeamCandidate,
-  type QuestTeamCharacter,
 } from "./quest-team"
+import type { QuestTeamCandidate, QuestTeamCharacter } from "./quest-team"
 import { questTierCap } from "./quest-tier-cap"
 
 const unit = (

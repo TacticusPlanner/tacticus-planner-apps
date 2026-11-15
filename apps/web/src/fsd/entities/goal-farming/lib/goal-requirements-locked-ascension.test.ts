@@ -4,18 +4,13 @@ import type {
   CharacterStorageModel,
 } from "@workspace/game-catalog"
 
-import {
-  progressionOrder,
-  progressionRarity,
-  type Progression,
-} from "@workspace/game-domain"
+import { progressionOrder, progressionRarity } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal/@x/goal-farming"
 
-import {
-  calculateGoalResourceNeed,
-  type GoalRequirementParams,
-} from "./goal-requirements"
+import { calculateGoalResourceNeed } from "./goal-requirements"
+import type { GoalRequirementParams } from "./goal-requirements"
 
 // Every step costs 10 shards and 1 orb of its own rarity, so the orb map shows which steps were charged.
 const ascensionCostsById = new Map<string, AscensionCostStorageModel>(

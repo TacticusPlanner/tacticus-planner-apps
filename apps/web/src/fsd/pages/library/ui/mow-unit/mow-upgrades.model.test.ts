@@ -10,8 +10,8 @@ import {
   defaultMowRange,
   ownedMowStock,
   withFrom,
-  type MowCostRung,
 } from "./mow-upgrades.model"
+import type { MowCostRung } from "./mow-upgrades.model"
 
 // Galatian's first two recipes per ability and its recipes for levels 49 → 51, from the catalog.
 const filler = ["x", "x", "x"] as UpgradeId[]

@@ -1,10 +1,12 @@
 import {
   deriveLegendaryEventLifecycle,
   resolveLegendaryEventRunsAt,
-  type LegendaryEventPlan,
-  type LegendaryEventProgress,
-  type LegendaryEventRunResolution,
-  type LegendaryEventTeam,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventPlan,
+  LegendaryEventProgress,
+  LegendaryEventRunResolution,
+  LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 

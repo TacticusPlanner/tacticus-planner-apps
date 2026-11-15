@@ -1,11 +1,8 @@
 import { rankAt } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
-import {
-  allocatePlanInventory,
-  type EstimateResourceId,
-  type GoalNeed,
-} from "@/entities/goal-farming"
+import { allocatePlanInventory } from "@/entities/goal-farming"
+import type { EstimateResourceId, GoalNeed } from "@/entities/goal-farming"
 
 import { dailyRaidResourceKey } from "./daily-raids.domain"
 import type {

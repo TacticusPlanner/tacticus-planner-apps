@@ -1,14 +1,11 @@
-import {
-  hseRestrictionPasses,
-  type GameCatalogHseTier,
-  type GameCatalogHseTracker,
+import { hseRestrictionPasses } from "@workspace/game-catalog"
+import type {
+  GameCatalogHseTier,
+  GameCatalogHseTracker,
 } from "@workspace/game-catalog"
 
-import {
-  HSE_TOKEN_MODES,
-  isHseManualTokenMode,
-  type HseTokenMode,
-} from "./hse-token-supply"
+import { HSE_TOKEN_MODES, isHseManualTokenMode } from "./hse-token-supply"
+import type { HseTokenMode } from "./hse-token-supply"
 
 /** What one scoring unit is: a kill, a cleared wave, or a battle (one per token). */
 type HseScoringUnit = "kills" | "waves" | "battles"

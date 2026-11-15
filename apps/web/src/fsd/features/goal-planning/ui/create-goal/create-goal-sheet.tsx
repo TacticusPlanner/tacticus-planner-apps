@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -20,10 +21,8 @@ import { CreateGoalSheetTourRegistration } from "./create-goal-sheet.tutorial"
 import { CreateGoalOptions } from "./create-goal-options"
 import { GoalFormIssueSummary } from "./goal-form-issues"
 import { focusGoalField } from "./goal-form-issue-ids"
-import {
-  MOBILE_CREATE_STEPS,
-  type MobileCreateStep,
-} from "./mobile-create-step"
+import { MOBILE_CREATE_STEPS } from "./mobile-create-step"
+import type { MobileCreateStep } from "./mobile-create-step"
 import { MobileStepIndicator } from "./mobile-create-steps"
 import { UnitGoalFormFields } from "./unit-goal-form-fields"
 

@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { powerNote, type PowerFigure } from "./unit-power.model"
+import { powerNote } from "./unit-power.model"
+import type { PowerFigure } from "./unit-power.model"
 
 /**
  * The unit's power in the header's values area (character and MoW pages, desktop and mobile alike):

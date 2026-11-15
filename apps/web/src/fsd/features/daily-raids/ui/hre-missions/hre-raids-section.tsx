@@ -1,4 +1,5 @@
-import { useMemo, type ReactNode } from "react"
+import { useMemo } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -15,10 +16,8 @@ import type {
   MissionRaidPlan,
   MissionRaidsRequest,
 } from "../../model/mission-raids"
-import {
-  missionDeployGroups,
-  type MissionDeployGroup,
-} from "../../model/mission-deploy-groups"
+import { missionDeployGroups } from "../../model/mission-deploy-groups"
+import type { MissionDeployGroup } from "../../model/mission-deploy-groups"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { useActiveHomeScreenEvent } from "../../model/use-active-home-screen-event"
@@ -32,8 +31,8 @@ import {
   HreCampaignOutlook,
   HreNoDropRaids,
   RaidRows,
-  type RaidRowsView,
 } from "./hre-raids-extras"
+import type { RaidRowsView } from "./hre-raids-extras"
 
 /** With no open objective the plan still runs, for the outlook nodes and daily energy only. */
 const SUMMARY_ONLY: MissionRaidsRequest = { battlesToGo: 0, eventOnly: false }

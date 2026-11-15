@@ -4,8 +4,8 @@ import type { Progression } from "@workspace/game-domain"
 import {
   onslaughtReward,
   progressForAlliance,
-  type OnslaughtProgress,
 } from "@/entities/player-data-override"
+import type { OnslaughtProgress } from "@/entities/player-data-override"
 
 import { isMythicProgression } from "@/entities/goal-farming"
 
@@ -16,7 +16,7 @@ import { isMythicProgression } from "@/entities/goal-farming"
 export function onslaughtRewardKeyForProgression(currentProgression: string) {
   return isMythicProgression(currentProgression as Progression)
     ? ("Mythic" as const)
-    : regularRewardKey(currentProgression.split(":")[0] ?? "")
+    : regularRewardKey(currentProgression.split(":", 1)[0] ?? "")
 }
 
 /** The average shards one Onslaught run yields for a character of `alliance` at

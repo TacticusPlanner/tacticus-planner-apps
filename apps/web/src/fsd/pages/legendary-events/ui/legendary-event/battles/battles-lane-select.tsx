@@ -8,10 +8,8 @@ import {
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEventLaneId,
-} from "@/entities/legendary-event"
+import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
+import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 
 /** Plan's Battles lane dropdown, in the battle row before the battle numbers. */
 export function BattlesLaneSelect({

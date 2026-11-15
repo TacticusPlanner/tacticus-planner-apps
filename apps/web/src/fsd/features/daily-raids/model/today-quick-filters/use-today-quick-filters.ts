@@ -4,8 +4,8 @@ import { useSearchParams } from "react-router"
 import {
   parseTodayQuickFilters,
   serializeTodayQuickFilters,
-  type TodayQuickFilter,
 } from "./today-quick-filters"
+import type { TodayQuickFilter } from "./today-quick-filters"
 
 const PARAM = "quick"
 

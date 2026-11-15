@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { selectHomeEvents, type HomeEventRow } from "./select-home-events"
+import { selectHomeEvents } from "./select-home-events"
+import type { HomeEventRow } from "./select-home-events"
 
 const hse = (definitionId: string, startUtc: string, endUtc: string) => ({
   definitionId,

@@ -7,10 +7,8 @@ import {
   useEligibleCampaignBattles,
   onslaughtProgressQueries,
 } from "@/entities/player-data-override"
-import {
-  toOnslaughtRunsPerDay,
-  type FarmingCharacter,
-} from "@/entities/goal-farming"
+import { toOnslaughtRunsPerDay } from "@/entities/goal-farming"
+import type { FarmingCharacter } from "@/entities/goal-farming"
 import {
   mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
@@ -20,10 +18,8 @@ import { usePlanningSettings } from "@/entities/planning-setting"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
-import {
-  createFarmingDaysEstimator,
-  type FarmingDaysEstimator,
-} from "./farming-days"
+import { createFarmingDaysEstimator } from "./farming-days"
+import type { FarmingDaysEstimator } from "./farming-days"
 
 export type UpgradeFarmingDaysState =
   | { status: "loading" }

@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown, ChevronRight, MoreHorizontal } from "lucide-react"
 import { eventDay } from "@workspace/game-catalog"

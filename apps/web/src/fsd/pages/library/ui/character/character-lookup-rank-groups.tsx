@@ -8,11 +8,8 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  rarityClass,
-  statIcon,
-  type StatIconKind,
-} from "@workspace/game-catalog"
+import { rarityClass, statIcon } from "@workspace/game-catalog"
+import type { StatIconKind } from "@workspace/game-catalog"
 
 import { EntityIcon, RankBadge, UpgradeIcon } from "@/shared/ui"
 

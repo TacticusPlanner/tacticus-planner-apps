@@ -17,8 +17,8 @@ import {
   openMissions,
   tokenMissionAmount,
   tokenProgressesMission,
-  type LegendaryEventMission,
 } from "./missions"
+import type { LegendaryEventMission } from "./missions"
 
 const npcsById = new Map(lysanderBattleNpcs.map((npc) => [npc.id, npc]))
 const enemiesOf = (id: string) =>

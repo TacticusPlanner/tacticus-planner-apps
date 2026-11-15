@@ -1,6 +1,6 @@
-import {
-  type LaneProgressView,
-  type LegendaryEventBattle,
+import type {
+  LaneProgressView,
+  LegendaryEventBattle,
 } from "@/entities/legendary-event"
 import {
   battleEnemyCount,
@@ -9,10 +9,8 @@ import {
   sortedWaves,
 } from "../../../lib/battle-preview"
 import type { NpcRecord } from "@/entities/npc"
-import {
-  buildEnemyTile,
-  type EnemyTileViewModel,
-} from "@/widgets/battle-preview"
+import { buildEnemyTile } from "@/widgets/battle-preview"
+import type { EnemyTileViewModel } from "@/widgets/battle-preview"
 
 import type { ReadValue } from "../legendary-event-page.view-model"
 

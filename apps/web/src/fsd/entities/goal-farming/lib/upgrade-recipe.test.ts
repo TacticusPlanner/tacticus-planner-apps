@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest"
-import {
-  unitIdSchema,
-  upgradeIdSchema,
-  type Rank,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
+import type { Rank, UpgradeId } from "@workspace/game-domain"
 
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
 import {

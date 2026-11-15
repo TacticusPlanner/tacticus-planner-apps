@@ -2,7 +2,8 @@ import { useSyncExternalStore } from "react"
 import { useTranslation } from "react-i18next"
 import { Progress } from "@workspace/ui/components/progress"
 
-import { remainingTime, type SearchProgressStore } from "./search-progress"
+import { remainingTime } from "./search-progress"
+import type { SearchProgressStore } from "./search-progress"
 
 /** The upgrade search's progress (spec: the search shows its progress): a bar, the upgrade being
  *  looked for and, once there is enough to go on, at most how long is left. Before the search

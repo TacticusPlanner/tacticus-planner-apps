@@ -5,8 +5,10 @@ import {
   FilteredOutNotice,
   RaidSchedule,
   RaidState,
-  type DailyRaidsViewModel,
-  type RaidLocationTarget,
+} from "@/features/daily-raids"
+import type {
+  DailyRaidsViewModel,
+  RaidLocationTarget,
 } from "@/features/daily-raids"
 
 import { TodayCard } from "./today-card"

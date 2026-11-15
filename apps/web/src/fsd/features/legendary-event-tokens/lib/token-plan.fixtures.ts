@@ -1,8 +1,8 @@
-import {
-  buildLanePointsModel,
-  type LegendaryEventAnnotation,
-  type LegendaryEventLaneId,
-  type LegendaryEventLaneRecord,
+import { buildLanePointsModel } from "@/entities/legendary-event"
+import type {
+  LegendaryEventAnnotation,
+  LegendaryEventLaneId,
+  LegendaryEventLaneRecord,
 } from "@/entities/legendary-event"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 

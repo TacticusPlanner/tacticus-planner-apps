@@ -1,9 +1,5 @@
-import {
-  npcLibraryHref,
-  resolveLadderRow,
-  type NpcRecord,
-  type NpcStatRow,
-} from "@/entities/npc"
+import { npcLibraryHref, resolveLadderRow } from "@/entities/npc"
+import type { NpcRecord, NpcStatRow } from "@/entities/npc"
 
 /** One served enemy entry of a battle or wave: an NPC at a ladder index, `count` times. */
 export interface EnemyTileViewModel {

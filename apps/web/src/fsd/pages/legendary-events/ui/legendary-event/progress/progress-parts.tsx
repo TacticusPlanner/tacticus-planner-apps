@@ -4,12 +4,11 @@ import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  ObjectiveIcon,
-  type LaneProgressView,
-  AnnotationMarkIcon,
-  type LegendaryEventAnnotationStatus,
-  type LegendaryEventLaneId,
+import { ObjectiveIcon, AnnotationMarkIcon } from "@/entities/legendary-event"
+import type {
+  LaneProgressView,
+  LegendaryEventAnnotationStatus,
+  LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
 import {

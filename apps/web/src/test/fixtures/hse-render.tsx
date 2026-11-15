@@ -2,10 +2,8 @@ import type { i18n as I18n } from "i18next"
 
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { render } from "@/test/render"
-import {
-  useFixtureHseProjection,
-  type HseFixtureReads,
-} from "@/test/fixtures/hse-event-points"
+import { useFixtureHseProjection } from "@/test/fixtures/hse-event-points"
+import type { HseFixtureReads } from "@/test/fixtures/hse-event-points"
 import enDailies from "../../../public/locales/en/dailies.json"
 import enNpcs from "../../../public/locales/en/npcs.json"
 import enShops from "../../../public/locales/en/shops.json"
@@ -16,7 +14,7 @@ import {
   EventDetails,
   PointsProjection,
 } from "@/features/home-screen-event-points"
-import { type HseInstance } from "@/entities/home-screen-event"
+import type { HseInstance } from "@/entities/home-screen-event"
 
 // Test utilities export helpers next to the harness component.
 /* eslint-disable react-refresh/only-export-components */

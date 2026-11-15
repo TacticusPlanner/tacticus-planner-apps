@@ -1,10 +1,7 @@
 import { useTranslation } from "react-i18next"
 
-import {
-  getSupportedLanguage,
-  supportedLocales,
-  type SupportedLanguage,
-} from "@/shared/config"
+import { getSupportedLanguage, supportedLocales } from "@/shared/config"
+import type { SupportedLanguage } from "@/shared/config"
 
 /** The active supported language plus its setter, shared by every language control. */
 export function useLanguage() {

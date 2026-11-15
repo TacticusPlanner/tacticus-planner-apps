@@ -26,8 +26,8 @@ import {
   hasSustain,
   teamPowerOf,
   toggleTeamMember,
-  type IncursionCandidate,
 } from "../../model/incursion-plan.model"
+import type { IncursionCandidate } from "../../model/incursion-plan.model"
 import type { Incursion } from "../../model/incursions.model"
 
 const SUPPORT_TRAITS = ["Healer", "Mechanic"] as const

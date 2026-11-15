@@ -10,30 +10,30 @@ import {
   unitNextAscensionStep,
   teamClearEstimate,
   unitClearEstimate,
-  type ClearEstimate,
-  type ClearEstimateConfigState,
-  type LaneEstimateInputs,
-  type LegendaryEventGoalTarget,
-  type CrossLaneLeaderboardRow,
-  type LaneProgressView,
-  type LeaderboardRow,
-  type LegendaryEvent,
-  type LegendaryEventBattle,
-  type LegendaryEventLaneId,
-  type LegendaryEventLifecycle,
-  type LegendaryEventPlan,
-  type LegendaryEventProgress,
-  type LegendaryEventRewards,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRunResolution,
-  type LegendaryEventUnit,
-  type ReadState,
-  type RewardProjection,
 } from "@/entities/legendary-event"
-import {
-  nextPointsMilestone,
-  type NextPointsMilestone,
-} from "../../lib/next-points-milestone"
+import type {
+  ClearEstimate,
+  ClearEstimateConfigState,
+  LaneEstimateInputs,
+  LegendaryEventGoalTarget,
+  CrossLaneLeaderboardRow,
+  LaneProgressView,
+  LeaderboardRow,
+  LegendaryEvent,
+  LegendaryEventBattle,
+  LegendaryEventLaneId,
+  LegendaryEventLifecycle,
+  LegendaryEventPlan,
+  LegendaryEventProgress,
+  LegendaryEventRewards,
+  LegendaryEventRosterUnit,
+  LegendaryEventRunResolution,
+  LegendaryEventUnit,
+  ReadState,
+  RewardProjection,
+} from "@/entities/legendary-event"
+import { nextPointsMilestone } from "../../lib/next-points-milestone"
+import type { NextPointsMilestone } from "../../lib/next-points-milestone"
 import type { RunHistory } from "../../lib/run-history"
 
 import type { UpgradeImpactState } from "@/features/legendary-event-goals"

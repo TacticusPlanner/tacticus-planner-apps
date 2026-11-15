@@ -15,8 +15,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   adjacentSwitcherKeys,
   groupSwitcherInstances,
-  type SwitcherInstance,
 } from "./event-instance-switcher.model"
+import type { SwitcherInstance } from "./event-instance-switcher.model"
 
 const GROUPS = ["running", "upcoming", "past"] as const
 

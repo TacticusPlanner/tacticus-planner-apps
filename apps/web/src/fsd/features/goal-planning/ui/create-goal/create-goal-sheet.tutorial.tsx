@@ -1,9 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useMemo, type Dispatch, type SetStateAction } from "react"
+import { useMemo } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import { useTranslation } from "react-i18next"
 import type { Step } from "react-joyride"
 
-import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
+import { useTourPageSteps } from "@/shared/tour"
+import type { TourPageSteps } from "@/shared/tour"
 
 import type { MobileCreateStep } from "./mobile-create-step"
 

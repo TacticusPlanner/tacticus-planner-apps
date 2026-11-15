@@ -1,15 +1,10 @@
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type CSSProperties,
-  type RefObject,
-} from "react"
+import { useEffect, useId, useRef, useState } from "react"
+import type { CSSProperties, RefObject } from "react"
 import { useTranslation } from "react-i18next"
 import { Plus } from "lucide-react"
 import { characterIcon, rankIcon, traitIcon } from "@workspace/game-catalog"
-import { progressionRarity, type UnitId } from "@workspace/game-domain"
+import { progressionRarity } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 import {
   Popover,
   PopoverAnchor,
@@ -26,10 +21,8 @@ import { useLongPress } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
 import type { EventUnitChipData } from "../lib/event-unit-chip-data"
-import {
-  eventUnitChipLayout,
-  type EventUnitChipLayout,
-} from "../lib/event-unit-chip-layout"
+import { eventUnitChipLayout } from "../lib/event-unit-chip-layout"
+import type { EventUnitChipLayout } from "../lib/event-unit-chip-layout"
 import { useRankShading } from "../model/rank-shading-context"
 import { useEventUnitChipNames } from "../model/use-event-unit-chip-names"
 import { EventUnitChipDetails } from "./event-unit-chip-details"

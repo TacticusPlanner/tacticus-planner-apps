@@ -1,5 +1,6 @@
 import userEvent from "@testing-library/user-event"
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"

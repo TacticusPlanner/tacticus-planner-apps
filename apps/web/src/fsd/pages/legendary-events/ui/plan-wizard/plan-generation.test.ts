@@ -7,8 +7,8 @@ import {
   ceilingOf,
   stepTargets,
   stepVerdict,
-  type StepTarget,
 } from "./plan-ceiling"
+import type { StepTarget } from "./plan-ceiling"
 import {
   NO_TEAM_ADJUSTMENTS,
   createPlanEvaluator,
@@ -23,7 +23,8 @@ import {
   recommendUpgradesNow,
 } from "./plan-upgrades"
 import { projectedRosters } from "./plan-inputs"
-import { runSliced, type SliceClock } from "./run-sliced"
+import { runSliced } from "./run-sliced"
+import type { SliceClock } from "./run-sliced"
 import { EMPTY_PLAN, NOW_MS, RUN_3_START_MS, planInputs } from "./plan.fixtures"
 import type { LegendaryEventTeam } from "@/entities/legendary-event"
 

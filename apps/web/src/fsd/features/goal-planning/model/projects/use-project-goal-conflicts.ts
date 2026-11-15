@@ -1,11 +1,7 @@
 import { useMemo } from "react"
 
-import {
-  goalTargetKeyOf,
-  useGoalsById,
-  type GoalDetail,
-  type GoalKind,
-} from "@/entities/goal"
+import { goalTargetKeyOf, useGoalsById } from "@/entities/goal"
+import type { GoalDetail, GoalKind } from "@/entities/goal"
 
 const isInFlight = (status: string) =>
   status === "Active" || status === "Paused"

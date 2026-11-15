@@ -1,8 +1,8 @@
 import type { Alliance, UnitId } from "@workspace/game-domain"
 
-import {
-  type HseEventPointsState,
-  type HseInstance,
+import type {
+  HseEventPointsState,
+  HseInstance,
 } from "@/entities/home-screen-event"
 import type { UnitPowerContext } from "@/shared/unit-power"
 

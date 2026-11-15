@@ -1,8 +1,5 @@
-import {
-  HRE_DAILY_PAYOUTS,
-  HRE_OH_SO_CLOSE_SHARDS,
-  type HreRarityStepId,
-} from "./hre-reward-tables"
+import { HRE_DAILY_PAYOUTS, HRE_OH_SO_CLOSE_SHARDS } from "./hre-reward-tables"
+import type { HreRarityStepId } from "./hre-reward-tables"
 import type { HreBracket, HreRewardRules, HreStep } from "./hre-rules"
 
 const DAY_MS = 86_400_000
@@ -141,7 +138,7 @@ export function ownedFrom(
 ): HreOwned | null {
   const { currency, nextTier, step } = input
   if (currency === null || nextTier === null || step === null) return null
-  if (step !== "none" && !rules.steps.some((item) => item.id === step))
+  if (step !== "none" && rules.steps.every((item) => !(item.id === step)))
     return null
   const gap = stepGap(rules, step as HreOwnedStep, startRarity)
   if (gap !== null && input.toNext === null) return null

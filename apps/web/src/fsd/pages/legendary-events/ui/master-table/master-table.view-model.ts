@@ -5,17 +5,19 @@ import {
   laneThresholdPowers,
   resolveLegendaryEventRunsAt,
   LEGENDARY_EVENT_LANE_IDS,
-  type ClearEstimateConfig,
-  type ClearEstimateConfigState,
-  type LegendaryEvent,
-  type LegendaryEventBattle,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
-  type LegendaryEventProgress,
-  type MasterTableEventInput,
-  type MasterTablePointsMode,
-  type MasterTableRow,
-  type MasterTableUnitSet,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimateConfig,
+  ClearEstimateConfigState,
+  LegendaryEvent,
+  LegendaryEventBattle,
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
+  LegendaryEventProgress,
+  MasterTableEventInput,
+  MasterTablePointsMode,
+  MasterTableRow,
+  MasterTableUnitSet,
 } from "@/entities/legendary-event"
 
 export const UNIT_SETS = [
@@ -293,11 +295,10 @@ export function eventsWithoutTeams({
   unitSet: MasterTableUnitSet
 }): string[] {
   if (unitSet !== "inTeams" || !plans) return []
-  return eventIds.filter(
-    (eventId) =>
-      !plans.some(
-        (plan) => plan.eventId === eventId && plan.teams.some(isCompleteTeam)
-      )
+  return eventIds.filter((eventId) =>
+    plans.every(
+      (plan) => plan.eventId !== eventId || !plan.teams.some(isCompleteTeam)
+    )
   )
 }
 

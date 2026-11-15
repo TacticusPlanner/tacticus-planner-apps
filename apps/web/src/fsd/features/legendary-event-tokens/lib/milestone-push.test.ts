@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest"
 
 import { utharEvent } from "@/test/fixtures/legendary-events"
 
-import { milestoneGap, type MilestoneGapInput } from "./milestone-push"
+import { milestoneGap } from "./milestone-push"
+import type { MilestoneGapInput } from "./milestone-push"
 import type { TokenPlanLane } from "./token-plan"
 import { fiveTeam, mark, meleeTeam, workedLanes } from "./token-plan.fixtures"
 

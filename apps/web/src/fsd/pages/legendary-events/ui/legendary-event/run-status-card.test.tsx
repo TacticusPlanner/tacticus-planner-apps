@@ -23,9 +23,11 @@ import { fireEvent, render, screen, within } from "@/test/render"
 import {
   buildRewardOutlookViewModel,
   buildRunStatusViewModel,
-  type RewardOutlookViewModel,
-  type RunInputsViewModel,
-  type RunStatusViewModel,
+} from "./legendary-event-page.view-model"
+import type {
+  RewardOutlookViewModel,
+  RunInputsViewModel,
+  RunStatusViewModel,
 } from "./legendary-event-page.view-model"
 import { RewardOutlook } from "./reward-outlook"
 import { RunStatusCard } from "./run-status-card"

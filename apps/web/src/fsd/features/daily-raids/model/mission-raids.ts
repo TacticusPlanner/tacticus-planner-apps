@@ -3,10 +3,12 @@ import type { BattleId } from "@workspace/game-domain"
 import {
   allocatePlanInventory,
   collectFarmNodes,
-  type EstimatePlanParams,
-  type EstimateResourceId,
-  type EstimateUpgrade,
-  type GoalNeed,
+} from "@/entities/goal-farming"
+import type {
+  EstimatePlanParams,
+  EstimateResourceId,
+  EstimateUpgrade,
+  GoalNeed,
 } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
@@ -270,7 +272,7 @@ export function planMissionRaids(
   }
 
   if (battlesLeft <= 0) return done([], null)
-  if (input.eventOnly && !input.battles.some((battle) => battle.isEvent)) {
+  if (input.eventOnly && input.battles.every((battle) => !battle.isEvent)) {
     return done([], "no-event")
   }
   if (pool.length === 0) {

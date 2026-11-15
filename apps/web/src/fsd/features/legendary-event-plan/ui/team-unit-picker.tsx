@@ -1,4 +1,5 @@
-import { Fragment, useId, useMemo, useState, type Ref } from "react"
+import { Fragment, useId, useMemo, useState } from "react"
+import type { Ref } from "react"
 import { useTranslation } from "react-i18next"
 import { ShieldPlus } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -13,10 +14,12 @@ import {
   ownedUnitChipData,
   unitEffectivePower,
   useObjectiveLabel,
-  type LaneProgressView,
-  type LegendaryEventLane,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventUnit,
+} from "@/entities/legendary-event"
+import type {
+  LaneProgressView,
+  LegendaryEventLane,
+  LegendaryEventRosterUnit,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 
@@ -27,9 +30,11 @@ import {
   notMatchingStart,
   objectiveChipCounts,
   toggleObjectiveChip,
-  type PickerEstimates,
-  type PickerGoalsPreview,
-  type PickerSort,
+} from "../model/team-picker"
+import type {
+  PickerEstimates,
+  PickerGoalsPreview,
+  PickerSort,
 } from "../model/team-picker"
 import { TeamPickerObjectiveChips } from "./team-picker-objective-chips"
 import { SelectedChip } from "./team-picker-selected-chip"

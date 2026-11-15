@@ -10,7 +10,8 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { guildQueries, type RegisteredGuild } from "@/entities/guild"
+import { guildQueries } from "@/entities/guild"
+import type { RegisteredGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
 
 import { resolveGuildAccess } from "../model/guild-access"

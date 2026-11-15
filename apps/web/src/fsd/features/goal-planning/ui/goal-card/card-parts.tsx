@@ -1,11 +1,14 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import type { Rank, UpgradeId } from "@workspace/game-domain"
 
-import { rowCount, type RankAdditionalTarget } from "@/entities/goal-farming"
+import { rowCount } from "@/entities/goal-farming"
+import type { RankAdditionalTarget } from "@/entities/goal-farming"
 import { RankBadge, UpgradeIcon } from "@/shared/ui"
 
-import { PreviewSection, type PreviewState } from "../shared/preview-section"
+import { PreviewSection } from "../shared/preview-section"
+import type { PreviewState } from "../shared/preview-section"
 
 type MissingUpgrade = { id: string; label: string; missing: number }
 

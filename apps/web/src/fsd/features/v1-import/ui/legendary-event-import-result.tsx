@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next"
 
-import {
-  reasonKeyForLegendaryEventOutcome,
-  type LegendaryEventBucketKey,
-  type LegendaryEventBuckets,
+import { reasonKeyForLegendaryEventOutcome } from "../model/legendary-event-outcome-buckets"
+import type {
+  LegendaryEventBucketKey,
+  LegendaryEventBuckets,
 } from "../model/legendary-event-outcome-buckets"
 import { useLegendaryEventIssueText } from "../model/use-legendary-event-issue-text"
 import { useLegendaryEventName } from "../model/use-legendary-event-name"

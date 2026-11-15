@@ -10,10 +10,12 @@ import {
   ObjectiveIcon,
   objectiveClearedCounts,
   useObjectiveLabel,
-  type LaneProgressView,
-  type LegendaryEvent,
-  type LegendaryEventLaneId,
-  type LegendaryEventObjective,
+} from "@/entities/legendary-event"
+import type {
+  LaneProgressView,
+  LegendaryEvent,
+  LegendaryEventLaneId,
+  LegendaryEventObjective,
 } from "@/entities/legendary-event"
 
 import type { LanePotentialsViewModel } from "../lane-potential.view-model"

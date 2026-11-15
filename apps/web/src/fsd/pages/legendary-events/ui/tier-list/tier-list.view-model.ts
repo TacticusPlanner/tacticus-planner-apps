@@ -1,8 +1,5 @@
-import {
-  progressionRarity,
-  type Rank,
-  type Rarity,
-} from "@workspace/game-domain"
+import { progressionRarity } from "@workspace/game-domain"
+import type { Rank, Rarity } from "@workspace/game-domain"
 
 import type {
   HordeRelicRating,

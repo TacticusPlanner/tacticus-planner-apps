@@ -8,8 +8,10 @@ import { useAnalyticsActions } from "@/shared/analytics"
 import { useUnitName } from "@/shared/unit-name"
 
 import { goalCreateErrorText } from "../goal-create-error"
-import { bulkUnitKey, type BulkUnitPlan } from "./bulk-goal-plan"
-import { sendBulkPlans, type BulkUnitStatus } from "./bulk-goal-submit"
+import { bulkUnitKey } from "./bulk-goal-plan"
+import type { BulkUnitPlan } from "./bulk-goal-plan"
+import { sendBulkPlans } from "./bulk-goal-submit"
+import type { BulkUnitStatus } from "./bulk-goal-submit"
 
 /**
  * Creates the plans' goals one unit at a time, keeping each unit's status for the dialog. Retry

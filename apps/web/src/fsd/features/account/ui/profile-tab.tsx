@@ -1,4 +1,5 @@
-import { useId, useState, type SubmitEvent } from "react"
+import { useId, useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -15,8 +16,8 @@ import {
   DISPLAY_NAME_MAX_LENGTH,
   useUpdateDisplayName,
   validateDisplayName,
-  type CurrentUser,
 } from "@/entities/account"
+import type { CurrentUser } from "@/entities/account"
 
 import { dialogActionClassName } from "./dialog-action-slot"
 import { DialogAction } from "./dialog-actions"

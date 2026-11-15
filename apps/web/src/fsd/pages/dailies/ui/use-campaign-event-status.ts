@@ -1,9 +1,6 @@
 import type { CampaignId } from "@workspace/game-domain"
-import {
-  campaignDescriptor,
-  campaignIcon,
-  type EventsCalendarStorageModel,
-} from "@workspace/game-catalog"
+import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
+import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { useCampaignDisplay } from "@/shared/lib"

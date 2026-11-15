@@ -13,14 +13,15 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
-import { rarityRank, type Rarity, type UpgradeId } from "@workspace/game-domain"
+import { rarityRank } from "@workspace/game-domain"
+import type { Rarity, UpgradeId } from "@workspace/game-domain"
 
 import { useCampaignDisplay } from "@/shared/lib"
 import { EntityIcon, LocationChips, UpgradeIcon } from "@/shared/ui"
 
-import {
-  type CampaignInsight,
-  type CampaignInsightContribution,
+import type {
+  CampaignInsight,
+  CampaignInsightContribution,
 } from "../model/campaign-insights"
 
 export type CampaignInsightResource = {
@@ -49,7 +50,7 @@ export function CampaignInsightList<TId extends string>({
 }) {
   const { t } = useTranslation()
   const { shortLabel, tierCode } = useCampaignDisplay()
-  if (!insights.length) return null
+  if (insights.length === 0) return null
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -167,7 +168,9 @@ function groupContributions<TId extends string>(
     }
     group.value += contribution.value
     if (
-      !group.locations.some((location) => location.id === contribution.battleId)
+      group.locations.every(
+        (location) => !(location.id === contribution.battleId)
+      )
     ) {
       const descriptor = campaignDescriptor(
         contribution.campaignGroupId,

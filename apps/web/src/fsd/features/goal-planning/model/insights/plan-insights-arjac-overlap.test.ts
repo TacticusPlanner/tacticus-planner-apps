@@ -6,9 +6,8 @@ import {
   rankIndex,
   unitIdSchema,
   upgradeIdSchema,
-  type Rank,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { Rank, UnitId } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
 import {
@@ -190,8 +189,8 @@ function simulate({
               )
             ),
           ].map((key) => ({
-            tacticusCampaignId: key.split(":")[0]!,
-            type: key.split(":")[1]!,
+            tacticusCampaignId: key.split(":", 1)[0]!,
+            type: key.split(":", 2)[1]!,
             highestCompletedBattleIndex: progressCap,
           })),
           new Set()

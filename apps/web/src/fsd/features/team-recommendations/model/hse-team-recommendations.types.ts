@@ -1,7 +1,7 @@
 import type { Alliance, UnitId } from "@workspace/game-domain"
 import type { GameCatalogHseTracker } from "@workspace/game-catalog"
 
-import { type HseTokenMode } from "@/entities/home-screen-event"
+import type { HseTokenMode } from "@/entities/home-screen-event"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
 import type { RosterCharacter } from "./roster-character"

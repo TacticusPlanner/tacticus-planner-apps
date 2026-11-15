@@ -8,8 +8,8 @@ import {
   indexEncounters,
   npcsAtPlace,
   sortEncountersBySource,
-  type NpcEncounter,
 } from "./encounters"
+import type { NpcEncounter } from "./encounters"
 
 const encounter = (
   npcId: string,

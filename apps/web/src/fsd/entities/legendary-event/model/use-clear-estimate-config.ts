@@ -2,10 +2,8 @@ import { useMemo } from "react"
 
 import type { UnitPowerContext } from "@/shared/unit-power"
 
-import {
-  clearEstimateConfig,
-  type ClearEstimateConfig,
-} from "../lib/clear-estimate"
+import { clearEstimateConfig } from "../lib/clear-estimate"
+import type { ClearEstimateConfig } from "../lib/clear-estimate"
 import { useHordeModeTiers } from "./use-horde-mode-tiers"
 import { useNpcTiers } from "./use-npc-tiers"
 import type { ReadState } from "./use-read-state"

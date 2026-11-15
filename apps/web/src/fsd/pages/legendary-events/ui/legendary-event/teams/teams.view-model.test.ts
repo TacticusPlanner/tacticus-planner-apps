@@ -13,8 +13,8 @@ import {
   buildTeamCardViewModel,
   buildTeamsSectionState,
   rosterMap,
-  type TeamPowerSource,
 } from "./teams.view-model"
+import type { TeamPowerSource } from "./teams.view-model"
 
 const plan: LegendaryEventPlan = {
   eventId: "astarLysander",

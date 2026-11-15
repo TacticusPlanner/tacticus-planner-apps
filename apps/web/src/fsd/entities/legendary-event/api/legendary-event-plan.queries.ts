@@ -1,8 +1,5 @@
-import {
-  infiniteQueryOptions,
-  queryOptions,
-  type QueryClient,
-} from "@tanstack/react-query"
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query"
+import type { QueryClient } from "@tanstack/react-query"
 
 import { ApiError } from "@/shared/api"
 

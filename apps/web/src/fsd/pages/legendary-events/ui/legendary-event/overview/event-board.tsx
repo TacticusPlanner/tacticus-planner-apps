@@ -1,12 +1,5 @@
-import {
-  useCallback,
-  useId,
-  useMemo,
-  useState,
-  type FocusEvent,
-  type KeyboardEvent,
-  type ReactNode,
-} from "react"
+import { useCallback, useId, useMemo, useState } from "react"
+import type { FocusEvent, KeyboardEvent, ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -27,11 +20,13 @@ import {
   useLaneAllowedRule,
   useObjectiveLabel,
   useRankShading,
-  type LegendaryEvent,
-  type LegendaryEventLaneId,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventUnit,
   EventUnitChip,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventLaneId,
+  LegendaryEventRosterUnit,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { laneTeams } from "@/features/legendary-event-plan"
 import { useUnitName } from "@/shared/unit-name"
@@ -40,18 +35,20 @@ import type {
   ProgressGridViewModel,
   ReadValue,
 } from "../legendary-event-page.view-model"
-import {
-  rosterMap,
-  type TeamPowerSource,
-  type TeamsSectionState,
+import { rosterMap } from "../teams/teams.view-model"
+import type {
+  TeamPowerSource,
+  TeamsSectionState,
 } from "../teams/teams.view-model"
 
 import {
   buildEventBoardLane,
   buildEventBoardTable,
-  type EventBoardLane,
-  type EventBoardObjective,
-  type EventBoardTableColumn,
+} from "./event-board.view-model"
+import type {
+  EventBoardLane,
+  EventBoardObjective,
+  EventBoardTableColumn,
 } from "./event-board.view-model"
 
 /** The best-five line: V1 drew a dashed rule under the fifth unit of every column. */

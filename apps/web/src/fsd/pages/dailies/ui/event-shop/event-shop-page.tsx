@@ -11,8 +11,10 @@ import {
 import {
   compareEventShopsByStart,
   isDatedEventShop,
-  type GameCatalogEventShop,
-  type GameCatalogEventShopRecord,
+} from "@workspace/game-catalog"
+import type {
+  GameCatalogEventShop,
+  GameCatalogEventShopRecord,
 } from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
@@ -25,8 +27,8 @@ import {
   defaultEventId,
   normalizeEventShopTab,
   parseEventShopDay,
-  type EventShopTab,
 } from "../../model/event-shop-route"
+import type { EventShopTab } from "../../model/event-shop-route"
 import type { DailiesOutletContext } from "../dailies-layout"
 import { EventShopUndated } from "./event-shop-undated"
 import { EventShopView } from "./event-shop-view"

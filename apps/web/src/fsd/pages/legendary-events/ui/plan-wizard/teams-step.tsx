@@ -1,4 +1,5 @@
-import { useDeferredValue, useMemo, useState, type KeyboardEvent } from "react"
+import { useDeferredValue, useMemo, useState } from "react"
+import type { KeyboardEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Pencil, Plus, Undo2, X } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
@@ -11,23 +12,21 @@ import {
   teamClearEstimate,
   unitClearEstimate,
   useObjectiveLabel,
-  type LegendaryEventLaneId,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
-import {
-  TeamEditorDialog,
-  type PickerEstimates,
-} from "@/features/legendary-event-plan"
+import type {
+  LegendaryEventLaneId,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+} from "@/entities/legendary-event"
+import { TeamEditorDialog } from "@/features/legendary-event-plan"
+import type { PickerEstimates } from "@/features/legendary-event-plan"
 import { EntityIcon } from "@/shared/ui"
 
-import {
-  objectivesAddedBySameUnits,
-  teamSwaps,
-  type TeamSwap,
-} from "./plan-evaluator"
+import { objectivesAddedBySameUnits, teamSwaps } from "./plan-evaluator"
+import type { TeamSwap } from "./plan-evaluator"
 import { PLAN_LANE_IDS } from "./plan-inputs"
-import { memberKey, type DraftTeam } from "./plan-teams"
+import { memberKey } from "./plan-teams"
+import type { DraftTeam } from "./plan-teams"
 import type { PlanDraft } from "./use-plan-draft"
 
 /** The team editor's view of a draft team: the depth the user set shows as the run's manual depth. */

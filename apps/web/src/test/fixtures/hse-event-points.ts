@@ -1,16 +1,16 @@
 import {
   buildHseEventPointsState,
-  type HseCatalogRead,
-  type HseInstance,
-  type HsePlayerRead,
   useHseProjectionInputs,
 } from "@/entities/home-screen-event"
+import type {
+  HseCatalogRead,
+  HseInstance,
+  HsePlayerRead,
+} from "@/entities/home-screen-event"
 
-import {
-  hseDefinitionConfig,
-  type HseFixtureId,
-} from "./home-screen-event-scoring"
+import { hseDefinitionConfig } from "./home-screen-event-scoring"
 import scoring from "./home-screen-event-scoring.json"
+import type { HseFixtureId } from "./home-screen-event-scoring"
 
 // Stands in for `useHseProjection` in page and tour tests: the real state builder and the real
 // persisted inputs over fixture reads (the real scoring JSON, a synced High-tier account), so the

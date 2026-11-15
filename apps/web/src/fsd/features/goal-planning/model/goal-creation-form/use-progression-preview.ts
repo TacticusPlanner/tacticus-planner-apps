@@ -395,7 +395,7 @@ export function summariseShopCurrencySpend(
       (byCurrency.get(offer.cost.currency) ?? 0) + spend
     )
   }
-  return [...byCurrency.entries()].map(([currency, amount]) => ({
+  return [...byCurrency].map(([currency, amount]) => ({
     currency,
     amount,
   }))

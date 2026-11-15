@@ -18,8 +18,8 @@ import {
   npcPowerAt,
   rosterCharacterPower,
   useUnitPowerContext,
-  type UnitPowerContext,
 } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import {
   eligibleCandidates,
@@ -29,11 +29,14 @@ import {
   suggestIncursionTeam,
   teamPowerOf,
   tierPower,
-  type IncursionCandidate,
-  type TierPower,
-  type TierRunsEstimate,
 } from "./incursion-plan.model"
-import { enemyStatRow, type Incursion } from "./incursions.model"
+import type {
+  IncursionCandidate,
+  TierPower,
+  TierRunsEstimate,
+} from "./incursion-plan.model"
+import { enemyStatRow } from "./incursions.model"
+import type { Incursion } from "./incursions.model"
 
 /** The suggested team from the synced roster, or why there is none. */
 type IncursionTeamPlan =

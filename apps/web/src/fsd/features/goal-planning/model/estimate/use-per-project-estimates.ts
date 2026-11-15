@@ -8,15 +8,14 @@ import {
   getPlayerMow,
 } from "@workspace/player-data/queries"
 
-import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
+import { useGlobalGoalPlan } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { useCatalogDataset } from "@/shared/local-data"
 
 import { estimateNewGoalsForProject } from "./per-project-estimate"
-import {
-  toOnslaughtRunsPerDay,
-  type EstimateOutcome,
-} from "@/entities/goal-farming"
+import { toOnslaughtRunsPerDay } from "@/entities/goal-farming"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { readyData } from "../shared/read-data"
 

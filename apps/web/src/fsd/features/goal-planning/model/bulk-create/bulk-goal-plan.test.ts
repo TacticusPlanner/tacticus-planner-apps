@@ -7,9 +7,8 @@ import {
   buildBulkGoalPlans,
   buildUnitPlan,
   bulkPlanTypesOverLimit,
-  type BulkGoalTargets,
-  type BulkGoalUnit,
 } from "./bulk-goal-plan"
+import type { BulkGoalTargets, BulkGoalUnit } from "./bulk-goal-plan"
 
 const NONE: BulkGoalTargets = {
   unlock: true,

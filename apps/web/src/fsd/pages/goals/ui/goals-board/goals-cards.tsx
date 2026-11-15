@@ -4,15 +4,16 @@ import { cn } from "@workspace/ui/lib/utils"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import { useGoalCatalog } from "@/features/goal-planning"
-import { SortableList, type SortableRenderProps } from "@/shared/ui"
+import { SortableList } from "@/shared/ui"
+import type { SortableRenderProps } from "@/shared/ui"
 import { ProgressLegend } from "../shared/goal-progress-visuals"
 import { GoalCard } from "./goal-card"
 import {
   drawsPotentialBar,
   isReachedRow,
   REACHED_ROW_CLASS,
-  type GoalsListProps,
 } from "./goal-row-utils"
+import type { GoalsListProps } from "./goal-row-utils"
 import { SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffItem } from "./season-fit-ui"
 

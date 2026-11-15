@@ -39,7 +39,8 @@ vi.mock("@dnd-kit/sortable", async (importOriginal) => {
   }
 })
 
-import { SortableList, type SortableListStrategy } from "./sortable-list"
+import { SortableList } from "./sortable-list"
+import type { SortableListStrategy } from "./sortable-list"
 
 const IDS = ["a", "b", "c", "d", "e", "f"]
 

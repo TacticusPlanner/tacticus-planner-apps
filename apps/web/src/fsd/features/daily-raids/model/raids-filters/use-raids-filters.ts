@@ -1,12 +1,8 @@
 import { useSyncExternalStore } from "react"
 import { Rarity } from "@workspace/game-domain"
 
-import {
-  emptyRaidsFilters,
-  RAIDS_CAMPAIGN_TYPES,
-  type RaidsCampaignType,
-  type RaidsFilters,
-} from "./raids-filters.domain"
+import { emptyRaidsFilters, RAIDS_CAMPAIGN_TYPES } from "./raids-filters.domain"
+import type { RaidsCampaignType, RaidsFilters } from "./raids-filters.domain"
 import { safeStorage } from "@/shared/lib"
 
 const STORAGE_KEY = "raids-filters.v1"

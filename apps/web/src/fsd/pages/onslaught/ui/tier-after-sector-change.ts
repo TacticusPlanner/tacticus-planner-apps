@@ -1,7 +1,7 @@
-import {
-  onslaughtSectors,
-  type OnslaughtSector,
-  type OnslaughtTier,
+import { onslaughtSectors } from "@/entities/player-data-override"
+import type {
+  OnslaughtSector,
+  OnslaughtTier,
 } from "@/entities/player-data-override"
 
 /** Moving up a sector starts at tier 1, moving down lands on 4 (complete). */

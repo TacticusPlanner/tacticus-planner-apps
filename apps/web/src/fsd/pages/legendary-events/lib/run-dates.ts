@@ -1,8 +1,10 @@
 import {
   LEGENDARY_EVENT_RUN_COUNT,
   LEGENDARY_EVENT_RUN_DURATION_MS,
-  type LegendaryEventRun,
-  type LegendaryEventSchedule,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventRun,
+  LegendaryEventSchedule,
 } from "@/entities/legendary-event"
 
 const DAY_MS = 24 * 60 * 60 * 1000

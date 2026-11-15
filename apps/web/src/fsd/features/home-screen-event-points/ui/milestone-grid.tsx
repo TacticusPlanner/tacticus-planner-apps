@@ -1,7 +1,8 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Infinity as InfinityIcon } from "lucide-react"
-import { chestIcon, type GameCatalogHseTier } from "@workspace/game-catalog"
+import { chestIcon } from "@workspace/game-catalog"
+import type { GameCatalogHseTier } from "@workspace/game-catalog"
 import {
   Tooltip,
   TooltipContent,

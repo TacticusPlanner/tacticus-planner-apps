@@ -6,10 +6,10 @@ import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { chunkOrUndefined, readyData } from "../shared/read-data"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
-import {
-  lastIndexByTrack,
-  type CampaignGateContext,
-  type GateCampaignDefinition,
+import { lastIndexByTrack } from "./campaign-track-gate"
+import type {
+  CampaignGateContext,
+  GateCampaignDefinition,
 } from "./campaign-track-gate"
 
 /** Elite campaigns are the ones the game gates on Power Level. */

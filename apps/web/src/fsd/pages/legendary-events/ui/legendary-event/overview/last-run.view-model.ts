@@ -1,21 +1,21 @@
-import {
-  type LegendaryEvent,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventLifecycleState,
-  type LegendaryEventProgress,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRunRecord,
-  type NamedTeam,
-  type ReadState,
-  type RosterSnapshot,
+import type {
+  LegendaryEvent,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventLifecycleState,
+  LegendaryEventProgress,
+  LegendaryEventRosterUnit,
+  LegendaryEventRunRecord,
+  NamedTeam,
+  ReadState,
+  RosterSnapshot,
 } from "@/entities/legendary-event"
 import {
   previousRunTeamClears,
   recordHistory,
   selectRunRecords,
-  type RunHistory,
 } from "../../../lib/run-history"
+import type { RunHistory } from "../../../lib/run-history"
 
 import type { ReadValue } from "../legendary-event-page.view-model"
 

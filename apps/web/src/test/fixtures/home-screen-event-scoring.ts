@@ -1,7 +1,5 @@
-import {
-  parseHseConfig,
-  type GameCatalogHseConfig,
-} from "@workspace/game-catalog"
+import { parseHseConfig } from "@workspace/game-catalog"
+import type { GameCatalogHseConfig } from "@workspace/game-catalog"
 
 import scoring from "./home-screen-event-scoring.json"
 

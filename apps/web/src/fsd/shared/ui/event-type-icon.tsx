@@ -15,8 +15,8 @@ import {
   Trophy,
   UserPlus,
   Zap,
-  type LucideIcon,
 } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 
 // Id-based icon resolution keyed by the definition's structural `type` field (not its specific `id`,
 // since every definition of a given type shares the same visual language) — no icon asset exists for

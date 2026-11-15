@@ -1,11 +1,8 @@
 import { matchesSearch } from "@/shared/lib"
 
 import type { NpcFilters, NpcGroup, NpcVariation } from "../model/types"
-import {
-  encounterPlaces,
-  type NpcEncounter,
-  type NpcEncounterLookup,
-} from "./encounters"
+import { encounterPlaces } from "./encounters"
+import type { NpcEncounter, NpcEncounterLookup } from "./encounters"
 
 export const emptyNpcFilters: NpcFilters = {
   search: "",
@@ -69,7 +66,7 @@ function matchesNpcAttributes(
   }
   if (filters.damageTypes.length > 0) {
     const dealt = variationDamageTypes(variation)
-    if (!filters.damageTypes.every((type) => dealt.includes(type))) return false
+    if (filters.damageTypes.some((type) => !dealt.includes(type))) return false
   }
   return filters.traits.every((trait) => variation.traits.includes(trait))
 }

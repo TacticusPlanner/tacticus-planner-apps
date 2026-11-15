@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { type Progression, type Rank } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import { progressionText } from "@/shared/ui"
 

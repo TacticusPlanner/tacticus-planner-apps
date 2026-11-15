@@ -1,10 +1,9 @@
 import { useTranslation } from "react-i18next"
 
-import {
-  defeatAllIcon,
-  useObjectiveLabel,
-  type LegendaryEventLane,
-  type ObjectiveIconModel,
+import { defeatAllIcon, useObjectiveLabel } from "@/entities/legendary-event"
+import type {
+  LegendaryEventLane,
+  ObjectiveIconModel,
 } from "@/entities/legendary-event"
 
 /** One grid column: defeat-all, then the five objectives in catalog order. */

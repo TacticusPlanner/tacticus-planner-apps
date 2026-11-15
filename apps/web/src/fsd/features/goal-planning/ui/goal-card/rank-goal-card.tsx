@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState, type ReactNode } from "react"
+import { useMemo, useRef, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import {
@@ -8,12 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import {
-  lastRank,
-  rankIndex,
-  rankOrder,
-  type Rank,
-} from "@workspace/game-domain"
+import { lastRank, rankIndex, rankOrder } from "@workspace/game-domain"
+import type { Rank } from "@workspace/game-domain"
 
 import type { FarmingStrategy } from "@/entities/goal"
 import type { RankAdditionalTarget } from "@/entities/goal-farming"
@@ -28,8 +25,8 @@ import {
   AdditionalTargetLabel,
   ResourcePreviewSection,
   TargetRangeLine,
-  type ResourcePreview,
 } from "./card-parts"
+import type { ResourcePreview } from "./card-parts"
 import { rankLadderSteps } from "./ladder-steps"
 import { TargetLadder } from "./target-ladder"
 

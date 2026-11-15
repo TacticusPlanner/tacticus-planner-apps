@@ -4,10 +4,10 @@ import { act, renderHook } from "@testing-library/react"
 import { toast } from "sonner"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import {
-  legendaryEventPlanQueries,
-  type LegendaryEventPlan,
-  type LegendaryEventRunInputs,
+import { legendaryEventPlanQueries } from "@/entities/legendary-event"
+import type {
+  LegendaryEventPlan,
+  LegendaryEventRunInputs,
 } from "@/entities/legendary-event"
 import { ApiError } from "@/shared/api"
 

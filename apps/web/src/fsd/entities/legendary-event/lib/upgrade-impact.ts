@@ -1,15 +1,13 @@
 import type { Rarity } from "@workspace/game-domain"
 
 import type { LegendaryEventRosterUnit } from "../model/types"
-import {
-  teamClearEstimate,
-  type ClearEstimateConfig,
-  type ClearEstimateRoster,
-} from "./clear-estimate"
+import { teamClearEstimate } from "./clear-estimate"
+import type { ClearEstimateConfig, ClearEstimateRoster } from "./clear-estimate"
 import type { LanePointsModel } from "./lane-points-model"
 import { laneReachablePoints } from "./reachable-points"
 import type { LaneProgressView } from "./synced-lane-progress"
-import { nextUpgradeSteps, type UpgradeStep } from "./upgrade-steps"
+import { nextUpgradeSteps } from "./upgrade-steps"
+import type { UpgradeStep } from "./upgrade-steps"
 
 /** One team of a lane as the impact reads it. */
 export interface ImpactTeam {

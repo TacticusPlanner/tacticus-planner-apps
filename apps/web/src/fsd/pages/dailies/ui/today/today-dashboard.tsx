@@ -2,10 +2,10 @@ import type { BattleId } from "@workspace/game-domain"
 import { useState } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  FilteredOutNotice,
-  type DailyRaidsViewModel,
-  type RaidLocationTarget,
+import { FilteredOutNotice } from "@/features/daily-raids"
+import type {
+  DailyRaidsViewModel,
+  RaidLocationTarget,
 } from "@/features/daily-raids"
 import { CampaignBattleDialog } from "@/widgets/battle-preview"
 

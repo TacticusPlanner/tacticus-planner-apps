@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest"
 import type { UnitId } from "@workspace/game-domain"
 
-import { searchUnits, type UnitListItem } from "./unit-list.model"
+import { searchUnits } from "./unit-list.model"
+import type { UnitListItem } from "./unit-list.model"
 
 const unit = (id: string, name: string, searchNames?: string[]) =>
   ({

@@ -1,12 +1,11 @@
-import {
-  MAX_TEAMS_PER_LANE,
-  teamDepthForRun,
-  type CreateTeamRequestDto,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
-  type UpdateTeamRequestDto,
+import { MAX_TEAMS_PER_LANE, teamDepthForRun } from "@/entities/legendary-event"
+import type {
+  CreateTeamRequestDto,
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+  UpdateTeamRequestDto,
 } from "@/entities/legendary-event"
 import { ApiError } from "@/shared/api"
 

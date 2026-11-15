@@ -10,7 +10,8 @@ import { Input } from "@workspace/ui/components/input"
 import { unitOriginState } from "@/entities/unit"
 import { EntityIcon } from "@/shared/ui"
 
-import { searchUnits, type UnitListItem } from "./unit-list.model"
+import { searchUnits } from "./unit-list.model"
+import type { UnitListItem } from "./unit-list.model"
 
 /**
  * A Library unit list (characters, Machines of War): name search and a wrapping grid of round

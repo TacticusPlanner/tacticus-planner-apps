@@ -7,12 +7,11 @@ import type { Rarity } from "@workspace/game-domain"
 
 import { useGlobalGoalPlan } from "@/entities/goal"
 import { usePlanInsights } from "@/features/goal-planning"
-import {
-  buildCoverage,
-  toCoverageNeeds,
-  type ClassifiedEntry,
-  type CoverageRow,
-  type XpPerBook,
+import { buildCoverage, toCoverageNeeds } from "@/features/shops/event-planner"
+import type {
+  ClassifiedEntry,
+  CoverageRow,
+  XpPerBook,
 } from "@/features/shops/event-planner"
 import { useShopNeeds } from "@/features/shops/recommendations"
 import { useCatalogDataset } from "@/shared/local-data"

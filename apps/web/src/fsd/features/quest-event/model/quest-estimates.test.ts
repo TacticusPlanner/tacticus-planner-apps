@@ -11,8 +11,8 @@ import {
   projectQuest,
   questBattlePower,
   questVerdict,
-  type QuestBattleEstimate,
 } from "./quest-estimates"
+import type { QuestBattleEstimate } from "./quest-estimates"
 import type { QuestObjectiveBadge, QuestTeam } from "./quest-team"
 
 const scoring = questEventsFixture[0]!.scorePoints

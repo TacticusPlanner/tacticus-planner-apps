@@ -1,9 +1,15 @@
-import { memo, type Dispatch, type SetStateAction } from "react"
+import { memo } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import { useTranslation } from "react-i18next"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { TableCell } from "@workspace/ui/components/table"
 
-import { useGoalCatalog, type GoalMenuMoves } from "@/features/goal-planning"
+import {
+  useGoalCatalog,
+  GoalProjectBadges,
+  GoalUnitIcon,
+} from "@/features/goal-planning"
+import type { GoalMenuMoves } from "@/features/goal-planning"
 import { GoalDragHandle } from "./goal-drag-handle"
 import { GoalRowActions } from ".//goal-row-actions"
 import { GoalResourceChips } from "../shared/goal-resource-chips"
@@ -13,7 +19,6 @@ import {
 } from "../shared/goal-progress-visuals"
 import { CoveredByNote } from "../shared/covered-by-note"
 import { GoalCheckpoints } from "../shared/goal-checkpoints"
-import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-planning"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
 import type { SortableRenderProps } from "@/shared/ui"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
@@ -30,8 +35,8 @@ import {
   sameRowSlice,
   stopRowNavigation,
   toggleGoalStatus,
-  type GoalsListProps,
 } from "./goal-row-utils"
+import type { GoalsListProps } from "./goal-row-utils"
 
 type GoalRowCellsProps = Pick<
   GoalsListProps,

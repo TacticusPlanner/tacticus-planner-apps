@@ -1,13 +1,13 @@
-import { useId, useState, type ReactNode } from "react"
+import { useId, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  doneMissionCount,
-  useMissionLabel,
-  type LegendaryEventMission,
-  type LegendaryEventRun,
+import { doneMissionCount, useMissionLabel } from "@/entities/legendary-event"
+import type {
+  LegendaryEventMission,
+  LegendaryEventRun,
 } from "@/entities/legendary-event"
 import { NumberStepper } from "@/shared/ui"
 

@@ -39,10 +39,10 @@ import {
   COMPARE_LATEST,
   compareLanes,
   compareOrders,
-  type CompareOrder,
-  type CompareQuery,
 } from "../../../model/compare-query"
-import { compareFields, type CompareField } from "../../../model/compare-view"
+import type { CompareOrder, CompareQuery } from "../../../model/compare-query"
+import { compareFields } from "../../../model/compare-view"
+import type { CompareField } from "../../../model/compare-view"
 import { sourceLabel } from "../../../model/compare-labels"
 import { useSourceLabels } from "../../../model/use-source-labels"
 import type { CompareSource } from "../../../model/use-compare-data"

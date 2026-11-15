@@ -8,10 +8,8 @@ import type {
 } from "@/entities/goal-farming"
 import type { Battle, FarmLocation } from "@/shared/lib"
 
-import {
-  computeCampaignProgression,
-  type ProgressionCampaignDefinition,
-} from "./plan-campaign-progression"
+import { computeCampaignProgression } from "./plan-campaign-progression"
+import type { ProgressionCampaignDefinition } from "./plan-campaign-progression"
 
 const res = (id: string) => id as EstimateResourceId
 const bid = (id: string) => id as BattleId

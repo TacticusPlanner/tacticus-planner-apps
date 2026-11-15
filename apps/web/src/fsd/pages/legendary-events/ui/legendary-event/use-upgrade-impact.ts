@@ -3,19 +3,21 @@ import { useCallback, useMemo } from "react"
 import {
   buildLanePointsModel,
   useTeamDisplayName,
-  type LegendaryEvent,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
-  type LegendaryEventUnit,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { buildUpgradeImpactState } from "@/features/legendary-event-goals"
 import { laneTeams } from "@/features/legendary-event-plan"
 import { useUnitName } from "@/shared/unit-name"
 
-import {
-  laneEstimateInputs,
-  type ClearEstimatesViewModel,
-  type ProgressGridViewModel,
+import { laneEstimateInputs } from "./legendary-event-page.view-model"
+import type {
+  ClearEstimatesViewModel,
+  ProgressGridViewModel,
 } from "./legendary-event-page.view-model"
 
 type UpgradeImpactInputs = Parameters<typeof buildUpgradeImpactState>[0]

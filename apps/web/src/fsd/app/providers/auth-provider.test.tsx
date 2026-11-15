@@ -1,4 +1,5 @@
-import { StrictMode, type ReactNode } from "react"
+import { StrictMode } from "react"
+import type { ReactNode } from "react"
 import { render } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 

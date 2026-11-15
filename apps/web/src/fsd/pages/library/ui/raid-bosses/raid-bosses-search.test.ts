@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  repairRaidBossesSearch,
-  type RaidBossesSearchState,
-} from "./raid-bosses-search"
+import { repairRaidBossesSearch } from "./raid-bosses-search"
+import type { RaidBossesSearchState } from "./raid-bosses-search"
 
 const known: RaidBossesSearchState = {
   catalogReady: true,

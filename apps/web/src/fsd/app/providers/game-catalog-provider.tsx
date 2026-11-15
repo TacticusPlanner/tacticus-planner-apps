@@ -1,22 +1,16 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-  useSyncExternalStore,
-  type ReactNode,
-} from "react"
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react"
+import type { ReactNode } from "react"
 
-import { useQueryClient, type QueryClient } from "@tanstack/react-query"
-import {
-  hasCompleteGameCatalogCache,
-  type GameCatalogSyncProgress,
-  type GameCatalogSyncResult,
+import { useQueryClient } from "@tanstack/react-query"
+import type { QueryClient } from "@tanstack/react-query"
+import { hasCompleteGameCatalogCache } from "@workspace/game-catalog"
+import type {
+  GameCatalogSyncProgress,
+  GameCatalogSyncResult,
 } from "@workspace/game-catalog"
 
-import {
-  GameCatalogContext,
-  type GameCatalogStatus,
-} from "@/shared/game-catalog-status"
+import { GameCatalogContext } from "@/shared/game-catalog-status"
+import type { GameCatalogStatus } from "@/shared/game-catalog-status"
 import { reportError } from "@/shared/lib"
 import {
   createProgressStore,

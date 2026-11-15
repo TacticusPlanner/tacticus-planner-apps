@@ -5,14 +5,10 @@ import { setTestAuth } from "@/test/auth"
 import { act, renderHook, waitFor } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
-import {
-  defaultCollectionQuery,
-  type CollectionQuery,
-} from "./collection-query"
-import {
-  useCollectionView,
-  type CollectionViewState,
-} from "./use-collection-view"
+import { defaultCollectionQuery } from "./collection-query"
+import type { CollectionQuery } from "./collection-query"
+import { useCollectionView } from "./use-collection-view"
+import type { CollectionViewState } from "./use-collection-view"
 
 // `testTitus` has no English translation, so its display name can only come from the catalog.
 const titusRecord = {
@@ -234,7 +230,7 @@ describe("useCollectionView", () => {
 
     await waitFor(() => expect(result.current.status).toBe("ready"))
     expect(Object.values(ready(result.current)?.quickFilters ?? {})).toEqual(
-      Array(8).fill("needsRoster")
+      new Array(8).fill("needsRoster")
     )
   })
 

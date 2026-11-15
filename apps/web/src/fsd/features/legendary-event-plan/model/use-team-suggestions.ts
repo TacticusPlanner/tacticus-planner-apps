@@ -5,8 +5,10 @@ import type { LegendaryEventUnit } from "@/entities/legendary-event"
 import {
   DEFAULT_SUGGESTION_TOGGLES,
   buildTeamSuggestionsState,
-  type TeamSuggestionsSource,
-  type TeamSuggestionsToggles,
+} from "./team-suggestions-state"
+import type {
+  TeamSuggestionsSource,
+  TeamSuggestionsToggles,
 } from "./team-suggestions-state"
 
 /** The dialog lists at most this many proposals (after Show more). */

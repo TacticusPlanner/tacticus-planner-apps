@@ -31,8 +31,8 @@ import {
   useLegendaryEvents,
   useLegendaryEventsBattles,
   useNpcTiers,
-  type NpcTierTile,
 } from "@/entities/legendary-event"
+import type { NpcTierTile } from "@/entities/legendary-event"
 import { NpcPortrait, useNpcLabels, useNpcsById } from "@/entities/npc"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -41,8 +41,8 @@ import {
   npcTierListSearchParams,
   parseNpcTierListFilters,
   rotationEventIds,
-  type NpcTierListUrlFilters,
 } from "./npc-tier-list.view-model"
+import type { NpcTierListUrlFilters } from "./npc-tier-list.view-model"
 import { formatMultiplier } from "./tier-list.view-model"
 import { TierRow } from "./tier-row"
 

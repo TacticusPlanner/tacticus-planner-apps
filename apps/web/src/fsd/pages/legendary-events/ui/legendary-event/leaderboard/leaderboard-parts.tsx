@@ -10,12 +10,11 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  ObjectiveIcon,
-  rankTone,
-  type LeaderboardUnitRow,
-  type LegendaryEventLaneId,
-  type ObjectiveIconModel,
+import { ObjectiveIcon, rankTone } from "@/entities/legendary-event"
+import type {
+  LeaderboardUnitRow,
+  LegendaryEventLaneId,
+  ObjectiveIconModel,
 } from "@/entities/legendary-event"
 import { UnitGoalBadge } from "@/entities/goal"
 import {

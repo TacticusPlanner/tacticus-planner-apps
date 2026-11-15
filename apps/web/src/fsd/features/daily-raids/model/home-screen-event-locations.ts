@@ -1,9 +1,11 @@
 import type { BattleId } from "@workspace/game-domain"
 
-import { collectFarmNodes, type EstimateUpgrade } from "@/entities/goal-farming"
+import { collectFarmNodes } from "@/entities/goal-farming"
+import type { EstimateUpgrade } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
-import { dropEfficiency, type EventFarmOrder } from "./home-screen-event-farm"
+import { dropEfficiency } from "./home-screen-event-farm"
+import type { EventFarmOrder } from "./home-screen-event-farm"
 
 /** One location of the Dailies > HSE list with "Ignore goals" on. */
 export type EventLocation = {

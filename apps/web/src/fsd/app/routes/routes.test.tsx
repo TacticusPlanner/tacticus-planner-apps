@@ -1,11 +1,7 @@
-import { Suspense, type ReactNode } from "react"
-import {
-  MemoryRouter,
-  Route,
-  Routes,
-  useLocation,
-  type RouteObject,
-} from "react-router"
+import { Suspense } from "react"
+import type { ReactNode } from "react"
+import { MemoryRouter, Route, Routes, useLocation } from "react-router"
+import type { RouteObject } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
 import { InteractionStatus } from "@azure/msal-browser"

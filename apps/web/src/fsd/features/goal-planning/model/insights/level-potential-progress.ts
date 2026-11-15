@@ -1,9 +1,5 @@
-import {
-  allocateLevelXp,
-  requiredLevelForGoal,
-  type LevelRules,
-  type LevelXpNeed,
-} from "@/entities/goal-farming"
+import { allocateLevelXp, requiredLevelForGoal } from "@/entities/goal-farming"
+import type { LevelRules, LevelXpNeed } from "@/entities/goal-farming"
 import type { GoalDetail } from "@/entities/goal"
 
 import { levelPotentialRatio } from "../attainment/level-requirement-progress"

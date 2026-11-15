@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next"
 import {
   orderLegendaryEventsForHub,
   useLegendaryEvents,
-  type LegendaryEvent,
 } from "@/entities/legendary-event"
+import type { LegendaryEvent } from "@/entities/legendary-event"
 import { useUnitName } from "@/shared/unit-name"
 
 /** One Legendary Event a project can relate to: its catalog id and localized name. */

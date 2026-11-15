@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { eventDays, type EventShopDay } from "@workspace/game-catalog"
+import { eventDays } from "@workspace/game-catalog"
+import type { EventShopDay } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 

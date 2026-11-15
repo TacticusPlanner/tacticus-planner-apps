@@ -4,7 +4,8 @@ import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
 import type { GoalDetail } from "@/entities/goal"
 import type { FarmingCharacter, FarmingUpgrade } from "@/entities/goal-farming"
 
-import { aggregateShopNeeds, type AggregateShopNeedsParams } from "./shop-needs"
+import { aggregateShopNeeds } from "./shop-needs"
+import type { AggregateShopNeedsParams } from "./shop-needs"
 
 const heroId = unitIdSchema.parse("eldarFarseer")
 const otherId = unitIdSchema.parse("eldarAutarch")

@@ -1,4 +1,5 @@
-import { useId, useMemo, useRef, useState, type SubmitEvent } from "react"
+import { useId, useMemo, useRef, useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -10,14 +11,16 @@ import {
   objectiveClearedThrough,
   teamEffectiveDepth,
   useObjectiveLabel,
-  type ClearEstimate,
-  type LaneProgressView,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
-  type LegendaryEventUnit,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimate,
+  LaneProgressView,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventRosterUnit,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import {
   ResponsiveDialog,
@@ -46,10 +49,8 @@ import {
   editStartsFromEstimate,
 } from "../model/clear-depth-display"
 import type { PickerEstimates, PickerGoalsPreview } from "../model/team-picker"
-import {
-  depthEstimateContext,
-  type DepthEstimateContext,
-} from "../model/depth-estimate-context"
+import { depthEstimateContext } from "../model/depth-estimate-context"
+import type { DepthEstimateContext } from "../model/depth-estimate-context"
 import type { PlanMutationOutcome } from "../model/use-legendary-event-plan"
 import { ClearDepthField } from "./clear-depth-field"
 import { TeamEditorSummary } from "./team-editor-summary"

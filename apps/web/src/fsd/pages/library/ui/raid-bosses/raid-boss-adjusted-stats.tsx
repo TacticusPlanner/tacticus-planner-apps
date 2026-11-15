@@ -18,11 +18,11 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 
-import {
-  applyStatAdjustment,
-  type AdjustedStatsView,
-  type RaidBoss,
-  type RaidBossStatStep,
+import { applyStatAdjustment } from "@/entities/raid-boss"
+import type {
+  AdjustedStatsView,
+  RaidBoss,
+  RaidBossStatStep,
 } from "@/entities/raid-boss"
 
 export type RaidBossAdjustedProps = {
@@ -186,7 +186,7 @@ export function RaidBossAdjustedStats({
         </p>
       ) : (
         <>
-          {rows.length || hitsDelta ? (
+          {rows.length > 0 || hitsDelta ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -241,7 +241,7 @@ export function RaidBossAdjustedStats({
             </Table>
           ) : null}
 
-          {removed.length ? (
+          {removed.length > 0 ? (
             <div className="flex flex-col gap-1 text-sm">
               <span className="text-muted-foreground">
                 {t("raidBosses.fieldEnemies")}

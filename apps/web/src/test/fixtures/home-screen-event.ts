@@ -3,14 +3,12 @@ import {
   homeScreenEventRaidRule,
   listHomeScreenEventInstances,
   selectActiveHomeScreenEvent,
-  type HomeScreenEventEntry,
 } from "@/features/daily-raids"
+import type { HomeScreenEventEntry } from "@/features/daily-raids"
 
-import {
-  hseDefinitionConfig,
-  type HseFixtureId,
-} from "./home-screen-event-scoring"
+import { hseDefinitionConfig } from "./home-screen-event-scoring"
 import scoring from "./home-screen-event-scoring.json"
+import type { HseFixtureId } from "./home-screen-event-scoring"
 
 /** An HSE definition as the catalog serves it: its fixture `config.hse`, or no config (Against the
  * Tide). */

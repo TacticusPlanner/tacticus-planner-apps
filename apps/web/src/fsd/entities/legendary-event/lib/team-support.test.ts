@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { withSupport, type SupportCandidate } from "./team-support"
+import { withSupport } from "./team-support"
+import type { SupportCandidate } from "./team-support"
 
 const unit = (id: string, ...traits: string[]): SupportCandidate => ({
   id,

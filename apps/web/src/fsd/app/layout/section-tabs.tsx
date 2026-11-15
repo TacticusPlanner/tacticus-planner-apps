@@ -6,7 +6,8 @@ import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 import { findActiveChild } from "./find-active-child"
 import { NavChildIcon } from "./nav-child-icon"
 import { NavLiveDot } from "./nav-live-dot"
-import { subItemLabel, type NavItem } from "./nav-items"
+import { subItemLabel } from "./nav-items"
+import type { NavItem } from "./nav-items"
 
 /**
  * Renders the active top-level section's child pages as a routed tab row. Rendered by the mobile

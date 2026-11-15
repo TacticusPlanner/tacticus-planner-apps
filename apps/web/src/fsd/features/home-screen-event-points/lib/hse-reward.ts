@@ -1,8 +1,7 @@
-import {
-  shopRewardDisplay,
-  type ShopRewardDisplayContext,
-} from "@/entities/shops/reward"
-import { datamineAssetUrl, type GameIcon } from "@workspace/game-catalog"
+import { shopRewardDisplay } from "@/entities/shops/reward"
+import type { ShopRewardDisplayContext } from "@/entities/shops/reward"
+import { datamineAssetUrl } from "@workspace/game-catalog"
+import type { GameIcon } from "@workspace/game-catalog"
 
 export type HseRewardDisplay = {
   /** Absent for a reward without art: the grid shows a generic reward icon. */

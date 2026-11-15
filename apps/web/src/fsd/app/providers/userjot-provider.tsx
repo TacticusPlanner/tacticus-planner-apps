@@ -8,8 +8,8 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
-  type ReactNode,
 } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { useQueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
@@ -17,7 +17,8 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import { watchCloseRequest } from "@workspace/ui/hooks/use-close-on-back"
 
 import { accountQueries, useCurrentUser } from "@/entities/account"
-import { useTheme, type Theme } from "@/shared/theme"
+import { useTheme } from "@/shared/theme"
+import type { Theme } from "@/shared/theme"
 
 import { findWidgetBackButton } from "./userjot-back"
 

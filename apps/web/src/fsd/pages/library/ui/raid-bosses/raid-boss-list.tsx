@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { RaidBossPortrait, type RaidBossListItem } from "@/entities/raid-boss"
+import { RaidBossPortrait } from "@/entities/raid-boss"
+import type { RaidBossListItem } from "@/entities/raid-boss"
 
 function Section({
   title,

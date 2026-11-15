@@ -5,10 +5,8 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
-import {
-  hseVariant,
-  type HseFixtureId,
-} from "@/test/fixtures/home-screen-event-scoring"
+import { hseVariant } from "@/test/fixtures/home-screen-event-scoring"
+import type { HseFixtureId } from "@/test/fixtures/home-screen-event-scoring"
 import { hseTeamsFixtureRead } from "@/test/fixtures/hse-teams"
 import enDailies from "../../../../../../public/locales/en/dailies.json"
 import enNpcs from "../../../../../../public/locales/en/npcs.json"
@@ -17,8 +15,10 @@ import enTeamRecs from "../../../../../../public/locales/en/teamRecs.json"
 import {
   buildHseTeamRecommendations,
   mapRosterCharacter,
-  type HseTeamCatalog,
-  type HseTeamsViewModel,
+} from "@/features/team-recommendations"
+import type {
+  HseTeamCatalog,
+  HseTeamsViewModel,
 } from "@/features/team-recommendations"
 import { anyUnitPowerFixture } from "@/test/fixtures/team-power"
 import { HseTeamsSection } from "./hse-teams-section"

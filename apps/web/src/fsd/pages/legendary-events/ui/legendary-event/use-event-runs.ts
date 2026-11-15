@@ -3,17 +3,17 @@ import { useMemo } from "react"
 import {
   currentLegendaryEventRun,
   resolveLegendaryEventRunsAt,
-  type LegendaryEvent,
-  type LegendaryEventProgress,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
-  type LegendaryEventRunResolution,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventProgress,
+  LegendaryEventRosterUnit,
+  LegendaryEventRun,
+  LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 
-import {
-  eventUnitRecord,
-  type ReadValue,
-} from "./legendary-event-page.view-model"
+import { eventUnitRecord } from "./legendary-event-page.view-model"
+import type { ReadValue } from "./legendary-event-page.view-model"
 
 /** Before the event is known: nothing has started, the depth run is 1. */
 const NO_EVENT_RUNS: LegendaryEventRunResolution = {

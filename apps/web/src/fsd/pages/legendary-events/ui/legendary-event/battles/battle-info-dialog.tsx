@@ -16,7 +16,8 @@ import {
   ResponsiveDialogTitle,
 } from "@/shared/ui"
 
-import { adjacentBattle, type BattleInfoTarget } from "./battle-info-target"
+import { adjacentBattle } from "./battle-info-target"
+import type { BattleInfoTarget } from "./battle-info-target"
 import { BattlePreview } from "./battles-section"
 import type { BattlesViewModel } from "./battles.view-model"
 

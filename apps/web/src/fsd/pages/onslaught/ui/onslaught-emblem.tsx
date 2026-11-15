@@ -1,14 +1,11 @@
 import { useTranslation } from "react-i18next"
-import {
-  onslaughtTierIcon,
-  type OnslaughtRewardStorageModel,
-} from "@workspace/game-catalog"
+import { onslaughtTierIcon } from "@workspace/game-catalog"
+import type { OnslaughtRewardStorageModel } from "@workspace/game-catalog"
 
-import {
-  onslaughtReward,
-  rewardKeys,
-  type OnslaughtSector,
-  type OnslaughtTier,
+import { onslaughtReward, rewardKeys } from "@/entities/player-data-override"
+import type {
+  OnslaughtSector,
+  OnslaughtTier,
 } from "@/entities/player-data-override"
 import { EntityIcon, ProgressionBadge } from "@/shared/ui"
 

@@ -3,10 +3,8 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  AnnotationMarkIcon,
-  type LegendaryEventAnnotationStatus,
-} from "@/entities/legendary-event"
+import { AnnotationMarkIcon } from "@/entities/legendary-event"
+import type { LegendaryEventAnnotationStatus } from "@/entities/legendary-event"
 
 import { tokenMarkIds } from "../lib/token-marks"
 import type { PlannedToken } from "../lib/token-plan"

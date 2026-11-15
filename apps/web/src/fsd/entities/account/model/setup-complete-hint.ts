@@ -1,6 +1,7 @@
 import { safeStorage } from "@/shared/lib"
 
-import { isAccountSetupComplete, type CurrentUser } from "./current-user"
+import { isAccountSetupComplete } from "./current-user"
+import type { CurrentUser } from "./current-user"
 
 // Which signed-in account (MSAL homeAccountId) last finished setup on this device. Only that one
 // bit is kept, never the account itself (spec: onboarding-gate).

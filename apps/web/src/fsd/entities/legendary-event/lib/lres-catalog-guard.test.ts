@@ -7,11 +7,8 @@ import {
   utharEvent,
 } from "@/test/fixtures/legendary-events"
 
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEvent,
-  type LegendaryEventUnitFilter,
-} from "../model/types"
+import { LEGENDARY_EVENT_LANE_IDS } from "../model/types"
+import type { LegendaryEvent, LegendaryEventUnitFilter } from "../model/types"
 import { unitDealtDamageTypes } from "./damage-profile-exclusions"
 import { LEGENDARY_EVENT_RUN_COUNT } from "./lifecycle"
 import { describeUnitFilter } from "./objective-label"

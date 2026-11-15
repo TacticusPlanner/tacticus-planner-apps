@@ -1,5 +1,6 @@
 import type { CreateGoalPrefill, GoalDetail } from "@/entities/goal"
-import { progressionOrder, type UnitId } from "@workspace/game-domain"
+import { progressionOrder } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 
 import type { ShardMeaning } from "@/features/quest-event"
 

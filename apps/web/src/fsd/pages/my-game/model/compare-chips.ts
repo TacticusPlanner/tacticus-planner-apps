@@ -200,7 +200,7 @@ export function focusChips(
   focus: CompareFocus | null
 ): { chip: CompareChip; dimmed: boolean }[] {
   const kind = focus?.kind
-  if (!kind || !chips.some((chip) => chip.kind === kind)) {
+  if (!kind || chips.every((chip) => !(chip.kind === kind))) {
     return chips.map((chip) => ({ chip, dimmed: false }))
   }
   return [

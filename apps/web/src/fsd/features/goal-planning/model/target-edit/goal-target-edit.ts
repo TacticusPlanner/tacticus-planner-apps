@@ -8,9 +8,8 @@ import {
   rankAt,
   rankIndex,
   rankOrder,
-  type Progression,
-  type Rank,
 } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import type {
   GoalDetail,
@@ -23,8 +22,8 @@ import {
   additionalTargetSelection,
   additionalTargetSlots,
   rankTargetReached,
-  type RankAdditionalTarget,
 } from "@/entities/goal-farming"
+import type { RankAdditionalTarget } from "@/entities/goal-farming"
 
 /** The editable *end* target of one goal, as the target editor holds it while the owner adjusts it.
  * Only the goal's own kind's fields exist — the start/baseline is never part of a draft (it is stored

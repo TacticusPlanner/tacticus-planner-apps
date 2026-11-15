@@ -10,10 +10,8 @@ import type {
   GoalRow,
   useGoalActions,
 } from "@/features/goal-planning"
-import {
-  levelBookAvailability,
-  type EstimateOutcome,
-} from "@/entities/goal-farming"
+import { levelBookAvailability } from "@/entities/goal-farming"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 import type { XpBookFigure } from "../shared/level-requirement-display"
 import type { ProjectRemoval } from "./project-removal-flow"
 

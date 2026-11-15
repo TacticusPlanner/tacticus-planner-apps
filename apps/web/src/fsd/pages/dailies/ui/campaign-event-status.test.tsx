@@ -7,10 +7,8 @@ import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 import { availableCampaignBattles } from "@/entities/player-data-override"
 
 import { CampaignEventTile } from "./campaign-event-status"
-import {
-  buildCampaignEventStatus,
-  type CampaignEventWindow,
-} from "./use-campaign-event-status"
+import { buildCampaignEventStatus } from "./use-campaign-event-status"
+import type { CampaignEventWindow } from "./use-campaign-event-status"
 
 // "eventCampaign4" is Adepta Sororitas vs Death Guard in the catalog's event-group map.
 const knownId = campaignIdSchema.parse("eventCampaign4")

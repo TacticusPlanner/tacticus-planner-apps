@@ -4,10 +4,8 @@ import type { BattleId } from "@workspace/game-domain"
 import type { DailyRaidsCalculationViewModel } from "./daily-raids.domain"
 import type { MissionRaidsRequest } from "./mission-raids"
 import { planHookMissionRaids } from "./plan-hook-mission-raids"
-import {
-  emptyRaidsFilters,
-  type RaidsFilterBattle,
-} from "./raids-filters/raids-filters.domain"
+import { emptyRaidsFilters } from "./raids-filters/raids-filters.domain"
+import type { RaidsFilterBattle } from "./raids-filters/raids-filters.domain"
 
 const id = (value: string) => value as BattleId
 

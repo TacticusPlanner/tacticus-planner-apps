@@ -13,8 +13,8 @@ import {
   emptyEditorDraft,
   initialEditorDraft,
   toTeamDraft,
-  type TeamEditorDraft,
 } from "./team-editor-draft"
+import type { TeamEditorDraft } from "./team-editor-draft"
 
 const context = { lane: teamLane, units: teamUnitList }
 

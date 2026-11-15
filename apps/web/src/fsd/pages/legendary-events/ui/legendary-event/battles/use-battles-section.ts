@@ -1,22 +1,18 @@
 import { useMemo, useState } from "react"
 
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEvent,
-  type LegendaryEventBattle,
-  type LegendaryEventLaneId,
-  type ReadState,
+import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventBattle,
+  LegendaryEventLaneId,
+  ReadState,
 } from "@/entities/legendary-event"
 import { useNpcsById } from "@/entities/npc"
 
-import {
-  readValue,
-  type ProgressGridViewModel,
-} from "../legendary-event-page.view-model"
-import {
-  buildBattlesSection,
-  type BattlesViewModel,
-} from "./battles.view-model"
+import { readValue } from "../legendary-event-page.view-model"
+import type { ProgressGridViewModel } from "../legendary-event-page.view-model"
+import { buildBattlesSection } from "./battles.view-model"
+import type { BattlesViewModel } from "./battles.view-model"
 
 /**
  * The given lanes' Battles sections over the page's `lre-battles` read, the synced `npcs` and the

@@ -1,4 +1,5 @@
-import { apiClient, unwrap, type ApiSchemas } from "@/shared/api"
+import { apiClient, unwrap } from "@/shared/api"
+import type { ApiSchemas } from "@/shared/api"
 
 import type { CurrentUser } from "../model/current-user"
 import { mapCurrentUserDtoToDomain } from "../model/current-user.mapper"

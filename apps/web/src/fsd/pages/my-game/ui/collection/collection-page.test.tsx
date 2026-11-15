@@ -27,10 +27,10 @@ import {
 import { setViewportWidth } from "@/test/viewport"
 
 import type { CollectionQuery } from "../../model/collection-query"
-import {
-  buildCollectionView,
-  type CollectionCatalog,
-  type CollectionRoster,
+import { buildCollectionView } from "../../model/collection-view"
+import type {
+  CollectionCatalog,
+  CollectionRoster,
 } from "../../model/collection-view"
 import type { CollectionCompareState } from "../../model/use-collection-compare"
 import type {
@@ -333,7 +333,9 @@ function renderPage(width: number, entry = "/my-game/collection") {
 }
 
 function openedUnit() {
-  const [path, origin] = screen.getByTestId("unit-page").textContent!.split("|")
+  const [path, origin] = screen
+    .getByTestId("unit-page")
+    .textContent!.split("|", 2)
   return { path, origin: JSON.parse(origin!) as unknown }
 }
 

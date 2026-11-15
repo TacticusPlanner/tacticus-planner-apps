@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
-import { progressionRarity, type Progression } from "@workspace/game-domain"
+import { progressionRarity } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { CompactStars } from "./compact-stars"

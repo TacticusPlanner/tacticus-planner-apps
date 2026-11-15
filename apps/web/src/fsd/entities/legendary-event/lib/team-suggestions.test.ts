@@ -11,11 +11,8 @@ import {
   rosterOf,
   rosterUnit,
 } from "./clear-estimate.fixtures"
-import {
-  suggestLaneTeams,
-  type TeamSuggestion,
-  type TeamSuggestionsInput,
-} from "./team-suggestions"
+import { suggestLaneTeams } from "./team-suggestions"
+import type { TeamSuggestion, TeamSuggestionsInput } from "./team-suggestions"
 
 const ULTRAMARINES = 0
 const MAX_2_HITS = 2

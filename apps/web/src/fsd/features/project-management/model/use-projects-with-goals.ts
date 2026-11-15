@@ -1,11 +1,9 @@
 import { useMemo } from "react"
 
-import { useGoalsById, type GoalDetail } from "@/entities/goal"
-import {
-  projectGoals,
-  useProjects,
-  type ProjectSummary,
-} from "@/entities/project"
+import { useGoalsById } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
+import { projectGoals, useProjects } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 
 export type ProjectWithGoals = ProjectSummary & { goals: GoalDetail[] }
 

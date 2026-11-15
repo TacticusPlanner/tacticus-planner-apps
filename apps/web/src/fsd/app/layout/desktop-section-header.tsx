@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
 import { findActiveChild } from "./find-active-child"
-import { subItemLabel, type NavItem } from "./nav-items"
+import { subItemLabel } from "./nav-items"
+import type { NavItem } from "./nav-items"
 import { sectionShortcut } from "./section-shortcut"
 import { PAGE_HEADING_ID } from "./use-focus-page-heading"
 

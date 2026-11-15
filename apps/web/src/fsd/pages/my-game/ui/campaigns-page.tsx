@@ -5,8 +5,10 @@ import {
   campaignDescriptor,
   campaignIcon,
   characterIcon,
-  type CampaignBattleStorageModel,
-  type CampaignDefinitionStorageModel,
+} from "@workspace/game-catalog"
+import type {
+  CampaignBattleStorageModel,
+  CampaignDefinitionStorageModel,
 } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
@@ -31,8 +33,10 @@ import {
   unclaimedTrackRewards,
   UnclaimedRewardsDetails,
   useSavedBattleProgress,
-  type TrackMedalStats,
-  type UnclaimedTrackRewards,
+} from "@/features/daily-raids"
+import type {
+  TrackMedalStats,
+  UnclaimedTrackRewards,
 } from "@/features/daily-raids"
 import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
@@ -304,7 +308,7 @@ function StoryCard({
         </span>
       </CardHeader>
       <CardContent className="space-y-4">
-        {story.coreCharacters.length ? (
+        {story.coreCharacters.length > 0 ? (
           <div className="flex gap-2">
             {story.coreCharacters.map((id) => (
               <EntityIcon

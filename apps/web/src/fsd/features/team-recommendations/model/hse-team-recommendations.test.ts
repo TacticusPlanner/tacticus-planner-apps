@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  hseVariant,
-  type HseFixtureId,
-} from "@/test/fixtures/home-screen-event-scoring"
+import { hseVariant } from "@/test/fixtures/home-screen-event-scoring"
+import type { HseFixtureId } from "@/test/fixtures/home-screen-event-scoring"
 import {
   hseTeamsFixtureCharacters,
   hseTeamsFixtureRead,

@@ -4,11 +4,8 @@ import type { UnitId } from "@workspace/game-domain"
 import type { CreateCombinedGoalsRequest } from "@/entities/goal"
 
 import type { BulkUnitPlan } from "./bulk-goal-plan"
-import {
-  bulkCreateRequest,
-  sendBulkPlans,
-  type BulkUnitStatus,
-} from "./bulk-goal-submit"
+import { bulkCreateRequest, sendBulkPlans } from "./bulk-goal-submit"
+import type { BulkUnitStatus } from "./bulk-goal-submit"
 
 function plan(
   kind: "character" | "mow",

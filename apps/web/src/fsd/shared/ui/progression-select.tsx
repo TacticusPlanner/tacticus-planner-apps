@@ -10,11 +10,8 @@ import {
 } from "@workspace/ui/components/select"
 
 import { progressionVisual } from "@workspace/game-catalog"
-import {
-  progressionOrder,
-  progressionRarity,
-  type Progression,
-} from "@workspace/game-domain"
+import { progressionOrder, progressionRarity } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 
 import { EntityIcon } from "./entity-icon"
 import { progressionText } from "./progression-text"
