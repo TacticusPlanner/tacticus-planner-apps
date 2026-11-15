@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest"
+import { describe, test } from "vitest"
 
 import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
@@ -48,16 +48,17 @@ const search = () => ({
 })
 
 describe("plan upgrade search", () => {
-  bench("whole search in one go", () => {
-    recommendUpgradesNow(search())
+  test("whole search in one go", async ({ bench }) => {
+    await bench("whole search in one go", () => {
+      recommendUpgradesNow(search())
+    }).run()
   })
 
   // The longest slice is the budget plus the longest single step, since a slice checks its
   // deadline after each step.
-  let longestStepMs = 0
-  bench(
-    "whole search step by step (longest step)",
-    () => {
+  test("whole search step by step (longest step)", async ({ bench }) => {
+    let longestStepMs = 0
+    await bench("whole search step by step (longest step)", () => {
       const iterator = recommendUpgrades(search())
       for (;;) {
         const started = performance.now()
@@ -65,13 +66,9 @@ describe("plan upgrade search", () => {
         longestStepMs = Math.max(longestStepMs, performance.now() - started)
         if (next.done) break
       }
-    },
-    {
-      teardown: () => {
-        console.info(
-          `longest step ${longestStepMs.toFixed(1)} ms, longest slice ≤ ${(SLICE_BUDGET_MS + longestStepMs).toFixed(1)} ms`
-        )
-      },
-    }
-  )
+    }).run()
+    console.info(
+      `longest step ${longestStepMs.toFixed(1)} ms, longest slice ≤ ${(SLICE_BUDGET_MS + longestStepMs).toFixed(1)} ms`
+    )
+  })
 })
