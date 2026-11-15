@@ -1,15 +1,13 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import {
-  computeShopLockContext,
+  rosterShopLockContext,
   type CharacterStorageModel,
   type EquipmentStorageModel,
   type MowStorageModel,
-  type RosterUnit,
   type ShopLockContext,
   type UpgradeStorageModel,
 } from "@workspace/game-catalog"
-import { progressionStarsIndex } from "@workspace/game-domain"
 
 import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
 import {
@@ -195,21 +193,12 @@ export function useShopNeeds(projectId: string | undefined): ShopNeedsState {
       getUnitLabel,
     })
 
-    const rosterUnit = (unit: {
-      unitId: string
-      progressionIndex: string
-    }): RosterUnit => ({
-      unitId: unit.unitId,
-      stars: progressionStarsIndex(unit.progressionIndex as never),
-    })
-    const powerLevel = playerDetails?.powerLevel ?? 0
     return {
       needs,
-      powerLevel,
-      lockContext: computeShopLockContext(
-        powerLevel,
-        rosterCharacters.map(rosterUnit),
-        rosterMows.map(rosterUnit)
+      ...rosterShopLockContext(
+        playerDetails?.powerLevel,
+        rosterCharacters,
+        rosterMows
       ),
       upgradesById,
       charactersById,
@@ -218,19 +207,31 @@ export function useShopNeeds(projectId: string | undefined): ShopNeedsState {
     }
   }, [members, data, details, t])
 
-  const retry = () => {
-    globalPlan.retry()
-    read.retry()
-  }
+  // Both retries are stable while their sources are, so the ready state below can stay one object.
+  const { retry: retryPlan } = globalPlan
+  const { retry: retryRead } = read
+  const retry = useCallback(() => {
+    retryPlan()
+    retryRead()
+  }, [retryPlan, retryRead])
+
+  // Memoised so consumers memoising on the state (Today's recommendations, the event shop's coverage)
+  // rerun only when the needs change, not on every render.
+  const ready = useMemo<ShopNeedsReady | null>(
+    () =>
+      computed
+        ? {
+            status: "ready",
+            ...computed,
+            activeGoalCount: activeMembers.length,
+            retry,
+          }
+        : null,
+    [computed, activeMembers.length, retry]
+  )
 
   if (globalPlan.isError || read.status === "error") {
     return { status: "error", retry }
   }
-  if (!computed) return { status: "loading" }
-  return {
-    status: "ready",
-    ...computed,
-    activeGoalCount: activeMembers.length,
-    retry,
-  }
+  return ready ?? { status: "loading" }
 }

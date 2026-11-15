@@ -1,8 +1,7 @@
 import { useMemo } from "react"
-import {
-  resolveEventDaySlots,
-  type GameCatalogEventShop,
-  type ShopLockContext,
+import type {
+  GameCatalogEventShop,
+  ResolvedEventSlot,
 } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 
@@ -11,7 +10,6 @@ import { usePlanInsights } from "@/features/goal-planning"
 import {
   buildCoverage,
   toCoverageNeeds,
-  withoutFreebies,
   type ClassifiedEntry,
   type CoverageRow,
   type XpPerBook,
@@ -51,15 +49,14 @@ export function useEventShopCoverage({
   entries,
   todayIndex,
   projectId,
-  lockContext,
-  powerLevel,
+  slotsByDay,
 }: {
   event: GameCatalogEventShop
   entries: readonly ClassifiedEntry[]
   todayIndex: number
   projectId: string | undefined
-  lockContext: ShopLockContext | null
-  powerLevel: number | undefined
+  /** Each day's purchasable slots for the roster, resolved once by the page (see `purchasableSlotsByDay`). */
+  slotsByDay: readonly (readonly ResolvedEventSlot[])[]
 }): EventShopCoverageState {
   const needs = useShopNeeds(projectId)
   const globalPlan = useGlobalGoalPlan()
@@ -76,7 +73,7 @@ export function useEventShopCoverage({
   const xpRead = useCatalogDataset("progression-rules", toXpPerBook)
   const xpPerBook = xpRead.status === "ready" ? xpRead.data : undefined
 
-  // The ready state is a fresh object each render; its aggregate is stable while the goals are.
+  // Depends on the aggregate, not the whole state, so a goal-count-only change doesn't rebuild coverage.
   const shopNeeds = needs.status === "ready" ? needs.needs : null
   const rows = useMemo(() => {
     if (!shopNeeds || insights.loading || !xpPerBook) return null
@@ -85,14 +82,7 @@ export function useEventShopCoverage({
       entries,
       todayIndex,
       dayCount: event.dayCount,
-      slotsOnDay: (dayIndex) =>
-        withoutFreebies(
-          event,
-          resolveEventDaySlots(event, dayIndex, {
-            powerLevel,
-            lockContext: lockContext ?? undefined,
-          })
-        ),
+      slotsOnDay: (dayIndex) => slotsByDay[dayIndex] ?? [],
       xpPerBook,
     })
   }, [
@@ -102,9 +92,8 @@ export function useEventShopCoverage({
     xpPerBook,
     entries,
     todayIndex,
-    event,
-    powerLevel,
-    lockContext,
+    event.dayCount,
+    slotsByDay,
   ])
 
   if (

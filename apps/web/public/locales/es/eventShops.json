@@ -119,6 +119,7 @@
     "replace": {
       "title": "¿Sustituir la oferta planificada?",
       "description": "El espacio {{number}} ya tiene {{current}} planificado este día. ¿Sustituirlo por {{next}}?",
+      "descriptionBought": "El espacio {{number}} ya tiene {{current}} planificado este día, con {{bought}} marcados como comprados. Si lo sustituyes por {{next}}, esos paquetes comprados se quitan del plan.",
       "confirm": "Sustituir"
     },
     "boughtSome": {

@@ -1,4 +1,7 @@
-import type { GameCatalogEventShop } from "@workspace/game-catalog"
+import type {
+  GameCatalogEventShop,
+  ResolvedEventSlot,
+} from "@workspace/game-catalog"
 
 import type { EventShopCartEntry } from "@/entities/shops/event-plan"
 
@@ -45,16 +48,18 @@ export interface ClassifiedCart {
   unresolvable: EventShopCartEntry[]
 }
 
-/** Every entry classified against `todayIndex` (the event day index of now; may be outside the event). */
+/** Every entry classified against `todayIndex` (the event day index of now; may be outside the event).
+ *  `slotsByDay` (each day's slots resolved for the roster) gives each entry the player's cap. */
 export function classifyCart(
   event: GameCatalogEventShop,
   entries: readonly EventShopCartEntry[],
-  todayIndex: number
+  todayIndex: number,
+  slotsByDay?: readonly (readonly ResolvedEventSlot[])[]
 ): ClassifiedCart {
   const classified: ClassifiedEntry[] = []
   const unresolvable: EventShopCartEntry[] = []
   for (const entry of entries) {
-    const resolved = resolveEntry(event, entry)
+    const resolved = resolveEntry(event, entry, slotsByDay)
     if (resolved) classified.push(classifyEntry(resolved, todayIndex))
     else unresolvable.push(entry)
   }

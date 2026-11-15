@@ -119,6 +119,7 @@
     "replace": {
       "title": "Geplantes Angebot ersetzen?",
       "description": "Für Platz {{number}} ist an diesem Tag schon {{current}} geplant. Durch {{next}} ersetzen?",
+      "descriptionBought": "Für Platz {{number}} ist an diesem Tag schon {{current}} geplant, davon {{bought}} als gekauft markiert. Wenn du es durch {{next}} ersetzt, verschwinden diese gekauften Pakete aus dem Plan.",
       "confirm": "Ersetzen"
     },
     "boughtSome": {

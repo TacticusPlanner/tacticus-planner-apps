@@ -119,6 +119,7 @@
     "replace": {
       "title": "Remplacer l'offre prévue ?",
       "description": "L'emplacement {{number}} a déjà {{current}} de prévu ce jour. Le remplacer par {{next}} ?",
+      "descriptionBought": "L'emplacement {{number}} a déjà {{current}} de prévu ce jour, dont {{bought}} marqués achetés. Le remplacer par {{next}} retire ces packs achetés du plan.",
       "confirm": "Remplacer"
     },
     "boughtSome": {

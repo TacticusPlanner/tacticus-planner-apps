@@ -137,11 +137,18 @@ function ReplaceDialog({
       cancelLabel={t("dialogs.cancel")}
       confirmLabel={t("dialogs.replace.confirm")}
       confirmVariant="default"
-      description={t("dialogs.replace.description", {
-        number: dialog.ref.slotIndex + 1,
-        current: format.reward(dialog.current.rewardType).label,
-        next: format.reward(dialog.rewardType).label,
-      })}
+      description={t(
+        // Replacing starts the new reward at 0 bought, so say when that drops packs already marked bought.
+        dialog.current.purchasedQuantity > 0
+          ? "dialogs.replace.descriptionBought"
+          : "dialogs.replace.description",
+        {
+          number: dialog.ref.slotIndex + 1,
+          current: format.reward(dialog.current.rewardType).label,
+          next: format.reward(dialog.rewardType).label,
+          bought: dialog.current.purchasedQuantity,
+        }
+      )}
       onCancel={controller.closeDialog}
       onConfirm={() => {
         if (dialog.rewardType.startsWith("draft_")) {
@@ -212,7 +219,6 @@ function BoughtSomeDialog({
             {t("dialogs.cancel")}
           </Button>
           <Button
-            data-testid="event-shop-bought-some-save"
             onClick={() => {
               controller.closeDialog()
               controller.setBought(entry, bought)

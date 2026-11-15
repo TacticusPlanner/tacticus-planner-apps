@@ -96,6 +96,7 @@ export {
   shardRewardEligible,
   lockIsActive,
   resolveEventLockId,
+  rosterShopLockContext,
   todayDow,
   DOW_MAP,
   PL_MEDIUM,

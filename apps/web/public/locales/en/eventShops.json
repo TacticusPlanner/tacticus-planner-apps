@@ -119,6 +119,7 @@
     "replace": {
       "title": "Replace the planned offer?",
       "description": "Slot {{number}} already has {{current}} planned on this day. Replace it with {{next}}?",
+      "descriptionBought": "Slot {{number}} already has {{current}} planned on this day, with {{bought}} marked bought. Replacing it with {{next}} removes those bought packs from the plan.",
       "confirm": "Replace"
     },
     "boughtSome": {

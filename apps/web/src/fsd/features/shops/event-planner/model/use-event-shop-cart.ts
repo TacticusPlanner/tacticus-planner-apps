@@ -121,8 +121,9 @@ export function useEventShopCart(
     }, CART_SAVE_DEBOUNCE_MS)
   }, [flush])
 
-  // Leaving the page or switching event (the page remounts per event) inside the debounce still saves
-  // the last edit instead of dropping it.
+  // Leaving the page or switching event (the page remounts per event) with an unsaved edit still saves
+  // it instead of dropping it: inside the debounce, and also after a failed save left it pending with no
+  // timer (a save already in flight sends it when it settles).
   const flushRef = useRef(flush)
   useEffect(() => {
     flushRef.current = flush
@@ -132,8 +133,8 @@ export function useEventShopCart(
       if (timer.current) {
         clearTimeout(timer.current)
         timer.current = null
-        void flushRef.current()
       }
+      if (pending.current !== null) void flushRef.current()
     },
     []
   )

@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest"
 
 import { eventOfferGroups } from "./offer-search"
+import { purchasableSlotsByDay } from "./slots-by-day"
 import { testEvent } from "./test-event.fixture"
 
 describe("eventOfferGroups", () => {
-  const groups = eventOfferGroups(testEvent, { todayIndex: 3 })
+  const groups = eventOfferGroups(testEvent, {
+    todayIndex: 3,
+    slotsByDay: purchasableSlotsByDay(testEvent, {}),
+  })
   const byType = new Map(groups.map((group) => [group.rewardType, group]))
 
   it("lists the days Yarrick shards are sold, past days marked", () => {

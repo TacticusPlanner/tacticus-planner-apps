@@ -1,12 +1,9 @@
 import {
   eventDay,
-  resolveEventDaySlots,
   type EventShopDay,
   type GameCatalogEventShop,
-  type ShopLockContext,
+  type ResolvedEventSlot,
 } from "@workspace/game-catalog"
-
-import { withoutFreebies } from "./freebie"
 
 /** One offer on one event day. */
 interface EventOfferDay extends EventShopDay {
@@ -37,24 +34,18 @@ export function eventOfferGroups(
   event: GameCatalogEventShop,
   {
     todayIndex,
-    powerLevel,
-    lockContext,
-    now,
+    slotsByDay,
   }: {
     todayIndex: number
-    powerLevel?: number
-    lockContext?: ShopLockContext
-    now?: number
+    /** Each event day's purchasable slots (resolved for the roster, freebies left out: the daily freebie is
+     *  claimed in game, not bought). */
+    slotsByDay: readonly (readonly ResolvedEventSlot[])[]
   }
 ): EventOfferGroup[] {
   const groups = new Map<string, EventOfferGroup>()
   for (let dayIndex = 0; dayIndex < event.dayCount; dayIndex++) {
     const day = eventDay(event, dayIndex)
-    // The daily freebie is claimed in game, not bought, so search leaves it out.
-    for (const slot of withoutFreebies(
-      event,
-      resolveEventDaySlots(event, dayIndex, { powerLevel, lockContext, now })
-    )) {
+    for (const slot of slotsByDay[dayIndex] ?? []) {
       for (const offer of slot.offers) {
         let group = groups.get(offer.rewardType)
         if (!group) {

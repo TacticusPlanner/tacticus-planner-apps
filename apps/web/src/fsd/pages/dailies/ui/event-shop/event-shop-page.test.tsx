@@ -309,7 +309,7 @@ describe("desktop", () => {
       within(card).queryByRole("button", { name: "slot.increase" })
     ).toBeNull()
 
-    const tick = screen.getByTestId("event-shop-mark-bought-2")
+    const tick = within(card).getByRole("button", { name: "slot.tick" })
     await userEvent.click(tick)
     expect(tick).toHaveAttribute("aria-pressed", "true")
     expect(card).toHaveAttribute("data-purchase", "bought")
@@ -353,8 +353,8 @@ describe("desktop", () => {
     )
   })
 
-  it("replaces a slot's plan with a draft reward only once an alliance is chosen", async () => {
-    // Slot 1 also sells a draft reward, so it can replace the planned orb.
+  // Slot 1 also sells a draft reward, so it can replace the planned orb.
+  const withDraftInSlot1 = (): GameCatalogEventShop => {
     const week = runningEvent.weeks[0]!
     const orbs = week.slots[1]!
     const withDraft: GameCatalogEventShop = {
@@ -376,17 +376,24 @@ describe("desktop", () => {
         runningEvent.weeks[1]!,
       ],
     }
-    events = [withDraft]
+    return withDraft
+  }
+  const draftAdd = () =>
+    within(screen.getByTestId("event-shop-slot-1"))
+      .getAllByRole("button", { name: "slot.add" })
+      .at(-1)!
+
+  it("replaces a slot's plan with a draft reward only once an alliance is chosen", async () => {
+    events = [withDraftInSlot1()]
     roster = { lockContext: null, powerLevel: undefined, lastSyncedAt: null }
     const orb = cartEntry("THU", 1, "heroAscensionOrbLegendary_Imperial", 3)
     storedPlan = plan([orb])
     renderPage("/dailies/event-shop/october-2026")
-    const draftAdd = () =>
-      within(screen.getByTestId("event-shop-slot-1"))
-        .getAllByRole("button", { name: "slot.add" })
-        .at(-1)!
 
     await userEvent.click(draftAdd())
+    expect(screen.getByRole("dialog")).not.toHaveTextContent(
+      "descriptionBought"
+    )
     await userEvent.click(screen.getByTestId("confirmation-dialog-confirm"))
     await userEvent.click(
       within(screen.getByTestId("event-shop-alliance-dialog")).getByRole(
@@ -415,6 +422,21 @@ describe("desktop", () => {
       })
     )
     expect(mutateAsync).toHaveBeenCalledTimes(1)
+  })
+
+  it("warns that replacing drops packs already marked bought", async () => {
+    events = [withDraftInSlot1()]
+    roster = { lockContext: null, powerLevel: undefined, lastSyncedAt: null }
+    storedPlan = plan([
+      cartEntry("THU", 1, "heroAscensionOrbLegendary_Imperial", 3, 2),
+    ])
+    renderPage("/dailies/event-shop/october-2026")
+
+    await userEvent.click(draftAdd())
+
+    expect(screen.getByRole("dialog")).toHaveTextContent(
+      'dialogs.replace.descriptionBought:{"number":2'
+    )
   })
 
   it("keeps the day in the URL and hides the calendar on Milestones", async () => {
@@ -608,7 +630,9 @@ describe("shopping list", () => {
     await userEvent.click(screen.getByTestId("event-shop-missed-1-2"))
     expect(within(review).getAllByRole("listitem")).toHaveLength(1)
 
-    await userEvent.click(screen.getByTestId("event-shop-clear-week-1"))
+    await userEvent.click(
+      screen.getByRole("button", { name: 'list.clearWeek:{"week":1}' })
+    )
     expect(
       screen.getByTestId("event-shop-clear-week-summary")
     ).toHaveTextContent("dialogs.clearWeek.toBuy")
@@ -624,7 +648,9 @@ describe("shopping list", () => {
   it("marks all of today bought", async () => {
     storedPlan = plan([cartEntry("THU", 2, "abilityTokenUncommon_Imperial", 2)])
     renderPage("/dailies/event-shop/october-2026")
-    await userEvent.click(screen.getByTestId("event-shop-all-today-bought"))
+    await userEvent.click(
+      screen.getByRole("button", { name: "list.allTodayBought" })
+    )
     expect(screen.queryByTestId("event-shop-today")).toBeNull()
     expect(screen.getByTestId("event-shop-done")).toBeInTheDocument()
   })

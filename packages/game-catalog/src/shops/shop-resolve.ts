@@ -105,6 +105,38 @@ export function computeShopLockContext(
   }
 }
 
+/** A synced roster unit as the player-data chunks store it. */
+interface RosterProgressUnit {
+  unitId: string
+  progressionIndex: string
+}
+
+const toRosterUnit = (unit: RosterProgressUnit): RosterUnit => ({
+  unitId: unit.unitId,
+  stars: progressionStarsIndex(unit.progressionIndex as Progression),
+})
+
+/**
+ * The one mapping from a synced roster to the shop's lock context and power level: unit stars from each
+ * unit's progression, and a missing power level counted as 0. Every shop consumer (daily shop needs,
+ * event shop) resolves locks through this, so they always agree.
+ */
+export function rosterShopLockContext(
+  powerLevel: number | null | undefined,
+  characters: readonly RosterProgressUnit[],
+  mows: readonly RosterProgressUnit[]
+): { powerLevel: number; lockContext: ShopLockContext } {
+  const level = powerLevel ?? 0
+  return {
+    powerLevel: level,
+    lockContext: computeShopLockContext(
+      level,
+      characters.map(toRosterUnit),
+      mows.map(toRosterUnit)
+    ),
+  }
+}
+
 // --- lockId resolution (V1 shop-resolve.ts, branch lists copied verbatim) -------------------------
 
 /** Rogue Trader's featured-legendary rotation boundary: Trajann is featured until this date, then Lucius. */
@@ -246,14 +278,17 @@ export function shardRewardEligible(
 
 // --- day / power-level matching ------------------------------------------------------------------
 
-function dayMatches(
+/** The variant is sold on `day`. Shared by the daily and event shop resolvers. */
+export function dayMatches(
   variant: GameCatalogShopVariant,
   day: ShopDayOfWeek
 ): boolean {
   return variant.days.includes(day)
 }
 
-function variantMatchesPl(
+/** The player's power level is within the variant's bounds; with no power level, bounds are not applied.
+ *  Shared by the daily and event shop resolvers so both apply the bounds one way. */
+export function variantMatchesPl(
   variant: GameCatalogShopVariant,
   powerLevel: number | undefined
 ): boolean {

@@ -26,6 +26,17 @@ describe("fillGameText", () => {
     ).toBe("Play 1 Arena battle!")
   })
 
+  it("keeps the text before the first plural marker", () => {
+    const template =
+      "Daily: [i2p_Plural]Win {[TARGET_AMOUNT]} battles[i2p_One]Win a battle"
+    expect(fillGameText(template, { TARGET_AMOUNT: 5 }, 5)).toBe(
+      "Daily: Win 5 battles"
+    )
+    expect(fillGameText(template, { TARGET_AMOUNT: 1 }, 1)).toBe(
+      "Daily: Win a battle"
+    )
+  })
+
   it("keeps a placeholder it has no value for", () => {
     expect(fillGameText("Defeat {[FACTION_TRAIT]} enemies", {})).toBe(
       "Defeat {[FACTION_TRAIT]} enemies"

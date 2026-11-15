@@ -162,7 +162,7 @@ export interface paths {
     get: operations["TacticusPlannerApiFeaturesEventShopPlansGetEventShopPlanEndpoint"]
     /**
      * Replaces the cart of the caller's event shop plan, creating the plan if needed.
-     * @description Each entry must name a week, day and slot of the current catalog event, a reward that slot offers that day, a quantity within that offer's per-day cap and a purchased quantity up to it. Lock ids and power levels are not checked. A cart equal to the stored one succeeds without bumping the revision.
+     * @description Each entry must name a week, day and slot of the current catalog event, a reward that slot offers that day, a quantity within that offer's per-day cap and a purchased quantity up to it. Lock ids and power levels are not checked. expectedRevision is required. A cart equal to the stored one, on a plan already written under the current catalog version, succeeds without bumping the revision.
      */
     put: operations["TacticusPlannerApiFeaturesEventShopPlansPutEventShopPlanEndpoint"]
     post?: never
@@ -4522,7 +4522,7 @@ export interface components {
     ProjectTargetKind: "legendaryEvent"
     PutEventShopPlanRequest: {
       /** Format: int64 */
-      expectedRevision: number
+      expectedRevision: null | number
       /** @constant */
       entries: null | components["schemas"]["EventShopCartEntryRequest"][]
     }
@@ -5569,7 +5569,7 @@ export interface operations {
           "application/json": components["schemas"]["EventShopPlanResponse"]
         }
       }
-      /** @description An entry fails validation; the error names the field. */
+      /** @description expectedRevision is missing or an entry fails validation; the error names the field. */
       400: {
         headers: {
           [name: string]: unknown

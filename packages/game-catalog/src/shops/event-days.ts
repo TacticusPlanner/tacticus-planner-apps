@@ -5,8 +5,10 @@ import type {
 import type { ShopDayOfWeek } from "../schemas/shops"
 import { groupVariantsByRewardType } from "./shop-offers"
 import {
+  dayMatches,
   DOW_MAP,
   resolveEventLockId,
+  variantMatchesPl,
   type ResolvedShopOffer,
   type ShopLockContext,
 } from "./shop-resolve"
@@ -104,12 +106,8 @@ export function resolveEventDaySlots(
   const lockTime = Math.max(now, Date.parse(event.startUtc) + dayIndex * DAY_MS)
 
   const matches = (variant: GameCatalogShopVariant) =>
-    variant.days.includes(day.dow) &&
-    (powerLevel === undefined ||
-      ((variant.minPowerLevel === undefined ||
-        powerLevel >= variant.minPowerLevel) &&
-        (variant.maxPowerLevel === undefined ||
-          powerLevel <= variant.maxPowerLevel))) &&
+    dayMatches(variant, day.dow) &&
+    variantMatchesPl(variant, powerLevel) &&
     (lockContext === undefined ||
       resolveEventLockId(variant.lockId, lockContext, lockTime))
 

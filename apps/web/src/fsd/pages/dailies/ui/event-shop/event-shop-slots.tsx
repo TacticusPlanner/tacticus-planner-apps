@@ -177,13 +177,11 @@ function BoughtTick({
   bought,
   disabled,
   onToggle,
-  slotIndex,
   label,
 }: {
   bought: boolean
   disabled: boolean
   onToggle: () => void
-  slotIndex: number
   label: string
 }) {
   return (
@@ -195,7 +193,6 @@ function BoughtTick({
         bought &&
           "border-emerald-600 bg-emerald-600 text-background hover:border-emerald-600 hover:text-background dark:border-emerald-400 dark:bg-emerald-400"
       )}
-      data-testid={`event-shop-mark-bought-${slotIndex}`}
       disabled={disabled}
       onClick={onToggle}
       type="button"
@@ -307,7 +304,6 @@ function CardCartRow({
                 ? controller.undoBought(view.ref)
                 : controller.markBought(view.ref)
             }
-            slotIndex={view.ref.slotIndex}
           />
           <Button
             aria-label={t("slot.remove")}
@@ -388,7 +384,6 @@ export function CartControls({
         />
       </span>
       <Button
-        data-testid={`event-shop-mark-bought-${view.ref.slotIndex}`}
         disabled={disabled}
         onClick={() =>
           allBought

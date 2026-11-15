@@ -76,6 +76,19 @@ describe("coverage", () => {
     ])
   })
 
+  it("counts an undecided draft toward no alliance until one is chosen", () => {
+    const rows = coverage(
+      [
+        ["orb:Imperial:Epic", 30],
+        ["orb:Xenos:Epic", 30],
+        ["orb:Chaos:Epic", 30],
+      ],
+      [entry("THU", 5, "draft_ascensionOrbsEpic", 2, 0, null)]
+    )
+
+    expect(rows.map((row) => row.planned)).toEqual([0, 0, 0])
+  })
+
   it("converts XP books to raw XP", () => {
     expect(rewardResources("xpLegendary", null, xpPerBook)).toEqual([
       { resource: "xp", group: "xp", unitsPerQty: 12_500 },

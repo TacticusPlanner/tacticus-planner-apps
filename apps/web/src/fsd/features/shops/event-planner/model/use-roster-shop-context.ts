@@ -1,10 +1,8 @@
 import { useMemo } from "react"
 import {
-  computeShopLockContext,
-  type RosterUnit,
+  rosterShopLockContext,
   type ShopLockContext,
 } from "@workspace/game-catalog"
-import { progressionStarsIndex } from "@workspace/game-domain"
 
 import { usePlayerDataStatus } from "@/shared/player-data-status"
 import { combineReadStates } from "@/shared/lib"
@@ -17,14 +15,6 @@ export interface RosterShopContext {
   /** ISO time of the last player-data sync; null when the account never synced. */
   lastSyncedAt: string | null
 }
-
-const rosterUnit = (unit: {
-  unitId: string
-  progressionIndex: string
-}): RosterUnit => ({
-  unitId: unit.unitId,
-  stars: progressionStarsIndex(unit.progressionIndex as never),
-})
 
 /**
  * The synced roster as the event shop resolves slots (spec event-shop-planner: the Shop tab lists the
@@ -46,13 +36,11 @@ export function useRosterShopContext(): RosterShopContext {
     const [details, rosterCharacters, rosterMows] = data ?? [null, null, null]
     if (!details)
       return { lockContext: null, powerLevel: undefined, lastSyncedAt }
-    const powerLevel = details.powerLevel ?? 0
     return {
-      powerLevel,
-      lockContext: computeShopLockContext(
-        powerLevel,
-        (rosterCharacters ?? []).map(rosterUnit),
-        (rosterMows ?? []).map(rosterUnit)
+      ...rosterShopLockContext(
+        details.powerLevel,
+        rosterCharacters ?? [],
+        rosterMows ?? []
       ),
       lastSyncedAt,
     }

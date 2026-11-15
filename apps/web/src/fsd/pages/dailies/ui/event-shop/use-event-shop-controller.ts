@@ -27,6 +27,7 @@ import {
   entryKey,
   markAllBought,
   markDayBought,
+  purchasableSlotsByDay,
   removeEntry,
   setBought,
   setDraftAlliance,
@@ -74,6 +75,9 @@ export interface EventShopController {
   todayIndex: number
   selectedDay: EventShopDay
   slots: ResolvedEventSlot[]
+  /** Every event day's purchasable slots for the roster (freebies left out), resolved once and shared by
+   *  the player caps, Coverage, search and the slot sheet. */
+  slotsByDay: readonly ResolvedEventSlot[][]
   roster: RosterShopContext
   cart: EventShopCartState
   /** Cart controls work only once the plan has loaded. */
@@ -134,10 +138,17 @@ export function useEventShopController(
     [event, selected, lockContext, powerLevel, now]
   )
 
+  // Not keyed on the cart: dragging a packs slider re-classifies the cart, not every day's slots (`now`
+  // only moves at the 00:00 UTC reset).
+  const slotsByDay = useMemo(
+    () => purchasableSlotsByDay(event, { lockContext, powerLevel, now }),
+    [event, lockContext, powerLevel, now]
+  )
+
   const rawEntries = cart.status === "ready" ? cart.entries : NO_ENTRIES
   const classified = useMemo(
-    () => classifyCart(event, rawEntries, todayIndex),
-    [event, rawEntries, todayIndex]
+    () => classifyCart(event, rawEntries, todayIndex, slotsByDay),
+    [event, rawEntries, todayIndex, slotsByDay]
   )
   const list = useMemo(
     () => buildShoppingList(classified.entries, todayIndex, event.dayCount),
@@ -240,6 +251,7 @@ export function useEventShopController(
     todayIndex,
     selectedDay,
     slots,
+    slotsByDay,
     roster,
     cart,
     cartReady: cart.status === "ready",

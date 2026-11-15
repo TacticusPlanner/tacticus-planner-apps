@@ -79,8 +79,7 @@ export function EventShopCoverage({
     entries: controller.entries,
     todayIndex: controller.todayIndex,
     projectId: context.projectId,
-    lockContext: controller.roster.lockContext,
-    powerLevel: controller.roster.powerLevel,
+    slotsByDay: controller.slotsByDay,
   })
   const unsynced = controller.roster.lockContext === null
   // Nothing is left to buy once the event ends, so there is nothing to compare.

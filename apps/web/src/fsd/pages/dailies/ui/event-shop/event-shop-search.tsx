@@ -41,15 +41,10 @@ function useOfferSearch(
 ) {
   const { i18n } = useTranslation()
   const searchNames = useUnitSearchNames()
-  const { event, todayIndex, roster, now } = controller
+  const { event, todayIndex, slotsByDay } = controller
   const groups = useMemo(
     () =>
-      eventOfferGroups(event, {
-        todayIndex,
-        powerLevel: roster.powerLevel,
-        lockContext: roster.lockContext ?? undefined,
-        now,
-      }).map((group) => {
+      eventOfferGroups(event, { todayIndex, slotsByDay }).map((group) => {
         const label = format.reward(group.rewardType, group.unitId).label
         return {
           group,
@@ -57,7 +52,7 @@ function useOfferSearch(
           names: [label, ...(group.unitId ? searchNames(group.unitId) : [])],
         }
       }),
-    [event, todayIndex, roster, now, format, searchNames]
+    [event, todayIndex, slotsByDay, format, searchNames]
   )
   const needle = normalizeSearchText(query, i18n.language)
   return useMemo(() => {

@@ -39,8 +39,5 @@ export {
   type RosterShopContext,
 } from "./model/use-roster-shop-context"
 export { eventOfferGroups, type EventOfferGroup } from "./model/offer-search"
-export {
-  dailyFreebie,
-  withoutFreebies,
-  type DailyFreebie,
-} from "./model/freebie"
+export { purchasableSlotsByDay } from "./model/slots-by-day"
+export { dailyFreebie, type DailyFreebie } from "./model/freebie"

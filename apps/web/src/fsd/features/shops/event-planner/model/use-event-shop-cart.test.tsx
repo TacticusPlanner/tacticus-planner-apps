@@ -173,4 +173,24 @@ describe("useEventShopCart", () => {
     })
     expect(ready(result.current).saveFailed).toBe(false)
   })
+
+  it("saves an edit left pending by a failed save when the cart unmounts", async () => {
+    mutateAsync
+      .mockRejectedValueOnce(new ApiError(500, "boom"))
+      .mockImplementation(({ entries }) => Promise.resolve(plan(2, entries)))
+    const { result, unmount } = renderHook(() => useEventShopCart(testEvent), {
+      wrapper,
+    })
+    act(() => ready(result.current).apply(() => []))
+    await act(() => vi.advanceTimersByTimeAsync(CART_SAVE_DEBOUNCE_MS))
+    expect(ready(result.current).saveFailed).toBe(true)
+
+    unmount()
+
+    expect(mutateAsync).toHaveBeenCalledTimes(2)
+    expect(mutateAsync).toHaveBeenLastCalledWith({
+      expectedRevision: 1,
+      entries: [],
+    })
+  })
 })

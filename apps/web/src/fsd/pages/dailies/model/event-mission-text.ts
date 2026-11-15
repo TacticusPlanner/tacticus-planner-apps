@@ -20,8 +20,12 @@ export function fillGameText(
     for (let index = 1; index + 1 < parts.length; index += 2) {
       forms.set(parts[index]!, parts[index + 1]!)
     }
-    text =
-      (count === 1 ? forms.get("One") : forms.get("Plural")) ?? parts[2] ?? text
+    // Text before the first marker ("Daily: ") is kept, as `resolveI2p` in shared/ability-text does.
+    // That helper is not reused because it reads the count from the template's first placeholder at an
+    // ability level; mission text passes its count explicitly.
+    const form =
+      (count === 1 ? forms.get("One") : forms.get("Plural")) ?? parts[2]
+    text = form === undefined ? text : parts[0]! + form
   }
   return text
     .replace(/\{\[(\w+)\]\}/g, (placeholder, name: string) =>

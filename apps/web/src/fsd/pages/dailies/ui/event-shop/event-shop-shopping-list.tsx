@@ -199,7 +199,6 @@ export function ShoppingList({
                   action={
                     <Button
                       className={TOUCH_SM}
-                      data-testid="event-shop-all-today-bought"
                       disabled={!controller.cartReady}
                       onClick={controller.markTodayBought}
                       size="sm"
@@ -286,7 +285,6 @@ export function ShoppingList({
               <Button
                 key={week}
                 className={cn("px-2", DESTRUCTIVE_TEXT, TOUCH_SM)}
-                data-testid={`event-shop-clear-week-${week}`}
                 disabled={!controller.cartReady}
                 onClick={() =>
                   controller.openDialog({ kind: "clearWeek", week })

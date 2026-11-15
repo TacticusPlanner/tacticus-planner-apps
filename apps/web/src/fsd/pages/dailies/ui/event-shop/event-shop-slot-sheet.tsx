@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { eventDay, resolveEventDaySlots } from "@workspace/game-catalog"
+import { eventDay } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import {
   Drawer,
@@ -10,7 +10,6 @@ import {
   DrawerTitle,
 } from "@workspace/ui/components/drawer"
 
-import { withoutFreebies } from "@/features/shops/event-planner"
 import { EntityIcon } from "@/shared/ui"
 
 import { CartControls, Cost, PacksSlider } from "./event-shop-slots"
@@ -23,27 +22,21 @@ function useAlsoDays(
   controller: EventShopController,
   rewardType: string | null
 ) {
-  const { event, selectedDay, todayIndex, roster, now } = controller
+  const { event, selectedDay, todayIndex, slotsByDay } = controller
   return useMemo(() => {
     if (!rewardType) return []
     const days: string[] = []
     for (let index = Math.max(0, todayIndex); index < event.dayCount; index++) {
       if (index === selectedDay.index) continue
-      // The daily freebie's gold is not a gold offer, so it never counts as "also on sale".
-      const sells = withoutFreebies(
-        event,
-        resolveEventDaySlots(event, index, {
-          lockContext: roster.lockContext ?? undefined,
-          powerLevel: roster.powerLevel,
-          now,
-        })
-      ).some((slot) =>
+      // Freebies are already left out: the daily freebie's gold is not a gold offer, so it never counts
+      // as "also on sale".
+      const sells = (slotsByDay[index] ?? []).some((slot) =>
         slot.offers.some((offer) => offer.rewardType === rewardType)
       )
       if (sells) days.push(eventDay(event, index).date)
     }
     return days
-  }, [event, selectedDay.index, todayIndex, roster, now, rewardType])
+  }, [event, selectedDay.index, todayIndex, slotsByDay, rewardType])
 }
 
 /**

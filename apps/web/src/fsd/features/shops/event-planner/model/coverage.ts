@@ -160,6 +160,14 @@ export function buildCoverage({
   for (const entry of entries) {
     const key = `${entry.dayIndex}/${entry.entry.slotIndex}/${entry.entry.rewardType}`
     plannedPacks.set(key, entry.entry.quantity)
+    // An undecided draft (no alliance yet, e.g. a plan written by another client) supplies one alliance
+    // once chosen, not all three, so it counts toward no row until then.
+    if (
+      entry.entry.rewardType.startsWith("draft_") &&
+      !entry.entry.draftAlliance
+    ) {
+      continue
+    }
     for (const supplied of rewardResources(
       entry.entry.rewardType,
       entry.entry.draftAlliance,

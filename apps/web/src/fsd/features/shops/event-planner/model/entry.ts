@@ -1,4 +1,8 @@
-import { eventDays, type GameCatalogEventShop } from "@workspace/game-catalog"
+import {
+  eventDays,
+  type GameCatalogEventShop,
+  type ResolvedEventSlot,
+} from "@workspace/game-catalog"
 
 import type { EventShopCartEntry } from "@/entities/shops/event-plan"
 
@@ -34,12 +38,17 @@ export function dayIndexOf(
 
 /**
  * The entry's offer in the catalog: the variants of its week's slot sold on its day with its reward
- * type. Variants of one reward on one day differ only by lock or power level, so the largest cap is the
- * one a player can meet (the API validates the same way). `null` when the catalog no longer has it.
+ * type. `null` when the catalog no longer has it.
+ *
+ * The cap is the player's: with `slotsByDay` (each event day's slots resolved for the roster's power level
+ * and locks, as the add path uses), it is that day's resolved offer's `maxPerDay`, so the slider can't
+ * plan more than the player can buy. Without it, or when the player's slot no longer resolves to this
+ * reward, it falls back to the largest cap of any variant (what the API accepts).
  */
 export function resolveEntry(
   event: GameCatalogEventShop,
-  entry: EventShopCartEntry
+  entry: EventShopCartEntry,
+  slotsByDay?: readonly (readonly ResolvedEventSlot[])[]
 ): ResolvedEntry | null {
   const dayIndex = dayIndexOf(event, entry.week, entry.day)
   const variants =
@@ -54,11 +63,16 @@ export function resolveEntry(
         )
   const first = variants[0]
   if (!first) return null
+  const playerCap = slotsByDay?.[dayIndex]
+    ?.find((slot) => slot.slotIndex === entry.slotIndex)
+    ?.offers.find((offer) => offer.rewardType === entry.rewardType)?.maxPerDay
   return {
     entry,
     dayIndex,
     costPerPack: first.cost.amount,
     qtyPerPack: first.reward.qty,
-    cap: Math.max(...variants.map((variant) => variant.maxPurchasesPerDay)),
+    cap:
+      playerCap ??
+      Math.max(...variants.map((variant) => variant.maxPurchasesPerDay)),
   }
 }
