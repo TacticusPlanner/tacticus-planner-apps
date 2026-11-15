@@ -69,7 +69,10 @@ Google accounts SHALL skip both the hidden check and this redirect: neither
 finds a Google user's session (`login_required`, AADSTS50058), while the
 interactive re-authentication started by the next API call returns them
 signed in with no prompt. A Google account known only from the account hint
-lands signed out. The redirect SHALL carry a hint for the account, so the
+lands signed out. An account counts as Google when its ID token names
+`google.com` as the identity provider or its username is the
+`<object id>@<tenant>` name Entra generates for federated users, since a cached
+account can lack those claims. The redirect SHALL carry a hint for the account, so the
 identity provider can pick it in a session that holds several accounts: the ID token's session id (`sid`) or opaque `login_hint`
 claim when the app registration emits them, otherwise the username. The
 session id is also kept in the account hint, so a cleared token cache still
@@ -98,6 +101,14 @@ in-progress state while the redirect leaves the page.
 - **WHEN** they open the app
 - **THEN** no hidden check or quiet redirect runs, and the one interactive
   redirect started by the first API call returns them signed in
+
+#### Scenario: Google account cached without its identity-provider claim
+
+- **GIVEN** a Google user whose cached account has a generated username but no
+  `idp` claim, and whose refresh token has expired
+- **WHEN** they open the app
+- **THEN** it is treated as a Google account: no hidden check or quiet redirect
+  runs
 
 #### Scenario: Several accounts in one identity-provider session
 
