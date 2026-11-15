@@ -1,9 +1,9 @@
 import type { Alliance, Rank } from "@workspace/game-domain"
 
-import type {
-  HseEventPointsState,
-  HseInstance,
-} from "@/features/home-screen-event-points"
+import {
+  type HseEventPointsState,
+  type HseInstance,
+} from "@/entities/home-screen-event"
 // eslint-disable-next-line no-restricted-imports -- stands in for this module inside a vi.mock factory; the slice's public API re-exports the mocked module, so importing it here deadlocks.
 import {
   buildHseTeamsViewModel,

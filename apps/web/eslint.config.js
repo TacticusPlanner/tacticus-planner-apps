@@ -49,12 +49,11 @@ export default defineConfig([
     },
   },
   {
-    // FSD allows `@x` cross-import surfaces only on the entities layer. A warning until the
-    // existing feature-to-feature `@x` imports are refactored away; then raise it to an error.
+    // FSD allows `@x` cross-import surfaces only on the entities layer.
     files: ["src/fsd/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": [
-        "warn",
+        "error",
         {
           patterns: [
             {

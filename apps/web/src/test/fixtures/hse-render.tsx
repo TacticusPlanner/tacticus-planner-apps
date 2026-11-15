@@ -15,8 +15,8 @@ import frDailies from "../../../public/locales/fr/dailies.json"
 import {
   EventDetails,
   PointsProjection,
-  type HseInstance,
 } from "@/features/home-screen-event-points"
+import { type HseInstance } from "@/entities/home-screen-event"
 
 // Test utilities export helpers next to the harness component.
 /* eslint-disable react-refresh/only-export-components */

@@ -11,30 +11,32 @@ import {
 } from "@/features/daily-raids"
 import {
   AllMissions,
-  arenaSurplus,
-  campaignObjectiveState,
-  DEFAULT_HRE_PROGRESS,
   HreEventHeader,
   HreEventSwitcher,
   hreObjectiveIcon,
-  hreDaysLeft,
-  hrePaceFor,
   MissionTracker,
   missionName,
-  nextCampaignMission,
   PaceCard,
   PaceSummary,
-  remainingCampaignBattles,
-  selectCampaignPlan,
-  selectTeamPlans,
-  tokenNeedRows,
   TokensNeededCard,
   useHreInstance,
   useHreProgress,
   useHreTokens,
   useObjectiveText,
-  type HreMission,
 } from "@/features/hre-missions"
+import {
+  arenaSurplus,
+  campaignObjectiveState,
+  DEFAULT_HRE_PROGRESS,
+  hreDaysLeft,
+  hrePaceFor,
+  nextCampaignMission,
+  remainingCampaignBattles,
+  selectCampaignPlan,
+  selectTeamPlans,
+  tokenNeedRows,
+  type HreMission,
+} from "@/entities/hre-mission"
 
 import { useHreTeamRecommendations } from "@/features/team-recommendations"
 import { CampaignBattleDialog } from "@/widgets/battle-preview"

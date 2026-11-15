@@ -10,7 +10,7 @@ import {
 
 import { EntityIcon } from "@/shared/ui"
 
-import { hseMilestoneCells } from "../lib/hse-milestones"
+import { hseMilestoneCells } from "@/entities/home-screen-event"
 import { hseRewardDisplay } from "../lib/hse-reward"
 
 const NO_UNITS = new Map<string, { name: string }>()

@@ -9,7 +9,7 @@ import {
   type OnslaughtAllianceIcon,
 } from "@workspace/game-catalog"
 
-import type { HreObjective } from "./hre-missions"
+import type { HreObjective } from "@/entities/hre-mission"
 
 const ALLIANCES: ReadonlySet<string> = new Set<OnslaughtAllianceIcon>([
   "Imperial",

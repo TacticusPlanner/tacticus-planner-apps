@@ -2,7 +2,7 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { usePlayerChunk } from "@/shared/local-data"
 
-import type { HreTokenMode } from "./hre-objectives"
+import type { HreTokenMode } from "@/entities/hre-mission"
 
 export type HreTokens = Record<HreTokenMode, number | null>
 

@@ -9,7 +9,7 @@ import {
   HSE_CAMPAIGN_MODES,
   HSE_TOKEN_MODES,
   hseModeScoring,
-} from "@/features/home-screen-event-points"
+} from "@/entities/home-screen-event"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { combatPowerOf } from "./team-eligibility"
