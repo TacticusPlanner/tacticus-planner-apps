@@ -17,7 +17,7 @@ export function mapJournaledAuthStepToEvent(
     from: "from" in entry ? entry.from : null,
     reason: "reason" in entry ? entry.reason : null,
     trigger: "trigger" in entry ? entry.trigger : null,
-    method: "method" in entry ? entry.method : null,
+    method: entry.method ?? null,
     freshLogin: "freshLogin" in entry ? entry.freshLogin : null,
   }
 }

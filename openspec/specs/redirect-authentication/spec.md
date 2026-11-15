@@ -154,6 +154,21 @@ When one or more callers (an API request, the player-data sync, a sign-in contro
 - **WHEN** another caller requests interactive sign-in
 - **THEN** no second redirect is started
 
+### Requirement: Automatic re-authentication redirects are capped per device
+
+The system SHALL start at most 3 automatic interactive redirects (ones an API request or the player-data sync asks for, not a sign-in control) per device within 10 minutes. Past that, the request fails and the user is told sign-in failed, instead of the page bouncing again. A completed redirect sign-in and signing out reset the count.
+
+#### Scenario: Redirects keep coming back without a response
+
+- **GIVEN** three automatic redirects in the last 10 minutes that each returned without a usable response
+- **WHEN** another API request requires interaction
+- **THEN** no redirect starts, and the user sees the sign-in error
+
+#### Scenario: A user signs in by hand
+
+- **WHEN** the cap is reached and the user presses Sign in
+- **THEN** the sign-in redirect starts
+
 ### Requirement: Token cache persists on the device
 
 Identity-provider tokens SHALL be stored in the device's local storage, shared across tabs and kept after the browser or the installed app closes, so a relaunch restores the session from the cached refresh token without a hidden identity-provider frame. Signing out SHALL remove them, together with the account hint described in `silent-sign-in`.
