@@ -8,7 +8,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { lastRank, rankOrder, type Rank } from "@workspace/game-domain"
+import {
+  lastRank,
+  rankIndex,
+  rankOrder,
+  type Rank,
+} from "@workspace/game-domain"
 
 import type { FarmingStrategy } from "@/entities/goal"
 import type { RankAdditionalTarget } from "@/features/goal-farming/@x/goal-create"
@@ -86,6 +91,9 @@ export function RankGoalCard({
   )
   const name = (rank: Rank) =>
     steps.find((step) => step.key === rank)?.name ?? rank
+  // The range (and its cost) runs from where the unit is now: the later of its start and live rank.
+  const rangeStart =
+    current && rankIndex(current) > rankIndex(start) ? current : start
 
   return (
     <div className="grid gap-3">
@@ -121,7 +129,7 @@ export function RankGoalCard({
           resources={t("goals.card.range.materials", {
             count: preview.missingUpgrades.length,
           })}
-          start={name(start)}
+          start={name(rangeStart)}
           state={preview.state}
         />
       </div>

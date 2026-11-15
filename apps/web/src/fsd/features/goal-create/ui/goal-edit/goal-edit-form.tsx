@@ -69,6 +69,8 @@ function useUnitProgression(detail: GoalDetail) {
     character ?? mows?.find((unit) => unit.unitId === detail.entityId)
   const start = detail.config.progression?.start
   return {
+    character,
+    mow: character ? undefined : synced,
     progression:
       synced?.progressionIndex ??
       (start && isProgression(start) ? start : "Common:None"),
@@ -191,14 +193,23 @@ export function GoalEditForm({
   const takenKeys = new Set(
     [...takenFor(detail.goalType)].filter((key) => key !== ownKey)
   )
+  const unitProgression = useUnitProgression(detail)
+  const live = useMemo(
+    () => ({
+      character: unitProgression.character,
+      mow: unitProgression.mow,
+      inventoryUpgrades,
+    }),
+    [unitProgression.character, unitProgression.mow, inventoryUpgrades]
+  )
   const previews = useGoalEditEstimate({
     detail,
     target: draft.target,
     catalog,
     acquisition,
     dailyEnergy: planningSettings.dailyEnergy,
+    live,
   })
-  const unitProgression = useUnitProgression(detail)
 
   const changes = goalEditChanges(baseline, draft)
   const dirty = isGoalEditDirty(changes)

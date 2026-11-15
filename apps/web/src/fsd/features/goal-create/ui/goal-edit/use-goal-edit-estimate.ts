@@ -6,7 +6,10 @@ import type { GoalDetail } from "@/entities/goal"
 import { estimateGoal } from "@/features/goal-farming/@x/goal-create"
 import type { useGoalCatalog } from "@/features/goal-planning/@x/goal-create"
 
-import { goalEditMaterialNeeds } from "../../model/goal-edit/goal-edit-material-needs"
+import {
+  goalEditMaterialNeeds,
+  type GoalEditLiveProgress,
+} from "../../model/goal-edit/goal-edit-material-needs"
 import type { useGoalEditAcquisition } from "../../model/goal-edit/use-goal-edit-acquisition"
 import { useProgressionPreview } from "../../model/goal-creation-form/use-progression-preview"
 import type { GoalTargetDraft } from "../../model/target-edit/goal-target-edit"
@@ -16,7 +19,8 @@ import type { ResourcePreview } from "../goal-card/card-parts"
  * The previews of the goal's card, from its start to the draft target, computed as the create preview
  * computes them (goal-edit-dialog): Ascension through the same progression preview over the draft's
  * acquisition sources, Rank, Upgrade and Machine-of-War Ability through `estimateGoal` over the
- * materials the draft needs. A Character Ability goal gets no resource preview (its cost isn't
+ * materials the draft still needs, counted from the unit's synced progress (`live`) as the create
+ * preview counts it. A Character Ability goal gets no resource preview (its cost isn't
  * supported, as at creation).
  */
 export function useGoalEditEstimate({
@@ -25,12 +29,14 @@ export function useGoalEditEstimate({
   catalog,
   acquisition,
   dailyEnergy,
+  live,
 }: {
   detail: GoalDetail
   target: GoalTargetDraft | null
   catalog: ReturnType<typeof useGoalCatalog>
   acquisition: ReturnType<typeof useGoalEditAcquisition>
   dailyEnergy: number
+  live: GoalEditLiveProgress
 }) {
   const { t } = useTranslation()
   const isAscension = detail.goalType === "Ascension"
@@ -39,6 +45,7 @@ export function useGoalEditEstimate({
   const progressionPreview = useProgressionPreview({
     entityId: isAscension ? (detail.entityId as never) : undefined,
     entityType: detail.entityType,
+    playerEntity: isAscension ? (live.character ?? live.mow) : undefined,
     character:
       detail.entityType === "Character"
         ? catalog.charactersById?.get(detail.entityId)
@@ -60,7 +67,7 @@ export function useGoalEditEstimate({
   const needs = useMemo(
     () =>
       target
-        ? goalEditMaterialNeeds(detail, target, catalog)
+        ? goalEditMaterialNeeds(detail, target, catalog, live)
             .filter((entry) => entry.missing > 0)
             .map((entry) => ({
               ...entry,
@@ -68,7 +75,7 @@ export function useGoalEditEstimate({
                 catalog.upgradesById.get(entry.id as never)?.label ?? entry.id,
             }))
         : [],
-    [detail, target, catalog]
+    [detail, target, catalog, live]
   )
   const estimate = useMemo(
     () =>
