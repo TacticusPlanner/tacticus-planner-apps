@@ -1,14 +1,23 @@
 import {
   type ColumnDef,
   type ColumnFiltersState,
+  type ColumnVisibilityState,
+  type RowSelectionState,
   type SortingState,
-  type VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+  columnFilteringFeature,
+  columnVisibilityFeature,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
+  filterFn_includesString,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  sortFn_alphanumeric,
+  sortFn_basic,
+  sortFn_text,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { useMemo, useState } from "react"
@@ -38,6 +47,23 @@ import {
 
 import { payments, type Payment } from "../model/ui-kit"
 
+const features = tableFeatures({
+  columnFilteringFeature,
+  columnVisibilityFeature,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  filteredRowModel: createFilteredRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+  sortedRowModel: createSortedRowModel(),
+  filterFns: { includesString: filterFn_includesString },
+  sortFns: {
+    alphanumeric: sortFn_alphanumeric,
+    basic: sortFn_basic,
+    text: sortFn_text,
+  },
+})
+
 function formatAmount(amount: number) {
   return new Intl.NumberFormat("en-US", {
     currency: "USD",
@@ -47,11 +73,12 @@ function formatAmount(amount: number) {
 
 export function DataTableShowcase() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState({})
+  const [columnVisibility, setColumnVisibility] =
+    useState<ColumnVisibilityState>({})
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [sorting, setSorting] = useState<SortingState>([])
 
-  const columns = useMemo<ColumnDef<Payment>[]>(
+  const columns = useMemo<ColumnDef<typeof features, Payment>[]>(
     () => [
       {
         id: "select",
@@ -102,7 +129,7 @@ export function DataTableShowcase() {
         header: () => <div className="text-right">Amount</div>,
         cell: ({ row }) => (
           <div className="text-right font-medium">
-            {formatAmount(row.getValue("amount"))}
+            {formatAmount(row.original.amount)}
           </div>
         ),
       },
@@ -138,14 +165,10 @@ export function DataTableShowcase() {
     []
   )
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const table = useReactTable({
+  const table = useTable({
     columns,
     data: payments,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    features,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
@@ -199,12 +222,9 @@ export function DataTableShowcase() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                    {header.isPlaceholder ? null : (
+                      <table.FlexRender header={header} />
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -219,10 +239,7 @@ export function DataTableShowcase() {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      <table.FlexRender cell={cell} />
                     </TableCell>
                   ))}
                 </TableRow>
