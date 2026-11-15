@@ -12,6 +12,7 @@ import {
 } from "./chunk-keys"
 import type { PlayerDataChunkDto } from "./player-data.dto"
 import type { PlayerDataMetadataStorageModel } from "./player-data.storage"
+import { createReconnectingRunner } from "./reconnect"
 
 // Exported so tests can delete/reset the exact database the app uses (see player-data-sync.test.ts).
 export const playerDataDbName = "tacticus-planner-player-data"
@@ -108,6 +109,10 @@ class PlayerDataDb extends Dexie {
 
 const playerDataDb = new PlayerDataDb()
 
+// Every read and write below runs through this, so a connection the browser dropped (WebKit does it
+// to background tabs) is reopened and the operation retried once instead of failing the sync.
+const withConnection = createReconnectingRunner(playerDataDb)
+
 // Counts deletions of the database, by this tab or by another one (sign-out in any tab deletes it).
 // Dexie reopens a closed connection on its next use, recreating an empty database, so a sync that
 // started before a deletion passes the generation it started in to its writes, which refuse to run
@@ -130,7 +135,7 @@ function assertGeneration(expected: number | undefined) {
 export async function getPlayerDataMetadata(): Promise<
   Map<string, PlayerDataMetadataStorageModel>
 > {
-  const values = await playerDataDb.metadata.toArray()
+  const values = await withConnection(() => playerDataDb.metadata.toArray())
 
   return new Map(values.map((metadata) => [metadata.key, metadata]))
 }
@@ -162,35 +167,39 @@ export async function replacePlayerDataChunk(
   metadata: PlayerDataMetadataStorageModel,
   expectedGeneration?: number
 ): Promise<void> {
-  const table = playerDataDb.table(storeNameForChunk(chunkKey))
+  await withConnection(() => {
+    const table = playerDataDb.table(storeNameForChunk(chunkKey))
 
-  await playerDataDb.transaction(
-    "rw",
-    table,
-    playerDataDb.metadata,
-    async () => {
-      assertGeneration(expectedGeneration)
-      if (isMergedPlayerDataChunkKey(chunkKey)) {
-        await table.where("id").startsWith(`${chunkKey}:`).delete()
-        await table.bulkPut(decomposeMergedChunk(chunkKey, data))
-      } else if (isSplitPlayerDataChunkKey(chunkKey)) {
-        await table.clear()
-        await table.bulkPut(Array.isArray(data) ? data : [])
+    return playerDataDb.transaction(
+      "rw",
+      table,
+      playerDataDb.metadata,
+      async () => {
+        assertGeneration(expectedGeneration)
+        if (isMergedPlayerDataChunkKey(chunkKey)) {
+          await table.where("id").startsWith(`${chunkKey}:`).delete()
+          await table.bulkPut(decomposeMergedChunk(chunkKey, data))
+        } else if (isSplitPlayerDataChunkKey(chunkKey)) {
+          await table.clear()
+          await table.bulkPut(Array.isArray(data) ? data : [])
+        }
+
+        await playerDataDb.metadata.put(metadata)
       }
-
-      await playerDataDb.metadata.put(metadata)
-    }
-  )
+    )
+  })
 }
 
 export async function saveManifestMetadata(
   metadata: PlayerDataMetadataStorageModel,
   expectedGeneration?: number
 ): Promise<void> {
-  await playerDataDb.transaction("rw", playerDataDb.metadata, async () => {
-    assertGeneration(expectedGeneration)
-    await playerDataDb.metadata.put(metadata)
-  })
+  await withConnection(() =>
+    playerDataDb.transaction("rw", playerDataDb.metadata, async () => {
+      assertGeneration(expectedGeneration)
+      await playerDataDb.metadata.put(metadata)
+    })
+  )
 }
 
 /**
@@ -201,6 +210,12 @@ export async function saveManifestMetadata(
  * xp books), which must still read back as `[]`, not `undefined`.
  */
 export async function getChunkData<K extends PlayerDataChunkKey>(
+  chunkKey: K
+): Promise<PlayerDataChunkDto<K> | undefined> {
+  return withConnection(() => readChunkData(chunkKey))
+}
+
+async function readChunkData<K extends PlayerDataChunkKey>(
   chunkKey: K
 ): Promise<PlayerDataChunkDto<K> | undefined> {
   const chunkMetadata = await playerDataDb.metadata.get(chunkKey)
@@ -244,19 +259,23 @@ export async function getChunkRecord<K extends SplitPlayerDataChunkKey>(
   chunkKey: K,
   id: string | string[]
 ): Promise<PlayerDataChunkDto<K>[number] | undefined> {
-  return playerDataDb
-    .table<PlayerDataChunkDto<K>[number], string | string[]>(chunkKey)
-    .get(id)
+  return withConnection(() =>
+    playerDataDb
+      .table<PlayerDataChunkDto<K>[number], string | string[]>(chunkKey)
+      .get(id)
+  )
 }
 
 export async function clearPlayerDataDb(): Promise<void> {
   const tableNames = ["metadata", profileStore, ...splitPlayerDataChunkKeys]
 
-  await playerDataDb.transaction("rw", tableNames, async () => {
-    await Promise.all(
-      tableNames.map((name) => playerDataDb.table(name).clear())
-    )
-  })
+  await withConnection(() =>
+    playerDataDb.transaction("rw", tableNames, async () => {
+      await Promise.all(
+        tableNames.map((name) => playerDataDb.table(name).clear())
+      )
+    })
+  )
 }
 
 export async function deletePlayerDataDb(): Promise<void> {
