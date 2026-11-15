@@ -40,6 +40,7 @@ import type { LastRunClears } from "../overview/last-run.view-model"
 
 import { TeamCard } from "./team-card"
 import type { TeamCardActions } from "./team-card"
+import { useTeamEditorSuggestionOpen } from "./team-editor-launcher"
 import type { TeamEditorLauncher } from "./team-editor-launcher"
 import { TeamsEmptyState } from "./teams-empty-state"
 import {
@@ -112,7 +113,7 @@ export function TeamsSection({
   teams: TeamsViewModel
   isMobile: boolean
   /** The page's team editor. */
-  editor: Pick<TeamEditorLauncher, "editor" | "openTeamEditor">
+  editor: TeamEditorLauncher
 }) {
   const { t } = useTranslation("legendaryEvents")
   const [suggestCount, setSuggestCount] = useState(0)
@@ -120,6 +121,8 @@ export function TeamsSection({
   // The open Suggest teams dialog's mount key (null when closed): a fresh mount resets its toggles.
   const [suggesting, setSuggesting] = useState<number | null>(null)
   const suggestReasonId = useId()
+  // The suggestions dialog steps aside while a suggestion is open in the editor.
+  const suggestionEditorOpen = useTeamEditorSuggestionOpen(editor)
   const titleId = useId()
   const { state, run, actions, estimates, unitPower } = teams
   const estimateTeam =
@@ -403,7 +406,7 @@ export function TeamsSection({
           key={suggesting}
           onClose={() => setSuggesting(null)}
           onUseSuggestion={acceptSuggestion}
-          open={editor.editor?.suggestionRank === undefined}
+          open={!suggestionEditorOpen}
           source={suggestionsSource}
         />
       ) : null}

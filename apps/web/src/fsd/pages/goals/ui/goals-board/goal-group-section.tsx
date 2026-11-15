@@ -53,7 +53,10 @@ export function GoalGroupSection({
           </span>
         </button>
       </h2>
-      <div hidden={collapsed} id={contentId}>
+      {/* Hidden as soon as it is tapped (the optimistic state), so the goals below move up in the
+          tap's own frame, which the browser does not count as a layout shift; unmounting the
+          group's goals follows in the transition (CLS audit 2026-11-15). */}
+      <div hidden={shownCollapsed} id={contentId}>
         {collapsed ? null : children}
       </div>
     </section>

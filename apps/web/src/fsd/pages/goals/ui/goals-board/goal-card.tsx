@@ -360,7 +360,7 @@ export const GoalCard = memo(
           <StatusBadge
             disabled={actions.pendingIds.has(row.goalId)}
             onToggle={(next) =>
-              void toggleGoalStatus(actions, row, next, cascadeContext)
+              toggleGoalStatus(actions, row, next, cascadeContext)
             }
             reached={data.reached}
             status={row.status}

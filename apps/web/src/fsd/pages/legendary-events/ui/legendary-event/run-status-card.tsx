@@ -202,7 +202,15 @@ export function RunStatusCard({
             <RewardOutlook outlook={outlook} />
           </>
         )}
-        {syncedAtMs === undefined ? null : (
+        {syncedAtMs === undefined ? (
+          // The line's height while the sync time loads, so the card doesn't grow under the
+          // content below it when the time arrives (CLS audit 2026-11-15).
+          <p
+            aria-hidden="true"
+            className="h-4"
+            data-testid="run-status-synced-at-pending"
+          />
+        ) : (
           <p
             className="text-xs text-muted-foreground"
             data-testid="run-status-synced-at"

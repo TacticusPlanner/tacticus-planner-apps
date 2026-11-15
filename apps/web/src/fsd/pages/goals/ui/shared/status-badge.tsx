@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, Link2, LockKeyhole, Pause, Play } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
@@ -14,6 +15,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { GoalStatus } from "@/entities/goal"
+import { afterNextPaint } from "@/shared/lib"
 import { resourceLabel } from "@/entities/goal-farming"
 import type {
   EstimateOutcome,
@@ -49,11 +51,17 @@ export function StatusBadge({
   reached?: boolean
   /** Extra classes for the chip (the desktop table's standalone Status column draws it larger). */
   className?: string
-  /** When given, an Active/Paused chip becomes a one-click Pause/Resume toggle (no extra space). */
-  onToggle?: (next: "Active" | "Paused") => void
+  /** When given, an Active/Paused chip becomes a one-click Pause/Resume toggle (no extra space).
+   *  It runs after the chip has painted its new status; the chip shows that status until the
+   *  returned promise settles, then whatever `status` says (a rolled-back toggle reverts). */
+  onToggle?: (next: "Active" | "Paused") => void | Promise<unknown>
   disabled?: boolean
 }) {
   const { t } = useTranslation()
+  // The status a tap asked for, shown at once. Pausing or resuming rewrites the goals cache, which
+  // re-renders the whole list and its estimates; that waits for the chip's own paint so the tap's
+  // INP is the chip, not the list (web vitals audit 2026-11-15, P90 about 1 s before).
+  const [requested, setRequested] = useState<"Active" | "Paused" | null>(null)
 
   if (reached) {
     return (
@@ -72,7 +80,14 @@ export function StatusBadge({
   }
 
   if (onToggle && (status === "Active" || status === "Paused")) {
-    const next = status === "Active" ? "Paused" : "Active"
+    const shown = requested ?? status
+    const next = shown === "Active" ? "Paused" : "Active"
+    const toggle = () => {
+      setRequested(next)
+      afterNextPaint(() => {
+        void Promise.resolve(onToggle(next)).finally(() => setRequested(null))
+      })
+    }
     const label = t(`goals.actions.${next === "Paused" ? "pause" : "resume"}`)
     return (
       <Tooltip>
@@ -81,21 +96,21 @@ export function StatusBadge({
             asChild
             className={className}
             data-testid="goal-status-badge"
-            variant={VARIANT_BY_STATUS[status]}
+            variant={VARIANT_BY_STATUS[shown]}
           >
             <button
-              aria-label={`${t(`goals.status.${status}`)} — ${label}`}
+              aria-label={`${t(`goals.status.${shown}`)} — ${label}`}
               className="cursor-pointer hover:opacity-80 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:cursor-default"
-              disabled={disabled}
-              onClick={() => onToggle(next)}
+              disabled={disabled || requested !== null}
+              onClick={toggle}
               type="button"
             >
-              {status === "Active" ? (
+              {shown === "Active" ? (
                 <Pause aria-hidden="true" className="size-3 fill-current" />
               ) : (
                 <Play aria-hidden="true" className="size-3 fill-current" />
               )}
-              {t(`goals.status.${status}`)}
+              {t(`goals.status.${shown}`)}
             </button>
           </Badge>
         </TooltipTrigger>

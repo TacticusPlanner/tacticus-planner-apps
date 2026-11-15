@@ -8,6 +8,7 @@ import type {
 import { TeamEditorDialog, laneTeams } from "@/features/legendary-event-plan"
 import type { PickerEstimates } from "@/features/legendary-event-plan"
 
+import { useOpenTeamEditor } from "./team-editor-launcher"
 import type { TeamEditorLauncher } from "./team-editor-launcher"
 import type { TeamsViewModel } from "./teams-section"
 
@@ -28,7 +29,7 @@ export function TeamEditorHost({
   launcher: TeamEditorLauncher
   onlyUnlocked: boolean
 }) {
-  const { editor } = launcher
+  const editor = useOpenTeamEditor(launcher)
   // The editor (by mount key) whose suggestion was already saved once.
   const suggestionSavedFor = useRef<number | null>(null)
   const displayName = useTeamDisplayName()

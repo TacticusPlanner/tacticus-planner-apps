@@ -12,22 +12,14 @@ import {
   ResponsiveDialogTitle,
 } from "@/shared/ui"
 
+import { useCampaignBattleTarget } from "../model/campaign-battle-dialog-store"
+import type {
+  CampaignBattleDialogStore,
+  CampaignBattleTarget,
+} from "../model/campaign-battle-dialog-store"
 import { campaignEnemyTiles } from "../model/campaign-enemy-tiles"
 import type { EnemyNpcs } from "../model/enemy-tile"
 import { EnemyList } from "./enemy-list"
-
-/** A campaign location's name as its raid row shows it (see `CampaignLocationName`). */
-interface CampaignBattleTitle {
-  campaignName: string
-  difficultyLabel?: string
-  nodeLabel?: string
-}
-
-/** The campaign battle the dialog shows, with the name its row already displays. */
-interface CampaignBattleTarget {
-  battleId: string
-  title: CampaignBattleTitle
-}
 
 /**
  * A campaign location's battle, opened by tapping a planned raid location (V1's expandable raid
@@ -54,6 +46,17 @@ export function CampaignBattleDialog({
       {target ? <CampaignBattleContent target={target} /> : null}
     </ResponsiveDialog>
   )
+}
+
+/** The page's campaign battle dialog, opened through `dialog.show`. It alone re-renders when the
+ *  dialog opens or closes. */
+export function CampaignBattleDialogHost({
+  dialog,
+}: {
+  dialog: CampaignBattleDialogStore
+}) {
+  const target = useCampaignBattleTarget(dialog)
+  return <CampaignBattleDialog onClose={dialog.close} target={target} />
 }
 
 function CampaignBattleContent({ target }: { target: CampaignBattleTarget }) {

@@ -19,8 +19,10 @@ import {
   selectTodayRaids,
   useDailyRaids,
 } from "@/features/daily-raids"
-import type { RaidLocationTarget } from "@/features/daily-raids"
-import { CampaignBattleDialog } from "@/widgets/battle-preview"
+import {
+  CampaignBattleDialogHost,
+  useCampaignBattleDialog,
+} from "@/widgets/battle-preview"
 
 /** Home dashboard's Daily Raids widget: today's real (energy-budget) schedule for the account's Active
  * goals in global order (the same run as Today) — or, once today's real energy spend reaches the daily
@@ -34,9 +36,9 @@ export function RaidsWidget() {
   const raids = useDailyRaids()
   const [expanded, setExpanded] = useState(false)
   // The location whose battle and enemies are open (tapping its name).
-  const [shownLocation, setShownLocation] = useState<RaidLocationTarget | null>(
-    null
-  )
+  // The battle dialog's open state lives outside this page, so a location's info button
+  // re-renders only the dialog.
+  const battleDialog = useCampaignBattleDialog()
 
   const body = (() => {
     if (raids.status === "loading") {
@@ -138,7 +140,7 @@ export function RaidsWidget() {
               entry={entry}
               key={entry.battleId}
               location={raids.locationsByBattleId.get(entry.battleId)}
-              onShowLocation={setShownLocation}
+              onShowLocation={battleDialog.show}
               progress={raids.resourceTotals.get(entry.resourceId)}
               resourceLabel={
                 raids.resourceLabels.get(entry.resourceId) ?? entry.resourceId
@@ -185,10 +187,7 @@ export function RaidsWidget() {
         </CardAction>
       </CardHeader>
       <CardContent>{body}</CardContent>
-      <CampaignBattleDialog
-        onClose={() => setShownLocation(null)}
-        target={shownLocation}
-      />
+      <CampaignBattleDialogHost dialog={battleDialog} />
     </Card>
   )
 }

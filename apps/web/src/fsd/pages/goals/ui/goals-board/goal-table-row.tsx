@@ -232,7 +232,7 @@ export const GoalRowCells = memo(function GoalRowCells({
             className="px-2.5 py-1 text-sm"
             disabled={actions.pendingIds.has(row.goalId)}
             onToggle={(next) =>
-              void toggleGoalStatus(actions, row, next, cascadeContext)
+              toggleGoalStatus(actions, row, next, cascadeContext)
             }
             reached={reached}
             status={row.status}
