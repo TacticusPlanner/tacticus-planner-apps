@@ -139,8 +139,31 @@ describe("buildCombinedGoalSpecs", () => {
     ])
     expect(specs[0]?.dependsOnIndex).toEqual([]) // Unlock
     expect(specs[1]?.dependsOnIndex).toEqual([0]) // Ascension -> Unlock
-    expect(specs[2]?.dependsOnIndex).toEqual([0, 1]) // Rank -> Unlock, Ascension
-    expect(specs[3]?.dependsOnIndex).toEqual([0, 1]) // Ability -> Unlock, Ascension
+    // Stone2 and level-0 abilities need no Ascension, so neither waits on the toggled one.
+    expect(specs[2]?.dependsOnIndex).toEqual([0]) // Rank -> Unlock
+    expect(specs[3]?.dependsOnIndex).toEqual([0]) // Ability -> Unlock
+  })
+
+  it("doesn't gate an Ability target the current rarity already permits on a toggled Ascension", () => {
+    // A Legendary unit's abilities cap at 50: adding stars doesn't unlock 44/50, so no edge.
+    const specs = buildCombinedGoalSpecs({
+      ...baseSpecParams,
+      enabledTypes: new Set(["Ascension", "Ability"]),
+      includesUnlock: false,
+      includesAscension: true,
+      rankStart: "Diamond1",
+      rankEnd: "Diamond1",
+      progressionStart: "Legendary:RedThreeStars",
+      progressionEnd: "Legendary:RedFiveStars",
+      abilityActiveStart: 35,
+      abilityActiveEnd: 44,
+      abilityPassiveStart: 35,
+      abilityPassiveEnd: 50,
+    })
+
+    expect(specs.map((spec) => spec.goalType)).toEqual(["Ascension", "Ability"])
+    expect(specs[1]?.dependsOnIndex).toEqual([])
+    expect(specs[1]?.dependsOnGoalIds).toBeUndefined()
   })
 
   it("gates Ability on an auto-suggested Ascension it wasn't explicitly toggled for (8.1)", () => {

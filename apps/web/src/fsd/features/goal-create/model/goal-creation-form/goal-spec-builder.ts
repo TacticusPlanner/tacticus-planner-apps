@@ -298,9 +298,9 @@ export function buildReviewItems(
  * milestones -> Upgrade. Each milestone of a ladder (goal-target-milestones) depends on the one before
  * it, and every stored start stays at the unit's current state. A Rank/Ability milestone whose target
  * needs a higher progression than `baseProgression` depends on the lowest Ascension that reaches it: an
- * in-flight one from `existingAscensions` (sent as `dependsOnGoalIds`), else one in this request. An
- * explicitly toggled Ascension ladder comes right after Unlock and also gates milestones that need no
- * ascension (by its first step); the auto-suggested one (`ascensionSuggestion`, used only when
+ * in-flight one from `existingAscensions` (sent as `dependsOnGoalIds`), else one in this request; a
+ * milestone the base progression already permits depends on no Ascension. An explicitly toggled
+ * Ascension ladder comes right after Unlock; the auto-suggested one (`ascensionSuggestion`, used only when
  * Ascension itself wasn't toggled) is placed just before the first milestone that needs it, and only
  * milestones that need it depend on it. The character level a target needs is never a spec — the goal
  * itself carries it (integrate-level-progression-into-rank-goals).
@@ -397,12 +397,9 @@ export function buildCombinedGoalSpecs(params: {
   const ascensionDependency = (
     need: Progression | null
   ): { index: number | null; goalIds: string[] } => {
-    if (need === null) {
-      return {
-        index: explicitAscension ? (ascensions[0]?.index ?? null) : null,
-        goalIds: [],
-      }
-    }
+    // A target the unit's current progression already permits waits on no Ascension, even one
+    // created alongside it: a needless edge would mark the goal Restricted until that Ascension lands.
+    if (need === null) return { index: null, goalIds: [] }
     const existing = lowestCoveringAscension(existingAscensions, need)
     if (existing) return { index: null, goalIds: [existing.goalId] }
     if (pendingSuggestion) {
