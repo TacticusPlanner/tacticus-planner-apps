@@ -2,11 +2,8 @@ import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import { laneAllowedRule } from "../lib/lane-label"
-import {
-  describeUnitFilter,
-  type ObjectiveIcon,
-  type ObjectiveLabelSpec,
-} from "../lib/objective-label"
+import { describeUnitFilter } from "../lib/objective-label"
+import type { ObjectiveIcon, ObjectiveLabelSpec } from "../lib/objective-label"
 import type {
   LegendaryEventLane,
   LegendaryEventObjective,

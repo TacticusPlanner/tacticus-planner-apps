@@ -14,7 +14,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import { EntityIcon } from "@/shared/ui"
 
 import { DESTRUCTIVE_TEXT } from "./day-state-style"
-import { slotViews, useSlotLabelText, type SlotView } from "./slot-view"
+import { slotViews, useSlotLabelText } from "./slot-view"
+import type { SlotView } from "./slot-view"
 import type { EventShopController } from "./use-event-shop-controller"
 import type { EventShopFormat } from "./use-event-shop-format"
 

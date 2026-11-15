@@ -6,12 +6,12 @@ import {
   rankAt,
   rankIndex,
   rankOrder,
-  type Rank,
-  type UpgradeId,
 } from "@workspace/game-domain"
+import type { Rank, UpgradeId } from "@workspace/game-domain"
 import type { MowStorageModel } from "@workspace/game-catalog"
 
-import { useGlobalGoalPlan, type UpgradeRange } from "@/entities/goal"
+import { useGlobalGoalPlan } from "@/entities/goal"
+import type { UpgradeRange } from "@/entities/goal"
 import type {
   UpgradeWithFarmLocations,
   Character,
@@ -23,8 +23,8 @@ import {
   characterRelevantUpgradeQuantities,
   computeUpgradeGoalNeed,
   mowRelevantUpgradeQuantities,
-  type UpgradeRanges,
 } from "./goal-spec-builder"
+import type { UpgradeRanges } from "./goal-spec-builder"
 
 /**
  * The Upgrade goal's own state — its rank-range picker (Character only; a Mow has no single range

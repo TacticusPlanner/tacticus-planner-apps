@@ -1,9 +1,7 @@
 import { useTranslation } from "react-i18next"
 
-import {
-  hasPendingChanges,
-  type MembershipDraft,
-} from "../model/membership-draft"
+import { hasPendingChanges } from "../model/membership-draft"
+import type { MembershipDraft } from "../model/membership-draft"
 
 /** The named summary of what Save will do — every pending addition and removal, regardless of what the
  * search or grouping currently shows. */

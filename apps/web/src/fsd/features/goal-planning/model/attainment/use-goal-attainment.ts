@@ -3,11 +3,8 @@ import type { UnitId } from "@workspace/game-domain"
 
 import { usePlayerChunk } from "@/shared/local-data"
 
-import {
-  computeGoalAttainment,
-  UNKNOWN,
-  type GoalAttainment,
-} from "./goal-attainment"
+import { computeGoalAttainment, UNKNOWN } from "./goal-attainment"
+import type { GoalAttainment } from "./goal-attainment"
 import { useGoalsFor } from "./use-goals-for"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { allocateUpgradeGoalStock } from "./upgrade-goal-stock"

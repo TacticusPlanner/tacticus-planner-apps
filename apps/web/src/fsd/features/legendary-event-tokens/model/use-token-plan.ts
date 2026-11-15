@@ -1,16 +1,13 @@
 import { useCallback, useMemo } from "react"
 
-import {
-  useTeamDisplayName,
-  type LegendaryEventLifecycle,
-  type LegendaryEventTeam,
+import { useTeamDisplayName } from "@/entities/legendary-event"
+import type {
+  LegendaryEventLifecycle,
+  LegendaryEventTeam,
 } from "@/entities/legendary-event"
 
-import {
-  buildTokenPlanView,
-  type TokenPlanView,
-  type TokenPlanViewInput,
-} from "../lib/token-plan-view"
+import { buildTokenPlanView } from "../lib/token-plan-view"
+import type { TokenPlanView, TokenPlanViewInput } from "../lib/token-plan-view"
 
 /**
  * The token plan, next token, supply and forecast, recomputed only when a read they use changes

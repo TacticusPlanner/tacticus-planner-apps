@@ -1,7 +1,8 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { rarityIcon } from "@workspace/game-catalog"
-import { rankAt, type Rarity } from "@workspace/game-domain"
+import { rankAt } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import {
   Select,
@@ -22,9 +23,11 @@ import {
   describeModifier,
   humanizeToken,
   RaidBossPortrait,
-  type ModifierContext,
-  type RaidBoss,
-  type RaidBossEncounterModifier,
+} from "@/entities/raid-boss"
+import type {
+  ModifierContext,
+  RaidBoss,
+  RaidBossEncounterModifier,
 } from "@/entities/raid-boss"
 import {
   CompactStarLevel,
@@ -35,10 +38,8 @@ import {
 
 import { buildProgressionStepLabels, toRarity } from "./progression-step-labels"
 import { RaidBossAbilityPanel } from "./raid-boss-ability-panel"
-import {
-  RaidBossAdjustedStats,
-  type RaidBossAdjustedProps,
-} from "./raid-boss-adjusted-stats"
+import { RaidBossAdjustedStats } from "./raid-boss-adjusted-stats"
+import type { RaidBossAdjustedProps } from "./raid-boss-adjusted-stats"
 
 export type RaidBossDetailProps = {
   unit: RaidBoss
@@ -321,7 +322,7 @@ export function RaidBossDetail({
 
       <Separator />
 
-      {fieldEnemies.length ? (
+      {fieldEnemies.length > 0 ? (
         <div data-testid="raid-boss-field-enemies">
           <h3 className="mb-2 text-sm font-semibold">
             {t("raidBosses.fieldEnemies")}
@@ -356,7 +357,7 @@ export function RaidBossDetail({
             {t("raidBosses.noEncounterData")}
           </p>
         ) : modifierContext.kind === "prime" ? (
-          modifierContext.modifiers.length ? (
+          modifierContext.modifiers.length > 0 ? (
             <ModifierRows modifiers={modifierContext.modifiers} />
           ) : (
             <p className="text-sm text-muted-foreground">
@@ -371,7 +372,7 @@ export function RaidBossDetail({
                 className="rounded-lg border p-3 text-sm"
               >
                 <h4 className="mb-2 font-medium">{prime.name}</h4>
-                {prime.modifiers.length ? (
+                {prime.modifiers.length > 0 ? (
                   <ModifierRows modifiers={prime.modifiers} />
                 ) : (
                   <p className="text-muted-foreground">
@@ -388,7 +389,7 @@ export function RaidBossDetail({
         )}
       </div>
 
-      {adjusted && adjusted.view.primes.length ? (
+      {adjusted && adjusted.view.primes.length > 0 ? (
         <>
           <Separator />
           <RaidBossAdjustedStats

@@ -1,13 +1,7 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  ChevronDown,
-  Coins,
-  Flag,
-  Sparkles,
-  TriangleAlert,
-  type LucideIcon,
-} from "lucide-react"
+import { ChevronDown, Coins, Flag, Sparkles, TriangleAlert } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"

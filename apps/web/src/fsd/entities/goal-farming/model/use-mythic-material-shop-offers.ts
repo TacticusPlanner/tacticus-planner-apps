@@ -1,9 +1,7 @@
 import { useMemo } from "react"
 
-import {
-  resolveMythicMaterialShopOffers,
-  type ShopRewardOffer,
-} from "@workspace/game-catalog"
+import { resolveMythicMaterialShopOffers } from "@workspace/game-catalog"
+import type { ShopRewardOffer } from "@workspace/game-catalog"
 
 import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"

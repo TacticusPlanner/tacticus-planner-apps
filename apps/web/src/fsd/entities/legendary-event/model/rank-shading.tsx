@@ -1,8 +1,10 @@
-import { useMemo, type ReactNode } from "react"
+import { useMemo } from "react"
+import type { ReactNode } from "react"
 
 import { usePersistedSelection } from "@/shared/lib"
 
-import { RankShadingContext, type RankShading } from "./rank-shading-context"
+import { RankShadingContext } from "./rank-shading-context"
+import type { RankShading } from "./rank-shading-context"
 
 const RANK_SHADING_KEY = "legendaryEvents.unitChips.rankShading"
 

@@ -1,5 +1,6 @@
 import type { QuestTokens } from "./quest-token-plan"
-import { MAX_MEDALS, type QuestBattleEntry } from "./quest-score"
+import { MAX_MEDALS } from "./quest-score"
+import type { QuestBattleEntry } from "./quest-score"
 
 /** The player's own record of one quest occurrence, kept in this browser only (design D4). */
 export type QuestProgress = {

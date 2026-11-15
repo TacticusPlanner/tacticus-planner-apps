@@ -7,7 +7,8 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 
-import { useTheme, type Theme } from "@/shared/theme"
+import { useTheme } from "@/shared/theme"
+import type { Theme } from "@/shared/theme"
 
 const themeOptions: {
   value: Theme

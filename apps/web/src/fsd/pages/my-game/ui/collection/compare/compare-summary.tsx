@@ -2,10 +2,10 @@ import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  rosterDiffMetrics,
-  type RosterDiffMetric,
-  type RosterDiffSummary,
+import { rosterDiffMetrics } from "@/entities/roster-snapshot"
+import type {
+  RosterDiffMetric,
+  RosterDiffSummary,
 } from "@/entities/roster-snapshot"
 
 import { formatSigned } from "../../../model/compare-labels"

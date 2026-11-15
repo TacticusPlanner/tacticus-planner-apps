@@ -4,9 +4,11 @@ import {
   useLegendaryEventRunRecordRosters,
   useLegendaryEventRunRecords,
   useTeamDisplayName,
-  type LegendaryEventState,
-  type LegendaryEventProgress,
-  type LegendaryEventRosterUnit,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventState,
+  LegendaryEventProgress,
+  LegendaryEventRosterUnit,
 } from "@/entities/legendary-event"
 import type { RunHistory } from "../../../lib/run-history"
 import { useAnalyticsActions } from "@/shared/analytics"
@@ -20,8 +22,8 @@ import {
   buildLastRunViewModel,
   historyDeltaCount,
   previousRunRecord,
-  type LastRunClears,
 } from "./last-run.view-model"
+import type { LastRunClears } from "./last-run.view-model"
 
 /**
  * Run history on the event page (design D6–D9): reads the event's run records and derives the

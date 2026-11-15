@@ -6,8 +6,8 @@ import {
   onslaughtAllianceIcon,
   raidTicketIcon,
   statIcon,
-  type OnslaughtAllianceIcon,
 } from "@workspace/game-catalog"
+import type { OnslaughtAllianceIcon } from "@workspace/game-catalog"
 
 import type { HreObjective } from "@/entities/hre-mission"
 

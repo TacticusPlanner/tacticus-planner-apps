@@ -1,4 +1,5 @@
-import { useCallback, useState, type ReactNode } from "react"
+import { useCallback, useState } from "react"
+import type { ReactNode } from "react"
 import { useNavigate } from "react-router"
 import { LoaderCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -31,7 +32,8 @@ import {
   GuestAuthButtons,
   UnreadDot,
 } from "@/widgets/account-menu"
-import { ManageAccountDialog, type ManageAccountTab } from "@/features/account"
+import { ManageAccountDialog } from "@/features/account"
+import type { ManageAccountTab } from "@/features/account"
 import {
   InstallAppDialog,
   useAppInstall,

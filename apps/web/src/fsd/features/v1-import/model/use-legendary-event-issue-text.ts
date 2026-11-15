@@ -7,10 +7,8 @@ import type {
 } from "@/entities/account"
 import { useLegendaryEvents } from "@/entities/legendary-event"
 
-import {
-  describeLegendaryEventIssue,
-  type LegendaryEventIssueCatalog,
-} from "./legendary-event-outcome-buckets"
+import { describeLegendaryEventIssue } from "./legendary-event-outcome-buckets"
+import type { LegendaryEventIssueCatalog } from "./legendary-event-outcome-buckets"
 
 /**
  * The translated line of a Legendary Event import issue and whether its raw value is shown beside

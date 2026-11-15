@@ -10,7 +10,8 @@ import {
   DialogTitle,
 } from "@workspace/ui/components/dialog"
 
-import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
+import { ProjectColorDot } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 
 type Props = {
   open: boolean

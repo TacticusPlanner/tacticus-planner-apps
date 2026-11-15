@@ -14,9 +14,8 @@ import {
   todayQuickFilterOptions,
   useActiveHomeScreenEvent,
   useTodayQuickFilters,
-  type HseListView,
-  type RaidLocationTarget,
 } from "@/features/daily-raids"
+import type { HseListView, RaidLocationTarget } from "@/features/daily-raids"
 import {
   EventDetails,
   PointsProjection,

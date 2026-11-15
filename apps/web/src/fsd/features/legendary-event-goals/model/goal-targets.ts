@@ -1,10 +1,7 @@
 import { isProgression, rankAt } from "@workspace/game-domain"
 
-import {
-  rankTargetSlots,
-  type GoalDetail,
-  type GoalKind,
-} from "@/entities/goal"
+import { rankTargetSlots } from "@/entities/goal"
+import type { GoalDetail, GoalKind } from "@/entities/goal"
 import type {
   LegendaryEventGoalRef,
   LegendaryEventGoalTarget,

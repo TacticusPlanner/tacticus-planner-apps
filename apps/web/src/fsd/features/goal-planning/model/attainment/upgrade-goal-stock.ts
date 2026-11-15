@@ -2,18 +2,15 @@ import type { MowStorageModel } from "@workspace/game-catalog"
 import type { UnitId, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import {
-  inFlightInGlobalOrder,
-  resolveGoalLinks,
-  type GoalDetail,
-} from "@/entities/goal"
+import { inFlightInGlobalOrder, resolveGoalLinks } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 import {
   mowAbilityGoalSlotItems,
   rankGoalSlotItems,
   targetUnitsInSlots,
   upgradeGoalRangeSlotItems,
-  type GoalSlotItem,
 } from "@/entities/goal-farming"
+import type { GoalSlotItem } from "@/entities/goal-farming"
 
 type InventoryUpgrade = PlayerDataChunkDto<"inventory-upgrades">[number]
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]

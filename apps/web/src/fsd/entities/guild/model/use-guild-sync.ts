@@ -4,7 +4,8 @@ import { useMutation } from "@tanstack/react-query"
 
 import { ApiError } from "@/shared/api"
 
-import { syncMyGuild, type RegisteredGuild } from "../api/guild.api"
+import { syncMyGuild } from "../api/guild.api"
+import type { RegisteredGuild } from "../api/guild.api"
 
 /** Used when a 429 carries no usable Retry-After (the API always sends one; this is a fallback). */
 const DEFAULT_COOLDOWN_SECONDS = 60

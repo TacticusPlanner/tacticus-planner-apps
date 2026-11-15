@@ -6,7 +6,10 @@ import { FILTER_CHIP_CLASS_NAME } from "./filter-chip"
 type Rgb = [number, number, number]
 
 function tokensOf(block: string): Map<string, Rgb> {
-  const body = CSS.split(new RegExp(`^${block} \\{`, "m"))[1]!.split(/^\}/m)[0]!
+  const body = CSS.split(new RegExp(`^${block} \\{`, "m"))[1]!.split(
+    /^\}/m,
+    1
+  )[0]!
   const out = new Map<string, Rgb>()
   for (const m of body.matchAll(
     /--([\w-]+):\s*oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/g

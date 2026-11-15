@@ -1,8 +1,5 @@
-import {
-  collectionSorts,
-  isCollectionSort,
-  type CollectionSort,
-} from "./collection-query"
+import { collectionSorts, isCollectionSort } from "./collection-query"
+import type { CollectionSort } from "./collection-query"
 
 export const COMPARE_LATEST = "latest"
 export const COMPARE_CURRENT = "current"

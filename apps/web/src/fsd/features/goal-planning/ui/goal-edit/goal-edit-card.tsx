@@ -6,10 +6,8 @@ import {
   maxAbilityLevel,
   rankAt,
   rankOrder,
-  type Progression,
-  type Rank,
-  type UpgradeId,
 } from "@workspace/game-domain"
+import type { Progression, Rank, UpgradeId } from "@workspace/game-domain"
 import type { MowStorageModel } from "@workspace/game-catalog"
 
 import type { FarmingStrategy, GoalDetail } from "@/entities/goal"
@@ -29,8 +27,8 @@ import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-
 import {
   isGoalTargetDraftChanged,
   withUpgradeRange,
-  type GoalTargetDraft,
 } from "../../model/target-edit/goal-target-edit"
+import type { GoalTargetDraft } from "../../model/target-edit/goal-target-edit"
 import { AbilityGoalCard } from "../goal-card/ability-goal-card"
 import { AscensionGoalCard } from "../goal-card/ascension-goal-card"
 import type { ResourcePreview } from "../goal-card/card-parts"

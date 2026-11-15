@@ -2,15 +2,17 @@ import {
   impactTeams,
   suggestLaneTeams,
   teamReaches,
-  type LaneEstimateInputs,
-  type LanePointsModel,
-  type LaneProgressView,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
-  type LegendaryEventUnit,
-  type TeamSuggestion,
+} from "@/entities/legendary-event"
+import type {
+  LaneEstimateInputs,
+  LanePointsModel,
+  LaneProgressView,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+  LegendaryEventUnit,
+  TeamSuggestion,
 } from "@/entities/legendary-event"
 
 /** Everything one lane's suggestions read, from the page (synced roster, never Goals Preview). */

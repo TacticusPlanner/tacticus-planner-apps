@@ -69,8 +69,9 @@ export function GoalProjectsField({
   const searched = search.trim()
   const canCreate =
     isProjectNameValid(searched) &&
-    !projects.some(
-      (project) => project.name.trim().toLowerCase() === searched.toLowerCase()
+    projects.every(
+      (project) =>
+        !(project.name.trim().toLowerCase() === searched.toLowerCase())
     )
 
   const changeOpen = (next: boolean) => {

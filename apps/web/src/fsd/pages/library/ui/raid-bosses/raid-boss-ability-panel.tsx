@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { type Rarity } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 
 import {
@@ -9,9 +9,11 @@ import {
   useRaidBossAbilityText,
   useRaidBossLabels,
   useRaidBossTraitText,
-  type RaidBoss,
-  type RaidBossEncounterModifier,
-  type RaidBossStatStep,
+} from "@/entities/raid-boss"
+import type {
+  RaidBoss,
+  RaidBossEncounterModifier,
+  RaidBossStatStep,
 } from "@/entities/raid-boss"
 import { AbilityText, rulesTextPending } from "@/shared/ability-text"
 
@@ -100,9 +102,10 @@ function RaidBossAbility({
       name
     )
   }
-  const adj = activeModifiers.length
-    ? computeAbilityAdjustments(activeModifiers, id)
-    : undefined
+  const adj =
+    activeModifiers.length > 0
+      ? computeAbilityAdjustments(activeModifiers, id)
+      : undefined
   const variables = adj
     ? applyAbilityVariableAdjustments(text.variables, adj)
     : text.variables
@@ -195,7 +198,7 @@ export function RaidBossAbilityPanel({
         </div>
       ) : null}
 
-      {traitIds.length ? (
+      {traitIds.length > 0 ? (
         <div>
           <h3 className="mb-2 text-sm font-semibold">
             {t("raidBosses.traits")}

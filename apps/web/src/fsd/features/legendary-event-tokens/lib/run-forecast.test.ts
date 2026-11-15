@@ -6,7 +6,8 @@ import type {
 } from "@/entities/legendary-event"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 
-import { forecastRuns, ohSoCloseHint, type ForecastInput } from "./run-forecast"
+import { forecastRuns, ohSoCloseHint } from "./run-forecast"
+import type { ForecastInput } from "./run-forecast"
 import type { RunSupply } from "./token-supply"
 
 const runInputs = (

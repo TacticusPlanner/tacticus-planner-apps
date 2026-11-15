@@ -13,8 +13,8 @@ import {
   Rank,
   unitIdSchema,
   upgradeIdSchema,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 
 import type {
   Character,

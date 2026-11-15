@@ -18,8 +18,8 @@ import {
   LocationRow,
   selectTodayRaids,
   useDailyRaids,
-  type RaidLocationTarget,
 } from "@/features/daily-raids"
+import type { RaidLocationTarget } from "@/features/daily-raids"
 import { CampaignBattleDialog } from "@/widgets/battle-preview"
 
 /** Home dashboard's Daily Raids widget: today's real (energy-budget) schedule for the account's Active

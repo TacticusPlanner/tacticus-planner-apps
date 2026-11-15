@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next"
 import {
   clearedTierCount,
   remainingShards,
-  type TierStars,
 } from "../../model/incursion-progress.model"
+import type { TierStars } from "../../model/incursion-progress.model"
 import type { Incursion } from "../../model/incursions.model"
 
 /**

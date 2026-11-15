@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import type { GameCatalogEventShop } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"

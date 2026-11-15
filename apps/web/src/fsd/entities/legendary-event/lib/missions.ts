@@ -225,7 +225,7 @@ export function tokenProgressesMission(
     case "winWithoutTrait": {
       return (
         mission.trait !== null &&
-        !members.some((unit) => unit.traits.includes(mission.trait!))
+        members.every((unit) => !unit.traits.includes(mission.trait!))
       )
     }
     default: {

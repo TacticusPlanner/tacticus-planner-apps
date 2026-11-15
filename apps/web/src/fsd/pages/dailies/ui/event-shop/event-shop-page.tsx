@@ -20,8 +20,8 @@ import {
   defaultEventId,
   normalizeEventShopTab,
   parseEventShopDay,
-  type EventShopTab,
 } from "../../model/event-shop-route"
+import type { EventShopTab } from "../../model/event-shop-route"
 import type { DailiesOutletContext } from "../dailies-layout"
 import { EventShopView } from "./event-shop-view"
 import { useEventShopController } from "./use-event-shop-controller"

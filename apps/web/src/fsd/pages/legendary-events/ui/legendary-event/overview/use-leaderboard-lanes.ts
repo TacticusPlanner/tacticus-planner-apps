@@ -1,9 +1,7 @@
 import { useCallback, useMemo } from "react"
 
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEventLaneId,
-} from "@/entities/legendary-event"
+import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
+import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 import { usePersistedSelection } from "@/shared/lib"
 
 import {

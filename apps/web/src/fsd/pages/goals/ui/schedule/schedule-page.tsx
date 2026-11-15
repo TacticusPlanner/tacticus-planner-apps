@@ -12,8 +12,8 @@ import {
   PlanUnitFilter,
   RaidState,
   useDailyRaids,
-  type DailyRaidsReadyViewModel,
 } from "@/features/daily-raids"
+import type { DailyRaidsReadyViewModel } from "@/features/daily-raids"
 import {
   PlanningSettingsDialog,
   PlanningSettingsTrigger,

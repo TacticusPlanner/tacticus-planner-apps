@@ -19,8 +19,10 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
 
-import { eventTypes, type EventView } from "../model/campaign-events.model"
-import { EventTrackEditor, type PatchTrack } from "./event-track-editor"
+import { eventTypes } from "../model/campaign-events.model"
+import type { EventView } from "../model/campaign-events.model"
+import { EventTrackEditor } from "./event-track-editor"
+import type { PatchTrack } from "./event-track-editor"
 
 function EventSummary({ view }: { view: EventView }) {
   const { t } = useTranslation(["common", "campaigns"])

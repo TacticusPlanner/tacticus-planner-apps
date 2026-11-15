@@ -8,13 +8,15 @@ import {
   nextAscensionStep,
   runInputValues,
   syncedChestsClaimed,
-  type AscensionGoal,
-  type AscensionStep,
-  type LegendaryEvent,
-  type LegendaryEventProgress,
-  type LegendaryEventRewards,
-  type LegendaryEventRun,
-  type LegendaryEventRunInputs,
+} from "@/entities/legendary-event"
+import type {
+  AscensionGoal,
+  AscensionStep,
+  LegendaryEvent,
+  LegendaryEventProgress,
+  LegendaryEventRewards,
+  LegendaryEventRun,
+  LegendaryEventRunInputs,
 } from "@/entities/legendary-event"
 
 import type { PlannedToken } from "./token-plan"

@@ -10,7 +10,8 @@ import {
 } from "../lib/lifecycle"
 import type { LegendaryEvent, LegendaryEventLifecycle } from "./types"
 import { readMinuteNow, useMinuteNow } from "./use-minute-now"
-import { useReadState, type ReadState } from "./use-read-state"
+import { useReadState } from "./use-read-state"
+import type { ReadState } from "./use-read-state"
 
 export type LegendaryEventState = ReadState<LegendaryEvent | undefined> & {
   /** The instant `lifecycle` is evaluated at: the minute clock as of this render. */

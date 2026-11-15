@@ -1,4 +1,5 @@
-import { useId, useState, type ReactNode } from "react"
+import { useId, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import type {
   CharacterStorageModel,

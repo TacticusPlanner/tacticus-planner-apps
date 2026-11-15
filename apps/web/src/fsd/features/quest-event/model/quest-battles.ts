@@ -2,7 +2,8 @@ import type {
   NpcStorageModel,
   QuestEventStorageModel,
 } from "@workspace/game-catalog"
-import { rarityOrder, type Rarity } from "@workspace/game-domain"
+import { rarityOrder } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 
 export type QuestBattle = QuestEventStorageModel["battles"][number]
 

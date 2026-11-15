@@ -32,7 +32,7 @@ describe("defaultBattleIndex", () => {
   })
 
   it("opens on the last battle when every battle is complete", () => {
-    expect(defaultBattleIndex(lane(Array(18).fill(true)), 18)).toBe(17)
+    expect(defaultBattleIndex(lane(new Array(18).fill(true)), 18)).toBe(17)
   })
 })
 

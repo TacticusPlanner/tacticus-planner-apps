@@ -1,7 +1,8 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import { teamDisplayName, type NamedTeam } from "../lib/team-display-name"
+import { teamDisplayName } from "../lib/team-display-name"
+import type { NamedTeam } from "../lib/team-display-name"
 import type { LegendaryEventLane } from "./types"
 import { useObjectiveLabel } from "./use-objective-label"
 

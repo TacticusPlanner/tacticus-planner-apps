@@ -1,8 +1,6 @@
 import { homeScreenEventEntryRule } from "./home-screen-event-raid-rule"
-import {
-  useHomeScreenEventCalendar,
-  type ActiveHomeScreenEventState,
-} from "./use-home-screen-event-calendar"
+import { useHomeScreenEventCalendar } from "./use-home-screen-event-calendar"
+import type { ActiveHomeScreenEventState } from "./use-home-screen-event-calendar"
 
 export type { ActiveHomeScreenEventState }
 

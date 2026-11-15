@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  matchGuildRaidCandidates,
-  type GuildRaidMatcherAssignment,
-  type GuildRaidMatcherSlot,
+import { matchGuildRaidCandidates } from "./match-guild-raid-candidates"
+import type {
+  GuildRaidMatcherAssignment,
+  GuildRaidMatcherSlot,
 } from "./match-guild-raid-candidates"
 
 function slot(

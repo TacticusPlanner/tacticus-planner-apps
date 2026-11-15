@@ -44,10 +44,10 @@ const FLEET_SUFFIXES = ["Leviathan", "Kronos", "Gorgon"]
 /** Inserts a space at a CamelCase boundary and around an embedded lowercase `of` / `the`. */
 function splitWords(token: string): string {
   return token
-    .replace(/([a-z])(of|the)([A-Z])/g, "$1 $2 $3")
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
-    .replace(/[_-]+/g, " ")
+    .replaceAll(/([a-z])(of|the)([A-Z])/g, "$1 $2 $3")
+    .replaceAll(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replaceAll(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
+    .replaceAll(/[_-]+/g, " ")
     .trim()
 }
 

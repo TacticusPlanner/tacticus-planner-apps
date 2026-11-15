@@ -1,17 +1,12 @@
-import {
-  useCallback,
-  useState,
-  type ReactNode,
-  createContext,
-  useContext,
-} from "react"
+import { useCallback, useState, createContext, useContext } from "react"
+import type { ReactNode } from "react"
 import { ChevronDownIcon } from "lucide-react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
-import {
-  type EventsCalendarStorageModel,
-  type NpcEncounterBattle,
-  type NpcEncounterSource,
+import type {
+  EventsCalendarStorageModel,
+  NpcEncounterBattle,
+  NpcEncounterSource,
 } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -25,9 +20,11 @@ import {
   npcsAtPlace,
   useNpcLabels,
   useNpcsById,
-  type EncounterPlace,
-  type EncounterPlaceIndex,
-  type NpcEncounter,
+} from "@/entities/npc"
+import type {
+  EncounterPlace,
+  EncounterPlaceIndex,
+  NpcEncounter,
 } from "@/entities/npc"
 import { RARITY_TEXT } from "@/entities/incursion"
 import { useMinuteNow } from "@/entities/legendary-event"
@@ -36,10 +33,8 @@ import { formatEstimateDate, localIsoDate, useDateLocale } from "@/shared/lib"
 import { useEncounterGroupName } from "../../model/npcs/use-encounter-group-name"
 import { useIncursionTierNames } from "../../model/npcs/use-incursion-tier-names"
 import type { NpcsPageViewProps } from "./npcs-page.view-model"
-import {
-  encounterTiming,
-  type EncounterTiming,
-} from "../../model/encounter-timing"
+import { encounterTiming } from "../../model/encounter-timing"
+import type { EncounterTiming } from "../../model/encounter-timing"
 
 // Where a group links to, when the planner has a page for it (spec: Quest Event and Survival have none).
 const LINKS: Partial<Record<NpcEncounterSource, (groupId: string) => string>> =
@@ -88,7 +83,7 @@ function byTrack(battles: readonly NpcEncounterBattle[]) {
     const track = battle.track ?? ""
     tracks.set(track, [...(tracks.get(track) ?? []), battle])
   }
-  return [...tracks.entries()]
+  return [...tracks]
     .sort(([a], [b]) => TRACK_ORDER.indexOf(a) - TRACK_ORDER.indexOf(b))
     .map(([track, list]) => ({
       track,
@@ -112,11 +107,11 @@ function incursionTiers(battles: readonly NpcEncounterBattle[]) {
     ])
   }
   const bySet = new Map<string, number[]>()
-  for (const [tier, ids] of [...byTier.entries()].sort(([a], [b]) => a - b)) {
+  for (const [tier, ids] of [...byTier].sort(([a], [b]) => a - b)) {
     const key = formatNumberList(ids)
     bySet.set(key, [...(bySet.get(key) ?? []), tier + 1])
   }
-  return [...bySet.entries()].map(([battles, tiers]) => ({ tiers, battles }))
+  return [...bySet].map(([battles, tiers]) => ({ tiers, battles }))
 }
 
 /** Places under their group key, in order of first appearance. */
@@ -129,7 +124,7 @@ function groupPlaces(
     const key = keyOf(place)
     groups.set(key, [...(groups.get(key) ?? []), place])
   }
-  return [...groups.entries()]
+  return [...groups]
 }
 
 function useEncounterText() {

@@ -1,6 +1,8 @@
-import { useEffect, type ReactNode } from "react"
+import { useEffect } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Navigate, useLocation, type Location } from "react-router"
+import { Navigate, useLocation } from "react-router"
+import type { Location } from "react-router"
 import { Button } from "@workspace/ui/components/button"
 import { useMsal } from "@azure/msal-react"
 
@@ -9,8 +11,8 @@ import {
   readSetupCompleteHint,
   rememberSetupState,
   useCurrentUser,
-  type CurrentUser,
 } from "@/entities/account"
+import type { CurrentUser } from "@/entities/account"
 import {
   signOut,
   useActiveAccountId,

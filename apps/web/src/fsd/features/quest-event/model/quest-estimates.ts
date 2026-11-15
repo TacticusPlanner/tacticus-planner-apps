@@ -1,15 +1,10 @@
 import type { NpcRecord, NpcStatRow } from "@/entities/npc"
 import { resolveLadderRow } from "@/entities/npc"
 
-import { isBoardPickup, type QuestBattle } from "./quest-battles"
-import {
-  fullClearPoints,
-  MAX_MEDALS,
-  scoreQuest,
-  type QuestBattleEntry,
-  type QuestScore,
-  type QuestScoring,
-} from "./quest-score"
+import { isBoardPickup } from "./quest-battles"
+import type { QuestBattle } from "./quest-battles"
+import { fullClearPoints, MAX_MEDALS, scoreQuest } from "./quest-score"
+import type { QuestBattleEntry, QuestScore, QuestScoring } from "./quest-score"
 import type { QuestObjectiveBadge, QuestTeam } from "./quest-team"
 
 /** A clear under this margin is "Close" (design D3); tune with calibration. */

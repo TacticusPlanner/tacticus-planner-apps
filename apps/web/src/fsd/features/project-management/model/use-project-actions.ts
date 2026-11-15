@@ -12,9 +12,8 @@ import {
   MAX_PROJECTS,
   updateProject,
   projectQueries,
-  type ProjectSummary,
-  type ProjectTarget,
 } from "@/entities/project"
+import type { ProjectSummary, ProjectTarget } from "@/entities/project"
 import { goalQueries } from "@/entities/goal"
 import { ApiError, apiIssue } from "@/shared/api"
 

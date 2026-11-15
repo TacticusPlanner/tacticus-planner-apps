@@ -5,7 +5,8 @@
 // subdirectories (`en/npcAbilityText/Foehammer.json` is `npcAbilityText/Foehammer`, several hundred
 // files) load on request through a small backend, as the app's HTTP backend does: bundling them
 // eagerly costs every test file ~20 s of setup. A namespace with no English file fails to load.
-import i18n, { type BackendModule, type Resource } from "i18next"
+import i18n from "i18next"
+import type { BackendModule, Resource } from "i18next"
 import { initReactI18next } from "react-i18next"
 
 const localeModules = import.meta.glob<{ default: Resource[string] }>(

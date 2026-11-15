@@ -1,11 +1,13 @@
 import {
   annotationCellKey,
   applicableAnnotations,
-  type BattleProgressView,
-  type LegendaryEventAnnotation,
-  type LegendaryEventAnnotationStatus,
-  type LegendaryEventLaneId,
-  type LegendaryEventProgress,
+} from "@/entities/legendary-event"
+import type {
+  BattleProgressView,
+  LegendaryEventAnnotation,
+  LegendaryEventAnnotationStatus,
+  LegendaryEventLaneId,
+  LegendaryEventProgress,
 } from "@/entities/legendary-event"
 
 /** The marks in effect per lane, keyed by `annotationCellKey` (cleared cells already dropped). */

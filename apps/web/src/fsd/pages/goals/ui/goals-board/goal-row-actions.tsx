@@ -19,12 +19,10 @@ import type {
 } from "@/features/goal-planning"
 import { DeleteGoalDialog } from ".//delete-goal-dialog"
 import { MoveToPriorityDialog } from "./move-to-priority-dialog"
-import { toggleGoalStatus, type CascadeContext } from "./goal-row-utils"
-import {
-  canRemoveFromProject,
-  removalMovesRow,
-  type ProjectRemoval,
-} from "./project-removal-flow"
+import { toggleGoalStatus } from "./goal-row-utils"
+import type { CascadeContext } from "./goal-row-utils"
+import { canRemoveFromProject, removalMovesRow } from "./project-removal-flow"
+import type { ProjectRemoval } from "./project-removal-flow"
 
 type MoveDirection = Exclude<keyof GoalMenuMoves, "priorityOrder">
 

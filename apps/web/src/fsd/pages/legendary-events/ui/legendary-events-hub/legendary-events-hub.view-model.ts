@@ -1,9 +1,9 @@
-import {
-  orderLegendaryEventsForHub,
-  type LegendaryEvent,
-  type LegendaryEventLifecycle,
-  type LegendaryEventProgress,
-  type ReadState,
+import { orderLegendaryEventsForHub } from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventLifecycle,
+  LegendaryEventProgress,
+  ReadState,
 } from "@/entities/legendary-event"
 
 import {

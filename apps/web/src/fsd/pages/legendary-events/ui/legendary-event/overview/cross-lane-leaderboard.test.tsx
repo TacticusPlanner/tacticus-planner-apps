@@ -3,10 +3,10 @@ import { useState } from "react"
 import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
-import {
-  objectiveFilterKey,
-  type CrossLaneLeaderboardRow,
-  type LegendaryEventProgress,
+import { objectiveFilterKey } from "@/entities/legendary-event"
+import type {
+  CrossLaneLeaderboardRow,
+  LegendaryEventProgress,
 } from "@/entities/legendary-event"
 import {
   fixtureCharacter,
@@ -19,9 +19,11 @@ import { act, fireEvent, render, screen, within } from "@/test/render"
 import {
   buildLeaderboardRows,
   buildProgressGridViewModel,
-  type LeaderboardGoalsViewModel,
-  type LeaderboardRowsViewModel,
-  type ProgressGridViewModel,
+} from "../legendary-event-page.view-model"
+import type {
+  LeaderboardGoalsViewModel,
+  LeaderboardRowsViewModel,
+  ProgressGridViewModel,
 } from "../legendary-event-page.view-model"
 import { CrossLaneLeaderboard } from "./cross-lane-leaderboard"
 

@@ -131,7 +131,7 @@ export function runSteps(tier: IncursionTier): RunStep[] {
   for (const node of tier.nodes) {
     byDepth.set(node.depth, [...(byDepth.get(node.depth) ?? []), node])
   }
-  return [...byDepth.entries()]
+  return [...byDepth]
     .sort(([a], [b]) => a - b)
     .map(([depth, nodes]) => ({
       depth,

@@ -1,13 +1,12 @@
-import { Children, type ReactNode } from "react"
+import { Children } from "react"
+import type { ReactNode } from "react"
 import type { BattleId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 
-import {
-  groupConsecutiveByCampaign,
-  type CampaignGroup as CampaignRowGroup,
-} from "../model/campaign-groups"
+import { groupConsecutiveByCampaign } from "../model/campaign-groups"
+import type { CampaignGroup as CampaignRowGroup } from "../model/campaign-groups"
 import { LoneCampaignRowContext } from "./campaign-group-context"
 import type { DailyRaidLocationViewModel } from "../model/daily-raids.domain"
 

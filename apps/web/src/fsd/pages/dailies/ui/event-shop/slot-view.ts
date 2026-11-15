@@ -11,9 +11,11 @@ import {
   dailyFreebie,
   entryKey,
   slotLabel,
-  type ClassifiedEntry,
-  type DailyFreebie,
-  type SlotLabel,
+} from "@/features/shops/event-planner"
+import type {
+  ClassifiedEntry,
+  DailyFreebie,
+  SlotLabel,
 } from "@/features/shops/event-planner"
 
 import type { EventShopController } from "./use-event-shop-controller"
@@ -58,7 +60,7 @@ export function slotViews(controller: EventShopController): SlotView[] {
     // stays on the card, so the card shows what its controls act on.
     const plannedVariants =
       entry &&
-      !options.some((option) => option.rewardType === entry.entry.rewardType)
+      options.every((option) => !(option.rewardType === entry.entry.rewardType))
         ? plannedRewardVariants(controller, ref, entry.entry.rewardType)
         : []
     const offer =

@@ -2,10 +2,8 @@ import type {
   LegendaryEventLaneId,
   LegendaryEventProgress,
 } from "@/entities/legendary-event"
-import {
-  estimateSnapshot,
-  type DepthEstimateContext,
-} from "@/features/legendary-event-plan"
+import { estimateSnapshot } from "@/features/legendary-event-plan"
+import type { DepthEstimateContext } from "@/features/legendary-event-plan"
 import type { AnalyticsEvent } from "@/shared/analytics"
 
 import type { TokenBattleSnapshot } from "./token-result-analytics"

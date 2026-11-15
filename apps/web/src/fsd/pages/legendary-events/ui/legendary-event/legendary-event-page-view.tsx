@@ -1,4 +1,5 @@
-import { useCallback, useContext, useMemo, type ReactNode } from "react"
+import { useCallback, useContext, useMemo } from "react"
+import type { ReactNode } from "react"
 
 import { UpgradeImpactSection } from "@/features/legendary-event-goals"
 import {
@@ -11,8 +12,8 @@ import {
   NextTokenCard,
   RunForecastSection,
   TokenPlanList,
-  type OpenTeamHandler,
 } from "@/features/legendary-event-tokens"
+import type { OpenTeamHandler } from "@/features/legendary-event-tokens"
 import {
   LEGENDARY_EVENT_LANE_IDS,
   RankShadingProvider,

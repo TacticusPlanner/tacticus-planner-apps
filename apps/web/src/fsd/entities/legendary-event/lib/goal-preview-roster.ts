@@ -3,10 +3,8 @@ import {
   progressionOrder,
   progressionRarity,
   rankIndex,
-  type Progression,
-  type Rank,
-  type Rarity,
 } from "@workspace/game-domain"
+import type { Progression, Rank, Rarity } from "@workspace/game-domain"
 
 import type { LegendaryEventRosterUnit } from "../model/types"
 

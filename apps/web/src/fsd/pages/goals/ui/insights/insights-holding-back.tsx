@@ -17,7 +17,8 @@ import type {
 import { FarmUnlockPaths } from "../shared/farm-unlock-paths"
 import { GoalResourceIcon } from "../shared/goal-resource-icon"
 import { GoalLink } from "./insights-goal-link"
-import { useGoalLabel, type InsightsGoalInfo } from "./insights-view"
+import { useGoalLabel } from "./insights-view"
+import type { InsightsGoalInfo } from "./insights-view"
 
 /** "What's holding you back": what no farming clears (blockers, with where each unlocks and the goals
  *  they stop), then the farmable resources that take the most energy, each with the goals waiting on

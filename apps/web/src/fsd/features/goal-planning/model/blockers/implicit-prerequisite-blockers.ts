@@ -4,8 +4,8 @@ import {
   progressionOrder,
   progressionRarity,
   rankAt,
-  type Progression,
 } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
 

@@ -5,8 +5,8 @@ import {
   MIN_TEAM_MEMBERS,
   ObjectiveIcon,
   useObjectiveLabel,
-  type LegendaryEventLane,
 } from "@/entities/legendary-event"
+import type { LegendaryEventLane } from "@/entities/legendary-event"
 
 import type { ClearDepthSummary } from "../model/clear-depth-display"
 

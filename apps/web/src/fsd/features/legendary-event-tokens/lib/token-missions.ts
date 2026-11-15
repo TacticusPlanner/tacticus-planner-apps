@@ -3,10 +3,12 @@ import {
   currentMissions,
   tokenMissionAmount,
   tokenProgressesMission,
-  type BattleEnemies,
-  type LegendaryEventLaneId,
-  type LegendaryEventMissionRef,
-  type LegendaryEventUnit,
+} from "@/entities/legendary-event"
+import type {
+  BattleEnemies,
+  LegendaryEventLaneId,
+  LegendaryEventMissionRef,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
 import type { NextTokenChoice, PlannedToken } from "./token-plan"

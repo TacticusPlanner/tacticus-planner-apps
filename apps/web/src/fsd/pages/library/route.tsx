@@ -2,7 +2,8 @@
 // "only export components" rule does not apply.
 /* eslint-disable react-refresh/only-export-components */
 import { lazy } from "react"
-import { Navigate, type RouteObject } from "react-router"
+import { Navigate } from "react-router"
+import type { RouteObject } from "react-router"
 
 import { preloadOnMatch } from "@/shared/lib"
 

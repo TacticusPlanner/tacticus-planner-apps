@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next"
 import {
   updateLegendaryEventPlan,
   usePlanWriteQueue,
-  type PlanMutationOutcome,
 } from "@/entities/legendary-event"
+import type { PlanMutationOutcome } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 
 import { normalizePlanNotes, planNotesChanged } from "./plan-notes"

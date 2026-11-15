@@ -1,12 +1,14 @@
 import { useState, useMemo } from "react"
 import {
-  type UnitId,
   startingProgression,
   firstRank,
   rankIndex,
-  type Rank,
-  type UpgradeId,
-  type FactionGroup,
+} from "@workspace/game-domain"
+import type {
+  UnitId,
+  Rank,
+  UpgradeId,
+  FactionGroup,
 } from "@workspace/game-domain"
 import type { FarmingStrategy, GoalKind } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
@@ -15,8 +17,8 @@ import {
   additionalTargetSelection,
   useUnitShopShardSupply,
   additionalTargetOptions,
-  type RankAdditionalTarget,
 } from "@/entities/goal-farming"
+import type { RankAdditionalTarget } from "@/entities/goal-farming"
 import { useAcquisitionSourceSelection } from "./use-acquisition-source-selection"
 import { useMythicMaterialSelection } from "./use-mythic-material-selection"
 import { useEntityShardSummary } from "./use-entity-shard-summary"

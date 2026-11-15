@@ -1,4 +1,5 @@
-import { useRef, useState, type ReactNode } from "react"
+import { useRef, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Plus, X } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -17,10 +18,8 @@ import {
   progressionOrder,
   rankIndex,
   rankOrder,
-  type Progression,
-  type Rank,
-  type Rarity,
 } from "@workspace/game-domain"
+import type { Progression, Rank, Rarity } from "@workspace/game-domain"
 
 import { closestOverlayContent, ProgressionBadge, RankBadge } from "@/shared/ui"
 import type { AbilityMilestone } from "../../model/goal-creation-form/goal-milestones"

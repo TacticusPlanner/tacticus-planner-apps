@@ -4,7 +4,8 @@ import type { CharacterStorageModel } from "@workspace/game-catalog"
 
 import { useUnitSearchNames } from "@/shared/unit-name"
 
-import { orderUnits, type UnitListItem } from "../unit/unit-list.model"
+import { orderUnits } from "../unit/unit-list.model"
+import type { UnitListItem } from "../unit/unit-list.model"
 
 /** Every catalog character with its localized name, in the characters list's default order. */
 export function useCharacterListItems(

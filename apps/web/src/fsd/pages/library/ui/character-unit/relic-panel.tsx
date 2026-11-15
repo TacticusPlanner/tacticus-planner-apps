@@ -1,9 +1,6 @@
 import { useTranslation } from "react-i18next"
-import {
-  abilityIcon,
-  equipmentSlotIcon,
-  type EquipmentStorageModel,
-} from "@workspace/game-catalog"
+import { abilityIcon, equipmentSlotIcon } from "@workspace/game-catalog"
+import type { EquipmentStorageModel } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 

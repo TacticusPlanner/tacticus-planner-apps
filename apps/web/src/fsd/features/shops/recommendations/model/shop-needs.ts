@@ -1,9 +1,9 @@
-import {
-  isUncraftableMythicUpgrade,
-  type AscensionCostStorageModel,
-  type CharacterStorageModel,
-  type MowStorageModel,
-  type UnlockShardCostStorageModel,
+import { isUncraftableMythicUpgrade } from "@workspace/game-catalog"
+import type {
+  AscensionCostStorageModel,
+  CharacterStorageModel,
+  MowStorageModel,
+  UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import type { UnitId, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
@@ -13,9 +13,11 @@ import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
   createUnitCoverage,
-  type FarmingCharacter,
-  type FarmingUpgrade,
-  type UnitCoverage,
+} from "@/entities/goal-farming"
+import type {
+  FarmingCharacter,
+  FarmingUpgrade,
+  UnitCoverage,
 } from "@/entities/goal-farming"
 
 import { activeProjectMembers } from "@/entities/goal"

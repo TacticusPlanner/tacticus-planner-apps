@@ -7,10 +7,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import {
-  RaidBossPortrait,
-  type ResolvedRaidBossEncounterLocation,
-} from "@/entities/raid-boss"
+import { RaidBossPortrait } from "@/entities/raid-boss"
+import type { ResolvedRaidBossEncounterLocation } from "@/entities/raid-boss"
 
 import type { RaidBossSeasonReferenceViewModel } from "./raid-boss-season-reference.view-model"
 

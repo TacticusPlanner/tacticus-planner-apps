@@ -1,6 +1,7 @@
 import type { CreateCombinedGoalsRequest } from "@/entities/goal"
 
-import { bulkUnitKey, type BulkUnitPlan } from "./bulk-goal-plan"
+import { bulkUnitKey } from "./bulk-goal-plan"
+import type { BulkUnitPlan } from "./bulk-goal-plan"
 
 export type BulkUnitStatus =
   | { status: "pending" }

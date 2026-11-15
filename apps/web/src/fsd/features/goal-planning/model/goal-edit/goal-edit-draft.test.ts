@@ -9,8 +9,8 @@ import {
   goalEditChanges,
   isGoalEditDirty,
   normalizeAcquisitionSources,
-  type GoalEditDraft,
 } from "./goal-edit-draft"
+import type { GoalEditDraft } from "./goal-edit-draft"
 
 const emptyConfig: GoalConfig = {
   rank: null,

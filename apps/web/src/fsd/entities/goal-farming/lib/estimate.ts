@@ -224,7 +224,7 @@ export function spendDay(
 
   // V1 `sortLocationsForRaiding`: longest time to finish first. `Array.sort` is stable, so ties
   // keep the material's existing order; each material's nodes stay in `nodesById` order.
-  const spendable = [...remaining.entries()]
+  const spendable = [...remaining]
     .map(([id, count]) => ({
       id,
       days: daysToFinish(count, nodesById.get(id) ?? [], dailyEnergy),

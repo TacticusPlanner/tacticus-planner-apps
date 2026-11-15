@@ -8,8 +8,10 @@ import {
   aggregateOwnedBaseUpgrades,
   appliedUpgradeIds,
   rankUpUpgradeIds,
-  type Character,
-  type UpgradeWithFarmLocations,
+} from "@/entities/rank-lookup"
+import type {
+  Character,
+  UpgradeWithFarmLocations,
 } from "@/entities/rank-lookup"
 import type {
   AcquisitionSource,
@@ -26,9 +28,8 @@ import {
   EMPTY_MILESTONES,
   lowestCoveringAscension,
   rankProgressionNeed,
-  type AbilityMilestone,
-  type GoalMilestones,
 } from "./goal-milestones"
+import type { AbilityMilestone, GoalMilestones } from "./goal-milestones"
 
 // Pure helpers behind the combined-creation composer (plan §6/§7), kept out of
 // `use-create-goal-form.ts` because they are pure: all plain

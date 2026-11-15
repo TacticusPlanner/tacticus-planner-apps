@@ -8,16 +8,14 @@ import {
 } from "@/features/goal-planning"
 import { GoalDragHandle } from "./goal-drag-handle"
 import { GoalTargetDisplay } from "../shared/goal-progress-visuals"
-import { SortableList, type SortableRenderProps } from "@/shared/ui"
+import { SortableList } from "@/shared/ui"
+import type { SortableRenderProps } from "@/shared/ui"
 import { SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffItem, SeasonFitLabel } from "./season-fit-ui"
 import { StatusBadge } from "../shared/status-badge"
 import { GoalPriorityNumber } from "./goal-row-shared"
-import {
-  isInFlightStatus,
-  isReachedRow,
-  type GoalsListProps,
-} from "./goal-row-utils"
+import { isInFlightStatus, isReachedRow } from "./goal-row-utils"
+import type { GoalsListProps } from "./goal-row-utils"
 
 type ReorderCardBodyProps = {
   row: NonNullable<GoalsListProps["rows"]>[number]

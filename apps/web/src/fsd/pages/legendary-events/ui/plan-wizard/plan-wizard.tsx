@@ -18,13 +18,10 @@ import { UnsavedChangesGuard } from "@/shared/ui"
 
 import { useShowPaidOptions } from "@/features/legendary-event-plan"
 
-import { PLAN_WIZARD_STEPS, type PlanWizardStep } from "./plan-draft"
-import {
-  planWrites,
-  writeCounts,
-  type PlanDestination,
-  type PlanWrites,
-} from "./plan-create"
+import { PLAN_WIZARD_STEPS } from "./plan-draft"
+import type { PlanWizardStep } from "./plan-draft"
+import { planWrites, writeCounts } from "./plan-create"
+import type { PlanDestination, PlanWrites } from "./plan-create"
 import { PlanSummary } from "./plan-summary"
 import type { DraftTeam } from "./plan-teams"
 import { usePlanWizardTutorial } from "./plan-wizard.tutorial"

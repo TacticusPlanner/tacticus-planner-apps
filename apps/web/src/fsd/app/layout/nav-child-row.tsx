@@ -4,7 +4,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { NavChildIcon } from "./nav-child-icon"
 import { NavLiveDot } from "./nav-live-dot"
-import { subItemDescription, subItemLabel, type NavSubItem } from "./nav-items"
+import { subItemDescription, subItemLabel } from "./nav-items"
+import type { NavSubItem } from "./nav-items"
 
 export function NavChildRow({
   child,

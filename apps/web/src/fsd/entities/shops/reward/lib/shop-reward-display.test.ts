@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  shopRewardDisplay,
-  type ShopRewardDisplayContext,
-} from "./shop-reward-display"
+import { shopRewardDisplay } from "./shop-reward-display"
+import type { ShopRewardDisplayContext } from "./shop-reward-display"
 
 const ctx: ShopRewardDisplayContext = {
   t: ((key: string, options?: Record<string, string>) =>

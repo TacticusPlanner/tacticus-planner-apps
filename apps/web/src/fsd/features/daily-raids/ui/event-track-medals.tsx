@@ -12,8 +12,8 @@ import { medalIcon } from "../lib/battle-progress-icons"
 import {
   beatenEventBattleRows,
   unclaimedTrackRewards,
-  type TrackMedalStats,
 } from "../model/battle-progress"
+import type { TrackMedalStats } from "../model/battle-progress"
 import {
   campaignEventProgressKey,
   useEffectiveCampaignEventProgress,

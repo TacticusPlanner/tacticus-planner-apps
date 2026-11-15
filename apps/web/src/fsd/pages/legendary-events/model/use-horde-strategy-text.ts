@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next"
 import {
   parseHordeStrategyText,
   withStrategyFallback,
-  type HordeStrategyText,
 } from "../lib/horde-strategy"
+import type { HordeStrategyText } from "../lib/horde-strategy"
 
 /** Resolves a character's horde-mode strategy text from the `hordeStrategy` namespace in the
  *  reader's language, field by field falling back to English. */

@@ -1,22 +1,17 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  todayDow,
-  type GameIcon,
-  type ShopStorageModel,
-} from "@workspace/game-catalog"
+import { todayDow } from "@workspace/game-catalog"
+import type { GameIcon, ShopStorageModel } from "@workspace/game-catalog"
 
-import {
-  shopRewardDisplay,
-  type ShopRewardDisplayContext,
-  type ShopRewardKind,
+import { shopRewardDisplay } from "@/entities/shops/reward"
+import type {
+  ShopRewardDisplayContext,
+  ShopRewardKind,
 } from "@/entities/shops/reward"
 
 import { useCatalogDataset } from "@/shared/local-data"
-import {
-  buildShopRecommendations,
-  type ShopRecommendationCard,
-} from "./shop-recommendations"
+import { buildShopRecommendations } from "./shop-recommendations"
+import type { ShopRecommendationCard } from "./shop-recommendations"
 import { useShopNeeds } from "./use-shop-needs"
 
 export interface ShopRecommendationCardView extends ShopRecommendationCard {

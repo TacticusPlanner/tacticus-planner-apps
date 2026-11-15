@@ -3,11 +3,8 @@ import { describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router"
 import type { ShopShardOffer } from "@workspace/game-catalog"
-import {
-  battleIdSchema,
-  campaignIdSchema,
-  type BattleId,
-} from "@workspace/game-domain"
+import { battleIdSchema, campaignIdSchema } from "@workspace/game-domain"
+import type { BattleId } from "@workspace/game-domain"
 
 import { render as testingLibraryRender, screen, within } from "@/test/render"
 import type { Battle, FarmLocation } from "@/entities/goal-farming"

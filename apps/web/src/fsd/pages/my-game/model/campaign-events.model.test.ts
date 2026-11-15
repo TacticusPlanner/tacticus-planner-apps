@@ -4,10 +4,10 @@ import type {
   CampaignDefinitionStorageModel,
 } from "@workspace/game-catalog"
 
-import {
-  buildEffectiveCampaignEventProgress,
-  type CampaignEventProgressOverride,
-  type SyncedCampaignEventProgress,
+import { buildEffectiveCampaignEventProgress } from "@/entities/player-data-override"
+import type {
+  CampaignEventProgressOverride,
+  SyncedCampaignEventProgress,
 } from "@/entities/player-data-override"
 
 import {

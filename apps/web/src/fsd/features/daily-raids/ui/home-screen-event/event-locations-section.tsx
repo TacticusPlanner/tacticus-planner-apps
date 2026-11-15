@@ -20,10 +20,8 @@ import { CampaignGroupedList } from "../campaign-group"
 import type { RaidLocationTarget } from "../raid-location-name"
 import { ListPagingControls } from "../list-paging-controls"
 import { ResourceIconWithTooltip } from "../resource-icon"
-import {
-  EventFarmOrderSwitch,
-  type HseListView,
-} from "./event-farm-order-switch"
+import { EventFarmOrderSwitch } from "./event-farm-order-switch"
+import type { HseListView } from "./event-farm-order-switch"
 import { EventLocationRow } from "./event-location-row"
 
 /**

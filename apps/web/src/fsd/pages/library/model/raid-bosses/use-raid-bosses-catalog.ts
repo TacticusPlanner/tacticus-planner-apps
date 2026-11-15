@@ -6,9 +6,11 @@ import {
   resolvePrimeCharacterId,
   resolvePrimeName,
   useRaidBossLabels,
-  type RaidBoss,
-  type RaidBossesPayload,
-  type RaidBossListItem,
+} from "@/entities/raid-boss"
+import type {
+  RaidBoss,
+  RaidBossesPayload,
+  RaidBossListItem,
 } from "@/entities/raid-boss"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 

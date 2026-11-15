@@ -26,10 +26,10 @@ import {
 import { orderIncursions } from "../model/incursions.model"
 import { useIncursionPlans } from "../model/use-incursion-plans"
 import { useIncursionsData } from "../model/use-incursions-data"
-import {
-  INCURSIONS_PATH,
-  type IncursionProgress,
-  type IncursionsOutlet,
+import { INCURSIONS_PATH } from "./incursions/incursions-outlet"
+import type {
+  IncursionProgress,
+  IncursionsOutlet,
 } from "./incursions/incursions-outlet"
 
 const Loading = () => (

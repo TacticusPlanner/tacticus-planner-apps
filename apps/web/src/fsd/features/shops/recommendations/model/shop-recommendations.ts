@@ -1,10 +1,12 @@
 import {
   isUncraftableMythicUpgrade,
   resolveShopOffersForToday,
-  type GameCatalogShop,
-  type ResolvedShopOffer,
-  type ShopDayOfWeek,
-  type ShopLockContext,
+} from "@workspace/game-catalog"
+import type {
+  GameCatalogShop,
+  ResolvedShopOffer,
+  ShopDayOfWeek,
+  ShopLockContext,
 } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 

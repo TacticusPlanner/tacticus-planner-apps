@@ -3,13 +3,16 @@ import { describe, expect, it } from "vitest"
 import {
   deriveLegendaryEventLifecycle,
   resolveLegendaryEventRunsAt,
-  type LegendaryEventRunInputs,
-  type LegendaryEventRunResolution,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventRunInputs,
+  LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 
 import { utharEvent } from "@/test/fixtures/legendary-events"
 
-import { runTokenSupply, type TokenSupplyInput } from "./token-supply"
+import { runTokenSupply } from "./token-supply"
+import type { TokenSupplyInput } from "./token-supply"
 
 const HOUR = 60 * 60 * 1000
 const DAY = 24 * HOUR

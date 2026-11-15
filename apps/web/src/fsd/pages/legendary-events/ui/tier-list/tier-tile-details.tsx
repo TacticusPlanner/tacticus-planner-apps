@@ -15,7 +15,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
-import { formatMultiplier, type TierTileDetails } from "./tier-list.view-model"
+import { formatMultiplier } from "./tier-list.view-model"
+import type { TierTileDetails } from "./tier-list.view-model"
 import { TierTileStrategy } from "./tier-tile-strategy"
 
 function DetailRow({

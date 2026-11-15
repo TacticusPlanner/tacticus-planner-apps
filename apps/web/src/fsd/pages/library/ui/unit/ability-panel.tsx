@@ -1,4 +1,5 @@
-import { useMemo, type ReactNode } from "react"
+import { useMemo } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import type { Rarity } from "@workspace/game-domain"
 
@@ -8,9 +9,8 @@ import {
   buildAbilitySeries,
   useRarityFactor,
   chartedSeries,
-  type AbilityTextEntry,
-  type RulesText,
 } from "@/shared/ability-text"
+import type { AbilityTextEntry, RulesText } from "@/shared/ability-text"
 import { describeSeries, EntityIcon, LevelChart } from "@/shared/ui"
 
 import { LevelStepper } from "./level-stepper"

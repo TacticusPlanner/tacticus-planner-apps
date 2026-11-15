@@ -1,6 +1,7 @@
 import type { ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../model/use-project-actions"
-import { ProjectRow, type ProjectCardSummary } from "./project-row"
+import { ProjectRow } from "./project-row"
+import type { ProjectCardSummary } from "./project-row"
 
 type Props = {
   projects: ProjectSummary[]

@@ -11,8 +11,10 @@ import {
   nextMasterTableParams,
   parseMasterTableQuery,
   resolveMasterTableState,
-  type MasterTablePickerEvent,
-  type UnitSetAvailability,
+} from "./master-table.view-model"
+import type {
+  MasterTablePickerEvent,
+  UnitSetAvailability,
 } from "./master-table.view-model"
 
 const PICKER: MasterTablePickerEvent[] = [

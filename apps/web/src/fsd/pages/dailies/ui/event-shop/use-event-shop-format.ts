@@ -1,10 +1,7 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  datamineAssetUrl,
-  resourceGlyphIcon,
-  type GameIcon,
-} from "@workspace/game-catalog"
+import { datamineAssetUrl, resourceGlyphIcon } from "@workspace/game-catalog"
+import type { GameIcon } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon, shopRewardDisplay } from "@/entities/shops/reward"
 import { toById, useCatalogDataset } from "@/shared/local-data"

@@ -5,18 +5,11 @@ import {
   minProgressionForRank,
   progressionIndex,
   rankIndex,
-  type Progression,
-  type Rank,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 
-import {
-  goalTargetKeyOf,
-  goalTypesOverLimit,
-  type CombinedGoalSpec,
-  type GoalDetail,
-  type GoalKind,
-} from "@/entities/goal"
+import { goalTargetKeyOf, goalTypesOverLimit } from "@/entities/goal"
+import type { CombinedGoalSpec, GoalDetail, GoalKind } from "@/entities/goal"
 
 /** A unit as Collection lists it: its current values, or where it starts when not owned. */
 export type BulkGoalUnit = {

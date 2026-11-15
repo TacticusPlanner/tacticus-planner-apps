@@ -47,7 +47,8 @@ vi.mock("@/shared/auth", () => ({
   useSignInRedirect: () => signInRedirect,
 }))
 
-import { filterQuickActions, type QuickAction } from "./quick-actions"
+import { filterQuickActions } from "./quick-actions"
+import type { QuickAction } from "./quick-actions"
 import { useQuickActions } from "./use-quick-actions"
 
 const action = (overrides: Partial<QuickAction>): QuickAction => ({

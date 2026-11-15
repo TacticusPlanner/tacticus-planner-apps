@@ -1,9 +1,6 @@
 import { useTranslation } from "react-i18next"
-import {
-  shopDaysOfWeek,
-  shopIcon,
-  type ShopDayOfWeek,
-} from "@workspace/game-catalog"
+import { shopDaysOfWeek, shopIcon } from "@workspace/game-catalog"
+import type { ShopDayOfWeek } from "@workspace/game-catalog"
 import {
   Select,
   SelectContent,
@@ -14,10 +11,8 @@ import {
 
 import { EntityIcon } from "@/shared/ui"
 
-import {
-  LIBRARY_SHOP_IDS,
-  type LibraryShopId,
-} from "../../../model/shops/use-library-shops"
+import { LIBRARY_SHOP_IDS } from "../../../model/shops/use-library-shops"
+import type { LibraryShopId } from "../../../model/shops/use-library-shops"
 import type { LibraryShopSlotView } from "../library-shops.view-model"
 import { ShopSlotCard } from "../shop-slot-card"
 import { ShopsBrowseState } from "../shops-browse-state"

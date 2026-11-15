@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next"
 
-import {
-  eventMissions,
-  type LegendaryEvent,
-  type LegendaryEventRun,
+import { eventMissions } from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventRun,
 } from "@/entities/legendary-event"
 
 import { missionDonePatch } from "../model/run-inputs-patches"

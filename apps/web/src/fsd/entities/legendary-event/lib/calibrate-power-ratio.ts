@@ -1,10 +1,7 @@
 import type { UnitPowerContext } from "@/shared/unit-power"
 
-import {
-  lockedMemberCount,
-  teamPower,
-  type ClearEstimateRoster,
-} from "./clear-estimate"
+import { lockedMemberCount, teamPower } from "./clear-estimate"
+import type { ClearEstimateRoster } from "./clear-estimate"
 
 /** One team with a manual depth on a lane, with the roster its members are read from. */
 export interface CalibrationSample {

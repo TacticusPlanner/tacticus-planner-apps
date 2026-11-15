@@ -6,10 +6,8 @@ import { render, screen, within } from "@/test/render"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 
 import enDailies from "../../../../../../public/locales/en/dailies.json"
-import {
-  listHomeScreenEventInstances,
-  type HomeScreenEventEntry,
-} from "../../model/select-active-home-screen-event"
+import { listHomeScreenEventInstances } from "../../model/select-active-home-screen-event"
+import type { HomeScreenEventEntry } from "../../model/select-active-home-screen-event"
 import { EventSwitcher } from "./event-switcher"
 
 const definitions = new Map(

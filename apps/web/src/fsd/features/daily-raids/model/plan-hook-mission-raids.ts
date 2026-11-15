@@ -4,11 +4,8 @@ import type { Battle } from "@/shared/lib"
 
 import type { BattleEnemyStats } from "./battle-enemy-stats"
 import type { DailyRaidsCalculationViewModel } from "./daily-raids.domain"
-import {
-  planMissionRaids,
-  type MissionRaidPlan,
-  type MissionRaidsRequest,
-} from "./mission-raids"
+import { planMissionRaids } from "./mission-raids"
+import type { MissionRaidPlan, MissionRaidsRequest } from "./mission-raids"
 import {
   DEFAULT_SLOTS,
   passLocationFilter,

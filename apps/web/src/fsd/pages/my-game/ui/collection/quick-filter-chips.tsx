@@ -11,8 +11,8 @@ import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 import {
   collectionQuickFilters,
   isCollectionQuickFilter,
-  type CollectionQuickFilter,
 } from "../../model/collection-query"
+import type { CollectionQuickFilter } from "../../model/collection-query"
 import type { QuickFilterAvailability } from "../../model/use-collection-view"
 import {
   overflowMask,
@@ -68,7 +68,7 @@ export function QuickFilterChips({
       byReason.set(status, [...(byReason.get(status) ?? []), quick])
     }
   }
-  const notes = [...byReason.entries()].map(([reason, quicks]) => ({
+  const notes = [...byReason].map(([reason, quicks]) => ({
     reason,
     text:
       reason === "needsRoster"

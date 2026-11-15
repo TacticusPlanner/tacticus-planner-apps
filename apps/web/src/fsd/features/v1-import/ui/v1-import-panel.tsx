@@ -1,4 +1,5 @@
-import { useState, type SubmitEvent, type ReactNode } from "react"
+import { useState } from "react"
+import type { SubmitEvent, ReactNode } from "react"
 import type { TFunction } from "i18next"
 import { useTranslation } from "react-i18next"
 import { Lock } from "lucide-react"
@@ -15,11 +16,8 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import {
-  accountQueries,
-  importV1Profile,
-  type ImportV1ProfileResult,
-} from "@/entities/account"
+import { accountQueries, importV1Profile } from "@/entities/account"
+import type { ImportV1ProfileResult } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 import { goalQueries } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
@@ -32,7 +30,8 @@ import { legendaryEventPlanQueries } from "@/entities/legendary-event"
 import { rosterSnapshotQueries } from "@/entities/roster-snapshot"
 
 import { materialSteps } from "../model/outcome-buckets"
-import { V1_IMPORT_PARTS, type V1ImportPartKey } from "../model/parts"
+import { V1_IMPORT_PARTS } from "../model/parts"
+import type { V1ImportPartKey } from "../model/parts"
 import { savePendingMaterialSteps } from "../model/pending-material-steps"
 import { ImportResult } from "./import-v1-result"
 import { ImportSummaryCard } from "./import-summary-card"

@@ -3,7 +3,8 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Step } from "react-joyride"
 
-import { useTourPageSteps, type TourPageSteps } from "@/shared/tour"
+import { useTourPageSteps } from "@/shared/tour"
+import type { TourPageSteps } from "@/shared/tour"
 
 /**
  * The Edit goal dialog's own onboarding tour: the target (the ladder or stepper of the goal's card), the priority position and the project

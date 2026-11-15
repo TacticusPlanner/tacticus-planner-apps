@@ -1,4 +1,5 @@
-import { progressionRarity, type UnitId } from "@workspace/game-domain"
+import { progressionRarity } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 
 import {
   combatPowerOf,
@@ -6,17 +7,17 @@ import {
   FULL_ROSTER_POOL_ID,
   isXpCapped,
 } from "./team-eligibility"
-import {
-  MIN_TEAM_SIZE,
-  type BuildTeamRecommendationsInput,
-  type TeamCategory,
-  type TeamMember,
-  type TeamMemberRationale,
-  type TeamMode,
-  type TeamPoolSpec,
-  type TeamPreferences,
-  type TeamRecommendations,
-  type TeamRosterCharacter,
+import { MIN_TEAM_SIZE } from "./team-recommendations.types"
+import type {
+  BuildTeamRecommendationsInput,
+  TeamCategory,
+  TeamMember,
+  TeamMemberRationale,
+  TeamMode,
+  TeamPoolSpec,
+  TeamPreferences,
+  TeamRecommendations,
+  TeamRosterCharacter,
 } from "./team-recommendations.types"
 
 /** Deterministic PRNG (mulberry32) — a fixed `randomSeed` always yields the same random team. */

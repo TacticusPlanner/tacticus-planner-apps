@@ -2,15 +2,17 @@ import {
   ASCENSION_STEPS,
   projectRewards,
   unitNextAscensionStep,
-  type AscensionStep,
-  type LegendaryEventPlan,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
-import {
-  buildTokenPlanView,
-  type TokenPlanMissionsSource,
-  type TokenPlanView,
+import type {
+  AscensionStep,
+  LegendaryEventPlan,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+} from "@/entities/legendary-event"
+import { buildTokenPlanView } from "@/features/legendary-event-tokens"
+import type {
+  TokenPlanMissionsSource,
+  TokenPlanView,
 } from "@/features/legendary-event-tokens"
 
 import type { PlanEconomy, PlanInputs } from "./plan-inputs"

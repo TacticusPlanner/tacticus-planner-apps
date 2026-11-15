@@ -8,10 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEventLaneId,
-} from "@/entities/legendary-event"
+import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
+import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 
 /** The leaderboard's lane multi-select: a dropdown of lane checkboxes, naming the one lane shown,
  *  "All lanes" or the count. The last checked lane stays checked. */

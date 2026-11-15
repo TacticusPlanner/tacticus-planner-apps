@@ -6,10 +6,12 @@ import {
   computeLevelGoalCost,
   requiredLevelForRankTarget,
   xpNeededForLevelRange,
-  type LevelGoalCost,
-  type LevelRules,
-  type RankAdditionalTarget,
   useLevelRules,
+} from "@/entities/goal-farming"
+import type {
+  LevelGoalCost,
+  LevelRules,
+  RankAdditionalTarget,
 } from "@/entities/goal-farming"
 
 /** What a Rank or Ability target needs in character level, previewed on that goal's own creation

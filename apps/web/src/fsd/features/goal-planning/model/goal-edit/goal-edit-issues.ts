@@ -4,8 +4,10 @@ import {
   getChangedGoalTargetIssue,
   getGoalTargetIssue,
   isValidUpgradeQuantity,
-  type GoalTargetDraft,
-  type GoalTargetIssue,
+} from "../target-edit/goal-target-edit"
+import type {
+  GoalTargetDraft,
+  GoalTargetIssue,
 } from "../target-edit/goal-target-edit"
 
 /** The message key creation uses for the same problem, so both dialogs say the same thing

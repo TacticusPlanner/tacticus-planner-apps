@@ -1,4 +1,5 @@
-import { rarityOrder, type Rarity } from "@workspace/game-domain"
+import { rarityOrder } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 import { normalizeXpBookRarity } from "@/entities/planning-setting/@x/goal-farming"
 
 import {

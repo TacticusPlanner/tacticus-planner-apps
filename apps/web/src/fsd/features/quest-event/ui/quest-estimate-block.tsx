@@ -4,7 +4,8 @@ import type {
   QuestBattleEstimate,
   QuestTeamEstimate,
 } from "../model/quest-estimates"
-import { useObjectiveWording, type Objective } from "./use-objective-wording"
+import { useObjectiveWording } from "./use-objective-wording"
+import type { Objective } from "./use-objective-wording"
 
 /**
  * One battle's clear estimates (spec: quest-event-clear-estimates): the objective team against the

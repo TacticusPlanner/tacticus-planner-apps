@@ -28,10 +28,10 @@ export function fillGameText(
     text = form === undefined ? text : parts[0]! + form
   }
   return text
-    .replace(/\{\[(\w+)\]\}/g, (placeholder, name: string) =>
+    .replaceAll(/\{\[(\w+)\]\}/g, (placeholder, name: string) =>
       name in values ? String(values[name]) : placeholder
     )
-    .replace(/<\/?style[^>]*>/g, "")
+    .replaceAll(/<\/?style[^>]*>/g, "")
 }
 
 interface RewardRange {
@@ -105,7 +105,7 @@ export function ladderView(
       percents.set(reward.type, set)
     }
   }
-  const spreads = [...percents.entries()]
+  const spreads = [...percents]
     .filter(([, set]) => set.size === 1 && [...set][0]! > 0)
     .map(([type, set]) => ({ type, percent: [...set][0]! }))
   const noted = new Set(spreads.map((spread) => spread.type))

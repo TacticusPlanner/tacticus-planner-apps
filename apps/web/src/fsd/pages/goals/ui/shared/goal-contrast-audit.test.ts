@@ -19,7 +19,10 @@ type Rgb = [number, number, number]
 type Theme = "light" | "dark"
 
 function tokensOf(block: string): Map<string, [number, number, number]> {
-  const body = CSS.split(new RegExp(`^${block} \\{`, "m"))[1]!.split(/^\}/m)[0]!
+  const body = CSS.split(new RegExp(`^${block} \\{`, "m"))[1]!.split(
+    /^\}/m,
+    1
+  )[0]!
   const out = new Map<string, [number, number, number]>()
   for (const m of body.matchAll(
     /--([\w-]+):\s*oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/g

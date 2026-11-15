@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 
-import { progressionLabel, type GoalKind } from "@/entities/goal"
+import { progressionLabel } from "@/entities/goal"
+import type { GoalKind } from "@/entities/goal"
 import { goalKindsForEntity } from "../../model/shared/goal-validation"
 
 import { buildCombinedGoalSpecs } from "../../model/goal-creation-form/goal-spec-builder"

@@ -16,7 +16,7 @@ import type { EventShopFormat, RewardText } from "./use-event-shop-format"
 function useResourceText(format: EventShopFormat) {
   const { t } = useTranslation(["eventShops", "shops", "progression"])
   return (row: CoverageRow, xpBookRarity: Rarity | null): RewardText => {
-    const [kind, first, second] = row.resource.split(":")
+    const [kind, first, second] = row.resource.split(":", 3)
     if (kind === "badge") return format.reward(`abilityToken${second}_${first}`)
     if (kind === "orb")
       return format.reward(`heroAscensionOrb${second}_${first}`)

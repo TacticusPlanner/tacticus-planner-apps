@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 
-import { MAX_FARMING_LOCATIONS, type GoalDetail } from "@/entities/goal"
+import { MAX_FARMING_LOCATIONS } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 import type { UpgradeId } from "@workspace/game-domain"
 import type { useGoalCatalog } from "../shared/use-goal-catalog"
 

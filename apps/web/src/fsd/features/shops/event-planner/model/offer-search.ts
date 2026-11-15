@@ -1,8 +1,8 @@
-import {
-  eventDay,
-  type EventShopDay,
-  type GameCatalogEventShop,
-  type ResolvedEventSlot,
+import { eventDay } from "@workspace/game-catalog"
+import type {
+  EventShopDay,
+  GameCatalogEventShop,
+  ResolvedEventSlot,
 } from "@workspace/game-catalog"
 
 /** One offer on one event day. */

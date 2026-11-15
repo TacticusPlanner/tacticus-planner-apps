@@ -1,4 +1,5 @@
-import { useId, type ReactNode } from "react"
+import { useId } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
   abilityBadgeIcon,
@@ -6,13 +7,10 @@ import {
   goldIcon,
   mowComponentIcon,
   salvageIcon,
-  type GameIcon,
 } from "@workspace/game-catalog"
-import {
-  rarityOrder,
-  type Rarity,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import type { GameIcon } from "@workspace/game-catalog"
+import { rarityOrder } from "@workspace/game-domain"
+import type { Rarity, UpgradeId } from "@workspace/game-domain"
 import { Label } from "@workspace/ui/components/label"
 import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
@@ -21,11 +19,11 @@ import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 
 import { LevelSelect, RecipeIcons } from "./mow-upgrades-controls"
-import {
-  MOW_ABILITIES,
-  type MowAbility,
-  type MowLevelRanges,
-  type MowUpgradesResult,
+import { MOW_ABILITIES } from "./mow-upgrades.model"
+import type {
+  MowAbility,
+  MowLevelRanges,
+  MowUpgradesResult,
 } from "./mow-upgrades.model"
 
 /**

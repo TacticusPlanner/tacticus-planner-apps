@@ -18,9 +18,10 @@ import {
   rarityIcon,
   shardIcon,
   xpBookIcon,
-  type GameIcon,
 } from "@workspace/game-catalog"
-import { rarityOrder, type Rarity } from "@workspace/game-domain"
+import type { GameIcon } from "@workspace/game-catalog"
+import { rarityOrder } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 
 import { EntityIcon } from "@/shared/ui"
 

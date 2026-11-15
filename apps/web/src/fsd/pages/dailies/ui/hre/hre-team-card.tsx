@@ -8,13 +8,10 @@ import {
 } from "@workspace/ui/components/card"
 
 import { missionName } from "@/features/hre-missions"
-import { type HreMission, type HreTeamPlan } from "@/entities/hre-mission"
+import type { HreMission, HreTeamPlan } from "@/entities/hre-mission"
 
-import {
-  HRE_TEAM_SIZE,
-  type HreTeam,
-  type HreTeamViewModel,
-} from "@/features/team-recommendations"
+import { HRE_TEAM_SIZE } from "@/features/team-recommendations"
+import type { HreTeam, HreTeamViewModel } from "@/features/team-recommendations"
 import { TeamList } from "../team-recs/team-list"
 import { TeamRecsState } from "../team-recs/team-recs-state"
 

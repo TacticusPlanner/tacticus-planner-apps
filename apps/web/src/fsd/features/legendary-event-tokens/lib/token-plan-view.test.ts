@@ -6,10 +6,10 @@ import {
   missionsNextToken,
   nextTokenCardState,
   tokenClearBand,
-  type TokenPlanReady,
   upNextTokens,
   tokenRisk,
 } from "./token-plan-view"
+import type { TokenPlanReady } from "./token-plan-view"
 import {
   UTHAR_RUN_STARTS,
   betweenRunsInput,

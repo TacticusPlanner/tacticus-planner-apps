@@ -1,10 +1,5 @@
-import {
-  startTransition,
-  useId,
-  useOptimistic,
-  type ReactNode,
-  type Ref,
-} from "react"
+import { startTransition, useId, useOptimistic } from "react"
+import type { ReactNode, Ref } from "react"
 import { ChevronDownIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
@@ -20,7 +15,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
 
-import { goalTypeIcon, type GoalKind } from "@/entities/goal"
+import { goalTypeIcon } from "@/entities/goal"
+import type { GoalKind } from "@/entities/goal"
 import { EntityIcon } from "@/shared/ui"
 
 import type { GoalProject } from "../../model/shared/types"

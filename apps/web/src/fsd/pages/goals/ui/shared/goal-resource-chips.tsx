@@ -8,10 +8,10 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
-import {
-  useGoalResourceChips,
-  type GoalResourceChip,
-  type GoalResourceChipsInput,
+import { useGoalResourceChips } from "./use-goal-resource-chips"
+import type {
+  GoalResourceChip,
+  GoalResourceChipsInput,
 } from "./use-goal-resource-chips"
 
 /** Icon chips for what a goal still needs (`goal-remaining-resources`). A goal card that splits them

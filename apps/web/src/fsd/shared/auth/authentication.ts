@@ -10,20 +10,19 @@ import {
   LogLevel,
   PromptValue,
   PublicClientApplication,
-  type AccountInfo,
-  type AuthenticationResult,
-  type Configuration,
-  type EventMessage,
-  type IPublicClientApplication,
-  type RedirectRequest,
+} from "@azure/msal-browser"
+import type {
+  AccountInfo,
+  AuthenticationResult,
+  Configuration,
+  EventMessage,
+  IPublicClientApplication,
+  RedirectRequest,
 } from "@azure/msal-browser"
 
 import { getRequiredEnvironmentValue } from "../config/environment"
-import {
-  getSignInMethod,
-  isGeneratedUsername,
-  type SignInMethod,
-} from "./account-identity"
+import { getSignInMethod, isGeneratedUsername } from "./account-identity"
+import type { SignInMethod } from "./account-identity"
 import {
   authErrorCode,
   markRedirectPending,

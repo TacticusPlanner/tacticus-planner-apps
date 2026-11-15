@@ -10,11 +10,8 @@ import type { BattleId, UpgradeId } from "@workspace/game-domain"
 
 import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
-import {
-  shopOfferPerDay,
-  type Battle,
-  type FarmLocation,
-} from "@/entities/goal-farming"
+import { shopOfferPerDay } from "@/entities/goal-farming"
+import type { Battle, FarmLocation } from "@/entities/goal-farming"
 import { GoalShardLocationsField } from "./goal-shard-locations-field"
 import { shardIcon } from "@workspace/game-catalog"
 
@@ -135,8 +132,9 @@ export function AcquisitionSourceField({
         <SourceGroup
           note={
             campaignEnabled &&
-            ![...regularShardLocations, ...mythicShardLocations].some(
-              (location) => selectedShardLocationIds.includes(location.battleId)
+            [...regularShardLocations, ...mythicShardLocations].every(
+              (location) =>
+                !selectedShardLocationIds.includes(location.battleId)
             ) ? (
               <p
                 className="text-xs text-muted-foreground"

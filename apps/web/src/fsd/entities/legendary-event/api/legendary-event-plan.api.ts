@@ -1,15 +1,14 @@
 import { apiClient, unwrap } from "@/shared/api"
 
-import {
-  toLegendaryEventPlan,
-  toLegendaryEventRun,
-  type CreateTeamRequestDto,
-  type LegendaryEventRun,
-  type UpdateAnnotationsRequestDto,
-  type UpdatePlanRequestDto,
-  type UpdateRunInputsRequestDto,
-  type UpdateTeamOrderRequestDto,
-  type UpdateTeamRequestDto,
+import { toLegendaryEventPlan, toLegendaryEventRun } from "../model/plan.types"
+import type {
+  CreateTeamRequestDto,
+  LegendaryEventRun,
+  UpdateAnnotationsRequestDto,
+  UpdatePlanRequestDto,
+  UpdateRunInputsRequestDto,
+  UpdateTeamOrderRequestDto,
+  UpdateTeamRequestDto,
 } from "../model/plan.types"
 import type {
   LegendaryEventPlanList,

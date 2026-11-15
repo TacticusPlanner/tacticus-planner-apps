@@ -3,7 +3,8 @@ import {
   progressionRulesFixture,
 } from "@workspace/game-catalog/testing"
 
-import { toHreRules, type HreRules } from "@/entities/hre-mission"
+import { toHreRules } from "@/entities/hre-mission"
+import type { HreRules } from "@/entities/hre-mission"
 
 /** Weirdboy's served `hre` record (datamine 1.43.157) as the missions and reward rules it yields. */
 export const hreRules = toHreRules(

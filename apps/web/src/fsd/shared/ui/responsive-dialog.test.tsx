@@ -1,11 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import {
-  factionIdSchema,
-  unitIdSchema,
-  type FactionGroup,
-} from "@workspace/game-domain"
+import { factionIdSchema, unitIdSchema } from "@workspace/game-domain"
+import type { FactionGroup } from "@workspace/game-domain"
 
 import {
   ResponsiveDialog,

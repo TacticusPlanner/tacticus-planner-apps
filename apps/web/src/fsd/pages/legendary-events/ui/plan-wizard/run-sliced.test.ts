@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { runSliced, type SliceClock, type SliceScheduler } from "./run-sliced"
+import { runSliced } from "./run-sliced"
+import type { SliceClock, SliceScheduler } from "./run-sliced"
 
 /** A fake clock: every `next()` costs `stepMs`; scheduled slices run when `flush` is called. */
 function fakeClock(stepMs: number) {

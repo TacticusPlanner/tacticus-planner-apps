@@ -1,5 +1,6 @@
 import userEvent from "@testing-library/user-event"
-import { useState, type ComponentProps } from "react"
+import { useState } from "react"
+import type { ComponentProps } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen, waitFor } from "@/test/render"

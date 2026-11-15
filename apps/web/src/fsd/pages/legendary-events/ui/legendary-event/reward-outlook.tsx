@@ -1,8 +1,6 @@
 import { useTranslation } from "react-i18next"
-import {
-  legendaryEventResourceIcon,
-  type LegendaryEventResource,
-} from "@workspace/game-catalog"
+import { legendaryEventResourceIcon } from "@workspace/game-catalog"
+import type { LegendaryEventResource } from "@workspace/game-catalog"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { RewardProjection } from "@/entities/legendary-event"

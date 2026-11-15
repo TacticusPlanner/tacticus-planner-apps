@@ -2,18 +2,20 @@ import { useMemo } from "react"
 import type { CampaignDefinitionStorageModel } from "@workspace/game-catalog"
 import type { BattleId } from "@workspace/game-domain"
 
-import {
-  battleEnemyStats,
-  type BattleEnemyStats,
-  type StatsBattle,
-  type StatsNpc,
+import { battleEnemyStats } from "./battle-enemy-stats"
+import type {
+  BattleEnemyStats,
+  StatsBattle,
+  StatsNpc,
 } from "./battle-enemy-stats"
 import {
   battleEventPoints,
   eventCampaignGroupIds,
-  type HseRaidRule,
-  type RuleBattle,
-  type RuleNpc,
+} from "./home-screen-event-rules"
+import type {
+  HseRaidRule,
+  RuleBattle,
+  RuleNpc,
 } from "./home-screen-event-rules"
 
 type MapsBattle = RuleBattle & StatsBattle & { id: string }

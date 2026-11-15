@@ -1,29 +1,20 @@
 import { useTranslation } from "react-i18next"
-import {
-  legendaryEventResourceIcon,
-  type LegendaryEventResource,
-} from "@workspace/game-catalog"
-import {
-  Coins,
-  Flag,
-  Sparkles,
-  TriangleAlert,
-  type LucideIcon,
-} from "lucide-react"
+import { legendaryEventResourceIcon } from "@workspace/game-catalog"
+import type { LegendaryEventResource } from "@workspace/game-catalog"
+import { Coins, Flag, Sparkles, TriangleAlert } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import type { ReactNode } from "react"
 
-import {
-  MilestoneGapSection,
-  type TokenPlanView,
-} from "@/features/legendary-event-tokens"
+import { MilestoneGapSection } from "@/features/legendary-event-tokens"
+import type { TokenPlanView } from "@/features/legendary-event-tokens"
 import type { AscensionStep } from "@/entities/legendary-event"
 import { formatEventCountdown } from "@/shared/lib"
 import { EntityIcon, IconLine } from "@/shared/ui"
 
-import {
-  buildCurrentRunStatusModel,
-  type RunStatusGoal,
-  type RunStatusRow,
+import { buildCurrentRunStatusModel } from "./current-run-status.view-model"
+import type {
+  RunStatusGoal,
+  RunStatusRow,
 } from "./current-run-status.view-model"
 import type { RunStatusViewModel } from "./legendary-event-page.view-model"
 

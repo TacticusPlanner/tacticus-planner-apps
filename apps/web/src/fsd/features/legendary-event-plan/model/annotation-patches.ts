@@ -1,9 +1,9 @@
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEventAnnotation,
-  type LegendaryEventAnnotationStatus,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
+import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
+import type {
+  LegendaryEventAnnotation,
+  LegendaryEventAnnotationStatus,
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
 } from "@/entities/legendary-event"
 
 /** The not-cleared cell ids of a battle (0 defeat-all, 1–5 objective index + 1): the cells a

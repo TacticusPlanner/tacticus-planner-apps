@@ -1,6 +1,8 @@
-import { shopDaysOfWeek, type ShopDayOfWeek } from "@workspace/game-catalog"
+import { shopDaysOfWeek } from "@workspace/game-catalog"
+import type { ShopDayOfWeek } from "@workspace/game-catalog"
 
-import { apiIssue, type ApiSchemas } from "@/shared/api"
+import { apiIssue } from "@/shared/api"
+import type { ApiSchemas } from "@/shared/api"
 
 // `/api/v1/event-shop-plans/{eventId}` (companion API change add-event-shops, spec event-shop-plans).
 // Every endpoint answers with the whole plan. Wire shapes are generated from the API's OpenAPI

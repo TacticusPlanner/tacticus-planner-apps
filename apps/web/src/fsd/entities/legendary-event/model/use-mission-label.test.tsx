@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 
-import { eventMissions, type LegendaryEventMission } from "../lib/missions"
+import { eventMissions } from "../lib/missions"
+import type { LegendaryEventMission } from "../lib/missions"
 import { useMissionLabel } from "./use-mission-label"
 
 const regular = eventMissions(utharEvent, "regular")

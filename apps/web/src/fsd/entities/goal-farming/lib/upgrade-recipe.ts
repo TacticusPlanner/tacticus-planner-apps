@@ -1,9 +1,5 @@
-import {
-  rankIndex,
-  rankOrder,
-  type Rank,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import { rankIndex, rankOrder } from "@workspace/game-domain"
+import type { Rank, UpgradeId } from "@workspace/game-domain"
 
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
 

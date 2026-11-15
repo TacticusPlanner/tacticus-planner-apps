@@ -2,14 +2,14 @@ import type { i18n as I18n } from "i18next"
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import {
-  useTeamDisplayName,
-  type LegendaryEventProgress,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRunRecord,
-  type LegendaryEventLifecycleState,
-  type ReadState,
-  type RosterSnapshot,
+import { useTeamDisplayName } from "@/entities/legendary-event"
+import type {
+  LegendaryEventProgress,
+  LegendaryEventRosterUnit,
+  LegendaryEventRunRecord,
+  LegendaryEventLifecycleState,
+  ReadState,
+  RosterSnapshot,
 } from "@/entities/legendary-event"
 import type { RunHistory } from "../../../lib/run-history"
 import {
@@ -25,10 +25,8 @@ import { setViewportWidth } from "@/test/viewport"
 
 import type { LastRunSectionViewModel } from "../legendary-event-page.view-model"
 import { LastRunCard } from "./last-run-card"
-import {
-  buildLastRunViewModel,
-  type LastRunViewModel,
-} from "./last-run.view-model"
+import { buildLastRunViewModel } from "./last-run.view-model"
+import type { LastRunViewModel } from "./last-run.view-model"
 
 let i18n: I18n
 

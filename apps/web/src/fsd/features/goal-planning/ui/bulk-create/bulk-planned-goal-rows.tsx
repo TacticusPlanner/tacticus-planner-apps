@@ -2,11 +2,8 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ArrowRight } from "lucide-react"
 import { rankIcon } from "@workspace/game-catalog"
-import {
-  progressionRarity,
-  type Progression,
-  type Rank,
-} from "@workspace/game-domain"
+import { progressionRarity } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import { progressionLabel } from "@/entities/goal"
 import { CompactStars, EntityIcon, RarityIcon } from "@/shared/ui"

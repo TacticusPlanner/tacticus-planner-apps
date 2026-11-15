@@ -3,7 +3,8 @@ import type { BattleId } from "@workspace/game-domain"
 import type { CampaignInsight } from "@/entities/campaign-insight"
 import type { Battle, EstimateResourceId } from "@/entities/goal-farming"
 
-import { addRuns, farmingDays, type RunsByBattle } from "./plan-farming-days"
+import { addRuns, farmingDays } from "./plan-farming-days"
+import type { RunsByBattle } from "./plan-farming-days"
 import type { PlanFarmingSpot } from "./use-plan-insights.domain"
 
 /** What farming each recommended campaign/event would take: how many of the plan's still-needed
@@ -38,7 +39,7 @@ export function summarizeFarmingSpots(
     let energy = 0
     const runsByBattle: RunsByBattle = new Map()
     for (const nodes of countByNode.values()) {
-      const options = [...nodes.entries()].flatMap(([battleId, node]) => {
+      const options = [...nodes].flatMap(([battleId, node]) => {
         const battle = battlesById.get(battleId)
         if (!battle || battle.energyCost <= 0) return []
         const runs = Math.ceil(node.count / node.dropRate)

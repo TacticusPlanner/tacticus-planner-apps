@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { progressForAlliance, type OnslaughtProgress } from "./types"
+import { progressForAlliance } from "./types"
+import type { OnslaughtProgress } from "./types"
 
 const progress: OnslaughtProgress = {
   imperial: { sector: "Gold", tier: 2, isSet: true },

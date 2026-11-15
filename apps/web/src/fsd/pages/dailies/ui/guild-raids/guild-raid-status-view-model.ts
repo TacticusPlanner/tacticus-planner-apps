@@ -1,7 +1,7 @@
-import {
-  describeModifier,
-  type ModifierDescription,
-  type RaidBossEncounterModifier,
+import { describeModifier } from "@/entities/raid-boss"
+import type {
+  ModifierDescription,
+  RaidBossEncounterModifier,
 } from "@/entities/raid-boss"
 import type {
   GuildRaidDifficulty,
@@ -10,11 +10,8 @@ import type {
   GuildRaidStatusResult,
 } from "@/entities/guild-raid-status"
 
-import {
-  resourceCountdown,
-  seasonEndCountdown,
-  type GuildRaidCountdown,
-} from "./guild-raid-countdowns"
+import { resourceCountdown, seasonEndCountdown } from "./guild-raid-countdowns"
+import type { GuildRaidCountdown } from "./guild-raid-countdowns"
 
 export type GuildRaidModifierView = {
   modifierId: string

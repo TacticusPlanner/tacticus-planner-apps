@@ -9,8 +9,10 @@ import type { HseRaidRule } from "./home-screen-event-rules"
 import {
   listHomeScreenEventInstances,
   selectActiveHomeScreenEvent,
-  type HomeScreenEventInstance,
-  type HomeScreenEventRuleOf,
+} from "./select-active-home-screen-event"
+import type {
+  HomeScreenEventInstance,
+  HomeScreenEventRuleOf,
 } from "./select-active-home-screen-event"
 
 /** How far back and ahead the calendar is read: past instances stay reachable from the HSE switcher. */

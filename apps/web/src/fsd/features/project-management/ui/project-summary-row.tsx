@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
+import { ProjectColorDot } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 
 import type { ProjectCardSummary } from "./project-row"
 

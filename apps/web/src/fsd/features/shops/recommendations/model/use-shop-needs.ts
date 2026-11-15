@@ -1,24 +1,25 @@
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  rosterShopLockContext,
-  type CharacterStorageModel,
-  type EquipmentStorageModel,
-  type MowStorageModel,
-  type ShopLockContext,
-  type UpgradeStorageModel,
+import { rosterShopLockContext } from "@workspace/game-catalog"
+import type {
+  CharacterStorageModel,
+  EquipmentStorageModel,
+  MowStorageModel,
+  ShopLockContext,
+  UpgradeStorageModel,
 } from "@workspace/game-catalog"
 
-import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
+import { useGlobalGoalPlan, activeProjectMembers } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
 } from "@/entities/rank-lookup"
 
-import { activeProjectMembers } from "@/entities/goal"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
-import { aggregateShopNeeds, type ShopNeedAggregate } from "./shop-needs"
+import { aggregateShopNeeds } from "./shop-needs"
+import type { ShopNeedAggregate } from "./shop-needs"
 
 const toUpgradesById = (records: UpgradeStorageModel[]) =>
   new Map(records.map((item) => [item.id, mapUpgradeStorageToDomain(item)]))

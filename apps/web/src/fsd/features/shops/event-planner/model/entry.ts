@@ -1,7 +1,7 @@
-import {
-  eventDays,
-  type GameCatalogEventShop,
-  type ResolvedEventSlot,
+import { eventDays } from "@workspace/game-catalog"
+import type {
+  GameCatalogEventShop,
+  ResolvedEventSlot,
 } from "@workspace/game-catalog"
 
 import type { EventShopCartEntry } from "@/entities/shops/event-plan"

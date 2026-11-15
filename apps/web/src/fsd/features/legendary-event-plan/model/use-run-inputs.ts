@@ -7,10 +7,12 @@ import {
   runInputValues,
   updateLegendaryEventRunInputs,
   usePlanWriteQueue,
-  type LegendaryEventPlan,
-  type LegendaryEventRun,
-  type LegendaryEventRunInputValues,
-  type PlanMutationOutcome,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventPlan,
+  LegendaryEventRun,
+  LegendaryEventRunInputValues,
+  PlanMutationOutcome,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 

@@ -1,5 +1,6 @@
 import type { ProgressionRulesStorageModel } from "@workspace/game-catalog"
-import { rarityOrder, type Rarity } from "@workspace/game-domain"
+import { rarityOrder } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 
 import { useCatalogDataset } from "@/shared/local-data"
 

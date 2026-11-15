@@ -1,20 +1,12 @@
 import { useMemo, useState } from "react"
-import {
-  progressionIndex,
-  rankIndex,
-  type Progression,
-  type Rank,
-} from "@workspace/game-domain"
+import { progressionIndex, rankIndex } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import { useGoalsById } from "@/entities/goal"
 import { useProjects } from "@/entities/project"
 
-import {
-  buildBulkGoalPlans,
-  bulkPlanTypesOverLimit,
-  type BulkGoalTargets,
-  type BulkGoalUnit,
-} from "./bulk-goal-plan"
+import { buildBulkGoalPlans, bulkPlanTypesOverLimit } from "./bulk-goal-plan"
+import type { BulkGoalTargets, BulkGoalUnit } from "./bulk-goal-plan"
 import { bulkTargetOptions, snapUp } from "./bulk-target-options"
 
 /** One shared target type the dialog turns on with its value. */

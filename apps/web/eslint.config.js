@@ -11,6 +11,7 @@ import testingLibrary from "eslint-plugin-testing-library"
 import regexp from "eslint-plugin-regexp"
 import pluginQuery from "@tanstack/eslint-plugin-query"
 import deMorgan from "eslint-plugin-de-morgan"
+import unicorn from "eslint-plugin-unicorn"
 import noUseEffect from "eslint-plugin-react-you-might-not-need-an-effect"
 import { defineConfig, globalIgnores } from "eslint/config"
 import { tailwindSizingConfig } from "../../packages/ui/eslint.tailwind-sizing.js"
@@ -68,6 +69,32 @@ export default defineConfig([
       "import-x/no-cycle": ["error", { ignoreExternal: true }],
       "import-x/no-self-import": "error",
       "import-x/no-duplicates": "error",
+      // `import type { X }` on its own line; verbatimModuleSyntax keeps it erased.
+      "import-x/consistent-type-specifier-style": ["error", "prefer-top-level"],
+    },
+  },
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      // `importOriginal<typeof import("…")>()` is vitest's mock idiom.
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { disallowTypeAnnotations: false },
+      ],
+      "@typescript-eslint/no-import-type-side-effects": "error",
+    },
+  },
+  {
+    // A few autofixable unicorn rules that read better and carry no style debate.
+    files: ["**/*.{ts,tsx}"],
+    plugins: { unicorn },
+    rules: {
+      "unicorn/prefer-string-replace-all": "error",
+      "unicorn/prefer-split-limit": "error",
+      "unicorn/new-for-builtins": "error",
+      "unicorn/explicit-length-check": "error",
+      "unicorn/no-negated-array-predicate": "error",
+      "unicorn/prefer-direct-iteration": "error",
     },
   },
   {
