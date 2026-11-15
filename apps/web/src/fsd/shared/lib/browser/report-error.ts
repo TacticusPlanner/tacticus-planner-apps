@@ -60,6 +60,18 @@ function isFromOurScripts(error: unknown, origin: string): boolean {
 }
 
 /**
+ * A request this app cancelled on purpose: TanStack Query aborts a query's `signal` when its last
+ * observer unmounts, and a promise still chained to that fetch rejects with an AbortError ("signal is
+ * aborted without reason") nobody is left to handle. It means "no longer needed", never a failure.
+ */
+function isCancellation(reason: unknown): boolean {
+  return (
+    (reason instanceof DOMException || reason instanceof Error) &&
+    reason.name === "AbortError"
+  )
+}
+
+/**
  * Routes every uncaught error and unhandled rejection from this app's own code to `reportError`;
  * installed once at boot. A `window.error` without an error object is never ours: it is a
  * cross-origin script's bare "Script error." or a browser notice such as "ResizeObserver loop
@@ -72,6 +84,7 @@ export function installGlobalErrorCapture(target: Window = window) {
     reportError(event.error, "window.error")
   })
   target.addEventListener("unhandledrejection", (event) => {
+    if (isCancellation(event.reason)) return
     if (!isFromOurScripts(event.reason, origin)) return
     reportError(event.reason, "unhandledrejection")
   })

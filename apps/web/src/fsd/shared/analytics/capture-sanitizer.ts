@@ -130,12 +130,18 @@ function labelWebVitals(properties: Properties) {
  * strings and hashes are cut from every URL-valued property at any depth, and the page's URL and
  * paths are rewritten to the route pattern of that page (so Web analytics groups pages by screen).
  * Every event is also tagged with the build that sent it (`app_version`). This is done here rather
- * than with `register()`, because `reset()` on sign-out clears registered properties.
+ * than with `register()`, because `reset()` on sign-out clears registered properties. Exceptions
+ * repeat it as `build_version`: Error Tracking sets `app_version` from the release it resolves
+ * from the stack's script files, and a file unchanged across builds (the React vendor chunk) resolves
+ * to the first build that shipped it.
  */
 export function sanitizeCapture(result: CaptureResult): CaptureResult {
   const { properties } = result
   const appVersion = import.meta.env.VITE_APP_VERSION
-  if (appVersion) properties.app_version = appVersion
+  if (appVersion) {
+    properties.app_version = appVersion
+    if (result.event === "$exception") properties.build_version = appVersion
+  }
   const pattern = reportedRoutePattern
   const pagePattern =
     typeof properties.$current_url === "string"

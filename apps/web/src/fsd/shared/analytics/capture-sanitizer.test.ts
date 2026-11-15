@@ -44,6 +44,17 @@ describe("sanitizeCapture", () => {
     ).toBe("1.2.3")
   })
 
+  it("repeats the build on exceptions only, as build_version", () => {
+    vi.stubEnv("VITE_APP_VERSION", "1.2.3")
+
+    expect(
+      sanitizeCapture(capture({ event: "$exception" })).properties.build_version
+    ).toBe("1.2.3")
+    expect(sanitizeCapture(capture()).properties).not.toHaveProperty(
+      "build_version"
+    )
+  })
+
   it("leaves app_version unset when the build has no version", () => {
     vi.stubEnv("VITE_APP_VERSION", "")
 
