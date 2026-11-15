@@ -86,7 +86,8 @@ function fetchPlayerDataSync(
   baseUrl: string,
   accountId: string
 ): Promise<PlayerDataSyncResult> {
-  return queryClient.fetchQuery({
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps -- one sync per account; the client is the cache and baseUrl is fixed per app
+  return queryClient.query({
     queryKey: ["sync", "player", accountId],
     queryFn: () => runPlayerDataSync(baseUrl, queryClient),
     staleTime: 0,

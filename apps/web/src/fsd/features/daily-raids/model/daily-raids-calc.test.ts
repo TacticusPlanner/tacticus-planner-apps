@@ -22,13 +22,11 @@ import type {
   FarmingCharacter,
   FarmingUpgrade,
   FlatSupplier,
+  EstimateResourceId,
+  EstimateUpgrade,
 } from "@/entities/goal-farming"
 
-import {
-  selectFarmNodes,
-  type EstimateResourceId,
-  type EstimateUpgrade,
-} from "@/entities/goal-farming"
+import { selectFarmNodes } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
 import {

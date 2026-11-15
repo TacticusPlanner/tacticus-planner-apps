@@ -48,7 +48,7 @@ describe("Legendary Events translations", () => {
       const english = new Map(leaves(en))
       for (const [key, value] of leaves(resource)) {
         const placeholders = (text: unknown) =>
-          (String(text).match(/{{\w+}}/g) ?? []).sort()
+          (String(text).match(/\{\{\w+\}\}/g) ?? []).sort()
         expect(placeholders(value), key).toEqual(placeholders(english.get(key)))
       }
     }

@@ -75,8 +75,6 @@ export const legendaryEventPlanQueries = {
         eventId,
       ] as const,
       initialPageParam: null as string | null,
-      getNextPageParam: (page: LegendaryEventRunRecords) =>
-        page.nextAfter ?? undefined,
       queryFn: async ({
         signal,
         pageParam,
@@ -94,6 +92,8 @@ export const legendaryEventPlanQueries = {
           throw error
         }
       },
+      getNextPageParam: (page: LegendaryEventRunRecords) =>
+        page.nextAfter ?? undefined,
     }),
   // The newest page alone (the Collection compare picker), at the API's largest page size so it
   // reaches back about 33 occurrences of three runs; its own key below the event's records, so a

@@ -7,8 +7,11 @@ import es from "../../../../../public/locales/es/hre.json"
 import fr from "../../../../../public/locales/fr/hre.json"
 import { hreMissions } from "@/test/fixtures/hre-rules"
 
-import { HRE_OBJECTIVE_KINDS, hreMission } from "@/entities/hre-mission"
-import { isTokenObjective } from "@/entities/hre-mission"
+import {
+  HRE_OBJECTIVE_KINDS,
+  hreMission,
+  isTokenObjective,
+} from "@/entities/hre-mission"
 import { objectiveTextKey } from "./hre-objective-text"
 
 function leafKeys(value: unknown, prefix = ""): string[] {

@@ -33,24 +33,13 @@ vi.mock("@/shared/api", () => ({
 
 import { GuildPurgeDialog } from "./guild-purge-dialog"
 
-const account = { homeAccountId: "acc-1", username: "test@example.com" }
-const instance = { getActiveAccount: () => account }
-
 beforeEach(() => {
   purgeGuild.mockReset()
 })
 
 describe("GuildPurgeDialog", () => {
   it("keeps the submit button disabled until 'Confirm' is typed exactly", () => {
-    render(
-      <GuildPurgeDialog
-        account={account as never}
-        instance={instance as never}
-        onOpenChange={vi.fn()}
-        onPurged={vi.fn()}
-        open
-      />
-    )
+    render(<GuildPurgeDialog onOpenChange={vi.fn()} onPurged={vi.fn()} open />)
 
     const submit = screen.getByTestId("guild-purge-submit")
     const input = screen.getByTestId("guild-purge-confirmation-input")
@@ -71,13 +60,7 @@ describe("GuildPurgeDialog", () => {
     const user = userEvent.setup()
 
     render(
-      <GuildPurgeDialog
-        account={account as never}
-        instance={instance as never}
-        onOpenChange={onOpenChange}
-        onPurged={onPurged}
-        open
-      />
+      <GuildPurgeDialog onOpenChange={onOpenChange} onPurged={onPurged} open />
     )
 
     fireEvent.change(screen.getByTestId("guild-purge-confirmation-input"), {
@@ -102,13 +85,7 @@ describe("GuildPurgeDialog", () => {
     const user = userEvent.setup()
 
     render(
-      <GuildPurgeDialog
-        account={account as never}
-        instance={instance as never}
-        onOpenChange={onOpenChange}
-        onPurged={onPurged}
-        open
-      />
+      <GuildPurgeDialog onOpenChange={onOpenChange} onPurged={onPurged} open />
     )
 
     fireEvent.change(screen.getByTestId("guild-purge-confirmation-input"), {
@@ -164,13 +141,7 @@ describe("GuildPurgeDialog", () => {
     const user = userEvent.setup()
 
     render(
-      <GuildPurgeDialog
-        account={account as never}
-        instance={instance as never}
-        onOpenChange={onOpenChange}
-        onPurged={vi.fn()}
-        open
-      />
+      <GuildPurgeDialog onOpenChange={onOpenChange} onPurged={vi.fn()} open />
     )
 
     fireEvent.change(screen.getByTestId("guild-purge-confirmation-input"), {

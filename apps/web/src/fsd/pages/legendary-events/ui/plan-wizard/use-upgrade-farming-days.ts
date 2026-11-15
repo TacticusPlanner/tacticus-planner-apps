@@ -3,7 +3,10 @@ import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import type { UnitId } from "@workspace/game-domain"
 
-import { useEligibleCampaignBattles } from "@/entities/player-data-override"
+import {
+  useEligibleCampaignBattles,
+  onslaughtProgressQueries,
+} from "@/entities/player-data-override"
 import {
   toOnslaughtRunsPerDay,
   type FarmingCharacter,
@@ -13,7 +16,6 @@ import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
 } from "@/entities/rank-lookup"
-import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"

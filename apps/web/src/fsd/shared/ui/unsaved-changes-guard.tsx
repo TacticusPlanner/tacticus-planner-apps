@@ -33,7 +33,7 @@ export function UnsavedChangesGuard({
     ({ currentLocation, nextLocation }) =>
       when &&
       currentLocation.pathname !== nextLocation.pathname &&
-      !(scope && within(nextLocation.pathname, scope))
+      (!scope || !within(nextLocation.pathname, scope))
   )
 
   // The router's state reaches React in a transition, so while the next page's chunk loads the
@@ -51,6 +51,7 @@ export function UnsavedChangesGuard({
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault()
       // Legacy browsers only show the prompt when returnValue is set.
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- deliberate legacy fallback
       event.returnValue = ""
     }
     window.addEventListener("beforeunload", onBeforeUnload)

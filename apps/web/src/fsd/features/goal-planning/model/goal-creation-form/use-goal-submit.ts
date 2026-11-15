@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useState, type SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
@@ -120,7 +120,7 @@ export function useGoalSubmit({
   const error = createGoals.error
   const errorMessage = error ? goalCreateErrorText(t, error, getUnitName) : null
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault()
     if (!entityId || !canSubmit) {
       return

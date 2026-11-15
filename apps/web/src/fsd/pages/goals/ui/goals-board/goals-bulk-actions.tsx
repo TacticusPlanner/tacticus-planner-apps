@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next"
 import { FolderMinus, FolderPlus, Pause, Play, Trash2 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 
-import type { CascadeTarget } from "@/features/goal-planning"
-import type { GoalRow } from "@/features/goal-planning"
+import type { CascadeTarget, GoalRow } from "@/features/goal-planning"
 import { isReachedRow } from "./goal-row-utils"
 import {
   canRemoveFromProject,

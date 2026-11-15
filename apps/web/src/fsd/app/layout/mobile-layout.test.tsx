@@ -98,7 +98,7 @@ function renderShell(
   onCreateGoal = vi.fn(),
   isAuthenticated = false,
   initialEntry = "/",
-  activeSection: NavItem | undefined = undefined,
+  activeSection?: NavItem,
   quickActions: QuickActionsController = noQuickActions
 ) {
   return render(

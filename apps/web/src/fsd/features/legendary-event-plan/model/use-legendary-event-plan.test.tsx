@@ -638,7 +638,7 @@ describe("useLegendaryEventPlan", () => {
       plan(4, [team("a", 0), team("b", 1)])
     )
     const refetch = queryClient
-      .fetchQuery({
+      .query({
         queryKey: legendaryEventPlanQueries.detail(EVENT).queryKey,
         queryFn: () =>
           new Promise<LegendaryEventPlan>((resolve) => {

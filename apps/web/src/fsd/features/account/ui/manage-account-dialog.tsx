@@ -1,4 +1,4 @@
-import { useId, useState, type FormEvent } from "react"
+import { useId, useState, type SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { ExternalLink } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -221,7 +221,7 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
         : t("manageAccount.integration.genericError")
       : null
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     if (userIdFormatInvalid) return
     updateIntegration.mutate({

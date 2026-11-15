@@ -59,7 +59,7 @@ const build = (
   progress: BuildInput["progress"],
   rewards: BuildInput["rewards"],
   progressObservedAtMs: number | null = OBSERVED,
-  unit: BuildInput["unit"] = undefined
+  unit?: BuildInput["unit"]
 ) =>
   buildRunStatusViewModel({
     progress,

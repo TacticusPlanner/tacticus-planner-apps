@@ -120,7 +120,7 @@ export function buildTeamCardViewModel(
   /** `roster` keyed by unit id; the section builds it once for all its cards. */
   rosterById: ClearEstimateRoster | undefined = roster && rosterMap(roster),
   /** The lane's synced progress; undefined while it loads or failed (nothing counts as cleared). */
-  progress: LaneProgressView | undefined = undefined,
+  progress?: LaneProgressView,
   /** The lane's points model; the section builds it once for all its cards. */
   model: LanePointsModel = buildLanePointsModel(lane)
 ): TeamCardViewModel {

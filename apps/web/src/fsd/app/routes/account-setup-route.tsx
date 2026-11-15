@@ -127,7 +127,7 @@ function AccountSetupRouteForStep({ step }: { step: AccountSetupStep }) {
   const search = next ? `?next=${encodeURIComponent(next)}` : ""
 
   if (
-    !(step === "import" && flow.importAwaitingContinue) &&
+    (step !== "import" || !flow.importAwaitingContinue) &&
     state.status === "success"
   ) {
     const { hasCompletedOnboarding, displayName } = state.user

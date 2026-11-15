@@ -163,7 +163,7 @@ function HeroTierList() {
   const list = isAwaitingOwnedRoster(filters, roster.status) ? undefined : built
   const noMatch = list ? isTierListEmpty(list) : false
   // The rows render unless the list is loading, absent, or replaced by the no-match note.
-  const rowsShown = Boolean(list) && !(noMatch && hasActiveFilters(filters))
+  const rowsShown = Boolean(list) && (!noMatch || !hasActiveFilters(filters))
   const firstRow = list?.rows.find((row) => row.units.length > 0)
   const filtersKey = tierListFiltersKey(filters)
   const untieredExpanded =

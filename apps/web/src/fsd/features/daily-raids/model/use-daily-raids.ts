@@ -7,7 +7,10 @@ import type { UpgradeStorageModel } from "@workspace/game-catalog"
 
 import { activeProjectMembers, type GoalDetail } from "@/entities/goal"
 import { dailyGoalTargetLabel } from "./goal-target-label"
-import { onslaughtProgressQueries } from "@/entities/player-data-override"
+import {
+  onslaughtProgressQueries,
+  useEligibleCampaignBattles,
+} from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import {
   mapCampaignBattleStorageToDomain,
@@ -22,7 +25,6 @@ import { buildResourceByBattle } from "./daily-raid-battle-resources"
 import type { EventFarmOrder } from "./home-screen-event-farm"
 import type { HseRaidRule } from "./home-screen-event-rules"
 import { useBattleMaps } from "./use-battle-maps"
-import { useEligibleCampaignBattles } from "@/entities/player-data-override"
 import { calculateDailyRaids } from "./daily-raids-calc"
 import {
   buildAttemptsLeftByBattle,

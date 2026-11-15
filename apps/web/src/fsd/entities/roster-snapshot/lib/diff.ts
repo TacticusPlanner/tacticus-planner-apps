@@ -197,7 +197,7 @@ function diffUnit(
             : null,
         upgrades: progressUnknown ? null : upgradesChange(before, after),
         xpLevel:
-          !(progressUnknown && kind === "mow") &&
+          (!progressUnknown || kind !== "mow") &&
           before.xpLevel !== undefined &&
           after.xpLevel !== undefined
             ? later(before.xpLevel, after.xpLevel, (level) => level)

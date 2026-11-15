@@ -21,10 +21,12 @@ import {
 } from "@/features/project-management"
 import type { ProjectSummary } from "@/entities/project"
 
-import { useCreateGoalLauncher } from "@/features/goal-planning"
-import { useGoalAttainment } from "@/features/goal-planning"
-import { useGoalsOverviewMetrics } from "@/features/goal-planning"
-import { usePlanInsights } from "@/features/goal-planning"
+import {
+  useCreateGoalLauncher,
+  useGoalAttainment,
+  useGoalsOverviewMetrics,
+  usePlanInsights,
+} from "@/features/goal-planning"
 import { useProjectsListTutorial } from "./projects-list-page.tutorial"
 
 /**

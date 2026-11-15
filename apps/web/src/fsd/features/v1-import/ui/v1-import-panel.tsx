@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from "react"
+import { useState, type SubmitEvent, type ReactNode } from "react"
 import type { TFunction } from "i18next"
 import { useTranslation } from "react-i18next"
 import { Lock } from "lucide-react"
@@ -156,7 +156,7 @@ export function V1ImportPanel({
     ])
   }
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     // Defensive only: the submit control is disabled whenever this doesn't hold, so a real click
     // can't reach here with `canSubmit` false.

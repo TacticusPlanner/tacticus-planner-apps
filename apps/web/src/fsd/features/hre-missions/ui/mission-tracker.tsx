@@ -2,12 +2,12 @@ import { PartyPopper } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Card, CardContent } from "@workspace/ui/components/card"
 
-import {
-  hreAllDone,
-  type HreMission,
-  type HreObjective,
+import { hreAllDone } from "@/entities/hre-mission"
+import type {
+  HreProgress,
+  HreMission,
+  HreObjective,
 } from "@/entities/hre-mission"
-import type { HreProgress } from "@/entities/hre-mission"
 import type { HreProgressActions } from "../model/use-hre-progress"
 import { CurrentMissionCard } from "./current-mission-card"
 import { MissionList } from "./mission-list"

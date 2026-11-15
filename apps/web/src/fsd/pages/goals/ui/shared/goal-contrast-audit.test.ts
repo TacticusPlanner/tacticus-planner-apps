@@ -440,6 +440,7 @@ describe("goal contrast audit (computed from globals.css tokens)", () => {
   })
 
   if (import.meta.env.VITE_AUDIT_PRINT) {
+    // eslint-disable-next-line vitest/expect-expect -- prints the matrix for a manual audit
     it("prints the measured matrix", () => {
       const rows = CASES.map((c) => {
         const at = (theme: Theme) =>

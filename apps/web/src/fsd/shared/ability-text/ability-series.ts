@@ -33,7 +33,7 @@ function flatten(nodes: AstNode[], out: Token[] = []): Token[] {
 
 const RANGE_SEPARATOR = /^\s*[-–]\s*$/
 
-const LINKING_WORD = /^(by|to|of|for|with|and|up|is|at|a|an|the)$/i
+const LINKING_WORD = /^(?:by|to|of|for|with|and|up|is|at|a|an|the)$/i
 
 const capitalise = (text: string) =>
   text ? text.charAt(0).toLocaleUpperCase() + text.slice(1) : text

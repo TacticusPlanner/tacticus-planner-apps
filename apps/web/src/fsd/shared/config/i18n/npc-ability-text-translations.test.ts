@@ -47,7 +47,7 @@ function entryOf(locale: Record<string, Entry>, id: string): Entry {
   return entry
 }
 
-const DAMAGE_PROFILE_TYPE = /^DamageProfileType(Style)?(_\d+)?$/
+const DAMAGE_PROFILE_TYPE = /^DamageProfileType(?:Style)?(_\d+)?$/
 const trimmedHas = (rec: Record<string, unknown>, key: string) =>
   rec[key] !== undefined || Object.keys(rec).some((k) => k.trim() === key)
 
@@ -105,7 +105,7 @@ describe("Ability rules text", () => {
           if (match)
             return !trimmedHas(
               entry.constants,
-              `damageProfile${match[2] ?? ""}`
+              `damageProfile${match[1] ?? ""}`
             )
           return true
         })

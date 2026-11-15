@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useState, type SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { ExternalLink } from "lucide-react"
 import { useMutation } from "@tanstack/react-query"
@@ -53,7 +53,7 @@ export function ApiKeyForm({ onCompleted }: { onCompleted: () => void }) {
         : t("onboarding.genericError")
       : null
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
 
     const trimmedApiKey = apiKey.trim()

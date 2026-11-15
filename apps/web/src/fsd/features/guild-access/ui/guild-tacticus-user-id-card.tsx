@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useState, type SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
@@ -54,7 +54,7 @@ export function GuildTacticusUserIdCard({ onSaved }: { onSaved: () => void }) {
         : t("guild.tacticusUserIdRequired.genericError")
       : null
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     if (!trimmed || formatInvalid) return
     updateIntegration.mutate({ tacticusApiKey: null, tacticusUserId: trimmed })

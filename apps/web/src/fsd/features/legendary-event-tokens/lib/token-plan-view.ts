@@ -26,7 +26,7 @@ import {
   fewestTokensForFullClear,
   type FullClearFigure,
 } from "./minimum-tokens"
-import { forecastRuns, type Forecast } from "./run-forecast"
+import { forecastRuns } from "./run-forecast"
 import { milestoneGap, type MilestoneGap } from "./milestone-push"
 import {
   nextToken,
@@ -54,7 +54,7 @@ import {
 } from "./mission-gains"
 import { splitPlanByRun, type PlanByRun } from "./token-runs"
 import { missionOrder, type MissionOrder } from "./mission-order"
-import type { TokenMarker } from "./run-forecast"
+import type { TokenMarker, Forecast } from "./run-forecast"
 
 /** A lane's team estimator, as the page builds it from the Stage 5 clear estimates. */
 type LaneTeamEstimator = {

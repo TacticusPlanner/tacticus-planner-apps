@@ -34,8 +34,6 @@ import {
   type GoalNeed,
   type LevelRules,
   type UpgradeNeed,
-} from "@/entities/goal-farming"
-import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
   computeGoalAcquisition,

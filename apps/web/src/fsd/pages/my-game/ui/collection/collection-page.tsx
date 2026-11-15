@@ -632,7 +632,7 @@ function SyncButton() {
     <div className="flex flex-wrap items-center gap-3">
       <Button
         size="sm"
-        onClick={() => void syncNow()}
+        onClick={() => syncNow()}
         disabled={syncDisabled}
         data-testid="collection-sync"
       >

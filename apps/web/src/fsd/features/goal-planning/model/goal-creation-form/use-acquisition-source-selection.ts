@@ -7,8 +7,11 @@ import type {
 } from "@workspace/game-catalog"
 import type { FarmLocation } from "@/shared/lib"
 
-import { dropRate, estimateGoal } from "@/entities/goal-farming"
-import { estimateRemainingShardEnergy } from "@/entities/goal-farming"
+import {
+  dropRate,
+  estimateGoal,
+  estimateRemainingShardEnergy,
+} from "@/entities/goal-farming"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
 
 /** The id of `locations`' lowest expected-energy-per-shard node (`battle.energyCost / dropRate`,

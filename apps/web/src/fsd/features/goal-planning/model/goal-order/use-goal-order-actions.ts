@@ -165,7 +165,7 @@ export function useGoalOrderActions() {
 
     const before =
       cachedOrder(queryClient) ??
-      (await queryClient.fetchQuery(goalQueries.list(false)))
+      (await queryClient.query(goalQueries.list(false)))
     const ids = inFlightInGlobalOrder(before.goals).map((goal) => goal.goalId)
     // The complete order this gesture produces, captured now: a later gesture's optimistic write must
     // not leak into what this request submits.

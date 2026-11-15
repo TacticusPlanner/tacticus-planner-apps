@@ -1,11 +1,13 @@
 import { Fragment, memo } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { UNKNOWN_PROGRESS } from "@/features/goal-planning"
-import { useGoalCatalog } from "@/features/goal-planning"
+import {
+  UNKNOWN_PROGRESS,
+  useGoalCatalog,
+  GoalUnitIcon,
+} from "@/features/goal-planning"
 import { GoalDragHandle } from "./goal-drag-handle"
 import { GoalTargetDisplay } from "../shared/goal-progress-visuals"
-import { GoalUnitIcon } from "@/features/goal-planning"
 import { SortableList, type SortableRenderProps } from "@/shared/ui"
 import { SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffItem, SeasonFitLabel } from "./season-fit-ui"

@@ -555,7 +555,9 @@ describe("CreateGoalSheet", () => {
     const matchMedia = vi.mocked(window.matchMedia)
     const original = matchMedia.getMockImplementation()
     matchMedia.mockImplementation(
-      (query: string) => ({ ...original?.(query), matches: true }) as never
+      (query: string) =>
+        // The mock returns a plain object, so copying its fields keeps everything.
+        Object.assign({}, original?.(query), { matches: true }) as never
     )
     try {
       render(<CreateGoalSheet open onOpenChange={vi.fn()} />)
@@ -2647,7 +2649,9 @@ describe("CreateGoalSheet", () => {
       const matchMedia = vi.mocked(window.matchMedia)
       const original = matchMedia.getMockImplementation()
       matchMedia.mockImplementation(
-        (query: string) => ({ ...original?.(query), matches: true }) as never
+        (query: string) =>
+          // The mock returns a plain object, so copying its fields keeps everything.
+          Object.assign({}, original?.(query), { matches: true }) as never
       )
       return () => {
         if (original) matchMedia.mockImplementation(original)

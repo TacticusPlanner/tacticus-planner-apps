@@ -51,10 +51,9 @@ const movesOrder = (status: GoalStatus) =>
  * shared by the list, grid and row-actions menu. A status change of any number of goals is one atomic
  * `POST goals/status` (spec: goal-status-actions): its response is written into the cached details
  * and lists, a rejection reverts every optimistic row and is reported once. `pendingIds` disables every
- * row whose action is in flight; `onChanged` is the caller's list `retry`.
+ * row whose action is in flight.
  */
-export function useGoalActions(_onChanged?: () => void) {
-  void _onChanged
+export function useGoalActions() {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()

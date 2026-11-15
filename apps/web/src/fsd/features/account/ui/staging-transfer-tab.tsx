@@ -1,4 +1,4 @@
-import { useId, useState, type FormEvent } from "react"
+import { useId, useState, type SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, Copy } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -165,7 +165,7 @@ function ImportPanel() {
   const trimmed = code.trim()
   const canImport = trimmed !== "" && confirmed && !importData.isPending
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     if (canImport) importData.mutate(trimmed)
   }

@@ -1,9 +1,4 @@
-import {
-  firstRank,
-  rankIndex,
-  rankOrder,
-  type Rank,
-} from "@workspace/game-domain"
+import { firstRank, rankIndex, rankOrder } from "@workspace/game-domain"
 
 import type {
   BaseUpgradeNeed,
@@ -12,7 +7,7 @@ import type {
   UpgradeAmount,
   Upgrade,
 } from "./rank-lookup.domain"
-import type { UpgradeId } from "@workspace/game-domain"
+import type { UpgradeId, Rank } from "@workspace/game-domain"
 
 export type {
   BaseUpgradeNeed,
