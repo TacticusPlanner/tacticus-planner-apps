@@ -152,7 +152,8 @@
       "bonus": "+{{currency}} currency on every points milestone (premium track)",
       "noBonus": "No payout bonus on points milestones",
       "startedRuns": "Later runs add only the missions and bundle you plan for them; the current run's are already in your synced currency."
-    }
+    },
+    "titleFor": "To reach {{step}}"
   },
   "lanes": {
     "alpha": "Alpha",
@@ -873,15 +874,8 @@
         "planned": "Planned"
       },
       "finished": "Finished",
-      "supply": "{{total}} tokens: {{free}} free + {{ad}} ad + {{bonus}} bonus delivery",
       "adToday": "Includes today's ad token, not watched yet",
       "thisRun": "This run's forecast",
-      "uses": "Uses {{used}} · {{left}} left over",
-      "points": "{{points}} points (+{{earned}})",
-      "currency": "{{currency}} currency in hand (+{{earned}} earned)",
-      "chests": "{{claimed}} chests claimed (+{{opened}})",
-      "shards": "{{shards}} shards",
-      "reached": "Reached: {{steps}}",
       "next": "Next: {{step}} · {{shards}} shards short",
       "allSteps": "Every reward step reached",
       "ohSoClose": "Oh So Close: {{shards}} shards for {{blackstone}} blackstone",
@@ -892,7 +886,13 @@
         "points": "Points at the end of the run",
         "chests": "Chests claimed",
         "shards": "Shards at the end of the run"
-      }
+      },
+      "split": "{{free}} free + {{ad}} ad",
+      "splitBonus": "{{free}} free + {{ad}} ad + {{bonus}} bonus delivery",
+      "leftOver_one": "{{count}} left over",
+      "leftOver_other": "{{count}} left over",
+      "gains": "+{{points}} points · +{{earned}} currency earned, {{currency}} left after chests · +{{chests}} chests",
+      "reachedThen": "Reached {{steps}} · {{next}}"
     },
     "closeGap": {
       "title": "Close the gap: +{{points}} points for {{step}}",

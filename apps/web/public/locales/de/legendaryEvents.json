@@ -152,7 +152,8 @@
       "bonus": "+{{currency}} Währung bei jedem Punkte-Meilenstein (Premium-Pfad)",
       "noBonus": "Kein Bonus auf Punkte-Meilensteine",
       "startedRuns": "Spätere Durchläufe zählen nur die Missionen und das Bundle, die du für sie planst; die des aktuellen Durchlaufs stecken schon in deiner synchronisierten Währung."
-    }
+    },
+    "titleFor": "Bis {{step}}"
   },
   "lanes": {
     "alpha": "Alpha",
@@ -873,15 +874,8 @@
         "planned": "Geplant"
       },
       "finished": "Abgeschlossen",
-      "supply": "{{total}} Tokens: {{free}} kostenlos + {{ad}} Werbung + {{bonus}} Bonuslieferung",
       "adToday": "Enthält den heutigen Werbe-Token, noch nicht angesehen",
       "thisRun": "Prognose für diesen Durchlauf",
-      "uses": "Nutzt {{used}} · {{left}} übrig",
-      "points": "{{points}} Punkte (+{{earned}})",
-      "currency": "{{currency}} Währung verfügbar (+{{earned}} verdient)",
-      "chests": "{{claimed}} Truhen geöffnet (+{{opened}})",
-      "shards": "{{shards}} Splitter",
-      "reached": "Erreicht: {{steps}}",
       "next": "Als Nächstes: {{step}} · {{shards}} Splitter fehlen",
       "allSteps": "Alle Belohnungsstufen erreicht",
       "ohSoClose": "Oh So Close: {{shards}} Splitter für {{blackstone}} Schwarzstein",
@@ -892,7 +886,13 @@
         "points": "Punkte am Ende des Laufs",
         "chests": "Erhaltene Truhen",
         "shards": "Splitter am Ende des Laufs"
-      }
+      },
+      "split": "{{free}} gratis + {{ad}} Werbung",
+      "splitBonus": "{{free}} gratis + {{ad}} Werbung + {{bonus}} Bonuslieferung",
+      "leftOver_one": "{{count}} übrig",
+      "leftOver_other": "{{count}} übrig",
+      "gains": "+{{points}} Punkte · +{{earned}} Währung verdient, {{currency}} übrig nach Truhen · +{{chests}} Truhen",
+      "reachedThen": "Erreicht: {{steps}} · {{next}}"
     },
     "closeGap": {
       "title": "Lücke schließen: +{{points}} Punkte für {{step}}",

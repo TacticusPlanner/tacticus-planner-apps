@@ -152,7 +152,8 @@
       "bonus": "+{{currency}} de moneda en cada hito de puntos (pase prémium)",
       "noBonus": "Sin bonificación en los hitos de puntos",
       "startedRuns": "Las rondas posteriores solo suman las misiones y el paquete que planees para ellas; los de la ronda actual ya están en tu moneda sincronizada."
-    }
+    },
+    "titleFor": "Para llegar a {{step}}"
   },
   "lanes": {
     "alpha": "Alfa",
@@ -873,15 +874,8 @@
         "planned": "Prevista"
       },
       "finished": "Finalizada",
-      "supply": "{{total}} fichas: {{free}} gratis + {{ad}} de anuncio + {{bonus}} de entrega extra",
       "adToday": "Incluye la ficha de anuncio de hoy, aún sin ver",
       "thisRun": "Previsión de esta ronda",
-      "uses": "Usa {{used}} · sobran {{left}}",
-      "points": "{{points}} puntos (+{{earned}})",
-      "currency": "{{currency}} de moneda disponible (+{{earned}} ganada)",
-      "chests": "{{claimed}} cofres abiertos (+{{opened}})",
-      "shards": "{{shards}} fragmentos",
-      "reached": "Alcanzado: {{steps}}",
       "next": "Siguiente: {{step}} · faltan {{shards}} fragmentos",
       "allSteps": "Todas las recompensas alcanzadas",
       "ohSoClose": "Oh So Close: {{shards}} fragmentos por {{blackstone}} de piedra negra",
@@ -892,7 +886,13 @@
         "points": "Puntos al final de la ejecución",
         "chests": "Cofres obtenidos",
         "shards": "Fragmentos al final de la ejecución"
-      }
+      },
+      "split": "{{free}} gratis + {{ad}} de anuncios",
+      "splitBonus": "{{free}} gratis + {{ad}} de anuncios + {{bonus}} de entrega extra",
+      "leftOver_one": "sobra {{count}}",
+      "leftOver_other": "sobran {{count}}",
+      "gains": "+{{points}} puntos · +{{earned}} de moneda ganada, {{currency}} tras los cofres · +{{chests}} cofres",
+      "reachedThen": "Alcanzado: {{steps}} · {{next}}"
     },
     "closeGap": {
       "title": "Cerrar la brecha: +{{points}} puntos para {{step}}",

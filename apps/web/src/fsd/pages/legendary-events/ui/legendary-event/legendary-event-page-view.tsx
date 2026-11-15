@@ -40,6 +40,7 @@ import { LaneSummary } from "./overview/lane-summary"
 import { LastRunCard } from "./overview/last-run-card"
 import { ProgressSection } from "./progress/progress-section"
 import { CurrentRunStatus } from "./current-run-status"
+import { RewardOutlook } from "./reward-outlook"
 import { RunStatusCard } from "./run-status-card"
 import { TeamEditorHost } from "./teams/team-editor-host"
 import { TeamsSection } from "./teams/teams-section"
@@ -145,6 +146,16 @@ function LegendaryEventPageBody({
           <TabPanel tab="overview">
             <RunStatusCard
               {...props}
+              current={(runStatus) => (
+                <>
+                  <CurrentRunStatus
+                    nowMs={props.nowMs}
+                    runStatus={runStatus}
+                    view={tokens.view}
+                  />
+                  <RewardOutlook compact outlook={props.outlook} />
+                </>
+              )}
               isMobile={isMobile}
               onGoToRun={
                 props.lifecycle.state === "archived"
