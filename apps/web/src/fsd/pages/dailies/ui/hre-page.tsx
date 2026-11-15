@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useOutletContext, useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -7,7 +7,6 @@ import {
   HreRaidsSection,
   todayQuickFilterOptions,
   useTodayQuickFilters,
-  type RaidLocationTarget,
 } from "@/features/daily-raids"
 import {
   AllMissions,
@@ -39,7 +38,10 @@ import {
 } from "@/entities/hre-mission"
 
 import { useHreTeamRecommendations } from "@/features/team-recommendations"
-import { CampaignBattleDialog } from "@/widgets/battle-preview"
+import {
+  CampaignBattleDialogHost,
+  useCampaignBattleDialog,
+} from "@/widgets/battle-preview"
 import { useRunningHse } from "../model/use-running-hse"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { HreCampaignTeams } from "./hre/hre-campaign-teams"
@@ -74,9 +76,9 @@ export function HrePage() {
     "factions",
   ])
   const isMobile = useIsMobile()
-  const [shownLocation, setShownLocation] = useState<RaidLocationTarget | null>(
-    null
-  )
+  // The battle dialog's open state lives outside this page, so a location's info button
+  // re-renders only the dialog.
+  const battleDialog = useCampaignBattleDialog()
   const context = useOutletContext<DailiesOutletContext>()
   const [searchParams, setSearchParams] = useSearchParams()
   const [quickFilters, setQuickFilters] = useTodayQuickFilters()
@@ -292,7 +294,7 @@ export function HrePage() {
           />
         }
         notice={notice}
-        onShowLocation={setShownLocation}
+        onShowLocation={battleDialog.show}
         projectId={context.projectId}
         quickFilters={todayQuickFilterOptions(quickFilters)}
         daysLeft={
@@ -479,10 +481,7 @@ export function HrePage() {
           </div>
         )
       ) : null}
-      <CampaignBattleDialog
-        onClose={() => setShownLocation(null)}
-        target={shownLocation}
-      />
+      <CampaignBattleDialogHost dialog={battleDialog} />
     </section>
   )
 }

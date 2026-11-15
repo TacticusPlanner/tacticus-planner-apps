@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useOutletContext, useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { homeScreenEventPointsIcon } from "@workspace/game-catalog"
@@ -15,7 +15,6 @@ import {
   useActiveHomeScreenEvent,
   useTodayQuickFilters,
   type HseListView,
-  type RaidLocationTarget,
 } from "@/features/daily-raids"
 import {
   EventDetails,
@@ -25,7 +24,10 @@ import {
 import { hseSectionsShown } from "@/entities/home-screen-event"
 
 import { useHseTeamRecommendations } from "@/features/team-recommendations"
-import { CampaignBattleDialog } from "@/widgets/battle-preview"
+import {
+  CampaignBattleDialogHost,
+  useCampaignBattleDialog,
+} from "@/widgets/battle-preview"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { useHseTutorial } from "./hse-page.tutorial"
 import { RaidsSectionControls } from "./raids-section-controls"
@@ -58,9 +60,9 @@ export function HsePage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const state = useActiveHomeScreenEvent()
   const [quickFilters, setQuickFilters] = useTodayQuickFilters()
-  const [shownLocation, setShownLocation] = useState<RaidLocationTarget | null>(
-    null
-  )
+  // The battle dialog's open state lives outside this page, so a location's info button
+  // re-renders only the dialog.
+  const battleDialog = useCampaignBattleDialog()
   // One object per selection, so the memoised farm list does not re-render on a keystroke.
   const quickOptions = useMemo(
     () => todayQuickFilterOptions(quickFilters),
@@ -193,7 +195,7 @@ export function HsePage() {
           <div data-testid="hse-sections">
             {ignoreGoals ? (
               <EventLocationsSection
-                onShowLocation={setShownLocation}
+                onShowLocation={battleDialog.show}
                 onViewChange={setListView}
                 order={listOrder}
                 pointsIcon={pointsIcon}
@@ -202,7 +204,7 @@ export function HsePage() {
               />
             ) : (
               <EventFarmSection
-                onShowLocation={setShownLocation}
+                onShowLocation={battleDialog.show}
                 onViewChange={setListView}
                 order={listOrder}
                 pointsIcon={pointsIcon}
@@ -215,10 +217,7 @@ export function HsePage() {
         </div>
       ) : null}
       <HseTeamsSection view={teams} />
-      <CampaignBattleDialog
-        onClose={() => setShownLocation(null)}
-        target={shownLocation}
-      />
+      <CampaignBattleDialogHost dialog={battleDialog} />
     </section>
   )
 }

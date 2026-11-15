@@ -2,13 +2,20 @@ import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { render, screen, within } from "@/test/render"
+import { act, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
 import { lysanderBattleNpcs } from "@/test/fixtures/lysander-battles"
 import dailiesEn from "../../../../../public/locales/en/dailies.json"
 
-import { CampaignBattleDialog } from "./campaign-battle-dialog"
+import {
+  useCampaignBattleDialog,
+  type CampaignBattleDialogStore,
+} from "../model/campaign-battle-dialog-store"
+import {
+  CampaignBattleDialog,
+  CampaignBattleDialogHost,
+} from "./campaign-battle-dialog"
 
 // Archimatos's served ladder opens at rank 5 / 5 stars, then rank 8 (Bronze III) / 5 stars.
 const battle = {
@@ -110,5 +117,28 @@ describe("CampaignBattleDialog", () => {
       wrapper: i18nWrapper(i18n),
     })
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+  })
+
+  it("opens and closes from its host without re-rendering the page that lists the raids", async () => {
+    let pageRenders = 0
+    let dialog: CampaignBattleDialogStore | undefined
+    function Page() {
+      pageRenders += 1
+      dialog = useCampaignBattleDialog()
+      return <CampaignBattleDialogHost dialog={dialog} />
+    }
+    render(<Page />, { route: "/", wrapper: i18nWrapper(i18n) })
+    const settled = pageRenders
+
+    act(() =>
+      dialog!.show({
+        battleId: battle.id,
+        title: { campaignName: "Indomitus", nodeLabel: "Elite 40" },
+      })
+    )
+    expect(await screen.findByRole("dialog")).toBeInTheDocument()
+    act(() => dialog!.close())
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
+    expect(pageRenders).toBe(settled)
   })
 })

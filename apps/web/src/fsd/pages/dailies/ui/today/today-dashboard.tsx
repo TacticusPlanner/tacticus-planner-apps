@@ -5,9 +5,11 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   FilteredOutNotice,
   type DailyRaidsViewModel,
-  type RaidLocationTarget,
 } from "@/features/daily-raids"
-import { CampaignBattleDialog } from "@/widgets/battle-preview"
+import {
+  CampaignBattleDialogHost,
+  useCampaignBattleDialog,
+} from "@/widgets/battle-preview"
 
 import { TodayShops } from "../today-shops"
 import { TodayBonusCard } from "./today-bonus-card"
@@ -35,9 +37,9 @@ export function TodayDashboard({
 }) {
   const [bonusShownCount, setBonusShownCount] = useState(BONUS_LIMIT)
   // The planned location whose battle and enemies are open (tapping its name).
-  const [shownLocation, setShownLocation] = useState<RaidLocationTarget | null>(
-    null
-  )
+  // The battle dialog's open state lives outside this page, so a location's info button
+  // re-renders only the dialog.
+  const battleDialog = useCampaignBattleDialog()
   const view =
     raids.status === "ready"
       ? buildTodayView(raids, { bonusShownCount })
@@ -64,7 +66,7 @@ export function TodayDashboard({
         }
         onShowLess={() => setBonusShownCount(BONUS_LIMIT)}
         onShowMore={() => setBonusShownCount((shown) => shown + BONUS_STEP)}
-        onShowLocation={setShownLocation}
+        onShowLocation={battleDialog.show}
         view={view}
         wide={wide}
       />
@@ -87,7 +89,7 @@ export function TodayDashboard({
           ) : (
             <TodayPlanCard
               onCantRaid={onCantRaid}
-              onShowLocation={setShownLocation}
+              onShowLocation={battleDialog.show}
               raids={raids}
               view={view}
             />
@@ -114,10 +116,7 @@ export function TodayDashboard({
           </div>
         ) : null}
       </div>
-      <CampaignBattleDialog
-        onClose={() => setShownLocation(null)}
-        target={shownLocation}
-      />
+      <CampaignBattleDialogHost dialog={battleDialog} />
     </div>
   )
 }
