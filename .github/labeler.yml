@@ -1,0 +1,75 @@
+# Labels for pull requests, applied by the "Detect changes" job in ci.yml (actions/labeler).
+# CI reads two of them to skip work a PR cannot affect: docs-only and release-scripts.
+# The rest only tell reviewers what a PR touches. sync-labels is on, so a label whose files are no
+# longer changed (or that was added by hand without matching files) is removed on the next push.
+
+# Gate: when every changed file is documentation or agent config, Build is skipped.
+# Keep in step with the docs-only filter of the Detect changes job in coverage.yml.
+docs-only:
+  - changed-files:
+      - any-glob-to-all-files:
+          - "**/*.md"
+          - "openspec/**"
+          - ".claude/**"
+          - ".agents/**"
+          - ".design-sync/**"
+          - "LICENSE"
+
+# Gate: the release script tests (Ubuntu and Windows) run only when the scripts changed.
+release-scripts:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "scripts/release/**"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+
+deps:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "pnpm-lock.yaml"
+          - "pnpm-workspace.yaml"
+          - "**/package.json"
+
+api-contract:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/web/openapi/**"
+
+datamine:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/web/datamine/**"
+          - "apps/web/public/game_catalog/**"
+
+i18n:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/web/public/locales/**"
+
+e2e:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/web/e2e/**"
+          - "apps/web/playwright.config.ts"
+
+area:web:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/web/src/**"
+          - "apps/web/index.html"
+          - "apps/web/vite.config.ts"
+
+area:ui:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "packages/ui/**"
+
+area:game-logic:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "packages/game-domain/**"
+          - "packages/game-catalog/**"
+          - "packages/player-data/**"
