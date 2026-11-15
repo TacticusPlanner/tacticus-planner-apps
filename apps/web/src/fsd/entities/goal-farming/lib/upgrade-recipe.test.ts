@@ -57,7 +57,10 @@ describe("rankUpUpgradeIds", () => {
       ids("U1", "U3", "U5")
     )
     expect(rankUpUpgradeIds(unit, "Bronze1", "Bronze1", false, 2)).toEqual(
-      ids("U1", "U2")
+      ids("U1", "U3")
+    )
+    expect(rankUpUpgradeIds(unit, "Bronze1", "Bronze1", false, 4)).toEqual(
+      ids("U1", "U3", "U5", "U2")
     )
     expect(rankUpUpgradeIds(unit, "Bronze1", "Bronze1", false, 0, 2)).toEqual(
       ids("U1", "U3")

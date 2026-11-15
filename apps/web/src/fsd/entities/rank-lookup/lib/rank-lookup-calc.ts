@@ -29,15 +29,26 @@ const rankUpgradeMap = (character: Character): Map<Rank, UpgradeId[]> =>
 const topRow = (upgrades: readonly UpgradeId[]): UpgradeId[] =>
   upgrades.filter((_, index) => index % 2 === 0)
 
+/** The first `count` upgrades in book-reading order (top row left to right, then bottom row) — the
+ * order the game gates a Diamond3+ rank's slots by level, one level each. */
+const bookOrder = (
+  upgrades: readonly UpgradeId[],
+  count: number
+): UpgradeId[] =>
+  [0, 2, 4, 1, 3, 5]
+    .slice(0, count)
+    .map((index) => upgrades[index])
+    .filter((id): id is UpgradeId => id !== undefined)
+
 /**
  * The upgrade ids applied to take `character` from `rankStart` up to (but not including) `rankEnd`.
  * At the target rank, one of (checked in this order):
  * - `topRowCount` > 0 includes just the first N of the *top row* (Health, then + Damage, then +
  *   Armour — a below-Diamond3 rank's only independently-appliable upgrades, since its bottom row
  *   needs a further level first),
- * - `appliedUpgrades` > 0 includes just the first N upgrades in raw catalog order (V1's Mythic-tier
- *   "N of 6" partial target, Diamond3+ only — ported from `CharacterUpgradesService.
- *   getCharacterUpgradeRank`'s `lastRankUpgrades.slice(0, targetApplied)`), or
+ * - `appliedUpgrades` > 0 includes just the first N upgrades in book-reading order (top row, then
+ *   bottom row — V1's "N of 6" partial target, Diamond3+ only, matching the order the game gates
+ *   those slots by level), or
  * - `pointFive` includes the whole top row (indices 0/2/4) — V1's "Rank Point Five", equivalent to
  *   `topRowCount: 3`.
  * A same-rank range may still return its configured partial target; a clean same-rank or inverted
@@ -63,7 +74,7 @@ export function rankUpUpgradeIds(
   if (topRowCount > 0) {
     ids.push(...topRow(endUpgrades).slice(0, topRowCount))
   } else if (appliedUpgrades > 0) {
-    ids.push(...endUpgrades.slice(0, appliedUpgrades))
+    ids.push(...bookOrder(endUpgrades, appliedUpgrades))
   } else if (pointFive) {
     ids.push(...topRow(endUpgrades))
   }
@@ -99,7 +110,7 @@ export function groupUpgradesByRank(
     topRowCount > 0
       ? topRow(endUpgrades).slice(0, topRowCount)
       : appliedUpgrades > 0
-        ? endUpgrades.slice(0, appliedUpgrades)
+        ? bookOrder(endUpgrades, appliedUpgrades)
         : pointFive
           ? topRow(endUpgrades)
           : []

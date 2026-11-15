@@ -7,9 +7,10 @@ import type { GoalDetail, RankTarget } from "./types"
  * The normalized identity of a Rank goal's *end* target — the same `"<rank>:<slots>"` key the API
  * uses for Rank slot occupancy (`RankTargetKey` in tacticus-planner-api) and returns as
  * `normalizedTarget` on a slot conflict. Start/baseline and farming strategy are not part of it.
- * Below Adamantine1 a rank's upgrades are a 3-slot row and point-five means all 3 (so point-five and
- * "3 applied" are one target); from Adamantine1 the applied count stands as-is and point-five carries
- * no meaning. Keep this in step with the server's rule, which stays authoritative under concurrency.
+ * Below Diamond3 a rank's targetable upgrades are a 3-slot row and point-five means all 3 (so
+ * point-five and "3 applied" are one target); from Diamond3 the applied count stands as-is (up to 5),
+ * with a Diamond3 point-five (saved before Diamond3 offered numbered targets) still reading as at least
+ * 3, and from Adamantine1 point-five carries no meaning. Keep this in step with the server's rule, which stays authoritative under concurrency.
  */
 export function rankTargetKey(
   target: Pick<RankTarget, "end" | "endPointFive" | "endAppliedUpgrades">
@@ -18,17 +19,20 @@ export function rankTargetKey(
 }
 
 /** The normalized applied-slot count of a Rank target's end (the key's second half): 0 at a clean
- * boundary, and below Adamantine1 capped at the three-slot row with point-five reading as 3. */
+ * boundary, below Diamond3 capped at the three-slot row with point-five reading as 3, and at Diamond3
+ * point-five reading as at least 3. */
 export function rankTargetSlots(
   target: Pick<RankTarget, "end" | "endPointFive" | "endAppliedUpgrades">
 ): number {
   const slots = Math.max(target.endAppliedUpgrades, 0)
   if (target.end >= rankIndex(Rank.Adamantine1)) return slots
+  if (target.end >= rankIndex(Rank.Diamond3))
+    return target.endPointFive ? Math.max(slots, 3) : slots
   return target.endPointFive ? 3 : Math.min(slots, 3)
 }
 
 /** The rank and applied-slot count a normalized target key names (for labelling a conflict), or null when
- * the key is malformed. `slots` is 0 for a clean rank boundary; from Adamantine1 it is the count as-is, and
+ * the key is malformed. `slots` is 0 for a clean rank boundary; from Diamond3 it is the count as-is, and
  * below it a point-five target reads as 3. */
 export function describeRankTargetKey(
   key: string
