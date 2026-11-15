@@ -8,8 +8,9 @@
 //   public/locales/{en,de,es,fr}/factions.json          faction id          -> name
 //   public/locales/{en,de,es,fr}/npcs.json              NPC variation id    -> name
 //   public/locales/{en,de,es,fr}/mythicQuestTasks.json  task loca key       -> template
-//   public/locales/{en,de,es,fr}/eventMissions.json     seasonal event mission task templates, chain names
-//                                                        and game modes ({ tasks, chains, gameModes })
+//   public/locales/{en,de,es,fr}/eventMissions.json     seasonal event mission task templates, chain names,
+//                                                        game modes and event names ({ tasks, chains, gameModes,
+//                                                        events })
 //   public/locales/{en,de,es,fr}/unitSearchNames.json   character/MoW id    -> other names to search by
 //   public/locales/{en,de,es,fr}/progression.json       ranks and rarities (en also keeps its hand-written short forms)
 //
@@ -226,6 +227,20 @@ if (unnamed.length > 0) {
 // One nested namespace for the event shop's Missions: `tasks.<taskName>` and `chains.<chainKey>` are the
 // game's templates ({[TARGET_AMOUNT]}, {[GAME_MODE]}, {[CHAIN_POSITION]}… and <style> tags kept; the page
 // fills and strips them), `gameModes.<mode>` the names {[GAME_MODE]} takes.
+// `events.<EventKey>` is the seasonal event's own name (`SeasonalEvents/name_november_2026` -> key
+// `November2026`), which names an event shop the calendar has not dated yet (it has no definition).
+const SEASONAL_EVENT_NAME = /^SeasonalEvents\/name_([a-z]+)_(\d{4})$/
+const seasonalEventNames = (locale) =>
+  Object.fromEntries(
+    Object.keys(languages.en)
+      .map((key) => [key, SEASONAL_EVENT_NAME.exec(key)])
+      .filter(([, match]) => match)
+      .map(([key, [, month, year]]) => [
+        `${month[0].toUpperCase()}${month.slice(1)}${year}`,
+        languages[locale][key] || languages.en[key],
+      ])
+      .sort(([a], [b]) => a.localeCompare(b))
+  )
 tables.eventMissions = Object.fromEntries(
   LOCALES.map((locale) => [
     locale,
@@ -233,6 +248,7 @@ tables.eventMissions = Object.fromEntries(
       tasks: tables.eventMissionTasks[locale],
       chains: tables.eventMissionChains[locale],
       gameModes: tables.eventMissionGameModes[locale],
+      events: seasonalEventNames(locale),
     },
   ])
 )

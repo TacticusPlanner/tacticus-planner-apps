@@ -29,7 +29,8 @@
     "synced": "Synchronisé {{time}}",
     "notSynced": "Non synchronisé",
     "income": "≈ {{free}} gratuits + {{bonus}} livraison bonus cette semaine",
-    "search": "Rechercher dans la boutique"
+    "search": "Rechercher dans la boutique",
+    "tba": "Date de début à venir"
   },
   "tabs": {
     "label": "Sections de la boutique d'événement",
@@ -233,5 +234,10 @@
     "clear": "Effacer la recherche",
     "offer": "×{{qty}} · {{cost}}",
     "past": "Passé"
+  },
+  "undated": {
+    "weeks_one": "{{count}} semaine",
+    "weeks_other": "{{count}} semaines",
+    "description": "Cette boutique d'événement figure déjà dans les données du jeu, mais sa date de début n'est pas encore annoncée. Les jours et votre panier s'ouvriront dès qu'elle le sera."
   }
 }

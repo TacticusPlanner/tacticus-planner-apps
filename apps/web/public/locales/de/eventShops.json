@@ -29,7 +29,8 @@
     "synced": "Synchronisiert {{time}}",
     "notSynced": "Nicht synchronisiert",
     "income": "≈ {{free}} gratis + {{bonus}} Bonuslieferung diese Woche",
-    "search": "Shop durchsuchen"
+    "search": "Shop durchsuchen",
+    "tba": "Startdatum folgt"
   },
   "tabs": {
     "label": "Bereiche des Event-Shops",
@@ -233,5 +234,10 @@
     "clear": "Suche leeren",
     "offer": "×{{qty}} · {{cost}}",
     "past": "Vorbei"
+  },
+  "undated": {
+    "weeks_one": "{{count}} Woche",
+    "weeks_other": "{{count}} Wochen",
+    "description": "Dieser Event-Shop ist bereits in den Spieldaten, aber sein Startdatum steht noch nicht fest. Tage und dein Warenkorb werden verfügbar, sobald es bekannt ist."
   }
 }

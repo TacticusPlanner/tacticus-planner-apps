@@ -29,7 +29,8 @@
     "synced": "Sincronizado {{time}}",
     "notSynced": "Sin sincronizar",
     "income": "≈ {{free}} gratis + {{bonus}} envío extra esta semana",
-    "search": "Buscar en la tienda"
+    "search": "Buscar en la tienda",
+    "tba": "Fecha de inicio por anunciar"
   },
   "tabs": {
     "label": "Secciones de la tienda del evento",
@@ -233,5 +234,10 @@
     "clear": "Borrar búsqueda",
     "offer": "×{{qty}} · {{cost}}",
     "past": "Pasado"
+  },
+  "undated": {
+    "weeks_one": "{{count}} semana",
+    "weeks_other": "{{count}} semanas",
+    "description": "Esta tienda de evento ya está en los datos del juego, pero aún no se ha anunciado su fecha de inicio. Los días y tu carrito se abrirán cuando se anuncie."
   }
 }

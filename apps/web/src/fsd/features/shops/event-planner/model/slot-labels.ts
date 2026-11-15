@@ -16,7 +16,8 @@ export type SlotLabel =
   | { kind: "options"; reason: "tier" | "progress" | "random" }
 
 const TIER_LOCK = /^lock_mythic_shop_tier_/
-const PROGRESS_LOCK = /^lock_(below_max_legendary|max_legendary|not_unlocked)_/
+const PROGRESS_LOCK =
+  /^lock_(?:below_max_legendary|max_legendary|not_unlocked)_/
 
 /** The slot's label, or null when it needs none. `lockContext` is absent without synced player data. */
 export function slotLabel(

@@ -29,7 +29,8 @@
     "synced": "Synced {{time}}",
     "notSynced": "Not synced",
     "income": "≈ {{free}} free + {{bonus}} bonus shipment this week",
-    "search": "Search the shop"
+    "search": "Search the shop",
+    "tba": "Start date TBA"
   },
   "tabs": {
     "label": "Event shop sections",
@@ -233,5 +234,10 @@
     "clear": "Clear search",
     "offer": "×{{qty}} · {{cost}}",
     "past": "Past"
+  },
+  "undated": {
+    "weeks_one": "{{count}} week",
+    "weeks_other": "{{count}} weeks",
+    "description": "This event shop is already in the game data, but its start date isn't announced yet. Days and your cart open once it is."
   }
 }

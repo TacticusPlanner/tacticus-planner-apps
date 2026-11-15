@@ -8,7 +8,14 @@ import {
   useParams,
   useSearchParams,
 } from "react-router"
-import type { GameCatalogEventShop } from "@workspace/game-catalog"
+import {
+  compareEventShopsByStart,
+  isDatedEventShop,
+} from "@workspace/game-catalog"
+import type {
+  GameCatalogEventShop,
+  GameCatalogEventShopRecord,
+} from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -23,14 +30,15 @@ import {
 } from "../../model/event-shop-route"
 import type { EventShopTab } from "../../model/event-shop-route"
 import type { DailiesOutletContext } from "../dailies-layout"
+import { EventShopUndated } from "./event-shop-undated"
 import { EventShopView } from "./event-shop-view"
 import { useEventShopController } from "./use-event-shop-controller"
 import { useEventShopForm } from "./use-event-shop-form"
 
 const BASE = "/dailies/event-shop"
 
-const byStart = (events: GameCatalogEventShop[]) =>
-  [...events].sort((a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc))
+const byStart = (events: GameCatalogEventShopRecord[]) =>
+  [...events].sort(compareEventShopsByStart)
 
 /** Router state carried by the redirect from an unknown event id. */
 type RedirectState = { notFound?: boolean } | null
@@ -38,7 +46,7 @@ type RedirectState = { notFound?: boolean } | null
 /**
  * Dailies › Event shop (spec event-shop-planner). `/dailies/event-shop` and an unknown event id
  * redirect to the default event; the event shows in its desktop, tablet or phone form with `?day=`
- * and `?tab=` in the URL.
+ * and `?tab=` in the URL. An event with no start date yet shows as "Start date TBA".
  */
 const DAY_MS = 86_400_000
 
@@ -92,7 +100,8 @@ export function EventShopPage() {
 
   const event = events.find((candidate) => candidate.id === eventId)
   if (!event) {
-    const fallback = defaultEventId(events, now)!
+    const fallback =
+      defaultEventId(events.filter(isDatedEventShop), now) ?? events[0]!.id
     return (
       <Navigate
         replace
@@ -100,6 +109,10 @@ export function EventShopPage() {
         to={`${BASE}/${fallback}${location.search}`}
       />
     )
+  }
+
+  if (!isDatedEventShop(event)) {
+    return <EventShopUndatedEvent event={event} events={events} now={now} />
   }
 
   return (
@@ -120,7 +133,7 @@ function EventShopEvent({
   now,
 }: {
   event: GameCatalogEventShop
-  events: readonly GameCatalogEventShop[]
+  events: readonly GameCatalogEventShopRecord[]
   notFound: boolean
   now: number
 }) {
@@ -181,5 +194,28 @@ function EventShopEvent({
         tab={tab}
       />
     </div>
+  )
+}
+
+function EventShopUndatedEvent({
+  event,
+  events,
+  now,
+}: {
+  event: GameCatalogEventShopRecord
+  events: readonly GameCatalogEventShopRecord[]
+  now: number
+}) {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const form = useEventShopForm()
+  return (
+    <EventShopUndated
+      event={event}
+      events={events}
+      form={form}
+      now={now}
+      onSelectEvent={(id) => void navigate(`${BASE}/${id}${location.search}`)}
+    />
   )
 }

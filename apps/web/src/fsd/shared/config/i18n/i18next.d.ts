@@ -66,11 +66,13 @@ declare module "i18next" {
       mythicQuestTasks: Record<string, string>
       // Seasonal event mission game text, generated from the datamine: task templates by task name,
       // chain name templates by chain key, game-mode names; read via `i18n.getResource` — see the
-      // event shop's Missions.
+      // event shop's Missions. `events` names a seasonal event by its event key (`November2026`), for
+      // an event shop the calendar has not dated yet.
       eventMissions: {
         tasks: Record<string, string>
         chains: Record<string, string>
         gameModes: Record<string, string>
+        events: Record<string, string>
       }
       // Raid-boss game-data namespaces (unitSet / ability / trait ids as keys), in every locale except
       // `raidBosses`, whose names are derived from the ids and so English-only (other locales fall back).
