@@ -18,11 +18,18 @@ import type { RewardOutlookViewModel } from "./legendary-event-page.view-model"
  */
 export function RewardOutlook({
   outlook,
+  compact = false,
 }: {
   outlook: RewardOutlookViewModel
+  /** Under the Now / End of run table (which shows the shards and the step line): the step moves
+   *  into the heading ("To reach 4 stars") and its shards line is dropped; nothing once every step
+   *  is reached. */
+  compact?: boolean
 }) {
   const { t } = useTranslation("legendaryEvents")
   if (outlook.kind === "unavailable") return null
+  const goal = outlook.kind === "ready" ? outlook.projection.goal : null
+  if (compact && goal?.step === "fullyAscended") return null
   return (
     <section
       aria-labelledby="legendary-event-outlook-title"
@@ -30,7 +37,9 @@ export function RewardOutlook({
       data-testid="reward-outlook"
     >
       <h3 className="text-sm font-semibold" id="legendary-event-outlook-title">
-        {t("outlook.title")}
+        {compact && goal && goal.step !== "fullyAscended"
+          ? t("outlook.titleFor", { step: t(`outlook.steps.${goal.step}`) })
+          : t("outlook.title")}
       </h3>
       {outlook.kind === "loading" ? (
         <Skeleton
@@ -38,13 +47,19 @@ export function RewardOutlook({
           data-testid="reward-outlook-loading"
         />
       ) : (
-        <OutlookBody projection={outlook.projection} />
+        <OutlookBody compact={compact} projection={outlook.projection} />
       )}
     </section>
   )
 }
 
-function OutlookBody({ projection }: { projection: RewardProjection }) {
+function OutlookBody({
+  projection,
+  compact,
+}: {
+  projection: RewardProjection
+  compact: boolean
+}) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
   const decimal = new Intl.NumberFormat(i18n.language, {
@@ -63,7 +78,7 @@ function OutlookBody({ projection }: { projection: RewardProjection }) {
       testId: "reward-outlook-complete",
       text: t("outlook.fullyAscended"),
     })
-  } else {
+  } else if (!compact) {
     lines.push({
       testId: "reward-outlook-next",
       icon: "shards",

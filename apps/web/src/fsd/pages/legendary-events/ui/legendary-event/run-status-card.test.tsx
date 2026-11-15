@@ -27,6 +27,7 @@ import {
   type RunInputsViewModel,
   type RunStatusViewModel,
 } from "./legendary-event-page.view-model"
+import { RewardOutlook } from "./reward-outlook"
 import { RunStatusCard } from "./run-status-card"
 
 vi.mock("@/shared/api", async (importOriginal) => ({
@@ -610,6 +611,30 @@ describe("RunStatusCard", () => {
       )
       expect(screen.queryByTestId("reward-outlook-chests")).toBeNull()
       expect(screen.queryByTestId("reward-outlook-points")).toBeNull()
+    })
+
+    it("names the step in the heading and drops its shards line when compact", () => {
+      render(<RewardOutlook compact outlook={outlookFor(synced())} />, {
+        wrapper: i18nWrapper(i18n),
+      })
+      expect(
+        screen.getByRole("heading", { name: "To reach Unlock" })
+      ).toBeInTheDocument()
+      expect(screen.queryByTestId("reward-outlook-next")).toBeNull()
+      expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
+        "6 more chests costing 1,850 currency"
+      )
+    })
+
+    it("shows nothing compact once every step is reached", () => {
+      render(
+        <RewardOutlook
+          compact
+          outlook={outlookFor(synced({ currentShards: 1300 }))}
+        />,
+        { wrapper: i18nWrapper(i18n) }
+      )
+      expect(screen.queryByTestId("reward-outlook")).toBeNull()
     })
 
     it("says a goal beyond the chest ladder is not reachable", () => {

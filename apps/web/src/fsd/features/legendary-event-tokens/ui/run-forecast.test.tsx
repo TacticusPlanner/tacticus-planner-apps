@@ -62,11 +62,23 @@ describe("RunForecastSection", () => {
     expect(runs.map((run) => run.dataset.run)).toEqual(["1", "2", "3"])
     expect(runs[0]).toHaveTextContent("Done")
     expect(runs[0]).toHaveTextContent("Finished")
-    expect(runs[1]).toHaveTextContent(
-      "32 tokens: 28 free + 4 ad + 0 bonus delivery"
+    // The icon summary carries tokens used of the supply, points, chests and shards; the lines
+    // below say only what it does not.
+    expect(
+      within(runs[1]!).getByTestId("run-forecast-tokens")
+    ).toHaveTextContent("28 free + 4 ad · 26 left over")
+    expect(
+      within(runs[1]!).getByTestId("run-forecast-gains")
+    ).toHaveTextContent(
+      "+1,136 points · +175 currency earned, 35 left after chests · +1 chests"
     )
-    expect(runs[1]).toHaveTextContent("Uses 6 · 26 left over")
-    expect(runs[2]).toHaveTextContent("Uses 0 · 68 left over")
+    expect(within(runs[1]!).getByTestId("run-forecast-step")).toHaveTextContent(
+      "Next: Unlock · 125 shards short"
+    )
+    expect(runs[1]).not.toHaveTextContent("6,136 points")
+    expect(
+      within(runs[2]!).getByTestId("run-forecast-tokens")
+    ).toHaveTextContent("68 left over")
     fireEvent.click(
       screen.getByRole("button", {
         name: "94 tokens with nothing to play: add a team or raise a depth to use them",
@@ -110,8 +122,8 @@ describe("RunForecastSection", () => {
     const runs = screen.getAllByTestId("run-forecast-run")
     expect(runs).toHaveLength(1)
     expect(runs[0]).toHaveTextContent(/^Next run/)
-    expect(screen.getByTestId("run-forecast-supply")).toHaveTextContent(
-      "68 tokens: 61 free + 7 ad + 0 bonus delivery"
+    expect(screen.getByTestId("run-forecast-tokens")).toHaveTextContent(
+      "61 free + 7 ad"
     )
     expect(
       screen.getByTestId("legendary-event-run-forecast").textContent

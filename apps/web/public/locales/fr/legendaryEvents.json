@@ -152,7 +152,8 @@
       "bonus": "+{{currency}} de monnaie à chaque palier de points (passe premium)",
       "noBonus": "Aucun bonus sur les paliers de points",
       "startedRuns": "Les manches suivantes n'ajoutent que les missions et le pack que tu prévois pour elles ; ceux de la manche en cours sont déjà dans ta monnaie synchronisée."
-    }
+    },
+    "titleFor": "Pour atteindre {{step}}"
   },
   "lanes": {
     "alpha": "Alpha",
@@ -873,15 +874,8 @@
         "planned": "Prévue"
       },
       "finished": "Terminée",
-      "supply": "{{total}} jetons : {{free}} gratuits + {{ad}} pub + {{bonus}} livraison bonus",
       "adToday": "Inclut le jeton pub du jour, pas encore regardé",
       "thisRun": "Prévision de cette manche",
-      "uses": "Utilise {{used}} · {{left}} restants",
-      "points": "{{points}} points (+{{earned}})",
-      "currency": "{{currency}} de monnaie en main (+{{earned}} gagnée)",
-      "chests": "{{claimed}} coffres ouverts (+{{opened}})",
-      "shards": "{{shards}} fragments",
-      "reached": "Atteint : {{steps}}",
       "next": "Suivant : {{step}} · {{shards}} fragments manquants",
       "allSteps": "Toutes les récompenses atteintes",
       "ohSoClose": "Oh So Close : {{shards}} fragments pour {{blackstone}} pierre noire",
@@ -892,7 +886,13 @@
         "points": "Points en fin de session",
         "chests": "Coffres obtenus",
         "shards": "Éclats en fin de session"
-      }
+      },
+      "split": "{{free}} gratuits + {{ad}} pub",
+      "splitBonus": "{{free}} gratuits + {{ad}} pub + {{bonus}} livraison bonus",
+      "leftOver_one": "{{count}} restant",
+      "leftOver_other": "{{count}} restants",
+      "gains": "+{{points}} points · +{{earned}} de monnaie gagnée, {{currency}} après les coffres · +{{chests}} coffres",
+      "reachedThen": "Atteint : {{steps}} · {{next}}"
     },
     "closeGap": {
       "title": "Combler l'écart : +{{points}} points pour {{step}}",
