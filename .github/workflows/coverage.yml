@@ -26,7 +26,9 @@ permissions:
 
 concurrency:
   group: coverage-${{ github.ref }}
-  cancel-in-progress: true
+  # Cancel superseded PR runs only. Each push to main is the baseline PR coverage diffs compare
+  # against, so a cancelled main run leaves PRs comparing against an older commit.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # Required checks must always report, so PRs are not filtered with paths-ignore;

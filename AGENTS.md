@@ -45,7 +45,12 @@ Use pnpm from the repository root.
   is started from `tacticus-planner-api`'s Aspire AppHost; see that repo).
 - `pnpm build` / `build:staging` / `build:production`: type-check and build
   packages/apps through Turbo for the given environment.
-- `pnpm lint`: run ESLint + knip across configured workspace packages.
+- `pnpm lint`: run ESLint + knip across configured workspace packages. ESLint
+  caches results in each package's `node_modules/.cache/eslint/`, so repeat runs
+  re-lint only changed files; delete that folder for a full run.
+- `pnpm --filter web bundle:budget`: check the startup-JS budget after a build.
+  Baselines live in `apps/web/bundle-budget.json`; growth within the headroom
+  warns, more fails. Use `--update` only for growth you mean to keep.
 - `pnpm lint:fsd`: run `steiger` to check Feature-Sliced Design boundary rules
   under `apps/web/src/fsd`.
 - `pnpm typecheck`: run TypeScript checks without emitting files.

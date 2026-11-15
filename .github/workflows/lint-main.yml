@@ -1,0 +1,54 @@
+name: Full lint
+
+# PR lint reuses ESLint's cache, which re-lints only changed files. A type-aware rule can then miss
+# a problem in an unchanged file whose imports changed. This run lints everything without a cache
+# on each push to main, so such a miss shows up here right after merge, and it saves the fresh
+# cache that PR runs restore.
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**/*.md"
+      - "openspec/**"
+      - ".claude/**"
+      - ".agents/**"
+      - ".design-sync/**"
+      - LICENSE
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-main-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  lint:
+    name: Full lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up toolchain
+        uses: ./.github/actions/setup-web
+        with:
+          turbo-cache-key: lint-main
+
+      # --force skips Turbo's cache and no ESLint cache is restored, so every file is linted.
+      - name: ESLint (uncached)
+        run: pnpm turbo run lint:eslint --force
+
+      - name: Save ESLint cache for PRs
+        if: ${{ success() }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            apps/*/node_modules/.cache/eslint
+            packages/*/node_modules/.cache/eslint
+          key: ${{ runner.os }}-eslint-${{ hashFiles('pnpm-lock.yaml', 'apps/*/eslint.config.js', 'packages/*/eslint.config.js') }}-${{ github.sha }}
