@@ -19,7 +19,11 @@ import {
 } from "@azure/msal-browser"
 
 import { getRequiredEnvironmentValue } from "../config/environment"
-import { getSignInMethod, type SignInMethod } from "./account-identity"
+import {
+  getSignInMethod,
+  isGeneratedUsername,
+  type SignInMethod,
+} from "./account-identity"
 import {
   authErrorCode,
   markRedirectPending,
@@ -82,15 +86,13 @@ export function hasAccountHint() {
   return readAccountHint() !== null
 }
 
-// Entra names a federated user `<object id>@<tenant domain>`; a local account's username is the
-// address they typed. Used for hints stored before `signInMethod` was recorded.
-const GENERATED_USERNAME = /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}@/i
-
+// A generated username always means Google, even when the stored method says email: hints written
+// from an account whose claims lacked `idp` recorded the wrong one. Hints stored before
+// `signInMethod` existed have only the username to go on.
 function hintSignInMethod(hint: AccountHint): SignInMethod {
-  return (
-    hint.signInMethod ??
-    (GENERATED_USERNAME.test(hint.username) ? "google" : "email")
-  )
+  return isGeneratedUsername(hint.username)
+    ? "google"
+    : (hint.signInMethod ?? "email")
 }
 
 export function forgetAccountHint() {
