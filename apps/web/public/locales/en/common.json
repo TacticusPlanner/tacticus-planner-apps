@@ -346,15 +346,6 @@
     "rewardsTitle": "Shard rewards reference",
     "sectorTier": "Sector / tier",
     "current": "Current alliance progress",
-    "rewards": {
-      "Common": "Common",
-      "Uncommon": "Uncommon",
-      "Rare": "Rare",
-      "Epic": "Epic",
-      "Legendary": "Legendary",
-      "LegendaryBlue": "Legendary 1★ blue",
-      "Mythic": "Mythic"
-    },
     "unsaved": {
       "message": "You have unsaved changes",
       "save": "Save",
@@ -1757,15 +1748,7 @@
       "xpBooksValue": "{{available}} of {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
       "poolLabel": "{{name}}: {{available}} of {{needed}}",
-      "standalone": "Standalone: {{slots}} upgrade slots, {{energy}} energy",
-      "rarity": {
-        "Common": "Common",
-        "Uncommon": "Uncommon",
-        "Rare": "Rare",
-        "Epic": "Epic",
-        "Legendary": "Legendary",
-        "Mythic": "Mythic"
-      }
+      "standalone": "Standalone: {{slots}} upgrade slots, {{energy}} energy"
     },
     "overview": {
       "levelProgress": "Lv {{current}} → {{target}}",

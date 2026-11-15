@@ -131,7 +131,7 @@ describe("UnitTile", () => {
     renderTile(titus)
 
     expect(screen.getByRole("group")).toHaveAccessibleName(
-      "Titus, Legendary, Red Four Stars, Gold I, level 45, Active ability level 40, passive ability level 38, 120 shards"
+      "Titus, Legendary 4★, Gold I, level 45, Active ability level 40, passive ability level 38, 120 shards"
     )
   })
 
@@ -173,7 +173,7 @@ describe("UnitTile", () => {
     expect(link).toBe(screen.getByTestId("tile"))
     expect(link).toHaveAttribute("href", "/library/characters/ultraTitus")
     expect(link).toHaveAccessibleName(
-      "Titus, Legendary, Red Four Stars, Gold I, level 45, Active ability level 40, passive ability level 38, 120 shards"
+      "Titus, Legendary 4★, Gold I, level 45, Active ability level 40, passive ability level 38, 120 shards"
     )
     link.focus()
     expect(link).toHaveFocus()
@@ -228,7 +228,7 @@ describe("UnitTile", () => {
       within(tile).queryByTestId("unit-tile-mythic-shards")
     ).not.toBeInTheDocument()
     expect(screen.getByRole("group")).toHaveAccessibleName(
-      "Galatian, Epic, Red Two Stars, Primary ability level 30, secondary ability level 25, 12 shards"
+      "Galatian, Epic 2★, Primary ability level 30, secondary ability level 25, 12 shards"
     )
   })
 
@@ -298,7 +298,7 @@ describe("UnitTile", () => {
       "Ultramarines"
     )
     expect(screen.getByRole("group")).toHaveAccessibleName(
-      expect.stringMatching(/^Titus, Ultramarines, Legendary,/)
+      expect.stringMatching(/^Titus, Ultramarines, Legendary 4★,/)
     )
   })
 

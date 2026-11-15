@@ -59,7 +59,6 @@ export function AllianceYield({
           return (
             <li key={key} className="inline-flex items-center gap-1">
               <ProgressionBadge value={rewardProgression[key]} />
-              <span className="sr-only">{t(`onslaught.rewards.${key}`)}</span>
               <span className={reward.mythic ? "text-violet-500" : undefined}>
                 {formatReward(reward)}
               </span>

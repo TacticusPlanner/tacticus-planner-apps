@@ -686,14 +686,6 @@
         "Steppable": "betretbare Einheiten",
         "Summon": "Beschwörungen"
       },
-      "rarities": {
-        "Common": "Gewöhnlich",
-        "Uncommon": "Ungewöhnlich",
-        "Rare": "Selten",
-        "Epic": "Episch",
-        "Legendary": "Legendär",
-        "Mythic": "Mythisch"
-      },
       "phrase": {
         "modesIn": "in {{modes}}",
         "modesExcept": "in jedem Modus außer {{modes}}",

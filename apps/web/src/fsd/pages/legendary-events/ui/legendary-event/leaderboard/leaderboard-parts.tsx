@@ -204,7 +204,9 @@ export function LeaderboardProgression({ row }: { row: LeaderboardUnitRow }) {
             src={visual.icon}
             width={512}
           />
-          <span className="sr-only">{t("stars.MythicWings")}</span>
+          <span className="sr-only">
+            {t("short.wings", { rarity: t(`rarities.${row.rarity}`) })}
+          </span>
         </>
       )}
     </span>

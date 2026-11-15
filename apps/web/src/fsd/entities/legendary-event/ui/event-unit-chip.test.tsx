@@ -127,9 +127,9 @@ describe("EventUnitChip details", () => {
     const details = visibleDetails()!
     expect(details).toHaveTextContent("High Marshal Helbrecht")
     expect(details).toHaveTextContent("Legendary")
-    // Four red stars, as art and, for screen readers, in words.
+    // Four red stars as art, and the short "Legendary 4★" for screen readers.
     expect(details.querySelectorAll('img[src*="star"]')).toHaveLength(4)
-    expect(details).toHaveTextContent("Red Four Stars")
+    expect(details).toHaveTextContent("Legendary 4★")
     expect(details).toHaveTextContent("Diamond I")
     expect(details).toHaveTextContent("Active 8 · Passive 8")
   })

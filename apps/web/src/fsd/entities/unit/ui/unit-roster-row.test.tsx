@@ -125,7 +125,7 @@ const calgar = (data: Partial<UnitTileUnit["data"]>): UnitTileUnit => ({
 })
 
 const titusLabel =
-  "Titus, Legendary, Red Four Stars, Gold I, level 45, Active ability level 40, passive ability level 38, 120 shards"
+  "Titus, Legendary 4★, Gold I, level 45, Active ability level 40, passive ability level 38, 120 shards"
 
 describe("UnitRosterRow as a link (desktop)", () => {
   it("shows an owned character's columns in order on one row", () => {
@@ -185,7 +185,7 @@ describe("UnitRosterRow as a link (desktop)", () => {
     expect(row.children[5]).toHaveTextContent("30")
     expect(row.children[6]).toHaveTextContent("25")
     expect(screen.getByRole("group")).toHaveAccessibleName(
-      "Galatian, Epic, Red Two Stars, Primary ability level 30, secondary ability level 25, 12 shards"
+      "Galatian, Epic 2★, Primary ability level 30, secondary ability level 25, 12 shards"
     )
   })
 
@@ -357,7 +357,7 @@ describe("UnitRosterRow with a faction (ungrouped list)", () => {
     expect(row.children).toHaveLength(9)
     expect(row.children[0]).toHaveAttribute("data-faction", "Ultramarines")
     expect(screen.getByRole("group")).toHaveAccessibleName(
-      expect.stringMatching(/^Titus, Ultramarines, Legendary,/)
+      expect.stringMatching(/^Titus, Ultramarines, Legendary 4★,/)
     )
   })
 

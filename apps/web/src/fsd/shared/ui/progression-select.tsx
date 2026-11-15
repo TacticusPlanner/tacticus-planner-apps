@@ -17,6 +17,7 @@ import {
 } from "@workspace/game-domain"
 
 import { EntityIcon } from "./entity-icon"
+import { progressionText } from "./progression-text"
 import { RarityIcon } from "./rarity-icon"
 
 export function ProgressionSelect({
@@ -55,8 +56,8 @@ export function ProgressionSelect({
 // Renders a progression step as its rarity badge + star/wings icon(s) — the rarity badge makes
 // the rank/rarity correlation visible (the same star count repeats at two different rarities
 // around a promotion boundary, e.g. "Common:TwoStars" then "Uncommon:TwoStars"). Stars match V1's
-// stars.icon.tsx (repeated gold/red/blue star images, or a single wings image at the max step) —
-// except "None", which has nothing to show an icon for and stays as plain text.
+// stars.icon.tsx (repeated gold/red/blue star images, or a single wings image at the max step);
+// "None" shows the rarity badge alone.
 export function ProgressionBadge({
   value,
   size = "md",
@@ -68,16 +69,13 @@ export function ProgressionBadge({
   const { t } = useTranslation(["progression"])
   const large = size === "lg"
   const rarity = progressionRarity(value)
-  const stars = value.slice(value.indexOf(":") + 1)
   const visual = progressionVisual(value)
-  const starsLabel = t(`stars.${stars}`, { defaultValue: stars })
+  const starsLabel = progressionText(t, value)
 
   return (
     <span className="inline-flex items-center gap-1.5">
       <RarityIcon rarity={rarity} className={large ? "size-6" : "size-4"} />
-      {visual.kind === "none" ? (
-        <span className="text-sm">{starsLabel}</span>
-      ) : visual.kind === "wings" ? (
+      {visual.kind === "none" ? null : visual.kind === "wings" ? (
         <EntityIcon
           src={visual.icon}
           alt={starsLabel}

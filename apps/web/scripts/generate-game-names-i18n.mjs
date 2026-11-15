@@ -9,7 +9,7 @@
 //   public/locales/{en,de,es,fr}/npcs.json              NPC variation id    -> name
 //   public/locales/{en,de,es,fr}/mythicQuestTasks.json  task loca key       -> template
 //   public/locales/{en,de,es,fr}/unitSearchNames.json   character/MoW id    -> other names to search by
-//   public/locales/{en,de,es,fr}/progression.json       ranks and rarities (en also keeps its hand-written stars)
+//   public/locales/{en,de,es,fr}/progression.json       ranks and rarities (en also keeps its hand-written short forms)
 //
 // Source: the pinned data-mines commit (datamine/REF, see scripts/datamine.mjs): the game config names
 // the ids, the game's language files name them. A term missing in one locale falls back to English.
@@ -209,8 +209,9 @@ tables.unitSearchNames = unitSearchNames
 
 // Ranks are the game's UnitDetails/Rank_<index> terms, shortened to the metal and numeral ("Stone Rank I"
 // → "Stone I", "Steinrang I" → "Stein I") because the badges and chips are sized for the short form;
-// rarities are the game's raw rarity names. The game has no star names (it draws stars), so `stars`
-// stays hand-written in English and other locales fall back to it.
+// rarities are the game's raw rarity names. Stars are never spelled out: the app shows a star icon and
+// the count, and the hand-written English `short` templates ("Legendary 5★") name a progression where
+// only text fits (accessible names, sentences); other locales fall back to them.
 const SHORT_RANK = {
   en: (term) => term.replace(/ Rank /, " "),
   de: (term) => term.replace(/rang /, " "),
@@ -259,7 +260,7 @@ const progression = Object.fromEntries(
   LOCALES.map((locale) => [
     locale,
     {
-      ...(locale === "en" ? { stars: enProgression.stars } : {}),
+      ...(locale === "en" ? { short: enProgression.short } : {}),
       ranks: Object.fromEntries(
         RANKS.map((rank, index) => [rank, shortRank(locale, index)])
       ),

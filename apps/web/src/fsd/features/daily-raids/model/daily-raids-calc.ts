@@ -319,6 +319,10 @@ export function calculateDailyRaids(
         detail.goalType === "Rank" && detail.config.rank
           ? rankAt(detail.config.rank.end)
           : undefined,
+      targetProgression:
+        detail.goalType === "Ascension" && detail.config.progression
+          ? detail.config.progression.end
+          : undefined,
     })
   }
 

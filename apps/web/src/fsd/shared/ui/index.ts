@@ -1,4 +1,6 @@
 export { CompactStars } from "./compact-stars"
+export { CompactProgression } from "./compact-progression"
+export { progressionText } from "./progression-text"
 export { EntityIcon } from "./entity-icon"
 export { CampaignLocationName } from "./campaign-location-name"
 export { IconLine } from "./icon-line"

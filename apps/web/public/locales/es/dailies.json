@@ -686,14 +686,6 @@
         "Steppable": "unidades pisables",
         "Summon": "invocaciones"
       },
-      "rarities": {
-        "Common": "Común",
-        "Uncommon": "Poco común",
-        "Rare": "Raro",
-        "Epic": "Épico",
-        "Legendary": "Legendario",
-        "Mythic": "Mítico"
-      },
       "phrase": {
         "modesIn": "en {{modes}}",
         "modesExcept": "en todos los modos excepto {{modes}}",

@@ -1,4 +1,7 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
+import { rarityIcon, starsVisual } from "@workspace/game-catalog"
+import { rankAt, type Rarity } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import {
   Select,
@@ -23,8 +26,9 @@ import {
   type RaidBoss,
   type RaidBossEncounterModifier,
 } from "@/entities/raid-boss"
+import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
-import { buildProgressionStepLabels } from "./progression-step-labels"
+import { buildProgressionStepLabels, toRarity } from "./progression-step-labels"
 import { RaidBossAbilityPanel } from "./raid-boss-ability-panel"
 import {
   RaidBossAdjustedStats,
@@ -43,7 +47,7 @@ export type RaidBossDetailProps = {
   compact?: boolean
 }
 
-function StatRow({ label, value }: { label: string; value: string | number }) {
+function StatRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <TableRow>
       <TableCell className="text-muted-foreground">{label}</TableCell>
@@ -51,6 +55,51 @@ function StatRow({ label, value }: { label: string; value: string | number }) {
         {value}
       </TableCell>
     </TableRow>
+  )
+}
+
+/** A raw 0-14 star index as one star icon and its count (or the mythic wings); nothing at 0. */
+function StarLevel({ starLevel }: { starLevel: number }) {
+  const visual = starsVisual(starLevel)
+  if (visual.kind === "none") return null
+  if (visual.kind === "wings") {
+    return (
+      <EntityIcon
+        src={visual.icon}
+        alt=""
+        className="h-4 w-12 object-contain"
+        width={512}
+        height={164}
+      />
+    )
+  }
+  return (
+    <span className="inline-flex items-center gap-0.5 text-xs font-semibold tabular-nums">
+      <EntityIcon src={visual.icon} alt="" className="size-3.5" />
+      {visual.count}
+    </span>
+  )
+}
+
+/** A step's base rarity as its icon (named for assistive technology) with the tier index beside it. */
+function RarityTier({
+  rarity,
+  index,
+}: {
+  rarity: Rarity | null
+  index: number
+}) {
+  const { t } = useTranslation("progression")
+  if (!rarity) return <span>{index}</span>
+  return (
+    <span className="inline-flex items-center gap-1">
+      <EntityIcon
+        src={rarityIcon(rarity)}
+        alt={t(`rarities.${rarity}`, { defaultValue: rarity })}
+        className="size-4"
+      />
+      {index}
+    </span>
   )
 }
 
@@ -118,6 +167,7 @@ export function RaidBossDetail({
   // An empty stat ladder has no step to show (this used to throw on `step.health`).
   if (!step) return null
   const stepLabels = buildProgressionStepLabels(ladder)
+  const baseRarity = toRarity(step.baseRarity)
 
   return (
     <div className="flex flex-col gap-6" data-testid="raid-boss-detail">
@@ -153,11 +203,17 @@ export function RaidBossDetail({
                 if (!label) return null
                 return (
                   <SelectItem key={index} value={String(index)}>
-                    {t("raidBosses.progressionStepLabelled", {
-                      rarityTier: label.rarityTierLabel,
-                      stars: entry.starLevel,
-                      health: label.health.toLocaleString(),
-                    })}
+                    <span className="inline-flex items-center gap-1.5">
+                      <RarityTier
+                        rarity={label.rarity}
+                        index={label.tierIndex}
+                      />
+                      <StarLevel starLevel={entry.starLevel} />
+                      <span aria-hidden>·</span>
+                      {t("raidBosses.stepHealth", {
+                        health: label.health.toLocaleString(),
+                      })}
+                    </span>
                   </SelectItem>
                 )
               })}
@@ -188,11 +244,33 @@ export function RaidBossDetail({
                 label={t("raidBosses.armor")}
                 value={step.fixedArmor.toLocaleString()}
               />
-              <StatRow label={t("raidBosses.rank")} value={step.rank} />
-              <StatRow label={t("raidBosses.stars")} value={step.starLevel} />
+              <StatRow
+                label={t("raidBosses.rank")}
+                value={
+                  <RankBadge
+                    className="justify-end"
+                    rank={rankAt(step.rank)}
+                    showLabel={false}
+                    tooltip
+                  />
+                }
+              />
+              <StatRow
+                label={t("raidBosses.stars")}
+                value={<StarLevel starLevel={step.starLevel} />}
+              />
               <StatRow
                 label={t("raidBosses.baseRarity")}
-                value={humanizeToken(step.baseRarity)}
+                value={
+                  baseRarity ? (
+                    <RarityIcon
+                      className="ml-auto size-5"
+                      rarity={baseRarity}
+                    />
+                  ) : (
+                    humanizeToken(step.baseRarity)
+                  )
+                }
               />
               <StatRow
                 label={t("raidBosses.abilityLevel")}

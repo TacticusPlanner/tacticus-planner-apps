@@ -346,15 +346,6 @@
     "rewardsTitle": "Référence des récompenses en éclats",
     "sectorTier": "Secteur / palier",
     "current": "Progression actuelle de l'alliance",
-    "rewards": {
-      "Common": "Commun",
-      "Uncommon": "Peu commun",
-      "Rare": "Rare",
-      "Epic": "Épique",
-      "Legendary": "Légendaire",
-      "LegendaryBlue": "Légendaire 1★ bleu",
-      "Mythic": "Mythique"
-    },
     "unsaved": {
       "message": "Vous avez des modifications non enregistrées",
       "save": "Enregistrer",
@@ -1757,15 +1748,7 @@
       "xpBooksValue": "{{available}} sur {{needed}}",
       "chipLabel": "{{name}} : {{quantity}}",
       "poolLabel": "{{name}} : {{available}} sur {{needed}}",
-      "standalone": "Seul : {{slots}} emplacements d'amélioration, {{energy}} d'énergie",
-      "rarity": {
-        "Common": "Commun",
-        "Uncommon": "Peu commun",
-        "Rare": "Rare",
-        "Epic": "Épique",
-        "Legendary": "Légendaire",
-        "Mythic": "Mythique"
-      }
+      "standalone": "Seul : {{slots}} emplacements d'amélioration, {{energy}} d'énergie"
     },
     "overview": {
       "levelProgress": "Niv {{current}} → {{target}}",

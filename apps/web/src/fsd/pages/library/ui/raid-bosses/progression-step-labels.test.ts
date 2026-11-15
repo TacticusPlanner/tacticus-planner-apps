@@ -38,9 +38,22 @@ describe("buildProgressionStepLabels", () => {
         ladder.slice(0, index + 1).filter((e) => e.baseRarity === "Legendary")
           .length === 2
     )
-    expect(at(labels, secondLegendaryIndex).rarityTierLabel).toBe("Legendary 2")
+    expect(at(labels, secondLegendaryIndex)).toMatchObject({
+      rarity: "Legendary",
+      tierIndex: 2,
+    })
 
-    expect(at(labels, labels.length - 1).rarityTierLabel).toBe("Mythic 5")
+    expect(at(labels, labels.length - 1)).toMatchObject({
+      rarity: "Mythic",
+      tierIndex: 5,
+    })
+  })
+
+  it("leaves an unknown rarity token unresolved", () => {
+    const [label] = buildProgressionStepLabels([
+      { baseRarity: "Shiny", health: 1 },
+    ] as unknown as RaidBossStatStep[])
+    expect(label).toMatchObject({ rarity: null, tierIndex: 1 })
   })
 
   it("carries each step's total health alongside its label", () => {

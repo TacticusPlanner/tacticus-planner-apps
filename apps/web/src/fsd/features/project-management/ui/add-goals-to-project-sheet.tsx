@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -32,6 +32,7 @@ import {
   type ProjectSummary,
 } from "@/entities/project"
 import { ApiError } from "@/shared/api"
+import { RankBadge } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import {
@@ -179,6 +180,28 @@ export function AddGoalsToProjectSheet({
     ]
       .filter(Boolean)
       .join(" · ")
+  // On a row the Rank target shows as its icon (name on hover); text lists keep `goalTitle`.
+  const goalRowTitle = (goal: GoalDetail): ReactNode => {
+    const target =
+      goal.goalType === "Rank"
+        ? describeRankTargetKey(goalRankTargetKey(goal) ?? "")
+        : null
+    const text = `${goalLabel(goal)} · ${goalTypeLabel(goal)}`
+    if (!target) return text
+    return (
+      <>
+        {text} ·{" "}
+        <RankBadge
+          className="align-text-bottom"
+          iconClassName="size-4"
+          rank={target.rank}
+          showLabel={false}
+          tooltip
+        />
+        {target.slots > 0 ? ` (${target.slots}/6)` : null}
+      </>
+    )
+  }
   const goalName = (goalId: string) => {
     const goal = goalById.get(goalId)
     return goal ? goalTitle(goal) : t("goals.project.assemblyUnknownGoal")
@@ -314,7 +337,7 @@ export function AddGoalsToProjectSheet({
               ? "remove"
               : null
         }
-        title={goalTitle(goal)}
+        title={goalRowTitle(goal)}
       />
     )
   }

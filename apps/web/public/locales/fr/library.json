@@ -180,7 +180,7 @@
     "noPrimeModifiers": "Aucun modificateur de prime pour ce boss.",
     "modifierReduces": "Réduit {{name}}",
     "modifierIncreases": "Augmente {{name}}",
-    "progressionStepLabelled": "{{rarityTier}} · ★{{stars}} · {{health}} PV",
+    "stepHealth": "{{health}} PV",
     "abilityTextLevelCaption": "Valeurs affichées pour le niveau de compétence {{level}}",
     "adjustedStatsHeading": "Statistiques ajustées",
     "showAdjusted": "Afficher ajustées",
@@ -479,8 +479,8 @@
       "yourUnit": "Votre unité :",
       "abilities": "capacités {{active}} / {{passive}}",
       "relic": "relique niveau {{level}}",
-      "notUnlocked": "Non débloqué. Les valeurs commencent à {{rarity}}, {{stars}}, {{rank}}.",
-      "showing": "Affichage : {{rarity}}, {{stars}}, {{rank}}, capacités au niveau 1.",
+      "notUnlocked": "Non débloqué. Les valeurs commencent à {{progression}}, {{rank}}.",
+      "showing": "Affichage : {{progression}}, {{rank}}, capacités au niveau 1.",
       "shards": "{{owned}} / {{needed}} fragments",
       "shardProgress": "Fragments pour le déblocage",
       "signInBanner": "Connectez-vous et synchronisez pour ouvrir cette page à vos propres valeurs.",
@@ -531,7 +531,7 @@
     },
     "compare": {
       "title": "Comparé aux autres personnages",
-      "subtitle": "Centile à Mythic Wings · Adamantium II",
+      "subtitle": "Centile à",
       "axes": {
         "health": "Points de vie",
         "armour": "Armure",

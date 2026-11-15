@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { progressionVisual, rankIcon } from "@workspace/game-catalog"
 import { progressionRarity } from "@workspace/game-domain"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, progressionText } from "@/shared/ui"
 
 import { RarityBadge } from "./rarity-badge"
 import type { EventUnitChipData as UnitChipData } from "../lib/event-unit-chip-data"
@@ -22,8 +22,6 @@ export function EventUnitChipDetails({
   const { t } = useTranslation(["legendaryEvents", "progression"])
   const rarity = unit.progression ? progressionRarity(unit.progression) : null
   const visual = unit.progression ? progressionVisual(unit.progression) : null
-  // The stars or wings as words ("Red Four Stars"), for screen readers: the art is decorative.
-  const stars = unit.progression?.split(":")[1]
   return (
     <span
       className="flex max-w-60 flex-col items-start gap-1 text-left text-xs"
@@ -37,11 +35,10 @@ export function EventUnitChipDetails({
         <span className="flex items-center gap-1.5">
           <RarityBadge rarity={rarity} />
           <span>{t(`progression:rarities.${rarity}`)}</span>
-          {stars && visual && visual.kind !== "none" ? (
+          {unit.progression && visual && visual.kind !== "none" ? (
+            // The short form ("Legendary 5★") for screen readers: the art is decorative.
             <span className="sr-only">
-              {t(`progression:stars.${stars}` as never, {
-                defaultValue: stars,
-              })}
+              {progressionText(t, unit.progression)}
             </span>
           ) : null}
           {visual && visual.kind === "stars" ? (

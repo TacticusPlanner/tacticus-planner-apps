@@ -38,7 +38,7 @@ export function LevelRequirementLine({
   trailing?: ReactNode
   className?: string
 }) {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation(["common", "progression"])
   if (!levelRequirement) return null
   const fmt = (value: number) =>
     new Intl.NumberFormat(i18n?.resolvedLanguage).format(value)
@@ -53,7 +53,7 @@ export function LevelRequirementLine({
     book && bookText
       ? t("goals.resourceChips.chipLabel", {
           name: t("goals.resourceChips.xpBooks", {
-            rarity: t(`goals.resourceChips.rarity.${book.rarity}`),
+            rarity: t(`progression:rarities.${book.rarity}`),
           }),
           quantity: bookText,
         })

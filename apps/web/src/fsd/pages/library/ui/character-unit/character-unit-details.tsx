@@ -4,7 +4,7 @@ import type {
   CharacterStorageModel,
   EquipmentStorageModel,
 } from "@workspace/game-catalog"
-import { lastRank, type Rank } from "@workspace/game-domain"
+import { lastRank, Rank } from "@workspace/game-domain"
 import {
   Accordion,
   AccordionContent,
@@ -12,6 +12,8 @@ import {
   AccordionTrigger,
 } from "@workspace/ui/components/accordion"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+
+import { CompactProgression, RankBadge } from "@/shared/ui"
 
 import type { RadarAxisResult } from "../../model/stat-radar"
 import {
@@ -129,10 +131,24 @@ export function CharacterUnitDetails({
     .join(", ")
   const levelMeta = (level: number) => t("unit.ability.levelShort", { level })
 
+  // The fixed reference every character is compared at, as icons (names on hover).
+  const compareAt = (
+    <span className="inline-flex items-center gap-1.5">
+      {t("characterUnit.compare.subtitle")}
+      <CompactProgression iconClassName="size-4" value="Mythic:MythicWings" />
+      <RankBadge
+        iconClassName="size-4"
+        rank={Rank.Adamantine2}
+        showLabel={false}
+        tooltip
+      />
+    </span>
+  )
+
   if (isMobile) {
     const section = (
       value: string,
-      kind: string,
+      kind: ReactNode,
       title: string,
       meta: string,
       content: ReactNode
@@ -197,14 +213,19 @@ export function CharacterUnitDetails({
             : null}
           {section(
             "compare",
-            t("characterUnit.compare.subtitle"),
+            compareAt,
             t("characterUnit.compare.title"),
             "",
             compare
           )}
           {section(
             "stats",
-            t(`progression:ranks.${shownRank}`),
+            <RankBadge
+              rank={shownRank}
+              showLabel={false}
+              tooltip
+              iconClassName="size-4"
+            />,
             t("characterUnit.statsByRank.title"),
             "",
             statsByRank
@@ -271,7 +292,7 @@ export function CharacterUnitDetails({
       >
         <DetailsCard
           title={t("characterUnit.compare.title")}
-          aside={t("characterUnit.compare.subtitle")}
+          aside={compareAt}
           data-testid="unit-compare"
         >
           {compare}

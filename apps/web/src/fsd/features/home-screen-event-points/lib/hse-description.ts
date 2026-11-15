@@ -97,7 +97,7 @@ const unitLabel = (unitId: string): HseText => ({
 })
 
 const rarityLabel = (rarity: string): HseText => ({
-  key: `${NS}.rarities.${rarity}`,
+  key: `progression:rarities.${rarity}`,
   fallback: rarity,
 })
 

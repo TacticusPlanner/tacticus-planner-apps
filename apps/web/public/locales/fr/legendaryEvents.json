@@ -684,8 +684,7 @@
     "ascension": "Ascension vers {{target}}",
     "rank": "Rang {{target}}",
     "rankWithUpgrades": "Rang {{target}} avec {{count}} améliorations",
-    "ability": "Capacités à {{active}} / {{passive}}",
-    "progression": "{{rarity}} {{stars}}"
+    "ability": "Capacités à {{active}} / {{passive}}"
   },
   "leaderboardActions": {
     "header": "Actions",

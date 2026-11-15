@@ -519,9 +519,13 @@ describe("MowUnitPage", () => {
     await renderUnit("/library/machines-of-war/ultraDreadnought", {
       player: { mows: [ownedGalatian] },
     })
-    expect(screen.getByTestId("unit-your-line")).toHaveTextContent(
-      "Your Machine of War: Epic · Red One Star · primary 30 · secondary 28"
+    const yourLine = screen.getByTestId("unit-your-line")
+    expect(yourLine).toHaveTextContent(
+      "Your Machine of War: 1·primary 30 · secondary 28"
     )
+    expect(
+      within(yourLine).getByRole("img", { name: "Epic 1★" })
+    ).toBeInTheDocument()
     expect(screen.getByTestId("unit-values-base")).toHaveTextContent(
       "Your unit"
     )
@@ -556,12 +560,7 @@ describe("MowUnitPage", () => {
 
       fireEvent.click(screen.getByTestId("unit-values-custom"))
       fireEvent.click(values.getByRole("combobox"))
-      fireEvent.click(
-        // Legendary and Mythic both have a one-blue-star step; Mythic's comes last.
-        (await screen.findAllByRole("option", { name: /One Blue Star/ })).at(
-          -1
-        )!
-      )
+      fireEvent.click(await screen.findByRole("option", { name: /Mythic 1★/ }))
       expect(screen.getByTestId("unit-power-value")).toHaveTextContent(
         "873,548"
       )
@@ -763,7 +762,9 @@ describe("MowUnitPage", () => {
       fireEvent.click(
         within(screen.getByTestId("unit-values")).getByRole("combobox")
       )
-      fireEvent.click(await screen.findByRole("option", { name: /Wings/ }))
+      fireEvent.click(
+        await screen.findByRole("option", { name: /Mythic wings/ })
+      )
       expect(screen.getByTestId("unit-ability-mythic-level")).toHaveTextContent(
         "Level 4"
       )
