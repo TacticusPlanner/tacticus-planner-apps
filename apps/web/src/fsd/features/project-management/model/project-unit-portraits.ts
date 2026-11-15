@@ -3,7 +3,7 @@ import { holdsGlobalPosition } from "@/entities/goal"
 export type PortraitUnit = { entityType: string; entityId: string }
 
 /** How many unit portraits a project card shows before "+N" (add-project-unit-portraits). */
-export const PROJECT_PORTRAIT_LIMIT = 4
+const PROJECT_PORTRAIT_LIMIT = 4
 
 /**
  * The distinct units among a project's in-flight (Active/Paused) goals, ordered by the global

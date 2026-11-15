@@ -17,7 +17,7 @@ import { moveProjectGoals } from "./project-moves"
 import { adoptOrder } from "./use-goal-order-actions"
 
 /** How long the Undo toast stays (project-goal-moves: "a toast SHALL offer Undo for 10 seconds"). */
-export const PROJECT_MOVE_UNDO_MS = 10_000
+const PROJECT_MOVE_UNDO_MS = 10_000
 
 /**
  * Move goals to top (add-move-project-goals): one `PUT goals/order` with the project's in-flight goals
