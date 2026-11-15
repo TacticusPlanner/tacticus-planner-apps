@@ -73,12 +73,12 @@ describe("TodayDashboard", () => {
 
     expect(screen.getByTestId("today-page")).toHaveClass("@container")
     expect(screen.getByTestId("today-grid")).toHaveClass(
-      "@[42rem]:grid-cols-2",
+      "@2xl:grid-cols-2",
       "@[84rem]:grid-cols-4",
       "items-start"
     )
     expect(screen.getByTestId("today-plan-area")).toHaveClass(
-      "@[42rem]:col-span-2"
+      "@2xl:col-span-2"
     )
   })
 
@@ -211,7 +211,7 @@ describe("TodayDashboard", () => {
     // Hidden on one track, where the arriving plan would push it down the screen.
     expect(screen.getByTestId("today-shops-slot")).toHaveClass(
       "hidden",
-      "@[42rem]:block"
+      "@2xl:block"
     )
     expect(bonusCards()).toHaveLength(0)
     expect(screen.queryByTestId("today-onslaught")).not.toBeInTheDocument()

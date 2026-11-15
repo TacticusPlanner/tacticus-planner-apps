@@ -137,18 +137,18 @@ describe("TodayGlance", () => {
     // One card around every row, rows split by dividers.
     expect(list).toHaveClass("bg-card", "ring-1", "divide-y")
     expect(list).toHaveClass(
-      "@[42rem]:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))]",
-      "@[42rem]:bg-transparent",
-      "@[42rem]:ring-0",
-      "@[42rem]:divide-y-0"
+      "@2xl:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))]",
+      "@2xl:bg-transparent",
+      "@2xl:ring-0",
+      "@2xl:divide-y-0"
     )
     // Each tile is a flat row until it gets its own card back from 42rem.
     const tile = screen.getByTestId("energy-usage")
     expect(tile).toHaveClass("flex-row", "ring-0", "bg-transparent")
     expect(tile).toHaveClass(
-      "@[42rem]:flex-col",
-      "@[42rem]:ring-1",
-      "@[42rem]:bg-card"
+      "@2xl:flex-col",
+      "@2xl:ring-1",
+      "@2xl:bg-card"
     )
   })
 
