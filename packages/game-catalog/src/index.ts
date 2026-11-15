@@ -61,6 +61,13 @@ export type {
   GameCatalogShop,
   GameCatalogShopSlot,
   GameCatalogShopVariant,
+  GameCatalogEventShop,
+  GameCatalogEventShopWeek,
+  GameCatalogEventShopMission,
+  GameCatalogEventShopMissionChain,
+  GameCatalogEventShopRewardTier,
+  GameCatalogEventShopRewardRange,
+  GameCatalogEventShopTask,
   GameCatalogRaidBosses,
   GameCatalogRaidBoss,
   GameCatalogRaidBossSeason,
@@ -89,6 +96,7 @@ export {
   shardRewardEligible,
   lockIsActive,
   resolveEventLockId,
+  rosterShopLockContext,
   todayDow,
   DOW_MAP,
   PL_MEDIUM,
@@ -104,6 +112,18 @@ export {
   type ResolveUnitShardShopOffersOptions,
 } from "./shops/shop-resolve"
 export { bpSeasonStartMs } from "./shops/season-locks"
+export {
+  defaultEventDay,
+  eventDay,
+  eventDayIndex,
+  eventDays,
+  eventStatus,
+  resolveEventDaySlots,
+  type EventShopDay,
+  type EventShopStatus,
+  type ResolvedEventSlot,
+  type ResolveEventDaySlotsOptions,
+} from "./shops/event-days"
 
 // The HTTP client, sync loop and zod schemas live behind `@workspace/game-catalog/sync` so they load
 // only when a sync runs; the types stay here because they are erased.
@@ -143,6 +163,7 @@ export {
   type EventDefinitionStorageModel,
   type EventsCalendarStorageModel,
   type ShopStorageModel,
+  type EventShopStorageModel,
   type RaidBossesStorageModel,
   type GuildRaidMetaStorageModel,
   type MythicQuestsStorageModel,
@@ -179,6 +200,7 @@ export {
   mowComponentIcon,
   orbIcon,
   orbAllianceIcon,
+  allianceOrbIcon,
   energyIcon,
   onslaughtTokenIcon,
   goldIcon,

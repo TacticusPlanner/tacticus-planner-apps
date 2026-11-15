@@ -122,7 +122,7 @@ describe("SectionTabs", () => {
     )
   })
 
-  it("shows the five Dailies tabs in order: Raids, HSE, HRE, Quest, Guild Raids", () => {
+  it("shows the six Dailies tabs in order: Raids, HSE, HRE, Quest, Event shop, Guild Raids", () => {
     renderTabs(section("/dailies"), "/dailies/raids")
 
     expect(
@@ -132,6 +132,7 @@ describe("SectionTabs", () => {
       "section-tab-dailies-hse",
       "section-tab-dailies-hre",
       "section-tab-dailies-quest",
+      "section-tab-dailies-event-shop",
       "section-tab-dailies-guild-raids",
     ])
     expect(screen.getByTestId("section-tab-dailies-raids")).toHaveAttribute(

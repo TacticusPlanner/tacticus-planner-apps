@@ -1,0 +1,51 @@
+{
+  "tasks": {
+    "ApplyUpgrades": "[i2p_Plural]Wende {[TARGET_AMOUNT]} Verbesserungen auf deine <style=\"Character\">Charaktere</style> an[i2p_One]Wende {[TARGET_AMOUNT]} Verbesserung auf deine <style=\"Character\">Charaktere</style> an",
+    "AttackUnitsInGameModes": "Greife {[TARGET_AMOUNT]}-mal Einheiten in {[GAME_MODES]} an",
+    "DealAbilityDamage": "Verursache {[TARGET_AMOUNT]} Schaden mit Fähigkeiten",
+    "DealDamage": "Verursache {[TARGET_AMOUNT]} Schaden an Gegnern im Kampf",
+    "DefeatWaves": "Besiege {[TARGET_AMOUNT]} Gegnerwellen in einem beliebigen Spielmodus mit Angriffswellen.",
+    "HealHealth": "Stelle <style=\"Stat_Health\">{[TARGET_AMOUNT]} Lebenspunkte</style> im Kampf wieder her",
+    "Overkill": "Erziele bei {[TARGET_AMOUNT]} Gegnern im Kampf einen <style=\"Overkill\">Overkill</style>",
+    "PlayBattlesInGameMode": "[i2p_Plural]Bestreite {[TARGET_AMOUNT]} Kämpfe im {[GAME_MODE]}-Modus[i2p_One]Bestreite {[TARGET_AMOUNT]} Kampf im {[GAME_MODE]}-Modus",
+    "ScoreCrits": "Erziele {[TARGET_AMOUNT]} <style=\"Stat_CritDamage\">Kritische Treffer</style> im Kampf",
+    "SlayEnemies": "Besiege {[TARGET_AMOUNT]} Gegner",
+    "SlayEnemiesFromHigherElevation": "Besiege {[TARGET_AMOUNT]} Gegner von erhöhtem Terrain aus",
+    "SlayEnemiesOfFactionTrait": "Besiege {[TARGET_AMOUNT]} Gegner der Fraktion {[FACTION_TRAIT]}",
+    "SlayEnemiesWithFactionTrait": "Besiege {[TARGET_AMOUNT]} Gegner mit {[FACTION_TRAIT]}-Einheiten",
+    "SlayEnemiesWithMeleeAttacks": "Besiege {[TARGET_AMOUNT]} Gegner mit <style=\"Stat_Melee\">Nahkampfangriffen</style>",
+    "SlayEnemiesWithRangedAttacks": "Besiege {[TARGET_AMOUNT]} Gegner mit <style=\"Stat_Range\">Fernkampfangriffen</style>",
+    "Summon": "Beschwöre{[TARGET_AMOUNT]} <style=\"Summon\">Einheiten</style> im Kampf",
+    "TraverseHexes": "Bewege deinen Charakter um {[TARGET_AMOUNT]} Felder",
+    "UpgradeAbility": "[i2p_Plural]Verbessere {[TARGET_AMOUNT]} Fähigkeiten deiner <style=\"Character\">Charaktere</style> oder deiner <style=\"MoW\">Kriegsmaschinen</style>[i2p_One]Verbessere {[TARGET_AMOUNT]} Fähigkeit deiner <style=\"Character\">Charaktere</style> oder deiner <style=\"MoW\">Kriegsmaschinen</style>",
+    "UseAbility": "Setze {[TARGET_AMOUNT]}-mal Fähigkeiten mit Charakteren ein",
+    "UseAbilityWithFactionTrait": "Setze {[TARGET_AMOUNT]}-mal Fähigkeiten mit Charakteren der Fraktion {[FACTION_TRAIT]} ein"
+  },
+  "chains": {
+    "August2026Week1FreeMissionChain": "Der Krieg wird niemals enden – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "August2026Week1PremiumMissionChain": "Unermüdliche Armeen – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "August2026Week2FreeMissionChain": "Kein Frieden in der Galaxis – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "August2026Week2PremiumMissionChain": "Diese Galaxis gehört uns – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "Crescendo01FreeMissionChainOne": "STUNDE DER KRÖNUNG – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "Crescendo01PremiumMissionChain": "HÄNDLER DES TODES – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week1FreeMissionChain": "Feuerwüsten und Einöden – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week1PremiumMissionChain": "Feuerwüsten – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week2FreeMissionChain": "Armageddon Secundus – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week2PremiumMissionChain": "Makropole Askalon – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week3FreeMissionChain": "Armageddon Primus – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "June2026Week3PremiumMissionChain": "Makropole Tempestora – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "May2026FreeMissionChainOne": "IM KAMPF GESCHMIEDET – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "May2026PremiumMissionChain": "JEDES RISIKO WERT – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "October2026FreeMissionChain": "GRABENKÄMPFER – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "October2026PremiumMissionChain": "SÄUBERN UND SICHERN – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "September2026FreeMissionChainOne": "WÄCHTER DER EWIGKEIT – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}",
+    "September2026PremiumMissionChain": "TIEF VERWURZELTE ÜBERLEGENHEIT – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}"
+  },
+  "gameModes": {
+    "AllCampaigns": "beliebige Kampagne:",
+    "LinearHeroEvent": "Charakter-Quests",
+    "PvP": "Arena",
+    "Survival": "Überlebensmodus",
+    "SyncPVP": "Turnierarena"
+  }
+}

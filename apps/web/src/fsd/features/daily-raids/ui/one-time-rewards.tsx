@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { shopRewardDisplay } from "@/entities/shop-reward"
+import { shopRewardDisplay } from "@/entities/shops/reward"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 import { EntityIcon } from "@/shared/ui"
 

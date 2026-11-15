@@ -4,7 +4,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import type { UpgradeId } from "@workspace/game-domain"
 
-import { shopCurrencyIcon } from "@/entities/shop-reward"
+import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 import type { MythicMaterialSelection } from "../../model/goal-creation-form/use-mythic-material-selection"
 import { ShopOfferRow } from "./acquisition-source-field"

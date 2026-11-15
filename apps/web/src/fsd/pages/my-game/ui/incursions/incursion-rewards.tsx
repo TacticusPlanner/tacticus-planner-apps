@@ -3,7 +3,7 @@ import { shardIcon } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { shopRewardDisplay, type ShopRewardKind } from "@/entities/shop-reward"
+import { shopRewardDisplay, type ShopRewardKind } from "@/entities/shops/reward"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 

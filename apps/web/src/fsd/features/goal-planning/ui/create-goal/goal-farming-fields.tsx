@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { datamineAssetUrl, shardIcon } from "@workspace/game-catalog"
 
-import { shopCurrencyIcon } from "@/entities/shop-reward"
+import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { useProgressionPreview } from "../../model/goal-creation-form/use-progression-preview"
 type ProgressionPreviewResult = ReturnType<typeof useProgressionPreview>

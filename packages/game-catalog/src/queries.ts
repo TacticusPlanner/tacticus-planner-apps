@@ -34,6 +34,7 @@ import type {
   OnslaughtRewardStorageModel,
   RaidBossesStorageModel,
   ShopStorageModel,
+  EventShopStorageModel,
   UnlockShardCostStorageModel,
   UpgradeStorageModel,
 } from "./game-catalog.storage"
@@ -154,6 +155,22 @@ export function getShops(): Promise<ShopStorageModel[]> {
 export async function getShopsMap(): Promise<Map<string, ShopStorageModel>> {
   const shops = await getShops()
   return new Map(shops.map((shop) => [shop.id, shop]))
+}
+
+// Every stored seasonal event shop, ordered by start (`startUtc`, an ISO-8601 UTC instant). Empty both
+// when the API serves none and when the dataset has not synced (it is optional).
+export async function getEventShops(): Promise<EventShopStorageModel[]> {
+  const events = await getDatasetRecords("event-shops")
+  return [...events].sort(
+    (a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc)
+  )
+}
+
+// One stored event shop by its id (`october-2026`), or `undefined` when no such event is stored.
+export function getEventShop(
+  id: string
+): Promise<EventShopStorageModel | undefined> {
+  return getDatasetRecord("event-shops", id)
 }
 
 // raid-bosses is stored as a single row (see game-catalog.mapper.ts's asSingleRow). Returns the whole

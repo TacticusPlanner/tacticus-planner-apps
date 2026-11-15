@@ -1,7 +1,7 @@
 import {
   shopRewardDisplay,
   type ShopRewardDisplayContext,
-} from "@/entities/shop-reward"
+} from "@/entities/shops/reward"
 import { datamineAssetUrl, type GameIcon } from "@workspace/game-catalog"
 
 export type HseRewardDisplay = {
