@@ -20,7 +20,7 @@ describe("NPC name translations", () => {
     }
   })
 
-  it("carries the V1 game localization for translated units", () => {
+  it("carries the game localization for translated units", () => {
     expect(en.necroNpc1Warrior).toBe("Necron Warrior")
     expect(de.necroNpc1Warrior).toBe("Necronkrieger")
     expect(de.necroNpc1WarriorSurv).toBe("Necronkrieger")
