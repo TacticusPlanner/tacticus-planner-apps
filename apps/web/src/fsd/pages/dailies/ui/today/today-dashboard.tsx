@@ -76,15 +76,12 @@ export function TodayDashboard({
       <div
         className={cn(
           "grid items-start gap-3.5",
-          "@[42rem]:grid-cols-2",
+          "@2xl:grid-cols-2",
           "@[84rem]:grid-cols-4"
         )}
         data-testid="today-grid"
       >
-        <div
-          className="min-w-0 @[42rem]:col-span-2"
-          data-testid="today-plan-area"
-        >
+        <div className="min-w-0 @2xl:col-span-2" data-testid="today-plan-area">
           {bonusInPlanArea ? (
             bonusCard(true)
           ) : (
@@ -102,9 +99,7 @@ export function TodayDashboard({
               would push Shops down the screen (layout shift), so there it waits for the plan. Side
               by side (two or four tracks) it shows while the plan loads. */}
           <div
-            className={cn(
-              raids.status === "loading" && "hidden @[42rem]:block"
-            )}
+            className={cn(raids.status === "loading" && "hidden @2xl:block")}
             data-testid="today-shops-slot"
           >
             <TodayShops />
