@@ -540,7 +540,12 @@
       "materials_other": "{{count}} matériaux n'ont aucun lieu autorisé avec ces filtres.",
       "pinned_one": "{{count}} objectif est épinglé sur un lieu exclu par vos filtres de raids. Réinitialisez les filtres ou changez l'épingle.",
       "pinned_other": "{{count}} objectifs sont épinglés sur un lieu exclu par vos filtres de raids. Réinitialisez les filtres ou changez l'épingle.",
-      "reset": "Réinitialiser les filtres"
+      "reset": "Réinitialiser les filtres",
+      "listLabel": "Matériaux ignorés par vos filtres de raids",
+      "pinnedBadge": "Épinglé",
+      "showAll": "Tout afficher ({{count}})",
+      "showLess": "Afficher moins",
+      "insights": "Voir dans Insights ce qui ne peut pas être farmé"
     }
   },
   "quickFilters": {

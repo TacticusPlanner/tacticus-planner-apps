@@ -59,7 +59,7 @@ export function TodayDashboard({
       <TodayBonusCard
         notice={
           wide && raids.status === "ready" ? (
-            <FilteredOutNotice filteredOut={raids.filteredOut} />
+            <FilteredOutNotice raids={raids} />
           ) : undefined
         }
         onShowLess={() => setBonusShownCount(BONUS_LIMIT)}

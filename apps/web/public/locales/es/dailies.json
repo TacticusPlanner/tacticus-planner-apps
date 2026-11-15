@@ -540,7 +540,12 @@
       "materials_other": "{{count}} materiales no tienen ninguna ubicación permitida con estos filtros.",
       "pinned_one": "{{count}} objetivo está fijado a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
       "pinned_other": "{{count}} objetivos están fijados a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
-      "reset": "Restablecer filtros"
+      "reset": "Restablecer filtros",
+      "listLabel": "Materiales que tus filtros de incursiones omiten",
+      "pinnedBadge": "Fijado",
+      "showAll": "Mostrar los {{count}}",
+      "showLess": "Mostrar menos",
+      "insights": "Ver en Insights lo que no se puede farmear"
     }
   },
   "quickFilters": {
