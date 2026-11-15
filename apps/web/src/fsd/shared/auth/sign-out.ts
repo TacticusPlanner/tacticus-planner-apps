@@ -4,6 +4,7 @@ import { forgetAuthJournal } from "./auth-journal"
 import {
   forgetAccountHint,
   forgetFreshLogin,
+  forgetAutoRedirects,
   forgetQuietRenewal,
 } from "./authentication"
 
@@ -16,6 +17,7 @@ export async function signOut(
   forgetAccountHint()
   forgetFreshLogin()
   forgetQuietRenewal()
+  forgetAutoRedirects()
   forgetAuthJournal()
   const account = instance
     .getAllAccounts()

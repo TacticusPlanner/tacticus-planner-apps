@@ -28,7 +28,7 @@ export type AuthStep =
   /** A quiet renewal was due but not run. */
   | {
       step: "quiet_renewal_skipped"
-      reason: "cooldown" | "fresh_login" | "interaction"
+      reason: "cooldown" | "fresh_login" | "interaction" | "google"
     }
   /** The response to a quiet renewal, read on the page it returned to. */
   | {
@@ -44,6 +44,8 @@ export type AuthStep =
       method: SignInMethod | "unknown"
       freshLogin: boolean
     }
+  /** An automatic interactive redirect was refused by the loop guard. */
+  | { step: "interactive_redirect_skipped"; reason: "loop_guard" }
   /** The response to an interactive redirect, read on the page it returned to. */
   | {
       step: "interactive_redirect_returned"
@@ -56,6 +58,8 @@ export type JournaledAuthStep = AuthStep & {
   at: number
   /** Groups the steps of one page load. */
   load: string
+  /** The sign-in method of the account this page load is restoring, when known. */
+  method?: SignInMethod | "unknown"
 }
 
 const JOURNAL_KEY = "tp.auth.journal"
@@ -67,6 +71,12 @@ const MAX_ENTRIES = 60
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000
 
 const pageLoadId = Math.random().toString(36).slice(2, 10)
+let pageLoadMethod: SignInMethod | undefined
+
+/** Stamps the account's sign-in method on every later step of this page load that has none. */
+export function setAuthJournalMethod(method: SignInMethod) {
+  pageLoadMethod = method
+}
 
 function readJournal(): JournaledAuthStep[] {
   try {
@@ -90,7 +100,12 @@ function readJournal(): JournaledAuthStep[] {
 export function recordAuthStep(step: AuthStep) {
   const entries = [
     ...readJournal(),
-    { ...step, at: Date.now(), load: pageLoadId },
+    {
+      ...(pageLoadMethod ? { method: pageLoadMethod } : {}),
+      ...step,
+      at: Date.now(),
+      load: pageLoadId,
+    },
   ]
   safeStorage.set(JOURNAL_KEY, JSON.stringify(entries.slice(-MAX_ENTRIES)))
 }
