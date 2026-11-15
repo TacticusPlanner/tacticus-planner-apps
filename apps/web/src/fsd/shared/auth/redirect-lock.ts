@@ -1,4 +1,4 @@
-import { safeStorage } from "@/shared/lib"
+import { safeStorage } from "../lib"
 
 /**
  * One tab at a time leaves for an automatic redirect (spec: redirect-authentication). When the
