@@ -1349,7 +1349,19 @@
       "eventArchived_other": "+{{count}} archived",
       "eventNoProject": "No project for this event",
       "eventOpenProjects": "Go to Projects",
-      "membershipConflictTarget": "{{unit}} already has an active or paused {{type}} goal with the target {{target}}."
+      "membershipConflictTarget": "{{unit}} already has an active or paused {{type}} goal with the target {{target}}.",
+      "portraits": {
+        "more_one": "{{names}} and {{count}} more",
+        "more_other": "{{names}} and {{count}} more"
+      },
+      "addToAnother": "Add to another project…",
+      "addToAnotherTitle": "Add to another project",
+      "addedToProjects": "Added to {{projects}}.",
+      "projectsSaved": "Projects saved.",
+      "projectsSaveFailed": "Couldn't save the projects. Check your connection and try again.",
+      "addToProjectsDescription": "Choose one or more projects to add the selected goals to, or create a new one.",
+      "addToProjectsConfirm": "Add",
+      "addToProjectsConfirmCount": "Add to {{count}} projects"
     },
     "toasts": {
       "statusConflict": "{{goal}} could not change: {{reason}}",
@@ -1369,7 +1381,12 @@
       "goalsRemovedAndMoved_one": "Removed {{count}} goal from {{project}}; {{moved}} moved to {{destination}}.",
       "goalsRemovedAndMoved_other": "Removed {{count}} goals from {{project}}; {{moved}} moved to {{destination}}.",
       "movedButNotRemoved_one": "Added {{count}} goal to {{destination}}, but couldn't remove it from {{project}}: {{error}}",
-      "movedButNotRemoved_other": "Added {{count}} goals to {{destination}}, but couldn't remove them from {{project}}: {{error}}"
+      "movedButNotRemoved_other": "Added {{count}} goals to {{destination}}, but couldn't remove them from {{project}}: {{error}}",
+      "goalsAddedToProjects_one": "Added {{count}} goal to {{projects}}.",
+      "goalsAddedToProjects_other": "Added {{count}} goals to {{projects}}.",
+      "addedToSomeProjects": "Added to {{added}}. {{failed}} failed.",
+      "addToProjectsFailed": "Couldn't add the goals to {{failed}}.",
+      "retry": "Retry"
     },
     "create": {
       "title": "Create a goal",
@@ -1898,7 +1915,17 @@
       "estimatesRetry": "Retry estimates",
       "listNote": "Goals are in your priority order. Drag an active or paused goal to move it — the change applies in every project, Today, Raids Plan, and Insights.",
       "hintLabel": "About the order",
-      "scopedNote": "Each number is the goal's position in your account-wide priority order, so a project's goals can show gaps such as 1, 3, 5. Moving a goal here also moves it in that order; goals from other projects keep their relative order."
+      "scopedNote": "Each number is the goal's position in your account-wide priority order, so a project's goals can show gaps such as 1, 3, 5. Moving a goal here also moves it in that order; goals from other projects keep their relative order.",
+      "projectMove": {
+        "menuItem": "Move goals to top",
+        "alreadyFirst": "This project's goals are already first.",
+        "moved_one": "Moved {{count}} goal to priority 1.",
+        "moved_other": "Moved {{count}} goals to priority 1.",
+        "undo": "Undo",
+        "undone": "Order restored.",
+        "staleUndo": "The order changed since. Nothing was undone.",
+        "staleMove": "The order changed while you were moving. Review the refreshed order and try again."
+      }
     },
     "edit": {
       "title": "Edit goal",
@@ -1945,7 +1972,9 @@
       "ladder": {
         "current": "Current",
         "start": "Start",
-        "taken": "Already a goal"
+        "taken": "Already a goal",
+        "belowRange": "{{from}} – {{to}}",
+        "showBelow": "Show {{from}} – {{to}}"
       },
       "range": {
         "span": "{{start}} → {{end}}",
@@ -2211,6 +2240,10 @@
         "newProject": {
           "title": "Create a project",
           "content": "Start a new project here. A project's action menu creates a goal in it, manages which goals belong to it, and renames, recolors, archives, or restores it."
+        },
+        "moveGoals": {
+          "title": "Move a project's goals first",
+          "content": "Open a project's menu and choose Move goals to top to put all its active and paused goals first in your priority order. You can undo it from the message that follows."
         }
       }
     },

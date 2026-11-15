@@ -1788,6 +1788,7 @@ describe("GoalsPage bulk actions", () => {
 
     await user.click(screen.getByTestId("goals-bulk-addToProject"))
     await user.click(await screen.findByTestId("project-picker-option-proj-2"))
+    await user.click(screen.getByTestId("project-picker-confirm"))
 
     await vi.waitFor(() =>
       expect(updateProjectGoals).toHaveBeenCalledExactlyOnceWith("proj-2", {
@@ -1795,6 +1796,36 @@ describe("GoalsPage bulk actions", () => {
         expectedGoalIds: [],
       })
     )
+  })
+
+  it("adds the selection to every checked project, one request each", async () => {
+    listProjects.mockResolvedValue({
+      projects: [overviewProject, otherProject],
+    })
+    membership = {}
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+    await vi.waitFor(() =>
+      expect(screen.getByTestId("goal-row-menu-goal-1")).toBeInTheDocument()
+    )
+    await select(user, "goal-1")
+
+    await user.click(screen.getByTestId("goals-bulk-addToProject"))
+    expect(screen.getByTestId("project-picker-confirm")).toBeDisabled()
+    await user.click(await screen.findByTestId("project-picker-option-proj-1"))
+    await user.click(screen.getByTestId("project-picker-option-proj-2"))
+    await user.click(screen.getByTestId("project-picker-confirm"))
+
+    await vi.waitFor(() => expect(updateProjectGoals).toHaveBeenCalledTimes(2))
+    expect(updateProjectGoals).toHaveBeenNthCalledWith(1, "proj-1", {
+      goals: [{ goalId: "goal-1" }],
+      expectedGoalIds: [],
+    })
+    expect(updateProjectGoals).toHaveBeenNthCalledWith(2, "proj-2", {
+      goals: [{ goalId: "goal-1" }],
+      expectedGoalIds: [],
+    })
   })
 
   describe("scoped to a project", () => {

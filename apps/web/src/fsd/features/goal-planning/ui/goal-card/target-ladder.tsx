@@ -1,5 +1,6 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import type { KeyboardEvent, ReactNode } from "react"
+import { ChevronsLeftRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -32,7 +33,8 @@ type StepState = {
  * goal", and the steps from the start to the selected one are highlighted. Steps at or below the start
  * and taken steps stay announced but `aria-disabled`. Arrow keys move between selectable steps (one
  * tab stop, a roving tabindex); Enter or Space selects. Tiers share one wrapping row at 768px and
- * wider, and take a row each below it, with 44px steps.
+ * wider, and take a row each below it, with steps of one fixed height (and, given `stepClassName`, one width). Steps below the current one (none of them
+ * choosable) fold into one "Stone I – Gold I" chip that expands them on click.
  */
 export function TargetLadder({
   steps,
@@ -44,6 +46,7 @@ export function TargetLadder({
   label,
   startSelectable = false,
   testId,
+  stepClassName,
   fieldProps,
 }: {
   steps: readonly LadderStep[]
@@ -57,6 +60,8 @@ export function TargetLadder({
   /** The start step is itself a valid target (a Rank goal's partial slots on the current rank). */
   startSelectable?: boolean
   testId: string
+  /** Sizes every step (and the folded chip) alike, e.g. a fixed width that fits the longest label. */
+  stepClassName?: string
   /** `id`, `aria-invalid` and `aria-describedby` from the card's issues. */
   fieldProps?: {
     id?: string
@@ -66,6 +71,7 @@ export function TargetLadder({
 }) {
   const { t } = useTranslation()
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
+  const [expanded, setExpanded] = useState(false)
   const startIndex = steps.findIndex((step) => step.key === startKey)
   const currentIndex = steps.findIndex(
     (step) => step.key === (currentKey ?? startKey)
@@ -108,8 +114,17 @@ export function TargetLadder({
     if (next) buttons.current[next.index]?.focus()
   }
 
+  // The steps below the unit's current one (and below the start and any stored target) can't be
+  // chosen, so they fold into one chip that expands on demand.
+  const collapseEnd = Math.min(
+    ...[startIndex, currentIndex, valueIndex].filter((index) => index >= 0)
+  )
+  const collapsed = !expanded && collapseEnd >= 2 ? collapseEnd : 0
+  const firstHidden = steps[0]
+  const lastHidden = steps[collapsed - 1]
+
   const tiers: { tier: string; label?: string; states: StepState[] }[] = []
-  for (const state of states) {
+  for (const state of states.slice(collapsed)) {
     const step = steps[state.index]!
     const last = tiers.at(-1)
     if (last?.tier === step.tier) last.states.push(state)
@@ -124,6 +139,32 @@ export function TargetLadder({
       role="radiogroup"
       {...fieldProps}
     >
+      {collapsed > 0 && firstHidden && lastHidden ? (
+        <div className="grid content-end gap-1">
+          <button
+            aria-expanded={false}
+            aria-label={t("goals.card.ladder.showBelow", {
+              from: firstHidden.name,
+              to: lastHidden.name,
+            })}
+            className={cn(
+              "flex h-12 min-w-14 items-center justify-center gap-1 rounded-xl border border-dashed px-1.5 py-1 text-xs text-muted-foreground transition-colors outline-none hover:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+              stepClassName
+            )}
+            data-testid={`${testId}-collapsed`}
+            onClick={() => setExpanded(true)}
+            type="button"
+          >
+            <ChevronsLeftRight className="size-3.5 shrink-0" />
+            <span className="truncate">
+              {t("goals.card.ladder.belowRange", {
+                from: firstHidden.name,
+                to: lastHidden.name,
+              })}
+            </span>
+          </button>
+        </div>
+      ) : null}
       {tiers.map((tier) => (
         <div className="grid content-start gap-1" key={tier.tier}>
           {tier.label ? (
@@ -147,7 +188,8 @@ export function TargetLadder({
                   aria-disabled={state.disabled || undefined}
                   aria-label={note ? `${step.name}, ${note}` : step.name}
                   className={cn(
-                    "grid min-h-9 min-w-14 content-center justify-items-center gap-0.5 rounded-xl border px-1.5 py-1 text-xs transition-colors outline-none max-md:min-h-11",
+                    "grid h-12 min-w-14 content-center justify-items-center gap-0.5 rounded-xl border px-1.5 py-1 text-xs transition-colors outline-none",
+                    stepClassName,
                     "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                     state.inRange && "border-primary/40 bg-primary/10",
                     state.selected &&

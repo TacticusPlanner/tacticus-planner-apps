@@ -15,6 +15,7 @@ import {
   NewProjectFab,
   ProjectList,
   orderDefaultFirst,
+  projectPortraitUnits,
   useProjectActions,
   useProjectsWithGoals,
 } from "@/features/project-management"
@@ -25,7 +26,10 @@ import {
   useCreateGoalLauncher,
   useGoalAttainment,
   useGoalsOverviewMetrics,
+  useMoveProjectGoals,
   usePlanInsights,
+  projectGoalsAlreadyFirst,
+  projectInFlightGoalIds,
 } from "@/features/goal-planning"
 import { useProjectsListTutorial } from "./projects-list-page.tutorial"
 
@@ -33,7 +37,8 @@ import { useProjectsListTutorial } from "./projects-list-page.tutorial"
  * The dedicated project-management surface (project-management spec: "The list route shows every
  * project without its goal table") - every project (including archived) as its own row with
  * inline lifecycle-action icons, a narrowed create/edit form Sheet opened via a row's Edit action
- * or the "New project" FAB, and the project-specific actions (Create goal, Manage goals) in each
+ * or the "New project" FAB, and the project-specific actions (Create goal, Manage goals, Move goals to
+ * top) in each
  * row's menu. No goal table, filters, or project selector here - clicking a row opens the project on
  * the Goals page (`/plan/goals?project=`).
  */
@@ -107,6 +112,7 @@ export function ProjectsListPage() {
       status: "success",
       units,
       goals: members.length,
+      portraitUnits: projectPortraitUnits(members),
       ...(project.isDefault
         ? {
             reached: members.filter(
@@ -120,6 +126,30 @@ export function ProjectsListPage() {
           }
         : {}),
     })
+  }
+
+  // Move goals to top (project-goal-moves): offered on live projects holding in-flight goals, disabled
+  // when their goals are already first or a move is saving.
+  const projectMoves = useMoveProjectGoals()
+  const moveGoalsToTop = new Map<string, "enabled" | "disabled">()
+  if (!goalsRead.loading && !goalsRead.isError) {
+    for (const project of projectsWithGoals.projects) {
+      if (project.status === "Archived") continue
+      if (projectInFlightGoalIds(project.goals).length === 0) continue
+      moveGoalsToTop.set(
+        project.projectId,
+        projectMoves.pending || projectGoalsAlreadyFirst(project.goals)
+          ? "disabled"
+          : "enabled"
+      )
+    }
+  }
+  const moveProjectGoalsToTop = (project: ProjectSummary) => {
+    const goals =
+      projectsWithGoals.projects.find(
+        (candidate) => candidate.projectId === project.projectId
+      )?.goals ?? []
+    void projectMoves.moveToTop(projectInFlightGoalIds(goals))
   }
 
   const openNewProject = () => {
@@ -163,7 +193,9 @@ export function ProjectsListPage() {
               actions={projectActions}
               onCreateGoal={createGoalIn}
               onEdit={openEditProject}
+              moveGoalsToTop={moveGoalsToTop}
               onManageGoals={setManageGoalsProject}
+              onMoveGoalsToTop={moveProjectGoalsToTop}
               onSelect={openProjectOnGoals}
               projects={available}
               summaries={summaries}

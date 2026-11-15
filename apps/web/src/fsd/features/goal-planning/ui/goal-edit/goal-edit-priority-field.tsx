@@ -9,11 +9,24 @@ import {
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { goalTypeIcon } from "@/entities/goal"
+import type { GoalKind } from "@/entities/goal"
+import { EntityIcon } from "@/shared/ui"
+import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { InfoHint } from "../shared/info-hint"
+import { GoalUnitIcon } from "../shared/goal-visuals"
+
+/** The in-flight goal that holds a position, shown beside its number. */
+type PriorityOccupant = {
+  entityType: string
+  entityId: string
+  goalType: GoalKind
+}
 
 /** The Priority position select: 1..`total` over the account's in-flight goals (1 is the highest
  * priority). Saving a different position moves the goal there, like a drag reorder to that spot. Creation
- * reuses it for where the new goals go (`total` is then the in-flight count + 1, the last being "last"). */
+ * reuses it for where the new goals go (`total` is then the in-flight count + 1, the last being "last").
+ * `occupants[i]` is the goal at position i + 1: its unit portrait and goal-type icon follow the number. */
 export function GoalEditPriorityField({
   position,
   total,
@@ -23,6 +36,7 @@ export function GoalEditPriorityField({
   hint,
   compact = false,
   lastLabel = false,
+  occupants = [],
 }: {
   position: number
   total: number
@@ -34,8 +48,10 @@ export function GoalEditPriorityField({
   compact?: boolean
   /** Marks the last position as "last" (creation's default). */
   lastLabel?: boolean
+  occupants?: readonly PriorityOccupant[]
 }) {
   const { t } = useTranslation()
+  const { getEntityName } = useGoalCatalog()
   const id = useId()
 
   return (
@@ -72,18 +88,72 @@ export function GoalEditPriorityField({
         <SelectContent container={portalContainer ?? undefined}>
           {Array.from({ length: total }, (_, index) => index + 1).map(
             (option) => (
-              <SelectItem key={option} value={String(option)}>
-                {lastLabel && option === total
-                  ? t("goals.create.priorityLast", { position: option, total })
-                  : t("goals.edit.priority.option", {
-                      position: option,
-                      total,
-                    })}
-              </SelectItem>
+              <PriorityOption
+                key={option}
+                label={
+                  lastLabel && option === total
+                    ? t("goals.create.priorityLast", {
+                        position: option,
+                        total,
+                      })
+                    : t("goals.edit.priority.option", {
+                        position: option,
+                        total,
+                      })
+                }
+                occupant={occupants[option - 1]}
+                unitName={(occupant) =>
+                  getEntityName(occupant.entityType, occupant.entityId)
+                }
+                value={option}
+              />
             )
           )}
         </SelectContent>
       </Select>
     </div>
+  )
+}
+
+function PriorityOption({
+  value,
+  label,
+  occupant,
+  unitName,
+}: {
+  value: number
+  label: string
+  occupant: PriorityOccupant | undefined
+  unitName: (occupant: PriorityOccupant) => string
+}) {
+  const { t } = useTranslation()
+  const name = occupant ? unitName(occupant) : ""
+  return (
+    <SelectItem
+      data-testid={`priority-option-${value}`}
+      textValue={label}
+      value={String(value)}
+    >
+      <span className="min-w-16 tabular-nums">{label}</span>
+      {occupant ? (
+        <span
+          className="flex items-center gap-1"
+          data-testid={`priority-option-occupant-${value}`}
+          title={`${name} · ${t(`goals.create.goalTypes.${occupant.goalType}`)}`}
+        >
+          <GoalUnitIcon
+            className="size-5"
+            entityId={occupant.entityId}
+            entityType={occupant.entityType}
+            name={name}
+          />
+          <EntityIcon
+            alt={t(`goals.create.goalTypes.${occupant.goalType}`)}
+            className="size-5"
+            src={goalTypeIcon(occupant.goalType, occupant.entityType)}
+          />
+        </span>
+      ) : null}
+    </SelectItem>
   )
 }

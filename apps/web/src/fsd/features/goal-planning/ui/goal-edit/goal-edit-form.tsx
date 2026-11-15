@@ -265,6 +265,17 @@ export function GoalEditForm({
           className="grid content-start items-start gap-x-6 gap-y-3 pb-3 text-sm @2xl:grid-cols-2"
           data-testid="goal-edit-form"
         >
+          {/* Priority comes first: it is the edit players make most (move-goal-edit-priority-first). */}
+          {draft.priorityPosition !== null ? (
+            <GoalEditPriorityField
+              onChange={(priorityPosition) => edit({ priorityPosition })}
+              portalContainer={portalContainer}
+              occupants={plan.inFlight}
+              position={draft.priorityPosition}
+              total={total}
+            />
+          ) : null}
+
           {draft.target || detail.goalType === "Unlock" ? (
             <div className="col-span-full">
               <GoalEditTarget detail={detail}>
@@ -310,15 +321,6 @@ export function GoalEditForm({
               {notesField}
             </div>
           )}
-
-          {draft.priorityPosition !== null ? (
-            <GoalEditPriorityField
-              onChange={(priorityPosition) => edit({ priorityPosition })}
-              portalContainer={portalContainer}
-              position={draft.priorityPosition}
-              total={total}
-            />
-          ) : null}
 
           <GoalProjectsField
             onSelectionChange={(projectIds) => edit({ projectIds })}

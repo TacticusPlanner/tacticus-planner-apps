@@ -88,6 +88,7 @@ describe("useHomeProjects", () => {
       status: "success",
       units: 1,
       goals: 1,
+      portraitUnits: [{ entityType: "Character", entityId: "unit-1" }],
     })
   })
 

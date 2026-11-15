@@ -10,7 +10,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 describe("useProjectsListTutorial", () => {
-  it("registers localized desktop and mobile steps targeting the list and the New project FAB", () => {
+  it("registers localized desktop and mobile steps targeting the list, the row menu and the New project FAB", () => {
     renderHook(() => useProjectsListTutorial())
     const steps = register.mock.lastCall?.[0] as {
       desktop: { target: string; title: string; content: string }[]
@@ -19,16 +19,18 @@ describe("useProjectsListTutorial", () => {
 
     expect(steps.desktop).toEqual(steps.mobile)
     for (const step of steps.desktop) {
-      expect(step.target).toMatch(/^\[data-testid="[a-z-]+"\]$/)
+      expect(step.target).toMatch(/^\[data-testid\^?="[a-z-]+"\]$/)
       expect(step.title).not.toMatch(/tour\.projectsList/)
       expect(step.content).not.toMatch(/tour\.projectsList/)
     }
     expect(steps.desktop.map((step) => step.title)).toEqual([
       "What a project is",
+      "Move a project's goals first",
       "Create a project",
     ])
     expect(steps.desktop.map((step) => step.target)).toEqual([
       '[data-testid="project-list"]',
+      '[data-testid^="project-row-actions-"]',
       '[data-testid="projects-new-project"]',
     ])
   })

@@ -66,6 +66,7 @@ import { GoalsMobileSelectToggle } from "./goals-mobile-select-toggle"
 import { MobileSelectBar } from "./mobile-select-bar"
 import { GoalsOrderHint } from "./goals-order-hint"
 import { GoalsProjectScope } from "./goals-project-scope"
+import { GoalsMoveProjectGoalsButton } from "./goals-move-project-goals-button"
 import { useLevelRules } from "@/entities/goal-farming"
 import { buildCascadeContext } from "./goal-row-utils"
 import type { SelectedXpBook } from "./goal-row-utils"
@@ -408,15 +409,24 @@ export function GoalsPage() {
     <div className="flex flex-col gap-6" data-testid="goals-page">
       <GoalsToolbar
         projectScope={
-          <GoalsProjectScope
-            counts={scopeCounts}
-            failed={projects.fetchState.status === "error"}
-            loading={projects.loading}
-            onSelect={setScopeId}
-            projects={projects.projects}
-            selectedId={scopeId}
-            totalCount={nonArchivedRows.length}
-          />
+          <>
+            <GoalsProjectScope
+              counts={scopeCounts}
+              failed={projects.fetchState.status === "error"}
+              loading={projects.loading}
+              onSelect={setScopeId}
+              projects={projects.projects}
+              selectedId={scopeId}
+              totalCount={nonArchivedRows.length}
+            />
+            {scopeId && nonArchivedGoals.fetchState.status === "success" ? (
+              <GoalsMoveProjectGoalsButton
+                goals={nonArchivedGoals.fetchState.goals.filter((goal) =>
+                  goal.projectIds.includes(scopeId)
+                )}
+              />
+            ) : null}
+          </>
         }
         bulkActions={bulkActions}
         createGoal={<GoalsCreateButton scopeId={scopeId ?? null} />}

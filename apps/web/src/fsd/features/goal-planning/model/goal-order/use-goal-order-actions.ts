@@ -81,7 +81,7 @@ function applyOptimisticMove(
 
 /** Adopts the order a 409 reports as current into every cached goal list (spec: api-error-handling:
  * a conflict's current state is adopted at once). */
-function adoptOrder(queryClient: QueryClient, order: GoalOrderResponse) {
+export function adoptOrder(queryClient: QueryClient, order: GoalOrderResponse) {
   const position = new Map(order.goalIds.map((id, index) => [id, index + 1]))
   queryClient.setQueriesData<GoalListResponse>(
     { queryKey: goalQueries.lists() },

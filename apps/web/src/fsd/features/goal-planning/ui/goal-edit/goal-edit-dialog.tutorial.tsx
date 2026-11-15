@@ -7,7 +7,7 @@ import { useTourPageSteps } from "@/shared/tour"
 import type { TourPageSteps } from "@/shared/tour"
 
 /**
- * The Edit goal dialog's own onboarding tour: the target (the ladder or stepper of the goal's card), the priority position and the project
+ * The Edit goal dialog's own onboarding tour: the priority position (first, as in the form), the target (the ladder or stepper of the goal's card) and the project
  * picker, all `data-testid`s inside the form body. Both shells (centered dialog at or above 768px,
  * bottom sheet below) render the same body, so desktop and mobile share the steps; a step whose target
  * the goal does not have (an Unlock goal has no target) is skipped by Joyride.
@@ -54,8 +54,8 @@ export function useGoalEditDialogTutorial(): TourPageSteps {
 
   return useMemo<TourPageSteps>(
     () => ({
-      desktop: [target, priority, projects, mythicMaterialSources],
-      mobile: [target, priority, projects, mythicMaterialSources],
+      desktop: [priority, target, projects, mythicMaterialSources],
+      mobile: [priority, target, projects, mythicMaterialSources],
     }),
     [target, priority, projects, mythicMaterialSources]
   )

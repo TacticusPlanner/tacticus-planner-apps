@@ -15,6 +15,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, values?: Record<string, unknown>) =>
       values ? `${key}:${JSON.stringify(values)}` : key,
+    i18n: { language: "en" },
   }),
 }))
 vi.mock("react-router", async (importOriginal) => ({
@@ -108,6 +109,36 @@ describe("ProjectsWidget", () => {
     screen.getByTestId("home-project-row-p1").click()
     expect(navigateMock).toHaveBeenCalledWith("/plan/goals?project=p1")
     expect(screen.queryByTestId("home-projects-more")).not.toBeInTheDocument()
+  })
+
+  it("shows the card's unit portraits at the widget size with +N", () => {
+    useHomeProjectsMock.mockReturnValue({
+      status: "ready",
+      projects: [project({ projectId: "p1" })],
+      summaries: new Map([
+        [
+          "p1",
+          {
+            status: "success",
+            units: 6,
+            goals: 8,
+            portraitUnits: ["a", "b", "c", "d"].map((entityId) => ({
+              entityType: "Character",
+              entityId,
+            })),
+          },
+        ],
+      ]),
+      remainingCount: 0,
+    })
+
+    render(<ProjectsWidget />, { route: "/" })
+
+    const portraits = screen.getByTestId("project-unit-portraits")
+    const images = portraits.querySelectorAll("img")
+    expect(images).toHaveLength(4)
+    expect(images[0]).toHaveClass("size-5")
+    expect(portraits).toHaveTextContent("+2")
   })
 
   it("shows a +N more control that navigates to the projects dashboard", () => {

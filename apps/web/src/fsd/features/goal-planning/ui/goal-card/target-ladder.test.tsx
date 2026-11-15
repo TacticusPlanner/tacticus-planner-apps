@@ -54,7 +54,28 @@ describe("TargetLadder", () => {
     render(<RankLadder initial="Gold3" start="Gold2" startSelectable />)
 
     expect(radio("Gold II, Current")).not.toHaveAttribute("aria-disabled")
+    expect(screen.queryByRole("radio", { name: "Gold I" })).toBeNull()
+  })
+
+  it("folds the steps below the current one into one chip that expands them", async () => {
+    render(<RankLadder initial="Gold3" start="Gold2" />)
+
+    expect(screen.getByTestId("ladder-collapsed")).toHaveTextContent(
+      "Stone I – Gold I"
+    )
+    expect(screen.queryByRole("radio", { name: "Stone I" })).toBeNull()
+    expect(screen.getAllByRole("radio")[0]).toHaveAttribute(
+      "data-step",
+      "Gold2"
+    )
+
+    await userEvent.click(
+      screen.getByRole("button", { name: "Show Stone I – Gold I" })
+    )
+
+    expect(screen.queryByTestId("ladder-collapsed")).toBeNull()
     expect(radio("Gold I")).toHaveAttribute("aria-disabled", "true")
+    expect(radio("Stone I")).toHaveAttribute("aria-disabled", "true")
   })
 
   it("marks the live step Current and the goal's start Start once the unit has progressed", () => {
@@ -75,7 +96,7 @@ describe("TargetLadder", () => {
     )
 
     expect(radio("Gold II, Current")).toHaveAttribute("aria-disabled", "true")
-    expect(radio("Silver III")).toHaveAttribute("aria-disabled", "true")
+    expect(screen.queryByRole("radio", { name: "Silver III" })).toBeNull()
     expect(radio("Gold III, Already a goal")).toHaveAttribute(
       "aria-disabled",
       "true"
@@ -106,7 +127,7 @@ describe("TargetLadder", () => {
     )
 
     await userEvent.click(radio("Gold III, Already a goal"))
-    await userEvent.click(radio("Silver I"))
+    await userEvent.click(radio("Gold II, Current"))
     expect(onChange).not.toHaveBeenCalled()
   })
 
@@ -114,7 +135,9 @@ describe("TargetLadder", () => {
     const user = userEvent.setup()
     render(<RankLadder initial="Diamond2" start="Gold2" taken={["Gold3"]} />)
 
-    // One tab stop: the selected step.
+    // The folded chip first, then one tab stop for the steps: the selected one.
+    await user.tab()
+    expect(screen.getByTestId("ladder-collapsed")).toHaveFocus()
     await user.tab()
     expect(radio("Diamond II")).toHaveFocus()
     await user.keyboard("{ArrowRight}{Enter}")
@@ -134,6 +157,10 @@ describe("TargetLadder", () => {
 
     expect(radio("Silver I")).toHaveAttribute("aria-checked", "true")
     expect(radio("Silver I")).toHaveAttribute("aria-disabled", "true")
+    // Only the steps below the stored target fold away.
+    expect(screen.getByTestId("ladder-collapsed")).toHaveTextContent(
+      "Stone I – Bronze III"
+    )
     // The tab stop moves to the first step that can be chosen.
     expect(radio("Gold III")).toHaveAttribute("tabindex", "0")
   })
