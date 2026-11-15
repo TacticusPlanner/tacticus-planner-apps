@@ -27,6 +27,7 @@
     "break": "Pause"
   },
   "wikiLink": "Wiki",
+  "plannerLink": "Planer öffnen",
   "agenda": {
     "ongoing": "Laufend",
     "endsIn": "Endet in {{when}}"

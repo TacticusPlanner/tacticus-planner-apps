@@ -24,6 +24,10 @@ const homeScreenEventArt: Record<string, { icon: string; banner?: string }> = {
     icon: "ui_gamemodeicon_global_hse_operation_imperator",
     banner: "ui_interstitial_global_hse_operation_imperator",
   },
+  "hse-global-blood-tithe": {
+    icon: "ui_gamemodeicon_global_hse_blood_tithe",
+    banner: "ui_interstitial_global_hse_blood_tithe",
+  },
   "hse-arsenal-of-war": {
     icon: "ui_gamemodeicon_arsenalofwar",
     banner: "ui_interstitial_arsenal_of_war",
@@ -176,6 +180,7 @@ const homeScreenEventPoints: Record<string, string> = {
   "hse-global-conflict-operations": "ui_icon_resource_event_conflictoperations",
   "hse-global-operation-imperator":
     "ui_icon_resource_global_hse_operation_imperator",
+  "hse-global-blood-tithe": "ui_icon_resource_event_global_hse_blood_tithe",
   "hse-arsenal-of-war": "ui_icon_resource_event_arsenalofwar",
   "hse-machine-hunt": "ui_icon_resource_event_machinehunt",
   "hse-terminator-boost":

@@ -16,9 +16,10 @@ import { CountdownChip, HomeEventVisual } from "./home-event-visual"
 import { LegendaryEventPlanButton } from "./legendary-event-plan-button"
 import { useHomeEventName } from "./use-home-event-name"
 
-/** Home's "Upcoming events" card: the next Home Screen Events, Legendary Events, Campaign Event and Incursion by start, three
- *  rows at most, the next Legendary Event always among them unless one is live (then it is in Right
- *  now). Distinct from the Events calendar. Each row links to its own destination. */
+/** Home's "Upcoming events" card: the next occurrence of each kind (Home Screen Event, Legendary
+ *  Event, Campaign Event, Incursion, Quest, Hero Release Event, event shop) by start; a shop with no
+ *  start date yet reads "Start date TBA". Distinct from the Events calendar. Each row links to its
+ *  own planner page. */
 export function UpcomingEvents({ events }: { events: HomeEventsState }) {
   const { t } = useTranslation("common")
 
@@ -113,6 +114,7 @@ function UpcomingEventRow({
   const { t, i18n } = useTranslation("common")
   const dateLocale = useDateLocale()
   const eventName = useHomeEventName()
+  const dateTba = row.type === "eventShop" && row.dateTba
   const startsIn = t("home.events.startsIn", {
     when: formatEventCountdown(row.startMs, nowMs, i18n.language, {
       withHours: true,
@@ -135,15 +137,19 @@ function UpcomingEventRow({
             className="block text-sm text-muted-foreground"
             data-testid="home-events-start"
           >
-            {new Date(row.startMs).toLocaleString(dateLocale, {
-              dateStyle: "medium",
-              timeStyle: "short",
-            })}
+            {dateTba
+              ? t("home.events.startDateTba")
+              : new Date(row.startMs).toLocaleString(dateLocale, {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
           </span>
         </span>
       </Link>
       <div className="flex shrink-0 flex-col items-end gap-1.5">
-        <CountdownChip className="text-muted-foreground" text={startsIn} />
+        {dateTba ? null : (
+          <CountdownChip className="text-muted-foreground" text={startsIn} />
+        )}
         {row.type === "legendaryEvent" ? (
           <LegendaryEventPlanButton eventId={row.unitId} />
         ) : null}

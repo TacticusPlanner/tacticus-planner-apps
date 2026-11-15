@@ -798,6 +798,7 @@
       "live": "LIVE",
       "endsIn": "Endet in {{when}}",
       "startsIn": "Beginnt in {{when}}",
+      "startDateTba": "Startdatum folgt",
       "empty": "Keine Events geplant.",
       "error": "Events konnten nicht geladen werden.",
       "loading": "Events werden geladen…",

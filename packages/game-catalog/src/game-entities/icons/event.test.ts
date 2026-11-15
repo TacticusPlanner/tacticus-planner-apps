@@ -17,6 +17,15 @@ describe("eventIcon", () => {
     expect(eventIcon("hse-purge-order", "HomeScreenEvent")).toBe(
       `${base}/liveevents/ui_gamemodeicon_killtyranids.webp`
     )
+    expect(eventIcon("hse-global-blood-tithe", "HomeScreenEvent")).toBe(
+      `${base}/liveevents/ui_gamemodeicon_global_hse_blood_tithe.webp`
+    )
+    expect(homeScreenEventBanner("hse-global-blood-tithe")).toBe(
+      `${base}/liveevents/ui_interstitial_global_hse_blood_tithe.webp`
+    )
+    expect(homeScreenEventPointsIcon("hse-global-blood-tithe")).toBe(
+      `${base}/liveevents/ui_icon_resource_event_global_hse_blood_tithe.webp`
+    )
   })
 
   it("picks a Faction Boost medallion by the boosted faction", () => {

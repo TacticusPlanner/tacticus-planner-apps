@@ -798,6 +798,7 @@
       "live": "EN VIVO",
       "endsIn": "Termina en {{when}}",
       "startsIn": "Empieza en {{when}}",
+      "startDateTba": "Fecha de inicio por anunciar",
       "empty": "No hay eventos programados.",
       "error": "No se pudieron cargar los eventos.",
       "loading": "Cargando eventos…",

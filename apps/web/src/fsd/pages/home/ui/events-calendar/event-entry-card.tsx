@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
-import { ExternalLink } from "lucide-react"
+import { ArrowRight, ExternalLink } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -19,6 +20,7 @@ import {
   useDateLocale,
   resolveEventFamily,
 } from "@/shared/lib"
+import { useCatalogDataset } from "@/shared/local-data"
 import { EventIcon } from "@/shared/ui"
 
 import type {
@@ -28,6 +30,10 @@ import type {
 } from "../../model/events-calendar.types"
 import { resolveEventDisplayName } from "../../model/resolve-event-display"
 import { resolveEventWikiUrl } from "../../model/event-wiki-links"
+import {
+  eventShopIdForOccurrence,
+  resolveEventPlannerPath,
+} from "../../model/event-planner-links"
 
 const NAMESPACES = ["events", "characters", "factions", "progression"] as const
 
@@ -75,8 +81,39 @@ function EntryStateText({ entry }: { entry: EventEntryViewModel }) {
   )
 }
 
-/** Opens an entry's details: full name, local dates, live/projected state and its Wiki link. The
- *  trigger is the entry itself, so the Wiki action no longer crowds the bar. */
+/** The popover's link to the entry's planner page (HSE, HRE, Quest, event shop, ...), if it has one. */
+function PlannerLink({ entry }: { entry: EventEntryViewModel }) {
+  if (entry.definitionType === "ShopEvent") {
+    return <EventShopPlannerLink entry={entry} />
+  }
+  return <PlannerLinkButton to={resolveEventPlannerPath(entry)} />
+}
+
+/** An event shop occurrence links to its own shop, found in the served event shops. */
+function EventShopPlannerLink({ entry }: { entry: EventEntryViewModel }) {
+  const shops = useCatalogDataset("event-shops")
+  const shopId =
+    shops.status === "ready"
+      ? eventShopIdForOccurrence(entry, shops.data)
+      : undefined
+  return <PlannerLinkButton to={resolveEventPlannerPath(entry, shopId)} />
+}
+
+function PlannerLinkButton({ to }: { to: string | undefined }) {
+  const { t } = useTranslation("events")
+  if (!to) return null
+  return (
+    <Button asChild size="xs">
+      <Link data-testid="event-planner-link" to={to}>
+        {t("plannerLink")}
+        <ArrowRight data-icon="inline-end" />
+      </Link>
+    </Button>
+  )
+}
+
+/** Opens an entry's details: full name, local dates, live/projected state, its planner page and its
+ *  Wiki link. The trigger is the entry itself, so the actions no longer crowd the bar. */
 function EventDetailsPopover({
   entry,
   children,
@@ -118,14 +155,17 @@ function EventDetailsPopover({
           {entry.confirmed ? null : (
             <Badge variant="outline">{t("badges.projected")}</Badge>
           )}
-          {wikiUrl ? (
-            <Button asChild className="ml-auto" size="xs" variant="outline">
-              <a href={wikiUrl} rel="noopener noreferrer" target="_blank">
-                {t("wikiLink")}
-                <ExternalLink data-icon="inline-end" />
-              </a>
-            </Button>
-          ) : null}
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            {wikiUrl ? (
+              <Button asChild size="xs" variant="outline">
+                <a href={wikiUrl} rel="noopener noreferrer" target="_blank">
+                  {t("wikiLink")}
+                  <ExternalLink data-icon="inline-end" />
+                </a>
+              </Button>
+            ) : null}
+            <PlannerLink entry={entry} />
+          </div>
         </div>
         {entry.phases.length > 0 ? <PhaseList phases={entry.phases} /> : null}
         {entry.confirmed ? null : (

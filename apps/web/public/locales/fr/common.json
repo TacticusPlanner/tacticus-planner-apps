@@ -798,6 +798,7 @@
       "live": "EN COURS",
       "endsIn": "Se termine dans {{when}}",
       "startsIn": "Commence dans {{when}}",
+      "startDateTba": "Date de début à venir",
       "empty": "Aucun événement programmé.",
       "error": "Impossible de charger les événements.",
       "loading": "Chargement des événements…",
