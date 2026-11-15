@@ -145,11 +145,7 @@ describe("TodayGlance", () => {
     // Each tile is a flat row until it gets its own card back from 42rem.
     const tile = screen.getByTestId("energy-usage")
     expect(tile).toHaveClass("flex-row", "ring-0", "bg-transparent")
-    expect(tile).toHaveClass(
-      "@2xl:flex-col",
-      "@2xl:ring-1",
-      "@2xl:bg-card"
-    )
+    expect(tile).toHaveClass("@2xl:flex-col", "@2xl:ring-1", "@2xl:bg-card")
   })
 
   it("has no daily reset or countdown tile", () => {

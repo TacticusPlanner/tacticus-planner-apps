@@ -77,9 +77,7 @@ describe("TodayDashboard", () => {
       "@[84rem]:grid-cols-4",
       "items-start"
     )
-    expect(screen.getByTestId("today-plan-area")).toHaveClass(
-      "@2xl:col-span-2"
-    )
+    expect(screen.getByTestId("today-plan-area")).toHaveClass("@2xl:col-span-2")
   })
 
   it("puts the bonus card in the plan's place at the energy limit, with its caption and every entry", () => {
