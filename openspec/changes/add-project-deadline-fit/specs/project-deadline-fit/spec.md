@@ -8,23 +8,23 @@ On Goals scoped to a project whose target has a deadline that has not passed, ea
 
 - Assumption: Done By is the global-plan date, in UTC calendar days, anchored to each goal's target.
 
-#### Scenario: Guild War season 29, worked example
+#### Scenario: Legendary Event next run, worked example
 
-- **GIVEN** a project targets Guild War season 29, whose deadline is 2026-11-27T09:00Z
+- **GIVEN** a project targets the Legendary Event Uthar with no run, and Uthar's next run starts 2026-11-27T00:00Z, so the deadline is 2026-11-27T00:00Z
 - **AND** its Active goals in priority order are Ragnar Rank (Done By Nov 26), Kharn Ascension (Done By Nov 27) and Calgar Rank (Done By Dec 10)
 - **WHEN** the fits are computed
 - **THEN** the completion instants are 2026-11-27T00:00Z, 2026-11-28T00:00Z and 2026-12-11T00:00Z
-- **AND** Ragnar fits (00:00 is before 09:00 on Nov 27)
-- **AND** Kharn misses by ceil(15 h / 24 h) = 1, shown "Misses by 1 d"
-- **AND** Calgar misses by ceil(13 d 15 h / 1 d) = 14, shown "Misses by 14 d"
+- **AND** Ragnar fits (its completion instant equals the deadline)
+- **AND** Kharn misses by ceil(24 h / 24 h) = 1, shown "Misses by 1 d"
+- **AND** Calgar misses by ceil(14 d / 1 d) = 14, shown "Misses by 14 d"
 
 ### Requirement: Fit labels carry an accent
 
-A fitting goal SHALL carry the on-track accent. A goal missing by 1 to 7 days SHALL carry the caution accent, and one missing by more than 7 days the urgent accent. These are the Season fit tokens, with the same contrast targets (`goal-visual-accessibility`). The text label is always shown, so colour never carries the meaning alone. Desktop rows and mobile cards SHALL show the same label and accent.
+A fitting goal SHALL carry the on-track accent. A goal missing by 1 to 7 days SHALL carry the caution accent, and one missing by more than 7 days the urgent accent. These are the Season fit tokens, with the same contrast targets (`goal-visual-accessibility`). The text label is always shown, so colour never carries the meaning alone. Table rows and cards (desktop Cards view and mobile) SHALL show the same label and accent.
 
 #### Scenario: Accents for the worked example
 
-- **WHEN** the Guild War season 29 goals render
+- **WHEN** the Uthar project's goals render
 - **THEN** Ragnar has the on-track accent, Kharn the caution accent and Calgar the urgent accent
 
 ### Requirement: A header summarizes the project deadline
@@ -33,18 +33,18 @@ The targeted scope SHALL show a header naming the deadline and the count: "Deadl
 
 #### Scenario: Counts with a reached and a paused goal
 
-- **GIVEN** the Guild War season 29 project also holds a Reached Abaddon Rank goal and a Paused Trajann Ascension goal
+- **GIVEN** the Uthar project also holds a Reached Abaddon Rank goal and a Paused Trajann Ascension goal
 - **WHEN** the header renders
-- **THEN** it reads "Deadline: GW S29 starts Nov 27 · 2 of 4 fit · 1 not estimated"
+- **THEN** it reads "Deadline: LE · Uthar starts Nov 27 · 2 of 4 fit · 1 not estimated"
 
 ### Requirement: A divider marks the first goal that misses
 
-With Group set to None, the list SHALL render a divider just before the first eligible goal in display order that misses, reading "<chip> <ends|starts> <date>. Goals below finish later." There SHALL be no divider when no goal misses or when Group is Type or Unit. The divider SHALL NOT be draggable or selectable, and SHALL appear in mobile reorder mode, as Season fit's divider does.
+With Group set to None, the list SHALL render a divider just before the first eligible goal in display order that misses, reading "<chip> <ends|starts> <date>. Goals below finish later." There SHALL be no divider when no goal misses or when Group is Type or Unit. The divider SHALL NOT be draggable or selectable, and SHALL render in each view (Table row, full-width grid row in desktop Cards view, list item on mobile and in mobile reorder mode) as Season fit's divider does.
 
 #### Scenario: Divider placement
 
-- **WHEN** the Guild War season 29 goals render with Group None
-- **THEN** the divider sits between Ragnar and Kharn and reads "GW S29 starts Nov 27. Goals below finish later."
+- **WHEN** the Uthar project's goals render with Group None
+- **THEN** the divider sits between Ragnar and Kharn and reads "LE · Uthar starts Nov 27. Goals below finish later."
 
 ### Requirement: An ended or unavailable deadline shows no fits
 
@@ -62,8 +62,8 @@ On the Projects page and in the home widget, the card of a non-archived project 
 
 #### Scenario: Card count
 
-- **WHEN** the Projects page renders the Guild War season 29 project
-- **THEN** its card shows "GW S29" and "2 of 4 fit"
+- **WHEN** the Projects page renders the Uthar project
+- **THEN** its card shows "LE · Uthar" and "2 of 4 fit"
 
 ### Requirement: The unscoped Goals page shows no project fits
 

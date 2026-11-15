@@ -46,3 +46,9 @@ A project card with a Legendary Event target SHALL show the chip "LE · <unit na
 - **GIVEN** Uthar's run 3 is not announced and its earliest estimated start is 2027-03-02T00:00Z
 - **WHEN** the user hovers or focuses the chip "LE · Uthar R3"
 - **THEN** the tooltip reads "Run 3 starts ~Mar 2"
+
+#### Scenario: Event left the catalog
+
+- **GIVEN** a project targets run 2 of an event the catalog no longer serves
+- **WHEN** the Projects page renders
+- **THEN** the chip shows "LE · <eventId> R2" without a link or date

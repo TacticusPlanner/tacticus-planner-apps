@@ -1,0 +1,5 @@
+## Decisions
+
+1. **Bulk add sends one request per project, in sequence.** Each uses today's single-destination path, including its `membershipStale` retry. They run one after another, so the toasts and the cache updates stay simple. The result is one toast: "Added 3 goals to Chaos Core and Team Lavi", or "Added to Chaos Core. Team Lavi failed. Retry" with Retry for the failed ones only.
+2. **Add to another project… reuses the membership picker** from the Edit goal dialog (`features/goal-planning/ui/projects/goal-projects-field.tsx`) in a small dialog (desktop) or sheet (mobile), saving only memberships. It is placed right after Edit in every goal row menu, in Table and Cards view, scoped or not. Existing scenarios that enumerate row menus predate the move items and describe relative order; they are unchanged.
+3. **Desktop and mobile.** The bulk picker on desktop is a popover with checkboxes; on mobile it is the existing sheet with checkboxes. No tour step changes: the bulk actions step already points at Add to project.

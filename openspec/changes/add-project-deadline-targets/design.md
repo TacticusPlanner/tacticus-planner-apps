@@ -12,10 +12,9 @@
 
 1. **Owning slices and public APIs.**
    - `entities/game-event` (new): `resolveSeasonWindows` and `SeasonWindows`, moved unchanged from `features/goal-planning/model/season-fit/season-windows.ts`, plus a new `seasonStartMs(definition, occurrences, season)` for pinned seasons. Public API: `@/entities/game-event`. `features/goal-planning` Season fit imports it from there.
-   - `entities/legendary-event`: `legendaryEventRunDates` and its types, moved from `pages/legendary-events/lib/run-dates.ts`. The page re-imports them from the entity.
-   - `entities/project/model/deadline/`: `resolveProjectDeadline`, `projectTargetLabel` and `nextTarget` (for Move to next season). It reads the two entities through `@x` files (`entities/game-event/@x/project.ts`, `entities/legendary-event/@x/project.ts`). `useProjectDeadline(project)` wraps it with `useCatalogDataset` and the LE catalog.
+   - `entities/project/model/deadline/`: `add-project-deadline-fit` creates `resolveProjectDeadline` and `useProjectDeadline` for Legendary Event targets, with `legendaryEventRunDates` already in `entities/legendary-event`. This change adds the season and date branches, `projectTargetLabel` and `nextTarget` (for Move to next season), reading `entities/game-event` through `entities/game-event/@x/project.ts`.
    - No page-to-page or feature-to-feature import is added. `add-project-deadline-fit` consumes `useProjectDeadline` from `@/entities/project`.
-2. **One canonical result.** `ProjectDeadline = { status: "loading" } | { status: "unavailable" } | { status: "ready"; deadlineMs; seasonNumber?; run?; estimated; ended }`. The chip, the tooltip, the ended action and the fit view (next change) all derive from it.
+2. **One canonical result.** `ProjectDeadline` from `add-project-deadline-fit` gains `seasonNumber?` on `ready`. The chip, the tooltip, the ended action and the fit view all derive from it.
 3. **Deadline instants** (pure function, `nowMs` injected):
    - Battle Pass and Guild Raid, season S: the start of season S+1 (= the end of S, as in Season fit). Rolling: the current season's deadline.
    - Guild War, season S: the start of season S. Rolling: the first season start after now.
@@ -24,11 +23,12 @@
    - Custom date D: 00:00 UTC on D + 1 day.
 4. **Season picker range.** The next 5 seasons whose deadline is after now: for Battle Pass and Guild Raid the current season and the next 4, for Guild War the next 5 season starts. Rolling is listed first.
 5. **Ended.** Only a pinned season, a pinned run, a "next run" after run 3 has started, or a past date can be ended. `nextTarget` gives season S+1 or run N+1. It is offered for seasons and runs 1 and 2. A run 3 or a date has no next target, so the user edits the target instead.
-6. **Desktop and mobile.** The Related to field is a two-step control in the same Sheet on both forms (kind select, then detail), with no layout split. The Projects tour's step targets the same `data-testid` on both.
+6. **Kind filter.** The chips are page-local state on the Projects route, defaulting to All, kept in `?kind=` so they survive reload and back navigation, and reset to All when the chosen kind no longer exists among the listed projects. The kind list derives from the loaded projects. Desktop shows one row above the list; mobile a horizontally scrolling row. The Projects tour gets a `kindFilter` step (`[data-testid="projects-kind-filter"]`), skipped when the chips are hidden.
+7. **Desktop and mobile.** The Related to field is a two-step control in the same Sheet on both forms (kind select, then detail), with no layout split. The Projects tour's step targets the same `data-testid` on both.
 
-7. **Catalog values used in the spec examples** (3 Nov 2026): `battle-pass` season 40 at 2026-08-02T00:00Z, every 35 days; `guild-raid-season` season 112 at 2026-10-21T10:00Z, every 14 days; `guild-war-season` season 28 at 2026-10-23T09:00Z, every 35 days. All three are `Fixed`.
+8. **Catalog values used in the spec examples** (3 Nov 2026): `battle-pass` season 40 at 2026-08-02T00:00Z, every 35 days; `guild-raid-season` season 112 at 2026-10-21T10:00Z, every 14 days; `guild-war-season` season 28 at 2026-10-23T09:00Z, every 35 days. All three are `Fixed`.
 
 ## Risks / Trade-offs
 
-- Moving `resolveSeasonWindows` and `legendaryEventRunDates` touches Season fit and the LE pages. Their existing tests move with the code and keep running against the new import paths, and `pnpm lint:fsd` guards the boundaries.
+- Moving `resolveSeasonWindows` touches Season fit. Their existing tests move with the code and keep running against the new import paths, and `pnpm lint:fsd` guards the boundaries.
 - A pinned season number can drift if the catalog's `seasonNumberAtAnchor` is corrected later. That is accepted, and the chip always shows the resolved date in its tooltip.

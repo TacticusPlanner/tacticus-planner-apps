@@ -19,6 +19,6 @@ Every project card SHALL show color, name, description when present, and a goal/
 
 #### Scenario: Targeted card shows its fit count
 
-- **GIVEN** a project targets Guild War season 29 and 2 of its 4 counted goals fit
+- **GIVEN** a project targets the Legendary Event Uthar and 2 of its 4 counted goals fit
 - **WHEN** its card renders with summary data available
-- **THEN** it shows "2 of 4 fit" beside the "GW S29" chip
+- **THEN** it shows "2 of 4 fit" beside the "LE · Uthar" chip

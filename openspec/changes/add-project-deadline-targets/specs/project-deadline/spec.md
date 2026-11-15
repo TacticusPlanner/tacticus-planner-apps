@@ -73,30 +73,24 @@ The client SHALL resolve a season target to one UTC instant. For Battle Pass and
 - **THEN** the deadline is 2026-10-23T09:00Z + (29 − 28) × 35 days = 2026-11-27T09:00Z
 - **AND** a rolling Guild War target resolves to the same instant, because season 28's start (2026-10-23T09:00Z) is before now and season 29's is the first start after now
 
-### Requirement: Legendary Event and date targets resolve to a run start or the next day
+### Requirement: Date targets resolve to the next day
 
-A Legendary Event target with run N SHALL resolve to run N's start. When the run is unannounced, it SHALL use the earliest estimate (`legendary-event-run-date-estimate`) and be marked estimated. A Next run target SHALL resolve to the first run whose start is after now. A date target D SHALL resolve to 00:00 UTC on the day after D, so a goal done on D fits.
-
-#### Scenario: Legendary Event run
-
-- **GIVEN** the catalog announces `lostaBile` run 1 at 2026-11-08T00:00Z
-- **WHEN** a target `{ eventId "lostaBile", run 1 }` is resolved
-- **THEN** the deadline is 2026-11-08T00:00Z and it is not estimated
+A date target D SHALL resolve to 00:00 UTC on the day after D, so a goal done on D fits. Legendary Event targets, now with a run, resolve as `project-deadline`'s Legendary Event rule says.
 
 #### Scenario: Custom date
 
 - **WHEN** a target `{ kind "customDate", date "2026-11-20" }` is resolved
 - **THEN** the deadline is 2026-11-21T00:00Z
 
-### Requirement: Unresolvable targets are unavailable
+### Requirement: Unresolvable season targets are unavailable
 
-While the catalog loads, a target's deadline SHALL be loading. A target whose definition or event the catalog does not serve, or whose Legendary Event run has no start, SHALL resolve to unavailable. Its chip SHALL show its kind and season number or event id without a date or tooltip.
+While the catalog loads, a season target's deadline SHALL be loading. A season target whose definition the catalog does not serve SHALL resolve to unavailable. Its chip SHALL show its kind and season number without a date or tooltip.
 
-#### Scenario: Event left the catalog
+#### Scenario: Definition left the catalog
 
-- **GIVEN** a project targets run 2 of an event the catalog no longer serves
+- **GIVEN** a project targets Guild War season 29 and the catalog no longer serves `guild-war-season`
 - **WHEN** the Projects page renders
-- **THEN** the chip shows "LE · <eventId> R2" without a link or date
+- **THEN** the chip shows "GW · S29" without a date or tooltip
 
 ### Requirement: Target chips name the kind and the resolved season
 
@@ -110,7 +104,7 @@ A project card with a season or date target SHALL show a chip. A pinned season r
 
 ### Requirement: A passed pinned target reads Ended
 
-A target whose deadline is at or before now SHALL be **ended**. That covers a pinned season, a pinned Legendary Event run, a Next run target once run 3 has started, and a past date. A rolling season target is never ended. An ended target's chip SHALL read "<chip> · Ended". A target SHALL never change without a user action.
+A target whose deadline is at or before now SHALL be **ended**. For season and date targets that covers a pinned season and a past date; Legendary Event targets end as `project-deadline`'s Legendary Event rule says. A rolling season target is never ended. An ended target's chip SHALL read "<chip> · Ended".
 
 #### Scenario: Ended date
 

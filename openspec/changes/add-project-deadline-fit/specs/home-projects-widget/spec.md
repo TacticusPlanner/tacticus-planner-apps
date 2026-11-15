@@ -16,9 +16,9 @@ Implementation note: the estimate subsystem now lives in `features/goal-planning
 
 #### Scenario: Targeted card shows its fit count
 
-- **GIVEN** a project targeting Guild War season 29 with 2 of 4 counted goals fitting
+- **GIVEN** a project targeting the Legendary Event Uthar with 2 of 4 counted goals fitting
 - **WHEN** its card renders in the widget
-- **THEN** the card also shows "GW S29" and "2 of 4 fit"
+- **THEN** the card also shows "LE · Uthar" and "2 of 4 fit"
 
 #### Scenario: No target, no plan run
 
