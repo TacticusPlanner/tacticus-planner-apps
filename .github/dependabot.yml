@@ -1,0 +1,95 @@
+# Dependabot version updates. Security alerts and security updates are repo settings
+# (Settings → Advanced Security), not configured here.
+version: 2
+updates:
+  # pnpm workspace: root pnpm-lock.yaml plus the catalog: in pnpm-workspace.yaml.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Kyiv
+    # Waits before offering a new release; stays above pnpm's 1-day minimumReleaseAge.
+    # Security updates ignore the cooldown.
+    cooldown:
+      semver-patch-days: 3
+      semver-minor-days: 7
+      semver-major-days: 14
+    open-pull-requests-limit: 5
+    versioning-strategy: increase
+    commit-message:
+      prefix: build(deps)
+      prefix-development: build(deps-dev)
+    groups:
+      react:
+        patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
+      vite-vitest:
+        patterns:
+          - vite
+          - "@vitejs/*"
+          - vitest
+          - "@vitest/*"
+      lint:
+        patterns:
+          - eslint
+          - "@eslint/*"
+          - "eslint-plugin-*"
+          - typescript-eslint
+          - globals
+          - steiger
+          - "@feature-sliced/*"
+          - knip
+      tailwind-ui:
+        patterns:
+          - tailwindcss
+          - "@tailwindcss/*"
+          - tailwind-merge
+          - tw-animate-css
+          - radix-ui
+          - shadcn
+          - class-variance-authority
+          - lucide-react
+      # Releases several times a week.
+      posthog:
+        patterns:
+          - posthog-js
+          - "@posthog/*"
+      prod-minor-patch:
+        dependency-type: production
+        update-types:
+          - minor
+          - patch
+      dev-minor-patch:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # 6.30.0+ breaks catalog: resolution (see the vulnerabilities-scan skill); lift once fixed upstream.
+      - dependency-name: knip
+        versions:
+          - ">=6.30.0"
+      # Tracks the Node 24 runtime pinned in engines and the workflows.
+      - dependency-name: "@types/node"
+        update-types:
+          - version-update:semver-major
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+      timezone: Europe/Kyiv
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ci(deps)
+    groups:
+      actions:
+        patterns:
+          - "*"
