@@ -5,7 +5,7 @@ import type {
   UpgradeId,
 } from "@workspace/game-domain"
 
-import { shardResourceId } from "@/features/goal-farming/@x/daily-raids"
+import { shardResourceId } from "@/entities/goal-farming"
 
 import type {
   DailyRaidBattleResource,

@@ -5,7 +5,7 @@ import { RarityIcon, UpgradeIcon } from "@/shared/ui"
 import {
   CampaignInsightList as SharedCampaignInsightList,
   type CampaignInsight,
-} from "@/features/campaign-insights"
+} from "@/entities/campaign-insight"
 
 import type { BaseUpgradeViewModel } from "./character-lookup-results.view-model"
 

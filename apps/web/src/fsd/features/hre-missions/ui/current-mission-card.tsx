@@ -22,8 +22,8 @@ import {
   hreMission,
   type HreMission,
   type HreObjective,
-} from "../model/hre-missions"
-import { isMissionComplete, type HreProgress } from "../model/hre-progress"
+} from "@/entities/hre-mission"
+import { isMissionComplete, type HreProgress } from "@/entities/hre-mission"
 import type { HreProgressActions } from "../model/use-hre-progress"
 import { EntityIcon } from "@/shared/ui"
 

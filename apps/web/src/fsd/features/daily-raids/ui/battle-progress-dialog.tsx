@@ -60,8 +60,10 @@ import {
   medalIcon,
   milestoneIcons,
 } from "../lib/battle-progress-icons"
-import { campaignEventProgressKey } from "../model/campaign-event-eligibility"
-import { useEffectiveCampaignEventProgress } from "../model/use-eligible-campaign-battles"
+import {
+  campaignEventProgressKey,
+  useEffectiveCampaignEventProgress,
+} from "@/entities/player-data-override"
 import { OneTimeRewards } from "./one-time-rewards"
 
 const MEDALS = [0, 1, 2, 3] as const

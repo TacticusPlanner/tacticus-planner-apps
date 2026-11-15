@@ -1,0 +1,112 @@
+import { useTranslation } from "react-i18next"
+import { datamineAssetUrl, shardIcon } from "@workspace/game-catalog"
+
+import { shopCurrencyIcon } from "@/entities/shop-reward"
+import { energyIconUrl, EntityIcon } from "@/shared/ui"
+import type { useProgressionPreview } from "../../model/goal-creation-form/use-progression-preview"
+type ProgressionPreviewResult = ReturnType<typeof useProgressionPreview>
+
+export function ProgressionPreview({
+  preview,
+}: {
+  preview: ProgressionPreviewResult
+}) {
+  const { t } = useTranslation(["common", "shops"])
+  if (!preview) return null
+  return (
+    <div
+      className="grid gap-1 rounded-2xl border p-3 text-sm"
+      data-testid="create-goal-progression-preview"
+    >
+      <p className="font-medium">{t("goals.create.previewTitle")}</p>
+      <p className="flex items-center gap-1.5">
+        <EntityIcon alt="" className="size-5" src={shardIcon("Regular")} />
+        {t("goals.create.ascension.shards", {
+          regular: preview.regularShards,
+          mythic: preview.mythicShards,
+        })}
+      </p>
+      {Object.entries(preview.orbsByType).map(([rarity, count]) => (
+        <p className="flex items-center gap-1.5" key={rarity}>
+          <EntityIcon
+            alt=""
+            className="size-6"
+            src={datamineAssetUrl(
+              `atlases/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
+            )}
+          />
+          {rarity} {t("goals.create.ascension.orbs", { count })}
+        </p>
+      ))}
+      {/* Each selected non-campaign source's contribution over the estimate window (contribution-
+          share basis) — how many Onslaught runs, and how much shop currency per currency type
+          (align-acquisition-source-yield-estimates). */}
+      {preview.onslaughtTokens > 0 ? (
+        <p
+          className="flex items-center gap-1.5"
+          data-testid="create-goal-preview-onslaught-tokens"
+        >
+          <EntityIcon alt="" className="size-5" src={shardIcon("Regular")} />
+          {t("goals.create.acquisitionSources.onslaughtTokens", {
+            count: preview.onslaughtTokens,
+          })}
+        </p>
+      ) : null}
+      {preview.shopCurrencySpend.map(({ currency, amount }) => {
+        const icon = shopCurrencyIcon(currency)
+        return (
+          <p
+            className="flex items-center gap-1.5"
+            data-testid={`create-goal-preview-currency-${currency}`}
+            key={currency}
+          >
+            {icon ? (
+              <EntityIcon alt="" className="size-5 shrink-0" src={icon} />
+            ) : null}
+            {t("goals.create.acquisitionSources.shopCurrencySpend", {
+              amount,
+              currency: t(`shops:currency.${currency}`, {
+                defaultValue: currency,
+              }),
+            })}
+          </p>
+        )
+      })}
+      {/* One line for the energy, raids and days (the combined farm-day simulation over every selected
+          source, which also folds in an enabled Unlock's shards); Ascension's own
+          energy-for-remaining-shards figure stands in only while that has no estimate. */}
+      {preview.combined?.status === "Estimated" ? (
+        <p
+          className="flex items-center gap-1.5 font-medium"
+          data-testid="create-goal-progression-resource-line"
+        >
+          <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />
+          {t("goals.create.ascension.resourceLine", {
+            energy: preview.combined.energyTotal,
+            raids: preview.combined.raidsTotal,
+            days: preview.combinedDays.toFixed(1),
+          })}
+        </p>
+      ) : preview.combined?.status === "Blocked" ? (
+        <p className="text-muted-foreground">
+          {t(`goals.estimate.blocked.${preview.combined.reason}`)}
+        </p>
+      ) : preview.ascensionShardEnergy ? (
+        <p className="flex items-center gap-1.5 text-muted-foreground">
+          <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />
+          {preview.ascensionShardEnergy.status === "Blocked"
+            ? t(`goals.estimate.blocked.${preview.ascensionShardEnergy.reason}`)
+            : t("goals.create.shardLocations.remainingEnergy", {
+                energy: preview.ascensionShardEnergy.energyTotal,
+              })}
+        </p>
+      ) : (
+        <p className="font-medium">
+          {t("goals.create.ascension.combinedEstimate", {
+            days: preview.combinedDays.toFixed(1),
+          })}
+        </p>
+      )}
+    </div>
+  )
+}

@@ -2,7 +2,7 @@ import { render, screen, within } from "@/test/render"
 import { describe, expect, it } from "vitest"
 import type { CampaignId } from "@workspace/game-domain"
 
-import type { EstimateResourceId } from "@/features/goal-farming"
+import type { EstimateResourceId } from "@/entities/goal-farming"
 
 import { InsightsCampaignProgression } from "./insights-campaign-progression"
 

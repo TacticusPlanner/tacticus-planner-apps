@@ -1,4 +1,4 @@
-import type { FilteredOutNeed } from "@/features/goal-farming/@x/daily-raids"
+import type { FilteredOutNeed } from "@/entities/goal-farming"
 
 /** One material the applied Raids Filters left without an allowed node, with the goals waiting on
  *  it in plan priority order. `pinned` marks a material at least one goal pinned to an excluded

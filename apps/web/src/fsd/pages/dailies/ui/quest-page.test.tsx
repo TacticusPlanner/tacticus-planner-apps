@@ -17,7 +17,7 @@ import {
   vi,
 } from "vitest"
 
-import { CreateGoalLauncherProvider } from "@/features/goal-create"
+import { CreateGoalLauncherProvider } from "@/features/goal-planning"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { render, screen, waitFor, within } from "@/test/render"
 import {

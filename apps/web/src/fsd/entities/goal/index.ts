@@ -42,7 +42,10 @@ export {
 } from "./model/types"
 export { goalRevisionConflict } from "./model/goal-target-conflict"
 export {
+  activeProjectMembers,
   applyPositionMove,
+  globalPriorityOf,
+  type GoalPlanEntry,
   goalOrderConflict,
   holdsGlobalPosition,
   inFlightInGlobalOrder,

@@ -6,7 +6,7 @@ import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import { GoalTypeBadge } from "@/entities/goal"
 import { useGoalCatalog, type GoalMenuMoves } from "@/features/goal-planning"
-import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-create"
+import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-planning"
 import type { SortableRenderProps } from "@/shared/ui"
 import { GoalResourceChipList } from "../shared/goal-resource-chips"
 import {

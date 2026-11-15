@@ -1,6 +1,6 @@
 import type { CampaignId, Rarity } from "@workspace/game-domain"
 
-import type { CampaignInsight } from "@/features/campaign-insights/@x/goal-planning"
+import type { CampaignInsight } from "@/entities/campaign-insight"
 
 import type {
   AbilityMaterials,
@@ -8,7 +8,7 @@ import type {
   EstimateOutcome,
   EstimateResourceId,
   RankSlotAllocation,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 
 import type { CampaignLockReason } from "../unlock-paths/campaign-track-gate"
 

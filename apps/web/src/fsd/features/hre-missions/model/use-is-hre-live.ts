@@ -4,7 +4,7 @@ import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 import { combineReadStates, useReadState } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
-import { selectHreInstance } from "./hre-instance"
+import { selectHreInstance } from "@/entities/hre-mission"
 
 const TICK_MS = 60_000
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import type { LevelRules } from "@/features/goal-farming/@x/goal-planning"
+import type { LevelRules } from "@/entities/goal-farming"
 
 import { createPlanMissingResources } from "./plan-missing-resources"
 

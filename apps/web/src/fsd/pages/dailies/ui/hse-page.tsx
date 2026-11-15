@@ -19,10 +19,10 @@ import {
 } from "@/features/daily-raids"
 import {
   EventDetails,
-  hseSectionsShown,
   PointsProjection,
   useHseProjection,
 } from "@/features/home-screen-event-points"
+import { hseSectionsShown } from "@/entities/home-screen-event"
 
 import { useHseTeamRecommendations } from "@/features/team-recommendations"
 import { CampaignBattleDialog } from "@/widgets/battle-preview"

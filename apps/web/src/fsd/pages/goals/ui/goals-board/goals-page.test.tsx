@@ -13,7 +13,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 // The dialog has its own tests; here only which goal the page hands it and how it closes matter.
-vi.mock("@/features/goal-create/ui/goal-edit/goal-edit-dialog", () => ({
+vi.mock("@/features/goal-planning/ui/goal-edit/goal-edit-dialog", () => ({
   GoalEditDialog: ({
     goalId,
     onOpenChange,
@@ -37,19 +37,8 @@ vi.mock("@/features/goal-create/ui/goal-edit/goal-edit-dialog", () => ({
     ) : null,
 }))
 
-vi.mock("@/entities/player-data-override", () => ({
-  battleProgressQueries: {
-    current: () => ({
-      queryKey: ["player-data-overrides", "battle-progress"],
-      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
-    }),
-  },
-  campaignEventProgressQueries: {
-    current: () => ({
-      queryKey: ["player-data-overrides", "campaign-events"],
-      queryFn: () => Promise.resolve({ progress: [], revision: 1 }),
-    }),
-  },
+vi.mock("@/entities/player-data-override", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
   buildEffectiveCampaignEventProgress: () => new Map(),
   campaignEventTrackKey: (groupId: string, type: string) =>
     `${groupId}:${type}`,
@@ -81,6 +70,25 @@ vi.mock("@/entities/player-data-override", () => ({
   },
   onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
 }))
+vi.mock("@/entities/player-data-override/api/battle-progress.queries", () => ({
+  battleProgressQueries: {
+    current: () => ({
+      queryKey: ["player-data-overrides", "battle-progress"],
+      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
+    }),
+  },
+}))
+vi.mock(
+  "@/entities/player-data-override/api/campaign-event-progress.queries",
+  () => ({
+    campaignEventProgressQueries: {
+      current: () => ({
+        queryKey: ["player-data-overrides", "campaign-events"],
+        queryFn: () => Promise.resolve({ progress: [], revision: 1 }),
+      }),
+    },
+  })
+)
 
 vi.mock("@/entities/planning-setting", async (importOriginal) => {
   const actual =
@@ -266,7 +274,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 import { MemoryRouter, useLocation, useNavigate } from "react-router"
 
 import { GoalsPage } from ".//goals-page"
-import { CreateGoalLauncherProvider } from "@/features/goal-create"
+import { CreateGoalLauncherProvider } from "@/features/goal-planning"
 
 const onLaunch = vi.fn()
 

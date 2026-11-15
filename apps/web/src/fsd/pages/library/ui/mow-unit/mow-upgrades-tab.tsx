@@ -17,7 +17,7 @@ import { Label } from "@workspace/ui/components/label"
 import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { UpgradeWithFarmLocations } from "@/features/rank-lookup"
+import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 
 import { LevelSelect, RecipeIcons } from "./mow-upgrades-controls"

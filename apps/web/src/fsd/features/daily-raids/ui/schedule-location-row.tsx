@@ -1,4 +1,4 @@
-import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 
 import type {
   DailyRaidLocationViewModel,

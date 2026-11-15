@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import type { UpgradeWithFarmLocations } from "@/features/rank-lookup"
+import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 import { UpgradeIcon } from "@/shared/ui"
 
 /** One step's recipe as small material icons with counts; the name is the icon's accessible label. */

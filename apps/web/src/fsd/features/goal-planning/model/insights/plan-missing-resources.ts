@@ -5,7 +5,7 @@ import type {
   AbilityMaterials,
   GoalInventoryAllocation,
   LevelRules,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 
 import type { PlanMissingResources } from "./use-plan-insights.domain"
 

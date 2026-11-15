@@ -62,7 +62,7 @@ vi.mock("@/entities/player-data-override", () => ({
 vi.mock("@/entities/planning-setting", () => ({
   usePlanningSettings: () => stable.settings,
 }))
-vi.mock("@/features/goal-farming/@x/goal-planning", () => ({
+vi.mock("@/entities/goal-farming", () => ({
   toOnslaughtRunsPerDay: () => 1,
   useLevelRules: () => stable.levelRules,
 }))

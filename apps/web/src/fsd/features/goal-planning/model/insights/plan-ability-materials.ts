@@ -13,7 +13,7 @@ import {
   mowAbilityTrackLevel,
   type AbilityMaterials,
   type UnitCoverage,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 
 type Player = Parameters<typeof mowAbilityTrackLevel>[0]
 

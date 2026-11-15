@@ -18,8 +18,8 @@ import {
   type HseEventPointsState,
   type HseInstance,
   type HsePlayerRead,
-} from "./hse-event-points"
-import { useHseProjectionInputs } from "./use-hse-projection-inputs"
+} from "@/entities/home-screen-event"
+import { useHseProjectionInputs } from "@/entities/home-screen-event"
 
 const rosterStars = (
   units: readonly { unitId: string; progressionIndex: Progression }[]

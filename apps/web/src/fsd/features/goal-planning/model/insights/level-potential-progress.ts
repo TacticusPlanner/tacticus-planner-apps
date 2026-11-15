@@ -3,7 +3,7 @@ import {
   requiredLevelForGoal,
   type LevelRules,
   type LevelXpNeed,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import type { GoalDetail } from "@/entities/goal"
 
 import { levelPotentialRatio } from "../attainment/level-requirement-progress"

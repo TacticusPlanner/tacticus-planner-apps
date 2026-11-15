@@ -1,12 +1,10 @@
-// eslint-disable-next-line no-restricted-imports -- stands in for this module inside a vi.mock factory; the slice's public API re-exports the mocked module, so importing it here deadlocks.
 import {
   buildHseEventPointsState,
   type HseCatalogRead,
   type HseInstance,
   type HsePlayerRead,
-} from "@/features/home-screen-event-points/model/hse-event-points"
-// eslint-disable-next-line no-restricted-imports -- stands in for this module inside a vi.mock factory; the slice's public API re-exports the mocked module, so importing it here deadlocks.
-import { useHseProjectionInputs } from "@/features/home-screen-event-points/model/use-hse-projection-inputs"
+  useHseProjectionInputs,
+} from "@/entities/home-screen-event"
 
 import {
   hseDefinitionConfig,

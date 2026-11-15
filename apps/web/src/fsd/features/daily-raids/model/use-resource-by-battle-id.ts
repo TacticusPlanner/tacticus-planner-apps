@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
 
-import { mapUpgradeStorageToDomain } from "@/features/rank-lookup/@x/daily-raids"
+import { mapUpgradeStorageToDomain } from "@/entities/rank-lookup"
 import { useCatalogDataset } from "@/shared/local-data"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"

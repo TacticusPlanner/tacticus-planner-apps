@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import type { FilteredOutNeed } from "@/features/goal-farming/@x/daily-raids"
+import type { FilteredOutNeed } from "@/entities/goal-farming"
 
 import { groupFilteredOutByMaterial } from "./filtered-out-materials"
 

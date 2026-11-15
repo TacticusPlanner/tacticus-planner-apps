@@ -16,7 +16,7 @@ import {
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { UnitKind } from "@/entities/unit"
-import { ascensionResourceNeed } from "@/features/goal-farming"
+import { ascensionResourceNeed } from "@/entities/goal-farming"
 
 /** What the progression quick filters read of one owned unit. */
 export interface QuickFilterUnit {

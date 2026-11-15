@@ -64,7 +64,7 @@ vi.mock("@/features/goal-planning/model/shared/use-goal-catalog", () => ({
   useGoalCatalog: () => ({ getEntityName: (_type: string, id: string) => id }),
 }))
 vi.mock(
-  "@/features/goal-create/model/goal-creation-form/create-goal-launcher-context",
+  "@/features/goal-planning/model/goal-creation-form/create-goal-launcher-context",
   () => ({
     useCreateGoalLauncher: () => vi.fn(),
   })
@@ -100,7 +100,7 @@ vi.mock(
     }),
   })
 )
-vi.mock("@/features/goal-create/ui/goal-edit/goal-edit-dialog", () => ({
+vi.mock("@/features/goal-planning/ui/goal-edit/goal-edit-dialog", () => ({
   GoalEditDialog: () => null,
 }))
 vi.mock("@/entities/planning-setting", () => ({

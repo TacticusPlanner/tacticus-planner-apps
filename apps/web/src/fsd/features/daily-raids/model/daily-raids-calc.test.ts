@@ -17,18 +17,18 @@ import {
   type BattleId,
 } from "@workspace/game-domain"
 
-import type { GoalDetail } from "@/entities/goal"
+import { activeProjectMembers, type GoalDetail } from "@/entities/goal"
 import type {
   FarmingCharacter,
   FarmingUpgrade,
   FlatSupplier,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 
 import {
   selectFarmNodes,
   type EstimateResourceId,
   type EstimateUpgrade,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
 import {
@@ -37,9 +37,8 @@ import {
   campaignProgressKey,
   type CampaignEventProgressEntry,
   type CampaignProgressEntry,
-} from "./campaign-event-eligibility"
+} from "@/entities/player-data-override"
 import {
-  activeProjectMembers,
   calculateCombinedResourceUrgency,
   calculateResourceUrgency,
   calculateDailyRaids,

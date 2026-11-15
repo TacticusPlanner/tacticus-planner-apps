@@ -7,11 +7,8 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 
-import {
-  missionName,
-  type HreMission,
-  type HreTeamPlan,
-} from "@/features/hre-missions"
+import { missionName } from "@/features/hre-missions"
+import { type HreMission, type HreTeamPlan } from "@/entities/hre-mission"
 
 import {
   HRE_TEAM_SIZE,

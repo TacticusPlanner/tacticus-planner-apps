@@ -31,6 +31,17 @@ export {
   type SyncedCampaignEventProgress,
 } from "./model/campaign-event-progress"
 export {
+  availableCampaignBattles,
+  campaignEventProgressKey,
+  campaignProgressKey,
+  type CampaignEventProgressEntry,
+  type CampaignProgressEntry,
+} from "./model/campaign-event-eligibility"
+export {
+  useEffectiveCampaignEventProgress,
+  useEligibleCampaignBattles,
+} from "./model/use-eligible-campaign-battles"
+export {
   onslaughtReward,
   rewardKeys,
   type OnslaughtRewardKey,

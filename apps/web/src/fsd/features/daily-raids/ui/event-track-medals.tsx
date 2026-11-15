@@ -14,8 +14,10 @@ import {
   unclaimedTrackRewards,
   type TrackMedalStats,
 } from "../model/battle-progress"
-import { campaignEventProgressKey } from "../model/campaign-event-eligibility"
-import { useEffectiveCampaignEventProgress } from "../model/use-eligible-campaign-battles"
+import {
+  campaignEventProgressKey,
+  useEffectiveCampaignEventProgress,
+} from "@/entities/player-data-override"
 import { useSavedBattleProgress } from "../model/use-saved-battle-progress"
 import { BattleProgressDialog } from "./battle-progress-dialog"
 import { MedalStats } from "./medal-stats"

@@ -1,5 +1,4 @@
 export { useDailyRaids } from "./model/use-daily-raids"
-export { activeProjectMembers } from "./model/daily-raids-calc"
 // Raids Filters: the trigger and notice are shared by Today and the Dailies > HSE tab, which also
 // read the one persisted filter inside this slice (`useRaidsFilters`).
 export { RaidsFiltersTrigger } from "./ui/raids-filters/raids-filters-trigger"
@@ -42,8 +41,6 @@ export { EventLocationsSection } from "./ui/home-screen-event/event-locations-se
 export { calculateDailyRaids } from "./model/daily-raids-calc"
 // Exported so Today can cross-check its campaign-event status line against the very rule that
 // decides whether an event node is schedulable at all (see campaign-event-status.test.tsx).
-export { availableCampaignBattles } from "./model/campaign-event-eligibility"
-export { useEligibleCampaignBattles } from "./model/use-eligible-campaign-battles"
 export { flattenTodayLocations } from "./model/flatten-today-locations"
 // Shared by Dailies > Today and the Home raids widget: promotes Bonus Raids into Today once the plan is done.
 export { selectTodayRaids } from "./model/select-today-raids"

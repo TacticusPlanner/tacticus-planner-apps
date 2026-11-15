@@ -1,12 +1,12 @@
 import type { BattleId, CampaignId } from "@workspace/game-domain"
 
-import { dropRate } from "@/features/campaign-insights/@x/goal-planning"
+import { dropRate } from "@/entities/campaign-insight"
 import type {
   EstimateOutcome,
   EstimateResourceId,
   GoalInventoryAllocation,
   GoalNeed,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import type { Battle, FarmLocation } from "@/shared/lib"
 
 import {
