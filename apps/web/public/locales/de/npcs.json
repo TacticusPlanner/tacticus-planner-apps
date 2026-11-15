@@ -154,7 +154,10 @@
   "bloodBossTerminatorSurv": "Cezare",
   "bloodNpc1Intercessor": "Intercessor mit Sprungmodul",
   "bloodNpc1IntercessorSurv": "Intercessor mit Sprungmodul",
+  "bloodNpc2Terminator": "Terminator",
   "bloodTerminator_LHE": "Cezare",
+  "custoNpc1Sentinel": "Schildwache",
+  "custoNpc2Dreadnought": "Boudicari",
   "darkaBossAsmodaiLHE": "Asmodai",
   "darkaBossAzraelLHE": "Azrael",
   "darkaBossCompanionLHE": "Forcas",
@@ -337,6 +340,9 @@
   "powupReinforcement": "Truppenpunktverstärkung",
   "powupReinforcementShield": "Schildverstärkung",
   "powupResurrect": "Auferstehungsverstärkung",
+  "powupSummonSpawn_admecSmnElectropriest": "Elektropriester-Verbesserung",
+  "powupSummonSpawn_admecSmnTechpriest": "Maschinenseher-Techpriester-Verbesserung",
+  "powupSummonSpawn_admecSmnVanguard": "Skitarii-Strahlenkrieger-Verbesserung",
   "powupSummonSpawn_bloodSmnIntercessor": "Intercessor-mit-Sprungmodul-Verstärkung",
   "powupSummonSpawn_darkaSmnHellblaster": "Plasma-Interfector-Verstärkung",
   "powupSummonSpawn_darkaSmnTerminator": "Deathwing-Ritter-Verstärkung",
@@ -532,5 +538,6 @@
   "worldBossExecutionsLHE": "Tarvakh",
   "worldBossJakhalLHE": "Macer",
   "worldBossKharnLHE": "Khârn",
-  "worldBossTerminatorLHE": "Wrask"
+  "worldBossTerminatorLHE": "Wrask",
+  "worldNpc1Berzerker": "Khorne-Berserker"
 }

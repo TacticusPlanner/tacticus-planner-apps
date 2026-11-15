@@ -154,7 +154,10 @@
   "bloodBossTerminatorSurv": "Cezare",
   "bloodNpc1Intercessor": "Intercesor con propulsor de salto",
   "bloodNpc1IntercessorSurv": "Intercesor con propulsor de salto",
+  "bloodNpc2Terminator": "Exterminador",
   "bloodTerminator_LHE": "Cezare",
+  "custoNpc1Sentinel": "Guardia Centinela",
+  "custoNpc2Dreadnought": "Boudicari",
   "darkaBossAsmodaiLHE": "Asmodai",
   "darkaBossAzraelLHE": "Azrael",
   "darkaBossCompanionLHE": "Forcas",
@@ -337,6 +340,9 @@
   "powupReinforcement": "Potenciador de punto de refuerzos",
   "powupReinforcementShield": "Potenciador de escudo",
   "powupResurrect": "Potenciador de resurrección",
+  "powupSummonSpawn_admecSmnElectropriest": "Potenciador del Electrosacerdote",
+  "powupSummonSpawn_admecSmnTechpriest": "Potenciador de Tecnosacerdote Visioingeniero",
+  "powupSummonSpawn_admecSmnVanguard": "Potenciador de Vanguardia Skitarii",
   "powupSummonSpawn_bloodSmnIntercessor": "Potenciador de Intercesor con propulsor de salto",
   "powupSummonSpawn_darkaSmnHellblaster": "Potenciador de Revientainfiernos",
   "powupSummonSpawn_darkaSmnTerminator": "Potenciador de Caballero del Ala de Muerte",
@@ -532,5 +538,6 @@
   "worldBossExecutionsLHE": "Tarvakh",
   "worldBossJakhalLHE": "Macer",
   "worldBossKharnLHE": "Khârn",
-  "worldBossTerminatorLHE": "Wrask"
+  "worldBossTerminatorLHE": "Wrask",
+  "worldNpc1Berzerker": "Bersérker de Khorne"
 }

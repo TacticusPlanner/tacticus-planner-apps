@@ -154,7 +154,10 @@
   "bloodBossTerminatorSurv": "Cezare",
   "bloodNpc1Intercessor": "Jump Pack Intercessor",
   "bloodNpc1IntercessorSurv": "Jump Pack Intercessor",
+  "bloodNpc2Terminator": "Terminator",
   "bloodTerminator_LHE": "Cezare",
+  "custoNpc1Sentinel": "Sentinel Guard",
+  "custoNpc2Dreadnought": "Boudicari",
   "darkaBossAsmodaiLHE": "Asmodai",
   "darkaBossAzraelLHE": "Azrael",
   "darkaBossCompanionLHE": "Forcas",
@@ -337,6 +340,9 @@
   "powupReinforcement": "Reinforcement Point Power-up",
   "powupReinforcementShield": "Shield Power-up",
   "powupResurrect": "Resurrection Power-up",
+  "powupSummonSpawn_admecSmnElectropriest": "Electro-priest Power-up",
+  "powupSummonSpawn_admecSmnTechpriest": "Tech-Priest Enginseer Power-up",
+  "powupSummonSpawn_admecSmnVanguard": "Skitarii Vanguard Power-up",
   "powupSummonSpawn_bloodSmnIntercessor": "Jump Pack Intercessor Power-up",
   "powupSummonSpawn_darkaSmnHellblaster": "Hellblaster Power-up",
   "powupSummonSpawn_darkaSmnTerminator": "Deathwing Knight Power-up",
@@ -532,5 +538,6 @@
   "worldBossExecutionsLHE": "Tarvakh",
   "worldBossJakhalLHE": "Macer",
   "worldBossKharnLHE": "Kharn",
-  "worldBossTerminatorLHE": "Wrask"
+  "worldBossTerminatorLHE": "Wrask",
+  "worldNpc1Berzerker": "Khorne Berzerker"
 }

@@ -154,7 +154,10 @@
   "bloodBossTerminatorSurv": "Cezare",
   "bloodNpc1Intercessor": "Intercessor à réacteur dorsal",
   "bloodNpc1IntercessorSurv": "Intercessor à réacteur dorsal",
+  "bloodNpc2Terminator": "Terminator",
   "bloodTerminator_LHE": "Cezare",
+  "custoNpc1Sentinel": "Garde Sentinelle",
+  "custoNpc2Dreadnought": "Boudicari",
   "darkaBossAsmodaiLHE": "Asmodaï",
   "darkaBossAzraelLHE": "Azraël",
   "darkaBossCompanionLHE": "Forcas",
@@ -337,6 +340,9 @@
   "powupReinforcement": "Amélioration de point de renfort",
   "powupReinforcementShield": "Amélioration de bouclier",
   "powupResurrect": "Amélioration de la résurrection",
+  "powupSummonSpawn_admecSmnElectropriest": "Amélioration Électro-prêtre",
+  "powupSummonSpawn_admecSmnTechpriest": "Amélioration Technaugure",
+  "powupSummonSpawn_admecSmnVanguard": "Amélioration Patrouilleur Skitarii",
   "powupSummonSpawn_bloodSmnIntercessor": "Amélioration d'Intercessor à réacteur dorsal",
   "powupSummonSpawn_darkaSmnHellblaster": "Amélioration de Hellblaster",
   "powupSummonSpawn_darkaSmnTerminator": "Amélioration de Chevalier Deathwing",
@@ -532,5 +538,6 @@
   "worldBossExecutionsLHE": "Tarvakh",
   "worldBossJakhalLHE": "Macer",
   "worldBossKharnLHE": "Khârn",
-  "worldBossTerminatorLHE": "Wrask"
+  "worldBossTerminatorLHE": "Wrask",
+  "worldNpc1Berzerker": "Berzerk de Khorne"
 }
