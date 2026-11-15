@@ -207,10 +207,16 @@ tables.unitSearchNames = unitSearchNames
 
 // ---- progression -------------------------------------------------------------------------------------
 
-// Ranks are the game's UnitDetails/Rank_<index> terms ("Steinrang I"), rarities its raw rarity names.
-// English keeps its compact rank labels ("Stone I"), which the badges and chips are sized for. The game
-// has no star names (it draws stars), so `stars` stays hand-written in English and other locales fall
-// back to it.
+// Ranks are the game's UnitDetails/Rank_<index> terms, shortened to the metal and numeral ("Stone Rank I"
+// → "Stone I", "Steinrang I" → "Stein I") because the badges and chips are sized for the short form;
+// rarities are the game's raw rarity names. The game has no star names (it draws stars), so `stars`
+// stays hand-written in English and other locales fall back to it.
+const SHORT_RANK = {
+  en: (term) => term.replace(/ Rank /, " "),
+  de: (term) => term.replace(/rang /, " "),
+  es: (term) => term.replace(/^Rango de /, ""),
+  fr: (term) => term.replace(/^Rang (?:de |d')?/, ""),
+}
 const RANK_METALS = [
   "Stone",
   "Iron",
@@ -235,18 +241,27 @@ const progressionTerm = (locale, key) => {
   }
   return term
 }
+// A term the shortening does not reduce to "<metal> <numeral>" fails the run, so a reworded rank is noticed.
+const shortRank = (locale, index) => {
+  const term = progressionTerm(locale, `UnitDetails/Rank_${index}`).replace(
+    /\s+/g,
+    " "
+  )
+  const short = SHORT_RANK[locale](term)
+  const numeral = ROMAN[index % 3]
+  if (short === term || !new RegExp(`^\\S+ ${numeral}$`).test(short)) {
+    console.log(`  BAD RANK  ${locale} ${term} -> ${short}`)
+    process.exit(1)
+  }
+  return short.charAt(0).toLocaleUpperCase(locale) + short.slice(1)
+}
 const progression = Object.fromEntries(
   LOCALES.map((locale) => [
     locale,
     {
       ...(locale === "en" ? { stars: enProgression.stars } : {}),
       ranks: Object.fromEntries(
-        RANKS.map((rank, index) => [
-          rank,
-          locale === "en"
-            ? `${RANK_METALS[Math.floor(index / 3)]} ${ROMAN[index % 3]}`
-            : progressionTerm(locale, `UnitDetails/Rank_${index}`),
-        ])
+        RANKS.map((rank, index) => [rank, shortRank(locale, index)])
       ),
       rarities: Object.fromEntries(
         RARITIES.map((rarity) => [
