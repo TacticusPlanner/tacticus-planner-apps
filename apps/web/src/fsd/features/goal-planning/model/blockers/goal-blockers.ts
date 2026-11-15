@@ -1,7 +1,7 @@
 import type { TFunction } from "i18next"
 
 import type { GoalKind } from "@/entities/goal"
-import type { EstimateBlockedReason } from "@/features/goal-farming/@x/goal-planning"
+import type { EstimateBlockedReason } from "@/entities/goal-farming"
 import type { Progression } from "@workspace/game-domain"
 
 // Structured blocker reasons (plan §4) — a goal stays Active/Paused while blocked; blocking is a

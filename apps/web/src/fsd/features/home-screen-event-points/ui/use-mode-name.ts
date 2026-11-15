@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 
-import type { HseTokenMode } from "../lib/hse-token-supply"
+import type { HseTokenMode } from "@/entities/home-screen-event"
 
 /** A token mode's localized name. */
 export function useModeName() {

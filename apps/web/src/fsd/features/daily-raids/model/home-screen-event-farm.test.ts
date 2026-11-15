@@ -10,7 +10,7 @@ import type {
   EstimateResourceId,
   EstimateUpgrade,
   GoalNeed,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
 import {

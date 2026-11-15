@@ -1,6 +1,6 @@
 import type { Rarity } from "@workspace/game-domain"
 
-import type { FarmNodeFilter } from "@/features/goal-farming/@x/daily-raids"
+import type { FarmNodeFilter } from "@/entities/goal-farming"
 
 import { passLocationFilter } from "./pass-location-filter"
 import {

@@ -15,7 +15,12 @@ import {
 } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import type { GoalDetail } from "@/entities/goal"
+import {
+  activeProjectMembers,
+  globalPriorityOf,
+  type GoalDetail,
+  type GoalPlanEntry,
+} from "@/entities/goal"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
 import {
   allocatePlanInventory,
@@ -37,7 +42,7 @@ import {
   type FarmingUpgrade,
   type GoalNeed,
   type RaidPlanSchedule,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
 import { blockedGoalsOf } from "./blocked-goals"
@@ -118,21 +123,6 @@ export type DailyRaidsCalculationInput = {
   onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
   onslaughtRunsPerDay?: number
   shops?: readonly GameCatalogShop[]
-}
-
-/** One goal of the plan, as `useGlobalGoalPlan` entries carry it. */
-type GoalPlanEntry = { goal: GoalDetail }
-
-/** The goal's position in the account-wide order; the weight every planning calculation sorts by. */
-function globalPriorityOf(member: GoalPlanEntry) {
-  return member.goal.globalPriority ?? Number.MAX_SAFE_INTEGER
-}
-
-/** Active goals of `members` in global order (Paused goals keep their position but do not plan). */
-export function activeProjectMembers(members: GoalPlanEntry[]) {
-  return members
-    .filter((member) => member.goal.status === "Active")
-    .sort((left, right) => globalPriorityOf(left) - globalPriorityOf(right))
 }
 
 /** An Unlock goal for a character no campaign node drops shards for (Kharn, Ragnar): its shards come

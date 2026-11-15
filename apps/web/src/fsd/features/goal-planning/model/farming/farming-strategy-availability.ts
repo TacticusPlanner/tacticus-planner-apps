@@ -1,5 +1,5 @@
 import type { FarmingStrategy } from "@/entities/goal"
-import { farmingStageTargets } from "@/features/goal-farming/@x/goal-planning"
+import { farmingStageTargets } from "@/entities/goal-farming"
 
 /** Why a `FarmingStrategy` option is disabled — drives the Select item's tooltip/explanation text
  * (see `farming-strategy-field.tsx`). `null` means the option is available. */

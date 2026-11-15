@@ -1,6 +1,6 @@
 import { gameModeTokenIcon } from "@workspace/game-catalog"
 
-import type { HseTokenMode } from "./hse-token-supply"
+import type { HseTokenMode } from "@/entities/home-screen-event"
 
 /** A token mode's battle token, as the game draws it (Tournament Arena spends Arena's). */
 export function hseModeIcon(mode: HseTokenMode): string {

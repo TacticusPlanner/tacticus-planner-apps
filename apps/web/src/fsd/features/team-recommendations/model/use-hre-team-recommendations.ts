@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import type { GameCatalogHseTracker } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import type { HreTeamPlan } from "@/features/hre-missions/@x/team-recommendations"
+import { type HreTeamPlan } from "@/entities/hre-mission"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 

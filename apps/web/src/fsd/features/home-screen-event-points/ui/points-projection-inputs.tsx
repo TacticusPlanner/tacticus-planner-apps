@@ -2,12 +2,12 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Input } from "@workspace/ui/components/input"
 
-import type { HseProjectionMode } from "../lib/hse-projection"
+import type { HseProjectionMode } from "@/entities/home-screen-event"
 import {
   isHseManualTokenMode,
   type HseManualTokenMode,
   type HseTokenMode,
-} from "../lib/hse-token-supply"
+} from "@/entities/home-screen-event"
 import { useModeName } from "./use-mode-name"
 
 /** An input's text as an average: empty clears it (null), anything else a non-negative number. */

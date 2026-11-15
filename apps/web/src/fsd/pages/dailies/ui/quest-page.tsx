@@ -13,7 +13,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useDailyRaids } from "@/features/daily-raids"
-import { GoalEditDialog } from "@/features/goal-create"
+import { GoalEditDialog } from "@/features/goal-planning"
 import {
   BattleList,
   battlesByTier,

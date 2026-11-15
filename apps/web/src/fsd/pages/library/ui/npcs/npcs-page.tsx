@@ -31,11 +31,11 @@ import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { useLibraryRouteSelection } from "../../model/use-library-route-selection"
 import { NpcsDesktopPage } from "./desktop/npcs-desktop-page"
-import { useEncounterGroupName } from "./hooks/use-encounter-group-name"
+import { useEncounterGroupName } from "../../model/npcs/use-encounter-group-name"
 import { encounterTiming } from "../../model/encounter-timing"
 
-import { useNpcEncounters } from "./hooks/use-npc-encounters"
-import { useNpcsCatalog } from "./hooks/use-npcs-catalog"
+import { useNpcEncounters } from "../../model/npcs/use-npc-encounters"
+import { useNpcsCatalog } from "../../model/npcs/use-npcs-catalog"
 import { NpcsMobilePage } from "./mobile/npcs-mobile-page"
 import { useNpcsTutorial } from "./npcs.tutorial"
 import {

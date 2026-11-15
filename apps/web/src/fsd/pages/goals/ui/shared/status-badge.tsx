@@ -18,7 +18,7 @@ import {
   resourceLabel,
   type EstimateOutcome,
   type EstimateResourceId,
-} from "@/features/goal-farming"
+} from "@/entities/goal-farming"
 
 import type { GoalProgress } from "@/features/goal-planning"
 import { blockerReasonText, type GoalBlockers } from "@/features/goal-planning"

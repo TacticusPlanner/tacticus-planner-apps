@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 
 import {
   materialNeed,

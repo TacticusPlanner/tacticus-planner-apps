@@ -3,7 +3,7 @@ import { raidTicketIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { DailyRaidsReadyViewModel } from "../../model/daily-raids.domain"
-import type { RaidDaySchedule } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidDaySchedule } from "@/entities/goal-farming"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { PlanCell, PlanDayCells } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"

@@ -12,15 +12,12 @@ import { implicitPrerequisiteBlockers } from "../blockers/implicit-prerequisite-
 import type {
   EstimateOutcome,
   RankSlotAllocation,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import {
   calculateGoalResourceNeed,
   useLevelRules,
-} from "@/features/goal-farming/@x/goal-planning"
-import type {
-  AbilityMaterials,
-  ResourceNeed,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
+import type { AbilityMaterials, ResourceNeed } from "@/entities/goal-farming"
 import { useStableIds } from "../shared/use-stable-ids"
 import { useStableMap } from "../shared/use-stable-map"
 import { useGoalsFor } from "./use-goals-for"

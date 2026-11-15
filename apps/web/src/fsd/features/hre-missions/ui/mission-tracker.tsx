@@ -6,8 +6,8 @@ import {
   hreAllDone,
   type HreMission,
   type HreObjective,
-} from "../model/hre-missions"
-import type { HreProgress } from "../model/hre-progress"
+} from "@/entities/hre-mission"
+import type { HreProgress } from "@/entities/hre-mission"
 import type { HreProgressActions } from "../model/use-hre-progress"
 import { CurrentMissionCard } from "./current-mission-card"
 import { MissionList } from "./mission-list"

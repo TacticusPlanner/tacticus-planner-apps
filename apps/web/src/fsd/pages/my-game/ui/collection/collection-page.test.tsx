@@ -111,8 +111,8 @@ vi.mock("@/shared/player-data-status", () => ({
 }))
 
 // The dialog's own behavior is covered by its feature tests; here it lists the units it was given.
-vi.mock("@/features/goal-create", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/features/goal-create")>()),
+vi.mock("@/features/goal-planning", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/goal-planning")>()),
   BulkGoalDialog: ({
     open,
     units,

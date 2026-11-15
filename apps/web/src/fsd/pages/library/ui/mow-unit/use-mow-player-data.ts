@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react"
 import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { mapUpgradeStorageToDomain } from "@/features/rank-lookup"
+import { mapUpgradeStorageToDomain } from "@/entities/rank-lookup"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { unitOwnership } from "../unit/unit-ownership"

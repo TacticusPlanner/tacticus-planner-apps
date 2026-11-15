@@ -3,7 +3,7 @@ import type { Rarity, UpgradeId } from "@workspace/game-domain"
 
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import type { UpgradeWithFarmLocations } from "@/features/rank-lookup"
+import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 
 import {
   calculateMowUpgrades,

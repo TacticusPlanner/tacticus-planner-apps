@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import type { HreObjective } from "../model/hre-missions"
+import type { HreObjective } from "@/entities/hre-mission"
 import { objectiveTextKey } from "../model/hre-objective-text"
 import type { HreFeaturedHero } from "../model/use-hre-instance"
 

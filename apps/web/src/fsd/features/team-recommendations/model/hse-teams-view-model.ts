@@ -1,9 +1,9 @@
 import type { Alliance, UnitId } from "@workspace/game-domain"
 
-import type {
-  HseEventPointsState,
-  HseInstance,
-} from "@/features/home-screen-event-points/@x/team-recommendations"
+import {
+  type HseEventPointsState,
+  type HseInstance,
+} from "@/entities/home-screen-event"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { mapRosterCharacter } from "./roster-character"

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import type { ResourceNeed } from "@/features/goal-farming"
+import type { ResourceNeed } from "@/entities/goal-farming"
 import { StackedProgressBar } from "./stacked-progress-bar"
 
 /** An Ascension goal's shard progress as V1's card showed it: one labelled bar per shard kind the goal

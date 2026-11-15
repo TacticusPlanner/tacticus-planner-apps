@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { render, screen, within } from "@/test/render"
 import { describe, expect, it } from "vitest"
 
-import type { ResourceNeed } from "@/features/goal-farming"
+import type { ResourceNeed } from "@/entities/goal-farming"
 import { GoalResourceChips } from "./goal-resource-chips"
 
 const need = (overrides: Partial<ResourceNeed> = {}): ResourceNeed => ({

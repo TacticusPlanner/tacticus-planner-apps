@@ -11,8 +11,8 @@ import {
   resolveHreSelection,
   selectHreInstance,
   type HreInstance,
-} from "./hre-instance"
-import { toHreRules, type HreRules } from "./hre-rules"
+} from "@/entities/hre-mission"
+import { toHreRules, type HreRules } from "@/entities/hre-mission"
 
 const DAY_MS = 86_400_000
 /** How far back the calendar is read: past events stay reachable from the HRE switcher. */

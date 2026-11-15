@@ -1,6 +1,6 @@
 import type { TFunction } from "i18next"
 
-import type { HreMission } from "../model/hre-missions"
+import type { HreMission } from "@/entities/hre-mission"
 
 /** "Mission 5", or "Bonus" for the Bonus mission. */
 export function missionName(

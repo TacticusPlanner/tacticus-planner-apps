@@ -31,7 +31,7 @@ import {
   formatRosterSourceId,
   useRosterSnapshots,
 } from "@/entities/roster-snapshot"
-import { BulkGoalDialog } from "@/features/goal-create"
+import { BulkGoalDialog } from "@/features/goal-planning"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"

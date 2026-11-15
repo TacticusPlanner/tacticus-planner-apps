@@ -1,9 +1,6 @@
 import type { BattleId } from "@workspace/game-domain"
 
-import {
-  collectFarmNodes,
-  type EstimateUpgrade,
-} from "@/features/goal-farming/@x/daily-raids"
+import { collectFarmNodes, type EstimateUpgrade } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
 import { dropEfficiency, type EventFarmOrder } from "./home-screen-event-farm"

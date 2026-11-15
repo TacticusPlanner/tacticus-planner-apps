@@ -16,7 +16,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import type {
   HseDetailsView,
   HseEventPointsState,
-} from "../model/hse-event-points"
+} from "@/entities/home-screen-event"
 import { MilestoneGrid } from "./milestone-grid"
 import { useHseText } from "./use-hse-text"
 

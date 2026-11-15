@@ -1,0 +1,35 @@
+name: Set up web toolchain
+description: Install pnpm and Node.js, restore the Turbo cache and install dependencies. Run after actions/checkout.
+
+inputs:
+  turbo-cache-key:
+    description: Prefix for this job's Turbo cache, so parallel jobs don't race to save the same key.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set up pnpm
+      uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      with:
+        version: 11.7.0
+        run_install: false
+
+    - name: Set up Node.js
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: 24.15.0
+        cache: pnpm
+        cache-dependency-path: pnpm-lock.yaml
+
+    - name: Cache Turbo
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .turbo
+        key: ${{ runner.os }}-turbo-${{ inputs.turbo-cache-key }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-${{ inputs.turbo-cache-key }}-
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile

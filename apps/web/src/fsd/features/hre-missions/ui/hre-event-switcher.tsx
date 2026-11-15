@@ -10,7 +10,7 @@ import {
   formatEventWindow,
 } from "@/shared/ui"
 
-import type { HreInstance } from "../model/hre-instance"
+import type { HreInstance } from "@/entities/hre-mission"
 import type { HreFeaturedHero } from "../model/use-hre-instance"
 
 /**

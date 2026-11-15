@@ -33,13 +33,13 @@ import {
   stepsFor,
   type HreOwnedStep,
   type HrePace,
-} from "../model/hre-pace"
+} from "@/entities/hre-mission"
 import {
   hreStepProgression,
   type HreRarityStepId,
-} from "../model/hre-reward-tables"
-import type { HreRewardRules } from "../model/hre-rules"
-import type { HreProgress } from "../model/hre-progress"
+} from "@/entities/hre-mission"
+import type { HreRewardRules } from "@/entities/hre-mission"
+import type { HreProgress } from "@/entities/hre-mission"
 import type { HreProgressActions } from "../model/use-hre-progress"
 
 const parseWhole = (value: string, min: number): number | null => {

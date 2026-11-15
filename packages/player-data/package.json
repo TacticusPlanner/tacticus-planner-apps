@@ -5,7 +5,9 @@
   "private": true,
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint && knip",
+    "lint": "pnpm run lint:eslint && pnpm run lint:knip",
+    "lint:eslint": "eslint --cache --cache-strategy content --cache-location node_modules/.cache/eslint/",
+    "lint:knip": "knip",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",

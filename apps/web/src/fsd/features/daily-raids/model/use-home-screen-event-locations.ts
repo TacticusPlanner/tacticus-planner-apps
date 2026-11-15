@@ -2,11 +2,11 @@ import { useMemo } from "react"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
 import type { BattleId } from "@workspace/game-domain"
 
-import { shardResourceId } from "@/features/goal-farming/@x/daily-raids"
+import { shardResourceId } from "@/entities/goal-farming"
 import {
   mapCampaignBattleStorageToDomain,
   mapUpgradeStorageToDomain,
-} from "@/features/rank-lookup/@x/daily-raids"
+} from "@/entities/rank-lookup"
 import { useCampaignDisplay } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
@@ -35,7 +35,7 @@ import { passLocationFilter } from "./raids-filters/pass-location-filter"
 import { useRaidsFilters } from "./raids-filters/use-raids-filters"
 import type { TodayQuickFilterOptions } from "./today-quick-filters/today-quick-filters"
 import { useResourceByBattleId } from "./use-resource-by-battle-id"
-import { useEligibleCampaignBattles } from "./use-eligible-campaign-battles"
+import { useEligibleCampaignBattles } from "@/entities/player-data-override"
 
 export type HomeScreenEventLocationsState =
   | { status: "loading" }

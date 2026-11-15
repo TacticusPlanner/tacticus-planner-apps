@@ -9,7 +9,7 @@ import {
 import { formatEstimateDate, useDateLocale } from "@/shared/lib"
 import { RankBadge } from "@/shared/ui"
 
-import type { EstimateOutcome } from "@/features/goal-farming"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 import {
   goalCheckpointsView,
   type CheckpointRow,

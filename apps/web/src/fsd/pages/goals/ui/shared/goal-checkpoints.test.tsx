@@ -2,7 +2,7 @@ import userEvent from "@testing-library/user-event"
 import { render, screen, within } from "@/test/render"
 import { describe, expect, it } from "vitest"
 
-import type { EstimateOutcome } from "@/features/goal-farming"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 import { GoalCheckpoints } from "./goal-checkpoints"
 
 const estimate: EstimateOutcome = {

@@ -33,8 +33,8 @@ import { RARITY_TEXT } from "@/entities/incursion"
 import { useMinuteNow } from "@/entities/legendary-event"
 import { formatEstimateDate, localIsoDate, useDateLocale } from "@/shared/lib"
 
-import { useEncounterGroupName } from "./hooks/use-encounter-group-name"
-import { useIncursionTierNames } from "./hooks/use-incursion-tier-names"
+import { useEncounterGroupName } from "../../model/npcs/use-encounter-group-name"
+import { useIncursionTierNames } from "../../model/npcs/use-incursion-tier-names"
 import type { NpcsPageViewProps } from "./npcs-page.view-model"
 import {
   encounterTiming,

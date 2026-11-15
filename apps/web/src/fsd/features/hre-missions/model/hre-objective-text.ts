@@ -1,4 +1,4 @@
-import type { HreObjective, HreObjectiveKind } from "./hre-missions"
+import type { HreObjective, HreObjectiveKind } from "@/entities/hre-mission"
 
 /** Kinds worded with the featured hero's alliance; without one they use the generic wording. */
 const ALLIANCE_KINDS: ReadonlySet<HreObjectiveKind> = new Set([

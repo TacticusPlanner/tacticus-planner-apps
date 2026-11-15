@@ -25,7 +25,7 @@ export function GlanceTile({
     <Card
       className={cn(
         "min-w-0 flex-row items-center justify-between gap-3 rounded-none bg-transparent px-0 py-2 shadow-none ring-0",
-        "@[42rem]:min-h-19 @[42rem]:flex-col @[42rem]:items-stretch @[42rem]:justify-start @[42rem]:gap-1.5 @[42rem]:rounded-[min(var(--radius-4xl),24px)] @[42rem]:bg-card @[42rem]:px-4 @[42rem]:py-3 @[42rem]:shadow-sm @[42rem]:ring-1",
+        "@2xl:min-h-19 @2xl:flex-col @2xl:items-stretch @2xl:justify-start @2xl:gap-1.5 @2xl:rounded-[min(var(--radius-4xl),24px)] @2xl:bg-card @2xl:px-4 @2xl:py-3 @2xl:shadow-sm @2xl:ring-1",
         className
       )}
       data-testid={testId}
@@ -38,7 +38,7 @@ export function GlanceTile({
       </dt>
       <dd
         className={cn(
-          "min-w-0 flex-1 text-end text-sm font-semibold tabular-nums @[42rem]:flex-none @[42rem]:text-start @[42rem]:text-lg",
+          "min-w-0 flex-1 text-end text-sm font-semibold tabular-nums @2xl:flex-none @2xl:text-start @2xl:text-lg",
           valueClassName
         )}
       >

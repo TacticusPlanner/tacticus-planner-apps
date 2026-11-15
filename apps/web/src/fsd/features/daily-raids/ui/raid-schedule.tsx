@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import type { BattleId } from "@workspace/game-domain"
 
-import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 
 import {
   dailyRaidResourceKey,
