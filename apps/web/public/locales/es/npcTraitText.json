@@ -1,0 +1,279 @@
+{
+  "ActOfFaith": {
+    "description": "Esta unidad obtiene +{[extraCritChance]} % de <style=\"Stat_Chance\">Probabilidad de Crítico</style> y aumenta su <style=\"Stat_CritDamage\">Daño Crítico</style> un {[extraCritDmgPct]} % cada vez que una unidad <style=\"Aliance_Imperial\">Imperial</style> aliada muere o mata a una unidad enemiga. Una vez que esta unidad inflige daño crítico, esta bonificación se reinicia.",
+    "variables": {
+      "extraCritChance": [10],
+      "extraCritDmgPct": [25]
+    }
+  },
+  "Ambush": {
+    "description": "La primera vez que esta unidad sufre una derrota, deja atrás un <style=\"Decoy\">señuelo</style> y al inicio de su siguiente turno, si aún hay un señuelo aliado en el campo de batalla, resucita con la <style=\"Stat_Health\">Salud</style> completa en un señuelo aliado aleatorio y puede tomar un turno de inmediato. Los <style=\"Character\">personajes</style> resucitan antes que las unidades que <style=\"NonCharacter\">no son personajes</style>.",
+    "variables": {}
+  },
+  "BattleFatigue": {
+    "description": "Si una unidad aliada es derrotada en un hexágono adyacente, hay un <style=\"Stat_Chance\">{[chance]} % de probabilidad</style> de que esta unidad huya y sea eliminada de la batalla. <style=\"Stat_Chance\">+{[chance_2]} %</style> si fue <style=\"Overkill\">Arrasada</style>.",
+    "variables": {
+      "chance": [10],
+      "chance_2": [40]
+    }
+  },
+  "BeastSlayer": {
+    "description": "Esta unidad inflige un <style=\"Stat_Damage\">+{[extraDmgPct]} % de daño</style> con ataques cuerpo a cuerpo a <style=\"Big_Target\">Grandes objetivos</style> y <style=\"Vehicle\">vehículos</style>. También tiene un <style=\"Stat_Chance\">{[blockChance]} % de probabilidad</style> adicional de <style=\"Stat_Block\">bloquear</style> Daño igual a su <style=\"Stat_Armor\">Armadura</style> actual.",
+    "variables": {
+      "extraDmgPct": [20],
+      "blockChance": [10]
+    }
+  },
+  "BeastSnagga": {
+    "description": "Inflige +{[extraDmgPct]} % <style=\"Stat_Melee\">de Daño cuerpo a cuerpo</style> a <style=\"Big_Target\">Grandes objetivos</style> y <style=\"Vehicle\">Vehículos</style>. Otorga un <style=\"Stat_Chance\">{[blockChance]} % de probabilidad adicional</style> de <style=\"Stat_Block\">Bloquear</style> un {[blockDmgPct]} % de su Salud máxima como Daño.",
+    "variables": {
+      "extraDmgPct": [20],
+      "blockChance": [10],
+      "blockDmgPct": [20]
+    }
+  },
+  "BigTarget": {
+    "description": "Debido a su tamaño, esta unidad se no se beneficia tanto de la cobertura, pero a la vez provee una obstrucción de la línea visual del enemigo. No obtiene ninguna bonificación de <style=\"Tile_Grass\">Hierba alta</style> y <style=\"Tile_Trench\">Trincheras</style>. Las unidades aliadas adyacentes reciben <style=\"Stat_Hits\">-1 impacto</style> de ataques <style=\"Stat_Range\">a distancia</style>, hasta alcance un mínimo de 1. No se puede desplazar.",
+    "variables": {}
+  },
+  "BlessingsOfKhorne": {
+    "description": "Inflige un <style=\"Stat\">{[extraDmgPct]} %</style> más de Daño y recibe un <style=\"Stat\">{[dmgPctReduction]} %</style> menos de <style=\"DMG_Psychic\">Daño psíquico</style> por cada unidad derrotada con ataques cuerpo a cuerpo en esta batalla. Cuenta hasta un máximo de {[nrOfHeroes]} unidades derrotadas.",
+    "variables": {
+      "extraDmgPct": [3],
+      "dmgPctReduction": [8],
+      "nrOfHeroes": [8]
+    }
+  },
+  "Camouflage": {
+    "description": "Los ataques <style=\"Stat_Range\">a distancia</style> contra este personaje asestan <style=\"Stat_Hits\">-1 impacto</style>. Esto aumenta a <style=\"Stat_Hits\">-2 impactos</style> si este personaje está a más de 2 hexágonos del atacante o a <style=\"Stat_Hits\">-3 impactos</style> si está en <style=\"Tile_Grass\">Hierba alta</style>. Los atacantes siempre asestan al menos <style=\"Stat_Hits\">1 impacto</style>.",
+    "variables": {}
+  },
+  "CloseCombatWeakness": {
+    "description": "Si esta unidad está en una posición adyacente, o empezó el turno en una ubicación adyacente, a las unidades enemigas, inflige <style=\"Stat_Damage\">{[dmgPctReduction]} % de Daño</style> con ataques <style=\"Stat_Melee\">cuerpo a cuerpo</style> y <style=\"Stat_Damage\">{[dmgPctReduction_2]} % de Daño</style> con ataques <style=\"Stat_Range\">a distancia</style>.",
+    "variables": {
+      "dmgPctReduction": [-50],
+      "dmgPctReduction_2": [-25]
+    }
+  },
+  "ContagionsOfNurgle": {
+    "description": "Esta unidad está rodeada de un aura que se expande con el tiempo. Mientras estén en ella, los enemigos tienen {[armorReduction]} % de <style=\"Stat_Armor\">Armadura</style>. Si se encuentran en dos o más auras enemigas superpuestas, tienen {[armorReduction2]} % de <style=\"Stat_Armor\">Armadura</style> en su lugar.\n\nAura:\nRonda 1-2: <style=\"Stat_Range\">Alcance 1</style>\nRonda 3-4: <style=\"Stat_Range\">Alcance 2</style>\nRonda 5+: <style=\"Stat_Range\">Alcance 3</style>",
+    "variables": {
+      "armorReduction": [-20],
+      "armorReduction2": [-40]
+    }
+  },
+  "CrushingStrike": {
+    "description": "Esta unidad inflige <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> con ataques <style=\"Stat_Melee\">cuerpo a cuerpo</style> normales si no se movió durante este turno.",
+    "variables": {
+      "extraDmgPct": [50]
+    }
+  },
+  "Daemon": {
+    "description": "Esta unidad tiene un <style=\"Stat_Chance\">{[blockChance]} % probabilidad adicional</style> de <style=\"Stat_Block\">Bloquear</style> hasta un {[blockDmgPct]} % de su actual atributo de <style=\"Stat_Damage\">Daño</style>.",
+    "variables": {
+      "blockChance": [25],
+      "blockDmgPct": [50]
+    }
+  },
+  "Diminutive": {
+    "description": "Debido a su pequeña estatura, esta unidad reduce los impactos múltiples de los ataques que recibe en <style=\"Stat_Hits\">{[hitsReduction]} impactos</style>, hasta un mínimo de 1.",
+    "variables": {
+      "hitsReduction": [1]
+    }
+  },
+  "Emplacement": {
+    "description": "Esta unidad inflige <style=\"Stat_Damage\">{[damageModifier]} % de Daño</style> <style=\"Stat_Melee\">cuerpo a cuerpo</style> y sus ataques <style=\"Stat_Range\">a distancia</style> infligen <style=\"Stat_Damage\">+{[damageModifier_2]} % de Daño</style> si no se movió en este turno.",
+    "variables": {
+      "damageModifier": [-50],
+      "damageModifier_2": [50]
+    }
+  },
+  "Explodes": {
+    "description": "Esta unidad <style=\"Explodes\">estalla</style> al morir e inflige <style=\"Stat\">25 %</style> de su <style=\"Stat_Health\">Salud</style> máxima como <style=\"DMG_Direct\">Daño directo</style> a todas las unidades adyacentes",
+    "variables": {}
+  },
+  "FinalJustice": {
+    "description": "Cuando esta unidad pierde lo último de su <style=\"Stat_Health\">Salud</style>, realiza de inmediato un <style=\"NormalAttack\">ataque normal</style> contra un objetivo elegible y luego es derrotada de manera normal, a menos que sea <style=\"Overkill\">Arrasada</style>.",
+    "variables": {}
+  },
+  "Flying": {
+    "description": "Puede atravesar hexágonos intransitables y enemigos, además de moverse entre cualquier elevación.",
+    "variables": {}
+  },
+  "GetStuckIn": {
+    "description": "Por cada 2 impactos que aseste esta unidad con un ataque contra un enemigo en un rango de 2 hexágonos, tiene un <style=\"STAT\">{[chance]} %</style> de probabilidad de asestar un <style=\"Stat_Hits\">impacto</style> adicional. Si 2 o más <style=\"Faction_Orks\">Orkos</style> aliados o 4 o más unidades aliadas están adyacentes al objetivo, la probabilidad aumenta a un <style=\"STAT\">{[chance_2]} %</style>.",
+    "variables": {
+      "chance": [30],
+      "chance_2": [100]
+    }
+  },
+  "Healer": {
+    "description": "Puede <style=\"Healing\">curar</style> a una unidad aliada como su acción.\nLa cantidad de <style=\"Stat_Health\">Salud</style> restaurada equivale al <style=\"Stat_Damage\">Daño</style> del Sanador multiplicado por la cantidad máxima de <style=\"Stat_Hits\">impactos</style> de cualquiera de sus armas. ",
+    "variables": {}
+  },
+  "HeavyWeapon": {
+    "description": "Si esta unidad no se movió en este turno, inflige <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> con ataques a distancia.",
+    "variables": {
+      "extraDmgPct": [25]
+    }
+  },
+  "Immune": {
+    "description": "Esta unidad es inmune a los hexágonos especiales y a los <style=\"HexEffect\">efectos de hexágono</style> y no se le puede reducir la <style=\"Stat_Armor\">Armadura</style>, los <style=\"Stat_Hits\">impactos</style>, el <style=\"Stat_Movement\">movimiento</style> ni el <style=\"Stat_Range\">alcance</style>.\n\nAdemás, esta unidad no puede sufrir <style=\"Debuff_Stunned\">Aturdimiento</style>, <style=\"Debuff_Pinned\">Supresión</style> ni <style=\"Debuff_Taunted\">Provocación</style> y no recibe Daño de retroceso.",
+    "variables": {}
+  },
+  "Impervious": {
+    "description": "Solo los impactos <style=\"Stat_CritDamage\">Críticos</style> le infligen Daño, pero cae enseguida ante un impacto <style=\"Stat_CritDamage\">Crítico</style>.",
+    "variables": {}
+  },
+  "IndirectFire": {
+    "description": "Puede disparar sobre hexágonos <style=\"Out_Of_Sight\">desconocidos</style> e impactar objetivos que estén en <style=\"Tile_Trench\">Trincheras</style>.",
+    "variables": {}
+  },
+  "Infiltrate": {
+    "description": "Esta unidad no activa <style=\"Overwatch\">Vigilancia</style>.",
+    "variables": {}
+  },
+  "InstinctiveBehaviour": {
+    "description": "Esta unidad siempre intenta atacar a la unidad enemiga más cercana. Si hay objetivos al alcance, esta unidad no se mueve antes de atacar.",
+    "variables": {}
+  },
+  "LetTheGalaxyBurn": {
+    "description": "Todos los ataques tienen un <style=\"Stat\">{[chance]} % de probabilidad</style> de asestar un <style=\"Stat_Hits\">impacto</style> adicional y añadir <style=\"Tile_DespoiledGround\">Tierra saqueada</style> al hexágono de la unidad atacada. Si la unidad atacada ya está sobre un hexágono con un <style=\"HexEffect\">efecto de hexágono</style>, el ataque automáticamente asesta un <style=\"Stat_Hits\">impacto</style> adicional, pero no añade <style=\"Tile_DespoiledGround\">Tierra saqueada</style>.",
+    "variables": {
+      "chance": [33]
+    }
+  },
+  "LivingMetal": {
+    "description": "<style=\"Regenerate\">Regenera</style> un <style=\"Stat\">{[hpPct]} %</style> de su <style=\"Stat_Health\">Salud</style> máxima al comienzo del turno de los jugadores. Esta unidad también es <style=\"Mechanical\">Mecánica</style>.",
+    "variables": {
+      "hpPct": [10]
+    }
+  },
+  "MachineOfWar": {
+    "description": "Las <style=\"MoW\">máquinas de guerra</style> se encuentran junto al campo de batalla y proporcionan dos habilidades adicionales poderosas que se pueden usar varias veces durante la batalla. Algunas cuestan <style=\"Resource_MachinesOfWarAmmo\">munición</style> y algunas tienen un <style=\"Cooldown\">tiempo de recuperación</style> antes de poder usarse de nuevo. Las máquinas de guerra no pueden ser fijadas como objetivo al estar en su posición fuera del campo de batalla y son destruidas cuando se pierde una batalla. \n\nNo todos los modos de juego permiten desplegar máquinas de guerra.",
+    "variables": {}
+  },
+  "MartialKatah": {
+    "description": "Los <style=\"NormalAttack\">ataques normales</style> contra esta unidad infligen un <style=\"Stat_Damage\">-{[dmgReductionPct]} % de Daño</style>. Esta unidad inflige un <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> con todos los ataques contra <style=\"Summon\">invocaciones</style>.",
+    "variables": {
+      "dmgReductionPct": [20],
+      "extraDmgPct": [100]
+    }
+  },
+  "Mechanic": {
+    "description": "Puede <style=\"Repairing\">reparar</style> una unidad <style=\"Mechanical\">Mecánica</style> aliada como su acción.\nLa cantidad de <style=\"Stat_Health\">Salud</style> restaurada equivale al Daño del <style=\"Mechanic\">Reparador</style> multiplicado por la cantidad máxima de <style=\"Stat_Hits\">impactos</style> de cualquiera de sus armas.",
+    "variables": {}
+  },
+  "Mechanical": {
+    "description": "No se puede <style=\"Healing\">curar</style>, pero sí se puede <style=\"Repairing\">reparar</style>.\n<i>Nota: las unidades con el rasgo <style=\"Living_Metal\">Metal viviente</style> también cuentan como si fueran <style=\"Mechanical\">Mecánicas</style></i>.",
+    "variables": {}
+  },
+  "MkXGravis": {
+    "description": "Cualquier <style=\"Stat_Damage\">Daño</style> debe atravesar la <style=\"Stat_Armor\">Armadura</style> por segunda vez. Esto no aplica a <style=\"Stat_CritDamage\">Golpes Críticos</style>.",
+    "variables": {}
+  },
+  "Object": {
+    "description": "Automáticamente se acciona al comienzo de la batalla. No se puede <style=\"Healing\">curar</style> ni <style=\"Repairing\">reparar</style>. Un jugador no pierde la batalla si las únicas unidades le quedan en pie son <style=\"Object\">Objetos</style>.",
+    "variables": {}
+  },
+  "Overwatch": {
+    "description": "Si esta unidad no ha atacado durante su turno ni después, atacará cuando un enemigo se mueva dentro de su alcance durante el turno del enemigo.",
+    "variables": {}
+  },
+  "Parry": {
+    "description": "Esta unidad reduce los impactos múltiples de los ataques <style=\"Stat_Melee\">cuerpo a cuerpo</style> que recibe en <style=\"Stat_Hits\">{[hitsReduction]} impactos</style>, hasta un mínimo de 1.",
+    "variables": {
+      "hitsReduction": [1]
+    }
+  },
+  "PrioritisedEfficiency": {
+    "description": "Esta unidad inflige <style=\"Stat_Damage\">+{[extraDmgPct]}% de Daño</style> con todos los ataques y recibe <style=\"Stat_Damage\">-{[dmgReductionPct]}% de Daño</style>. Si atraviesa 3 o más hexágonos durante su turno, pierde este efecto hasta el inicio de su próximo turno.",
+    "variables": {
+      "extraDmgPct": [25],
+      "dmgReductionPct": [25]
+    }
+  },
+  "Psyker": {
+    "description": "Cuando esta unidad realiza un <style=\"NormalAttack\">ataque a distancia normal</style>, también inflige un {[extraDmgPct]} % de su <style=\"Stat_Damage\">Daño</style> a un enemigo aleatorio adyacente al objetivo.",
+    "variables": {
+      "extraDmgPct": [50]
+    }
+  },
+  "PutridExplosion": {
+    "description": "Esta unidad explota al morir, lo que inflige un {[extraDmgPct]} % de su <style=\"Stat_Health\">Salud</style> máxima como <style=\"DMG_Toxic\">Daño tóxico</style> a las unidades adyacentes, excepto las unidades de la <style=\"Faction_DeathGuard\">Guardia de la Muerte</style>.",
+    "variables": {
+      "extraDmgPct": [25]
+    }
+  },
+  "RangedSpecialist": {
+    "description": "Si esta unidad no empezó su turno adyacente a una unidad enemiga, inflige un <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> con ataques a distancia.",
+    "variables": {
+      "extraDmgPct": [33]
+    }
+  },
+  "RapidAssault": {
+    "description": "Esta unidad tiene <style=\"Stat_Movement\">+1 de Movimiento</style> hasta que realiza un ataque cuerpo a cuerpo o a distancia. Su primer ataque en cada batalla y todos los próximos ataques que realiza en el mismo turno infligen <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style>.",
+    "variables": {
+      "extraDmgPct": [25]
+    }
+  },
+  "Resilient": {
+    "description": "Si esta unidad no tiene <style=\"Stat_Health\">1 de Salud</style> y sería derrotada, en su lugar su <style=\"Stat_Health\">Salud</style> disminuye a <style=\"Stat_Health\">1 de Salud</style>, a menos que sea <style=\"Overkill\">Arrasada</style>.",
+    "variables": {}
+  },
+  "ShadowInTheWarp": {
+    "description": "Los <style=\"Psyker\">Psíquicos</style> enemigos en un radio de {[range]} hexágonos infligen un {[dmgPct]} % de <style=\"DMG_Psychic\">Daño psíquico</style>. No afecta a los <style=\"Psyker\">Psíquicos</style> <style=\"Faction_Tyranids\">Tiránidos</style>.",
+    "variables": {
+      "range": [2],
+      "dmgPct": [-25]
+    }
+  },
+  "Steppable": {
+    "description": "Se destruirá si se pisa o si se daña, pero no se puede fijar como objetivo.",
+    "variables": {}
+  },
+  "SuppressiveFire": {
+    "description": "Un enemigo impactado por los ataques a distancia de esta unidad recibe el efecto <style=\"Debuff_Pinned\">Supresión</style>.",
+    "variables": {}
+  },
+  "Swarm": {
+    "description": "Ataca con <style=\"Stat_Hits\">1 impacto</style> por cada miembro individual del enjambre. Cada impacto recibido puede infligir <style=\"Stat_Damage\">Daño</style> solo a un miembro. Esto no se aplica al <style=\"DMG_Blast\">Daño de explosión</style>.\nPor cada miembro derrotado, el enjambre ataca con 1 <style=\"Stat_Hits\">impacto</style> menos. \n<style=\"Healing\">Curar</style> a esta unidad puede resucitar a miembros muertos del enjambre.",
+    "variables": {}
+  },
+  "Synapse": {
+    "description": "Las unidades aliadas dentro de 2 hexágonos de distancia son inmunes a los efectos de <style=\"Instinctive_Behaviour\">Comportamiento instintivo</style> y <style=\"Battle_Fatigue\">Fatiga de batalla</style>.",
+    "variables": {}
+  },
+  "TeleportStrike": {
+    "description": "Esta unidad empieza la batalla en Ataque profundo. Las unidades en Ataque profundo pueden moverse a cualquier hexágono libre del campo de batalla que no esté adyacente a un enemigo, pero entonces no pueden realizar ataques a distancia hasta el final de su turno, o pueden moverse normalmente desde su posición actual. Las unidades en Ataque profundo no pueden ser seleccionadas como objetivo ni recibir daño hasta que hayan realizado una acción o hayan terminado su turno.",
+    "variables": {}
+  },
+  "TerminatorArmour": {
+    "description": "El primer ataque en cada turno contra esta unidad inflige un <style=\"Stat\">{[dmgPctReduction]} % de Daño</style>. Los <style=\"Stat_Hits\">impactos</style> que inflijan Daño <style=\"DMG_Psychic\">psíquico</style> o <style=\"DMG_Direct\">directo</style> quedan excluidos. Esta unidad no puede ser afectada por <style=\"Debuff_Pinned\">Supresión</style>.",
+    "variables": {
+      "dmgPctReduction": [-75]
+    }
+  },
+  "Terrifying": {
+    "description": "Recibe <style=\"Stat\">{[defensePct]} % de Daño</style> por ataques <style=\"Stat_Melee\">cuerpo a cuerpo</style>.",
+    "variables": {
+      "defensePct": [-30]
+    }
+  },
+  "TwoManTeam": {
+    "description": "Recibe un máximo de un <style=\"Stat\">50 %</style> de su <style=\"Stat_Health\">Salud</style> máxima en forma de <style=\"Stat_Damage\">Daño</style> de un solo <style=\"Stat_Hits\">impacto</style>. No se aplica al <style=\"DMG_Blast\">Daño de explosión</style>. Una vez que esté por debajo del <style=\"Stat\">50 %</style> de su <style=\"Stat_Health\">Salud</style> máxima, no se podrá <style=\"Healing\">curar</style> por encima del <style=\"Stat\">50 %</style> de su <style=\"Stat_Health\">Salud</style> máxima de nuevo.",
+    "variables": {}
+  },
+  "Unstoppable": {
+    "description": "Esta unidad no se detiene en hexágonos especiales ni por <style=\"HexEffect\">efectos de hexágono</style> que normalmente obligan a la unidad a interrumpir su <style=\"Stat_Movement\">movimiento</style>.",
+    "variables": {}
+  },
+  "Vehicle": {
+    "description": "Esta unidad no se detiene en hexágonos especiales ni por <style=\"HexEffect\">efectos de hexágono</style> que normalmente obligan a la unidad a interrumpir su <style=\"Stat_Movement\">movimiento</style>. No obtiene ninguna bonificación de <style=\"Tile_Grass\">Hierba alta</style> ni de <style=\"Tile_Trench\">Trincheras</style>. Esta unidad también es <style=\"Mechanical\">Mecánica</style>.",
+    "variables": {}
+  },
+  "WeaverOfFate": {
+    "description": "En cualquier turno en el que 3 o más unidades enemigas hayan recibido <style=\"DMG_Psychic\">Daño psíquico</style>, esta unidad inflige el máximo de <style=\"Stat_Damage\">Daño</style> posible con sus ataques y habilidades durante dicho turno.",
+    "variables": {}
+  }
+}

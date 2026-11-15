@@ -1,0 +1,33 @@
+{
+  "ranks": {
+    "Stone1": "Rang de Pierre I",
+    "Stone2": "Rang de Pierre II",
+    "Stone3": "Rang de Pierre III",
+    "Iron1": "Rang de Fer I",
+    "Iron2": "Rang de Fer II",
+    "Iron3": "Rang de Fer III",
+    "Bronze1": "Rang de Bronze I",
+    "Bronze2": "Rang de Bronze II",
+    "Bronze3": "Rang de Bronze III",
+    "Silver1": "Rang d'Argent I",
+    "Silver2": "Rang d'Argent II",
+    "Silver3": "Rang d'Argent III",
+    "Gold1": "Rang Or I",
+    "Gold2": "Rang Or II",
+    "Gold3": "Rang Or III",
+    "Diamond1": "Rang Diamant I",
+    "Diamond2": "Rang Diamant II",
+    "Diamond3": "Rang Diamant III",
+    "Adamantine1": "Rang d'adamantine I",
+    "Adamantine2": "Rang d'adamantine II",
+    "Adamantine3": "Rang d'adamantine III"
+  },
+  "rarities": {
+    "Common": "Commune",
+    "Uncommon": "Remarquable",
+    "Rare": "Rare",
+    "Epic": "Épique",
+    "Legendary": "Légendaire",
+    "Mythic": "Mythique"
+  }
+}

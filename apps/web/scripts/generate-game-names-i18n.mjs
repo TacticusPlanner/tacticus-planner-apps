@@ -9,6 +9,7 @@
 //   public/locales/{en,de,es,fr}/npcs.json              NPC variation id    -> name
 //   public/locales/{en,de,es,fr}/mythicQuestTasks.json  task loca key       -> template
 //   public/locales/{en,de,es,fr}/unitSearchNames.json   character/MoW id    -> other names to search by
+//   public/locales/{en,de,es,fr}/progression.json       ranks and rarities (en also keeps its hand-written stars)
 //
 // Source: the pinned data-mines commit (datamine/REF, see scripts/datamine.mjs): the game config names
 // the ids, the game's language files name them. A term missing in one locale falls back to English.
@@ -203,6 +204,60 @@ for (const namespace of ["characters", "mows"]) {
   }
 }
 tables.unitSearchNames = unitSearchNames
+
+// ---- progression -------------------------------------------------------------------------------------
+
+// Ranks are the game's UnitDetails/Rank_<index> terms ("Steinrang I"), rarities its raw rarity names.
+// English keeps its compact rank labels ("Stone I"), which the badges and chips are sized for. The game
+// has no star names (it draws stars), so `stars` stays hand-written in English and other locales fall
+// back to it.
+const RANK_METALS = [
+  "Stone",
+  "Iron",
+  "Bronze",
+  "Silver",
+  "Gold",
+  "Diamond",
+  "Adamantine",
+]
+const RANKS = RANK_METALS.flatMap((metal) =>
+  [1, 2, 3].map((n) => `${metal}${n}`)
+)
+const RARITIES = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"]
+const ROMAN = ["I", "II", "III"]
+const enProgression = readJson(`${localesDir}/en/progression.json`)
+
+const progressionTerm = (locale, key) => {
+  const term = (languages[locale][key] ?? languages.en[key])?.trim()
+  if (!term) {
+    console.log(`  NO TERM   progression/${key}`)
+    process.exit(1)
+  }
+  return term
+}
+const progression = Object.fromEntries(
+  LOCALES.map((locale) => [
+    locale,
+    {
+      ...(locale === "en" ? { stars: enProgression.stars } : {}),
+      ranks: Object.fromEntries(
+        RANKS.map((rank, index) => [
+          rank,
+          locale === "en"
+            ? `${RANK_METALS[Math.floor(index / 3)]} ${ROMAN[index % 3]}`
+            : progressionTerm(locale, `UnitDetails/Rank_${index}`),
+        ])
+      ),
+      rarities: Object.fromEntries(
+        RARITIES.map((rarity) => [
+          rarity,
+          progressionTerm(locale, `Upgrades/RarityName_Raw_${rarity}`),
+        ])
+      ),
+    },
+  ])
+)
+tables.progression = progression
 
 // ---- write -------------------------------------------------------------------------------------------
 

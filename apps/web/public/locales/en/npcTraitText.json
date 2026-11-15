@@ -121,6 +121,10 @@
     "description": "This unit is immune to special hexes and <style=\"HexEffect\">hex effects</style>, and cannot have its <style=\"Stat_Armor\">Armour</style>, <style=\"Stat_Hits\">hits</style>, <style=\"Stat_Movement\">Movement</style> or <style=\"Stat_Range\">Range</style> reduced.\n\nAdditionally, this unit cannot be <style=\"Debuff_Stunned\">Stunned</style>, <style=\"Debuff_Pinned\">Suppressed</style> or <style=\"Debuff_Taunted\">Taunted</style>, and does not receive knockback damage.",
     "variables": {}
   },
+  "Impervious": {
+    "description": "Has to be hit by a <style=\"Stat_CritDamage\">Crit</style> to take any Damage, but is instantly defeated by a <style=\"Stat_CritDamage\">Crit</style>.",
+    "variables": {}
+  },
   "IndirectFire": {
     "description": "Can fire over <style=\"Out_Of_Sight\">obscuring</style> hexes and hit targets in <style=\"Tile_Trench\">Trenches</style>",
     "variables": {}
@@ -145,6 +149,17 @@
       "hpPct": [10]
     }
   },
+  "MachineOfWar": {
+    "description": "<style=\"MoW\">Machines of War</style> stand beside the battlefield and provide two additional powerful abilities to use multiple times during the battle. Some of them cost <style=\"Resource_MachinesOfWarAmmo\">Munitions</style> and some have a <style=\"Cooldown\">cooldown</style> before you can use them. Machines of War cannot be targeted in their off-battlefield position and are destroyed when a battle is lost. \n\nNot every game mode allows to field Machines of War!",
+    "variables": {}
+  },
+  "MartialKatah": {
+    "description": "<style=\"NormalAttack\">Normal attacks</style> against this unit deal <style=\"Stat_Damage\">-{[dmgReductionPct]}% Damage</style>. This unit deals <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> with all attacks against <style=\"Summon\">Summons</style>.",
+    "variables": {
+      "dmgReductionPct": [20],
+      "extraDmgPct": [100]
+    }
+  },
   "Mechanic": {
     "description": "Can <style=\"Repairing\">repair</style> a friendly <style=\"Mechanical\">Mechanical</style> unit as its action.\nThe amount of <style=\"Stat_Health\">Health</style> restored equals the <style=\"Mechanic\">Mechanic</style>'s Damage multiplied by the highest number of <style=\"Stat_Hits\">hits</style> of any of their weapons.",
     "variables": {}
@@ -155,6 +170,10 @@
   },
   "MkXGravis": {
     "description": "Any incoming <style=\"Stat_Damage\">Damage</style> has to go through <style=\"Stat_Armor\">Armour</style> a second time. Does not apply to <style=\"Stat_CritDamage\">Crits</style>",
+    "variables": {}
+  },
+  "Object": {
+    "description": "Automatically takes its action, if any, at the beginning of the turn. Cannot be <style=\"Healing\">healed</style> or <style=\"Repairing\">repaired</style>. A player loses the battle if their only remaining units are <style=\"Object\">Objects</style>",
     "variables": {}
   },
   "Overwatch": {
@@ -209,6 +228,10 @@
       "dmgPct": [-25]
     }
   },
+  "Steppable": {
+    "description": "Will be destroyed if stepped on or if damaged, but cannot be targeted.",
+    "variables": {}
+  },
   "SuppressiveFire": {
     "description": "An enemy hit by this unit’s ranged attack becomes <style=\"Debuff_Pinned\">Suppressed</style>.",
     "variables": {}
@@ -222,7 +245,7 @@
     "variables": {}
   },
   "TeleportStrike": {
-    "description": "This unit starts the battle in Deep Strike. \n\nUnits in Deep Strike can move to any free hex on the battlefield that is not adjacent to an enemy, or they can move normally from their current position. They cannot be targeted or damaged until they have taken an action or ended their turn.",
+    "description": "This unit starts the battle in Deep Strike. Units in Deep Strike can move to any free hex on the battlefield that is not adjacent to an enemy, but then cannot perform ranged attacks until the end of their turn, or they can move normally from their current position. Units in Deep Strike cannot be targeted or damaged until they have taken an action or ended their turn.",
     "variables": {}
   },
   "TerminatorArmour": {
