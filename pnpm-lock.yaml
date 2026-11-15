@@ -199,8 +199,8 @@ importers:
         specifier: ^1.64.1
         version: 1.64.1
       '@posthog/rollup-plugin':
-        specifier: ^1.6.2
-        version: 1.6.2(rollup@4.67.2)
+        specifier: ^1.6.4
+        version: 1.6.4(rollup@4.67.2)
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.3.3(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.1))
@@ -1421,8 +1421,8 @@ packages:
   '@posthog/browser-common@0.10.8':
     resolution: {integrity: sha512-TQmqLVNFoKaL4dDV5Q8AScX2dIwdq8By2cj2KU1hMGe88tn7Usbf3U/hv5okhobEojntqJeslPIRBrG79Su+vg==}
 
-  '@posthog/cli@0.18.12':
-    resolution: {integrity: sha512-/eT9riWOkBb9uwsdOxQgW3fan/T3hwT8rvwZCzPl3DAgSBEhzpP59usD0fyFS++X2967E5AQe74nrBw1rywf6A==}
+  '@posthog/cli@0.19.4':
+    resolution: {integrity: sha512-wDS1yNMfKYEVpWJNX0DVdmQA9//zQV6+I7Eq2NcgRL30g2TKzN/wAzob0iAI/ysibcON7D6o/LtBxfh+8JTGDw==}
     engines: {node: '>=14.14', npm: '>=6'}
     hasBin: true
 
@@ -1432,8 +1432,8 @@ packages:
   '@posthog/plugin-utils@2.0.1':
     resolution: {integrity: sha512-ZiQfUcgY65EjF2vkqL4Aau6sx0aqvSWoXaGSGu9Solnmv6e6VRjQbAU0SCKbxpJxcEsCJof9vmvnrFTQIEOUAQ==}
 
-  '@posthog/rollup-plugin@1.6.2':
-    resolution: {integrity: sha512-6aOAx34tP6M8H4+3y9ydVeM/bK06ak+UUJgEA7pQCygkdHOsPcVFI6Tnd+rV4ZWQEMQDj6ZHZy9K5X7IIWj6Tg==}
+  '@posthog/rollup-plugin@1.6.4':
+    resolution: {integrity: sha512-T2BnNw9wqodg+Xx75Aq7Nm0wtHanvD4amlc1KJnJ/oTE76bN3okl+Cwm30WvoGSVFnrzumDYF2lrsJejplCmgw==}
     peerDependencies:
       rollup: '>= 4.0.0'
 
@@ -6111,7 +6111,7 @@ snapshots:
     transitivePeerDependencies:
       - preact-render-to-string
 
-  '@posthog/cli@0.18.12':
+  '@posthog/cli@0.19.4':
     dependencies:
       detect-libc: 2.1.2
 
@@ -6123,9 +6123,9 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
 
-  '@posthog/rollup-plugin@1.6.2(rollup@4.67.2)':
+  '@posthog/rollup-plugin@1.6.4(rollup@4.67.2)':
     dependencies:
-      '@posthog/cli': 0.18.12
+      '@posthog/cli': 0.19.4
       '@posthog/plugin-utils': 2.0.1
       magic-string: 0.30.21
       rollup: 4.67.2
