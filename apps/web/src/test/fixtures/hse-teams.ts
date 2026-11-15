@@ -4,6 +4,7 @@ import type {
   HseEventPointsState,
   HseInstance,
 } from "@/features/home-screen-event-points"
+// eslint-disable-next-line no-restricted-imports -- stands in for this module inside a vi.mock factory; the slice's public API re-exports the mocked module, so importing it here deadlocks.
 import {
   buildHseTeamsViewModel,
   type HseTeamsRead,

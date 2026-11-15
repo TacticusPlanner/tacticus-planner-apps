@@ -1,8 +1,8 @@
 import { ExternalLink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { DISCORD_INVITE_URL, GITHUB_ORG_URL } from "@/shared/config"
-import { useDateLocale } from "@/shared/lib"
+import { DISCORD_INVITE_URL, GITHUB_ORG_URL } from "../config"
+import { useDateLocale } from "../lib"
 
 interface LegalDocumentSection {
   id: string

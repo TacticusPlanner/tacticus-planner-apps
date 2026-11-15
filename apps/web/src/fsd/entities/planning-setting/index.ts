@@ -3,7 +3,6 @@ export {
   hasPreference,
   normalizeXpBookRarity,
   withPreference,
-  xpBookRarityOptions,
   watchesDailyAds,
 } from "./model/types"
 

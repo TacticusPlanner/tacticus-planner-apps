@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react"
-import { safeStorage } from "@/shared/lib"
+import { safeStorage } from "../lib"
 
 import { applyThemeColor } from "./theme-color"
 

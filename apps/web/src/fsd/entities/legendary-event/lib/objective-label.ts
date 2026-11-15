@@ -5,7 +5,7 @@ import {
   traitIcon,
 } from "@workspace/game-catalog"
 
-import defeatAllSrc from "../assets/defeat-all.png"
+import defeatAllSrc from "./defeat-all.png"
 import type { LegendaryEventUnitFilter } from "../model/types"
 
 /** The defeat-all star, planner art bundled with the entity (design D6); the game has no sprite for it. */

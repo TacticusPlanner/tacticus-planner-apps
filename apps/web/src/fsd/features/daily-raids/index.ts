@@ -22,9 +22,16 @@ export {
 } from "./model/use-home-screen-event-calendar"
 export {
   homeScreenEventInstanceKey,
+  listHomeScreenEventInstances,
   resolveHomeScreenEventSelection,
+  selectActiveHomeScreenEvent,
   selectListTarget,
+  type HomeScreenEventEntry,
 } from "./model/select-active-home-screen-event"
+export {
+  homeScreenEventEntryRule,
+  homeScreenEventRaidRule,
+} from "./model/home-screen-event-raid-rule"
 export { EventSwitcher } from "./ui/home-screen-event/event-switcher"
 export { useHomeScreenEventName } from "./ui/home-screen-event/use-home-screen-event-name"
 export { EventPreviewBanner } from "./ui/home-screen-event/event-preview-banner"

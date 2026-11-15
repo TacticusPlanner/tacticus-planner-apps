@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { localReadTimeoutMs } from "@/shared/lib"
+import { localReadTimeoutMs } from "../lib"
 import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { act, renderHook, waitFor } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"

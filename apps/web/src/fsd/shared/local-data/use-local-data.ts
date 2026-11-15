@@ -15,7 +15,7 @@ import {
   useQueryReadState,
   withReadTimeout,
   type ReadState,
-} from "@/shared/lib"
+} from "../lib"
 
 export type LocalDataSource = "catalog" | "player"
 

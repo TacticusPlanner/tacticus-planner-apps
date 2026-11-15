@@ -2,7 +2,7 @@
 import { replaceGameCatalogDataset } from "@workspace/game-catalog/testing"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { refreshLocalDataAfterSync } from "@/shared/local-data"
+import { refreshLocalDataAfterSync } from "../local-data"
 import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { unitPowerCatalog } from "@/test/fixtures/unit-power"
 import { renderHook, waitFor } from "@/test/render"

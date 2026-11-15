@@ -6,7 +6,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 
 import { useMsal } from "@azure/msal-react"
 
-import { PostHogProvider } from "@/app/providers"
+import { PostHogProvider } from "../providers"
 import { signOut, useActiveAccountId } from "@/shared/auth"
 
 import { AppLogo } from "./app-logo"

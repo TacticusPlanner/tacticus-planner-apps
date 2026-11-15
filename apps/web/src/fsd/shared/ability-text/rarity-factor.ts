@@ -1,7 +1,7 @@
 import type { ProgressionRulesStorageModel } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 
-import { useCatalogDataset } from "@/shared/local-data"
+import { useCatalogDataset } from "../local-data"
 
 /** A module-level selector for `useCatalogDataset("progression-rules", …)`: the factor each rarity
  *  scales an ability's rarity-affected values by — the game's `abilityStatMultiplierPct` of that

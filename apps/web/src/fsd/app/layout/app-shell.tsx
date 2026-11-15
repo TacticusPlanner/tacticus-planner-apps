@@ -9,7 +9,7 @@ import {
   PlayerDataProvider,
   PostHogProvider,
   UserJotProvider,
-} from "@/app/providers"
+} from "../providers"
 import {
   CreateGoalLauncherProvider,
   type CreateGoalPrefill,

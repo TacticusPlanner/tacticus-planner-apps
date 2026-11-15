@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { safeStorage } from "@/shared/lib"
+import { safeStorage } from "../lib"
 
 import { fetchEnabledFeatureFlags } from "./feature-flags.api"
 
