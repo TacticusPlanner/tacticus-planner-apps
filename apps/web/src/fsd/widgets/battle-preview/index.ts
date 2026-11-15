@@ -9,12 +9,6 @@ export {
   type EnemyTileViewModel,
 } from "./model/enemy-tile"
 export { BoardMap } from "./ui/board-map"
-export {
-  useCampaignBattleDialog,
-  type CampaignBattleDialogStore,
-} from "./model/campaign-battle-dialog-store"
-export {
-  CampaignBattleDialog,
-  CampaignBattleDialogHost,
-} from "./ui/campaign-battle-dialog"
+export { useCampaignBattleDialog } from "./model/campaign-battle-dialog-store"
+export { CampaignBattleDialogHost } from "./ui/campaign-battle-dialog"
 export { EnemyList } from "./ui/enemy-list"
