@@ -6,7 +6,7 @@ Collection lists units as `UnitTileUnit`s (owned: progression, rank, ability lev
 
 ### D1. Owning slice
 
-The existing `features/goal-create` slice owns the bulk code in its own segments (`model/bulk-create/`: plan builder, submit core and hooks; `ui/bulk-create/`: the dialog) and exports `BulkGoalDialog`, `BulkGoalUnit` and `bulkUnitKey` through its public API. A separate slice would put `features` over steiger's 20-slice threshold, and bulk creation is goal creation. The plan builder builds specs from `@workspace/game-domain` (`minProgressionForRank`, `minProgressionForAbilityLevel`, `startingProgression`) and `entities/goal` (`goalTargetKeyOf`, `goalTypesOverLimit`, `createCombinedGoals`), not from the single-goal form's model. The Collection page owns the selection state and renders the dialog.
+The existing `features/goal-planning` slice owns the bulk code in its own segments (`model/bulk-create/`: plan builder, submit core and hooks; `ui/bulk-create/`: the dialog) and exports `BulkGoalDialog`, `BulkGoalUnit` and `bulkUnitKey` through its public API. A separate slice would put `features` over steiger's 20-slice threshold, and bulk creation is goal creation. The plan builder builds specs from `@workspace/game-domain` (`minProgressionForRank`, `minProgressionForAbilityLevel`, `startingProgression`) and `entities/goal` (`goalTargetKeyOf`, `goalTypesOverLimit`, `createCombinedGoals`), not from the single-goal form's model. The Collection page owns the selection state and renders the dialog.
 
 ### D2. One shared target, resolved per unit
 

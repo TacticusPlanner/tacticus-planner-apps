@@ -65,7 +65,7 @@ import {
 } from "@/features/goal-planning"
 import { useLevelRules } from "@/entities/goal-farming"
 import { buildCascadeContext, type SelectedXpBook } from "./goal-row-utils"
-import { GoalEditDialog } from "@/features/goal-create"
+import { GoalEditDialog } from "@/features/goal-planning"
 import { PageTourButton } from "@/shared/tour"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 

@@ -13,7 +13,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 // The dialog has its own tests; here only which goal the page hands it and how it closes matter.
-vi.mock("@/features/goal-create/ui/goal-edit/goal-edit-dialog", () => ({
+vi.mock("@/features/goal-planning/ui/goal-edit/goal-edit-dialog", () => ({
   GoalEditDialog: ({
     goalId,
     onOpenChange,
@@ -274,7 +274,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 import { MemoryRouter, useLocation, useNavigate } from "react-router"
 
 import { GoalsPage } from ".//goals-page"
-import { CreateGoalLauncherProvider } from "@/features/goal-create"
+import { CreateGoalLauncherProvider } from "@/features/goal-planning"
 
 const onLaunch = vi.fn()
 
