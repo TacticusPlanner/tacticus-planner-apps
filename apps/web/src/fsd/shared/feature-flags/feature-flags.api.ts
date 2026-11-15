@@ -1,5 +1,5 @@
-import type { ApiSchemas } from "@/shared/api"
-import { getRequiredEnvironmentValue } from "@/shared/config"
+import type { ApiSchemas } from "../api"
+import { getRequiredEnvironmentValue } from "../config"
 
 type FeatureFlagsDto = ApiSchemas["FeatureFlagsResponse"]
 

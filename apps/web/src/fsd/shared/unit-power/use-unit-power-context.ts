@@ -9,8 +9,8 @@ import type {
 } from "@workspace/game-catalog"
 import { hasGameCatalogSynced } from "@workspace/game-catalog/queries"
 
-import { combineReadStates, useReadState, type ReadState } from "@/shared/lib"
-import { useCatalogDataset } from "@/shared/local-data"
+import { combineReadStates, useReadState, type ReadState } from "../lib"
+import { useCatalogDataset } from "../local-data"
 
 import {
   buildUnitPowerContext,

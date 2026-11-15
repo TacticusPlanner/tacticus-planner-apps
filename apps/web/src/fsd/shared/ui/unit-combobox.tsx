@@ -19,8 +19,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import { characterIcon, lockIcon } from "@workspace/game-catalog"
 import type { FactionGroup, UnitId } from "@workspace/game-domain"
 
-import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
-import { useUnitSearchNames } from "@/shared/unit-name"
+import { anyNameIncludes, normalizeSearchText } from "../lib"
+import { useUnitSearchNames } from "../unit-name"
 
 import { useCommandListId } from "./command-list-id"
 import { EntityIcon } from "./entity-icon"

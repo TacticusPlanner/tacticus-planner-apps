@@ -1,6 +1,6 @@
 import { AuthError } from "@azure/msal-browser"
 
-import { safeStorage } from "@/shared/lib"
+import { safeStorage } from "../lib"
 
 import type { SignInMethod } from "./account-identity"
 
