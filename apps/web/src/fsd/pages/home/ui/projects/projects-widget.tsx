@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router"
 import { Button } from "@workspace/ui/components/button"
@@ -11,11 +12,17 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import {
-  useHomeProjects,
-  ProjectSummaryRow,
-} from "@/features/project-management"
-import { useProjectFitCounts } from "@/features/goal-planning"
+import { useHomeProjects } from "@/features/project-management"
+
+import { ProjectsWidgetList } from "./projects-widget-list"
+
+// The fit counts need the plan engine, which Home otherwise never loads, so they arrive in their
+// own chunk; the rows render without counts until it does.
+const ProjectsWidgetFitList = lazy(() =>
+  import("./projects-widget-fit-list").then((m) => ({
+    default: m.ProjectsWidgetFitList,
+  }))
+)
 
 /** Home dashboard's Your Projects widget: Default project first. Mobile caps the list to 3 project
  * rows with a "+N more" link to the Projects dashboard (home-projects-widget spec); desktop has
@@ -26,11 +33,6 @@ export function ProjectsWidget() {
   const navigate = useNavigate()
   const isMobile = useIsMobile()
   const result = useHomeProjects(isMobile ? 3 : null)
-  // Targeted cards' deadline fit counts (project-deadline-fit); the plan runs only when a listed
-  // project has a resolvable, not-ended target.
-  const fitCounts = useProjectFitCounts(
-    result.status === "ready" ? result.projects : []
-  )
 
   const body = (() => {
     if (result.status === "loading") {
@@ -72,24 +74,17 @@ export function ProjectsWidget() {
       )
     }
 
+    const listProps = {
+      projects: result.projects,
+      summaries: result.summaries,
+      onSelect: (projectId: string) =>
+        void navigate(`/plan/goals?project=${projectId}`),
+    }
     return (
       <div className="flex flex-col gap-3">
-        <ul
-          className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-1"
-          data-testid="home-projects-list"
-        >
-          {result.projects.map((project) => (
-            <ProjectSummaryRow
-              key={project.projectId}
-              onSelect={() =>
-                void navigate(`/plan/goals?project=${project.projectId}`)
-              }
-              project={project}
-              summary={result.summaries.get(project.projectId)}
-              fitCount={fitCounts.get(project.projectId)}
-            />
-          ))}
-        </ul>
+        <Suspense fallback={<ProjectsWidgetList {...listProps} />}>
+          <ProjectsWidgetFitList {...listProps} />
+        </Suspense>
         {result.remainingCount > 0 ? (
           <Button
             className="self-start"

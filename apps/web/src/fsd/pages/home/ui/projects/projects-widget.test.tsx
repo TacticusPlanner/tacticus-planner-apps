@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { render, screen } from "@/test/render"
+import { render, screen, waitFor } from "@/test/render"
 
 import { ProjectsWidget } from "./projects-widget"
 
@@ -187,19 +187,20 @@ describe("ProjectsWidget", () => {
       remainingCount: 0,
     })
 
-    it("runs no plan when no listed project has a target", () => {
+    it("runs no plan when no listed project has a target", async () => {
       planInsightsMock.mockClear()
       useHomeProjectsMock.mockReturnValue(
         ready([project({ target: null, goalIds: [] })])
       )
       render(<ProjectsWidget />, { route: "/" })
-      expect(planInsightsMock).toHaveBeenCalled()
+      // The fit counts load in their own lazy chunk.
+      await waitFor(() => expect(planInsightsMock).toHaveBeenCalled())
       for (const [scope] of planInsightsMock.mock.calls) {
         expect(scope).toEqual([])
       }
     })
 
-    it("runs the full plan once a listed project has a target", () => {
+    it("runs the full plan once a listed project has a target", async () => {
       planInsightsMock.mockClear()
       useHomeProjectsMock.mockReturnValue(
         ready([
@@ -210,7 +211,9 @@ describe("ProjectsWidget", () => {
         ])
       )
       render(<ProjectsWidget />, { route: "/" })
-      expect(planInsightsMock).toHaveBeenLastCalledWith(null)
+      await waitFor(() =>
+        expect(planInsightsMock).toHaveBeenLastCalledWith(null)
+      )
     })
   })
 })
