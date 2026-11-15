@@ -169,6 +169,22 @@ The system SHALL start at most 3 automatic interactive redirects (ones an API re
 - **WHEN** the cap is reached and the user presses Sign in
 - **THEN** the sign-in redirect starts
 
+### Requirement: One tab at a time leaves for an automatic redirect
+
+When several tabs of the app need a new authorization at once (for example when the browser restores them together), only the first SHALL start an automatic redirect, interactive or quiet. The others SHALL wait for it to come back, for at most 60 seconds, and then reload, restoring the session from the tokens it saved to the shared cache. A tab that waited does not count against the automatic-redirect cap. A sign-in the user starts is never held back.
+
+#### Scenario: Two tabs restored together
+
+- **GIVEN** two tabs opening at the same moment for a user whose session must be renewed
+- **WHEN** both need a new authorization
+- **THEN** one tab redirects, and the other reloads signed in once that redirect returns, without a redirect of its own
+
+#### Scenario: The redirecting tab never comes back
+
+- **GIVEN** a tab waiting on another tab's redirect
+- **WHEN** 60 seconds pass and the other tab has not returned
+- **THEN** the waiting tab reloads and may start its own redirect
+
 ### Requirement: Token cache persists on the device
 
 Identity-provider tokens SHALL be stored in the device's local storage, shared across tabs and kept after the browser or the installed app closes, so a relaunch restores the session from the cached refresh token without a hidden identity-provider frame. Signing out SHALL remove them, together with the account hint described in `silent-sign-in`.

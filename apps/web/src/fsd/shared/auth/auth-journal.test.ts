@@ -13,6 +13,7 @@ import {
 describe("auth journal", () => {
   beforeEach(() => {
     localStorage.clear()
+    sessionStorage.clear()
     vi.useRealTimers()
   })
 
@@ -57,6 +58,20 @@ describe("auth journal", () => {
 
     expect(takePendingRedirect()).toBe("quiet")
     expect(takePendingRedirect()).toBeNull()
+  })
+
+  it("keeps the redirect marker to this tab", () => {
+    markRedirectPending("quiet")
+
+    expect(sessionStorage.getItem("tp.auth.pendingRedirect")).toBe("quiet")
+    expect(localStorage.getItem("tp.auth.pendingRedirect")).toBeNull()
+  })
+
+  it("clears the device-wide marker earlier versions wrote", () => {
+    localStorage.setItem("tp.auth.pendingRedirect", "interactive")
+
+    expect(takePendingRedirect()).toBeNull()
+    expect(localStorage.getItem("tp.auth.pendingRedirect")).toBeNull()
   })
 
   it("forgets everything on demand", () => {
