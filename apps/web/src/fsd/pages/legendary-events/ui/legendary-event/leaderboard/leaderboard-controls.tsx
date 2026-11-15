@@ -21,7 +21,8 @@ import type { ObjectiveChipGroup } from "./leaderboard.view-model"
 
 /**
  * The one controls bar shared by the lane and Overview leaderboards (design D7): "Only unlocked"
- * (disabled while ownership is unknown), "Deduct scored points", "Goals Preview" (disabled while
+ * (disabled while ownership is unknown), "Only in my teams" (disabled while the plan is
+ * unavailable), "Deduct scored points", "Goals Preview" (disabled while
  * goals load, failed or none target the event's units) and the objective multi-select
  * chips, one group per lane with a lane heading when there are several (design D2 of the Overview
  * refinement). Like the collection page, the switches and chips sit in a panel behind a Filters
@@ -47,6 +48,8 @@ export function LeaderboardControls({
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
   const unlockedId = useId()
+  const inTeamsId = useId()
+  const teamsAvailable = state.teamUnitIds !== undefined
   const deductId = useId()
   const previewId = useId()
   const previewHintId = useId()
@@ -56,6 +59,7 @@ export function LeaderboardControls({
   const active =
     state.selectedObjectives.size +
     (rosterAvailable && state.onlyUnlocked ? 1 : 0) +
+    (teamsAvailable && state.onlyInTeams ? 1 : 0) +
     (previewReady && goals.previewEnabled ? 1 : 0)
   const [open, setOpen] = useState(() => active > 0)
   const selectedIn = (group: ObjectiveChipGroup) =>
@@ -108,6 +112,15 @@ export function LeaderboardControls({
               onCheckedChange={state.onOnlyUnlockedChange}
             />
             <Label htmlFor={unlockedId}>{t("leaderboard.onlyUnlocked")}</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={teamsAvailable && state.onlyInTeams}
+              disabled={!teamsAvailable}
+              id={inTeamsId}
+              onCheckedChange={state.onOnlyInTeamsChange}
+            />
+            <Label htmlFor={inTeamsId}>{t("leaderboard.onlyInTeams")}</Label>
           </div>
           <div className="flex items-center gap-2">
             <Switch

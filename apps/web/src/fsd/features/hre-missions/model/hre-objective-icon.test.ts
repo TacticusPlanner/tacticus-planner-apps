@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { HRE_OBJECTIVE_KINDS } from "./hre-missions"
+import { HRE_OBJECTIVE_KINDS } from "@/entities/hre-mission"
 import { hreObjectiveIcon } from "./hre-objective-icon"
 
 describe("hreObjectiveIcon", () => {

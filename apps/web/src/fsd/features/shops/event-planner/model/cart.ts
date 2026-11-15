@@ -1,6 +1,9 @@
 import type { GameCatalogEventShop } from "@workspace/game-catalog"
 
-import type { DraftAlliance, EventShopCartEntry } from "@/entities/event-shop"
+import type {
+  DraftAlliance,
+  EventShopCartEntry,
+} from "@/entities/shops/event-plan"
 
 import { dayIndexOf, entryKey, resolveEntry } from "./entry"
 

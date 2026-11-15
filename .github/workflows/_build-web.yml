@@ -19,7 +19,7 @@ on:
         type: string
         default: ""
       run-validation:
-        description: Run formatting, linting, FSD linting, typechecking, and knip.
+        description: Run the Lint and Checks jobs (eslint, prettier, FSD, pinned refs) and knip plus typecheck in the build job.
         required: false
         type: boolean
         default: true
@@ -64,8 +64,108 @@ on:
         required: false
 
 jobs:
-  build:
-    name: Build Web
+  # Three jobs run side by side so a PR waits for the slowest one (eslint), not for every step in
+  # a row. "Build Web" at the end only collects their results: it keeps the one required check name
+  # the ruleset already lists, so adding or moving a step never needs a ruleset change.
+  lint:
+    name: Lint
+    if: ${{ !inputs.skip && inputs.run-validation }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
+
+      - name: Set up toolchain
+        uses: ./.github/actions/setup-web
+        with:
+          turbo-cache-key: lint
+
+      # eslint --cache (see each package's lint:eslint script) re-lints only files whose content
+      # changed. Type-aware rules can leave a cached result stale when a file's imports change, so
+      # Full lint (lint-main.yml) runs uncached on every push to main and seeds this cache.
+      - name: Restore ESLint cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            apps/*/node_modules/.cache/eslint
+            packages/*/node_modules/.cache/eslint
+          key: ${{ runner.os }}-eslint-${{ hashFiles('pnpm-lock.yaml', 'apps/*/eslint.config.js', 'packages/*/eslint.config.js') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-eslint-${{ hashFiles('pnpm-lock.yaml', 'apps/*/eslint.config.js', 'packages/*/eslint.config.js') }}-
+
+      - name: ESLint
+        run: pnpm turbo run lint:eslint
+
+  checks:
+    name: Checks
+    if: ${{ !inputs.skip && inputs.run-validation }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
+
+      - name: Set up toolchain
+        uses: ./.github/actions/setup-web
+        with:
+          turbo-cache-key: checks
+
+      # API types come from the committed copy of the API's OpenAPI document (spec: api-contract-sync).
+      - name: Check API types are current
+        run: |
+          pnpm --filter web api:types
+          git diff --exit-code -- apps/web/src/fsd/shared/api/schema.d.ts
+
+      - name: Check the API spec is pinned to a commit
+        run: |
+          if [ "$(cat apps/web/openapi/api.ref)" = "local" ]; then
+            echo "::error::apps/web/openapi/api.ref is 'local'. Run 'pnpm --filter web api:pull <api-commit-sha>' before merging."
+            exit 1
+          fi
+
+      # Generated game text and images come from one data-mines commit (spec: datamine-source).
+      - name: Check the datamine is pinned to a commit
+        run: |
+          if [ "$(cat apps/web/datamine/REF)" = "local" ]; then
+            echo "::error::apps/web/datamine/REF is 'local'. Run 'pnpm --filter web datamine:pull <data-mines-tag>' before merging."
+            exit 1
+          fi
+
+      # public/game_catalog/datamines holds exactly the sprites datamine/sprites.txt lists, and
+      # nothing but datamines/ and curated/ sits directly under public/game_catalog.
+      - name: Check the catalog image folders
+        working-directory: apps/web
+        run: |
+          if ! diff <(grep -v '^#' datamine/sprites.txt | sed '/^$/d') \
+            <(cd public/game_catalog/datamines && find . -type f | sed 's|^\./||' | LC_ALL=C sort); then
+            echo "::error::public/game_catalog/datamines differs from datamine/sprites.txt. Run 'pnpm --filter web datamine:sprites'."
+            exit 1
+          fi
+          extra=$(cd public/game_catalog && find . -mindepth 1 -maxdepth 1 ! -name datamines ! -name curated)
+          if [ -n "$extra" ]; then
+            echo "::error::public/game_catalog holds only datamines/ and curated/; move these: $extra"
+            exit 1
+          fi
+
+      - name: Check formatting
+        run: pnpm exec prettier --check "**/*.{ts,tsx}"
+
+      - name: Lint FSD
+        run: pnpm lint:fsd
+
+  bundle:
+    name: Typecheck and bundle
     if: ${{ !inputs.skip }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -74,43 +174,25 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 2
           ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - name: Set up toolchain
+        uses: ./.github/actions/setup-web
         with:
-          version: 11.7.0
-          run_install: false
+          turbo-cache-key: build
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24.15.0
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Cache Turbo
-        uses: actions/cache@v5
-        with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # A release build (CD Prod checks out refs/tags/vX.Y.Z) is versioned by its tag, so analytics
-      # app_version names the release; any other build by its commit.
+      # A release build (CD Prod checks out refs/tags/vX.Y.Z or, for a hotfix, vX.Y.Z.N) is versioned
+      # by its tag, so analytics app_version names the release; any other build by its commit.
       - name: Set app version
         shell: bash
         env:
           REF: ${{ inputs.ref || github.ref }}
         run: |
-          if [[ "$REF" =~ ^refs/tags/(v[0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+          if [[ "$REF" =~ ^refs/tags/(v[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?)$ ]]; then
             echo "VITE_APP_VERSION=${BASH_REMATCH[1]}" >> "$GITHUB_ENV"
           else
             echo "VITE_APP_VERSION=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
@@ -150,58 +232,9 @@ jobs:
           echo "POSTHOG_PERSONAL_API_KEY=$POSTHOG_PERSONAL_API_KEY" >> "$GITHUB_ENV"
           echo "POSTHOG_PROJECT_ID=$POSTHOG_PROJECT_ID" >> "$GITHUB_ENV"
 
-      # API types come from the committed copy of the API's OpenAPI document (spec: api-contract-sync).
-      - name: Check API types are current
+      - name: Knip
         if: ${{ inputs.run-validation }}
-        run: |
-          pnpm --filter web api:types
-          git diff --exit-code -- apps/web/src/fsd/shared/api/schema.d.ts
-
-      - name: Check the API spec is pinned to a commit
-        if: ${{ inputs.run-validation }}
-        run: |
-          if [ "$(cat apps/web/openapi/api.ref)" = "local" ]; then
-            echo "::error::apps/web/openapi/api.ref is 'local'. Run 'pnpm --filter web api:pull <api-commit-sha>' before merging."
-            exit 1
-          fi
-
-      # Generated game text and images come from one data-mines commit (spec: datamine-source).
-      - name: Check the datamine is pinned to a commit
-        if: ${{ inputs.run-validation }}
-        run: |
-          if [ "$(cat apps/web/datamine/REF)" = "local" ]; then
-            echo "::error::apps/web/datamine/REF is 'local'. Run 'pnpm --filter web datamine:pull <data-mines-tag>' before merging."
-            exit 1
-          fi
-
-      # public/game_catalog/datamines holds exactly the sprites datamine/sprites.txt lists, and
-      # nothing but datamines/ and curated/ sits directly under public/game_catalog.
-      - name: Check the catalog image folders
-        if: ${{ inputs.run-validation }}
-        working-directory: apps/web
-        run: |
-          if ! diff <(grep -v '^#' datamine/sprites.txt | sed '/^$/d') \
-            <(cd public/game_catalog/datamines && find . -type f | sed 's|^\./||' | LC_ALL=C sort); then
-            echo "::error::public/game_catalog/datamines differs from datamine/sprites.txt. Run 'pnpm --filter web datamine:sprites'."
-            exit 1
-          fi
-          extra=$(cd public/game_catalog && find . -mindepth 1 -maxdepth 1 ! -name datamines ! -name curated)
-          if [ -n "$extra" ]; then
-            echo "::error::public/game_catalog holds only datamines/ and curated/; move these: $extra"
-            exit 1
-          fi
-
-      - name: Check formatting
-        if: ${{ inputs.run-validation }}
-        run: pnpm exec prettier --check "**/*.{ts,tsx}"
-
-      - name: Lint
-        if: ${{ inputs.run-validation }}
-        run: pnpm lint
-
-      - name: Lint FSD
-        if: ${{ inputs.run-validation }}
-        run: pnpm lint:fsd
+        run: pnpm turbo run lint:knip
 
       - name: Typecheck
         if: ${{ inputs.run-validation }}
@@ -230,9 +263,34 @@ jobs:
 
       - name: Upload web artifact
         if: ${{ inputs.upload-artifact }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: web-dist
           path: apps/web/dist
           if-no-files-found: error
           retention-days: 7
+
+  build:
+    name: Build Web
+    needs: [lint, checks, bundle]
+    # always() so a failed job above still reports here as a failure instead of skipping this check
+    # (a skipped required check counts as passing). With skip set, nothing ran and this skips too.
+    if: ${{ always() && !inputs.skip }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Check results
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          # Lint and Checks are skipped when run-validation is off; anything else must succeed.
+          if echo "$RESULTS" | jq -e 'to_entries | any(.value.result == "failure" or .value.result == "cancelled")' > /dev/null; then
+            echo "::error::A Build Web job failed; see the jobs above."
+            exit 1
+          fi
+          if [ "$(echo "$RESULTS" | jq -r '.bundle.result')" != "success" ]; then
+            echo "::error::Typecheck and bundle did not run."
+            exit 1
+          fi

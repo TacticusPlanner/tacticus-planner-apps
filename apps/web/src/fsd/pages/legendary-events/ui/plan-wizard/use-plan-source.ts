@@ -6,7 +6,7 @@ import {
   buildLanePointsModel,
   buildMasterTable,
   buildSyncedLaneProgress,
-  laneBattlePowers,
+  laneThresholdPowers,
   resolveLegendaryEventRunsAt,
   unitHordeMultiplier,
   useClearEstimateConfig,
@@ -172,7 +172,11 @@ export function usePlanSource(eventId: string): PlanSource {
           model,
           progress: buildSyncedLaneProgress(model, synced?.[laneId]),
           battlePowers:
-            laneBattlePowers(eventData[laneId].battleIds, battlesData) ?? [],
+            laneThresholdPowers(
+              eventData[laneId].battleIds,
+              battlesData,
+              config.config
+            ) ?? [],
         }
       }),
       units: unitsData,

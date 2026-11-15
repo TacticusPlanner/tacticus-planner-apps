@@ -7,14 +7,17 @@ export default defineConfig([
     files: ["./src/fsd/**"],
     rules: {
       "fsd/insignificant-slice": "off",
+      // Opt-in rules (not in the recommended preset).
+      // Imports inside a slice stay relative, so a slice never imports its own public API.
+      "fsd/import-locality": "error",
+      // Public APIs list their exports explicitly instead of `export *`.
+      "fsd/no-wildcard-exports": "error",
     },
   },
   {
-    // Rule added in steiger 0.8; these segments predate it.
-    files: [
-      "./src/fsd/app/providers/**",
-      "./src/fsd/entities/legendary-event/assets/**",
-    ],
+    // FSD names `providers` as a standard App segment (React provider components), but steiger's
+    // segments-by-purpose rule does not exempt it.
+    files: ["./src/fsd/app/providers/**"],
     rules: {
       "fsd/segments-by-purpose": "off",
     },

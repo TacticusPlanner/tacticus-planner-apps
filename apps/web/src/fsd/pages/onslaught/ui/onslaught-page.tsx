@@ -174,9 +174,6 @@ export function OnslaughtPage() {
                   >
                     <div className="flex justify-center">
                       <ProgressionBadge value={rewardProgression[key]} />
-                      <span className="sr-only">
-                        {t(`onslaught.rewards.${key}`)}
-                      </span>
                     </div>
                   </th>
                 ))}

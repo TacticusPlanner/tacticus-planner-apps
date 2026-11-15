@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@workspace/ui/components/dialog"
 
-import { DRAFT_ALLIANCES } from "@/entities/event-shop"
+import { DRAFT_ALLIANCES } from "@/entities/shops/event-plan"
 import { clearWeekSummary } from "@/features/shops/event-planner"
 import { ConfirmationDialog, NumberStepper } from "@/shared/ui"
 

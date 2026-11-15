@@ -1,0 +1,33 @@
+{
+  "ranks": {
+    "Stone1": "Pierre I",
+    "Stone2": "Pierre II",
+    "Stone3": "Pierre III",
+    "Iron1": "Fer I",
+    "Iron2": "Fer II",
+    "Iron3": "Fer III",
+    "Bronze1": "Bronze I",
+    "Bronze2": "Bronze II",
+    "Bronze3": "Bronze III",
+    "Silver1": "Argent I",
+    "Silver2": "Argent II",
+    "Silver3": "Argent III",
+    "Gold1": "Or I",
+    "Gold2": "Or II",
+    "Gold3": "Or III",
+    "Diamond1": "Diamant I",
+    "Diamond2": "Diamant II",
+    "Diamond3": "Diamant III",
+    "Adamantine1": "Adamantine I",
+    "Adamantine2": "Adamantine II",
+    "Adamantine3": "Adamantine III"
+  },
+  "rarities": {
+    "Common": "Commune",
+    "Uncommon": "Remarquable",
+    "Rare": "Rare",
+    "Epic": "Épique",
+    "Legendary": "Légendaire",
+    "Mythic": "Mythique"
+  }
+}

@@ -1,7 +1,7 @@
 import type { ResolvedEventSlot } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 
-import type { DraftAlliance } from "@/entities/event-shop"
+import type { DraftAlliance } from "@/entities/shops/event-plan"
 
 import type { ClassifiedEntry } from "./classify"
 

@@ -24,15 +24,16 @@ export {
   type PlannedItemState,
 } from "./model/day-state"
 export { slotLabel, type SlotLabel } from "./model/slot-labels"
-export { type CoverageRow, type XpPerBook } from "./model/coverage"
+export {
+  buildCoverage,
+  toCoverageNeeds,
+  type CoverageRow,
+  type XpPerBook,
+} from "./model/coverage"
 export {
   useEventShopCart,
   type EventShopCartState,
 } from "./model/use-event-shop-cart"
-export {
-  useEventShopCoverage,
-  type EventShopCoverageState,
-} from "./model/use-event-shop-coverage"
 export {
   useRosterShopContext,
   type RosterShopContext,

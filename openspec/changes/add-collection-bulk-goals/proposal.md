@@ -23,7 +23,7 @@ No companion API change: the client sends one existing combined create request p
 
 ## Impact
 
-- New `bulk-create` segments in `apps/web/src/fsd/features/goal-create` (plan builder, submit hook, dialog).
+- New `bulk-create` segments in `apps/web/src/fsd/features/goal-planning` (plan builder, submit hook, dialog).
 - `pages/my-game/ui/collection/*`: select mode, selectable tile/row wrapper, select bar, tour step.
 - `shared/analytics`: the new event.
 - `public/locales/{en,de,es,fr}/common.json`.

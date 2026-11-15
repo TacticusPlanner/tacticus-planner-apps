@@ -8,7 +8,6 @@ import {
 } from "@workspace/game-catalog"
 import {
   progressionOrder,
-  progressionRarity,
   rankOrder,
   rarityOrder,
   type Progression,
@@ -32,6 +31,7 @@ import {
   RankBadge,
   SearchableSelect,
   type SelectOption,
+  progressionText,
 } from "@/shared/ui"
 
 import {
@@ -85,18 +85,11 @@ export function CollectionFilterFields({
     label: t(`progression:ranks.${rank}`, { defaultValue: rank }),
     icon: <RankBadge rank={rank} showLabel={false} iconClassName="size-5" />,
   }))
-  const starOptions: SelectOption<Progression>[] = starSteps.map((step) => {
-    const rarity = progressionRarity(step)
-    const stars = step.slice(step.indexOf(":") + 1)
-    return {
-      value: step,
-      label: `${t(`progression:rarities.${rarity}`, { defaultValue: rarity })} · ${t(
-        `progression:stars.${stars}`,
-        { defaultValue: stars }
-      )}`,
-      icon: <ProgressionBadge value={step} />,
-    }
-  })
+  const starOptions: SelectOption<Progression>[] = starSteps.map((step) => ({
+    value: step,
+    label: progressionText(t, step),
+    icon: <ProgressionBadge value={step} />,
+  }))
   const numbers = (values: readonly number[]) =>
     values.map((value) => ({ value: String(value), label: String(value) }))
   const toNumber = (value: string | null) =>

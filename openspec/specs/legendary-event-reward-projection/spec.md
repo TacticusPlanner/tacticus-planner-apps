@@ -17,7 +17,7 @@ The planner SHALL compute one reward projection per event with these figures, al
 - **Chests to go** = max(0, ⌈(goal threshold − S − future Oh So Close shards) ÷ `shardsPerChest`⌉); **chests required** = K + chests to go. When required exceeds the event's chest count the goal is "not reachable this event", and no currency, points or battles-per-lane figures are produced (the ladder has no cost for chests beyond its last). When every step is reached, no chest, currency or points figures are produced.
 - For a reachable goal, **currency required** = sum of `engramCost` of chests 1..required; **collected** = sum of costs of chests 1..K + C; **currency from points** = required − collected − future mission currency − future bundle currency.
 - **Per-payout bonus** = synced `extraCurrencyPerPayout` when greater than 0; else 15 when the current run's stored premium missions > 0 and paid options are on; else 0.
-- **Points target**: when currency from points ≤ 0, "enough currency now"; otherwise the first `pointsMilestones` entry above P at which the running total of (`engramPayout` + bonus) over the milestones above P reaches currency from points. When the ladder ends first, "points alone can't cover it" with the currency still missing. **Points to go** = target `cumulativePoints` − P.
+- **Points target**: when currency from points ≤ 0, "enough currency now" if the collected currency alone covers currency required, else "covered by later runs" with the currency still short today (currency required − collected); otherwise the first `pointsMilestones` entry above P at which the running total of (`engramPayout` + bonus) over the milestones above P reaches currency from points. When the ladder ends first, "points alone can't cover it" with the currency still missing. **Points to go** = target `cumulativePoints` − P.
 - **Average battles per lane** = target `cumulativePoints` ÷ 3 ÷ 500, to one decimal.
 
 Every figure is in the event's own units: shards for the goal, chests, currency, and points. The projection is anchored to current synced progress and the user's inputs, never to a goal target.
@@ -62,9 +62,15 @@ Assumptions:
 
 #### Scenario: Enough currency now
 
-- **GIVEN** collected currency plus future missions and bundles already covers the chests for the goal
+- **GIVEN** collected currency alone already covers the chests for the goal
 - **WHEN** the projection is computed
 - **THEN** the points target is "enough currency now" with 0 points to go
+
+#### Scenario: Covered by later runs
+
+- **GIVEN** collected currency falls 190 short of the chests for the goal, but the future runs' missions and bundles cover the rest
+- **WHEN** the projection is computed
+- **THEN** the points target is "covered by later runs", 190 currency short today, with 0 points to go
 
 #### Scenario: Fewer shards held than chests claimed
 
@@ -108,7 +114,7 @@ Assumptions:
 
 ### Requirement: The Run status card shows the reward outlook
 
-Below its synced figures the Run status card SHALL show a **Reward outlook**: "Next: <step> · S / threshold shards" (step names translated: Unlock, 4 stars, 5 stars, Blue star, Mythic, Two blue stars); "N more chests costing X currency" (X = the cost of chests K + 1 through chests required); "N points to reach M · about B battles per lane"; and a "How this is worked out" disclosure listing, one line each, the synced base, the future mission and bundle currency, the per-payout bonus, and the note that runs already started are counted through sync. It SHALL show "Every reward step reached" when every step is reached, "Not reachable this event (needs N chests, the event has M)" when beyond the chest ladder, "Enough currency for the chests now" when no points are needed, and "Points alone can't cover it: N currency short" when beyond the points ladder. Without a synced entry it SHALL show the outlook computed from zero with a "No synced progress yet" note. While the event's catalog record is loading the outlook SHALL show a skeleton; when the catalog read failed the outlook SHALL be hidden and the card's existing failure note shown.
+Below its synced figures the Run status card SHALL show a **Reward outlook**: "Next: <step> · S / threshold shards" (step names translated: Unlock, 4 stars, 5 stars, Blue star, Mythic, Two blue stars); "N more chests costing X currency" (X = the cost of chests K + 1 through chests required); "N points to reach M · about B battles per lane"; and a "How this is worked out" disclosure listing, one line each, the synced base, the future mission and bundle currency, the per-payout bonus, and the note "Later runs add only the missions and bundle you plan for them; the current run's are already in your synced currency." Under the Now / End of run table (Overview with a synced entry) the outlook is compact: headed "To reach <step>", without the "Next:" shards line, and hidden once every step is reached. It SHALL show "Every reward step reached" when every step is reached, "Not reachable this event (needs N chests, the event has M)" when beyond the chest ladder, "Enough currency for the chests now" when no points are needed and the currency in hand covers the chests, "N currency short today · your later runs' missions and bundles cover it" when no points are needed but later runs' currency is, and "Points alone can't cover it: N currency short" when beyond the points ladder. Without a synced entry it SHALL show the outlook computed from zero with a "No synced progress yet" note. While the event's catalog record is loading the outlook SHALL show a skeleton; when the catalog read failed the outlook SHALL be hidden and the card's existing failure note shown.
 
 #### Scenario: Outlook on the Uthar example
 

@@ -19,7 +19,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { rarityRank, type Rarity } from "@workspace/game-domain"
 
-import { normalizeSearchText } from "@/shared/lib"
+import { normalizeSearchText } from "../lib"
 
 import { useCommandListId } from "./command-list-id"
 import { closestOverlayContent } from "./overlay-content"

@@ -1,8 +1,10 @@
 import type { IPublicClientApplication } from "@azure/msal-browser"
 import { clearAccountLocalData } from "./account-local-data"
+import { forgetAuthJournal } from "./auth-journal"
 import {
   forgetAccountHint,
   forgetFreshLogin,
+  forgetAutoRedirects,
   forgetQuietRenewal,
 } from "./authentication"
 
@@ -15,6 +17,8 @@ export async function signOut(
   forgetAccountHint()
   forgetFreshLogin()
   forgetQuietRenewal()
+  forgetAutoRedirects()
+  forgetAuthJournal()
   const account = instance
     .getAllAccounts()
     .find((candidate) => candidate.homeAccountId === accountId)

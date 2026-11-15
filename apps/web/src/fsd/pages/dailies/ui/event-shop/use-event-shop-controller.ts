@@ -12,7 +12,10 @@ import {
   type ResolvedShopOffer,
 } from "@workspace/game-catalog"
 
-import type { DraftAlliance, EventShopCartEntry } from "@/entities/event-shop"
+import type {
+  DraftAlliance,
+  EventShopCartEntry,
+} from "@/entities/shops/event-plan"
 import {
   addOffer,
   buildDayStates,

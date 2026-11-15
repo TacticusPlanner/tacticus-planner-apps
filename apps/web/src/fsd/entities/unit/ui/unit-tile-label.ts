@@ -1,9 +1,7 @@
 import { useTranslation } from "react-i18next"
-import {
-  progressionStarsIndex,
-  type Progression,
-  type Rarity,
-} from "@workspace/game-domain"
+import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
+
+import { progressionText } from "@/shared/ui"
 
 import type { UnitFaction, UnitTileUnit } from "../model/types"
 
@@ -16,7 +14,7 @@ export function usesMythicShards(progression: Progression): boolean {
 }
 const firstBlueStarIndex = 11
 
-/** "Titus, Legendary, Red Four Stars, Gold I, level 45, active ability level 40, ...". */
+/** "Titus, Legendary 4★, Gold I, level 45, active ability level 40, ...". */
 export function useUnitTileLabel(
   unit: UnitTileUnit,
   faction?: UnitFaction
@@ -73,14 +71,9 @@ export function useUnitTileLabel(
   return parts.join(", ")
 }
 
-type StarsKey = Progression extends `${string}:${infer Stars}` ? Stars : never
-
 function progressionParts(
   progression: Progression,
   t: ReturnType<typeof useTranslation<["common", "progression"]>>["t"]
 ): string[] {
-  const [rarity, stars] = progression.split(":") as [Rarity, StarsKey]
-  const parts = [t(`progression:rarities.${rarity}`)]
-  if (stars !== "None") parts.push(t(`progression:stars.${stars}`))
-  return parts
+  return [progressionText(t, progression)]
 }

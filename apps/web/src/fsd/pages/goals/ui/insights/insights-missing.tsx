@@ -57,11 +57,10 @@ export function InsightsMissing({
   missing: PlanMissingResources
   totals?: PlanInsightsTotals
 }) {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation(["common", "progression"])
   const fmt = (value: number) =>
     new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
-  const rarityName = (rarity: Rarity) =>
-    t(`goals.resourceChips.rarity.${rarity}`)
+  const rarityName = (rarity: Rarity) => t(`progression:rarities.${rarity}`)
 
   const byRarity = (
     prefix: string,

@@ -5,7 +5,8 @@
   "private": true,
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint",
+    "lint": "pnpm run lint:eslint",
+    "lint:eslint": "eslint --cache --cache-strategy content --cache-location node_modules/.cache/eslint/",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",

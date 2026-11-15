@@ -454,13 +454,19 @@ The Rank, Ascension and Ability cards SHALL offer "Add milestone", which appends
 
 ### Requirement: A ladder places its Ascension prerequisite before the milestones that need it
 
-Any Ascension prerequisite of a ladder SHALL precede the first milestone that needs it, and every milestone that needs it SHALL depend on it. The desktop dialog and mobile sheet SHALL show the same milestone list, stacked vertically.
+Any Ascension prerequisite of a ladder SHALL precede the first milestone that needs it, and every milestone that needs it SHALL depend on it. A Rank or Ability milestone the unit's current progression already permits SHALL NOT depend on any Ascension goal, including one created in the same submission. The desktop dialog and mobile sheet SHALL show the same milestone list, stacked vertically.
 
 #### Scenario: Ladder crossing a rarity cap
 
 - **GIVEN** Ragnar is Epic and the ladder is Diamond1 then Adamantine1, where only Adamantine1 needs Legendary
 - **WHEN** the user submits with the suggested Ascension goal
 - **THEN** the order is Diamond1, Ascension, Adamantine1, and only Adamantine1 depends on the Ascension goal
+
+#### Scenario: A target the current rarity permits waits on no Ascension
+
+- **GIVEN** Wrask is Legendary 3★, whose ability cap is 50
+- **WHEN** the user submits an Ascension goal to Legendary 5★ together with an Ability goal to 44/50
+- **THEN** the Ability goal does not depend on the Ascension goal
 
 ### Requirement: Default targets skip reached and taken targets
 

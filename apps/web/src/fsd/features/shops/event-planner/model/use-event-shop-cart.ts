@@ -8,7 +8,7 @@ import {
   useEventShopPlan,
   useSaveEventShopPlan,
   type EventShopCartEntry,
-} from "@/entities/event-shop"
+} from "@/entities/shops/event-plan"
 
 import { dropUnresolvable } from "./cart"
 

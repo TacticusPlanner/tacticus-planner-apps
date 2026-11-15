@@ -102,6 +102,7 @@ function Harness({
   goals = noGoals,
   onAddToTeam,
   wholeSelection = false,
+  teamUnitIds,
 }: {
   rows: LeaderboardRowsViewModel
   layout: "table" | "list"
@@ -110,8 +111,10 @@ function Harness({
   onAddToTeam?: (unitId: string, laneId: "alpha" | "beta" | "gamma") => void
   /** Hand it every lane's picks, as the page does. */
   wholeSelection?: boolean
+  teamUnitIds?: Record<"alpha" | "beta" | "gamma", ReadonlySet<string>>
 }) {
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
+  const [onlyInTeams, setOnlyInTeams] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
   const [selectedObjectives, setSelectedObjectives] = useState<
     ReadonlySet<string>
@@ -124,6 +127,9 @@ function Harness({
         ...rows,
         onlyUnlocked,
         onOnlyUnlockedChange: setOnlyUnlocked,
+        onlyInTeams,
+        onOnlyInTeamsChange: setOnlyInTeams,
+        teamUnitIds,
         deductScored,
         onDeductScoredChange: setDeductScored,
         selectedObjectives,
@@ -305,6 +311,44 @@ describe("CrossLaneLeaderboard", () => {
     expect(screen.getByTestId("leaderboard-figure-head")).toHaveTextContent(
       "Remaining"
     )
+  })
+
+  it("keeps only the units the shown lanes' teams use with Only in my teams", async () => {
+    const user = userEvent.setup()
+    render(
+      <Harness
+        layout="table"
+        rows={ready}
+        teamUnitIds={{
+          alpha: new Set(),
+          beta: new Set(["bloodDante"]),
+          gamma: new Set(),
+        }}
+      />,
+      { wrapper: i18nWrapper(i18n) }
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    await user.click(screen.getByRole("switch", { name: "Only in my teams" }))
+    expect(units()).toEqual(["bloodDante"])
+    expect(
+      screen.getByRole("button", { name: "Filters (1)" })
+    ).toBeInTheDocument()
+    // Beta hidden: no shown lane's team uses a unit any more.
+    await user.click(screen.getByRole("button", { name: "Lanes: All lanes" }))
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Beta" }))
+    await user.keyboard("{Escape}")
+    expect(screen.queryAllByTestId("leaderboard-row")).toHaveLength(0)
+    expect(
+      screen.getByText("Your teams here have no units yet.")
+    ).toBeInTheDocument()
+  })
+
+  it("disables Only in my teams while the plan is unavailable", () => {
+    renderOverview()
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    expect(
+      screen.getByRole("switch", { name: "Only in my teams" })
+    ).toBeDisabled()
   })
 
   it("re-orders by points per battle when Deduct scored points is off", () => {

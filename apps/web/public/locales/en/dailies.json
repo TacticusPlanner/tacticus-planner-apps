@@ -210,7 +210,8 @@
     "more_one": "{{count}} still needed",
     "more_other": "{{count}} still needed",
     "progress": "{{owned}} of {{target}} owned",
-    "fullyRaided": "Fully raided"
+    "fullyRaided": "Fully raided",
+    "battle": "Battle {{node}}"
   },
   "bonus": {
     "title": "Bonus raids",
@@ -597,7 +598,12 @@
       "materials_other": "{{count}} materials have no allowed location with these filters.",
       "pinned_one": "{{count}} goal is pinned to a location excluded by your Raids Filters. Reset the filters or change the pin.",
       "pinned_other": "{{count}} goals are pinned to a location excluded by your Raids Filters. Reset the filters or change the pin.",
-      "reset": "Reset filters"
+      "reset": "Reset filters",
+      "listLabel": "Materials your Raids Filters skip",
+      "pinnedBadge": "Pinned",
+      "showAll": "Show all {{count}}",
+      "showLess": "Show less",
+      "insights": "See what can't be farmed in Insights"
     }
   },
   "quickFilters": {
@@ -654,8 +660,6 @@
       "energy": "{{energy}} energy",
       "note": "Locations that earn event points and feed your goals, chosen from your whole plan. It picks point-earning locations even where a cheaper location without points exists, so it can cost more energy per item than Today.",
       "points": "{{points}} pts",
-      "raidCount_one": "{{count}} raid",
-      "raidCount_other": "{{count}} raids",
       "empty": {
         "noGoals": "You have no active goals, so there is nothing to farm.",
         "noEnergy": "There is no energy left today for any of these locations.",
@@ -739,14 +743,6 @@
         "MachineOfWar": "Machines of War",
         "Steppable": "Steppables",
         "Summon": "Summons"
-      },
-      "rarities": {
-        "Common": "Common",
-        "Uncommon": "Uncommon",
-        "Rare": "Rare",
-        "Epic": "Epic",
-        "Legendary": "Legendary",
-        "Mythic": "Mythic"
       },
       "phrase": {
         "modesIn": "in {{modes}}",

@@ -3,7 +3,7 @@ import type {
   GameCatalogShopVariant,
 } from "@workspace/game-catalog"
 
-import type { EventShopCartEntry } from "@/entities/event-shop"
+import type { EventShopCartEntry } from "@/entities/shops/event-plan"
 
 const ALL_DAYS: GameCatalogShopVariant["days"] = [
   "MON",

@@ -15,9 +15,9 @@ import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
 import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
-} from "@/features/rank-lookup/@x/shops/recommendations"
+} from "@/entities/rank-lookup"
 
-import { activeProjectMembers } from "@/features/daily-raids/@x/shops/recommendations"
+import { activeProjectMembers } from "@/entities/goal"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { aggregateShopNeeds, type ShopNeedAggregate } from "./shop-needs"

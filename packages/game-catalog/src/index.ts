@@ -169,6 +169,7 @@ export {
   type LegendaryEventStorageModel,
   type LegendaryEventBattleStorageModel,
   type HordeModeTiersStorageModel,
+  type NpcTiersStorageModel,
   type UnitPowerStorageModel,
   type QuestEventStorageModel,
   type QuestCrateStorageModel,

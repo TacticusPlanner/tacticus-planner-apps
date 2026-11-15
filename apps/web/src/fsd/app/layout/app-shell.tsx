@@ -9,13 +9,13 @@ import {
   PlayerDataProvider,
   PostHogProvider,
   UserJotProvider,
-} from "@/app/providers"
+} from "../providers"
 import {
   CreateGoalLauncherProvider,
   type CreateGoalPrefill,
-} from "@/features/goal-create"
+} from "@/features/goal-planning"
 
-import { GameCatalogInitGate } from "../game-catalog-init-gate"
+import { GameCatalogInitGate } from "../boot/game-catalog-init-gate"
 import { HseLiveProvider } from "./hse-live-provider"
 import { DesktopShell } from "./desktop-layout"
 import { documentTitle } from "./document-title"
@@ -37,7 +37,9 @@ import { useSectionEntryPath } from "./use-section-entry-path"
 // Idle until the user opens it (via onCreateGoal), so it's lazy-loaded rather than pulled into the
 // shell's own chunk — mirrors the route-level lazy-load idiom in routes.tsx.
 const CreateGoalSheet = lazy(() =>
-  import("@/features/goal-create").then((m) => ({ default: m.CreateGoalSheet }))
+  import("@/features/goal-planning").then((m) => ({
+    default: m.CreateGoalSheet,
+  }))
 )
 
 const QuickCreateProjectSheet = lazy(() =>

@@ -3,7 +3,7 @@ import { rankAt, type Rank } from "@workspace/game-domain"
 import type {
   EstimateOutcome,
   GoalCheckpointEstimate,
-} from "@/features/goal-farming"
+} from "@/entities/goal-farming"
 
 /** What a checkpoint is a target of: a rank, or one ability track's level. */
 export type CheckpointTarget =

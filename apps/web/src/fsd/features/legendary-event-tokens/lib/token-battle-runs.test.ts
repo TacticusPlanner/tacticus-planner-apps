@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { groupTokenBattleRuns } from "./token-battle-runs"
+import { groupTokenBattleRuns, hasFoldedBattleRuns } from "./token-battle-runs"
 import type { PlannedToken } from "./token-plan"
 
 function token(
@@ -50,5 +50,28 @@ describe("groupTokenBattleRuns", () => {
   it("keeps a replayed battle apart", () => {
     const runs = groupTokenBattleRuns([token(2), token(2)], 0)
     expect(runs).toHaveLength(2)
+  })
+})
+
+describe("hasFoldedBattleRuns", () => {
+  it("is true when a slice holds several battles of one run", () => {
+    expect(
+      hasFoldedBattleRuns([token(0), token(1)], [{ start: 0, count: 2 }])
+    ).toBe(true)
+  })
+
+  it("is false when every row is a single battle", () => {
+    const tokens = [token(0), token(2), token(3, { teamId: "ranged" })]
+    expect(hasFoldedBattleRuns(tokens, [{ start: 0, count: 3 }])).toBe(false)
+  })
+
+  it("does not fold across slice boundaries", () => {
+    const tokens = [token(0), token(1)]
+    expect(
+      hasFoldedBattleRuns(tokens, [
+        { start: 0, count: 1 },
+        { start: 1, count: 1 },
+      ])
+    ).toBe(false)
   })
 })

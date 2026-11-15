@@ -3,7 +3,10 @@ import type {
   GameCatalogShopVariant,
 } from "@workspace/game-catalog"
 
-import type { EventShopCartEntry, EventShopPlan } from "@/entities/event-shop"
+import type {
+  EventShopCartEntry,
+  EventShopPlan,
+} from "@/entities/shops/event-plan"
 
 // Page-test events: a two-week event from Mon 26 Oct 2026 (so "today", Thu 29 Oct, is day 3) with a
 // shard slot gated by unit progress, an orb slot gated by tier, a capped badge slot and a draft slot;

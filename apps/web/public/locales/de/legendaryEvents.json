@@ -42,7 +42,33 @@
     "syncedAgo": "Synchronisiert {{when}}",
     "neverSynced": "Noch nicht synchronisiert",
     "goToCurrentRun": "Zum aktuellen Lauf",
-    "goToNextRun": "Zum nächsten Lauf"
+    "goToNextRun": "Zum nächsten Lauf",
+    "current": {
+      "tokensLeft_one": "Noch {{count}} in diesem Durchlauf",
+      "tokensLeft_other": "Noch {{count}} in diesem Durchlauf",
+      "fromAds_one": "{{count}} aus Werbung",
+      "fromAds_other": "{{count}} aus Werbung",
+      "bonusDelivery_one": "{{count}} Bonuslieferung",
+      "bonusDelivery_other": "{{count}} Bonuslieferungen",
+      "unused_one": "{{count}} ohne spielbaren Kampf",
+      "unused_other": "{{count}} ohne spielbaren Kampf",
+      "resource": "Ressource",
+      "now": "Jetzt",
+      "end": "Ende Durchlauf {{run}}",
+      "endNext": "Ende nächster Durchlauf",
+      "gain": "+{{value}}",
+      "stepThisRun": "{{step}} bei Token {{token}} in diesem Durchlauf",
+      "then": "danach {{step}}, {{shards}} Splitter fehlen",
+      "later": "Nächstes: {{step}} · am Ende des Durchlaufs fehlen {{shards}} Splitter",
+      "laterAt": "erreicht bei Token {{token}} (Durchlauf {{run}})",
+      "rows": {
+        "points": "Punkte",
+        "currency": "Währung",
+        "chests": "Truhen",
+        "shards": "Splitter"
+      },
+      "gainEarned": "+{{value}} verdient"
+    }
   },
   "runInputs": {
     "button": "Eingaben",
@@ -112,6 +138,7 @@
     "fullyAscended": "Alle Belohnungsstufen erreicht",
     "beyondChests": "In diesem Event nicht erreichbar (benötigt {{required}} Truhen, das Event hat {{ladder}})",
     "affordableNow": "Genug Währung für die Truhen vorhanden",
+    "coveredByLaterRuns": "Heute fehlen {{currency}} Währung · Missionen und Bundles späterer Durchläufe decken das",
     "beyondPoints": "Punkte allein reichen nicht: Es fehlen {{currency}} Währung",
     "noEntry": "Noch kein synchronisierter Fortschritt",
     "explain": {
@@ -124,8 +151,9 @@
       "noFutureInputs": "Keine Eingaben für spätere Durchläufe",
       "bonus": "+{{currency}} Währung bei jedem Punkte-Meilenstein (Premium-Pfad)",
       "noBonus": "Kein Bonus auf Punkte-Meilensteine",
-      "startedRuns": "Zählt, was du laut Synchronisierung schon verdient hast, plus deine Eingaben für spätere Durchläufe; bereits begonnene Durchläufe werden nicht noch einmal addiert."
-    }
+      "startedRuns": "Spätere Durchläufe zählen nur die Missionen und das Bundle, die du für sie planst; die des aktuellen Durchlaufs stecken schon in deiner synchronisierten Währung."
+    },
+    "titleFor": "Bis {{step}}"
   },
   "lanes": {
     "alpha": "Alpha",
@@ -232,11 +260,13 @@
     "laneObjectives": "{{lane}}-Ziele",
     "laneObjectiveFilter": "Nach {{lane}}-Ziel filtern",
     "onlyUnlocked": "Nur freigeschaltete",
+    "onlyInTeams": "Nur in meinen Teams",
     "locked": "Gesperrt",
     "objectiveMet": "{{objective}}: erfüllt",
     "objectiveNotMet": "{{objective}}: nicht erfüllt",
     "noEligible": "Keine Einheit kann auf dieser Bahn spielen.",
     "noUnlocked": "Keine deiner freigeschalteten Einheiten kann auf dieser Bahn spielen.",
+    "noneInTeams": "Deine Teams hier haben noch keine Einheiten.",
     "noneMatch": "Keine Einheit erfüllt diese Ziele.",
     "clearFilter": "Filter zurücksetzen",
     "rosterNotSynced": "Deine Einheiten sind noch nicht synchronisiert, daher werden Besitz, Seltenheit und Rang nicht angezeigt.",
@@ -654,8 +684,7 @@
     "ascension": "Aufstieg zu {{target}}",
     "rank": "Rang {{target}}",
     "rankWithUpgrades": "Rang {{target}} mit {{count}} Verbesserungen",
-    "ability": "Fähigkeiten auf {{active}} / {{passive}}",
-    "progression": "{{rarity}} {{stars}}"
+    "ability": "Fähigkeiten auf {{active}} / {{passive}}"
   },
   "leaderboardActions": {
     "header": "Aktionen",
@@ -720,6 +749,8 @@
       "reasons": {
         "mostPoints": "Die meisten Punkte, die jetzt verfügbar sind",
         "mostPointsPlayableNow": "Die meisten Punkte unter den Kämpfen, die du jetzt spielen kannst",
+        "safestToMilestone": "Sicherster Kampf, der in diesem Durchlauf noch Meilenstein {{milestone}} erreicht",
+        "safestToStep": "Sicherster Kampf, der in diesem Durchlauf noch {{step}} (Meilenstein {{milestone}}) erreicht",
         "missionsOrder": "Schließt die offenen Missionen dieses Durchlaufs am frühesten ab, bei gleichen Durchlaufpunkten"
       },
       "upcoming": "{{reason}}, sobald Durchlauf {{run}} beginnt",
@@ -772,6 +803,8 @@
       "summary_other": "{{count}} Tokens · +{{points}} Punkte",
       "battle": "Kampf {{battle}}",
       "points": "+{{points}}",
+      "battlePoints": "K{{battle}} +{{points}}",
+      "battlePointsLabel": "Punkte pro Kampf",
       "running": "{{points}} gesamt",
       "maybe": "Vielleicht schaffbar",
       "milestone": "Meilenstein {{milestone}} · +{{currency}} Währung",
@@ -819,6 +852,8 @@
       "expandRun_other": "{{count}} Kämpfe anzeigen",
       "collapseRun_one": "{{count}} Kampf ausblenden",
       "collapseRun_other": "{{count}} Kämpfe ausblenden",
+      "expandAll": "Alle aufklappen",
+      "collapseAll": "Alle zuklappen",
       "tokens_one": "{{count}} Token",
       "tokens_other": "{{count}} Tokens",
       "openTeam": "Team {{team}} öffnen"
@@ -838,15 +873,8 @@
         "planned": "Geplant"
       },
       "finished": "Abgeschlossen",
-      "supply": "{{total}} Tokens: {{free}} kostenlos + {{ad}} Werbung + {{bonus}} Bonuslieferung",
       "adToday": "Enthält den heutigen Werbe-Token, noch nicht angesehen",
       "thisRun": "Prognose für diesen Durchlauf",
-      "uses": "Nutzt {{used}} · {{left}} übrig",
-      "points": "{{points}} Punkte (+{{earned}})",
-      "currency": "{{currency}} Währung verfügbar (+{{earned}} verdient)",
-      "chests": "{{claimed}} Truhen geöffnet (+{{opened}})",
-      "shards": "{{shards}} Splitter",
-      "reached": "Erreicht: {{steps}}",
       "next": "Als Nächstes: {{step}} · {{shards}} Splitter fehlen",
       "allSteps": "Alle Belohnungsstufen erreicht",
       "ohSoClose": "Oh So Close: {{shards}} Splitter für {{blackstone}} Schwarzstein",
@@ -857,7 +885,13 @@
         "points": "Punkte am Ende des Laufs",
         "chests": "Erhaltene Truhen",
         "shards": "Splitter am Ende des Laufs"
-      }
+      },
+      "split": "{{free}} gratis + {{ad}} Werbung",
+      "splitBonus": "{{free}} gratis + {{ad}} Werbung + {{bonus}} Bonuslieferung",
+      "leftOver_one": "{{count}} übrig",
+      "leftOver_other": "{{count}} übrig",
+      "gains": "+{{points}} Punkte · +{{earned}} Währung verdient, {{currency}} übrig nach Truhen · +{{chests}} Truhen",
+      "reachedThen": "Erreicht: {{steps}} · {{next}}"
     },
     "closeGap": {
       "title": "Lücke schließen: +{{points}} Punkte für {{step}}",
@@ -1038,6 +1072,27 @@
       "howToUse": "Einsatz",
       "teammates": "Empfohlene Teammitglieder",
       "relicAdvice": "Relikt"
+    }
+  },
+  "npcTierList": {
+    "kind": {
+      "label": "Stufenliste",
+      "heroes": "Helden",
+      "enemies": "Gegner"
+    },
+    "intro": "Gegnerstufen für die laufenden und kommenden Legendären Events (normale Gegner, keine Bosse): In den Abschlussschätzungen wird die Stärke jedes Gegners mit dem Wert seiner Stufe multipliziert.",
+    "search": "Gegner suchen",
+    "event": "Event",
+    "allEvents": "Alle laufenden Events",
+    "noEnemy": "Kein Gegner",
+    "noEvent": "Es ist kein Legendäres Event geplant.",
+    "error": "Die Gegner-Stufenliste konnte nicht geladen werden.",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "details": {
+      "description": "Stufe, Multiplikator und warum dieser Gegner gefährlich ist.",
+      "threat": "Warum er gefährlich ist",
+      "counter": "So gehst du damit um",
+      "noThreat": "Noch keine Hinweise zu diesem Gegner."
     }
   },
   "missions": {

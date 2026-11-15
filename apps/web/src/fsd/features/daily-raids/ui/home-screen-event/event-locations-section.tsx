@@ -16,6 +16,8 @@ import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/today-quick-filters"
 import { useHomeScreenEventLocations } from "../../model/use-home-screen-event-locations"
 import { useListPaging } from "../../model/use-list-paging"
+import { CampaignGroupedList } from "../campaign-group"
+import type { RaidLocationTarget } from "../raid-location-name"
 import { ListPagingControls } from "../list-paging-controls"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import {
@@ -37,12 +39,15 @@ export function EventLocationsSection({
   quickFilters,
   order = "points",
   onViewChange,
+  onShowLocation,
 }: {
   rule: HseRaidRule
   pointsIcon?: string
   quickFilters?: TodayQuickFilterOptions
   order?: EventFarmOrder
   onViewChange?: (view: HseListView) => void
+  /** Makes each battle's name open its enemies. */
+  onShowLocation?: (target: RaidLocationTarget) => void
 }) {
   const { t } = useTranslation("dailies")
   const state = useHomeScreenEventLocations(rule, { quickFilters, order })
@@ -75,12 +80,18 @@ export function EventLocationsSection({
         </div>
       ) : state.locations.length > 0 ? (
         <>
-          <ul className="grid gap-2" data-testid="hse-raids-list">
-            {paging.visible.map((location) => {
+          <CampaignGroupedList
+            battleIdOf={(location) => location.battleId}
+            locationsByBattleId={state.locationsByBattleId}
+            rows={paging.visible}
+            testId="hse-raids-list"
+            renderRow={(location) => {
               const resource = state.resourceByBattleId.get(location.battleId)
               return (
                 <EventLocationRow
                   key={location.battleId}
+                  battleId={location.battleId}
+                  onShowLocation={onShowLocation}
                   fallbackLabel={location.battleId}
                   location={state.locationsByBattleId.get(location.battleId)}
                   testId={`hse-raid-${location.battleId}`}
@@ -88,7 +99,7 @@ export function EventLocationsSection({
                   {resource ? (
                     <span className="flex items-center gap-1">
                       <ResourceIconWithTooltip
-                        className="size-6"
+                        className="size-8"
                         label={resource.label}
                         visual={resource.visual}
                       />
@@ -102,11 +113,6 @@ export function EventLocationsSection({
                         })}
                       </span>
                     </span>
-                  ) : null}
-                  {location.raids !== null ? (
-                    <Badge className="tabular-nums" variant="outline">
-                      {t("hse.raids.raidCount", { count: location.raids })}
-                    </Badge>
                   ) : null}
                   {location.points !== null ? (
                     <Badge className="tabular-nums" variant="secondary">
@@ -148,8 +154,8 @@ export function EventLocationsSection({
                   </Badge>
                 </EventLocationRow>
               )
-            })}
-          </ul>
+            }}
+          />
           <ListPagingControls paging={paging} testId="hse-raids-paging" />
         </>
       ) : (

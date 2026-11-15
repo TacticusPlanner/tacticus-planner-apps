@@ -10,7 +10,7 @@ import {
   shopRewardDisplay,
   type ShopRewardDisplayContext,
   type ShopRewardKind,
-} from "@/features/shops/rewards/@x/shops/recommendations"
+} from "@/entities/shops/reward"
 
 import { useCatalogDataset } from "@/shared/local-data"
 import {

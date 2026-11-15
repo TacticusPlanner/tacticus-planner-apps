@@ -4,7 +4,7 @@ import * as React from "react"
 
 import type { Step } from "react-joyride"
 
-import { isStaleBuildError, reportError, safeStorage } from "@/shared/lib"
+import { isStaleBuildError, reportError, safeStorage } from "../lib"
 
 /** Steps a page registers for its own tour, split by platform since the same target selectors
  *  don't always exist (or make sense) on both - `mobile` falls back to `desktop` when omitted. */

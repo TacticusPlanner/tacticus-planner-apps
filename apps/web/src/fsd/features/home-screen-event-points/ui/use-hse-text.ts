@@ -1,10 +1,17 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import type { HseText, HseTextValue } from "../lib/hse-description"
+import type { HseText, HseTextValue } from "@/entities/home-screen-event"
 
 /** Every namespace a description line can reach into. */
-const NAMESPACES = ["dailies", "common", "traits", "factions", "npcs"] as const
+const NAMESPACES = [
+  "dailies",
+  "common",
+  "traits",
+  "factions",
+  "npcs",
+  "progression",
+] as const
 
 /**
  * Turns description data (`hseDescriptionLines`) into the player's language: nested texts are

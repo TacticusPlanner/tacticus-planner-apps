@@ -75,6 +75,7 @@ const estimateOf = (overrides: Partial<ClearEstimate> = {}): ClearEstimate => {
     stretchDepth: depth,
     battleCount: 18,
     power: 100_000,
+    balanceFactor: 1,
     marginAbovePct: 21,
     shortfallToNextPct: 32,
     calibrated: true,

@@ -5,11 +5,11 @@ import {
   allocateInventory,
   calculateGoalResourceNeed,
   isMowDetail,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import type {
   GoalInventoryAllocation,
   InventoryAllocationGoal,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 
 import type { InventoryOrbs } from "./orb-potential-allocation"
 import type { PlanNetResources } from "./use-plan-insights.domain"

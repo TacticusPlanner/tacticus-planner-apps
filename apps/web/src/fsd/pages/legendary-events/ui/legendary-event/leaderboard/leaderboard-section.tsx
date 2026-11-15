@@ -19,6 +19,7 @@ import {
   laneClearsOf,
   laneLeaderboardBody,
   leaderboardFigure,
+  shownTeamUnitIds,
   useLeaderboardUnitName,
   useObjectiveChips,
 } from "./leaderboard.view-model"
@@ -75,6 +76,7 @@ export function LeaderboardSection({
     const result = laneLeaderboardBody(leaderboard.rowsByLane[laneId], {
       onlyUnlocked: rosterAvailable && leaderboard.onlyUnlocked,
       objectiveKeys: leaderboard.selectedObjectives,
+      teamUnitIds: shownTeamUnitIds(leaderboard, [laneId]),
       figure,
       nameOf,
       locale: i18n.language,

@@ -3,14 +3,11 @@ import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
 
 import { ProjectSelect } from "@/entities/project"
-import {
-  useEventShopCoverage,
-  type CoverageRow,
-  type XpPerBook,
-} from "@/features/shops/event-planner"
+import type { CoverageRow, XpPerBook } from "@/features/shops/event-planner"
 import { EntityIcon } from "@/shared/ui"
 import type { Rarity } from "@workspace/game-domain"
 
+import { useEventShopCoverage } from "../../model/use-event-shop-coverage"
 import type { DailiesOutletContext } from "../dailies-layout"
 import type { EventShopController } from "./use-event-shop-controller"
 import type { EventShopFormat, RewardText } from "./use-event-shop-format"

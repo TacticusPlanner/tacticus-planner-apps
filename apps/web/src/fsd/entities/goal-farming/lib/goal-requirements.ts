@@ -1,0 +1,346 @@
+import type {
+  AscensionCostStorageModel,
+  CharacterAbilityCostStorageModel,
+  CharacterStorageModel,
+  MowStorageModel,
+  MowUpgradeCostStorageModel,
+  UnlockShardCostStorageModel,
+} from "@workspace/game-catalog"
+import { startingProgression, type UpgradeId } from "@workspace/game-domain"
+import type { PlayerDataChunkDto } from "@workspace/player-data"
+
+import type { GoalDetail } from "@/entities/goal/@x/goal-farming"
+
+import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
+import { abilityMaterialsNeed } from "./ability-materials"
+import { farmingStageTargets } from "./farming-stages"
+import { mowAbilityTrackLevel } from "./mow-ability-calc"
+import type { CraftedInventoryPool } from "./upgrade-recipe"
+import {
+  abilityResourceNeed,
+  rankResourceNeed,
+  rankSlotsRemaining,
+  type AbilityCoverage,
+} from "./goal-need"
+import { upgradeResourceNeed } from "./upgrade-goal-need"
+import {
+  ascensionResourceNeed,
+  createAscensionCoverage,
+  unlockResourceNeed,
+  type AscensionCoverage,
+  type ResourceNeed,
+} from "./progression-cost-calc"
+
+type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
+type PlayerMow = PlayerDataChunkDto<"mows">[number]
+type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
+
+/** What earlier (higher-priority) goals of one unit already claimed, so overlapping goals charge shared
+ * progression once: the ability transitions per track, the Rank upgrade slots, and the Ascension
+ * progression steps together with the owned shards each Ascension goal drew. One per unit across a
+ * plan, goals invoked in effective priority order. */
+export type UnitCoverage = {
+  primary: Set<number>
+  secondary: Set<number>
+  mowSlots: Set<string>
+  rankSlots: Set<string>
+  ascension: AscensionCoverage
+}
+
+export const createUnitCoverage = (): UnitCoverage => ({
+  primary: new Set(),
+  secondary: new Set(),
+  mowSlots: new Set(),
+  rankSlots: new Set(),
+  ascension: createAscensionCoverage(),
+})
+
+export type GoalRequirementParams = {
+  detail: GoalDetail
+  character: FarmingCharacter | undefined
+  characterView: CharacterStorageModel | undefined
+  mow: MowStorageModel | undefined
+  playerCharacter: PlayerCharacter | undefined
+  playerMow: PlayerMow | undefined
+  inventoryShard: InventoryShard | undefined
+  upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
+  ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
+  unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
+  /** `mow-upgrade-costs` keyed by the level a rung raises a MoW ability to. Omit (or leave empty) and a
+   *  MoW Ability need simply carries no `abilityMaterials`. */
+  mowUpgradeCostsByLevel?: ReadonlyMap<number, MowUpgradeCostStorageModel>
+  /** `character-ability-costs` keyed by level; same absent-means-no-materials contract. */
+  characterAbilityCostsByLevel?: ReadonlyMap<
+    number,
+    CharacterAbilityCostStorageModel
+  >
+  coveredAbilityTransitions?: AbilityCoverage
+  /** The Rank slots earlier (higher-priority) goals of this character already claimed — one set per
+   *  character across the plan, goals invoked in priority order (see `rankResourceNeed`). */
+  coveredRankSlots?: Set<string>
+  /** The unit's plan coverage, for Ascension goals: steps an earlier goal claimed are not charged again,
+   *  and owned shards are drawn once across the unit's Ascension goals. Omit for a standalone estimate. */
+  ascensionCoverage?: UnitCoverage
+  craftedInventory?: CraftedInventoryPool
+}
+
+export function calculateGoalResourceNeed(
+  params: GoalRequirementParams
+): ResourceNeed | null {
+  const { detail, upgradesById } = params
+  const isMow = detail.entityType === "Mow"
+  if (detail.goalType === "Rank") {
+    // Slots first, then the need: the need claims this goal's slots in `coveredRankSlots`, which would
+    // otherwise make every one of them read as already covered by the time the slot count is taken.
+    const upgradeSlotsRemaining = rankSlotsRemaining({
+      detail,
+      character: params.character,
+      playerCharacter: params.playerCharacter,
+      coveredRankSlots: params.coveredRankSlots,
+    })
+    const upgrades = rankResourceNeed({
+      detail,
+      character: params.character,
+      playerCharacter: params.playerCharacter,
+      upgradesById,
+      craftedInventory: params.craftedInventory,
+      coveredRankSlots: params.coveredRankSlots,
+    })
+    return upgrades
+      ? {
+          upgrades,
+          shardId: null,
+          shards: 0,
+          mythicShards: 0,
+          orbsByType: {},
+          upgradeSlotsRemaining,
+        }
+      : null
+  }
+  if (detail.goalType === "Ability") {
+    // Materials first, without claiming: `abilityResourceNeed` claims this goal's MoW transitions next
+    // (a Character has no upgrade need, so its materials claim them here).
+    const coveredTransitions = params.coveredAbilityTransitions ?? {
+      primary: new Set<number>(),
+      secondary: new Set<number>(),
+    }
+    const playerUnit = isMow ? params.playerMow : params.playerCharacter
+    const abilityMaterials =
+      isMow && !params.mow
+        ? null
+        : abilityMaterialsNeed({
+            detail,
+            ladder: isMow
+              ? params.mowUpgradeCostsByLevel
+              : params.characterAbilityCostsByLevel,
+            currentLevels: {
+              primary: mowAbilityTrackLevel(playerUnit, "primary"),
+              secondary: mowAbilityTrackLevel(playerUnit, "secondary"),
+            },
+            covered: coveredTransitions,
+            claim: !isMow,
+          })
+    const upgrades = abilityResourceNeed({
+      detail,
+      mow: params.mow,
+      playerMow: params.playerMow,
+      upgradesById,
+      coveredTransitions,
+      craftedInventory: params.craftedInventory,
+    })
+    if (!upgrades && !abilityMaterials) return null
+    return {
+      upgrades: upgrades ?? [],
+      shardId: null,
+      shards: 0,
+      mythicShards: 0,
+      orbsByType: {},
+      upgradeSlotsRemaining: null,
+      ...(abilityMaterials && { abilityMaterials }),
+    }
+  }
+  if (detail.goalType === "Upgrade") {
+    const upgrades = upgradeResourceNeed({
+      detail,
+      character: params.character,
+      mow: params.mow,
+      playerCharacter: params.playerCharacter,
+      playerMow: params.playerMow,
+      upgradesById,
+      coveredRankSlots: params.coveredRankSlots,
+      coveredAbilityTransitions: params.coveredAbilityTransitions,
+    })
+    return upgrades
+      ? {
+          upgrades,
+          shardId: null,
+          shards: 0,
+          mythicShards: 0,
+          orbsByType: {},
+          upgradeSlotsRemaining: null,
+        }
+      : null
+  }
+  if (detail.goalType === "Ascension" && detail.config.progression) {
+    const owned = isMow ? params.playerMow : params.playerCharacter
+    return ascensionResourceNeed({
+      start: detail.config.progression.start,
+      end: detail.config.progression.end,
+      entityId: detail.entityId,
+      isMow,
+      ownedShards: owned?.shards ?? 0,
+      ownedMythicShards: owned?.mythicShards ?? 0,
+      // An unowned character lands on its starting rarity once unlocked: steps below it never cost
+      // orbs, even when the goal was saved starting lower (e.g. a Legendary saved from Common).
+      currentProgression:
+        owned?.progressionIndex ??
+        (!isMow && params.characterView
+          ? startingProgression(params.characterView.initialRarity)
+          : undefined),
+      ascensionCostsById: params.ascensionCostsById,
+      coverage: params.ascensionCoverage && {
+        goalId: detail.goalId,
+        allocation: params.ascensionCoverage.ascension,
+      },
+    })
+  }
+  if (detail.goalType === "Unlock") {
+    const owned = isMow ? params.playerMow : params.playerCharacter
+    return unlockResourceNeed({
+      initialRarity: params.characterView?.initialRarity,
+      entityId: detail.entityId,
+      isMow,
+      owned: !!owned,
+      ownedShards: params.inventoryShard?.amount ?? 0,
+      unlockShardCostsById: params.unlockShardCostsById,
+    })
+  }
+  return null
+}
+
+export function calculateGoalFarmingStages(params: GoalRequirementParams) {
+  const detail = params.detail
+  if (detail.goalType === "Rank" && detail.config.rank) {
+    const target = detail.config.rank
+    let start = target.start
+    const targets = farmingStageTargets(
+      "rank",
+      start,
+      target.end,
+      detail.config.farmingStrategy
+    )
+    if (targets.length === 0) return null
+    return targets
+      .map((end) => {
+        const stageDetail = {
+          ...detail,
+          config: {
+            ...detail.config,
+            rank: {
+              ...target,
+              start,
+              end,
+              endPointFive: end === target.end && target.endPointFive,
+              endAppliedUpgrades:
+                end === target.end ? target.endAppliedUpgrades : 0,
+            },
+          },
+        }
+        start = end
+        return {
+          target: String(end),
+          needs:
+            rankResourceNeed({
+              detail: stageDetail,
+              character: params.character,
+              playerCharacter: params.playerCharacter,
+              upgradesById: params.upgradesById,
+              craftedInventory: params.craftedInventory,
+              coveredRankSlots: params.coveredRankSlots,
+            }) ?? [],
+        }
+      })
+      .filter((stage) => stage.needs.length > 0)
+  }
+  if (
+    detail.goalType === "Ability" &&
+    detail.entityType === "Mow" &&
+    detail.config.ability
+  ) {
+    const ability = detail.config.ability
+    // One shared coverage accumulator across every stage of *both* tracks — its `primary`/
+    // `secondary` sets are keyed independently, so raising both tracks in one goal never
+    // double-claims a shared base upgrade.
+    const coverage = params.coveredAbilityTransitions ?? {
+      primary: new Set<number>(),
+      secondary: new Set<number>(),
+    }
+
+    // True once at least one track produced stage targets — distinguishes "nothing to raise"
+    // (return null, like a Rank goal with an empty range) from "raised, but crafted inventory
+    // covers every material" (return the empty-after-filter array, an applicable empty result).
+    let anyStageTargets = false
+
+    // Stages for one advancing track — the other track is pinned to its own start so this stage's
+    // `abilityResourceNeed` yields only this track's materials.
+    const trackStages = (
+      track: "primary" | "secondary",
+      trackStart: number,
+      trackEnd: number
+    ) => {
+      if (trackEnd <= trackStart) return []
+      const targets = farmingStageTargets(
+        "ability",
+        trackStart,
+        trackEnd,
+        detail.config.farmingStrategy
+      )
+      if (targets.length === 0) return []
+      anyStageTargets = true
+      let start = trackStart
+      return targets
+        .map((end) => {
+          const stageAbility =
+            track === "primary"
+              ? {
+                  activeStart: start,
+                  activeEnd: end,
+                  passiveStart: ability.passiveStart,
+                  passiveEnd: ability.passiveStart,
+                }
+              : {
+                  activeStart: ability.activeStart,
+                  activeEnd: ability.activeStart,
+                  passiveStart: start,
+                  passiveEnd: end,
+                }
+          const stageDetail = {
+            ...detail,
+            config: { ...detail.config, ability: stageAbility },
+          }
+          start = end
+          return {
+            // Both tracks can stop at the same level, so the track names the checkpoint too.
+            target: `${track}:${end}`,
+            needs:
+              abilityResourceNeed({
+                detail: stageDetail,
+                mow: params.mow,
+                playerMow: params.playerMow,
+                upgradesById: params.upgradesById,
+                coveredTransitions: coverage,
+                craftedInventory: params.craftedInventory,
+              }) ?? [],
+          }
+        })
+        .filter((stage) => stage.needs.length > 0)
+    }
+
+    const stages = [
+      ...trackStages("primary", ability.activeStart, ability.activeEnd),
+      ...trackStages("secondary", ability.passiveStart, ability.passiveEnd),
+    ]
+    return anyStageTargets ? stages : null
+  }
+  return null
+}

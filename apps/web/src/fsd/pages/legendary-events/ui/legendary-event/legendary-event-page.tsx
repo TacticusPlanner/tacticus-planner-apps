@@ -15,6 +15,7 @@ import {
   useLegendaryEventSyncTimes,
   useLegendaryEventUnits,
   useMinuteNow,
+  teamUnitIdsByLane,
   LEGENDARY_EVENT_LANE_IDS,
 } from "@/entities/legendary-event"
 import {
@@ -127,6 +128,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   } = useLaneJump(defaultTab, lanes, setBattlesLane)
   // Shared by every view of the leaderboard; discarded when the page unmounts.
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
+  const [onlyInTeams, setOnlyInTeams] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
   const [selectedObjectives, setSelectedObjectives] = useState<
     ReadonlySet<string>
@@ -359,6 +361,13 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       }),
     [plan.enabled, plan.query, units, unitsRead.retry, roster, progressValue]
   )
+  const teamUnitIds = useMemo(
+    () =>
+      teamsState.kind === "ready"
+        ? teamUnitIdsByLane(teamsState.plan.teams)
+        : undefined,
+    [teamsState]
+  )
   const { openTeamEditor } = teamEditor
   const addToTeam = useCallback(
     (unitId: string, laneId: LegendaryEventLaneId) =>
@@ -569,6 +578,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         ...(previewLeaderboardRows ?? leaderboardRows),
         onlyUnlocked,
         onOnlyUnlockedChange: setOnlyUnlocked,
+        onlyInTeams,
+        onOnlyInTeamsChange: setOnlyInTeams,
+        teamUnitIds,
         deductScored,
         onDeductScoredChange: setDeductScored,
         // A hidden lane's objective chips no longer filter (spec: one lane selection).
@@ -662,6 +674,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     previewLeaderboardRows,
     leaderboardRows,
     onlyUnlocked,
+    onlyInTeams,
+    teamUnitIds,
     deductScored,
     selectedObjectives,
     previewOn,

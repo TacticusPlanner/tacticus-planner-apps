@@ -4,7 +4,7 @@ import { heroReleaseEventResourceIcon } from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
 
-import type { HrePace } from "../model/hre-pace"
+import type { HrePace } from "@/entities/hre-mission"
 
 /**
  * Mobile only (design D4): the pace in one line under the current mission (points now → projected

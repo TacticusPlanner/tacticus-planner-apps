@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import type { MissionDeployGroup } from "@/features/daily-raids"
-import type { HreMission, HreTeamPlan } from "@/features/hre-missions"
+import { type HreMission, type HreTeamPlan } from "@/entities/hre-mission"
 
 import { useHreTeamRecommendations } from "@/features/team-recommendations"
 import type { RunningHse } from "../../model/use-running-hse"

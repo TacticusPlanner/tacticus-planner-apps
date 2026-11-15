@@ -174,6 +174,7 @@ export {
   CLEAR_ESTIMATE_CURVE_VERSION,
   battlePowerRatio,
   laneBattlePowers,
+  laneThresholdPowers,
   memberPowers,
   teamClearEstimate,
   teamEffectiveDepth,
@@ -207,6 +208,7 @@ export {
 export {
   impactTeams,
   teamReaches,
+  teamUnitIdsByLane,
   type LaneEstimateInputs,
 } from "./lib/lane-teams"
 export {
@@ -238,4 +240,10 @@ export {
 } from "./lib/horde-tier-list"
 export { useLegendaryEventsBattles } from "./model/use-legendary-events-battles"
 export { useHordeModeTiers } from "./model/use-horde-mode-tiers"
+export {
+  buildNpcTierList,
+  npcEventIds,
+  type NpcTierTile,
+} from "./lib/npc-tier-list"
+export { useNpcTiers } from "./model/use-npc-tiers"
 export { tierToneClass } from "./lib/tier-tone"

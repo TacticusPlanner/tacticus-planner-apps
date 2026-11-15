@@ -374,7 +374,7 @@ describe("CharacterRankUpTab", () => {
     const [, progressionToTrigger] = screen.getAllByRole("combobox")
     if (!progressionToTrigger) throw new Error("expected a progression select")
     fireEvent.click(progressionToTrigger)
-    fireEvent.click(screen.getByRole("option", { name: /None/ }))
+    fireEvent.click(screen.getByRole("option", { name: "Common" }))
 
     // "To" progression is now Common:None, which only unlocks up to Iron1 — rankEnd is pulled
     // back down to it rather than staying at an unreachable Diamond1.

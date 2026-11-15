@@ -7,46 +7,24 @@
 // - preloads: <link rel="modulepreload"> tags in dist/index.html.
 // - packages that must stay out of the shared graph (read from dist/.vite/chunk-packages.json,
 //   written by the chunk-packages plugin in vite.config.ts).
-// Exits 1 when any figure is over budget. Budgets are minified bytes = measured + 5%.
+// Budgets live in apps/web/bundle-budget.json: each figure has a baseline and fails only above
+// baseline + headroomPercent, so small growth warns instead of failing the PR. `--update` writes
+// the measured figures back as the new baselines (for growth you mean to keep).
 //
 // Composition report: rollup-plugin-visualizer is not used (see tasks.md notes). For a per-module
 // breakdown run `pnpm --filter web exec vite build --sourcemap` and then
 // `npx source-map-explorer apps/web/dist/assets/<chunk>.js`.
-import { readFileSync, statSync } from "node:fs"
+import { readFileSync, statSync, writeFileSync } from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
-const dist = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../dist"
-)
-
-// Baseline before trim-startup-bundle: 2430 KB shared, 95 modulepreload links.
-// 1315: the Account settings dialog moved to ResponsiveDialog with a footer action slot (it is
-// statically reachable from the shell's account menu), taking the shared graph from 1309 to 1311 KB.
-const BUNDLE_BUDGET_KB = Number(process.env.BUNDLE_BUDGET_KB ?? 1315)
-const MAX_PRELOADS = 20
-// Route -> manifest keys of the page modules React Router loads for it (beyond the entry).
-const ROUTES = {
-  "/": { budgetKb: 1315, modules: [] },
-  "/home": { budgetKb: 2000, modules: ["src/fsd/pages/home/index.ts"] },
-  // 1320: the shell's lazy Legendary Event settings button (its loader and preload list) took the
-  // route from 1310 to 1311 KB.
-  "/library/characters": {
-    budgetKb: 1320,
-    modules: [
-      "src/fsd/pages/library/ui/library-page.tsx",
-      "src/fsd/pages/library/ui/characters/characters-list-page.tsx",
-    ],
-  },
-}
-const FORBIDDEN_IN_SHARED = [
-  "posthog-js",
-  "react-joyride",
-  "zod",
-  "@dnd-kit/core",
-  "cmdk",
-]
+const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
+const dist = path.join(webRoot, "dist")
+const budgetFile = path.join(webRoot, "bundle-budget.json")
+const budget = JSON.parse(readFileSync(budgetFile, "utf8"))
+const update = process.argv.includes("--update")
+const limitOf = (baselineKb) =>
+  Math.round(baselineKb * (1 + budget.headroomPercent / 100))
 
 const manifest = JSON.parse(
   readFileSync(path.join(dist, ".vite/manifest.json"), "utf8")
@@ -85,17 +63,35 @@ const bytesOf = (keys) =>
 const kb = (bytes) => Math.round(bytes / 1024)
 
 const failures = []
+const warnings = []
+const check = (label, measuredKb, baselineKb) => {
+  const limitKb = limitOf(baselineKb)
+  console.log(
+    `${label}: ${measuredKb} KB (baseline ${baselineKb} KB, limit ${limitKb} KB)`
+  )
+  // --update accepts the measured size as the new baseline, so it never fails on size.
+  if (update) return
+  if (measuredKb > limitKb)
+    failures.push(`${label} ${measuredKb} KB > limit ${limitKb} KB`)
+  else if (measuredKb > baselineKb)
+    warnings.push(
+      `${label} grew to ${measuredKb} KB, above its ${baselineKb} KB baseline (limit ${limitKb} KB)`
+    )
+}
+
 const shared = staticGraph(["index.html"])
 const sharedKb = kb(bytesOf(shared))
-console.log(`shared startup graph: ${sharedKb} KB in ${shared.size} chunks`)
-if (sharedKb > BUNDLE_BUDGET_KB)
-  failures.push(`shared graph ${sharedKb} KB > ${BUNDLE_BUDGET_KB} KB`)
+check(
+  `shared startup graph (${shared.size} chunks)`,
+  sharedKb,
+  budget.shared.baselineKb
+)
+if (update) budget.shared.baselineKb = sharedKb
 
-for (const [route, { budgetKb, modules }] of Object.entries(ROUTES)) {
-  const routeKb = kb(bytesOf(staticGraph(["index.html", ...modules])))
-  console.log(`${route}: ${routeKb} KB (budget ${budgetKb} KB)`)
-  if (routeKb > budgetKb)
-    failures.push(`${route} ${routeKb} KB > ${budgetKb} KB`)
+for (const [route, entry] of Object.entries(budget.routes)) {
+  const routeKb = kb(bytesOf(staticGraph(["index.html", ...entry.modules])))
+  check(route, routeKb, entry.baselineKb)
+  if (update) entry.baselineKb = routeKb
 }
 
 const preloads = (
@@ -103,18 +99,32 @@ const preloads = (
     /rel="modulepreload"/g
   ) ?? []
 ).length
-console.log(`modulepreload links: ${preloads} (max ${MAX_PRELOADS})`)
-if (preloads > MAX_PRELOADS)
-  failures.push(`${preloads} modulepreload links > ${MAX_PRELOADS}`)
+console.log(`modulepreload links: ${preloads} (max ${budget.maxPreloads})`)
+if (preloads > budget.maxPreloads)
+  failures.push(`${preloads} modulepreload links > ${budget.maxPreloads}`)
 
 const sharedPackages = new Set(
   [...shared].flatMap((key) => chunkPackages[manifest[key].file] ?? [])
 )
-for (const name of FORBIDDEN_IN_SHARED) {
+for (const name of budget.forbiddenInShared) {
   if (sharedPackages.has(name))
     failures.push(`${name} is in the shared startup graph`)
 }
 
+if (update) {
+  writeFileSync(budgetFile, `${JSON.stringify(budget, null, 2)}\n`)
+  console.log(
+    `Baselines written to ${path.relative(process.cwd(), budgetFile)}`
+  )
+}
+// GitHub Actions shows ::warning:: lines as annotations on the run and the PR.
+const annotate = process.env.GITHUB_ACTIONS === "true"
+for (const warning of warnings)
+  console.warn(
+    annotate
+      ? `::warning title=Bundle budget::${warning}`
+      : `warning: ${warning}`
+  )
 if (failures.length > 0) {
   console.error(`\nBundle budget exceeded:\n- ${failures.join("\n- ")}`)
   process.exit(1)

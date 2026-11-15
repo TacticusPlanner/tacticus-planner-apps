@@ -1,7 +1,7 @@
 import createClient, { type Client, type Middleware } from "openapi-fetch"
 
-import { getRequiredEnvironmentValue } from "@/shared/config"
-import { acquireAccessToken } from "@/shared/auth"
+import { getRequiredEnvironmentValue } from "../config"
+import { acquireAccessToken } from "../auth"
 
 import type { components, paths } from "./schema"
 

@@ -43,7 +43,7 @@ export function RunStatusCard({
   syncedAtMs,
   isMobile,
   onGoToRun,
-  forecast,
+  current,
 }: {
   event: Pick<LegendaryEvent, "id" | "regularMissions" | "premiumMissions">
   lifecycle: LegendaryEventLifecycle
@@ -56,8 +56,11 @@ export function RunStatusCard({
   isMobile: boolean
   /** Opens the run tab (the Overview copy of the card). */
   onGoToRun?: () => void
-  /** The current run's forecast (the run tab's copy of the card), under the synced values. */
-  forecast?: ReactNode
+  /** The run tab's content for synced values (`CurrentRunStatus`): it replaces the synced values
+   *  and the Reward outlook, which stays on Overview. */
+  current?: (
+    runStatus: Extract<RunStatusViewModel, { kind: "synced" }>
+  ) => ReactNode
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
@@ -193,9 +196,14 @@ export function RunStatusCard({
         ) : null}
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        {body}
-        <RewardOutlook outlook={outlook} />
-        {forecast}
+        {current && runStatus.kind === "synced" ? (
+          current(runStatus)
+        ) : (
+          <>
+            {body}
+            <RewardOutlook outlook={outlook} />
+          </>
+        )}
         {syncedAtMs === undefined ? null : (
           <p
             className="text-xs text-muted-foreground"

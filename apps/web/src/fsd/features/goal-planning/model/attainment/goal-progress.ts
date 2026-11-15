@@ -13,10 +13,7 @@ import type { UnlockShardCostStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { rankTargetSlots, type GoalKind } from "@/entities/goal"
-import {
-  reachableRankProgress,
-  type LevelRules,
-} from "@/features/goal-farming/@x/goal-planning"
+import { reachableRankProgress, type LevelRules } from "@/entities/goal-farming"
 
 import { abilityTrackLevel, type GoalAttainmentParams } from "./goal-attainment"
 

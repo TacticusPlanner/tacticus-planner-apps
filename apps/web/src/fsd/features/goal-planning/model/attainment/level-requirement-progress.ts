@@ -8,7 +8,7 @@ import {
   requiredLevelForGoal,
   xpNeededForLevelRange,
   type LevelRules,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 
 import type { GoalProgress } from "./goal-progress"
 

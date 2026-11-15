@@ -52,7 +52,7 @@ export function UnitHeader({
   ownership: UnitOwnership
   signedIn: boolean
   /** "Your unit:" label and its details, for an owned unit. */
-  yourUnit?: { label: string; line: string }
+  yourUnit?: { label: string; line: ReactNode }
   /** Header state (b): what the values start at. */
   notUnlockedText: string
   /** Header state (c): what the values are. */
@@ -110,7 +110,9 @@ export function UnitHeader({
               data-testid="unit-your-line"
             >
               <span className="font-semibold">{yourUnit.label}</span>{" "}
-              {yourUnit.line}
+              <span className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1 align-middle">
+                {yourUnit.line}
+              </span>
             </p>
           ) : null}
           {ownership === "notOwned" ? (

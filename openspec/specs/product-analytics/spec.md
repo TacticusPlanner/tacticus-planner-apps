@@ -30,6 +30,8 @@ The client SHALL NOT report any event — including page views — for a visitor
 - **WHEN** a visitor browses several pages and then signs in
 - **THEN** only activity from the point of identification onward is reported, and the earlier page views are not sent retroactively
 
+The one exception is the sign-in steps of "Sign-in steps are reported once identified": they describe how the user got signed in, not what they did in the planner, and are sent only once that user is identified.
+
 ### Requirement: The reported identity is the pseudonymous analytics id
 
 When the client identifies a user to the analytics destination, it SHALL use the analytics id supplied by the API for that account. It SHALL NOT use the account's application user id, display name, email address, or any other account attribute as the reported identity, and SHALL NOT attach them as properties.
@@ -166,6 +168,25 @@ The client SHALL NOT download or initialise the analytics SDK until a signed-in 
 
 - **WHEN** a user signs out while the analytics SDK is still downloading
 - **THEN** no event is reported for that user and no identity is established when the download completes
+
+### Requirement: Sign-in steps are reported once identified
+
+The client SHALL record each step the sign-in machinery takes on the device (the cached-token restore, the hidden-frame check, a quiet renewal started, skipped or returned, an interactive redirect started or returned) and SHALL report them as `auth_step` events only once the user is identified, each dated when it happened and grouped by page load. A step carries its name, outcome, protocol error code (MSAL's code plus Entra's AADSTS code, never the error message), and, where they apply, whether it started from a cached account or a remembered hint, why a renewal was skipped, whether an interactive redirect was started by the app or the user, the sign-in method and whether a fresh login was asked for. It SHALL NOT carry a username, login hint, token, URL or error message. The device keeps at most 60 steps from the last 7 days, sends each once, and drops them on sign-out.
+
+#### Scenario: A sign-in loop is reported after the user signs in by hand
+
+- **WHEN** a returning user's restore fails, a quiet renewal comes back without a session and the app starts an interactive redirect, and the user then signs in
+- **THEN** once they are identified, each of those steps is reported as `auth_step` with its outcome and error code, dated when it happened
+
+#### Scenario: A redirect response never arrives
+
+- **WHEN** a redirect left the page and the page it returns to finds no response
+- **THEN** a `no_response` return step is recorded
+
+#### Scenario: Nobody signs in afterwards
+
+- **WHEN** the recorded steps end with the visitor signed out and nobody signs in on the device
+- **THEN** nothing is reported, and steps older than 7 days are dropped
 
 ### Requirement: Installing the app is a declared event
 

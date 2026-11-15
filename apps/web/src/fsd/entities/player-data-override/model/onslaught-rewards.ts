@@ -1,6 +1,6 @@
 import type { OnslaughtRewardStorageModel } from "@workspace/game-catalog"
 
-import type { OnslaughtSector } from "@/entities/player-data-override"
+import type { OnslaughtSector } from "./types"
 
 export type OnslaughtRewardRange = { min: number; max: number; mythic: boolean }
 export type OnslaughtRewardKey =

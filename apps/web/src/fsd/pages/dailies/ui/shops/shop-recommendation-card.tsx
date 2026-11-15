@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { chanceIcon } from "@workspace/game-catalog"
 
-import { shopCurrencyIcon } from "@/features/shops/rewards"
+import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { EntityIcon } from "@/shared/ui"
 import type { ShopRecommendationCardView } from "@/features/shops/recommendations"
 

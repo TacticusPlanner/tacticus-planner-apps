@@ -3,7 +3,7 @@ import type { TFunction } from "i18next"
 
 import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "@/features/goal-planning"
 import type { GoalOverviewMetrics, GoalRow } from "@/features/goal-planning"
-import type { EstimateOutcome } from "@/features/goal-farming"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 import { createTestI18n } from "@/test/i18n"
 
 import { formatGoalRemainingText } from "../shared/goal-remaining-text"

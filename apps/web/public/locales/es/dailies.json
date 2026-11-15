@@ -210,7 +210,8 @@
     "more_one": "Falta {{count}}",
     "more_other": "Faltan {{count}}",
     "progress": "{{owned}} de {{target}} en posesión",
-    "fullyRaided": "Completado"
+    "fullyRaided": "Completado",
+    "battle": "Batalla {{node}}"
   },
   "bonus": {
     "title": "Incursiones extra",
@@ -597,7 +598,12 @@
       "materials_other": "{{count}} materiales no tienen ninguna ubicación permitida con estos filtros.",
       "pinned_one": "{{count}} objetivo está fijado a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
       "pinned_other": "{{count}} objetivos están fijados a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
-      "reset": "Restablecer filtros"
+      "reset": "Restablecer filtros",
+      "listLabel": "Materiales que tus filtros de incursiones omiten",
+      "pinnedBadge": "Fijado",
+      "showAll": "Mostrar los {{count}}",
+      "showLess": "Mostrar menos",
+      "insights": "Ver en Insights lo que no se puede farmear"
     }
   },
   "quickFilters": {
@@ -654,8 +660,6 @@
       "energy": "{{energy}} de energía",
       "note": "Ubicaciones que dan puntos de evento y avanzan tus objetivos, elegidas con todo tu plan. Elige ubicaciones con puntos incluso cuando existe otra más barata sin puntos, así que puede costar más energía por objeto que Incursiones de hoy.",
       "points": "{{points}} pts",
-      "raidCount_one": "{{count}} incursión",
-      "raidCount_other": "{{count}} incursiones",
       "empty": {
         "noGoals": "No tienes objetivos activos, así que no hay nada que farmear.",
         "noEnergy": "Hoy no queda energía para ninguna de estas ubicaciones.",
@@ -739,14 +743,6 @@
         "MachineOfWar": "máquinas de guerra",
         "Steppable": "unidades pisables",
         "Summon": "invocaciones"
-      },
-      "rarities": {
-        "Common": "Común",
-        "Uncommon": "Poco común",
-        "Rare": "Raro",
-        "Epic": "Épico",
-        "Legendary": "Legendario",
-        "Mythic": "Mítico"
       },
       "phrase": {
         "modesIn": "en {{modes}}",

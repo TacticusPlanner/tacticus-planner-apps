@@ -1,6 +1,6 @@
 import { apiIssue } from "@/shared/api"
 
-import type { GoalOrderResponse } from "./types"
+import type { GoalDetail, GoalOrderResponse } from "./types"
 
 /** Only an Active/Paused goal holds a position in the account-wide order. */
 export const holdsGlobalPosition = (goal: { status: string }) =>
@@ -98,4 +98,19 @@ export function goalOrderConflict(error: unknown): {
         current: current as GoalOrderResponse,
       }
     : null
+}
+
+/** One goal of the plan, as `useGlobalGoalPlan` entries carry it. */
+export type GoalPlanEntry = { goal: GoalDetail }
+
+/** The goal's position in the account-wide order; the weight every planning calculation sorts by. */
+export function globalPriorityOf(member: GoalPlanEntry) {
+  return member.goal.globalPriority ?? Number.MAX_SAFE_INTEGER
+}
+
+/** Active goals of `members` in global order (Paused goals keep their position but do not plan). */
+export function activeProjectMembers<T extends GoalPlanEntry>(members: T[]) {
+  return members
+    .filter((member) => member.goal.status === "Active")
+    .sort((left, right) => globalPriorityOf(left) - globalPriorityOf(right))
 }

@@ -5,8 +5,8 @@ import { lockIcon } from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
 
-import type { HreMission, HreObjective } from "../model/hre-missions"
-import { missionStatus } from "../model/hre-progress"
+import type { HreMission, HreObjective } from "@/entities/hre-mission"
+import { missionStatus } from "@/entities/hre-mission"
 import { missionName } from "./mission-name"
 import { ObjectiveTips } from "./objective-tips"
 

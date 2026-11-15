@@ -16,8 +16,8 @@ import {
 
 import type { LegendaryEventRosterUnit } from "@/entities/legendary-event"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
-import type { Battle, FarmingCharacter } from "@/features/goal-farming"
-import type { UpgradeWithFarmLocations } from "@/features/rank-lookup"
+import type { Battle, FarmingCharacter } from "@/entities/goal-farming"
+import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 
 import {
   createFarmingDaysEstimator,

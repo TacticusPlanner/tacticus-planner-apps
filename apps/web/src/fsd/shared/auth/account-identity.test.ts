@@ -26,6 +26,13 @@ describe("getSignInMethod", () => {
     )
   })
 
+  it("is google for a generated username, even without claims or idp", () => {
+    const generated =
+      "0f8c2c51-6a2e-4b7a-9d3e-1c2b3a4d5e6f@tacticusplannerext.onmicrosoft.com"
+    expect(getSignInMethod(account(generated))).toBe("google")
+    expect(getSignInMethod(account(generated, {}))).toBe("google")
+  })
+
   it("is email when the token has no idp", () => {
     expect(getSignInMethod(account("me@example.com", {}))).toBe("email")
     expect(getSignInMethod(account("me@example.com"))).toBe("email")

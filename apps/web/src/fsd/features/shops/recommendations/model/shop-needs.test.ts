@@ -2,10 +2,7 @@ import { describe, expect, it } from "vitest"
 import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
-import type {
-  FarmingCharacter,
-  FarmingUpgrade,
-} from "@/features/goal-farming/@x/shops/recommendations"
+import type { FarmingCharacter, FarmingUpgrade } from "@/entities/goal-farming"
 
 import { aggregateShopNeeds, type AggregateShopNeedsParams } from "./shop-needs"
 

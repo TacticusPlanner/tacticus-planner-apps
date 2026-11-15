@@ -42,7 +42,33 @@
     "syncedAgo": "Sincronizado {{when}}",
     "neverSynced": "Aún sin sincronizar",
     "goToCurrentRun": "Ir a la ejecución actual",
-    "goToNextRun": "Ir a la próxima ejecución"
+    "goToNextRun": "Ir a la próxima ejecución",
+    "current": {
+      "tokensLeft_one": "Queda {{count}} en esta ronda",
+      "tokensLeft_other": "Quedan {{count}} en esta ronda",
+      "fromAds_one": "{{count}} de anuncios",
+      "fromAds_other": "{{count}} de anuncios",
+      "bonusDelivery_one": "{{count}} de entrega extra",
+      "bonusDelivery_other": "{{count}} de entrega extra",
+      "unused_one": "{{count}} sin batalla que jugar",
+      "unused_other": "{{count}} sin batalla que jugar",
+      "resource": "Recurso",
+      "now": "Ahora",
+      "end": "Fin de la ronda {{run}}",
+      "endNext": "Fin de la próxima ronda",
+      "gain": "+{{value}}",
+      "stepThisRun": "{{step}} en la ficha {{token}} de esta ronda",
+      "then": "después {{step}}, faltan {{shards}} fragmentos",
+      "later": "Siguiente: {{step}} · faltan {{shards}} fragmentos al final de la ronda",
+      "laterAt": "se alcanza en la ficha {{token}} (ronda {{run}})",
+      "rows": {
+        "points": "Puntos",
+        "currency": "Moneda",
+        "chests": "Cofres",
+        "shards": "Fragmentos"
+      },
+      "gainEarned": "+{{value}} ganados"
+    }
   },
   "runInputs": {
     "button": "Datos",
@@ -112,6 +138,7 @@
     "fullyAscended": "Todas las recompensas alcanzadas",
     "beyondChests": "No alcanzable en este evento (necesita {{required}} cofres y el evento tiene {{ladder}})",
     "affordableNow": "Ya tienes moneda suficiente para los cofres",
+    "coveredByLaterRuns": "Te faltan {{currency}} de moneda hoy · las misiones y paquetes de rondas posteriores lo cubren",
     "beyondPoints": "Los puntos por sí solos no bastan: faltan {{currency}} de moneda",
     "noEntry": "Todavía no hay progreso sincronizado",
     "explain": {
@@ -124,8 +151,9 @@
       "noFutureInputs": "Sin datos para rondas posteriores",
       "bonus": "+{{currency}} de moneda en cada hito de puntos (pase prémium)",
       "noBonus": "Sin bonificación en los hitos de puntos",
-      "startedRuns": "Cuenta lo que ya ganaste según la sincronización más tus datos para rondas posteriores; las rondas ya empezadas no se suman otra vez."
-    }
+      "startedRuns": "Las rondas posteriores solo suman las misiones y el paquete que planees para ellas; los de la ronda actual ya están en tu moneda sincronizada."
+    },
+    "titleFor": "Para llegar a {{step}}"
   },
   "lanes": {
     "alpha": "Alfa",
@@ -232,11 +260,13 @@
     "laneObjectives": "Objetivos de {{lane}}",
     "laneObjectiveFilter": "Filtrar por objetivo de {{lane}}",
     "onlyUnlocked": "Solo desbloqueadas",
+    "onlyInTeams": "Solo en mis equipos",
     "locked": "Bloqueada",
     "objectiveMet": "{{objective}}: cumple",
     "objectiveNotMet": "{{objective}}: no cumple",
     "noEligible": "Ninguna unidad puede jugar en este carril.",
     "noUnlocked": "Ninguna de tus unidades desbloqueadas puede jugar en este carril.",
+    "noneInTeams": "Tus equipos aquí aún no tienen unidades.",
     "noneMatch": "Ninguna unidad cumple estos objetivos.",
     "clearFilter": "Quitar filtro",
     "rosterNotSynced": "Tu plantilla aún no se ha sincronizado, así que no se muestran la propiedad, la rareza ni el rango.",
@@ -654,8 +684,7 @@
     "ascension": "Ascender a {{target}}",
     "rank": "Rango {{target}}",
     "rankWithUpgrades": "Rango {{target}} con {{count}} mejoras",
-    "ability": "Habilidades a {{active}} / {{passive}}",
-    "progression": "{{rarity}} {{stars}}"
+    "ability": "Habilidades a {{active}} / {{passive}}"
   },
   "leaderboardActions": {
     "header": "Acciones",
@@ -720,6 +749,8 @@
       "reasons": {
         "mostPoints": "La mayor cantidad de puntos disponible ahora",
         "mostPointsPlayableNow": "La mayor cantidad de puntos entre las batallas que puedes jugar ahora",
+        "safestToMilestone": "La batalla más segura que aún alcanza el hito {{milestone}} en esta ronda",
+        "safestToStep": "La batalla más segura que aún alcanza {{step}} (hito {{milestone}}) en esta ronda",
         "missionsOrder": "Completa antes las misiones abiertas de esta ronda, con los mismos puntos de ronda"
       },
       "upcoming": "{{reason}} para cuando empiece la ronda {{run}}",
@@ -772,6 +803,8 @@
       "summary_other": "{{count}} fichas · +{{points}} puntos",
       "battle": "Batalla {{battle}}",
       "points": "+{{points}}",
+      "battlePoints": "B{{battle}} +{{points}}",
+      "battlePointsLabel": "Puntos por batalla",
       "running": "{{points}} en total",
       "maybe": "Quizá superable",
       "milestone": "Hito {{milestone}} · +{{currency}} de moneda",
@@ -819,6 +852,8 @@
       "expandRun_other": "Mostrar {{count}} batallas",
       "collapseRun_one": "Ocultar {{count}} batalla",
       "collapseRun_other": "Ocultar {{count}} batallas",
+      "expandAll": "Expandir todo",
+      "collapseAll": "Contraer todo",
       "tokens_one": "{{count}} ficha",
       "tokens_other": "{{count}} fichas",
       "openTeam": "Abrir el equipo {{team}}"
@@ -838,15 +873,8 @@
         "planned": "Prevista"
       },
       "finished": "Finalizada",
-      "supply": "{{total}} fichas: {{free}} gratis + {{ad}} de anuncio + {{bonus}} de entrega extra",
       "adToday": "Incluye la ficha de anuncio de hoy, aún sin ver",
       "thisRun": "Previsión de esta ronda",
-      "uses": "Usa {{used}} · sobran {{left}}",
-      "points": "{{points}} puntos (+{{earned}})",
-      "currency": "{{currency}} de moneda disponible (+{{earned}} ganada)",
-      "chests": "{{claimed}} cofres abiertos (+{{opened}})",
-      "shards": "{{shards}} fragmentos",
-      "reached": "Alcanzado: {{steps}}",
       "next": "Siguiente: {{step}} · faltan {{shards}} fragmentos",
       "allSteps": "Todas las recompensas alcanzadas",
       "ohSoClose": "Oh So Close: {{shards}} fragmentos por {{blackstone}} de piedra negra",
@@ -857,7 +885,13 @@
         "points": "Puntos al final de la ejecución",
         "chests": "Cofres obtenidos",
         "shards": "Fragmentos al final de la ejecución"
-      }
+      },
+      "split": "{{free}} gratis + {{ad}} de anuncios",
+      "splitBonus": "{{free}} gratis + {{ad}} de anuncios + {{bonus}} de entrega extra",
+      "leftOver_one": "sobra {{count}}",
+      "leftOver_other": "sobran {{count}}",
+      "gains": "+{{points}} puntos · +{{earned}} de moneda ganada, {{currency}} tras los cofres · +{{chests}} cofres",
+      "reachedThen": "Alcanzado: {{steps}} · {{next}}"
     },
     "closeGap": {
       "title": "Cerrar la brecha: +{{points}} puntos para {{step}}",
@@ -1038,6 +1072,27 @@
       "howToUse": "Cómo usarlo",
       "teammates": "Compañeros recomendados",
       "relicAdvice": "Reliquia"
+    }
+  },
+  "npcTierList": {
+    "kind": {
+      "label": "Lista de niveles",
+      "heroes": "Héroes",
+      "enemies": "Enemigos"
+    },
+    "intro": "Niveles de enemigos de los Eventos Legendarios actuales y próximos (enemigos normales, sin jefes): en las estimaciones de superación, el poder de cada enemigo se multiplica por el valor de su nivel.",
+    "search": "Buscar enemigos",
+    "event": "Evento",
+    "allEvents": "Todos los eventos activos",
+    "noEnemy": "Ningún enemigo",
+    "noEvent": "No hay ningún Evento Legendario programado.",
+    "error": "No se pudo cargar la lista de niveles de enemigos.",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "details": {
+      "description": "Nivel, multiplicador y por qué este enemigo es peligroso.",
+      "threat": "Por qué es peligroso",
+      "counter": "Cómo enfrentarlo",
+      "noThreat": "Todavía no hay notas sobre este enemigo."
     }
   },
   "missions": {

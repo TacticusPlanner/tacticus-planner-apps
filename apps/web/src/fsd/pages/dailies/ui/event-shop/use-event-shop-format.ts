@@ -6,7 +6,7 @@ import {
   type GameIcon,
 } from "@workspace/game-catalog"
 
-import { shopCurrencyIcon, shopRewardDisplay } from "@/features/shops/rewards"
+import { shopCurrencyIcon, shopRewardDisplay } from "@/entities/shops/reward"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 const NO_NAMES = new Map<string, { name: string }>()

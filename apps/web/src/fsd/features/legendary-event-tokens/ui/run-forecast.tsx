@@ -5,7 +5,6 @@ import {
   Coins,
   Flag,
   Sparkles,
-  Swords,
   TriangleAlert,
   type LucideIcon,
 } from "lucide-react"
@@ -238,73 +237,67 @@ function RunSummary({ run }: { run: RunForecast }) {
   )
 }
 
-/** A run's supply, use and ending figures. */
+/** What the run's icon summary (tokens used of the supply, ending points, chests, shards) does not
+ *  already say: where the tokens come from and how many go unused, what the run earns, and the
+ *  steps it reaches with the next one. */
 function RunDetails({ run }: { run: RunForecast }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
+  const { supply } = run
+  const tokenParts = [
+    supply.ad > 0 || supply.bonusDelivery > 0
+      ? supply.bonusDelivery > 0
+        ? t("tokenPlan.forecast.splitBonus", {
+            free: supply.free,
+            ad: supply.ad,
+            bonus: supply.bonusDelivery,
+          })
+        : t("tokenPlan.forecast.split", { free: supply.free, ad: supply.ad })
+      : null,
+    run.tokensLeftOver > 0
+      ? t("tokenPlan.forecast.leftOver", { count: run.tokensLeftOver })
+      : null,
+  ].filter((part) => part !== null)
+  const steps = run.stepsReached
+    .map((step) => t(`outlook.steps.${step}`))
+    .join(", ")
+  const next =
+    run.next.step === "fullyAscended"
+      ? t("tokenPlan.forecast.allSteps")
+      : t("tokenPlan.forecast.next", {
+          step: t(`outlook.steps.${run.next.step}`),
+          shards: number.format(run.shardsMissing),
+        })
   return (
     <ul className="flex flex-col gap-0.5 text-sm">
-      <IconLine icon={tokensIcon} testId="run-forecast-supply">
-        {t("tokenPlan.forecast.supply", {
-          total: run.supply.total,
-          free: run.supply.free,
-          ad: run.supply.ad,
-          bonus: run.supply.bonusDelivery,
-        })}
-        {run.supply.adTodayPending ? (
-          <span
-            className="block text-xs text-muted-foreground"
-            data-testid="run-forecast-ad-today"
-          >
-            {t("tokenPlan.forecast.adToday")}
-          </span>
-        ) : null}
-      </IconLine>
-      <GlyphLine icon={Swords} testId="run-forecast-uses">
-        {t("tokenPlan.forecast.uses", {
-          used: run.tokensUsed,
-          left: run.tokensLeftOver,
-        })}
-      </GlyphLine>
-      <IconLine icon={pointsIcon} testId="run-forecast-points">
-        {t("tokenPlan.forecast.points", {
-          points: number.format(run.endingPoints),
-          earned: number.format(run.pointsEarned),
-        })}
-      </IconLine>
-      <GlyphLine icon={Coins} testId="run-forecast-currency">
-        {t("tokenPlan.forecast.currency", {
-          currency: number.format(run.endingCurrency),
-          earned: number.format(run.currencyEarned),
-        })}
-      </GlyphLine>
-      <IconLine icon={chestsIcon}>
-        {t("tokenPlan.forecast.chests", {
-          claimed: run.chestsClaimed,
-          opened: run.chestsOpened,
-        })}
-      </IconLine>
-      <IconLine icon={shardsIcon}>
-        {t("tokenPlan.forecast.shards", {
-          shards: number.format(run.endingShards),
-        })}
-      </IconLine>
-      {run.stepsReached.length > 0 ? (
-        <GlyphLine icon={Sparkles} testId="run-forecast-reached">
-          {t("tokenPlan.forecast.reached", {
-            steps: run.stepsReached
-              .map((step) => t(`outlook.steps.${step}`))
-              .join(", "),
-          })}
-        </GlyphLine>
+      {tokenParts.length > 0 || supply.adTodayPending ? (
+        <IconLine icon={tokensIcon} testId="run-forecast-tokens">
+          {tokenParts.join(" · ")}
+          {supply.adTodayPending ? (
+            <span
+              className="block text-xs text-muted-foreground"
+              data-testid="run-forecast-ad-today"
+            >
+              {t("tokenPlan.forecast.adToday")}
+            </span>
+          ) : null}
+        </IconLine>
       ) : null}
-      <GlyphLine icon={Flag} testId="run-forecast-next">
-        {run.next.step === "fullyAscended"
-          ? t("tokenPlan.forecast.allSteps")
-          : t("tokenPlan.forecast.next", {
-              step: t(`outlook.steps.${run.next.step}`),
-              shards: number.format(run.shardsMissing),
-            })}
+      <GlyphLine icon={Coins} testId="run-forecast-gains">
+        {t("tokenPlan.forecast.gains", {
+          points: number.format(run.pointsEarned),
+          earned: number.format(run.currencyEarned),
+          currency: number.format(run.endingCurrency),
+          chests: number.format(run.chestsOpened),
+        })}
+      </GlyphLine>
+      <GlyphLine
+        icon={run.stepsReached.length > 0 ? Sparkles : Flag}
+        testId="run-forecast-step"
+      >
+        {run.stepsReached.length > 0
+          ? t("tokenPlan.forecast.reachedThen", { steps, next })
+          : next}
       </GlyphLine>
       {run.ohSoClose ? (
         <GlyphLine icon={TriangleAlert} testId="run-forecast-oh-so-close">
@@ -315,35 +308,6 @@ function RunDetails({ run }: { run: RunForecast }) {
         </GlyphLine>
       ) : null}
     </ul>
-  )
-}
-
-/**
- * The run in progress (or the next one) from the Run forecast, for the run tab's Run status, so
- * the forecast reads without switching to Plan. Nothing while loading or without a forecast.
- */
-export function CurrentRunForecast({ view }: { view: TokenPlanView }) {
-  const { t } = useTranslation("legendaryEvents")
-  if (view.kind !== "ready" || !view.forecast) return null
-  const run = view.forecast.runs.find(
-    (entry) => entry.state === "now" || entry.state === "next"
-  )
-  if (!run) return null
-  return (
-    <section
-      aria-labelledby="run-status-forecast-title"
-      className="flex min-w-0 flex-col gap-2 border-t pt-3"
-      data-run={run.run}
-      data-testid="run-status-forecast"
-    >
-      <h3 className="text-sm font-semibold" id="run-status-forecast-title">
-        {t("tokenPlan.forecast.thisRun")}
-      </h3>
-      <RunDetails run={run} />
-      {view.milestoneGap?.run === run.run ? (
-        <MilestoneGapSection gap={view.milestoneGap} />
-      ) : null}
-    </section>
   )
 }
 

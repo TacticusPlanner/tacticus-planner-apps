@@ -210,7 +210,8 @@
     "more_one": "Noch {{count}} nötig",
     "more_other": "Noch {{count}} nötig",
     "progress": "{{owned}} von {{target}} im Besitz",
-    "fullyRaided": "Vollständig geraidet"
+    "fullyRaided": "Vollständig geraidet",
+    "battle": "Kampf {{node}}"
   },
   "bonus": {
     "title": "Bonus-Raids",
@@ -597,7 +598,12 @@
       "materials_other": "{{count}} Materialien haben mit diesen Filtern keinen erlaubten Ort.",
       "pinned_one": "{{count}} Ziel ist an einen Ort angeheftet, den deine Raid-Filter ausschließen. Setze die Filter zurück oder ändere die Anheftung.",
       "pinned_other": "{{count}} Ziele sind an einen Ort angeheftet, den deine Raid-Filter ausschließen. Setze die Filter zurück oder ändere die Anheftung.",
-      "reset": "Filter zurücksetzen"
+      "reset": "Filter zurücksetzen",
+      "listLabel": "Materialien, die deine Raid-Filter auslassen",
+      "pinnedBadge": "Angeheftet",
+      "showAll": "Alle {{count}} anzeigen",
+      "showLess": "Weniger anzeigen",
+      "insights": "In Insights sehen, was nicht farmbar ist"
     }
   },
   "quickFilters": {
@@ -654,8 +660,6 @@
       "energy": "{{energy}} Energie",
       "note": "Orte, die Event-Punkte bringen und deine Ziele voranbringen, ausgewählt aus deinem gesamten Plan. Es werden auch dann Orte mit Event-Punkten gewählt, wenn ein günstigerer Ort ohne Punkte existiert; pro Item kann das mehr Energie kosten als bei Heutige Raids.",
       "points": "{{points}} Pkt.",
-      "raidCount_one": "{{count}} Raid",
-      "raidCount_other": "{{count}} Raids",
       "empty": {
         "noGoals": "Du hast keine aktiven Ziele, es gibt also nichts zu farmen.",
         "noEnergy": "Heute reicht die Energie für keinen dieser Orte mehr.",
@@ -739,14 +743,6 @@
         "MachineOfWar": "Kriegsmaschinen",
         "Steppable": "betretbare Einheiten",
         "Summon": "Beschwörungen"
-      },
-      "rarities": {
-        "Common": "Gewöhnlich",
-        "Uncommon": "Ungewöhnlich",
-        "Rare": "Selten",
-        "Epic": "Episch",
-        "Legendary": "Legendär",
-        "Mythic": "Mythisch"
       },
       "phrase": {
         "modesIn": "in {{modes}}",

@@ -15,7 +15,12 @@ import {
 } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import type { GoalDetail } from "@/entities/goal"
+import {
+  activeProjectMembers,
+  globalPriorityOf,
+  type GoalDetail,
+  type GoalPlanEntry,
+} from "@/entities/goal"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
 import {
   allocatePlanInventory,
@@ -37,7 +42,7 @@ import {
   type FarmingUpgrade,
   type GoalNeed,
   type RaidPlanSchedule,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
 import { blockedGoalsOf } from "./blocked-goals"
@@ -118,21 +123,6 @@ export type DailyRaidsCalculationInput = {
   onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
   onslaughtRunsPerDay?: number
   shops?: readonly GameCatalogShop[]
-}
-
-/** One goal of the plan, as `useGlobalGoalPlan` entries carry it. */
-type GoalPlanEntry = { goal: GoalDetail }
-
-/** The goal's position in the account-wide order; the weight every planning calculation sorts by. */
-function globalPriorityOf(member: GoalPlanEntry) {
-  return member.goal.globalPriority ?? Number.MAX_SAFE_INTEGER
-}
-
-/** Active goals of `members` in global order (Paused goals keep their position but do not plan). */
-export function activeProjectMembers(members: GoalPlanEntry[]) {
-  return members
-    .filter((member) => member.goal.status === "Active")
-    .sort((left, right) => globalPriorityOf(left) - globalPriorityOf(right))
 }
 
 /** An Unlock goal for a character no campaign node drops shards for (Kharn, Ragnar): its shards come
@@ -225,6 +215,7 @@ export function calculateDailyRaids(
       flatSuppliers,
       shopOffers,
       mythicShardNeed,
+      shardNeed,
     } = computeGoalAcquisition({
       detail,
       need,
@@ -240,10 +231,11 @@ export function calculateDailyRaids(
       referenceDate,
     })
     for (const offer of shopOffers) shopOffersById.set(offer.offerId, offer)
-    if (need.shardId && (need.shards > 0 || flatSuppliers.length > 0)) {
-      needs.push({ id: need.shardId, count: need.shards })
+    // A Machine of War's shards arrive here only when Onslaught or a shop supplies them.
+    if (shardNeed) {
+      needs.push(shardNeed)
       const character = params.charactersById.get(detail.entityId)
-      if (character) {
+      if (need.shardId && character) {
         const ownedShards =
           detail.goalType === "Unlock"
             ? (params.inventoryShardById.get(detail.entityId)?.amount ?? 0)
@@ -316,6 +308,10 @@ export function calculateDailyRaids(
       targetRank:
         detail.goalType === "Rank" && detail.config.rank
           ? rankAt(detail.config.rank.end)
+          : undefined,
+      targetProgression:
+        detail.goalType === "Ascension" && detail.config.progression
+          ? detail.config.progression.end
           : undefined,
     })
   }

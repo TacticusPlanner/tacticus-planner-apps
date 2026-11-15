@@ -14,8 +14,8 @@ import {
 import { rarityOrder, type Rarity } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
-import type { ResourceNeed } from "@/features/goal-farming"
-import { shopCurrencyIcon } from "@/features/shops/rewards"
+import type { ResourceNeed } from "@/entities/goal-farming"
+import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { sumPools } from "./goal-resource-totals"
 
 const EMPTY_AVAILABLE = {
@@ -82,11 +82,10 @@ export function useGoalResourceChips({
   onslaughtTokens,
   shopSpend,
 }: GoalResourceChipsInput): GoalResourceChip[] {
-  const { t, i18n } = useTranslation(["common", "shops"])
+  const { t, i18n } = useTranslation(["common", "shops", "progression"])
   const format = new Intl.NumberFormat(i18n?.resolvedLanguage)
   const fmt = (value: number) => format.format(value)
-  const rarityName = (rarity: Rarity) =>
-    t(`goals.resourceChips.rarity.${rarity}`)
+  const rarityName = (rarity: Rarity) => t(`progression:rarities.${rarity}`)
   const chips: GoalResourceChip[] = []
   const add = (
     kind: GoalResourceChipKind,

@@ -6,7 +6,7 @@ import {
 import type { ProgressionRulesStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { mowAbilityTrackLevel } from "@/features/goal-farming"
+import { mowAbilityTrackLevel } from "@/entities/goal-farming"
 import type { ReadState } from "@/shared/lib"
 import { mowPowerAt, type UnitPowerContext } from "@/shared/unit-power"
 

@@ -1,6 +1,6 @@
 import { eventDays, type GameCatalogEventShop } from "@workspace/game-catalog"
 
-import type { EventShopCartEntry } from "@/entities/event-shop"
+import type { EventShopCartEntry } from "@/entities/shops/event-plan"
 
 /** A cart entry joined with its catalog offer: the price and pack size of one pack, the per-day cap. */
 export interface ResolvedEntry {

@@ -7,6 +7,7 @@ import {
   clearEstimateConfig,
   estimateClearDepth,
   laneBattlePowers,
+  laneThresholdPowers,
   lockedMemberCount,
   memberPowers,
   requiredClearPower,
@@ -18,6 +19,9 @@ import {
   unitHordeMultiplier,
   unitEffectivePower,
   unitPower,
+  teamBalanceFactor,
+  topMemberShare,
+  balancedTeamPower,
 } from "./clear-estimate"
 import {
   UNAVAILABLE_CONFIG,
@@ -60,10 +64,41 @@ describe("clear estimate (spec worked examples)", () => {
       stretchDepth: 6,
       battleCount: 7,
       power,
+      balanceFactor: 1,
       marginAbovePct: 12,
       shortfallToNextPct: 37,
       calibrated: true,
     })
+  })
+
+  it("multiplies a team's power by its team-balance factor when the config has one", () => {
+    const config = {
+      ...WORKED_CONFIG,
+      teamBalance: { neutralShare: 0.4, slope: 1.3 },
+    }
+    const estimate = teamClearEstimate(
+      WORKED_TEAM,
+      UTHAR_ALPHA_POWERS,
+      roster,
+      config
+    )
+    // The strongest member (24,753) holds 25% of the members' 98,895 power. Capping it a little
+    // lower (towards the even 0.2 share) reads 0.07% better than the uncapped factor.
+    const factor = Math.exp(-1.3 * (24753 / 98895 - 0.4))
+    expect(estimate?.balanceFactor).toBeGreaterThan(factor)
+    expect(estimate?.balanceFactor).toBeCloseTo(factor, 2)
+    expect(estimate?.power).toBeCloseTo(102229.4, 6)
+    expect(estimate?.depth).toBe(
+      estimateClearDepth(
+        102229.4 * estimate!.balanceFactor,
+        UTHAR_ALPHA_POWERS,
+        WORKED_CONFIG
+      ).depth
+    )
+    expect(
+      unitClearEstimate("ultraCalgar", UTHAR_ALPHA_POWERS, roster, config)
+        ?.balanceFactor
+    ).toBeCloseTo(Math.exp(0.26), 9)
   })
 
   it("sums fewer members for a partial team: E 68,311 clears 5", () => {
@@ -235,6 +270,7 @@ describe("clear estimate (spec worked examples)", () => {
       stretchDepth: 0,
       battleCount: 7,
       power: 965,
+      balanceFactor: 1,
       marginAbovePct: null,
       shortfallToNextPct: 21,
       calibrated: true,
@@ -323,85 +359,220 @@ describe("clear estimate (spec worked examples)", () => {
       laneBattlePowers(["votanUthar-alpha-1", "votanUthar-alpha-3"], battles)
     ).toBeNull()
   })
+
+  it("scales a lane's battle powers by its enemies' NPC multipliers (count-weighted without power data)", () => {
+    const battles = [
+      {
+        id: "b-2",
+        power: 2000,
+        waves: [
+          {
+            enemies: [
+              { id: "grunt", ladderIndex: 1, count: 3 },
+              { id: "heavy", ladderIndex: 1, count: 1 },
+            ],
+          },
+        ],
+      },
+      {
+        id: "b-1",
+        power: 1000,
+        waves: [{ enemies: [{ id: "grunt", ladderIndex: 1, count: 4 }] }],
+      },
+    ]
+    const config = { unitPower: null, npcMultipliers: new Map([["heavy", 2]]) }
+    // b-2: 3 grunts at 1.0 and 1 heavy at 2.0 → 1.25 × 2000.
+    expect(laneThresholdPowers(["b-1", "b-2"], battles, config)).toEqual([
+      1000, 2500,
+    ])
+    expect(
+      laneThresholdPowers(["b-1", "b-2"], battles, { unitPower: null })
+    ).toEqual([1000, 2000])
+    expect(laneThresholdPowers(["b-1", "b-3"], battles, config)).toBeNull()
+  })
 })
 
 // Fabius Bile Alpha / Gamma battle powers (datamine `legendary_event_16_lane_{1,3}`).
 const BILE_ALPHA_POWERS = [
   1184, 3728, 9902, 24711, 49842, 92887, 136056, 280510, 437871, 527461, 919925,
+  1242564, 1826995, 3119051, 6254801, 10199192,
 ]
 const BILE_GAMMA_POWERS = [
-  1035, 3036, 8060, 20153, 40460, 75563, 135741, 225078, 350510,
+  1035, 3036, 8060, 20153, 40460, 75563, 135741, 225078, 350510, 526488, 754219,
+  1009586, 1499878, 2506501, 5002344, 10046258,
 ]
 
-describe("clear curve (fitted to reported clears)", () => {
+describe("clear curve (fitted to battle results)", () => {
   const config = clearEstimateConfig(null, null)
 
-  it("needs r × (P / 100k)^0.25 × P: less than the power early, more late", () => {
+  it("needs r × (P / 100k)^-0.1 × P: a little more than the power early, a little less late", () => {
     const curve = config.curve!
     expect(requiredClearPower(100_000, 1.2, curve)).toBeCloseTo(120_000, 6)
     expect(requiredClearPower(25_000, 1.2, curve)).toBeCloseTo(
-      1.2 * Math.SQRT1_2 * 25_000,
+      1.2 * 4 ** 0.1 * 25_000,
       6
     )
     expect(requiredClearPower(400_000, 1.2, curve)).toBeCloseTo(
-      1.2 * Math.SQRT2 * 400_000,
+      1.2 * 4 ** -0.1 * 400_000,
       6
     )
     expect(requiredClearPower(100_000, 1.2, undefined)).toBe(120_000)
   })
 
-  // Each report: team power (horde multipliers at 1.0), lane, observed depth, expected bands.
+  // Each Discord report: team power (horde multipliers at 1.0), lane, the top member's share read off
+  // the members' levels, and the bands with the team-balance factor. Every reported depth lands in
+  // its band (#2 cleared 7, #5 and #8 cleared 8, #6 cleared 6, #9 cleared 10, #36 and #38 cleared 15).
   it.each([
-    // #2: cleared 7, about half of 8.
     {
+      report: 2,
       power: 204_259,
       powers: BILE_ALPHA_POWERS,
-      sure: 6,
-      likely: 7,
-      stretch: 7,
+      share: 0.6,
+      bands: [5, 6, 7],
     },
-    // #5 and #8: cleared 8, 9 out of reach.
     {
+      report: 5,
       power: 760_238,
       powers: BILE_ALPHA_POWERS,
-      sure: 7,
-      likely: 8,
-      stretch: 10,
+      share: 0.65,
+      bands: [7, 9, 10],
     },
     {
+      report: 8,
       power: 723_086,
       powers: BILE_ALPHA_POWERS,
-      sure: 7,
-      likely: 8,
-      stretch: 10,
+      share: 0.6,
+      bands: [7, 9, 10],
     },
-    // #6: cleared 6, battle 7 partially.
     {
+      report: 6,
       power: 157_384,
       powers: BILE_GAMMA_POWERS,
-      sure: 6,
-      likely: 6,
-      stretch: 7,
+      share: 0.55,
+      bands: [5, 6, 7],
     },
-    // #9: cleared 10, failed 11.
     {
+      report: 9,
       power: 978_492,
       powers: BILE_ALPHA_POWERS,
-      sure: 8,
-      likely: 10,
-      stretch: 10,
+      share: 0.5,
+      bands: [8, 10, 12],
+    },
+    {
+      report: 36,
+      power: 3_163_371,
+      powers: BILE_ALPHA_POWERS,
+      share: 0.22,
+      bands: [13, 14, 15],
+    },
+    {
+      report: 38,
+      power: 3_557_982,
+      powers: BILE_GAMMA_POWERS,
+      share: 0.22,
+      bands: [14, 14, 15],
     },
   ])(
-    "puts a reported clear in its band: $power → $sure / $likely / $stretch",
-    ({ power, powers, sure, likely, stretch }) => {
-      const estimate = estimateClearDepth(power, powers, config)
+    "puts report #$report in its band: $bands",
+    ({ power, powers, share, bands }) => {
+      const factor = teamBalanceFactor(share, config.teamBalance)
+      const estimate = estimateClearDepth(power, powers, config, factor)
       expect([
         estimate.sureDepth,
         estimate.depth,
         estimate.stretchDepth,
-      ]).toEqual([sure, likely, stretch])
+      ]).toEqual(bands)
     }
   )
+
+  it("scales power by the team-balance factor: ×1 at a 0.4 share, more balanced reads deeper", () => {
+    expect(teamBalanceFactor(0.4, config.teamBalance)).toBeCloseTo(1, 9)
+    expect(teamBalanceFactor(0.2, config.teamBalance)).toBeCloseTo(
+      Math.exp(0.26),
+      9
+    )
+    expect(teamBalanceFactor(0.9, config.teamBalance)).toBeCloseTo(
+      Math.exp(-0.65),
+      9
+    )
+    expect(teamBalanceFactor(null, config.teamBalance)).toBe(1)
+    expect(teamBalanceFactor(0.9, undefined)).toBe(1)
+    expect(topMemberShare([30, 10, 10])).toBeCloseTo(0.6, 9)
+    expect(topMemberShare([0, 0])).toBeNull()
+  })
+
+  it("never lowers a team's balanced power when a member gets stronger", () => {
+    const balance = config.teamBalance
+    const team = (first: number, multipliers: readonly number[]) =>
+      multipliers.map((multiplier, index) => ({
+        power: index === 0 ? first : 10_000,
+        multiplier,
+      }))
+    for (const multipliers of [
+      [1, 2, 2, 2, 2],
+      [1, 1, 1, 1, 1],
+      [2.5, 1, 1, 1, 1],
+    ]) {
+      let previous = 0
+      for (let first = 5000; first <= 60_000; first += 500) {
+        const power = balancedTeamPower(team(first, multipliers), balance)
+        expect(power).toBeGreaterThanOrEqual(previous - 1e-6)
+        previous = power
+      }
+    }
+  })
+
+  it("reads a team at least as well as its uncapped balance factor, equal for a lopsided team", () => {
+    const balance = config.teamBalance
+    const lopsided = [30_000, 10_000, 10_000, 10_000].map((power) => ({
+      power,
+      multiplier: 1,
+    }))
+    expect(balancedTeamPower(lopsided, balance)).toBeCloseTo(
+      60_000 * teamBalanceFactor(0.5, balance),
+      6
+    )
+    // Five equal members: capping them all only loses power.
+    const even = Array.from({ length: 5 }, () => ({
+      power: 10_000,
+      multiplier: 1,
+    }))
+    expect(balancedTeamPower(even, balance)).toBeCloseTo(
+      50_000 * teamBalanceFactor(0.2, balance),
+      6
+    )
+    // The 20,000 carry reads as if capped near the others: above its uncapped 109k.
+    const carry = team20k()
+    expect(balancedTeamPower(carry, balance)).toBeGreaterThan(
+      100_000 * teamBalanceFactor(20 / 60, balance)
+    )
+    expect(balancedTeamPower(carry, undefined)).toBe(100_000)
+    expect(balancedTeamPower([], balance)).toBe(0)
+
+    function team20k() {
+      return [1, 2, 2, 2, 2].map((multiplier, index) => ({
+        power: index === 0 ? 20_000 : 10_000,
+        multiplier,
+      }))
+    }
+  })
+
+  it("leaves the margin unset above a battle of no power", () => {
+    expect(estimateClearDepth(0, [0], config)).toMatchObject({
+      depth: 1,
+      marginAbovePct: null,
+    })
+    expect(estimateClearDepth(50_000, [0], config).marginAbovePct).toBeNull()
+  })
+
+  it("keeps the effective power and reports the factor it applied", () => {
+    const estimate = estimateClearDepth(500_000, BILE_ALPHA_POWERS, config, 0.5)
+    expect(estimate.power).toBe(500_000)
+    expect(estimate.balanceFactor).toBe(0.5)
+    expect(estimate.depth).toBe(
+      estimateClearDepth(250_000, BILE_ALPHA_POWERS, config).depth
+    )
+  })
 
   it("orders the bands sure ≤ likely ≤ stretch", () => {
     for (const power of [5_000, 50_000, 150_000, 300_000, 2_000_000]) {

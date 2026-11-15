@@ -113,6 +113,7 @@ export function TokenGroups({
   membersByTeam,
   depthByTeam,
   chipOf = unknownChip,
+  expandRuns = false,
 }: {
   tokens: readonly PlannedTokenRow[]
   start: number
@@ -130,6 +131,8 @@ export function TokenGroups({
   depthByTeam: ReadonlyMap<string, TeamClearDepth>
   /** A unit's chip in the team popover (rank, rarity, abilities from the synced roster). */
   chipOf?: (unitId: string) => EventUnitChipData
+  /** Whether the folded battle rows start expanded (the Token plan's Expand all). */
+  expandRuns?: boolean
 }) {
   return (
     <ol className="flex min-w-0 flex-col divide-y">
@@ -185,9 +188,11 @@ export function TokenGroups({
                 }
                 return (
                   <TokenBattleRunRow
+                    defaultExpanded={expandRuns}
                     event={event}
                     isMobile={isMobile}
-                    key={run.start}
+                    // Expand all / Collapse all resets every row to the new choice.
+                    key={`${run.start}-${expandRuns}`}
                     markers={markers}
                     start={run.start}
                     steps={steps}
@@ -324,8 +329,8 @@ function MobileRowLines({
 
 /** Consecutive battles of one lane clearing the same cells as one row: its token count, "Alpha ·
  *  Battles 1–11" (opening the first battle's info), the cells, the summed points and the running
- *  points after the last, every milestone reached; a separate button expands the per-battle rows
- *  (which then carry the markers). */
+ *  points after the last, then each battle's points and every milestone reached; a separate button
+ *  expands the per-battle rows (which then carry the markers). */
 function TokenBattleRunRow({
   event,
   tokens,
@@ -334,6 +339,7 @@ function TokenBattleRunRow({
   steps,
   isMobile,
   teamHeader,
+  defaultExpanded,
 }: {
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
   tokens: readonly PlannedTokenRow[]
@@ -343,9 +349,10 @@ function TokenBattleRunRow({
   isMobile: boolean
   /** The team's header, when this is the team's only row. */
   teamHeader?: ReactNode
+  defaultExpanded: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(defaultExpanded)
   const first = tokens[0]
   const last = tokens.at(-1)
   if (!first || !last) return null
@@ -429,6 +436,22 @@ function TokenBattleRunRow({
             <span className="text-right">{running}</span>
           </div>
         </>
+      )}
+      {expanded ? null : (
+        <ul
+          aria-label={t("tokenPlan.plan.battlePointsLabel")}
+          className="flex flex-wrap gap-x-3 text-xs text-muted-foreground tabular-nums"
+          data-testid="token-plan-run-battle-points"
+        >
+          {tokens.map((token) => (
+            <li className="whitespace-nowrap" key={token.battleIndex}>
+              {t("tokenPlan.plan.battlePoints", {
+                battle: token.battleIndex + 1,
+                points: number.format(token.points),
+              })}
+            </li>
+          ))}
+        </ul>
       )}
       {expanded ? null : (
         <TokenMarkerList

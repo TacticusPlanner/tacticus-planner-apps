@@ -46,7 +46,7 @@ export function TodayPlanCard({
         <RaidState state={raids.status} variant="inline" />
       ) : (
         <>
-          <FilteredOutNotice filteredOut={raids.filteredOut} />
+          <FilteredOutNotice raids={raids} />
           {view && view.planNodeCount > 0 ? (
             <div className={INSET_CARDS_CLASS_NAME}>
               <RaidSchedule

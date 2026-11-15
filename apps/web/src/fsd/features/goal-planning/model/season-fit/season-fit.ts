@@ -1,4 +1,4 @@
-import type { EstimateOutcome } from "@/features/goal-farming/@x/goal-planning"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 
 import type { GoalRow } from "../shared/types"
 import type { SeasonFitSeason, SeasonWindows } from "./season-windows"

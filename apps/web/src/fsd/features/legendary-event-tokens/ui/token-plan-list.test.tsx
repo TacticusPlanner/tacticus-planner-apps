@@ -154,6 +154,51 @@ describe("TokenPlanList", () => {
     ).toEqual(["0", "1", "2"])
   })
 
+  it("says what each battle of a folded row is worth", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready") throw new Error("not ready")
+    renderList(view)
+    expand()
+
+    const perBattle = within(
+      screen.getByRole("list", { name: "Points per battle" })
+    ).getAllByRole("listitem")
+    expect(perBattle.map((item) => item.textContent)).toEqual(
+      view.plan.tokens
+        .slice(0, 3)
+        .map((token) => `B${token.battleIndex + 1} +${token.points}`)
+    )
+    // Expanded, the per-battle rows carry the points instead.
+    fireEvent.click(screen.getByTestId("token-plan-run-toggle"))
+    expect(
+      screen.queryByRole("list", { name: "Points per battle" })
+    ).not.toBeInTheDocument()
+  })
+
+  it("expands and collapses every folded row at once and remembers it", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    const { unmount } = renderList(view)
+    expand()
+
+    const toggle = () => screen.getByTestId("token-plan-run-toggle")
+    expect(toggle()).toHaveAttribute("aria-expanded", "false")
+    fireEvent.click(screen.getByRole("button", { name: "Expand all" }))
+    expect(toggle()).toHaveAttribute("aria-expanded", "true")
+    expect(
+      localStorage.getItem("legendaryEvents.tokenPlan.expandBattles")
+    ).toBe("true")
+
+    // A row can still be closed on its own.
+    fireEvent.click(toggle())
+    expect(toggle()).toHaveAttribute("aria-expanded", "false")
+
+    unmount()
+    renderList(view)
+    expect(toggle()).toHaveAttribute("aria-expanded", "true")
+    fireEvent.click(screen.getByRole("button", { name: "Collapse all" }))
+    expect(toggle()).toHaveAttribute("aria-expanded", "false")
+  })
+
   it("sums the milestones a row reaches into one line", () => {
     const view = buildTokenPlanView(workedViewInput())
     if (view.kind !== "ready" || !view.forecast) throw new Error("not ready")

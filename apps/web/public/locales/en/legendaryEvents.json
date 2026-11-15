@@ -42,7 +42,33 @@
     "syncedAgo": "Synced {{when}}",
     "neverSynced": "Not synced yet",
     "goToCurrentRun": "Go to current run",
-    "goToNextRun": "Go to next run"
+    "goToNextRun": "Go to next run",
+    "current": {
+      "tokensLeft_one": "{{count}} left this run",
+      "tokensLeft_other": "{{count}} left this run",
+      "fromAds_one": "{{count}} from ads",
+      "fromAds_other": "{{count}} from ads",
+      "bonusDelivery_one": "{{count}} bonus delivery",
+      "bonusDelivery_other": "{{count}} bonus delivery",
+      "unused_one": "{{count}} with nothing to play",
+      "unused_other": "{{count}} with nothing to play",
+      "resource": "Resource",
+      "now": "Now",
+      "end": "End of run {{run}}",
+      "endNext": "End of next run",
+      "gain": "+{{value}}",
+      "stepThisRun": "{{step}} at token {{token}} this run",
+      "then": "then {{step}}, {{shards}} shards short",
+      "later": "Next: {{step}} · {{shards}} shards short at the end of the run",
+      "laterAt": "reached at token {{token}} (run {{run}})",
+      "rows": {
+        "points": "Points",
+        "currency": "Currency",
+        "chests": "Chests",
+        "shards": "Shards"
+      },
+      "gainEarned": "+{{value}} earned"
+    }
   },
   "runInputs": {
     "button": "Inputs",
@@ -112,6 +138,7 @@
     "fullyAscended": "Every reward step reached",
     "beyondChests": "Not reachable this event (needs {{required}} chests, the event has {{ladder}})",
     "affordableNow": "Enough currency for the chests now",
+    "coveredByLaterRuns": "{{currency}} currency short today · your later runs' missions and bundles cover it",
     "beyondPoints": "Points alone can't cover it: {{currency}} currency short",
     "noEntry": "No synced progress yet",
     "explain": {
@@ -124,8 +151,9 @@
       "noFutureInputs": "No inputs for later runs",
       "bonus": "+{{currency}} currency on every points milestone (premium track)",
       "noBonus": "No payout bonus on points milestones",
-      "startedRuns": "Counts what you have already earned through sync plus your inputs for later runs; runs already started are not added again."
-    }
+      "startedRuns": "Later runs add only the missions and bundle you plan for them; the current run's are already in your synced currency."
+    },
+    "titleFor": "To reach {{step}}"
   },
   "lanes": {
     "alpha": "Alpha",
@@ -232,11 +260,13 @@
     "laneObjectives": "{{lane}} objectives",
     "laneObjectiveFilter": "Filter by {{lane}} objective",
     "onlyUnlocked": "Only unlocked",
+    "onlyInTeams": "Only in my teams",
     "locked": "Locked",
     "objectiveMet": "{{objective}}: met",
     "objectiveNotMet": "{{objective}}: not met",
     "noEligible": "No unit can play in this lane.",
     "noUnlocked": "None of your unlocked units can play in this lane.",
+    "noneInTeams": "Your teams here have no units yet.",
     "noneMatch": "No unit satisfies these objectives.",
     "clearFilter": "Clear filter",
     "rosterNotSynced": "Your roster hasn't synced yet, so ownership, rarity and rank aren't shown.",
@@ -654,8 +684,7 @@
     "ascension": "Ascension to {{target}}",
     "rank": "Rank to {{target}}",
     "rankWithUpgrades": "Rank to {{target}} with {{count}} upgrades",
-    "ability": "Abilities to {{active}} / {{passive}}",
-    "progression": "{{rarity}} {{stars}}"
+    "ability": "Abilities to {{active}} / {{passive}}"
   },
   "leaderboardActions": {
     "header": "Actions",
@@ -720,6 +749,8 @@
       "reasons": {
         "mostPoints": "Most points available now",
         "mostPointsPlayableNow": "Most points among battles you can play now",
+        "safestToMilestone": "Safest battle that still reaches milestone {{milestone}} this run",
+        "safestToStep": "Safest battle that still reaches {{step}} (milestone {{milestone}}) this run",
         "missionsOrder": "Finishes this run's open missions soonest, for the same run points"
       },
       "upcoming": "{{reason}} for when run {{run}} starts",
@@ -772,6 +803,8 @@
       "summary_other": "{{count}} tokens · +{{points}} points",
       "battle": "Battle {{battle}}",
       "points": "+{{points}}",
+      "battlePoints": "B{{battle}} +{{points}}",
+      "battlePointsLabel": "Points per battle",
       "running": "{{points}} total",
       "maybe": "Maybe clear",
       "milestone": "Milestone {{milestone}} · +{{currency}} currency",
@@ -819,6 +852,8 @@
       "expandRun_other": "Show {{count}} battles",
       "collapseRun_one": "Hide {{count}} battle",
       "collapseRun_other": "Hide {{count}} battles",
+      "expandAll": "Expand all",
+      "collapseAll": "Collapse all",
       "tokens_one": "{{count}} token",
       "tokens_other": "{{count}} tokens",
       "openTeam": "Open team {{team}}"
@@ -838,15 +873,8 @@
         "planned": "Planned"
       },
       "finished": "Finished",
-      "supply": "{{total}} tokens: {{free}} free + {{ad}} ad + {{bonus}} bonus delivery",
       "adToday": "Includes today's ad token, not watched yet",
       "thisRun": "This run's forecast",
-      "uses": "Uses {{used}} · {{left}} left over",
-      "points": "{{points}} points (+{{earned}})",
-      "currency": "{{currency}} currency in hand (+{{earned}} earned)",
-      "chests": "{{claimed}} chests claimed (+{{opened}})",
-      "shards": "{{shards}} shards",
-      "reached": "Reached: {{steps}}",
       "next": "Next: {{step}} · {{shards}} shards short",
       "allSteps": "Every reward step reached",
       "ohSoClose": "Oh So Close: {{shards}} shards for {{blackstone}} blackstone",
@@ -857,7 +885,13 @@
         "points": "Points at the end of the run",
         "chests": "Chests claimed",
         "shards": "Shards at the end of the run"
-      }
+      },
+      "split": "{{free}} free + {{ad}} ad",
+      "splitBonus": "{{free}} free + {{ad}} ad + {{bonus}} bonus delivery",
+      "leftOver_one": "{{count}} left over",
+      "leftOver_other": "{{count}} left over",
+      "gains": "+{{points}} points · +{{earned}} currency earned, {{currency}} left after chests · +{{chests}} chests",
+      "reachedThen": "Reached {{steps}} · {{next}}"
     },
     "closeGap": {
       "title": "Close the gap: +{{points}} points for {{step}}",
@@ -1038,6 +1072,27 @@
       "howToUse": "How to use",
       "teammates": "Recommended teammates",
       "relicAdvice": "Relic"
+    }
+  },
+  "npcTierList": {
+    "kind": {
+      "label": "Tier list",
+      "heroes": "Heroes",
+      "enemies": "Enemies"
+    },
+    "intro": "Enemy tiers for the current and upcoming Legendary Events (regular enemies, no bosses): each enemy's power is multiplied by its tier's value in the clear estimates.",
+    "search": "Search enemies",
+    "event": "Event",
+    "allEvents": "All active events",
+    "noEnemy": "No enemy",
+    "noEvent": "No Legendary Event is scheduled.",
+    "error": "Couldn't load the enemy tier list.",
+    "tileLabel": "{{name}}, {{multiplier}}",
+    "details": {
+      "description": "The enemy's tier, multiplier and why it is dangerous.",
+      "threat": "Why it's dangerous",
+      "counter": "How to deal with it",
+      "noThreat": "No notes for this enemy yet."
     }
   },
   "missions": {

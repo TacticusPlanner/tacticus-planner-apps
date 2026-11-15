@@ -11,12 +11,12 @@ import type {
   UpgradeStorageModel,
 } from "@workspace/game-catalog"
 
-import { useEligibleCampaignBattles } from "@/features/daily-raids/@x/goal-planning"
+import { useEligibleCampaignBattles } from "@/entities/player-data-override"
 import {
   mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
-} from "@/features/rank-lookup/@x/goal-planning"
+} from "@/entities/rank-lookup"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 import { useUnitName } from "@/shared/unit-name"
 

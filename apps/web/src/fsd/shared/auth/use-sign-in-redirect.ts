@@ -10,7 +10,12 @@ import {
 } from "@azure/msal-browser"
 import { useMsal } from "@azure/msal-react"
 
-import { forgetQuietRenewal, loginRequest } from "./authentication"
+import { takePendingRedirect } from "./auth-journal"
+import {
+  forgetQuietRenewal,
+  loginRequest,
+  recordInteractiveRedirect,
+} from "./authentication"
 import { useSilentSignInStatus } from "./silent-sign-in"
 
 /** The bare landing page stays browsable once signed in (spec: landing-page), so signing in from it
@@ -38,7 +43,12 @@ export function useSignInRedirect() {
   const start = useCallback(
     (request: RedirectRequest) => {
       forgetQuietRenewal()
+      recordInteractiveRedirect("user", {
+        method: "unknown",
+        freshLogin: request.prompt === PromptValue.LOGIN,
+      })
       void instance.loginRedirect(request).catch((error: unknown) => {
+        takePendingRedirect()
         if (error instanceof AuthError) {
           console.error("[MSAL] sign-in failed", {
             errorCode: error.errorCode,

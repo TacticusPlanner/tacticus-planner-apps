@@ -25,6 +25,7 @@ import { useActiveHomeScreenEvent } from "../../model/use-active-home-screen-eve
 import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/today-quick-filters"
 import { useDailyRaids } from "../../model/use-daily-raids"
 import { useHomeScreenEventName } from "../home-screen-event/use-home-screen-event-name"
+import type { RaidLocationTarget } from "../raid-location-name"
 import { RaidState } from "../raid-state"
 import { HreHandBattles } from "./hre-hand-battles"
 import {
@@ -72,6 +73,7 @@ export function HreRaidsSection({
   projectId,
   controls,
   quickFilters,
+  onShowLocation,
 }: {
   request: HreRaidsRequest | null
   notice: ReactNode
@@ -87,6 +89,8 @@ export function HreRaidsSection({
   /** Today's quick filters picked in `controls`: "Combine goals" drops goal priority from the order,
    * "Raidable only" leaves battles to play manually out of the raids. */
   quickFilters?: TodayQuickFilterOptions
+  /** Makes each suggested battle's name open its enemies. */
+  onShowLocation?: (target: RaidLocationTarget) => void
 }) {
   const { t } = useTranslation("hre")
   // A running Home Screen Event with a raid rule ranks the nodes too, so both events progress.
@@ -136,7 +140,7 @@ export function HreRaidsSection({
   const plan = loaded ? raids.missionRaids : undefined
   const locations = loaded ? raids.locationsByBattleId : undefined
   const view = raids.status === "ready" ? raids : null
-  const rowsView: RaidRowsView = { locations, view }
+  const rowsView: RaidRowsView = { locations, view, onShowLocation }
   const shown = request && (request.raids || manual || request.manualNotice)
   const hseNote =
     runningEvent &&

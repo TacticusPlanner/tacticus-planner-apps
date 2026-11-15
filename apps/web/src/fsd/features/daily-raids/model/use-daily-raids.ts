@@ -5,7 +5,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
 
-import type { GoalDetail } from "@/entities/goal"
+import { activeProjectMembers, type GoalDetail } from "@/entities/goal"
 import { dailyGoalTargetLabel } from "./goal-target-label"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
@@ -13,8 +13,8 @@ import {
   mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
-} from "@/features/rank-lookup/@x/daily-raids"
-import { toOnslaughtRunsPerDay } from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/rank-lookup"
+import { toOnslaughtRunsPerDay } from "@/entities/goal-farming"
 import { useCampaignDisplay, type ReadState } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
@@ -22,8 +22,8 @@ import { buildResourceByBattle } from "./daily-raid-battle-resources"
 import type { EventFarmOrder } from "./home-screen-event-farm"
 import type { HseRaidRule } from "./home-screen-event-rules"
 import { useBattleMaps } from "./use-battle-maps"
-import { useEligibleCampaignBattles } from "./use-eligible-campaign-battles"
-import { activeProjectMembers, calculateDailyRaids } from "./daily-raids-calc"
+import { useEligibleCampaignBattles } from "@/entities/player-data-override"
+import { calculateDailyRaids } from "./daily-raids-calc"
 import {
   buildAttemptsLeftByBattle,
   buildBattleAttemptIndex,

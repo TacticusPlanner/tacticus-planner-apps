@@ -3,14 +3,12 @@ import userEvent from "@testing-library/user-event"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { GameCatalogEventShop } from "@workspace/game-catalog"
 
-import type { EventShopPlan } from "@/entities/event-shop"
-import type {
-  EventShopCoverageState,
-  RosterShopContext,
-} from "@/features/shops/event-planner"
+import type { EventShopPlan } from "@/entities/shops/event-plan"
+import type { RosterShopContext } from "@/features/shops/event-planner"
 import { act, render, screen, waitFor, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
+import type { EventShopCoverageState } from "../../model/use-event-shop-coverage"
 import type { DailiesOutletContext } from "../dailies-layout"
 import {
   cartEntry,
@@ -83,7 +81,7 @@ vi.mock("@/features/shops/event-planner/model/use-roster-shop-context", () => ({
   useRosterShopContext: () => roster,
 }))
 let coverage: EventShopCoverageState = { status: "noGoals" }
-vi.mock("@/features/shops/event-planner/model/use-event-shop-coverage", () => ({
+vi.mock("../../model/use-event-shop-coverage", () => ({
   useEventShopCoverage: () => coverage,
 }))
 
@@ -93,8 +91,8 @@ const mutateAsync = vi.fn((request: { entries: EventShopPlan["entries"] }) =>
   Promise.resolve(plan(request.entries, 2))
 )
 const refetchPlan = vi.fn()
-vi.mock("@/entities/event-shop", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/entities/event-shop")>()),
+vi.mock("@/entities/shops/event-plan", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/shops/event-plan")>()),
   useEventShopPlan: () =>
     planState === "error"
       ? { data: undefined, isError: true, refetch: refetchPlan }

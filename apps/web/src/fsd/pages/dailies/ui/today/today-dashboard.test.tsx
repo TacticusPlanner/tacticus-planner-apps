@@ -73,13 +73,11 @@ describe("TodayDashboard", () => {
 
     expect(screen.getByTestId("today-page")).toHaveClass("@container")
     expect(screen.getByTestId("today-grid")).toHaveClass(
-      "@[42rem]:grid-cols-2",
+      "@2xl:grid-cols-2",
       "@[84rem]:grid-cols-4",
       "items-start"
     )
-    expect(screen.getByTestId("today-plan-area")).toHaveClass(
-      "@[42rem]:col-span-2"
-    )
+    expect(screen.getByTestId("today-plan-area")).toHaveClass("@2xl:col-span-2")
   })
 
   it("puts the bonus card in the plan's place at the energy limit, with its caption and every entry", () => {
@@ -93,7 +91,7 @@ describe("TodayDashboard", () => {
       within(bonus).getByTestId("bonus-energy-limit-reached")
     ).toHaveTextContent("Daily energy limit reached")
     // 2 plan entries + 4 bonus entries, all shown.
-    expect(within(bonus).getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+    expect(within(bonus).getByTestId("raid-upgrade-g2-B4")).toBeInTheDocument()
     expect(
       within(bonus).queryByRole("button", { name: /^Show \d+ more$/ })
     ).not.toBeInTheDocument()
@@ -111,7 +109,7 @@ describe("TodayDashboard", () => {
       within(bonus).queryByTestId("bonus-energy-limit-reached")
     ).not.toBeInTheDocument()
     expect(
-      within(bonus).queryByTestId("raid-card-g2-B4")
+      within(bonus).queryByTestId("raid-upgrade-g2-B4")
     ).not.toBeInTheDocument()
     expect(
       within(bonus).getByRole("button", { name: "Show 1 more" })
@@ -153,15 +151,15 @@ describe("TodayDashboard", () => {
 
     const bonus = within(bonusCards()[0]!)
     expect(bonus.getByText("if energy is left")).toBeInTheDocument()
-    expect(bonus.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
+    expect(bonus.queryByTestId("raid-upgrade-g2-B4")).not.toBeInTheDocument()
     // 4 entries: one more after the top 3.
     await user.click(bonus.getByRole("button", { name: "Show 1 more" }))
-    expect(bonus.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+    expect(bonus.getByTestId("raid-upgrade-g2-B4")).toBeInTheDocument()
     expect(
       bonus.queryByRole("button", { name: /^Show \d+ more$/ })
     ).not.toBeInTheDocument()
     await user.click(bonus.getByRole("button", { name: "Show less" }))
-    expect(bonus.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
+    expect(bonus.queryByTestId("raid-upgrade-g2-B4")).not.toBeInTheDocument()
   })
 
   it("links Bonus raids to Plan > Schedule below the limit, not at the limit", () => {
@@ -211,7 +209,7 @@ describe("TodayDashboard", () => {
     // Hidden on one track, where the arriving plan would push it down the screen.
     expect(screen.getByTestId("today-shops-slot")).toHaveClass(
       "hidden",
-      "@[42rem]:block"
+      "@2xl:block"
     )
     expect(bonusCards()).toHaveLength(0)
     expect(screen.queryByTestId("today-onslaught")).not.toBeInTheDocument()

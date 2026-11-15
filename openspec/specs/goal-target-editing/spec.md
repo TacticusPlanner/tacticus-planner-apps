@@ -165,13 +165,19 @@ For an Upgrade goal, the Edit goal dialog SHALL let the owner add materials with
 
 ### Requirement: Rank and Ascension targets are picked on a ladder
 
-In the create and Edit goal dialogs, Rank and Ascension targets SHALL be chosen on a ladder that shows every step of the unit's track, grouped by tier. The goal's start step SHALL be marked "Current". The selected target SHALL be marked, and the steps from start to target SHALL be highlighted. Rank's additional target SHALL stay a separate control under the ladder.
+In the create and Edit goal dialogs, Rank and Ascension targets SHALL be chosen on a ladder that shows every step of the unit's track, grouped by tier. The unit's current step SHALL be marked "Current": in the create dialog that is the goal's start; in the Edit goal dialog it is the unit's synced roster rank or progression, falling back to the goal's stored start when the roster has no entry. When the unit has progressed past the stored start, the start step SHALL be marked "Start" instead. The selected target SHALL be marked, and the steps from start to target SHALL be highlighted. Rank's additional target SHALL stay a separate control under the ladder.
 
 #### Scenario: Incisus Rank ladder
 
 - **GIVEN** Incisus is Gold II and the Rank target is Diamond II
 - **WHEN** the Rank card is open
 - **THEN** Gold II is marked Current, Diamond II is marked selected, and Gold II to Diamond II is highlighted
+
+#### Scenario: Edited goal after progress
+
+- **GIVEN** a Rank goal created when Nauseous was Gold I, and Nauseous is now Gold II in the synced roster
+- **WHEN** the Edit goal dialog opens
+- **THEN** Gold II is marked Current and Gold I is marked Start
 
 #### Scenario: Stored target at or below start
 
@@ -244,7 +250,7 @@ An Ability goal SHALL be valid when at least one track rises above its start; a 
 
 ### Requirement: Ability steppers offer quick picks
 
-Each ability stepper SHALL offer "Next" (start + 1), "+5" (the current target + 5, capped at 60, so each press adds 5 more), and "Rarity cap" (the ability cap of the unit's current rarity). "Rarity cap" SHALL be hidden when the start is at or above that cap, and "+5" SHALL be hidden once the target is at 60.
+Each ability stepper SHALL offer "Next" (the track's level + 1), "+5" (the current target + 5, capped at 60, so each press adds 5 more), and "Rarity cap" (the ability cap of the unit's current rarity). The track's level is its start; in the Edit goal dialog, when the synced roster shows the track above the goal's stored start, it is that live level, and the stepper SHALL show it as "Current". The lowest choosable level stays the stored start. "Rarity cap" SHALL be hidden when the track's level is at or above that cap, and "+5" SHALL be hidden once the target is at 60.
 
 #### Scenario: Quick picks for a Legendary unit at 35
 
@@ -257,6 +263,12 @@ Each ability stepper SHALL offer "Next" (start + 1), "+5" (the current target + 
 - **GIVEN** the active ability is at 35
 - **WHEN** the user activates "+5" twice
 - **THEN** the target becomes 40, then 45
+
+#### Scenario: Edited goal after levelling
+
+- **GIVEN** an Ability goal created with the active ability at 3, and the synced roster now shows it at 20
+- **WHEN** the Edit goal dialog opens
+- **THEN** the active stepper shows "Current 20" and "Next" sets 21
 
 #### Scenario: At the rarity cap
 

@@ -1,5 +1,3 @@
-import type { Progression } from "@workspace/game-domain"
-
 import {
   formatSnapshotDate,
   hasDefaultName,
@@ -7,18 +5,6 @@ import {
 } from "@/entities/roster-snapshot"
 
 import type { CompareSource } from "./use-compare-data"
-
-/** The stars part of a progression ("Legendary:RedFiveStars" → "RedFiveStars"). */
-export type ProgressionStarsKey = Progression extends `${string}:${infer Stars}`
-  ? Stars
-  : never
-
-/** The `progression:stars.*` key of a progression's stars. */
-export function progressionStarsKey(
-  progression: Progression
-): ProgressionStarsKey {
-  return progression.slice(progression.indexOf(":") + 1) as ProgressionStarsKey
-}
 
 /** A compact signed number for chips: "+260", "−240", "+4.6k". */
 export function formatSigned(value: number, locale: string): string {

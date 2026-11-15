@@ -27,6 +27,7 @@ import {
   type RunInputsViewModel,
   type RunStatusViewModel,
 } from "./legendary-event-page.view-model"
+import { RewardOutlook } from "./reward-outlook"
 import { RunStatusCard } from "./run-status-card"
 
 vi.mock("@/shared/api", async (importOriginal) => ({
@@ -597,7 +598,9 @@ describe("RunStatusCard", () => {
         "250 currency from run 3 missions",
         "300 currency from the run 3 bundle",
         "No payout bonus on points milestones",
-        expect.stringMatching(/runs already started are not added again/),
+        expect.stringMatching(
+          /the current run.s are already in your synced currency/
+        ),
       ])
     })
 
@@ -608,6 +611,30 @@ describe("RunStatusCard", () => {
       )
       expect(screen.queryByTestId("reward-outlook-chests")).toBeNull()
       expect(screen.queryByTestId("reward-outlook-points")).toBeNull()
+    })
+
+    it("names the step in the heading and drops its shards line when compact", () => {
+      render(<RewardOutlook compact outlook={outlookFor(synced())} />, {
+        wrapper: i18nWrapper(i18n),
+      })
+      expect(
+        screen.getByRole("heading", { name: "To reach Unlock" })
+      ).toBeInTheDocument()
+      expect(screen.queryByTestId("reward-outlook-next")).toBeNull()
+      expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
+        "6 more chests costing 1,850 currency"
+      )
+    })
+
+    it("shows nothing compact once every step is reached", () => {
+      render(
+        <RewardOutlook
+          compact
+          outlook={outlookFor(synced({ currentShards: 1300 }))}
+        />,
+        { wrapper: i18nWrapper(i18n) }
+      )
+      expect(screen.queryByTestId("reward-outlook")).toBeNull()
     })
 
     it("says a goal beyond the chest ladder is not reachable", () => {
@@ -637,6 +664,30 @@ describe("RunStatusCard", () => {
       expect(screen.getByTestId("reward-outlook-affordable")).toHaveTextContent(
         "Enough currency for the chests now"
       )
+    })
+
+    it("says when only later runs' currency covers the chests", () => {
+      const outlook = outlookFor(synced())
+      if (outlook.kind !== "ready") throw new Error("outlook not ready")
+      const currency = outlook.projection.currency!
+      renderOutlook(
+        outlookFor(
+          synced({
+            currentCurrency:
+              outlook.projection.base.currency +
+              currency.fromPoints +
+              currency.futureMissions +
+              currency.futureBundles -
+              190,
+          })
+        )
+      )
+      expect(
+        screen.getByTestId("reward-outlook-covered-later")
+      ).toHaveTextContent(
+        "190 currency short today · your later runs' missions and bundles cover it"
+      )
+      expect(screen.queryByTestId("reward-outlook-affordable")).toBeNull()
     })
 
     it("says when points alone cannot cover the chests", () => {

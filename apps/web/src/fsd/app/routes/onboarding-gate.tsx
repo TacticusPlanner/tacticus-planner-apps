@@ -1,0 +1,169 @@
+import { useEffect, type ReactNode } from "react"
+import { useTranslation } from "react-i18next"
+import { Navigate, useLocation, type Location } from "react-router"
+import { Button } from "@workspace/ui/components/button"
+import { useMsal } from "@azure/msal-react"
+
+import {
+  isAccountSetupComplete,
+  readSetupCompleteHint,
+  rememberSetupState,
+  useCurrentUser,
+  type CurrentUser,
+} from "@/entities/account"
+import {
+  signOut,
+  useActiveAccountId,
+  useRequestApiAccessOnce,
+} from "@/shared/auth"
+
+import { SETUP_STEP_PATHS } from "./account-setup-routes"
+import { BootScreen } from "../boot/boot-screen"
+import { useDelayedFlag } from "../boot/use-delayed-flag"
+
+// A healthy /account answers in well under a second; past this, say so rather than look frozen.
+export const ACCOUNT_GATE_SLOW_MS = 5000
+
+/** The setup step an unfinished account owes, remembering the page it was on as `next`. */
+function setupRedirectTarget(
+  user: CurrentUser,
+  location: Pick<Location, "pathname" | "search">
+): string {
+  const next = `${location.pathname}${location.search}`
+  // A user who already has a key only owes the name step; anyone else starts from the beginning.
+  const setupPath = user.hasCompletedOnboarding
+    ? SETUP_STEP_PATHS.name
+    : SETUP_STEP_PATHS.choose
+  return `${setupPath}?next=${encodeURIComponent(next)}`
+}
+
+/**
+ * The public pages inside the shell (Library, My Game › Collection) skip the onboarding gate, so a
+ * first sign-in started from one of them would otherwise come back to a page that cannot sync, with
+ * nothing pointing at setup. Once GET /account answers that the signed-in account has not finished
+ * setup, this sends it there and remembers the page. It never blocks: while the answer is pending,
+ * on an error, or signed out, it renders nothing and the page shows as usual.
+ */
+export function SetupRedirect() {
+  const { state } = useCurrentUser()
+  const location = useLocation()
+
+  if (state.status !== "success" || isAccountSetupComplete(state.user)) {
+    return null
+  }
+
+  return <Navigate replace to={setupRedirectTarget(state.user, location)} />
+}
+
+function logApiAccessError(error: unknown) {
+  console.error("[MSAL] api-access failed", error)
+}
+
+/**
+ * Blocks protected routes until the signed-in user has a configured Tacticus API key and a confirmed
+ * display name, sending them to `/setup` (or straight to its name step) and remembering where they were headed. Protected content waits for the current-user request
+ * because GET /api/v1/account provisions a first-time caller's Account/Profile; mounting child routes before it
+ * succeeds can race their profile-scoped requests and produce misleading 404 responses.
+ *
+ * Only a definitive answer redirects. The loading branch renders the boot screen, and the error branch blocks
+ * with a retry — neither navigates, because `/setup` sends configured users back here and two guards
+ * acting on an indeterminate state would bounce the user between them. Blocking (rather than failing
+ * open) on error matters because an indeterminate state must not be read as "onboarding complete": that
+ * would let an unconfigured account reach protected content during a transient outage.
+ */
+export function OnboardingGate({ children }: { children: ReactNode }) {
+  const { t } = useTranslation()
+  const { instance } = useMsal()
+  const accountId = useActiveAccountId()
+  const { state, refetch } = useCurrentUser()
+  const location = useLocation()
+  // An expired/revoked session is not an outage: start the in-app re-authentication redirect
+  // (which returns to this URL) and keep the boot screen up instead of offering Retry / Sign out.
+  const reauthenticating = useRequestApiAccessOnce(
+    state.status === "error" ? state.error : undefined,
+    logApiAccessError
+  )
+
+  // An account that already finished setup on this device does not wait for GET /account again: it
+  // exists, so its pages cannot race the provisioning call, and the gate still redirects if the
+  // answer turns out otherwise (spec: onboarding-gate, returning users).
+  const knownComplete = readSetupCompleteHint(accountId)
+  const user = state.status === "success" ? state.user : undefined
+  useEffect(() => {
+    if (accountId && user) rememberSetupState(accountId, user)
+  }, [accountId, user])
+
+  const waiting =
+    ((state.status === "idle" || state.status === "loading") &&
+      !knownComplete) ||
+    reauthenticating
+  const slow = useDelayedFlag(
+    waiting && !reauthenticating,
+    ACCOUNT_GATE_SLOW_MS
+  )
+
+  if (waiting) {
+    return (
+      <BootScreen testId="account-gate-loading">
+        <p className="text-sm font-medium">
+          {reauthenticating
+            ? t("accountGate.reauthenticating")
+            : t("accountGate.loading")}
+        </p>
+        {slow ? (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="account-gate-slow"
+          >
+            {t("accountGate.slow")}
+          </p>
+        ) : null}
+      </BootScreen>
+    )
+  }
+
+  if (state.status === "success" && !isAccountSetupComplete(state.user)) {
+    return <Navigate replace to={setupRedirectTarget(state.user, location)} />
+  }
+
+  if (state.status === "error") {
+    return (
+      <div className="flex min-h-svh items-center justify-center">
+        <div className="flex w-full max-w-sm flex-col items-center gap-4 rounded-lg border bg-card p-8 text-center shadow-lg">
+          <h2 className="text-lg font-semibold">
+            {t("accountGate.errorTitle")}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {t("accountGate.errorDescription")}
+          </p>
+          <div className="flex gap-2">
+            <Button
+              // eslint-disable-next-line jsx-a11y/no-autofocus -- the error screen replaces the whole app, so focus would otherwise drop to body.
+              autoFocus
+              data-testid="account-gate-retry"
+              onClick={refetch}
+            >
+              {t("accountGate.retry")}
+            </Button>
+            <Button
+              data-testid="account-gate-sign-out"
+              disabled={!accountId}
+              onClick={() => {
+                if (accountId) {
+                  void signOut(instance, accountId).catch((error: unknown) => {
+                    console.error("[MSAL] sign-out failed", error)
+                  })
+                }
+              }}
+              variant="ghost"
+            >
+              {t("auth.signOut")}
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return <>{children}</>
+}

@@ -582,8 +582,8 @@ describe("HRE tab", () => {
         }),
       }),
       locationsByBattleId: new Map([
-        ["I30", { campaignName: "Indomitus" }],
-        ["O10", { campaignName: "Octarius" }],
+        ["I30", { campaignName: "Indomitus", nodeLabel: "30" }],
+        ["O10", { campaignName: "Octarius", nodeLabel: "10" }],
       ]),
     }
     seed({ mission: 17, progress: [0, 0] })

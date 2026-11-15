@@ -108,7 +108,8 @@ const hasKey = (record, name) =>
 
 // Values shared by a status effect rather than set per ability (since 1.44, e.g. `poisonedNrOfHits`
 // for Poisoned). A description may reference them; they are written into that ability's constants.
-const unitEffectVariables = config("globalValues.json").unitEffectVariables ?? {}
+const unitEffectVariables =
+  config("globalValues.json").unitEffectVariables ?? {}
 
 /** The tokens the renderer could not resolve from the ability's own tables. */
 function unresolvedTokens(ability, tokens) {

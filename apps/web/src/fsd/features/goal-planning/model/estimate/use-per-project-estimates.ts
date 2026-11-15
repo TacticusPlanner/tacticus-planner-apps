@@ -16,7 +16,7 @@ import { estimateNewGoalsForProject } from "./per-project-estimate"
 import {
   toOnslaughtRunsPerDay,
   type EstimateOutcome,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { readyData } from "../shared/read-data"
 

@@ -4,6 +4,7 @@ import type {
 } from "@workspace/game-catalog"
 import type {
   BattleId,
+  Progression,
   Rank,
   Rarity,
   UnitId,
@@ -16,7 +17,7 @@ import type {
   FilteredOutNeed,
   RaidDaySchedule,
   RaidPlanSummary,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 
 import type { TodaysAttempt } from "./daily-raids-energy"
 import type { EventFarm } from "./home-screen-event-farm"
@@ -32,6 +33,8 @@ export type DailyRaidGoalViewModel = {
   goalKind: GoalKind
   // Only set when goalKind === "Rank" — the raw target rank, for icon-only rendering.
   targetRank?: Rank
+  // Only set when goalKind === "Ascension" — the target progression, for the compact icon form.
+  targetProgression?: Progression
 }
 
 export type DailyRaidResourceVisual =

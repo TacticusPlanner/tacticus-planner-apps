@@ -9,7 +9,7 @@ import { LocationRow } from "./location-row"
 const battleId = battleIdSchema.parse("B1")
 
 describe("LocationRow", () => {
-  it("wraps a long localized campaign name and node label in full instead of truncating them", () => {
+  it("names just the battle, wrapping a long localized node label in full instead of truncating it", () => {
     const campaignName = "Adeptus Mechanicus – Kampagnenereignis"
     const nodeLabel = "Extremis 12B (Herausforderungsknoten)"
     render(
@@ -27,6 +27,7 @@ describe("LocationRow", () => {
           id: battleId,
           campaignName,
           nodeLabel,
+          difficultyLabel: "Extremis",
           shortLabel: "AdMech EX 12B",
           challenge: true,
         }}
@@ -35,16 +36,16 @@ describe("LocationRow", () => {
       />
     )
 
-    for (const label of [campaignName, nodeLabel]) {
-      // Campaign, tier and node share one line that wraps instead of truncating.
-      const line = screen.getByText(label).closest(".wrap-break-word")
-      expect(line).not.toBeNull()
-      expect(line).not.toHaveClass("truncate")
-      expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
-    }
+    // The campaign and tier are the group header's; the row names the battle.
+    const line = screen
+      .getByText("Battle 12B (Herausforderungsknoten)")
+      .closest(".wrap-break-word")
+    expect(line).not.toBeNull()
+    expect(line).not.toHaveClass("truncate")
+    expect(screen.queryByText(campaignName)).not.toBeInTheDocument()
   })
 
-  it("sets the difficulty word in italics on the same line as the campaign and node", () => {
+  it("names the location in full when the catalog has no node for it", () => {
     render(
       <LocationRow
         entry={{
@@ -58,10 +59,9 @@ describe("LocationRow", () => {
         }}
         location={{
           id: battleId,
-          campaignName: "Indomitus Mirror",
-          nodeLabel: "Elite 36",
-          difficultyLabel: "Elite",
-          shortLabel: "IM E 36",
+          campaignName: "B1",
+          nodeLabel: "",
+          shortLabel: "B1",
           challenge: false,
         }}
         resourceLabel="Upgrade"
@@ -69,11 +69,10 @@ describe("LocationRow", () => {
       />
     )
 
-    const tier = screen.getByText("Elite")
-    expect(tier.tagName).toBe("EM")
-    expect(tier.closest(".wrap-break-word")).toHaveTextContent(
-      "Indomitus Mirror Elite 36"
-    )
+    expect(
+      screen.getByTestId(`home-raid-location-${battleId}`)
+    ).toHaveTextContent("B1")
+    expect(screen.queryByText(/Battle/)).not.toBeInTheDocument()
   })
 
   it("opens the location's battle from its name when it can show one", async () => {
@@ -104,7 +103,7 @@ describe("LocationRow", () => {
       />
     )
 
-    const button = screen.getByRole("button", { name: /Indomitus Mirror/ })
+    const button = screen.getByRole("button", { name: /Battle 36/ })
     expect(button).toHaveAttribute("aria-haspopup", "dialog")
     await user.click(button)
     expect(onShowLocation).toHaveBeenCalledWith({

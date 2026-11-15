@@ -1,4 +1,4 @@
-## 1. Plan builder (`features/goal-create`, `bulk-create` segments)
+## 1. Plan builder (`features/goal-planning`, `bulk-create` segments)
 
 - [x] 1.1 `buildBulkGoalPlans`: per-unit specs and skip reasons (reached, already a goal, not for MoW, not owned), added Ascension, in-flight Ascension/Unlock reuse; unit tests
 - [x] 1.2 Cap check over the plan (`goalTypesOverLimit`); unit test

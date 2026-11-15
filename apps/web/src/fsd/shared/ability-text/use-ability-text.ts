@@ -37,9 +37,8 @@ export function useAbilityText(abilityIds: readonly string[]) {
 
 /**
  * The same resolution for trait rules text, from the whole `npcTraitText` namespace (small, so not
- * split). V1 ships trait descriptions in English only, so this namespace is en-only and other
- * languages fall back to it, mirroring `raidBossTraitText`; the localized trait *name* comes from the
- * `traits` namespace. Traits have no levels — each value is stored as a single-element array so the
+ * split), generated in every locale from the game's trait descriptions like `raidBossTraitText`; the
+ * localized trait *name* comes from the `traits` namespace. Traits have no levels — each value is stored as a single-element array so the
  * shared renderer, which indexes variables by level, resolves them at level 1.
  */
 export function useTraitText() {

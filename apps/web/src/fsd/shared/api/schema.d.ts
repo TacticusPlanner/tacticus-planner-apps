@@ -964,6 +964,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/npc-tiers": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the horde-mode NPC tier list. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/npc-tiers/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the horde-mode NPC tier list. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/npcs": {
     parameters: {
       query?: never
@@ -2069,16 +2103,16 @@ export interface components {
       type: string
       /** Format: int32 */
       completedBattleCount: null | number
-      completedChallengeBattlesIds:
-        null | components["schemas"]["IReadOnlyListOfString"]
+      /** @constant */
+      completedChallengeBattlesIds: null | string[]
     }
     CampaignEventProgressOverrideResponse: {
       campaignGroupId: string
       type: string
       /** Format: int32 */
       completedBattleCount: null | number
-      completedChallengeBattlesIds:
-        null | components["schemas"]["IReadOnlyListOfString"]
+      /** @constant */
+      completedChallengeBattlesIds: null | string[]
     }
     CampaignEventProgressOverridesResponse: {
       progress: components["schemas"]["IReadOnlyListOfCampaignEventProgressOverrideResponse"]
@@ -2090,18 +2124,29 @@ export interface components {
       config: components["schemas"]["CreateGoalConfigRequest"]
       dependsOnIndex: components["schemas"]["ListOfInt32"]
       snapshot?: null | components["schemas"]["CreateGoalSnapshotRequest"]
-      dependsOnGoalIds?: null | components["schemas"]["ListOfGuid"]
+      /** @constant */
+      dependsOnGoalIds?: null | string[]
       notes?: null | string
-      linkedGoalIds?: null | components["schemas"]["ListOfGuid"]
+      /** @constant */
+      linkedGoalIds?: null | string[]
     }
+    /** @constant */
     CreateCombinedGoalsRequest: {
       entityType: components["schemas"]["GoalEntityType"]
+      /** @constant */
       entityId: string
-      projects: null | components["schemas"]["ListOfProjectPriorityRequest"]
+      /** @constant */
+      projects: null | components["schemas"]["ProjectPriorityRequest"][]
       goals: components["schemas"]["ListOfCombinedGoalSpec"]
-      /** @default false */
+      /**
+       * @default false
+       * @constant
+       */
       startPaused?: boolean
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       position?: null | number
     }
     CreateCombinedGoalsResponse: {
@@ -2111,11 +2156,12 @@ export interface components {
       rank?: null | components["schemas"]["RankTargetRequest"]
       progression?: null | components["schemas"]["ProgressionTargetRequest"]
       ability?: null | components["schemas"]["AbilityTargetRequest"]
-      farmingLocationIds?:
-        null | components["schemas"]["ListOfCampaignBattleId"]
+      /** @constant */
+      farmingLocationIds?: null | string[]
       farmingStrategy?: null | components["schemas"]["FarmingStrategy"]
+      /** @constant */
       acquisitionSources?:
-        null | components["schemas"]["ListOfAcquisitionSourceRequest"]
+        null | components["schemas"]["AcquisitionSourceRequest"][]
       upgrade?: null | components["schemas"]["UpgradeTargetRequest"]
     }
     CreateGoalSnapshotRequest: {
@@ -2125,33 +2171,55 @@ export interface components {
       initialActiveAbilityLevel?: null | number
       /** Format: int32 */
       initialPassiveAbilityLevel?: null | number
+      /** @constant */
       initialRequirement?:
-        null | components["schemas"]["ListOfGoalSnapshotResourceRequest"]
+        null | components["schemas"]["GoalSnapshotResourceRequest"][]
+      /** @constant */
       initialInventoryContribution?:
-        null | components["schemas"]["ListOfGoalSnapshotResourceRequest"]
+        null | components["schemas"]["GoalSnapshotResourceRequest"][]
     }
+    /** @constant */
     CreateLegendaryEventTeamRequest: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       expectedRevision: number
       laneId: components["schemas"]["LegendaryEventLaneId"]
+      /** @constant */
       name: string
       memberUnitIds: components["schemas"]["IReadOnlyListOfString"]
+      /** @constant */
       reserveUnitId: null | string
       objectiveIndexes: components["schemas"]["IReadOnlyListOfInt32"]
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       run: number
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       expectedBattleClears: null | number
+      /** @constant */
       expectedBattleClearsSource:
         null | components["schemas"]["LegendaryEventDepthSource"]
     }
+    /** @constant */
     CreatePersonalRosterSnapshotRequest: {
+      /** @constant */
       name?: null | string
     }
+    /** @constant */
     CreateProjectRequest: {
+      /** @constant */
       name: string
+      /** @constant */
       description: null | string
+      /** @constant */
       color: null | string
+      /** @constant */
       target?: null | components["schemas"]["ProjectTargetDto"]
     }
     CreateStagingTransferCodeResponse: {
@@ -2175,12 +2243,18 @@ export interface components {
       /** Format: int64 */
       expectedOrderRevision: number
     }
+    /** @constant */
     EditGoalRequest: {
+      /** @constant */
       target?: null | components["schemas"]["UpdateGoalTargetRequest"]
+      /** @constant */
       details?: null | components["schemas"]["UpdateGoalRequest"]
-      projectIds?: null | components["schemas"]["ListOfGuid"]
+      /** @constant */
+      projectIds?: null | string[]
+      /** @constant */
       priority?: null | components["schemas"]["EditGoalPriorityRequest"]
-      linkedGoalIds?: null | components["schemas"]["ListOfGuid"]
+      /** @constant */
+      linkedGoalIds?: null | string[]
     }
     EditGoalResponse: {
       goal: components["schemas"]["GoalDetailResponse"]
@@ -2452,9 +2526,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogAscensionCostView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogAscensionCostView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCampaignBattleView: {
       version: string
@@ -2463,9 +2536,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogCampaignBattleView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogCampaignBattleView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCampaignDefinitionView: {
       version: string
@@ -2474,9 +2546,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogCampaignDefinitionView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogCampaignDefinitionView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCharacterAbilityCostView: {
       version: string
@@ -2485,9 +2556,9 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
+      /** @constant */
       data:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogCharacterAbilityCostView"]
+        null | components["schemas"]["GameCatalogCharacterAbilityCostView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogCharacterView: {
       version: string
@@ -2496,8 +2567,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        null | components["schemas"]["IReadOnlyListOfGameCatalogCharacterView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogCharacterView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogDamageType: {
       version: string
@@ -2506,7 +2577,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data: null | components["schemas"]["IReadOnlyListOfGameCatalogDamageType"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogDamageType"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEquipmentView: {
       version: string
@@ -2515,8 +2587,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        null | components["schemas"]["IReadOnlyListOfGameCatalogEquipmentView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogEquipmentView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEventDefinition: {
       version: string
@@ -2525,9 +2597,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogEventDefinition"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogEventDefinition"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogEventShopView: {
       version: string
@@ -2536,8 +2607,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        null | components["schemas"]["IReadOnlyListOfGameCatalogEventShopView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogEventShopView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogFaction: {
       version: string
@@ -2546,7 +2617,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data: null | components["schemas"]["IReadOnlyListOfGameCatalogFaction"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogFaction"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGlobalValues: {
       version: string
@@ -2555,8 +2627,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        null | components["schemas"]["IReadOnlyListOfGameCatalogGlobalValues"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogGlobalValues"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHordeModeTiers: {
       version: string
@@ -2565,8 +2637,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        null | components["schemas"]["IReadOnlyListOfGameCatalogHordeModeTiers"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogHordeModeTiers"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHre: {
       version: string
@@ -2575,7 +2647,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data: null | components["schemas"]["IReadOnlyListOfGameCatalogHre"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogHre"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogIncursion: {
       version: string
@@ -2584,7 +2657,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data: null | components["schemas"]["IReadOnlyListOfGameCatalogIncursion"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogIncursion"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogLreBattleView: {
       version: string
@@ -2593,8 +2667,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        null | components["schemas"]["IReadOnlyListOfGameCatalogLreBattleView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogLreBattleView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogLreView: {
       version: string
@@ -2603,7 +2677,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data: null | components["schemas"]["IReadOnlyListOfGameCatalogLreView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogLreView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogMow: {
       version: string
@@ -2612,7 +2687,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data: null | components["schemas"]["IReadOnlyListOfGameCatalogMow"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogMow"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogMowUpgradeCostView: {
       version: string
@@ -2621,9 +2697,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogMowUpgradeCostView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogMowUpgradeCostView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogMythicQuestsView: {
       version: string
@@ -2632,9 +2707,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogMythicQuestsView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogMythicQuestsView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpc: {
       version: string
@@ -2643,7 +2717,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data: null | components["schemas"]["IReadOnlyListOfGameCatalogNpc"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogNpc"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter: {
       version: string
@@ -2652,8 +2727,18 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        null | components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounter"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogNpcEncounter"][]
+    }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogNpcTiers"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogOnslaughtReward: {
       version: string
@@ -2662,9 +2747,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogOnslaughtReward"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogOnslaughtReward"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogProgressionRules: {
       version: string
@@ -2673,9 +2757,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogProgressionRules"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogProgressionRules"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestCrate: {
       version: string
@@ -2684,7 +2767,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data: null | components["schemas"]["IReadOnlyListOfGameCatalogQuestCrate"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogQuestCrate"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogQuestEventView: {
       version: string
@@ -2693,8 +2777,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        null | components["schemas"]["IReadOnlyListOfGameCatalogQuestEventView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogQuestEventView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogShopView: {
       version: string
@@ -2703,7 +2787,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data: null | components["schemas"]["IReadOnlyListOfGameCatalogShopView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogShopView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogUnitPower: {
       version: string
@@ -2712,7 +2797,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data: null | components["schemas"]["IReadOnlyListOfGameCatalogUnitPower"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogUnitPower"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogUnlockShardCostView: {
       version: string
@@ -2721,9 +2807,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogUnlockShardCostView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogUnlockShardCostView"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogUpgradeView: {
       version: string
@@ -2732,8 +2817,8 @@ export interface components {
       sourceHash: string
       datasetKey: string
       datasetHash: string
-      data:
-        null | components["schemas"]["IReadOnlyListOfGameCatalogUpgradeView"]
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogUpgradeView"][]
     }
     GameCatalogEquipmentLevel: {
       stats: components["schemas"]["IReadOnlyDictionaryOfStringAndInt32"]
@@ -2965,9 +3050,10 @@ export interface components {
       tier: string
       /** Format: double */
       multiplier?: null | number
-      synergies?: null | components["schemas"]["IReadOnlyListOfString"]
-      relics?:
-        null | components["schemas"]["IReadOnlyListOfGameCatalogHordeModeRelic"]
+      /** @constant */
+      synergies?: null | string[]
+      /** @constant */
+      relics?: null | components["schemas"]["GameCatalogHordeModeRelic"][]
     }
     GameCatalogHordeModeRelic: {
       equipmentId: string
@@ -3433,6 +3519,17 @@ export interface components {
       /** Format: int32 */
       stars: number
     }
+    GameCatalogNpcTier: {
+      npcId: string
+      tier: string
+      /** Format: double */
+      multiplier?: null | number
+    }
+    GameCatalogNpcTiers: {
+      id: string
+      tiers: components["schemas"]["IReadOnlyListOfGameCatalogHordeModeTier"]
+      npcs: components["schemas"]["IReadOnlyListOfGameCatalogNpcTier"]
+    }
     GameCatalogOhSoCloseOffer: {
       unlock: components["schemas"]["GameCatalogOhSoCloseOfferPrice"]
       ascension: components["schemas"]["GameCatalogOhSoCloseOfferPrice"]
@@ -3619,13 +3716,16 @@ export interface components {
       /** Format: int32 */
       movement: number
       statProgression: components["schemas"]["IReadOnlyListOfGameCatalogRaidBossStatStepView"]
-      weapons:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogRaidBossWeaponView"]
-      activeAbilityIds: null | components["schemas"]["IReadOnlyListOfString"]
-      passiveAbilityIds: null | components["schemas"]["IReadOnlyListOfString"]
-      relicAbilityIds: null | components["schemas"]["IReadOnlyListOfString"]
-      traitIds: null | components["schemas"]["IReadOnlyListOfString"]
+      /** @constant */
+      weapons: null | components["schemas"]["GameCatalogRaidBossWeaponView"][]
+      /** @constant */
+      activeAbilityIds: null | string[]
+      /** @constant */
+      passiveAbilityIds: null | string[]
+      /** @constant */
+      relicAbilityIds: null | string[]
+      /** @constant */
+      traitIds: null | string[]
       questUnitId: null | string
     }
     GameCatalogRaidBossWeaponView: {
@@ -3738,9 +3838,9 @@ export interface components {
       material: string
       /** Format: int32 */
       count: number
+      /** @constant */
       recipe?:
-        | null
-        | components["schemas"]["IReadOnlyListOfGameCatalogUpgradeRecipeIngredient"]
+        null | components["schemas"]["GameCatalogUpgradeRecipeIngredient"][]
     }
     GameCatalogUpgradeSlotRank: {
       rank: string
@@ -3769,10 +3869,12 @@ export interface components {
       rank: null | components["schemas"]["RankTargetResponse"]
       progression: null | components["schemas"]["ProgressionTargetResponse"]
       ability: null | components["schemas"]["AbilityTargetResponse"]
-      farmingLocationIds: null | components["schemas"]["ListOfString"]
+      /** @constant */
+      farmingLocationIds: null | string[]
       farmingStrategy: components["schemas"]["FarmingStrategy"]
+      /** @constant */
       acquisitionSources:
-        null | components["schemas"]["ListOfAcquisitionSourceResponse"]
+        null | components["schemas"]["AcquisitionSourceResponse"][]
       upgrade: null | components["schemas"]["UpgradeTargetResponse"]
     }
     GoalDetailResponse: {
@@ -3919,7 +4021,9 @@ export interface components {
     }
     /** @enum {string} */
     GuildRole: "Member" | "Officer" | "CoLeader" | "Leader"
+    /** @constant */
     ImportFromProductionRequest: {
+      /** @constant */
       code: string
     }
     ImportFromProductionResponse: {
@@ -3945,9 +4049,13 @@ export interface components {
     }
     /** @enum {string} */
     ImportPartStatus: "Imported" | "Skipped" | "Failed"
+    /** @constant */
     ImportV1ProfileRequest: {
+      /** @constant */
       username: string
+      /** @constant */
       password: string
+      /** @constant */
       import: null | components["schemas"]["ImportV1Selection"]
     }
     ImportV1ProfileResponse: {
@@ -4033,38 +4141,26 @@ export interface components {
     IReadOnlyListOfBattleProgressOverrideResponse: components["schemas"]["BattleProgressOverrideResponse"][]
     IReadOnlyListOfCampaignEventProgressOverrideRequest: components["schemas"]["CampaignEventProgressOverrideRequest"][]
     IReadOnlyListOfCampaignEventProgressOverrideResponse: components["schemas"]["CampaignEventProgressOverrideResponse"][]
-    IReadOnlyListOfEventShopCartEntryRequest: components["schemas"]["EventShopCartEntryRequest"][]
     IReadOnlyListOfEventShopCartEntryResponse: components["schemas"]["EventShopCartEntryResponse"][]
     IReadOnlyListOfEventShopPlanResponse: components["schemas"]["EventShopPlanResponse"][]
     IReadOnlyListOfGameCatalogAbilityPowerModifier: components["schemas"]["GameCatalogAbilityPowerModifier"][]
     IReadOnlyListOfGameCatalogAmountByRarity: components["schemas"]["GameCatalogAmountByRarity"][]
-    IReadOnlyListOfGameCatalogAscensionCostView: components["schemas"]["GameCatalogAscensionCostView"][]
-    IReadOnlyListOfGameCatalogCampaignBattleView: components["schemas"]["GameCatalogCampaignBattleView"][]
-    IReadOnlyListOfGameCatalogCampaignDefinitionView: components["schemas"]["GameCatalogCampaignDefinitionView"][]
     IReadOnlyListOfGameCatalogCampaignDetailedEnemy: components["schemas"]["GameCatalogCampaignDetailedEnemy"][]
     IReadOnlyListOfGameCatalogCampaignGuaranteedReward: components["schemas"]["GameCatalogCampaignGuaranteedReward"][]
     IReadOnlyListOfGameCatalogCampaignMedalReward: components["schemas"]["GameCatalogCampaignMedalReward"][]
     IReadOnlyListOfGameCatalogCampaignMilestoneReward: components["schemas"]["GameCatalogCampaignMilestoneReward"][]
     IReadOnlyListOfGameCatalogCampaignPotentialRewardView: components["schemas"]["GameCatalogCampaignPotentialRewardView"][]
-    IReadOnlyListOfGameCatalogCharacterAbilityCostView: components["schemas"]["GameCatalogCharacterAbilityCostView"][]
     IReadOnlyListOfGameCatalogCharacterRankUp: components["schemas"]["GameCatalogCharacterRankUp"][]
-    IReadOnlyListOfGameCatalogCharacterView: components["schemas"]["GameCatalogCharacterView"][]
     IReadOnlyListOfGameCatalogDamageProfileModifier: components["schemas"]["GameCatalogDamageProfileModifier"][]
-    IReadOnlyListOfGameCatalogDamageType: components["schemas"]["GameCatalogDamageType"][]
     IReadOnlyListOfGameCatalogEquipmentLevel: components["schemas"]["GameCatalogEquipmentLevel"][]
     IReadOnlyListOfGameCatalogEquipmentSlot: components["schemas"]["GameCatalogEquipmentSlot"][]
     IReadOnlyListOfGameCatalogEquipmentUpgradeLevel: components["schemas"]["GameCatalogEquipmentUpgradeLevel"][]
-    IReadOnlyListOfGameCatalogEquipmentView: components["schemas"]["GameCatalogEquipmentView"][]
-    IReadOnlyListOfGameCatalogEventDefinition: components["schemas"]["GameCatalogEventDefinition"][]
     IReadOnlyListOfGameCatalogEventsCalendarEntry: components["schemas"]["GameCatalogEventsCalendarEntry"][]
     IReadOnlyListOfGameCatalogEventShopMissionChainView: components["schemas"]["GameCatalogEventShopMissionChainView"][]
     IReadOnlyListOfGameCatalogEventShopMissionView: components["schemas"]["GameCatalogEventShopMissionView"][]
     IReadOnlyListOfGameCatalogEventShopTaskView: components["schemas"]["GameCatalogEventShopTaskView"][]
-    IReadOnlyListOfGameCatalogEventShopView: components["schemas"]["GameCatalogEventShopView"][]
     IReadOnlyListOfGameCatalogEventShopWeekView: components["schemas"]["GameCatalogEventShopWeekView"][]
-    IReadOnlyListOfGameCatalogFaction: components["schemas"]["GameCatalogFaction"][]
     IReadOnlyListOfGameCatalogFarmLocation: components["schemas"]["GameCatalogFarmLocation"][]
-    IReadOnlyListOfGameCatalogGlobalValues: components["schemas"]["GameCatalogGlobalValues"][]
     IReadOnlyListOfGameCatalogGuildRaidMetaBossView: components["schemas"]["GameCatalogGuildRaidMetaBossView"][]
     IReadOnlyListOfGameCatalogGuildRaidMetaCompView: components["schemas"]["GameCatalogGuildRaidMetaCompView"][]
     IReadOnlyListOfGameCatalogGuildRaidMetaHeroSlotView: components["schemas"]["GameCatalogGuildRaidMetaHeroSlotView"][]
@@ -4073,10 +4169,7 @@ export interface components {
     IReadOnlyListOfGameCatalogHeroPowerStep: components["schemas"]["GameCatalogHeroPowerStep"][]
     IReadOnlyListOfGameCatalogHeroProgressionRule: components["schemas"]["GameCatalogHeroProgressionRule"][]
     IReadOnlyListOfGameCatalogHordeModeCharacter: components["schemas"]["GameCatalogHordeModeCharacter"][]
-    IReadOnlyListOfGameCatalogHordeModeRelic: components["schemas"]["GameCatalogHordeModeRelic"][]
     IReadOnlyListOfGameCatalogHordeModeTier: components["schemas"]["GameCatalogHordeModeTier"][]
-    IReadOnlyListOfGameCatalogHordeModeTiers: components["schemas"]["GameCatalogHordeModeTiers"][]
-    IReadOnlyListOfGameCatalogHre: components["schemas"]["GameCatalogHre"][]
     IReadOnlyListOfGameCatalogHreChest: components["schemas"]["GameCatalogHreChest"][]
     IReadOnlyListOfGameCatalogHreDailyReward: components["schemas"]["GameCatalogHreDailyReward"][]
     IReadOnlyListOfGameCatalogHreMilestone: components["schemas"]["GameCatalogHreMilestone"][]
@@ -4084,41 +4177,30 @@ export interface components {
     IReadOnlyListOfGameCatalogHreMissionTask: components["schemas"]["GameCatalogHreMissionTask"][]
     IReadOnlyListOfGameCatalogHrePhase: components["schemas"]["GameCatalogHrePhase"][]
     IReadOnlyListOfGameCatalogHrePhaseChest: components["schemas"]["GameCatalogHrePhaseChest"][]
-    IReadOnlyListOfGameCatalogIncursion: components["schemas"]["GameCatalogIncursion"][]
     IReadOnlyListOfGameCatalogIncursionBattle: components["schemas"]["GameCatalogIncursionBattle"][]
     IReadOnlyListOfGameCatalogIncursionEnemy: components["schemas"]["GameCatalogIncursionEnemy"][]
     IReadOnlyListOfGameCatalogIncursionNode: components["schemas"]["GameCatalogIncursionNode"][]
     IReadOnlyListOfGameCatalogIncursionTier: components["schemas"]["GameCatalogIncursionTier"][]
-    IReadOnlyListOfGameCatalogLreBattleView: components["schemas"]["GameCatalogLreBattleView"][]
     IReadOnlyListOfGameCatalogLreChestsMilestone: components["schemas"]["GameCatalogLreChestsMilestone"][]
     IReadOnlyListOfGameCatalogLreEnemy: components["schemas"]["GameCatalogLreEnemy"][]
     IReadOnlyListOfGameCatalogLreFilter: components["schemas"]["GameCatalogLreFilter"][]
     IReadOnlyListOfGameCatalogLreMission: components["schemas"]["GameCatalogLreMission"][]
     IReadOnlyListOfGameCatalogLrePointsMilestone: components["schemas"]["GameCatalogLrePointsMilestone"][]
     IReadOnlyListOfGameCatalogLreRestriction: components["schemas"]["GameCatalogLreRestriction"][]
-    IReadOnlyListOfGameCatalogLreView: components["schemas"]["GameCatalogLreView"][]
     IReadOnlyListOfGameCatalogLreWave: components["schemas"]["GameCatalogLreWave"][]
     IReadOnlyListOfGameCatalogManifestDataset: components["schemas"]["GameCatalogManifestDataset"][]
-    IReadOnlyListOfGameCatalogMow: components["schemas"]["GameCatalogMow"][]
     IReadOnlyListOfGameCatalogMowPowerStep: components["schemas"]["GameCatalogMowPowerStep"][]
     IReadOnlyListOfGameCatalogMowProgressionRule: components["schemas"]["GameCatalogMowProgressionRule"][]
-    IReadOnlyListOfGameCatalogMowUpgradeCostView: components["schemas"]["GameCatalogMowUpgradeCostView"][]
     IReadOnlyListOfGameCatalogMythicQuestRewardView: components["schemas"]["GameCatalogMythicQuestRewardView"][]
-    IReadOnlyListOfGameCatalogMythicQuestsView: components["schemas"]["GameCatalogMythicQuestsView"][]
     IReadOnlyListOfGameCatalogMythicQuestTaskView: components["schemas"]["GameCatalogMythicQuestTaskView"][]
     IReadOnlyListOfGameCatalogMythicQuestView: components["schemas"]["GameCatalogMythicQuestView"][]
-    IReadOnlyListOfGameCatalogNpc: components["schemas"]["GameCatalogNpc"][]
-    IReadOnlyListOfGameCatalogNpcEncounter: components["schemas"]["GameCatalogNpcEncounter"][]
     IReadOnlyListOfGameCatalogNpcEncounterBattle: components["schemas"]["GameCatalogNpcEncounterBattle"][]
     IReadOnlyListOfGameCatalogNpcEncounterLevel: components["schemas"]["GameCatalogNpcEncounterLevel"][]
     IReadOnlyListOfGameCatalogNpcStat: components["schemas"]["GameCatalogNpcStat"][]
-    IReadOnlyListOfGameCatalogOnslaughtReward: components["schemas"]["GameCatalogOnslaughtReward"][]
-    IReadOnlyListOfGameCatalogProgressionRules: components["schemas"]["GameCatalogProgressionRules"][]
+    IReadOnlyListOfGameCatalogNpcTier: components["schemas"]["GameCatalogNpcTier"][]
     IReadOnlyListOfGameCatalogQuestBattleView: components["schemas"]["GameCatalogQuestBattleView"][]
-    IReadOnlyListOfGameCatalogQuestCrate: components["schemas"]["GameCatalogQuestCrate"][]
     IReadOnlyListOfGameCatalogQuestCrateReward: components["schemas"]["GameCatalogQuestCrateReward"][]
     IReadOnlyListOfGameCatalogQuestEnemyView: components["schemas"]["GameCatalogQuestEnemyView"][]
-    IReadOnlyListOfGameCatalogQuestEventView: components["schemas"]["GameCatalogQuestEventView"][]
     IReadOnlyListOfGameCatalogQuestObjectiveView: components["schemas"]["GameCatalogQuestObjectiveView"][]
     IReadOnlyListOfGameCatalogRaidBossEncounterModifierView: components["schemas"]["GameCatalogRaidBossEncounterModifierView"][]
     IReadOnlyListOfGameCatalogRaidBossEncounterView: components["schemas"]["GameCatalogRaidBossEncounterView"][]
@@ -4126,21 +4208,16 @@ export interface components {
     IReadOnlyListOfGameCatalogRaidBossStatStepView: components["schemas"]["GameCatalogRaidBossStatStepView"][]
     IReadOnlyListOfGameCatalogRaidBossTierView: components["schemas"]["GameCatalogRaidBossTierView"][]
     IReadOnlyListOfGameCatalogRaidBossView: components["schemas"]["GameCatalogRaidBossView"][]
-    IReadOnlyListOfGameCatalogRaidBossWeaponView: components["schemas"]["GameCatalogRaidBossWeaponView"][]
     IReadOnlyListOfGameCatalogRewardRange: components["schemas"]["GameCatalogRewardRange"][]
     IReadOnlyListOfGameCatalogRewardRangeView: components["schemas"]["GameCatalogRewardRangeView"][]
     IReadOnlyListOfGameCatalogRewardTierView: components["schemas"]["GameCatalogRewardTierView"][]
     IReadOnlyListOfGameCatalogShopSlotView: components["schemas"]["GameCatalogShopSlotView"][]
     IReadOnlyListOfGameCatalogShopVariantView: components["schemas"]["GameCatalogShopVariantView"][]
-    IReadOnlyListOfGameCatalogShopView: components["schemas"]["GameCatalogShopView"][]
     IReadOnlyListOfGameCatalogStaminaShopTier: components["schemas"]["GameCatalogStaminaShopTier"][]
     IReadOnlyListOfGameCatalogTraitPowerModifier: components["schemas"]["GameCatalogTraitPowerModifier"][]
-    IReadOnlyListOfGameCatalogUnitPower: components["schemas"]["GameCatalogUnitPower"][]
     IReadOnlyListOfGameCatalogUnitPowerUnit: components["schemas"]["GameCatalogUnitPowerUnit"][]
-    IReadOnlyListOfGameCatalogUnlockShardCostView: components["schemas"]["GameCatalogUnlockShardCostView"][]
     IReadOnlyListOfGameCatalogUpgradeRecipeIngredient: components["schemas"]["GameCatalogUpgradeRecipeIngredient"][]
     IReadOnlyListOfGameCatalogUpgradeSlotRank: components["schemas"]["GameCatalogUpgradeSlotRank"][]
-    IReadOnlyListOfGameCatalogUpgradeView: components["schemas"]["GameCatalogUpgradeView"][]
     IReadOnlyListOfGameCatalogXpBook: components["schemas"]["GameCatalogXpBook"][]
     IReadOnlyListOfGuid: string[]
     IReadOnlyListOfGuildMemberSummary: components["schemas"]["GuildMemberSummary"][]
@@ -4155,7 +4232,6 @@ export interface components {
     IReadOnlyListOfLegendaryEventObjectiveAnnotationResponse: components["schemas"]["LegendaryEventObjectiveAnnotationResponse"][]
     IReadOnlyListOfLegendaryEventPlanResponse: components["schemas"]["LegendaryEventPlanResponse"][]
     IReadOnlyListOfLegendaryEventRunProgressResponse: components["schemas"]["LegendaryEventRunProgressResponse"][]
-    IReadOnlyListOfLegendaryEventRunRecordEncounterResponse: components["schemas"]["LegendaryEventRunRecordEncounterResponse"][]
     IReadOnlyListOfLegendaryEventRunRecordResponse: components["schemas"]["LegendaryEventRunRecordResponse"][]
     IReadOnlyListOfLegendaryEventRunRecordTeamResponse: components["schemas"]["LegendaryEventRunRecordTeamResponse"][]
     IReadOnlyListOfLegendaryEventTeamResponse: components["schemas"]["LegendaryEventTeamResponse"][]
@@ -4222,15 +4298,18 @@ export interface components {
       highScore: number
     }
     LegendaryEventRunRecordLanesResponse: {
+      /** @constant */
       alpha:
         | null
-        | components["schemas"]["IReadOnlyListOfLegendaryEventRunRecordEncounterResponse"]
+        | components["schemas"]["LegendaryEventRunRecordEncounterResponse"][]
+      /** @constant */
       beta:
         | null
-        | components["schemas"]["IReadOnlyListOfLegendaryEventRunRecordEncounterResponse"]
+        | components["schemas"]["LegendaryEventRunRecordEncounterResponse"][]
+      /** @constant */
       gamma:
         | null
-        | components["schemas"]["IReadOnlyListOfLegendaryEventRunRecordEncounterResponse"]
+        | components["schemas"]["LegendaryEventRunRecordEncounterResponse"][]
     }
     LegendaryEventRunRecordResponse: {
       /** Format: uuid */
@@ -4293,19 +4372,16 @@ export interface components {
       /** Format: int64 */
       orderRevision: number
     }
-    ListOfAcquisitionSourceRequest: components["schemas"]["AcquisitionSourceRequest"][]
-    ListOfAcquisitionSourceResponse: components["schemas"]["AcquisitionSourceResponse"][]
-    ListOfCampaignBattleId: string[]
+    /** @constant */
     ListOfCombinedGoalSpec: components["schemas"]["CombinedGoalSpec"][]
     ListOfGoalDetailResponse: components["schemas"]["GoalDetailResponse"][]
-    ListOfGoalSnapshotResourceRequest: components["schemas"]["GoalSnapshotResourceRequest"][]
     ListOfGoalSnapshotResourceResponse: components["schemas"]["GoalSnapshotResourceResponse"][]
     ListOfGuid: string[]
+    /** @constant */
     ListOfGuid__op9477E6AA2E5A: string[]
     ListOfInt32: number[]
     ListOfProjectGoalEntryRequest: components["schemas"]["ProjectGoalEntryRequest"][]
     ListOfProjectGoalEntryResponse: components["schemas"]["ProjectGoalEntryResponse"][]
-    ListOfProjectPriorityRequest: components["schemas"]["ProjectPriorityRequest"][]
     ListOfProjectSummaryResponse: components["schemas"]["ProjectSummaryResponse"][]
     ListOfString: string[]
     ListOfUpgradeMaterialTargetRequest: components["schemas"]["UpgradeMaterialTargetRequest"][]
@@ -4320,9 +4396,13 @@ export interface components {
     /** @enum {string} */
     MyGuildState: "tacticusUserIdRequired" | "unregistered" | "registered"
     NullableOfJsonElement: unknown
+    /** @constant */
     OnslaughtAllianceProgressRequest: {
       sector: components["schemas"]["OnslaughtSector"]
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       tier: number
     }
     OnslaughtAllianceProgressResponse: {
@@ -4443,8 +4523,8 @@ export interface components {
     PutEventShopPlanRequest: {
       /** Format: int64 */
       expectedRevision: number
-      entries:
-        null | components["schemas"]["IReadOnlyListOfEventShopCartEntryRequest"]
+      /** @constant */
+      entries: null | components["schemas"]["EventShopCartEntryRequest"][]
     }
     RankEndTargetRequest: {
       /** Format: int32 */
@@ -4594,14 +4674,22 @@ export interface components {
       | "Adamantine1"
       | "Adamantine2"
       | "Adamantine3"
+    /** @constant */
     UpdateBattleProgressRequest: {
       battles: components["schemas"]["IReadOnlyListOfBattleProgressOverrideRequest"]
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       revision: number
     }
+    /** @constant */
     UpdateCampaignEventProgressRequest: {
       progress: components["schemas"]["IReadOnlyListOfCampaignEventProgressOverrideRequest"]
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       revision: number
     }
     UpdateDisplayNameRequest: {
@@ -4610,22 +4698,35 @@ export interface components {
     UpdateDisplayNameResponse: {
       displayName: string
     }
+    /** @constant */
     UpdateGoalOrderRequest: {
       goalIds: components["schemas"]["ListOfGuid"]
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       expectedRevision: number
     }
+    /** @constant */
     UpdateGoalRequest: {
+      /** @constant */
       notes: null | string
-      farmingLocationIds: null | components["schemas"]["ListOfCampaignBattleId"]
+      /** @constant */
+      farmingLocationIds: null | string[]
+      /** @constant */
       farmingStrategy?: null | components["schemas"]["FarmingStrategy"]
+      /** @constant */
       acquisitionSources?:
-        null | components["schemas"]["ListOfAcquisitionSourceRequest"]
+        null | components["schemas"]["AcquisitionSourceRequest"][]
     }
+    /** @constant */
     UpdateGoalsStatusRequest: {
       goalIds: components["schemas"]["ListOfGuid__op9477E6AA2E5A"]
       status: components["schemas"]["GoalStatus"]
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       expectedOrderRevision?: null | number
     }
     UpdateGoalsStatusResponse: {
@@ -4633,93 +4734,172 @@ export interface components {
       /** Format: int64 */
       orderRevision: number
     }
+    /** @constant */
     UpdateGoalTargetRequest: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       expectedRevision: number
       target: components["schemas"]["GoalTargetEditRequest"]
     }
+    /** @constant */
     UpdateIncursionProgressRequest: {
       battles: components["schemas"]["IReadOnlyListOfIncursionBattleProgressOverrideRequest"]
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       revision: number
     }
+    /** @constant */
     UpdateLegendaryEventAnnotationsRequest: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       expectedRevision: number
       laneId: components["schemas"]["LegendaryEventLaneId"]
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       battleIndex: number
       objectiveIds: components["schemas"]["IReadOnlyListOfInt32"]
+      /** @constant */
       status: null | components["schemas"]["LegendaryEventAnnotationStatus"]
     }
+    /** @constant */
     UpdateLegendaryEventPlanRequest: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       expectedRevision: number
+      /** @constant */
       notes: null | string
+      /** @constant */
       showPaidOptions: boolean
     }
+    /** @constant */
     UpdateLegendaryEventRunInputsRequest: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       expectedRevision: number
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       regularMissions: number
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       premiumMissions: number
+      /** @constant */
       bundlePurchased: boolean
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       closeShards: number
-      completedRegularMissions?:
-        null | components["schemas"]["IReadOnlyListOfInt32"]
-      completedPremiumMissions?:
-        null | components["schemas"]["IReadOnlyListOfInt32"]
+      /** @constant */
+      completedRegularMissions?: null | number[]
+      /** @constant */
+      completedPremiumMissions?: null | number[]
     }
+    /** @constant */
     UpdateLegendaryEventTeamOrderRequest: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       expectedRevision: number
       laneId: components["schemas"]["LegendaryEventLaneId"]
       teamIds: components["schemas"]["IReadOnlyListOfGuid"]
     }
+    /** @constant */
     UpdateLegendaryEventTeamRequest: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       expectedRevision: number
+      /** @constant */
       name: string
       memberUnitIds: components["schemas"]["IReadOnlyListOfString"]
+      /** @constant */
       reserveUnitId: null | string
       objectiveIndexes: components["schemas"]["IReadOnlyListOfInt32"]
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       run: number
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       expectedBattleClears: null | number
+      /** @constant */
       expectedBattleClearsSource:
         null | components["schemas"]["LegendaryEventDepthSource"]
+      /** @constant */
       laneId?: null | components["schemas"]["LegendaryEventLaneId"]
     }
+    /** @constant */
     UpdateOnslaughtProgressRequest: {
+      /** @constant */
       imperial: null | components["schemas"]["OnslaughtAllianceProgressRequest"]
+      /** @constant */
       xenos: null | components["schemas"]["OnslaughtAllianceProgressRequest"]
+      /** @constant */
       chaos: null | components["schemas"]["OnslaughtAllianceProgressRequest"]
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       revision: number
     }
+    /** @constant */
     UpdateProjectGoalOrderRequest: {
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @constant
+       */
       goalId: string
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @constant
+       */
       displacedGoalId: string
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       expectedRevision: number
     }
     UpdateProjectGoalsRequest: {
       goals: components["schemas"]["ListOfProjectGoalEntryRequest"]
       expectedGoalIds: components["schemas"]["ListOfGuid"]
     }
+    /** @constant */
     UpdateProjectRequest: {
+      /** @constant */
       name: string
+      /** @constant */
       description: null | string
+      /** @constant */
       color: null | string
       status: components["schemas"]["ProjectStatus"]
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       revision: number
+      /** @constant */
       target?: null | components["schemas"]["ProjectTargetDto"]
     }
     UpdateTacticusIntegrationRequest: {
@@ -4739,13 +4919,21 @@ export interface components {
       tacticusApiKeyMasked: null | string
       tacticusUserIdMasked: null | string
     }
+    /** @constant */
     UpdateUserSettingsRequest: {
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @constant
+       */
       dailyEnergy: number
       xpBookRarity: components["schemas"]["XpBookRarity"]
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @constant
+       */
       revision: number
-      preferences?: null | components["schemas"]["UserPreferenceArray"]
+      /** @constant */
+      preferences?: null | components["schemas"]["UserPreference"][]
     }
     UpgradeMaterialTargetRequest: {
       upgradeId: string
@@ -4807,7 +4995,8 @@ export interface components {
       goalId: null | string
       sourceGoalId: null | string
       upgradeId: null | string
-      linkedSourceGoalIds: null | components["schemas"]["IReadOnlyListOfString"]
+      /** @constant */
+      linkedSourceGoalIds: null | string[]
       /** Format: int32 */
       upgradeQuantity: null | number
     }
@@ -7554,6 +7743,98 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The single S/A/B/C/D tier list of enemy NPCs for horde modes, with each tier's power multiplier applied to an NPC's power in clear estimates; an NPC may override its tier's multiplier, and one not listed is unrated (multiplier 1.0). */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The single S/A/B/C/D tier list of enemy NPCs for horde modes, with each tier's power multiplier applied to an NPC's power in clear estimates; an NPC may override its tier's multiplier, and one not listed is unrated (multiplier 1.0). */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers"]
         }
       }
       /** @description The dataset has not changed. */

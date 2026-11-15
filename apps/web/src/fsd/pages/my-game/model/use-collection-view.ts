@@ -13,7 +13,7 @@ import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
   rankUpReadiness,
-} from "@/features/rank-lookup"
+} from "@/entities/rank-lookup"
 import { combineReadStates, type ReadState } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { useUnitSearchNames } from "@/shared/unit-name"

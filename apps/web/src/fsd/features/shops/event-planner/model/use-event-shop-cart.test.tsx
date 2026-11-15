@@ -4,7 +4,10 @@ import type { ReactNode } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { ApiError } from "@/shared/api"
-import type { EventShopCartEntry, EventShopPlan } from "@/entities/event-shop"
+import type {
+  EventShopCartEntry,
+  EventShopPlan,
+} from "@/entities/shops/event-plan"
 
 import { markAllBought } from "./cart"
 import { entry, testEvent } from "./test-event.fixture"
@@ -13,8 +16,8 @@ import { CART_SAVE_DEBOUNCE_MS, useEventShopCart } from "./use-event-shop-cart"
 const mutateAsync = vi.fn()
 let storedPlan: EventShopPlan
 
-vi.mock("@/entities/event-shop", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/entities/event-shop")>()),
+vi.mock("@/entities/shops/event-plan", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/shops/event-plan")>()),
   useEventShopPlan: () => ({ data: storedPlan, isError: false }),
   useSaveEventShopPlan: () => ({ mutateAsync }),
 }))

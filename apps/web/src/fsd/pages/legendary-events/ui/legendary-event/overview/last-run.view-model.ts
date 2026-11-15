@@ -1,5 +1,3 @@
-import type { Progression } from "@workspace/game-domain"
-
 import {
   type LegendaryEvent,
   type LegendaryEventLane,
@@ -182,15 +180,4 @@ export function teamLastRunClearedBattle(
 /** The deltas count the analytics event reports (0 when there is no list). */
 export function historyDeltaCount(history: RunHistory): number {
   return history.deltas.kind === "ready" ? history.deltas.deltas.length : 0
-}
-
-type ProgressionStars<P> = P extends `${string}:${infer Stars}` ? Stars : never
-
-/** The `progression:stars.*` key of a "Rarity:Stars" progression, e.g. "RedFiveStars". */
-export function progressionStarsKey(
-  progression: Progression
-): ProgressionStars<Progression> {
-  return progression.slice(
-    progression.indexOf(":") + 1
-  ) as ProgressionStars<Progression>
 }

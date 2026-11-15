@@ -39,6 +39,7 @@ import {
   type TokenPlanLane,
 } from "./token-plan"
 import { runTokenSupply, type RunSupply } from "./token-supply"
+import { safestNextToken, type TokenRisk } from "./safest-next"
 import {
   nextTokenMissions,
   tokenMissionProgress,
@@ -190,6 +191,9 @@ export interface TokenPlanReady {
   /** Tokens left over across runs while the plan is shorter than the supply, with the first lane
    *  that still has points left; null when every token has a battle to play. */
   leftover: { tokens: number; laneId: LegendaryEventLaneId | null } | null
+  /** The plan index the run the tokens are spent in next ends at (its tokens are `0..runEnd − 1`):
+   *  Up next lists none past it. Null without a token supply. */
+  runEnd: number | null
 }
 
 /** The Overview's token sections by data state (design D8). Signed out there is no plan to read, so
@@ -269,58 +273,6 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     }
   })
 
-  const supply = runTokenSupply({
-    bank: event.tokens,
-    lifecycle,
-    resolution,
-    progress: entry,
-    progressObservedAtMs: input.progressObservedAtMs,
-    nowMs: input.nowMs,
-    runs: plan.data.runs,
-    showPaidOptions: plan.data.showPaidOptions,
-    watchAds: input.watchAds,
-  })
-  const planInput = {
-    lanes,
-    startingPoints: entry?.currentPoints ?? 0,
-    runSlots: input.perRunDepths && supply ? supplySlots(supply) : undefined,
-  }
-  const tokenPlan = planTokens(planInput)
-  const forecastInput =
-    supply && event.rewards
-      ? {
-          rewards: event.rewards,
-          ohSoCloseOffer: event.ohSoCloseOffer,
-          progress: entry,
-          supply,
-          fromStep: unitNextAscensionStep(input.eventUnit),
-          runs: plan.data.runs,
-          showPaidOptions: plan.data.showPaidOptions,
-        }
-      : null
-  const forecast = forecastInput
-    ? forecastRuns({ ...forecastInput, tokens: tokenPlan.tokens })
-    : null
-  const gap =
-    forecastInput && !input.perRunDepths
-      ? milestoneGap({
-          plan: planInput,
-          forecast: forecastInput,
-          estimateDepthOf: (teamId) =>
-            estimateByTeam.get(teamId)?.depth ?? null,
-        })
-      : null
-
-  const firstLaneWithPoints =
-    tokenPlan.lanes.find((lane) => lane.pointsLeftAfterPlan > 0)?.laneId ?? null
-  const tokensLeftOver = forecast
-    ? forecast.runs.reduce((sum, entry) => sum + entry.tokensLeftOver, 0)
-    : 0
-
-  const next = nextToken(tokenPlan)
-  const membersByTeam = new Map(
-    teams.map((team) => [team.id, team.memberUnitIds])
-  )
   const teamById = new Map(teams.map((team) => [team.id, team]))
   const depthByTeam = new Map(
     lanes.flatMap((lane) =>
@@ -343,6 +295,77 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
         ]
       })
     )
+  )
+  const supply = runTokenSupply({
+    bank: event.tokens,
+    lifecycle,
+    resolution,
+    progress: entry,
+    progressObservedAtMs: input.progressObservedAtMs,
+    nowMs: input.nowMs,
+    runs: plan.data.runs,
+    showPaidOptions: plan.data.showPaidOptions,
+    watchAds: input.watchAds,
+  })
+  const planInput = {
+    lanes,
+    startingPoints: entry?.currentPoints ?? 0,
+    runSlots: input.perRunDepths && supply ? supplySlots(supply) : undefined,
+  }
+  const mostPoints = planTokens(planInput)
+  const forecastInput =
+    supply && event.rewards
+      ? {
+          rewards: event.rewards,
+          ohSoCloseOffer: event.ohSoCloseOffer,
+          progress: entry,
+          supply,
+          fromStep: unitNextAscensionStep(input.eventUnit),
+          runs: plan.data.runs,
+          showPaidOptions: plan.data.showPaidOptions,
+        }
+      : null
+  const mostPointsForecast = forecastInput
+    ? forecastRuns({ ...forecastInput, tokens: mostPoints.tokens })
+    : null
+  // The safest path to the run's milestone replaces the most-points plan (not in the 1-click plan,
+  // whose runs are projected).
+  const safest =
+    forecastInput && mostPointsForecast && !input.perRunDepths
+      ? safestNextToken({
+          planInput,
+          plan: mostPoints,
+          forecast: mostPointsForecast,
+          forecastInput,
+          riskOf: (token) =>
+            tokenRisk(depthByTeam.get(token.teamId), token.battleIndex),
+        })
+      : null
+  const tokenPlan = safest?.plan ?? mostPoints
+  const forecast = safest?.forecast ?? mostPointsForecast
+  const gap =
+    forecastInput && !input.perRunDepths
+      ? milestoneGap({
+          plan: planInput,
+          forecast: forecastInput,
+          estimateDepthOf: (teamId) =>
+            estimateByTeam.get(teamId)?.depth ?? null,
+        })
+      : null
+
+  const firstLaneWithPoints =
+    tokenPlan.lanes.find((lane) => lane.pointsLeftAfterPlan > 0)?.laneId ?? null
+  const tokensLeftOver = forecast
+    ? forecast.runs.reduce((sum, entry) => sum + entry.tokensLeftOver, 0)
+    : 0
+
+  const pointsNext = nextToken(tokenPlan)
+  const next: NextTokenChoice | null =
+    safest && pointsNext?.index === 0
+      ? { ...pointsNext, reason: "safestToMilestone", goal: safest.goal }
+      : pointsNext
+  const membersByTeam = new Map(
+    teams.map((team) => [team.id, team.memberUnitIds])
   )
   const source = input.missions
   const membersOf = (teamId: string) =>
@@ -448,11 +471,27 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     upcoming:
       lifecycle.state !== "upcoming" ? null : { run: resolution.nextRun },
     milestoneGap: gap,
+    runEnd: byRun
+      ? (byRun.sections[0]?.start ?? 0) + (byRun.sections[0]?.count ?? 0)
+      : null,
     leftover:
       tokensLeftOver > 0
         ? { tokens: tokensLeftOver, laneId: firstLaneWithPoints }
         : null,
   }
+}
+
+/** A token's risk from its team's clear depth (`safestNextToken`): past the sure depth is a likely
+ *  clear; headroom counts the battles cleared past this one. Null without a depth. */
+export function tokenRisk(
+  depth: TeamClearDepth | undefined,
+  battleIndex: number
+): TokenRisk | null {
+  if (!depth || depth.depth === null) return null
+  const band = tokenClearBand(depth, battleIndex)
+  const reach =
+    band === "sure" && depth.sureDepth !== null ? depth.sureDepth : depth.depth
+  return { band: band === "likely" ? 1 : 0, headroom: reach - battleIndex - 1 }
 }
 
 /** The supply slots of each run that is not Done, in order. */
@@ -528,13 +567,17 @@ const UP_NEXT_COUNT = 4
 export function upNextTokens<T>(
   plan: { tokens: readonly T[] },
   next: { index: number } | null,
-  count = UP_NEXT_COUNT
+  count = UP_NEXT_COUNT,
+  /** The plan index the current run ends at (`TokenPlanReady.runEnd`): only the tokens the run
+   *  still has are up next. */
+  runEnd: number | null = null
 ): { token: T; index: number }[] {
   return (
     plan.tokens
       .map((token, index) => ({ token, index }))
       // After the next one: tokens before it were skipped (flagged or not playable yet).
       .filter((entry) => next === null || entry.index > next.index)
+      .filter((entry) => runEnd === null || entry.index < runEnd)
       .slice(0, count)
   )
 }

@@ -1,0 +1,115 @@
+import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
+import { isProgression, type UpgradeId } from "@workspace/game-domain"
+
+import type { GoalDetail } from "@/entities/goal"
+import { estimateGoal } from "@/entities/goal-farming"
+import type { useGoalCatalog } from "../../model/shared/use-goal-catalog"
+
+import {
+  goalEditMaterialNeeds,
+  type GoalEditLiveProgress,
+} from "../../model/goal-edit/goal-edit-material-needs"
+import type { useGoalEditAcquisition } from "../../model/goal-edit/use-goal-edit-acquisition"
+import { useProgressionPreview } from "../../model/goal-creation-form/use-progression-preview"
+import type { GoalTargetDraft } from "../../model/target-edit/goal-target-edit"
+import type { ResourcePreview } from "../goal-card/card-parts"
+
+/**
+ * The previews of the goal's card, from its start to the draft target, computed as the create preview
+ * computes them (goal-edit-dialog): Ascension through the same progression preview over the draft's
+ * acquisition sources, Rank, Upgrade and Machine-of-War Ability through `estimateGoal` over the
+ * materials the draft still needs, counted from the unit's synced progress (`live`) as the create
+ * preview counts it. A Character Ability goal gets no resource preview (its cost isn't
+ * supported, as at creation).
+ */
+export function useGoalEditEstimate({
+  detail,
+  target,
+  catalog,
+  acquisition,
+  dailyEnergy,
+  live,
+}: {
+  detail: GoalDetail
+  target: GoalTargetDraft | null
+  catalog: ReturnType<typeof useGoalCatalog>
+  acquisition: ReturnType<typeof useGoalEditAcquisition>
+  dailyEnergy: number
+  live: GoalEditLiveProgress
+}) {
+  const { t } = useTranslation()
+  const isAscension = detail.goalType === "Ascension"
+  const start = detail.config.progression?.start
+  const progressionStart = start && isProgression(start) ? start : undefined
+  const progressionPreview = useProgressionPreview({
+    entityId: isAscension ? (detail.entityId as never) : undefined,
+    entityType: detail.entityType,
+    playerEntity: isAscension ? (live.character ?? live.mow) : undefined,
+    character:
+      detail.entityType === "Character"
+        ? catalog.charactersById?.get(detail.entityId)
+        : undefined,
+    progressionStart: progressionStart ?? "Common:None",
+    progressionEnd:
+      target?.kind === "Ascension"
+        ? target.end
+        : (progressionStart ?? "Common:None"),
+    ascensionEnabled: isAscension && !!progressionStart,
+    unlockEnabled: false,
+    plan: acquisition.selection.plan,
+    ascensionCostsById: catalog.ascensionCostsById,
+    unlockShardCostsById: catalog.unlockShardCostsById,
+    battlesById: catalog.battlesById,
+    dailyEnergy,
+  })
+
+  const needs = useMemo(
+    () =>
+      target
+        ? goalEditMaterialNeeds(detail, target, catalog, live)
+            .filter((entry) => entry.missing > 0)
+            .map((entry) => ({
+              ...entry,
+              label:
+                catalog.upgradesById.get(entry.id as never)?.label ?? entry.id,
+            }))
+        : [],
+    [detail, target, catalog, live]
+  )
+  const estimate = useMemo(
+    () =>
+      needs.length > 0
+        ? estimateGoal({
+            needs: needs.map((entry) => ({
+              id: entry.id as UpgradeId,
+              count: entry.missing,
+            })),
+            upgradesById: catalog.upgradesById,
+            battlesById: catalog.battlesById,
+            dailyEnergy,
+          })
+        : null,
+    [needs, catalog.upgradesById, catalog.battlesById, dailyEnergy]
+  )
+
+  const resourcePreview: ResourcePreview | undefined =
+    detail.goalType === "Ability" && detail.entityType === "Character"
+      ? undefined
+      : {
+          state:
+            catalog.upgradesById.size === 0
+              ? "loading"
+              : needs.length === 0
+                ? "empty"
+                : "content",
+          missingUpgrades: needs,
+          days: estimate
+            ? estimate.status === "Blocked"
+              ? t(`goals.estimate.blocked.${estimate.reason}`)
+              : t("goals.edit.estimate.days", { days: estimate.days })
+            : undefined,
+        }
+
+  return { progressionPreview, resourcePreview }
+}

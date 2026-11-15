@@ -8,7 +8,7 @@ import {
 
 import { formatEstimateDate, useDateLocale } from "@/shared/lib"
 
-import type { EstimateOutcome } from "@/features/goal-farming"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 import type { GoalRow } from "@/features/goal-planning"
 import { useGoalCatalog } from "@/features/goal-planning"
 import { isInFlightStatus } from "./goal-row-utils"

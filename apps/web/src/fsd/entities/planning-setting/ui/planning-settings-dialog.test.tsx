@@ -19,22 +19,8 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
-vi.mock("@/entities/planning-setting", () => ({
-  xpBookRarityOptions: [
-    "Common",
-    "Uncommon",
-    "Rare",
-    "Epic",
-    "Legendary",
-    "Mythic",
-  ],
-  normalizeXpBookRarity: (rarity: string | null | undefined) =>
-    rarity &&
-    ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"].includes(
-      rarity
-    )
-      ? rarity
-      : "Legendary",
+// The real xpBookRarityOptions / normalizeXpBookRarity; only the settings query is stubbed.
+vi.mock("../model/use-planning-settings", () => ({
   usePlanningSettings: () => ({
     settings,
     save,

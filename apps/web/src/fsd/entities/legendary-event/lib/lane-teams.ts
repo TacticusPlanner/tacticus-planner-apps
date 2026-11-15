@@ -1,4 +1,8 @@
-import type { LegendaryEventLane, LegendaryEventUnit } from "../model/types"
+import type {
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventUnit,
+} from "../model/types"
 import type { LegendaryEventRun, LegendaryEventTeam } from "../model/plan.types"
 import {
   teamClearEstimate,
@@ -67,4 +71,28 @@ export function teamReaches(
       )?.depth ??
       0,
   }))
+}
+
+/**
+ * The units each lane's teams use, members and reserve alike, for the leaderboards' "Only in my
+ * teams" filter. An incomplete team (fewer than three members) is left out, as in the Master
+ * Table's In teams.
+ */
+export function teamUnitIdsByLane(
+  teams: readonly Pick<
+    LegendaryEventTeam,
+    "laneId" | "memberUnitIds" | "reserveUnitId"
+  >[]
+): Record<LegendaryEventLaneId, ReadonlySet<string>> {
+  const byLane: Record<LegendaryEventLaneId, Set<string>> = {
+    alpha: new Set(),
+    beta: new Set(),
+    gamma: new Set(),
+  }
+  for (const team of teams.filter(isCompleteTeam)) {
+    const units = byLane[team.laneId]
+    for (const unitId of team.memberUnitIds) units.add(unitId)
+    if (team.reserveUnitId) units.add(team.reserveUnitId)
+  }
+  return byLane
 }

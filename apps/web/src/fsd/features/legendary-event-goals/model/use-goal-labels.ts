@@ -1,10 +1,8 @@
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  progressionRarity,
-  type Progression,
-  type Rank,
-} from "@workspace/game-domain"
+import { type Progression, type Rank } from "@workspace/game-domain"
+
+import { progressionText } from "@/shared/ui"
 
 import type {
   LegendaryEventGoalRef,
@@ -27,13 +25,7 @@ export interface GoalLabels {
 export function useGoalLabels(): GoalLabels {
   const { t } = useTranslation(["legendaryEvents", "progression"])
   const progression = useCallback(
-    (value: Progression) => {
-      const stars = value.slice(value.indexOf(":") + 1)
-      return t("goalBadge.progression", {
-        rarity: t(`progression:rarities.${progressionRarity(value)}`),
-        stars: t(`progression:stars.${stars}`, { defaultValue: stars }),
-      })
-    },
+    (value: Progression) => progressionText(t, value),
     [t]
   )
   const rank = useCallback(

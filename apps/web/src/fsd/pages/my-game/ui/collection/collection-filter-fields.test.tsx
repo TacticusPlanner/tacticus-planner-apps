@@ -118,9 +118,7 @@ describe("CollectionFilterFields", () => {
     expect(update).toHaveBeenLastCalledWith({ shardSources: ["none"] })
 
     fireEvent.click(screen.getByRole("combobox", { name: "Lowest stars" }))
-    fireEvent.click(
-      screen.getByRole("option", { name: /Legendary · Red Three Stars/ })
-    )
+    fireEvent.click(screen.getByRole("option", { name: /Legendary 3★/ }))
     expect(update).toHaveBeenLastCalledWith({
       starsMin: "Legendary:RedThreeStars",
     })

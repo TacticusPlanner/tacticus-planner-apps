@@ -273,6 +273,7 @@
     "dailies": "Quotidiennes",
     "dailiesDescription": "Tâches quotidiennes et périodiques du jeu",
     "eventLive": "Événement en cours",
+    "live": "En cours",
     "home": "Accueil",
     "homeDescription": "Aperçu de votre compte et raccourcis",
     "createGoal": "Créer un objectif",
@@ -345,15 +346,6 @@
     "rewardsTitle": "Référence des récompenses en éclats",
     "sectorTier": "Secteur / palier",
     "current": "Progression actuelle de l'alliance",
-    "rewards": {
-      "Common": "Commun",
-      "Uncommon": "Peu commun",
-      "Rare": "Rare",
-      "Epic": "Épique",
-      "Legendary": "Légendaire",
-      "LegendaryBlue": "Légendaire 1★ bleu",
-      "Mythic": "Mythique"
-    },
     "unsaved": {
       "message": "Vous avez des modifications non enregistrées",
       "save": "Enregistrer",
@@ -1756,15 +1748,7 @@
       "xpBooksValue": "{{available}} sur {{needed}}",
       "chipLabel": "{{name}} : {{quantity}}",
       "poolLabel": "{{name}} : {{available}} sur {{needed}}",
-      "standalone": "Seul : {{slots}} emplacements d'amélioration, {{energy}} d'énergie",
-      "rarity": {
-        "Common": "Commun",
-        "Uncommon": "Peu commun",
-        "Rare": "Rare",
-        "Epic": "Épique",
-        "Legendary": "Légendaire",
-        "Mythic": "Mythique"
-      }
+      "standalone": "Seul : {{slots}} emplacements d'amélioration, {{energy}} d'énergie"
     },
     "overview": {
       "levelProgress": "Niv {{current}} → {{target}}",
@@ -1960,6 +1944,7 @@
     "card": {
       "ladder": {
         "current": "Actuel",
+        "start": "Départ",
         "taken": "Déjà un objectif"
       },
       "range": {
@@ -1975,6 +1960,7 @@
         "decrease": "Baisser {{track}}",
         "increase": "Augmenter {{track}}",
         "noChange": "Aucun changement",
+        "current": "Actuel {{level}}",
         "quickPicks": "{{track}} : choix rapides"
       }
     },

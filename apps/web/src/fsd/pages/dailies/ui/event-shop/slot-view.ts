@@ -6,7 +6,7 @@ import type {
 } from "@workspace/game-catalog"
 import { useTranslation } from "react-i18next"
 
-import type { EventShopCartEntry } from "@/entities/event-shop"
+import type { EventShopCartEntry } from "@/entities/shops/event-plan"
 import {
   dailyFreebie,
   entryKey,

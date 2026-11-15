@@ -19,10 +19,10 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import type {
   Character,
   UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-planning"
+} from "@/entities/rank-lookup"
 import type { GoalDetail } from "@/entities/goal"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
-import { computeCampaignInsights } from "@/features/campaign-insights/@x/goal-planning"
+import { computeCampaignInsights } from "@/entities/campaign-insight"
 
 import {
   allocatePlanInventory,
@@ -34,7 +34,7 @@ import {
   type GoalNeed,
   type LevelRules,
   type UpgradeNeed,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
@@ -44,7 +44,7 @@ import {
   rankSlotAllocation,
   type RankSlotAllocation,
   type UnitCoverage,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import { createAbilityMaterialsPlan } from "./plan-ability-materials"
 import { buildPotentialProgressByGoalId } from "./potential-progress"
 import {
@@ -243,6 +243,7 @@ export function computePlanInsights(params: {
       flatSuppliers,
       onslaughtTokensDelta,
       mythicShardNeed,
+      shardNeed,
     } = computeGoalAcquisition({
       detail,
       need,
@@ -270,11 +271,17 @@ export function computePlanInsights(params: {
     // read them after `allocatePlanInventory` below, so owned materials never count as missing.
     const needs: UpgradeNeed[] = [...need.upgrades]
 
-    if (need.shardId && (need.shards > 0 || flatSuppliers.length > 0)) {
-      needs.push({ id: need.shardId, count: need.shards })
+    // A Machine of War's shards arrive here only when Onslaught or a shop supplies them; it has no
+    // campaign nodes, so it never gets a catalog entry below.
+    if (shardNeed) {
+      needs.push(shardNeed)
 
       const characterView = params.charactersById.get(detail.entityId)
-      if (characterView && !shardCatalogEntries.has(need.shardId)) {
+      if (
+        need.shardId &&
+        characterView &&
+        !shardCatalogEntries.has(need.shardId)
+      ) {
         // `rarity` here is only for computeCampaignInsights's value-weighting formula (it has no
         // farmable-resource concept of its own rarity) — the character's own starting rarity is the
         // natural stand-in, mirroring how a higher-rarity character's shards are scarcer/more

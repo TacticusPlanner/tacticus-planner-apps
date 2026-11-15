@@ -83,7 +83,7 @@ The HSE tab's main list, titled "Farm list for event points", SHALL be computed 
 
 A location SHALL be a candidate only when all of these hold: (1) it earns event points for the active rule (points per raid greater than 0); (2) it is unlocked by the player's campaign progress, has an energy cost above 0 and has attempts left today (the synced attempts left when known, otherwise the node's daily cap, where a cap of 0 means unlimited); (3) it drops a resource that an in-scope goal still needs somewhere in the schedule, where a goal that pins its farm locations is served only by the pinned ones; (4) it passes the persisted Raids Filters, evaluated with the resource it drops.
 
-The energy budget SHALL be the planning-settings daily energy minus the energy the player has really spent today across all campaigns, never below 0. Candidates SHALL be ordered by points per raid divided by energy cost, descending; ties by points per raid descending, then the best (lowest) priority among the goals the location serves, then battle id ascending. The list SHALL be filled in that order: each location gets as many raids as the attempts left, the remaining budget and the remaining need allow (the need is reduced by what earlier locations already farm, so two locations dropping the same resource do not farm it past the need); a location that does not fit is skipped and later candidates are still considered. Locations with no raids SHALL NOT be shown. The day total badges SHALL show the sum of row points and the sum of row energy, and the energy total SHALL never exceed the budget.
+The energy budget SHALL be the planning-settings daily energy minus the energy the player has really spent today across all campaigns, never below 0. Candidates SHALL be ordered by points per raid divided by energy cost, descending; ties by points per raid descending, then as Today picks between two locations (see `daily-raids-today`): the lower drop efficiency (energy per item over the cheapest passing location for that drop), then the higher expected gold, then the best (lowest) priority among the goals the location serves, then battle id ascending. The list SHALL be filled in that order: each location gets as many raids as the attempts left, the remaining budget and the remaining need allow (the need is reduced by what earlier locations already farm, so two locations dropping the same resource do not farm it past the need); a location that does not fit is skipped and later candidates are still considered. Locations with no raids SHALL NOT be shown. The day total badges SHALL show the sum of row points and the sum of row energy, and the energy total SHALL never exceed the budget.
 
 #### Scenario: Only point-earning, goal-contributing locations
 
@@ -98,7 +98,13 @@ The energy budget SHALL be the planning-settings daily energy minus the energy t
 #### Scenario: Ordering and tie-breaks
 
 - **GIVEN** location A with 12 points at energy 6 (ratio 2) and B with 15 points at energy 10 (ratio 1.5)
-- **THEN** A is listed before B; with equal ratio the location with more points per raid is first, then the better goal priority, then the lower battle id
+- **THEN** A is listed before B; with equal ratio the location with more points per raid is first, then the one cheaper per item, then the one with more expected gold, then the better goal priority, then the lower battle id
+
+#### Scenario: Gold breaks a tie on points
+
+- **GIVEN** Octarius Mirror Elite 15 and 39 both cost 10 energy, drop the same upgrade at the same rate and earn 60 points per raid, and Battle 39 pays more gold
+- **WHEN** the farm list is computed
+- **THEN** Battle 39 is listed first and gets its raids, and Battle 15 only gets the raids still needed
 
 #### Scenario: Filled until the budget is used
 
@@ -228,7 +234,7 @@ The tab SHALL order its sections as: status line, event details, points projecti
 
 ### Requirement: The farm list shows its locations, goals and totals
 
-Each row of the farm list SHALL show the location (icon, campaign, tier and node), raids to do, expected event points (points per raid times raids), energy (energy cost times raids), the goals it serves as round unit/character icons (the icon component Today and Raids use for goal units; one per distinct goal, in goal-priority order; for a shard goal the unit, for an upgrade goal the goal's unit) and the drop icon of the needed resource it drops. At most 4 goal icons SHALL be visible; additional goals SHALL collapse into a "+N" indicator, and the icon group SHALL have an accessible name and tooltip listing all serving goals including those hidden by the overflow. The list header SHALL show total points and total energy badges and a note that the list spends energy on point-earning nodes even when a cheaper non-point node exists, so it can cost more energy per item than Today.
+Each row of the farm list SHALL show the location (its battle under its campaign's header), expected event points (points per raid times the raids planned there), the goals it serves as round unit/character icons (the icon component Today and Raids use for goal units; one per distinct goal, in goal-priority order; for a shard goal the unit, for an upgrade goal the goal's unit) and the drop icon of the needed resource it drops. At most 4 goal icons SHALL be visible; additional goals SHALL collapse into a "+N" indicator, and the icon group SHALL have an accessible name and tooltip listing all serving goals including those hidden by the overflow. Rows SHALL NOT show their raid count or energy, which only add noise; the list header SHALL show total points and total energy badges and a note that the list spends energy on point-earning nodes even when a cheaper non-point node exists, so it can cost more energy per item than Today.
 
 #### Scenario: Few goals
 
@@ -384,3 +390,13 @@ The HSE tab SHALL register a Joyride tour with desktop and mobile steps covering
 
 - **WHEN** the player starts the tour on the HSE tab
 - **THEN** a step highlights the event switcher and explains that other upcoming and past events can be opened
+
+### Requirement: The HSE lists' rows are grouped by campaign
+
+The farm list and the "Ignore goals" list SHALL show each run of consecutive rows in one campaign (with its difficulty, so Indomitus Elite and Indomitus Mirror Elite differ) under one header with the campaign icon and the campaign's name, mirror qualifier and difficulty word ("Indomitus Mirror Elite"); each row SHALL name just its battle ("Battle 7", with a challenge node's "B" suffix) ahead of its badges, goals and drop. A campaign with a single row in a group SHALL show no header: that row SHALL instead name the location in full ("Saim-Hann Elite 33") after the campaign icon, on one line. Grouping SHALL NOT reorder the list: a later row of a campaign that already had a group earlier starts a new group. Paging counts rows, not groups. Neither list's rows show a raid count or energy, and each row's battle name opens the battle and its enemies, as on the Raids tab. A battle the catalog cannot name is a group of its own with no header, showing its raw id.
+
+#### Scenario: Consecutive rows of one campaign share a header
+
+- **GIVEN** the list's rows, in its order, are Octarius Mirror Elite 26, Indomitus Mirror Elite 7, Indomitus Mirror Elite 38, Octarius Mirror Elite 15, 21 and 39
+- **WHEN** the list renders
+- **THEN** it shows an "Octarius Mirror Elite" group with Battle 26, an "Indomitus Mirror Elite" group with Battle 7 and Battle 38, then an "Octarius Mirror Elite" group with Battle 15, 21 and 39, each row keeping its own badges and drop

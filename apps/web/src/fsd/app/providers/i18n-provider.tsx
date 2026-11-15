@@ -5,7 +5,7 @@ import { I18nextProvider } from "react-i18next"
 
 import { getSupportedLanguage, i18n } from "@/shared/config"
 
-import { AuthResolving } from "../auth-route-guards"
+import { AuthResolving } from "../routes/auth-route-guards"
 
 type I18nProviderProps = {
   children: ReactNode

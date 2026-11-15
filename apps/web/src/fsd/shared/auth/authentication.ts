@@ -19,8 +19,19 @@ import {
 } from "@azure/msal-browser"
 
 import { getRequiredEnvironmentValue } from "../config/environment"
-import { getSignInMethod, type SignInMethod } from "./account-identity"
-import { safeStorage } from "@/shared/lib"
+import {
+  getSignInMethod,
+  isGeneratedUsername,
+  type SignInMethod,
+} from "./account-identity"
+import {
+  authErrorCode,
+  markRedirectPending,
+  recordAuthStep,
+  setAuthJournalMethod,
+  takePendingRedirect,
+} from "./auth-journal"
+import { safeStorage } from "../lib"
 
 let authentication: PublicClientApplication | undefined
 
@@ -75,15 +86,13 @@ export function hasAccountHint() {
   return readAccountHint() !== null
 }
 
-// Entra names a federated user `<object id>@<tenant domain>`; a local account's username is the
-// address they typed. Used for hints stored before `signInMethod` was recorded.
-const GENERATED_USERNAME = /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}@/i
-
+// A generated username always means Google, even when the stored method says email: hints written
+// from an account whose claims lacked `idp` recorded the wrong one. Hints stored before
+// `signInMethod` existed have only the username to go on.
 function hintSignInMethod(hint: AccountHint): SignInMethod {
-  return (
-    hint.signInMethod ??
-    (GENERATED_USERNAME.test(hint.username) ? "google" : "email")
-  )
+  return isGeneratedUsername(hint.username)
+    ? "google"
+    : (hint.signInMethod ?? "email")
 }
 
 export function forgetAccountHint() {
@@ -119,8 +128,8 @@ function readQuietRenewalStartedAt(): number | null {
   return Number.isFinite(startedAt) && startedAt > 0 ? startedAt : null
 }
 
-/** Called whenever an interactive flow starts, so its own response is never taken for a quiet
- *  renewal's, and on sign-out. */
+/** Called when the user starts a sign-in themselves, and on sign-out. An automatic
+ *  re-authentication leaves the cooldown running (see startInteraction). */
 export function forgetQuietRenewal() {
   safeStorage.remove(QUIET_RENEWAL_KEY)
 }
@@ -251,14 +260,30 @@ export function takeSignInRedirectFailure(): SignInRedirectFailure | null {
 // from starting: the user lands signed out and can try again. Entra reports a deliberate cancel as
 // `access_denied`; anything else is a real failure the user is told about.
 async function completeRedirect(instance: PublicClientApplication) {
-  // Read before handling: a quiet renewal that started recently is what this response answers.
-  const quietRenewal = quietRenewalCoolingDown()
+  // Which redirect left the page: it tells a lost response from a plain load, and an interactive
+  // response from a quiet renewal's while the renewal's cooldown is still running. Without the
+  // marker (storage refused it), a quiet renewal that started recently is what this answers.
+  const pending = takePendingRedirect()
+  const quietRenewal = pending ? pending === "quiet" : quietRenewalCoolingDown()
+  const returnStep = quietRenewal
+    ? ("quiet_renewal_returned" as const)
+    : ("interactive_redirect_returned" as const)
   try {
     const result = await instance.handleRedirectPromise()
-    if (result) safeStorage.remove(QUIET_RENEWAL_KEY)
+    if (result) {
+      safeStorage.remove(QUIET_RENEWAL_KEY)
+      recordAuthStep({ step: returnStep, outcome: "success" })
+    } else if (pending) {
+      recordAuthStep({ step: returnStep, outcome: "no_response" })
+    }
     return { result, quietRenewal }
   } catch (error) {
     if (quietRenewal && isInteractionRequired(error)) {
+      recordAuthStep({
+        step: "quiet_renewal_returned",
+        outcome: "no_session",
+        errorCode: authErrorCode(error),
+      })
       // No live session to renew from: not a failed sign-in. The cached account and hint stay, the
       // marker stays as the cooldown, and the user lands signed out with no toast. Logged with
       // Entra's own reason (AADSTS code), which says why the session could not be used.
@@ -276,6 +301,19 @@ async function completeRedirect(instance: PublicClientApplication) {
       error instanceof AuthError && error.errorCode === "access_denied"
         ? "cancelled"
         : "failed"
+    recordAuthStep(
+      returnStep === "quiet_renewal_returned"
+        ? {
+            step: returnStep,
+            outcome: "failed",
+            errorCode: authErrorCode(error),
+          }
+        : {
+            step: returnStep,
+            outcome: signInRedirectFailure,
+            errorCode: authErrorCode(error),
+          }
+    )
     // Either way, don't let a stale identity-provider session answer the next attempt: drop the
     // local accounts (no logout redirect) and the hint, and ask for a fresh login.
     try {
@@ -318,6 +356,7 @@ export async function initializeAuthentication() {
 
   if (redirectResult) {
     forgetFreshLogin()
+    safeStorage.remove(AUTO_REDIRECTS_KEY)
     activateAccount(msalInstance, redirectResult.account)
     // A quiet renewal returns to whatever page was open, the landing page included.
     if (!quietRenewal) returnHomeAfterLandingSignIn()
@@ -419,11 +458,59 @@ export function isInteractionRequired(error: unknown) {
 // so a caller can retry; a started redirect is leaving the page.
 let interaction: Promise<void> | null = null
 
+// Loop guard (spec: redirect-authentication): automatic re-authentication redirects are capped per
+// device, so a redirect that keeps coming back without a usable response can't bounce the user
+// forever. A completed redirect sign-in resets it; a user's own Sign in is never capped.
+const AUTO_REDIRECTS_KEY = "tp.auth.autoRedirects"
+export const MAX_AUTO_REDIRECTS = 3
+export const AUTO_REDIRECT_WINDOW_MS = 10 * 60 * 1000
+
+/** On sign-out: the next account on the device starts with a fresh allowance. */
+export function forgetAutoRedirects() {
+  safeStorage.remove(AUTO_REDIRECTS_KEY)
+}
+
+class AutoRedirectLimitError extends Error {
+  constructor() {
+    super("Automatic sign-in redirects paused: too many in a short time.")
+    this.name = "AutoRedirectLimitError"
+  }
+}
+
+/** Counts one more automatic redirect, or throws when the guard's limit is reached. */
+function claimAutoRedirect() {
+  const now = Date.now()
+  let recent: number[] = []
+  try {
+    const parsed: unknown = JSON.parse(
+      safeStorage.get(AUTO_REDIRECTS_KEY) ?? "[]"
+    )
+    if (Array.isArray(parsed)) {
+      recent = parsed.filter(
+        (at): at is number =>
+          typeof at === "number" && now - at < AUTO_REDIRECT_WINDOW_MS
+      )
+    }
+  } catch {
+    // Unreadable: start counting afresh.
+  }
+  if (recent.length >= MAX_AUTO_REDIRECTS) {
+    recordAuthStep({
+      step: "interactive_redirect_skipped",
+      reason: "loop_guard",
+    })
+    throw new AutoRedirectLimitError()
+  }
+  safeStorage.set(AUTO_REDIRECTS_KEY, JSON.stringify([...recent, now]))
+}
+
 export function requestInteraction(): Promise<void> {
   if (interaction) return interaction
   const request = Promise.resolve().then(startInteraction)
   interaction = request
   request.catch(() => {
+    // It never left the page: there is no response to wait for.
+    takePendingRedirect()
     if (interaction === request) interaction = null
   })
   return request
@@ -454,10 +541,24 @@ async function redirectToGoogle(
   }
 }
 
+// The quiet renewal's cooldown is left running: the pending-redirect marker already tells this
+// redirect's response apart from a quiet renewal's, and clearing it let the next load renew quietly
+// again before re-authenticating, which doubled every bounce.
 function startInteraction() {
-  forgetQuietRenewal()
   const instance = getAuthentication()
   const account = instance.getActiveAccount() ?? instance.getAllAccounts()[0]
+  const hint = readAccountHint()
+  const method = account
+    ? getSignInMethod(account)
+    : hint
+      ? hintSignInMethod(hint)
+      : undefined
+  if (method) setAuthJournalMethod(method)
+  claimAutoRedirect()
+  recordInteractiveRedirect("auto", {
+    method: method ?? "unknown",
+    freshLogin: Boolean(freshLoginPrompt().prompt),
+  })
   if (account) {
     if (getSignInMethod(account) === "google") {
       return redirectToGoogle(instance, account)
@@ -468,7 +569,6 @@ function startInteraction() {
       ...freshLoginPrompt(),
     })
   }
-  const hint = readAccountHint()
   if (hint && hintSignInMethod(hint) === "google") {
     return redirectToGoogle(instance, null)
   }
@@ -477,6 +577,15 @@ function startInteraction() {
     ...(hint ? { loginHint: hint.username } : {}),
     ...freshLoginPrompt(),
   })
+}
+
+/** Journals an interactive redirect that is about to leave the page (see auth-journal). */
+export function recordInteractiveRedirect(
+  trigger: "auto" | "user",
+  details: { method: SignInMethod | "unknown"; freshLogin: boolean }
+) {
+  recordAuthStep({ step: "interactive_redirect_started", trigger, ...details })
+  markRedirectPending("interactive")
 }
 
 // "redirecting": a quiet renewal is leaving the page; the restore is still in progress.
@@ -505,12 +614,18 @@ async function restoreSession(
     // to check.
     const hint = readAccountHint()
     if (!hint) return "no-cached-account"
+    const method = hintSignInMethod(hint)
+    setAuthJournalMethod(method)
+    if (method === "google") return skipSilentChecksForGoogle()
     const outcome = await checkIdentityProviderSession(
       instance,
-      silentHint(hint)
+      silentHint(hint),
+      "hint"
     )
     return outcome === "failed" ? renewQuietly(instance, null, hint) : outcome
   }
+
+  setAuthJournalMethod(getSignInMethod(cachedAccount))
 
   // Cached tokens first: a valid access token or refresh token restores the session with no
   // hidden frame at all, which is the common case for a returning user within the refresh token's
@@ -524,25 +639,50 @@ async function restoreSession(
     })
 
     activateAccount(instance, result.account)
+    recordAuthStep({ step: "restore_cache", outcome: "success" })
 
     return "success"
-  } catch {
+  } catch (error) {
     // Expected once the refresh token has expired; fall through to the IdP session check.
+    recordAuthStep({
+      step: "restore_cache",
+      outcome: "failed",
+      errorCode: authErrorCode(error),
+    })
+  }
+
+  if (getSignInMethod(cachedAccount) === "google") {
+    return skipSilentChecksForGoogle()
   }
 
   // A quiet renewal that came back empty-handed earlier: the identity provider has no session to
   // give, through a frame or otherwise, so the user signs in by hand.
-  if (quietRenewalCoolingDown()) return "failed"
+  if (quietRenewalCoolingDown()) {
+    recordAuthStep({ step: "quiet_renewal_skipped", reason: "cooldown" })
+    return "failed"
+  }
 
   // Without an account/sid/loginHint, ssoSilent can't tell which session to restore once more
   // than one account is cached, and fails with an ambiguity error even though a valid session
   // exists for one of them.
-  const outcome = await checkIdentityProviderSession(instance, {
-    account: cachedAccount,
-  })
+  const outcome = await checkIdentityProviderSession(
+    instance,
+    { account: cachedAccount },
+    "account"
+  )
   return outcome === "failed"
     ? renewQuietly(instance, cachedAccount, readAccountHint())
     : outcome
+}
+
+/** Google accounts skip the hidden frame and the quiet renewal: neither ever finds their session
+ *  (production auth_step data, Nov 2026: 0 of 86 frames and 0 of 99 quiet renewals succeeded,
+ *  `login_required:AADSTS50058`), while the interactive redirect that followed came back signed in
+ *  with no clicks in about 2s. With a cached account, the API call that needs a token then starts
+ *  that redirect; with only a hint, the user lands signed out as before. */
+function skipSilentChecksForGoogle(): SilentSignInOutcome {
+  recordAuthStep({ step: "quiet_renewal_skipped", reason: "google" })
+  return "failed"
 }
 
 /** One top-level `prompt=none` redirect (see QUIET_RENEWAL_KEY), joined by any caller that asks for
@@ -552,10 +692,23 @@ async function renewQuietly(
   account: AccountInfo | null,
   hint: AccountHint | null
 ): Promise<SilentSignInOutcome> {
-  if (interaction || quietRenewalCoolingDown() || freshLoginPrompt().prompt) {
+  const skipped = interaction
+    ? ("interaction" as const)
+    : quietRenewalCoolingDown()
+      ? ("cooldown" as const)
+      : freshLoginPrompt().prompt
+        ? ("fresh_login" as const)
+        : null
+  if (skipped) {
+    recordAuthStep({ step: "quiet_renewal_skipped", reason: skipped })
     return "failed"
   }
   safeStorage.set(QUIET_RENEWAL_KEY, String(Date.now()))
+  recordAuthStep({
+    step: "quiet_renewal_started",
+    from: account ? "account" : "hint",
+  })
+  markRedirectPending("quiet")
   const none = { prompt: PromptValue.NONE }
   // Unlike interactive re-authentication, every account keeps its hint here, Google ones included:
   // `prompt=none` never shows a page, so the generated Google username can't lead to a password
@@ -582,6 +735,7 @@ async function renewQuietly(
     return "redirecting"
   } catch (error) {
     console.warn("[MSAL] quiet session renewal could not start", error)
+    takePendingRedirect()
     if (interaction === request) interaction = null
     return "failed"
   }
@@ -590,7 +744,8 @@ async function renewQuietly(
 /** One hidden IdP session check (bounded by SILENT_FRAME_TIMEOUT_MS). */
 async function checkIdentityProviderSession(
   instance: IPublicClientApplication,
-  who: { account: AccountInfo } | { loginHint: string } | { sid: string }
+  who: { account: AccountInfo } | { loginHint: string } | { sid: string },
+  from: "account" | "hint"
 ): Promise<SilentSignInOutcome> {
   try {
     const result = await instance.ssoSilent({
@@ -599,6 +754,7 @@ async function checkIdentityProviderSession(
     })
 
     activateAccount(instance, result.account)
+    recordAuthStep({ step: "restore_frame", outcome: "success", from })
 
     return "success"
   } catch (error) {
@@ -608,6 +764,12 @@ async function checkIdentityProviderSession(
     if (!isInteractionRequired(error)) {
       console.error("[MSAL] silent sign-in failed unexpectedly", error)
     }
+    recordAuthStep({
+      step: "restore_frame",
+      outcome: "failed",
+      errorCode: authErrorCode(error),
+      from,
+    })
 
     return "failed"
   }

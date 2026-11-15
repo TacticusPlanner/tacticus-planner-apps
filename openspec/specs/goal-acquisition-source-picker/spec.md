@@ -43,8 +43,8 @@ SHALL NOT be rendered — no empty or disabled group headers.
 
 - Campaigns SHALL be shown only when the unit has at least one campaign shard-farm node of a
   shard type the goal needs.
-- Onslaught SHALL be shown only for Ascension goals whose entity is a Character; it SHALL NOT
-  be shown for Unlock goals or for Machine-of-War goals.
+- Onslaught SHALL be shown only for Ascension goals, for both Characters and Machines of War;
+  it SHALL NOT be shown for Unlock goals.
 - Shops SHALL be shown only when at least one daily shop currently offers the unit's character
   shards of a shard type the goal needs.
 
@@ -59,10 +59,12 @@ SHALL NOT be rendered — no empty or disabled group headers.
 - **WHEN** the acquisition-source control renders for an Unlock goal
 - **THEN** the Onslaught group is not rendered
 
-#### Scenario: Onslaught hidden for a Machine of War
+#### Scenario: Onslaught shown for a Machine of War
 
 - **WHEN** the acquisition-source control renders for a Machine-of-War Ascension goal
-- **THEN** the Onslaught group is not rendered
+- **THEN** the Onslaught group is rendered
+- **AND** when selected, its shard supply feeds the goal's farming estimate, so the goal gets a
+  "Done by" date like a Character's
 
 #### Scenario: No shop offers the unit's shards
 
