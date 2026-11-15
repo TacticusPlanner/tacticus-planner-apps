@@ -16,6 +16,11 @@ updates:
       semver-patch-days: 3
       semver-minor-days: 7
       semver-major-days: 14
+      # vitest and @vitest/* release in lockstep and must match exactly. A per-package cooldown
+      # let vitest through while @vitest/coverage-v8 was still cooling down, splitting the group.
+      exclude:
+        - vitest
+        - "@vitest/*"
     open-pull-requests-limit: 5
     versioning-strategy: increase
     commit-message:
@@ -59,13 +64,72 @@ updates:
         patterns:
           - posthog-js
           - "@posthog/*"
+      # Catch-alls for everything else. The exclusions keep packages that have their own group
+      # out of these; without them Dependabot also bumped grouped packages here, duplicating PRs.
       prod-minor-patch:
         dependency-type: production
+        exclude-patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
+          - vite
+          - "@vitejs/*"
+          - vitest
+          - "@vitest/*"
+          - eslint
+          - "@eslint/*"
+          - "eslint-plugin-*"
+          - typescript-eslint
+          - globals
+          - steiger
+          - "@feature-sliced/*"
+          - knip
+          - tailwindcss
+          - "@tailwindcss/*"
+          - tailwind-merge
+          - tw-animate-css
+          - radix-ui
+          - shadcn
+          - class-variance-authority
+          - lucide-react
+          - posthog-js
+          - "@posthog/*"
         update-types:
           - minor
           - patch
       dev-minor-patch:
         dependency-type: development
+        exclude-patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
+          - vite
+          - "@vitejs/*"
+          - vitest
+          - "@vitest/*"
+          - eslint
+          - "@eslint/*"
+          - "eslint-plugin-*"
+          - typescript-eslint
+          - globals
+          - steiger
+          - "@feature-sliced/*"
+          - knip
+          - tailwindcss
+          - "@tailwindcss/*"
+          - tailwind-merge
+          - tw-animate-css
+          - radix-ui
+          - shadcn
+          - class-variance-authority
+          - lucide-react
+          - posthog-js
+          - "@posthog/*"
+        update-types:
+          - minor
+          - patch
         update-types:
           - minor
           - patch
