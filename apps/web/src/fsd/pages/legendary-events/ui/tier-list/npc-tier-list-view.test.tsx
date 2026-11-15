@@ -114,6 +114,17 @@ describe("Tier List Enemies view", () => {
     expect(screen.queryAllByTestId("npc-tier-tile")).toHaveLength(3)
   })
 
+  it("names an NPC the npcs namespace lacks by its catalog name, not its id", async () => {
+    renderPage()
+    await screen.findByTestId("npc-tier-list")
+
+    const tile = within(screen.getByTestId("npc-tier-list-row-A")).getByTestId(
+      "npc-tier-tile"
+    )
+    expect(tile).toHaveTextContent("Grot Tank")
+    expect(tile).not.toHaveTextContent("orksNpc3GrotTank")
+  })
+
   it("filters by name", async () => {
     renderPage("/legendary-events/tier-list?list=enemies&q=grot")
     await screen.findByTestId("npc-tier-list")
@@ -133,7 +144,7 @@ describe("Tier List Enemies view", () => {
 
     fireEvent.click(
       within(screen.getByTestId("npc-tier-list-row-A")).getByRole("button", {
-        name: "orksNpc3GrotTank, 1.7×",
+        name: "Grot Tank, 1.7×",
       })
     )
     const details = await screen.findByTestId("npc-tier-details")

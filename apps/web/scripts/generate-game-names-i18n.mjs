@@ -6,6 +6,7 @@
 //   public/locales/{en,de,es,fr}/mows.json              MoW id              -> short name
 //   public/locales/{en,de,es,fr}/traits.json            trait id            -> name
 //   public/locales/{en,de,es,fr}/factions.json          faction id          -> name
+//   public/locales/{en,de,es,fr}/npcs.json              NPC variation id    -> name
 //   public/locales/{en,de,es,fr}/mythicQuestTasks.json  task loca key       -> template
 //   public/locales/{en,de,es,fr}/unitSearchNames.json   character/MoW id    -> other names to search by
 //
@@ -45,6 +46,7 @@ const curated = readJson(resolve(here, "../datamine/curated-names.json"))
 const lineup = Object.entries(config("units/lineup.json"))
 const isMow = ([, unit]) => unit.traits?.includes("MachineOfWar")
 const items = config("items.json")
+const npcs = config("units/npc.json")
 
 /** The `mythic_*` quests' task loca keys, wherever they sit in the quest groups. */
 function mythicTaskKeys(node, keys = new Set()) {
@@ -99,6 +101,23 @@ const NAMESPACES = {
     ids: Object.keys(config("units/factions.json")),
     key: (id) => `UnitDetails/Faction_${id}`,
   },
+  // A regular NPC has its own Units/ name; a boss or hero-like NPC (and debris) has none and shows as
+  // the unit it looks like (`visualId`), by that unit's displayed name; the config name is the last resort.
+  npcs: {
+    ids: Object.keys(npcs),
+    key: (id) => {
+      const visual = npcs[id].visualId
+      return [
+        `Units/${id}_Name`,
+        ...(visual
+          ? ["_ExtraShortName", "_ShortName", "_Name"].map(
+              (suffix) => `Units/${visual}${suffix}`
+            )
+          : []),
+      ]
+    },
+    fallback: (id) => npcs[id].name,
+  },
   mythicQuestTasks: {
     ids: [...mythicTaskKeys(config("quests/groups.json"))],
     key: (id) => `Quests/${id}`,
@@ -122,7 +141,14 @@ for (const [namespace, { ids, key, fallback }] of Object.entries(NAMESPACES)) {
   ].sort()
   tables[namespace] = Object.fromEntries(LOCALES.map((locale) => [locale, {}]))
   for (const id of allIds) {
-    const game = (locale) => languages[locale][key(id)]?.trim() || undefined
+    // `key` gives one language key, or several tried in order.
+    const game = (locale) =>
+      [key(id)]
+        .flat()
+        .map((k) =>
+          languages[locale][k]?.replace(/[\u200B-\u200D\uFEFF]/g, "").trim()
+        )
+        .find(Boolean)
     for (const locale of LOCALES) {
       const term =
         values[id]?.[locale] ??

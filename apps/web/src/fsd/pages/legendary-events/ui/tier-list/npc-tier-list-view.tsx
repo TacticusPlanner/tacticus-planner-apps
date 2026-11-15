@@ -33,7 +33,7 @@ import {
   useNpcTiers,
   type NpcTierTile,
 } from "@/entities/legendary-event"
-import { NpcPortrait, useNpcLabels } from "@/entities/npc"
+import { NpcPortrait, useNpcLabels, useNpcsById } from "@/entities/npc"
 import { useUnitName } from "@/shared/unit-name"
 
 import { useNpcThreatText } from "../../model/use-npc-threat-text"
@@ -59,13 +59,19 @@ export function NpcTierListView() {
   const tiers = useNpcTiers()
   const unitName = useUnitName()
   const { variationName } = useNpcLabels()
+  const npcs = useNpcsById()
   const [searchParams, setSearchParams] = useSearchParams()
   const filters = parseNpcTierListFilters(searchParams)
 
   const eventIds =
     events.status === "ready" ? rotationEventIds(events.data, events.nowMs) : []
   const battles = useLegendaryEventsBattles(eventIds)
-  const nameOf = (npcId: string) => variationName(npcId, npcId)
+  // An id the `npcs` namespace lacks falls back to the served catalog name, then the raw id.
+  const nameOf = (npcId: string) =>
+    variationName(
+      npcId,
+      (npcs.status === "ready" ? npcs.data.get(npcId)?.name : null) ?? npcId
+    )
   const eventName = (eventId: string) => unitName("Character", eventId)
   const format = (value: number) => formatMultiplier(value, i18n.language)
 

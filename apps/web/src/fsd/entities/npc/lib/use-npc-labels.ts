@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next"
 import type { NpcGroup } from "../model/types"
 
 /**
- * id -> localized NPC name via the id-keyed `npcs` namespace (ported from V1's game localization),
- * falling back to the served catalog name. A group's name is its default variation's name.
+ * id -> localized NPC name via the id-keyed `npcs` namespace (generated from the game's language files by
+ * scripts/generate-game-names-i18n.mjs), falling back to the served catalog name. A group's name is its default variation's name.
  */
 export function useNpcLabels() {
   const { t } = useTranslation(["npcs", "factions"])
