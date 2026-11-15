@@ -20,7 +20,10 @@ fall back to a hidden identity-provider session check when no cached token is
 usable. A non-secret account hint (the account identifier only, never a
 token) also persists on the device, so a cleared token cache still counts as
 "a previously cached account exists". A hidden session check SHALL give up
-after at most 6 seconds.
+after at most 6 seconds. Browsers that keep the identity provider's cookies out
+of hidden frames (Safari and every iOS browser, Firefox, Brave) SHALL skip the
+hidden check, because it cannot find their session, and go on to the quiet
+renewal described below.
 
 #### Scenario: Cached account present
 
@@ -44,6 +47,14 @@ after at most 6 seconds.
 - **WHEN** the application loads
 - **THEN** exactly one hidden identity-provider session check runs, and it
   gives up after at most 6 seconds if it cannot complete
+
+#### Scenario: Refresh token expired in a browser that blocks hidden frames
+
+- **GIVEN** an email user on Safari, any iOS browser, Firefox or Brave whose
+  refresh token has expired
+- **WHEN** the application loads
+- **THEN** no hidden check runs, and the quiet top-level renewal starts
+  straight away
 
 #### Scenario: Sign-out clears the account hint
 
