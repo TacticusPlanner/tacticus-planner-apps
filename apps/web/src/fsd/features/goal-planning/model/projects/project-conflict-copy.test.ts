@@ -71,7 +71,7 @@ describe("projectConflictText", () => {
         "Ragnar"
       )
     ).toBe(
-      'goals.project.membershipConflictTarget:{"unit":"Ragnar","type":"goals.create.goalTypes.Ascension","target":"Legendary RedFourStars"}'
+      'goals.project.membershipConflictTarget:{"unit":"Ragnar","type":"goals.create.goalTypes.Ascension","target":"progression:short.stars:{\\"rarity\\":\\"Legendary\\",\\"count\\":4}"}'
     )
   })
 

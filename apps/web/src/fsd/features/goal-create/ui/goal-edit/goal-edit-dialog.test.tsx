@@ -932,7 +932,7 @@ describe("GoalEditDialog", () => {
 
           expect(
             selectedStep("create-goal-ascension-end")
-          ).toHaveAccessibleName("Epic Red One Star")
+          ).toHaveAccessibleName("Epic 1★")
           // The same text creation shows for a target at or below the start.
           expect(
             screen.getByTestId("create-goal-issue-Ascension-target")
@@ -1005,7 +1005,7 @@ describe("GoalEditDialog", () => {
         const choosable = within(ladder)
           .getAllByRole("radio")
           .filter((step) => !step.hasAttribute("aria-disabled"))
-        expect(choosable[0]).toHaveAccessibleName(/Common One Star/)
+        expect(choosable[0]).toHaveAccessibleName(/Common 1★/)
         expect(
           within(ladder).getByRole("radio", { name: "Common, Current" })
         ).toHaveAttribute("aria-disabled", "true")

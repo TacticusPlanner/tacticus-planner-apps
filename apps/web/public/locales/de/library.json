@@ -180,7 +180,7 @@
     "noPrimeModifiers": "Keine Prime-Modifikatoren für diesen Boss.",
     "modifierReduces": "Reduziert {{name}}",
     "modifierIncreases": "Erhöht {{name}}",
-    "progressionStepLabelled": "{{rarityTier}} · ★{{stars}} · {{health}} LP",
+    "stepHealth": "{{health}} LP",
     "abilityTextLevelCaption": "Werte für Fähigkeitsstufe {{level}}",
     "adjustedStatsHeading": "Angepasste Werte",
     "showAdjusted": "Angepasst anzeigen",
@@ -479,8 +479,8 @@
       "yourUnit": "Deine Einheit:",
       "abilities": "Fähigkeiten {{active}} / {{passive}}",
       "relic": "Relikt Stufe {{level}}",
-      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei {{rarity}}, {{stars}}, {{rank}}.",
-      "showing": "Angezeigt: {{rarity}}, {{stars}}, {{rank}}, Fähigkeiten auf Stufe 1.",
+      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei {{progression}}, {{rank}}.",
+      "showing": "Angezeigt: {{progression}}, {{rank}}, Fähigkeiten auf Stufe 1.",
       "shards": "{{owned}} / {{needed}} Splitter",
       "shardProgress": "Splitter bis zur Freischaltung",
       "signInBanner": "Melde dich an und synchronisiere, um diese Seite mit deinen eigenen Werten zu öffnen.",
@@ -530,7 +530,7 @@
     },
     "compare": {
       "title": "Im Vergleich zu anderen Charakteren",
-      "subtitle": "Perzentil bei Mythic Wings · Adamant II",
+      "subtitle": "Perzentil bei",
       "axes": {
         "health": "Leben",
         "armour": "Rüstung",

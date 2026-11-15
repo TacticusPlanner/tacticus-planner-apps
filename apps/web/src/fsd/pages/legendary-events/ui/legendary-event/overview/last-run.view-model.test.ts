@@ -20,7 +20,6 @@ import {
   buildLastRunViewModel,
   historyDeltaCount,
   previousRunRecord,
-  progressionStarsKey,
   teamLastRunClearedBattle,
   type LastRunInput,
 } from "./last-run.view-model"
@@ -257,12 +256,5 @@ describe("buildLastRunClears", () => {
         records: ready([utharRun1Record]),
       })
     ).toBeUndefined()
-  })
-})
-
-describe("progressionStarsKey", () => {
-  it("reads the stars part of a progression", () => {
-    expect(progressionStarsKey("Legendary:RedFiveStars")).toBe("RedFiveStars")
-    expect(progressionStarsKey("Mythic:OneBlueStar")).toBe("OneBlueStar")
   })
 })

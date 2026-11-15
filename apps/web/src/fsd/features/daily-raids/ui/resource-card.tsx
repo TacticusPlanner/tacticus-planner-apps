@@ -21,12 +21,16 @@ import {
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
 import { RaidLocationName, type RaidLocationTarget } from "./raid-location-name"
 import { ResourceIcon, ResourceIconWithTooltip } from "./resource-icon"
-import { EntityIcon, LocationChips, RankBadge } from "@/shared/ui"
+import {
+  CompactProgression,
+  EntityIcon,
+  LocationChips,
+  RankBadge,
+} from "@/shared/ui"
 
-/** A goal's target, icon-led: Rank goals pair the goal-type icon with the rank icon (an accessible
- * name is enough, no text — see `RankBadge`'s `showLabel={false}`); every other kind pairs its
- * goal-type icon with the existing text label, matching the Create Goal sheet's goal-type picker
- * treatment. */
+/** A goal's target, icon-led: Rank goals pair the goal-type icon with the rank icon (its name in a
+ * tooltip), Ascension goals with the compact progression; every other kind pairs its goal-type icon
+ * with the existing text label, matching the Create Goal sheet's goal-type picker treatment. */
 export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
   if (goal.goalKind === "Rank" && goal.targetRank) {
     return (
@@ -36,7 +40,22 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
           className="size-3.5 shrink-0"
           src={goalTypeIcon(goal.goalKind, goal.unitType)}
         />
-        <RankBadge rank={goal.targetRank} showLabel={false} />
+        <RankBadge rank={goal.targetRank} showLabel={false} tooltip />
+      </span>
+    )
+  }
+  if (goal.goalKind === "Ascension" && goal.targetProgression) {
+    return (
+      <span className="inline-flex items-center gap-1">
+        <EntityIcon
+          alt=""
+          className="size-3.5 shrink-0"
+          src={goalTypeIcon(goal.goalKind, goal.unitType)}
+        />
+        <CompactProgression
+          iconClassName="size-4"
+          value={goal.targetProgression}
+        />
       </span>
     )
   }

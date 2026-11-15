@@ -20,7 +20,7 @@ import {
 import { useAbilityText } from "@/shared/ability-text"
 import { useCatalogDataset } from "@/shared/local-data"
 import { useTourPageSteps } from "@/shared/tour"
-import { ProgressionSelect } from "@/shared/ui"
+import { CompactProgression, ProgressionSelect } from "@/shared/ui"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { MOWS_PATH } from "../mows/mows-list-page"
@@ -252,18 +252,17 @@ function MowUnit({
   const allianceName = t(`npcs.alliances.${mow.alliance}`, {
     defaultValue: mow.alliance,
   })
-  const yourUnitLine = player
-    ? [
-        t(
-          `progression:rarities.${progressionRarity(player.progressionIndex)}`,
-          { defaultValue: progressionRarity(player.progressionIndex) }
-        ),
-        t(`progression:stars.${player.progressionIndex.split(":")[1]}`, {
-          defaultValue: player.progressionIndex,
-        }),
-        t("mowUnit.header.levels", playerLevels),
-      ].join(" · ")
-    : undefined
+  // The rarity and stars as icons (rarity name in a tooltip), then the levels as text.
+  const yourUnitLine = player ? (
+    <>
+      <CompactProgression
+        iconClassName="size-4"
+        value={player.progressionIndex}
+      />
+      <span aria-hidden="true">·</span>
+      <span>{t("mowUnit.header.levels", playerLevels)}</span>
+    </>
+  ) : undefined
 
   useTourPageSteps(useMowUnitTutorial({ upgradesOpen: tab === "upgrades" }))
 

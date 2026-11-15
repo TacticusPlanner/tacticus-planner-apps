@@ -5,7 +5,7 @@ import { progressionLabel, type GoalDetail } from "@/entities/goal"
 
 /**
  * A goal's target as the raids pages show it under the unit: "Rank Diamond III", "Ability 50",
- * "Ascension Legendary Red Five Stars", "Unlock", "12 upgrades". The progression is localized, never
+ * "Ascension Legendary 5★", "Unlock", "12 upgrades". The progression is localized, never
  * the wire id ("Legendary:RedFiveStars").
  */
 export function dailyGoalTargetLabel(
@@ -13,8 +13,9 @@ export function dailyGoalTargetLabel(
   detail: Pick<GoalDetail, "goalType" | "config">
 ): string {
   if (detail.goalType === "Rank" && detail.config.rank) {
+    const rank = rankAt(detail.config.rank.end)
     return t("dailies:target.rank", {
-      value: rankAt(detail.config.rank.end),
+      value: t(`progression:ranks.${rank}`, { defaultValue: rank }),
     })
   }
   if (detail.goalType === "Ability" && detail.config.ability) {

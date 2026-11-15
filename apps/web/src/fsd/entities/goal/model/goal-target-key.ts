@@ -1,4 +1,7 @@
 import type { Namespace, TFunction } from "i18next"
+import { isProgression } from "@workspace/game-domain"
+
+import { progressionText } from "@/shared/ui"
 
 import { rankTargetKey, rankTargetKeyLabel } from "./rank-target-key"
 import type { CreateGoalConfigRequest, GoalConfig, GoalKind } from "./types"
@@ -99,20 +102,14 @@ export function goalTargetLabel(
   }
 }
 
-/** "Legendary Red Four Stars" for the wire progression `"Legendary:RedFourStars"`. */
+/** "Legendary 4★" for the wire progression `"Legendary:RedFourStars"` (see `progressionText`). */
 export function progressionLabel<Ns extends Namespace>(
   t: TFunction<Ns>,
   progression: string
 ): string {
+  if (isProgression(progression)) return progressionText(t, progression)
+  // Off-ladder ids such as "Epic:None" still read as their rarity.
   const [rarity = progression, stars] = progression.split(":")
-  const rarityLabel = t(`rarities.${rarity}`, {
-    ns: "progression",
-    defaultValue: rarity,
-  })
-  if (!stars || stars === "None") return rarityLabel
-  const starsLabel = t(`stars.${stars}`, {
-    ns: "progression",
-    defaultValue: stars,
-  })
-  return `${rarityLabel} ${starsLabel}`
+  if (stars && stars !== "None") return progression
+  return t(`rarities.${rarity}`, { ns: "progression", defaultValue: rarity })
 }

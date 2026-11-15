@@ -180,7 +180,7 @@
     "noPrimeModifiers": "No prime modifiers for this boss.",
     "modifierReduces": "Reduces {{name}}",
     "modifierIncreases": "Increases {{name}}",
-    "progressionStepLabelled": "{{rarityTier}} · ★{{stars}} · {{health}} HP",
+    "stepHealth": "{{health}} HP",
     "abilityTextLevelCaption": "Values shown for ability level {{level}}",
     "adjustedStatsHeading": "Adjusted stats",
     "showAdjusted": "Show adjusted",
@@ -479,8 +479,8 @@
       "yourUnit": "Your unit:",
       "abilities": "abilities {{active}} / {{passive}}",
       "relic": "relic level {{level}}",
-      "notUnlocked": "Not unlocked. Values start at {{rarity}}, {{stars}}, {{rank}}.",
-      "showing": "Showing {{rarity}}, {{stars}}, {{rank}}, abilities level 1.",
+      "notUnlocked": "Not unlocked. Values start at {{progression}}, {{rank}}.",
+      "showing": "Showing {{progression}}, {{rank}}, abilities level 1.",
       "shards": "{{owned}} / {{needed}} shards",
       "shardProgress": "Shards towards unlocking",
       "signInBanner": "Sign in and sync to open this page at your own levels.",
@@ -530,7 +530,7 @@
     },
     "compare": {
       "title": "Compared with other characters",
-      "subtitle": "Percentile at Mythic Wings · Adamantine II",
+      "subtitle": "Percentile at",
       "axes": {
         "health": "Health",
         "armour": "Armour",

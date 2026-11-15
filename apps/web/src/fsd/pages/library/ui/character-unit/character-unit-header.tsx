@@ -12,7 +12,7 @@ import {
   type Rank,
   type UnitId,
 } from "@workspace/game-domain"
-import { ProgressionSelect, RankSelect } from "@/shared/ui"
+import { ProgressionSelect, RankSelect, progressionText } from "@/shared/ui"
 
 import { UnitHeader, type ValuesMode } from "../unit/unit-header"
 import type { ShownValues, UnitOwnership } from "./character-unit.view-model"
@@ -51,7 +51,7 @@ export function CharacterUnitHeader({
   onModeChange: (mode: ValuesMode) => void
   onCustomChange: (values: ShownValues) => void
   /** "Your unit: …" details, for an owned unit. */
-  yourUnitLine?: string
+  yourUnitLine?: ReactNode
   /** The unit's power at the shown values, in the values area. */
   power: ReactNode
   /** Shard progress towards unlocking, for a unit the player doesn't own. */
@@ -63,15 +63,8 @@ export function CharacterUnitHeader({
   const { t } = useTranslation(["library", "factions", "progression"])
   const rarity = progressionRarity(shown.progression)
   const baseRarity = progressionRarity(baseValues.progression)
-  const stars = (value: Progression) =>
-    t(`progression:stars.${value.slice(value.indexOf(":") + 1)}`, {
-      defaultValue: value,
-    })
   const describe = (values: ShownValues) => ({
-    rarity: t(`progression:rarities.${progressionRarity(values.progression)}`, {
-      defaultValue: progressionRarity(values.progression),
-    }),
-    stars: stars(values.progression),
+    progression: progressionText(t, values.progression),
     rank: t(`progression:ranks.${values.rank}`, { defaultValue: values.rank }),
   })
   const rankOptions = rankOrder.filter(

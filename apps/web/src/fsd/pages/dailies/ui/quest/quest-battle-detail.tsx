@@ -22,7 +22,7 @@ import {
   type QuestTierCap,
 } from "@/features/quest-event"
 import type { NpcRecord } from "@/entities/npc"
-import { EntityIcon, UpgradeIcon } from "@/shared/ui"
+import { EntityIcon, UpgradeIcon, progressionText } from "@/shared/ui"
 import {
   BoardMap,
   buildEnemyTile,
@@ -87,10 +87,9 @@ export function QuestBattleDetail({
       buildEnemyTile(enemy, `${prefix}-${index}`, npcs)
     )
   const tierName = t(`progression:rarities.${battle.tier}`)
-  const stars = cap.progression.slice(cap.progression.indexOf(":") + 1)
   const capValues = {
     rarity: tierName,
-    stars: t(`progression:stars.${stars}` as never, { defaultValue: stars }),
+    progression: progressionText(t, cap.progression),
     rank: t(`progression:ranks.${cap.rank}` as never, {
       defaultValue: cap.rank,
     }),

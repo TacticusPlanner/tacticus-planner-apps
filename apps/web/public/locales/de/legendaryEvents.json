@@ -684,8 +684,7 @@
     "ascension": "Aufstieg zu {{target}}",
     "rank": "Rang {{target}}",
     "rankWithUpgrades": "Rang {{target}} mit {{count}} Verbesserungen",
-    "ability": "Fähigkeiten auf {{active}} / {{passive}}",
-    "progression": "{{rarity}} {{stars}}"
+    "ability": "Fähigkeiten auf {{active}} / {{passive}}"
   },
   "leaderboardActions": {
     "header": "Aktionen",

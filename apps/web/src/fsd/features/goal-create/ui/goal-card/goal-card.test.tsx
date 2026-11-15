@@ -139,7 +139,7 @@ describe("AscensionGoalCard", () => {
       expect(ladder).toHaveAccessibleDescription(reached.message)
       expect(
         within(ladder).getByRole("radio", { checked: true })
-      ).toHaveAccessibleName("Epic Red One Star")
+      ).toHaveAccessibleName("Epic 1★")
       expect(screen.queryByText("Milestones here") !== null).toBe(
         mode === "create"
       )

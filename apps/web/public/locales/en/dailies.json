@@ -686,14 +686,6 @@
         "Steppable": "Steppables",
         "Summon": "Summons"
       },
-      "rarities": {
-        "Common": "Common",
-        "Uncommon": "Uncommon",
-        "Rare": "Rare",
-        "Epic": "Epic",
-        "Legendary": "Legendary",
-        "Mythic": "Mythic"
-      },
       "phrase": {
         "modesIn": "in {{modes}}",
         "modesExcept": "in every mode except {{modes}}",

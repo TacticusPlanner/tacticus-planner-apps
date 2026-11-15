@@ -180,7 +180,7 @@
     "noPrimeModifiers": "Sin modificadores de prime para este jefe.",
     "modifierReduces": "Reduce {{name}}",
     "modifierIncreases": "Aumenta {{name}}",
-    "progressionStepLabelled": "{{rarityTier}} · ★{{stars}} · {{health}} PS",
+    "stepHealth": "{{health}} PS",
     "abilityTextLevelCaption": "Valores mostrados para el nivel de habilidad {{level}}",
     "adjustedStatsHeading": "Estadísticas ajustadas",
     "showAdjusted": "Mostrar ajustadas",
@@ -479,8 +479,8 @@
       "yourUnit": "Tu unidad:",
       "abilities": "habilidades {{active}} / {{passive}}",
       "relic": "reliquia nivel {{level}}",
-      "notUnlocked": "No desbloqueado. Los valores empiezan en {{rarity}}, {{stars}}, {{rank}}.",
-      "showing": "Mostrando {{rarity}}, {{stars}}, {{rank}}, habilidades en nivel 1.",
+      "notUnlocked": "No desbloqueado. Los valores empiezan en {{progression}}, {{rank}}.",
+      "showing": "Mostrando {{progression}}, {{rank}}, habilidades en nivel 1.",
       "shards": "{{owned}} / {{needed}} fragmentos",
       "shardProgress": "Fragmentos para desbloquear",
       "signInBanner": "Inicia sesión y sincroniza para abrir esta página con tus propios valores.",
@@ -530,7 +530,7 @@
     },
     "compare": {
       "title": "Comparado con otros personajes",
-      "subtitle": "Percentil en Mythic Wings · Adamantino II",
+      "subtitle": "Percentil en",
       "axes": {
         "health": "Salud",
         "armour": "Armadura",

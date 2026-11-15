@@ -384,9 +384,17 @@ describe("CharacterUnitPage", () => {
     env.roster = [ownedTigurius]
     await renderUnit("/library/characters/ultraTigurius")
 
-    expect(screen.getByTestId("unit-your-line")).toHaveTextContent(
-      "Your unit: Mythic · Two Blue Stars · Adamantine II · abilities 58 / 46 · relic level 3"
+    const yourLine = screen.getByTestId("unit-your-line")
+    expect(yourLine).toHaveTextContent(
+      "Your unit: 2··abilities 58 / 46 · relic level 3"
     )
+    // Progression and rank show as icons, named for assistive technology.
+    expect(
+      within(yourLine).getByRole("img", { name: "Mythic 2★" })
+    ).toBeInTheDocument()
+    expect(
+      within(yourLine).getByRole("img", { name: "Adamantine II" })
+    ).toBeInTheDocument()
     expect(
       within(screen.getByTestId("unit-glance-health")).getByText("7,955")
     ).toBeInTheDocument()
@@ -412,7 +420,7 @@ describe("CharacterUnitPage", () => {
       "true"
     )
     expect(screen.getByTestId("unit-not-unlocked")).toHaveTextContent(
-      "Not unlocked. Values start at Uncommon, Two Stars, Stone I."
+      "Not unlocked. Values start at Uncommon 2★, Stone I."
     )
     const progress = screen.getByRole("progressbar", {
       name: "Shards towards unlocking",
@@ -572,7 +580,7 @@ describe("CharacterUnitPage", () => {
       "data-greyed"
     )
     expect(screen.getByTestId("unit-showing-starting")).toHaveTextContent(
-      "Showing Uncommon, Two Stars, Stone I, abilities level 1."
+      "Showing Uncommon 2★, Stone I, abilities level 1."
     )
     expect(
       within(screen.getByTestId("unit-sign-in-banner")).getByRole("button", {

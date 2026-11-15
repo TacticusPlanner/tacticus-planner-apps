@@ -346,15 +346,6 @@
     "rewardsTitle": "Referenz für Scherben-Belohnungen",
     "sectorTier": "Sektor / Stufe",
     "current": "Aktueller Allianzfortschritt",
-    "rewards": {
-      "Common": "Gewöhnlich",
-      "Uncommon": "Ungewöhnlich",
-      "Rare": "Selten",
-      "Epic": "Episch",
-      "Legendary": "Legendär",
-      "LegendaryBlue": "Legendär 1★ blau",
-      "Mythic": "Mythisch"
-    },
     "unsaved": {
       "message": "Du hast ungespeicherte Änderungen",
       "save": "Speichern",
@@ -1757,15 +1748,7 @@
       "xpBooksValue": "{{available}} von {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
       "poolLabel": "{{name}}: {{available}} von {{needed}}",
-      "standalone": "Einzeln: {{slots}} Upgrade-Slots, {{energy}} Energie",
-      "rarity": {
-        "Common": "Gewöhnlich",
-        "Uncommon": "Ungewöhnlich",
-        "Rare": "Selten",
-        "Epic": "Episch",
-        "Legendary": "Legendär",
-        "Mythic": "Mythisch"
-      }
+      "standalone": "Einzeln: {{slots}} Upgrade-Slots, {{energy}} Energie"
     },
     "overview": {
       "levelProgress": "Stufe {{current}} → {{target}}",

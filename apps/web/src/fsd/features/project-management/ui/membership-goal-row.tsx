@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -16,7 +17,7 @@ export function MembershipGoalRow({
   onToggle,
 }: {
   goalId: string
-  title: string
+  title: ReactNode
   /** Position in the account-wide order; null for a completed goal. */
   globalPriority: number | null
   isMember: boolean

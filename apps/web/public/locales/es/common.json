@@ -346,15 +346,6 @@
     "rewardsTitle": "Referencia de recompensas de fragmentos",
     "sectorTier": "Sector / nivel",
     "current": "Progreso actual de la alianza",
-    "rewards": {
-      "Common": "Común",
-      "Uncommon": "Poco común",
-      "Rare": "Raro",
-      "Epic": "Épico",
-      "Legendary": "Legendario",
-      "LegendaryBlue": "Legendario 1★ azul",
-      "Mythic": "Mítico"
-    },
     "unsaved": {
       "message": "Tienes cambios sin guardar",
       "save": "Guardar",
@@ -1757,15 +1748,7 @@
       "xpBooksValue": "{{available}} de {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
       "poolLabel": "{{name}}: {{available}} de {{needed}}",
-      "standalone": "Por sí solo: {{slots}} ranuras de mejora, {{energy}} de energía",
-      "rarity": {
-        "Common": "Común",
-        "Uncommon": "Poco común",
-        "Rare": "Raro",
-        "Epic": "Épico",
-        "Legendary": "Legendario",
-        "Mythic": "Mítico"
-      }
+      "standalone": "Por sí solo: {{slots}} ranuras de mejora, {{energy}} de energía"
     },
     "overview": {
       "levelProgress": "Nv {{current}} → {{target}}",

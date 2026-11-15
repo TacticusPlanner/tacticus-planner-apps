@@ -12,13 +12,13 @@ import {
   xpBookIcon,
   type QuestCrateStorageModel,
 } from "@workspace/game-catalog"
-import type { Rarity } from "@workspace/game-domain"
+import { isProgression, type Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, progressionText } from "@/shared/ui"
 
 import type {
   QuestCrateView,
@@ -201,14 +201,8 @@ function ShardsMeaningLine({
     )
   }
   const last = meaning.steps.at(-1)
-  const [lastRarity, lastStars] = last?.split(":") ?? []
-  const lastLabel = last
-    ? `${t(`progression:rarities.${lastRarity}` as never) as string} ${
-        t(`progression:stars.${lastStars}` as never, {
-          defaultValue: last,
-        }) as string
-      }`
-    : ""
+  const lastLabel =
+    last && isProgression(last) ? progressionText(t, last) : (last ?? "")
   return (
     <div className="space-y-0.5 text-sm" data-testid="quest-shards-meaning">
       <p className="font-medium">
