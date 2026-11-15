@@ -817,6 +817,37 @@ describe("authentication", () => {
       expect(localStorage.getItem("tp.auth.quietRenewal")).toBeNull()
     })
 
+    it("skips them for a Google account whose cached claims lack idp", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([
+        { homeAccountId: "g", username: googleAccount.username },
+      ] as never)
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("failed")
+
+      expect(mocks.instance.ssoSilent).not.toHaveBeenCalled()
+      expect(mocks.instance.acquireTokenRedirect).not.toHaveBeenCalled()
+    })
+
+    it("skips them for a Google hint that recorded the email method", async () => {
+      localStorage.setItem(
+        "tp.auth.accountHint",
+        JSON.stringify({
+          homeAccountId: "g",
+          username: googleAccount.username,
+          signInMethod: "email",
+        })
+      )
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("failed")
+
+      expect(mocks.instance.ssoSilent).not.toHaveBeenCalled()
+      expect(mocks.instance.loginRedirect).not.toHaveBeenCalled()
+    })
+
     it("skips them for a remembered Google hint too", async () => {
       localStorage.setItem(
         "tp.auth.accountHint",
