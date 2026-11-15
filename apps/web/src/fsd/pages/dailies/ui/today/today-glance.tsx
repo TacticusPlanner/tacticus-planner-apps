@@ -23,7 +23,7 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
       <dl
         className={cn(
           "grid divide-y rounded-[min(var(--radius-4xl),24px)] bg-card px-4 py-1 text-sm text-card-foreground shadow-sm ring-1 ring-foreground/5 dark:ring-foreground/10",
-          "@[42rem]:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] @[42rem]:gap-3.5 @[42rem]:divide-y-0 @[42rem]:rounded-none @[42rem]:bg-transparent @[42rem]:p-0 @[42rem]:shadow-none @[42rem]:ring-0 @[42rem]:dark:ring-0"
+          "@2xl:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] @2xl:gap-3.5 @2xl:divide-y-0 @2xl:rounded-none @2xl:bg-transparent @2xl:p-0 @2xl:shadow-none @2xl:ring-0 @2xl:dark:ring-0"
         )}
       >
         {view ? (
@@ -38,7 +38,7 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
             labelClassName={cn(overLimit && "text-energy-over")}
             testId="energy-usage"
           >
-            <span className="flex items-center justify-end gap-2 @[42rem]:justify-start">
+            <span className="flex items-center justify-end gap-2 @2xl:justify-start">
               {/* A daily energy of 0 means no limit: no bar, and no percentage to announce. */}
               {view.energy.daily > 0 ? (
                 <Progress
@@ -71,7 +71,7 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
             label={t("today.energyUsage.label")}
             testId="energy-usage-loading"
           >
-            <Skeleton className="ms-auto h-lh w-20 @[42rem]:ms-0" />
+            <Skeleton className="ms-auto h-lh w-20 @2xl:ms-0" />
           </GlanceTile>
         )}
         {view && hasOnslaught ? (
