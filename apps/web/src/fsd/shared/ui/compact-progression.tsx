@@ -9,17 +9,20 @@ import { RarityIcon } from "./rarity-icon"
 /**
  * A progression in its compact form: the rarity icon (its name in a tooltip), then one star icon and
  * the star count (or the wings at the top step). The whole badge is named by its short text
- * ("Legendary 5★") for assistive technology.
+ * ("Legendary 5★") for assistive technology. `fade` dims one half, e.g. the rarity on a promotion.
+ * Collection's roster rows, the compare marks and the LE leaderboard all use this one visual.
  */
 export function CompactProgression({
   value,
   className,
   iconClassName = "size-5",
+  fade,
   "data-testid": testId,
 }: {
   value: Progression
   className?: string
   iconClassName?: string
+  fade?: "rarity" | "stars"
   "data-testid"?: string
 }) {
   const { t } = useTranslation(["progression"])
@@ -31,8 +34,16 @@ export function CompactProgression({
       data-testid={testId}
       role="img"
     >
-      <RarityIcon className={iconClassName} rarity={progressionRarity(value)} />
-      <CompactStars progression={value} />
+      <RarityIcon
+        className={cn(iconClassName, fade === "rarity" && fadedPart)}
+        rarity={progressionRarity(value)}
+      />
+      <CompactStars
+        className={fade === "stars" ? fadedPart : undefined}
+        progression={value}
+      />
     </span>
   )
 }
+
+const fadedPart = "opacity-35"

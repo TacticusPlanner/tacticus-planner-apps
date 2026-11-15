@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { rarityIcon, starsVisual } from "@workspace/game-catalog"
+import { rarityIcon } from "@workspace/game-catalog"
 import { rankAt, type Rarity } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import {
@@ -26,7 +26,12 @@ import {
   type RaidBoss,
   type RaidBossEncounterModifier,
 } from "@/entities/raid-boss"
-import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
+import {
+  CompactStarLevel,
+  EntityIcon,
+  RankBadge,
+  RarityIcon,
+} from "@/shared/ui"
 
 import { buildProgressionStepLabels, toRarity } from "./progression-step-labels"
 import { RaidBossAbilityPanel } from "./raid-boss-ability-panel"
@@ -55,29 +60,6 @@ function StatRow({ label, value }: { label: string; value: ReactNode }) {
         {value}
       </TableCell>
     </TableRow>
-  )
-}
-
-/** A raw 0-14 star index as one star icon and its count (or the mythic wings); nothing at 0. */
-function StarLevel({ starLevel }: { starLevel: number }) {
-  const visual = starsVisual(starLevel)
-  if (visual.kind === "none") return null
-  if (visual.kind === "wings") {
-    return (
-      <EntityIcon
-        src={visual.icon}
-        alt=""
-        className="h-4 w-12 object-contain"
-        width={512}
-        height={164}
-      />
-    )
-  }
-  return (
-    <span className="inline-flex items-center gap-0.5 text-xs font-semibold tabular-nums">
-      <EntityIcon src={visual.icon} alt="" className="size-3.5" />
-      {visual.count}
-    </span>
   )
 }
 
@@ -208,7 +190,7 @@ export function RaidBossDetail({
                         rarity={label.rarity}
                         index={label.tierIndex}
                       />
-                      <StarLevel starLevel={entry.starLevel} />
+                      <CompactStarLevel starLevel={entry.starLevel} />
                       <span aria-hidden>·</span>
                       {t("raidBosses.stepHealth", {
                         health: label.health.toLocaleString(),
@@ -257,7 +239,12 @@ export function RaidBossDetail({
               />
               <StatRow
                 label={t("raidBosses.stars")}
-                value={<StarLevel starLevel={step.starLevel} />}
+                value={
+                  <CompactStarLevel
+                    className="justify-end"
+                    starLevel={step.starLevel}
+                  />
+                }
               />
               <StatRow
                 label={t("raidBosses.baseRarity")}

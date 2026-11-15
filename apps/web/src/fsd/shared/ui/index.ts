@@ -1,4 +1,4 @@
-export { CompactStars } from "./compact-stars"
+export { CompactStarLevel, CompactStars } from "./compact-stars"
 export { CompactProgression } from "./compact-progression"
 export { progressionText } from "./progression-text"
 export { EntityIcon } from "./entity-icon"

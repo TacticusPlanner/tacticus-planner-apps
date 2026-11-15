@@ -118,7 +118,7 @@ describe("UpgradeImpactSection", () => {
     ])
     expect(
       within(rows[2]!).getByTestId("upgrade-impact-step")
-    ).toHaveTextContent("Ascension to Epic Red Three Stars")
+    ).toHaveTextContent("Ascension to Epic 3★")
     expect(
       within(rows[2]!).getByTestId("upgrade-impact-teams")
     ).toHaveTextContent("Four: battle 5 → 6")

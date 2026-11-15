@@ -1071,7 +1071,7 @@ describe("CreateGoalSheet", () => {
       ).not.toBeDisabled()
     })
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Ascension"))
-    pickStep("create-goal-ascension-end", "Common One Star")
+    pickStep("create-goal-ascension-end", "Common 1★")
     await screen.findByTestId("create-goal-shard-location-B1")
 
     // Following the link closes the sheet (via onNavigateAway) — it must not reset the form.
@@ -1107,7 +1107,7 @@ describe("CreateGoalSheet", () => {
     // The default Common:None -> Common:None range needs no shards at all, so the selector
     // correctly stays hidden until the target actually crosses a step that costs regular shards —
     // advance to Common:OneStar (20 regular shards per the ascension-costs fixture above).
-    pickStep("create-goal-ascension-end", "Common One Star")
+    pickStep("create-goal-ascension-end", "Common 1★")
 
     // Ascension alone: the shared selector shows on its card.
     await screen.findByTestId("create-goal-shard-location-B1")
@@ -1165,7 +1165,7 @@ describe("CreateGoalSheet", () => {
 
     // Advance all the way to Mythic:TwoBlueStars (8 mythic shards per the fixture above) — now the
     // mythic group appears, listing ASE28 (never B1, which is regular-only).
-    pickStep("create-goal-ascension-end", "Mythic Two Blue Stars")
+    pickStep("create-goal-ascension-end", "Mythic 2★")
 
     await screen.findByTestId("create-goal-shard-location-ASE28")
     expect(
@@ -1189,7 +1189,7 @@ describe("CreateGoalSheet", () => {
 
     // Advance to a range needing mythic shards before Unlock is enabled — same fixture/target as
     // "offers the mythic shard-location group..." above.
-    pickStep("create-goal-ascension-end", "Mythic Two Blue Stars")
+    pickStep("create-goal-ascension-end", "Mythic 2★")
     await screen.findByTestId("create-goal-shard-location-ASE28")
 
     // Enabling Unlock alongside it moves the shared Campaigns group's regular-only sources to
@@ -1887,7 +1887,7 @@ describe("CreateGoalSheet", () => {
     expect(info).toHaveTextContent("3")
     expect(info).toHaveTextContent("2")
     expect(info).toHaveTextContent("Stone II")
-    expect(within(info).getByAltText("Red One Star")).toBeInTheDocument()
+    expect(within(info).getByAltText(/ 1★$/)).toBeInTheDocument()
   })
 
   it("shows only the Mythic Shard count once an owned character's progression reaches the Mythic tier", async () => {
@@ -2678,7 +2678,7 @@ describe("CreateGoalSheet", () => {
           "radio",
           { checked: true }
         )
-      ).toHaveAccessibleName("Common One Star")
+      ).toHaveAccessibleName("Common 1★")
     })
 
     it("shows every problem inline at once, counts them beside submit, and moves focus from the summary", async () => {
