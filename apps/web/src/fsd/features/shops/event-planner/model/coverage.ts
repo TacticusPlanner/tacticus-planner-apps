@@ -106,7 +106,7 @@ export function rewardResources(
       one(`component:${alliance}`, "components")
     )
   }
-  if (/^(mythicShards|shards)_/.test(rewardType))
+  if (/^(?:mythicShards|shards)_/.test(rewardType))
     return [one(rewardType, "shards")]
   if (/^upg/.test(rewardType)) return [one(rewardType, "mythicMaterials")]
   return []
