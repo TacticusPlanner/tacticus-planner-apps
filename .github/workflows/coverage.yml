@@ -31,6 +31,7 @@ concurrency:
 jobs:
   # Required checks must always report, so PRs are not filtered with paths-ignore;
   # instead the work is skipped (a skipped job satisfies a required check).
+  # The file filter matches the docs-only label in .github/labeler.yml; keep the two in step.
   changes:
     name: Detect changes
     runs-on: ubuntu-latest

@@ -169,7 +169,8 @@ Run the tests on any OS with Node 22 or newer:
 node --test "scripts/release/*.test.mjs"
 ```
 
-CI runs them on Linux and Windows. The folder is kept identical in
+CI runs them on Linux and Windows when a pull request changes `scripts/release/`
+(the `release-scripts` label from `.github/labeler.yml`). The folder is kept identical in
 `tacticus-planner-api`; change both together.
 
 ## Rules
