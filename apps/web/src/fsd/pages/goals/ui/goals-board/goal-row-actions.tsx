@@ -12,13 +12,12 @@ import {
 
 import type { GoalStatus } from "@/entities/goal"
 
-import {
-  AddToAnotherProjectDialog
-  
-  
-  
+import { AddToAnotherProjectDialog } from "@/features/goal-planning"
+import type {
+  GoalMenuMoves,
+  GoalRow,
+  useGoalActions,
 } from "@/features/goal-planning"
-import type {GoalMenuMoves, GoalRow, useGoalActions} from "@/features/goal-planning";
 import { DeleteGoalDialog } from ".//delete-goal-dialog"
 import { MoveToPriorityDialog } from "./move-to-priority-dialog"
 import { toggleGoalStatus } from "./goal-row-utils"
