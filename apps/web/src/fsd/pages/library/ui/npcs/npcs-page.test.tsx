@@ -296,12 +296,7 @@ describe("NpcsPage", () => {
       .getAllByRole("button")
       .map((tile) => tile.textContent)
     // Store order (by id) and localized names from the `npcs` namespace.
-    expect(names).toEqual([
-      "Havoc",
-      "Royal Warden Makhotep",
-      "Hexmark Destroyer Imospekh",
-      "Termagant",
-    ])
+    expect(names).toEqual(["Havoc", "Makhotep", "Imospekh", "Termagant"])
   })
 
   it("restores NPC, variation, and level from a direct link", async () => {
