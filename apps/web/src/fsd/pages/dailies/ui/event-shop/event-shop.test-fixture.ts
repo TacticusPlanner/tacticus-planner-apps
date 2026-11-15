@@ -1,5 +1,6 @@
 import type {
   GameCatalogEventShop,
+  GameCatalogEventShopRecord,
   GameCatalogShopVariant,
 } from "@workspace/game-catalog"
 
@@ -153,6 +154,17 @@ export const upcomingEvent: GameCatalogEventShop = {
   startUtc: "2026-12-07T00:00:00Z",
   dayCount: 7,
   weeks: [runningEvent.weeks[0]!],
+}
+
+/** An event the game data has but the calendar does not date yet (start date to be announced). */
+export const undatedEvent: GameCatalogEventShopRecord = {
+  ...runningEvent,
+  id: "january-2027",
+  eventKey: "January2027",
+  definitionId: null,
+  currency: "seasonalEventCurrencyJanuary2027",
+  startUtc: null,
+  dayCount: 14,
 }
 
 export const NOW = Date.parse("2026-10-29T12:00:00Z")

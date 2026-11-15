@@ -3,11 +3,13 @@ import { describe, expect, it } from "vitest"
 import { datasetPayloadSchemas } from "../schemas"
 import fixture from "./event-shops.fixture.json"
 import {
+  compareEventShopsByStart,
   defaultEventDay,
   eventDay,
   eventDayIndex,
   eventDays,
   eventStatus,
+  isDatedEventShop,
   resolveEventDaySlots,
 } from "./event-days"
 import { bpSeasonStartMs } from "./season-locks"
@@ -15,11 +17,34 @@ import { computeShopLockContext } from "./shop-resolve"
 
 // A trimmed copy of the served `event-shops` payload: August 2026 (2 weeks from Sun 2 Aug, no slots) and
 // October 2026 (1 week from Mon 26 Oct, the game's first 8 slots).
-const events = datasetPayloadSchemas["event-shops"].parse(fixture)
+const records = datasetPayloadSchemas["event-shops"].parse(fixture)
+const events = records.filter(isDatedEventShop)
 const august = events.find((event) => event.id === "august-2026")!
 const october = events.find((event) => event.id === "october-2026")!
 
 const at = (iso: string) => Date.parse(iso)
+
+describe("undated events", () => {
+  const undated = {
+    ...records[0]!,
+    id: "january-2027",
+    definitionId: null,
+    startUtc: null,
+  }
+
+  it("parses an event with no start date or definition yet", () => {
+    const [parsed] = datasetPayloadSchemas["event-shops"].parse([undated])
+    expect(parsed?.startUtc).toBeNull()
+    expect(isDatedEventShop(parsed!)).toBe(false)
+    expect(isDatedEventShop(october)).toBe(true)
+  })
+
+  it("orders dated events by start, then undated ones", () => {
+    expect(
+      [undated, october, august].sort(compareEventShopsByStart).map((e) => e.id)
+    ).toEqual(["august-2026", "october-2026", "january-2027"])
+  })
+})
 
 describe("event day mapping", () => {
   it("maps an instant to its event day, week, date and weekday", () => {
