@@ -270,6 +270,7 @@ export function GoalEditForm({
             <GoalEditPriorityField
               onChange={(priorityPosition) => edit({ priorityPosition })}
               portalContainer={portalContainer}
+              occupants={plan.inFlight}
               position={draft.priorityPosition}
               total={total}
             />

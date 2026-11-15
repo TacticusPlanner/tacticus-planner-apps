@@ -12,7 +12,13 @@ const getGoal = vi.fn()
 const editGoal = vi.fn()
 const listProjects = vi.fn()
 const plan = vi.hoisted(() => ({
-  inFlight: [] as { goalId: string; status: string }[],
+  inFlight: [] as {
+    goalId: string
+    status: string
+    entityType?: string
+    entityId?: string
+    goalType?: string
+  }[],
   orderRevision: 4,
   loading: false,
 }))
@@ -1238,6 +1244,28 @@ describe("GoalEditDialog", () => {
       expect(editGoal).toHaveBeenCalledWith("e", {
         priority: { position: 3, expectedOrderRevision: 4 },
       })
+    })
+
+    it("shows the unit and goal type holding each position", async () => {
+      plan.inFlight = ["a", "b", "c", "d", "e"].map((goalId, index) => ({
+        goalId,
+        status: "Active",
+        entityType: "Character",
+        entityId: `unit-${goalId}`,
+        goalType: index === 1 ? "Ascension" : "Rank",
+      }))
+      stayOnScreen("e")
+      renderDialog({ goalId: "e" })
+      await loaded()
+
+      fireEvent.click(screen.getByTestId("goal-edit-priority-select"))
+      const listbox = await screen.findByRole("listbox")
+      expect(
+        within(listbox).getByTestId("priority-option-occupant-2")
+      ).toHaveAttribute("title", "Entity unit-b · Ascension")
+      expect(
+        within(listbox).getByTestId("priority-option-occupant-2")
+      ).toContainElement(within(listbox).getByAltText("Ascension"))
     })
 
     it("moves C down to position 5", async () => {

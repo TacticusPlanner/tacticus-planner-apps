@@ -118,6 +118,8 @@ export function RankGoalCard({
           onChange={(key) => onChange({ ...value, end: key as Rank })}
           startKey={start}
           startSelectable={start !== lastRank}
+          // One width for every rank chip, sized to the longest name ("Adamantine III").
+          stepClassName="w-36"
           steps={steps}
           takenKeys={takenRanks}
           testId="create-goal-rank-end"

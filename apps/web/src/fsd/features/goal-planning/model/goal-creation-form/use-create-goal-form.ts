@@ -521,6 +521,7 @@ export function useCreateGoalForm({
     // 1-based position in the global order; the new goals go last unless the user moves them.
     priorityPosition: priorityPosition ?? inFlightCount + 1,
     priorityTotal: inFlightCount + 1,
+    priorityOccupants: globalPlan.inFlight,
     setPriorityPosition: (position: number) =>
       setPriorityPosition(position > inFlightCount ? null : position),
     takenTargetsFor: takenTargets.takenFor,
