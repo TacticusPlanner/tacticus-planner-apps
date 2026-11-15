@@ -222,7 +222,7 @@ const openFilters = (user: ReturnType<typeof userEvent.setup>) =>
 /** `toLocaleString` grouping differs per machine locale; match digits regardless of separators. */
 const numberText = (value: number) =>
   new RegExp(
-    String(value).replace(/\B(?=(\d{3})+(?!\d))/g, "[\\s,.\\u00a0\\u202f]?")
+    String(value).replace(/\B(?=(?:\d{3})+(?!\d))/g, "[\\s,.\\u00a0\\u202f]?")
   )
 
 describe("NpcsPage", () => {

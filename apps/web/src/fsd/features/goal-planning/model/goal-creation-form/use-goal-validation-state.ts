@@ -103,10 +103,8 @@ export function useGoalValidationState({
   const abilityOutOfRange =
     enabledTypes.has("Ability") &&
     !!abilityTargets &&
-    !(
-      inRange(abilityTargets.abilityActiveTarget, abilityActiveStart) &&
-      inRange(abilityTargets.abilityPassiveTarget, abilityPassiveStart)
-    )
+    (!inRange(abilityTargets.abilityActiveTarget, abilityActiveStart) ||
+      !inRange(abilityTargets.abilityPassiveTarget, abilityPassiveStart))
 
   const allTargetIssues = getGoalValidationIssues({
     hasEntityId: !!entityId,

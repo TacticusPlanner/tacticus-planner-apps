@@ -19,7 +19,7 @@ const nestedModules = import.meta.glob<Resource[string]>(
 
 const en = Object.fromEntries(
   Object.entries(localeModules).map(([path, module]) => [
-    path.replace(/^.*\/(.+)\.json$/, "$1"),
+    path.replace(/^.*\/([^/]+)\.json$/, "$1"),
     module.default,
   ])
 )

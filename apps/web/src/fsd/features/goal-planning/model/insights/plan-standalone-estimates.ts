@@ -5,10 +5,12 @@ import {
   calculateGoalResourceNeed,
   createCraftedInventoryPool,
   estimatePlan,
-  type FlatSupplier,
-  type GoalNeed,
 } from "@/entities/goal-farming"
-import type { RankSlotAllocation } from "@/entities/goal-farming"
+import type {
+  RankSlotAllocation,
+  FlatSupplier,
+  GoalNeed,
+} from "@/entities/goal-farming"
 
 type NeedParams = Parameters<typeof calculateGoalResourceNeed>[0]
 type EstimateParams = Parameters<typeof estimatePlan>[0]

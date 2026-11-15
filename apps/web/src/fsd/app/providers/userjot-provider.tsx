@@ -217,9 +217,7 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     // Until this call succeeds there is no fresh identity, so a failure is retried on the next open.
     identifiedAtRef.current = null
     try {
-      const { token } = await queryClient.fetchQuery(
-        accountQueries.userJotToken()
-      )
+      const { token } = await queryClient.query(accountQueries.userJotToken())
       if (identifyGenerationRef.current !== generation) {
         return
       }

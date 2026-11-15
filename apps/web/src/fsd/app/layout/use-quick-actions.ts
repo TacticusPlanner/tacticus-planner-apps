@@ -109,7 +109,7 @@ export function useQuickActions({
               ? createElement(SyncStatusText)
               : undefined,
         },
-        run: () => void sync.syncNow(),
+        run: () => sync.syncNow(),
       }
     )
   }

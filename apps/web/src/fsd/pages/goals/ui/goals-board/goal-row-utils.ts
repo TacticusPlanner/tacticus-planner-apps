@@ -7,14 +7,14 @@ import type {
   ActiveSeasonFit,
   GoalMenuMoves,
   GoalOverviewMetrics,
+  GoalRow,
+  useGoalActions,
 } from "@/features/goal-planning"
 import {
   levelBookAvailability,
   type EstimateOutcome,
 } from "@/entities/goal-farming"
 import type { XpBookFigure } from "../shared/level-requirement-display"
-import type { GoalRow } from "@/features/goal-planning"
-import type { useGoalActions } from "@/features/goal-planning"
 import type { ProjectRemoval } from "./project-removal-flow"
 
 /** The data a prerequisite pause/resume cascade needs about every goal currently in view, not just

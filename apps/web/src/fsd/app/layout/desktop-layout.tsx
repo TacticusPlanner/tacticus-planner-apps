@@ -83,7 +83,7 @@ export function DesktopShell({
     if (!hasSectionMenu) return
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.repeat || !(event.metaKey || event.ctrlKey)) return
+      if (event.repeat || (!event.metaKey && !event.ctrlKey)) return
       if (event.key.toLowerCase() !== "b") return
 
       event.preventDefault()
@@ -197,7 +197,7 @@ function AppSidebar({
     if (!isAuthenticated) return
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat) return
-      if (!(event.metaKey || event.ctrlKey)) return
+      if (!event.metaKey && !event.ctrlKey) return
 
       if (event.key === "g") {
         event.preventDefault()

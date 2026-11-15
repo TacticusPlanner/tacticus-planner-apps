@@ -274,7 +274,7 @@ export const GoalCard = memo(
                 (chip) =>
                   !ROW_END_KINDS.has(chip.kind) &&
                   chip.kind !== "orbs" &&
-                  !(shardProgress && SHARD_KINDS.has(chip.kind))
+                  (!shardProgress || !SHARD_KINDS.has(chip.kind))
               )}
             </>
           ) : kind === "Ability" ? (

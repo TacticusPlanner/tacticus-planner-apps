@@ -99,7 +99,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   // The Legendary Event part's own code is translated; the other parts keep the server's message.
   const rows = V1_IMPORT_PARTS.filter(({ key }) => result[key])
     .filter(({ key }) => result[key].code !== "not_selected")
-    .filter(({ key }) => !(key === "goals" && syncRequired))
+    .filter(({ key }) => key !== "goals" || !syncRequired)
     .map(({ key, label }) => {
       const part =
         key === "goals" ? { ...result.goals, status: goalsStatus } : result[key]

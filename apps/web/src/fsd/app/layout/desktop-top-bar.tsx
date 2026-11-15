@@ -32,7 +32,7 @@ export function DesktopTopBar({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.repeat || !(event.metaKey || event.ctrlKey)) return
+      if (event.repeat || (!event.metaKey && !event.ctrlKey)) return
       if (event.key === "k") {
         event.preventDefault()
         setNavigationOpen((open) => !open)

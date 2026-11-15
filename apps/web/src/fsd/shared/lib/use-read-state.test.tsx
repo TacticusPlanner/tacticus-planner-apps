@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { describe, expect, it, vi } from "vitest"
 
-import { act, render, screen, waitFor } from "@/test/render"
+import { act, render, screen } from "@/test/render"
 
 import {
   combineReadStates,
@@ -104,6 +104,6 @@ describe("useReadState after a sync", () => {
       queryClient.invalidateQueries({ queryKey: ["local", "composite"] })
     )
 
-    await waitFor(() => expect(screen.getByText("second")).toBeInTheDocument())
+    expect(await screen.findByText("second")).toBeInTheDocument()
   })
 })

@@ -10,7 +10,7 @@ afterEach(() => {
 describe("shareCurrentLookupUrl", () => {
   it("shares via the Web Share sheet when preferred and available", async () => {
     const share = vi.fn().mockResolvedValue(undefined)
-    vi.stubGlobal("navigator", { ...navigator, share })
+    vi.stubGlobal("navigator", { share })
 
     const result = await shareCurrentLookupUrl(true)
 
@@ -22,7 +22,7 @@ describe("shareCurrentLookupUrl", () => {
     const share = vi
       .fn()
       .mockRejectedValue(new DOMException("dismissed", "AbortError"))
-    vi.stubGlobal("navigator", { ...navigator, share })
+    vi.stubGlobal("navigator", { share })
 
     expect(await shareCurrentLookupUrl(true)).toBe("shared")
   })
@@ -31,7 +31,6 @@ describe("shareCurrentLookupUrl", () => {
     const share = vi.fn().mockRejectedValue(new Error("boom"))
     const writeText = vi.fn().mockResolvedValue(undefined)
     vi.stubGlobal("navigator", {
-      ...navigator,
       share,
       clipboard: { writeText },
     })
@@ -43,7 +42,6 @@ describe("shareCurrentLookupUrl", () => {
   it("copies to the clipboard directly when Web Share isn't preferred", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined)
     vi.stubGlobal("navigator", {
-      ...navigator,
       share: undefined,
       clipboard: { writeText },
     })
@@ -54,7 +52,6 @@ describe("shareCurrentLookupUrl", () => {
   it("reports an error when the clipboard write itself fails", async () => {
     const writeText = vi.fn().mockRejectedValue(new Error("denied"))
     vi.stubGlobal("navigator", {
-      ...navigator,
       share: undefined,
       clipboard: { writeText },
     })

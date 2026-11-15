@@ -58,6 +58,8 @@ describe("setup-complete hint", () => {
   it("stores no account details", () => {
     rememberSetupState("account-a", completeUser)
 
-    expect(Object.values({ ...localStorage })).toEqual(["account-a"])
+    expect(
+      Object.keys(localStorage).map((key) => localStorage.getItem(key))
+    ).toEqual(["account-a"])
   })
 })

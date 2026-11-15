@@ -211,6 +211,7 @@ function createMsalConfig(): Configuration {
               console.info(message)
               break
             case LogLevel.Verbose:
+            case LogLevel.Trace:
               console.debug(message)
               break
           }

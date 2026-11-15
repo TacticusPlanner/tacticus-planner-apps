@@ -65,9 +65,9 @@ import type {
   DailyRaidResourceProgress,
   DailyRaidResourceUrgency,
   DailyRaidResourceVisual,
+  DailyRaidResourceLabels,
 } from "./daily-raids.domain"
 import { dailyRaidResourceKey, shardResourceLabel } from "./daily-raids.domain"
-import type { DailyRaidResourceLabels } from "./daily-raids.domain"
 import type { TodayQuickFilterOptions } from "./today-quick-filters/today-quick-filters"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]

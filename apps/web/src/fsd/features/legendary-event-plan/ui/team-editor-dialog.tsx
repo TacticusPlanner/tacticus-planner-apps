@@ -1,4 +1,4 @@
-import { useId, useMemo, useRef, useState, type FormEvent } from "react"
+import { useId, useMemo, useRef, useState, type SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -221,7 +221,7 @@ export function TeamEditorDialog({
       onOpenChange(false)
     }
   }
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     void save(false)
   }

@@ -51,7 +51,8 @@ const escapeRegExp = (text: string) =>
  */
 function isFromOurScripts(error: unknown, origin: string): boolean {
   // A DOMException is not an Error in every engine, and IndexedDB / fetch failures are ours.
-  if (!(error instanceof Error || error instanceof DOMException)) return false
+  if (!(error instanceof Error) && !(error instanceof DOMException))
+    return false
   if (!error.stack) return true
   return new RegExp(
     `${escapeRegExp(origin)}/[^\\s:)]+\\.(?:m?js|tsx?)\\b`

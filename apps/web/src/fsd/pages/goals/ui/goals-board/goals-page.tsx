@@ -7,7 +7,35 @@ import {
   StatusFilterSelect,
   isGoalGroupValue,
 } from "@/entities/goal"
-import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-planning"
+import {
+  MobileReorderBar,
+  OrderConflictBanner,
+  useGoalAttainmentState,
+  useGoalsOverviewMetrics,
+  usePlanInsights,
+  orderRowsByGlobalPriority,
+  expandedRows,
+  groupRows,
+  rowGroupId,
+  useCollapsedGroups,
+  useProjectsByGoalId,
+  useStableMap,
+  useGoalActions,
+  useGoalsMobileModes,
+  useGoalsSelection,
+  useGoals,
+  useGoalEditParam,
+  useGoalsListFilters,
+  goalMenuMoves,
+  useGoalsPageReorder,
+  isGoalsListLoading,
+  useGoalCatalog,
+  useGoalsProjectScope,
+  isSeasonFitMode,
+  seasonCutoffGoalId,
+  useSeasonFit,
+  GoalEditDialog,
+} from "@/features/goal-planning"
 import { PendingMaterialSteps } from "@/features/v1-import"
 import {
   normalizeXpBookRarity,
@@ -17,30 +45,10 @@ import {
 } from "@/entities/planning-setting"
 import { usePersistedSelection } from "@/shared/lib"
 
-import { useGoalAttainmentState } from "@/features/goal-planning"
-import { useGoalsOverviewMetrics } from "@/features/goal-planning"
-import { usePlanInsights } from "@/features/goal-planning"
-import { orderRowsByGlobalPriority } from "@/features/goal-planning"
-import {
-  expandedRows,
-  groupRows,
-  rowGroupId,
-  useCollapsedGroups,
-} from "@/features/goal-planning"
 import { goalRowFromSummary, type GoalRow } from "@/features/goal-planning"
-import { useProjectsByGoalId } from "@/features/goal-planning"
-import { useStableMap } from "@/features/goal-planning"
-import { useGoalActions } from "@/features/goal-planning"
-import { useGoalsMobileModes } from "@/features/goal-planning"
-import { useGoalsSelection } from "@/features/goal-planning"
-import { useGoals } from "@/features/goal-planning"
-import { useGoalEditParam, useGoalsListFilters } from "@/features/goal-planning"
 import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
-import { goalMenuMoves, useGoalsPageReorder } from "@/features/goal-planning"
-import { isGoalsListLoading } from "@/features/goal-planning"
 import { useProjects } from "@/entities/project"
-import { useGoalCatalog } from "@/features/goal-planning"
 import { GoalsCardsSelectAll } from "./goals-cards"
 import { GoalsList } from ".//goals-list"
 import { GoalGroupSection } from "./goal-group-section"
@@ -57,15 +65,8 @@ import { GoalsMobileSelectToggle } from "./goals-mobile-select-toggle"
 import { MobileSelectBar } from "./mobile-select-bar"
 import { GoalsOrderHint } from "./goals-order-hint"
 import { GoalsProjectScope } from "./goals-project-scope"
-import { useGoalsProjectScope } from "@/features/goal-planning"
-import {
-  isSeasonFitMode,
-  seasonCutoffGoalId,
-  useSeasonFit,
-} from "@/features/goal-planning"
 import { useLevelRules } from "@/entities/goal-farming"
 import { buildCascadeContext, type SelectedXpBook } from "./goal-row-utils"
-import { GoalEditDialog } from "@/features/goal-planning"
 import { PageTourButton } from "@/shared/tour"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 

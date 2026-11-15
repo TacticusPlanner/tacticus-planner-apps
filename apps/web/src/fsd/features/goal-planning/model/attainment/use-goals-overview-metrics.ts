@@ -12,17 +12,18 @@ import { implicitPrerequisiteBlockers } from "../blockers/implicit-prerequisite-
 import type {
   EstimateOutcome,
   RankSlotAllocation,
+  AbilityMaterials,
+  ResourceNeed,
 } from "@/entities/goal-farming"
 import {
   calculateGoalResourceNeed,
   useLevelRules,
 } from "@/entities/goal-farming"
-import type { AbilityMaterials, ResourceNeed } from "@/entities/goal-farming"
 import { useStableIds } from "../shared/use-stable-ids"
 import { useStableMap } from "../shared/use-stable-map"
 import { useGoalsFor } from "./use-goals-for"
 import { splitUpgradeGoalStock } from "./upgrade-goal-stock"
-import type { UpgradeMaterialHolder } from "./goal-progress"
+import type { UpgradeMaterialHolder, GoalProgress } from "./goal-progress"
 import { withStandaloneAvailable } from "../insights/plan-ability-materials"
 import type { PlanNetResources } from "../insights/use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
@@ -37,7 +38,7 @@ import {
   isPlayerDataUnavailable,
 } from "./goal-attainment"
 import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "./goal-overview-metrics-defaults"
-import { computeGoalProgress, type GoalProgress } from "./goal-progress"
+import { computeGoalProgress } from "./goal-progress"
 import { milestoneSiblings, withMilestoneStart } from "./milestone-siblings"
 import type { GoalDetail } from "@/entities/goal"
 import {

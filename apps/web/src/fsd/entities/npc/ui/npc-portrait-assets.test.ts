@@ -16,7 +16,7 @@ const shippedCatalogImages = new Set(
 
 // Loot objects and power-ups are served with `kind: "object"` and never listed, so their portraits
 // (supply pods, hero-spawn power-ups) are intentionally not shipped.
-const isObjectId = (id: string) => /^(LootObj_|powup)/.test(id)
+const isObjectId = (id: string) => /^(?:LootObj_|powup)/.test(id)
 
 describe("NPC portrait assets", () => {
   it("ships a portrait file for every mapped unit variation", () => {

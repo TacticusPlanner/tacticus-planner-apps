@@ -7,8 +7,7 @@ import {
   useProjectActions,
 } from "@/features/project-management"
 
-import type { useGoalActions } from "@/features/goal-planning"
-import type { GoalRow } from "@/features/goal-planning"
+import type { useGoalActions, GoalRow } from "@/features/goal-planning"
 import { DeleteGoalDialog } from "./delete-goal-dialog"
 import { GoalsBulkActions } from "./goals-bulk-actions"
 import { ProjectPickerDialog } from "./project-picker-dialog"

@@ -5,7 +5,7 @@
 // (`fuzzyResolveNpc`).
 
 const UNIT_TYPE_RE = /^GuildBoss\d+(?:Boss|MiniBoss|Minion|Npc|LootObj)\d*/
-const PRIME_TOKEN_RE = /(?:MiniBoss|Minion)\d+(.+)$/
+const PRIME_TOKEN_RE = /(?:MiniBoss|Minion)\d+(\D.*)$/
 const NPC_PREFIX_RE = /^GuildBoss\d+Npc\d+/
 
 // The faction token that leads a unit-set id's descriptive tail (`TyranTervigon…`, `AdmecMarshall`).

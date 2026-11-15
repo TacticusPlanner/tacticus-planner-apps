@@ -20,9 +20,8 @@ import {
   type EstimateResourceId,
 } from "@/entities/goal-farming"
 
-import type { GoalProgress } from "@/features/goal-planning"
-import { blockerReasonText, type GoalBlockers } from "@/features/goal-planning"
-import { useGoalCatalog } from "@/features/goal-planning"
+import type { GoalProgress, GoalBlockers } from "@/features/goal-planning"
+import { blockerReasonText, useGoalCatalog } from "@/features/goal-planning"
 import { reachableCeilingLabel } from "./ceiling-marker"
 import { FarmUnlockPaths } from "./farm-unlock-paths"
 import { GoalResourceIcon } from "./goal-resource-icon"

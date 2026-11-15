@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
-import { render, screen, waitFor } from "@/test/render"
+import { render, screen } from "@/test/render"
 import {
   globalValuesFixture,
   progressionRulesFixture,
@@ -311,9 +311,7 @@ describe("InsightsPage", () => {
       { auth: { authenticated: true }, route: "/plan/insights" }
     )
 
-    await waitFor(() =>
-      expect(screen.getByTestId("insights-outlook")).toBeInTheDocument()
-    )
+    expect(await screen.findByTestId("insights-outlook")).toBeInTheDocument()
     expect((await screen.findAllByText("1")).length).toBeGreaterThan(0)
     expect(getGoal).not.toHaveBeenCalled()
   })

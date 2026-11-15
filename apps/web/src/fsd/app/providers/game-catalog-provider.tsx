@@ -58,7 +58,8 @@ function fetchCatalogSync(
   baseUrl: string,
   force: boolean
 ): Promise<GameCatalogSyncResult> {
-  return queryClient.fetchQuery({
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps -- the client is the cache, not an input
+  return queryClient.query({
     queryKey: ["sync", "catalog", baseUrl],
     queryFn: () => runCatalogSync(baseUrl, queryClient),
     staleTime: force ? 0 : Infinity,

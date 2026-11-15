@@ -31,15 +31,15 @@ import {
   ownedFrom,
   stepGap,
   stepsFor,
-  type HreOwnedStep,
-  type HrePace,
-} from "@/entities/hre-mission"
-import {
   hreStepProgression,
-  type HreRarityStepId,
 } from "@/entities/hre-mission"
-import type { HreRewardRules } from "@/entities/hre-mission"
-import type { HreProgress } from "@/entities/hre-mission"
+import type {
+  HreRewardRules,
+  HreOwnedStep,
+  HrePace,
+  HreRarityStepId,
+  HreProgress,
+} from "@/entities/hre-mission"
 import type { HreProgressActions } from "../model/use-hre-progress"
 
 const parseWhole = (value: string, min: number): number | null => {

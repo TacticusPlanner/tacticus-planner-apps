@@ -135,7 +135,7 @@ export function useRevisionedDraft<
           return "conflict"
         }
         try {
-          await queryClient.fetchQuery({ ...queryOptions, staleTime: 0 })
+          await queryClient.query({ ...queryOptions, staleTime: 0 })
           refreshSharedRevision()
           setEdited(null)
           mutation.reset()

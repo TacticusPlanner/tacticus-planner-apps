@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useState, type SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
@@ -44,7 +44,7 @@ export function ReplaceGuildApiKeyCard({ guild, onReplaced }: Props) {
       : t("guild.settings.apiKey.genericError")
     : null
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     const trimmed = apiKey.trim()
     if (!trimmed) return

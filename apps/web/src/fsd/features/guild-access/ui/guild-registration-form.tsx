@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useState, type SubmitEvent } from "react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
@@ -44,7 +44,7 @@ export function GuildRegistrationForm({
       : t("guild.unregistered.genericError")
     : null
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     const trimmed = token.trim()
     if (!trimmed) return
