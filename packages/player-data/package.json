@@ -23,7 +23,7 @@
     "@eslint/js": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
-    "fake-indexeddb": "^6.2.6",
+    "fake-indexeddb": "^6.2.8",
     "globals": "catalog:",
     "jsdom": "catalog:",
     "knip": "catalog:",

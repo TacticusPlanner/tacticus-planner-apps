@@ -47,7 +47,8 @@ const search = () => ({
   hordeMultiplier: () => 1,
 })
 
-describe("plan upgrade search", () => {
+// Each benchmark runs a full search many times; the default 60 s test timeout is too short.
+describe("plan upgrade search", { timeout: 600_000 }, () => {
   test("whole search in one go", async ({ bench }) => {
     await bench("whole search in one go", () => {
       recommendUpgradesNow(search())
