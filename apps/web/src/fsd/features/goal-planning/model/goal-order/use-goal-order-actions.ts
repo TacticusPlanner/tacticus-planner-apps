@@ -1,7 +1,8 @@
 import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { useQueryClient, type QueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
+import type { QueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
@@ -11,9 +12,8 @@ import {
   inFlightInGlobalOrder,
   moveOntoDisplaced,
   updateGoalOrder,
-  type GoalListResponse,
-  type GoalOrderResponse,
 } from "@/entities/goal"
+import type { GoalListResponse, GoalOrderResponse } from "@/entities/goal"
 import { moveProjectGoal } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 

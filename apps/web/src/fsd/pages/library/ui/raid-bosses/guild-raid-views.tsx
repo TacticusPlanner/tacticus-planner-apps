@@ -8,9 +8,9 @@ import { Button } from "@workspace/ui/components/button"
 import { chestIcon, guildRaidChestTier } from "@workspace/game-catalog"
 import { useTranslation } from "react-i18next"
 
-import {
-  type GuildRaidMetaCatalog,
-  type GuildRaidMetaUnitPresentation,
+import type {
+  GuildRaidMetaCatalog,
+  GuildRaidMetaUnitPresentation,
 } from "@/entities/guild-raid-meta"
 import type { RaidBossesPayload } from "@/entities/raid-boss"
 import { EntityIcon } from "@/shared/ui/entity-icon"

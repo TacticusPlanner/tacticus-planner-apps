@@ -1,11 +1,12 @@
 import { useMemo } from "react"
-import {
-  getGameCatalogMetadata,
-  type GameCatalogDatasetKey,
-  type StorageModel,
+import { getGameCatalogMetadata } from "@workspace/game-catalog"
+import type {
+  GameCatalogDatasetKey,
+  StorageModel,
 } from "@workspace/game-catalog"
 
-import { combineReadStates, useReadState, type ReadState } from "@/shared/lib"
+import { combineReadStates, useReadState } from "@/shared/lib"
+import type { ReadState } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 export type CatalogDataset<Record extends { id: string }> = {

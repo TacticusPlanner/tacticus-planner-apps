@@ -11,8 +11,8 @@ import type { GoalDetail } from "@/entities/goal/@x/goal-farming"
 import {
   calculateGoalResourceNeed,
   createUnitCoverage,
-  type GoalRequirementParams,
 } from "./goal-requirements"
+import type { GoalRequirementParams } from "./goal-requirements"
 
 const characterLadder = new Map(
   [

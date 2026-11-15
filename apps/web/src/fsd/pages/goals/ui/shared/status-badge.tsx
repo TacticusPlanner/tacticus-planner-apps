@@ -16,10 +16,10 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { GoalStatus } from "@/entities/goal"
 import { afterNextPaint } from "@/shared/lib"
-import {
-  resourceLabel,
-  type EstimateOutcome,
-  type EstimateResourceId,
+import { resourceLabel } from "@/entities/goal-farming"
+import type {
+  EstimateOutcome,
+  EstimateResourceId,
 } from "@/entities/goal-farming"
 
 import type { GoalProgress, GoalBlockers } from "@/features/goal-planning"

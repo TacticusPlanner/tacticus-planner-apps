@@ -4,18 +4,20 @@ import {
   LEGENDARY_EVENT_LANE_IDS,
   buildLanePointsModel,
   buildSyncedLaneProgress,
-  type LegendaryEvent,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventLifecycleState,
-  type LegendaryEventProgress,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
-  type LegendaryEventRunRecord,
-  type LegendaryEventRunRecordEncounter,
-  type LegendaryEventRunRecordTeam,
-  type ReadState,
-  type RosterSnapshot,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventLifecycleState,
+  LegendaryEventProgress,
+  LegendaryEventRosterUnit,
+  LegendaryEventRun,
+  LegendaryEventRunRecord,
+  LegendaryEventRunRecordEncounter,
+  LegendaryEventRunRecordTeam,
+  ReadState,
+  RosterSnapshot,
 } from "@/entities/legendary-event"
 import { diffRosters } from "@/entities/roster-snapshot"
 

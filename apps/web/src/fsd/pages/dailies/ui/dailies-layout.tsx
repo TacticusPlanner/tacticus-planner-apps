@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react"
 import { Outlet, useMatch } from "react-router"
 
-import { useProjects, type ProjectSummary } from "@/entities/project"
+import { useProjects } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 import { PageContainer } from "@/widgets/page-container"
 
 export type DailiesOutletContext = {

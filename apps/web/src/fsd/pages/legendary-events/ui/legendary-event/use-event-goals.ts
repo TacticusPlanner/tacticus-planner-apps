@@ -3,9 +3,11 @@ import { useCallback, useMemo } from "react"
 import {
   LEGENDARY_EVENT_LANE_IDS,
   previewRoster,
-  type LegendaryEvent,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventUnit,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventRosterUnit,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import {
   useGoalLabels,

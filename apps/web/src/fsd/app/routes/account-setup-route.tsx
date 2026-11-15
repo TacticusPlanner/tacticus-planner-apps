@@ -6,7 +6,8 @@ import {
   useSearchParams,
 } from "react-router"
 
-import { AccountSetupScreen, type AccountSetupStep } from "@/features/account"
+import { AccountSetupScreen } from "@/features/account"
+import type { AccountSetupStep } from "@/features/account"
 import { useCurrentUser } from "@/entities/account"
 
 import { SETUP_STEP_PATHS } from "./account-setup-routes"

@@ -8,7 +8,8 @@ import { useHomeScreenEventCalendar } from "@/features/daily-raids"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { calendarWindow, calendarWindowEntry } from "./calendar-window"
-import { selectHomeEvents, type HomeEventRow } from "./select-home-events"
+import { selectHomeEvents } from "./select-home-events"
+import type { HomeEventRow } from "./select-home-events"
 
 /** The calendar's definition id for a Campaign Event window; it names no campaign. */
 const CAMPAIGN_EVENT_DEFINITION_ID = "campaign-event"

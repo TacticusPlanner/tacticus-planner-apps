@@ -14,8 +14,8 @@ import {
   todayQuickFilterOptions,
   useActiveHomeScreenEvent,
   useTodayQuickFilters,
-  type HseListView,
 } from "@/features/daily-raids"
+import type { HseListView } from "@/features/daily-raids"
 import {
   EventDetails,
   PointsProjection,

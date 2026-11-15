@@ -6,7 +6,6 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
-  type LegendaryEventLaneId,
   useClearEstimateConfig,
   useLegendaryEvent,
   useLegendaryEventBattles,
@@ -18,18 +17,21 @@ import {
   teamUnitIdsByLane,
   LEGENDARY_EVENT_LANE_IDS,
 } from "@/entities/legendary-event"
+import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 import {
   useAnnotations,
   useLegendaryEventPlan,
   useShowPaidOptions,
 } from "@/features/legendary-event-plan"
 import {
-  type MarkTokenHandler,
-  type StopTeamHandler,
-  type TokenShownHandler,
   tokenMarkOutcome,
   useTokenMissionsSource,
   useTokenPlan,
+} from "@/features/legendary-event-tokens"
+import type {
+  MarkTokenHandler,
+  StopTeamHandler,
+  TokenShownHandler,
 } from "@/features/legendary-event-tokens"
 import {
   usePlanningSettings,
@@ -49,8 +51,10 @@ import {
   buildRewardOutlookViewModel,
   buildRunStatusViewModel,
   readValue,
-  type LegendaryEventPageViewModel,
-  type LegendaryEventTab,
+} from "./legendary-event-page.view-model"
+import type {
+  LegendaryEventPageViewModel,
+  LegendaryEventTab,
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
@@ -72,10 +76,8 @@ import { useShownTokens } from "./use-shown-tokens"
 import { useEventGoals } from "./use-event-goals"
 import { useEventRuns } from "./use-event-runs"
 import { useImpactTeamName, useUpgradeImpact } from "./use-upgrade-impact"
-import {
-  buildMarksByLane,
-  type ProgressMarksViewModel,
-} from "./progress/progress-marks"
+import { buildMarksByLane } from "./progress/progress-marks"
+import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import { useTeamEditorLauncher } from "./teams/team-editor-launcher"
 import {
   buildTeamsSectionState,

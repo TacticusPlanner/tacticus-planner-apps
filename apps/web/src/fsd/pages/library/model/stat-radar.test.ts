@@ -1,10 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  buildRadarPopulation,
-  buildStatRadar,
-  type RadarCharacter,
-} from "./stat-radar"
+import { buildRadarPopulation, buildStatRadar } from "./stat-radar"
+import type { RadarCharacter } from "./stat-radar"
 import type { PierceRatios } from "./pierce-ratios"
 import v1Fixture from "./v1-radar.fixture.json"
 

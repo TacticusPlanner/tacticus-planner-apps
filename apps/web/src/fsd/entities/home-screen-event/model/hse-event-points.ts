@@ -1,33 +1,24 @@
-import {
-  hseRestrictionPasses,
-  parseHseConfig,
-  type GameCatalogHseTier,
-  type GameCatalogHseTracker,
-  type GameCatalogHseVariant,
+import { hseRestrictionPasses, parseHseConfig } from "@workspace/game-catalog"
+import type {
+  GameCatalogHseTier,
+  GameCatalogHseTracker,
+  GameCatalogHseVariant,
 } from "@workspace/game-catalog"
 
-import { hseDescriptionLines, type HseText } from "../lib/hse-description"
+import { hseDescriptionLines } from "../lib/hse-description"
+import type { HseText } from "../lib/hse-description"
 import {
   hseCurrentMilestoneCell,
   hseMilestoneCells,
   hseMilestonesMax,
   hseProgressPoints,
 } from "../lib/hse-milestones"
-import {
-  hseModeScoring,
-  projectHsePoints,
-  type HseProjection,
-} from "../lib/hse-projection"
-import {
-  HSE_TOKEN_MODES,
-  hseTokenSupply,
-  type HseTokenBuckets,
-} from "../lib/hse-token-supply"
-import {
-  resolveHseScoring,
-  type HsePlayerTier,
-  type HseTierPlayer,
-} from "../lib/resolve-hse-scoring"
+import { hseModeScoring, projectHsePoints } from "../lib/hse-projection"
+import type { HseProjection } from "../lib/hse-projection"
+import { HSE_TOKEN_MODES, hseTokenSupply } from "../lib/hse-token-supply"
+import type { HseTokenBuckets } from "../lib/hse-token-supply"
+import { resolveHseScoring } from "../lib/resolve-hse-scoring"
+import type { HsePlayerTier, HseTierPlayer } from "../lib/resolve-hse-scoring"
 import type { HseProjectionInputs } from "./use-hse-projection-inputs"
 
 /** The HSE instance the tab shows (structurally the daily-raids `HomeScreenEventInstance`). */

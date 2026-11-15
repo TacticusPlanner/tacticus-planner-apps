@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import {
   Download,
   LoaderCircle,
@@ -26,8 +27,8 @@ import {
   MenuSection,
   PreferencesSection,
   UnreadDot,
-  type AccountMenuView,
 } from "./account-menu-parts"
+import type { AccountMenuView } from "./account-menu-parts"
 import { CatalogSyncStatusBadge } from "./catalog-sync-status-badge"
 import { EditDisplayNameButton } from "./edit-display-name-button"
 import { USERJOT_ROADMAP_URL } from "../model/userjot-links"

@@ -5,8 +5,8 @@ import {
   getAutoSyncProgress,
   usePlayerDataProgress,
   usePlayerDataStatus,
-  type PlayerDataStatus,
 } from "@/shared/player-data-status"
+import type { PlayerDataStatus } from "@/shared/player-data-status"
 
 // Reuses the existing manageAccount.playerData.* labels (idle/syncing/ready/stale/error) instead of
 // introducing a duplicate i18n group — those keys already read fine standalone ("Up to date", "Sync

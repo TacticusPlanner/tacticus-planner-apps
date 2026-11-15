@@ -3,11 +3,8 @@
 // character, Kharn, Gulgortz and Uthar, the Biovore and Dreadnought MoWs, the Dark Angels
 // Infiltrator NPC, the items V1's in-game references wear plus the Ultramarines relics, and the
 // stat of every upgrade those characters rank up with.
-import {
-  buildUnitPowerContext,
-  type UnitPowerCatalog,
-  type UnitPowerContext,
-} from "@/shared/unit-power"
+import { buildUnitPowerContext } from "@/shared/unit-power"
+import type { UnitPowerCatalog, UnitPowerContext } from "@/shared/unit-power"
 
 import catalog from "./unit-power-catalog.json"
 

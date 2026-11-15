@@ -1,11 +1,13 @@
 import {
   remainingLanePoints,
   unitLanePotential,
-  type ClearEstimateConfig,
-  type LaneProgressView,
-  type LegendaryEventLane,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventUnit,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimateConfig,
+  LaneProgressView,
+  LegendaryEventLane,
+  LegendaryEventRosterUnit,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
 

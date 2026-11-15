@@ -1,4 +1,5 @@
-import { useMemo, useRef, type CSSProperties, type ReactNode } from "react"
+import { useMemo, useRef } from "react"
+import type { CSSProperties, ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
   closestCenter,
@@ -7,9 +8,11 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  type Announcements,
-  type DragEndEvent,
-  type UniqueIdentifier,
+} from "@dnd-kit/core"
+import type {
+  Announcements,
+  DragEndEvent,
+  UniqueIdentifier,
 } from "@dnd-kit/core"
 import {
   rectSortingStrategy,

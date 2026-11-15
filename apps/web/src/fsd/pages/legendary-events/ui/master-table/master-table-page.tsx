@@ -18,8 +18,10 @@ import {
   useLegendaryEventsBattles,
   useLegendaryEventsProgress,
   useLegendaryEventUnits,
-  type MasterTablePointsMode,
-  type MasterTableUnitSet,
+} from "@/entities/legendary-event"
+import type {
+  MasterTablePointsMode,
+  MasterTableUnitSet,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
@@ -38,9 +40,11 @@ import {
   nextMasterTableParams,
   parseMasterTableQuery,
   resolveMasterTableState,
-  type MasterTablePickerEvent,
-  type MasterTableState,
-  type UnitSetAvailability,
+} from "./master-table.view-model"
+import type {
+  MasterTablePickerEvent,
+  MasterTableState,
+  UnitSetAvailability,
 } from "./master-table.view-model"
 
 /** How long the search box waits after a keystroke before writing `q` to the URL. */

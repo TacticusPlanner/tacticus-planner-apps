@@ -1,9 +1,10 @@
-import {
-  hseRestrictionPasses,
-  type GameCatalogHseTracker,
-  type GameCatalogHseUnitFilter,
+import { hseRestrictionPasses } from "@workspace/game-catalog"
+import type {
+  GameCatalogHseTracker,
+  GameCatalogHseUnitFilter,
 } from "@workspace/game-catalog"
-import { progressionRarity, type UnitId } from "@workspace/game-domain"
+import { progressionRarity } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 
 import {
   HSE_CAMPAIGN_MODES,
@@ -14,26 +15,26 @@ import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { combatPowerOf } from "./team-eligibility"
 import { buildTeamRecommendations } from "./team-recommendations"
-import {
-  HSE_TEAM_SIZE,
-  type BuildHseTeamRecommendationsInput,
-  type HseEnemyHint,
-  type HseEnemyLabel,
-  type HseModeTeams,
-  type HseTeam,
-  type HseTeamCatalog,
-  type HseTeamCriteria,
-  type HseTeamMode,
-  type HseTeamPick,
-  type HseTeamRecommendations,
+import { HSE_TEAM_SIZE } from "./hse-team-recommendations.types"
+import type {
+  BuildHseTeamRecommendationsInput,
+  HseEnemyHint,
+  HseEnemyLabel,
+  HseModeTeams,
+  HseTeam,
+  HseTeamCatalog,
+  HseTeamCriteria,
+  HseTeamMode,
+  HseTeamPick,
+  HseTeamRecommendations,
 } from "./hse-team-recommendations.types"
 import { ALLIANCE_TRACKS } from "./alliance-tracks"
 import type { AllianceTrack } from "./alliance-tracks"
-import {
-  MIN_TEAM_SIZE,
-  type EventUnitMatch,
-  type TeamPoolSpec,
-  type TeamRosterCharacter,
+import { MIN_TEAM_SIZE } from "./team-recommendations.types"
+import type {
+  EventUnitMatch,
+  TeamPoolSpec,
+  TeamRosterCharacter,
 } from "./team-recommendations.types"
 
 /** Tracker kinds that count a kill, wave or line-up by the player's units in a token mode. */
@@ -90,7 +91,7 @@ function passesFilter(
   if (filter.tags?.disallowed?.some((tag) => tags.includes(tag))) return false
   if (
     filter.tags?.allowed &&
-    !filter.tags.allowed.some((t) => tags.includes(t))
+    filter.tags.allowed.every((t) => !tags.includes(t))
   )
     return false
   if (!hseRestrictionPasses(filter.factionIds, unit.faction)) return false

@@ -26,7 +26,7 @@ const goal = (
 ) => ({
   goalId,
   entityId,
-  goalType: goalId.split("-")[0],
+  goalType: goalId.split("-", 1)[0],
   entityType: "Character",
   status,
   config: { rank: null, progression: null, ability: null, ...config },

@@ -2,11 +2,8 @@ import { useMemo, useState, useSyncExternalStore } from "react"
 
 import { safeStorage } from "@/shared/lib"
 
-import {
-  detectInstallPlatform,
-  isRunningInstalled,
-  type InstallPlatform,
-} from "./install-platform"
+import { detectInstallPlatform, isRunningInstalled } from "./install-platform"
+import type { InstallPlatform } from "./install-platform"
 import {
   getInstallPromptState,
   subscribeInstallPrompt,

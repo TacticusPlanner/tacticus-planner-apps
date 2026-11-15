@@ -20,8 +20,8 @@ import {
   drawsPotentialBar,
   isReachedRow,
   REACHED_ROW_CLASS,
-  type GoalsListProps,
 } from "./goal-row-utils"
+import type { GoalsListProps } from "./goal-row-utils"
 import { GoalsReorderCards } from "./goals-reorder-cards"
 import { SEASON_FIT_ROW_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffRow } from "./season-fit-ui"

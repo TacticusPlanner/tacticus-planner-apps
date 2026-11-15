@@ -1,4 +1,5 @@
-import { rarityRank, type Rarity, type UpgradeId } from "@workspace/game-domain"
+import { rarityRank } from "@workspace/game-domain"
+import type { Rarity, UpgradeId } from "@workspace/game-domain"
 
 export type UpgradeRarityGroup = {
   rarity: Rarity

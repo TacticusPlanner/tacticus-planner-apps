@@ -4,9 +4,8 @@ import { passLocationFilter } from "./pass-location-filter"
 import {
   countActiveFilterGroups,
   emptyRaidsFilters,
-  type RaidsFilterBattle,
-  type RaidsFilters,
 } from "./raids-filters.domain"
+import type { RaidsFilterBattle, RaidsFilters } from "./raids-filters.domain"
 
 // Mirrors V1 `upgrades.service.spec.ts` / `campaigns.service` filter cases (min/max count, enemy
 // types, slots, campaign type, alliances/factions, combined) against the V2 battle shape.

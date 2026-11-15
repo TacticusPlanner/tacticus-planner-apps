@@ -9,7 +9,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { GOAL_TYPE_VALUES, type GoalKind } from "../model/types"
+import { GOAL_TYPE_VALUES } from "../model/types"
+import type { GoalKind } from "../model/types"
 
 export type GoalTypeFilterValue = "all" | GoalKind
 /** `type` orders the type groups by the fixed goal-type order (Rank first, as in v1);

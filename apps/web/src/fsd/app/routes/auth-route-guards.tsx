@@ -1,11 +1,13 @@
-import { Suspense, type ReactNode } from "react"
+import { Suspense } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Navigate, useLocation, useSearchParams } from "react-router"
 
 import { InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"
 
-import { LandingPage, type SignInRequired } from "@/pages/landing"
+import { LandingPage } from "@/pages/landing"
+import type { SignInRequired } from "@/pages/landing"
 
 import { BootScreen } from "../boot/boot-screen"
 import { navItems, subItemLabel } from "../layout/nav-items"
@@ -102,7 +104,7 @@ function useSignInRequired(next: string | null): SignInRequired | undefined {
   if (next === null) return undefined
 
   const destination = resolveNextPath(next, { allowSetupDestination: true })
-  const pathname = destination.split(/[?#]/)[0] ?? destination
+  const pathname = destination.split(/[?#]/, 1)[0] ?? destination
   const { activeItem, activeChild } = resolveActiveNavigation(
     navItems,
     pathname

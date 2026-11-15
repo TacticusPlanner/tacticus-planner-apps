@@ -1,9 +1,7 @@
 import type { ReactNode } from "react"
 
-import {
-  CreateGoalLauncherContext,
-  type LaunchCreateGoal,
-} from "./create-goal-launcher-context"
+import { CreateGoalLauncherContext } from "./create-goal-launcher-context"
+import type { LaunchCreateGoal } from "./create-goal-launcher-context"
 
 export function CreateGoalLauncherProvider({
   children,

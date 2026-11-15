@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 
-import { buildNpcGroups, type NpcGroup } from "@/entities/npc"
+import { buildNpcGroups } from "@/entities/npc"
+import type { NpcGroup } from "@/entities/npc"
 import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset } from "@/shared/local-data"
 

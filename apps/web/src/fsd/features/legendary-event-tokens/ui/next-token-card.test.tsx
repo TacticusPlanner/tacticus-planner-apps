@@ -7,11 +7,8 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
 
 import { mark } from "../lib/token-plan.fixtures"
-import {
-  buildTokenPlanView,
-  type TokenPlanView,
-  type TokenPlanViewInput,
-} from "../lib/token-plan-view"
+import { buildTokenPlanView } from "../lib/token-plan-view"
+import type { TokenPlanView, TokenPlanViewInput } from "../lib/token-plan-view"
 import {
   UTHAR_RUN_STARTS,
   betweenRunsInput,

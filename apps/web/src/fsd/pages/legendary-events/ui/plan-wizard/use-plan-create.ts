@@ -15,9 +15,11 @@ import {
   updateLegendaryEventTeam,
   updateLegendaryEventRunInputs,
   usePlanWriteQueue,
-  type LegendaryEventPlan,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventPlan,
+  LegendaryEventRun,
+  LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import {
   createProject,
@@ -29,8 +31,9 @@ import { assertLaneHasRoom } from "@/features/legendary-event-plan"
 import { ApiError } from "@/shared/api"
 
 import { upgradeChainGoalSpecs } from "./farming-days"
-import { type PlanDestination, type PlanWrites } from "./plan-create"
-import { memberKey, type DraftTeam } from "./plan-teams"
+import type { PlanDestination, PlanWrites } from "./plan-create"
+import { memberKey } from "./plan-teams"
+import type { DraftTeam } from "./plan-teams"
 
 export type CreateItemStatus = "pending" | "done" | "failed"
 
@@ -108,7 +111,7 @@ export async function writeLane(
   let plan = base
   // A retry skips what an earlier attempt already wrote.
   for (const teamId of lane.remove) {
-    if (!plan.teams.some((team) => team.id === teamId)) continue
+    if (plan.teams.every((team) => !(team.id === teamId))) continue
     plan = await deleteLegendaryEventTeam(eventId, teamId, plan.revision)
   }
   for (const team of lane.update) {

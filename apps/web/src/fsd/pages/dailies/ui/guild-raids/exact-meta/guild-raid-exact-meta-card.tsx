@@ -6,12 +6,12 @@ import { Progress } from "@workspace/ui/components/progress"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, RankBadge } from "@/shared/ui"
-import {
-  resolveGuildRaidLineupFocus,
-  type GuildRaidExactReadinessOptionView,
-  type GuildRaidExactReadinessRecommendationView,
-  type GuildRaidExactReadinessSlotView,
-  type GuildRaidExactReadinessUnitView,
+import { resolveGuildRaidLineupFocus } from "@/entities/guild-raid-meta"
+import type {
+  GuildRaidExactReadinessOptionView,
+  GuildRaidExactReadinessRecommendationView,
+  GuildRaidExactReadinessSlotView,
+  GuildRaidExactReadinessUnitView,
 } from "@/entities/guild-raid-meta"
 
 const statusBadgeVariant = {

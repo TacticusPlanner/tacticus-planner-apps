@@ -3,13 +3,13 @@ import type { BattleId } from "@workspace/game-domain"
 
 import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 
-import {
-  dailyRaidResourceKey,
-  type DailyRaidGoalViewModel,
-  type DailyRaidLocationViewModel,
-  type DailyRaidResourceProgress,
-  type DailyRaidResourceUrgency,
-  type DailyRaidResourceVisual,
+import { dailyRaidResourceKey } from "../model/daily-raids.domain"
+import type {
+  DailyRaidGoalViewModel,
+  DailyRaidLocationViewModel,
+  DailyRaidResourceProgress,
+  DailyRaidResourceUrgency,
+  DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
 import {
   clusterByCampaign,
@@ -277,12 +277,10 @@ function combineEntries(entries: RaidBreakdownEntry[]): GoalGroup[] {
   return [
     {
       goal: COMBINED_GROUP,
-      resources: [...resources.entries()].map(
-        ([resourceId, resourceEntries]) => ({
-          resourceId,
-          entries: resourceEntries,
-        })
-      ),
+      resources: [...resources].map(([resourceId, resourceEntries]) => ({
+        resourceId,
+        entries: resourceEntries,
+      })),
     },
   ]
 }
@@ -305,7 +303,7 @@ function groupEntries(
     resources.set(entry.resourceId, resourceEntries)
     byGoal.set(entry.goalId, resources)
   }
-  return [...byGoal.entries()]
+  return [...byGoal]
     .map(([goalId, resources]) => ({
       goal: goalsById.get(goalId) ?? {
         goalId,
@@ -319,7 +317,7 @@ function groupEntries(
       // Longest to finish first, then most energy; then same-campaign upgrades of similar energy
       // are pulled together so the player stays in one campaign.
       resources: clusterByCampaign(
-        [...resources.entries()]
+        [...resources]
           .map(([resourceId, resourceEntries]) => ({
             resourceId,
             entries: resourceEntries,

@@ -5,7 +5,8 @@ import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 import { combineReadStates, useReadState } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
-import { selectQuestInstance, type QuestInstance } from "./quest-instance"
+import { selectQuestInstance } from "./quest-instance"
+import type { QuestInstance } from "./quest-instance"
 
 const DAY_MS = 86_400_000
 /** A quest lasts 3 days plus a 1-day claim window; reading a week back finds one still claimable. */

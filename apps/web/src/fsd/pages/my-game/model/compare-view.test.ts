@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { diffRosters, type DiffUnit } from "@/entities/roster-snapshot"
+import { diffRosters } from "@/entities/roster-snapshot"
+import type { DiffUnit } from "@/entities/roster-snapshot"
 import type { UnitTileUnit } from "@/entities/unit"
 
 import {

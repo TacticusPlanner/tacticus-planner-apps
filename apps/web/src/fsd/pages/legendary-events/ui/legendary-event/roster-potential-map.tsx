@@ -12,11 +12,10 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  ObjectiveIcon,
-  useObjectiveLabel,
-  type LegendaryEventLane,
-  type PotentialCellState,
+import { ObjectiveIcon, useObjectiveLabel } from "@/entities/legendary-event"
+import type {
+  LegendaryEventLane,
+  PotentialCellState,
 } from "@/entities/legendary-event"
 
 import type { LanePotentialViewModel } from "./lane-potential.view-model"

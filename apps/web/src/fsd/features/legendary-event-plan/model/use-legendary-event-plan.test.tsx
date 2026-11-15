@@ -10,8 +10,10 @@ import {
   legendaryEventPlanQueries,
   resolveLegendaryEventRunsAt,
   teamDepthForRun,
-  type LegendaryEventPlan,
-  type LegendaryEventTeam,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventPlan,
+  LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import { ApiError } from "@/shared/api"
 import { setTestAuth } from "@/test/auth"

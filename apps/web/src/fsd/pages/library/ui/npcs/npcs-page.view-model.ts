@@ -14,9 +14,11 @@ import type {
   NpcVariationMode,
 } from "@/entities/npc"
 import type { ReadState } from "@/shared/lib"
-import { npcPowerAt, type UnitPowerContext } from "@/shared/unit-power"
+import { npcPowerAt } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
-import { powerFigure, type PowerFigure } from "../unit/unit-power.model"
+import { powerFigure } from "../unit/unit-power.model"
+import type { PowerFigure } from "../unit/unit-power.model"
 
 /** One NPC as listed in the desktop tile grid / mobile picker. */
 export interface NpcListItem {

@@ -2,10 +2,10 @@ import type { BattleId, CampaignId } from "@workspace/game-domain"
 
 import type { Battle, FarmLocation } from "@/shared/lib"
 
-import {
-  campaignTrackGate,
-  type CampaignGateContext,
-  type CampaignLockReason,
+import { campaignTrackGate } from "./campaign-track-gate"
+import type {
+  CampaignGateContext,
+  CampaignLockReason,
 } from "./campaign-track-gate"
 
 /** A node that drops a resource but that the player can't farm yet, and how far away it is. */

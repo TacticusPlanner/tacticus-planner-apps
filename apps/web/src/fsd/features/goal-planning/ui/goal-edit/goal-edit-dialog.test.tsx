@@ -358,7 +358,7 @@ const onslaughtRewards = [
     id: "Gold-3",
     sector: "Gold",
     tier: 3,
-    regular: Array(5).fill({ min: 2, max: 4 }),
+    regular: new Array(5).fill({ min: 2, max: 4 }),
     mythic: { min: 1, max: 1 },
   },
 ]

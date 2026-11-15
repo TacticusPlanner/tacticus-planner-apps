@@ -12,8 +12,8 @@ import { lastRequest } from "@/test/last-request"
 import {
   eventShopPlanConflict,
   toPutEventShopPlanRequest,
-  type EventShopCartEntry,
 } from "../model/plan.types"
+import type { EventShopCartEntry } from "../model/plan.types"
 import {
   getEventShopPlan,
   listEventShopPlans,

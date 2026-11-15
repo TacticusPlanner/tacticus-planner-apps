@@ -1,20 +1,15 @@
 import { useRef } from "react"
 
-import {
-  useTeamDisplayName,
-  type LegendaryEvent,
-  type LegendaryEventLaneId,
+import { useTeamDisplayName } from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventLaneId,
 } from "@/entities/legendary-event"
-import {
-  TeamEditorDialog,
-  laneTeams,
-  type PickerEstimates,
-} from "@/features/legendary-event-plan"
+import { TeamEditorDialog, laneTeams } from "@/features/legendary-event-plan"
+import type { PickerEstimates } from "@/features/legendary-event-plan"
 
-import {
-  useOpenTeamEditor,
-  type TeamEditorLauncher,
-} from "./team-editor-launcher"
+import { useOpenTeamEditor } from "./team-editor-launcher"
+import type { TeamEditorLauncher } from "./team-editor-launcher"
 import type { TeamsViewModel } from "./teams-section"
 
 /**

@@ -16,19 +16,17 @@ import {
   battleMax,
   isBoardPickup,
   ObjectiveChips,
-  type QuestBattle,
-  type QuestScoring,
-  type QuestObjectiveBadge,
-  type QuestTierCap,
+} from "@/features/quest-event"
+import type {
+  QuestBattle,
+  QuestScoring,
+  QuestObjectiveBadge,
+  QuestTierCap,
 } from "@/features/quest-event"
 import type { NpcRecord } from "@/entities/npc"
 import { EntityIcon, UpgradeIcon, progressionText } from "@/shared/ui"
-import {
-  BoardMap,
-  buildEnemyTile,
-  EnemyList,
-  type EnemyNpcs,
-} from "@/widgets/battle-preview"
+import { BoardMap, buildEnemyTile, EnemyList } from "@/widgets/battle-preview"
+import type { EnemyNpcs } from "@/widgets/battle-preview"
 
 import type { QuestDropNeed } from "../../model/quest-drop-need"
 

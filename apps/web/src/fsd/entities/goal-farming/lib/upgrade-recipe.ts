@@ -1,11 +1,9 @@
-import {
-  rankIndex,
-  rankOrder,
-  type Rank,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import { rankIndex, rankOrder } from "@workspace/game-domain"
+import type { Rank, UpgradeId } from "@workspace/game-domain"
 
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
+
+import { BOOK_ORDER_SLOT_INDICES } from "./rank-additional-target"
 
 type UpgradeAmount = { id: UpgradeId; amount: number }
 
@@ -26,7 +24,7 @@ const TOP_ROW_SLOT_INDICES = [0, 2, 4]
 /**
  * The upgrade slots a Rank range needs, in order: every slot of each rank from `rankStart` up to but
  * excluding `rankEnd`, then the end rank's partial target — the first `topRowCount` top-row slots, the
- * first `appliedUpgrades` slots, or the whole top row for point-five.
+ * first `appliedUpgrades` slots in book-reading order, or the whole top row for point-five.
  */
 export function rankUpSlotOccurrences(
   character: FarmingCharacter,
@@ -57,10 +55,7 @@ export function rankUpSlotOccurrences(
   }
   if (topRowCount > 0) push(rankEnd, TOP_ROW_SLOT_INDICES.slice(0, topRowCount))
   else if (appliedUpgrades > 0)
-    push(
-      rankEnd,
-      Array.from({ length: appliedUpgrades }, (_, slot) => slot)
-    )
+    push(rankEnd, BOOK_ORDER_SLOT_INDICES.slice(0, appliedUpgrades))
   else if (pointFive) push(rankEnd, TOP_ROW_SLOT_INDICES)
   return occurrences
 }

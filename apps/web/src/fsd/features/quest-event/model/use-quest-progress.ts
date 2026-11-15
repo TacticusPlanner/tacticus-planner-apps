@@ -6,15 +6,12 @@ import {
   EMPTY_QUEST_PROGRESS,
   fitObjectives,
   parseQuestProgress,
-  type QuestProgress,
 } from "./quest-progress"
+import type { QuestProgress } from "./quest-progress"
 import type { QuestEventStorageModel } from "@workspace/game-catalog"
 
-import {
-  EMPTY_BATTLE_ENTRY,
-  MAX_MEDALS,
-  type QuestBattleEntry,
-} from "./quest-score"
+import { EMPTY_BATTLE_ENTRY, MAX_MEDALS } from "./quest-score"
+import type { QuestBattleEntry } from "./quest-score"
 import type { QuestTokens } from "./quest-token-plan"
 
 // Design D4: one entry per quest occurrence, per browser. Every storage access is guarded, so a

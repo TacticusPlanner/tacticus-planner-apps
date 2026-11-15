@@ -2,10 +2,8 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
-import {
-  useFarmUnlockPaths,
-  type FarmUnlockPathViewModel,
-} from "@/features/goal-planning"
+import { useFarmUnlockPaths } from "@/features/goal-planning"
+import type { FarmUnlockPathViewModel } from "@/features/goal-planning"
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 
 import { CampaignLockReasons } from "./campaign-lock-reasons"

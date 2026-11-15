@@ -7,7 +7,8 @@ import {
   utharLane,
   workedLanes,
 } from "./token-plan.fixtures"
-import { nextToken, planTokens, type PlannedToken } from "./token-plan"
+import { nextToken, planTokens } from "./token-plan"
+import type { PlannedToken } from "./token-plan"
 
 const summary = (tokens: PlannedToken[]) =>
   tokens.map((token) => [

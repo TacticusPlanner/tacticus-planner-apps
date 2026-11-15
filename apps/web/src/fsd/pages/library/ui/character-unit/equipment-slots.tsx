@@ -1,10 +1,7 @@
 import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  EquipmentIcons,
-  equipmentSlotIcon,
-  type EquipmentStorageModel,
-} from "@workspace/game-catalog"
+import { EquipmentIcons, equipmentSlotIcon } from "@workspace/game-catalog"
+import type { EquipmentStorageModel } from "@workspace/game-catalog"
 import { rarityOrder } from "@workspace/game-domain"
 import {
   Tooltip,

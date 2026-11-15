@@ -322,7 +322,7 @@ async function renderUnit(url: string, state?: unknown) {
   if (env.rosterPending) {
     holdRosterRead()
   }
-  const [pathname, search] = url.split("?")
+  const [pathname, search] = url.split("?", 2)
   const { queryClient } = render(
     <CreateGoalLauncherContext.Provider value={launchCreateGoal}>
       <CharacterUnitPage />

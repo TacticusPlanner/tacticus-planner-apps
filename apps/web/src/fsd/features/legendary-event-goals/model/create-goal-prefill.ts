@@ -1,8 +1,5 @@
-import {
-  progressionIndex,
-  rankIndex,
-  type UnitId,
-} from "@workspace/game-domain"
+import { progressionIndex, rankIndex } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 
 import type { CreateGoalPrefill } from "@/entities/goal"
 import type {

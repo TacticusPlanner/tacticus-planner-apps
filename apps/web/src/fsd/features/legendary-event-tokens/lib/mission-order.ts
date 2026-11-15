@@ -1,9 +1,11 @@
 import {
   UNTRACKED_MISSION_KINDS,
   tokenMissionAmount,
-  type LegendaryEventMissionRef,
-  type LegendaryEventRun,
-  type MissionAmount,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventMissionRef,
+  LegendaryEventRun,
+  MissionAmount,
 } from "@/entities/legendary-event"
 
 import type { TokenMissionsInput } from "./token-missions"
@@ -254,7 +256,7 @@ function orderSection(
   sequences: readonly (readonly Tracked[])[],
   amountsOf: (token: PlannedToken) => readonly (MissionAmount | null)[]
 ): PlannedToken[] {
-  if (!sequences.some((sequence) => sequence.some((entry) => !entry.untracked)))
+  if (sequences.every((sequence) => sequence.every((entry) => entry.untracked)))
     return [...tokens]
   const queues = new Map<string, { token: PlannedToken; order: number }[]>()
   for (const [order, token] of tokens.entries()) {

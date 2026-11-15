@@ -34,8 +34,8 @@ import {
   selectCampaignPlan,
   selectTeamPlans,
   tokenNeedRows,
-  type HreMission,
 } from "@/entities/hre-mission"
+import type { HreMission } from "@/entities/hre-mission"
 
 import { useHreTeamRecommendations } from "@/features/team-recommendations"
 import {

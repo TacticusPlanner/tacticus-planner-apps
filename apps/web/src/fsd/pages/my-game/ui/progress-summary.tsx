@@ -1,4 +1,5 @@
-import { MedalStats, type TrackMedalStats } from "@/features/daily-raids"
+import { MedalStats } from "@/features/daily-raids"
+import type { TrackMedalStats } from "@/features/daily-raids"
 
 /** A headline progress block: percent, battles done, tracks cleared and medal stats. */
 export function ProgressSummary({

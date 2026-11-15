@@ -4,7 +4,8 @@ import type {
   GameCatalogShopVariant,
   ShopDayOfWeek,
 } from "@workspace/game-catalog"
-import { Rarity, type UpgradeId } from "@workspace/game-domain"
+import { Rarity } from "@workspace/game-domain"
+import type { UpgradeId } from "@workspace/game-domain"
 
 import { buildShopRecommendations } from "./shop-recommendations"
 import type { ShopNeedAggregate } from "./shop-needs"

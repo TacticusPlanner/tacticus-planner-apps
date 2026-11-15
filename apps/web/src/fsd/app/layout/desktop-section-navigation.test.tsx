@@ -21,7 +21,8 @@ vi.mock("react-i18next", () => ({
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
 import { DesktopSectionNavigation } from "./desktop-section-navigation"
-import { navItems, type NavItem } from "./nav-items"
+import { navItems } from "./nav-items"
+import type { NavItem } from "./nav-items"
 
 const legendaryEvents = navItems.find(
   (item) => item.path === "/legendary-events"

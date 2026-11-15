@@ -8,16 +8,14 @@ import {
 } from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  LEGENDARY_EVENT_LANE_IDS,
-  type LegendaryEventLaneId,
-  type LegendaryEventLifecycle,
+import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
+import type {
+  LegendaryEventLaneId,
+  LegendaryEventLifecycle,
 } from "@/entities/legendary-event"
 
-import {
-  LEGENDARY_EVENT_TABS,
-  type LegendaryEventTab,
-} from "./legendary-event-page.view-model"
+import { LEGENDARY_EVENT_TABS } from "./legendary-event-page.view-model"
+import type { LegendaryEventTab } from "./legendary-event-page.view-model"
 import type { LaneSelection } from "./use-lane-selection"
 
 /** The run tab's name: Current run while the event is active, Next run before it, Last run once

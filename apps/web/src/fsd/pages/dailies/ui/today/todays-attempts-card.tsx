@@ -1,14 +1,13 @@
 import { CheckIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-  ResourceIconWithTooltip,
-  type DailyRaidsReadyViewModel,
-} from "@/features/daily-raids"
+import { ResourceIconWithTooltip } from "@/features/daily-raids"
+import type { DailyRaidsReadyViewModel } from "@/features/daily-raids"
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 
 import { TodayCard } from "./today-card"
-import { todaysAttemptProgress, type TodayView } from "./today-view-model"
+import { todaysAttemptProgress } from "./today-view-model"
+import type { TodayView } from "./today-view-model"
 
 /**
  * Every node the player has really raided today, account-wide, as one compact row each: what it

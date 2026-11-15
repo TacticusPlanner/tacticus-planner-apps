@@ -4,10 +4,8 @@ import { ImageOff, Shield, Sparkles, UserRound } from "lucide-react"
 import type { GameIcon, LayeredIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  type IconPlaceholderKind,
-  placeholderKindForIcon,
-} from "./entity-icon-placeholder"
+import { placeholderKindForIcon } from "./entity-icon-placeholder"
+import type { IconPlaceholderKind } from "./entity-icon-placeholder"
 
 /** An <img> that swaps to a fallback image, or else to a placeholder glyph sized like the icon, when
  *  the source asset is missing (a new unit the datamine ships no art for yet). No `src` at all still

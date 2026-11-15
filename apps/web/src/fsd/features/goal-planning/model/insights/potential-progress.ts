@@ -7,10 +7,8 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal"
 
-import {
-  computeGoalProgress,
-  type GoalProgress,
-} from "../attainment/goal-progress"
+import { computeGoalProgress } from "../attainment/goal-progress"
+import type { GoalProgress } from "../attainment/goal-progress"
 import type { GoalInventoryAllocation } from "@/entities/goal-farming"
 
 function clampRatio(value: number): number {

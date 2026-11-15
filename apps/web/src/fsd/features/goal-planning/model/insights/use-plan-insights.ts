@@ -16,10 +16,8 @@ import { useCampaignDisplay } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { computePlanInsights } from "./plan-insights-calc"
-import {
-  EMPTY_PLAN_INSIGHTS_RESULT,
-  type PlanInsightsResult,
-} from "./use-plan-insights.domain"
+import { EMPTY_PLAN_INSIGHTS_RESULT } from "./use-plan-insights.domain"
+import type { PlanInsightsResult } from "./use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { useCampaignGateContext } from "../unlock-paths/use-campaign-gate-context"
 import {

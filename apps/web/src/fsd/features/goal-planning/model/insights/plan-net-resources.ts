@@ -83,7 +83,7 @@ function takeOrbPool(
   const availableByRarity: Partial<Record<Rarity, number>> = {}
   const left = remainingById(allocation)
   for (const need of allocation?.stages[0]?.needs ?? []) {
-    const rarity = need.id.split(":")[2] as Rarity
+    const rarity = need.id.split(":", 3)[2] as Rarity
     const held = stock.get(need.id) ?? 0
     neededByRarity[rarity] = (neededByRarity[rarity] ?? 0) + need.count
     availableByRarity[rarity] = (availableByRarity[rarity] ?? 0) + held
@@ -98,7 +98,7 @@ function orbShortfall(
 ): Partial<Record<Rarity, number>> {
   const byRarity: Partial<Record<Rarity, number>> = {}
   for (const [id, count] of remainingById(allocation)) {
-    const rarity = id.split(":")[2] as Rarity
+    const rarity = id.split(":", 3)[2] as Rarity
     byRarity[rarity] = (byRarity[rarity] ?? 0) + count
   }
   return byRarity

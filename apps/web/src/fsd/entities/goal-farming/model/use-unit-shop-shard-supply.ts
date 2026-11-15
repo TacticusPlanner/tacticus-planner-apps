@@ -1,9 +1,7 @@
 import { useMemo } from "react"
 
-import {
-  resolveUnitShardShopOffers,
-  type ShopShardOffer,
-} from "@workspace/game-catalog"
+import { resolveUnitShardShopOffers } from "@workspace/game-catalog"
+import type { ShopShardOffer } from "@workspace/game-catalog"
 
 import { useCatalogDataset } from "@/shared/local-data"
 

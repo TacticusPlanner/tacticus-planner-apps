@@ -11,8 +11,8 @@ import type { GoalDetail } from "@/entities/goal/@x/goal-farming"
 import {
   calculateGoalResourceNeed,
   createUnitCoverage,
-  type GoalRequirementParams,
 } from "./goal-requirements"
+import type { GoalRequirementParams } from "./goal-requirements"
 
 // Several goals of one type for one unit (support-multiple-goals-per-unit): each shared step or
 // transition is charged once, to the first goal in priority order that reaches it.

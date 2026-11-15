@@ -9,9 +9,8 @@ import {
   inventoryBaseUpgrades,
   rankUpReadiness,
   rankUpUpgradeIds,
-  type Character,
-  type Upgrade,
 } from "./rank-lookup-calc"
+import type { Character, Upgrade } from "./rank-lookup-calc"
 
 const upgradeId = upgradeIdSchema.parse
 const upgradeIds = (values: string[]) => values.map((value) => upgradeId(value))
@@ -107,7 +106,7 @@ describe("rankUpUpgradeIds", () => {
       ["h1", "h2", "d1", "d2", "a1", "a2", "h3"]
     )
     expect(rankUpUpgradeIds(character, "Stone1", "Stone2", true, 4, 0)).toEqual(
-      ["h1", "h2", "d1", "d2", "a1", "a2", "h3", "h4", "d3", "d4"]
+      ["h1", "h2", "d1", "d2", "a1", "a2", "h3", "d3", "a3", "h4"]
     )
   })
 })

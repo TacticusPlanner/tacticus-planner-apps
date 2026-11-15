@@ -2,10 +2,10 @@ import type { GameCatalogGuildRaidMeta } from "@workspace/game-catalog"
 import type { Progression, Rank } from "@workspace/game-domain"
 
 import type { GuildRaidInvestmentThreshold } from "./resolve-guild-raid-investment-threshold"
-import {
-  resolveGuildRaidLineup,
-  type GuildRaidLineupOptionState,
-  type GuildRaidLineupStatus,
+import { resolveGuildRaidLineup } from "./resolve-guild-raid-lineup"
+import type {
+  GuildRaidLineupOptionState,
+  GuildRaidLineupStatus,
 } from "./resolve-guild-raid-lineup"
 import type {
   GuildRaidMetaPresentationResolver,

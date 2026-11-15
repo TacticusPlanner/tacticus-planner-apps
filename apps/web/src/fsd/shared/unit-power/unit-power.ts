@@ -4,11 +4,13 @@ import {
   mowPower,
   npcPower,
   UnitPowerDataError,
-  type CharacterPowerState,
-  type CharacterStats,
-  type PowerNpcRow,
-  type Progression,
-  type Rank,
+} from "@workspace/game-domain"
+import type {
+  CharacterPowerState,
+  CharacterStats,
+  PowerNpcRow,
+  Progression,
+  Rank,
 } from "@workspace/game-domain"
 
 import type { UnitPowerContext } from "./unit-power-context"

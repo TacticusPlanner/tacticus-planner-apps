@@ -8,8 +8,8 @@ import {
   LEGENDARY_EVENT_RUN_COUNT as RUN_COUNT,
   LEGENDARY_EVENT_RUN_DURATION_MS,
   deriveLegendaryEventLifecycle,
-  type LegendaryEventSchedule,
 } from "./lifecycle"
+import type { LegendaryEventSchedule } from "./lifecycle"
 
 const LANES: readonly LegendaryEventLaneId[] = ["alpha", "beta", "gamma"]
 

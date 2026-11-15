@@ -1,4 +1,5 @@
-import { useState, type SubmitEvent } from "react"
+import { useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { ExternalLink } from "lucide-react"
 import { useMutation } from "@tanstack/react-query"

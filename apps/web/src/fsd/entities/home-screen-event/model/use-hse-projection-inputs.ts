@@ -1,15 +1,9 @@
 import { useCallback, useState } from "react"
 
-import {
-  NO_HSE_MILESTONE_PROGRESS,
-  type HseMilestoneProgress,
-} from "../lib/hse-milestones"
-import {
-  HSE_TOKEN_MODES,
-  isHseManualTokenMode,
-  type HseManualTokenMode,
-  type HseTokenMode,
-} from "../lib/hse-token-supply"
+import { NO_HSE_MILESTONE_PROGRESS } from "../lib/hse-milestones"
+import type { HseMilestoneProgress } from "../lib/hse-milestones"
+import { HSE_TOKEN_MODES, isHseManualTokenMode } from "../lib/hse-token-supply"
+import type { HseManualTokenMode, HseTokenMode } from "../lib/hse-token-supply"
 import { accountStorageKey, safeStorage } from "@/shared/lib"
 
 // Design D5: averages persist per browser by (definition, mode), milestone progress by instance,

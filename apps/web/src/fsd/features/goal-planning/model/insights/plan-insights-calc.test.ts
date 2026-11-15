@@ -16,8 +16,8 @@ import {
   rankOrder,
   unitIdSchema,
   upgradeIdSchema,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 
 import type {
   Character,
@@ -696,11 +696,11 @@ describe("computePlanInsights", () => {
       rankUpUpgrades: [
         {
           rank: Rank.Stone1,
-          upgradeIds: Array(6).fill(upgrade.id),
+          upgradeIds: new Array(6).fill(upgrade.id),
         },
         {
           rank: Rank.Stone2,
-          upgradeIds: Array(6).fill(upgrade.id),
+          upgradeIds: new Array(6).fill(upgrade.id),
         },
       ],
     }

@@ -2,13 +2,8 @@ import { useState } from "react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  unitLibraryPath,
-  UnitRosterRow,
-  type UnitFaction,
-  type UnitKind,
-  type UnitTileUnit,
-} from "@/entities/unit"
+import { unitLibraryPath, UnitRosterRow } from "@/entities/unit"
+import type { UnitFaction, UnitKind, UnitTileUnit } from "@/entities/unit"
 
 import type { CollectionSelection } from "../../model/collection-selection"
 import type {
@@ -119,7 +114,7 @@ function useRosterRow(
   const [expandedId, setExpandedId] = useState<string | null>(null)
   if (
     expandedId !== null &&
-    !units.some((unit) => rowKey(unit) === expandedId)
+    units.every((unit) => !(rowKey(unit) === expandedId))
   ) {
     setExpandedId(null)
   }

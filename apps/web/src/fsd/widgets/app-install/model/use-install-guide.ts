@@ -2,10 +2,8 @@ import { useState } from "react"
 
 import { useAnalyticsActions } from "@/shared/analytics"
 
-import {
-  promptInstall,
-  type InstallPromptOutcome,
-} from "./install-prompt-store"
+import { promptInstall } from "./install-prompt-store"
+import type { InstallPromptOutcome } from "./install-prompt-store"
 import type { AppInstallState } from "./use-app-install"
 
 export type AppInstallSource = "homeCard" | "accountMenu"

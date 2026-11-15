@@ -1,9 +1,7 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  incursionBoardImage,
-  type NpcStorageModel,
-} from "@workspace/game-catalog"
+import { incursionBoardImage } from "@workspace/game-catalog"
+import type { NpcStorageModel } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 import {
   ToggleGroup,
@@ -17,10 +15,12 @@ import { EntityIcon } from "@/shared/ui"
 import {
   enemyStatRow,
   enhancementSubject,
-  type Incursion,
-  type IncursionBattle,
-  type IncursionNode,
   nodeName,
+} from "../../model/incursions.model"
+import type {
+  Incursion,
+  IncursionBattle,
+  IncursionNode,
 } from "../../model/incursions.model"
 import { MAX_STARS } from "../../model/incursion-progress.model"
 import { IncursionNodeMarker } from "./incursion-node-marker"

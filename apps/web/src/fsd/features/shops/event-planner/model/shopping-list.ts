@@ -51,7 +51,7 @@ function groupByDay(entries: readonly ClassifiedEntry[]): DayGroup[] {
     if (bucket) bucket.push(entry)
     else byDay.set(entry.dayIndex, [entry])
   }
-  return [...byDay.entries()]
+  return [...byDay]
     .sort(([a], [b]) => a - b)
     .map(([dayIndex, dayEntries]) => ({
       dayIndex,
@@ -103,7 +103,7 @@ export function buildShoppingList(
       (sum, entry) => sum + entry.boughtPacks * entry.costPerPack,
       0
     ),
-    all: [...byWeek.entries()]
+    all: [...byWeek]
       .sort(([a], [b]) => a - b)
       .map(([week, weekEntries]) => ({ week, days: groupByDay(weekEntries) })),
     ended: todayIndex >= dayCount,

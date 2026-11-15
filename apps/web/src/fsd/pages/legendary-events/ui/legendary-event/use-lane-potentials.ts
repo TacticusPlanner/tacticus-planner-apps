@@ -7,10 +7,8 @@ import type {
   LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
-import {
-  buildLanePotentials,
-  type LanePotentialsViewModel,
-} from "./lane-potential.view-model"
+import { buildLanePotentials } from "./lane-potential.view-model"
+import type { LanePotentialsViewModel } from "./lane-potential.view-model"
 import type {
   ClearEstimatesViewModel,
   ProgressGridViewModel,

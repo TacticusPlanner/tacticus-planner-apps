@@ -3,10 +3,10 @@ import { ChevronDown, ChevronsDownUp, ChevronsUpDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  useObjectiveLabel,
-  type EventUnitChipData,
-  type LegendaryEvent,
+import { useObjectiveLabel } from "@/entities/legendary-event"
+import type {
+  EventUnitChipData,
+  LegendaryEvent,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 
@@ -15,12 +15,8 @@ import type { LaneFullClear, TokenPlanView } from "../lib/token-plan-view"
 import { useMissionsOrder } from "../model/token-plan-order"
 import { useStoredOpen } from "../model/use-stored-open"
 import { RunMissionsSummary, TokenPlanOrderSwitch } from "./mission-order-view"
-import {
-  RunSection,
-  RunSectionHeader,
-  TokenGroups,
-  type OpenTeamHandler,
-} from "./token-plan-rows"
+import { RunSection, RunSectionHeader, TokenGroups } from "./token-plan-rows"
+import type { OpenTeamHandler } from "./token-plan-rows"
 
 const OPEN_KEY = "legendaryEvents.tokenPlan.open"
 const REGION_ID = "legendary-event-token-plan-list"

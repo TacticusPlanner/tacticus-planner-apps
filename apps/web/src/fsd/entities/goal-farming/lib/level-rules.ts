@@ -1,11 +1,6 @@
 import type { ProgressionRulesStorageModel } from "@workspace/game-catalog"
-import {
-  isRank,
-  rankOrder,
-  rarityOrder,
-  type Rank,
-  type Rarity,
-} from "@workspace/game-domain"
+import { isRank, rankOrder, rarityOrder } from "@workspace/game-domain"
+import type { Rank, Rarity } from "@workspace/game-domain"
 
 type XpBookRule = {
   id: string

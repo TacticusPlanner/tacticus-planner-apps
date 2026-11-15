@@ -1,10 +1,5 @@
-import {
-  useId,
-  useLayoutEffect,
-  useRef,
-  type KeyboardEvent,
-  type ReactNode,
-} from "react"
+import { useId, useLayoutEffect, useRef } from "react"
+import type { KeyboardEvent, ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"

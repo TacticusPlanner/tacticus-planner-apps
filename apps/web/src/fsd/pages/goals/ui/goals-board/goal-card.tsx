@@ -1,18 +1,23 @@
-import { memo, type Dispatch, type SetStateAction } from "react"
+import { memo } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import { useTranslation } from "react-i18next"
 import { Trash2 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import { GoalTypeBadge } from "@/entities/goal"
-import { useGoalCatalog, type GoalMenuMoves } from "@/features/goal-planning"
-import { GoalProjectBadges, GoalUnitIcon } from "@/features/goal-planning"
+import {
+  useGoalCatalog,
+  GoalProjectBadges,
+  GoalUnitIcon,
+} from "@/features/goal-planning"
+import type { GoalMenuMoves } from "@/features/goal-planning"
 import type { SortableRenderProps } from "@/shared/ui"
 import { GoalResourceChipList } from "../shared/goal-resource-chips"
-import {
-  useGoalResourceChips,
-  type GoalResourceChip,
-  type GoalResourceChipKind,
+import { useGoalResourceChips } from "../shared/use-goal-resource-chips"
+import type {
+  GoalResourceChip,
+  GoalResourceChipKind,
 } from "../shared/use-goal-resource-chips"
 import {
   GoalProgressDisplay,
@@ -36,8 +41,8 @@ import {
   sameRowSlice,
   stopRowNavigation,
   toggleGoalStatus,
-  type GoalsListProps,
 } from "./goal-row-utils"
+import type { GoalsListProps } from "./goal-row-utils"
 import { SeasonFitLabel } from "./season-fit-ui"
 
 /** Chips shown at the right end of the target row, as V1's estimate chips were. */

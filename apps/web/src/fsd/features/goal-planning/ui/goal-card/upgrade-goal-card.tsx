@@ -1,14 +1,12 @@
-import { useMemo, type ReactNode } from "react"
+import { useMemo } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import type { UpgradeId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 
 import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
-import {
-  RarityCombobox,
-  UpgradeIcon,
-  type RarityComboboxItem,
-} from "@/shared/ui"
+import { RarityCombobox, UpgradeIcon } from "@/shared/ui"
+import type { RarityComboboxItem } from "@/shared/ui"
 
 import { upgradeRarityGroups } from "../../model/goal-creation-form/upgrade-rarity-groups"
 import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
@@ -18,7 +16,8 @@ import {
   goalFieldId,
 } from "../create-goal/goal-form-issue-ids"
 import { UpgradeQuantityRow } from "../shared/upgrade-quantity-row"
-import { ResourcePreviewSection, type ResourcePreview } from "./card-parts"
+import { ResourcePreviewSection } from "./card-parts"
+import type { ResourcePreview } from "./card-parts"
 
 /**
  * An Upgrade goal as both dialogs show it: the optional range(s) the materials are scoped to, one row
@@ -66,7 +65,7 @@ export function UpgradeGoalCard({
   const { t } = useTranslation()
   const available = useMemo<RarityComboboxItem<UpgradeId>[]>(() => {
     const selected = new Set(targets.map((target) => target.upgradeId))
-    return [...choices.entries()]
+    return [...choices]
       .filter(([id]) => !selected.has(id))
       .map(([id, quantity]) => {
         const upgrade = upgradesById.get(id)

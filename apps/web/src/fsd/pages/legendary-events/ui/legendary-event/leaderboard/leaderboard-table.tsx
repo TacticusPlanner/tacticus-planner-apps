@@ -8,12 +8,12 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 
-import {
-  ObjectiveIcon,
-  type LeaderboardFigure,
-  type LeaderboardRow,
-  type LegendaryEventLaneId,
-  type LegendaryEventUnit,
+import { ObjectiveIcon } from "@/entities/legendary-event"
+import type {
+  LeaderboardFigure,
+  LeaderboardRow,
+  LegendaryEventLaneId,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
 import type { LeaderboardGoalsViewModel } from "../legendary-event-page.view-model"
@@ -24,11 +24,8 @@ import {
   LeaderboardUnit,
   ObjectiveIndicator,
 } from "./leaderboard-parts"
-import {
-  useClearsText,
-  type LeaderboardClears,
-  type ObjectiveChip,
-} from "./leaderboard.view-model"
+import { useClearsText } from "./leaderboard.view-model"
+import type { LeaderboardClears, ObjectiveChip } from "./leaderboard.view-model"
 
 /** Desktop: one lane's leaderboard as a table, in the fixed default order (no sortable headers),
  *  with one icon-headed column per objective, the shown points figure, the objectives count,

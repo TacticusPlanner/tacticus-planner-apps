@@ -1,4 +1,5 @@
-import { useId, type ReactNode } from "react"
+import { useId } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown, Search, SlidersHorizontal } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
@@ -39,13 +40,12 @@ import { EntityIcon, FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 
 import { isTourElement } from "./master-table-tour"
 
-import {
-  POINTS_MODES,
-  UNIT_SETS,
-  type EstimatedAvailability,
-  type MasterTablePickerEvent,
-  type MasterTableState,
-  type UnitSetAvailability,
+import { POINTS_MODES, UNIT_SETS } from "./master-table.view-model"
+import type {
+  EstimatedAvailability,
+  MasterTablePickerEvent,
+  MasterTableState,
+  UnitSetAvailability,
 } from "./master-table.view-model"
 
 const SORT_TOTAL = "__total"

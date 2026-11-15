@@ -1,15 +1,8 @@
 import * as React from "react"
 
 import { useTranslation } from "react-i18next"
-import {
-  STATUS,
-  type Locale,
-  type Options,
-  type Status,
-  type Step,
-  type Styles,
-  useJoyride,
-} from "react-joyride"
+import { STATUS, useJoyride } from "react-joyride"
+import type { Locale, Options, Status, Step, Styles } from "react-joyride"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useTheme } from "../theme/theme-provider"

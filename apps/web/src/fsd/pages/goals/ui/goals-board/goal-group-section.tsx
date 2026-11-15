@@ -1,4 +1,5 @@
-import { startTransition, useId, useOptimistic, type ReactNode } from "react"
+import { startTransition, useId, useOptimistic } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"

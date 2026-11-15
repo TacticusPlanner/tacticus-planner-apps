@@ -1,4 +1,5 @@
-import createClient, { type Client, type Middleware } from "openapi-fetch"
+import createClient from "openapi-fetch"
+import type { Client, Middleware } from "openapi-fetch"
 
 import { getRequiredEnvironmentValue } from "../config"
 import { acquireAccessToken } from "../auth"

@@ -1,11 +1,9 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  damageTypeIcon,
-  statIcon,
-  traitIcon,
-  type CharacterStorageModel,
-  type EquipmentStorageModel,
+import { damageTypeIcon, statIcon, traitIcon } from "@workspace/game-catalog"
+import type {
+  CharacterStorageModel,
+  EquipmentStorageModel,
 } from "@workspace/game-catalog"
 import type { Rank } from "@workspace/game-domain"
 import {
@@ -20,13 +18,14 @@ import {
   AbilityText,
   rulesTextPending,
   useTraitText,
-  type TraitTextEntry,
 } from "@/shared/ability-text"
+import type { TraitTextEntry } from "@/shared/ability-text"
 import { describeSeries, EntityIcon, LevelChart } from "@/shared/ui"
 
 import { usePierceRatios } from "../../model/use-pierce-ratios"
 import { RulesTextNote } from "../unit/rules-text-note"
-import { ladderRanks, type StatsFigure } from "./character-unit.view-model"
+import { ladderRanks } from "./character-unit.view-model"
+import type { StatsFigure } from "./character-unit.view-model"
 import { EquipmentSlots } from "./equipment-slots"
 
 /** The cards every Details section sits in on desktop. */

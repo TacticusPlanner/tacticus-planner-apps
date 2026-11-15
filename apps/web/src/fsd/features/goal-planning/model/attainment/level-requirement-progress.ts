@@ -1,14 +1,12 @@
-import {
-  levelCapForProgression,
-  type Progression,
-} from "@workspace/game-domain"
+import { levelCapForProgression } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
 import {
   requiredLevelForGoal,
   xpNeededForLevelRange,
-  type LevelRules,
 } from "@/entities/goal-farming"
+import type { LevelRules } from "@/entities/goal-farming"
 
 import type { GoalProgress } from "./goal-progress"
 

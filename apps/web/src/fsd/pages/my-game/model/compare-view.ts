@@ -1,9 +1,8 @@
-import {
-  contributesTo,
-  summarizeRosterDiff,
-  type RosterDiffMetric,
-  type RosterDiffSummary,
-  type UnitDiff,
+import { contributesTo, summarizeRosterDiff } from "@/entities/roster-snapshot"
+import type {
+  RosterDiffMetric,
+  RosterDiffSummary,
+  UnitDiff,
 } from "@/entities/roster-snapshot"
 import type { UnitTileUnit } from "@/entities/unit"
 

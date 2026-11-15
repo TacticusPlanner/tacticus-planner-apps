@@ -5,8 +5,8 @@ import {
   eventDayIndex,
   eventStatus,
   isDatedEventShop,
-  type GameCatalogEventShopRecord,
 } from "@workspace/game-catalog"
+import type { GameCatalogEventShopRecord } from "@workspace/game-catalog"
 import {
   Select,
   SelectContent,

@@ -8,10 +8,12 @@ import {
   progressionOrder,
   progressionRarity,
   rarityRank,
-  type Alliance,
-  type Progression,
-  type Rank,
-  type Rarity,
+} from "@workspace/game-domain"
+import type {
+  Alliance,
+  Progression,
+  Rank,
+  Rarity,
 } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 

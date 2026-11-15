@@ -4,11 +4,14 @@ import { useTranslation } from "react-i18next"
 
 import {
   HRE_OBJECTIVE_KINDS,
-  type HreMission,
-  type HreObjective,
-  type HreObjectiveKind,
+  isTokenObjective,
+  nextTokenReserve,
 } from "@/entities/hre-mission"
-import { isTokenObjective, nextTokenReserve } from "@/entities/hre-mission"
+import type {
+  HreMission,
+  HreObjective,
+  HreObjectiveKind,
+} from "@/entities/hre-mission"
 import { missionName } from "./mission-name"
 
 type TipKind = Exclude<

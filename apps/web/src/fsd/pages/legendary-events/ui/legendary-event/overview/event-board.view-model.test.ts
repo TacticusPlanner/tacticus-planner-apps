@@ -3,9 +3,11 @@ import { describe, expect, it, vi } from "vitest"
 import {
   eventUnitChipData,
   objectivesSatisfied,
-  type LaneProgressView,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventTeam,
+} from "@/entities/legendary-event"
+import type {
+  LaneProgressView,
+  LegendaryEventRosterUnit,
+  LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { lysanderEvent } from "@/test/fixtures/legendary-events"

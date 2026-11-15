@@ -1,4 +1,5 @@
-import { useId, useState, type ReactNode } from "react"
+import { useId, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
   ToggleGroup,
@@ -10,8 +11,8 @@ import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 import {
   TODAY_QUICK_FILTERS,
   isTodayQuickFilter,
-  type TodayQuickFilter,
 } from "../../model/today-quick-filters/today-quick-filters"
+import type { TodayQuickFilter } from "../../model/today-quick-filters/today-quick-filters"
 
 /**
  * Today's quick filters as a multi-select chip row (Collection's chip style). Each chip's tooltip

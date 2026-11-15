@@ -6,7 +6,8 @@ import {
   rarityIcon,
   traitIcon,
 } from "@workspace/game-catalog"
-import { factionOrder, type Rarity } from "@workspace/game-domain"
+import { factionOrder } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 
 import {
@@ -18,8 +19,8 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
   SearchableSelect,
-  type SelectOption,
 } from "@/shared/ui"
+import type { SelectOption } from "@/shared/ui"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import { listEnemyTraits } from "../../model/battle-enemy-traits"
@@ -28,8 +29,8 @@ import {
   RAIDS_CAMPAIGN_TYPES,
   RAIDS_SLOT_OPTIONS,
   RAIDS_UPGRADE_RARITIES,
-  type RaidsFilters,
 } from "../../model/raids-filters/raids-filters.domain"
+import type { RaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import {
   pruneFactions,
   toFactionAlliance,
@@ -42,7 +43,7 @@ const ALLIANCES = ["Imperial", "Chaos", "Xenos"] as const
 const noFactionAlliance: ReadonlyMap<string, string> = new Map()
 
 /** "PermaDeath" -> "Perma Death": the label of a trait the `traits` namespace has no entry for. */
-const humanizeId = (id: string) => id.replace(/([a-z])([A-Z])/g, "$1 $2")
+const humanizeId = (id: string) => id.replaceAll(/([a-z])([A-Z])/g, "$1 $2")
 
 /**
  * The Raids Filters dialog (a bottom sheet below 768px). Edits are a draft: Close discards, Apply

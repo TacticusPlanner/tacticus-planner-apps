@@ -1,4 +1,5 @@
-import { useId, type ReactElement, type ReactNode } from "react"
+import { useId } from "react"
+import type { ReactElement, ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { SlidersHorizontal } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
@@ -23,12 +24,11 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Switch } from "@workspace/ui/components/switch"
 
-import {
-  MAX_CLOSE_SHARDS,
-  eventMissions,
-  type LegendaryEvent,
-  type LegendaryEventRun,
-  type LegendaryEventRunResolution,
+import { MAX_CLOSE_SHARDS, eventMissions } from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventRun,
+  LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 import { NumberStepper } from "@/shared/ui"
 
@@ -37,7 +37,8 @@ import {
   runInputsFocusRun,
   runInputsPhase,
 } from "../model/run-inputs-patches"
-import { useRunInputs, type RunInputsActions } from "../model/use-run-inputs"
+import { useRunInputs } from "../model/use-run-inputs"
+import type { RunInputsActions } from "../model/use-run-inputs"
 import { MissionChecklist } from "./mission-checklist"
 
 const RUNS: readonly LegendaryEventRun[] = [1, 2, 3]

@@ -1,17 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  type UseQueryResult,
-} from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import type { UseQueryResult } from "@tanstack/react-query"
 
 import { apiIssue } from "@/shared/api"
 
-import {
-  refreshGuildRaidStatus,
-  type GuildRaidStatusResult,
-} from "../api/guild-raid-status.api"
+import { refreshGuildRaidStatus } from "../api/guild-raid-status.api"
+import type { GuildRaidStatusResult } from "../api/guild-raid-status.api"
 import {
   guildRaidStatusQueries,
   guildRaidStatusQueryKey,

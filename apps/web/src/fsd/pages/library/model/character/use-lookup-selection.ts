@@ -14,11 +14,9 @@ import {
   progressionIndex,
   rankAt,
   rankIndex,
-  type Progression,
-  type Rank,
   unitIdSchema,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 
 export interface LookupSelection {
   characterId?: UnitId

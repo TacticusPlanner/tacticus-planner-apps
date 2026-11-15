@@ -1,6 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query"
 
-import { localDataKeys, type LocalDataSource } from "./use-local-data"
+import { localDataKeys } from "./use-local-data"
+import type { LocalDataSource } from "./use-local-data"
 
 const channelName = "tacticus-planner-local-data"
 

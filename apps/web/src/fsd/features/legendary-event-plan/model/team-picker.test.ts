@@ -3,8 +3,10 @@ import { describe, expect, it } from "vitest"
 import {
   buildLanePointsModel,
   buildSyncedLaneProgress,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventUnit,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventRosterUnit,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import {
   fixtureCharacter,
@@ -21,8 +23,8 @@ import {
   notMatchingStart,
   objectiveChipCounts,
   toggleObjectiveChip,
-  type PickerTile,
 } from "./team-picker"
+import type { PickerTile } from "./team-picker"
 
 // Lysander Alpha: 2 is Flying, 4 is No Resilient. Dante satisfies both (32 + 80 + 40 = 152). The
 // catalog has no Resilient flyer on Alpha, so a synthetic one (Flying, Resilient, 5 hits: 32 + 80

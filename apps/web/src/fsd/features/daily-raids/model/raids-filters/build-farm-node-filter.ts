@@ -3,11 +3,8 @@ import type { Rarity } from "@workspace/game-domain"
 import type { FarmNodeFilter } from "@/entities/goal-farming"
 
 import { passLocationFilter } from "./pass-location-filter"
-import {
-  countActiveFilterGroups,
-  type RaidsFilterBattle,
-  type RaidsFilters,
-} from "./raids-filters.domain"
+import { countActiveFilterGroups } from "./raids-filters.domain"
+import type { RaidsFilterBattle, RaidsFilters } from "./raids-filters.domain"
 
 /**
  * The engine predicate for the applied filter, or `undefined` for an empty one so an unfiltered run is

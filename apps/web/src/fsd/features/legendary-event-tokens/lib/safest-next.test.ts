@@ -2,9 +2,12 @@ import { describe, expect, it } from "vitest"
 
 import { utharEvent } from "@/test/fixtures/legendary-events"
 
-import { forecastRuns, type ForecastInput } from "./run-forecast"
-import { compareRisk, safestNextToken, type TokenRisk } from "./safest-next"
-import { planTokens, type PlannedToken } from "./token-plan"
+import { forecastRuns } from "./run-forecast"
+import type { ForecastInput } from "./run-forecast"
+import { compareRisk, safestNextToken } from "./safest-next"
+import type { TokenRisk } from "./safest-next"
+import { planTokens } from "./token-plan"
+import type { PlannedToken } from "./token-plan"
 import { workedLanes } from "./token-plan.fixtures"
 
 // Uthar Alpha (worked example): the most-points plan opens with Melee on battle 3 (+240), and

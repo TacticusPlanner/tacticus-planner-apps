@@ -8,10 +8,8 @@ import { setViewportWidth } from "@/test/viewport"
 import { lysanderBattleNpcs } from "@/test/fixtures/lysander-battles"
 import dailiesEn from "../../../../../public/locales/en/dailies.json"
 
-import {
-  useCampaignBattleDialog,
-  type CampaignBattleDialogStore,
-} from "../model/campaign-battle-dialog-store"
+import { useCampaignBattleDialog } from "../model/campaign-battle-dialog-store"
+import type { CampaignBattleDialogStore } from "../model/campaign-battle-dialog-store"
 import {
   CampaignBattleDialog,
   CampaignBattleDialogHost,

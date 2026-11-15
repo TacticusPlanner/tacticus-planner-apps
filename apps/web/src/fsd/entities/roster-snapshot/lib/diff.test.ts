@@ -1,13 +1,8 @@
 import { describe, expect, it } from "vitest"
 import type { Progression } from "@workspace/game-domain"
 
-import {
-  contributesTo,
-  diffRosters,
-  summarizeRosterDiff,
-  type DiffUnit,
-  type RosterDiffContext,
-} from "./diff"
+import { contributesTo, diffRosters, summarizeRosterDiff } from "./diff"
+import type { DiffUnit, RosterDiffContext } from "./diff"
 
 const calgarFrom: DiffUnit = {
   unitId: "ultraCalgar",

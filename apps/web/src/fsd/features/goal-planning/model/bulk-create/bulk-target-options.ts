@@ -5,9 +5,8 @@ import {
   progressionOrder,
   rankIndex,
   rankOrder,
-  type Progression,
-  type Rank,
 } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import type { BulkGoalUnit } from "./bulk-goal-plan"
 

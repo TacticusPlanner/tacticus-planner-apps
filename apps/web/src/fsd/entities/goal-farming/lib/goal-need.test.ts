@@ -323,9 +323,9 @@ describe("rankSlotsRemaining", () => {
     const repeatedMaterialCharacter: FarmingCharacter = {
       ...character,
       rankUpUpgrades: [
-        { rank: "Stone1", upgradeIds: Array(6).fill(repeatedId) },
-        { rank: "Stone2", upgradeIds: Array(6).fill(repeatedId) },
-        { rank: "Stone3", upgradeIds: Array(6).fill(repeatedId) },
+        { rank: "Stone1", upgradeIds: new Array(6).fill(repeatedId) },
+        { rank: "Stone2", upgradeIds: new Array(6).fill(repeatedId) },
+        { rank: "Stone3", upgradeIds: new Array(6).fill(repeatedId) },
       ],
     }
     const detail = goalDetail({ start: 0, end: 2 })

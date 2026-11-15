@@ -5,27 +5,30 @@ import type { Progression, Rarity } from "@workspace/game-domain"
 import {
   legendaryEventPlanQueries,
   useLegendaryEvents,
-  type LegendaryEventPlan,
 } from "@/entities/legendary-event"
+import type { LegendaryEventPlan } from "@/entities/legendary-event"
 import {
   formatRosterSourceId,
   parseRosterSourceId,
   rosterSnapshotQueries,
   useRosterSnapshots,
-  type DiffRoster,
   V1_IMPORT_CATALOG_VERSION,
-  type PersonalRosterSnapshotList,
-  type RosterDiffContext,
-  type RosterSnapshotSource,
 } from "@/entities/roster-snapshot"
-import { useQueryReadState, type ReadState } from "@/shared/lib"
+import type {
+  DiffRoster,
+  PersonalRosterSnapshotList,
+  RosterDiffContext,
+  RosterSnapshotSource,
+} from "@/entities/roster-snapshot"
+import { useQueryReadState } from "@/shared/lib"
+import type { ReadState } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
   mowPowerAt,
   rosterCharacterPower,
   useUnitPowerContext,
-  type UnitPowerContext,
 } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { COMPARE_CURRENT } from "./compare-query"
 

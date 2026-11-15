@@ -1,4 +1,5 @@
-import { useContext, type ReactNode } from "react"
+import { useContext } from "react"
+import type { ReactNode } from "react"
 import { createPortal } from "react-dom"
 
 import { DialogActionSlotContext } from "./dialog-action-slot"

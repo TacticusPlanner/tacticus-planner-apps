@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  buildEffectiveCampaignEventProgress,
-  type SyncedCampaignEventProgress,
-} from "./campaign-event-progress"
+import { buildEffectiveCampaignEventProgress } from "./campaign-event-progress"
+import type { SyncedCampaignEventProgress } from "./campaign-event-progress"
 import type { CampaignEventProgressOverride } from "./types"
 
 import {

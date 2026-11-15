@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import {
-  MAX_TEAMS_PER_LANE,
-  type LegendaryEventPlan,
-} from "@/entities/legendary-event"
+import { MAX_TEAMS_PER_LANE } from "@/entities/legendary-event"
+import type { LegendaryEventPlan } from "@/entities/legendary-event"
 
 import type { DraftTeam } from "./plan-teams"
 import { EMPTY_PLAN } from "./plan.fixtures"

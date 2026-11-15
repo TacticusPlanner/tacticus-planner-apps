@@ -9,18 +9,18 @@ import {
   updateLegendaryEventTeam,
   updateLegendaryEventTeamOrder,
   usePlanWriteQueue,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
-  type PlanMutationOutcome,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+  PlanMutationOutcome,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 
-import {
-  estimateSnapshot,
-  type DepthEstimateContext,
-} from "./depth-estimate-context"
+import { estimateSnapshot } from "./depth-estimate-context"
+import type { DepthEstimateContext } from "./depth-estimate-context"
 import {
   assertLaneHasRoom,
   draftOfTeam,
@@ -30,8 +30,8 @@ import {
   withLaneOrder,
   withoutTeam,
   withTeamDepth,
-  type TeamDraft,
 } from "./plan-patches"
+import type { TeamDraft } from "./plan-patches"
 
 export type { PlanMutationOutcome }
 

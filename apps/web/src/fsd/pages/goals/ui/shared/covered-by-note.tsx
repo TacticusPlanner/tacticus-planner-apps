@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 
-import { goalTargetLabel, type GoalDetail } from "@/entities/goal"
+import { goalTargetLabel } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 
 /** "Covered by the Rank → Adamantine I goal": a higher-priority goal of the same unit and type already
  *  reaches this milestone's target, so it adds no work of its own (goal-milestone-planning). */

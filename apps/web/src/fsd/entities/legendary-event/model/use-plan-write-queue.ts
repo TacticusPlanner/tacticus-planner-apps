@@ -1,21 +1,16 @@
 import { useSyncExternalStore } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import {
-  useQuery,
-  useQueryClient,
-  type QueryClient,
-} from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import type { QueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
 import { ApiError } from "@/shared/api"
 
 import { legendaryEventPlanQueries } from "../api/legendary-event-plan.queries"
 import { MAX_TEAMS_PER_LANE } from "../lib/team-size"
-import {
-  legendaryEventPlanConflict,
-  type LegendaryEventPlan,
-} from "./plan.types"
+import { legendaryEventPlanConflict } from "./plan.types"
+import type { LegendaryEventPlan } from "./plan.types"
 
 /** How a plan mutation ended: `saved` (the returned plan is adopted), `conflict` (the plan changed
  *  elsewhere and was reloaded — from this write's 409 body, or from an earlier queued write's,

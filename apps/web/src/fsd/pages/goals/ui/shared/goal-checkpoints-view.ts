@@ -1,4 +1,5 @@
-import { rankAt, type Rank } from "@workspace/game-domain"
+import { rankAt } from "@workspace/game-domain"
+import type { Rank } from "@workspace/game-domain"
 
 import type {
   EstimateOutcome,
@@ -33,7 +34,7 @@ export function parseCheckpointTarget(
       : null
   }
   if (goalType === "Ability") {
-    const [track, level] = target.split(":")
+    const [track, level] = target.split(":", 2)
     const parsed = Number(level)
     if (
       (track === "primary" || track === "secondary") &&

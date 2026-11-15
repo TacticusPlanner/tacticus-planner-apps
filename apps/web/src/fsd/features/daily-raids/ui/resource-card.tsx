@@ -19,7 +19,8 @@ import {
   plannedRaidNeedForEntry,
 } from "../model/planned-raid-need"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
-import { RaidLocationName, type RaidLocationTarget } from "./raid-location-name"
+import { RaidLocationName } from "./raid-location-name"
+import type { RaidLocationTarget } from "./raid-location-name"
 import { ResourceIcon, ResourceIconWithTooltip } from "./resource-icon"
 import {
   CompactProgression,

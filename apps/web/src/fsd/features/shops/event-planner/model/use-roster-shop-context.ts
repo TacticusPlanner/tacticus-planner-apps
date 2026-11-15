@@ -1,8 +1,6 @@
 import { useMemo } from "react"
-import {
-  rosterShopLockContext,
-  type ShopLockContext,
-} from "@workspace/game-catalog"
+import { rosterShopLockContext } from "@workspace/game-catalog"
+import type { ShopLockContext } from "@workspace/game-catalog"
 
 import { usePlayerDataStatus } from "@/shared/player-data-status"
 import { combineReadStates } from "@/shared/lib"

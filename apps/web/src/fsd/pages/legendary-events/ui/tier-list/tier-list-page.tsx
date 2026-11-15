@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from "react"
+import { useEffect, useId, useRef, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 import { ChevronDown } from "lucide-react"
@@ -17,8 +18,8 @@ import {
   useHordeModeTiers,
   useLegendaryEventRoster,
   useLegendaryEventUnits,
-  type HordeTierList,
 } from "@/entities/legendary-event"
+import type { HordeTierList } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
@@ -29,8 +30,8 @@ import {
   TIER_LIST_KINDS,
   parseTierListKind,
   tierListKindSearchParams,
-  type TierListKind,
 } from "./npc-tier-list.view-model"
+import type { TierListKind } from "./npc-tier-list.view-model"
 import { TierListFiltersBar, TierListFiltersRow } from "./tier-list-filters"
 import { useTierListTutorial } from "./tier-list.tutorial"
 import {
@@ -44,10 +45,11 @@ import {
   tierListSearchParams,
   tierListFiltersKey,
   tierTileDetails,
-  type TierListUrlFilters,
 } from "./tier-list.view-model"
+import type { TierListUrlFilters } from "./tier-list.view-model"
 import { TierRow, UntieredRow } from "./tier-row"
-import { TierTile, type TierTileView } from "./tier-tile"
+import { TierTile } from "./tier-tile"
+import type { TierTileView } from "./tier-tile"
 import { TierTileDetailsSheet } from "./tier-tile-details"
 
 type TierRef = { tier: string; multiplier: number } | null

@@ -1,7 +1,8 @@
 import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Info } from "lucide-react"
-import { powerIcon, statIcon, type StatIconKind } from "@workspace/game-catalog"
+import { powerIcon, statIcon } from "@workspace/game-catalog"
+import type { StatIconKind } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import {
   Popover,

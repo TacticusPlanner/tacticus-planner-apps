@@ -5,10 +5,8 @@ import userEvent from "@testing-library/user-event"
 import { toast } from "sonner"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import {
-  legendaryEventPlanQueries,
-  type LegendaryEventPlan,
-} from "@/entities/legendary-event"
+import { legendaryEventPlanQueries } from "@/entities/legendary-event"
+import type { LegendaryEventPlan } from "@/entities/legendary-event"
 
 import { PlanNotesCard } from "./plan-notes-card"
 

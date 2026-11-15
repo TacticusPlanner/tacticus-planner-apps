@@ -14,8 +14,8 @@ import {
   localReadQueryOptions,
   useQueryReadState,
   withReadTimeout,
-  type ReadState,
 } from "../lib"
+import type { ReadState } from "../lib"
 
 export type LocalDataSource = "catalog" | "player"
 

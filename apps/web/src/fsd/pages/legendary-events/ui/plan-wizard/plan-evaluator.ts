@@ -5,20 +5,10 @@ import type {
 } from "@/entities/legendary-event"
 
 import { ceilingOf, draftTokenView } from "./plan-ceiling"
-import {
-  planRuns,
-  projectedRosters,
-  rosterKey,
-  type ChosenUpgrade,
-  type PlanEconomy,
-  type PlanInputs,
-} from "./plan-inputs"
-import {
-  generateLaneTeams,
-  memberKey,
-  storedDrafts,
-  type DraftTeam,
-} from "./plan-teams"
+import { planRuns, projectedRosters, rosterKey } from "./plan-inputs"
+import type { ChosenUpgrade, PlanEconomy, PlanInputs } from "./plan-inputs"
+import { generateLaneTeams, memberKey, storedDrafts } from "./plan-teams"
+import type { DraftTeam } from "./plan-teams"
 
 /** The user's Teams-step changes the generation keeps (spec: keep the user's edits where they
  *  still apply). */

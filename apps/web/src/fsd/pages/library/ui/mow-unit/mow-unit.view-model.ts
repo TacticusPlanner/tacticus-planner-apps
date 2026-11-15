@@ -1,16 +1,15 @@
-import {
-  startingProgression,
-  type Progression,
-  type Rarity,
-} from "@workspace/game-domain"
+import { startingProgression } from "@workspace/game-domain"
+import type { Progression, Rarity } from "@workspace/game-domain"
 import type { ProgressionRulesStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { mowAbilityTrackLevel } from "@/entities/goal-farming"
 import type { ReadState } from "@/shared/lib"
-import { mowPowerAt, type UnitPowerContext } from "@/shared/unit-power"
+import { mowPowerAt } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
-import { powerFigure, type PowerFigure } from "../unit/unit-power.model"
+import { powerFigure } from "../unit/unit-power.model"
+import type { PowerFigure } from "../unit/unit-power.model"
 
 import type { MowAbility, MowCostRung } from "./mow-upgrades.model"
 

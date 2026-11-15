@@ -1,9 +1,6 @@
 import { useMemo, useState } from "react"
-import {
-  firstProgression,
-  progressionIndex,
-  type Progression,
-} from "@workspace/game-domain"
+import { firstProgression, progressionIndex } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 
 import { progressionEndOptionsFor } from "../target-edit/goal-target-edit"
 import { firstFreeTarget } from "./first-free-target"

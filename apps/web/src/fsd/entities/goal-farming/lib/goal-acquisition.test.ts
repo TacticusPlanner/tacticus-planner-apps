@@ -3,15 +3,14 @@ import type {
   GameCatalogShop,
   OnslaughtRewardStorageModel,
 } from "@workspace/game-catalog"
-import { Rarity, type UpgradeId } from "@workspace/game-domain"
+import { Rarity } from "@workspace/game-domain"
+import type { UpgradeId } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal/@x/goal-farming"
 import type { OnslaughtProgress } from "@/entities/player-data-override/@x/goal-farming"
 
-import {
-  computeGoalAcquisition,
-  type MythicMaterialCatalog,
-} from "./goal-acquisition"
+import { computeGoalAcquisition } from "./goal-acquisition"
+import type { MythicMaterialCatalog } from "./goal-acquisition"
 
 // Venerable Battle Mark has no recipe (shop-only); the Legendary material is farmable.
 const upgradesById: MythicMaterialCatalog = new Map([

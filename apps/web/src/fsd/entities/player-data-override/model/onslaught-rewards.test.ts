@@ -8,7 +8,7 @@ const rewards: OnslaughtRewardStorageModel[] = [
     id: "Stone-2",
     sector: "Stone",
     tier: 2,
-    regular: Array(5).fill({ min: 2, max: 4 }),
+    regular: new Array(5).fill({ min: 2, max: 4 }),
     mythic: { min: 1, max: 1 },
   },
   {
@@ -28,14 +28,14 @@ const rewards: OnslaughtRewardStorageModel[] = [
     id: "Diamond-1",
     sector: "Diamond",
     tier: 1,
-    regular: Array(5).fill({ min: 1, max: 1 }),
+    regular: new Array(5).fill({ min: 1, max: 1 }),
     mythic: { min: 1, max: 2 },
   },
   {
     id: "Adamantine-3",
     sector: "Adamantine",
     tier: 3,
-    regular: Array(5).fill({ min: 1, max: 1 }),
+    regular: new Array(5).fill({ min: 1, max: 1 }),
     mythic: { min: 2, max: 3 },
   },
 ]

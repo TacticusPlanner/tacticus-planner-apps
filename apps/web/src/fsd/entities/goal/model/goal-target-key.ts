@@ -109,7 +109,7 @@ export function progressionLabel<Ns extends Namespace>(
 ): string {
   if (isProgression(progression)) return progressionText(t, progression)
   // Off-ladder ids such as "Epic:None" still read as their rarity.
-  const [rarity = progression, stars] = progression.split(":")
+  const [rarity = progression, stars] = progression.split(":", 2)
   if (stars && stars !== "None") return progression
   return t(`rarities.${rarity}`, { ns: "progression", defaultValue: rarity })
 }

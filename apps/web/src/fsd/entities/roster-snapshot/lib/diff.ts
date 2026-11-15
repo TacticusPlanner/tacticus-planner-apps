@@ -7,10 +7,8 @@ import {
   rankIndex,
   rarityRank,
   startingProgression,
-  type Progression,
-  type Rank,
-  type Rarity,
 } from "@workspace/game-domain"
+import type { Progression, Rank, Rarity } from "@workspace/game-domain"
 
 type DiffUnitKind = "character" | "mow"
 

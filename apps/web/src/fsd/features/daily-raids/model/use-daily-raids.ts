@@ -2,10 +2,12 @@ import { useDeferredValue, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { unitIdSchema, type UnitId } from "@workspace/game-domain"
+import { unitIdSchema } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
 
-import { activeProjectMembers, type GoalDetail } from "@/entities/goal"
+import { activeProjectMembers } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 import { dailyGoalTargetLabel } from "./goal-target-label"
 import {
   onslaughtProgressQueries,
@@ -18,7 +20,8 @@ import {
   mapUpgradeStorageToDomain,
 } from "@/entities/rank-lookup"
 import { toOnslaughtRunsPerDay } from "@/entities/goal-farming"
-import { useCampaignDisplay, type ReadState } from "@/shared/lib"
+import { useCampaignDisplay } from "@/shared/lib"
+import type { ReadState } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"

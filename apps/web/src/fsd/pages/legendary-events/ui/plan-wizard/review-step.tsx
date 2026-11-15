@@ -1,20 +1,20 @@
-import { useId, type ReactNode } from "react"
+import { useId } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, CircleDashed, Minus, Pencil, Plus, X } from "lucide-react"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  useTeamDisplayName,
-  type LegendaryEventLaneId,
-} from "@/entities/legendary-event"
+import { useTeamDisplayName } from "@/entities/legendary-event"
+import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 import { useGoalLabels } from "@/features/legendary-event-goals"
 
 import type { PlanWrites } from "./plan-create"
 import { runAssumptions } from "./target-step.model"
 import type { CreateItem, usePlanCreate } from "./use-plan-create"
-import { NEW_PROJECT, type PlanDestinationState } from "./use-plan-destination"
+import { NEW_PROJECT } from "./use-plan-destination"
+import type { PlanDestinationState } from "./use-plan-destination"
 import type { PlanDraft } from "./use-plan-draft"
 
 const STATUS_ICON = { pending: CircleDashed, done: Check, failed: X } as const

@@ -14,10 +14,10 @@ import { useUnitName } from "@/shared/unit-name"
 
 import { LegendaryEventCard } from "./legendary-event-card"
 import { useLegendaryEventsHubTutorial } from "./legendary-events-hub.tutorial"
-import {
-  buildHubViewModel,
-  type HubCardViewModel,
-  type HubViewModel,
+import { buildHubViewModel } from "./legendary-events-hub.view-model"
+import type {
+  HubCardViewModel,
+  HubViewModel,
 } from "./legendary-events-hub.view-model"
 
 const GROUPS = ["active", "upcoming", "archived"] as const

@@ -23,10 +23,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import type { HordeTierAlliance } from "@/entities/legendary-event"
 import { EntityIcon, FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 
-import {
-  TIER_LIST_ALLIANCES,
-  type TierListUrlFilters,
-} from "./tier-list.view-model"
+import { TIER_LIST_ALLIANCES } from "./tier-list.view-model"
+import type { TierListUrlFilters } from "./tier-list.view-model"
 
 export interface TierListFiltersProps {
   filters: TierListUrlFilters

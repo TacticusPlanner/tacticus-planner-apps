@@ -70,9 +70,8 @@ export function maxKnownProgressionIndex(
     .map((encounter) => encounter.progressionIndex)
     .filter((index) => Number.isFinite(index))
 
-  const maxEncounterIndex = fromEncounters.length
-    ? Math.max(...fromEncounters)
-    : 0
+  const maxEncounterIndex =
+    fromEncounters.length > 0 ? Math.max(...fromEncounters) : 0
 
   // Encounter progression indices are 1-based; clamp into the 0-based ladder.
   return Math.min(

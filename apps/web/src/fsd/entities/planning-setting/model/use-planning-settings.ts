@@ -3,7 +3,8 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import { planningSettingsQueries } from "../api/planning-settings.queries"
 import { updatePlanningSettings } from "../api/planning-settings.api"
-import { defaultPlanningSettings, type PlanningSettings } from "./types"
+import { defaultPlanningSettings } from "./types"
+import type { PlanningSettings } from "./types"
 
 export function usePlanningSettings() {
   const isAuthenticated = useIsAuthenticated()

@@ -1,10 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import {
-  createProject,
-  projectQueries,
-  type ProjectSummary,
-} from "@/entities/project"
+import { createProject, projectQueries } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 
 /**
  * Creates an ordinary custom project from inside the goal membership picker. The project is written

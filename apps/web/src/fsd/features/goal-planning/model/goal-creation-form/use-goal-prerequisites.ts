@@ -1,10 +1,6 @@
 import { useMemo } from "react"
-import {
-  firstProgression,
-  progressionIndex,
-  type Progression,
-  type Rank,
-} from "@workspace/game-domain"
+import { firstProgression, progressionIndex } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 
@@ -14,8 +10,8 @@ import {
   highestProgression,
   lowestCoveringAscension,
   rankProgressionNeed,
-  type GoalMilestones,
 } from "./goal-milestones"
+import type { GoalMilestones } from "./goal-milestones"
 
 /** An in-flight Ascension goal of the selected unit. */
 export type ExistingAscension = { goalId: string; end: Progression }

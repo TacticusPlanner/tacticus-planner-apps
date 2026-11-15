@@ -8,7 +8,8 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 
-import { RarityCombobox, type RarityComboboxItem } from "./rarity-combobox"
+import { RarityCombobox } from "./rarity-combobox"
+import type { RarityComboboxItem } from "./rarity-combobox"
 
 const items: RarityComboboxItem<string>[] = [
   { id: "h1", name: "Health Base", rarity: "Common" },

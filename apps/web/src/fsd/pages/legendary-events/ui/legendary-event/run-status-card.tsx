@@ -1,9 +1,7 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  legendaryEventResourceIcon,
-  type LegendaryEventResource,
-} from "@workspace/game-catalog"
+import { legendaryEventResourceIcon } from "@workspace/game-catalog"
+import type { LegendaryEventResource } from "@workspace/game-catalog"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {

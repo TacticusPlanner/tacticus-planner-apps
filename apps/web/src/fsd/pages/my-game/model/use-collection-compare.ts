@@ -1,11 +1,8 @@
 import { useEffect, useMemo } from "react"
 import { useIsAuthenticated } from "@azure/msal-react"
 
-import {
-  diffRosters,
-  type DiffRoster,
-  type UnitDiff,
-} from "@/entities/roster-snapshot"
+import { diffRosters } from "@/entities/roster-snapshot"
+import type { DiffRoster, UnitDiff } from "@/entities/roster-snapshot"
 
 import { COMPARE_CURRENT, resolveCompareSources } from "./compare-query"
 import { teamUnitIdsOf } from "./compare-view"
@@ -13,9 +10,8 @@ import {
   useCompareSources,
   useRosterDiffContext,
   useSourceRoster,
-  type CompareSource,
-  type CompareSources,
 } from "./use-compare-data"
+import type { CompareSource, CompareSources } from "./use-compare-data"
 import type { CollectionRosterOverride } from "./use-collection-view"
 import type { CompareQueryState } from "./use-compare-query"
 

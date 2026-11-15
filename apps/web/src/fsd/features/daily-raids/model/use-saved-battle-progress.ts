@@ -1,10 +1,8 @@
 import { useIsAuthenticated } from "@azure/msal-react"
 import { useQuery } from "@tanstack/react-query"
 
-import {
-  battleProgressQueries,
-  type BattleProgressOverride,
-} from "@/entities/player-data-override"
+import { battleProgressQueries } from "@/entities/player-data-override"
+import type { BattleProgressOverride } from "@/entities/player-data-override"
 
 /**
  * The player's saved battle progress overrides while they're signed in, else undefined (also while

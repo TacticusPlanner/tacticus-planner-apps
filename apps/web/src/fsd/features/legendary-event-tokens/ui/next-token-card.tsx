@@ -19,16 +19,16 @@ import type {
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
-import { gainsFromProgress, type MissionGain } from "../lib/mission-gains"
+import { gainsFromProgress } from "../lib/mission-gains"
+import type { MissionGain } from "../lib/mission-gains"
 import type { TokenMissionStep } from "../lib/mission-order"
 import type { NextTokenChoice, PlannedToken } from "../lib/token-plan"
 import {
   missionsNextToken,
   upNextTokens,
   tokenClearBand,
-  type NextTokenEmpty,
-  type TokenPlanView,
 } from "../lib/token-plan-view"
+import type { NextTokenEmpty, TokenPlanView } from "../lib/token-plan-view"
 import { unknownChip } from "../lib/unit-chips"
 import { useMissionsOrder } from "../model/token-plan-order"
 import { useNextTokenShown } from "../model/use-next-token-shown"

@@ -5,11 +5,8 @@ import type {
   CharacterStorageModel,
   ShopShardOffer,
 } from "@workspace/game-catalog"
-import {
-  battleIdSchema,
-  campaignIdSchema,
-  type BattleId,
-} from "@workspace/game-domain"
+import { battleIdSchema, campaignIdSchema } from "@workspace/game-domain"
+import type { BattleId } from "@workspace/game-domain"
 
 import type { Battle } from "@/entities/goal-farming"
 import { useAcquisitionSourceSelection } from "./use-acquisition-source-selection"

@@ -12,10 +12,10 @@ import {
   ResponsiveDialogTitle,
 } from "@/shared/ui"
 
-import {
-  useCampaignBattleTarget,
-  type CampaignBattleDialogStore,
-  type CampaignBattleTarget,
+import { useCampaignBattleTarget } from "../model/campaign-battle-dialog-store"
+import type {
+  CampaignBattleDialogStore,
+  CampaignBattleTarget,
 } from "../model/campaign-battle-dialog-store"
 import { campaignEnemyTiles } from "../model/campaign-enemy-tiles"
 import type { EnemyNpcs } from "../model/enemy-tile"

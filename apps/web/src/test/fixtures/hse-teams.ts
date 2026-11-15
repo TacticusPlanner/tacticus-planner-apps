@@ -1,14 +1,13 @@
 import type { Alliance, Rank } from "@workspace/game-domain"
 
-import {
-  type HseEventPointsState,
-  type HseInstance,
+import type {
+  HseEventPointsState,
+  HseInstance,
 } from "@/entities/home-screen-event"
-// eslint-disable-next-line no-restricted-imports -- stands in for this module inside a vi.mock factory; the slice's public API re-exports the mocked module, so importing it here deadlocks.
-import {
-  buildHseTeamsViewModel,
-  type HseTeamsRead,
-} from "@/features/team-recommendations/model/hse-teams-view-model"
+/* eslint-disable no-restricted-imports -- stands in for this module inside a vi.mock factory; the slice's public API re-exports the mocked module, so importing it here deadlocks. */
+import { buildHseTeamsViewModel } from "@/features/team-recommendations/model/hse-teams-view-model"
+import type { HseTeamsRead } from "@/features/team-recommendations/model/hse-teams-view-model"
+/* eslint-enable no-restricted-imports */
 import { anyUnitPowerFixture } from "./team-power"
 
 // A synced roster for the HSE event teams: Psykers in every alliance (four Imperial among other

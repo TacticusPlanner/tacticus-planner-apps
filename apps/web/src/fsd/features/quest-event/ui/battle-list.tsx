@@ -1,16 +1,14 @@
 import { useTranslation } from "react-i18next"
 import { ChevronDownIcon, ChevronRightIcon, UsersIcon } from "lucide-react"
-import {
-  heroStarIcon,
-  rarityIcon,
-  type UpgradeStorageModel,
-} from "@workspace/game-catalog"
+import { heroStarIcon, rarityIcon } from "@workspace/game-catalog"
+import type { UpgradeStorageModel } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 
-import { battlesByTier, type QuestBattle } from "../model/quest-battles"
+import { battlesByTier } from "../model/quest-battles"
+import type { QuestBattle } from "../model/quest-battles"
 import type { QuestVerdict } from "../model/quest-estimates"
 import type { QuestScore } from "../model/quest-score"
 import { ObjectiveChips } from "./objective-chips"

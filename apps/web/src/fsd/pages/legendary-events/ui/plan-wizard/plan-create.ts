@@ -1,9 +1,9 @@
-import {
-  runInputValues,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
-  type LegendaryEventRun,
-  type LegendaryEventRunInputValues,
+import { runInputValues } from "@/entities/legendary-event"
+import type {
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
+  LegendaryEventRun,
+  LegendaryEventRunInputValues,
 } from "@/entities/legendary-event"
 
 import type { UnitGoalChain } from "./plan-draft"

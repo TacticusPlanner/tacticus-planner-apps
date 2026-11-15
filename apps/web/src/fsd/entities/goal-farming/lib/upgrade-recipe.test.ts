@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest"
-import {
-  unitIdSchema,
-  upgradeIdSchema,
-  type Rank,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
+import type { Rank, UpgradeId } from "@workspace/game-domain"
 
 import type { FarmingCharacter, FarmingUpgrade } from "../model/estimate.domain"
 import {
@@ -61,7 +57,10 @@ describe("rankUpUpgradeIds", () => {
       ids("U1", "U3", "U5")
     )
     expect(rankUpUpgradeIds(unit, "Bronze1", "Bronze1", false, 2)).toEqual(
-      ids("U1", "U2")
+      ids("U1", "U3")
+    )
+    expect(rankUpUpgradeIds(unit, "Bronze1", "Bronze1", false, 4)).toEqual(
+      ids("U1", "U3", "U5", "U2")
     )
     expect(rankUpUpgradeIds(unit, "Bronze1", "Bronze1", false, 0, 2)).toEqual(
       ids("U1", "U3")

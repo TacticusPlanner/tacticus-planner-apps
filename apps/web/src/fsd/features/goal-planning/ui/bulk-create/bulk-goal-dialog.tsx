@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, CircleDashed, X } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -19,10 +20,10 @@ import {
   ResponsiveDialogTitle,
 } from "@/shared/ui"
 
-import {
-  bulkUnitKey,
-  type BulkGoalUnit,
-  type BulkUnitPlan,
+import { bulkUnitKey } from "../../model/bulk-create/bulk-goal-plan"
+import type {
+  BulkGoalUnit,
+  BulkUnitPlan,
 } from "../../model/bulk-create/bulk-goal-plan"
 import type { BulkUnitStatus } from "../../model/bulk-create/bulk-goal-submit"
 import { useBulkGoalForm } from "../../model/bulk-create/use-bulk-goal-form"

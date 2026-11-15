@@ -4,8 +4,8 @@ import {
   hasLaneDefaultName,
   teamDisplayName,
   withLanePrefix,
-  type NamedTeam,
 } from "./team-display-name"
+import type { NamedTeam } from "./team-display-name"
 
 // Uthar Alpha's objectives as labelled (catalog order is by `index`).
 const alphaObjectives = [

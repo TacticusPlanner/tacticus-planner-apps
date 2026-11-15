@@ -2,7 +2,8 @@ import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 
-import { goalTargetLabel, type GoalDetail } from "@/entities/goal"
+import { goalTargetLabel } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 
 /** "Counts toward": the unit's Rank (or MoW Ability) goals an Upgrade goal links to, one checkbox each.
  *  A linked goal's slots take the Upgrade goal's materials instead of needing their own. */

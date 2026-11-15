@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, Pin } from "lucide-react"
 import { characterIcon, powerIcon } from "@workspace/game-catalog"
@@ -15,11 +16,8 @@ import {
   ResponsiveDialogTitle,
 } from "@/shared/ui"
 
-import {
-  questPickedPower,
-  toggleQuestPick,
-  type QuestTeam,
-} from "../model/quest-team"
+import { questPickedPower, toggleQuestPick } from "../model/quest-team"
+import type { QuestTeam } from "../model/quest-team"
 
 /**
  * Every unit eligible for a quest battle, strongest first at the tier cap, with the featured hero

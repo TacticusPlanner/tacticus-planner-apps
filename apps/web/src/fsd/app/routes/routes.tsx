@@ -1,9 +1,10 @@
 // This is the route-config module (it exports the `routes` array, not a component), so Fast Refresh's
 // "only export components" rule does not apply.
 /* eslint-disable react-refresh/only-export-components */
-import { lazy, type ReactNode } from "react"
+import { lazy } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { type RouteObject } from "react-router"
+import type { RouteObject } from "react-router"
 
 import { useIsAuthenticated } from "@azure/msal-react"
 

@@ -13,8 +13,8 @@ import {
   suggestIncursionTeam,
   tierPower,
   toggleTeamMember,
-  type IncursionCandidate,
 } from "./incursion-plan.model"
+import type { IncursionCandidate } from "./incursion-plan.model"
 
 const broadside = incursionsFixture.find(
   (incursion) => incursion.mowId === "tauBroadside"
@@ -138,7 +138,7 @@ describe("toggleTeamMember", () => {
 describe("estimateTierRuns", () => {
   const path = (...powers: number[]) =>
     powers.map((power, at) => ({ battleId: String(at + 1), power }))
-  const fives = (count: number) => path(...Array<number>(count).fill(250))
+  const fives = (count: number) => path(...new Array<number>(count).fill(250))
 
   it("clears in one run while the HP lasts, the team weakening as it loses HP", () => {
     // A 100-power team faces 250 / 5 = 50 per battle, which needs half its HP; each win costs

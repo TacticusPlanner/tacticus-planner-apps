@@ -16,8 +16,8 @@ import enDailies from "../../../../../../public/locales/en/dailies.json"
 import {
   listHomeScreenEventInstances,
   selectActiveHomeScreenEvent,
-  type HomeScreenEventEntry,
 } from "../../model/select-active-home-screen-event"
+import type { HomeScreenEventEntry } from "../../model/select-active-home-screen-event"
 import type { ActiveHomeScreenEventState } from "../../model/use-active-home-screen-event"
 import { EventPreviewBanner } from "./event-preview-banner"
 import { EventStatusLine } from "./event-status-line"

@@ -1,15 +1,13 @@
 // @vitest-environment jsdom
-import { createElement, type ReactNode } from "react"
+import { createElement } from "react"
+import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { toast } from "sonner"
 
-import {
-  goalQueries,
-  type GoalDetail,
-  type GoalListResponse,
-} from "@/entities/goal"
+import { goalQueries } from "@/entities/goal"
+import type { GoalDetail, GoalListResponse } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 import { useGoalOrderActions } from "./use-goal-order-actions"
 

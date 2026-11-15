@@ -1,10 +1,5 @@
-import {
-  parseAbilityText,
-  resolveVariable,
-  type AbilityContext,
-  type AstNode,
-  type VariableNode,
-} from "./ability-text"
+import { parseAbilityText, resolveVariable } from "./ability-text"
+import type { AbilityContext, AstNode, VariableNode } from "./ability-text"
 import type { AbilityTextEntry } from "./use-ability-text"
 
 export type AbilitySeries = {
@@ -46,7 +41,7 @@ const capitalise = (text: string) =>
 function labelFor(tokens: Token[], first: number, last: number): string {
   const next = tokens[last + 1]
   if (next?.kind === "text") {
-    const words = (next.text.split(/[.,;:\n(]/)[0] ?? "")
+    const words = (next.text.split(/[.,;:\n(]/, 1)[0] ?? "")
       .trim()
       .split(/\s+/)
       .filter((word) => /\p{L}/u.test(word))

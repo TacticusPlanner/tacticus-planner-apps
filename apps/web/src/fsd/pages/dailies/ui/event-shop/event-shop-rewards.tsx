@@ -1,11 +1,12 @@
-import { Fragment, useState, type ReactNode } from "react"
+import { Fragment, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  eventDays,
-  type GameCatalogEventShopMissionChain,
-  type GameCatalogEventShopRewardRange,
-  type GameCatalogEventShopRewardTier,
-  type GameCatalogEventShopTask,
+import { eventDays } from "@workspace/game-catalog"
+import type {
+  GameCatalogEventShopMissionChain,
+  GameCatalogEventShopRewardRange,
+  GameCatalogEventShopRewardTier,
+  GameCatalogEventShopTask,
 } from "@workspace/game-catalog"
 import {
   Select,
@@ -22,8 +23,8 @@ import {
   fillGameText,
   ladderView,
   sumRewards,
-  type LadderTile,
 } from "../../model/event-mission-text"
+import type { LadderTile } from "../../model/event-mission-text"
 import type { EventShopController } from "./use-event-shop-controller"
 import type { EventShopFormat } from "./use-event-shop-format"
 
@@ -387,7 +388,7 @@ function useTaskText() {
     /** "Deal Damage using Abilities": the chain's task without one mission's target. */
     taskName: (task: GameCatalogEventShopTask) =>
       fillGameText(template(task), { ...values(task), TARGET_AMOUNT: "" }, 2)
-        .replace(/\s{2,}/g, " ")
+        .replaceAll(/\s{2,}/g, " ")
         .trim(),
   }
 }

@@ -1,14 +1,11 @@
-import {
-  campaignDescriptor,
-  campaignIcon,
-  type CampaignDescriptor,
-} from "@workspace/game-catalog"
-import {
-  rarityRank,
-  type BattleId,
-  type CampaignId,
-  type Rarity,
-  type UpgradeId,
+import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
+import type { CampaignDescriptor } from "@workspace/game-catalog"
+import { rarityRank } from "@workspace/game-domain"
+import type {
+  BattleId,
+  CampaignId,
+  Rarity,
+  UpgradeId,
 } from "@workspace/game-domain"
 
 import type { Battle, FarmLocation } from "@/shared/lib"
@@ -222,7 +219,7 @@ export function computeCampaignInsights<
     return totalEnergy > 0 ? value / totalEnergy : 0
   }
 
-  const scored = [...chips.entries()].map(([id, chip]) => ({
+  const scored = [...chips].map(([id, chip]) => ({
     id,
     label: chip.label,
     icon: chip.icon,

@@ -1,11 +1,11 @@
-import {
-  buildSyncedLaneProgress,
-  type AscensionStep,
-  type LanePointsModel,
-  type LegendaryEventAnnotation,
-  type LegendaryEventLaneId,
-  type LegendaryEventLaneRecord,
-  type LegendaryEventRun,
+import { buildSyncedLaneProgress } from "@/entities/legendary-event"
+import type {
+  AscensionStep,
+  LanePointsModel,
+  LegendaryEventAnnotation,
+  LegendaryEventLaneId,
+  LegendaryEventLaneRecord,
+  LegendaryEventRun,
 } from "@/entities/legendary-event"
 
 // Ported from V1 `TokenEstimationService` (`computeNextToken`, `computeAllTokenUsage`,
@@ -426,12 +426,12 @@ export function playableNext(
     token !== undefined &&
     !token.maybe &&
     token.playableNow &&
-    !tokens
+    tokens
       .slice(0, index)
-      .some(
+      .every(
         (earlier) =>
-          earlier.laneId === token.laneId &&
-          earlier.battleIndex === token.battleIndex
+          earlier.laneId !== token.laneId ||
+          earlier.battleIndex !== token.battleIndex
       )
   )
 }

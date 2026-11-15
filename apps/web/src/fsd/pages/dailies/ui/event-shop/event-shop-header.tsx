@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next"
 import { Search } from "lucide-react"
-import {
-  eventDay,
-  type GameCatalogEventShop,
-  type GameCatalogEventShopRecord,
+import { eventDay } from "@workspace/game-catalog"
+import type {
+  GameCatalogEventShop,
+  GameCatalogEventShopRecord,
 } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"

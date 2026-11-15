@@ -542,8 +542,8 @@ function runPlanSchedule(
   // A date needs some goal behind it: one whose goals are all excluded would only date Today.
   const completes =
     (excludedGoalIds.length === 0 || excludedGoalIds.length < ordered.length) &&
-    !ordered.some(
-      (goal) => !goal.excludeFromCompletion && isBlocked(goal.goalId)
+    ordered.every(
+      (goal) => !(!goal.excludeFromCompletion && isBlocked(goal.goalId))
     )
   const totalEnergy = scheduleDays.reduce(
     (total, day) => total + day.energyTotal,

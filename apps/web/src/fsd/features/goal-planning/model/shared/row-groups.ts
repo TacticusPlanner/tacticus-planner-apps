@@ -1,4 +1,5 @@
-import { compareGoalTypes, type GoalGroupValue } from "@/entities/goal"
+import { compareGoalTypes } from "@/entities/goal"
+import type { GoalGroupValue } from "@/entities/goal"
 
 import type { GoalRow } from "./types"
 

@@ -4,11 +4,10 @@ import type { MowStorageModel } from "@workspace/game-catalog"
 
 import { useUnitSearchNames } from "@/shared/unit-name"
 
-import { orderUnits, type UnitListItem } from "../unit/unit-list.model"
-import {
-  useSyncedCatalogDataset,
-  type CatalogDataset,
-} from "../unit/use-catalog-dataset"
+import { orderUnits } from "../unit/unit-list.model"
+import type { UnitListItem } from "../unit/unit-list.model"
+import { useSyncedCatalogDataset } from "../unit/use-catalog-dataset"
+import type { CatalogDataset } from "../unit/use-catalog-dataset"
 
 /** The synced `mows` dataset, with loading and failure states. */
 export function useMowsCatalog(): CatalogDataset<MowStorageModel> {

@@ -6,9 +6,8 @@ import {
   orbIcon,
   shardIcon,
   xpBookIcon,
-  type EquipmentStorageModel,
-  type GameIcon,
 } from "@workspace/game-catalog"
+import type { EquipmentStorageModel, GameIcon } from "@workspace/game-catalog"
 
 import { AbilityText } from "@/shared/ability-text"
 import { EntityIcon } from "@/shared/ui"
@@ -16,8 +15,10 @@ import { EntityIcon } from "@/shared/ui"
 import {
   mythicQuestReward,
   mythicTaskVariables,
-  type MythicQuestData,
-  type MythicQuestReward,
+} from "../../model/mythic-quests"
+import type {
+  MythicQuestData,
+  MythicQuestReward,
 } from "../../model/mythic-quests"
 
 function RewardChip({

@@ -11,6 +11,9 @@ import testingLibrary from "eslint-plugin-testing-library"
 import regexp from "eslint-plugin-regexp"
 import pluginQuery from "@tanstack/eslint-plugin-query"
 import deMorgan from "eslint-plugin-de-morgan"
+import unicorn from "eslint-plugin-unicorn"
+import sonarjs from "eslint-plugin-sonarjs"
+import eslintReact from "@eslint-react/eslint-plugin"
 import noUseEffect from "eslint-plugin-react-you-might-not-need-an-effect"
 import { defineConfig, globalIgnores } from "eslint/config"
 import { tailwindSizingConfig } from "../../packages/ui/eslint.tailwind-sizing.js"
@@ -68,6 +71,32 @@ export default defineConfig([
       "import-x/no-cycle": ["error", { ignoreExternal: true }],
       "import-x/no-self-import": "error",
       "import-x/no-duplicates": "error",
+      // `import type { X }` on its own line; verbatimModuleSyntax keeps it erased.
+      "import-x/consistent-type-specifier-style": ["error", "prefer-top-level"],
+    },
+  },
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      // `importOriginal<typeof import("…")>()` is vitest's mock idiom.
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { disallowTypeAnnotations: false },
+      ],
+      "@typescript-eslint/no-import-type-side-effects": "error",
+    },
+  },
+  {
+    // A few autofixable unicorn rules that read better and carry no style debate.
+    files: ["**/*.{ts,tsx}"],
+    plugins: { unicorn },
+    rules: {
+      "unicorn/prefer-string-replace-all": "error",
+      "unicorn/prefer-split-limit": "error",
+      "unicorn/new-for-builtins": "error",
+      "unicorn/explicit-length-check": "error",
+      "unicorn/no-negated-array-predicate": "error",
+      "unicorn/prefer-direct-iteration": "error",
     },
   },
   {
@@ -166,6 +195,40 @@ export default defineConfig([
           skipComments: true,
         },
       ],
+    },
+  },
+  {
+    // Tier 2: high-signal rules with existing hits. Warn while each is burned down in its own PR,
+    // then raise it to error at zero. See the ESLint survey for counts.
+    files: ["**/*.{ts,tsx}"],
+    ignores: ["steiger.config.ts"],
+    plugins: { sonarjs, "@eslint-react": eslintReact },
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "warn",
+      "@typescript-eslint/strict-boolean-expressions": [
+        "warn",
+        {
+          allowString: true,
+          allowNumber: false,
+          allowNullableBoolean: true,
+          allowNullableString: true,
+        },
+      ],
+      "@typescript-eslint/no-unnecessary-condition": "warn",
+      "unicorn/no-array-sort": "warn",
+      "unicorn/require-array-sort-compare": "warn",
+      "unicorn/consistent-function-scoping": "warn",
+      "sonarjs/cognitive-complexity": ["warn", 15],
+      "@eslint-react/no-array-index-key": "warn",
+      "@eslint-react/no-nested-component-definitions": "warn",
+      "@eslint-react/purity": "warn",
+    },
+  },
+  {
+    files: ["**/*.test.{ts,tsx}", "src/test/**/*.{ts,tsx}"],
+    rules: {
+      "testing-library/no-node-access": "warn",
+      "testing-library/no-container": "warn",
     },
   },
   {

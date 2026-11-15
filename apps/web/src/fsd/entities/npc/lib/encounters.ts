@@ -1,9 +1,9 @@
-import {
-  npcEncounterSources,
-  type NpcEncounterBattle,
-  type NpcEncounterLevel,
-  type NpcEncounterSource,
-  type NpcEncounterStorageModel,
+import { npcEncounterSources } from "@workspace/game-catalog"
+import type {
+  NpcEncounterBattle,
+  NpcEncounterLevel,
+  NpcEncounterSource,
+  NpcEncounterStorageModel,
 } from "@workspace/game-catalog"
 
 /** Every encounter source in display order: the order the encounters section and the game-mode filter use. */

@@ -1,15 +1,15 @@
-import {
-  DOW_MAP,
-  type GlobalValuesStorageModel,
-  type ShopRewardOffer,
+import { DOW_MAP } from "@workspace/game-catalog"
+import type {
+  GlobalValuesStorageModel,
+  ShopRewardOffer,
 } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 
 import {
   mythicShardResourceId,
   shardResourceId,
-  type FlatSupplier,
 } from "../model/estimate.domain"
+import type { FlatSupplier } from "../model/estimate.domain"
 
 /**
  * A selected shop offer's flat per-day supply (spec: *A selected shop source supplies a bounded,
