@@ -9,8 +9,8 @@ import {
   goalQueries,
   inFlightInGlobalOrder,
   updateGoalOrder,
-  type GoalListResponse,
 } from "@/entities/goal"
+import type { GoalListResponse } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 import { moveProjectGoals } from "./project-moves"

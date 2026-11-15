@@ -9,7 +9,8 @@ import {
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { goalTypeIcon, type GoalKind } from "@/entities/goal"
+import { goalTypeIcon } from "@/entities/goal"
+import type { GoalKind } from "@/entities/goal"
 import { EntityIcon } from "@/shared/ui"
 import { useGoalCatalog } from "../../model/shared/use-goal-catalog"
 import { InfoHint } from "../shared/info-hint"

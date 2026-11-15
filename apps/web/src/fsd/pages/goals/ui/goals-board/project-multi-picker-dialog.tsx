@@ -4,7 +4,8 @@ import { FolderPlus } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 
-import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
+import { ProjectColorDot } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
