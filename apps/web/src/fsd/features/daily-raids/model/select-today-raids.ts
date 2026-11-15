@@ -1,6 +1,6 @@
 import type { BattleId } from "@workspace/game-domain"
 
-import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 
 import { isLocationVisible } from "./location-visibility"
 

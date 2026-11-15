@@ -10,7 +10,7 @@ import {
   rankUpUpgradeIds,
   type Character,
   type UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-create"
+} from "@/entities/rank-lookup"
 import type {
   AcquisitionSource,
   CombinedGoalSpec,
@@ -18,7 +18,7 @@ import type {
   GoalKind,
   UpgradeTarget,
 } from "@/entities/goal"
-import { mowAbilityUpgradeIds } from "@/features/goal-farming/@x/goal-create"
+import { mowAbilityUpgradeIds } from "@/entities/goal-farming"
 import { acquisitionSourcesFromPlan } from "./acquisition-plan"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
 import {

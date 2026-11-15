@@ -22,12 +22,12 @@ import {
 import type {
   Character,
   UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-planning"
+} from "@/entities/rank-lookup"
 import type { GoalDetail, ProgressionTarget } from "@/entities/goal"
 
 type Progression = ProgressionTarget["start"]
 
-import type { Battle } from "@/features/goal-farming/@x/goal-planning"
+import type { Battle } from "@/entities/goal-farming"
 import { computePlanInsights } from "./plan-insights-calc"
 import { levelRules } from "@/test/fixtures/level-rules"
 

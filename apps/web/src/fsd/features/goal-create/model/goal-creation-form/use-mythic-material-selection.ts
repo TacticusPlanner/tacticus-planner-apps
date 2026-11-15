@@ -9,7 +9,7 @@ import {
   projectShopSupply,
   selectMythicMaterialOffers,
   useMythicMaterialShopOffers,
-} from "@/features/goal-farming/@x/goal-create"
+} from "@/entities/goal-farming"
 import { summariseShopCurrencySpend } from "./use-progression-preview"
 
 function seedShopIds(seed: readonly AcquisitionSource[] | null | undefined) {

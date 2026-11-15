@@ -5,7 +5,7 @@ import type { CharacterStorageModel } from "@workspace/game-catalog"
 
 import type { FarmingStrategy, GoalKind } from "@/entities/goal"
 
-import { goalKindsForEntity } from "@/features/goal-planning/@x/goal-create"
+import { goalKindsForEntity } from "@/features/goal-planning"
 import type {
   useAbilityFields,
   useProjectSelection,

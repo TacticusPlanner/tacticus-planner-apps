@@ -3,8 +3,8 @@ import type { TFunction } from "i18next"
 import { isGoalLimitError, MAX_GOALS_PER_TYPE } from "@/entities/goal"
 import { ApiError, hasProblemText, isTransientApiError } from "@/shared/api"
 
-import { projectConflictText } from "@/features/goal-planning/@x/goal-create"
-import { goalSlotConflict } from "@/features/goal-planning/@x/goal-create"
+import { projectConflictText } from "@/features/goal-planning"
+import { goalSlotConflict } from "@/features/goal-planning"
 
 /**
  * What a failed goal creation tells the user, for the create sheet and the bulk dialog alike: a slot

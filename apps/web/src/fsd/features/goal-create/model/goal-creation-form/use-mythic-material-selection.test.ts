@@ -4,7 +4,7 @@ import { act, renderHook } from "@testing-library/react"
 import type { ShopRewardOffer } from "@workspace/game-catalog"
 import { Rarity, type UpgradeId } from "@workspace/game-domain"
 
-import type { MythicMaterialCatalog } from "@/features/goal-farming/@x/goal-create"
+import type { MythicMaterialCatalog } from "@/entities/goal-farming"
 
 const venerable = (
   shopId: string,
@@ -31,10 +31,8 @@ const offers = [
   } satisfies ShopRewardOffer,
 ]
 
-vi.mock("@/features/goal-farming/@x/goal-create", async (importOriginal) => ({
-  ...(await importOriginal<
-    typeof import("@/features/goal-farming/@x/goal-create")
-  >()),
+vi.mock("@/entities/goal-farming", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/goal-farming")>()),
   useMythicMaterialShopOffers: () => ({ offers, failed: false }),
 }))
 

@@ -1,7 +1,7 @@
 import type {
   EstimatePlanParams,
   RaidPlanSchedule,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 
 import type { DailyRaidBlockedGoal } from "./daily-raids.domain"
 

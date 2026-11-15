@@ -16,7 +16,7 @@ import {
 } from "@workspace/game-domain"
 
 import type { FarmingStrategy } from "@/entities/goal"
-import type { RankAdditionalTarget } from "@/features/goal-farming/@x/goal-create"
+import type { RankAdditionalTarget } from "@/entities/goal-farming"
 import { closestOverlayContent } from "@/shared/ui"
 
 import { rankEndKey } from "../../model/goal-creation-form/first-free-target"

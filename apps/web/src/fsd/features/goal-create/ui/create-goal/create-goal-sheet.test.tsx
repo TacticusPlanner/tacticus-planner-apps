@@ -32,19 +32,8 @@ const savedOnslaughtProgress = {
   revision: 1,
 }
 let onslaughtProgressFixture: unknown = savedOnslaughtProgress
-vi.mock("@/entities/player-data-override", () => ({
-  battleProgressQueries: {
-    current: () => ({
-      queryKey: ["player-data-overrides", "battle-progress"],
-      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
-    }),
-  },
-  campaignEventProgressQueries: {
-    current: () => ({
-      queryKey: ["player-data-overrides", "campaign-events"],
-      queryFn: () => Promise.resolve({ progress: [], revision: 1 }),
-    }),
-  },
+vi.mock("@/entities/player-data-override", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
   buildEffectiveCampaignEventProgress: () => new Map(),
   campaignEventTrackKey: (groupId: string, type: string) =>
     `${groupId}:${type}`,
@@ -70,6 +59,25 @@ vi.mock("@/entities/player-data-override", () => ({
   },
   onslaughtReward: () => ({ min: 2, max: 3, mythic: false }),
 }))
+vi.mock("@/entities/player-data-override/api/battle-progress.queries", () => ({
+  battleProgressQueries: {
+    current: () => ({
+      queryKey: ["player-data-overrides", "battle-progress"],
+      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
+    }),
+  },
+}))
+vi.mock(
+  "@/entities/player-data-override/api/campaign-event-progress.queries",
+  () => ({
+    campaignEventProgressQueries: {
+      current: () => ({
+        queryKey: ["player-data-overrides", "campaign-events"],
+        queryFn: () => Promise.resolve({ progress: [], revision: 1 }),
+      }),
+    },
+  })
+)
 
 vi.mock("@/entities/planning-setting", () => ({
   xpBookRarityOptions: [

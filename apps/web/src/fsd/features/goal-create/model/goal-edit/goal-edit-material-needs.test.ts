@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
-import type { Character } from "@/features/rank-lookup/@x/goal-create"
+import type { Character } from "@/entities/rank-lookup"
 
 import {
   goalEditMaterialNeeds,

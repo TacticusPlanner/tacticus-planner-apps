@@ -2,10 +2,7 @@ import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import type { Rank, UpgradeId } from "@workspace/game-domain"
 
-import {
-  rowCount,
-  type RankAdditionalTarget,
-} from "@/features/goal-farming/@x/goal-create"
+import { rowCount, type RankAdditionalTarget } from "@/entities/goal-farming"
 import { RankBadge, UpgradeIcon } from "@/shared/ui"
 
 import { PreviewSection, type PreviewState } from "../shared/preview-section"

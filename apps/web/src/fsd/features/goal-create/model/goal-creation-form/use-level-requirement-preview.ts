@@ -10,7 +10,7 @@ import {
   type LevelRules,
   type RankAdditionalTarget,
   useLevelRules,
-} from "@/features/goal-farming/@x/goal-create"
+} from "@/entities/goal-farming"
 
 /** What a Rank or Ability target needs in character level, previewed on that goal's own creation
  * card (integrate-level-progression-into-rank-goals) — never a goal or a prerequisite. */

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { shopCurrencyIcon } from "@/features/shop-rewards/@x/daily-raids"
+import { shopCurrencyIcon } from "@/entities/shop-reward"
 import { shopIcon } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 

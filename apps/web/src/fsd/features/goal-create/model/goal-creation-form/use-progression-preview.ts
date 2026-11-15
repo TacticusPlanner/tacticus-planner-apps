@@ -12,33 +12,27 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
-import {
-  estimateGoal,
-  selectFarmNodes,
-} from "@/features/goal-farming/@x/goal-create"
-import {
-  mythicShardResourceId,
-  shardResourceId,
-} from "@/features/goal-farming/@x/goal-create"
+import { estimateGoal, selectFarmNodes } from "@/entities/goal-farming"
+import { mythicShardResourceId, shardResourceId } from "@/entities/goal-farming"
 import {
   ascensionResourceNeed,
   isMythicProgression,
   unlockResourceNeed,
-} from "@/features/goal-farming/@x/goal-create"
-import { estimateRemainingShardEnergy } from "@/features/goal-farming/@x/goal-create"
+} from "@/entities/goal-farming"
+import { estimateRemainingShardEnergy } from "@/entities/goal-farming"
 import {
   projectOnslaughtSupply,
   projectShopSupply,
   shopOfferPerDay,
   toOnslaughtRunsPerDay,
-} from "@/features/goal-farming/@x/goal-create"
-import type { FlatSupplier } from "@/features/goal-farming/@x/goal-create"
+} from "@/entities/goal-farming"
+import type { FlatSupplier } from "@/entities/goal-farming"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
 import {
   isOnslaughtProgressSaved,
   onslaughtShardsPerRun as onslaughtShardsPerRunFor,
 } from "./onslaught-yield"
-import { readyData, toByUnitId } from "@/features/goal-planning/@x/goal-create"
+import { readyData, toByUnitId } from "@/features/goal-planning"
 
 type PlayerUnit =
   PlayerDataChunkDto<"characters">[number] | PlayerDataChunkDto<"mows">[number]

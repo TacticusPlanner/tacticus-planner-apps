@@ -4,7 +4,7 @@ import { Button } from "@workspace/ui/components/button"
 import { useUnitName } from "@/shared/unit-name"
 
 import type { GoalEditSaveError } from "../../model/goal-edit/use-goal-edit-save"
-import { projectConflictText } from "@/features/goal-planning/@x/goal-create"
+import { projectConflictText } from "@/features/goal-planning"
 
 /** Names why the last Save failed. Every case means nothing was saved and the draft is kept; a stale
  * goal or stale order offers the refresh that lets the owner review and retry, and a target colliding

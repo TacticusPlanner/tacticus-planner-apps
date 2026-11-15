@@ -6,7 +6,7 @@ import { Input } from "@workspace/ui/components/input"
 
 import type { UpgradeId } from "@workspace/game-domain"
 
-import type { UpgradeWithFarmLocations } from "@/features/rank-lookup/@x/goal-create"
+import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 import { UpgradeIcon } from "@/shared/ui"
 
 import {

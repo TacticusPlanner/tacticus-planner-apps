@@ -4,7 +4,7 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { usePlayerChunk } from "@/shared/local-data"
 
-import { readyData, toByUnitId } from "@/features/goal-planning/@x/goal-create"
+import { readyData, toByUnitId } from "@/features/goal-planning"
 
 /**
  * The caller's synced record for `entityId` (rank/progressionIndex/abilities/appliedUpgradeSlots for

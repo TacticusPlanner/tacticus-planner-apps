@@ -11,10 +11,7 @@ import {
 import { useGlobalGoalPlan } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
-import {
-  toOnslaughtRunsPerDay,
-  useLevelRules,
-} from "@/features/goal-farming/@x/goal-planning"
+import { toOnslaughtRunsPerDay, useLevelRules } from "@/entities/goal-farming"
 import { useCampaignDisplay } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 

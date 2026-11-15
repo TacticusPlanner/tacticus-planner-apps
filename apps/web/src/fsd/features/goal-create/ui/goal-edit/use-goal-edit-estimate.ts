@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next"
 import { isProgression, type UpgradeId } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
-import { estimateGoal } from "@/features/goal-farming/@x/goal-create"
-import type { useGoalCatalog } from "@/features/goal-planning/@x/goal-create"
+import { estimateGoal } from "@/entities/goal-farming"
+import type { useGoalCatalog } from "@/features/goal-planning"
 
 import {
   goalEditMaterialNeeds,

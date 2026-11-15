@@ -13,7 +13,7 @@ import {
   targetUnitsInSlots,
   upgradeGoalRangeSlotItems,
   type GoalSlotItem,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 
 type InventoryUpgrade = PlayerDataChunkDto<"inventory-upgrades">[number]
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]

@@ -3,16 +3,16 @@ import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import type { UnitId } from "@workspace/game-domain"
 
-import { useEligibleCampaignBattles } from "@/features/daily-raids"
+import { useEligibleCampaignBattles } from "@/entities/player-data-override"
 import {
   toOnslaughtRunsPerDay,
   type FarmingCharacter,
-} from "@/features/goal-farming"
+} from "@/entities/goal-farming"
 import {
   mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
-} from "@/features/rank-lookup"
+} from "@/entities/rank-lookup"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { combineReadStates } from "@/shared/lib"

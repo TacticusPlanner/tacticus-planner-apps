@@ -15,7 +15,7 @@ import type { GoalKind } from "@/entities/goal"
 import {
   rankTargetReached,
   type RankAdditionalTarget,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 
 /** The rarity ability caps (see `abilityCapByRarity` in `@workspace/game-domain`, which mirrors
  * the backend's `AbilityCaps` table) paired with their rarity tier, in rarity order — used to

@@ -14,7 +14,7 @@ import {
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
-import { goalSlotConflict } from "@/features/goal-planning/@x/goal-create"
+import { goalSlotConflict } from "@/features/goal-planning"
 
 /** Why the last Save did not land. Every kind means nothing was saved and the draft is untouched.
  * `stale` carries the goal as it is now; `order` the order as it now stands; `conflict` the existing

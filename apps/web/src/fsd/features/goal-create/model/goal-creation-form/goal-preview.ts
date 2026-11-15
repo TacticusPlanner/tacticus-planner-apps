@@ -5,16 +5,16 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import type {
   Character,
   UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-create"
+} from "@/entities/rank-lookup"
 import type { GoalKind } from "@/entities/goal"
 
-import { estimateGoal } from "@/features/goal-farming/@x/goal-create"
-import type { EstimateOutcome } from "@/features/goal-farming/@x/goal-create"
+import { estimateGoal } from "@/entities/goal-farming"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 import {
   computeMissingUpgrades,
   type MissingUpgradeEntry,
 } from "./goal-spec-builder"
-import { computeMowMissingUpgrades } from "@/features/goal-farming/@x/goal-create"
+import { computeMowMissingUpgrades } from "@/entities/goal-farming"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]

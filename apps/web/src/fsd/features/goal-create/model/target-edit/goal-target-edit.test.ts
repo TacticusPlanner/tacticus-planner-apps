@@ -3,7 +3,7 @@ import { Rank, rankIndex } from "@workspace/game-domain"
 
 import type { GoalConfig, GoalDetail } from "@/entities/goal"
 
-import { getGoalValidationIssue } from "@/features/goal-planning/@x/goal-create"
+import { getGoalValidationIssue } from "@/features/goal-planning"
 import {
   getChangedGoalTargetIssue,
   getGoalTargetIssue,

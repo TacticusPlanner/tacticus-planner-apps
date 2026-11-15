@@ -7,10 +7,8 @@ import { levelRules } from "@/test/fixtures/level-rules"
 
 import { useLevelRequirementPreviews } from "./use-level-requirement-preview"
 
-vi.mock("@/features/goal-farming/@x/goal-create", async (importOriginal) => ({
-  ...(await importOriginal<
-    typeof import("@/features/goal-farming/@x/goal-create")
-  >()),
+vi.mock("@/entities/goal-farming", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/goal-farming")>()),
   useLevelRules: () => levelRules,
 }))
 

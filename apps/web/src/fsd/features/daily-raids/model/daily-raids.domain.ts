@@ -17,7 +17,7 @@ import type {
   FilteredOutNeed,
   RaidDaySchedule,
   RaidPlanSummary,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 
 import type { TodaysAttempt } from "./daily-raids-energy"
 import type { EventFarm } from "./home-screen-event-farm"

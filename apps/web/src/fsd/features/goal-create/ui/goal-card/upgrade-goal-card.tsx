@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import type { UpgradeId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 
-import type { UpgradeWithFarmLocations } from "@/features/rank-lookup/@x/goal-create"
+import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 import {
   RarityCombobox,
   UpgradeIcon,

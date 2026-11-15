@@ -3,7 +3,7 @@ import type { Alliance, UnitId } from "@workspace/game-domain"
 import type {
   HseEventPointsState,
   HseInstance,
-} from "@/features/home-screen-event-points/@x/team-recommendations"
+} from "@/features/home-screen-event-points"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { mapRosterCharacter } from "./roster-character"

@@ -12,7 +12,7 @@ import { EntityIcon } from "@/shared/ui"
 import {
   LIBRARY_SHOP_IDS,
   type LibraryShopId,
-} from "../hooks/use-library-shops"
+} from "../../../model/shops/use-library-shops"
 import type { LibraryShopSlotView } from "../library-shops.view-model"
 import { ShopSlotCard } from "../shop-slot-card"
 import { ShopsBrowseState } from "../shops-browse-state"

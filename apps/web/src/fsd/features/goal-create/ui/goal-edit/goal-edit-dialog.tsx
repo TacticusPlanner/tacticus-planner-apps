@@ -15,7 +15,7 @@ import {
   ResponsiveDialogTitle,
 } from "@/shared/ui"
 
-import { useGoalCatalog } from "@/features/goal-planning/@x/goal-create"
+import { useGoalCatalog } from "@/features/goal-planning"
 import { GoalEditDialogTourRegistration } from "./goal-edit-dialog.tutorial"
 import { GoalEditForm } from "./goal-edit-form"
 import { GoalEditUnsavedDialog } from "./goal-edit-unsaved-dialog"

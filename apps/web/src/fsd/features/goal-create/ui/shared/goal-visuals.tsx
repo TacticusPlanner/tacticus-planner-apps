@@ -23,7 +23,7 @@ import { Field, FieldLabel } from "@workspace/ui/components/field"
 import { goalTypeIcon, type GoalKind } from "@/entities/goal"
 import { EntityIcon } from "@/shared/ui"
 
-import type { GoalProject } from "@/features/goal-planning/@x/goal-create"
+import type { GoalProject } from "@/features/goal-planning"
 import { ProjectColorDot } from "@/entities/project"
 
 export function GoalUnitIcon({

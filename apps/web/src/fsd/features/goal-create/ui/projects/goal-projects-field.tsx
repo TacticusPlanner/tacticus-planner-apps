@@ -25,8 +25,8 @@ import {
   ProjectColorDot,
 } from "@/entities/project"
 import { ApiError } from "@/shared/api"
-import { useInlineProjectCreate } from "@/features/goal-planning/@x/goal-create"
-import type { ProjectRemovalUnavailableReason } from "@/features/goal-planning/@x/goal-create"
+import { useInlineProjectCreate } from "@/features/goal-planning"
+import type { ProjectRemovalUnavailableReason } from "@/features/goal-planning"
 
 /** Selected project chips plus a searchable, non-archived add picker shared by goal creation/editing.
  * Membership is a whole list, so the caller is handed the next selection rather than a single toggle —

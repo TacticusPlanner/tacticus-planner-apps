@@ -17,13 +17,13 @@ import { milestoneOrderIssue, type GoalMilestones } from "./goal-milestones"
 import {
   mowAbilityTrackLevel,
   type RankAdditionalTarget,
-} from "@/features/goal-farming/@x/goal-create"
+} from "@/entities/goal-farming"
 import {
   getGoalValidationIssues,
   isAtMaxAbility,
   isAtMaxProgression,
   isAtMaxRank,
-} from "@/features/goal-planning/@x/goal-create"
+} from "@/features/goal-planning"
 
 /**
  * The "can this even be submitted" surface — current ability levels (MoW's own track-level lookup

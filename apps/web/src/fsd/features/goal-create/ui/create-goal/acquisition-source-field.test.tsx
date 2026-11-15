@@ -10,10 +10,7 @@ import {
 } from "@workspace/game-domain"
 
 import { render as testingLibraryRender, screen, within } from "@/test/render"
-import type {
-  Battle,
-  FarmLocation,
-} from "@/features/goal-farming/@x/goal-create"
+import type { Battle, FarmLocation } from "@/entities/goal-farming"
 
 // The Onslaught panel renders a react-router `Link`, so every render needs a router in scope —
 // unlike `create-goal-sheet.test.tsx`, which never exercises that branch (Onslaught starts

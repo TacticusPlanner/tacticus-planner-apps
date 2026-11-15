@@ -7,7 +7,7 @@ import {
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
 /** What one battle fought by hand counts toward a manual objective (see hre-campaign-raids). */

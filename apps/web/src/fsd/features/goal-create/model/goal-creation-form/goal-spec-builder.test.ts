@@ -5,7 +5,7 @@ import type { MowStorageModel } from "@workspace/game-catalog"
 import type {
   Character,
   UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-create"
+} from "@/entities/rank-lookup"
 
 import {
   buildCombinedGoalSpecs,

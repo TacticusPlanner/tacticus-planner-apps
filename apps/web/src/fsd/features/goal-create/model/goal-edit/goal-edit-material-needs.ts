@@ -8,13 +8,13 @@ import {
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal"
-import { computeMowMissingUpgrades } from "@/features/goal-farming/@x/goal-create"
+import { computeMowMissingUpgrades } from "@/entities/goal-farming"
 
 import {
   computeMissingUpgrades,
   computeUpgradeGoalNeed,
 } from "../goal-creation-form/goal-spec-builder"
-import type { useGoalCatalog } from "@/features/goal-planning/@x/goal-create"
+import type { useGoalCatalog } from "@/features/goal-planning"
 import {
   goalTargetEditFromDraft,
   type GoalTargetDraft,

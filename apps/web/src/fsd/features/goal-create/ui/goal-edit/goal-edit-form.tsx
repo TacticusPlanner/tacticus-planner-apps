@@ -26,8 +26,8 @@ import { useGoalEditAcquisition } from "../../model/goal-edit/use-goal-edit-acqu
 import { goalEditMaterialNeeds } from "../../model/goal-edit/goal-edit-material-needs"
 import { useMythicMaterialSelection } from "../../model/goal-creation-form/use-mythic-material-selection"
 import { useGoalEditSave } from "../../model/goal-edit/use-goal-edit-save"
-import { useGoalLocationGroups } from "@/features/goal-planning/@x/goal-create"
-import { useGoalCatalog } from "@/features/goal-planning/@x/goal-create"
+import { useGoalLocationGroups } from "@/features/goal-planning"
+import { useGoalCatalog } from "@/features/goal-planning"
 import { getChangedGoalTargetIssue } from "../../model/target-edit/goal-target-edit"
 import { goalEditIssues } from "../../model/goal-edit/goal-edit-issues"
 import { useTakenTargets } from "../../model/goal-creation-form/first-free-target"
@@ -41,10 +41,7 @@ import { GoalEditCard } from "./goal-edit-card"
 import { GoalLinksField } from "../shared/goal-links-field"
 import { useGoalEditEstimate } from "./use-goal-edit-estimate"
 import { usePlayerChunk } from "@/shared/local-data"
-import {
-  chunkOrUndefined,
-  readyData,
-} from "@/features/goal-planning/@x/goal-create"
+import { chunkOrUndefined, readyData } from "@/features/goal-planning"
 import { abilityCapForProgression, isProgression } from "@workspace/game-domain"
 
 /**

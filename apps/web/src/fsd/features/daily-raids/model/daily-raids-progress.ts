@@ -5,7 +5,7 @@ import {
   allocatePlanInventory,
   type EstimateResourceId,
   type GoalNeed,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 
 import { dailyRaidResourceKey } from "./daily-raids.domain"
 import type {

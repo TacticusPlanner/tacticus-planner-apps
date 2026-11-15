@@ -1,9 +1,6 @@
 import type { BattleId, UnitId, UpgradeId } from "@workspace/game-domain"
 
-import {
-  mythicShardResourceId,
-  shardResourceId,
-} from "@/features/goal-farming/@x/daily-raids"
+import { mythicShardResourceId, shardResourceId } from "@/entities/goal-farming"
 import type { ResourceShopSource, ResourceSources } from "./daily-raids.domain"
 import type { PlanCell } from "./plan-day-cells"
 

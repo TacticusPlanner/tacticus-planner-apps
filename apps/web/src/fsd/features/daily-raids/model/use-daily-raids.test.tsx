@@ -30,28 +30,35 @@ vi.mock("@/entities/goal/api/goal.api", () => ({ getGoal, listGoals: vi.fn() }))
 
 vi.mock("@/entities/player-data-override", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/player-data-override")>()),
-  battleProgressQueries: {
-    current: () => ({
-      queryKey: ["player-data-overrides", "battle-progress"],
-      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
-    }),
-  },
   onslaughtProgressQueries: {
     current: () => ({
       queryKey: ["onslaught"],
       queryFn: async () => ({ revision: 1 }),
     }),
   },
-  campaignEventProgressQueries: {
+}))
+vi.mock("@/entities/player-data-override/api/battle-progress.queries", () => ({
+  battleProgressQueries: {
     current: () => ({
-      queryKey: ["campaign-events"],
-      queryFn: async () => {
-        if (overrides.fail) throw new Error("boom")
-        return { progress: [], revision: 1 }
-      },
+      queryKey: ["player-data-overrides", "battle-progress"],
+      queryFn: () => Promise.resolve({ battles: [], revision: 1 }),
     }),
   },
 }))
+vi.mock(
+  "@/entities/player-data-override/api/campaign-event-progress.queries",
+  () => ({
+    campaignEventProgressQueries: {
+      current: () => ({
+        queryKey: ["campaign-events"],
+        queryFn: async () => {
+          if (overrides.fail) throw new Error("boom")
+          return { progress: [], revision: 1 }
+        },
+      }),
+    },
+  })
+)
 
 // The harness `renderHook` is Testing Library's own (no QueryClient or auth), so the hook runs in a
 // probe mounted through the harness `render`, signed in.

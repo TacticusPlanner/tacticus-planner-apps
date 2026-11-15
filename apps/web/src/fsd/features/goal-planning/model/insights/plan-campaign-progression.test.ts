@@ -5,7 +5,7 @@ import type {
   EstimateOutcome,
   EstimateResourceId,
   GoalNeed,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import type { Battle, FarmLocation } from "@/shared/lib"
 
 import {

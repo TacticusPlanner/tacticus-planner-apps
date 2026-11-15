@@ -11,7 +11,7 @@ import type {
 import {
   levelBookAvailability,
   type EstimateOutcome,
-} from "@/features/goal-farming"
+} from "@/entities/goal-farming"
 import type { XpBookFigure } from "../shared/level-requirement-display"
 import type { GoalRow } from "@/features/goal-planning"
 import type { useGoalActions } from "@/features/goal-planning"

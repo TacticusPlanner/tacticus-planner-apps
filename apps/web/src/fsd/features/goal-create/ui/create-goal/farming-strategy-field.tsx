@@ -14,9 +14,9 @@ import { rankAt, rankIndex, type Rank } from "@workspace/game-domain"
 
 import type { FarmingStrategy } from "@/entities/goal"
 import { RankBadge, closestOverlayContent } from "@/shared/ui"
-import { farmingStageTargets } from "@/features/goal-farming/@x/goal-create"
-import { farmingStrategyAvailability } from "@/features/goal-planning/@x/goal-create"
-import type { RankAdditionalTarget } from "@/features/goal-farming/@x/goal-create"
+import { farmingStageTargets } from "@/entities/goal-farming"
+import { farmingStrategyAvailability } from "@/features/goal-planning"
+import type { RankAdditionalTarget } from "@/entities/goal-farming"
 
 const strategies: FarmingStrategy[] = [
   "TotalUpgrades",

@@ -37,7 +37,7 @@ import {
   type FarmingUpgrade,
   type GoalNeed,
   type UpgradeNeed,
-} from "@/features/goal-farming"
+} from "@/entities/goal-farming"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]

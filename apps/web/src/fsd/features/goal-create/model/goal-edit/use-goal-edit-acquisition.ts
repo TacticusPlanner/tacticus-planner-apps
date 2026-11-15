@@ -10,7 +10,7 @@ import {
   isMythicProgression,
   toOnslaughtRunsPerDay,
   useUnitShopShardSupply,
-} from "@/features/goal-farming/@x/goal-create"
+} from "@/entities/goal-farming"
 
 import {
   acquisitionSourceSeed,
@@ -21,8 +21,8 @@ import {
   onslaughtShardsPerRun,
 } from "../goal-creation-form/onslaught-yield"
 import { useAcquisitionSourceSelection } from "../goal-creation-form/use-acquisition-source-selection"
-import type { useGoalCatalog } from "@/features/goal-planning/@x/goal-create"
-import { readyData, toByUnitId } from "@/features/goal-planning/@x/goal-create"
+import type { useGoalCatalog } from "@/features/goal-planning"
+import { readyData, toByUnitId } from "@/features/goal-planning"
 
 type CharactersById = ReturnType<typeof useGoalCatalog>["charactersById"]
 type MowsById = ReturnType<typeof useGoalCatalog>["mowsById"]

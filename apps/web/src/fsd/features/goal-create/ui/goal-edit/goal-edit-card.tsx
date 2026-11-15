@@ -13,11 +13,11 @@ import {
 import type { MowStorageModel } from "@workspace/game-catalog"
 
 import type { FarmingStrategy, GoalDetail } from "@/entities/goal"
-import { additionalTargetOptions } from "@/features/goal-farming/@x/goal-create"
+import { additionalTargetOptions } from "@/entities/goal-farming"
 import type {
   Character,
   UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-create"
+} from "@/entities/rank-lookup"
 import { RankBadge } from "@/shared/ui"
 
 import {

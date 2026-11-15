@@ -16,7 +16,7 @@ import {
   useUnitShopShardSupply,
   additionalTargetOptions,
   type RankAdditionalTarget,
-} from "@/features/goal-farming/@x/goal-create"
+} from "@/entities/goal-farming"
 import { useAcquisitionSourceSelection } from "./use-acquisition-source-selection"
 import { useMythicMaterialSelection } from "./use-mythic-material-selection"
 import { useEntityShardSummary } from "./use-entity-shard-summary"
@@ -26,7 +26,7 @@ import {
   readyData,
   toXpBooks,
   goalKindsForEntity,
-} from "@/features/goal-planning/@x/goal-create"
+} from "@/features/goal-planning"
 import { useGoalFormReset } from "./use-goal-form-reset"
 import { useGoalPrefill } from "./use-goal-prefill"
 import { useEntityPrefillEffect } from "./use-entity-prefill-effect"

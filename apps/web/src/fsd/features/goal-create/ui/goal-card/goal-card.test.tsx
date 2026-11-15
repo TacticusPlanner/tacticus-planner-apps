@@ -9,7 +9,7 @@ import type {
 import { maxAbilityLevel } from "@workspace/game-domain"
 
 import { render, screen, within } from "@/test/render"
-import type { UpgradeWithFarmLocations } from "@/features/rank-lookup/@x/goal-create"
+import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 
 import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
 import { AbilityGoalCard } from "./ability-goal-card"

@@ -19,10 +19,10 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import type {
   Character,
   UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-planning"
+} from "@/entities/rank-lookup"
 import type { GoalDetail } from "@/entities/goal"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
-import { computeCampaignInsights } from "@/features/campaign-insights/@x/goal-planning"
+import { computeCampaignInsights } from "@/entities/campaign-insight"
 
 import {
   allocatePlanInventory,
@@ -34,7 +34,7 @@ import {
   type GoalNeed,
   type LevelRules,
   type UpgradeNeed,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
@@ -44,7 +44,7 @@ import {
   rankSlotAllocation,
   type RankSlotAllocation,
   type UnitCoverage,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import { createAbilityMaterialsPlan } from "./plan-ability-materials"
 import { buildPotentialProgressByGoalId } from "./potential-progress"
 import {

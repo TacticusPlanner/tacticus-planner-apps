@@ -24,7 +24,7 @@ import {
   additionalTargetSlots,
   rankTargetReached,
   type RankAdditionalTarget,
-} from "@/features/goal-farming/@x/goal-create"
+} from "@/entities/goal-farming"
 
 /** The editable *end* target of one goal, as the target editor holds it while the owner adjusts it.
  * Only the goal's own kind's fields exist — the start/baseline is never part of a draft (it is stored

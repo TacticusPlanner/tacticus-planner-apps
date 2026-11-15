@@ -7,7 +7,7 @@ import {
   type OnslaughtProgress,
 } from "@/entities/player-data-override"
 
-import { isMythicProgression } from "@/features/goal-farming/@x/goal-create"
+import { isMythicProgression } from "@/entities/goal-farming"
 
 /** The Onslaught reward tier that applies to a character at `currentProgression` — Mythic once the
  *  character's *current* progression is in the Mythic tier, otherwise its current rarity's regular

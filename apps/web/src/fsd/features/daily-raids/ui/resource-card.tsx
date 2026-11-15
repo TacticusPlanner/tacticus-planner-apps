@@ -5,7 +5,7 @@ import { Card, CardContent } from "@workspace/ui/components/card"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { goalTypeIcon } from "@/entities/goal"
-import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 import type {
   DailyRaidGoalViewModel,
   DailyRaidLocationViewModel,

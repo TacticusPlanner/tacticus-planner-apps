@@ -1,10 +1,7 @@
 import type { GameCatalogHseTracker } from "@workspace/game-catalog"
 import type { Alliance, UnitId } from "@workspace/game-domain"
 
-import type {
-  HreTeamPlan,
-  HreTeamRule,
-} from "@/features/hre-missions/@x/team-recommendations"
+import type { HreTeamPlan, HreTeamRule } from "@/features/hre-missions"
 import { characterDamageTypes } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
 

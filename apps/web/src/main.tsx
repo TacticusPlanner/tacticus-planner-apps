@@ -5,8 +5,8 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import "@workspace/ui/globals.css"
 import { App } from "@/app"
 import { AuthProvider, I18nProvider, QueryProvider } from "@/app/providers"
-import { installForeignDomGuard } from "@/app/foreign-dom-guard"
-import { installPreloadErrorRecovery } from "@/app/stale-build-recovery"
+import { installForeignDomGuard } from "@/app/boot/foreign-dom-guard"
+import { installPreloadErrorRecovery } from "@/app/boot/stale-build-recovery"
 import { listenForInstallPrompt } from "@/widgets/app-install"
 import {
   claimAccountLocalData,

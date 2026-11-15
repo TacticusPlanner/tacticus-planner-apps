@@ -1,6 +1,6 @@
 import type { BattleId } from "@workspace/game-domain"
 
-import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 
 /** Whether a location still has real attempts left today (or has no real data at all — treated as
  * "not exhausted" rather than guessed at; this now applies to standing and event-campaign nodes

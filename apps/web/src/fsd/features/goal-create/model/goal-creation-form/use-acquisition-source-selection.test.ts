@@ -11,7 +11,7 @@ import {
   type BattleId,
 } from "@workspace/game-domain"
 
-import type { Battle } from "@/features/goal-farming/@x/goal-create"
+import type { Battle } from "@/entities/goal-farming"
 import { useAcquisitionSourceSelection } from "./use-acquisition-source-selection"
 
 const battleId = battleIdSchema.parse

@@ -6,11 +6,8 @@ import type { BattleId } from "@workspace/game-domain"
 
 import { useCampaignDisplay } from "@/shared/lib"
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
-import { dropRate } from "@/features/goal-farming/@x/goal-create"
-import type {
-  Battle,
-  FarmLocation,
-} from "@/features/goal-farming/@x/goal-create"
+import { dropRate } from "@/entities/goal-farming"
+import type { Battle, FarmLocation } from "@/entities/goal-farming"
 
 /** The campaign battle name for a shard-farm location in the app's one location format, e.g.
  *  "Fall of Cadia *Standard* 22" or "Death Guard *Extremis* 5B" — falls back to the raw battle id when

@@ -15,11 +15,11 @@ import {
   calculateGoalResourceNeed,
   createCraftedInventoryPool,
   createUnitCoverage,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import type {
   Character,
   UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-planning"
+} from "@/entities/rank-lookup"
 
 import { filterUnlockedBattles } from "@/shared/lib"
 

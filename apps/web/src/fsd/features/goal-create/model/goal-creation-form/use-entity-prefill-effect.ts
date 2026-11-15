@@ -5,7 +5,7 @@ import {
   isAtMaxAbility,
   isAtMaxProgression,
   isAtMaxRank,
-} from "@/features/goal-planning/@x/goal-create"
+} from "@/features/goal-planning"
 
 type FieldsWithPrefill<TArgs extends unknown[]> = {
   prefillFrom: (...args: TArgs) => void

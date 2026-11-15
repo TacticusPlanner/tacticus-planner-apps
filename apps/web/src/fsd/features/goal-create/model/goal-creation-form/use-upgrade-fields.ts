@@ -15,7 +15,7 @@ import { useGlobalGoalPlan, type UpgradeRange } from "@/entities/goal"
 import type {
   UpgradeWithFarmLocations,
   Character,
-} from "@/features/rank-lookup/@x/goal-create"
+} from "@/entities/rank-lookup"
 
 import { isValidUpgradeQuantity } from "../target-edit/goal-target-edit"
 import { useUpgradeLinks } from "./upgrade-links"

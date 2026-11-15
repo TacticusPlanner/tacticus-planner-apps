@@ -2,10 +2,10 @@ import type { Progression, UnitId } from "@workspace/game-domain"
 import type { ShopShardOffer } from "@workspace/game-catalog"
 
 import type { EntityType } from "./use-create-goal-form"
-import { isMythicProgression } from "@/features/goal-farming/@x/goal-create"
+import { isMythicProgression } from "@/entities/goal-farming"
 import { usePlayerChunk } from "@/shared/local-data"
 
-import { readyData, toByUnitId } from "@/features/goal-planning/@x/goal-create"
+import { readyData, toByUnitId } from "@/features/goal-planning"
 
 /**
  * Whether the Unlock goal type is offered. A Character needs some way to farm regular shards: a

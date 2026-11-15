@@ -24,7 +24,7 @@ import {
 
 import { closestOverlayContent, ProgressionBadge, RankBadge } from "@/shared/ui"
 import type { AbilityMilestone } from "../../model/goal-creation-form/goal-milestones"
-import { abilityLevelsByRarity } from "@/features/goal-planning/@x/goal-create"
+import { abilityLevelsByRarity } from "@/features/goal-planning"
 import { abilityLevelOptionsFor } from "../../model/target-edit/goal-target-edit"
 
 type MilestoneListProps<T> = {

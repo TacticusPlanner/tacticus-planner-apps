@@ -1,4 +1,4 @@
-import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 
 /** What a planned node row says instead of a raid count (drops are random, so a planned count is
  *  only an estimate). */

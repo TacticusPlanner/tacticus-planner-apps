@@ -1,10 +1,7 @@
 import type { BattleId } from "@workspace/game-domain"
 
-import type { CampaignInsight } from "@/features/campaign-insights/@x/goal-planning"
-import type {
-  Battle,
-  EstimateResourceId,
-} from "@/features/goal-farming/@x/goal-planning"
+import type { CampaignInsight } from "@/entities/campaign-insight"
+import type { Battle, EstimateResourceId } from "@/entities/goal-farming"
 
 import { addRuns, farmingDays, type RunsByBattle } from "./plan-farming-days"
 import type { PlanFarmingSpot } from "./use-plan-insights.domain"

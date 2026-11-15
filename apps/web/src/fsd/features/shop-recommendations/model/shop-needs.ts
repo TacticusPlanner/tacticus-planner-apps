@@ -16,9 +16,9 @@ import {
   type FarmingCharacter,
   type FarmingUpgrade,
   type UnitCoverage,
-} from "@/features/goal-farming/@x/shop-recommendations"
+} from "@/entities/goal-farming"
 
-import { activeProjectMembers } from "@/features/daily-raids/@x/shop-recommendations"
+import { activeProjectMembers } from "@/entities/goal"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]

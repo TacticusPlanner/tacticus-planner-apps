@@ -14,7 +14,7 @@ import {
   useGoalSlotConflict,
   buildPreviewGoalDetails,
   usePerProjectEstimates,
-} from "@/features/goal-planning/@x/goal-create"
+} from "@/features/goal-planning"
 import { buildCombinedGoalSpecs } from "./goal-spec-builder"
 import { useGoalSubmit } from "./use-goal-submit"
 import type { EntityType } from "./use-create-goal-form"

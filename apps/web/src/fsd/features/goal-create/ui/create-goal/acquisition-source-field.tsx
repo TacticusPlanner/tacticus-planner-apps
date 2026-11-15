@@ -8,13 +8,13 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import type { ShopRewardOffer, ShopShardOffer } from "@workspace/game-catalog"
 import type { BattleId, UpgradeId } from "@workspace/game-domain"
 
-import { shopCurrencyIcon } from "@/features/shop-rewards/@x/goal-create"
+import { shopCurrencyIcon } from "@/entities/shop-reward"
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 import {
   shopOfferPerDay,
   type Battle,
   type FarmLocation,
-} from "@/features/goal-farming/@x/goal-create"
+} from "@/entities/goal-farming"
 import { GoalShardLocationsField } from "./goal-shard-locations-field"
 import { shardIcon } from "@workspace/game-catalog"
 

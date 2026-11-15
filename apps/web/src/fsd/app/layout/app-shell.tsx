@@ -15,7 +15,7 @@ import {
   type CreateGoalPrefill,
 } from "@/features/goal-create"
 
-import { GameCatalogInitGate } from "../game-catalog-init-gate"
+import { GameCatalogInitGate } from "../boot/game-catalog-init-gate"
 import { HseLiveProvider } from "./hse-live-provider"
 import { DesktopShell } from "./desktop-layout"
 import { documentTitle } from "./document-title"
