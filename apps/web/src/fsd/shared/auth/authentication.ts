@@ -31,7 +31,7 @@ import {
   setAuthJournalMethod,
   takePendingRedirect,
 } from "./auth-journal"
-import { safeStorage } from "@/shared/lib"
+import { safeStorage } from "../lib"
 
 let authentication: PublicClientApplication | undefined
 

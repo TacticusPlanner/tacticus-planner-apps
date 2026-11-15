@@ -3,8 +3,8 @@ import {
   type HseCatalogRead,
   type HseInstance,
   type HsePlayerRead,
-} from "@/features/home-screen-event-points/model/hse-event-points"
-import { useHseProjectionInputs } from "@/features/home-screen-event-points/model/use-hse-projection-inputs"
+  useHseProjectionInputs,
+} from "@/features/home-screen-event-points"
 
 import {
   hseDefinitionConfig,

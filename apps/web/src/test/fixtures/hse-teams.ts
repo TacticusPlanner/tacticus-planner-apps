@@ -7,7 +7,7 @@ import type {
 import {
   buildHseTeamsViewModel,
   type HseTeamsRead,
-} from "@/features/team-recommendations/model/hse-teams-view-model"
+} from "@/features/team-recommendations"
 import { anyUnitPowerFixture } from "./team-power"
 
 // A synced roster for the HSE event teams: Psykers in every alliance (four Imperial among other
