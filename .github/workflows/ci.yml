@@ -79,8 +79,9 @@ jobs:
 
   release-scripts:
     name: Release scripts (${{ matrix.os }})
+    # Gated per step, not with a job-level `if`: a skipped matrix job reports one check named
+    # "Release scripts (${{ matrix.os }})", so per-OS required checks would never report.
     needs: changes
-    if: needs.changes.outputs.release-scripts == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -89,12 +90,15 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Check out code
+        if: needs.changes.outputs.release-scripts == 'true'
         uses: actions/checkout@v6
 
       - name: Set up Node
+        if: needs.changes.outputs.release-scripts == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: 24
 
       - name: Test release scripts
+        if: needs.changes.outputs.release-scripts == 'true'
         run: node --test "scripts/release/*.test.mjs"
