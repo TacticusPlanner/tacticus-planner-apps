@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import {
   Archive,
   ArchiveRestore,
-  ArrowUpToLine,
+  ArrowUpDown,
   ListChecks,
   MoreHorizontal,
   Pencil,
@@ -27,6 +27,8 @@ import type { useProjectActions } from "../model/use-project-actions"
 import { DeleteProjectDialog } from "./delete-project-dialog"
 import { ProjectUnitPortraits } from "./project-unit-portraits"
 import { ProjectTargetChip } from "./project-target-chip"
+import { ProjectFitCount } from "./project-fit-count"
+import type { ProjectCardFitCount } from "./project-fit-count"
 
 type Props = {
   project: ProjectSummary
@@ -36,13 +38,15 @@ type Props = {
    *  project-specific action"); offered on non-archived rows only. */
   onCreateGoal?: (project: ProjectSummary) => void
   onManageGoals?: (project: ProjectSummary) => void
-  /** Move goals to top (project-goal-moves): `enabled` or `disabled` (the block is already first);
-   *  absent hides the item (no in-flight goals, an archived project, or not offered here). */
-  moveGoalsToTop?: "enabled" | "disabled"
-  onMoveGoalsToTop?: (project: ProjectSummary) => void
+  /** Move goals… (project-goal-moves): `enabled` or `disabled` (no placement would change the
+   *  order); absent hides the item (no in-flight goals, an archived project, or not offered here). */
+  moveGoals?: "enabled" | "disabled"
+  onMoveGoals?: (project: ProjectSummary) => void
   /** Present where clicking the card should open the project on the Goals page. */
   onSelect?: () => void
   summary?: ProjectCardSummary
+  /** The deadline fit count beside the target chip (project-deadline-fit); absent shows none. */
+  fitCount?: ProjectCardFitCount
 }
 
 export type ProjectCardSummary =
@@ -69,10 +73,11 @@ export function ProjectRow({
   onEdit,
   onCreateGoal,
   onManageGoals,
-  moveGoalsToTop,
-  onMoveGoalsToTop,
+  moveGoals,
+  onMoveGoals,
   onSelect,
   summary,
+  fitCount,
 }: Props) {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
@@ -160,8 +165,9 @@ export function ProjectRow({
         )}
         {/* Outside the select button: a link cannot sit inside a button. */}
         {project.target ? (
-          <div className="mt-2 ml-7">
+          <div className="mt-2 ml-7 flex flex-wrap items-center gap-2">
             <ProjectTargetChip target={project.target} />
+            {fitCount ? <ProjectFitCount count={fitCount} /> : null}
           </div>
         ) : null}
         {summary?.status === "error" ? (
@@ -206,18 +212,18 @@ export function ProjectRow({
                 {t("goals.project.addGoalsTrigger")}
               </DropdownMenuItem>
             ) : null}
-            {!archived && moveGoalsToTop && onMoveGoalsToTop ? (
+            {!archived && moveGoals && onMoveGoals ? (
               <DropdownMenuItem
                 data-testid="project-move-goals"
-                disabled={moveGoalsToTop === "disabled"}
-                onSelect={() => onMoveGoalsToTop(project)}
+                disabled={moveGoals === "disabled"}
+                onSelect={() => onMoveGoals(project)}
                 title={
-                  moveGoalsToTop === "disabled"
+                  moveGoals === "disabled"
                     ? t("goals.order.projectMove.alreadyFirst")
                     : undefined
                 }
               >
-                <ArrowUpToLine />
+                <ArrowUpDown />
                 {t("goals.order.projectMove.menuItem")}
               </DropdownMenuItem>
             ) : null}

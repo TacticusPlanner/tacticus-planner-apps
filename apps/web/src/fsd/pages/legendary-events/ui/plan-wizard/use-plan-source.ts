@@ -18,14 +18,14 @@ import {
   useLegendaryEventUnits,
   useLegendaryEvents,
   usePlanWriteQueue,
+  legendaryEventRunDates,
 } from "@/entities/legendary-event"
 import type {
   LegendaryEvent,
   LegendaryEventLifecycle,
   LegendaryEventGoalTarget,
+  LegendaryEventRunDates,
 } from "@/entities/legendary-event"
-import { legendaryEventRunDates } from "../../lib/run-dates"
-import type { LegendaryEventRunDates } from "../../lib/run-dates"
 import { useLegendaryEventGoalTargets } from "@/features/legendary-event-goals"
 import { useShowPaidOptions } from "@/features/legendary-event-plan"
 import { useTokenMissionsSource } from "@/features/legendary-event-tokens"

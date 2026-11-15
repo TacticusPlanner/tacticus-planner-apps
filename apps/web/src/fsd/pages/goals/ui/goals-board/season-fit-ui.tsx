@@ -6,12 +6,13 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import type { ActiveSeasonFit } from "@/features/goal-planning"
 import {
+  goalFitCopy,
+  goalFitOffset,
+  isDeadlineFitView,
   seasonCutoffText,
-  seasonFitLabel,
-  seasonFitTooltip,
 } from "./season-fit-copy"
+import type { GoalFitView } from "./season-fit-copy"
 import { useDateLocale } from "@/shared/lib"
 
 /** The fit label beside a goal's Done By date, nothing for a goal without a fit (goal-season-fit
@@ -21,33 +22,37 @@ export function SeasonFitLabel({
   seasonFit,
 }: {
   goalId: string
-  seasonFit: ActiveSeasonFit | null | undefined
+  seasonFit: GoalFitView | null | undefined
 }) {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
-  const fit = seasonFit?.fits.get(goalId)
-  if (!seasonFit || !fit) return null
+  const offset = goalFitOffset(seasonFit, goalId)
+  const copy = goalFitCopy(seasonFit, goalId, t, dateLocale)
+  if (offset === undefined || !copy) return null
+  const { label, tooltip } = copy
   return (
     <Tooltip>
       {/* Focusable so the deadline stays reachable by keyboard. */}
       <TooltipTrigger asChild>
         <button
           className="text-xs font-medium text-muted-foreground underline decoration-dotted underline-offset-2"
-          data-offset={fit.offset}
-          data-testid="goal-season-fit"
+          data-offset={offset}
+          data-testid={
+            seasonFit && isDeadlineFitView(seasonFit)
+              ? "goal-deadline-fit"
+              : "goal-season-fit"
+          }
           type="button"
         >
-          {seasonFitLabel(t, fit)}
+          {label}
         </button>
       </TooltipTrigger>
-      <TooltipContent>
-        {seasonFitTooltip(t, dateLocale, seasonFit, fit)}
-      </TooltipContent>
+      <TooltipContent>{tooltip}</TooltipContent>
     </Tooltip>
   )
 }
 
-function useCutoffText(seasonFit: ActiveSeasonFit) {
+function useCutoffText(seasonFit: GoalFitView) {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
   return seasonCutoffText(t, dateLocale, seasonFit)
@@ -59,7 +64,7 @@ export function SeasonCutoffRow({
   seasonFit,
   colSpan,
 }: {
-  seasonFit: ActiveSeasonFit
+  seasonFit: GoalFitView
   colSpan: number
 }) {
   const text = useCutoffText(seasonFit)
@@ -77,11 +82,7 @@ export function SeasonCutoffRow({
 
 /** Card-list season cut-off: a list item between cards (also in mobile reorder mode). In the cards grid
  *  it spans every column, so the goal after it starts a new grid row. */
-export function SeasonCutoffItem({
-  seasonFit,
-}: {
-  seasonFit: ActiveSeasonFit
-}) {
+export function SeasonCutoffItem({ seasonFit }: { seasonFit: GoalFitView }) {
   const text = useCutoffText(seasonFit)
   return (
     <li className="col-span-full" data-testid="goals-season-cutoff">

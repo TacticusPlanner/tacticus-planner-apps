@@ -1730,6 +1730,28 @@
       "dividerEnds": "{{season}} ends {{deadline}}. The next goal finishes later.",
       "dividerStarts": "{{season}} starts {{deadline}}. The next goal finishes after it."
     },
+    "deadlineFit": {
+      "header": {
+        "label": "Deadline:",
+        "starts": "starts {{date}}",
+        "startsEstimated": "starts {{date}} (estimated)",
+        "count": "{{fit}} of {{total}} fit",
+        "allDone_one": "All {{count}} done",
+        "allDone_other": "All {{count}} done",
+        "notEstimated_one": "{{count}} not estimated",
+        "notEstimated_other": "{{count}} not estimated",
+        "ended": "Ended {{date}}",
+        "unavailable": "No date available",
+        "separator": " · "
+      },
+      "fits": "Fits",
+      "misses_one": "Misses by {{count}} d",
+      "misses_other": "Misses by {{count}} d",
+      "tooltip": "Done by {{date}}, before {{chip}} starts on {{deadline}}",
+      "tooltipAfter": "Done by {{date}}, after {{chip}} starts on {{deadline}}",
+      "divider": "{{chip}} starts {{deadline}}. Goals below finish later.",
+      "overrideChip": "Using project deadline"
+    },
     "detail": {
       "notes": "Notes",
       "projectsTitle": "Projects",
@@ -1917,14 +1939,24 @@
       "hintLabel": "About the order",
       "scopedNote": "Each number is the goal's position in your account-wide priority order, so a project's goals can show gaps such as 1, 3, 5. Moving a goal here also moves it in that order; goals from other projects keep their relative order.",
       "projectMove": {
-        "menuItem": "Move goals to top",
+        "menuItem": "Move goals…",
         "alreadyFirst": "This project's goals are already first.",
-        "moved_one": "Moved {{count}} goal to priority 1.",
-        "moved_other": "Moved {{count}} goals to priority 1.",
+        "moved_one": "Moved {{count}} goal to priority {{priority}}.",
+        "moved_other": "Moved {{count}} goals to priority {{priority}}.",
         "undo": "Undo",
         "undone": "Order restored.",
         "staleUndo": "The order changed since. Nothing was undone.",
-        "staleMove": "The order changed while you were moving. Review the refreshed order and try again."
+        "staleMove": "The order changed while you were moving. Review the refreshed order and try again.",
+        "dialogTitle": "Move goals",
+        "dialogDescription": "Place the in-flight goals of {{name}} as one block. Their order inside the block stays the same.",
+        "toTop": "To the top",
+        "before": "Before",
+        "after": "After",
+        "projectLabel": "Project",
+        "projectPlaceholder": "Choose a project",
+        "noReference": "No other project to place against",
+        "confirm": "Move",
+        "cancel": "Cancel"
       }
     },
     "edit": {
@@ -2189,6 +2221,10 @@
           "title": "Season fit",
           "content": "Pick a Battle Pass, Guild Raid or Guild War season to see which goals finish in time. A line marks where goals start spilling into the next season."
         },
+        "deadlineFit": {
+          "title": "Project deadline",
+          "content": "This project has a target, so its goals are measured against that deadline instead of Season fit. Each goal shows Fits or Misses by N d, and a line marks the first goal that finishes too late."
+        },
         "viewToggle": {
           "title": "Cards or table",
           "content": "Switch between goal cards and the compact table. Your choice is saved on this device."
@@ -2242,8 +2278,8 @@
           "content": "Start a new project here. A project's action menu creates a goal in it, manages which goals belong to it, and renames, recolors, archives, or restores it."
         },
         "moveGoals": {
-          "title": "Move a project's goals first",
-          "content": "Open a project's menu and choose Move goals to top to put all its active and paused goals first in your priority order. You can undo it from the message that follows."
+          "title": "Move a project's goals",
+          "content": "Open a project's menu and choose Move goals… to put all its active and paused goals at the top, or just before or after another project. You can undo it from the message that follows."
         }
       }
     },

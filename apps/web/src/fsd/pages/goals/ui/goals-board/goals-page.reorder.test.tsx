@@ -27,6 +27,7 @@ vi.mock("@/entities/project", () => ({
     loading: false,
     fetchState: { status: "success" },
   }),
+  useProjectDeadline: () => null,
 }))
 vi.mock(
   "@/features/goal-planning/model/goal-order/use-goal-order-actions",
@@ -87,6 +88,8 @@ vi.mock("./goals-page.tutorial", () => ({
 vi.mock("@/features/project-management", () => ({
   useProjectActions: () => ({}),
   ManageProjectsSheet: () => null,
+  useEventTargetName: () => null,
+  ProjectTargetChip: () => null,
 }))
 vi.mock("./goals-project-scope", () => ({
   GoalsProjectScope: () => null,

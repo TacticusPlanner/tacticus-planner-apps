@@ -1730,6 +1730,28 @@
       "dividerEnds": "{{season}} endet am {{deadline}} – das nächste Ziel wird später fertig.",
       "dividerStarts": "{{season}} beginnt am {{deadline}} – das nächste Ziel wird danach fertig."
     },
+    "deadlineFit": {
+      "header": {
+        "label": "Frist:",
+        "starts": "beginnt am {{date}}",
+        "startsEstimated": "beginnt am {{date}} (geschätzt)",
+        "count": "{{fit}} von {{total}} passen",
+        "allDone_one": "{{count}} erledigt",
+        "allDone_other": "Alle {{count}} erledigt",
+        "notEstimated_one": "{{count}} nicht geschätzt",
+        "notEstimated_other": "{{count}} nicht geschätzt",
+        "ended": "Beendet am {{date}}",
+        "unavailable": "Kein Datum verfügbar",
+        "separator": " · "
+      },
+      "fits": "Passt",
+      "misses_one": "{{count}} T zu spät",
+      "misses_other": "{{count}} T zu spät",
+      "tooltip": "Fertig am {{date}}, bevor {{chip}} am {{deadline}} beginnt",
+      "tooltipAfter": "Fertig am {{date}}, nachdem {{chip}} am {{deadline}} beginnt",
+      "divider": "{{chip}} beginnt am {{deadline}}. Die Ziele darunter werden später fertig.",
+      "overrideChip": "Projektfrist wird verwendet"
+    },
     "detail": {
       "notes": "Notizen",
       "projectsTitle": "Projekte",
@@ -1917,14 +1939,24 @@
       "hintLabel": "Zur Reihenfolge",
       "scopedNote": "Jede Zahl ist die Position des Ziels in deiner kontoweiten Prioritätsreihenfolge, daher können die Ziele eines Projekts Lücken wie 1, 3, 5 zeigen. Ein Ziel hier zu verschieben verschiebt es auch in dieser Reihenfolge; Ziele anderer Projekte behalten ihre relative Reihenfolge.",
       "projectMove": {
-        "menuItem": "Ziele nach oben verschieben",
+        "menuItem": "Ziele verschieben…",
         "alreadyFirst": "Die Ziele dieses Projekts stehen bereits an erster Stelle.",
-        "moved_one": "{{count}} Ziel auf Priorität 1 verschoben.",
-        "moved_other": "{{count}} Ziele auf Priorität 1 verschoben.",
+        "moved_one": "{{count}} Ziel auf Priorität {{priority}} verschoben.",
+        "moved_other": "{{count}} Ziele auf Priorität {{priority}} verschoben.",
         "undo": "Rückgängig",
         "undone": "Reihenfolge wiederhergestellt.",
         "staleUndo": "Die Reihenfolge hat sich inzwischen geändert. Es wurde nichts rückgängig gemacht.",
-        "staleMove": "Die Reihenfolge hat sich während des Verschiebens geändert. Prüfe die aktualisierte Reihenfolge und versuche es erneut."
+        "staleMove": "Die Reihenfolge hat sich während des Verschiebens geändert. Prüfe die aktualisierte Reihenfolge und versuche es erneut.",
+        "dialogTitle": "Ziele verschieben",
+        "dialogDescription": "Setze die laufenden Ziele von {{name}} als einen Block. Ihre Reihenfolge innerhalb des Blocks bleibt gleich.",
+        "toTop": "Ganz nach oben",
+        "before": "Vor",
+        "after": "Nach",
+        "projectLabel": "Projekt",
+        "projectPlaceholder": "Projekt wählen",
+        "noReference": "Kein anderes Projekt zum Einordnen",
+        "confirm": "Verschieben",
+        "cancel": "Abbrechen"
       }
     },
     "edit": {
@@ -2189,6 +2221,10 @@
           "title": "Saison-Passung",
           "content": "Wähle eine Battle-Pass-, Gildenraid- oder Gildenkriegs-Saison, um zu sehen, welche Ziele rechtzeitig fertig werden. Eine Linie zeigt, ab wo Ziele in die nächste Saison rutschen."
         },
+        "deadlineFit": {
+          "title": "Projektfrist",
+          "content": "Dieses Projekt hat ein Ziel, daher werden seine Ziele an dieser Frist statt an der Saison-Passung gemessen. Jedes Ziel zeigt „Passt“ oder „N T zu spät“, und eine Linie markiert das erste Ziel, das zu spät fertig wird."
+        },
         "viewToggle": {
           "title": "Karten oder Tabelle",
           "content": "Wechsle zwischen Zielkarten und der kompakten Tabelle. Deine Wahl wird auf diesem Gerät gespeichert."
@@ -2242,8 +2278,8 @@
           "content": "Starte hier ein neues Projekt. Über das Aktionsmenü eines Projekts erstellst du darin ein Ziel, verwaltest seine Ziele und kannst es umbenennen, umfärben, archivieren oder wiederherstellen."
         },
         "moveGoals": {
-          "title": "Ziele eines Projekts nach vorne",
-          "content": "Öffne das Menü eines Projekts und wähle „Ziele nach oben verschieben“, um alle aktiven und pausierten Ziele an den Anfang deiner Prioritäten zu setzen. Über die folgende Meldung kannst du es rückgängig machen."
+          "title": "Ziele eines Projekts verschieben",
+          "content": "Öffne das Menü eines Projekts und wähle „Ziele verschieben…“, um alle aktiven und pausierten Ziele ganz nach oben oder direkt vor oder nach ein anderes Projekt zu setzen. Über die folgende Meldung kannst du es rückgängig machen."
         }
       }
     },

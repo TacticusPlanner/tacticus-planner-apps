@@ -412,16 +412,16 @@ describe("ProjectRow", () => {
 
   it("offers Move goals to top after Manage goals and reports the project", async () => {
     const user = userEvent.setup()
-    const onMoveGoalsToTop = vi.fn()
+    const onMoveGoals = vi.fn()
     render(
       <ul>
         <ProjectRow
           actions={actionsHarness()}
-          moveGoalsToTop="enabled"
+          moveGoals="enabled"
           onCreateGoal={vi.fn()}
           onEdit={vi.fn()}
           onManageGoals={vi.fn()}
-          onMoveGoalsToTop={onMoveGoalsToTop}
+          onMoveGoals={onMoveGoals}
           project={otherProject}
         />
       </ul>
@@ -439,7 +439,7 @@ describe("ProjectRow", () => {
       "goals.project.delete",
     ])
     await user.click(screen.getByTestId("project-move-goals"))
-    expect(onMoveGoalsToTop).toHaveBeenCalledWith(otherProject)
+    expect(onMoveGoals).toHaveBeenCalledWith(otherProject)
   })
 
   it("disables Move goals to top when the project's goals are already first", async () => {
@@ -448,9 +448,9 @@ describe("ProjectRow", () => {
       <ul>
         <ProjectRow
           actions={actionsHarness()}
-          moveGoalsToTop="disabled"
+          moveGoals="disabled"
           onEdit={vi.fn()}
-          onMoveGoalsToTop={vi.fn()}
+          onMoveGoals={vi.fn()}
           project={otherProject}
         />
       </ul>
@@ -468,9 +468,9 @@ describe("ProjectRow", () => {
       <ul>
         <ProjectRow
           actions={actionsHarness()}
-          moveGoalsToTop="enabled"
+          moveGoals="enabled"
           onEdit={vi.fn()}
-          onMoveGoalsToTop={vi.fn()}
+          onMoveGoals={vi.fn()}
           project={archivedProject}
         />
       </ul>

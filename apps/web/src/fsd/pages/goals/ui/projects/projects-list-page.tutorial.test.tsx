@@ -25,7 +25,7 @@ describe("useProjectsListTutorial", () => {
     }
     expect(steps.desktop.map((step) => step.title)).toEqual([
       "What a project is",
-      "Move a project's goals first",
+      "Move a project's goals",
       "Create a project",
     ])
     expect(steps.desktop.map((step) => step.target)).toEqual([

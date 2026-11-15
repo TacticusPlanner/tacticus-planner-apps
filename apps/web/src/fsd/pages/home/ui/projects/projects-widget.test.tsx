@@ -4,10 +4,23 @@ import { render, screen } from "@/test/render"
 
 import { ProjectsWidget } from "./projects-widget"
 
-const { isMobileRef, navigateMock, useHomeProjectsMock } = vi.hoisted(() => ({
-  isMobileRef: { current: false },
-  navigateMock: vi.fn(),
-  useHomeProjectsMock: vi.fn(),
+const { isMobileRef, navigateMock, useHomeProjectsMock, planInsightsMock } =
+  vi.hoisted(() => ({
+    isMobileRef: { current: false },
+    navigateMock: vi.fn(),
+    useHomeProjectsMock: vi.fn(),
+    planInsightsMock: vi.fn(),
+  }))
+
+vi.mock("@/features/goal-planning/model/insights/use-plan-insights", () => ({
+  usePlanInsights: (scope: unknown) => {
+    planInsightsMock(scope)
+    return {
+      result: { estimates: new Map() },
+      loading: false,
+      isError: false,
+    }
+  },
 }))
 
 vi.mock("react-i18next", () => ({
@@ -164,5 +177,40 @@ describe("ProjectsWidget", () => {
       "href",
       "/plan/projects"
     )
+  })
+
+  describe("deadline fit counts", () => {
+    const ready = (projects: ReturnType<typeof project>[]) => ({
+      status: "ready",
+      projects,
+      summaries: new Map(),
+      remainingCount: 0,
+    })
+
+    it("runs no plan when no listed project has a target", () => {
+      planInsightsMock.mockClear()
+      useHomeProjectsMock.mockReturnValue(
+        ready([project({ target: null, goalIds: [] })])
+      )
+      render(<ProjectsWidget />, { route: "/" })
+      expect(planInsightsMock).toHaveBeenCalled()
+      for (const [scope] of planInsightsMock.mock.calls) {
+        expect(scope).toEqual([])
+      }
+    })
+
+    it("runs the full plan once a listed project has a target", () => {
+      planInsightsMock.mockClear()
+      useHomeProjectsMock.mockReturnValue(
+        ready([
+          project({
+            target: { kind: "legendaryEvent", eventId: "votanUthar" },
+            goalIds: [],
+          }),
+        ])
+      )
+      render(<ProjectsWidget />, { route: "/" })
+      expect(planInsightsMock).toHaveBeenLastCalledWith(null)
+    })
   })
 })

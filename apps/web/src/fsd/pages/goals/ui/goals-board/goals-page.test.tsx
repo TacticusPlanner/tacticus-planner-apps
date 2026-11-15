@@ -1428,6 +1428,73 @@ describe("GoalsPage", () => {
       expect(cutoff.tagName).toBe("LI")
       expect(cutoff.nextElementSibling).toHaveAttribute("data-season-fit", "1")
     })
+
+    describe("in a project targeting a Legendary Event", () => {
+      // Uthar's run 3 starts Nov 27; goal-b is done Nov 30, so it misses by ceil(4 d) = 4 days.
+      const uthar = {
+        id: "votanUthar",
+        name: "Uthar",
+        eventStageStartDatesUtc: [
+          "2026-03-08T00:00:00Z",
+          "2026-10-04T00:00:00Z",
+          "2026-11-27T00:00:00Z",
+        ],
+      }
+
+      beforeEach(async () => {
+        await seedGameCatalog({
+          "event-definitions": seasonDefinitions,
+          "events-calendar": {},
+          lres: [uthar],
+        })
+        listProjects.mockResolvedValue({
+          projects: [
+            overviewProject,
+            {
+              ...otherProject,
+              target: { kind: "legendaryEvent", eventId: "votanUthar" },
+            },
+          ],
+        })
+        window.localStorage.setItem("goals.overview.seasonFit", "battlePass")
+      })
+
+      it("replaces Season fit with the project deadline and keeps the stored choice elsewhere", async () => {
+        const view = renderPage("/plan/goals?project=proj-2")
+
+        const header = await screen.findByTestId("goals-deadline-fit")
+        await vi.waitFor(() =>
+          expect(header).toHaveTextContent("starts Nov 27 · 0 of 1 fit")
+        )
+        expect(
+          screen.getByTestId("goals-season-fit-override")
+        ).toHaveTextContent("Using project deadline")
+        expect(screen.queryByTestId("goals-season-fit")).toBeNull()
+        expect(screen.getByTestId("goal-deadline-fit")).toHaveTextContent(
+          "Misses by 4 d"
+        )
+        expect(fitOf(goalB.goalId)).toBe("1")
+        expect(
+          screen.getByTestId("goals-season-cutoff").nextElementSibling
+        ).toHaveAttribute("data-goal-id", goalB.goalId)
+
+        view.unmount()
+        renderPage()
+        await vi.waitFor(() => expect(fitOf(goalB.goalId)).toBe("1"))
+        expect(screen.queryByTestId("goals-deadline-fit")).toBeNull()
+        expect(
+          document.getElementById("goals-season-fit-value")
+        ).toHaveTextContent("Battle Pass")
+      })
+
+      it("keeps Season fit in an untargeted project", async () => {
+        renderPage("/plan/goals?project=proj-1")
+
+        await vi.waitFor(() => expect(fitOf(activeGoal.goalId)).toBe("0"))
+        expect(screen.queryByTestId("goals-deadline-fit")).toBeNull()
+        expect(screen.getByTestId("goals-season-fit")).toBeInTheDocument()
+      })
+    })
   })
 
   describe("URL state", () => {

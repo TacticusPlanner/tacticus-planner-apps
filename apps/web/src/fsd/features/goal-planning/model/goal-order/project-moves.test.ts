@@ -4,7 +4,78 @@ import {
   moveProjectGoals,
   projectGoalsAlreadyFirst,
   projectInFlightGoalIds,
+  projectMoveReferences,
 } from "./project-moves"
+
+const ORDER = ["A", "B", "C", "D", "E", "F"]
+const GW = ["B", "D"]
+const CHAOS = ["C", "E"]
+
+describe("moveProjectGoals before and after a project", () => {
+  it("places Chaos Core before GW S29's first goal", () => {
+    expect(
+      moveProjectGoals(ORDER, CHAOS, { kind: "before", referenceIds: GW })
+    ).toEqual(["A", "C", "E", "B", "D", "F"])
+  })
+
+  it("places Chaos Core after GW S29's last goal", () => {
+    expect(
+      moveProjectGoals(ORDER, CHAOS, { kind: "after", referenceIds: GW })
+    ).toEqual(["A", "B", "D", "C", "E", "F"])
+  })
+
+  it("keeps a goal in both projects where it is", () => {
+    // G is in Chaos Core and GW S29: it stays, and C goes before it.
+    expect(
+      moveProjectGoals(["A", "G", "B", "C"], ["G", "C"], {
+        kind: "before",
+        referenceIds: ["G", "B"],
+      })
+    ).toEqual(["A", "C", "G", "B"])
+  })
+
+  it("moves nothing against an empty reference", () => {
+    expect(
+      moveProjectGoals(ORDER, CHAOS, { kind: "after", referenceIds: [] })
+    ).toEqual(ORDER)
+  })
+})
+
+describe("projectMoveReferences", () => {
+  const project = (projectId: string, status = "Active") => ({
+    projectId,
+    name: projectId,
+    status,
+  })
+  const goal = (goalId: string, projectIds: string[], status = "Active") => ({
+    goalId,
+    status,
+    projectIds,
+  })
+
+  it("offers live projects with an in-flight goal not shared with the moved one", () => {
+    const projects = [
+      project("Chaos"),
+      project("GW"),
+      project("Shared"),
+      project("Old", "Archived"),
+      project("Empty"),
+      project("Done"),
+    ]
+    const goals = [
+      goal("c", ["Chaos"]),
+      goal("b", ["GW"], "Paused"),
+      goal("s", ["Chaos", "Shared"]),
+      goal("o", ["Old"]),
+      goal("d", ["Done"], "Completed"),
+    ]
+    expect(
+      projectMoveReferences(projects, "Chaos", goals).map(
+        (candidate) => candidate.projectId
+      )
+    ).toEqual(["GW"])
+  })
+})
 
 describe("moveProjectGoals", () => {
   it("places the project's goals first as one block (the spec's worked example)", () => {

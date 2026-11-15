@@ -18,12 +18,17 @@ export {
   type LegendaryEventUnit,
 } from "./model/types"
 export {
-  LEGENDARY_EVENT_RUN_COUNT,
   LEGENDARY_EVENT_RUN_DURATION_MS,
   deriveLegendaryEventLifecycle,
   orderLegendaryEventsForHub,
   type LegendaryEventSchedule,
 } from "./lib/lifecycle"
+export {
+  legendaryEventRunDates,
+  legendaryEventRunWindow,
+  type LegendaryEventRunDates,
+  type LegendaryEventRunStart,
+} from "./lib/run-dates"
 export {
   defeatAllIcon,
   type ObjectiveIcon as ObjectiveIconModel,

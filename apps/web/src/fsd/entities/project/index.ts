@@ -20,6 +20,11 @@ export {
 
 export { isProjectNameValid } from "./model/project-name"
 export { useProjects } from "./model/use-projects"
+export { type ProjectDeadline } from "./model/deadline/resolve-project-deadline"
+export {
+  useProjectDeadline,
+  useProjectDeadlines,
+} from "./model/deadline/use-project-deadline"
 export { ProjectColorDot } from "./ui/project-color-dot"
 export { ProjectSelect } from "./ui/project-select"
 export type { ProjectSummary, ProjectTarget } from "./model/types"

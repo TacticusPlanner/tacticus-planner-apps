@@ -15,6 +15,7 @@ import {
   useHomeProjects,
   ProjectSummaryRow,
 } from "@/features/project-management"
+import { useProjectFitCounts } from "@/features/goal-planning"
 
 /** Home dashboard's Your Projects widget: Default project first. Mobile caps the list to 3 project
  * rows with a "+N more" link to the Projects dashboard (home-projects-widget spec); desktop has
@@ -25,6 +26,11 @@ export function ProjectsWidget() {
   const navigate = useNavigate()
   const isMobile = useIsMobile()
   const result = useHomeProjects(isMobile ? 3 : null)
+  // Targeted cards' deadline fit counts (project-deadline-fit); the plan runs only when a listed
+  // project has a resolvable, not-ended target.
+  const fitCounts = useProjectFitCounts(
+    result.status === "ready" ? result.projects : []
+  )
 
   const body = (() => {
     if (result.status === "loading") {
@@ -80,6 +86,7 @@ export function ProjectsWidget() {
               }
               project={project}
               summary={result.summaries.get(project.projectId)}
+              fitCount={fitCounts.get(project.projectId)}
             />
           ))}
         </ul>
