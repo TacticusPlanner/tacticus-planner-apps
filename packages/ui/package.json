@@ -53,7 +53,7 @@
     "jsdom": "catalog:",
     "knip": "catalog:",
     "prettier": "catalog:",
-    "tailwindcss": "^4.3.3",
+    "tailwindcss": "^4.3.5",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:"
