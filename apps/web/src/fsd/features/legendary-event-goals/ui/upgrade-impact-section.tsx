@@ -50,9 +50,12 @@ export function UpgradeImpactSection({
   nameOf,
   teamName,
   goalTargets,
+  showLane = false,
 }: {
   eventId: string
   laneId: LegendaryEventLaneId
+  /** Name the lane in the heading (more than one lane's section shows). */
+  showLane?: boolean
   state: UpgradeImpactState
   layout: "table" | "list"
   nameOf: (unitId: string) => string
@@ -320,7 +323,11 @@ export function UpgradeImpactSection({
             title={t("upgradeImpact.toggle")}
             type="button"
           >
-            {t("upgradeImpact.title")}
+            {showLane
+              ? t("upgradeImpact.titleLane", {
+                  lane: t(`lanes.${laneId}`),
+                })
+              : t("upgradeImpact.title")}
             <ChevronDown
               aria-hidden
               className={cn(

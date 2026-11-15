@@ -11,8 +11,37 @@ export type PlanningSettings = ApiSchemas["UserSettingsResponse"]
 export const defaultPlanningSettings: PlanningSettings = {
   dailyEnergy: 288,
   xpBookRarity: "Legendary",
-  watchAds: true,
+  preferences: [],
   revision: 0,
+}
+
+/** An on/off account preference (spec: user preference flags): listed in `preferences` when on. Every
+ *  preference is off by default. */
+export type UserPreference = PlanningSettings["preferences"][number]
+
+/** Whether `flag` is on; a settings read without preferences reads as all off. */
+export function hasPreference(
+  settings: Pick<PlanningSettings, "preferences">,
+  flag: UserPreference
+): boolean {
+  return (settings.preferences ?? []).includes(flag)
+}
+
+/** Whether the player watches the daily Legendary Event ad (on unless Skip daily ads is). */
+export function watchesDailyAds(
+  settings: Pick<PlanningSettings, "preferences">
+): boolean {
+  return !hasPreference(settings, "LegendaryEventSkipDailyAds")
+}
+
+/** `settings` with `flag` turned on or off (the other flags kept). */
+export function withPreference(
+  settings: PlanningSettings,
+  flag: UserPreference,
+  on: boolean
+): PlanningSettings {
+  const others = (settings.preferences ?? []).filter((entry) => entry !== flag)
+  return { ...settings, preferences: on ? [...others, flag] : others }
 }
 
 /** Every rarity the planning-settings dialog offers for `xpBookRarity`, in Common→Mythic order. */

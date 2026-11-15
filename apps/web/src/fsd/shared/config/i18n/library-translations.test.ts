@@ -69,6 +69,9 @@ describe("Library translations", () => {
       expect(locale.npcs.attacks.hits_other).toContain("{{count}}")
       expect(locale.npcs.attacks.range).toContain("{{range}}")
       expect(locale.npcs.healthAtLevel).toContain("{{health}}")
+      expect(locale.npcs.encounters.battles).toContain("{{list}}")
+      expect(locale.npcs.encounters.timing.next).toContain("{{date}}")
+      expect(locale.npcs.encounters.tierBattles_other).toContain("{{tiers}}")
       expect(Object.keys(locale.npcs.tour.steps)).toEqual([
         "filters",
         "list",
@@ -76,6 +79,7 @@ describe("Library translations", () => {
         "variation",
         "level",
         "stats",
+        "encounters",
       ])
     }
   })

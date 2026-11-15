@@ -23,7 +23,7 @@ export function MobileNavLink({
     <Link
       aria-current={isCurrent ? "page" : undefined}
       className={cn(
-        "flex flex-1 flex-col items-center justify-center gap-1 text-[0.65rem] font-medium transition-colors",
+        "flex flex-1 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors",
         isActive
           ? "text-primary shadow-[inset_0_2px_0_0_var(--primary)]"
           : "text-muted-foreground hover:text-foreground"

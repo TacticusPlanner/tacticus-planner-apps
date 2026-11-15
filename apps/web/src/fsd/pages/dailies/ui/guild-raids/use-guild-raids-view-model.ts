@@ -30,7 +30,8 @@ async function readLiveProgressObservedAt() {
 /** Combines persisted Guild Raid status, the local raid-boss catalog, and synced player resources into
  * the single view model the desktop/mobile Guild Raids regions render from. */
 export function useGuildRaidsViewModel(): GuildRaidsViewModel {
-  const { query, refresh, isRefreshing, refreshError } = useGuildRaidStatus()
+  const { query, refresh, isRefreshing, refreshError, isKeyRejected } =
+    useGuildRaidStatus()
   const catalog = useGuildRaidCatalog()
   // A failed read shows no resources, like a read still loading.
   const tokensRead = usePlayerChunk("live-progress", toGuildRaidTokens)
@@ -72,5 +73,6 @@ export function useGuildRaidsViewModel(): GuildRaidsViewModel {
     refresh,
     isRefreshing,
     hasRefreshError: refreshError !== null,
+    isKeyRejected,
   }
 }

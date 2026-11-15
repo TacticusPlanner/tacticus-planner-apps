@@ -11,7 +11,10 @@ import {
   seedPlayerData,
 } from "@/test/seed"
 
-import { CLEAR_ESTIMATE_POWER_RATIO } from "../lib/clear-estimate"
+import {
+  CLEAR_ESTIMATE_CALIBRATED,
+  CLEAR_ESTIMATE_CURVE,
+} from "../lib/clear-estimate"
 import { useClearEstimateConfig } from "./use-clear-estimate-config"
 import { useHordeModeTiers } from "./use-horde-mode-tiers"
 import { useLegendaryEvent } from "./use-legendary-event"
@@ -174,8 +177,8 @@ describe("Legendary Event read hooks", () => {
     await waitFor(() => expect(ready.result.current.status).toBe("ready"))
     const state = ready.result.current
     if (state.status !== "ready") throw new Error("not ready")
-    expect(state.config.powerRatio).toBe(CLEAR_ESTIMATE_POWER_RATIO)
-    expect(state.config.calibrated).toBe(false)
+    expect(state.config.powerRatio).toBe(CLEAR_ESTIMATE_CURVE.likelyRatio)
+    expect(state.config.calibrated).toBe(CLEAR_ESTIMATE_CALIBRATED)
     expect(state.config.hordeMultipliers.get("ultraTigurius")).toBe(1.55)
     expect(state.config.hordeMultipliers.get("ultraCalgar")).toBe(1.65)
     expect(state.config.unitPower).toBe(context)

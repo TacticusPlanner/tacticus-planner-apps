@@ -58,7 +58,7 @@ export function LeaderboardTable({
   const clearsText = useClearsText()
 
   return (
-    <div className="max-h-[36rem] min-w-0 overflow-y-auto rounded-lg border">
+    <div className="max-h-144 min-w-0 overflow-y-auto rounded-lg border">
       <Table data-testid="leaderboard-table">
         <TableHeader className="sticky top-0 z-10 bg-card">
           <TableRow>

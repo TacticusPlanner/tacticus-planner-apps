@@ -16,24 +16,31 @@ import type {
   DailyRaidsReadyViewModel,
 } from "../../model/daily-raids.domain"
 import type { MissionRaidPlan } from "../../model/mission-raids"
+import { CampaignGroupedList } from "../campaign-group"
+import type { RaidLocationTarget } from "../raid-location-name"
 import { EventGoalIcons } from "../home-screen-event/event-goal-icons"
 import { EventLocationRow } from "../home-screen-event/event-location-row"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
+import { useListPaging } from "../../model/use-list-paging"
+import { ListPagingControls } from "../list-paging-controls"
 
 /** What the raid rows read: the location labels, and the goal plan for drop icons and stock. */
 export type RaidRowsView = {
   locations: ReadonlyMap<BattleId, DailyRaidLocationViewModel> | undefined
   view: DailyRaidsReadyViewModel | null
+  /** Makes each battle's name open its enemies. */
+  onShowLocation?: (target: RaidLocationTarget) => void
 }
 
-/** One row per suggested node: its location, the goals it feeds (as on the HSE farm list), the goal
- * drop with "owned/target", the running Home Screen Event's points, raids (or battles) and energy;
- * an open-ended row shows only its energy per battle. */
+/** One row per suggested node: its battle (opening its enemies), the goals it feeds (as on the HSE
+ * farm list), the goal drop with "owned/target" and the running Home Screen Event's points. Like the
+ * HSE list, a raid row shows no raid count or energy; a by-hand battle row keeps its battle count,
+ * and an open-ended row shows its energy per battle. */
 export function RaidRows({
   rows,
   testId,
-  view: { locations, view },
+  view: { locations, view, onShowLocation },
   battles = false,
   openEnded = false,
 }: {
@@ -46,77 +53,75 @@ export function RaidRows({
   openEnded?: boolean
 }) {
   const { t } = useTranslation("hre")
+  const paging = useListPaging(rows)
   return (
-    <ul className="grid gap-2" data-testid={testId}>
-      {rows.map((row) => {
-        const resourceId = row.goal?.resourceId
-        const goals = (row.goal?.goalIds ?? [])
-          .map((goalId) => view?.goalsById.get(goalId))
-          .filter((goal): goal is DailyRaidGoalViewModel => !!goal)
-        return (
-          <EventLocationRow
-            key={row.battleId}
-            fallbackLabel={row.battleId}
-            location={locations?.get(row.battleId)}
-            testId={`hre-raid-${row.battleId}`}
-          >
-            <EventGoalIcons
-              goals={goals}
-              testId={`hre-raid-${row.battleId}-goals`}
-            />
-            {resourceId && view ? (
-              <span className="flex items-center gap-1">
-                <ResourceIconWithTooltip
-                  className="size-6"
-                  label={view.resourceLabels.get(resourceId) ?? resourceId}
-                  visual={view.resourceVisuals.get(resourceId)}
-                />
-                <ResourceStock
-                  progress={view.resourceTotals.get(resourceId)}
-                  testId={`hre-raid-${row.battleId}-stock`}
-                />
-              </span>
-            ) : null}
-            {row.eventPoints > 0 ? (
-              <Badge
-                className="tabular-nums"
-                data-testid={`hre-raid-${row.battleId}-event-points`}
-                variant="outline"
-              >
-                {t("raids.eventPoints", { points: row.eventPoints })}
-              </Badge>
-            ) : null}
-            {openEnded ? (
-              <Badge className="tabular-nums" variant="secondary">
-                <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
-                {t("raids.energyPerBattle", { energy: row.energyCost })}
-              </Badge>
-            ) : (
-              <>
+    <>
+      <CampaignGroupedList
+        battleIdOf={(row) => row.battleId}
+        locationsByBattleId={locations}
+        rows={paging.visible}
+        testId={testId}
+        renderRow={(row) => {
+          const resourceId = row.goal?.resourceId
+          const goals = (row.goal?.goalIds ?? [])
+            .map((goalId) => view?.goalsById.get(goalId))
+            .filter((goal): goal is DailyRaidGoalViewModel => !!goal)
+          return (
+            <EventLocationRow
+              key={row.battleId}
+              battleId={row.battleId}
+              onShowLocation={onShowLocation}
+              fallbackLabel={row.battleId}
+              location={locations?.get(row.battleId)}
+              testId={`hre-raid-${row.battleId}`}
+            >
+              <EventGoalIcons
+                goals={goals}
+                testId={`hre-raid-${row.battleId}-goals`}
+              />
+              {resourceId && view ? (
+                <span className="flex items-center gap-1">
+                  <ResourceIconWithTooltip
+                    className="size-8"
+                    label={view.resourceLabels.get(resourceId) ?? resourceId}
+                    visual={view.resourceVisuals.get(resourceId)}
+                  />
+                  <ResourceStock
+                    progress={view.resourceTotals.get(resourceId)}
+                    testId={`hre-raid-${row.battleId}-stock`}
+                  />
+                </span>
+              ) : null}
+              {row.eventPoints > 0 ? (
+                <Badge
+                  className="tabular-nums"
+                  data-testid={`hre-raid-${row.battleId}-event-points`}
+                  variant="outline"
+                >
+                  {t("raids.eventPoints", { points: row.eventPoints })}
+                </Badge>
+              ) : null}
+              {openEnded ? (
+                <Badge className="tabular-nums" variant="secondary">
+                  <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
+                  {t("raids.energyPerBattle", { energy: row.energyCost })}
+                </Badge>
+              ) : battles ? (
                 <Badge className="tabular-nums" variant="outline">
                   <EntityIcon
                     alt=""
                     className="size-3.5"
-                    src={
-                      battles
-                        ? battleGlyphIcon("campaignBattle")
-                        : raidTicketIcon()
-                    }
+                    src={battleGlyphIcon("campaignBattle")}
                   />
-                  {t(battles ? "raids.battleCount" : "raids.raidCount", {
-                    count: row.raids,
-                  })}
+                  {t("raids.battleCount", { count: row.raids })}
                 </Badge>
-                <Badge className="tabular-nums" variant="secondary">
-                  <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
-                  {t("raids.energy", { energy: row.energy })}
-                </Badge>
-              </>
-            )}
-          </EventLocationRow>
-        )
-      })}
-    </ul>
+              ) : null}
+            </EventLocationRow>
+          )
+        }}
+      />
+      <ListPagingControls paging={paging} testId={`${testId}-paging`} />
+    </>
   )
 }
 

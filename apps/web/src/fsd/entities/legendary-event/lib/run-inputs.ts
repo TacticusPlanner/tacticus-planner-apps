@@ -8,9 +8,13 @@ import type {
  *  (25-shard) awards. */
 export const MAX_CLOSE_SHARDS = 75
 
-/** A run with no stored inputs reads as zeros and no bundle. */
+/** How many regular (free) missions a run has; a run with no stored inputs plans all of them. */
+const REGULAR_MISSIONS_PER_RUN = 10
+
+/** A run with no stored inputs (spec: free missions assumed by default): every regular mission
+ *  planned, no premium missions, no bundle and no shards. */
 export const EMPTY_RUN_INPUT_VALUES: LegendaryEventRunInputValues = {
-  regularMissions: 0,
+  regularMissions: REGULAR_MISSIONS_PER_RUN,
   premiumMissions: 0,
   bundlePurchased: false,
   closeShards: 0,
@@ -18,7 +22,8 @@ export const EMPTY_RUN_INPUT_VALUES: LegendaryEventRunInputValues = {
   completedPremiumMissions: [],
 }
 
-/** The stored values of `run` among a plan's `runs`, or zeros when that run was never written. */
+/** The stored values of `run` among a plan's `runs`, or the defaults (`EMPTY_RUN_INPUT_VALUES`) when
+ *  that run was never written. */
 export function runInputValues(
   runs: readonly LegendaryEventRunInputs[] | undefined,
   run: LegendaryEventRun

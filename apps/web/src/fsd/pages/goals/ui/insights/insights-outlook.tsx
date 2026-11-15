@@ -101,16 +101,21 @@ export function InsightsOutlook({
               </h3>
               <ol
                 aria-label={t("goals.insights.criticalTitle")}
-                className="flex flex-col gap-1.5 text-sm"
+                className="flex flex-col gap-2 text-sm"
               >
                 {critical.map((goal) => {
                   const label = goalLabel(goal.goalId)
                   return (
                     <li
-                      className="flex items-baseline justify-between gap-2"
+                      className="flex items-center justify-between gap-2"
                       key={goal.goalId}
                     >
-                      <GoalLink goalId={goal.goalId} label={label} />
+                      <GoalLink
+                        goalId={goal.goalId}
+                        info={goalInfoById.get(goal.goalId)}
+                        label={label}
+                        variant="row"
+                      />
                       <span className="shrink-0 text-muted-foreground tabular-nums">
                         {formatEstimateDate(goal.date, locale)}
                       </span>
@@ -130,28 +135,46 @@ export function InsightsOutlook({
                   count: excludedGoals.length,
                 })}
               </h3>
-              <ul
-                aria-label={t("goals.insights.excludedTitle")}
-                className="flex flex-col gap-1.5 text-sm"
-              >
-                {excludedGoals.map((goal) => (
-                  <li className="flex flex-col" key={goal.goalId}>
-                    <GoalLink
-                      goalId={goal.goalId}
-                      label={goalLabel(goal.goalId)}
-                    />
-                    <span className="text-xs text-muted-foreground">
-                      {goal.reason === "NotEstimated"
-                        ? t("goals.insights.notEstimated")
-                        : t(`goals.estimate.blocked.${goal.reason}`)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              {/* One heading per reason, so a reason shared by several goals is said once. */}
+              {groupByReason(excludedGoals).map(([reason, goals]) => (
+                <div className="flex flex-col gap-2" key={reason}>
+                  <p className="text-xs text-muted-foreground">
+                    {reason === "NotEstimated"
+                      ? t("goals.insights.notEstimated")
+                      : t(`goals.estimate.blocked.${reason}`)}
+                  </p>
+                  <ul
+                    aria-label={t("goals.insights.excludedTitle")}
+                    className="flex flex-col gap-2 text-sm"
+                  >
+                    {goals.map((goal) => (
+                      <li key={goal.goalId}>
+                        <GoalLink
+                          goalId={goal.goalId}
+                          info={goalInfoById.get(goal.goalId)}
+                          label={goalLabel(goal.goalId)}
+                          variant="row"
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </section>
           ) : null}
         </CardContent>
       ) : null}
     </Card>
   )
+}
+
+function groupByReason(goals: readonly PlanInsightsExcludedGoal[]) {
+  const byReason = new Map<
+    PlanInsightsExcludedGoal["reason"],
+    PlanInsightsExcludedGoal[]
+  >()
+  for (const goal of goals) {
+    byReason.set(goal.reason, [...(byReason.get(goal.reason) ?? []), goal])
+  }
+  return [...byReason]
 }

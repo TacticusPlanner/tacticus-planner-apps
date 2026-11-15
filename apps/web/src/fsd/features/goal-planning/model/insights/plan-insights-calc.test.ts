@@ -22,12 +22,12 @@ import {
 import type {
   Character,
   UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-planning"
+} from "@/entities/rank-lookup"
 import type { GoalDetail, ProgressionTarget } from "@/entities/goal"
 
 type Progression = ProgressionTarget["start"]
 
-import type { Battle } from "@/features/goal-farming/@x/goal-planning"
+import type { Battle } from "@/entities/goal-farming"
 import { computePlanInsights } from "./plan-insights-calc"
 import { levelRules } from "@/test/fixtures/level-rules"
 
@@ -58,6 +58,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
     },
     snapshot: null,
     dependsOn: [],
+    linkedGoalIds: [],
     projectIds: [],
     revision: 1,
     ...overrides,
@@ -414,7 +415,7 @@ describe("computePlanInsights", () => {
     })
   })
 
-  describe("ability materials net of inventory (goal-remaining-resources)", () => {
+  describe("ability materials against inventory (goal-remaining-resources)", () => {
     const abilityGoal = (goalId: string, start: number, end: number) =>
       goalDetail({
         goalId,
@@ -460,24 +461,35 @@ describe("computePlanInsights", () => {
         ]),
       })
 
-    it("shows no badge chip for a resource the player fully holds, and keeps gold un-netted", () => {
+    it("keeps a fully held need beside the stock at the goal's turn, and gold un-netted", () => {
       expect(run(40).abilityMaterialsByGoalId.get("first")).toEqual({
         gold: 90,
-        badgesByRarity: {},
+        badgesByRarity: { Epic: 27 },
         forgeBadgesByRarity: {},
         components: 0,
+        available: {
+          badgesByRarity: { Epic: 40 },
+          forgeBadgesByRarity: {},
+          components: 0,
+        },
       })
     })
 
-    it("shows the shortfall for a partly held resource, in priority order, from the unit's alliance", () => {
+    it("hands each goal the stock left at its turn, in priority order, from the unit's alliance", () => {
       // 30 Xenos Epic badges (the 999 Imperial ones must not count): first takes 27, second sees 3 of 5.
       const result = run(30)
       expect(result.abilityMaterialsByGoalId.get("first")).toMatchObject({
-        badgesByRarity: {},
+        badgesByRarity: { Epic: 27 },
+        available: { badgesByRarity: { Epic: 30 } },
       })
       expect(result.abilityMaterialsByGoalId.get("second")).toMatchObject({
         gold: 100,
-        badgesByRarity: { Epic: 2 },
+        badgesByRarity: { Epic: 5 },
+        available: { badgesByRarity: { Epic: 3 } },
+      })
+      // The Insights shortfall still nets: only the second goal's 2 badges are missing.
+      expect(result.missing.abilityBadges).toEqual({
+        Xenos: { Epic: 2 },
       })
     })
 
@@ -991,12 +1003,38 @@ describe("computePlanInsights", () => {
       const net = computePlanInsights(params(40, 0)).planNetByGoalId
       expect(net.get("a")).toMatchObject({ shards: 0 })
       expect(net.get("b")).toMatchObject({ shards: 40 })
+      // The card's shard bars: owned shards spent on each goal against its own steps' cost.
+      expect(net.get("a")?.shardProgress?.shards).toEqual({
+        owned: 30,
+        needed: 30,
+      })
+      expect(net.get("b")?.shardProgress?.shards).toEqual({
+        owned: 10,
+        needed: 50,
+      })
+    })
+
+    it("leaves a goal outside the plan on its standalone shard progress", () => {
+      const net = computePlanInsights({
+        ...params(0, 0),
+        priorityByGoalId: new Map([["a", 1]]),
+      }).planNetByGoalId
+      expect(net.get("b")?.shardProgress).toBeUndefined()
     })
 
     it("shows no orb shortfall when the orbs are fully held and the shortfall otherwise", () => {
       const net = computePlanInsights(params(0, 10)).planNetByGoalId
       expect(net.get("a")?.orbsByType).toEqual({})
       expect(net.get("b")?.orbsByType).toEqual({ Uncommon: 4 })
+      // The chips' available/needed: each goal's gross need beside the stock left at its turn.
+      expect(net.get("a")?.orbPool).toEqual({
+        neededByRarity: { Uncommon: 10 },
+        availableByRarity: { Uncommon: 10 },
+      })
+      expect(net.get("b")?.orbPool).toEqual({
+        neededByRarity: { Uncommon: 4 },
+        availableByRarity: { Uncommon: 0 },
+      })
     })
   })
 
@@ -1291,6 +1329,54 @@ describe("computePlanInsights", () => {
       ],
     ]),
     ...onslaughtParams,
+  })
+
+  // A Machine of War has no campaign shard nodes: Onslaught (or a shop) is its only shard source.
+  const mowAscension = (
+    acquisitionSources: GoalDetail["config"]["acquisitionSources"]
+  ) => {
+    const base = ascensionWithOnslaught(30)
+    return {
+      ...base,
+      details: [
+        goalDetail({
+          entityType: "Mow",
+          entityId: "mow1",
+          goalType: "Ascension",
+          config: { ...base.details[0]!.config, acquisitionSources },
+        }),
+      ],
+      mowsById: new Map([
+        ["mow1", { id: "mow1", alliance: "Xenos" } as MowStorageModel],
+      ]),
+      onslaughtRunsPerDay: 1,
+    }
+  }
+
+  it("dates a Machine-of-War Ascension goal its Onslaught source supplies", () => {
+    const result = computePlanInsights({
+      levelRules,
+      ...baseParams,
+      ...mowAscension([{ kind: "Onslaught", ids: [] }]),
+    })
+
+    // Diamond 1, Common: 3.5 shards a run at 1 run a day → 30 shards in 9 days.
+    expect(result.estimates.get("goal-1")).toMatchObject({
+      status: "Estimated",
+      days: 9,
+      onslaughtTokens: 9,
+    })
+  })
+
+  it("leaves a Machine-of-War Ascension goal with no shard source count-only", () => {
+    const result = computePlanInsights({
+      levelRules,
+      ...baseParams,
+      ...mowAscension(null),
+    })
+
+    expect(result.totals.shards).toBe(30)
+    expect(result.estimates.has("goal-1")).toBe(false)
   })
 
   const rankRange = {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { formatEstimateDate } from "@/shared/lib"
+import { formatEstimateDate } from "../../lib"
 
 import de from "../../../../../public/locales/de/common.json"
 import en from "../../../../../public/locales/en/common.json"

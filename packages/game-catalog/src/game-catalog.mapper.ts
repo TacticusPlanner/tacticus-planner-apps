@@ -59,6 +59,14 @@ function byMowId(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.mowId, ...row }))
 }
 
+// npc-encounters has one record per (npc, source, group); together they are unique.
+function byNpcEncounterKey(data: unknown): Record<string, unknown>[] {
+  return asArray(data).map((row) => ({
+    id: `${String(row.npcId)}|${String(row.source)}|${String(row.groupId)}`,
+    ...row,
+  }))
+}
+
 // quest-events has one record per featured hero, so the hero id doubles as the store id.
 function byFeaturedCharacterId(data: unknown): Record<string, unknown>[] {
   return asArray(data).map((row) => ({ id: row.featuredCharacterId, ...row }))
@@ -104,6 +112,7 @@ export const datasetToStorageModels: Record<
   lres: asArray,
   "lre-battles": asArray,
   "horde-mode-tiers": asArray,
+  "npc-tiers": asArray,
   "event-definitions": asArray,
   "events-calendar": byCalendarDate,
   // Plain-array passthrough — each shop record already carries its `id` (guild / war / ...).
@@ -120,6 +129,7 @@ export const datasetToStorageModels: Record<
   "progression-rules": (data) => asFixedIdRow("progression-rules", data),
   hre: asArray,
   incursions: byMowId,
+  "npc-encounters": byNpcEncounterKey,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

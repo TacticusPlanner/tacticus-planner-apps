@@ -5,6 +5,7 @@ import reactHooks from "eslint-plugin-react-hooks"
 import reactRefresh from "eslint-plugin-react-refresh"
 import tseslint from "typescript-eslint"
 import { defineConfig, globalIgnores } from "eslint/config"
+import { tailwindSizingConfig } from "../../packages/ui/eslint.tailwind-sizing.js"
 
 export default defineConfig([
   // schema.d.ts is generated from the API's OpenAPI document (pnpm api:types).
@@ -48,6 +49,44 @@ export default defineConfig([
     },
   },
   {
+    // FSD allows `@x` cross-import surfaces only on the entities layer.
+    files: ["src/fsd/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              regex: String.raw`^@/(?:features|widgets|pages)/[^/]+/@x(?:/|$)`,
+              message:
+                "`@x` is for the entities layer only. Merge the slices, move the shared logic into an entity, compose from a page, or import the slice's public API.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // steiger only checks src/fsd, so files outside it (main.tsx, src/test fixtures) import
+    // slices through their public API here.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/fsd/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              regex: String.raw`^@/(?:pages|widgets|features|entities)/[^/]+/.+`,
+              message:
+                "Import the slice's public API (`@/<layer>/<slice>`), not its internal files.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     // The steiger plugin's types come from @steiger/toolkit, which is not resolvable from here.
     files: ["steiger.config.ts"],
     extends: [tseslint.configs.disableTypeChecked],
@@ -67,4 +106,5 @@ export default defineConfig([
       ],
     },
   },
+  tailwindSizingConfig,
 ])

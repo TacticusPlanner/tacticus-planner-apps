@@ -60,8 +60,10 @@ import {
   medalIcon,
   milestoneIcons,
 } from "../lib/battle-progress-icons"
-import { campaignEventProgressKey } from "../model/campaign-event-eligibility"
-import { useEffectiveCampaignEventProgress } from "../model/use-eligible-campaign-battles"
+import {
+  campaignEventProgressKey,
+  useEffectiveCampaignEventProgress,
+} from "@/entities/player-data-override"
 import { OneTimeRewards } from "./one-time-rewards"
 
 const MEDALS = [0, 1, 2, 3] as const
@@ -242,8 +244,11 @@ function BattleProgressEditor({
   const tier = selected.descriptor ? difficultyLabel(selected.descriptor) : ""
   const battleLabel = (row: BattleProgressRow) =>
     row.challenge
-      ? t("battleProgress.challengeBattle", { tier, node: row.nodeNumber })
-      : `${tier} ${row.nodeNumber}`
+      ? t("battleProgress.challengeBattle", {
+          tier,
+          node: row.nodeNumber,
+        }).trim()
+      : `${tier} ${row.nodeNumber}`.trim()
   // The frontier was never beaten, so it holds every reward; beaten battles default to the best.
   const progressFor = (row: BattleProgressRow): BattleProgress =>
     row.frontier

@@ -58,6 +58,73 @@ after at most 6 seconds.
 - **THEN** the system does not attempt a silent session restore and shows
   the unauthenticated experience exactly as it does today
 
+### Requirement: Quiet top-level renewal when the hidden check fails
+
+When the hidden identity-provider session check fails for a previously
+cached email account (or account hint), the system SHALL make one top-level
+redirect to the identity provider with `prompt=none` before falling back to
+manual sign-in, because a top-level navigation carries the identity
+provider's cookies even where the browser keeps them out of hidden frames.
+Google accounts SHALL skip both the hidden check and this redirect: neither
+finds a Google user's session (`login_required`, AADSTS50058), while the
+interactive re-authentication started by the next API call returns them
+signed in with no prompt. A Google account known only from the account hint
+lands signed out. An account counts as Google when its ID token names
+`google.com` as the identity provider or its username is the
+`<object id>@<tenant>` name Entra generates for federated users, since a cached
+account can lack those claims. The redirect SHALL carry a hint for the account, so the
+identity provider can pick it in a session that holds several accounts: the ID token's session id (`sid`) or opaque `login_hint`
+claim when the app registration emits them, otherwise the username. The
+session id is also kept in the account hint, so a cleared token cache still
+restores the right account. It SHALL be
+skipped while a fresh login is required, and for 12 hours after an attempt
+that did not come back signed in. An automatic interactive re-authentication
+SHALL NOT end that cooldown; only a completed sign-in, a sign-in the user
+starts, or signing out does. A response that reports no usable session
+SHALL NOT count as a failed sign-in: no error toast, no fresh-login prompt,
+and the cached account and hint are kept. Sign-in controls keep showing the
+in-progress state while the redirect leaves the page.
+
+#### Scenario: Live session the hidden frame cannot see
+
+- **GIVEN** a user who chose to stay signed in, whose refresh token expired
+  more than 24 hours after sign-in, in a browser that blocks third-party
+  cookies
+- **WHEN** they open the app
+- **THEN** the page bounces through the identity provider and returns signed
+  in, on the page they opened, with no prompt
+
+#### Scenario: Google account with an expired refresh token
+
+- **GIVEN** a Google user with a cached account whose refresh token has
+  expired
+- **WHEN** they open the app
+- **THEN** no hidden check or quiet redirect runs, and the one interactive
+  redirect started by the first API call returns them signed in
+
+#### Scenario: Google account cached without its identity-provider claim
+
+- **GIVEN** a Google user whose cached account has a generated username but no
+  `idp` claim, and whose refresh token has expired
+- **WHEN** they open the app
+- **THEN** it is treated as a Google account: no hidden check or quiet redirect
+  runs
+
+#### Scenario: Several accounts in one identity-provider session
+
+- **GIVEN** an email user whose identity-provider session also holds other
+  accounts, and whose refresh token has expired
+- **WHEN** they open the app
+- **THEN** the quiet redirect names their account, and they return signed in
+  without an account picker
+
+#### Scenario: No session left
+
+- **WHEN** the quiet redirect comes back reporting that interaction is
+  required
+- **THEN** the user lands signed out with the normal sign-in control and no
+  error, and the next loads within 12 hours do not repeat the redirect
+
 ### Requirement: Successful restore requires no further user action
 
 When the automatic silent restore succeeds, the user SHALL be taken directly

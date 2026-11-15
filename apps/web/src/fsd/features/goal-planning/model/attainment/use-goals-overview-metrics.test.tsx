@@ -7,7 +7,8 @@ const goalsList = vi.hoisted(() => ({
   isError: false,
 }))
 
-vi.mock("@/entities/goal", () => ({
+vi.mock("@/entities/goal", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/goal")>()),
   useGoalsById: () => ({ ...goalsList, retry: () => {} }),
 }))
 

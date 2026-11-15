@@ -11,6 +11,7 @@ import {
   characterStatsAt,
   mowPowerAt,
   npcPowerAt,
+  npcPowerAtLadder,
   rosterCharacterPower,
 } from "./unit-power"
 
@@ -123,6 +124,18 @@ describe("mowPowerAt and npcPowerAt", () => {
   it("gives the Infiltrator's third row 45", () => {
     const row = at(at(unitPowerCatalog.npcs, 0).stats, 2)
     expect(npcPowerAt("darkaNpc1Infiltrator", row, context)).toBe(45)
+  })
+
+  it("reads a wave enemy's 1-based ladder index (darkaNpc1Infiltrator:3 is 45)", () => {
+    expect(npcPowerAtLadder("darkaNpc1Infiltrator", 3, context)).toBe(45)
+    expect(npcPowerAtLadder("darkaNpc1Infiltrator", 0, context)).toBe(
+      npcPowerAtLadder("darkaNpc1Infiltrator", 1, context)
+    )
+  })
+
+  it("is null for a ladder index past the NPC's stats or an unknown NPC", () => {
+    expect(npcPowerAtLadder("darkaNpc1Infiltrator", 999, context)).toBeNull()
+    expect(npcPowerAtLadder("newNpc", 1, context)).toBeNull()
   })
 
   it("is null for an unknown MoW or NPC", () => {

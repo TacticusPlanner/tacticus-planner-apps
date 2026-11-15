@@ -5,7 +5,7 @@ import type {
   DailyRaidGoalViewModel,
   DailyRaidsReadyViewModel,
 } from "./daily-raids.domain"
-import type { RaidDaySchedule } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidDaySchedule } from "@/entities/goal-farming"
 
 export type PlanCell = {
   resourceId: string

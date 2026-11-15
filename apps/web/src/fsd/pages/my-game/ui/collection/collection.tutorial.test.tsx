@@ -18,6 +18,7 @@ beforeAll(async () => {
 })
 
 function steps(flags: {
+  view?: "cards" | "roster"
   hasSummary: boolean
   hasGroups?: boolean
   hasOwned: boolean
@@ -32,7 +33,7 @@ function steps(flags: {
   ).result.current
 }
 
-const toolbar = ["toolbar", "quick-filters"]
+const toolbar = ["toolbar", "view-switch", "quick-filters"]
 
 const tileTargets = new Set([
   '[data-testid="collection-owned-tile"]',
@@ -79,6 +80,86 @@ describe("useCollectionTutorial", () => {
     }
   )
 
+  it("points the faction and unit steps at the Roster view's sections and rows", () => {
+    const tour = steps({
+      view: "roster",
+      hasSummary: true,
+      hasOwned: true,
+      hasUnowned: true,
+    })
+
+    for (const form of ["desktop", "mobile"] as const) {
+      expect((tour[form] ?? []).map((step) => step.target)).toEqual(
+        [
+          ...toolbar,
+          "summary",
+          "roster-section",
+          "owned-row",
+          "unowned-row",
+        ].map((target) => `[data-testid="collection-${target}"]`)
+      )
+    }
+    const unitSteps = (form: "desktop" | "mobile") =>
+      (tour[form] ?? []).filter((step) =>
+        (step.target as string).endsWith('-row"]')
+      )
+    for (const step of unitSteps("desktop")) {
+      expect(step.content).toContain(
+        "Select a row to open its details in the Library."
+      )
+    }
+    for (const step of unitSteps("mobile")) {
+      expect(step.content).toMatch(
+        /^.*Tap a row .* in the Library from there\.$/
+      )
+    }
+    expect(
+      (tour.desktop ?? []).find((step) =>
+        (step.target as string).includes("roster-section")
+      )?.content
+    ).toContain("Each section")
+  })
+
+  it("leaves out the faction step while units are not grouped by faction", () => {
+    for (const view of ["cards", "roster"] as const) {
+      const wrapper = ({ children }: { children: ReactNode }) => (
+        <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
+      )
+      const tour = renderHook(
+        () =>
+          useCollectionTutorial({
+            view,
+            grouped: false,
+            hasSummary: true,
+            hasGroups: true,
+            hasOwned: true,
+            hasUnowned: true,
+          }),
+        { wrapper }
+      ).result.current
+      const unit = view === "roster" ? "row" : "tile"
+      for (const form of ["desktop", "mobile"] as const) {
+        expect((tour[form] ?? []).map((step) => step.target)).toEqual(
+          [...toolbar, "summary", `owned-${unit}`, `unowned-${unit}`].map(
+            (target) => `[data-testid="collection-${target}"]`
+          )
+        )
+      }
+    }
+  })
+
+  it("leaves out the unowned step while unowned units are hidden", () => {
+    const tour = steps({
+      view: "roster",
+      hasSummary: true,
+      hasOwned: true,
+      hasUnowned: false,
+    })
+    expect(
+      (tour.mobile ?? []).map((step) => step.target as string)
+    ).not.toContain('[data-testid="collection-unowned-row"]')
+  })
+
   it("covers only the toolbar and quick filters when the filters match nothing", () => {
     const tour = steps({
       hasSummary: false,
@@ -99,22 +180,31 @@ describe("useCollectionTutorial", () => {
     ["de", deCommon],
     ["es", esCommon],
     ["fr", frCommon],
-  ])("has translated toolbar and quick-filter steps in %s", (lang, common) => {
-    const { toolbar: toolbarStep, quickFilters } = common.tour.collection.steps
-    for (const text of [
-      toolbarStep.title,
-      toolbarStep.content,
-      quickFilters.title,
-      quickFilters.content,
-    ]) {
-      expect(text.length).toBeGreaterThan(0)
+  ])(
+    "has translated toolbar, view and quick-filter steps in %s",
+    (lang, common) => {
+      const steps = common.tour.collection.steps
+      const keys = [
+        "toolbar",
+        "view",
+        "quickFilters",
+        "factionRoster",
+        "ownedRoster",
+        "ownedRosterMobile",
+        "unownedRoster",
+        "unownedRosterMobile",
+      ] as const
+      for (const key of keys) {
+        expect(steps[key].title.length).toBeGreaterThan(0)
+        expect(steps[key].content.length).toBeGreaterThan(0)
+        if (lang !== "en") {
+          expect(steps[key].content).not.toBe(
+            enCommon.tour.collection.steps[key].content
+          )
+        }
+      }
     }
-    if (lang !== "en") {
-      expect(toolbarStep.content).not.toBe(
-        enCommon.tour.collection.steps.toolbar.content
-      )
-    }
-  })
+  )
 
   it.each([
     ["en", enCommon, "Library"],
@@ -124,9 +214,17 @@ describe("useCollectionTutorial", () => {
   ])(
     "tells the player in %s that a tile opens the Library",
     (_, common, library) => {
-      const { owned, unowned } = common.tour.collection.steps
-      expect(owned.content).toContain(library)
-      expect(unowned.content).toContain(library)
+      const steps = common.tour.collection.steps
+      for (const step of [
+        steps.owned,
+        steps.unowned,
+        steps.ownedRoster,
+        steps.ownedRosterMobile,
+        steps.unownedRoster,
+        steps.unownedRosterMobile,
+      ]) {
+        expect(step.content).toContain(library)
+      }
     }
   )
 })

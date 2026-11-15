@@ -12,12 +12,16 @@ import {
 import { GOAL_TYPE_VALUES, type GoalKind } from "../model/types"
 
 export type GoalTypeFilterValue = "all" | GoalKind
-export type GoalGroupValue = "none" | "unit" | "type"
+/** `type` orders the type groups by the fixed goal-type order (Rank first, as in v1);
+ *  `typePriority` orders them by their highest-priority goal, so the group holding the top goal
+ *  leads and the groups move as goals are reordered. */
+export type GoalGroupValue = "none" | "unit" | "type" | "typePriority"
 
 const DEFAULT_GROUP_OPTIONS: readonly GoalGroupValue[] = [
   "none",
   "unit",
   "type",
+  "typePriority",
 ]
 
 type Props = {
@@ -30,7 +34,7 @@ type Props = {
   /** Hides the Type filter where every goal type is always shown. Defaults to `true`, matching
    *  the Goals page. */
   showTypeFilter?: boolean
-  /** Restricts which Group options render (default: all three, the Goals page's behavior). */
+  /** Restricts which Group options render (default: all four, the Goals page's behavior). */
   groupOptions?: readonly GoalGroupValue[]
 }
 
@@ -61,7 +65,9 @@ export function GoalFilters({
       ? t("goals.filters.groupNone")
       : group === "unit"
         ? t("goals.filters.groupByUnit")
-        : t("goals.filters.groupByType")
+        : group === "typePriority"
+          ? t("goals.filters.groupByTypePriority")
+          : t("goals.filters.groupByType")
   // A stable purpose name for each filter's accessible name, not the current value alone — a
   // screen-reader user on mobile (where the visible `SelectValue` is hidden) would otherwise hear
   // just "Rank" with no indication of what that value is filtering/sorting/grouping by.
@@ -131,6 +137,11 @@ export function GoalFilters({
           {groupOptions.includes("type") ? (
             <SelectItem value="type">
               {t("goals.filters.groupByType")}
+            </SelectItem>
+          ) : null}
+          {groupOptions.includes("typePriority") ? (
+            <SelectItem value="typePriority">
+              {t("goals.filters.groupByTypePriority")}
             </SelectItem>
           ) : null}
         </SelectContent>

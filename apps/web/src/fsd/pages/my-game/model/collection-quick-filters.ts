@@ -16,7 +16,7 @@ import {
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { UnitKind } from "@/entities/unit"
-import { ascensionResourceNeed } from "@/features/goal-farming"
+import { ascensionResourceNeed } from "@/entities/goal-farming"
 
 /** What the progression quick filters read of one owned unit. */
 export interface QuickFilterUnit {
@@ -122,6 +122,21 @@ export function abilitiesBehindLevel(unit: QuickFilterUnit): boolean {
     unit.kind === "character" &&
     xpLevel !== undefined &&
     (unit.abilityLevels ?? []).some((level) => level < xpLevel)
+  )
+}
+
+/** Can pay for its next star within its current rarity from what it holds. A unit on its rarity's
+ *  last star promotes no further: its next step is an ascension (see `canAscend`). */
+export function canPromote(
+  unit: QuickFilterUnit,
+  ladder: AscensionLadder,
+  orbs: HeldOrbs
+): boolean {
+  if (unit.progression === lastProgression) return false
+  const next = progressionAt(progressionIndex(unit.progression) + 1)
+  return (
+    progressionRarity(next) === progressionRarity(unit.progression) &&
+    covers(unit, ladder, orbs, next)
   )
 }
 

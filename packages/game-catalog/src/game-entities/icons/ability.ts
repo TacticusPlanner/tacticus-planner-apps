@@ -8,7 +8,7 @@ const abilityIconOverrides: Record<string, string> = overrides
 /**
  * Ability icon URL, derived directly from the ability id (`AdaptiveStrategy` →
  * `ui_icon_ability2_AdaptiveStrategy.webp`). A handful of ids have no shipped asset — the game itself
- * has none for them — so callers render through `EntityIcon`, which drops a missing image.
+ * has none for them — so callers render through `EntityIcon`, which draws a placeholder for a missing image.
  */
 export function abilityIcon(id: string): string {
   // The game's `LionHelmRelic` icon is different art; the planner keeps its own copy of this one.

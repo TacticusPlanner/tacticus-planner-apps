@@ -80,8 +80,8 @@ export function TodayQuickFilterChips({
       )}
     </ToggleGroup>
   )
-  const notes = TODAY_QUICK_FILTERS.filter((quick) =>
-    selected.includes(quick)
+  const notes = TODAY_QUICK_FILTERS.filter(
+    (quick) => selected.includes(quick) && !hidden.includes(quick)
   ).map((quick) => (
     <p
       key={quick}

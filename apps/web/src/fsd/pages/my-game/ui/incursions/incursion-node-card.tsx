@@ -177,7 +177,7 @@ function BattleBody({
         {STARS.map((count, at) => (
           <div
             key={count}
-            className={cn("contents", count <= stars && "[&>*]:opacity-50")}
+            className={cn("contents", count <= stars && "*:opacity-50")}
             data-claimed={count <= stars || undefined}
           >
             <dt className="flex items-center text-xs text-muted-foreground">

@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest"
 import { questEventsFixture } from "@workspace/game-catalog/testing"
 
-import { crateTrack, questShards, shardMeaning } from "./quest-rewards"
+import {
+  crateTrack,
+  questRewardsLeft,
+  questShards,
+  shardMeaning,
+} from "./quest-rewards"
 import { questTokenPlan } from "./quest-token-plan"
 
 const crates = [
@@ -25,19 +30,27 @@ describe("crateTrack", () => {
 })
 
 describe("questShards", () => {
-  it("counts a shard per medal, three with the bundle", () => {
-    const medals = Array.from({ length: 10 }, () => 3)
+  it("counts a shard per won battle, plus 2 per medal with the bundle", () => {
+    const medals = [...Array.from({ length: 10 }, () => 3), 1, 0]
 
     expect(questShards(medals, false)).toEqual({
-      earned: 30,
-      max: 51,
-      reachable: 21,
+      earned: 11,
+      max: 17,
+      reachable: 6,
+      medalsLeft: 20,
     })
     expect(questShards(medals, true)).toEqual({
-      earned: 90,
-      max: 153,
-      reachable: 63,
+      earned: 73,
+      max: 119,
+      reachable: 46,
+      medalsLeft: 20,
     })
+  })
+
+  it("pays one shard for a won battle whatever its medals", () => {
+    expect(questShards([1], false).earned).toBe(1)
+    expect(questShards([3], false).earned).toBe(1)
+    expect(questShards([0], false).earned).toBe(0)
   })
 })
 
@@ -63,22 +76,27 @@ describe("shardMeaning", () => {
         owned: null,
         notOwnedShards: 12,
       })
-    ).toEqual({ kind: "unlock", cost: 40, spare: 23, reachedSoFar: false })
+    ).toEqual({ kind: "unlock", cost: 40, spare: -11, reachedSoFar: false })
   })
 
   it("walks the ascension costs an owned hero's shards cover", () => {
     expect(
       shardMeaning({
         ...base,
-        shards: questShards([3, 3], false),
+        shards: questShards([3, 3], true),
         owned: { progression: "Common:None", shards: 5 },
         notOwnedShards: null,
       })
     ).toEqual({
       kind: "ascend",
-      steps: ["Common:OneStar", "Common:TwoStars", "Uncommon:TwoStars"],
+      steps: [
+        "Common:OneStar",
+        "Common:TwoStars",
+        "Uncommon:TwoStars",
+        "Uncommon:ThreeStars",
+      ],
       reachedSoFar: 1,
-      spare: 11,
+      spare: 49,
     })
   })
 
@@ -171,6 +189,52 @@ describe("questTokenPlan", () => {
     })
     expect(questTokenPlan({ ...params, phase: "claim" })).toEqual({
       kind: "closed",
+    })
+  })
+})
+
+describe("questRewardsLeft", () => {
+  const crate = (
+    number: number,
+    points: number,
+    rewards: { type: string; min: number; max: number; rarity?: string }[]
+  ) => ({ number, points, rewards })
+  const crates = [
+    crate(1, 100, [{ type: "Coins", min: 1000, max: 1000 }]),
+    crate(2, 200, [
+      { type: "Coins", min: 2000, max: 2000 },
+      { type: "XpBook", min: 1, max: 2, rarity: "Rare" },
+    ]),
+    crate(3, 300, [
+      { type: "XpBook", min: 2, max: 3, rarity: "Rare" },
+      { type: "XpBook", min: 1, max: 1, rarity: "Epic" },
+    ]),
+  ]
+
+  it("sums the unopened crates and counts the medals and shards still to win", () => {
+    const left = questRewardsLeft(
+      questShards([3, 2], true),
+      crateTrack(crates, { total: 150, nextCrate: null })
+    )
+
+    expect(left).toEqual({
+      medals: 46,
+      shards: 107,
+      crates: 2,
+      rewards: [
+        { type: "Coins", min: 2000, max: 2000 },
+        { type: "XpBook", min: 3, max: 5, rarity: "Rare" },
+        { type: "XpBook", min: 1, max: 1, rarity: "Epic" },
+      ],
+    })
+  })
+
+  it("counts no crates when the crate track is unavailable", () => {
+    expect(questRewardsLeft(questShards([], false), null)).toMatchObject({
+      medals: 51,
+      shards: 17,
+      crates: 0,
+      rewards: [],
     })
   })
 })

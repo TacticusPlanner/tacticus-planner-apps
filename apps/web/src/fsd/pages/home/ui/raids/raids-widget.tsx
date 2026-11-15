@@ -12,11 +12,15 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import {
+  CampaignGroupedList,
   flattenTodayLocations,
+  groupRowsByUpgradeCampaign,
   LocationRow,
   selectTodayRaids,
   useDailyRaids,
+  type RaidLocationTarget,
 } from "@/features/daily-raids"
+import { CampaignBattleDialog } from "@/widgets/battle-preview"
 
 /** Home dashboard's Daily Raids widget: today's real (energy-budget) schedule for the account's Active
  * goals in global order (the same run as Today) — or, once today's real energy spend reaches the daily
@@ -29,6 +33,10 @@ export function RaidsWidget() {
   const { t } = useTranslation("common")
   const raids = useDailyRaids()
   const [expanded, setExpanded] = useState(false)
+  // The location whose battle and enemies are open (tapping its name).
+  const [shownLocation, setShownLocation] = useState<RaidLocationTarget | null>(
+    null
+  )
 
   const body = (() => {
     if (raids.status === "loading") {
@@ -113,19 +121,32 @@ export function RaidsWidget() {
     const shown = expanded ? locations : locations.slice(0, VISIBLE_LOCATIONS)
     const list = (
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-2" data-testid="home-raids-list">
-          {shown.map((entry) => (
+        <CampaignGroupedList
+          battleIdOf={(entry) => entry.battleId}
+          // Grouped as Today groups the same upgrades, so both read alike.
+          groupRows={(rows) =>
+            groupRowsByUpgradeCampaign(
+              rows,
+              (battleId) => raids.locationsByBattleId.get(battleId)?.campaignKey
+            )
+          }
+          locationsByBattleId={raids.locationsByBattleId}
+          rows={shown}
+          testId="home-raids-list"
+          renderRow={(entry) => (
             <LocationRow
               entry={entry}
               key={entry.battleId}
               location={raids.locationsByBattleId.get(entry.battleId)}
+              onShowLocation={setShownLocation}
+              progress={raids.resourceTotals.get(entry.resourceId)}
               resourceLabel={
                 raids.resourceLabels.get(entry.resourceId) ?? entry.resourceId
               }
               resourceVisual={raids.resourceVisuals.get(entry.resourceId)}
             />
-          ))}
-        </div>
+          )}
+        />
         {locations.length > VISIBLE_LOCATIONS ? (
           <Button
             aria-expanded={expanded}
@@ -152,7 +173,7 @@ export function RaidsWidget() {
   })()
 
   return (
-    <Card className="h-full" data-testid="home-raids-widget">
+    <Card className="h-full" data-testid="home-raids-widget" id="home-raids">
       <CardHeader>
         <CardTitle>{t("home.raids.title")}</CardTitle>
         <CardAction>
@@ -164,6 +185,10 @@ export function RaidsWidget() {
         </CardAction>
       </CardHeader>
       <CardContent>{body}</CardContent>
+      <CampaignBattleDialog
+        onClose={() => setShownLocation(null)}
+        target={shownLocation}
+      />
     </Card>
   )
 }

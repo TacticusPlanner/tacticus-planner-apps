@@ -20,15 +20,6 @@ Each automatic snapshot in the manage sheet SHALL offer Keep. Keep SHALL convert
 - **WHEN** the user keeps the automatic snapshot from Oct 1, 2026
 - **THEN** the manual list has 6 with that snapshot in it, and the Automatic section has 2
 
-### Requirement: Automatic snapshots can be turned off
-
-The planning settings SHALL offer a toggle "Take a snapshot automatically when you have none from the last 30 days", bound to `autoRosterSnapshots` (on by default). Turning it off SHALL NOT delete existing automatic snapshots.
-
-#### Scenario: Turn off
-
-- **WHEN** the user turns the toggle off
-- **THEN** the setting is saved as off and existing automatic snapshots are still listed
-
 ### Requirement: V1-imported snapshots show unknown fields as unknown
 
 Snapshots with source `V1Import` SHALL be labeled "V1 · <name>". When either side of a comparison is a `V1Import` snapshot, XP gained and applied upgrades SHALL be shown as "—" in details, and SHALL NOT produce a chip or count in the summary.

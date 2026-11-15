@@ -1,9 +1,11 @@
-import type {
-  LegendaryEventMissionTrack,
-  LegendaryEventPlan,
-  LegendaryEventRun,
-  LegendaryEventRunInputValues,
-  LegendaryEventRunResolution,
+import {
+  doneMissionIndexes,
+  type LegendaryEventMission,
+  type LegendaryEventMissionTrack,
+  type LegendaryEventPlan,
+  type LegendaryEventRun,
+  type LegendaryEventRunInputValues,
+  type LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
 
 /** How a run reads in the drawer: ended, in progress, or still to come. */
@@ -66,23 +68,28 @@ const TRACK_FIELDS = {
 } as const
 
 /**
- * Ticking or unticking one mission Done (spec: tick raises the plan): the ticks stay ascending
- * and unique, and the track's Plan to complete count is raised to the ticked count when a tick
- * would pass it; unticking leaves the count.
+ * Setting how many of a track's missions are done (spec: missions are done in order): the first
+ * `count` missions in order are stored Done, and the track's Plan to complete count is raised to it
+ * when it would pass it; lowering Done leaves the count.
  */
-export function missionTickPatch(
+export function missionDonePatch(
   values: LegendaryEventRunInputValues,
   track: LegendaryEventMissionTrack,
-  index: number,
-  done: boolean
+  missions: readonly LegendaryEventMission[],
+  count: number
 ): Partial<LegendaryEventRunInputValues> {
   const fields = TRACK_FIELDS[track]
-  const current = values[fields.ticks]
-  const ticks = done
-    ? [...new Set([...current, index])].sort((a, b) => a - b)
-    : current.filter((entry) => entry !== index)
+  const done = Math.max(0, Math.min(missions.length, count))
   return {
-    [fields.ticks]: ticks,
-    [fields.count]: Math.max(values[fields.count], ticks.length),
+    [fields.ticks]: doneMissionIndexes(missions, done),
+    [fields.count]: Math.max(values[fields.count], done),
   }
+}
+
+/** The run the Run status card edits (spec: current run inputs): the run in progress, else the
+ *  next one; null while the run is unknown or after the last run. */
+export function runInputsFocusRun(
+  runs: LegendaryEventRunResolution
+): LegendaryEventRun | null {
+  return runs.currentRun ?? runs.nextRun
 }

@@ -1,11 +1,7 @@
 import { clearPlayerDataDb, deletePlayerDataDb } from "@workspace/player-data"
 
-import {
-  accountStorageKey,
-  accountStoragePrefix,
-  safeStorage,
-} from "@/shared/lib"
-import { clearLocalDataCache } from "@/shared/local-data"
+import { accountStorageKey, accountStoragePrefix, safeStorage } from "../lib"
+import { clearLocalDataCache } from "../local-data"
 
 // Which account the browser's local copy (player-data database, `tp.session.*` keys) belongs to.
 // Under the prefix itself, so clearing the copy also forgets its owner.

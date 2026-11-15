@@ -1,4 +1,4 @@
-import type { GoalGroupValue } from "@/entities/goal"
+import { compareGoalTypes, type GoalGroupValue } from "@/entities/goal"
 
 import type { GoalRow } from "./types"
 
@@ -13,7 +13,7 @@ export type RowGroup = {
 const groupKey = (row: GoalRow, group: GoalGroupValue) =>
   group === "unit"
     ? `${row.entityType}:${row.entityId}`
-    : group === "type"
+    : group === "type" || group === "typePriority"
       ? row.goalType
       : "all"
 
@@ -22,13 +22,20 @@ const groupKey = (row: GoalRow, group: GoalGroupValue) =>
  * (`project-management`: "Project detail groups by the selected dimension"). Shared by Overview and
  * project detail — both live in this page slice, so this is an intra-slice extraction.
  *
- * Order is inherited, never imposed: groups come out in first-appearance order and each group's rows
- * keep their incoming order, so whatever Sort the caller applied survives partitioning. Headings are
+ * Row order is inherited, never imposed: each group's rows keep their incoming order, so whatever Sort
+ * the caller applied survives partitioning. Unit groups come out in first-appearance order; `type`
+ * groups in the fixed goal-type order (Rank first, as in v1), so the most-used section always
+ * leads instead of moving with whichever type holds the top-priority goal. `typePriority` groups
+ * come out in first-appearance order like unit groups, so the type holding the top-priority goal
+ * leads and the sections reorder as goals move up the priority list. Headings are
  * the caller's job — a unit heading needs the catalog and a type heading needs `t`, and both routes
  * already hold those.
  */
 export function groupRows(rows: GoalRow[], group: GoalGroupValue): RowGroup[] {
-  return [...new Set(rows.map((row) => groupKey(row, group)))].map((key) => ({
+  const firstSeen = [...new Set(rows.map((row) => groupKey(row, group)))]
+  const keys =
+    group === "type" ? firstSeen.toSorted(compareGoalTypes) : firstSeen
+  return keys.map((key) => ({
     key,
     dimension: group,
     rows: rows.filter((row) => groupKey(row, group) === key),

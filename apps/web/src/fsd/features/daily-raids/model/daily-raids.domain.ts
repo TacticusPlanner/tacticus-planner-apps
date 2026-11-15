@@ -4,6 +4,7 @@ import type {
 } from "@workspace/game-catalog"
 import type {
   BattleId,
+  Progression,
   Rank,
   Rarity,
   UnitId,
@@ -16,7 +17,7 @@ import type {
   FilteredOutNeed,
   RaidDaySchedule,
   RaidPlanSummary,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 
 import type { TodaysAttempt } from "./daily-raids-energy"
 import type { EventFarm } from "./home-screen-event-farm"
@@ -32,6 +33,8 @@ export type DailyRaidGoalViewModel = {
   goalKind: GoalKind
   // Only set when goalKind === "Rank" — the raw target rank, for icon-only rendering.
   targetRank?: Rank
+  // Only set when goalKind === "Ascension" — the target progression, for the compact icon form.
+  targetProgression?: Progression
 }
 
 export type DailyRaidResourceVisual =
@@ -45,6 +48,8 @@ export type DailyRaidResourceVisual =
 
 /** What a single campaign node drops, as Today's Attempts renders it (icon + tooltip text). */
 export type DailyRaidBattleResource = {
+  /** The plan's resource id (an upgrade id or `shards_<unit>`), so a row can look up its have/need. */
+  resourceId: string
   label: string
   visual: DailyRaidResourceVisual
 }
@@ -73,15 +78,25 @@ export type DailyRaidLocationViewModel = {
   // difficulty — the first line of the location-primary Today/Bonus/Home rendering. Falls back to
   // the raw battle id when the catalog has no descriptor for the battle.
   campaignName: string
-  // Difficulty word + node number + a challenge node's "B" (e.g. "Elite 40", "Extremis 12B") — the
+  // Difficulty word + node number + a challenge node's "B" (e.g. "Elite 40", "Extremis 12B"; a
+  // campaign event's Standard tier has no word, just "12B") — the
   // second line of that same rendering. Empty when the catalog has no descriptor, in which case
   // renderers omit the line entirely rather than inventing one.
   nodeLabel: string
+  /** Identifies the campaign with its difficulty (Indomitus, Indomitus Elite and Indomitus Mirror
+   *  Elite are three campaigns): the campaign group and battle type. Used to keep same-campaign
+   *  upgrades together in Today's order. */
+  campaignKey?: string
+  // Just the difficulty word that opens `nodeLabel` ("Elite", "Extremis"), so renderers can set it
+  // apart (italic) from the campaign name and node number. Absent when the catalog has no descriptor.
+  difficultyLabel?: string
   // Compact "{name} {code} {node}{B?}" form Raids Plan's chips still use verbatim.
   shortLabel: string
   challenge: boolean
   /** Must be played, not raided: raids need 3 medals (see `manualBattleIds`). */
   manual?: boolean
+  /** A campaign event's node rather than a standing campaign's. */
+  isEvent?: boolean
   icon?: string
 }
 
@@ -98,13 +113,21 @@ export function campaignLocationLabels(
     campaignName: (descriptor: CampaignDescriptor) => string
     difficultyLabel: (descriptor: CampaignDescriptor) => string
   }
-): Pick<DailyRaidLocationViewModel, "campaignName" | "nodeLabel"> {
+): Pick<
+  DailyRaidLocationViewModel,
+  "campaignName" | "nodeLabel" | "difficultyLabel"
+> {
   if (!descriptor) return { campaignName: battleId, nodeLabel: "" }
+  const node = `${battle.nodeNumber}${battle.challenge ? "B" : ""}`
+  const campaignName = display.campaignName(descriptor)
+  // Empty for a Standard tier, storyline or campaign event ("Saim-Hann 42", "Death Guard 3"): the
+  // location icon already tells it from Elite.
+  const difficultyLabel = display.difficultyLabel(descriptor)
+  if (!difficultyLabel) return { campaignName, nodeLabel: node }
   return {
-    campaignName: display.campaignName(descriptor),
-    nodeLabel: `${display.difficultyLabel(descriptor)} ${battle.nodeNumber}${
-      battle.challenge ? "B" : ""
-    }`,
+    campaignName,
+    nodeLabel: `${difficultyLabel} ${node}`,
+    difficultyLabel,
   }
 }
 
@@ -131,6 +154,22 @@ export function shardResourceLabel(characterName: string) {
 export type DailyRaidResourceLabels = {
   upgrade?: (id: UpgradeId, catalogLabel: string) => string
   shards?: (unitId: UnitId, characterName: string) => string
+}
+
+/** One shop that sells a resource: its cheapest listing per item, as sold. */
+export type ResourceShopSource = {
+  shopId: string
+  rewardQty: number
+  currency: string
+  cost: number
+}
+
+/** Every catalog source of one plan resource (an upgrade, `shard:<unit>` or `mythic-shard:<unit>`). */
+export type ResourceSources = {
+  /** Campaign nodes (standing campaigns and campaign events) that drop it, in catalog order. */
+  battleIds: readonly BattleId[]
+  /** Shops that sell it, by shop id. */
+  shops: readonly ResourceShopSource[]
 }
 
 export type DailyRaidsReadyViewModel = {
@@ -175,6 +214,11 @@ export type DailyRaidsReadyViewModel = {
   // What every raidable node drops, straight from the catalog and independent of this project's
   // plan — Today's Attempts is account-wide, so it needs an icon for nodes the plan never mentions.
   resourceByBattleId: ReadonlyMap<BattleId, DailyRaidBattleResource>
+  /** Every catalog source (campaign and event nodes, shops) per plan resource id, independent of the
+   *  plan — the Schedule tooltip lists the ones a day doesn't use as alternatives. */
+  sourcesByResource: ReadonlyMap<string, ResourceSources>
+  /** The nodes the plan may raid (unlocked and allowed); an alternative outside it reads as locked. */
+  eligibleBattleIds: ReadonlySet<BattleId>
   attemptsUsedByBattle: ReadonlyMap<BattleId, number>
   // Real, account-wide energy spent today per synced attempts at standing (non-event) campaign
   // nodes — independent of this project's simulated plan, and NOT capped at `dailyEnergy`.
@@ -199,6 +243,8 @@ export type DailyRaidsCalculationViewModel = Omit<
   | "locationsByBattleId"
   | "hasManualRaids"
   | "resourceByBattleId"
+  | "sourcesByResource"
+  | "eligibleBattleIds"
   | "realEnergyUsedToday"
   | "attemptsLeftByBattle"
   | "todaysAttempts"

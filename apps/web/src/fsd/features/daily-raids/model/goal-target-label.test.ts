@@ -15,8 +15,8 @@ beforeAll(async () => {
 
 describe("dailyGoalTargetLabel", () => {
   it.each([
-    ["Legendary:RedFiveStars", "Ascension Legendary Red Five Stars"],
-    ["Mythic:OneBlueStar", "Ascension Mythic One Blue Star"],
+    ["Legendary:RedFiveStars", "Ascension Legendary 5★"],
+    ["Mythic:OneBlueStar", "Ascension Mythic 1★"],
     ["Epic:None", "Ascension Epic"],
   ])("localizes the ascension target %s", (end, expected) => {
     expect(

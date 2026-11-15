@@ -64,13 +64,15 @@ export const routes: RouteObject[] = [
     loader: preloadOnMatch(loadTierListPage),
   },
   {
-    path: ":eventId",
-    element: <LegendaryEventPage />,
-    loader: preloadOnMatch(loadLegendaryEventPage),
-  },
-  {
-    path: ":eventId/plan",
+    path: ":eventId/plan/edit",
     element: <PlanWizardPage />,
     loader: preloadOnMatch(loadPlanWizardPage),
+  },
+  // The event page's tab is the last path segment (`/teams`, `/plan`, `/run`); the bare event
+  // path shows the default tab. Old `?tab=` links carry no redirect: they open the default tab.
+  {
+    path: ":eventId/:tab?",
+    element: <LegendaryEventPage />,
+    loader: preloadOnMatch(loadLegendaryEventPage),
   },
 ]

@@ -114,7 +114,7 @@ export function MythicQuestsList({
 
   return (
     <ol
-      className="grid grid-cols-[repeat(auto-fit,minmax(min(420px,100%),1fr))] gap-x-6"
+      className="grid grid-cols-[repeat(auto-fit,minmax(min(26.25rem,100%),1fr))] gap-x-6"
       data-testid="unit-mythic-quests"
     >
       {quests.map((quest) => (

@@ -82,6 +82,20 @@ describe("silent sign-in", () => {
     await waitFor(() => expect(result.current).toBe("failed"))
   })
 
+  it("stays checking while a quiet renewal is leaving the page", async () => {
+    attemptSilentSignIn.mockResolvedValue("redirecting")
+    const { result } = renderHook(() => signIn.useSilentSignInStatus())
+
+    act(() => {
+      signIn.startSilentSignInOnce(instanceWithAccounts(1) as never)
+    })
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    expect(result.current).toBe("checking")
+  })
+
   it("only ever attempts a silent restore once, no matter how many times it is triggered", async () => {
     attemptSilentSignIn.mockResolvedValue("failed")
 

@@ -5,12 +5,18 @@ import {
   getPlayerDataMetadata,
   type PlayerDataChunkDto,
 } from "@workspace/player-data"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { combineReadStates, useReadState } from "@/shared/lib"
 import { usePlayerChunk } from "@/shared/local-data"
 import { EntityIcon, LocalReadFailure } from "@/shared/ui"
 
+import {
+  homeRememberedCounts,
+  rememberCount,
+  rememberedCount,
+} from "../../model/remembered-count"
 import { formatExactCountdown } from "./format-exact-countdown"
 import {
   cappedFirst,
@@ -130,7 +136,7 @@ function TokenRow({
           />
         </div>
       </div>
-      <span className="w-full truncate text-[11px] text-muted-foreground">
+      <span className="w-full truncate text-xs text-muted-foreground">
         {t(tokenLabelI18nKeys[entry.labelKey])}
       </span>
       <span className="text-sm leading-none font-semibold tabular-nums">
@@ -139,7 +145,7 @@ function TokenRow({
       {countdownText ? (
         <span
           className={cn(
-            "text-[11px] tabular-nums",
+            "text-xs tabular-nums",
             isCapped
               ? "font-semibold tracking-wide text-destructive uppercase"
               : "text-muted-foreground"
@@ -150,7 +156,7 @@ function TokenRow({
       ) : null}
       {fullInSeconds > 0 ? (
         <span
-          className="text-[10px] leading-tight text-muted-foreground uppercase tabular-nums"
+          className="text-xs/tight text-muted-foreground uppercase tabular-nums"
           data-testid={`token-full-in-${entry.key}`}
         >
           {t("home.tokens.fullIn", {
@@ -178,6 +184,21 @@ export function TokenAvailability() {
     useReadState("player-data-metadata", getPlayerDataMetadata, [])
   )
   const [nowMs, setNowMs] = useState(() => Date.now())
+  // As many placeholder rings as there were tokens last time, so the band keeps its height.
+  const [placeholders] = useState(() =>
+    rememberedCount(homeRememberedCounts.tokens)
+  )
+  const tokenCount =
+    read.status === "ready"
+      ? read.data[0]
+        ? collectTokenEntries(read.data[0].gameModeTokens).length
+        : 0
+      : null
+  useEffect(() => {
+    if (tokenCount !== null) {
+      rememberCount(homeRememberedCounts.tokens, tokenCount)
+    }
+  }, [tokenCount])
 
   useEffect(() => {
     const interval = window.setInterval(() => setNowMs(Date.now()), NOW_TICK_MS)
@@ -187,13 +208,39 @@ export function TokenAvailability() {
   const body = (() => {
     if (read.status === "error") return <LocalReadFailure retry={read.retry} />
     if (read.status === "loading") {
+      if (placeholders === 0) {
+        // Last time there was no token data: hold the one-line empty state's height.
+        return (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="token-availability-loading"
+            role="status"
+          >
+            {t("home.tokens.loading")}
+          </p>
+        )
+      }
+      // The rings' own footprint, so the band (and Home below it) doesn't grow when they arrive.
       return (
-        <p
-          className="text-sm text-muted-foreground"
+        <div
+          className="grid grid-cols-5 gap-1 sm:gap-3"
           data-testid="token-availability-loading"
+          role="status"
         >
-          {t("home.tokens.loading")}
-        </p>
+          <span className="sr-only">{t("home.tokens.loading")}</span>
+          {Array.from({ length: placeholders }, (_, index) => (
+            <div
+              aria-hidden="true"
+              className="flex flex-col items-center gap-1"
+              key={index}
+            >
+              <Skeleton className="size-14 rounded-full" />
+              <Skeleton className="h-4 w-10 rounded-md" />
+              <Skeleton className="h-3.5 w-8 rounded-md" />
+              <Skeleton className="h-4 w-12 rounded-md" />
+            </div>
+          ))}
+        </div>
       )
     }
 

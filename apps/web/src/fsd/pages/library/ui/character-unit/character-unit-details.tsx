@@ -4,7 +4,7 @@ import type {
   CharacterStorageModel,
   EquipmentStorageModel,
 } from "@workspace/game-catalog"
-import { lastRank, type Rank } from "@workspace/game-domain"
+import { lastRank, Rank } from "@workspace/game-domain"
 import {
   Accordion,
   AccordionContent,
@@ -12,6 +12,8 @@ import {
   AccordionTrigger,
 } from "@workspace/ui/components/accordion"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+
+import { CompactProgression, RankBadge } from "@/shared/ui"
 
 import type { RadarAxisResult } from "../../model/stat-radar"
 import {
@@ -129,10 +131,24 @@ export function CharacterUnitDetails({
     .join(", ")
   const levelMeta = (level: number) => t("unit.ability.levelShort", { level })
 
+  // The fixed reference every character is compared at, as icons (names on hover).
+  const compareAt = (
+    <span className="inline-flex items-center gap-1.5">
+      {t("characterUnit.compare.subtitle")}
+      <CompactProgression iconClassName="size-4" value="Mythic:MythicWings" />
+      <RankBadge
+        iconClassName="size-4"
+        rank={Rank.Adamantine2}
+        showLabel={false}
+        tooltip
+      />
+    </span>
+  )
+
   if (isMobile) {
     const section = (
       value: string,
-      kind: string,
+      kind: ReactNode,
       title: string,
       meta: string,
       content: ReactNode
@@ -144,7 +160,7 @@ export function CharacterUnitDetails({
         className="scroll-mt-28 outline-none"
         data-testid={`unit-section-${value}`}
       >
-        <AccordionTrigger className="min-h-[52px] items-center">
+        <AccordionTrigger className="min-h-13 items-center">
           <span className="flex min-w-0 flex-1 flex-col text-left">
             <span className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
               {kind}
@@ -197,14 +213,19 @@ export function CharacterUnitDetails({
             : null}
           {section(
             "compare",
-            t("characterUnit.compare.subtitle"),
+            compareAt,
             t("characterUnit.compare.title"),
             "",
             compare
           )}
           {section(
             "stats",
-            t(`progression:ranks.${shownRank}`),
+            <RankBadge
+              rank={shownRank}
+              showLabel={false}
+              tooltip
+              iconClassName="size-4"
+            />,
             t("characterUnit.statsByRank.title"),
             "",
             statsByRank
@@ -236,7 +257,7 @@ export function CharacterUnitDetails({
   return (
     <div className="flex flex-col gap-5" data-testid="unit-details">
       <div
-        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(460px,100%),1fr))]`}
+        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(28.75rem,100%),1fr))]`}
       >
         <DetailsCard title={t("characterUnit.glance.title")}>
           {glance}
@@ -259,7 +280,7 @@ export function CharacterUnitDetails({
             {t("characterUnit.abilities.title")}
           </h2>
           <div
-            className={`${row} grid-cols-[repeat(auto-fit,minmax(min(520px,100%),1fr))]`}
+            className={`${row} grid-cols-[repeat(auto-fit,minmax(min(32.5rem,100%),1fr))]`}
           >
             {activePanel}
             {passivePanel}
@@ -267,11 +288,11 @@ export function CharacterUnitDetails({
         </section>
       ) : null}
       <div
-        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(520px,100%),1fr))]`}
+        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(32.5rem,100%),1fr))]`}
       >
         <DetailsCard
           title={t("characterUnit.compare.title")}
-          aside={t("characterUnit.compare.subtitle")}
+          aside={compareAt}
           data-testid="unit-compare"
         >
           {compare}
@@ -294,12 +315,12 @@ export function CharacterUnitDetails({
         </DetailsCard>
       </div>
       <div
-        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(460px,100%),1fr))]`}
+        className={`${row} grid-cols-[repeat(auto-fit,minmax(min(28.75rem,100%),1fr))]`}
       >
         <div
           id={relicAnchorId}
           tabIndex={-1}
-          className="flex scroll-mt-28 flex-col outline-none [&>*]:flex-1"
+          className="flex scroll-mt-28 flex-col outline-none *:flex-1"
         >
           {relicPanel}
         </div>

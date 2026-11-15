@@ -1,6 +1,6 @@
-import type { Rarity } from "@workspace/game-domain"
+import type { CampaignId, Rarity } from "@workspace/game-domain"
 
-import type { CampaignInsight } from "@/features/campaign-insights/@x/goal-planning"
+import type { CampaignInsight } from "@/entities/campaign-insight"
 
 import type {
   AbilityMaterials,
@@ -8,7 +8,9 @@ import type {
   EstimateOutcome,
   EstimateResourceId,
   RankSlotAllocation,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
+
+import type { CampaignLockReason } from "../unlock-paths/campaign-track-gate"
 
 // Input/output shapes for the Insights view's plan-wide aggregation (plan-insights-calc.ts), kept
 // separate from the calc itself — mirrors estimate.domain.ts / estimate.ts.
@@ -60,6 +62,34 @@ export interface PlanInsightsBlocker {
   goalIds: string[]
 }
 
+/** Why a campaign track can't be played yet. */
+export type PlanCampaignLockReason = CampaignLockReason
+
+/** A standing-campaign track worth pushing for the scoped goals (see `computeCampaignProgression`). */
+export interface PlanCampaignProgression {
+  /** `${campaignGroupId}:${type}`. */
+  key: string
+  campaignGroupId: CampaignId
+  type: string
+  /** Battles still to beat to clear the track. */
+  battlesLeft: number
+  /** False when the player has no progress on the track. */
+  started: boolean
+  /** Rough energy the goals' farming saves once the track is open. */
+  energySaved: number
+  /** Needs no reachable node drops that this track's locked nodes do, closest first. */
+  unblocks: {
+    resourceId: EstimateResourceId
+    label: string
+    count: number
+    /** Battles to beat to reach the closest node that drops it, including the campaigns that must
+     *  be cleared before this track opens. */
+    battlesToGo: number
+    goalIds: string[]
+  }[]
+  lockReasons: PlanCampaignLockReason[]
+}
+
 /** One estimated goal's finish, for the outlook's "what sets the date" list. */
 export interface PlanInsightsGoalOutlook {
   goalId: string
@@ -91,6 +121,17 @@ export interface PlanNetResources {
   orbsByType?: Partial<Record<Rarity, number>>
   shards?: number
   mythicShards?: number
+  /** Ascension goals in the plan: each orb rarity the goal needs (gross) beside the player's stock of it
+   *  at the goal's turn in priority order, uncapped (V1's orb "x/y"; the Machine of War pool logic). */
+  orbPool?: {
+    neededByRarity: Partial<Record<Rarity, number>>
+    availableByRarity: Partial<Record<Rarity, number>>
+  }
+  /** Ascension goals: owned shards the plan spends on the goal against its gross shard cost. */
+  shardProgress?: {
+    shards: { owned: number; needed: number }
+    mythicShards: { owned: number; needed: number }
+  }
   /** Rank goals: gold to apply the level-up books (V1's Rank "Gold"), never netted against stock. */
   levelGold?: number
   /** Rank goals partly covered by a higher-priority goal: the goal's standalone slots and energy. */
@@ -152,6 +193,8 @@ export interface PlanInsightsResult {
    *  "which characters/MoW benefit" list (plan §16 phase 7); resolve goalId -> entity via the
    *  member list itself or `useGoalCatalog().getEntityName`. */
   benefitingGoalIdsByInsightId: Map<string, string[]>
+  /** "Campaigns to push": uncleared campaign tracks that unblock or cheapen the scoped goals. */
+  campaignProgression: PlanCampaignProgression[]
 }
 
 export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
@@ -186,4 +229,5 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   eventInsights: [],
   farmingSpotsByInsightId: new Map(),
   benefitingGoalIdsByInsightId: new Map(),
+  campaignProgression: [],
 }

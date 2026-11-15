@@ -75,12 +75,12 @@ When neither estimate clears, the detail SHALL show the shortfall of the better 
 
 ### Requirement: The projection combines entered scores and estimates
 
-For each battle, the **projected points** SHALL be the entered points when the battle has at least 1 medal entered; else the first estimate's points when it clears; else the second estimate's points when it clears; else 0. **Projected medals** SHALL be the entered medals, or 3 for a battle projected as cleared, or 0. The summary SHALL add "Projected: {total} / {max} · {crates} of 17 crates", and the rewards card SHALL add projected shards (projected medals × the bundle multiplier), both labelled "estimate" and "uncalibrated" while r is the default. Estimates and the projection SHALL be recalculated live and never written to storage or the API.
+For each battle, the **projected points** SHALL be the entered points when the battle has at least 1 medal entered; else the first estimate's points when it clears; else the second estimate's points when it clears; else 0. **Projected medals** SHALL be the entered medals, or 3 for a battle projected as cleared, or 0. The summary SHALL add "Projected: {total} / {max} · {crates} of 17 crates", and the rewards card SHALL add projected shards (the featured-hero shards of the projected medals, per the rewards rule: 1 per battle with a projected medal, plus 2 per projected medal with the bundle), both labelled "estimate" and "uncalibrated" while r is the default. Estimates and the projection SHALL be recalculated live and never written to storage or the API.
 
 #### Scenario: Mixed
 
 - **GIVEN** battles 1 to 10 entered for 4,600 points and 28 medals, battles 11 to 15 clearing with objectives for 2,500, battle 16 clearing only without objectives for 400, and battle 17 not clearing
-- **THEN** the projection is 7,500 points with 28 + 18 = 46 medals, and 46 projected shards without the bundle
+- **THEN** the projection is 7,500 points with 28 + 18 = 46 medals, and 16 projected shards without the bundle (16 battles with a medal)
 
 ### Requirement: The power ratio can be calibrated from samples
 

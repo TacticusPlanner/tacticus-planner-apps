@@ -16,7 +16,7 @@ export function RaidBossesDesktopPage({
   adjusted,
 }: RaidBossesPageViewProps) {
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(220px,300px)_1fr]">
+    <div className="grid gap-6 lg:grid-cols-[minmax(13.75rem,18.75rem)_1fr]">
       <div className="lg:sticky lg:top-4 lg:self-start">
         <RaidBossList
           bosses={bosses}

@@ -5,7 +5,6 @@ import { useQueryClient } from "@tanstack/react-query"
 import {
   legendaryEventPlanQueries,
   runInputValues,
-  updateLegendaryEventPlan,
   updateLegendaryEventRunInputs,
   usePlanWriteQueue,
   type LegendaryEventPlan,
@@ -16,6 +15,7 @@ import {
 import { useAnalyticsActions } from "@/shared/analytics"
 
 import { sameRunInputValues, withRunInputs } from "./run-inputs-patches"
+import { useShowPaidOptions } from "./use-show-paid-options"
 
 /** How long a run's values must stay unchanged before they are saved (design D4). */
 export const RUN_INPUTS_SETTLE_MS = 600
@@ -37,6 +37,7 @@ export function useRunInputs(eventId: string) {
   const queryClient = useQueryClient()
   const { captureEvent } = useAnalyticsActions()
   const { query, enabled, pending, enqueue } = usePlanWriteQueue(eventId)
+  const { showPaidOptions } = useShowPaidOptions()
   const queryKey = legendaryEventPlanQueries.detail(eventId).queryKey
   const plan = query.data
   // The drafts live in a ref (read by the settle timers) mirrored into state (for rendering).
@@ -124,35 +125,16 @@ export function useRunInputs(eventId: string) {
     }, RUN_INPUTS_SETTLE_MS)
   }
 
-  /** Writes the plan's Show paid options with its notes unchanged. */
-  const setShowPaidOptions = (on: boolean) =>
-    enqueue({
-      patch: (current) => ({ ...current, showPaidOptions: on }),
-      send: (base) =>
-        updateLegendaryEventPlan(eventId, {
-          expectedRevision: base.revision,
-          notes: base.notes,
-          showPaidOptions: on,
-        }),
-      onSaved: () =>
-        captureEvent({
-          type: "legendary_event_paid_options_toggled",
-          eventId,
-          on,
-        }),
-      errorMessage: t("runInputs.toasts.error"),
-    })
-
   return {
     enabled,
     /** The plan is still loading (the drawer shows a skeleton). */
     loading: enabled && query.isPending,
     failed: query.isError,
     pending,
-    showPaidOptions: plan?.showPaidOptions ?? false,
+    /** The account's Show paid options (a user preference, not the plan's own copy). */
+    showPaidOptions,
     values,
     change,
-    setShowPaidOptions,
   }
 }
 

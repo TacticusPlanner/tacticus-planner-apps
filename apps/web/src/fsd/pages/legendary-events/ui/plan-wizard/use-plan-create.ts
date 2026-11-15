@@ -12,7 +12,6 @@ import {
   createLegendaryEventTeam,
   deleteLegendaryEventTeam,
   teamDepthForRun,
-  updateLegendaryEventPlan,
   updateLegendaryEventTeam,
   updateLegendaryEventRunInputs,
   usePlanWriteQueue,
@@ -222,7 +221,7 @@ export function usePlanCreate(eventId: string) {
         subject: lane.laneId,
         status: "pending" as const,
       })),
-      ...(writes.runs.length > 0 || writes.showPaidOptions !== null
+      ...(writes.runs.length > 0
         ? [{ key: "runs", kind: "runs" as const, status: "pending" as const }]
         : []),
     ]
@@ -318,20 +317,6 @@ export function usePlanCreate(eventId: string) {
             updateLegendaryEventRunInputs(eventId, entry.run, {
               expectedRevision: base.revision,
               ...entry.values,
-            }),
-        })
-        if (outcome !== "saved" && outcome !== "skipped") {
-          throw new Error(outcome)
-        }
-      }
-      if (writes.showPaidOptions !== null) {
-        const on = writes.showPaidOptions
-        const outcome = await enqueue({
-          send: (base) =>
-            updateLegendaryEventPlan(eventId, {
-              expectedRevision: base.revision,
-              notes: base.notes,
-              showPaidOptions: on,
             }),
         })
         if (outcome !== "saved" && outcome !== "skipped") {

@@ -240,3 +240,23 @@ The tooltip of the Restricted indicator SHALL start with a one-line explanation 
 
 - **WHEN** the user hovers or focuses a Blocked indicator
 - **THEN** the tooltip lists the reasons without the Restricted explanation
+
+### Requirement: A material no reachable node drops says where it unlocks
+
+When a material has no accessible farming location ("No accessible farming location provides a required resource."), the blocked goal's tooltip row for that material and its row under Plan > Insights "Can't be farmed" SHALL both list "Unlocks at": the catalog nodes that drop it which the player can't farm yet, at most two, followed by "+N more locations".
+
+- A standing-campaign node SHALL show the number of battles still to beat to raid it. That count runs from the track's next unbeaten battle (the first battle when the track has no progress) up to and including the node. When the track has no progress, the count SHALL be prefixed with "not started". Closest nodes come first.
+- A campaign-event node SHALL read "during the campaign event" and come after every standing-campaign node.
+- Nodes that drop nothing, or that cost no energy, SHALL be left out. Each node SHALL appear at most once.
+- The list SHALL be omitted when no catalog node drops the material.
+
+#### Scenario: Locked elite node
+
+- **GIVEN** a goal blocked on a material that only Fall of Cadia Elite 23 drops, and the player's next unbeaten Fall of Cadia Elite battle is node 16
+- **WHEN** the user opens the goal's Blocked tooltip
+- **THEN** the material's row lists "Unlocks at" Fall of Cadia Elite 23 with "8 battles to go"
+
+#### Scenario: Insights blocker
+
+- **GIVEN** the same material is listed under "Can't be farmed" in Plan > Insights
+- **THEN** its row shows the same "Unlocks at" list

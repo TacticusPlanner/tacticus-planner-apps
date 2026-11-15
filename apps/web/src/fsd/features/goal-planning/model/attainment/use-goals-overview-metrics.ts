@@ -12,19 +12,17 @@ import { implicitPrerequisiteBlockers } from "../blockers/implicit-prerequisite-
 import type {
   EstimateOutcome,
   RankSlotAllocation,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import {
   calculateGoalResourceNeed,
   useLevelRules,
-} from "@/features/goal-farming/@x/goal-planning"
-import type {
-  AbilityMaterials,
-  ResourceNeed,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
+import type { AbilityMaterials, ResourceNeed } from "@/entities/goal-farming"
 import { useStableIds } from "../shared/use-stable-ids"
 import { useStableMap } from "../shared/use-stable-map"
 import { useGoalsFor } from "./use-goals-for"
-import { allocateUpgradeGoalStock } from "./upgrade-goal-stock"
+import { splitUpgradeGoalStock } from "./upgrade-goal-stock"
+import type { UpgradeMaterialHolder } from "./goal-progress"
 import { withStandaloneAvailable } from "../insights/plan-ability-materials"
 import type { PlanNetResources } from "../insights/use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
@@ -152,11 +150,39 @@ function useComputedGoalsOverviewMetrics(
   return useMemo(() => {
     const details = goalIds.map((goalId) => goals.goalsById.get(goalId))
     // Upgrade goals targeting the same material share one stock, in priority order.
-    const upgradeStock = allocateUpgradeGoalStock(
-      goals.goalsById.values(),
-      inventoryUpgrades,
-      { getCharacter, getMow, playerCharacterById, playerMowById }
-    )
+    const { stock: upgradeStock, holders: upgradeStockHolders } =
+      splitUpgradeGoalStock(goals.goalsById.values(), inventoryUpgrades, {
+        getCharacter,
+        getMow,
+        playerCharacterById,
+        playerMowById,
+        upgradesById,
+      })
+    const namedHolders = (goalId: string) => {
+      const byMaterial = upgradeStockHolders.get(goalId)
+      if (!byMaterial) return undefined
+      return new Map(
+        [...byMaterial].map(([upgradeId, holders]) => [
+          upgradeId,
+          holders.flatMap((holder): UpgradeMaterialHolder[] => {
+            const holderDetail = goals.goalsById.get(holder.goalId)
+            if (!holderDetail) return []
+            return [
+              {
+                unitName: getEntityName(
+                  holderDetail.entityType,
+                  holderDetail.entityId
+                ),
+                goalType: holderDetail.goalType,
+                priority: holderDetail.globalPriority,
+                amount: holder.amount,
+                counted: holder.counted,
+              },
+            ]
+          }),
+        ])
+      )
+    }
     const prerequisiteGoals = [...goals.goalsById.values()].filter(
       (goal) => goal.goalType === "Ascension" || goal.goalType === "Unlock"
     )
@@ -232,6 +258,7 @@ function useComputedGoalsOverviewMetrics(
         inventoryShard,
         upgradesById,
         levelRules,
+        upgradeHolders: namedHolders(goalId),
       })
       const progress = withMilestoneStart(liveProgress, siblings)
 
@@ -263,7 +290,7 @@ function useComputedGoalsOverviewMetrics(
             }
           : remainingStandalone
       // Plan-wide coverage overrides the standalone ability materials (`null` = fully covered/none left).
-      // A paused Machine of War goal is outside the plan run: its standalone need against the full stock.
+      // A paused Ability goal is outside the plan run: its standalone need against the full stock.
       const standaloneMaterials = withSlots?.abilityMaterials
       const withMaterials: typeof withSlots =
         withSlots && abilityMaterialsByGoalId?.has(goalId)
@@ -272,16 +299,16 @@ function useComputedGoalsOverviewMetrics(
               abilityMaterials:
                 abilityMaterialsByGoalId.get(goalId) ?? undefined,
             }
-          : withSlots &&
-              detail.entityType === "Mow" &&
-              standaloneMaterials &&
-              abilityInventory
+          : withSlots && standaloneMaterials && abilityInventory
             ? {
                 ...withSlots,
                 abilityMaterials: withStandaloneAvailable(
                   standaloneMaterials,
                   abilityInventory,
-                  mowsById?.get(detail.entityId)?.alliance
+                  (detail.entityType === "Mow"
+                    ? mowsById
+                    : charactersById
+                  )?.get(detail.entityId)?.alliance
                 ),
               }
             : withSlots

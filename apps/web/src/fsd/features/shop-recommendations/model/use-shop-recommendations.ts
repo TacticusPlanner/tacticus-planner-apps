@@ -14,14 +14,14 @@ import { useGlobalGoalPlan, type GoalDetail } from "@/entities/goal"
 import {
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
-} from "@/features/rank-lookup/@x/shop-recommendations"
+} from "@/entities/rank-lookup"
 import {
   shopRewardDisplay,
   type ShopRewardDisplayContext,
   type ShopRewardKind,
-} from "@/features/shop-rewards/@x/shop-recommendations"
+} from "@/entities/shop-reward"
 
-import { activeProjectMembers } from "@/features/daily-raids/@x/shop-recommendations"
+import { activeProjectMembers } from "@/entities/goal"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { aggregateShopNeeds } from "./shop-needs"

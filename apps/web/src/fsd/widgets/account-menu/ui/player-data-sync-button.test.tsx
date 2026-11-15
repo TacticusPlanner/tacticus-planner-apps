@@ -45,6 +45,7 @@ function mockStatus(
     progress: overrides.progress ?? null,
     lastSyncedAt: overrides.lastSyncedAt ?? null,
     error: overrides.error ?? null,
+    syncBlockedUntil: null,
     syncNow: overrides.syncNow ?? vi.fn(),
   })
 }

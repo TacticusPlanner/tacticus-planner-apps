@@ -1,0 +1,1175 @@
+[
+  {
+    "npcId": "blackNpc3TraitorGuardsman",
+    "source": "campaign",
+    "groupId": "campaign4",
+    "battles": [
+      {
+        "battleId": "SH06",
+        "track": null,
+        "tier": null,
+        "number": 6,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "SH07",
+        "track": null,
+        "tier": null,
+        "number": 7,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "SH08",
+        "track": null,
+        "tier": null,
+        "number": 8,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "blackNpc3TraitorGuardsman",
+    "source": "campaignEvent",
+    "groupId": "eventCampaign4",
+    "battles": [
+      {
+        "battleId": "DGS01",
+        "track": "Standard",
+        "tier": null,
+        "number": 1,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "DGS02",
+        "track": "Standard",
+        "tier": null,
+        "number": 2,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "DGS03",
+        "track": "Standard",
+        "tier": null,
+        "number": 3,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "blackNpc3TraitorGuardsman",
+    "source": "legendaryEvent",
+    "groupId": "astarLysander",
+    "battles": [
+      {
+        "battleId": "astarLysander-gamma-1",
+        "track": "gamma",
+        "tier": null,
+        "number": 1,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "astarLysander-gamma-2",
+        "track": "gamma",
+        "tier": null,
+        "number": 2,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "astarLysander-gamma-3",
+        "track": "gamma",
+        "tier": null,
+        "number": 3,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "blackNpc3TraitorGuardsman",
+    "source": "questEvent",
+    "groupId": "astarEradicator",
+    "battles": [
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": 1,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": 2,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": 3,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "blackNpc3TraitorGuardsman",
+    "source": "incursion",
+    "groupId": "blackForgefiend",
+    "battles": [
+      {
+        "battleId": "1",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "2",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "3",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "blackNpc3TraitorGuardsman",
+    "source": "survival",
+    "groupId": "survival_crescendo_01",
+    "battles": [
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [1],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [3],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [5],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [12],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [18],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [22],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [28],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [34],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "necroNpc1Warrior",
+    "source": "campaign",
+    "groupId": "campaign1",
+    "battles": [
+      {
+        "battleId": "I13",
+        "track": null,
+        "tier": null,
+        "number": 13,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "I15",
+        "track": null,
+        "tier": null,
+        "number": 15,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "I16",
+        "track": null,
+        "tier": null,
+        "number": 16,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "necroNpc1Warrior",
+    "source": "legendaryEvent",
+    "groupId": "votanUthar",
+    "battles": [
+      {
+        "battleId": "votanUthar-alpha-2",
+        "track": "alpha",
+        "tier": null,
+        "number": 2,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "votanUthar-alpha-3",
+        "track": "alpha",
+        "tier": null,
+        "number": 3,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "votanUthar-alpha-4",
+        "track": "alpha",
+        "tier": null,
+        "number": 4,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "necroNpc1Warrior",
+    "source": "questEvent",
+    "groupId": "astarCyrus",
+    "battles": [
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": 1,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": 2,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": 3,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "necroNpc1Warrior",
+    "source": "incursion",
+    "groupId": "necroReanimator",
+    "battles": [
+      {
+        "battleId": "1",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "2",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "3",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "necroNpc1Warrior",
+    "source": "survival",
+    "groupId": "survival_may_2026",
+    "battles": [
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [18],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "orksNpc1Grot",
+    "source": "campaign",
+    "groupId": "campaign3",
+    "battles": [
+      {
+        "battleId": "O07",
+        "track": null,
+        "tier": null,
+        "number": 7,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "O08",
+        "track": null,
+        "tier": null,
+        "number": 8,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "O09",
+        "track": null,
+        "tier": null,
+        "number": 9,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "orksNpc1Grot",
+    "source": "legendaryEvent",
+    "groupId": "astarLysander",
+    "battles": [
+      {
+        "battleId": "astarLysander-alpha-1",
+        "track": "alpha",
+        "tier": null,
+        "number": 1,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "astarLysander-alpha-2",
+        "track": "alpha",
+        "tier": null,
+        "number": 2,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "astarLysander-alpha-3",
+        "track": "alpha",
+        "tier": null,
+        "number": 3,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "orksNpc1Grot",
+    "source": "questEvent",
+    "groupId": "votanChampion",
+    "battles": [
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": 1,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": 2,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": 3,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "orksNpc1Grot",
+    "source": "incursion",
+    "groupId": "orksRukkatrukk",
+    "battles": [
+      {
+        "battleId": "1",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "2",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "4",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "orksNpc1Grot",
+    "source": "survival",
+    "groupId": "survival_may_2026",
+    "battles": [
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [8],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "tyranNpc3Termagant",
+    "source": "campaign",
+    "groupId": "campaign3",
+    "battles": [
+      {
+        "battleId": "O37",
+        "track": null,
+        "tier": null,
+        "number": 37,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "O38",
+        "track": null,
+        "tier": null,
+        "number": 38,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "O41",
+        "track": null,
+        "tier": null,
+        "number": 41,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "tyranNpc3Termagant",
+    "source": "campaignEvent",
+    "groupId": "eventCampaign2",
+    "battles": [
+      {
+        "battleId": "TS03",
+        "track": "Standard",
+        "tier": null,
+        "number": 3,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "TS04",
+        "track": "Standard",
+        "tier": null,
+        "number": 4,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "TS05",
+        "track": "Standard",
+        "tier": null,
+        "number": 5,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "tyranNpc3Termagant",
+    "source": "incursion",
+    "groupId": "tyranBiovore",
+    "battles": [
+      {
+        "battleId": "2",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "3",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": "4",
+        "track": null,
+        "tier": 0,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "tyranNpc3Termagant",
+    "source": "guildRaid",
+    "groupId": "GuildBoss1Boss1TyranTervigonLeviathan",
+    "battles": [
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [],
+        "count": null,
+        "levels": []
+      }
+    ]
+  },
+  {
+    "npcId": "tyranNpc3Termagant",
+    "source": "survival",
+    "groupId": "survival_may_2026",
+    "battles": [
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [22],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": null,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [38],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "npcId": "tyranNpc3Termagant",
+    "source": "onslaught",
+    "groupId": "onslaught",
+    "battles": [
+      {
+        "battleId": null,
+        "track": null,
+        "tier": 2,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [1, 3, 4, 5, 6, 8],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": 3,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [1, 3, 5, 6, 8],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      },
+      {
+        "battleId": null,
+        "track": null,
+        "tier": 4,
+        "number": null,
+        "challenge": false,
+        "role": "enemy",
+        "rounds": [3, 4, 5, 6, 8],
+        "count": 2,
+        "levels": [
+          {
+            "servedIndex": 0,
+            "count": 2
+          }
+        ]
+      }
+    ]
+  }
+]

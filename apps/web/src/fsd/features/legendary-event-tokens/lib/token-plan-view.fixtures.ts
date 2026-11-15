@@ -125,9 +125,11 @@ export const workedPlan = (
   ...overrides,
 })
 
-/** Five's estimate is depth 6; every other team has none. */
+/** Five's estimate is depth 6 (sure through 5, up to 7 at best); every other team has none. */
 const estimateTeam = (memberUnitIds: readonly string[]) =>
-  memberUnitIds.length === FIVE_MEMBERS.length ? { depth: 6 } : null
+  memberUnitIds.length === FIVE_MEMBERS.length
+    ? { depth: 6, sureDepth: 5, stretchDepth: 7 }
+    : null
 
 const workedEstimates: TokenPlanViewInput["estimates"] = {
   kind: "ready",

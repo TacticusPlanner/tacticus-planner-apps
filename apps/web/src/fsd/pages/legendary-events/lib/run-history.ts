@@ -1,9 +1,4 @@
-import {
-  progressionIndex,
-  rankIndex,
-  type Progression,
-  type Rank,
-} from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import {
   LEGENDARY_EVENT_LANE_IDS,
@@ -22,6 +17,7 @@ import {
   type ReadState,
   type RosterSnapshot,
 } from "@/entities/legendary-event"
+import { diffRosters } from "@/entities/roster-snapshot"
 
 /** The event's records split into the current run, the previous run and earlier runs (design D6). */
 export interface RunRecordSelection {
@@ -135,34 +131,28 @@ export interface RosterDelta {
   abilities: (FromTo<number> & { slot: number; abilityId: string })[]
 }
 
-type SnapshotUnit = Pick<
-  RosterSnapshot["characters"][number],
-  "unitId" | "progressionIndex" | "abilities"
-> & { rank?: Rank }
-
 /**
  * Roster changes for `unitIds` between the snapshot and the current roster (design D7): unlocked,
  * a later progression, a later rank (applied upgrades ignored) and each ability that rose. Units
  * unchanged, not owned now, or owned neither then nor now are omitted; values that went down are
- * ignored.
+ * ignored. A projection of the shared roster diff onto those fields: a unit whose only change is
+ * elsewhere (XP, shards, equipment, applied upgrades) is omitted too.
  */
 export function rosterDeltas(
   snapshot: Pick<RosterSnapshot, "characters" | "mows">,
   roster: readonly LegendaryEventRosterUnit[],
   unitIds: readonly string[]
 ): RosterDelta[] {
-  const then = new Map<string, SnapshotUnit>(
-    [...snapshot.characters, ...snapshot.mows].map((unit) => [
-      unit.unitId,
-      unit,
-    ])
+  const wanted = new Set(unitIds)
+  const diffs = new Map(
+    diffRosters(snapshot, {
+      characters: roster.filter((unit) => wanted.has(unit.unitId)),
+    }).map((diff) => [diff.unitId, diff])
   )
-  const now = new Map(roster.map((unit) => [unit.unitId as string, unit]))
-  return [...new Set(unitIds)].flatMap((unitId): RosterDelta[] => {
-    const current = now.get(unitId)
-    if (!current) return []
-    const before = then.get(unitId)
-    if (!before) {
+  return [...wanted].flatMap((unitId): RosterDelta[] => {
+    const diff = diffs.get(unitId)
+    if (!diff) return []
+    if (diff.unlocked) {
       return [
         {
           unitId,
@@ -173,32 +163,7 @@ export function rosterDeltas(
         },
       ]
     }
-    const progression =
-      progressionIndex(current.progressionIndex) >
-      progressionIndex(before.progressionIndex)
-        ? { from: before.progressionIndex, to: current.progressionIndex }
-        : null
-    const rank =
-      before.rank !== undefined &&
-      rankIndex(current.rank) > rankIndex(before.rank)
-        ? { from: before.rank, to: current.rank }
-        : null
-    const abilities = (current.abilities ?? []).flatMap((ability, slot) => {
-      const previous =
-        before.abilities.find(
-          (entry) => entry.abilityId === ability.abilityId
-        ) ?? before.abilities[slot]
-      return previous && ability.level > previous.level
-        ? [
-            {
-              slot,
-              abilityId: ability.abilityId,
-              from: previous.level,
-              to: ability.level,
-            },
-          ]
-        : []
-    })
+    const { progression, rank, abilities } = diff
     if (!progression && !rank && abilities.length === 0) return []
     return [{ unitId, unlocked: false, progression, rank, abilities }]
   })

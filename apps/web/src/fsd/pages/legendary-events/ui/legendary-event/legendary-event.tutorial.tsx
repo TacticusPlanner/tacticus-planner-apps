@@ -15,14 +15,15 @@ const EVENT_TOUR_TARGETS = {
   // The header, not the whole card: an expanded plan can be taller than the viewport.
   tokenPlan: '[data-testid="legendary-event-token-plan-header"]',
   laneSummary: '[data-testid="legendary-event-lane-summary"]',
-  overviewLeaderboard: '[data-testid="legendary-event-overview-leaderboard"]',
-  laneOverview: '[data-testid="legendary-event-lane-overview"]',
+  eventBoard: '[data-testid="legendary-event-board"]',
   teams: '[data-testid="legendary-event-teams"]',
+  // The cross-lane board with two or three lanes shown, the lane's own with one.
+  eligibility:
+    '[data-testid="legendary-event-overview-leaderboard"], [data-testid="legendary-event-leaderboard"]',
   upgradeImpact: '[data-testid="legendary-event-upgrade-impact"]',
   progressGrid: '[data-testid="legendary-event-progress-grid"]',
   // The heading, not the whole section: a battle's waves can be taller than the viewport.
   battles: '[data-testid="legendary-event-battles"]',
-  leaderboard: '[data-testid="legendary-event-leaderboard"]',
 } as const
 
 /**
@@ -52,17 +53,18 @@ function waitForElement(selector: string, timeoutMs: number): Promise<void> {
 }
 
 /**
- * The event page tour (spec: the Events pages have Joyride tours): the tab strip, the Next token
- * card (in whichever state it renders), Run status, the Last run card (only when it renders, so
- * the tour never shows an empty step), Run status's Inputs button (the same target on both
- * forms), the Token plan header, the Overview lane summary and cross-lane
- * leaderboard, then, after switching to Alpha through
- * `selectTab`, Alpha's lane overview, Teams section (with its Add team button), progress grid (and
- * its marks), Battles preview and leaderboard. Desktop and mobile share the steps.
+ * The event page tour (spec: the Events pages have Joyride tours), one tab at a time. Overview:
+ * the tab strip and the lane summary. Teams: the Event board, the first shown lane's Teams section
+ * (with its Add team button) and the eligibility leaderboard. Plan: the Token plan header, Upgrade
+ * impact and the battle preview. The run tab: the Next token card (in whichever state it renders),
+ * Run status, its Inputs button (the same target on both forms), the progress grid (and its
+ * marks) and the Last run card (only when it renders, so the tour never shows an empty step).
+ * Every step first opens its tab through `selectTab` (a no-op when it is already open), so
+ * stepping back across tabs lands on the right one too. Desktop and mobile share the steps.
  */
 export function useLegendaryEventTutorial(
   selectTab: (tab: LegendaryEventTab) => void,
-  /** The Last run card renders: its step follows Run status. */
+  /** The Last run card renders: its step closes the run tab. */
   hasLastRun = false
 ): TourPageSteps {
   const { t } = useTranslation("legendaryEvents")
@@ -77,27 +79,32 @@ export function useLegendaryEventTutorial(
       title: t(`tour.event.steps.${key}.title`),
       content: t(`tour.event.steps.${key}.content`),
     })
-    const steps: Step[] = [
-      step("tabs", "bottom"),
-      step("nextToken", "bottom"),
-      step("runStatus", "bottom"),
-      ...(hasLastRun ? [step("lastRun", "top")] : []),
-      step("runInputs", "bottom"),
-      step("tokenPlan", "bottom"),
-      step("laneSummary", "top"),
-      step("overviewLeaderboard", "top"),
-      {
-        ...step("laneOverview", "top"),
-        before: async () => {
-          selectTab("alpha")
-          await waitForElement(EVENT_TOUR_TARGETS.laneOverview, 1000)
-        },
+    // Opens the step's tab, then waits for its target.
+    const onTab = (
+      tab: LegendaryEventTab,
+      key: keyof typeof EVENT_TOUR_TARGETS,
+      placement: Step["placement"]
+    ): Step => ({
+      ...step(key, placement),
+      before: async () => {
+        selectTab(tab)
+        await waitForElement(EVENT_TOUR_TARGETS[key], 1000)
       },
-      step("teams", "top"),
-      step("upgradeImpact", "top"),
-      step("progressGrid", "top"),
-      step("battles", "top"),
-      step("leaderboard", "top"),
+    })
+    const steps: Step[] = [
+      onTab("overview", "tabs", "bottom"),
+      onTab("overview", "laneSummary", "top"),
+      onTab("teams", "eventBoard", "top"),
+      onTab("teams", "teams", "top"),
+      onTab("teams", "eligibility", "top"),
+      onTab("plan", "tokenPlan", "bottom"),
+      onTab("plan", "upgradeImpact", "top"),
+      onTab("plan", "battles", "top"),
+      onTab("run", "nextToken", "bottom"),
+      onTab("run", "runStatus", "bottom"),
+      onTab("run", "runInputs", "bottom"),
+      onTab("run", "progressGrid", "top"),
+      ...(hasLastRun ? [onTab("run", "lastRun", "top")] : []),
     ]
     return { desktop: steps, mobile: steps }
   }, [hasLastRun, selectTab, t])

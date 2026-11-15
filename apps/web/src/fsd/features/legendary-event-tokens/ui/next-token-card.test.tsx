@@ -1,6 +1,7 @@
 import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { eventMissions } from "@/entities/legendary-event"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
@@ -30,15 +31,28 @@ vi.mock("@/shared/analytics", () => ({
 }))
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => (_type: string | null, id: string | null) => id ?? "",
+  useUnitSearchNames: () => () => [],
 }))
 
 let i18n: I18n
 const onMarkToken = vi.fn()
+const onStopTeam = vi.fn()
+const onTokenShown = vi.fn()
 const onOpenTeams = vi.fn()
 
 function renderCard(
   view: TokenPlanView,
-  { isMobile = false, canMark = true } = {}
+  {
+    isMobile = false,
+    canMark = true,
+    onViewPlan,
+    missionsInput,
+  }: {
+    isMobile?: boolean
+    canMark?: boolean
+    onViewPlan?: () => void
+    missionsInput?: React.ReactNode
+  } = {}
 ) {
   return render(
     <NextTokenCard
@@ -46,7 +60,11 @@ function renderCard(
       eventId="votanUthar"
       isMobile={isMobile}
       onMarkToken={canMark ? onMarkToken : undefined}
+      onStopTeam={canMark ? onStopTeam : undefined}
+      onTokenShown={canMark ? onTokenShown : undefined}
       onOpenTeams={onOpenTeams}
+      missionsInput={missionsInput}
+      onViewPlan={onViewPlan}
       view={view}
     />,
     { wrapper: i18nWrapper(i18n) }
@@ -101,8 +119,11 @@ describe("NextTokenCard", () => {
     i18n = await createTestI18n("en")
   })
   beforeEach(() => {
+    localStorage.clear()
     capture.mockReset()
     onMarkToken.mockReset()
+    onStopTeam.mockReset()
+    onTokenShown.mockReset()
     onOpenTeams.mockReset()
   })
 
@@ -111,15 +132,25 @@ describe("NextTokenCard", () => {
 
     expect(screen.getByTestId("next-token-team")).toHaveTextContent("Melee")
     expect(
+      screen
+        .getAllByTestId("next-token-team-details-portrait")
+        .map((portrait) => portrait.dataset.unit)
+    ).toEqual(["ultraCalgar", "ultraTitus", "ultraApothecary"])
+    fireEvent.click(screen.getByTestId("next-token-team-details"))
+    expect(
       screen.getAllByTestId("next-token-member").map((m) => m.dataset.unit)
     ).toEqual(["ultraCalgar", "ultraTitus", "ultraApothecary"])
+    expect(
+      screen.getByTestId("next-token-team-details-depth")
+    ).toHaveTextContent("Clears battles 1–5 of 18 · set by you")
     expect(screen.getByTestId("next-token-battle")).toHaveTextContent(
       "Alpha · Battle 3"
     )
     expect(screen.getByTestId("next-token-points")).toHaveTextContent(
       "+240 points"
     )
-    const objectives = within(screen.getByTestId("token-objectives"))
+    // The first objectives list is the next token's; the rest belong to the tokens up next.
+    const objectives = within(screen.getAllByTestId("token-objectives")[0]!)
       .getAllByRole("listitem")
       .map((item) => item.dataset.objective)
     expect(objectives).toEqual(["0", "1", "4"])
@@ -135,6 +166,66 @@ describe("NextTokenCard", () => {
     })
   })
 
+  it("says how sure an estimated team's clear is, and nothing for a manual depth", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const { unmount } = renderCard(view)
+    expect(screen.queryByTestId("next-token-clear-band")).toBeNull()
+    unmount()
+
+    // Five's token on battle 6: estimated depth 6, sure through 5.
+    const fiveIndex = view.plan.tokens.findIndex(
+      (token) => token.teamId === "five"
+    )
+    renderCard({
+      ...view,
+      next: {
+        ...view.next,
+        index: fiveIndex,
+        token: view.plan.tokens[fiveIndex]!,
+      },
+    })
+    const band = screen.getByTestId("next-token-clear-band")
+    expect(band).toHaveAttribute("data-band", "likely")
+    expect(band).toHaveTextContent("Likely clear · safe through battle 5")
+  })
+
+  it("offers Try another team only on a likely clear, ending the team after the battle before", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const { unmount } = renderCard(view)
+    expect(screen.queryByTestId("next-token-stop")).toBeNull()
+    unmount()
+
+    const fiveIndex = view.plan.tokens.findIndex(
+      (token) => token.teamId === "five"
+    )
+    const five = { ...view.plan.tokens[fiveIndex]!, playableNow: true }
+    renderCard({
+      ...view,
+      next: { ...view.next, index: fiveIndex, token: five },
+    })
+    expect(screen.getByTestId("next-token-stop")).toHaveTextContent(
+      "Try another teamEnd this team after battle 5"
+    )
+    fireEvent.click(screen.getByTestId("next-token-stop"))
+
+    expect(onStopTeam).toHaveBeenCalledWith(five.laneId, 5, "five")
+    expect(onMarkToken).not.toHaveBeenCalled()
+  })
+
+  it("lists the next four tokens after it, with View all opening the plan", () => {
+    const onViewPlan = vi.fn()
+    renderCard(buildTokenPlanView(workedViewInput()), { onViewPlan })
+    const upNext = within(screen.getByTestId("next-token-up-next"))
+
+    expect(upNext.getAllByTestId("token-plan-row")).toHaveLength(4)
+    fireEvent.click(
+      upNext.getByRole("button", { name: "View all 6 planned tokens" })
+    )
+    expect(onViewPlan).toHaveBeenCalledOnce()
+  })
+
   it("skips a flagged token and battles not playable yet", () => {
     renderCard(withMarks([mark(2, 4, "maybeClear")]))
 
@@ -147,35 +238,107 @@ describe("NextTokenCard", () => {
     )
   })
 
-  it("marks every cleared cell Stop here with Couldn't clear", () => {
-    renderCard(buildTokenPlanView(workedViewInput()))
+  it("reports the shown token once per battle and team, not on re-renders", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const { rerender } = renderCard(view)
+    expect(onTokenShown).toHaveBeenCalledExactlyOnceWith(view.next.token)
 
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Couldn't clear: mark Melee on Alpha battle 3 as Stop here",
-      })
+    rerender(
+      <NextTokenCard
+        event={utharEvent}
+        eventId="votanUthar"
+        isMobile={false}
+        onMarkToken={onMarkToken}
+        onOpenTeams={onOpenTeams}
+        onTokenShown={onTokenShown}
+        view={{
+          ...view,
+          next: { ...view.next, token: { ...view.next.token } },
+        }}
+      />
     )
-
-    expect(onMarkToken).toHaveBeenCalledWith("alpha", 2, [0, 1, 4], "stopHere")
+    expect(onTokenShown).toHaveBeenCalledOnce()
   })
 
-  it("marks the objective cells Maybe clear with Partly cleared", () => {
+  it("reports the same token again when the run changes", () => {
+    const view = buildTokenPlanView(workedViewInput())
+    if (view.kind !== "ready" || !view.next) throw new Error("no next token")
+    const card = (run: number) => (
+      <NextTokenCard
+        event={utharEvent}
+        eventId="votanUthar"
+        isMobile={false}
+        onMarkToken={onMarkToken}
+        onOpenTeams={onOpenTeams}
+        onTokenShown={onTokenShown}
+        run={run}
+        view={view}
+      />
+    )
+    const { rerender } = render(card(1), { wrapper: i18nWrapper(i18n) })
+    rerender(card(2))
+    expect(onTokenShown).toHaveBeenCalledTimes(2)
+  })
+
+  it("reports no shown token while marks cannot be written", () => {
+    renderCard(buildTokenPlanView(workedViewInput()), { canMark: false })
+    expect(onTokenShown).not.toHaveBeenCalled()
+  })
+
+  it("marks every cleared cell Stop here, explaining there is no chance with this team", () => {
     renderCard(buildTokenPlanView(workedViewInput()))
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Partly cleared: mark Melee on Alpha battle 3 as Maybe clear",
+        name: "Stop here: Melee has no chance on Alpha battle 3",
       })
     )
+    const button = screen.getByTestId("next-token-could-not")
+    expect(button).toHaveTextContent("Stop hereNo chance with this team")
+    expect(within(button).getByTestId("annotation-mark-icon")).toHaveAttribute(
+      "data-mark",
+      "stopHere"
+    )
 
-    expect(onMarkToken).toHaveBeenCalledWith("alpha", 2, [1, 4], "maybeClear")
+    expect(onMarkToken).toHaveBeenCalledWith(
+      "alpha",
+      2,
+      [0, 1, 4],
+      "stopHere",
+      expect.any(String)
+    )
+  })
+
+  it("marks the objective cells Maybe clear, explaining it might clear with a retry", () => {
+    renderCard(buildTokenPlanView(workedViewInput()))
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Maybe clear: Melee might clear Alpha battle 3 with a retry",
+      })
+    )
+    const button = screen.getByTestId("next-token-partly")
+    expect(button).toHaveTextContent("Maybe clearMight clear with a retry")
+    expect(within(button).getByTestId("annotation-mark-icon")).toHaveAttribute(
+      "data-mark",
+      "maybeClear"
+    )
+
+    expect(onMarkToken).toHaveBeenCalledWith(
+      "alpha",
+      2,
+      [1, 4],
+      "maybeClear",
+      expect.any(String)
+    )
   })
 
   it("stacks touch-sized actions on mobile", () => {
     renderCard(buildTokenPlanView(workedViewInput()), { isMobile: true })
 
     expect(screen.getByTestId("next-token-partly")).toHaveClass(
-      "h-11",
+      "min-h-11",
       "w-full"
     )
   })
@@ -326,5 +489,81 @@ describe("NextTokenCard", () => {
     renderCard({ kind: "hidden" })
 
     expect(screen.queryByTestId("legendary-event-next-token")).toBeNull()
+  })
+
+  describe("Points / Missions switch", () => {
+    // Uthar regular 2: "Defeat 75 AdMechs".
+    const admech = {
+      track: "regular" as const,
+      mission: eventMissions(utharEvent, "regular").find(
+        (mission) => mission.index === 2
+      )!,
+    }
+    const withMissionOrder = (): TokenPlanView => {
+      const view = buildTokenPlanView(workedViewInput())
+      if (view.kind !== "ready") throw new Error("worked view is not ready")
+      // Missions order puts Alpha battle 2's token first.
+      const second = view.plan.tokens.findIndex(
+        (token) => token.laneId === "alpha" && token.battleIndex === 1
+      )
+      const tokens = [
+        view.plan.tokens[second]!,
+        ...view.plan.tokens.filter((_, index) => index !== second),
+      ]
+      return {
+        ...view,
+        missionOrder: {
+          tokens,
+          markers: [],
+          nextProgress: [],
+          steps: tokens.map(() => [
+            {
+              ref: admech,
+              total: 75,
+              gained: 75,
+              needed: 75,
+              completes: true,
+              estimate: false,
+            },
+          ]),
+          runs: [],
+        },
+      }
+    }
+
+    it("reads the plan in Missions order with the run's mission ticks", () => {
+      renderCard(withMissionOrder(), {
+        missionsInput: <p data-testid="ticks">ticks</p>,
+      })
+      expect(screen.getByTestId("next-token-battle")).toHaveTextContent(
+        "Alpha · Battle 3"
+      )
+      expect(screen.queryByTestId("ticks")).toBeNull()
+
+      fireEvent.click(screen.getByRole("radio", { name: "Missions" }))
+
+      expect(screen.getByTestId("next-token-battle")).toHaveTextContent(
+        "Alpha · Battle 2"
+      )
+      fireEvent.click(screen.getByTestId("next-token-progresses"))
+      expect(
+        screen.getByTestId("next-token-progresses-mission")
+      ).toHaveTextContent(/Defeat 75 .*\+75 · done/)
+      expect(screen.getByTestId("next-token-reason")).toHaveTextContent(
+        "Finishes this run's open missions soonest"
+      )
+      expect(screen.getByTestId("ticks")).toBeInTheDocument()
+      const upNext = within(screen.getByTestId("next-token-up-next"))
+      expect(upNext.getAllByTestId("token-plan-row")).toHaveLength(4)
+      expect(
+        localStorage.getItem("legendaryEvents.tokenPlan.missionsOrder")
+      ).toBe("true")
+    })
+
+    it("has no switch without a Missions order", () => {
+      renderCard(buildTokenPlanView(workedViewInput()))
+
+      expect(screen.queryByRole("radio", { name: "Missions" })).toBeNull()
+    })
   })
 })

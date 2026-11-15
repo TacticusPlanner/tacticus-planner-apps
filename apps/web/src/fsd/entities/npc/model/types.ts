@@ -1,3 +1,5 @@
+import type { NpcEncounterSource } from "@workspace/game-catalog"
+
 /** One served stat row. Ladders are served in raw order and are not unique on (rank, stars). */
 export interface NpcStatRow {
   abilityLevel: number
@@ -66,6 +68,14 @@ export interface NpcFilters {
   factionId: string | null
   alliance: string | null
   attack: NpcAttackFilter | null
+  /** An `npc-encounters` source the variation must be encountered in. */
+  gameMode: NpcEncounterSource | null
+  /** A group (campaign, event, raid boss…) within `gameMode`; only offered once a game mode is chosen. */
+  encounterGroup: string | null
+  /** Only variations with an encounter the calendar has running now. */
+  runningNow: boolean
+  /** How many targets one battle must hold; see `matchingEncounterPlaces`. */
+  minCount: number | null
   damageTypes: readonly string[]
   traits: readonly string[]
 }

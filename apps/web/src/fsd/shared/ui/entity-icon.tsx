@@ -1,10 +1,19 @@
 import { useState } from "react"
+import type { LucideIcon } from "lucide-react"
+import { ImageOff, Shield, Sparkles, UserRound } from "lucide-react"
 import type { GameIcon, LayeredIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
-/** An <img> that swaps to a fallback (or hides) when the source asset is missing. Pass the intrinsic
- *  `width`/`height` when the CSS does not fix both dimensions (e.g. `h-4 w-auto`), so the box is
- *  reserved before the image loads. A layered icon renders its sprites stacked in a square box. */
+import {
+  type IconPlaceholderKind,
+  placeholderKindForIcon,
+} from "./entity-icon-placeholder"
+
+/** An <img> that swaps to a fallback image, or else to a placeholder glyph sized like the icon, when
+ *  the source asset is missing (a new unit the datamine ships no art for yet). No `src` at all still
+ *  renders nothing: that means the entity has no icon by design. Pass the intrinsic `width`/`height`
+ *  when the CSS does not fix both dimensions (e.g. `h-4 w-auto`), so the box is reserved before the
+ *  image loads. A layered icon renders its sprites stacked in a square box. */
 export function EntityIcon({
   src,
   fallback,
@@ -27,8 +36,19 @@ export function EntityIcon({
     return <LayeredEntityIcon icon={src} alt={alt} className={className} />
   }
 
+  if (!src && !fallback) return null
   const resolved = src && erroredSrc !== src ? src : fallback
-  if (!resolved) return null
+  if (!resolved) {
+    return (
+      <IconPlaceholder
+        kind={placeholderKindForIcon(src ?? "")}
+        alt={alt}
+        className={className}
+        width={width}
+        height={height}
+      />
+    )
+  }
 
   return (
     <img
@@ -40,6 +60,47 @@ export function EntityIcon({
       className={cn("object-contain", className)}
       onError={() => setErroredSrc(src ?? null)}
     />
+  )
+}
+
+const placeholderGlyphs: Record<IconPlaceholderKind, LucideIcon> = {
+  unit: UserRound,
+  ability: Sparkles,
+  trait: Shield,
+  generic: ImageOff,
+}
+
+function IconPlaceholder({
+  kind,
+  alt,
+  className,
+  width,
+  height,
+}: {
+  kind: IconPlaceholderKind
+  alt: string
+  className?: string
+  width?: number
+  height?: number
+}) {
+  const Glyph = placeholderGlyphs[kind]
+  return (
+    <span
+      role={alt ? "img" : undefined}
+      aria-label={alt || undefined}
+      aria-hidden={alt ? undefined : true}
+      data-icon-placeholder={kind}
+      style={width && height ? { width, height } : undefined}
+      className={cn(
+        "inline-flex aspect-square shrink-0 items-center justify-center rounded-sm bg-muted text-muted-foreground",
+        className,
+        // The game's portrait sprites are circles, so a unit placeholder stays round whatever the
+        // caller's box shape is.
+        kind === "unit" && "rounded-full"
+      )}
+    >
+      <Glyph aria-hidden className="size-3/5" />
+    </span>
   )
 }
 

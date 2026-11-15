@@ -81,6 +81,16 @@ export {
   useObjectiveLabel,
 } from "./model/use-objective-label"
 export { ObjectiveIcon } from "./ui/objective-icon"
+export { AnnotationMarkIcon } from "./ui/annotation-mark"
+export { EventUnitChip } from "./ui/event-unit-chip"
+export { RankShadingProvider } from "./model/rank-shading"
+export { useRankShading } from "./model/rank-shading-context"
+export { rankTone } from "./lib/rank-tone"
+export {
+  eventUnitChipData,
+  ownedUnitChipData,
+  type EventUnitChipData,
+} from "./lib/event-unit-chip-data"
 export {
   type CreateTeamRequestDto,
   type LegendaryEventAnnotation,
@@ -115,6 +125,9 @@ export {
   UNTRACKED_MISSION_KINDS,
   battleEnemies,
   completedMissions,
+  currentMissions,
+  doneMissionCount,
+  doneMissionIndexes,
   eventMissions,
   openMissions,
   tokenMissionAmount,
@@ -133,6 +146,7 @@ export {
   PREMIUM_BONUS_CURRENCY,
   nextAscensionStep,
   projectRewards,
+  syncedChestsClaimed,
   unitNextAscensionStep,
   type AscensionGoal,
   type AscensionStep,
@@ -157,7 +171,11 @@ export {
 export { type NamedTeam, withLanePrefix } from "./lib/team-display-name"
 export { useTeamDisplayName } from "./model/use-team-display-name"
 export {
+  CLEAR_ESTIMATE_CURVE_VERSION,
+  battlePowerRatio,
   laneBattlePowers,
+  laneThresholdPowers,
+  memberPowers,
   teamClearEstimate,
   teamEffectiveDepth,
   teamPower,
@@ -190,6 +208,7 @@ export {
 export {
   impactTeams,
   teamReaches,
+  teamUnitIdsByLane,
   type LaneEstimateInputs,
 } from "./lib/lane-teams"
 export {
@@ -221,4 +240,10 @@ export {
 } from "./lib/horde-tier-list"
 export { useLegendaryEventsBattles } from "./model/use-legendary-events-battles"
 export { useHordeModeTiers } from "./model/use-horde-mode-tiers"
+export {
+  buildNpcTierList,
+  npcEventIds,
+  type NpcTierTile,
+} from "./lib/npc-tier-list"
+export { useNpcTiers } from "./model/use-npc-tiers"
 export { tierToneClass } from "./lib/tier-tone"

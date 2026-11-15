@@ -14,10 +14,14 @@ import {
   type CollectionQuickFilter,
 } from "../../model/collection-query"
 import type { QuickFilterAvailability } from "../../model/use-collection-view"
+import {
+  overflowMask,
+  useScrollOverflow,
+} from "../../model/use-scroll-overflow"
 
 type Unavailable = Extract<
   QuickFilterAvailability,
-  "needsRoster" | "needsInventory" | "failed"
+  "needsRoster" | "needsInventory" | "currentOnly" | "failed"
 >
 
 const isUnavailable = (
@@ -25,6 +29,7 @@ const isUnavailable = (
 ): availability is Unavailable =>
   availability === "needsRoster" ||
   availability === "needsInventory" ||
+  availability === "currentOnly" ||
   availability === "failed"
 
 /**
@@ -39,14 +44,19 @@ export function QuickFilterChips({
   availability,
   onChange,
   onRetry,
+  scroll = false,
 }: {
   value: CollectionQuickFilter | null
   availability: Record<CollectionQuickFilter, QuickFilterAvailability>
   onChange: (next: CollectionQuickFilter | null) => void
   onRetry: () => void
+  /** One row that scrolls sideways instead of wrapping (mobile). */
+  scroll?: boolean
 }) {
   const { t, i18n } = useTranslation("common")
   const noteId = useId()
+  const [overflow, scrollRef] = useScrollOverflow()
+  const mask = scroll ? overflowMask(overflow) : undefined
   const label = (quick: CollectionQuickFilter) =>
     t(`myGame.collection.toolbar.quick.${quick}`)
   const list = new Intl.ListFormat(i18n.language, { type: "conjunction" })
@@ -66,7 +76,9 @@ export function QuickFilterChips({
         : t(
             reason === "needsInventory"
               ? "myGame.collection.toolbar.quickNeedsInventory"
-              : "myGame.collection.toolbar.quickFailed",
+              : reason === "currentOnly"
+                ? "myGame.collection.toolbar.quickCurrentOnly"
+                : "myGame.collection.toolbar.quickFailed",
             { filters: list.format(quicks.map(label)) }
           ),
   }))
@@ -80,36 +92,47 @@ export function QuickFilterChips({
       <span id={`${noteId}-label`} className="text-xs text-muted-foreground">
         {t("myGame.collection.toolbar.quickFilters")}
       </span>
-      <ToggleGroup
-        type="single"
-        variant="outline"
-        size="sm"
-        spacing={1}
-        className="flex-wrap"
-        aria-labelledby={`${noteId}-label`}
-        value={value ?? ""}
-        onValueChange={(next) =>
-          onChange(isCollectionQuickFilter(next) ? next : null)
-        }
+      {/* On mobile the row scrolls sideways; the edges hiding chips fade out to show there is more. */}
+      <div
+        ref={scroll ? scrollRef : undefined}
+        className={scroll ? "scrollbar-none overflow-x-auto pb-1" : undefined}
+        style={mask ? { maskImage: mask, WebkitMaskImage: mask } : undefined}
       >
-        {collectionQuickFilters.map((quick) => {
-          const status = availability[quick]
-          return (
-            <ToggleGroupItem
-              key={quick}
-              value={quick}
-              className={FILTER_CHIP_CLASS_NAME}
-              disabled={status !== "available"}
-              title={t(`myGame.collection.toolbar.quickHelp.${quick}`)}
-              aria-describedby={
-                isUnavailable(status) ? `${noteId}-${status}` : undefined
-              }
-            >
-              {label(quick)}
-            </ToggleGroupItem>
-          )
-        })}
-      </ToggleGroup>
+        <ToggleGroup
+          type="single"
+          variant="outline"
+          size="sm"
+          spacing={1}
+          className={scroll ? "w-max flex-nowrap justify-start" : "flex-wrap"}
+          aria-labelledby={`${noteId}-label`}
+          value={value ?? ""}
+          onValueChange={(next) =>
+            onChange(isCollectionQuickFilter(next) ? next : null)
+          }
+        >
+          {collectionQuickFilters.map((quick) => {
+            const status = availability[quick]
+            return (
+              <ToggleGroupItem
+                key={quick}
+                value={quick}
+                className={
+                  scroll
+                    ? `${FILTER_CHIP_CLASS_NAME} shrink-0`
+                    : FILTER_CHIP_CLASS_NAME
+                }
+                disabled={status !== "available"}
+                title={t(`myGame.collection.toolbar.quickHelp.${quick}`)}
+                aria-describedby={
+                  isUnavailable(status) ? `${noteId}-${status}` : undefined
+                }
+              >
+                {label(quick)}
+              </ToggleGroupItem>
+            )
+          })}
+        </ToggleGroup>
+      </div>
       {notes.map((note) => (
         <p
           key={note.reason}

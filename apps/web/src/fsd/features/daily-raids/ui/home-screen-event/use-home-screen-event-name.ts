@@ -1,6 +1,8 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
+import { formatEventWindow } from "@/shared/ui"
+
 import type { HomeScreenEventEntry } from "../../model/select-active-home-screen-event"
 
 /**
@@ -31,8 +33,5 @@ export function formatHomeScreenEventDates(
   entry: HomeScreenEventEntry,
   locale: string
 ): string {
-  return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).formatRange(
-    new Date(entry.startUtc),
-    new Date(entry.endUtc)
-  )
+  return formatEventWindow(entry, locale)
 }

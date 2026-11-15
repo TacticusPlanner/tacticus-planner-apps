@@ -1,3 +1,4 @@
+import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import {
   ToggleGroup,
@@ -23,11 +24,12 @@ export function TokenPlanOrderSwitch({
   onChange: (order: TokenPlanOrder) => void
 }) {
   const { t } = useTranslation("legendaryEvents")
+  const labelId = useId()
   return (
     <div className="flex items-center gap-2 text-sm">
-      <span id="token-plan-order-label">{t("tokenPlan.plan.order.label")}</span>
+      <span id={labelId}>{t("tokenPlan.plan.order.label")}</span>
       <ToggleGroup
-        aria-labelledby="token-plan-order-label"
+        aria-labelledby={labelId}
         onValueChange={(value) => {
           if (value === "points" || value === "missions") onChange(value)
         }}

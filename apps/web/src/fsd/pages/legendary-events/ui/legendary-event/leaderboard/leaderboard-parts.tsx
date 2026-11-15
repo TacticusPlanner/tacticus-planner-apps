@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Eye, Lock, MoreHorizontal } from "lucide-react"
-import { characterIcon, traitIcon } from "@workspace/game-catalog"
+import { characterIcon, rankIcon, traitIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
@@ -12,12 +12,18 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   ObjectiveIcon,
+  rankTone,
   type LeaderboardUnitRow,
   type LegendaryEventLaneId,
   type ObjectiveIconModel,
 } from "@/entities/legendary-event"
 import { UnitGoalBadge } from "@/entities/goal"
-import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
+import {
+  CompactProgression,
+  EntityIcon,
+  RankBadge,
+  RarityIcon,
+} from "@/shared/ui"
 
 import type { LeaderboardBody } from "./leaderboard.view-model"
 
@@ -169,6 +175,41 @@ export function LeaderboardRarity({ row }: { row: LeaderboardUnitRow }) {
   )
 }
 
+/** The owned unit's progression as the collection's roster view shows it (`CompactProgression`):
+ *  the rarity icon, then the star icon with the star count (or the wings); nothing for a locked or
+ *  unknown unit. */
+export function LeaderboardProgression({ row }: { row: LeaderboardUnitRow }) {
+  if (!row.rarity || !row.progression) return null
+  return (
+    <span data-rarity={row.rarity}>
+      <CompactProgression
+        data-testid="leaderboard-progression"
+        value={row.progression}
+      />
+    </span>
+  )
+}
+
+/** The owned unit's rank icon on a background in its rank colour, as the team tiles draw it;
+ *  nothing for a locked or unknown unit. */
+export function LeaderboardRankTile({ row }: { row: LeaderboardUnitRow }) {
+  const { t } = useTranslation("progression")
+  if (!row.rank) return null
+  const label = t(`ranks.${row.rank}`)
+  return (
+    <span
+      className="inline-flex h-7 w-10 items-center justify-center rounded-md border"
+      data-rank={row.rank}
+      data-testid="leaderboard-rank"
+      style={rankTone(row.rank)}
+      title={label}
+    >
+      <EntityIcon alt="" className="size-5" src={rankIcon(row.rank)} />
+      <span className="sr-only">{label}</span>
+    </span>
+  )
+}
+
 /** The owned unit's rank badge; nothing for a locked or unknown unit. */
 export function LeaderboardRank({
   row,
@@ -261,20 +302,22 @@ export function LeaderboardEmptyBody({
       </div>
     )
   }
+  const message = {
+    noEligible: "leaderboard.noEligible",
+    noUnlocked: "leaderboard.noUnlocked",
+    noneInTeams: "leaderboard.noneInTeams",
+  } as const
+  const testId = {
+    noEligible: "leaderboard-no-eligible",
+    noUnlocked: "leaderboard-no-unlocked",
+    noneInTeams: "leaderboard-none-in-teams",
+  } as const
   return (
     <p
       className="text-sm text-muted-foreground"
-      data-testid={
-        body.kind === "noEligible"
-          ? "leaderboard-no-eligible"
-          : "leaderboard-no-unlocked"
-      }
+      data-testid={testId[body.kind]}
     >
-      {t(
-        body.kind === "noEligible"
-          ? "leaderboard.noEligible"
-          : "leaderboard.noUnlocked"
-      )}
+      {t(message[body.kind])}
     </p>
   )
 }

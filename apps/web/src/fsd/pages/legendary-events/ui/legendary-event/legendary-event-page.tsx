@@ -6,7 +6,6 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
-  LEGENDARY_EVENT_LANE_IDS,
   type LegendaryEventLaneId,
   useClearEstimateConfig,
   useLegendaryEvent,
@@ -16,20 +15,27 @@ import {
   useLegendaryEventSyncTimes,
   useLegendaryEventUnits,
   useMinuteNow,
+  teamUnitIdsByLane,
+  LEGENDARY_EVENT_LANE_IDS,
 } from "@/entities/legendary-event"
 import {
   useAnnotations,
   useLegendaryEventPlan,
+  useShowPaidOptions,
 } from "@/features/legendary-event-plan"
 import {
   type MarkTokenHandler,
+  type StopTeamHandler,
+  type TokenShownHandler,
+  tokenMarkOutcome,
   useTokenMissionsSource,
   useTokenPlan,
 } from "@/features/legendary-event-tokens"
-import { usePlanningSettings } from "@/entities/planning-setting"
+import {
+  usePlanningSettings,
+  watchesDailyAds,
+} from "@/entities/planning-setting"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { useFeatureFlag } from "@/shared/feature-flags"
-import { useSearchParamState } from "@/shared/lib"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
@@ -48,9 +54,21 @@ import {
 } from "./legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
 import { useLastRun } from "./overview/use-last-run"
+import {
+  mergeShownObjectiveSelection,
+  shownObjectiveSelection,
+} from "./leaderboard/leaderboard.view-model"
+import { useBattlesLane } from "./use-battles-lane"
 import { useLaneJump } from "./use-lane-jump"
+import { useLaneSelection } from "./use-lane-selection"
 import { useLanePotentials } from "./use-lane-potentials"
 import { useCreateGoalFromRow } from "./use-create-goal-from-row"
+import {
+  tokenActionEstimateContext,
+  tokenBattleSnapshot,
+  tokenResultEvent,
+} from "./token-result-analytics"
+import { useShownTokens } from "./use-shown-tokens"
 import { useEventGoals } from "./use-event-goals"
 import { useEventRuns } from "./use-event-runs"
 import { useImpactTeamName, useUpgradeImpact } from "./use-upgrade-impact"
@@ -64,19 +82,17 @@ import {
   pickerGoalsPreview,
 } from "./teams/teams.view-model"
 
-const isEventTab = (value: string) =>
-  value === "overview" ||
-  (LEGENDARY_EVENT_LANE_IDS as readonly string[]).includes(value)
-
 /** `/legendary-events/:eventId`: computes the page's view model once and renders the tab-strip
- *  page (design D3). An unknown id replaces the route with the hub. The selected tab is the `tab`
- *  query parameter (replace history), which navigation to another event does not carry. The
+ *  page (design D3). An unknown id replaces the route with the hub. The selected tab and lane are the
+ *  `tab` and `lane` query parameters (replace history), which navigation to another event does not carry. The
  *  content is keyed by the event id, so the leaderboard's filters and toggles (and every read)
  *  start fresh on each event instead of carrying over. */
 export function LegendaryEventPage() {
   const { eventId = "" } = useParams()
   return <LegendaryEventPageContent eventId={eventId} key={eventId} />
 }
+
+const NO_LANES: readonly LegendaryEventLaneId[] = []
 
 function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const { t } = useTranslation("legendaryEvents")
@@ -87,13 +103,32 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const progress = useLegendaryEventProgress(eventId)
   const unitName = useUnitName()
   const syncTimes = useLegendaryEventSyncTimes()
-  const [selectedTab, setSelectedTab] = useSearchParamState<LegendaryEventTab>(
-    "tab",
-    isEventTab,
-    "overview"
-  )
-  // Shared by the three lanes' leaderboards and the Overview one; discarded when the page unmounts.
+  const lanes = useLaneSelection(isMobile)
+  // The run tab opens first while the event is active (spec: the run tab is the active default).
+  // Fixed once the lifecycle is known: a run window ending while the page is open must not move a
+  // user on the default tab (left out of the URL) to another tab.
+  const liveDefaultTab: LegendaryEventTab | undefined = event.lifecycle
+    ? event.lifecycle.state === "active"
+      ? "run"
+      : "overview"
+    : undefined
+  const [pinnedDefaultTab, setPinnedDefaultTab] = useState(liveDefaultTab)
+  if (pinnedDefaultTab === undefined && liveDefaultTab !== undefined) {
+    setPinnedDefaultTab(liveDefaultTab)
+  }
+  const defaultTab = pinnedDefaultTab ?? liveDefaultTab ?? "overview"
+  const [battlesLane, setBattlesLane] = useBattlesLane()
+  const {
+    selectedTab,
+    selectTab,
+    jumpToLane,
+    openTeams,
+    viewPlan,
+    viewBattles,
+  } = useLaneJump(defaultTab, lanes, setBattlesLane)
+  // Shared by every view of the leaderboard; discarded when the page unmounts.
   const [onlyUnlocked, setOnlyUnlocked] = useState(false)
+  const [onlyInTeams, setOnlyInTeams] = useState(false)
   const [deductScored, setDeductScored] = useState(true)
   const [selectedObjectives, setSelectedObjectives] = useState<
     ReadonlySet<string>
@@ -113,9 +148,26 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
   const eventData = event.status === "ready" ? event.data : undefined
   const runs = useEventRuns(event, syncedEntry, roster)
   const plan = useLegendaryEventPlan({ eventId, run: runs.run })
+  // Show paid options is an account preference: it replaces the plan's own (legacy) copy everywhere
+  // the plan feeds a figure. Until the account's value has loaded (or when its read failed) the
+  // plan's own copy stands, so the defaults never override it.
+  const paid = useShowPaidOptions()
+  const accountPaid =
+    paid.loading || paid.failed ? undefined : paid.showPaidOptions
+  const paidPlanQuery = useMemo(
+    () =>
+      plan.query.data &&
+      accountPaid !== undefined &&
+      plan.query.data.showPaidOptions !== accountPaid
+        ? {
+            ...plan.query,
+            data: { ...plan.query.data, showPaidOptions: accountPaid },
+          }
+        : plan.query,
+    [plan.query, accountPaid]
+  )
   const annotations = useAnnotations(eventId)
   const teamEditor = useTeamEditorLauncher()
-  const showEventBoard = useFeatureFlag("LreEventBoard")
   const marksByLane = useMemo(
     () => buildMarksByLane(annotations.annotations, syncedEntry),
     [annotations.annotations, syncedEntry]
@@ -210,10 +262,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     progress: progressValue,
     roster,
   })
-  const selectedLane = selectedTab === "overview" ? undefined : selectedTab
   const upgradeImpact = useUpgradeImpact({
     eventData,
-    laneId: selectedLane,
+    laneIds: selectedTab === "plan" ? LEGENDARY_EVENT_LANE_IDS : NO_LANES,
     planEnabled: plan.enabled,
     planData: plan.query.data,
     units: Array.isArray(units) ? units : undefined,
@@ -224,11 +275,15 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     initialRarityOf,
   })
   const impactTeamName = useImpactTeamName(eventData, plan.query.data)
+  const battlesLanes = useMemo(
+    () => (selectedTab === "plan" ? [battlesLane] : NO_LANES),
+    [selectedTab, battlesLane]
+  )
   const battlesSection = useBattlesSection({
     event: eventData,
-    laneId: selectedLane,
     battlesRead,
     progressGrid,
+    laneIds: battlesLanes,
   })
   const progressObservedAtMs =
     syncTimes.status === "ready" ? syncTimes.data.progressObservedAtMs : null
@@ -244,11 +299,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     nowMs,
     progress: progressValue,
     progressObservedAtMs,
-    watchAds: accountSettings.watchAds,
+    watchAds: watchesDailyAds(accountSettings),
     plan: {
       enabled: plan.enabled,
-      status: plan.query.status,
-      data: plan.query.data,
+      status: paidPlanQuery.status,
+      data: paidPlanQuery.data,
     },
     resolution: runs.resolution,
     eventUnit: runs.ownedEventUnit,
@@ -260,10 +315,6 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     plan: plan.query.data,
     run: runs.run,
   })
-  const { selectTab, jumpToLane, openTeams } = useLaneJump(
-    selectedTab,
-    setSelectedTab
-  )
   useTourPageSteps(useLegendaryEventTutorial(selectTab, runHistory.hasLastRun))
 
   // A record cached before rewards were served lacks them until the next catalog sync.
@@ -273,10 +324,11 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       buildRunStatusViewModel({
         progress,
         rewards,
+        unit: runs.eventUnit,
         progressObservedAtMs,
         nowMs,
       }),
-    [progress, rewards, progressObservedAtMs, nowMs]
+    [progress, rewards, runs.eventUnit, progressObservedAtMs, nowMs]
   )
   const outlook = useMemo(
     () =>
@@ -285,7 +337,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         progress: progressValue,
         unit: runs.eventUnit,
         resolution: runs.resolution,
-        plan: plan.query,
+        plan: paidPlanQuery,
         planEnabled: plan.enabled,
       }),
     [
@@ -293,7 +345,7 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       progressValue,
       runs.eventUnit,
       runs.resolution,
-      plan.query,
+      paidPlanQuery,
       plan.enabled,
     ]
   )
@@ -308,6 +360,13 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
         runPending: progressValue === "loading",
       }),
     [plan.enabled, plan.query, units, unitsRead.retry, roster, progressValue]
+  )
+  const teamUnitIds = useMemo(
+    () =>
+      teamsState.kind === "ready"
+        ? teamUnitIdsByLane(teamsState.plan.teams)
+        : undefined,
+    [teamsState]
   )
   const { openTeamEditor } = teamEditor
   const addToTeam = useCallback(
@@ -329,10 +388,152 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     (laneId, battle, status) => void markBattle(laneId, battle, status),
     [markBattle]
   )
+  const planTeams = plan.query.data?.teams
+  const { setDepth } = plan
+  const shownTokens = useShownTokens(eventId, runs.run, progressValue)
   const markTokenVoid = useCallback<MarkTokenHandler>(
-    (laneId, battleIndex, objectiveIds, status) =>
-      void markToken(laneId, battleIndex, objectiveIds, status),
-    [markToken]
+    (laneId, battleIndex, objectiveIds, status, teamId) => {
+      const team = planTeams?.find((entry) => entry.id === teamId)
+      const outcome = tokenMarkOutcome({
+        teamId,
+        laneId,
+        battleIndex,
+        teams: planTeams ?? [],
+        depthOf: (id) =>
+          tokenPlan.kind === "ready"
+            ? (tokenPlan.depthByTeam.get(id)?.depth ?? null)
+            : null,
+      })
+      const depthBefore =
+        tokenPlan.kind === "ready"
+          ? tokenPlan.depthByTeam.get(teamId)
+          : undefined
+      const shown = tokenActionEstimateContext(
+        clearEstimates,
+        laneId,
+        team,
+        depthBefore?.estimated ?? false
+      )
+      const dropped = team !== undefined && outcome.depth !== null
+      shownTokens.forget({ laneId, battleIndex })
+      if (dropped) void setDepth(team, outcome.depth, shown)
+      if (!dropped || outcome.markCells) {
+        void markToken(laneId, battleIndex, objectiveIds, status)
+      }
+      captureEvent(
+        tokenResultEvent({
+          eventId,
+          run: runs.run,
+          laneId,
+          battleIndex,
+          action: status,
+          shown,
+          battle: tokenBattleSnapshot(
+            clearEstimates,
+            laneId,
+            battleIndex,
+            shown
+          ),
+          depthBefore,
+          depthAfter: dropped ? outcome.depth : (depthBefore?.depth ?? null),
+          otherTeamReaches: !outcome.markCells,
+        })
+      )
+    },
+    [
+      captureEvent,
+      clearEstimates,
+      eventId,
+      markToken,
+      planTeams,
+      runs.run,
+      setDepth,
+      shownTokens,
+      tokenPlan,
+    ]
+  )
+  // Try another team: the player ends the token's team before this battle (no cells marked), so its
+  // depth becomes the battles before it and the plan moves on to other teams.
+  const stopTeamVoid = useCallback<StopTeamHandler>(
+    (laneId, battleIndex, teamId) => {
+      const team = planTeams?.find((entry) => entry.id === teamId)
+      if (!team || battleIndex < 1) return
+      const depthBefore =
+        tokenPlan.kind === "ready"
+          ? tokenPlan.depthByTeam.get(teamId)
+          : undefined
+      const shown = tokenActionEstimateContext(
+        clearEstimates,
+        laneId,
+        team,
+        depthBefore?.estimated ?? false
+      )
+      shownTokens.forget({ laneId, battleIndex })
+      void setDepth(team, battleIndex, shown)
+      captureEvent(
+        tokenResultEvent({
+          eventId,
+          run: runs.run,
+          laneId,
+          battleIndex,
+          action: "stopEarly",
+          shown,
+          battle: tokenBattleSnapshot(
+            clearEstimates,
+            laneId,
+            battleIndex,
+            shown
+          ),
+          depthBefore,
+          depthAfter: battleIndex,
+          otherTeamReaches: false,
+        })
+      )
+    },
+    [
+      captureEvent,
+      clearEstimates,
+      eventId,
+      planTeams,
+      runs.run,
+      setDepth,
+      shownTokens,
+      tokenPlan,
+    ]
+  )
+  // Remembers the shown Next token so a later sync that clears it is logged as a success.
+  const rememberShownToken = useCallback<TokenShownHandler>(
+    (token) => {
+      const team = planTeams?.find((entry) => entry.id === token.teamId)
+      if (!team) return
+      const depth =
+        tokenPlan.kind === "ready"
+          ? tokenPlan.depthByTeam.get(token.teamId)
+          : undefined
+      const shown = tokenActionEstimateContext(
+        clearEstimates,
+        token.laneId,
+        team,
+        depth?.estimated ?? false
+      )
+      shownTokens.remember({
+        run: runs.run,
+        laneId: token.laneId,
+        battleIndex: token.battleIndex,
+        teamId: token.teamId,
+        clearedIds: token.clearedIds,
+        depth: depth?.depth ?? null,
+        depthManual: depth ? !depth.estimated : false,
+        shown,
+        battle: tokenBattleSnapshot(
+          clearEstimates,
+          token.laneId,
+          token.battleIndex,
+          shown
+        ),
+      })
+    },
+    [clearEstimates, planTeams, runs.run, shownTokens, tokenPlan]
   )
   const pickerPreview = useCallback(
     (laneId: LegendaryEventLaneId) =>
@@ -368,15 +569,32 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       syncedAtMs,
       selectedTab,
       onSelectTab: selectTab,
+      lanes,
       onJumpToLane: jumpToLane,
+      onViewPlan: viewPlan,
+      onViewBattles: viewBattles,
+      battlesLane: { laneId: battlesLane, onChange: setBattlesLane },
       leaderboard: {
         ...(previewLeaderboardRows ?? leaderboardRows),
         onlyUnlocked,
         onOnlyUnlockedChange: setOnlyUnlocked,
+        onlyInTeams,
+        onOnlyInTeamsChange: setOnlyInTeams,
+        teamUnitIds,
         deductScored,
         onDeductScoredChange: setDeductScored,
-        selectedObjectives,
-        onSelectedObjectivesChange: setSelectedObjectives,
+        // A hidden lane's objective chips no longer filter (spec: one lane selection).
+        selectedObjectives: shownObjectiveSelection(
+          eventData,
+          lanes.shown,
+          selectedObjectives
+        ),
+        onSelectedObjectivesChange: (next) =>
+          setSelectedObjectives((current) =>
+            mergeShownObjectiveSelection(eventData, lanes.shown, current, next)
+          ),
+        allSelectedObjectives: selectedObjectives,
+        onAllSelectedObjectivesChange: setSelectedObjectives,
         clears:
           previewOn && previewEstimates ? previewEstimates : clearEstimates,
         onAddToTeam: teamsState.kind === "ready" ? addToTeam : undefined,
@@ -389,6 +607,10 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
           onCreateGoal: createGoalFromRow,
         },
       },
+      allLanesObjectives: {
+        selected: selectedObjectives,
+        onChange: setSelectedObjectives,
+      },
       progressGrid,
       marks: {
         editable: marksEditable,
@@ -399,6 +621,9 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       tokens: {
         view: tokenPlan,
         onMarkToken: marksEditable ? markTokenVoid : undefined,
+        onStopTeam: marksEditable ? stopTeamVoid : undefined,
+        onTokenShown: marksEditable ? rememberShownToken : undefined,
+        run: runs.run,
         onOpenTeams: openTeams,
       },
       teams: {
@@ -417,14 +642,15 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
       lastRun: runHistory.lastRun,
       upgradeImpact: upgradeImpact
         ? {
-            state: upgradeImpact,
+            byLane: upgradeImpact,
             goalTargets: goalTargetsByUnit,
             teamName: impactTeamName,
           }
         : null,
       battles: battlesSection,
+      battlesRead,
       potentials,
-      showEventBoard,
+      eventBoard: { units, roster: syncedRoster },
     }
   }, [
     eventData,
@@ -439,10 +665,17 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     syncedAtMs,
     selectedTab,
     selectTab,
+    lanes,
     jumpToLane,
+    viewPlan,
+    viewBattles,
+    battlesLane,
+    setBattlesLane,
     previewLeaderboardRows,
     leaderboardRows,
     onlyUnlocked,
+    onlyInTeams,
+    teamUnitIds,
     deductScored,
     selectedObjectives,
     previewOn,
@@ -463,6 +696,8 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     markBattleVoid,
     tokenPlan,
     markTokenVoid,
+    stopTeamVoid,
+    rememberShownToken,
     openTeams,
     unitPower,
     eventId,
@@ -475,8 +710,10 @@ function LegendaryEventPageContent({ eventId }: { eventId: string }) {
     goalTargetsByUnit,
     impactTeamName,
     battlesSection,
+    battlesRead,
     potentials,
-    showEventBoard,
+    units,
+    syncedRoster,
   ])
 
   // Until `lres` has synced an absent event may just not have arrived yet (the catalog init gate

@@ -10,6 +10,10 @@ import { progressionRulesSchema } from "./progression-rules"
 import { hreSchema } from "./hre"
 import { incursionSchema } from "./incursions"
 import {
+  npcEncounterSchema,
+  npcEncountersPayloadSchema,
+} from "./npc-encounters"
+import {
   eventDefinitionSchema,
   eventsCalendarPayloadSchema,
   eventsCalendarRowSchema,
@@ -17,6 +21,7 @@ import {
 import { lreBattleViewSchema, lreViewSchema } from "./lre"
 import { guildRaidMetaPayloadSchema } from "./guild-raid-meta"
 import { hordeModeTiersSchema } from "./horde-mode-tiers"
+import { npcTiersSchema } from "./npc-tiers"
 import { mowSchema, mowUpgradeCostSchema } from "./mow"
 import { mythicQuestsSchema } from "./mythic-quests"
 import { characterAbilityCostSchema } from "./character-ability-costs"
@@ -48,6 +53,7 @@ export const datasetPayloadSchemas = {
   lres: z.array(lreViewSchema),
   "lre-battles": z.array(lreBattleViewSchema),
   "horde-mode-tiers": z.array(hordeModeTiersSchema),
+  "npc-tiers": z.array(npcTiersSchema),
   "event-definitions": z.array(eventDefinitionSchema),
   // The one exception to "every payload is a plain array" — see events.ts.
   "events-calendar": eventsCalendarPayloadSchema,
@@ -67,6 +73,7 @@ export const datasetPayloadSchemas = {
   "progression-rules": z.array(progressionRulesSchema),
   hre: z.array(hreSchema),
   incursions: z.array(incursionSchema),
+  "npc-encounters": npcEncountersPayloadSchema,
 } satisfies Record<GameCatalogDatasetKey, z.ZodType>
 
 // Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
@@ -87,6 +94,7 @@ export type GameCatalogRecordByKey = {
   lres: z.infer<typeof lreViewSchema>
   "lre-battles": z.infer<typeof lreBattleViewSchema>
   "horde-mode-tiers": z.infer<typeof hordeModeTiersSchema>
+  "npc-tiers": z.infer<typeof npcTiersSchema>
   "event-definitions": z.infer<typeof eventDefinitionSchema>
   // The flattened storage-row shape (entry + injected `date`), not the raw date-keyed payload — see
   // events.ts and game-catalog.mapper.ts's `byCalendarDate`.
@@ -105,4 +113,5 @@ export type GameCatalogRecordByKey = {
   "progression-rules": z.infer<typeof progressionRulesSchema> & { id: string }
   hre: z.infer<typeof hreSchema>
   incursions: z.infer<typeof incursionSchema>
+  "npc-encounters": z.infer<typeof npcEncounterSchema>
 }

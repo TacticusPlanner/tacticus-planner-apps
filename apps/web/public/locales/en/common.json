@@ -82,6 +82,7 @@
       "nextAutoSync": "Next auto sync {{time}}",
       "syncProgress": "Syncing {{downloaded}} / {{total}}…",
       "retrySync": "Sync failed — try again",
+      "rateLimited": "Sync limit reached. Try again {{time}}.",
       "reauthRequired": "Sign-in expired — tap to sign in",
       "refreshRequired": "Refresh required · {{lastSync}}",
       "syncNow": "Sync now"
@@ -138,7 +139,8 @@
       "replaceWarning": "Applying a code replaces your current goals, plans and settings.",
       "confirm": "I understand",
       "applied": "Code applied.",
-      "apply": "Apply code"
+      "apply": "Apply code",
+      "traceId": "Trace ID: {{traceId}}"
     }
   },
   "accountGate": {
@@ -271,6 +273,7 @@
     "dailies": "Dailies",
     "dailiesDescription": "Daily and periodic in-game tasks",
     "eventLive": "Event live",
+    "live": "Live",
     "home": "Home",
     "homeDescription": "Your account overview and quick links",
     "createGoal": "Create Goal",
@@ -290,6 +293,7 @@
     "noResults": "No matching pages or actions found.",
     "search": "Search pages and actions",
     "sync": "Sync",
+    "syncCooldown": "{{minutes}} min",
     "syncWithTacticus": "Sync with Tacticus",
     "skipToContent": "Skip to content",
     "primaryNavigation": "Main navigation",
@@ -342,15 +346,6 @@
     "rewardsTitle": "Shard rewards reference",
     "sectorTier": "Sector / tier",
     "current": "Current alliance progress",
-    "rewards": {
-      "Common": "Common",
-      "Uncommon": "Uncommon",
-      "Rare": "Rare",
-      "Epic": "Epic",
-      "Legendary": "Legendary",
-      "LegendaryBlue": "Legendary 1★ blue",
-      "Mythic": "Mythic"
-    },
     "unsaved": {
       "message": "You have unsaved changes",
       "save": "Save",
@@ -400,8 +395,17 @@
           "rarity": "Rarity",
           "rank": "Rank",
           "abilities": "Abilities",
-          "shards": "Shards"
+          "shards": "Shards",
+          "power": "Power"
         },
+        "view": "View",
+        "views": {
+          "cards": "Cards",
+          "roster": "Roster"
+        },
+        "groupByFaction": "Group by faction",
+        "hideUnowned": "Hide unowned",
+        "hideUnownedNeedsRoster": "Hiding unowned units needs a synced roster.",
         "filters": "Filters",
         "filtersCount_one": "Filters ({{count}})",
         "filtersCount_other": "Filters ({{count}})",
@@ -422,19 +426,16 @@
         "clearRankTo": "Clear highest rank",
         "searchRanks": "Search ranks",
         "noRanks": "No rank matches",
-        "ownership": "Ownership",
-        "ownershipAll": "All units",
-        "owned": "Owned",
-        "unowned": "Not owned",
         "kind": "Unit type",
         "kindAll": "All unit types",
         "character": "Characters",
         "mow": "Machines of War",
-        "needsRoster": "Rank, stars and ownership filters need a synced roster.",
+        "needsRoster": "Rank and stars filters need a synced roster.",
         "quickFilters": "Quick filters",
         "quick": {
           "readyToRankUp": "Ready to rank up",
           "needToAscend": "Need to ascend",
+          "canPromote": "Can promote",
           "canAscend": "Can ascend",
           "needToLevel": "Need to level",
           "blueStarReady": "Blue star ready",
@@ -444,6 +445,7 @@
         "quickHelp": {
           "readyToRankUp": "Your upgrade inventory covers every material still needed at the current rank.",
           "needToAscend": "At the highest rank for its rarity, with an ascension still ahead.",
+          "canPromote": "Your shards and orbs pay for the next star within the current rarity.",
           "canAscend": "Your shards and orbs pay for the next rarity (the next star at Mythic).",
           "needToLevel": "Below the level cap for its rarity.",
           "blueStarReady": "Your shards and orbs pay for every step up to one blue star.",
@@ -452,6 +454,7 @@
         },
         "quickNeedsRoster": "Quick filters need a synced roster.",
         "quickNeedsInventory": "{{filters}}: needs your synced inventory.",
+        "quickCurrentOnly": "{{filters}}: reads your current roster and inventory, so it is off while comparing a snapshot.",
         "quickFailed": "{{filters}}: its game data couldn't be loaded.",
         "rankRange": "Rank range",
         "groupUnit": "Unit",
@@ -504,9 +507,164 @@
       },
       "empty": {
         "title": "No unit matches these filters",
-        "body": "Change or clear the filters to see more units."
+        "body": "Change or clear the filters to see more units.",
+        "hiddenTitle": "No owned units here",
+        "hiddenBody": "Hide unowned is hiding all of these units.",
+        "showUnowned": "Show unowned units"
+      },
+      "compare": {
+        "toggle": "Compare",
+        "loading": "Loading the comparison…",
+        "options": "Compare options",
+        "from": "From",
+        "to": "To",
+        "current": "Current roster",
+        "personalGroup": "Your snapshots",
+        "leGroup": "Legendary Events",
+        "runRecordLabel": "{{event}} · run {{run}} · {{date}}",
+        "event": "Legendary Event",
+        "anyEvent": "Any unit",
+        "lane": "Lane",
+        "anyLane": "Every lane",
+        "lanes": {
+          "alpha": "Alpha",
+          "beta": "Beta",
+          "gamma": "Gamma"
+        },
+        "order": "Order",
+        "orderGain": "Power gained",
+        "fields": "Fields ({{count}}/{{total}})",
+        "fieldNames": {
+          "shards": "Shards",
+          "mythicShards": "Mythic shards",
+          "xp": "XP",
+          "upgrades": "Upgrades",
+          "abilities": "Abilities",
+          "equipment": "Equipment",
+          "power": "Power"
+        },
+        "showUnchanged": "Show unchanged",
+        "summaryTitle": "{{from}} → {{to}}",
+        "summaryFor_one": "for {{count}} matching unit",
+        "summaryFor_other": "for {{count}} matching units",
+        "metricHint": "Select a number to list only the units behind it.",
+        "metrics": {
+          "unlocked": "Unlocked",
+          "ascensions": "Ascensions",
+          "promotions": "Promotions",
+          "rankUps": "Rank-ups",
+          "abilityLevels": "Ability levels",
+          "upgradesApplied": "Upgrades applied",
+          "shardsEarned": "Shards earned",
+          "mythicShardsEarned": "Mythic shards earned",
+          "power": "Power gained"
+        },
+        "noChanges": "No changes for these units",
+        "emptyTitle": "Take your first snapshot",
+        "emptyBody": "A snapshot saves your whole roster as it is now, so you can compare it with later progress.",
+        "errorTitle": "Snapshots couldn't be loaded",
+        "errorBody": "The comparison can't be shown without them. Try again.",
+        "fromTo": "{{from}} → {{to}}",
+        "chips": {
+          "unlocked": "Unlocked",
+          "upgrades": "{{value}} upgrades",
+          "xpLevel": "{{value}} levels",
+          "shards": "{{value}} shards",
+          "mythicShards": "{{value}} mythic",
+          "equipment": "{{value}} items",
+          "power": "{{value}} power"
+        },
+        "details": {
+          "none": "No changes.",
+          "unlocked": "Unlocked",
+          "rank": "Rank",
+          "stars": "Stars",
+          "upgrades": "Upgrades applied",
+          "xpLevel": "XP level",
+          "xpGained": "XP gained",
+          "activeAbility": "Active ability",
+          "passiveAbility": "Passive ability",
+          "primaryAbility": "Primary ability",
+          "secondaryAbility": "Secondary ability",
+          "shards": "Shards",
+          "mythicShards": "Mythic shards",
+          "shardsBreakdown": "net {{net}} · spent {{spent}} · earned {{earned}}",
+          "equipment": "Item",
+          "power": "Power",
+          "openLibrary": "Open in Library",
+          "items": {
+            "I_Crit": "Crit item",
+            "I_Block": "Block item",
+            "I_Booster_Crit": "Crit booster",
+            "I_Booster_Block": "Block booster",
+            "I_Defensive": "Defensive item"
+          }
+        },
+        "closeOptions": "Close"
+      },
+      "snapshots": {
+        "signIn": "Sign in to save snapshots of your roster and compare them.",
+        "take": "Take snapshot",
+        "manage": "Snapshots",
+        "usage": "{{count}}/{{limit}}",
+        "limitTooltip": "Delete a snapshot to take a new one",
+        "dialogTitle": "Take a snapshot",
+        "dialogBody": "Syncs with Tacticus first, then saves your whole roster.",
+        "name": "Name (optional)",
+        "nameLabel": "Snapshot name",
+        "namePlaceholder": "Today's date",
+        "nameTooLong": "Use at most {{max}} characters.",
+        "cancel": "Cancel",
+        "confirm": "Take snapshot",
+        "syncing": "Syncing…",
+        "retry": "Retry",
+        "syncFailed": "Syncing with Tacticus failed.",
+        "rateLimited": "Too many syncs. You can try again {{time}}.",
+        "rateLimitedSoon": "Too many syncs. Try again shortly.",
+        "notSynced": "Sync your roster before taking a snapshot.",
+        "fromLastSync": "Take from last sync (synced {{time}})",
+        "taken": "Snapshot taken",
+        "compare": "Compare",
+        "manageTitle": "Manage snapshots",
+        "none": "No snapshots yet.",
+        "rename": "Rename",
+        "delete": "Delete",
+        "deleteTitle": "Delete “{{name}}”?",
+        "deleteBody": "The snapshot is deleted permanently.",
+        "deleteConfirm": "Delete",
+        "renameFailed": "The snapshot couldn't be renamed.",
+        "deleteFailed": "The snapshot couldn't be deleted.",
+        "autoLabel": "Auto · {{date}}",
+        "v1ImportLabel": "V1 · {{name}}",
+        "autoBadge": "Auto",
+        "v1ImportBadge": "V1",
+        "autoTitle": "Automatic",
+        "autoHint": "Taken after a sync when your roster has no snapshot from the last 30 days. Up to {{limit}} are kept; the oldest is replaced.",
+        "keep": "Keep",
+        "keepLimitTooltip": "Delete a snapshot to keep this one",
+        "keepFailed": "The snapshot couldn't be kept."
+      },
+      "select": {
+        "start": "Select units",
+        "unit": "Select {{name}}",
+        "count_one": "{{count}} selected",
+        "count_other": "{{count}} selected",
+        "selectAll": "Select all shown",
+        "clear": "Clear",
+        "createGoals": "Create goals",
+        "done": "Done"
       }
     }
+  },
+  "unitRow": {
+    "level": "Lv {{level}}",
+    "active": "Active",
+    "passive": "Passive",
+    "primary": "Primary",
+    "secondary": "Secondary",
+    "equipment": "Equipment",
+    "shards": "Shards",
+    "open": "Open {{name}}"
   },
   "unitTile": {
     "characterAbilities": "Active ability level {{first}}, passive ability level {{second}}",
@@ -813,12 +971,14 @@
         "goals": "Goals",
         "onslaughtProgress": "Onslaught progress",
         "campaignEventProgress": "Campaign event progress",
-        "legendaryEventPlans": "Legendary Event teams"
+        "legendaryEventPlans": "Legendary Event teams",
+        "rosterSnapshots": "Roster snapshots"
       },
       "partDescriptions": {
         "userId": "Links your planner account to your in-game player, which guild features need.",
         "guildKey": "Used only if you're your guild's Leader or Co-Leader: it registers your guild in the planner so every member can use guild features.",
-        "legendaryEventPlans": "Hand-built teams, notes, per-run mission and pack inputs, and Maybe clear / Stop here marks for the events the planner knows. Event progress is not imported."
+        "legendaryEventPlans": "Hand-built teams, notes, per-run mission and pack inputs, and Maybe clear / Stop here marks for the events the planner knows. Event progress is not imported.",
+        "rosterSnapshots": "Your V1 roster snapshots, newest first, up to the snapshot limit. Total XP and applied upgrades were not recorded in V1, so comparisons leave them out."
       },
       "submit": "Import selected",
       "submitting": "Importing…",
@@ -948,6 +1108,8 @@
         "goals_other": "{{count}} goals",
         "legendaryEvents_one": "Legendary Event teams for {{count}} event",
         "legendaryEvents_other": "Legendary Event teams for {{count}} events",
+        "rosterSnapshots_one": "{{count}} roster snapshot",
+        "rosterSnapshots_other": "{{count}} roster snapshots",
         "parts": {
           "personalTacticusApiKey": "API key",
           "tacticusUserId": "Tacticus user ID",
@@ -960,6 +1122,26 @@
       "partReasons": {
         "invalidTacticusUserId": "The V1 Tacticus user ID is not a valid GUID, so it wasn't imported.",
         "tacticusUserIdConflict": "This Tacticus user ID is already linked to another planner account, so it wasn't imported."
+      },
+      "rosterSnapshots": {
+        "title": "Roster snapshots",
+        "unnamed": "Unnamed snapshot",
+        "droppedUnits_one": "{{count}} unit or item the planner does not know was left out",
+        "droppedUnits_other": "{{count}} units or items the planner does not know were left out",
+        "reasons": {
+          "imported": "Imported",
+          "skippedDuplicate": "Already imported",
+          "skippedDeleted": "In the V1 trash",
+          "skippedLimit": "The snapshot limit is reached",
+          "failed": "This snapshot couldn't be read"
+        },
+        "partReasons": {
+          "missing_roster_snapshots": "Your V1 profile has no roster snapshots.",
+          "invalid_roster_snapshots": "Your V1 roster snapshots couldn't be read.",
+          "no_roster_snapshot_imported": "No new roster snapshot came across.",
+          "roster_snapshot_import_failed": "None of your V1 roster snapshots could be read.",
+          "roster_snapshot_import_conflict": "Your snapshots changed during the import. Try again."
+        }
       }
     },
     "empty": {
@@ -1026,6 +1208,7 @@
       "pause": "Pause",
       "resume": "Resume",
       "delete": "Delete",
+      "deleteGoal": "Delete {{entity}} goal",
       "moveToTop": "Move to top",
       "moveUp": "Move up",
       "moveDown": "Move down",
@@ -1346,7 +1529,17 @@
         },
         "owned": "own {{count}}",
         "alreadyMet": "You already own this many, so this target is already met.",
-        "noResources": "You already own every material in these quantities."
+        "noResources": "You already own every material in these quantities.",
+        "addRarity": {
+          "label": "Add all:",
+          "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Counts toward",
+          "hint": "Its materials count toward these goals instead of being farmed on top of them.",
+          "option": "{{type}} → {{target}}",
+          "empty": "No in-flight goal on this unit to count toward."
+        }
       },
       "previewTitle": "Resources needed",
       "showAll": "Show all ({{count}})",
@@ -1361,6 +1554,7 @@
       "submit": "Create goal",
       "close": "Close",
       "genericError": "Couldn't create the goal. Please try again.",
+      "serverError": "Couldn't reach the server. Please try again.",
       "previewEstimate": "≈ {{days}} days",
       "previewEnergy": "{{energy}} energy",
       "reviewTitle": "What will be created",
@@ -1383,7 +1577,7 @@
         "upgradeTargetsRequired": "Select at least one upgrade to farm for the Upgrade goal.",
         "rankMaxed": "This character has already reached the maximum rank.",
         "progressionMaxed": "This unit has already reached the maximum progression level.",
-        "abilityMaxed": "This unit's abilities have already reached the maximum level for its current rarity.",
+        "abilityMaxed": "This unit's abilities have already reached the maximum level.",
         "activeOrPausedGoalExists": "An active or paused {{goalType}} goal already exists for this unit.",
         "upgradeQuantity": "Enter a whole number from 1 to 10,000.",
         "alreadyUnlocked_mow": "This Machine of War is already unlocked.",
@@ -1442,10 +1636,18 @@
       }
     },
     "estimate": {
+      "checkpoints": {
+        "summary": "{{count}} checkpoints",
+        "next": "Next",
+        "title": "Checkpoints",
+        "ready": "Ready now",
+        "energy": "{{energy}} energy"
+      },
       "none": "—",
       "days": "in {{days}} days",
       "blockedLabel": "Blocked",
       "unavailableRow": "{{material}} ×{{count}}: {{reason}}",
+      "materialCount": "{{material}} ×{{count}}",
       "blocked": {
         "NoFarmLocation": "No accessible farming location provides a required resource.",
         "FarmingOverrideUnavailable": "The selected farming locations do not provide every required resource.",
@@ -1453,7 +1655,16 @@
         "SimulationLimit": "The goal could not complete within the planning horizon.",
         "UnsupportedCost": "Detailed costing is not supported for this goal.",
         "FilteredOut": "Every farming location is excluded by your Raids Filters."
-      }
+      },
+      "unlockAt": "Unlocks at",
+      "battlesToGo_one": "{{count}} battle to go",
+      "battlesToGo_other": "{{count}} battles to go",
+      "battlesToGoNotStarted_one": "not started, {{count}} battle to go",
+      "battlesToGoNotStarted_other": "not started, {{count}} battles to go",
+      "unlockDuringEvent": "during the campaign event",
+      "unlockMore_one": "+{{count}} more location",
+      "unlockMore_other": "+{{count}} more locations",
+      "unlockFewer": "Show fewer"
     },
     "unlockFlavor": "Gather the character's shards and prepare them to join your roster.",
     "filters": {
@@ -1463,11 +1674,14 @@
       "groupByLabel": "Group by",
       "groupNone": "No grouping",
       "groupByType": "Group by type",
+      "groupByTypePriority": "Group by type (priority order)",
       "groupByUnit": "Group by unit",
       "reachedIndicatorLabel": "Reached goals are waiting to be viewed",
       "statusFilterLabel": "Goal status filter",
       "groupCount_one": "{{count}} goal",
-      "groupCount_other": "{{count}} goals"
+      "groupCount_other": "{{count}} goals",
+      "collapseAllGroups": "Collapse all",
+      "expandAllGroups": "Expand all"
     },
     "seasonFit": {
       "label": "Season fit",
@@ -1526,24 +1740,22 @@
       "orbs": "{{rarity}} orbs",
       "abilityBadges": "{{rarity}} ability badges",
       "forgeBadges": "{{rarity}} forge badges",
+      "orbsTotal": "Orbs",
+      "abilityBadgesTotal": "Ability badges",
+      "forgeBadgesTotal": "Forge badges",
+      "byRarityLabel": "{{label}}. Show by rarity",
       "xpBooks": "{{rarity}} XP books",
       "xpBooksValue": "{{available}} of {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
       "poolLabel": "{{name}}: {{available}} of {{needed}}",
-      "standalone": "Standalone: {{slots}} upgrade slots, {{energy}} energy",
-      "rarity": {
-        "Common": "Common",
-        "Uncommon": "Uncommon",
-        "Rare": "Rare",
-        "Epic": "Epic",
-        "Legendary": "Legendary",
-        "Mythic": "Mythic"
-      }
+      "standalone": "Standalone: {{slots}} upgrade slots, {{energy}} energy"
     },
     "overview": {
       "levelProgress": "Lv {{current}} → {{target}}",
       "ownedOfRequired": "{{owned}} / {{required}}",
       "upgradeMaterial": "{{name}}: {{owned}} / {{quantity}}",
+      "upgradeMaterialCounted": "Includes {{amount}} held by the {{unit}} {{goalType}} goal (#{{priority}})",
+      "upgradeMaterialTakenFirst": "{{amount}} taken first by the {{unit}} {{goalType}} goal (#{{priority}})",
       "abilityTrack": {
         "active": "Active",
         "passive": "Passive",
@@ -1630,7 +1842,8 @@
       "holdingBackTitle": "What's holding you back",
       "holdingBackDescription": "What no farming clears, then the resources that take the most energy at your chosen nodes.",
       "holdingBackNone": "Nothing is holding these goals back.",
-      "neededFor": "Needed for {{units}}",
+      "neededFor": "Needed for",
+      "blockedGoals": "Goals it blocks",
       "missingFarmed": "Farmed resources",
       "missingUpgrades": "Upgrades",
       "missingShards": "Shards",
@@ -1639,7 +1852,21 @@
       "farmingSpot_other": "{{count}} resources · {{days}}",
       "farmingSpotHint": "Ranked by how much of what your goals still need drops per energy. Each row shows how many needed resources drop there and the days to farm them all there, at your daily energy and each node's daily attempts.",
       "openSchedule": "Day-by-day plan",
-      "helpsGoals": "Helps these goals"
+      "helpsGoals": "Helps these goals",
+      "progressionTitle": "Campaigns to push",
+      "progressionDescription": "Uncleared campaigns that unblock your goals or make their farming cheaper, with what still stops you from playing them.",
+      "battlesLeft_one": "{{count}} battle left",
+      "battlesLeft_other": "{{count}} battles left",
+      "battlesLeftNotStarted_one": "Not started, {{count}} battle",
+      "battlesLeftNotStarted_other": "Not started, {{count}} battles",
+      "unblocks_one": "Unblocks {{material}} in {{count}} battle",
+      "unblocks_other": "Unblocks {{material}} in {{count}} battles",
+      "energySaved": "Saves about {{energy}} energy",
+      "lockMissingCore": "Unlock {{units}} to play it",
+      "lockRequiredCampaign_one": "Clear {{campaign}} first ({{count}} battle left)",
+      "lockRequiredCampaign_other": "Clear {{campaign}} first ({{count}} battles left)",
+      "lockPowerLevel": "Reach Power Level {{required}} (you're at {{current}})",
+      "createUnlockGoal": "Add Unlock goal for {{unit}}"
     },
     "target": {
       "title": "Target",
@@ -1717,6 +1944,7 @@
     "card": {
       "ladder": {
         "current": "Current",
+        "start": "Start",
         "taken": "Already a goal"
       },
       "range": {
@@ -1732,6 +1960,7 @@
         "decrease": "Lower {{track}}",
         "increase": "Raise {{track}}",
         "noChange": "No change",
+        "current": "Current {{level}}",
         "quickPicks": "{{track}}: quick picks"
       }
     },
@@ -1739,6 +1968,61 @@
       "goalLimitReached": "You already have {{max}} {{type}} goals that are not archived. Archive or delete some first.",
       "goalLimitReachedGeneric": "You can have at most {{max}} goals of one type that are not archived. Archive or delete some first.",
       "projectLimitReached": "You already have {{max}} projects that are not archived. Archive one to make room."
+    },
+    "view": {
+      "label": "Goals view",
+      "cards": "Cards",
+      "table": "Table"
+    },
+    "bulkCreate": {
+      "title_one": "Create goals for {{count}} unit",
+      "title_other": "Create goals for {{count}} units",
+      "targets": {
+        "unlock": "Unlock units you don't own",
+        "ascension": "Ascension",
+        "ascensionTo": "Ascend to",
+        "rank": "Rank",
+        "rankTo": "Rank up to",
+        "ability": "Abilities",
+        "abilityTo": "Ability level",
+        "abilityDecrease": "Lower the ability level",
+        "abilityIncrease": "Raise the ability level",
+        "allAtTop": "Every selected unit is already at the top."
+      },
+      "summary_one": "{{count}} goal for {{units}}",
+      "summary_other": "{{count}} goals for {{units}}",
+      "unitCount_one": "{{count}} unit",
+      "unitCount_other": "{{count}} units",
+      "created_one": "Created {{count}} goal.",
+      "created_other": "Created {{count}} goals.",
+      "overLimit": "This would pass the limit of {{max}} goals per type for: {{types}}. Remove some units or goals first.",
+      "cancel": "Cancel",
+      "submit_one": "Create {{count}} goal",
+      "submit_other": "Create {{count}} goals",
+      "retryFailed_one": "Retry {{count}} failed",
+      "retryFailed_other": "Retry {{count}} failed",
+      "done": "Done",
+      "status": {
+        "pending": "creating",
+        "done": "created",
+        "failed": "failed"
+      },
+      "skipped": "{{type}} skipped: {{reason}}",
+      "skipReasons": {
+        "reached": "already reached",
+        "alreadyGoal": "already a goal",
+        "notForMow": "not for Machines of War",
+        "notOwned": "not owned (turn on Unlock)"
+      },
+      "nothingToCreate": "Nothing to create for this unit.",
+      "removeUnit": "Remove {{name}}",
+      "goal": {
+        "range": "{{type}} {{start}} → {{end}}",
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (needed)",
+        "active": "Active",
+        "passive": "Passive",
+        "needed": "needed"
+      }
     }
   },
   "language": {
@@ -1875,6 +2159,10 @@
         "seasonFit": {
           "title": "Season fit",
           "content": "Pick a Battle Pass, Guild Raid or Guild War season to see which goals finish in time. A line marks where goals start spilling into the next season."
+        },
+        "viewToggle": {
+          "title": "Cards or table",
+          "content": "Switch between goal cards and the compact table. Your choice is saved on this device."
         }
       }
     },
@@ -1949,6 +2237,22 @@
     },
     "collection": {
       "steps": {
+        "compare": {
+          "title": "Compare with a snapshot",
+          "content": "Turn on Compare to see what changed since a snapshot or a Legendary Event run: the biggest power gains come first."
+        },
+        "takeSnapshot": {
+          "title": "Take a snapshot",
+          "content": "Saves your whole roster after a fresh sync, so you can compare it with later progress."
+        },
+        "compareOptions": {
+          "title": "Compare options",
+          "content": "Choose the snapshots to compare, filter by a Legendary Event, change the order and pick which changes to show."
+        },
+        "compareSummary": {
+          "title": "What changed",
+          "content": "Totals for the listed units. Select a number to list only the units behind it."
+        },
         "summary": {
           "title": "Your collection at a glance",
           "content": "How many of the game's characters and Machines of War you own."
@@ -1972,6 +2276,34 @@
         "quickFilters": {
           "title": "Quick filters",
           "content": "One tap shows the units to work on next: ready to rank up, need to ascend, can ascend, need to level or blue star ready. Select a chip again to clear it."
+        },
+        "view": {
+          "title": "Cards or Roster",
+          "content": "Switch between the faction cards and Roster, a denser list with one row per unit. Your choice is remembered. Turn off Group by faction to list every unit together in your sort order, and Hide unowned to see only the units you own."
+        },
+        "factionRoster": {
+          "title": "Grouped by faction",
+          "content": "Each section holds one faction's characters and Machines of War — the units you own come first."
+        },
+        "ownedRoster": {
+          "title": "An owned unit",
+          "content": "Each row shows the portrait ringed in its rarity colour, then its rank, stars, XP level, ability levels and equipment. Select a row to open its details in the Library."
+        },
+        "ownedRosterMobile": {
+          "title": "An owned unit",
+          "content": "Each row shows the portrait, rank, stars and XP level. Tap a row to see its ability levels, equipment and shards, then open its details in the Library from there."
+        },
+        "unownedRoster": {
+          "title": "Not unlocked yet",
+          "content": "Greyed-out rows aren't in your roster. The bar shows how close you are to unlocking them. Select a row to open its details in the Library."
+        },
+        "unownedRosterMobile": {
+          "title": "Not unlocked yet",
+          "content": "Greyed-out rows aren't in your roster. Tap a row to see how close you are to unlocking it, then open its details in the Library from there."
+        },
+        "selectUnits": {
+          "title": "Goals for many units",
+          "content": "Select several units, then create the same Ascension, Rank, Abilities or Unlock goal for all of them at once."
         }
       }
     },

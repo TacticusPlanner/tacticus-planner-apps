@@ -14,6 +14,8 @@ const forgetFreshLogin = vi.fn()
 vi.mock("./authentication", () => ({
   forgetAccountHint: () => forgetAccountHint(),
   forgetFreshLogin: () => forgetFreshLogin(),
+  forgetQuietRenewal: () => undefined,
+  forgetAutoRedirects: () => undefined,
 }))
 
 import { signOut } from "./sign-out"

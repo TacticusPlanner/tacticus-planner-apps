@@ -19,8 +19,16 @@ vi.mock("@/entities/account", () => ({
 
 vi.mock("@/shared/api", () => ({
   ApiError: class ApiError extends Error {
-    constructor(_status: number, message: string) {
+    readonly status: number
+    readonly traceId?: string
+    constructor(
+      status: number,
+      message: string,
+      problem: { traceId?: string } = {}
+    ) {
       super(message)
+      this.status = status
+      this.traceId = problem.traceId
     }
   },
 }))
@@ -93,5 +101,37 @@ describe("StagingTransferTab", () => {
     expect(
       await screen.findByTestId("manage-account-staging-import-error")
     ).toHaveTextContent("Code expired")
+  })
+
+  it("shows the trace id with a server failure, not with a refused code", async () => {
+    const { ApiError } = await import("@/shared/api")
+    importFromProduction
+      .mockRejectedValueOnce(
+        new ApiError(500, "The request failed.", { traceId: "00-abc-01" })
+      )
+      .mockRejectedValueOnce(
+        new ApiError(400, "Code expired", { traceId: "00-def-01" })
+      )
+    const user = userEvent.setup()
+    render(<StagingTransferTab mode="import" />)
+    const input = screen.getByTestId("manage-account-staging-import-code")
+
+    await user.type(input, "TP1-x")
+    await user.click(screen.getByTestId("manage-account-staging-confirm"))
+    await user.click(screen.getByTestId("manage-account-staging-import-submit"))
+
+    expect(
+      await screen.findByTestId("manage-account-staging-import-error-trace")
+    ).toHaveTextContent('{"traceId":"00-abc-01"}')
+
+    await user.type(input, "y")
+    await user.click(screen.getByTestId("manage-account-staging-import-submit"))
+
+    expect(
+      await screen.findByTestId("manage-account-staging-import-error")
+    ).toHaveTextContent("Code expired")
+    expect(
+      screen.queryByTestId("manage-account-staging-import-error-trace")
+    ).not.toBeInTheDocument()
   })
 })

@@ -1,31 +1,42 @@
-import { useEffect } from "react"
-import { useSearchParams } from "react-router"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { useOutletContext, useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { homeScreenEventPointsIcon } from "@workspace/game-catalog"
 
 import {
   EventFarmSection,
+  EventLocationsSection,
   EventPreviewBanner,
   EventStatusLine,
   EventSwitcher,
-  EventTopLocations,
   resolveHomeScreenEventSelection,
   selectListTarget,
+  todayQuickFilterOptions,
   useActiveHomeScreenEvent,
+  useTodayQuickFilters,
+  type HseListView,
+  type RaidLocationTarget,
 } from "@/features/daily-raids"
 import {
   EventDetails,
-  hseSectionsShown,
   PointsProjection,
   useHseProjection,
 } from "@/features/home-screen-event-points"
+import { hseSectionsShown } from "@/entities/home-screen-event"
 
 import { useHseTeamRecommendations } from "@/features/team-recommendations"
+import { CampaignBattleDialog } from "@/widgets/battle-preview"
+import type { DailiesOutletContext } from "./dailies-layout"
 import { useHseTutorial } from "./hse-page.tutorial"
+import { RaidsSectionControls } from "./raids-section-controls"
 import { HseTeamsSection } from "./hse-teams/hse-teams-section"
 
 /** The HSE tab's search parameter holding the selected instance key (HSE-only, never carried over). */
 const EVENT_PARAM = "event"
+/** The list's Sort mode (`energy` or `ignoreGoals`; points per energy without it), so a reload or
+ * link keeps it. */
+const ORDER_PARAM = "order"
+const IGNORE_GOALS_PARAM = "ignoreGoals"
 
 /**
  * Dailies > HSE: one Home Screen Event instance at a time. By default the running event (or, with
@@ -33,16 +44,50 @@ const EVENT_PARAM = "event"
  * instance, held in the `event` URL parameter so it survives a reload. Every instance with scoring
  * data gets its event details (tier, description, milestones) and, when running or upcoming and
  * personal, its points projection and event teams for Arena, Onslaught and Salvage Run. Only a
- * running or upcoming rule-bearing instance also gets the farm list and the top-10 lists, which
- * cover every active goal and honor the Raids Filters and Planning Settings chosen on Today.
- * Order: status line, details, projection, event teams, then the raid lists. Stacked on mobile
- * (farm list, overall top 10, event-campaign top 10); on desktop details and projection share a
- * row above the teams and the farm list, which sits beside a column holding both top-10 lists.
+ * running or upcoming rule-bearing instance also gets the raid list, which follows the Dailies
+ * project (every active goal without one), the Raids Filters and Today's quick filters (the `quick`
+ * URL state), all picked in the controls row above it (and shared with Today), and the Planning
+ * Settings chosen on Today. The list's Sort switch (points per energy, energy per item, or "Ignore
+ * goals", which swaps the farm list for every point-earning location) is held in the `order` URL
+ * parameter. Order: status line, details (beside
+ * the projection on desktop), projection, the raid list, then event teams.
  */
 export function HsePage() {
   const { t } = useTranslation("dailies")
+  const context = useOutletContext<DailiesOutletContext>()
   const [searchParams, setSearchParams] = useSearchParams()
   const state = useActiveHomeScreenEvent()
+  const [quickFilters, setQuickFilters] = useTodayQuickFilters()
+  const [shownLocation, setShownLocation] = useState<RaidLocationTarget | null>(
+    null
+  )
+  // One object per selection, so the memoised farm list does not re-render on a keystroke.
+  const quickOptions = useMemo(
+    () => todayQuickFilterOptions(quickFilters),
+    [quickFilters]
+  )
+  const requestedOrder = searchParams.get(ORDER_PARAM)
+  const listOrder = requestedOrder === "energy" ? "energy" : "points"
+  // `?order=ignoreGoals` is the link shape from when Ignore goals was a Sort option.
+  const ignoreGoals =
+    searchParams.get(IGNORE_GOALS_PARAM) === "1" ||
+    requestedOrder === "ignoreGoals"
+  // Stable, so the memoised farm list does not re-render on a projection keystroke.
+  const setListView = useCallback(
+    (view: HseListView) =>
+      setSearchParams(
+        (previous) => {
+          const params = new URLSearchParams(previous)
+          if (view.order === "points") params.delete(ORDER_PARAM)
+          else params.set(ORDER_PARAM, view.order)
+          if (view.ignoreGoals) params.set(IGNORE_GOALS_PARAM, "1")
+          else params.delete(IGNORE_GOALS_PARAM)
+          return params
+        },
+        { replace: true }
+      ),
+    [setSearchParams]
+  )
 
   const requestedKey = searchParams.get(EVENT_PARAM)
   const selection =
@@ -106,7 +151,7 @@ export function HsePage() {
           <h2 className="text-lg font-semibold">{t("hse.title")}</h2>
           {state.status === "ready" ? (
             <EventSwitcher
-              className="order-last md:order-none md:ml-auto"
+              className="order-last md:order-0 md:ml-auto"
               instances={state.instances}
               onSelect={selectInstance}
               selectedKey={instance?.key ?? null}
@@ -134,21 +179,46 @@ export function HsePage() {
           />
         </div>
       ) : null}
-      <HseTeamsSection view={teams} />
       {target && !target.live ? (
         <EventPreviewBanner entry={target.entry} />
       ) : null}
       {raidRule ? (
-        <div
-          className="space-y-5 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0"
-          data-testid="hse-sections"
-        >
-          <EventFarmSection pointsIcon={pointsIcon} rule={raidRule} />
-          <div data-testid="hse-top-lists">
-            <EventTopLocations rule={raidRule} />
+        <div className="space-y-3">
+          <RaidsSectionControls
+            context={context}
+            onQuickFiltersChange={setQuickFilters}
+            quickFilters={quickFilters}
+            testIdPrefix="hse"
+          />
+          <div data-testid="hse-sections">
+            {ignoreGoals ? (
+              <EventLocationsSection
+                onShowLocation={setShownLocation}
+                onViewChange={setListView}
+                order={listOrder}
+                pointsIcon={pointsIcon}
+                quickFilters={quickOptions}
+                rule={raidRule}
+              />
+            ) : (
+              <EventFarmSection
+                onShowLocation={setShownLocation}
+                onViewChange={setListView}
+                order={listOrder}
+                pointsIcon={pointsIcon}
+                projectId={context.projectId}
+                quickFilters={quickOptions}
+                rule={raidRule}
+              />
+            )}
           </div>
         </div>
       ) : null}
+      <HseTeamsSection view={teams} />
+      <CampaignBattleDialog
+        onClose={() => setShownLocation(null)}
+        target={shownLocation}
+      />
     </section>
   )
 }

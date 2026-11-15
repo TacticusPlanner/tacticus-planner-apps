@@ -91,18 +91,18 @@ For the distinct members and reserves of a shown record's teams (the previous ru
 - **WHEN** the Last run card renders
 - **THEN** no roster request is issued
 
-### Requirement: Last run card on the Overview tab
+### Requirement: Last run card on the run tab
 
-The Overview tab SHALL show a **Last run** card for the previous run when one exists, after the Run status card. It SHALL show "Run N of 3", the local date of the record's last progress, the event points recorded, and per lane its cleared battle and points ("Alpha: battle 4 · 1,139 points"); the teams used per lane with portraits and "cleared up to battle N" (and their planned depth for that run when stored); and a **Since last run** list of roster changes. On an archived or upcoming event the card SHALL be followed by a collapsed **Earlier runs** list with one expandable entry per earlier record read so far, carrying the same content, and, while the last page read returned a `nextAfter` cursor, a "Load more" control that reads the next page with that cursor as `after` and appends its records; an active event SHALL show only the Last run card.
+The run tab SHALL show a **Last run** card for the previous run when one exists, after the synced progress grids. It SHALL show "Run N of 3", the local date of the record's last progress, the event points recorded, and per lane its cleared battle and points ("Alpha: battle 4 · 1,139 points"); the teams used per lane with portraits and "cleared up to battle N" (and their planned depth for that run when stored); and a **Since last run** list of roster changes. On an archived or upcoming event the card SHALL be followed by a collapsed **Earlier runs** list with one expandable entry per earlier record read so far, carrying the same content, and, while the last page read returned a `nextAfter` cursor, a "Load more" control that reads the next page with that cursor as `after` and appends its records; an active event SHALL show only the Last run card.
 
 #### Scenario: Desktop card
 
-- **WHEN** the Overview renders at or above 768px with a previous run
+- **WHEN** the run tab renders at or above 768px with a previous run
 - **THEN** the card shows the three lanes side by side, each with its cleared battle, points and teams, and the Since last run list below them
 
 #### Scenario: Mobile card
 
-- **WHEN** the Overview renders below 768px with a previous run
+- **WHEN** the run tab renders below 768px with a previous run
 - **THEN** the card stacks the lanes, each lane's teams collapse behind a "Teams (N)" toggle, and the Since last run list follows; nothing scrolls horizontally
 
 #### Scenario: Teams with a planned depth
@@ -124,20 +124,20 @@ The history SHALL distinguish: records loading (card skeleton); records read fai
 #### Scenario: First recorded run
 
 - **GIVEN** Uthar is active in run 1 and its only record is run 1
-- **WHEN** the Overview renders
+- **WHEN** the run tab renders
 - **THEN** no Last run card and no history note is shown
 
 #### Scenario: No records
 
 - **GIVEN** Lysander has no records
-- **WHEN** the Overview renders
+- **WHEN** the run tab renders
 - **THEN** "History starts with your next synced run" shows where the card would be
 
 #### Scenario: Read failed
 
 - **GIVEN** the run-records read fails
-- **WHEN** the Overview renders
-- **THEN** the card area shows "History unavailable" with Retry and every other Overview section renders normally
+- **WHEN** the run tab renders
+- **THEN** the card area shows "History unavailable" with Retry and every other run tab section renders normally
 
 #### Scenario: Roster read failed
 

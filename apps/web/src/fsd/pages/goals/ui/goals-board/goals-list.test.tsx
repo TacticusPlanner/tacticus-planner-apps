@@ -60,7 +60,14 @@ describe("GoalsList", () => {
   beforeEach(() => useIsMobileMock.mockReturnValue(false))
 
   it("lets Escape on the drag handle cancel a keyboard reorder", async () => {
-    render(<GoalsList actions={stubActions} reorderEnabled rows={rows} />)
+    render(
+      <GoalsList
+        view="Table"
+        actions={stubActions}
+        reorderEnabled
+        rows={rows}
+      />
+    )
     const handle = await screen.findByRole("button", {
       name: "Drag Hero One to reorder",
     })
@@ -80,7 +87,12 @@ describe("GoalsList", () => {
 
   it("hides move buttons when reorder is disabled", async () => {
     render(
-      <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />
+      <GoalsList
+        view="Table"
+        actions={stubActions}
+        reorderEnabled={false}
+        rows={rows}
+      />
     )
 
     await screen.findByText("Hero One")
@@ -99,6 +111,7 @@ describe("GoalsList", () => {
     ])
     render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         estimates={estimates}
         reorderEnabled={false}
@@ -124,6 +137,7 @@ describe("GoalsList", () => {
     useIsMobileMock.mockReturnValue(false)
     const desktop = render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         estimates={estimates}
         reorderEnabled={false}
@@ -142,6 +156,7 @@ describe("GoalsList", () => {
     useIsMobileMock.mockReturnValue(true)
     render(
       <GoalsList
+        view="Cards"
         actions={stubActions}
         estimates={estimates}
         reorderEnabled={false}
@@ -179,6 +194,7 @@ describe("GoalsList", () => {
       ])
       render(
         <GoalsList
+          view={mobile ? "Cards" : "Table"}
           actions={stubActions}
           estimates={estimates}
           reorderEnabled={false}
@@ -195,7 +211,12 @@ describe("GoalsList", () => {
 
   it("renders no estimate column when no estimates are given", async () => {
     render(
-      <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />
+      <GoalsList
+        view="Table"
+        actions={stubActions}
+        reorderEnabled={false}
+        rows={rows}
+      />
     )
 
     await screen.findByText("Hero One")
@@ -212,6 +233,7 @@ describe("GoalsList", () => {
     ])
     render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         estimates={estimates}
         metrics={
@@ -248,6 +270,11 @@ describe("GoalsList", () => {
     expect(bar).toBeInTheDocument()
     expect(
       screen.getByTestId("goal-progress-bar-potential-fill")
+    ).toBeInTheDocument()
+    expect(
+      within(
+        screen.getByRole("columnheader", { name: /Progress/ })
+      ).getByTestId("goals-progress-legend")
     ).toBeInTheDocument()
     // The desktop Remaining column shows icon chips (energy here), not the prose sentence.
     const remainingColumn = screen.getByTestId("goal-remaining-column")
@@ -303,6 +330,7 @@ describe("GoalsList", () => {
       ])
       render(
         <GoalsList
+          view={mobile ? "Cards" : "Table"}
           actions={stubActions}
           levelChargedXp={new Map([["goal-1", 12_200]])}
           levelPoolXpAvailable={new Map([["goal-1", 100_000]])}
@@ -351,6 +379,7 @@ describe("GoalsList", () => {
       const user = userEvent.setup()
       render(
         <GoalsList
+          view={mobile ? "Cards" : "Table"}
           actions={stubActions}
           onEdit={onEdit}
           reorderEnabled={false}
@@ -384,6 +413,7 @@ describe("GoalsList", () => {
       const user = userEvent.setup()
       render(
         <GoalsList
+          view={mobile ? "Cards" : "Table"}
           actions={stubActions}
           onEdit={onEdit}
           reorderEnabled={false}
@@ -403,6 +433,7 @@ describe("GoalsList", () => {
     const onEdit = vi.fn()
     render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         onEdit={onEdit}
         reorderEnabled={false}
@@ -430,7 +461,12 @@ describe("GoalsList", () => {
       },
     ]
     render(
-      <GoalsList actions={stubActions} reorderEnabled={false} rows={mowRows} />
+      <GoalsList
+        view="Table"
+        actions={stubActions}
+        reorderEnabled={false}
+        rows={mowRows}
+      />
     )
 
     expect(await screen.findByText("Stormbird")).toBeInTheDocument()
@@ -451,7 +487,14 @@ describe("GoalsList", () => {
         { ...rows[1]!, goalId: "goal-3", priority: 3 },
         { ...rows[1]!, goalId: "goal-5", priority: 5 },
       ]
-      render(<GoalsList actions={stubActions} reorderEnabled rows={view} />)
+      render(
+        <GoalsList
+          view="Table"
+          actions={stubActions}
+          reorderEnabled
+          rows={view}
+        />
+      )
       await screen.findByText("Hero One")
 
       expect(numbers()).toEqual(["Priority 1", "Priority 3", "Priority 5"])
@@ -470,7 +513,14 @@ describe("GoalsList", () => {
         { ...withStatus(rows[0]!, "Archived"), goalId: "old" },
         { ...rows[0]!, goalId: "none", priority: undefined },
       ]
-      render(<GoalsList actions={stubActions} reorderEnabled rows={view} />)
+      render(
+        <GoalsList
+          view="Table"
+          actions={stubActions}
+          reorderEnabled
+          rows={view}
+        />
+      )
       await screen.findAllByText("Hero One")
 
       expect(numbers()).toEqual(["Priority 2"])
@@ -478,7 +528,14 @@ describe("GoalsList", () => {
     })
 
     it("uses text-foreground, a theme token that meets text contrast in both themes", async () => {
-      render(<GoalsList actions={stubActions} reorderEnabled rows={rows} />)
+      render(
+        <GoalsList
+          view="Table"
+          actions={stubActions}
+          reorderEnabled
+          rows={rows}
+        />
+      )
       await screen.findByText("Hero One")
 
       expect(screen.getAllByTestId("goal-row-priority")[0]).toHaveClass(
@@ -487,7 +544,7 @@ describe("GoalsList", () => {
     })
 
     it("still shows the number without a drag handle when the list is not reorderable", async () => {
-      render(<GoalsList actions={stubActions} rows={[rows[0]!]} />)
+      render(<GoalsList view="Table" actions={stubActions} rows={[rows[0]!]} />)
       await screen.findByText("Hero One")
 
       expect(numbers()).toEqual(["Priority 10"])
@@ -501,7 +558,12 @@ describe("GoalsList", () => {
         { ...withStatus(rows[1]!, "Completed"), priority: undefined },
       ]
       const { unmount } = render(
-        <GoalsList actions={stubActions} reorderEnabled rows={view} />
+        <GoalsList
+          view="Cards"
+          actions={stubActions}
+          reorderEnabled
+          rows={view}
+        />
       )
       await screen.findByText("Hero One")
       expect(numbers()).toEqual(["Priority 10"])
@@ -509,6 +571,7 @@ describe("GoalsList", () => {
 
       render(
         <GoalsList
+          view="Cards"
           actions={stubActions}
           mobileReorderActive
           reorderEnabled
@@ -525,7 +588,12 @@ describe("GoalsList", () => {
         { ...rows[0]!, goalId: "paused", status: "Paused", priority: 2 },
       ]
       const { unmount } = render(
-        <GoalsList actions={stubActions} reorderEnabled rows={view} />
+        <GoalsList
+          view="Table"
+          actions={stubActions}
+          reorderEnabled
+          rows={view}
+        />
       )
       await screen.findByText("Hero One")
       expect(screen.getByTestId("goal-status-badge")).toHaveTextContent(
@@ -539,6 +607,7 @@ describe("GoalsList", () => {
       useIsMobileMock.mockReturnValue(true)
       render(
         <GoalsList
+          view="Cards"
           actions={stubActions}
           mobileReorderActive
           reorderEnabled
@@ -556,12 +625,19 @@ describe("GoalsList", () => {
     })
 
     it("marks a dragged row without lowering its opacity, so its text keeps its contrast", async () => {
-      render(<GoalsList actions={stubActions} reorderEnabled rows={rows} />)
+      render(
+        <GoalsList
+          view="Table"
+          actions={stubActions}
+          reorderEnabled
+          rows={rows}
+        />
+      )
       await screen.findByText("Hero One")
 
       const row = screen.getAllByTestId("goal-row")[0]!
       expect(row.className).not.toMatch(/opacity/)
-      expect(row).toHaveClass("data-[dragging]:bg-card")
+      expect(row).toHaveClass("data-dragging:bg-card")
     })
   })
 })
@@ -600,6 +676,7 @@ describe("GoalsList reached rows and column layout", () => {
       useIsMobileMock.mockReturnValue(mobile)
       render(
         <GoalsList
+          view={mobile ? "Cards" : "Table"}
           actions={stubActions}
           levelChargedXp={new Map([["goal-1", 12_200]])}
           levelPoolXpAvailable={new Map([["goal-1", 100_000]])}
@@ -620,12 +697,13 @@ describe("GoalsList reached rows and column layout", () => {
     ["desktop", false],
     ["mobile", true],
   ])(
-    "renders a reached Paused goal as a completed %s row with dashes and no pause/resume",
+    "renders a reached Paused goal as a completed %s row with no pause/resume",
     async (_layout, mobile) => {
       useIsMobileMock.mockReturnValue(mobile)
       const paused: GoalRow = { ...rows[0]!, status: "Paused" }
       render(
         <GoalsList
+          view={mobile ? "Cards" : "Table"}
           actions={stubActions}
           estimates={estimates}
           metrics={rankMetrics("goal-1")}
@@ -644,8 +722,9 @@ describe("GoalsList reached rows and column layout", () => {
       expect(screen.queryByTestId("goal-progress")).toBeNull()
       expect(screen.queryByTestId("goal-row-estimate")).toBeNull()
       expect(screen.queryByTestId("goal-remaining-column")).toBeNull()
-      expect(screen.getAllByTestId("goal-reached-dash").length).toBeGreaterThan(
-        0
+      // The table keeps a "-" in its cells; a card drops the empty rows instead.
+      expect(screen.queryAllByTestId("goal-reached-dash")).toHaveLength(
+        mobile ? 0 : 3
       )
       expect(screen.queryByTestId("goal-row-resume-goal-1")).toBeNull()
       expect(stubActions.setStatus).not.toHaveBeenCalled()
@@ -657,6 +736,7 @@ describe("GoalsList reached rows and column layout", () => {
   it("shows dashes for progress, remaining and done-by in the three desktop cells of a reached row", async () => {
     render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         estimates={estimates}
         metrics={rankMetrics("goal-1")}
@@ -672,6 +752,7 @@ describe("GoalsList reached rows and column layout", () => {
   it("leaves a not-reached row untinted with its own status and progress", async () => {
     render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         metrics={rankMetrics("goal-1")}
         reachedByGoalId={new Map([["goal-1", false]])}
@@ -687,7 +768,12 @@ describe("GoalsList reached rows and column layout", () => {
 
   it("has no goal-type caption and puts the row menu at the end of the Character cell", async () => {
     render(
-      <GoalsList actions={stubActions} reorderEnabled={false} rows={rows} />
+      <GoalsList
+        view="Table"
+        actions={stubActions}
+        reorderEnabled={false}
+        rows={rows}
+      />
     )
     await screen.findByText("Hero One")
     expect(screen.queryByText("Rank")).toBeNull()
@@ -714,6 +800,7 @@ describe("GoalsList reached rows and column layout", () => {
     }
     render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         reorderEnabled={false}
         rows={[withProjects, { ...rows[1]!, priority: undefined }]}
@@ -753,6 +840,7 @@ describe("GoalsList reached rows and column layout", () => {
     const long = "some very long note ".repeat(10)
     render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         reorderEnabled={false}
         rows={[{ ...rows[0]!, notes: long }]}
@@ -771,6 +859,7 @@ describe("GoalsList reached rows and column layout", () => {
     useIsMobileMock.mockReturnValue(true)
     render(
       <GoalsList
+        view="Cards"
         actions={stubActions}
         metrics={
           new Map([
@@ -844,6 +933,7 @@ describe("GoalsList remaining chips on mobile", () => {
     useIsMobileMock.mockReturnValue(true)
     const { unmount } = render(
       <GoalsList
+        view="Cards"
         actions={stubActions}
         estimates={estimates}
         metrics={chipMetrics as never}
@@ -857,6 +947,7 @@ describe("GoalsList remaining chips on mobile", () => {
 
     render(
       <GoalsList
+        view="Cards"
         actions={stubActions}
         estimates={estimates}
         metrics={chipMetrics as never}
@@ -870,6 +961,53 @@ describe("GoalsList remaining chips on mobile", () => {
   })
 })
 
+describe("GoalsList table legend", () => {
+  it("leaves the legend out when no goal has a Potential ratio", async () => {
+    render(<GoalsList actions={stubActions} rows={[rows[0]!]} view="Table" />)
+
+    await screen.findByTestId("goals-list-table")
+    expect(screen.queryByTestId("goals-progress-legend")).toBeNull()
+  })
+})
+
+describe("GoalsList goal line on mobile", () => {
+  it("names the goal type and its configured target for a unit that isn't owned yet", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    render(
+      <GoalsList
+        view="Cards"
+        actions={stubActions}
+        metrics={
+          new Map([
+            [
+              "goal-1",
+              {
+                progress: {
+                  kind: "Unknown",
+                  preview: {
+                    kind: "Rank",
+                    start: "Stone1",
+                    target: "Iron1",
+                    targetSlots: 0,
+                  },
+                },
+                remaining: null,
+                blockers: { isBlocked: false, reasons: [] },
+              },
+            ],
+          ]) as never
+        }
+        reorderEnabled={false}
+        rows={[rows[0]!]}
+      />
+    )
+    const target = await screen.findByTestId("goal-row-target")
+    expect(target).toHaveTextContent("Rank")
+    expect(screen.getByTestId("goal-target-preview")).toBeInTheDocument()
+    expect(screen.getByAltText("Iron I")).toBeInTheDocument()
+  })
+})
+
 describe("GoalsList selection", () => {
   beforeEach(() => useIsMobileMock.mockReturnValue(false))
 
@@ -879,6 +1017,7 @@ describe("GoalsList selection", () => {
     const user = userEvent.setup()
     render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         onSelectAllVisible={onSelectAllVisible}
         onToggleSelected={onToggleSelected}
@@ -908,6 +1047,7 @@ describe("GoalsList selection", () => {
   it("shows the header checkbox checked when every visible id is selected (ids across groups)", async () => {
     render(
       <GoalsList
+        view="Table"
         actions={stubActions}
         rows={[rows[0]!]}
         selection={new Set(["goal-1", "goal-2"])}
@@ -924,13 +1064,14 @@ describe("GoalsList selection", () => {
     const onToggleSelected = vi.fn()
     const user = userEvent.setup()
     const { rerender } = render(
-      <GoalsList actions={stubActions} rows={[rows[0]!]} />
+      <GoalsList view="Cards" actions={stubActions} rows={[rows[0]!]} />
     )
     await screen.findByText("Hero One")
     expect(screen.queryByTestId("goal-row-select-goal-1")).toBeNull()
 
     rerender(
       <GoalsList
+        view="Cards"
         actions={stubActions}
         onToggleSelected={onToggleSelected}
         rows={[rows[0]!]}
@@ -976,7 +1117,12 @@ describe("GoalsList catalog reads", () => {
     ]
 
     const { queryClient } = render(
-      <GoalsList actions={stubActions} reorderEnabled={false} rows={manyRows} />
+      <GoalsList
+        view="Table"
+        actions={stubActions}
+        reorderEnabled={false}
+        rows={manyRows}
+      />
     )
     await screen.findByText("Hero 20")
     await waitFor(() => expect(queryClient.isFetching()).toBe(0))

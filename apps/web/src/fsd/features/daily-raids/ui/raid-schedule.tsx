@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import type { BattleId } from "@workspace/game-domain"
 
-import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 
 import {
   dailyRaidResourceKey,
@@ -11,8 +11,16 @@ import {
   type DailyRaidResourceUrgency,
   type DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
+import {
+  clusterByCampaign,
+  upgradeCampaignKey,
+} from "../model/campaign-clustering"
+import { groupScheduleByCampaign } from "../model/campaign-groups"
 import { isLocationVisible } from "../model/location-visibility"
+import { CampaignGroup } from "./campaign-group"
+import type { RaidLocationTarget } from "./raid-location-name"
 import { GoalTargetBadge, ResourceCard, UnitIcon } from "./resource-card"
+import { ScheduleLocationRow } from "./schedule-location-row"
 
 // Stable default so callers that never use "location" emphasis (Raids Plan) don't need to pass
 // this prop, and don't allocate a new Map identity on every render.
@@ -37,6 +45,7 @@ export function RaidSchedule({
   resourceVisuals,
   emphasis = "material",
   onCantRaid,
+  onShowLocation,
   grouping = "goal",
   testId,
 }: {
@@ -62,6 +71,8 @@ export function RaidSchedule({
   emphasis?: "material" | "location"
   /** Offers "Can't raid this?" on each card, opening the battle progress dialog. */
   onCantRaid?: (battleId: BattleId) => void
+  /** Makes each location's name open its battle and enemies ("location" emphasis). */
+  onShowLocation?: (target: RaidLocationTarget) => void
   // "combined" (Today's Combine goals): one list with no goal headers, in the entries' own order,
   // with `resourceProgress` keyed by resource alone.
   grouping?: "goal" | "combined"
@@ -73,7 +84,8 @@ export function RaidSchedule({
       : groupEntries(
           groupedEntries,
           goalsById,
-          resourceUrgencyByGoalAndResource
+          resourceUrgencyByGoalAndResource,
+          locationsByBattleId
         )
   const grouped = group(entries)
   const bonusGrouped = bonusEntries ? group(bonusEntries) : []
@@ -99,10 +111,18 @@ export function RaidSchedule({
     const onlyVisual = onlyResource
       ? resourceVisuals.get(onlyResource.resourceId)
       : undefined
+    // Campaign groups name no unit, so only the material cards fold the goal into a shard card.
     const combinesShardIdentity =
+      emphasis === "material" &&
       grouping === "goal" &&
       onlyVisual?.kind === "shard" &&
       onlyVisual.unitId === goal.unitId
+    const progressOf = (resourceId: string) =>
+      resourceProgress.get(
+        grouping === "combined"
+          ? resourceId
+          : dailyRaidResourceKey(goal.goalId, resourceId)
+      )
 
     // A goal group whose every resource has been fully de-duped away (every location's real
     // attempts are exhausted) renders no cards — skip the section entirely instead of leaving an
@@ -123,26 +143,58 @@ export function RaidSchedule({
           className="grid gap-2 md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))] md:gap-3"
           data-testid={`raid-resource-grid-${goal.goalId}`}
         >
-          {resources.map(({ resourceId, entries: resourceEntries }) => (
-            <ResourceCard
-              key={resourceId}
-              attemptsLeftByBattle={attemptsLeftByBattle}
-              attemptsUsedByBattle={attemptsUsedByBattle}
-              emphasis={emphasis}
-              onCantRaid={onCantRaid}
-              goal={combinesShardIdentity ? goal : undefined}
-              label={resourceLabels.get(resourceId) ?? resourceId}
-              locationsByBattleId={locationsByBattleId}
-              progress={resourceProgress.get(
-                grouping === "combined"
-                  ? resourceId
-                  : dailyRaidResourceKey(goal.goalId, resourceId)
-              )}
-              resourceEntries={resourceEntries}
-              resourceId={resourceId}
-              visual={resourceVisuals.get(resourceId)}
-            />
-          ))}
+          {emphasis === "location"
+            ? groupScheduleByCampaign(
+                resources,
+                (battleId) => locationsByBattleId.get(battleId)?.campaignKey,
+                (entry) => isLocationVisible(entry, attemptsLeftByBattle)
+              ).map((campaignGroup) => {
+                const first = campaignGroup.items[0]
+                return (
+                  <CampaignGroup
+                    key={campaignGroup.key}
+                    className="bg-background"
+                    location={
+                      first
+                        ? locationsByBattleId.get(first.entry.battleId)
+                        : undefined
+                    }
+                    testId={`raid-campaign-${goal.goalId}-${campaignGroup.key}`}
+                  >
+                    {campaignGroup.items.map(
+                      ({ resourceId, entry, resourceEntries }) => (
+                        <ScheduleLocationRow
+                          key={`${entry.battleId}-${resourceId}`}
+                          entry={entry}
+                          label={resourceLabels.get(resourceId) ?? resourceId}
+                          location={locationsByBattleId.get(entry.battleId)}
+                          onShowLocation={onShowLocation}
+                          progress={progressOf(resourceId)}
+                          resourceEntries={resourceEntries}
+                          visual={resourceVisuals.get(resourceId)}
+                        />
+                      )
+                    )}
+                  </CampaignGroup>
+                )
+              })
+            : resources.map(({ resourceId, entries: resourceEntries }) => (
+                <ResourceCard
+                  key={resourceId}
+                  attemptsLeftByBattle={attemptsLeftByBattle}
+                  attemptsUsedByBattle={attemptsUsedByBattle}
+                  emphasis={emphasis}
+                  onCantRaid={onCantRaid}
+                  onShowLocation={onShowLocation}
+                  goal={combinesShardIdentity ? goal : undefined}
+                  label={resourceLabels.get(resourceId) ?? resourceId}
+                  locationsByBattleId={locationsByBattleId}
+                  progress={progressOf(resourceId)}
+                  resourceEntries={resourceEntries}
+                  resourceId={resourceId}
+                  visual={resourceVisuals.get(resourceId)}
+                />
+              ))}
         </div>
         {footer}
       </section>
@@ -241,7 +293,8 @@ function groupEntries(
   resourceUrgencyByGoalAndResource: ReadonlyMap<
     string,
     DailyRaidResourceUrgency
-  >
+  >,
+  locationsByBattleId: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
 ) {
   const byGoal = new Map<string, Map<string, RaidBreakdownEntry[]>>()
   for (const entry of entries) {
@@ -263,25 +316,36 @@ function groupEntries(
         targetLabel: "",
         goalKind: "Unlock" as const,
       },
-      resources: [...resources.entries()]
-        .map(([resourceId, resourceEntries]) => ({
-          resourceId,
-          entries: resourceEntries,
-        }))
-        .sort((left, right) => {
-          const leftUrgency = resourceUrgencyByGoalAndResource.get(
-            dailyRaidResourceKey(goalId, left.resourceId)
-          )
-          const rightUrgency = resourceUrgencyByGoalAndResource.get(
-            dailyRaidResourceKey(goalId, right.resourceId)
-          )
-          const byDays = (rightUrgency?.days ?? -1) - (leftUrgency?.days ?? -1)
-          if (byDays !== 0) return byDays
-          const byEnergy =
-            (rightUrgency?.energyTotal ?? -1) - (leftUrgency?.energyTotal ?? -1)
-          if (byEnergy !== 0) return byEnergy
-          return left.resourceId.localeCompare(right.resourceId)
-        }),
+      // Longest to finish first, then most energy; then same-campaign upgrades of similar energy
+      // are pulled together so the player stays in one campaign.
+      resources: clusterByCampaign(
+        [...resources.entries()]
+          .map(([resourceId, resourceEntries]) => ({
+            resourceId,
+            entries: resourceEntries,
+          }))
+          .sort((left, right) => {
+            const leftUrgency = resourceUrgencyByGoalAndResource.get(
+              dailyRaidResourceKey(goalId, left.resourceId)
+            )
+            const rightUrgency = resourceUrgencyByGoalAndResource.get(
+              dailyRaidResourceKey(goalId, right.resourceId)
+            )
+            const byDays =
+              (rightUrgency?.days ?? -1) - (leftUrgency?.days ?? -1)
+            if (byDays !== 0) return byDays
+            const byEnergy =
+              (rightUrgency?.energyTotal ?? -1) -
+              (leftUrgency?.energyTotal ?? -1)
+            if (byEnergy !== 0) return byEnergy
+            return left.resourceId.localeCompare(right.resourceId)
+          }),
+        (resource) => upgradeCampaignKey(resource.entries, locationsByBattleId),
+        (resource) =>
+          resourceUrgencyByGoalAndResource.get(
+            dailyRaidResourceKey(goalId, resource.resourceId)
+          )?.energyTotal
+      ),
     }))
     .sort((left, right) => left.goal.priority - right.goal.priority)
 }

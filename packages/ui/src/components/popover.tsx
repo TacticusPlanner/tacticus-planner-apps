@@ -62,7 +62,8 @@ function PopoverArrow({
     <PopoverPrimitive.Arrow
       data-slot="popover-arrow"
       className={cn(
-        "z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px] bg-popover fill-popover ring-1 ring-foreground/10 data-[side=left]:translate-x-[-1.5px] data-[side=right]:translate-x-[1.5px] dark:ring-foreground/15",
+        // eslint-disable-next-line better-tailwindcss/no-restricted-classes -- shadcn hairline offset, off the spacing scale
+        "z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-xs bg-popover fill-popover ring-1 ring-foreground/10 data-[side=left]:translate-x-[-1.5px] data-[side=right]:translate-x-[1.5px] dark:ring-foreground/15",
         className
       )}
       {...props}

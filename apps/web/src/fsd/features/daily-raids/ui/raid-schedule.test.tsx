@@ -4,6 +4,7 @@ import { battleIdSchema } from "@workspace/game-domain"
 
 import { render, screen, within } from "@/test/render"
 
+import { dailyRaidResourceKey } from "../model/daily-raids.domain"
 import { RaidSchedule } from "./raid-schedule"
 
 const b1 = battleIdSchema.parse("B1")
@@ -19,10 +20,16 @@ const goal = {
   goalKind: "Unlock" as const,
 }
 
-const location = (id: string, campaignName: string, nodeLabel: string) => ({
+const location = (
+  id: string,
+  campaignName: string,
+  nodeLabel: string,
+  difficultyLabel?: string
+) => ({
   id,
   campaignName,
   nodeLabel,
+  difficultyLabel,
   shortLabel: `${campaignName} ${nodeLabel}`,
   challenge: false,
   icon: undefined,
@@ -168,6 +175,134 @@ describe("RaidSchedule location emphasis", () => {
     ])
   })
 
+  it("pulls a same-campaign upgrade within 50 energy up next to the earlier one", () => {
+    const b3 = battleIdSchema.parse("B3")
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        entries={[
+          { ...entry(b1, 1), resourceId: "X" as never },
+          { ...entry(b2, 1), resourceId: "Y" as never },
+          { ...entry(b3, 1), resourceId: "Z" as never },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [
+              b1,
+              {
+                ...location("B1", "Indomitus", "Elite 4"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+            [
+              b2,
+              {
+                ...location("B2", "Fall of Cadia", "Elite 7"),
+                campaignKey: "cadia:Elite",
+              },
+            ],
+            [
+              b3,
+              {
+                ...location("B3", "Indomitus", "Elite 9"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map()}
+        resourceUrgencyByGoalAndResource={
+          new Map([
+            ["g1:X", { days: 3, energyTotal: 90 }],
+            ["g1:Y", { days: 3, energyTotal: 80 }],
+            ["g1:Z", { days: 2, energyTotal: 50 }],
+          ])
+        }
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const resourceIds = [
+      ...screen
+        .getByTestId("raid-resource-grid-g1")
+        .querySelectorAll<HTMLElement>("[data-testid^='raid-card-g1-']"),
+    ].map((element) => element.dataset.testid?.replace("raid-card-g1-", ""))
+    expect(resourceIds).toEqual(["X", "Z", "Y"])
+  })
+
+  it("shows each campaign once as a header, with one row per battle and its upgrade", () => {
+    const b3 = battleIdSchema.parse("B3")
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[
+          { ...entry(b1, 1), resourceId: "X" as never },
+          { ...entry(b2, 1), resourceId: "Y" as never },
+          { ...entry(b3, 1), resourceId: "Z" as never },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [
+              b1,
+              {
+                ...location("B1", "Indomitus", "Elite 4", "Elite"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+            [
+              b2,
+              {
+                ...location("B2", "Fall of Cadia", "Elite 7", "Elite"),
+                campaignKey: "cadia:Elite",
+              },
+            ],
+            [
+              b3,
+              {
+                ...location("B3", "Indomitus", "Elite 9", "Elite"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map()}
+        resourceUrgencyByGoalAndResource={
+          new Map([
+            ["g1:X", { days: 3, energyTotal: 90 }],
+            ["g1:Y", { days: 3, energyTotal: 80 }],
+            ["g1:Z", { days: 2, energyTotal: 50 }],
+          ])
+        }
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    const grid = screen.getByTestId("raid-resource-grid-g1")
+    expect(
+      within(grid)
+        .getAllByRole("heading", { level: 3 })
+        .map((heading) => heading.textContent)
+    ).toEqual(["Indomitus Elite"])
+    // Fall of Cadia has one battle: no header, its row names it in full.
+    expect(screen.getByTestId("raid-location-B2")).toHaveTextContent(
+      "Fall of Cadia Elite 7"
+    )
+    expect(
+      within(grid)
+        .getAllByRole("listitem")
+        .map((row) => row.dataset.testid)
+    ).toEqual(["raid-location-B1", "raid-location-B3", "raid-location-B2"])
+    expect(screen.getByTestId("raid-location-B3")).toHaveTextContent("Battle 9")
+    expect(screen.getByTestId("raid-upgrade-g1-Z")).toBeInTheDocument()
+  })
+
   it("uses the same urgency order for Bonus Raids", () => {
     render(
       <RaidSchedule
@@ -244,7 +379,7 @@ describe("RaidSchedule location emphasis", () => {
     ])
   })
 
-  it("splits the campaign name and the tier-and-node label across the card's two primary lines", () => {
+  it("names a campaign's lone battle in full on its row, with no group header", () => {
     render(
       <RaidSchedule
         attemptsUsedByBattle={new Map([[b1, 3]])}
@@ -252,7 +387,7 @@ describe("RaidSchedule location emphasis", () => {
         entries={[entry(b1, 3)]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
-          new Map([[b1, location("B1", "Indomitus", "Elite 4")]])
+          new Map([[b1, location("B1", "Indomitus", "Elite 4", "Elite")]])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
         resourceProgress={new Map()}
@@ -261,8 +396,15 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    expect(screen.getByText("Indomitus")).toBeInTheDocument()
-    expect(screen.getByText("Elite 4")).toBeInTheDocument()
+    expect(
+      screen.queryByRole("heading", { level: 3, name: "Indomitus Elite" })
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId(`raid-location-${b1}`)).toHaveTextContent(
+      "Indomitus Elite 4"
+    )
+    expect(screen.getByTestId(`raid-location-${b1}`)).not.toHaveTextContent(
+      "Battle"
+    )
   })
 
   it("omits the tier-and-node line for a battle the catalog has no descriptor for", () => {
@@ -282,7 +424,7 @@ describe("RaidSchedule location emphasis", () => {
 
     const lines = screen
       .getByTestId(`raid-location-${b1}`)
-      .querySelectorAll(".break-words")
+      .querySelectorAll(".wrap-break-word")
     expect([...lines].map((line) => line.textContent)).toEqual(["B1"])
   })
 
@@ -296,7 +438,7 @@ describe("RaidSchedule location emphasis", () => {
         entries={[entry(b1, 3)]}
         goalsById={new Map([["g1", goal]])}
         locationsByBattleId={
-          new Map([[b1, location("B1", campaignName, nodeLabel)]])
+          new Map([[b1, location("B1", campaignName, nodeLabel, "Extremis")]])
         }
         resourceLabels={new Map([["upgrade1", "Ceramite"]])}
         resourceProgress={new Map()}
@@ -305,15 +447,15 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    const row = within(screen.getByTestId(`raid-location-${b1}`))
-    for (const label of [campaignName, nodeLabel]) {
-      const line = row.getByText(label)
-      expect(line).toHaveClass("break-words")
-      expect(line).not.toHaveClass("truncate")
-    }
+    // A lone battle names its campaign, tier and node on its row, wrapping instead of truncating.
+    const line = screen
+      .getByTestId(`raid-location-${b1}`)
+      .querySelector(".wrap-break-word")
+    expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
+    expect(line).not.toHaveClass("truncate")
   })
 
-  it("keeps the resource name accessible (sr-only) by default and shows it in a visible tooltip on hover, while keeping progress visible underneath", async () => {
+  it("names the resource by its icon, shows the name in a tooltip on hover, and keeps progress beside it", async () => {
     const user = userEvent.setup()
     render(
       <RaidSchedule
@@ -343,12 +485,12 @@ describe("RaidSchedule location emphasis", () => {
       />
     )
 
-    // Visually hidden (sr-only) but still accessible before the tooltip opens.
-    expect(screen.getAllByText("Ceramite")).toHaveLength(1)
-    expect(screen.getByText("5 / 10")).toBeInTheDocument()
+    // Named by the icon's button before the tooltip opens.
+    expect(screen.getByRole("button", { name: "Ceramite" })).toBeInTheDocument()
+    expect(screen.getByText("5/10")).toBeInTheDocument()
 
     await user.hover(screen.getByTestId("raid-resource-icon"))
-    expect((await screen.findAllByText("Ceramite")).length).toBeGreaterThan(1)
+    expect(await screen.findAllByText("Ceramite")).not.toHaveLength(0)
   })
 
   it("renders one full-weight row per location when a resource is farmed at more than one node", () => {
@@ -419,6 +561,91 @@ describe("RaidSchedule location emphasis", () => {
     const row = screen.getByTestId(`raid-location-${b1}`)
     expect(row).toHaveTextContent("3 upgrades left")
     expect(row).not.toHaveTextContent(/attempts? used/)
+    // Short visible form so the name keeps the row width on mobile; full wording stays for AT.
+    expect(within(row).getByText("3 still needed")).toHaveAttribute(
+      "aria-hidden"
+    )
+    expect(within(row).getByText("3 upgrades left")).toHaveClass("sr-only")
+  })
+
+  it("shows a later location the goal's whole need, not what is left after an earlier location's expected drops", () => {
+    // Needs 3: B1 is raided out (3 attempts, expected 1.2 drops), leaving 1.8 for B2 in the plan.
+    render(
+      <RaidSchedule
+        attemptsLeftByBattle={
+          new Map([
+            [b1, 3],
+            [b2, 5],
+          ])
+        }
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[
+          { ...entry(b1, 3, 3), itemsFarmed: 1.2, remainingBefore: 3 },
+          { ...entry(b2, 3, 5), itemsFarmed: 1.8, remainingBefore: 1.8 },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Saim-Hann Mirror", "Elite 38")],
+            [b2, location("B2", "Saim-Hann Mirror", "Elite 7")],
+          ])
+        }
+        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    expect(screen.getByTestId(`raid-location-${b1}`)).not.toHaveTextContent(
+      /still needed/
+    )
+    expect(
+      within(screen.getByTestId(`raid-location-${b2}`)).getByText(
+        "3 still needed"
+      )
+    ).toBeInTheDocument()
+  })
+
+  it("shows no still-needed badge when the card already shows owned / target", () => {
+    render(
+      <RaidSchedule
+        attemptsLeftByBattle={
+          new Map([
+            [b1, 3],
+            [b2, 5],
+          ])
+        }
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[
+          { ...entry(b1, 3, 3), itemsFarmed: 1.2, remainingBefore: 12 },
+          { ...entry(b2, 3, 5), itemsFarmed: 1.8, remainingBefore: 10.8 },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [b1, location("B1", "Fall of Cadia", "Elite 12")],
+            [b2, location("B2", "Saim-Hann Mirror", "Elite 1")],
+          ])
+        }
+        resourceLabels={new Map([["upgrade1", "Ceramite"]])}
+        resourceProgress={
+          new Map([
+            [dailyRaidResourceKey("g1", "upgrade1"), { owned: 0, target: 12 }],
+          ])
+        }
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    // Each row of the upgrade shows what the player holds of it.
+    expect(screen.getAllByText("0/12")).toHaveLength(2)
+    expect(screen.getByTestId("schedule")).not.toHaveTextContent(
+      /still needed|upgrades? left/
+    )
   })
 
   it("excludes a fully-raided location from the card but keeps the card for its other locations", () => {

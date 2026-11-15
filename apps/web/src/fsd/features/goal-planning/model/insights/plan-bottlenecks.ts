@@ -9,8 +9,8 @@ import {
   type EstimateUpgrade,
   type GoalInventoryAllocation,
   type GoalNeed,
-} from "@/features/goal-farming/@x/goal-planning"
-import type { UpgradeWithFarmLocations } from "@/features/rank-lookup/@x/goal-planning"
+} from "@/entities/goal-farming"
+import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 
 import { addRuns, farmingDays, type RunsByBattle } from "./plan-farming-days"
 import type {

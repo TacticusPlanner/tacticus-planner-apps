@@ -86,7 +86,7 @@ describe("DesktopSectionNavigation", () => {
           const link = menu.getByRole("link", { name: label })
           expect(link).toHaveAttribute("title", label)
           const text = within(link).getByText(label)
-          expect(text).toHaveClass("break-words")
+          expect(text).toHaveClass("wrap-break-word")
           expect(text).not.toHaveClass("truncate")
         }
       }

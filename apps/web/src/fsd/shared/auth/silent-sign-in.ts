@@ -51,6 +51,8 @@ export function startSilentSignInOnce(instance: IPublicClientApplication) {
   setStatus("checking")
 
   void attemptSilentSignIn(instance).then((outcome) => {
+    // A quiet renewal is leaving the page: keep the boot screen up until it does.
+    if (outcome === "redirecting") return
     setStatus(outcome === "success" ? "idle" : "failed")
   })
 }

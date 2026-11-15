@@ -84,6 +84,7 @@
   "genesMagus": ["Xybia Kheiser"],
   "genesPatriarch": ["The Patermine"],
   "genesPrimus": ["Isaak Starn"],
+  "lostaFearmonger": ["Daras Carrow"],
   "necroDestroyer": [
     "Destroyer Hexmark Imospekh",
     "Hexmark Destroyer Imospekh"
@@ -100,7 +101,7 @@
   "orksRuntherd": ["Grumbal Snotflogga"],
   "orksWarboss": ["Boss Gulgortz", "Gulgortz Bulldoza"],
   "orksWeirdboy": ["Grubak Zapspitta"],
-  "spaceBlackmane": ["Ragnar", "Ragnar Crinière Noire", "Ragnar Blackmane"],
+  "spaceBlackmane": ["Ragnar Crinière Noire", "Ragnar Blackmane"],
   "spaceHound": ["Tjark Wyrdslayer"],
   "spaceRockfist": ["Arjac Rockfist"],
   "spaceStormcaller": ["Njal Stormcaller"],
@@ -177,6 +178,7 @@
   "worldTerminator": ["Wrask, le Boucher", "Wrask, the Butcher"],
   "astraOrdnanceBattery": ["Malleus Rocket Launcher"],
   "blackForgefiend": ["Forgefiend"],
+  "custoDreadnought": ["Boudicari Feldorus"],
   "darkaStormSpeeder": ["Storm Speeder Hailstrike"],
   "deathCrawler": ["Plagueburst Crawler"],
   "necroReanimator": [

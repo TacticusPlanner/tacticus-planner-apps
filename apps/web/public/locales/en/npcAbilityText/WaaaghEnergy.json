@@ -1,6 +1,6 @@
 {
   "WaaaghEnergy": {
-    "description": "Whenever another unit within 2 hexes performs an attack, <style=\"Faction_Orks\">Zapspitta</style> gains a <i>Waaagh! charge</i>. When attacking, he deals <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> for each of his <i>Waaagh! charges</i> and loses {[effectLevelPct]}% of them after attacking. At the end of his turn, if he has <style=\"STAT\">{[effectLevel]}</style> or more <i>Waaagh! charges</i>, Zapspitta loses {[hpPct]}% of his current maximum <style=\"Stat_Health\">Health</style>.",
+    "description": "Whenever another unit within 2 hexes performs an attack, <style=\"Faction_Orks\">Zapspitta</style> gains a level of <i>Waaagh! energy</i>. When attacking, he deals <style=\"Stat_Damage\">+{[extraDmg]} Damage</style> for each level and loses {[effectLevelPct]}% of current levels after attacking. At the end of his turn, if he has <style=\"STAT\">{[effectLevel]}</style> or more levels of <i>Waaagh! energy</i>, Zapspitta loses {[hpPct]}% of his current maximum <style=\"Stat_Health\">Health</style>.",
     "variables": {
       "extraDmg": [
         1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 17, 18,
@@ -9,7 +9,7 @@
         119, 121, 123, 126, 128, 131, 134, 137, 140, 143, 146
       ],
       "effectLevel": [
-        5, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6,
+        4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6,
         6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
         7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
       ]

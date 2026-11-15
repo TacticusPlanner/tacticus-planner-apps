@@ -9,6 +9,11 @@ export { goalQueries } from "./api/goal.queries"
 export { useGlobalGoalPlan } from "./model/use-global-goal-plan"
 export { useGoalsById } from "./model/use-goals-by-id"
 export {
+  linkCandidates,
+  linkedGoalIdsOf,
+  resolveGoalLinks,
+} from "./model/goal-links"
+export {
   CreateGoalLauncherContext,
   useCreateGoalLauncher,
   type CreateGoalPrefill,
@@ -30,13 +35,17 @@ export type { GoalStatusFilterValue } from "./ui/status-filter-select"
 export { GoalFilters } from "./ui/goal-filters"
 export type { GoalGroupValue, GoalTypeFilterValue } from "./ui/goal-filters"
 export {
+  compareGoalTypes,
   isGoalGroupValue,
   isGoalStatusFilterValue,
   isGoalTypeFilterValue,
 } from "./model/types"
 export { goalRevisionConflict } from "./model/goal-target-conflict"
 export {
+  activeProjectMembers,
   applyPositionMove,
+  globalPriorityOf,
+  type GoalPlanEntry,
   goalOrderConflict,
   holdsGlobalPosition,
   inFlightInGlobalOrder,
@@ -55,6 +64,7 @@ export {
 } from "./model/goal-target-key"
 export type {
   CombinedGoalSpec,
+  CreateCombinedGoalsRequest,
   CreateGoalConfigRequest,
   EditGoalRequest,
   GoalConfig,

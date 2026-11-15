@@ -3,7 +3,12 @@ import { describe, expect, it } from "vitest"
 
 import { battle, offPlanBattle, ready } from "@/test/fixtures/daily-raids"
 
-import { BONUS_LIMIT, BONUS_STEP, buildTodayView } from "./today-view-model"
+import {
+  BONUS_LIMIT,
+  BONUS_STEP,
+  buildTodayView,
+  todaysAttemptProgress,
+} from "./today-view-model"
 
 describe("buildTodayView", () => {
   it("shows the top 3 bonus entries below the limit, then up to 5 more per step", () => {
@@ -188,5 +193,34 @@ describe("buildTodayView", () => {
 
     expect(view.energy).toMatchObject({ used: 120, daily: 288 })
     expect(view.scheduleProps.emphasis).toBe("location")
+  })
+})
+
+describe("todaysAttemptProgress", () => {
+  const raids = {
+    resourceTotals: new Map([
+      ["U1", { owned: 14, target: 24 }],
+      ["U2", { owned: 30, target: 24 }],
+      ["U3", { owned: 0, target: 0 }],
+    ]),
+  }
+
+  it("returns the have/need, done once the holding covers the need", () => {
+    expect(todaysAttemptProgress(raids, "U1")).toEqual({
+      owned: 14,
+      target: 24,
+      done: false,
+    })
+    expect(todaysAttemptProgress(raids, "U2")).toEqual({
+      owned: 30,
+      target: 24,
+      done: true,
+    })
+  })
+
+  it("returns nothing for a resource no goal needs", () => {
+    expect(todaysAttemptProgress(raids, "U3")).toBeUndefined()
+    expect(todaysAttemptProgress(raids, "missing")).toBeUndefined()
+    expect(todaysAttemptProgress(raids, undefined)).toBeUndefined()
   })
 })

@@ -11,7 +11,7 @@ import type {
 import {
   levelBookAvailability,
   type EstimateOutcome,
-} from "@/features/goal-farming"
+} from "@/entities/goal-farming"
 import type { XpBookFigure } from "../shared/level-requirement-display"
 import type { GoalRow } from "@/features/goal-planning"
 import type { useGoalActions } from "@/features/goal-planning"
@@ -148,6 +148,104 @@ export type GoalsListProps = {
   cascadeContext?: CascadeContext
   /** Present while the Goals page is scoped to a project; each row menu then offers removal from it. */
   projectRemoval?: ProjectRemoval
+}
+
+/** The props a memoized goal row or card compares to decide whether it must re-render. */
+export type RowSliceProps = Pick<
+  GoalsListProps,
+  | "actions"
+  | "estimates"
+  | "metrics"
+  | "potentialProgress"
+  | "levelPotentialProgress"
+  | "levelChargedXp"
+  | "levelPoolXpAvailable"
+  | "xpBook"
+  | "onToggleSelected"
+  | "reachedByGoalId"
+  | "cascadeContext"
+  | "seasonFit"
+> & {
+  moves: GoalMenuMoves | undefined
+  row: GoalRow
+  selected: boolean
+  dragHandle?: unknown
+  popoverOpen: boolean
+}
+
+/** Memo comparator for a goal row or card: maps and `actions` are rebuilt on every page render (a
+ *  pause/resume rebuilds the cascade context, estimates and `pendingIds` for the whole list), so compare
+ *  only this goal's slice of each. Functions other than `onToggleSelected` are omitted on purpose:
+ *  `actions`, `onEdit` and `onMenuMove` only act on ids/state read at call time (a move's target is the
+ *  compared `moves`), and `setOpenPopoverGoalId` is a state setter. `extra` adds a surface's own scalar props. */
+/** Whether a goal's row or card draws a Potential bar, which is what the legend explains. Cards draw
+ *  shard bars with no Potential for Ascension, and an Ability card's only one is on its level row. */
+export function drawsPotentialBar(
+  row: GoalRow,
+  {
+    metrics,
+    potentialProgress,
+    levelPotentialProgress,
+    reachedByGoalId,
+  }: Pick<
+    GoalsListProps,
+    | "metrics"
+    | "potentialProgress"
+    | "levelPotentialProgress"
+    | "reachedByGoalId"
+  >,
+  view: "Cards" | "Table"
+) {
+  if (isReachedRow(row, reachedByGoalId)) return false
+  const onProgressBar = potentialProgress?.get(row.goalId) !== undefined
+  const onLevelRow =
+    !!metrics?.get(row.goalId)?.levelRequirement &&
+    levelPotentialProgress?.get(row.goalId) !== undefined
+  if (view === "Table") return onProgressBar || onLevelRow
+  if (row.goalType === "Ascension") return false
+  return onLevelRow || (row.goalType !== "Ability" && onProgressBar)
+}
+
+export function sameRowSlice<P extends RowSliceProps>(
+  a: P,
+  b: P,
+  extra: (props: P) => unknown[] = () => []
+) {
+  const id = a.row.goalId
+  if (id !== b.row.goalId || a.row !== b.row) return false
+  const scalar = (props: P) => [
+    props.selected,
+    props.popoverOpen,
+    props.xpBook,
+    props.actions.pendingIds.has(id),
+    props.onToggleSelected,
+    props.dragHandle,
+    props.moves?.top,
+    props.moves?.up,
+    props.moves?.down,
+    props.moves?.priorityOrder,
+    ...extra(props),
+  ]
+  const perId = (props: P) => [
+    props.estimates?.get(id),
+    props.metrics?.get(id),
+    props.potentialProgress?.get(id),
+    props.levelPotentialProgress?.get(id),
+    props.levelChargedXp?.get(id),
+    props.levelPoolXpAvailable?.get(id),
+    props.reachedByGoalId?.get(id),
+    props.seasonFit?.fits.get(id),
+    props.seasonFit?.season,
+    props.seasonFit?.seasonNumber,
+    props.seasonFit?.deadlineMs,
+    ...(a.row.dependsOn ?? []).flatMap((dep) => [
+      props.cascadeContext?.statusById.get(dep),
+      props.cascadeContext?.dependentCountById.get(dep),
+    ]),
+  ]
+  const same = (x: unknown[], y: unknown[]) =>
+    x.length === y.length && x.every((value, k) => Object.is(value, y[k]))
+  return same(scalar(a), scalar(b)) && same(perId(a), perId(b))
 }
 
 /** Whether a row renders as a completed (Reached) row/card — a display state derived from computed

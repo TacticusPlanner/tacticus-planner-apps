@@ -7,6 +7,7 @@ import type {
   OnslaughtRewardStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
+import { campaignDescriptor } from "@workspace/game-catalog"
 import type {
   CampaignId,
   Rarity,
@@ -18,21 +19,22 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import type {
   Character,
   UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-planning"
+} from "@/entities/rank-lookup"
 import type { GoalDetail } from "@/entities/goal"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
-import { computeCampaignInsights } from "@/features/campaign-insights/@x/goal-planning"
+import { computeCampaignInsights } from "@/entities/campaign-insight"
 
 import {
   allocatePlanInventory,
   createCraftedInventoryPool,
   estimatePlan,
+  resourceLabel,
   type EstimateResourceId,
   type EstimateUpgrade,
   type GoalNeed,
   type LevelRules,
   type UpgradeNeed,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
@@ -42,7 +44,7 @@ import {
   rankSlotAllocation,
   type RankSlotAllocation,
   type UnitCoverage,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 import { createAbilityMaterialsPlan } from "./plan-ability-materials"
 import { buildPotentialProgressByGoalId } from "./potential-progress"
 import {
@@ -53,6 +55,7 @@ import {
 } from "./orb-potential-allocation"
 import { buildLevelPotentialProgress } from "./level-potential-progress"
 import { computeBottlenecks, netGoalNeeds } from "./plan-bottlenecks"
+import { computeCampaignProgression } from "./plan-campaign-progression"
 import { summarizeFarmingSpots } from "./plan-farming-spots"
 import { createPlanMissingResources } from "./plan-missing-resources"
 import { createPlanNetResources } from "./plan-net-resources"
@@ -117,6 +120,19 @@ export function computePlanInsights(params: {
    *  goal as if it selected no shop sources — the shared estimate still runs, just without that
    *  contribution. */
   shops?: readonly GameCatalogShop[]
+  /** "Campaigns to push" inputs: every catalog battle, the player's campaign progress, the campaign
+   *  definitions, the owned roster, Power Level and the Elite threshold. Omitted, no campaign
+   *  progression is computed. */
+  campaignProgression?: Omit<
+    Parameters<typeof computeCampaignProgression>[0],
+    | "goalNeeds"
+    | "allocations"
+    | "estimates"
+    | "farmLocationsById"
+    | "battlesById"
+    | "isElite"
+    | "label"
+  >
 }): PlanInsightsResult {
   const totals: PlanInsightsTotals = {
     upgradesByRarity: {},
@@ -227,6 +243,7 @@ export function computePlanInsights(params: {
       flatSuppliers,
       onslaughtTokensDelta,
       mythicShardNeed,
+      shardNeed,
     } = computeGoalAcquisition({
       detail,
       need,
@@ -254,11 +271,17 @@ export function computePlanInsights(params: {
     // read them after `allocatePlanInventory` below, so owned materials never count as missing.
     const needs: UpgradeNeed[] = [...need.upgrades]
 
-    if (need.shardId && (need.shards > 0 || flatSuppliers.length > 0)) {
-      needs.push({ id: need.shardId, count: need.shards })
+    // A Machine of War's shards arrive here only when Onslaught or a shop supplies them; it has no
+    // campaign nodes, so it never gets a catalog entry below.
+    if (shardNeed) {
+      needs.push(shardNeed)
 
       const characterView = params.charactersById.get(detail.entityId)
-      if (characterView && !shardCatalogEntries.has(need.shardId)) {
+      if (
+        need.shardId &&
+        characterView &&
+        !shardCatalogEntries.has(need.shardId)
+      ) {
         // `rarity` here is only for computeCampaignInsights's value-weighting formula (it has no
         // farmable-resource concept of its own rarity) — the character's own starting rarity is the
         // natural stand-in, mirroring how a higher-rarity character's shards are scarcer/more
@@ -382,6 +405,7 @@ export function computePlanInsights(params: {
   const planNetByGoalId = planNet.resolve({
     orderedDetails,
     orbAllocations,
+    inventoryOrbs: params.inventoryOrbs,
     levelGoldByGoalId: levelPotential.goldByGoalId,
     standaloneByGoalId,
     chainedFromLevelByGoalId: levelPotential.chainedFromLevelByGoalId,
@@ -468,6 +492,21 @@ export function computePlanInsights(params: {
         : params.campaignFullLabel(descriptor)
   )
 
+  const campaignProgression = params.campaignProgression
+    ? computeCampaignProgression({
+        ...params.campaignProgression,
+        goalNeeds: goalNeeds.filter((goal) => inScope(goal.goalId)),
+        allocations,
+        estimates: estimateResults,
+        farmLocationsById: combinedUpgradesById,
+        battlesById: params.battlesById,
+        isElite: (groupId) =>
+          campaignDescriptor(groupId, "Elite")?.difficultyToken === "elite",
+        label: (id) =>
+          resourceLabel(id, params.upgradesById, params.charactersById),
+      })
+    : []
+
   const farmingSpotsByInsightId = summarizeFarmingSpots(
     [...campaignInsights, ...eventInsights],
     params.battlesById,
@@ -531,5 +570,6 @@ export function computePlanInsights(params: {
     eventInsights,
     farmingSpotsByInsightId,
     benefitingGoalIdsByInsightId,
+    campaignProgression,
   }
 }

@@ -11,7 +11,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { Rarity } from "@workspace/game-domain"
 
-import type { CampaignInsight } from "@/features/campaign-insights"
+import type { CampaignInsight } from "@/entities/campaign-insight"
 
 import {
   BaseUpgradesCards,

@@ -23,6 +23,7 @@ vi.mock("@/entities/player-data-override", async (importOriginal) => ({
       queryFn: async () => ({ revision: 1 }),
     }),
   },
+  useEligibleCampaignBattles: () => eligible,
 }))
 vi.mock("@/entities/planning-setting", () => ({
   usePlanningSettings: () => ({
@@ -41,9 +42,6 @@ vi.mock("./use-scoped-goal-plan", () => ({
 const filters = vi.hoisted(() => ({}))
 vi.mock("./raids-filters/use-raids-filters", () => ({
   useRaidsFilters: () => [filters],
-}))
-vi.mock("./use-eligible-campaign-battles", () => ({
-  useEligibleCampaignBattles: () => eligible,
 }))
 const eligible = vi.hoisted(() => ({
   availableBattles: [],

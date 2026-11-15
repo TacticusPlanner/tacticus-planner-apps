@@ -111,6 +111,29 @@ describe("ManageAccountDialog", () => {
     expect(link).toHaveAttribute("rel", "noopener noreferrer")
   })
 
+  it("shows Close beside the open tab's main button in the footer", async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    render(<ManageAccountDialog onOpenChange={onOpenChange} open />)
+
+    const close = screen.getByTestId("manage-account-close")
+    const footer = close.parentElement
+    expect(footer).toContainElement(
+      screen.getByTestId("manage-account-integration-submit")
+    )
+
+    await user.click(screen.getByTestId("manage-account-tab-account"))
+    expect(footer).toContainElement(
+      screen.getByTestId("manage-account-purge-submit")
+    )
+    expect(
+      screen.queryByTestId("manage-account-integration-submit")
+    ).not.toBeInTheDocument()
+
+    await user.click(close)
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
   describe("profile tab", () => {
     async function openProfileTab() {
       const user = userEvent.setup()

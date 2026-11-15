@@ -107,7 +107,7 @@ function LaneSummaryRow({
       // button's accessible description, so assistive technology reads them too.
       aria-describedby={figuresId}
       aria-label={t("laneSummary.open", { lane })}
-      className="flex min-w-0 items-center gap-3 rounded-md px-2 py-2.5 text-left transition-colors hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="flex min-w-0 items-center gap-3 rounded-md px-2 py-2.5 text-left transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
       data-lane={laneId}
       data-testid="lane-summary-row"
       onClick={() => onJumpToLane(laneId)}

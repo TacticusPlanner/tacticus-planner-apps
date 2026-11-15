@@ -20,6 +20,7 @@ describe("GuildRaidFreshnessFooter", () => {
       <GuildRaidFreshnessFooter
         freshness="fresh"
         hasRefreshError={false}
+        isKeyRejected={false}
         isRefreshing={false}
         lastGuildSyncSucceededAtMs={NOW - 10 * 60_000}
         observedAtMs={NOW - 5 * 60_000}
@@ -39,6 +40,7 @@ describe("GuildRaidFreshnessFooter", () => {
       <GuildRaidFreshnessFooter
         freshness="stale"
         hasRefreshError={false}
+        isKeyRejected={false}
         isRefreshing={false}
         lastGuildSyncSucceededAtMs={NOW}
         observedAtMs={NOW}
@@ -54,6 +56,7 @@ describe("GuildRaidFreshnessFooter", () => {
       <GuildRaidFreshnessFooter
         freshness="fresh"
         hasRefreshError={true}
+        isKeyRejected={false}
         isRefreshing={false}
         lastGuildSyncSucceededAtMs={NOW}
         observedAtMs={NOW}
@@ -64,6 +67,24 @@ describe("GuildRaidFreshnessFooter", () => {
     expect(screen.getByTestId("guild-raid-refresh-error")).toBeInTheDocument()
   })
 
+  it("names the rejected key rather than a generic refresh failure", () => {
+    render(
+      <GuildRaidFreshnessFooter
+        freshness="stale"
+        hasRefreshError={true}
+        isKeyRejected={true}
+        isRefreshing={false}
+        lastGuildSyncSucceededAtMs={NOW}
+        observedAtMs={NOW}
+        refresh={vi.fn()}
+      />
+    )
+
+    expect(screen.getByTestId("guild-raid-refresh-error")).toHaveTextContent(
+      "guildRaids.status.keyRejected"
+    )
+  })
+
   it("invokes the refresh action on click and disables the button while a refresh is pending", async () => {
     const refresh = vi.fn()
     const user = userEvent.setup()
@@ -71,6 +92,7 @@ describe("GuildRaidFreshnessFooter", () => {
       <GuildRaidFreshnessFooter
         freshness="fresh"
         hasRefreshError={false}
+        isKeyRejected={false}
         isRefreshing={false}
         lastGuildSyncSucceededAtMs={NOW}
         observedAtMs={NOW}
@@ -87,6 +109,7 @@ describe("GuildRaidFreshnessFooter", () => {
       <GuildRaidFreshnessFooter
         freshness="fresh"
         hasRefreshError={false}
+        isKeyRejected={false}
         isRefreshing={true}
         lastGuildSyncSucceededAtMs={NOW}
         observedAtMs={NOW}

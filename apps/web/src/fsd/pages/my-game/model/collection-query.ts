@@ -15,13 +15,25 @@ export const collectionSorts = [
   "rank",
   "abilities",
   "shards",
+  "power",
 ] as const
 export type CollectionSort = (typeof collectionSorts)[number]
 export const defaultCollectionSort: CollectionSort = "rarity"
 
+/** How the listed units are laid out; Table and Showcase join this list later. */
+export const collectionLayouts = ["cards", "roster"] as const
+export type CollectionLayout = (typeof collectionLayouts)[number]
+export const defaultCollectionLayout: CollectionLayout = "cards"
+
+/** Whether units are grouped by faction or listed together across factions. */
+const collectionGroupings = ["faction", "none"] as const
+export type CollectionGrouping = (typeof collectionGroupings)[number]
+export const defaultCollectionGrouping: CollectionGrouping = "faction"
+
 export const collectionQuickFilters = [
   "readyToRankUp",
   "needToAscend",
+  "canPromote",
   "canAscend",
   "needToLevel",
   "blueStarReady",
@@ -32,9 +44,6 @@ export type CollectionQuickFilter = (typeof collectionQuickFilters)[number]
 
 /** The alliances a player can filter by; Neutral has no playable units. */
 export const collectionAlliances = ["Imperial", "Chaos", "Xenos"] as const
-
-export const collectionOwnerships = ["owned", "unowned"] as const
-type CollectionOwnership = (typeof collectionOwnerships)[number]
 
 export const collectionKinds = [
   "character",
@@ -66,7 +75,8 @@ export interface CollectionQuery {
   /** Rarity and stars; owned units only. */
   starsMin: Progression | null
   starsMax: Progression | null
-  ownership: CollectionOwnership | null
+  /** Lists owned units only: a display setting, kept in `?owned=owned`; the counts are unchanged. */
+  hideUnowned: boolean
   kind: UnitKind | null
   // The combat filters: catalog properties of characters, so they apply signed out too.
   attack: CollectionAttackType | null
@@ -80,6 +90,10 @@ export interface CollectionQuery {
   shardSources: readonly CollectionShardSource[]
   quick: CollectionQuickFilter | null
   sort: CollectionSort
+  /** The layout; like the sort it is not a filter and Clear filters keeps it. */
+  view: CollectionLayout
+  /** Grouped by faction, or one list across factions; not a filter either. */
+  group: CollectionGrouping
 }
 
 export const defaultCollectionQuery: CollectionQuery = {
@@ -91,7 +105,7 @@ export const defaultCollectionQuery: CollectionQuery = {
   rankMax: null,
   starsMin: null,
   starsMax: null,
-  ownership: null,
+  hideUnowned: false,
   kind: null,
   attack: null,
   hitsMin: null,
@@ -104,6 +118,8 @@ export const defaultCollectionQuery: CollectionQuery = {
   shardSources: [],
   quick: null,
   sort: defaultCollectionSort,
+  view: defaultCollectionLayout,
+  group: defaultCollectionGrouping,
 }
 
 const includes =
@@ -112,9 +128,10 @@ const includes =
     typeof value === "string" && (values as readonly string[]).includes(value)
 
 export const isCollectionSort = includes(collectionSorts)
+export const isCollectionLayout = includes(collectionLayouts)
+export const isCollectionGrouping = includes(collectionGroupings)
 export const isCollectionQuickFilter = includes(collectionQuickFilters)
 export const isCollectionAlliance = includes(collectionAlliances)
-export const isCollectionOwnership = includes(collectionOwnerships)
 export const isCollectionKind = includes(collectionKinds)
 export const isCollectionRarity = includes(rarityOrder)
 export const isCollectionAttackType = includes(collectionAttackTypes)
@@ -126,7 +143,7 @@ export const isCollectionRank = (value: unknown): value is Rank =>
 
 /**
  * How many filters are active: the search, each standalone filter that is set (a range with a
- * lowest and a highest end counts once) and the quick filter. The sort is not a filter.
+ * lowest and a highest end counts once) and the quick filter. The sort, the view and the grouping are not filters.
  */
 export function activeFilterCount(query: CollectionQuery): number {
   return [
@@ -136,7 +153,6 @@ export function activeFilterCount(query: CollectionQuery): number {
     query.rarities.length > 0,
     query.rankMin !== null || query.rankMax !== null,
     query.starsMin !== null || query.starsMax !== null,
-    query.ownership !== null,
     query.kind !== null,
     query.attack !== null,
     query.hitsMin !== null || query.hitsMax !== null,

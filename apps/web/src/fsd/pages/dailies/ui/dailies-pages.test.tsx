@@ -91,11 +91,10 @@ describe("Dailies raid pages", () => {
 
     expect(screen.getAllByText("Bellator").length).toBeGreaterThan(0)
     expect(screen.getAllByText("Aleph-Null").length).toBeGreaterThan(0)
-    // The same resource (Ceramite/U1) is grouped under both contributing goals — its name only
-    // renders as visible text for the merged shard-identity card (g1); for g2 it's icon+tooltip
-    // only, so the grouping is verified via each goal's own resource card existing instead.
-    expect(screen.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
-    expect(screen.getByTestId("raid-card-g2-U1")).toBeInTheDocument()
+    // The same resource (Ceramite/U1) is grouped under both contributing goals — its name is
+    // icon+tooltip only, so the grouping is verified via each goal's own row of it instead.
+    expect(screen.getByTestId("raid-upgrade-g1-U1")).toBeInTheDocument()
+    expect(screen.getByTestId("raid-upgrade-g2-U1")).toBeInTheDocument()
     const todaySchedule = within(screen.getByTestId("today-grid"))
     // Bonus Raids is its own grouping context again (a labeled continuation, not merged data), so
     // a goal with multiple bonus resources (not eligible for the combined-shard-identity merge)
@@ -103,7 +102,7 @@ describe("Dailies raid pages", () => {
     expect(todaySchedule.getAllByText("Bellator")).toHaveLength(2)
     expect(todaySchedule.getAllByText("Aleph-Null")).toHaveLength(2)
     expect(todaySchedule.getAllByText(/Indomitus/)).not.toHaveLength(0)
-    expect(todaySchedule.getByText(/265 \/ 500/)).toBeInTheDocument()
+    expect(todaySchedule.getAllByText("265/500")).not.toHaveLength(0)
     expect(
       todaySchedule.getByLabelText(
         'schedule.progress:{"owned":265,"target":500}'
@@ -123,7 +122,7 @@ describe("Dailies raid pages", () => {
     ).toHaveClass(
       "md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))]"
     )
-    expect(screen.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("raid-upgrade-g2-B4")).not.toBeInTheDocument()
     expect(
       screen.getByRole("region", { name: "bonus.title" })
     ).toBeInTheDocument()
@@ -133,9 +132,9 @@ describe("Dailies raid pages", () => {
     await user.click(
       screen.getByRole("button", { name: 'bonus.showMore:{"count":1}' })
     )
-    expect(screen.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+    expect(screen.getByTestId("raid-upgrade-g2-B4")).toBeInTheDocument()
     await user.click(screen.getByRole("button", { name: "bonus.showLess" }))
-    expect(screen.queryByTestId("raid-card-g2-B4")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("raid-upgrade-g2-B4")).not.toBeInTheDocument()
     expect(registeredTours.at(-1)).toMatchObject({
       desktop: expect.any(Array),
       mobile: expect.any(Array),
@@ -265,13 +264,35 @@ describe("Dailies raid pages", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("splits a storyline elite node across two lines in Today's schedule", () => {
-    useDailyRaids.mockReturnValue(ready())
+  it("names a storyline elite node in full, with the campaign icon, when it is its campaign's only battle", () => {
+    useDailyRaids.mockReturnValue(
+      ready({
+        locationsByBattleId: new Map([
+          [
+            battle,
+            {
+              id: battle,
+              campaignName: "Indomitus",
+              nodeLabel: "Elite 1",
+              difficultyLabel: "Elite",
+              campaignKey: "indomitus-elite",
+              shortLabel: "Indomitus E 1",
+              challenge: false,
+              icon: "/campaign.png",
+            },
+          ],
+        ]),
+      })
+    )
     renderPage(<TodayPage />)
 
-    const row = within(screen.getAllByTestId(`raid-location-${battle}`)[0]!)
-    expect(row.getByText("Indomitus")).toBeInTheDocument()
-    expect(row.getByText("Elite 1")).toBeInTheDocument()
+    const plan = within(screen.getByTestId("today-raid-list"))
+    expect(
+      plan.queryByRole("heading", { level: 3, name: "Indomitus Elite" })
+    ).not.toBeInTheDocument()
+    const row = plan.getAllByTestId(`raid-location-${battle}`)[0]!
+    expect(row).toHaveTextContent("Indomitus Elite 1")
+    expect(row.querySelector('img[src="/campaign.png"]')).not.toBeNull()
   })
 
   it("renders only the battle id, with no second line, for an attempt the catalog cannot name", () => {
@@ -287,7 +308,7 @@ describe("Dailies raid pages", () => {
 
     const lines = screen
       .getByTestId(`todays-attempt-${battle}`)
-      .querySelectorAll(".break-words")
+      .querySelectorAll(".wrap-break-word")
     expect([...lines].map((line) => line.textContent)).toEqual([battle])
   })
 
@@ -318,7 +339,7 @@ describe("Dailies raid pages", () => {
     const attempt = within(screen.getByTestId(`todays-attempt-${battle}`))
     // Campaign and node share one compact line that wraps instead of truncating.
     for (const label of [campaignName, nodeLabel]) {
-      const line = attempt.getByText(label).closest(".break-words")
+      const line = attempt.getByText(label).closest(".wrap-break-word")
       expect(line).not.toBeNull()
       expect(line).not.toHaveClass("truncate")
       expect(line).toHaveTextContent(`${campaignName} ${nodeLabel}`)
@@ -408,14 +429,14 @@ describe("Dailies raid pages", () => {
     expect(bonusCard).toHaveAttribute("data-limit", "reached")
     const bonus = within(bonusCard)
     // The plan's own material keeps its remaining farming, ahead of the bonus materials.
-    expect(bonus.getByTestId("raid-card-g1-U1")).toBeInTheDocument()
+    expect(bonus.getByTestId("raid-upgrade-g1-U1")).toBeInTheDocument()
     expect(bonus.getByText("bonus.title")).toBeInTheDocument()
     expect(bonus.getByTestId("bonus-energy-limit-reached")).toHaveTextContent(
       "bonus.limitReached"
     )
-    expect(bonus.getByTestId("raid-card-g1-B1")).toBeInTheDocument()
+    expect(bonus.getByTestId("raid-upgrade-g1-B1")).toBeInTheDocument()
     // Every raid left today is listed, with no Show more.
-    expect(bonus.getByTestId("raid-card-g2-B4")).toBeInTheDocument()
+    expect(bonus.getByTestId("raid-upgrade-g2-B4")).toBeInTheDocument()
     expect(
       bonus.queryByRole("button", { name: /^bonus\.showMore/ })
     ).not.toBeInTheDocument()

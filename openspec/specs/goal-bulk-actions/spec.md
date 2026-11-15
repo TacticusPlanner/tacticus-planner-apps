@@ -8,30 +8,47 @@ Defines how a user selects several goals on the Goals page and acts on them at o
 
 ### Requirement: Desktop rows can be selected individually or all at once
 
-At or above the mobile breakpoint, every goal row on the Goals page (`/plan/goals`, with or without a project scope) SHALL carry a selection checkbox in its leading cell, before the priority number and drag handle, and the table header SHALL carry a select-all checkbox. Toggling a row's checkbox SHALL add or remove that goal from the selection without triggering any other row control. The header checkbox SHALL select every currently visible row — across every group when Group is set — when not all are selected, and SHALL clear the selection when all visible rows are selected; it SHALL render as indeterminate while some but not all visible rows are selected. A Reached row SHALL be selectable like any other row; applicability of individual bulk actions is decided per action (see "Bulk actions are enabled by the selection"). Each checkbox SHALL have an accessible name identifying the goal (or, for the header, the select-all action).
+At or above the mobile breakpoint, every goal on the Goals page (`/plan/goals`, with or without a project scope) SHALL carry a selection checkbox in both views:
+
+- in Table view, in the row's leading cell, before the priority number and drag handle;
+- in Cards view, first in the card header, before the priority number and drag handle.
+
+A select-all checkbox SHALL also be present: in the table header in Table view, and once above the goal groups in Cards view, because a label under a group heading would read as selecting that group only.
+
+- Toggling a goal's checkbox SHALL add or remove that goal from the selection without triggering any other control of its row or card.
+- The select-all checkbox SHALL select every currently visible goal, across every group when Group is set, when not all are selected. It SHALL clear the selection when all visible goals are selected, and SHALL render as indeterminate while some but not all are selected.
+- Switching between Table and Cards view SHALL keep the current selection.
+- A Reached goal SHALL be selectable like any other. Whether each bulk action applies is decided per action (see "Bulk actions are enabled by the selection").
+- Each checkbox SHALL have an accessible name identifying the goal, or the select-all action for the select-all checkbox. Both views SHALL expose the select-all checkbox under the same test id, so tours and tests target it in either view.
 
 #### Scenario: Selecting two rows
 
-- **WHEN** the user checks the checkboxes of two rows
-- **THEN** both rows are selected, the actions row reports two selected goals, and no other row control (drag handle, menu) was activated
+- **WHEN** the user checks the checkboxes of two rows in Table view, or of two cards in Cards view
+- **THEN** both goals are selected, the actions row reports two selected goals, and no other control (drag handle, menu, status chip) was activated
 
 #### Scenario: Select all visible across groups
 
-- **GIVEN** Group is set to goal type and the visible rows span three groups
-- **WHEN** the user checks the header checkbox
-- **THEN** every row in all three groups is selected
+- **GIVEN** Group is set to goal type and the visible goals span three groups
+- **WHEN** the user checks the select-all checkbox, in the table header or above the goal groups
+- **THEN** every goal in all three groups is selected
 
 #### Scenario: Header checkbox clears a full selection
 
-- **GIVEN** every visible row is selected
-- **WHEN** the user activates the header checkbox
+- **GIVEN** every visible goal is selected
+- **WHEN** the user activates the select-all checkbox
 - **THEN** the selection is empty
 
 #### Scenario: Partial selection shows indeterminate
 
-- **GIVEN** three of five visible rows are selected
-- **WHEN** the header renders
-- **THEN** the header checkbox is in its indeterminate state
+- **GIVEN** three of five visible goals are selected
+- **WHEN** the select-all checkbox renders, in either view
+- **THEN** it is in its indeterminate state
+
+#### Scenario: The selection survives a view switch
+
+- **GIVEN** two goals are selected in Cards view
+- **WHEN** the user switches to Table view
+- **THEN** the same two goals are selected and the actions row still reports two selected goals
 
 ### Requirement: Mobile offers a select mode mirroring reorder mode
 

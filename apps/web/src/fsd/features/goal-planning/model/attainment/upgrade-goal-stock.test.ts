@@ -6,6 +6,7 @@ import type { GoalDetail } from "@/entities/goal"
 import { computeGoalAttainment } from "./goal-attainment"
 import {
   allocateUpgradeGoalStock,
+  splitUpgradeGoalStock,
   type UpgradeStockUnits,
 } from "./upgrade-goal-stock"
 
@@ -231,6 +232,126 @@ describe("allocateUpgradeGoalStock with Rank and Machine of War Ability goals", 
     )
     expect(stock.get("ahriman-extra")).toEqual([
       { upgradeId: "boon", amount: 1 },
+    ])
+  })
+})
+
+describe("allocateUpgradeGoalStock with base materials inside crafted slots", () => {
+  // Re'vas' Stone1 slots each hold a crafted `chipItem`, made from 2 base `chip`.
+  const crafted = {
+    ...units,
+    getCharacter: (unitId: string) =>
+      unitId === "revas"
+        ? ({
+            id: unitId,
+            name: "Re'vas",
+            rankUpUpgrades: [
+              { rank: "Stone1", upgradeIds: ["chipItem", "chipItem"] },
+            ],
+          } as never)
+        : units.getCharacter(unitId as never),
+    upgradesById: new Map([
+      [
+        "chipItem",
+        {
+          crafted: true,
+          recipe: [{ material: "chip", count: 2 }],
+        },
+      ],
+      ["chip", { crafted: false, recipe: [] }],
+    ]) as never,
+  } as UpgradeStockUnits
+  const revasRank = { ...rankGoal("revas-rank", 1), entityId: "revas" }
+  const revasChips = (globalPriority: number, quantity: number) =>
+    upgradeGoal(
+      "revas-chips",
+      globalPriority,
+      [{ upgradeId: "chip", quantity }],
+      "Active",
+      { entityId: "revas", rankRange: { start: 0, end: 2 } }
+    )
+
+  it("counts the base pieces of a crafted item an earlier Rank goal holds", () => {
+    const stock = allocateUpgradeGoalStock(
+      [revasRank, revasChips(2, 4)],
+      inventory([
+        { upgradeId: "chipItem", amount: 1 },
+        { upgradeId: "chip", amount: 1 },
+      ]),
+      crafted
+    )
+    // 2 inside the owned crafted item, plus 1 loose.
+    expect(stock.get("revas-chips")).toEqual([{ upgradeId: "chip", amount: 3 }])
+  })
+
+  it("matches only slots holding the target without recipes", () => {
+    const stock = allocateUpgradeGoalStock(
+      [revasRank, revasChips(2, 4)],
+      inventory([
+        { upgradeId: "chipItem", amount: 1 },
+        { upgradeId: "chip", amount: 1 },
+      ]),
+      { ...crafted, upgradesById: undefined }
+    )
+    expect(stock.get("revas-chips")).toEqual([{ upgradeId: "chip", amount: 1 }])
+  })
+})
+
+describe("splitUpgradeGoalStock holders (Discord: lower Z'Kar goal reached before Ahriman)", () => {
+  // Ahriman's Rank goal ranks first; Abraxas' Upgrade goal comes next and is short, and Ahriman's own
+  // Upgrade goal, ranked last, is reached on the pieces its Rank goal already holds.
+  const goals = [
+    rankGoal("ahriman-rank", 1),
+    upgradeGoal("abraxas", 2, boon(3)),
+    upgradeGoal("ahriman-items", 3, boon(3), "Active", {
+      entityId: "ahriman",
+      rankRange: { start: 0, end: 2 },
+    }),
+  ]
+
+  it("names the higher goal that took the stock first on the short goal", () => {
+    const { stock, holders } = splitUpgradeGoalStock(
+      goals,
+      inventory([{ upgradeId: "boon", amount: 4 }]),
+      units
+    )
+    expect(stock.get("abraxas")).toEqual([{ upgradeId: "boon", amount: 1 }])
+    expect(holders.get("abraxas")?.get("boon" as never)).toEqual([
+      { goalId: "ahriman-rank", amount: 3, counted: false },
+    ])
+  })
+
+  it("names the same-unit goal whose pieces a reached goal counts", () => {
+    const { stock, holders } = splitUpgradeGoalStock(
+      goals,
+      inventory([{ upgradeId: "boon", amount: 4 }]),
+      units
+    )
+    expect(stock.get("ahriman-items")).toEqual([
+      { upgradeId: "boon", amount: 3 },
+    ])
+    expect(holders.get("ahriman-items")?.get("boon" as never)).toEqual([
+      { goalId: "ahriman-rank", amount: 3, counted: true },
+    ])
+  })
+
+  it("lists no holders for a goal that got its full need from the stock", () => {
+    const { holders } = splitUpgradeGoalStock(
+      [upgradeGoal("ahriman", 1, boon(2)), upgradeGoal("abraxas", 2, boon(2))],
+      inventory([{ upgradeId: "boon", amount: 4 }])
+    )
+    expect(holders.has("ahriman")).toBe(false)
+    expect(holders.has("abraxas")).toBe(false)
+  })
+
+  it("follows a reorder: the goal moved up draws first and the other names it", () => {
+    const { stock, holders } = splitUpgradeGoalStock(
+      [upgradeGoal("ahriman", 2, boon(3)), upgradeGoal("zkar", 1, boon(3))],
+      inventory([{ upgradeId: "boon", amount: 4 }])
+    )
+    expect(stock.get("zkar")).toEqual([{ upgradeId: "boon", amount: 3 }])
+    expect(holders.get("ahriman")?.get("boon" as never)).toEqual([
+      { goalId: "zkar", amount: 3, counted: false },
     ])
   })
 })

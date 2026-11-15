@@ -43,7 +43,10 @@ vi.mock("@/shared/config", () => ({
   DISCORD_INVITE_URL: "https://discord.example",
   isUiKitEnabled: true,
 }))
-vi.mock("@azure/msal-react", () => ({ useMsal: () => ({ instance: {} }) }))
+vi.mock("@azure/msal-react", () => ({
+  useMsal: () => ({ instance: {} }),
+  useIsAuthenticated: () => false,
+}))
 vi.mock("@/shared/auth", () => ({
   useSignInRedirect: () => ({
     signIn: vi.fn(),
@@ -60,6 +63,8 @@ vi.mock("@/features/player-data-sync", () => ({
     status: "idle",
     isSyncing: false,
     statusText: "Up to date",
+    syncDisabled: false,
+    cooldownMinutes: null,
     syncNow: vi.fn(),
   }),
 }))
@@ -293,6 +298,32 @@ describe("nav live indicator accessibility", () => {
     expect(within(tab).getByText(TEXT)).toHaveClass("sr-only")
     expect(dot.className).toContain("motion-safe:animate-pulse")
     expect(dot.className).not.toMatch(/(^|\s)animate-pulse/)
+  })
+
+  it("reads as live, not as an alert: a green Live badge beside labels, a green dot on icons", () => {
+    hseState.current = ready(hunt)
+    shell(<SectionTabs item={dailies} />)
+    const tab = screen.getByTestId("section-tab-dailies-hse")
+    const badge = within(tab).getByTestId("nav-live-badge")
+
+    expect(badge).toHaveTextContent("nav.live")
+    expect(badge).toHaveAttribute("aria-hidden", "true")
+    expect(badge).toHaveAttribute("title", TEXT)
+    expect(badge).toHaveClass("bg-success", "text-success-foreground")
+    expect(within(tab).getByTestId("nav-live-dot")).toHaveClass(
+      "bg-success-foreground"
+    )
+    expect(tab.innerHTML).not.toContain("red-")
+  })
+
+  it("gives the icon-corner dot a tooltip instead of a badge", () => {
+    hseState.current = ready(hunt)
+    shell(<NavLiveDot corner item={{ liveIndicator: "hse" }} />)
+    const dot = screen.getByTestId("nav-live-dot")
+
+    expect(dot).toHaveAttribute("title", TEXT)
+    expect(dot).toHaveClass("absolute", "bg-success-foreground")
+    expect(screen.queryByTestId("nav-live-badge")).toBeNull()
   })
 
   it("shows no indicator without a provider (signed out)", () => {

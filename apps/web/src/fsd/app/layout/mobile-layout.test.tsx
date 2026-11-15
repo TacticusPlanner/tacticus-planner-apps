@@ -24,6 +24,7 @@ vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({
     instance: { loginRedirect: (...args: unknown[]) => loginRedirect(...args) },
   }),
+  useIsAuthenticated: () => false,
 }))
 
 const silentSignInStatus = vi.fn(() => "idle")
@@ -75,6 +76,8 @@ const { usePlayerDataSyncStatusMock } = vi.hoisted(() => ({
     status: "idle",
     isSyncing: false,
     statusText: "Up to date",
+    syncDisabled: false,
+    cooldownMinutes: null,
     syncNow: vi.fn(),
   })),
 }))
@@ -395,6 +398,8 @@ describe("MobileBottomNav actions", () => {
       status: "idle",
       isSyncing: false,
       statusText: "Up to date",
+      syncDisabled: false,
+      cooldownMinutes: null,
       syncNow,
     })
     renderShell(vi.fn(), true)
@@ -412,6 +417,8 @@ describe("MobileBottomNav actions", () => {
       status: "syncing",
       isSyncing: true,
       statusText: "SyncingР Р†Р вЂљР’В¦",
+      syncDisabled: true,
+      cooldownMinutes: null,
       syncNow: vi.fn(),
     })
     renderShell(vi.fn(), true)
@@ -423,6 +430,22 @@ describe("MobileBottomNav actions", () => {
     )
   })
 
+  it("disables the sync button and shows the minutes left while rate limited", () => {
+    usePlayerDataSyncStatusMock.mockReturnValue({
+      status: "ready",
+      isSyncing: false,
+      statusText: "Sync limit reached. Try again in 12 minutes.",
+      syncDisabled: true,
+      cooldownMinutes: 12,
+      syncNow: vi.fn(),
+    } as unknown as ReturnType<typeof usePlayerDataSyncStatusMock>)
+    renderShell(vi.fn(), true)
+
+    const syncButton = screen.getByTestId("mobile-sync-button")
+    expect(syncButton).toBeDisabled()
+    expect(syncButton).toHaveTextContent("nav.syncCooldown")
+  })
+
   it("fills the sync button with the elapsed share of the auto-sync interval and names the next sync", () => {
     usePlayerDataSyncStatusMock.mockReturnValue({
       status: "ready",
@@ -430,6 +453,8 @@ describe("MobileBottomNav actions", () => {
       statusText: "Last synced 15 minutes ago",
       autoSyncProgress: { fraction: 0.25, nextSyncAt: 0 },
       nextAutoSyncText: "Next auto sync in 45 minutes",
+      syncDisabled: false,
+      cooldownMinutes: null,
       syncNow: vi.fn(),
     } as unknown as ReturnType<typeof usePlayerDataSyncStatusMock>)
     renderShell(vi.fn(), true)
@@ -448,6 +473,8 @@ describe("MobileBottomNav actions", () => {
       status: "idle",
       isSyncing: false,
       statusText: "Never synced",
+      syncDisabled: false,
+      cooldownMinutes: null,
       syncNow: vi.fn(),
     })
     renderShell(vi.fn(), true)

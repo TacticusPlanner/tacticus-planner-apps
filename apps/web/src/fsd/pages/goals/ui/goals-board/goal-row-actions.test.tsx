@@ -175,6 +175,27 @@ describe("GoalRowActions", () => {
     expect(updateGoalsStatus).not.toHaveBeenCalled()
   })
 
+  it("deletes a Reached goal straight from the menu, without a confirmation", async () => {
+    deleteGoal.mockResolvedValue(undefined)
+    const user = userEvent.setup()
+    render(<Harness reached />)
+
+    await pickItem(user, "delete")
+
+    expect(deleteGoal).toHaveBeenCalledExactlyOnceWith("goal-1")
+    expect(screen.queryByTestId("delete-goal-dialog")).not.toBeInTheDocument()
+  })
+
+  it("still confirms before deleting an unreached goal", async () => {
+    const user = userEvent.setup()
+    render(<Harness />)
+
+    await pickItem(user, "delete")
+
+    expect(await screen.findByTestId("delete-goal-dialog")).toBeInTheDocument()
+    expect(deleteGoal).not.toHaveBeenCalled()
+  })
+
   it.each(["Completed", "Archived"] as const)(
     "offers no Pause or Resume for a %s goal",
     async (status) => {

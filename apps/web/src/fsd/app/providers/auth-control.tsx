@@ -184,7 +184,7 @@ export function AuthControl() {
       accountName={accountName}
       applicationAccountId={applicationAccountId}
       canEditName={currentUser !== null}
-      className={tourRow ? "[&_[data-slot=menu-row]]:min-h-11" : undefined}
+      className={tourRow ? "**:data-[slot=menu-row]:min-h-11" : undefined}
       onEditName={() => openManageAccount("profile")}
       onFeedback={() => {
         setMenuOpen(false)
@@ -253,7 +253,7 @@ export function AuthControl() {
                 ? t("auth.accountLoading")
                 : (accountEmail ?? t(`auth.signedInWith.${signInMethod}`))}
             </DrawerDescription>
-            <div className="flex-1 overflow-y-auto px-4 py-4">
+            <div className="flex-1 overflow-y-auto p-4">
               {accountCard(
                 <TourButton
                   className="h-8 w-full justify-start px-2 font-normal"

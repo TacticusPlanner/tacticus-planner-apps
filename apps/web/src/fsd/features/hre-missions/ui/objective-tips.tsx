@@ -7,8 +7,8 @@ import {
   type HreMission,
   type HreObjective,
   type HreObjectiveKind,
-} from "../model/hre-missions"
-import { isTokenObjective, nextTokenReserve } from "../model/hre-objectives"
+} from "@/entities/hre-mission"
+import { isTokenObjective, nextTokenReserve } from "@/entities/hre-mission"
 import { missionName } from "./mission-name"
 
 type TipKind = Exclude<

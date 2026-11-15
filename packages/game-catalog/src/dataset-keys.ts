@@ -16,6 +16,7 @@ export const servedDatasetKeys = [
   "lres",
   "lre-battles",
   "horde-mode-tiers",
+  "npc-tiers",
   "event-definitions",
   "events-calendar",
   "shops",
@@ -31,6 +32,7 @@ export const servedDatasetKeys = [
   "progression-rules",
   "hre",
   "incursions",
+  "npc-encounters",
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
@@ -39,11 +41,15 @@ export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
 // longer does) leaves the client ready, and the features reading it treat it as absent.
 export const optionalDatasetKeys: readonly GameCatalogDatasetKey[] = [
   "horde-mode-tiers",
+  // Served once the API ships it; without it every enemy NPC is untiered (multiplier 1.0).
+  "npc-tiers",
   "unit-power",
   "quest-events",
   "quest-crates",
   // Served once the API ships the dataset; the Incursion page reads it behind its feature flag.
   "incursions",
+  // Served once the API ships it; without it the NPC Library hides its encounters section and game-mode filter.
+  "npc-encounters",
 ]
 
 // Metadata-store key for the manifest sync metadata (etag/version) used for delta sync.

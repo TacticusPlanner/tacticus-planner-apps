@@ -34,6 +34,7 @@ const loadingViewModel: GuildRaidsViewModel = {
   refresh: vi.fn(),
   isRefreshing: false,
   hasRefreshError: false,
+  isKeyRejected: false,
 }
 let viewModel: GuildRaidsViewModel = loadingViewModel
 vi.mock("./use-guild-raids-view-model", () => ({
@@ -93,6 +94,7 @@ function activeViewModel(): GuildRaidsViewModel {
     refresh: vi.fn(),
     isRefreshing: false,
     hasRefreshError: false,
+    isKeyRejected: false,
   }
 }
 

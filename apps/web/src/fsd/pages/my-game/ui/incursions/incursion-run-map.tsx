@@ -111,7 +111,7 @@ export function IncursionRunMap({
               className="flex shrink-0 flex-col items-center gap-1 border-l border-border/50 px-1 first:border-l-0"
               data-testid={`incursion-step-${step.depth}`}
             >
-              <span className="text-[10px] text-muted-foreground tabular-nums">
+              <span className="text-xs text-muted-foreground tabular-nums">
                 {index + 1}
               </span>
               <div className="flex flex-1 flex-col items-center justify-center gap-1">
@@ -123,7 +123,7 @@ export function IncursionRunMap({
                     <Fragment key={node.index}>
                       {position > 0 && step.choice ? (
                         <span
-                          className="text-[10px] text-muted-foreground uppercase"
+                          className="text-xs text-muted-foreground uppercase"
                           data-testid="incursion-step-choice"
                         >
                           {t("map.or")}

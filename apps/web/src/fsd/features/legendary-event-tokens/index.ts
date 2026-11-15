@@ -5,10 +5,20 @@ export { useTokenMissionsSource } from "./model/use-token-missions-source"
 export {
   NextTokenCard,
   type MarkTokenHandler,
+  type StopTeamHandler,
+  type TokenShownHandler,
   type OpenTeamsHandler,
 } from "./ui/next-token-card"
+export { tokenMarkOutcome } from "./lib/token-marks"
 export { TokenPlanList } from "./ui/token-plan-list"
+export type { OpenTeamHandler } from "./ui/token-plan-rows"
+export {
+  BattleInfoContext,
+  type OpenBattleInfo,
+} from "./ui/battle-info-context"
 export { RunForecastSection } from "./ui/run-forecast"
+export { MilestoneGapSection } from "./ui/milestone-gap"
+export { currentRunOutlook } from "./lib/current-run-outlook"
 export {
   buildTokenPlanView,
   type TokenPlanMissionsSource,

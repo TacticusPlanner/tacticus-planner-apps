@@ -10,7 +10,7 @@ import type {
   EstimateResourceId,
   EstimateUpgrade,
   GoalNeed,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
 import {
@@ -198,7 +198,7 @@ describe("planEventFarm candidates", () => {
 })
 
 describe("planEventFarm ordering and fill", () => {
-  it("orders by points per energy, then points per raid, then goal priority, then battle id", () => {
+  it("orders by points per energy, then points per raid, then drop efficiency, goal priority and battle id", () => {
     // PTS6: 12/6 = 2, PTS10: 15/10 = 1.5, PTS6b: 6/6 = 1.
     const farm = plan({
       goals: [goal("g1", 1, { matA: 100, matB: 100 })],
@@ -214,7 +214,8 @@ describe("planEventFarm ordering and fill", () => {
       ]),
     })
     // PTS6 and PTS6b tie at ratio 1 with equal points; PTS10 (10/10 = 1) has more points per raid.
-    expect(ids(tie)).toEqual(["PTS10", "PTS6", "PTS6b"])
+    // PTS6b drops its resource at the cheapest rate, PTS6 does not (CHEAP is cheaper): PTS6b first.
+    expect(ids(tie)).toEqual(["PTS10", "PTS6b", "PTS6"])
 
     const byPriority = plan({
       goals: [goal("late", 9, { matA: 100 }), goal("early", 1, { matB: 100 })],
@@ -225,14 +226,64 @@ describe("planEventFarm ordering and fill", () => {
     })
     expect(ids(byPriority)).toEqual(["PTS6b", "PTS6"])
 
+    // Both drop their resource as cheaply as it can be had: battle id decides.
     const byId = plan({
-      goals: [goal("g1", 1, { matA: 100, matB: 100 })],
+      goals: [goal("g1", 1, { matB: 100, matHalf: 100 })],
       pointsByBattleId: new Map([
         [battle("PTS6"), 6],
         [battle("PTS6b"), 6],
       ]),
     })
     expect(ids(byId)).toEqual(["PTS6", "PTS6b"])
+  })
+
+  it("breaks a tie on points the way Today picks: cheaper per item, then more gold", () => {
+    // Octarius Mirror Elite 15 and 39 under Training Rush: same energy, drop and points per raid;
+    // 39 pays more gold, so it is raided first and 15 only gets the raids still needed.
+    const withGold = (id: string, expectedGold: number) => ({
+      battleId: battle(id),
+      guaranteed: false,
+      effectiveRate: 0.5,
+      numerator: null,
+      denominator: null,
+      isMythic: false,
+      expectedGold,
+    })
+    const farm = plan({
+      battlesById: new Map<BattleId, Battle>([
+        [battle("OME15"), node(10, 6)],
+        [battle("OME39"), node(10, 6)],
+      ]),
+      upgradesById: new Map<EstimateResourceId, EstimateUpgrade>([
+        [
+          upgrade("matG"),
+          {
+            id: upgrade("matG"),
+            farmLocations: [withGold("OME15", 137), withGold("OME39", 175)],
+          },
+        ],
+      ]),
+      pointsByBattleId: new Map<BattleId, number>([
+        [battle("OME15"), 60],
+        [battle("OME39"), 60],
+      ]),
+      goals: [goal("g1", 1, { matG: 5 })],
+    })
+    expect(farm.rows.map((row) => [row.battleId, row.raids])).toEqual([
+      ["OME39", 6],
+      ["OME15", 4],
+    ])
+
+    // Equal on points, PTS6 drops matA at 1.2x the cheapest location's energy per item, PTS6b
+    // drops matB at the cheapest: PTS6b comes first.
+    const cheaper = plan({
+      goals: [goal("g1", 1, { matA: 100, matB: 100 })],
+      pointsByBattleId: new Map([
+        [battle("PTS6"), 6],
+        [battle("PTS6b"), 6],
+      ]),
+    })
+    expect(ids(cheaper)).toEqual(["PTS6b", "PTS6"])
   })
 
   it("fills until the budget is used and never exceeds it", () => {
@@ -337,5 +388,91 @@ describe("planEventFarm with Raids Filters", () => {
         nodeFilter: () => false,
       }).empty
     ).toBe("nothing-contributes")
+  })
+})
+
+describe("planEventFarm order and quick filters", () => {
+  it("energy order puts the cheapest location per item first, ahead of more points per energy", () => {
+    const input = {
+      battlesById: new Map<BattleId, Battle>([
+        [battle("SURE"), node(10, 3)],
+        [battle("HALF"), node(6, 3)],
+      ]),
+      // SURE: 10 energy per item; HALF: 12 energy per item but 2 points per energy.
+      upgradesById: new Map<EstimateResourceId, EstimateUpgrade>([
+        upgradeFarmedAt("matM", "SURE", ["HALF", 0.5]),
+      ]),
+      pointsByBattleId: new Map<BattleId, number>([
+        [battle("SURE"), 10],
+        [battle("HALF"), 12],
+      ]),
+      goals: [goal("g1", 1, { matM: 10 })],
+    }
+    expect(ids(plan(input))).toEqual(["HALF", "SURE"])
+    const farm = plan({ ...input, order: "energy" })
+    expect(ids(farm)).toEqual(["SURE", "HALF"])
+    expect(farm.rows.map((row) => row.energyPerItem)).toEqual([10, 12])
+  })
+
+  it("energy order rates a location against the cheapest one, with or without points", () => {
+    // matA: CHEAP (5, no points) is the cheapest, so PTS6 (1.2x) comes before PTS10 (2x).
+    expect(ids(plan({ order: "energy" }))).toEqual(["PTS6", "PTS10"])
+  })
+
+  it("energy order still serves a goal from its pinned locations", () => {
+    const farm = plan({
+      order: "energy",
+      goals: [goal("g1", 1, { matA: 5 }, { farmingLocationIds: ["PTS10"] })],
+    })
+    expect(ids(farm)).toEqual(["PTS10"])
+  })
+
+  it("Fewer raids puts the costliest battle first among locations tied on energy per item", () => {
+    const tied = {
+      battlesById: new Map<BattleId, Battle>([
+        [battle("E5"), node(5, 1)],
+        [battle("E10"), node(10, 1)],
+      ]),
+      upgradesById: new Map<EstimateResourceId, EstimateUpgrade>([
+        upgradeFarmedAt("matE", ["E5", 1], ["E10", 2]),
+      ]),
+      // Both cost 5 energy per item; E5 earns more points per energy.
+      pointsByBattleId: new Map<BattleId, number>([
+        [battle("E5"), 6],
+        [battle("E10"), 10],
+      ]),
+      goals: [goal("g1", 1, { matE: 4 })],
+      order: "energy" as const,
+    }
+    expect(ids(plan(tied))).toEqual(["E5", "E10"])
+    expect(ids(plan({ ...tied, fewerRaids: true }))).toEqual(["E10", "E5"])
+  })
+
+  it("Combine goals drops goal priority from the tie-break", () => {
+    const input = {
+      battlesById: new Map<BattleId, Battle>([
+        [battle("A6"), node(6)],
+        [battle("Z6"), node(6)],
+      ]),
+      upgradesById: new Map<EstimateResourceId, EstimateUpgrade>([
+        upgradeFarmedAt("matG", "A6"),
+        upgradeFarmedAt("matH", "Z6"),
+      ]),
+      pointsByBattleId: new Map<BattleId, number>([
+        [battle("A6"), 6],
+        [battle("Z6"), 6],
+      ]),
+      goals: [goal("g1", 2, { matG: 1 }), goal("g2", 1, { matH: 1 })],
+    }
+    expect(ids(plan(input))).toEqual(["Z6", "A6"])
+    expect(ids(plan({ ...input, combineGoals: true }))).toEqual(["A6", "Z6"])
+  })
+
+  it("is not capped by energy when the budget is unlimited", () => {
+    const farm = plan({ energyBudget: Infinity })
+    expect(
+      farm.rows.reduce((total, row) => total + row.raids, 0)
+    ).toBeGreaterThan(0)
+    expect(farm.empty).toBeNull()
   })
 })

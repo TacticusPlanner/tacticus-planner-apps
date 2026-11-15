@@ -44,6 +44,7 @@ describe("buildResourceByBattle", () => {
     )
 
     expect(byBattle.get(battle("B1"))).toEqual({
+      resourceId: "ceramite",
       label: "Ceramite",
       visual: {
         kind: "upgrade",
@@ -61,7 +62,9 @@ describe("buildResourceByBattle", () => {
       [character("bellator", ["B2"])]
     )
 
+    // Keyed like the plan's shard resource, so Today's attempts can read its have/need.
     expect(byBattle.get(battle("B2"))).toEqual({
+      resourceId: "shard:bellator",
       label: "bellator name shards",
       visual: { kind: "shard", unitId: "bellator" },
     })

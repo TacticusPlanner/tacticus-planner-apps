@@ -39,7 +39,7 @@ export function UnsavedChangesBar({
       data-testid="unsaved-changes-bar"
       data-mobile={isMobile ? "true" : undefined}
       className={cn(
-        "sticky z-30 flex items-center gap-2 rounded-xl border bg-background/95 px-3 shadow-lg backdrop-blur",
+        "sticky z-30 flex items-center gap-2 rounded-xl border bg-background/95 px-3 shadow-lg backdrop-blur-sm",
         isMobile
           ? "bottom-[calc(var(--mobile-nav-height)+1rem)] mr-14 min-h-12 py-1.5"
           : "bottom-4 py-2"

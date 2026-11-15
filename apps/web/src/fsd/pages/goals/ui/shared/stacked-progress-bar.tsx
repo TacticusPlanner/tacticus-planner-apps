@@ -24,6 +24,7 @@ export function StackedProgressBar({
   ceilingLabel,
   mobile,
   valueText,
+  label,
 }: {
   actualRatio: number
   potentialRatio: number | undefined
@@ -31,6 +32,9 @@ export function StackedProgressBar({
   ceilingLabel: ReactNode | null
   mobile: boolean
   valueText: string
+  /** Accessible name; defaults to the goal's "Progress" label (the Ascension card's shard bars name
+   *  their shard kind). */
+  label?: string
 }) {
   const { t } = useTranslation()
   const actualPct = Math.min(100, Math.max(0, actualRatio * 100))
@@ -47,14 +51,14 @@ export function StackedProgressBar({
   return (
     <div className="relative w-full">
       <div
-        aria-label={t("goals.overview.progressLabel")}
+        aria-label={label ?? t("goals.overview.progressLabel")}
         aria-valuemax={100}
         aria-valuemin={0}
         aria-valuenow={Math.round(actualPct)}
         aria-valuetext={valueText}
         className={cn(
           "relative w-full overflow-hidden rounded-full bg-muted",
-          mobile ? "h-[5px]" : "h-1.5"
+          mobile ? "h-1.25" : "h-1.5"
         )}
         data-testid="goal-progress-bar"
         role="progressbar"
@@ -83,7 +87,7 @@ export function StackedProgressBar({
           <TooltipTrigger asChild>
             <div
               aria-hidden="true"
-              className="absolute -top-1.5 -bottom-1.5 z-10 flex w-3 -translate-x-1/2 cursor-help items-center justify-center"
+              className="absolute -inset-y-1.5 z-10 flex w-3 -translate-x-1/2 cursor-help items-center justify-center"
               data-testid="goal-progress-bar-ceiling"
               style={{ left: `${ceilingPct}%` }}
             >

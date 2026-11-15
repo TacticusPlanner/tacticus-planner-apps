@@ -28,8 +28,10 @@ const inputGroupAddonVariants = cva(
     variants: {
       align: {
         "inline-start":
+          // eslint-disable-next-line better-tailwindcss/no-restricted-classes -- shadcn hairline offset, off the spacing scale
           "order-first pl-2 has-[>button]:ml-[-0.3rem] has-[>kbd]:ml-[-0.15rem]",
         "inline-end":
+          // eslint-disable-next-line better-tailwindcss/no-restricted-classes -- shadcn hairline offset, off the spacing scale
           "order-last pr-2 has-[>button]:mr-[-0.3rem] has-[>kbd]:mr-[-0.15rem]",
         "block-start":
           "order-first w-full justify-start px-2.5 pt-2 group-has-[>input]/input-group:pt-2 [.border-b]:pb-2",

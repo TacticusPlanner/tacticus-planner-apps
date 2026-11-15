@@ -27,6 +27,7 @@ import {
   type RunInputsViewModel,
   type RunStatusViewModel,
 } from "./legendary-event-page.view-model"
+import { RewardOutlook } from "./reward-outlook"
 import { RunStatusCard } from "./run-status-card"
 
 vi.mock("@/shared/api", async (importOriginal) => ({
@@ -57,11 +58,13 @@ type BuildInput = Parameters<typeof buildRunStatusViewModel>[0]
 const build = (
   progress: BuildInput["progress"],
   rewards: BuildInput["rewards"],
-  progressObservedAtMs: number | null = OBSERVED
+  progressObservedAtMs: number | null = OBSERVED,
+  unit: BuildInput["unit"] = undefined
 ) =>
   buildRunStatusViewModel({
     progress,
     rewards,
+    unit,
     progressObservedAtMs,
     nowMs: NOW,
   })
@@ -148,6 +151,8 @@ const runInputs = (
   completedPremiumMissions: [],
   updatedAt: "2026-10-10T00:00:00Z",
 })
+/** Every run stored with no missions planned (a run with no inputs plans its free missions). */
+const NO_MISSIONS = [runInputs(1, 0), runInputs(2, 0), runInputs(3, 0)]
 const utharPlan: LegendaryEventPlan = {
   eventId: "votanUthar",
   revision: 3,
@@ -248,9 +253,6 @@ describe("RunStatusCard", () => {
     expect(screen.getByTestId("run-status-milestone")).toHaveTextContent(
       "90 points to milestone 14 (+60 currency)"
     )
-    expect(screen.getByTestId("event-timing-countdown")).toHaveTextContent(
-      "Ends in 4 days"
-    )
   })
 
   it("counts the next token down from the sync, and reads it as ready once due", () => {
@@ -303,6 +305,51 @@ describe("RunStatusCard", () => {
     )
   })
 
+  it("caps the claimed chests by the shards an unowned unit holds", () => {
+    // Farsight report: index 5 with 100 shards and Farsight not in the roster is four chests.
+    renderCard(
+      build(
+        {
+          status: "ready",
+          data: {
+            ...lysanderProgress,
+            currentClaimedChestIndex: 5,
+            currentShards: 100,
+          },
+          retry,
+        },
+        ladder,
+        OBSERVED,
+        undefined
+      )
+    )
+    expect(screen.getByTestId("run-status-chests")).toHaveTextContent(
+      "4 chests claimed"
+    )
+  })
+
+  it("keeps the synced chest count while the roster is unknown", () => {
+    renderCard(
+      build(
+        {
+          status: "ready",
+          data: {
+            ...lysanderProgress,
+            currentClaimedChestIndex: 5,
+            currentShards: 100,
+          },
+          retry,
+        },
+        ladder,
+        OBSERVED,
+        "error"
+      )
+    )
+    expect(screen.getByTestId("run-status-chests")).toHaveTextContent(
+      "5 chests claimed"
+    )
+  })
+
   it("shows a dash for the milestone without the reward ladder", () => {
     const view = build(
       { status: "ready", data: lysanderProgress, retry },
@@ -339,14 +386,13 @@ describe("RunStatusCard", () => {
     )
   })
 
-  it("shows the run timing and the no-entry body for an event not in the chunk", () => {
+  it("shows the no-entry body for an event not in the chunk", () => {
     const view = build({ status: "ready", data: undefined, retry }, ladder)
     renderCard(view)
 
     expect(screen.getByTestId("run-status-no-entry")).toHaveTextContent(
       "No synced progress for this event yet."
     )
-    expect(screen.getByTestId("event-timing")).toBeInTheDocument()
     expect(screen.queryByTestId("run-status-values")).toBeNull()
   })
 
@@ -356,7 +402,6 @@ describe("RunStatusCard", () => {
     expect(screen.getByTestId("run-status-unavailable")).toHaveTextContent(
       "Synced data unavailable"
     )
-    expect(screen.getByTestId("event-timing")).toBeInTheDocument()
     expect(screen.queryByTestId("run-status-values")).toBeNull()
   })
 
@@ -437,12 +482,38 @@ describe("RunStatusCard", () => {
         "Next: Unlock · 250 / 400 shards"
       )
       expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
-        "6 more chests (3,350 currency in total)"
+        "6 more chests costing 1,850 currency"
       )
       expect(screen.getByTestId("reward-outlook-points")).toHaveTextContent(
         "5,000 points to reach 10,000 · about 6.7 battles per lane"
       )
       expect(screen.queryByTestId("reward-outlook-no-entry")).toBeNull()
+    })
+
+    it("counts an unowned unit's chests from its shards (Farsight report)", () => {
+      // Index 5 with 100 shards: four chests opened (chests 1–4 cost 360); unlock at 400 shards
+      // takes 12 more, chests 5–16 costing 3,350 − 360 = 2,990.
+      renderOutlook(
+        outlookFor(
+          synced({
+            currentPoints: 2013,
+            currentCurrency: 115,
+            currentClaimedChestIndex: 5,
+            currentShards: 100,
+          })
+        )
+      )
+
+      expect(screen.getByTestId("reward-outlook-next")).toHaveTextContent(
+        "Next: Unlock · 100 / 400 shards"
+      )
+      expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
+        "12 more chests costing 2,990 currency"
+      )
+      fireEvent.click(screen.getByText("How this is worked out"))
+      expect(
+        screen.getByTestId("reward-outlook-explain-lines")
+      ).toHaveTextContent("4 chests claimed, 100 shards")
     })
 
     it("aims an owned Uthar at its next step between runs (4 stars at 120)", () => {
@@ -455,7 +526,7 @@ describe("RunStatusCard", () => {
             currentShards: 25,
             currentEventRun: null,
           }),
-          { ...utharPlan, runs: [] },
+          { ...utharPlan, runs: NO_MISSIONS },
           {
             unit: {
               unitId: "votanUthar",
@@ -471,7 +542,7 @@ describe("RunStatusCard", () => {
         "Next: 4 stars · 25 / 120 shards"
       )
       expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
-        "4 more chests (5,250 currency in total)"
+        "4 more chests costing 1,540 currency"
       )
       expect(screen.getByTestId("reward-outlook-points")).toHaveTextContent(
         "1,611 points to reach 14,750 · about 9.8 battles per lane"
@@ -484,7 +555,7 @@ describe("RunStatusCard", () => {
       renderOutlook(
         outlookFor(
           undefined,
-          { ...utharPlan, eventId: "lostaBile", runs: [] },
+          { ...utharPlan, eventId: "lostaBile", runs: NO_MISSIONS },
           {
             resolution: {
               kind: "known",
@@ -501,7 +572,7 @@ describe("RunStatusCard", () => {
         "Next: Unlock · 0 / 400 shards"
       )
       expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
-        "16 more chests (3,350 currency in total)"
+        "16 more chests costing 3,350 currency"
       )
       expect(screen.getByTestId("reward-outlook-points")).toHaveTextContent(
         "13,000 points to reach 13,000"
@@ -527,7 +598,9 @@ describe("RunStatusCard", () => {
         "250 currency from run 3 missions",
         "300 currency from the run 3 bundle",
         "No payout bonus on points milestones",
-        expect.stringMatching(/runs already started are not added again/),
+        expect.stringMatching(
+          /the current run.s are already in your synced currency/
+        ),
       ])
     })
 
@@ -540,11 +613,42 @@ describe("RunStatusCard", () => {
       expect(screen.queryByTestId("reward-outlook-points")).toBeNull()
     })
 
+    it("names the step in the heading and drops its shards line when compact", () => {
+      render(<RewardOutlook compact outlook={outlookFor(synced())} />, {
+        wrapper: i18nWrapper(i18n),
+      })
+      expect(
+        screen.getByRole("heading", { name: "To reach Unlock" })
+      ).toBeInTheDocument()
+      expect(screen.queryByTestId("reward-outlook-next")).toBeNull()
+      expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
+        "6 more chests costing 1,850 currency"
+      )
+    })
+
+    it("shows nothing compact once every step is reached", () => {
+      render(
+        <RewardOutlook
+          compact
+          outlook={outlookFor(synced({ currentShards: 1300 }))}
+        />,
+        { wrapper: i18nWrapper(i18n) }
+      )
+      expect(screen.queryByTestId("reward-outlook")).toBeNull()
+    })
+
     it("says a goal beyond the chest ladder is not reachable", () => {
       renderOutlook(
         outlookFor(
-          synced({ currentClaimedChestIndex: 41, currentShards: 50 }),
-          undefined
+          synced({ currentClaimedChestIndex: 51, currentShards: 25 }),
+          undefined,
+          {
+            unit: {
+              unitId: "votanUthar",
+              rank: "Diamond3",
+              progressionIndex: "Legendary:RedThreeStars",
+            } as LegendaryEventRosterUnit,
+          }
         )
       )
       expect(
@@ -562,11 +666,35 @@ describe("RunStatusCard", () => {
       )
     })
 
+    it("says when only later runs' currency covers the chests", () => {
+      const outlook = outlookFor(synced())
+      if (outlook.kind !== "ready") throw new Error("outlook not ready")
+      const currency = outlook.projection.currency!
+      renderOutlook(
+        outlookFor(
+          synced({
+            currentCurrency:
+              outlook.projection.base.currency +
+              currency.fromPoints +
+              currency.futureMissions +
+              currency.futureBundles -
+              190,
+          })
+        )
+      )
+      expect(
+        screen.getByTestId("reward-outlook-covered-later")
+      ).toHaveTextContent(
+        "190 currency short today · your later runs' missions and bundles cover it"
+      )
+      expect(screen.queryByTestId("reward-outlook-affordable")).toBeNull()
+    })
+
     it("says when points alone cannot cover the chests", () => {
       renderOutlook(
         outlookFor(synced({ currentPoints: 26_900, currentCurrency: 0 }), {
           ...utharPlan,
-          runs: [],
+          runs: NO_MISSIONS,
         })
       )
       expect(
@@ -588,7 +716,7 @@ describe("RunStatusCard", () => {
         "Next: Unlock · 0 / 400 shards"
       )
       expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
-        "16 more chests (3,350 currency in total)"
+        "16 more chests costing 3,350 currency"
       )
     })
 
@@ -614,7 +742,7 @@ describe("RunStatusCard", () => {
       expect(screen.getByTestId("reward-outlook-loading")).toBeInTheDocument()
     })
 
-    it("runs without inputs when signed out", () => {
+    it("plans every run's free missions when signed out", () => {
       const outlook = buildRewardOutlookViewModel({
         ...OUTLOOK_DEFAULTS,
         rewards: utharEvent.rewards,
@@ -624,7 +752,7 @@ describe("RunStatusCard", () => {
       })
       expect(outlook).toMatchObject({
         kind: "ready",
-        projection: { futureRuns: [{ run: 3, missionCurrency: 0 }] },
+        projection: { futureRuns: [{ run: 3, missionCurrency: 250 }] },
       })
     })
 

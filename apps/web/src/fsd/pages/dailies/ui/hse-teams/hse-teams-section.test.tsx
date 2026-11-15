@@ -120,6 +120,22 @@ describe("HseTeamsSection on desktop", () => {
     )
   })
 
+  it("adds a Chaos-only Arena card for Warp Surge's Chaos-enemy rule, beside the strongest team", () => {
+    renderSection(readyView("hse-warp-surge"))
+
+    expect(screen.getByTestId("hse-team-arena-any-unit")).toHaveTextContent(
+      "Any unit scores"
+    )
+    const matching = screen.getByTestId("hse-team-arena-matching")
+    expect(matching).toHaveTextContent("Chaos only")
+    expect(
+      screen.getByTestId("hse-team-arena-matching-criteria")
+    ).toHaveTextContent("Only characters matching the enemies that count")
+    expect(
+      screen.queryByTestId("hse-team-arena-matching-any-unit")
+    ).not.toBeInTheDocument()
+  })
+
   it("shows only the modes the event scores in", () => {
     renderSection(readyView("hse-11th-edition-week-2"))
 

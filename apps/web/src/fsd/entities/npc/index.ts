@@ -15,6 +15,9 @@ export {
   activeNpcFilterCount,
   emptyNpcFilters,
   filterNpcGroups,
+  encounterAllowedByFilters,
+  matchesNpcFilters,
+  matchingEncounterPlaces,
   matchingVariations,
   variationDamageTypes,
 } from "./lib/npc-filters"
@@ -23,6 +26,22 @@ export {
   variationModeLabelKey,
   type NpcVariationMode,
 } from "./lib/variation-mode"
+export {
+  NO_ENCOUNTER_PLACES,
+  NPC_ENCOUNTER_SOURCES,
+  encounterPlaces,
+  encountersOf,
+  indexEncounterPlaces,
+  indexEncounters,
+  npcsAtPlace,
+  sortEncountersBySource,
+  type EncounterPlace,
+  type EncounterPlaceIndex,
+  type NpcEncounter,
+  type NpcEncounterIndex,
+  type NpcEncounterLookup,
+} from "./lib/encounters"
+export { collapseRanges } from "./lib/number-ranges"
 export { useNpcLabels } from "./lib/use-npc-labels"
 export {
   useAbilityText as useNpcAbilityText,

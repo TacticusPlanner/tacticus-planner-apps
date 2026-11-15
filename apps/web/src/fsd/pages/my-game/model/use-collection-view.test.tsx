@@ -219,6 +219,7 @@ describe("useCollectionView", () => {
     expect(ready(result.current)?.quickFilters).toEqual({
       readyToRankUp: "available",
       needToAscend: "available",
+      canPromote: "available",
       canAscend: "available",
       needToLevel: "available",
       blueStarReady: "available",
@@ -233,7 +234,7 @@ describe("useCollectionView", () => {
 
     await waitFor(() => expect(result.current.status).toBe("ready"))
     expect(Object.values(ready(result.current)?.quickFilters ?? {})).toEqual(
-      Array(7).fill("needsRoster")
+      Array(8).fill("needsRoster")
     )
   })
 
@@ -271,6 +272,7 @@ describe("useCollectionView", () => {
     await waitFor(() => expect(result.current.status).toBe("ready"))
     expect(ready(result.current)?.quickFilters).toMatchObject({
       readyToRankUp: "available",
+      canPromote: "needsInventory",
       canAscend: "needsInventory",
       blueStarReady: "needsInventory",
       needToAscend: "available",

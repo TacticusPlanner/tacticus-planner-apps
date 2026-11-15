@@ -1,9 +1,11 @@
+export { afterNextPaint } from "./after-next-paint"
 export {
   installGlobalErrorCapture,
   reportError,
   setErrorReporter,
 } from "./report-error"
 export { isMacPlatform } from "./is-mac-platform"
+export { useLongPress } from "./use-long-press"
 export {
   accountStorageKey,
   accountStoragePrefix,

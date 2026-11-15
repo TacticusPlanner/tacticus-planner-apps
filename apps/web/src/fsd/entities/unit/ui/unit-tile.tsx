@@ -1,34 +1,29 @@
-import type { CSSProperties } from "react"
 import { Link, type To } from "react-router"
-import { useTranslation } from "react-i18next"
 import {
   characterIcon,
-  EquipmentIcons,
+  factionIcon,
   lockIcon,
   mowIcon,
   progressionVisual,
   rankIcon,
   shardIcon,
 } from "@workspace/game-catalog"
-import { progressionRarity, type Rarity } from "@workspace/game-domain"
+import { progressionRarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
 
 import type {
   OwnedUnitTileData,
+  UnitFaction,
   UnitKind,
   UnitTileEquipment,
   UnitTileUnit,
   UnownedUnitTileData,
 } from "../model/types"
+import { EquipmentSlot, UnownedDetails } from "./unit-parts"
+import { outlinedText, rarityColor } from "./unit-styles"
 import { usesMythicShards, useUnitTileLabel } from "./unit-tile-label"
-
-const rarityColor = (rarity: Rarity) => `var(--rarity-${rarity.toLowerCase()})`
-
-// Black outline so a count stays readable over the bright shard crystal and portrait art.
-const outlinedText =
-  "[text-shadow:-1px_-1px_0_#000,1px_-1px_0_#000,-1px_1px_0_#000,1px_1px_0_#000,0_1px_3px_rgb(0_0_0/0.8)]"
 
 /**
  * One unit of the player's collection as a game-style card: a round portrait ringed in its rarity
@@ -43,16 +38,19 @@ const outlinedText =
 export function UnitTile({
   unit,
   link,
+  faction,
   className,
   testId,
 }: {
   unit: UnitTileUnit
   /** Makes the tile a link; `state` goes into router history state, never the URL. */
   link?: { to: To; state?: unknown }
+  /** Shows the faction (icon, and name in the accessible name) when no faction group does. */
+  faction?: UnitFaction
   className?: string
   testId?: string
 }) {
-  const label = useUnitTileLabel(unit)
+  const label = useUnitTileLabel(unit, faction)
   const { data } = unit
   const portrait =
     unit.kind === "character"
@@ -88,6 +86,19 @@ export function UnitTile({
             className="size-full object-cover"
           />
         </div>
+        {faction ? (
+          <span
+            className="absolute top-1/2 -left-1 grid size-5.5 -translate-y-1/2 place-items-center rounded-full bg-overlay"
+            data-testid="unit-tile-faction"
+            data-faction={faction.id}
+          >
+            <EntityIcon
+              src={factionIcon(faction.id)}
+              alt=""
+              className="size-4"
+            />
+          </span>
+        ) : null}
         {owned ? (
           <PortraitOverlays kind={unit.kind} data={owned} />
         ) : (
@@ -98,7 +109,7 @@ export function UnitTile({
       </div>
       <span
         className={cn(
-          "mt-1.5 w-full truncate text-center text-xs leading-[15px] font-semibold",
+          "mt-1.5 w-full truncate text-center text-xs/4 font-semibold",
           !owned && "text-muted-foreground"
         )}
       >
@@ -154,7 +165,7 @@ function PortraitOverlays({
     <>
       {visual.kind === "none" ? null : (
         <span
-          className="absolute -top-2.5 left-1/2 flex h-4.5 w-max -translate-x-1/2 items-center gap-px rounded-[5px] bg-overlay px-[3px]"
+          className="absolute -top-2.5 left-1/2 flex h-4.5 w-max -translate-x-1/2 items-center gap-px rounded-sm bg-overlay px-0.75"
           data-testid="unit-tile-stars"
           data-count={visual.kind === "stars" ? visual.count : undefined}
         >
@@ -164,7 +175,7 @@ function PortraitOverlays({
                 key={index}
                 src={visual.icon}
                 alt=""
-                className="size-[13px]"
+                className="size-3.5"
               />
             ))
           ) : (
@@ -180,7 +191,7 @@ function PortraitOverlays({
       )}
       {kind === "character" && data.rank ? (
         <span
-          className="absolute -bottom-1.5 -left-1.5 h-[25px] w-[26px] drop-shadow-[0_1px_2px_rgb(0_0_0/0.7)]"
+          className="absolute -bottom-1.5 -left-1.5 size-6 drop-shadow-[0_1px_2px_rgb(0_0_0/0.7)]"
           data-testid="unit-tile-rank"
         >
           <EntityIcon src={rankIcon(data.rank)} alt="" className="size-full" />
@@ -214,7 +225,7 @@ function ShardCrystal({
 }) {
   return (
     <span
-      className="absolute -right-1.5 -bottom-1.5 grid h-5 w-[22px] place-items-center"
+      className="absolute -right-1.5 -bottom-1.5 grid h-5 w-6 place-items-center"
       data-testid={testId}
     >
       <EntityIcon
@@ -224,7 +235,7 @@ function ShardCrystal({
       />
       <span
         className={cn(
-          "relative text-[10px] leading-none font-bold text-overlay-foreground tabular-nums",
+          "relative text-2xs leading-none font-bold text-overlay-foreground tabular-nums",
           outlinedText
         )}
       >
@@ -253,12 +264,12 @@ function OwnedDetails({
         data-testid="unit-tile-numbers"
       >
         {/* As in game: abilities on the sides, the XP level (characters only) in the middle. */}
-        <span className="grid h-5 place-items-center rounded border font-semibold">
+        <span className="grid h-5 place-items-center rounded-sm border font-semibold">
           {first}
         </span>
         {kind === "character" ? (
           <span
-            className="grid h-5 place-items-center rounded bg-overlay font-bold text-overlay-foreground"
+            className="grid h-5 place-items-center rounded-sm bg-overlay font-bold text-overlay-foreground"
             data-testid="unit-tile-xp-level"
           >
             {data.xpLevel}
@@ -266,7 +277,7 @@ function OwnedDetails({
         ) : (
           <span />
         )}
-        <span className="grid h-5 place-items-center rounded border font-semibold">
+        <span className="grid h-5 place-items-center rounded-sm border font-semibold">
           {second}
         </span>
       </div>
@@ -281,100 +292,13 @@ function OwnedDetails({
             ) : (
               <span
                 key={index}
-                className="h-[22px] rounded border-2 border-dashed"
+                className="h-6 rounded-sm border-2 border-dashed"
                 data-testid="unit-tile-empty-slot"
               />
             )
           )}
         </div>
       ) : null}
-    </div>
-  )
-}
-
-function EquipmentSlot({ item }: { item: UnitTileEquipment }) {
-  const style: CSSProperties | undefined = item.rarity
-    ? { borderColor: rarityColor(item.rarity) }
-    : undefined
-
-  return (
-    <span
-      className="relative h-[22px] overflow-hidden rounded border-2 bg-muted"
-      style={style}
-      data-testid="unit-tile-item"
-    >
-      <EntityIcon
-        src={EquipmentIcons.icon(item.equipmentId)}
-        fallback={EquipmentIcons.fallback}
-        alt=""
-        className="absolute inset-0 m-auto size-full object-contain"
-      />
-      <span
-        className={cn(
-          "absolute right-px bottom-0 text-xs leading-none font-bold text-overlay-foreground tabular-nums",
-          outlinedText
-        )}
-      >
-        {item.level}
-      </span>
-    </span>
-  )
-}
-
-function UnownedDetails({ data }: { data: UnownedUnitTileData }) {
-  const { t } = useTranslation(["common", "progression"])
-
-  if (data.shards === undefined) {
-    return data.rarity ? (
-      <p
-        className="pt-1 text-center text-xs text-muted-foreground"
-        data-testid="unit-tile-starts"
-      >
-        {t("unitTile.startsAt", {
-          rarity: t(`progression:rarities.${data.rarity}`),
-        })}
-      </p>
-    ) : null
-  }
-
-  const { shards, unlockShards, mythicShards } = data
-  const percent =
-    unlockShards && unlockShards > 0
-      ? Math.min(100, Math.round((shards / unlockShards) * 100))
-      : undefined
-
-  return (
-    <div className="flex flex-col items-stretch gap-1 pt-1">
-      <span className="flex items-center justify-center gap-1.5 text-xs tabular-nums">
-        <span data-testid="unit-tile-shards">
-          <b className="font-bold">{shards}</b>
-          {unlockShards === undefined ? null : `/${unlockShards}`}
-        </span>
-        {mythicShards ? (
-          <span
-            className="inline-flex items-center gap-0.5"
-            data-testid="unit-tile-mythic-shards"
-          >
-            <EntityIcon src={shardIcon("Mythic")} alt="" className="size-3" />
-            {mythicShards}
-          </span>
-        ) : null}
-      </span>
-      {percent === undefined ? null : (
-        <span
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={unlockShards}
-          aria-valuenow={Math.min(shards, unlockShards!)}
-          aria-label={t("unitTile.unlockProgress")}
-          className="h-1.5 overflow-hidden rounded-full bg-muted"
-        >
-          <span
-            className="block h-full rounded-full bg-progress"
-            style={{ width: `${percent}%` }}
-          />
-        </span>
-      )}
     </div>
   )
 }

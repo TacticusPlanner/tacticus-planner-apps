@@ -29,6 +29,7 @@ function GuildRaidSidebar({ viewModel }: { viewModel: GuildRaidsViewModel }) {
             freshnessStatus.lastGuildSyncSucceededAtMs
           }
           hasRefreshError={viewModel.hasRefreshError}
+          isKeyRejected={viewModel.isKeyRejected}
           isRefreshing={viewModel.isRefreshing}
           refresh={viewModel.refresh}
         />

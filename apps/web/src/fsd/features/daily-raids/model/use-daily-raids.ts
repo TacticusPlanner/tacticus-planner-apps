@@ -5,7 +5,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import { unitIdSchema, type UnitId } from "@workspace/game-domain"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
 
-import type { GoalDetail } from "@/entities/goal"
+import { activeProjectMembers, type GoalDetail } from "@/entities/goal"
 import { dailyGoalTargetLabel } from "./goal-target-label"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
@@ -13,16 +13,17 @@ import {
   mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
   mapUpgradeStorageToDomain,
-} from "@/features/rank-lookup/@x/daily-raids"
-import { toOnslaughtRunsPerDay } from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/rank-lookup"
+import { toOnslaughtRunsPerDay } from "@/entities/goal-farming"
 import { useCampaignDisplay, type ReadState } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
+import type { EventFarmOrder } from "./home-screen-event-farm"
 import type { HseRaidRule } from "./home-screen-event-rules"
 import { useBattleMaps } from "./use-battle-maps"
-import { useEligibleCampaignBattles } from "./use-eligible-campaign-battles"
-import { activeProjectMembers, calculateDailyRaids } from "./daily-raids-calc"
+import { useEligibleCampaignBattles } from "@/entities/player-data-override"
+import { calculateDailyRaids } from "./daily-raids-calc"
 import {
   buildAttemptsLeftByBattle,
   buildBattleAttemptIndex,
@@ -33,6 +34,7 @@ import { buildRaidsFilterBattles } from "./raids-filters/campaign-type"
 import { useRaidsFilters } from "./raids-filters/use-raids-filters"
 import { useScopedGoalPlan } from "./use-scoped-goal-plan"
 import { buildLocationsByBattleId } from "./daily-raid-locations"
+import { buildResourceSources } from "./plan-cell-alternatives"
 import type {
   DailyRaidResourceLabels,
   DailyRaidsCalculationViewModel,
@@ -63,6 +65,8 @@ export function useDailyRaids(
   options?: {
     homeScreenEventRule?: HseRaidRule
     eventFarm?: boolean
+    /** The HSE farm list's order (`planEventFarm`); points per energy by default. */
+    eventFarmOrder?: EventFarmOrder
     missionRaids?: MissionRaidsRequest
     quickFilters?: TodayQuickFilterOptions
   }
@@ -72,6 +76,7 @@ export function useDailyRaids(
   const fewerRaids = options?.quickFilters?.fewerRaids ?? false
   const combineGoals = options?.quickFilters?.combineGoals ?? false
   const raidableOnly = options?.quickFilters?.raidableOnly ?? false
+  const eventFarmOrder = options?.eventFarmOrder ?? "points"
   const { t } = useTranslation([
     "dailies",
     "characters",
@@ -245,6 +250,20 @@ export function useDailyRaids(
       ),
     [upgradesById, charactersById, labelResource]
   )
+  const sourcesByResource = useMemo(
+    () =>
+      buildResourceSources({
+        upgrades: upgradesById?.values() ?? [],
+        characters: charactersById?.values() ?? [],
+        shops: shops ?? [],
+        knownBattleIds: new Set(allBattlesById.keys()),
+      }),
+    [upgradesById, charactersById, shops, allBattlesById]
+  )
+  const eligibleBattleIds = useMemo(
+    () => new Set(battlesById.keys()),
+    [battlesById]
+  )
   const battleAttemptIndex = useMemo(
     () => buildBattleAttemptIndex(allBattlesById),
     [allBattlesById]
@@ -335,6 +354,8 @@ export function useDailyRaids(
             raidsFilters,
             eventPointsByBattleId,
             enemyStatsByBattleId,
+            combineGoals,
+            raidableOnly: raidableOnly ? manualBattleIds : undefined,
           })
         : undefined
     const details = activeProjectMembers(goalEntries).map(
@@ -393,7 +414,9 @@ export function useDailyRaids(
         ? {
             pointsByBattleId: farm,
             attemptsLeftByBattle,
-            energyBudget: Math.max(0, dailyEnergy - realEnergyUsedToday),
+            // Not bound to today's energy: the player may refill, so only attempts and need cap it.
+            energyBudget: Infinity,
+            order: eventFarmOrder,
           }
         : undefined,
       missionGoalNodes: !!missionRequest,
@@ -407,6 +430,8 @@ export function useDailyRaids(
             manualBattleIds.has(entry.battleId)
           ),
           resourceByBattleId,
+          sourcesByResource,
+          eligibleBattleIds,
           realEnergyUsedToday,
           attemptsLeftByBattle,
           todaysAttempts,
@@ -427,10 +452,13 @@ export function useDailyRaids(
     combineGoals,
     dailyEnergy,
     eligibilityReady,
+    eligibleBattleIds,
     enemyStatsByBattleId,
     eventFarmOff,
+    eventFarmOrder,
     eventPointsByBattleId,
     failed,
+    sourcesByResource,
     fewerRaids,
     filterBattlesById,
     goalEntries,
@@ -451,6 +479,7 @@ export function useDailyRaids(
     playerCharacterById,
     playerMowById,
     raidsFilters,
+    raidableOnly,
     realEnergyUsedToday,
     resourceByBattleId,
     settingsLoading,

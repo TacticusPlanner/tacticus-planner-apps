@@ -20,9 +20,12 @@ import { PlanWizard } from "./plan-wizard"
 import { EMPTY_PLAN, RUN_3_START_MS, planInputs } from "./plan.fixtures"
 import type { PlanSource } from "./use-plan-source"
 
+const MISSING_ONSLAUGHT = new Set<string>()
 const FARMING: { status: string; estimate: () => unknown } = {
   status: "ready",
-  estimate: () => ({ days: 10, date: "2026-10-16" }),
+  estimate: Object.assign(() => ({ days: 10, date: "2026-10-16" }), {
+    missingOnslaughtAlliances: MISSING_ONSLAUGHT,
+  }),
 }
 vi.mock("./use-upgrade-farming-days", () => ({
   useUpgradeFarmingDays: () => FARMING,
@@ -76,6 +79,7 @@ beforeAll(async () => {
 beforeEach(() => {
   run.mockReset()
   FARMING.status = "ready"
+  MISSING_ONSLAUGHT.clear()
   createState.items = []
   capture.mockReset()
   run.mockResolvedValue({ ok: true, projectId: "project-1" })
@@ -89,7 +93,7 @@ function renderWizard(source = SOURCE, search = "") {
   const router = createMemoryRouter(
     [
       {
-        path: "/legendary-events/:eventId/plan",
+        path: "/legendary-events/:eventId/plan/edit",
         element: <PlanWizard initialTarget={null} source={source} />,
       },
       {
@@ -97,7 +101,9 @@ function renderWizard(source = SOURCE, search = "") {
         element: <div data-testid="event-page" />,
       },
     ],
-    { initialEntries: [`/legendary-events/${utharEvent.id}/plan${search}`] }
+    {
+      initialEntries: [`/legendary-events/${utharEvent.id}/plan/edit${search}`],
+    }
   )
   render(<RouterProvider router={router} />, { wrapper: i18nWrapper(i18n) })
   return router
@@ -421,12 +427,12 @@ describe("PlanWizard", () => {
     const of = utharEvent.regularMissions.length
     expect(
       screen.getByTestId("plan-wizard-run-inputs-summary")
-    ).toHaveTextContent(`Run 2: 0 of ${of} missions`)
+    ).toHaveTextContent(`Run 2: ${of} of ${of} missions`)
     await userEvent.click(screen.getByTestId("plan-wizard-horizon-3"))
     expect(
       screen.getByTestId("plan-wizard-run-inputs-summary")
     ).toHaveTextContent(
-      `Run 2: 0 of ${of} missions · Run 3: 0 of ${of} missions`
+      `Run 2: ${of} of ${of} missions · Run 3: ${of} of ${of} missions`
     )
     expect(screen.queryByTestId("run-inputs-run")).not.toBeInTheDocument()
     await userEvent.click(screen.getByTestId("plan-wizard-run-inputs-toggle"))
@@ -698,6 +704,29 @@ describe("PlanWizard", () => {
     await userEvent.click(screen.getByRole("button", { name: "Just enough" }))
     expect(
       screen.queryByTestId("plan-wizard-upgrades-new")
+    ).not.toBeInTheDocument()
+  })
+
+  it("asks for the Onslaught sector when Mythic ascensions were left out", async () => {
+    MISSING_ONSLAUGHT.add("Xenos")
+    renderWizard()
+    await userEvent.click(screen.getByTestId("plan-wizard-horizon-3"))
+    await searchOver()
+    await next()
+    const notice = screen.getByTestId("plan-wizard-upgrades-onslaught")
+    expect(notice).toHaveTextContent(/Xenos units are left out/)
+    expect(
+      within(notice).getByRole("link", { name: "Set Onslaught progress" })
+    ).toHaveAttribute("href", "/my-game/onslaught")
+  })
+
+  it("shows no Onslaught notice when nothing was left out", async () => {
+    renderWizard()
+    await userEvent.click(screen.getByTestId("plan-wizard-horizon-3"))
+    await searchOver()
+    await next()
+    expect(
+      screen.queryByTestId("plan-wizard-upgrades-onslaught")
     ).not.toBeInTheDocument()
   })
 

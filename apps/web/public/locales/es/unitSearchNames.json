@@ -81,6 +81,7 @@
   "genesPatriarch": ["The Patermine"],
   "genesPrimus": ["Isaak Starn"],
   "lostaBile": ["Fabius Bile"],
+  "lostaFearmonger": ["Daras Carrow"],
   "necroDestroyer": [
     "Destructor maldicida Imospekh",
     "Hexmark Destroyer Imospekh"
@@ -172,6 +173,7 @@
   "adeptExorcist": ["Exorcist"],
   "astraOrdnanceBattery": ["Malleus Rocket Launcher"],
   "blackForgefiend": ["Forgefiend"],
+  "custoDreadnought": ["Boudicari Feldorus"],
   "darkaStormSpeeder": ["Storm Speeder Granizador", "Storm Speeder Hailstrike"],
   "deathCrawler": ["Plagueburst Crawler"],
   "necroReanimator": [

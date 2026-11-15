@@ -31,7 +31,7 @@ export function TeamPickerTileMarkers({
       {tier ? (
         <span
           className={cn(
-            "flex size-5 items-center justify-center rounded-md border text-[10px] leading-none font-bold",
+            "flex size-5 items-center justify-center rounded-md border text-xs leading-none font-bold",
             tierToneClass(tier)
           )}
           data-testid="team-picker-tier"

@@ -13,6 +13,7 @@ import { useGlobalGoalPlan } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
+import { InsightsCampaignProgression } from "./insights-campaign-progression"
 import { InsightsEvents } from "./insights-events"
 import { InsightsHoldingBack } from "./insights-holding-back"
 import { InsightsMissing } from "./insights-missing"
@@ -122,12 +123,16 @@ export function InsightsPage() {
             goalOutlook={result.goalOutlook}
             onslaughtDays={result.onslaughtDays}
           />
+          {/* Two columns of similar height: what holds the plan back on the left, where to spend
+              energy (farm now, events, campaigns to push) on the right. */}
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
-            <InsightsHoldingBack
-              blockers={result.blockers}
-              bottlenecks={result.bottlenecks}
-              goalInfoById={goalInfoById}
-            />
+            <div className="flex flex-col gap-6">
+              <InsightsHoldingBack
+                blockers={result.blockers}
+                bottlenecks={result.bottlenecks}
+                goalInfoById={goalInfoById}
+              />
+            </div>
             <div className="flex flex-col gap-6">
               <InsightsEvents
                 benefitingGoalIdsByInsightId={
@@ -146,6 +151,9 @@ export function InsightsPage() {
                 goalInfoById={goalInfoById}
                 insights={result.eventInsights}
                 title={t("goals.insights.eventsTitle")}
+              />
+              <InsightsCampaignProgression
+                campaigns={result.campaignProgression}
               />
             </div>
           </div>

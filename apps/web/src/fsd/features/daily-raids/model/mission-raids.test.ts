@@ -229,3 +229,35 @@ describe("planMissionRaids", () => {
     })
   })
 })
+
+describe("planMissionRaids quick filters and energy", () => {
+  const pair = (overrides: Partial<PlanMissionRaidsInput> = {}) =>
+    base({
+      battlesToGo: 10,
+      battles: [
+        node("A", 5, 10, { drops: [["dA", 0.2]] }),
+        node("B", 5, 10, { drops: [["dB", 0.2]] }),
+      ],
+      goalNodesByBattle: new Map([
+        [id("A"), goal("dA", 2)],
+        [id("B"), goal("dB", 1)],
+      ]),
+      ...overrides,
+    })
+
+  it("breaks ties by goal priority, and by battle id with Combine goals", () => {
+    expect(raidsOf(planMissionRaids(pair()).rows)).toEqual({ B: 10 })
+    expect(
+      raidsOf(planMissionRaids(pair({ combineGoals: true })).rows)
+    ).toEqual({ A: 10 })
+  })
+
+  it("is bound only by attempts and the objective with unlimited energy", () => {
+    const plan = planMissionRaids(
+      mission5({ realEnergyUsedToday: 538, unlimitedEnergy: true })
+    )
+    expect(plan.energyBudget).toBe(Infinity)
+    expect(plan.totalRaids).toBe(38)
+    expect(plan.remainingAfter).toBe(0)
+  })
+})

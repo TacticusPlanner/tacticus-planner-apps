@@ -6,7 +6,7 @@ import { type TourPageSteps } from "@/shared/tour"
 
 /**
  * Desktop steps target the filter panel, the tile list, the two selectors, and the stats; mobile
- * swaps the tile list for the combobox. The filter step targets the panel rather than the controls,
+ * swaps the tile list for the combobox. Both end on where the variation is encountered. The filter step targets the panel rather than the controls,
  * since those are collapsed until the visitor opens them.
  */
 export function useNpcsTutorial(): TourPageSteps {
@@ -28,12 +28,14 @@ export function useNpcsTutorial(): TourPageSteps {
         step("variation", "npcs-variation-select", "bottom"),
         step("level", "npcs-level-select", "bottom"),
         step("stats", "npcs-stats", "top"),
+        step("encounters", "npc-encounters", "top"),
       ],
       mobile: [
         step("picker", "npcs-combobox", "bottom"),
         step("variation", "npcs-variation-select", "bottom"),
         step("level", "npcs-level-select", "bottom"),
         step("stats", "npcs-stats", "top"),
+        step("encounters", "npc-encounters", "top"),
       ],
     }
   }, [t])

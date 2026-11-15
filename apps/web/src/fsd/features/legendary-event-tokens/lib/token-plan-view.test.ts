@@ -3,8 +3,12 @@ import { describe, expect, it } from "vitest"
 import { mark } from "./token-plan.fixtures"
 import {
   buildTokenPlanView,
+  missionsNextToken,
   nextTokenCardState,
+  tokenClearBand,
   type TokenPlanReady,
+  upNextTokens,
+  tokenRisk,
 } from "./token-plan-view"
 import {
   UTHAR_RUN_STARTS,
@@ -51,6 +55,18 @@ describe("buildTokenPlanView", () => {
       "ultraTitus",
       "ultraApothecary",
     ])
+    expect(view.depthByTeam.get("melee")).toEqual({
+      depth: 5,
+      estimated: false,
+      total: 18,
+      sureDepth: null,
+    })
+    expect(view.depthByTeam.get("five")).toEqual({
+      depth: 6,
+      estimated: true,
+      total: 18,
+      sureDepth: 5,
+    })
     expect(view.fullClear).toEqual([
       {
         laneId: "alpha",
@@ -63,6 +79,7 @@ describe("buildTokenPlanView", () => {
       shardsMissing: 75,
     })
     expect(view.leftover).toEqual({ tokens: 94, laneId: "alpha" })
+    expect(view.runEnd).toBe(view.byRun!.sections[0]!.count)
     expect(view.upcoming).toBeNull()
     expect(nextTokenCardState(view)).toBe("token")
   })
@@ -309,5 +326,130 @@ describe("buildTokenPlanView", () => {
 
     expect(view.forecast).toBeNull()
     expect(view.plan.tokens).toHaveLength(6)
+  })
+})
+
+describe("upNextTokens", () => {
+  const plan = { tokens: ["a", "b", "c", "d", "e", "f", "g"] }
+
+  it("lists up to four tokens after the next one, not the ones it skipped", () => {
+    expect(
+      upNextTokens(plan, { index: 2 }).map((entry) => entry.index)
+    ).toEqual([3, 4, 5, 6])
+    expect(
+      upNextTokens(plan, { index: 0 }).map((entry) => entry.token)
+    ).toEqual(["b", "c", "d", "e"])
+  })
+
+  it("starts at the first token without a next one", () => {
+    expect(upNextTokens(plan, null, 2).map((entry) => entry.index)).toEqual([
+      0, 1,
+    ])
+  })
+
+  it("lists only the tokens left when fewer than four follow the next one", () => {
+    expect(
+      upNextTokens(plan, { index: 5 }).map((entry) => entry.index)
+    ).toEqual([6])
+    expect(upNextTokens(plan, { index: 6 })).toEqual([])
+  })
+
+  it("lists nothing for an empty plan", () => {
+    expect(upNextTokens({ tokens: [] }, null)).toEqual([])
+  })
+
+  it("stops at the tokens the current run still has", () => {
+    // One token left this run: the next one is it, so nothing is up next.
+    expect(upNextTokens(plan, { index: 0 }, undefined, 1)).toEqual([])
+    expect(
+      upNextTokens(plan, { index: 0 }, undefined, 3).map((entry) => entry.index)
+    ).toEqual([1, 2])
+  })
+})
+
+describe("missionsNextToken", () => {
+  const view = ready(buildTokenPlanView(workedViewInput()))
+  const first = { ...view.plan.tokens[0]!, maybe: false, playableNow: true }
+  // Another lane's battle, so nothing earlier in the order blocks it.
+  const second = {
+    ...first,
+    laneId: first.laneId === "alpha" ? ("beta" as const) : ("alpha" as const),
+  }
+  const ref = {
+    track: "regular" as const,
+    mission: {
+      index: 1,
+      kind: "defeatFaction",
+      count: 30,
+      faction: "Necrons",
+      alliance: null,
+      damageType: null,
+      trait: null,
+      text: "Defeat 30 Necrons",
+    },
+  }
+  const step = (gained: number) => ({
+    ref,
+    total: gained,
+    gained,
+    needed: 30,
+    completes: false,
+    estimate: false,
+  })
+  const order = (tokens: (typeof view.plan.tokens)[number][]) => ({
+    missionOrder: {
+      tokens,
+      markers: [],
+      runs: [],
+      steps: [[step(10)], [step(4)]],
+      nextProgress: [{ ref, amount: 12, estimate: false }],
+    },
+  })
+
+  it("reads the first token's gains from the order's steps", () => {
+    expect(missionsNextToken(order([first, second]))).toMatchObject({
+      index: 0,
+      gains: [{ ref, amount: 10, completes: false }],
+    })
+  })
+
+  it("reads a later token's gains from the current missions once earlier tokens are skipped", () => {
+    // The step after a skipped Maybe token assumes it was played, so it would undercount.
+    const skipped = { ...first, maybe: true }
+    expect(missionsNextToken(order([skipped, second]))).toMatchObject({
+      index: 1,
+      gains: [{ ref, amount: 12, completes: false }],
+    })
+  })
+})
+
+describe("tokenRisk", () => {
+  const estimated = { depth: 6, estimated: true, total: 18, sureDepth: 4 }
+
+  it("counts headroom to the sure depth within it, to the depth past it", () => {
+    expect(tokenRisk(estimated, 1)).toEqual({ band: 0, headroom: 2 })
+    expect(tokenRisk(estimated, 4)).toEqual({ band: 1, headroom: 1 })
+    expect(
+      tokenRisk({ ...estimated, estimated: false, sureDepth: null }, 1)
+    ).toEqual({ band: 0, headroom: 4 })
+    expect(tokenRisk({ ...estimated, depth: null }, 1)).toBeNull()
+  })
+})
+
+describe("tokenClearBand", () => {
+  const estimated = { depth: 6, estimated: true, total: 18, sureDepth: 4 }
+
+  it("is sure within the sure depth and likely past it", () => {
+    expect(tokenClearBand(estimated, 3)).toBe("sure")
+    expect(tokenClearBand(estimated, 4)).toBe("likely")
+    expect(tokenClearBand(estimated, 5)).toBe("likely")
+  })
+
+  it("has no band for a manual depth or an estimate without bands", () => {
+    expect(
+      tokenClearBand({ ...estimated, estimated: false, sureDepth: null }, 2)
+    ).toBeNull()
+    expect(tokenClearBand({ ...estimated, sureDepth: null }, 2)).toBeNull()
+    expect(tokenClearBand(undefined, 2)).toBeNull()
   })
 })

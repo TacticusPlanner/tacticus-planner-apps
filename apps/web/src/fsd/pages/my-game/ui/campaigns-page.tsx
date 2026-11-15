@@ -311,7 +311,7 @@ function StoryCard({
                 key={id}
                 src={characterIcon(id as UnitId)}
                 alt={id}
-                className="size-9 rounded"
+                className="size-9 rounded-sm"
               />
             ))}
           </div>

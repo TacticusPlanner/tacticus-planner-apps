@@ -18,7 +18,7 @@ export function NpcsDesktopPage(props: NpcsPageViewProps) {
   return (
     <div data-testid="npcs-desktop-page">
       <div
-        className="grid gap-6 lg:grid-cols-[minmax(240px,340px)_1fr]"
+        className="grid gap-6 lg:grid-cols-[minmax(15rem,21.25rem)_1fr]"
         data-testid="npcs-columns"
       >
         {/* Filters act on the list only, so they sit above it in the same column rather than

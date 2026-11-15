@@ -5,7 +5,9 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   FilteredOutNotice,
   type DailyRaidsViewModel,
+  type RaidLocationTarget,
 } from "@/features/daily-raids"
+import { CampaignBattleDialog } from "@/widgets/battle-preview"
 
 import { TodayShops } from "../today-shops"
 import { TodayBonusCard } from "./today-bonus-card"
@@ -32,6 +34,10 @@ export function TodayDashboard({
   onCantRaid?: (battleId: BattleId) => void
 }) {
   const [bonusShownCount, setBonusShownCount] = useState(BONUS_LIMIT)
+  // The planned location whose battle and enemies are open (tapping its name).
+  const [shownLocation, setShownLocation] = useState<RaidLocationTarget | null>(
+    null
+  )
   const view =
     raids.status === "ready"
       ? buildTodayView(raids, { bonusShownCount })
@@ -53,11 +59,12 @@ export function TodayDashboard({
       <TodayBonusCard
         notice={
           wide && raids.status === "ready" ? (
-            <FilteredOutNotice filteredOut={raids.filteredOut} />
+            <FilteredOutNotice raids={raids} />
           ) : undefined
         }
         onShowLess={() => setBonusShownCount(BONUS_LIMIT)}
         onShowMore={() => setBonusShownCount((shown) => shown + BONUS_STEP)}
+        onShowLocation={setShownLocation}
         view={view}
         wide={wide}
       />
@@ -69,19 +76,21 @@ export function TodayDashboard({
       <div
         className={cn(
           "grid items-start gap-3.5",
-          "@[42rem]:grid-cols-2",
+          "@2xl:grid-cols-2",
           "@[84rem]:grid-cols-4"
         )}
         data-testid="today-grid"
       >
-        <div
-          className="min-w-0 @[42rem]:col-span-2"
-          data-testid="today-plan-area"
-        >
+        <div className="min-w-0 @2xl:col-span-2" data-testid="today-plan-area">
           {bonusInPlanArea ? (
             bonusCard(true)
           ) : (
-            <TodayPlanCard onCantRaid={onCantRaid} raids={raids} view={view} />
+            <TodayPlanCard
+              onCantRaid={onCantRaid}
+              onShowLocation={setShownLocation}
+              raids={raids}
+              view={view}
+            />
           )}
         </div>
         <div className="flex min-w-0 flex-col gap-3.5">
@@ -90,9 +99,7 @@ export function TodayDashboard({
               would push Shops down the screen (layout shift), so there it waits for the plan. Side
               by side (two or four tracks) it shows while the plan loads. */}
           <div
-            className={cn(
-              raids.status === "loading" && "hidden @[42rem]:block"
-            )}
+            className={cn(raids.status === "loading" && "hidden @2xl:block")}
             data-testid="today-shops-slot"
           >
             <TodayShops />
@@ -107,6 +114,10 @@ export function TodayDashboard({
           </div>
         ) : null}
       </div>
+      <CampaignBattleDialog
+        onClose={() => setShownLocation(null)}
+        target={shownLocation}
+      />
     </div>
   )
 }

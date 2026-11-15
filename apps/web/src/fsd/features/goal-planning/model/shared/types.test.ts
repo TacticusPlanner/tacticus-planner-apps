@@ -17,6 +17,7 @@ const goalRow = {
 
 const goal = {
   ...goalRow,
+  linkedGoalIds: [],
   createdAt: "2026-07-15T12:00:00Z",
   globalPriority: 4,
   config: {} as GoalDetail["config"],

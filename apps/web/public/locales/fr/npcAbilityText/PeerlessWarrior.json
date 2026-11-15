@@ -1,0 +1,8 @@
+{
+  "PeerlessWarrior": {
+    "description": "Pendant chaque tour ennemi, après que le <style=\"Faction_Custodes\">Garde Sentinelle</style> a été attaqué par une unité ennemie adjacente, il effectue une <style=\"NormalAttack\">attaque normale</style> contre l’attaquant.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

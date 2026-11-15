@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useId, useState, type FormEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, Copy } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -22,8 +22,11 @@ import { ApiError } from "@/shared/api"
 
 import {
   minutesUntil,
+  supportTraceId,
   type StagingTransferMode,
 } from "../model/staging-transfer"
+import { dialogActionClassName } from "./dialog-action-slot"
+import { DialogAction } from "./dialog-actions"
 
 /**
  * The account dialog's Transfer tab: mint a code in production, or redeem one on staging. Deliberately
@@ -31,6 +34,27 @@ import {
  */
 export function StagingTransferTab({ mode }: { mode: StagingTransferMode }) {
   return mode === "export" ? <ExportPanel /> : <ImportPanel />
+}
+
+/** The API's sentence for a failure, plus the trace id to quote to support when it asks for one. */
+function TransferError({ error, testId }: { error: Error; testId: string }) {
+  const { t } = useTranslation()
+  const traceId = supportTraceId(error)
+  return (
+    <FieldError data-testid={testId}>
+      {error instanceof ApiError
+        ? error.message
+        : t("manageAccount.staging.genericError")}
+      {traceId ? (
+        <span
+          className="mt-1 block font-mono text-xs break-all select-all"
+          data-testid={`${testId}-trace`}
+        >
+          {t("manageAccount.staging.traceId", { traceId })}
+        </span>
+      ) : null}
+    </FieldError>
+  )
 }
 
 type CopyState = "idle" | "copied" | "failed"
@@ -98,32 +122,34 @@ function ExportPanel() {
       ) : null}
 
       {create.error ? (
-        <FieldError data-testid="manage-account-staging-error">
-          {create.error instanceof ApiError
-            ? create.error.message
-            : t("manageAccount.staging.genericError")}
-        </FieldError>
+        <TransferError
+          error={create.error}
+          testId="manage-account-staging-error"
+        />
       ) : null}
 
-      <Button
-        className="self-start"
-        data-testid="manage-account-staging-create"
-        disabled={create.isPending}
-        type="button"
-        variant={create.data ? "outline" : "default"}
-        onClick={() => create.mutate()}
-      >
-        {create.isPending ? <Spinner /> : null}
-        {create.data
-          ? t("manageAccount.staging.createAnother")
-          : t("manageAccount.staging.create")}
-      </Button>
+      <DialogAction>
+        <Button
+          className={dialogActionClassName}
+          data-testid="manage-account-staging-create"
+          disabled={create.isPending}
+          type="button"
+          variant={create.data ? "outline" : "default"}
+          onClick={() => create.mutate()}
+        >
+          {create.isPending ? <Spinner /> : null}
+          {create.data
+            ? t("manageAccount.staging.createAnother")
+            : t("manageAccount.staging.create")}
+        </Button>
+      </DialogAction>
     </div>
   )
 }
 
 function ImportPanel() {
   const { t } = useTranslation()
+  const formId = useId()
   const queryClient = useQueryClient()
   const [code, setCode] = useState("")
   const [confirmed, setConfirmed] = useState(false)
@@ -145,7 +171,11 @@ function ImportPanel() {
   }
 
   return (
-    <form className="flex flex-col gap-4 pt-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col gap-4 pt-4"
+      id={formId}
+      onSubmit={handleSubmit}
+    >
       <Field data-invalid={Boolean(importData.error)}>
         <FieldLabel htmlFor="manage-account-staging-import-code">
           {t("manageAccount.staging.codeLabel")}
@@ -163,11 +193,10 @@ function ImportPanel() {
             }}
           />
           {importData.error ? (
-            <FieldError data-testid="manage-account-staging-import-error">
-              {importData.error instanceof ApiError
-                ? importData.error.message
-                : t("manageAccount.staging.genericError")}
-            </FieldError>
+            <TransferError
+              error={importData.error}
+              testId="manage-account-staging-import-error"
+            />
           ) : null}
         </FieldContent>
       </Field>
@@ -200,14 +229,18 @@ function ImportPanel() {
         </p>
       ) : null}
 
-      <Button
-        data-testid="manage-account-staging-import-submit"
-        disabled={!canImport}
-        type="submit"
-      >
-        {importData.isPending ? <Spinner /> : null}
-        {t("manageAccount.staging.apply")}
-      </Button>
+      <DialogAction>
+        <Button
+          className={dialogActionClassName}
+          data-testid="manage-account-staging-import-submit"
+          disabled={!canImport}
+          form={formId}
+          type="submit"
+        >
+          {importData.isPending ? <Spinner /> : null}
+          {t("manageAccount.staging.apply")}
+        </Button>
+      </DialogAction>
     </form>
   )
 }

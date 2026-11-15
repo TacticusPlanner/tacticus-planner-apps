@@ -11,7 +11,11 @@ import {
   rosterOf,
   rosterUnit,
 } from "./clear-estimate.fixtures"
-import { suggestLaneTeams, type TeamSuggestionsInput } from "./team-suggestions"
+import {
+  suggestLaneTeams,
+  type TeamSuggestion,
+  type TeamSuggestionsInput,
+} from "./team-suggestions"
 
 const ULTRAMARINES = 0
 const MAX_2_HITS = 2
@@ -171,25 +175,63 @@ describe("suggestLaneTeams (spec worked examples)", () => {
       "ultraEliminatorSgt",
       "ultraInceptorSgt",
     ]
-    const ultramarinesTeam = (
+    const ultramarinesSuggestion = (
       overrides: Partial<TeamSuggestionsInput>
-    ): string[] | undefined =>
+    ): TeamSuggestion | undefined =>
       suggest(overrides).find(
         (suggestion) =>
           suggestion.objectiveIndexes.length === 1 &&
           suggestion.objectiveIndexes[0] === ULTRAMARINES
-      )?.memberUnitIds
+      )
+    const ultramarinesTeam = (
+      overrides: Partial<TeamSuggestionsInput>
+    ): string[] | undefined => ultramarinesSuggestion(overrides)?.memberUnitIds
 
-    it("swaps a held Healer in for the weakest plain member", () => {
-      // Incisus (Healer) at Stone 1 is the weakest of six held Ultramarines.
-      const held = new Map([
+    const heldWithHealerAt = (rank: "Stone1" | "Silver3") =>
+      new Map([
         ...rosterOf(plain),
-        [
-          "ultraApothecary",
-          { ...rosterUnit("ultraApothecary"), rank: "Stone1" as const },
-        ],
+        ["ultraApothecary", { ...rosterUnit("ultraApothecary"), rank }],
       ])
-      expect(ultramarinesTeam({ roster: held })).toContain("ultraApothecary")
+
+    // Eliminator and Inceptor Sgt at Gold 2 (21,250 each) put Incisus at Silver 3 (16,113) sixth;
+    // the team still clears ~6 with Incisus in place of the weakest plain member.
+    const healerFits = new Map([
+      ...heldWithHealerAt("Silver3"),
+      [
+        "ultraEliminatorSgt",
+        { ...rosterUnit("ultraEliminatorSgt"), rank: "Gold2" as const },
+      ],
+      [
+        "ultraInceptorSgt",
+        { ...rosterUnit("ultraInceptorSgt"), rank: "Gold2" as const },
+      ],
+    ])
+
+    it("swaps a held Healer in for the weakest plain member when the depth holds", () => {
+      const members = ultramarinesTeam({ roster: healerFits })
+      expect(members).toHaveLength(5)
+      expect(members).toContain("ultraApothecary")
+    })
+
+    it("keeps the replaced plain member as the reserve", () => {
+      const suggestion = ultramarinesSuggestion({ roster: healerFits })
+      expect(plain).toContain(suggestion?.reserveUnitId)
+      expect(suggestion?.memberUnitIds).not.toContain(suggestion?.reserveUnitId)
+    })
+
+    it("puts a Healer that would lower the depth in the reserve", () => {
+      expect(
+        ultramarinesSuggestion({ roster: heldWithHealerAt("Stone1") })
+          ?.reserveUnitId
+      ).toBe("ultraApothecary")
+    })
+
+    it("keeps the stronger member when the Healer would lower the depth", () => {
+      // Incisus at Stone 1 would drop the team from ~6 to ~5 (UserJot: LRE team picks favour
+      // weaker healers).
+      expect(
+        ultramarinesTeam({ roster: heldWithHealerAt("Stone1") })?.toSorted()
+      ).toEqual(plain.toSorted())
     })
 
     it("does not swap in a Healer the player does not hold", () => {
@@ -199,6 +241,10 @@ describe("suggestLaneTeams (spec worked examples)", () => {
       })
       expect(members).toBeDefined()
       expect(members).not.toContain("ultraApothecary")
+      expect(
+        ultramarinesSuggestion({ roster: rosterOf(plain), onlyUnlocked: false })
+          ?.reserveUnitId
+      ).toBeNull()
     })
   })
 
@@ -254,5 +300,95 @@ describe("suggestLaneTeams (objectives already cleared)", () => {
     }).map((suggestion) => suggestion.objectiveIndexes)
     expect(subsets).not.toContainEqual([ULTRAMARINES])
     expect(subsets).toContainEqual([MELEE])
+  })
+})
+
+describe("suggestLaneTeams (three-objective subsets)", () => {
+  // Titus at two melee hits joins Max 2 Hits: {Max 2 Hits, Melee} then has Incisus, Titus and
+  // Calgar, who all satisfy Ultramarines too.
+  const widened = units.map((unit) =>
+    unit.id === "ultraTitus" ? { ...unit, meleeHits: 2 } : unit
+  )
+  const TRIPLE = ["ultraApothecary", "ultraTitus", "ultraCalgar"]
+  const triple = (overrides: Partial<TeamSuggestionsInput>) =>
+    suggest({ units: widened, ...overrides }).find(
+      (suggestion) => suggestion.memberUnitIds.join() === TRIPLE.join()
+    )
+
+  it("proposes a team covering three objectives", () => {
+    expect(triple({})?.coveredObjectiveIndexes).toEqual([
+      ULTRAMARINES,
+      MAX_2_HITS,
+      MELEE,
+    ])
+  })
+
+  it("keeps a proposal that adds no points but saves tokens", () => {
+    // Two existing teams split the three objectives over battles 1–5: two tokens per battle.
+    const proposal = triple({
+      existingTeams: [
+        {
+          memberUnitIds: ["a", "b", "c"],
+          depth: 5,
+          coveredObjectiveIndexes: [ULTRAMARINES, MELEE],
+        },
+        {
+          memberUnitIds: ["d", "e", "f"],
+          depth: 5,
+          coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS],
+        },
+      ],
+    })
+    expect(proposal).toMatchObject({ depth: 5, gainPoints: 0 })
+    expect(proposal?.tokensSaved).toBe(5)
+  })
+
+  it("lists a three-objective proposal with no gain last, at 0 points and 0 tokens", () => {
+    const existingTeams = [
+      {
+        memberUnitIds: ["a", "b", "c"],
+        depth: 5,
+        coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS, MELEE],
+      },
+    ]
+    const suggestions = suggest({ units: widened, existingTeams })
+    expect(suggestions.at(-1)).toMatchObject({
+      memberUnitIds: TRIPLE,
+      gainPoints: 0,
+      tokensSaved: 0,
+    })
+    expect(
+      suggestions
+        .slice(0, -1)
+        .every(
+          (suggestion) =>
+            suggestion.gainPoints > 0 || suggestion.tokensSaved > 0
+        )
+    ).toBe(true)
+  })
+
+  it("drops a no-gain proposal covering fewer than three open objectives", () => {
+    // Ultramarines cleared everywhere leaves the triple two open objectives.
+    const progress = {
+      ...UTHAR_ALPHA_PROGRESS,
+      battles: UTHAR_ALPHA_PROGRESS.battles.map((battle) => ({
+        ...battle,
+        cleared: battle.cleared.map((isCleared, column) =>
+          column === ULTRAMARINES + 1 ? true : isCleared
+        ),
+      })),
+    }
+    expect(
+      triple({
+        progress,
+        existingTeams: [
+          {
+            memberUnitIds: ["a", "b", "c"],
+            depth: 5,
+            coveredObjectiveIndexes: [ULTRAMARINES, MAX_2_HITS, MELEE],
+          },
+        ],
+      })
+    ).toBeUndefined()
   })
 })

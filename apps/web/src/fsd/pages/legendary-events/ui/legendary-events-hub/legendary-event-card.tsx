@@ -4,6 +4,8 @@ import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { EntityIcon } from "@/shared/ui"
+
 import { EventTimingLines } from "../shared/event-timing-lines"
 import type { HubCardViewModel } from "./legendary-events-hub.view-model"
 import { useDateLocale } from "@/shared/lib"
@@ -38,16 +40,15 @@ export function LegendaryEventCard({
       className={cn(
         "flex min-w-0 items-start gap-3 rounded-xl border bg-card p-3 text-card-foreground transition-colors",
         "border-l-4 border-l-(--event-legendary) hover:bg-muted/50",
-        "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+        "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
       )}
       data-state={card.lifecycle.state}
       data-testid={testId ?? "legendary-event-card"}
       to={`/legendary-events/${card.eventId}`}
     >
       {portrait ? (
-        <img
+        <EntityIcon
           alt=""
-          aria-hidden="true"
           className="size-12 shrink-0 rounded-full object-cover"
           src={portrait}
         />

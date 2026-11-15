@@ -80,15 +80,15 @@ describe("Legendary Events translations", () => {
       for (const [translatedText, english] of pairs) {
         expect(translatedText).not.toBe(english)
       }
-      // The lane leaderboard tour step names both menu items.
-      const content = resource.tour.event.steps.leaderboard.content
+      // The eligibility tour step names both menu items.
+      const content = resource.tour.event.steps.eligibility.content
       expect(content).toContain(resource.leaderboardActions.createGoal)
       expect(content).toContain(resource.leaderboardActions.addToTeam)
     }
   )
 
   it("names both menu items in the English tour step", () => {
-    const content = en.tour.event.steps.leaderboard.content
+    const content = en.tour.event.steps.eligibility.content
     expect(content).toContain(en.leaderboardActions.createGoal)
     expect(content).toContain(en.leaderboardActions.addToTeam)
   })
@@ -102,8 +102,11 @@ describe("Legendary Events translations", () => {
       expect(resource.tokenPlan.nextToken.reasons.mostPoints).not.toBe(
         en.tokenPlan.nextToken.reasons.mostPoints
       )
-      expect(resource.tokenPlan.nextToken.actions.couldNot).not.toBe(
-        en.tokenPlan.nextToken.actions.couldNot
+      expect(resource.tokenPlan.nextToken.actions.stopHint).not.toBe(
+        en.tokenPlan.nextToken.actions.stopHint
+      )
+      expect(resource.tokenPlan.nextToken.actions.maybeHint).not.toBe(
+        en.tokenPlan.nextToken.actions.maybeHint
       )
       expect(resource.tokenPlan.plan.title).not.toBe(en.tokenPlan.plan.title)
       expect(resource.tokenPlan.forecast.header).not.toBe(
@@ -177,8 +180,8 @@ describe("Legendary Events translations", () => {
     expect(resource.progress.howPoints.body).not.toBe(
       en.progress.howPoints.body
     )
-    expect(resource.tour.event.steps.leaderboard.content).not.toBe(
-      en.tour.event.steps.leaderboard.content
+    expect(resource.tour.event.steps.eligibility.content).not.toBe(
+      en.tour.event.steps.eligibility.content
     )
     expect(resource.tour.event.steps.progressGrid.content).not.toBe(
       en.tour.event.steps.progressGrid.content

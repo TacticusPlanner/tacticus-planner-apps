@@ -19,7 +19,7 @@ function MapImage({
   if (src === undefined || erroredSrc === src) {
     return (
       <div
-        className="flex aspect-[296/408] w-full max-w-74 flex-col items-center justify-center gap-2 rounded-xl border border-dashed text-sm text-muted-foreground"
+        className="flex aspect-296/408 w-full max-w-74 flex-col items-center justify-center gap-2 rounded-xl border border-dashed text-sm text-muted-foreground"
         data-map={mapId}
         data-testid="battle-map-unavailable"
       >
@@ -31,7 +31,7 @@ function MapImage({
   return (
     <img
       alt={alt}
-      className="aspect-[296/408] w-full max-w-74 rounded-xl border object-cover"
+      className="aspect-296/408 w-full max-w-74 rounded-xl border object-cover"
       data-map={mapId}
       data-testid="battle-map-image"
       height={408}

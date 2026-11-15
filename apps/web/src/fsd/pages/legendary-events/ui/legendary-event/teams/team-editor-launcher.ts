@@ -11,6 +11,8 @@ interface TeamEditorRequest {
   laneId: LegendaryEventLaneId
   team?: LegendaryEventTeam
   memberUnitIds?: readonly string[]
+  /** A new team's reserve (a suggestion's). */
+  reserveUnitId?: string | null
   /** The objectives the picker's chips start from (the suggestion's). */
   objectiveIndexes?: readonly number[]
   /** The 1-based rank of the team suggestion the editor starts from. */

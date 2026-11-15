@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -19,6 +19,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import {
   describeRankTargetKey,
   goalQueries,
+  compareGoalTypes,
   goalRankTargetKey,
   type GoalDetail,
   type GoalGroupValue,
@@ -31,6 +32,7 @@ import {
   type ProjectSummary,
 } from "@/entities/project"
 import { ApiError } from "@/shared/api"
+import { RankBadge } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import {
@@ -178,6 +180,28 @@ export function AddGoalsToProjectSheet({
     ]
       .filter(Boolean)
       .join(" · ")
+  // On a row the Rank target shows as its icon (name on hover); text lists keep `goalTitle`.
+  const goalRowTitle = (goal: GoalDetail): ReactNode => {
+    const target =
+      goal.goalType === "Rank"
+        ? describeRankTargetKey(goalRankTargetKey(goal) ?? "")
+        : null
+    const text = `${goalLabel(goal)} · ${goalTypeLabel(goal)}`
+    if (!target) return text
+    return (
+      <>
+        {text} ·{" "}
+        <RankBadge
+          className="align-text-bottom"
+          iconClassName="size-4"
+          rank={target.rank}
+          showLabel={false}
+          tooltip
+        />
+        {target.slots > 0 ? ` (${target.slots}/6)` : null}
+      </>
+    )
+  }
   const goalName = (goalId: string) => {
     const goal = goalById.get(goalId)
     return goal ? goalTitle(goal) : t("goals.project.assemblyUnknownGoal")
@@ -189,14 +213,18 @@ export function AddGoalsToProjectSheet({
       !query ||
       `${goalLabel(goal)} ${goalTypeLabel(goal)}`.toLowerCase().includes(query)
   )
-  // Groups keep first-appearance order and each keeps the incoming (global-priority) order.
+  // Unit groups keep first-appearance order, type groups the fixed goal-type order (Rank first, as
+  // on the Goals page); each keeps the incoming (global-priority) row order.
   const groupKey = (goal: GoalDetail) =>
     group === "unit"
       ? `${goal.entityType}:${goal.entityId}`
       : group === "type"
         ? goal.goalType
         : "all"
-  const groups = [...new Set(visibleGoals.map(groupKey))].map((key) => {
+  const firstSeen = [...new Set(visibleGoals.map(groupKey))]
+  const groupKeys =
+    group === "type" ? firstSeen.toSorted(compareGoalTypes) : firstSeen
+  const groups = groupKeys.map((key) => {
     const rows = visibleGoals.filter((goal) => groupKey(goal) === key)
     return {
       key,
@@ -309,7 +337,7 @@ export function AddGoalsToProjectSheet({
               ? "remove"
               : null
         }
-        title={goalTitle(goal)}
+        title={goalRowTitle(goal)}
       />
     )
   }

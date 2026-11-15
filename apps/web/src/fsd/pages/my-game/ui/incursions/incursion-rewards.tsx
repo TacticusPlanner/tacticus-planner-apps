@@ -3,7 +3,7 @@ import { shardIcon } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { shopRewardDisplay, type ShopRewardKind } from "@/features/shop-rewards"
+import { shopRewardDisplay, type ShopRewardKind } from "@/entities/shop-reward"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 
@@ -50,7 +50,7 @@ function RewardIcon({
           alt=""
           src={iconUrl}
           className={cn(
-            "size-full rounded border",
+            "size-full rounded-sm border",
             mythic ? "border-(--rarity-mythic)" : "border-(--rarity-legendary)"
           )}
         />

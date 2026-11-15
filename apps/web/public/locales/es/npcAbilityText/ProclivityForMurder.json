@@ -1,0 +1,26 @@
+{
+  "ProclivityForMurder": {
+    "description": "Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> a todos los enemigos adyacentes. Cualquier <style=\"Battle_Fatigue\">Fatiga de batalla</style> resultante se activa dos veces. Después de usar esta habilidad, <style=\"Faction_TheLostAndTheDamned\">Daras</style> puede volver a moverse, incluso si ya se ha movido este turno.",
+    "variables": {
+      "minDmg": [
+        26, 31, 36, 42, 47, 53, 59, 65, 71, 77, 83, 89, 95, 101, 107, 113, 119,
+        125, 131, 137, 145, 156, 179, 203, 227, 250, 274, 298, 321, 345, 369,
+        392, 416, 440, 463, 487, 511, 534, 558, 591, 638, 687, 740, 799, 906,
+        1013, 1120, 1226, 1333, 1440, 1456, 1476, 1495, 1521, 1547, 1573, 1599,
+        1632, 1664, 1697, 1736, 1775, 1814, 1853, 1892
+      ],
+      "maxDmg": [
+        31, 37, 43, 50, 56, 63, 70, 77, 84, 91, 99, 106, 113, 120, 127, 134,
+        141, 148, 156, 163, 172, 186, 214, 242, 270, 299, 327, 355, 383, 411,
+        440, 468, 496, 524, 552, 581, 609, 637, 665, 705, 761, 819, 883, 953,
+        1080, 1207, 1335, 1462, 1590, 1718, 1736, 1759, 1783, 1814, 1845, 1876,
+        1907, 1945, 1984, 2023, 2069, 2116, 2162, 2209, 2255
+      ]
+    },
+    "constants": {
+      "nrOfHits": "3",
+      "damageProfile": "Toxic"
+    },
+    "scaled": ["minDmg", "maxDmg"]
+  }
+}

@@ -22,7 +22,10 @@ export {
   NO_BLOCKERS,
   UNKNOWN_PROGRESS,
 } from "./model/attainment/goal-overview-metrics-defaults"
-export { type GoalProgress } from "./model/attainment/goal-progress"
+export {
+  type GoalProgress,
+  type GoalTargetPreview,
+} from "./model/attainment/goal-progress"
 export { type LevelRequirementProgress } from "./model/attainment/level-requirement-progress"
 export {
   useGoalAttainment,
@@ -40,6 +43,8 @@ export {
 export { computePlanInsights } from "./model/insights/plan-insights-calc"
 export { usePlanInsights } from "./model/insights/use-plan-insights"
 export {
+  type PlanCampaignLockReason,
+  type PlanCampaignProgression,
   type PlanInsightsBlocker,
   type PlanInsightsBottleneck,
   type PlanFarmingSpot,
@@ -48,6 +53,10 @@ export {
   type PlanInsightsTotals,
   type PlanMissingResources,
 } from "./model/insights/use-plan-insights.domain"
+export {
+  useFarmUnlockPaths,
+  type FarmUnlockPathViewModel,
+} from "./model/unlock-paths/use-farm-unlock-paths"
 export { isOnlyMemberOf } from "./model/projects/project-removal"
 export { useGoalsProjectScope } from "./model/projects/use-goals-project-scope"
 export { useProjectsByGoalId } from "./model/projects/use-projects-by-goal-id"
@@ -73,3 +82,45 @@ export { useGoalCatalog } from "./model/shared/use-goal-catalog"
 export { useStableMap } from "./model/shared/use-stable-map"
 export { MobileReorderBar } from "./ui/mobile-reorder-bar"
 export { OrderConflictBanner } from "./ui/order-conflict-banner"
+// Planning helpers the goal creation and edit forms (features/goal-create) read.
+export { buildPreviewGoalDetails } from "./model/estimate/per-project-estimate"
+export { usePerProjectEstimates } from "./model/estimate/use-per-project-estimates"
+export { farmingStrategyAvailability } from "./model/farming/farming-strategy-availability"
+export { useGoalLocationGroups } from "./model/farming/use-goal-location-groups"
+export { projectConflictText } from "./model/projects/project-conflict-copy"
+export { goalSlotConflict } from "./model/projects/project-membership"
+export { type ProjectRemovalUnavailableReason } from "./model/projects/project-removal"
+export { useInlineProjectCreate } from "./model/projects/use-inline-project-create"
+export { useGoalSlotConflict } from "./model/projects/use-project-goal-conflicts"
+export {
+  abilityLevelsByRarity,
+  getGoalValidationIssue,
+  getGoalValidationIssues,
+  goalKindsForEntity,
+  isAtMaxAbility,
+  isAtMaxProgression,
+  isAtMaxRank,
+} from "./model/shared/goal-validation"
+export {
+  chunkOrUndefined,
+  readyData,
+  toByUnitId,
+  toXpBooks,
+} from "./model/shared/read-data"
+export { type GoalProject } from "./model/shared/types"
+// Goal creation and edit: the create-goal sheet and its app-wide launcher, plus the goal edit
+// dialog that reuses the same form family.
+export { CreateGoalSheet } from "./ui/create-goal/create-goal-sheet"
+export { CreateGoalLauncherProvider } from "./model/goal-creation-form/create-goal-launcher"
+export {
+  useCreateGoalLauncher,
+  type CreateGoalPrefill,
+} from "./model/goal-creation-form/create-goal-launcher-context"
+export { GoalEditDialog } from "./ui/goal-edit/goal-edit-dialog"
+export { GoalProjectBadges, GoalUnitIcon } from "./ui/shared/goal-visuals"
+// Bulk goal creation: one shared target for several units at once (Collection's select mode).
+export { BulkGoalDialog } from "./ui/bulk-create/bulk-goal-dialog"
+export {
+  bulkUnitKey,
+  type BulkGoalUnit,
+} from "./model/bulk-create/bulk-goal-plan"

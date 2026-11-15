@@ -24,6 +24,28 @@ describe("Tooltip", () => {
     vi.useRealTimers()
   })
 
+  it("with disableTouchToggle, a touch tap runs the trigger's own click and leaves the tooltip closed", () => {
+    const onClick = vi.fn()
+    render(
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger disableTouchToggle onClick={onClick}>
+            Hover me
+          </TooltipTrigger>
+          <TooltipContent>Tooltip text</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+    const trigger = screen.getByText("Hover me")
+
+    fireEvent.pointerDown(trigger, { pointerType: "touch" })
+    fireEvent.focus(trigger)
+    fireEvent.click(trigger)
+
+    expect(onClick).toHaveBeenCalledTimes(1)
+    expect(document.querySelector('[data-slot="tooltip-content"]')).toBeNull()
+  })
+
   it("opens on a touch tap, since Radix's hover/focus opening ignores touch pointers", () => {
     renderTooltip()
     const trigger = screen.getByText("Hover me")

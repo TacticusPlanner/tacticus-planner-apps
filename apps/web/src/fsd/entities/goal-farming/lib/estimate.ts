@@ -1,0 +1,467 @@
+import type { BattleId } from "@workspace/game-domain"
+
+import type {
+  Battle,
+  CountedResourceNeed,
+  EstimateResourceId,
+  EstimateBlocker,
+  EstimateOutcome,
+  EstimateUpgrade,
+  FarmNode,
+  FlatSupplier,
+  GoalInventoryAllocation,
+  GoalNeed,
+  InventoryAllocationGoal,
+  RaidBreakdownEntry,
+  UpgradeNeed,
+} from "../model/estimate.domain"
+import { blocked, partiallyBlocked } from "./estimate-blocked"
+import { classifyNeed } from "./select-farm-nodes"
+import { onslaughtTokensFromSupply, shopSpendFromSupply } from "./shop-supply"
+
+// Day-by-day resource estimation engine — a "core scheduler" port of V1's
+// `UpgradesService.generateDailyRaidsList` (day loop budgeting energy against campaign nodes) and
+// `GoalsService.computeMaterialQuantityInfo` (priority-ordered shared-inventory allocation). Handles
+// upgrade materials and (plan §16 phase 7) farmable character shards via `EstimateResourceId`; orbs,
+// mythic shards, onslaught tokens, home-screen-event scoring, and XP-tome accrual have no
+// campaign-node farm source and are deferred fidelity, not ported.
+//
+// I18n-free, pure functions; callers derive `needs`/`inventory` via `entities/rank-lookup`
+// (`lib/rank-lookup-calc.ts`) and pass the pre-aggregated result in.
+
+/** V1's guard against a farm that can never complete (e.g. zero daily energy, or every candidate
+ *  node priced out of the daily budget) looping forever. */
+const MAX_DAYS = 1000
+
+/**
+ * Applies each supplier's day-`dayIndex` amount against `remaining` (mutated in place), capped at
+ * what's still needed and never negative, and returns how much was actually applied that day —
+ * both rolled up per resource (`byResource`) and split by the individual `FlatSupplier.key`
+ * (`bySupplier`) so a consumer can attribute the contribution to one shop offer or the Onslaught
+ * source. Shared by `estimateGoal`'s and `estimatePlan`'s day loops so both simulate flat
+ * (energy-free) suppliers — a daily-shop offer, an Onslaught run — concurrently alongside campaign
+ * farming against one shared remaining requirement (plan: acquisition-source picker,
+ * tacticus-planner-apps#103), rather than as a separate estimate combined afterward.
+ */
+/** Key of the per-day Onslaught runs pool in `applyFlatSuppliers`' `dailySupplyUsed` (shop offer ids
+ *  are `<shopId>:<rewardType>`, so it can't collide with one). */
+const ONSLAUGHT_RUNS_POOL_KEY = "onslaught:runs"
+const MYTHIC_ONSLAUGHT_KEY = "onslaught:mythic"
+
+/** What `supplier` can give toward `need` today after higher-priority goals' draws, recording the
+ *  draw in `pool`. A shop offer pools its own amount by `key`; Onslaught pools runs (its supply over
+ *  `shardsPerRun`) across every Onslaught supplier, since each unit yields different shards per run
+ *  (spec: *Onslaught tokens are shared across goals in priority order*). */
+function takeFromPool(
+  supplier: FlatSupplier,
+  dayIndex: number,
+  need: number,
+  pool: Map<string, number> | undefined
+): number {
+  const supply = Math.max(0, supplier.supplyOnDay(dayIndex))
+  if (pool && supplier.shardsPerRun) {
+    const runsLeft = Math.max(
+      0,
+      supply / supplier.shardsPerRun - (pool.get(ONSLAUGHT_RUNS_POOL_KEY) ?? 0)
+    )
+    const amount = Math.min(runsLeft * supplier.shardsPerRun, need)
+    if (amount > 0) {
+      pool.set(
+        ONSLAUGHT_RUNS_POOL_KEY,
+        (pool.get(ONSLAUGHT_RUNS_POOL_KEY) ?? 0) +
+          amount / supplier.shardsPerRun
+      )
+    }
+    return amount
+  }
+  const pooled = pool && supplier.shop ? pool : undefined
+  const amount = Math.min(
+    Math.max(0, supply - (pooled?.get(supplier.key) ?? 0)),
+    need
+  )
+  if (amount > 0) {
+    pooled?.set(supplier.key, (pooled.get(supplier.key) ?? 0) + amount)
+  }
+  return amount
+}
+
+/** `{ shopSpend }` when a shop offer contributed, else nothing — so outcomes without a shop supplier
+ *  keep their exact shape. */
+export function shopSpendField(
+  bySupplier: ReadonlyMap<string, number>,
+  suppliers: readonly FlatSupplier[] | undefined
+) {
+  const shopSpend = shopSpendFromSupply(bySupplier, suppliers)
+  return shopSpend.size > 0 ? { shopSpend } : {}
+}
+
+export function applyFlatSuppliers(
+  remaining: Map<EstimateResourceId, number>,
+  suppliers: readonly FlatSupplier[] | undefined,
+  dayIndex: number,
+  /** Today's account-wide supply already taken by higher-priority goals — mutated in place. Shop
+   *  purchases are keyed by supplier `key` (an offer id); Onslaught runs, shared by every Onslaught
+   *  supplier, under `ONSLAUGHT_RUNS_POOL_KEY`. Shop caps and Onslaught tokens are per account, so
+   *  `estimatePlan` passes one map per day across every goal; a single-goal estimate passes none and
+   *  owns its sources outright. */
+  dailySupplyUsed?: Map<string, number>
+): {
+  byResource: Map<EstimateResourceId, number>
+  bySupplier: Map<string, number>
+} {
+  const byResource = new Map<EstimateResourceId, number>()
+  const bySupplier = new Map<string, number>()
+  if (!suppliers?.length) return { byResource, bySupplier }
+
+  // Allocate in a stable order (by key), not caller array order: on the day the shared need is
+  // exhausted, whichever supplier is consulted first absorbs the remainder, so array order would
+  // otherwise make each source's attributed total depend on selection order.
+  // Mythic Onslaught runs come after regular ones: a run yields regular shards until the unit
+  // reaches Mythic, so the shared run pool goes to the regular need first.
+  const ordered = [...suppliers].sort(
+    (a, b) =>
+      Number(a.key === MYTHIC_ONSLAUGHT_KEY) -
+        Number(b.key === MYTHIC_ONSLAUGHT_KEY) ||
+      (a.key < b.key ? -1 : a.key > b.key ? 1 : 0)
+  )
+
+  for (const supplier of ordered) {
+    const need = remaining.get(supplier.resourceId)
+    if (!need || need <= 0) continue
+
+    const amount = Math.min(
+      takeFromPool(supplier, dayIndex, need, dailySupplyUsed),
+      need
+    )
+    if (amount <= 0) continue
+
+    const next = need - amount
+    if (next <= 0) {
+      remaining.delete(supplier.resourceId)
+    } else {
+      remaining.set(supplier.resourceId, next)
+    }
+    byResource.set(
+      supplier.resourceId,
+      (byResource.get(supplier.resourceId) ?? 0) + amount
+    )
+    bySupplier.set(supplier.key, (bySupplier.get(supplier.key) ?? 0) + amount)
+  }
+
+  return { byResource, bySupplier }
+}
+
+function addDays(base: Date, days: number): Date {
+  const result = new Date(base.getTime())
+  result.setUTCDate(result.getUTCDate() + days)
+  return result
+}
+
+/** Returns the inclusive completion date when the reference date is farming Day 1. */
+export function inclusiveCompletionDate(
+  referenceDate: Date,
+  requiredDays: number
+): Date {
+  return addDays(referenceDate, Math.max(requiredDays - 1, 0))
+}
+
+export function formatDate(date: Date): string {
+  return date.toISOString().slice(0, 10)
+}
+
+/**
+ * Days to finish `count` items from `nodes`: `count / Σ itemsPerDay(node)`. Zero yield is Infinity.
+ * V1 (`calculateDaysToCompleteMaterial`) uses `energyPerDay / energyPerItem` per suggested node
+ * with `energyPerDay = dailyBattleCount * energyCost` (campaigns.service.ts:134-160), i.e.
+ * `dropRate * attempt cap` and only the attempt cap. V2 deliberately also bounds a node by the
+ * daily energy budget (`floor(dailyEnergy / energyCost)`), so order can still differ from V1 for
+ * cheap high-cap nodes.
+ */
+function daysToFinish(
+  count: number,
+  nodes: readonly FarmNode[],
+  dailyEnergy: number
+): number {
+  let itemsPerDay = 0
+  for (const node of nodes) {
+    const attempts = Math.min(
+      Math.floor(dailyEnergy / node.energyCost),
+      node.dailyAttempts > 0 ? node.dailyAttempts : Infinity
+    )
+    const items = node.dropRate * attempts
+    if (items > 0) itemsPerDay += items
+  }
+  return itemsPerDay > 0 ? count / itemsPerDay : Infinity
+}
+
+/**
+ * Spends one day's energy against a goal's still-remaining materials, longest-to-finish material first, mutating
+ * `remaining` and returning the energy/raids spent. Shared by `estimateGoal` (one goal) and
+ * `estimatePlan` (each goal's turn within a combined day), so both loops spend a day identically.
+ * `attemptsUsedByBattle` is a caller-owned accumulator mutated in place. Each battle node's
+ * `dailyAttempts` cap is tracked per `battleId` across the whole call (not per material) — it's the
+ * same real-world battle regardless of which material happens to drop there, so two different
+ * materials farmed from the same node share one daily cap rather than each getting a fresh one.
+ * `attemptsLeftByBattle` (the player's real attempts left today) lowers a node's cap to what is
+ * left; such an entry reports that lowered cap as its `dailyAttempts`.
+ */
+export function spendDay(
+  remaining: Map<EstimateResourceId, number>,
+  nodesById: ReadonlyMap<EstimateResourceId, FarmNode[]>,
+  startingEnergy: number,
+  dailyEnergy: number,
+  attemptsUsedByBattle = new Map<BattleId, number>(),
+  attemptsLeftByBattle?: ReadonlyMap<BattleId, number>
+): {
+  energySpent: number
+  raidsPerformed: number
+  breakdown: Omit<RaidBreakdownEntry, "goalId">[]
+} {
+  let energy = startingEnergy
+  let energySpent = 0
+  let raidsPerformed = 0
+  const breakdown: Omit<RaidBreakdownEntry, "goalId">[] = []
+
+  // V1 `sortLocationsForRaiding`: longest time to finish first. `Array.sort` is stable, so ties
+  // keep the material's existing order; each material's nodes stay in `nodesById` order.
+  const spendable = [...remaining.entries()]
+    .map(([id, count]) => ({
+      id,
+      days: daysToFinish(count, nodesById.get(id) ?? [], dailyEnergy),
+    }))
+    .sort((a, b) => b.days - a.days)
+    .flatMap(({ id }) =>
+      (nodesById.get(id) ?? []).map((node) => ({ id, node }))
+    )
+
+  for (const { id, node } of spendable) {
+    const remainingCount = remaining.get(id)
+    if (!remainingCount || remainingCount <= 0) continue
+    if (energy < node.energyCost) continue
+
+    const attemptsUsed = attemptsUsedByBattle.get(node.battleId) ?? 0
+    const attemptsLeft = attemptsLeftByBattle?.get(node.battleId)
+    const attemptsCap = Math.min(
+      node.dailyAttempts > 0 ? node.dailyAttempts : Infinity,
+      attemptsLeft ?? Infinity
+    )
+    const attemptsRemaining = attemptsCap - attemptsUsed
+    if (attemptsRemaining <= 0) continue
+
+    const affordableRaids = Math.floor(energy / node.energyCost)
+    const neededRaids = Math.ceil(remainingCount / node.dropRate)
+    const raidsToPerform = Math.min(
+      affordableRaids,
+      neededRaids,
+      attemptsRemaining
+    )
+    if (raidsToPerform <= 0) continue
+
+    const farmed = raidsToPerform * node.dropRate
+    const spent = raidsToPerform * node.energyCost
+    energy -= spent
+    energySpent += spent
+    raidsPerformed += raidsToPerform
+    attemptsUsedByBattle.set(node.battleId, attemptsUsed + raidsToPerform)
+    breakdown.push({
+      resourceId: id,
+      battleId: node.battleId,
+      raidsPerformed: raidsToPerform,
+      itemsFarmed: farmed,
+      energySpent: spent,
+      dailyAttempts:
+        attemptsLeft === undefined ? node.dailyAttempts : attemptsCap,
+      remainingBefore: remainingCount,
+    })
+
+    const nextRemaining = remainingCount - farmed
+    if (nextRemaining <= 0) {
+      remaining.delete(id)
+    } else {
+      remaining.set(id, nextRemaining)
+    }
+  }
+
+  return {
+    energySpent,
+    raidsPerformed,
+    breakdown,
+  }
+}
+
+/**
+ * Isolated single-goal estimate (plan §9 context (a), the creation preview): how many days of
+ * `dailyEnergy` farming clear every material in `needs`, assuming no other goal competes for energy
+ * or inventory. Returns `null` when any material has no farmable location, or the farm can't clear
+ * within `MAX_DAYS` (e.g. `dailyEnergy` too low to ever afford the cheapest node) — both "can't
+ * estimate this" rather than a misleading number.
+ */
+export function estimateGoal({
+  needs,
+  upgradesById,
+  battlesById,
+  dailyEnergy,
+  farmingLocationIds,
+  flatSuppliers,
+  referenceDate = new Date(),
+}: {
+  needs: UpgradeNeed[]
+  upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>
+  battlesById: ReadonlyMap<BattleId, Battle>
+  dailyEnergy: number
+  farmingLocationIds?: readonly string[] | null
+  /** Selected non-campaign acquisition sources (shop offers, Onslaught) — see `FlatSupplier`. A
+   *  need with no campaign farm location is estimable, not blocked, when a supplier covers it. */
+  flatSuppliers?: readonly FlatSupplier[]
+  referenceDate?: Date
+}): EstimateOutcome {
+  const remaining = new Map<EstimateResourceId, number>()
+  const nodesById = new Map<EstimateResourceId, FarmNode[]>()
+  const suppliedResourceIds = new Set(
+    flatSuppliers?.map((supplier) => supplier.resourceId)
+  )
+
+  const blockers: EstimateBlocker[] = []
+  for (const need of needs) {
+    if (need.count <= 0) continue
+    const { nodes, blocker } = classifyNeed(
+      need,
+      suppliedResourceIds.has(need.id),
+      upgradesById,
+      battlesById,
+      farmingLocationIds,
+      dailyEnergy
+    )
+    if (blocker) {
+      blockers.push({
+        resourceId: need.id,
+        reason: blocker,
+        remaining: need.count,
+      })
+      continue
+    }
+    remaining.set(need.id, need.count)
+    nodesById.set(need.id, nodes)
+  }
+
+  if (remaining.size === 0 && blockers.length > 0) {
+    return partiallyBlocked(blockers, [])
+  }
+  if (remaining.size === 0) {
+    return {
+      status: "Estimated",
+      days: 0,
+      date: formatDate(referenceDate),
+      energyTotal: 0,
+      raidsTotal: 0,
+      flatSupplyTotal: new Map(),
+      flatSupplyBySupplier: new Map(),
+    }
+  }
+
+  const actionableIds = [...remaining.keys()]
+  let days = 0
+  let energyTotal = 0
+  let raidsTotal = 0
+  const flatSupplyTotal = new Map<EstimateResourceId, number>()
+  const flatSupplyBySupplier = new Map<string, number>()
+
+  while (remaining.size > 0 && days < MAX_DAYS) {
+    days++
+    const appliedToday = applyFlatSuppliers(remaining, flatSuppliers, days - 1)
+    for (const [id, amount] of appliedToday.byResource) {
+      flatSupplyTotal.set(id, (flatSupplyTotal.get(id) ?? 0) + amount)
+    }
+    for (const [key, amount] of appliedToday.bySupplier) {
+      flatSupplyBySupplier.set(
+        key,
+        (flatSupplyBySupplier.get(key) ?? 0) + amount
+      )
+    }
+
+    const { energySpent, raidsPerformed } = spendDay(
+      remaining,
+      nodesById,
+      dailyEnergy,
+      dailyEnergy
+    )
+    energyTotal += energySpent
+    raidsTotal += raidsPerformed
+  }
+
+  if (remaining.size > 0)
+    return blocked("SimulationLimit", [...remaining.keys()])
+  if (blockers.length > 0) return partiallyBlocked(blockers, actionableIds)
+  return {
+    status: "Estimated",
+    days,
+    date: formatDate(inclusiveCompletionDate(referenceDate, days)),
+    energyTotal,
+    raidsTotal,
+    flatSupplyTotal,
+    flatSupplyBySupplier,
+    onslaughtTokens: onslaughtTokensFromSupply(
+      flatSupplyBySupplier,
+      flatSuppliers
+    ),
+    ...shopSpendField(flatSupplyBySupplier, flatSuppliers),
+  }
+}
+
+/**
+ * Priority-shared plan estimate (plan §9 context (b), §5's per-project priority): given every Rank
+ * goal in a project (ordered by `priority`, lower runs first) and the shared upgrade `inventory`,
+ * returns each goal's completion estimate accounting for (1) higher-priority goals claiming shared
+ * inventory first — a port of V1 `GoalsService.computeMaterialQuantityInfo` — and (2) a single
+ * combined day loop where each day's energy is spent goal-by-goal in priority order (V1's default
+ * `goalPriority` farm order), so a higher-priority goal's farming isn't slowed by a lower-priority
+ * goal's competing needs. A goal's value is `null` when it can never complete (see `estimateGoal`).
+ */
+export function allocateInventory<TId extends string>(
+  goals: readonly InventoryAllocationGoal<TId>[],
+  inventory: readonly CountedResourceNeed<TId>[]
+): Map<string, GoalInventoryAllocation<TId>> {
+  const held = new Map<TId, number>(
+    inventory.map((entry) => [entry.id, entry.count])
+  )
+  const allocations = new Map<string, GoalInventoryAllocation<TId>>()
+
+  for (const goal of [...goals].sort((a, b) => a.priority - b.priority)) {
+    const sourceStages = goal.stages?.length
+      ? goal.stages
+      : [{ target: "final", needs: goal.needs }]
+    const stages = sourceStages.map((sourceStage) => {
+      const remaining: CountedResourceNeed<TId>[] = []
+      for (const need of sourceStage.needs) {
+        const available = held.get(need.id) ?? 0
+        const consumed = Math.min(available, need.count)
+        if (consumed > 0) held.set(need.id, available - consumed)
+        const stillNeeded = need.count - consumed
+        if (stillNeeded > 0) remaining.push({ ...need, count: stillNeeded })
+      }
+      return {
+        target: sourceStage.target,
+        needs: sourceStage.needs.map((need) => ({ ...need })),
+        remaining,
+      }
+    })
+    allocations.set(goal.goalId, { goalId: goal.goalId, stages })
+  }
+
+  return allocations
+}
+
+export function allocatePlanInventory(
+  goals: readonly GoalNeed[],
+  inventory: readonly UpgradeNeed[]
+): Map<string, GoalInventoryAllocation> {
+  return allocateInventory(goals, inventory)
+}
+
+// Node selection lives in `select-farm-nodes.ts`; re-exported so callers keep importing it from here.
+export {
+  classifyNeed,
+  collectFarmNodes,
+  dropRate,
+  selectFarmNodes,
+} from "./select-farm-nodes"

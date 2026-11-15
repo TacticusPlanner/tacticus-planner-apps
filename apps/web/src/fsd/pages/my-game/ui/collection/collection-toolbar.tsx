@@ -1,8 +1,16 @@
 import { useCallback, useEffect, useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Search, SlidersHorizontal, X } from "lucide-react"
+import {
+  LayoutGrid,
+  List,
+  Search,
+  Funnel,
+  X,
+  type LucideIcon,
+} from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
+import { Label } from "@workspace/ui/components/label"
 import {
   Select,
   SelectContent,
@@ -10,6 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { Switch } from "@workspace/ui/components/switch"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -24,8 +37,11 @@ import {
 import {
   activeFilterCount,
   activeStandaloneFilterCount,
+  collectionLayouts,
   collectionSorts,
+  isCollectionLayout,
   isCollectionSort,
+  type CollectionLayout,
   type CollectionQuery,
   type CollectionQuickFilter,
 } from "../../model/collection-query"
@@ -46,10 +62,12 @@ export interface CollectionToolbarProps {
 }
 
 /**
- * Search, sort, filters and quick filters above the faction cards. Desktop keeps search, Sort and
- * Filters on one row and opens the filters inline below it (already open when one is set, so a
- * short list is never unexplained); mobile stacks search over Sort and Filters and opens the
- * filters in a bottom sheet. The quick-filter chips wrap below in both forms.
+ * Search, sort, filters, the view switch and quick filters above the faction groups. Desktop keeps
+ * search, Sort, Filters, the view switch, the grouping and Unowned toggles on one wrapping row and opens the
+ * filters inline below it (already open when one is set, so a short list is never unexplained).
+ * Mobile keeps it to three short rows: search with an icon Filters button, Sort with icon view
+ * buttons, then the grouping and Unowned switches side by side; the filters open in a bottom sheet
+ * and the quick-filter chips scroll sideways in one row. Desktop wraps its chips below.
  */
 export function CollectionToolbar(props: CollectionToolbarProps) {
   const isMobile = useIsMobile()
@@ -95,6 +113,18 @@ function DesktopToolbar(props: CollectionToolbarProps) {
           controls={panelId}
           onClick={() => setOpen((value) => !value)}
         />
+        <div
+          className="flex flex-wrap items-center gap-x-4 gap-y-2"
+          data-testid="collection-view-switch"
+        >
+          <ViewButtons query={query} update={update} />
+          <GroupToggle query={query} update={update} />
+          <UnownedToggle
+            query={query}
+            update={update}
+            rosterAvailable={rosterAvailable}
+          />
+        </div>
         {active > 0 ? <ClearFiltersButton onClick={clear} /> : null}
       </div>
       {open ? (
@@ -144,14 +174,37 @@ function MobileToolbar(props: CollectionToolbarProps) {
         aria-label={t("myGame.collection.toolbar.label")}
         data-testid="collection-toolbar"
       >
-        <SearchField value={query.search} onChange={setSearch} />
-        <div className="grid grid-cols-2 gap-2">
-          <SortSelect query={query} update={update} />
+        <div className="flex gap-2">
+          <SearchField
+            value={query.search}
+            onChange={setSearch}
+            className="min-w-0 flex-1"
+          />
           <FiltersButton
             count={active}
             expanded={open}
             onClick={() => setOpen(true)}
+            compact
           />
+        </div>
+        <div
+          className="flex flex-col gap-1"
+          data-testid="collection-view-switch"
+        >
+          <div className="flex gap-2">
+            <div className="min-w-0 flex-1">
+              <SortSelect query={query} update={update} />
+            </div>
+            <ViewButtons query={query} update={update} compact />
+          </div>
+          <div className="flex flex-wrap items-center gap-x-4">
+            <GroupToggle query={query} update={update} />
+            <UnownedToggle
+              query={query}
+              update={update}
+              rosterAvailable={rosterAvailable}
+            />
+          </div>
         </div>
         {active > 0 ? <ClearFiltersButton onClick={clear} /> : null}
       </div>
@@ -160,6 +213,7 @@ function MobileToolbar(props: CollectionToolbarProps) {
         availability={quickFilters}
         onChange={(quick) => update({ quick })}
         onRetry={onRetry}
+        scroll
       />
       <ResponsiveDialog
         open={open}
@@ -284,13 +338,43 @@ function FiltersButton({
   expanded,
   controls,
   onClick,
+  compact = false,
 }: {
   count: number
   expanded: boolean
   controls?: string
   onClick: () => void
+  /** Icon only, with the active count as a badge (the mobile search row). */
+  compact?: boolean
 }) {
   const { t } = useTranslation("common")
+  const label =
+    count > 0
+      ? t("myGame.collection.toolbar.filtersCount", { count })
+      : t("myGame.collection.toolbar.filters")
+  if (compact) {
+    return (
+      <Button
+        variant="outline"
+        size="icon"
+        className="relative size-8 shrink-0 after:absolute after:-inset-1.5 after:content-['']"
+        aria-label={label}
+        aria-expanded={expanded}
+        aria-controls={controls}
+        onClick={onClick}
+      >
+        <Funnel aria-hidden />
+        {count > 0 ? (
+          <span
+            aria-hidden
+            className="absolute -top-1.5 -right-1.5 flex min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs/5 font-semibold text-primary-foreground tabular-nums"
+          >
+            {count}
+          </span>
+        ) : null}
+      </Button>
+    )
+  }
   return (
     <Button
       variant="outline"
@@ -298,10 +382,8 @@ function FiltersButton({
       aria-controls={controls}
       onClick={onClick}
     >
-      <SlidersHorizontal aria-hidden />
-      {count > 0
-        ? t("myGame.collection.toolbar.filtersCount", { count })
-        : t("myGame.collection.toolbar.filters")}
+      <Funnel aria-hidden />
+      {label}
     </Button>
   )
 }
@@ -313,5 +395,136 @@ function ClearFiltersButton({ onClick }: { onClick: () => void }) {
       <X aria-hidden />
       {t("myGame.collection.toolbar.clearFilters")}
     </Button>
+  )
+}
+
+const layoutIcons: Record<CollectionLayout, LucideIcon> = {
+  cards: LayoutGrid,
+  roster: List,
+}
+
+/**
+ * Desktop: the views as one joined segmented control, the site's mode switch (the Library unit
+ * page's Starting | Custom, the theme switcher).
+ */
+function ViewButtons({
+  query,
+  update,
+  compact = false,
+}: Pick<CollectionToolbarProps, "query" | "update"> & {
+  /** Icons only, named for screen readers (the mobile sort row). */
+  compact?: boolean
+}) {
+  const { t } = useTranslation("common")
+  return (
+    <ToggleGroup
+      aria-label={t("myGame.collection.toolbar.view")}
+      type="single"
+      variant="outline"
+      spacing={0}
+      value={query.view}
+      onValueChange={(view) => {
+        // Radix emits "" when the selected item is clicked again; a view is always shown.
+        if (isCollectionLayout(view)) update({ view })
+      }}
+    >
+      {collectionLayouts.map((layout) => {
+        const Icon = layoutIcons[layout]
+        return (
+          <ToggleGroupItem
+            key={layout}
+            value={layout}
+            className={
+              compact
+                ? "relative h-8 w-9 after:absolute after:inset-x-0 after:-inset-y-1.5 after:content-['']"
+                : "px-3"
+            }
+            aria-label={
+              compact
+                ? t(`myGame.collection.toolbar.views.${layout}`)
+                : undefined
+            }
+          >
+            <Icon aria-hidden />
+            {compact ? null : t(`myGame.collection.toolbar.views.${layout}`)}
+          </ToggleGroupItem>
+        )
+      })}
+    </ToggleGroup>
+  )
+}
+
+/** A labelled on/off switch, the site's toolbar toggle (as the tier list's "Only owned"). */
+function ToolbarSwitch({
+  label,
+  checked,
+  onCheckedChange,
+  disabledHint,
+}: {
+  label: string
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+  /** Disables the switch and says why, next to it. */
+  disabledHint?: string
+}) {
+  const id = useId()
+  const hintId = useId()
+  return (
+    <div className="flex min-h-11 items-center gap-2 md:min-h-0">
+      <Switch
+        id={id}
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+        disabled={disabledHint !== undefined}
+        aria-describedby={disabledHint ? hintId : undefined}
+      />
+      <Label htmlFor={id}>{label}</Label>
+      {disabledHint ? (
+        <span id={hintId} className="text-xs text-muted-foreground">
+          {disabledHint}
+        </span>
+      ) : null}
+    </div>
+  )
+}
+
+/**
+ * Hides the units the player does not own: a display setting kept in `?owned=owned`, not a filter.
+ * Without a roster nothing can be owned, so it is disabled and explained.
+ */
+function UnownedToggle({
+  query,
+  update,
+  rosterAvailable,
+}: Pick<CollectionToolbarProps, "query" | "update" | "rosterAvailable">) {
+  const { t } = useTranslation("common")
+  return (
+    <ToolbarSwitch
+      label={t("myGame.collection.toolbar.hideUnowned")}
+      checked={query.hideUnowned}
+      onCheckedChange={(hideUnowned) => update({ hideUnowned })}
+      disabledHint={
+        rosterAvailable
+          ? undefined
+          : t("myGame.collection.toolbar.hideUnownedNeedsRoster")
+      }
+    />
+  )
+}
+
+/** On while units are grouped by faction; off lists them together across factions. */
+function GroupToggle({
+  query,
+  update,
+}: Pick<CollectionToolbarProps, "query" | "update">) {
+  const { t } = useTranslation("common")
+  return (
+    <ToolbarSwitch
+      label={t("myGame.collection.toolbar.groupByFaction")}
+      checked={query.group === "faction"}
+      onCheckedChange={(grouped) =>
+        update({ group: grouped ? "faction" : "none" })
+      }
+    />
   )
 }

@@ -9,7 +9,22 @@
     "window": "Del {{start}} al {{end}}",
     "endsIn": "Termina en {{when}}",
     "startsIn": "Empieza en {{when}}",
-    "previewNote": "Este evento aún no ha empezado. El progreso de misiones, las incursiones y el ritmo se activan cuando esté en curso."
+    "previewNote": "Este evento aún no ha empezado. El progreso de misiones, las incursiones y el ritmo se activan cuando esté en curso.",
+    "past": "Terminado",
+    "pastNote": "Este evento ha terminado. Sus misiones se muestran como referencia."
+  },
+  "switcher": {
+    "label": "Elige un evento de lanzamiento de héroe",
+    "placeholder": "Elige un evento",
+    "empty": "No hay eventos en el calendario",
+    "previous": "Evento anterior",
+    "next": "Evento siguiente",
+    "option": "{{name}} · {{dates}}",
+    "groups": {
+      "running": "En curso",
+      "upcoming": "Próximos",
+      "past": "Pasados"
+    }
   },
   "missions": {
     "number": "Misión {{number}}",
@@ -92,7 +107,6 @@
     "toGo_other": "Faltan {{count}} batallas",
     "note": "Incursiones para el objetivo de campaña: los nodos de campaña más baratos que sueltan algo. A igual coste, primero los que dan más puntos del evento, luego los que sueltan algo que tus objetivos necesitan, por probabilidad de botín y luego por oro.",
     "noteLightning": "Las incursiones en los nodos del evento de campaña en curso cuentan como victorias relámpago, así que solo se muestran esos nodos.",
-    "budget": "Energía restante hoy: {{energy}}.",
     "raidCount_one": "{{count}} incursión",
     "raidCount_other": "{{count}} incursiones",
     "energy": "{{energy}} de energía",
@@ -147,7 +161,8 @@
       "more": "Hacen falta más batallas después de la energía de hoy.",
       "none": "Ningún nodo de campaña encaja con los objetivos de esta misión.",
       "rulesTitle": "Reglas de nodos"
-    }
+    },
+    "unlimitedEnergy": "Sin límite de la energía de hoy: solo los intentos de hoy y el objetivo limitan la lista."
   },
   "tokens": {
     "title": "Fichas necesarias",

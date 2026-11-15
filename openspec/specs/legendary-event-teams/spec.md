@@ -6,9 +6,9 @@ Defines the per-lane Teams section of a Legendary Event page: the team card, the
 
 ## Requirements
 
-### Requirement: Each lane tab has a Teams section with one card per team
+### Requirement: Each Event board lane column has a Teams section with one card per team
 
-A lane tab SHALL show a Teams section, between the lane overview and the synced progress grid, listing that lane's teams in their stored order as one card per team. A card SHALL show the team name, its members as unit portraits in position order with a count badge ("N/5") whenever fewer than five members, the reserve member marked as such when present, the covered objectives as chips (objective icon, label and points; a stored objective the current members no longer derive shows muted and does not count toward points), the team's **points left** (see the points-left requirement), the team's **total power**, the clear depth (or a "Set depth" prompt when null), and an actions menu with Edit, Delete and, on mobile, Move up / Move down. The same team SHALL never be rendered more than once, whatever the number of objectives it covers. The section SHALL carry an explicit **Add team** button; no scroll, swipe or other gesture SHALL create or open a team.
+Each lane column of the Teams tab's Event board SHALL show a Teams section, under its unit table, listing that lane's teams in their stored order as one card per team. A card SHALL show the team name, its members in position order as unit chips (the `legendary-events-hub` unit chip, with rank shading per the Rank shading setting and the unit details) with a count badge ("N/5") whenever fewer than five members, the reserve member as a unit chip marked as the reserve when present, a **coverage strip** beside the team name when the card is at least 28rem wide, and on a line of its own under the name on narrower cards, never squeezing the name out (so five named member chips keep a line of their own), with one fixed slot per lane objective in objective order (a covered objective shows its icon and points; a stored objective the current members no longer derive shows muted and does not count toward points; an uncovered one shows faint, so teams scan down by column), the clear depth as a **depth bar** of one segment per lane battle filled through the depth with a "Battles 1–n" headline (toned: set by you, room to spare, or within 10% of the next battle; "No depth set" when null) and an edit button that reveals the depth stepper (shown at once when there is no depth), a **Details** fold with the team's **points left** (see the points-left requirement), its **total power** and the last-run line, and an actions menu with Edit, Delete and, on mobile, Move up / Move down. The same team SHALL never be rendered more than once, whatever the number of objectives it covers. The section SHALL carry an explicit **Add team** button; no scroll, swipe or other gesture SHALL create or open a team. A member chip SHALL be a button that opens the member's details (see the `legendary-events-hub` details requirement).
 
 #### Scenario: Teams render in order on a lane
 
@@ -20,7 +20,14 @@ A lane tab SHALL show a Teams section, between the lane overview and the synced 
 
 - **GIVEN** a team with three members
 - **WHEN** its card renders
-- **THEN** three portraits and a "3/5" badge show, and the card is not styled as an error
+- **THEN** three member chips and a "3/5" badge show, and the card is not styled as an error
+
+#### Scenario: Members show as named chips
+
+- **GIVEN** a team whose members include `templHelbrecht`, owned at Legendary with 4 red stars, rank Diamond 1, active 8 and passive 8, and whose reserve is `templAncient`, not owned
+- **WHEN** its card renders in English
+- **THEN** Helbrecht's chip shows "Helbrecht" beside his portrait with an "L" badge and the Diamond 1 rank icon, and "A8" and "P8" side by side under the name
+- **AND** the reserve shows as a locked "Thoread" chip marked as the reserve
 
 #### Scenario: Points per battle on the card
 
@@ -154,24 +161,19 @@ The section SHALL not render when the user is signed out. While the plan, the ca
 
 ### Requirement: A team card shows what the same team cleared last run
 
-When the event has a previous run (see `legendary-event-run-history`) whose teams snapshot contains a team with the same id on this lane, that team's card SHALL show "Last run: cleared up to battle N" beside its clear depth, with N the team cleared battle derived from the previous record. A team absent from the snapshot (created since) SHALL show no line. The line SHALL NOT change the depth stepper's value or default, and SHALL be absent while records load or when their read failed.
+When the event has a previous run (see `legendary-event-run-history`) whose teams snapshot contains a team with the same id on this lane, that team's card SHALL show "Last run: cleared up to battle N" in its Details fold, with N the team cleared battle derived from the previous record. A team absent from the snapshot (created since) SHALL show no line. The line SHALL NOT change the depth stepper's value or default, and SHALL be absent while records load or when their read failed.
 
 #### Scenario: Same team as last run
 
 - **GIVEN** the previous run's snapshot has Alpha team "Melee" (same id) cleared up to battle 3
 - **WHEN** the Alpha tab renders Melee's card
-- **THEN** the card reads "Last run: cleared up to battle 3" beside the depth stepper, and the stepper still shows the current run's depth
+- **THEN** the card's Details read "Last run: cleared up to battle 3", and the stepper still shows the current run's depth
 
 #### Scenario: New team
 
 - **GIVEN** a team created after the previous run
 - **WHEN** its card renders
 - **THEN** no last-run line is shown
-
-#### Scenario: Mobile card
-
-- **WHEN** the card renders below 768px
-- **THEN** the last-run line wraps under the depth stepper instead of beside it
 
 ### Requirement: A team shows a readable name wherever it is named
 

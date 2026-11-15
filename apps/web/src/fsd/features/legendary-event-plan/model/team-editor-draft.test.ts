@@ -82,4 +82,13 @@ describe("initialEditorDraft (spec: the team covers what its members derive)", (
     const opened = initialEditorDraft(undefined, 1, context, [teamUnits.a.id])
     expect(checkedObjectives(opened)).toEqual([0, 1, 2])
   })
+
+  it("starts from a suggestion's reserve, unless it is also a member", () => {
+    const members = [teamUnits.a.id, teamUnits.b.id]
+    const withReserve = (reserve: string) =>
+      initialEditorDraft(undefined, 1, context, members, undefined, reserve)
+        .reserveUnitId
+    expect(withReserve(teamUnits.c.id)).toBe(teamUnits.c.id)
+    expect(withReserve(teamUnits.a.id)).toBeNull()
+  })
 })

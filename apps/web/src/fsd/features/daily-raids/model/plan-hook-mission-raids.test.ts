@@ -78,13 +78,20 @@ const plan = (
   })
 
 describe("planHookMissionRaids", () => {
-  it("ignores Today's plan and uses the energy left today", () => {
-    const result = plan({ realEnergyUsedToday: 40 })
+  it("ignores Today's plan and is not bound to today's energy: only attempts cap the raids", () => {
+    const result = plan({ realEnergyUsedToday: 95 })
     expect(result.battlesLeft).toBe(20)
-    expect(result.energyBudget).toBe(60)
+    expect(result.energyBudget).toBe(Infinity)
+    // 5 energy left today would allow one raid; the node's 10 attempts cap it instead.
     expect(result.rows).toEqual([
       expect.objectContaining({ battleId: "I15", raids: 10 }),
     ])
+  })
+
+  it("leaves battles to play manually out of the raids with Raidable only", () => {
+    const result = plan({ calculation: null, raidableOnly: new Set(["I15"]) })
+    expect(result.rows).toEqual([])
+    expect(result.noDropRows.map((row) => row.battleId)).toEqual(["I06"])
   })
 
   it("splits the no-drop nodes from the nodes that drop something", () => {

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import type { DailyRaidResourceProgress } from "../model/daily-raids.domain"
+import { inDigitSlot } from "../model/digit-slot"
 
 /** "X/Y" beside the drop icon: what the player holds of the item and its total target over the goals
  * in scope (the Today/Raids have/need figure, aggregated). Nothing when no goal targets the item. */
@@ -20,7 +21,8 @@ export function ResourceStock({
       data-testid={testId}
       role="img"
     >
-      {progress.owned}/{progress.target}
+      {/* Each side takes a two-digit slot, so the icons of a list line up. */}
+      {inDigitSlot(progress.owned)}/{inDigitSlot(progress.target, "end")}
     </span>
   )
 }

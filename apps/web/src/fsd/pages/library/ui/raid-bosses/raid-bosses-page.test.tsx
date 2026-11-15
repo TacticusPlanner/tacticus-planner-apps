@@ -822,13 +822,15 @@ describe("RaidBossesPage", () => {
 
     // Ghazghkull is never in an encounter -> defaults to the first step (rank 0 in the fixture).
     const stats = await screen.findByTestId("raid-boss-stats")
-    expect(stats).toHaveTextContent("Rank0")
+    expect(within(stats).getByRole("img", { name: "Stone I" })).toBeVisible()
 
     await user.click(screen.getByTestId("raid-boss-progression-select"))
     const options = await screen.findAllByRole("option")
     expect(options).toHaveLength(3)
     await user.click(at(options, 1))
 
-    await waitFor(() => expect(stats).toHaveTextContent("Rank1"))
+    await waitFor(() =>
+      expect(within(stats).getByRole("img", { name: "Stone II" })).toBeVisible()
+    )
   })
 })

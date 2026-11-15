@@ -1,22 +1,32 @@
 import { useTranslation } from "react-i18next"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, ChevronsDownUp, ChevronsUpDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
   useObjectiveLabel,
+  type EventUnitChipData,
   type LegendaryEvent,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 
+import { hasFoldedBattleRuns } from "../lib/token-battle-runs"
 import type { LaneFullClear, TokenPlanView } from "../lib/token-plan-view"
+import { useMissionsOrder } from "../model/token-plan-order"
 import { useStoredOpen } from "../model/use-stored-open"
 import { RunMissionsSummary, TokenPlanOrderSwitch } from "./mission-order-view"
-import { RunSection, RunSectionHeader, TokenGroups } from "./token-plan-rows"
+import {
+  RunSection,
+  RunSectionHeader,
+  TokenGroups,
+  type OpenTeamHandler,
+} from "./token-plan-rows"
 
 const OPEN_KEY = "legendaryEvents.tokenPlan.open"
 const REGION_ID = "legendary-event-token-plan-list"
-const ORDER_KEY = "legendaryEvents.tokenPlan.missionsOrder"
+/** Whether the folded battle rows start expanded, remembered per device and shared by the event
+ *  page and the plan wizard. */
+const EXPAND_RUNS_KEY = "legendaryEvents.tokenPlan.expandBattles"
 
 /**
  * The Overview's collapsible Token plan (spec: Token plan list): every planned token in run
@@ -31,6 +41,8 @@ export function TokenPlanList({
   openKey = OPEN_KEY,
   defaultOpen = false,
   trackExpand = true,
+  onOpenTeam,
+  chipOf,
 }: {
   eventId: string
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
@@ -41,12 +53,17 @@ export function TokenPlanList({
   defaultOpen?: boolean
   /** Report expanding it to analytics (the event page's sections do). */
   trackExpand?: boolean
+  /** Makes the team names open that team's editor (the event page). */
+  onOpenTeam?: OpenTeamHandler
+  /** A unit's chip in a team's popover (rank, rarity, abilities from the synced roster). */
+  chipOf?: (unitId: string) => EventUnitChipData
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const { captureEvent } = useAnalyticsActions()
   const [open, setOpen] = useStoredOpen(openKey, defaultOpen)
   // Remembered per device, shared by the event page and the plan wizard.
-  const [byMissions, setByMissions] = useStoredOpen(ORDER_KEY, false)
+  const [byMissions, setByMissions] = useMissionsOrder()
+  const [expandRuns, setExpandRuns] = useStoredOpen(EXPAND_RUNS_KEY, false)
   if (view.kind !== "ready" || view.plan.tokens.length === 0) return null
   const number = new Intl.NumberFormat(i18n.language)
   const missionOrder = byMissions ? view.missionOrder : null
@@ -57,6 +74,13 @@ export function TokenPlanList({
     ? missionOrder.markers
     : (view.forecast?.markers ?? [])
   const steps = missionOrder?.steps
+  const slices = view.byRun
+    ? [
+        ...view.byRun.sections.filter((section) => section.count > 0),
+        ...(view.byRun.overflow ? [view.byRun.overflow] : []),
+      ]
+    : [{ start: 0, count: plan.tokens.length }]
+  const canExpandRuns = hasFoldedBattleRuns(plan.tokens, slices)
 
   const toggle = () => {
     if (!open && trackExpand) {
@@ -82,7 +106,7 @@ export function TokenPlanList({
         <Button
           aria-controls={REGION_ID}
           aria-expanded={open}
-          className="h-auto w-full justify-between px-1 py-1 text-left whitespace-normal"
+          className="h-auto w-full justify-between p-1 text-left whitespace-normal"
           data-testid="token-plan-toggle"
           onClick={toggle}
           type="button"
@@ -110,11 +134,35 @@ export function TokenPlanList({
       </h2>
       {open ? (
         <div className="flex min-w-0 flex-col gap-3" id={REGION_ID}>
-          {view.missionOrder ? (
-            <TokenPlanOrderSwitch
-              onChange={(order) => setByMissions(order === "missions")}
-              order={missionOrder ? "missions" : "points"}
-            />
+          {view.missionOrder || canExpandRuns ? (
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              {view.missionOrder ? (
+                <TokenPlanOrderSwitch
+                  onChange={(order) => setByMissions(order === "missions")}
+                  order={missionOrder ? "missions" : "points"}
+                />
+              ) : null}
+              {canExpandRuns ? (
+                <Button
+                  className="ml-auto min-h-9"
+                  onClick={() => setExpandRuns(!expandRuns)}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  {expandRuns ? (
+                    <ChevronsDownUp aria-hidden="true" />
+                  ) : (
+                    <ChevronsUpDown aria-hidden="true" />
+                  )}
+                  {t(
+                    expandRuns
+                      ? "tokenPlan.plan.collapseAll"
+                      : "tokenPlan.plan.expandAll"
+                  )}
+                </Button>
+              ) : null}
+            </div>
           ) : null}
           {view.byRun ? (
             <ol className="flex min-w-0 flex-col gap-4">
@@ -144,6 +192,11 @@ export function TokenPlanList({
                       event={event}
                       isMobile={isMobile}
                       markers={markers}
+                      onOpenTeam={onOpenTeam}
+                      membersByTeam={view.membersByTeam}
+                      depthByTeam={view.depthByTeam}
+                      chipOf={chipOf}
+                      expandRuns={expandRuns}
                       start={section.start}
                       steps={steps}
                       tokens={plan.tokens}
@@ -173,6 +226,11 @@ export function TokenPlanList({
                     event={event}
                     isMobile={isMobile}
                     markers={markers}
+                    onOpenTeam={onOpenTeam}
+                    membersByTeam={view.membersByTeam}
+                    depthByTeam={view.depthByTeam}
+                    chipOf={chipOf}
+                    expandRuns={expandRuns}
                     start={view.byRun.overflow.start}
                     tokens={plan.tokens}
                   />
@@ -185,6 +243,11 @@ export function TokenPlanList({
               event={event}
               isMobile={isMobile}
               markers={markers}
+              onOpenTeam={onOpenTeam}
+              membersByTeam={view.membersByTeam}
+              depthByTeam={view.depthByTeam}
+              chipOf={chipOf}
+              expandRuns={expandRuns}
               start={0}
               tokens={plan.tokens}
             />

@@ -11,7 +11,7 @@ import {
 
 import { EntityIcon } from "@/shared/ui"
 
-import type { HreTokenNeedRow } from "../model/hre-objectives"
+import type { HreTokenNeedRow } from "@/entities/hre-mission"
 
 /** Battles of Arena, Guild Raid, Onslaught and Salvage Run the remaining missions need, against
  * the synced tokens now: "short" when the need exceeds them, "not unlocked" without a bucket. */

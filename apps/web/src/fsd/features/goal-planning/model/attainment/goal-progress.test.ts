@@ -287,6 +287,83 @@ describe("computeGoalProgress Ascension", () => {
   })
 })
 
+describe("computeGoalProgress for a unit that isn't owned yet", () => {
+  it("keeps a Rank goal's configured start and target as a preview", () => {
+    expect(
+      computeGoalProgress({
+        levelRules,
+        detail: rankDetail(0, 12, 3),
+      } as never)
+    ).toEqual({
+      kind: "Unknown",
+      preview: {
+        kind: "Rank",
+        start: "Stone1",
+        target: "Gold1",
+        targetSlots: 3,
+      },
+    })
+  })
+
+  it("keeps an Ascension goal's configured start and target as a preview", () => {
+    expect(
+      computeGoalProgress({
+        levelRules,
+        detail: ascensionDetail("Common:None", "Legendary:RedFiveStars"),
+      } as never)
+    ).toEqual({
+      kind: "Unknown",
+      preview: {
+        kind: "Ascension",
+        start: "Common:None",
+        target: "Legendary:RedFiveStars",
+      },
+    })
+  })
+
+  it("keeps an Ability goal's configured tracks as a preview", () => {
+    expect(
+      computeGoalProgress({
+        levelRules,
+        detail: {
+          entityType: "Character",
+          goalType: "Ability",
+          config: {
+            ability: {
+              activeStart: 1,
+              activeEnd: 30,
+              passiveStart: 1,
+              passiveEnd: 25,
+            },
+          },
+        } as GoalDetail,
+      } as never)
+    ).toEqual({
+      kind: "Unknown",
+      preview: {
+        kind: "Ability",
+        startActive: 1,
+        targetActive: 30,
+        startPassive: 1,
+        targetPassive: 25,
+      },
+    })
+  })
+
+  it("has no preview when the goal has no target configured", () => {
+    expect(
+      computeGoalProgress({
+        levelRules,
+        detail: {
+          entityType: "Character",
+          goalType: "Rank",
+          config: { rank: null },
+        } as unknown as GoalDetail,
+      } as never)
+    ).toEqual({ kind: "Unknown" })
+  })
+})
+
 function upgradeDetail(targets: { upgradeId: string; quantity: number }[]) {
   return {
     entityType: "Character",

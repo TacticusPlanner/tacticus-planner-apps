@@ -1,0 +1,10 @@
+{
+  "DefiantToTheLast": {
+    "description": "Friendly <style=\"Rarity_Mythic\">Mythic</style> <style=\"Character\">characters</style> deal <style=\"Stat_Damage\">+{[extraDmgPct]}% Damage</style> if they have used an Active Ability this battle or are adjacent to <style=\"Faction_Custodes\">Boudicari</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}

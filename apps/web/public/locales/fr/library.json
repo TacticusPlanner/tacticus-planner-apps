@@ -180,7 +180,7 @@
     "noPrimeModifiers": "Aucun modificateur de prime pour ce boss.",
     "modifierReduces": "Réduit {{name}}",
     "modifierIncreases": "Augmente {{name}}",
-    "progressionStepLabelled": "{{rarityTier}} · ★{{stars}} · {{health}} PV",
+    "stepHealth": "{{health}} PV",
     "abilityTextLevelCaption": "Valeurs affichées pour le niveau de compétence {{level}}",
     "adjustedStatsHeading": "Statistiques ajustées",
     "showAdjusted": "Afficher ajustées",
@@ -246,11 +246,11 @@
     "level": "Niveau du PNJ",
     "variationMode": {
       "standard": "Standard",
-      "lhe": "Événement de héros légendaire",
-      "legendary": "Légendaire",
+      "questEvent": "Événement de quête",
+      "legendary": "Événement Légendaire",
       "survival": "Survie",
       "campaign": "Campagne",
-      "championEvent": "Événement de champion",
+      "campaignEvent": "Événement de campagne",
       "tutorial": "Tutoriel",
       "leviathan": "Flotte-ruche Léviathan",
       "kronos": "Flotte-ruche Kronos",
@@ -276,6 +276,58 @@
     },
     "traits": "Traits",
     "noTraits": "Cette unité n’a aucun trait.",
+    "encounters": {
+      "title": "Rencontré dans",
+      "unavailable": "Les données de rencontre ne sont pas encore disponibles.",
+      "none": "Aucune rencontre n’est enregistrée pour cette variante.",
+      "noneHint": "Le contenu passé ou tournant peut manquer dans les données du jeu : elle peut donc apparaître ailleurs.",
+      "alongside": "Combat aux côtés de ce boss",
+      "boss": "En tant que boss",
+      "prime": "En tant que prime",
+      "challenge": "Défi {{list}}",
+      "battles": "Combats {{list}}",
+      "rounds": "Manches {{list}}",
+      "battle": "Combat {{number}}",
+      "round": "Manche {{number}}",
+      "tier": "Palier {{number}}",
+      "count": "×{{number}}",
+      "upTo": "jusqu’à {{number}}",
+      "matches_one": "{{count}} combat correspondant",
+      "matches_other": "{{count}} combats correspondants",
+      "canAppear": "Peut apparaître aux paliers {{list}}",
+      "tierBattles_one": "Palier {{tiers}} : combats {{battles}}",
+      "tierBattles_other": "Paliers {{tiers}} : combats {{battles}}",
+      "tierRangeBattles": "{{tiers}} : combats {{battles}}",
+      "tracks": {
+        "Standard": "Standard",
+        "Extremis": "Extremis",
+        "alpha": "Alpha",
+        "beta": "Bêta",
+        "gamma": "Gamma"
+      },
+      "source": {
+        "campaign": "Campagne",
+        "campaignEvent": "Événement de campagne",
+        "legendaryEvent": "Événement Légendaire",
+        "questEvent": "Événement de quête",
+        "incursion": "Incursion",
+        "guildRaid": "Raid de guilde",
+        "survival": "Survie",
+        "onslaught": "Onslaught"
+      },
+      "timing": {
+        "always": "Toujours disponible",
+        "rotating": "Tournant",
+        "running": "En cours",
+        "next": "Prochaine session {{date}}",
+        "none": "Aucune session prévue"
+      },
+      "survivalSeason": {
+        "survival_may_2026": "Mai 2026",
+        "survival_september_2026": "Septembre 2026",
+        "survival_crescendo_01": "Crescendo"
+      }
+    },
     "healthAtLevel": "{{health}} PV",
     "noMatchingNpcs": "Aucun PNJ ne correspond aux filtres actuels.",
     "noMatchingOptions": "Aucune option correspondante.",
@@ -286,7 +338,7 @@
       "steps": {
         "filters": {
           "title": "Filtrer la liste",
-          "content": "Recherchez par nom ou affinez la liste par faction, type de dégâts et trait. Un PNJ reste affiché tant que l’une de ses variantes correspond."
+          "content": "Recherchez par nom ou affinez la liste par faction, mode de jeu, lieu, type de dégâts et trait. Un PNJ reste affiché tant que l’une de ses variantes correspond."
         },
         "list": {
           "title": "Choisir un PNJ",
@@ -298,7 +350,7 @@
         },
         "variation": {
           "title": "Variante",
-          "content": "Le jeu fait apparaître la même unité avec des échelles de niveaux différentes selon le mode : Survie, Événements de héros légendaire, campagnes. Passez de l’une à l’autre ici."
+          "content": "Le jeu fait apparaître la même unité avec des échelles de niveaux différentes selon le mode : Survie, Événements de quête, campagnes. Passez de l’une à l’autre ici."
         },
         "level": {
           "title": "Niveau du PNJ",
@@ -307,6 +359,10 @@
         "stats": {
           "title": "Statistiques, puissance, attaques et traits",
           "content": "Points de vie, armure, dégâts, mouvement et puissance estimée au niveau sélectionné, ainsi que les attaques et traits de l’unité."
+        },
+        "encounters": {
+          "title": "Où le combattre",
+          "content": "Chaque campagne, événement et mode où apparaît cette variante, la prochaine session du contenu à durée limitée et un lien vers la page correspondante."
         }
       }
     },
@@ -325,6 +381,11 @@
     },
     "attack": "Attaque",
     "anyAttack": "Toute attaque",
+    "gameMode": "Mode de jeu",
+    "anyGameMode": "Tous les modes de jeu",
+    "location": "Lieu",
+    "anyLocation": "Tous les lieux",
+    "minCount": "Min. dans un combat",
     "meleeOnly": "Corps à corps uniquement",
     "hasRanged": "Avec attaque à distance",
     "clearOne": "Effacer {{name}}",
@@ -372,7 +433,9 @@
     },
     "notFound": "Cette unité n'est pas dans la Bibliothèque.",
     "loadFailed": "Impossible de charger les données des personnages.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "createGoal": "Créer un objectif",
+    "createGoalFor": "Créer un objectif pour {{name}}"
   },
   "charactersList": {
     "title": "Personnages",
@@ -416,8 +479,8 @@
       "yourUnit": "Votre unité :",
       "abilities": "capacités {{active}} / {{passive}}",
       "relic": "relique niveau {{level}}",
-      "notUnlocked": "Non débloqué. Les valeurs commencent à {{rarity}}, {{stars}}, {{rank}}.",
-      "showing": "Affichage : {{rarity}}, {{stars}}, {{rank}}, capacités au niveau 1.",
+      "notUnlocked": "Non débloqué. Les valeurs commencent à {{progression}}, {{rank}}.",
+      "showing": "Affichage : {{progression}}, {{rank}}, capacités au niveau 1.",
       "shards": "{{owned}} / {{needed}} fragments",
       "shardProgress": "Fragments pour le déblocage",
       "signInBanner": "Connectez-vous et synchronisez pour ouvrir cette page à vos propres valeurs.",
@@ -468,7 +531,7 @@
     },
     "compare": {
       "title": "Comparé aux autres personnages",
-      "subtitle": "Centile à Mythic Wings · Adamantium II",
+      "subtitle": "Centile à",
       "axes": {
         "health": "Points de vie",
         "armour": "Armure",
@@ -511,7 +574,7 @@
       "steps": {
         "header": {
           "title": "L'unité",
-          "content": "Son portrait, sa faction et les valeurs affichées par la page. Connecté et synchronisé, elles partent de votre propre unité ; choisissez « Personnalisées » pour essayer d'autres valeurs. L’en-tête affiche aussi la puissance de l’unité à ces valeurs."
+          "content": "Son portrait, sa faction et les valeurs affichées par la page. Connecté et synchronisé, elles partent de votre propre unité ; choisissez « Personnalisées » pour essayer d'autres valeurs. L’en-tête affiche aussi la puissance de l’unité à ces valeurs. Une fois connecté, « Créer un objectif » ouvre la création d’objectif pour cette unité."
         },
         "tabs": {
           "title": "Détails et rang",
@@ -604,7 +667,7 @@
       "steps": {
         "header": {
           "title": "Machine de guerre",
-          "content": "La rareté et les niveaux de capacité de votre Machine de guerre. Passez à Personnalisées pour voir d’autres raretés. L’en-tête affiche aussi sa puissance aux valeurs affichées."
+          "content": "La rareté et les niveaux de capacité de votre Machine de guerre. Passez à Personnalisées pour voir d’autres raretés. L’en-tête affiche aussi sa puissance aux valeurs affichées. Une fois connecté, « Créer un objectif » ouvre la création d’objectif pour elle."
         },
         "tabs": {
           "title": "Détails et améliorations",

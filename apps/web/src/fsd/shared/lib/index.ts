@@ -8,6 +8,7 @@ export {
 export { characterDamageTypes } from "./character-damage-types"
 export {
   formatEstimateDate,
+  localIsoDate,
   formatEventCountdown,
   formatRelativeTime,
   getDeviceFirstDayOfWeek,
@@ -39,12 +40,14 @@ export {
 export {
   accountStorageKey,
   accountStoragePrefix,
+  afterNextPaint,
   installGlobalErrorCapture,
   isMacPlatform,
   migrateLegacyAccountKeys,
   reportError,
   safeStorage,
   setErrorReporter,
+  useLongPress,
   usePersistedSelection,
   useSearchParamState,
 } from "./browser"

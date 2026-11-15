@@ -12,6 +12,7 @@ import {
   type UniqueIdentifier,
 } from "@dnd-kit/core"
 import {
+  rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
@@ -20,6 +21,15 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 
 type SortableReturn = ReturnType<typeof useSortable>
+
+/** `vertical` for a single column (table rows, a card list); `grid` for a wrapping multi-column grid,
+ *  where a move previews across rows in reading order. */
+export type SortableListStrategy = "vertical" | "grid"
+
+const STRATEGIES = {
+  vertical: verticalListSortingStrategy,
+  grid: rectSortingStrategy,
+} as const
 
 /** Drag-activator props an item's own grip handle spreads onto itself. */
 type DragHandleProps = {
@@ -66,7 +76,9 @@ function SortableItem<T>({
 
   return renderItem(item, {
     setNodeRef,
-    style: { transform: CSS.Transform.toString(transform), transition },
+    // Translate only: the grid strategy also returns a scale, which would stretch a card moving
+    // into a row of another height.
+    style: { transform: CSS.Translate.toString(transform), transition },
     dragHandle,
     isDragging,
   })
@@ -87,6 +99,7 @@ export function SortableList<T>({
   renderItem,
   getLabel,
   disabled = false,
+  strategy = "vertical",
 }: {
   items: T[]
   getId: (item: T) => string
@@ -98,6 +111,8 @@ export function SortableList<T>({
    *  from a previous drop is still in flight, closing the race a stale second drag could otherwise
    *  cause). */
   disabled?: boolean
+  /** How items shift while dragging; the committed `onReorder` order is the same either way. */
+  strategy?: SortableListStrategy
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -153,7 +168,7 @@ export function SortableList<T>({
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+      <SortableContext items={ids} strategy={STRATEGIES[strategy]}>
         {items.map((item) => (
           <SortableItem
             getId={getId}

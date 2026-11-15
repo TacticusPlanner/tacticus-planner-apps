@@ -29,8 +29,14 @@ const relativeTimeRefreshMs = 30 * 1000
  */
 export function usePlayerDataSyncStatus() {
   const { i18n, t } = useTranslation()
-  const { error, lastSyncedAt, requiresReauth, status, syncNow } =
-    usePlayerDataStatus()
+  const {
+    error,
+    lastSyncedAt,
+    requiresReauth,
+    status,
+    syncBlockedUntil,
+    syncNow,
+  } = usePlayerDataStatus()
   // Subscribes to every progress tick: call this only from a control that shows the status text.
   const progress = usePlayerDataProgress()
   const [relativeTimeTick, setRelativeTimeTick] = useState(() => Date.now())
@@ -64,21 +70,26 @@ export function usePlayerDataSyncStatus() {
         time: relativeNextAutoSync,
       })
     : null
+  const isCoolingDown = syncBlockedUntil !== null
   const statusText =
     status === "syncing"
       ? progressText
-      : status === "error"
-        ? requiresReauth
-          ? t("manageAccount.playerData.reauthRequired")
-          : (error ?? t("manageAccount.playerData.retrySync"))
-        : status === "stale"
-          ? t("manageAccount.playerData.refreshRequired", {
-              lastSync: lastSyncText,
-            })
-          : lastSyncText
+      : isCoolingDown
+        ? t("manageAccount.playerData.rateLimited", {
+            time: formatRelativeTime(syncBlockedUntil, i18n.language),
+          })
+        : status === "error"
+          ? requiresReauth
+            ? t("manageAccount.playerData.reauthRequired")
+            : (error ?? t("manageAccount.playerData.retrySync"))
+          : status === "stale"
+            ? t("manageAccount.playerData.refreshRequired", {
+                lastSync: lastSyncText,
+              })
+            : lastSyncText
 
   useEffect(() => {
-    if (!lastSyncedAt) {
+    if (!lastSyncedAt && !isCoolingDown) {
       return
     }
 
@@ -88,11 +99,16 @@ export function usePlayerDataSyncStatus() {
     )
 
     return () => window.clearInterval(interval)
-  }, [lastSyncedAt])
+  }, [lastSyncedAt, isCoolingDown])
 
   return {
     status,
     isSyncing,
+    // A control that can't start a sync right now: one is running, or the rate limit is in force.
+    syncDisabled: isSyncing || isCoolingDown,
+    cooldownMinutes: isCoolingDown
+      ? Math.max(1, Math.ceil((syncBlockedUntil - relativeTimeTick) / 60_000))
+      : null,
     lastSyncedAt,
     lastSyncText,
     statusText,

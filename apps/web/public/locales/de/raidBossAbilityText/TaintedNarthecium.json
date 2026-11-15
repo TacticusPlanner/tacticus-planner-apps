@@ -1,6 +1,6 @@
 {
   "TaintedNarthecium": {
-    "description": "Eine angrenzende, verbündete <style=\"Aliance_Chaos\">Chaos</style>-Einheit, die besiegt wurde, wird mit einer <style=\"Stat_Chance\">Chance von {[chance]} %</style> sofort mit maximal <style=\"Stat_Health\">{[hp]} Lebenspunkten</style> wiederbelebt – auch wenn sie einen <style=\"Overkill\">Overkill</style> erlitten hat. Kann nur einmal pro Zug ausgelöst werden.",
+    "description": "Eine benachbarte verbündete, nicht-<style=\"Mechanical\">mechanische</style> <style=\"Aliance_Chaos\">Chaos</style>-Einheit, die besiegt wird, hat eine <style=\"Stat_Chance\">{[chance]}% Chance</style>, mit maximal <style=\"Stat_Health\">{[hp]} Lebenspunkten</style> wiederbelebt zu werden, selbst wenn sie einen <style=\"Overkill\">Overkill</style> erlitten hat. Kann nur einmal pro Zug ausgelöst werden.",
     "variables": {
       "hp": [
         49, 59, 69, 78, 88, 99, 111, 122, 133, 145, 156, 167, 178, 190, 201,

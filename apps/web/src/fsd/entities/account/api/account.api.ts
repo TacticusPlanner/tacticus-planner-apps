@@ -67,6 +67,9 @@ export type V1LegendaryEventIssue = S["V1LegendaryEventIssue"]
  *  rendered. `runInputsImported` / `annotationsImported` count the run rows and marks written. */
 export type V1LegendaryEventOutcome = S["V1LegendaryEventOutcome"]
 
+/** One V1 roster snapshot's outcome in the `rosterSnapshots` part. */
+export type V1RosterSnapshotOutcome = S["V1RosterSnapshotOutcome"]
+
 /** `suggestedDisplayName` is the V1 login username as a private prefill for the name step — only while
  *  the account has no confirmed name. Never public identity, and not stored by the API. */
 export type ImportV1ProfileResult = S["ImportV1ProfileResponse"]

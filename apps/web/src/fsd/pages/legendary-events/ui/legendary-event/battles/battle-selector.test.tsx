@@ -57,6 +57,21 @@ describe("BattleSelector", () => {
     expect(items[3]).toHaveAccessibleName("4")
   })
 
+  it("steps through battles with Previous and Next on desktop", () => {
+    renderSelector(false, 16)
+    const next = screen.getByRole("button", { name: "Next battle" })
+    fireEvent.click(next)
+    expect(screen.getByTestId("selected")).toHaveTextContent("18")
+    expect(next).toBeDisabled()
+
+    fireEvent.click(screen.getByRole("button", { name: "Previous battle" }))
+    expect(screen.getByTestId("selected")).toHaveTextContent("17")
+    expect(screen.getAllByTestId("battle-selector-item")[16]).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+  })
+
   it("steps through battles on mobile", () => {
     renderSelector(true)
     const previous = screen.getByRole("button", { name: "Previous battle" })

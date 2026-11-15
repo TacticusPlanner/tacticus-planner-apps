@@ -2,13 +2,18 @@ import type { MowStorageModel } from "@workspace/game-catalog"
 import type { UnitId, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { inFlightInGlobalOrder, type GoalDetail } from "@/entities/goal"
+import {
+  inFlightInGlobalOrder,
+  resolveGoalLinks,
+  type GoalDetail,
+} from "@/entities/goal"
 import {
   mowAbilityGoalSlotItems,
   rankGoalSlotItems,
+  targetUnitsInSlots,
   upgradeGoalRangeSlotItems,
   type GoalSlotItem,
-} from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
 
 type InventoryUpgrade = PlayerDataChunkDto<"inventory-upgrades">[number]
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
@@ -22,6 +27,30 @@ export type UpgradeStockUnits = {
   getMow: (unitId: UnitId) => MowStorageModel | undefined
   playerCharacterById: ReadonlyMap<string, PlayerCharacter>
   playerMowById: ReadonlyMap<string, PlayerMow>
+  /** Recipes, so an Upgrade goal's base material matches its pieces inside a crafted range slot.
+   *  Omitted, only slots holding the target itself match. */
+  upgradesById?: Parameters<typeof targetUnitsInSlots>[2]
+}
+
+/** An earlier-drawing goal that holds pieces of one material an Upgrade goal targets. `counted` pieces
+ *  are the same pieces for the same slots (an earlier goal on the same unit), so they count toward the
+ *  Upgrade goal; otherwise the earlier goal took them from the stock ahead of it, leaving it short. */
+type UpgradeStockHolder = {
+  goalId: string
+  amount: number
+  counted: boolean
+}
+
+type UpgradeGoalStockSplit = {
+  /** One inventory view per in-flight Upgrade goal (see {@link allocateUpgradeGoalStock}). */
+  stock: ReadonlyMap<string, readonly InventoryUpgrade[]>
+  /** Per in-flight Upgrade goal, per targeted material: the earlier goals that hold some of it — the
+   *  ones whose pieces count toward it, and, when it is still short, the ones that took the rest of
+   *  the stock first. Materials no earlier goal touched have no entry. */
+  holders: ReadonlyMap<
+    string,
+    ReadonlyMap<UpgradeId, readonly UpgradeStockHolder[]>
+  >
 }
 
 /**
@@ -40,36 +69,62 @@ export type UpgradeStockUnits = {
  *
  * The result holds one inventory view per in-flight Upgrade goal; any other goal (Completed, Archived,
  * another kind) has no entry and reads the full stock. `undefined` stock (not loaded yet) yields no
- * entries, so callers keep reporting it as unknown. Pieces are matched by id only: a Rank slot that
- * needs a crafted item doesn't draw that item's components.
+ * entries, so callers keep reporting it as unknown. An Upgrade goal for a base material matches
+ * its pieces inside crafted range slots (with `units.upgradesById`): a crafted piece an earlier Rank
+ * goal drew holds them, and the pieces the Upgrade goal claims stay its own. A Rank slot still draws
+ * only its own item from the stock, never that item's components.
  */
 export function allocateUpgradeGoalStock(
   goals: Iterable<GoalDetail>,
   inventoryUpgrades: readonly InventoryUpgrade[] | undefined,
   units?: UpgradeStockUnits
 ): ReadonlyMap<string, readonly InventoryUpgrade[]> {
+  return splitUpgradeGoalStock(goals, inventoryUpgrades, units).stock
+}
+
+/** {@link allocateUpgradeGoalStock}, plus which earlier goals hold each Upgrade goal's materials, so a
+ *  row can say why a lower-priority goal is reached while a higher one is short. */
+export function splitUpgradeGoalStock(
+  goals: Iterable<GoalDetail>,
+  inventoryUpgrades: readonly InventoryUpgrade[] | undefined,
+  units?: UpgradeStockUnits
+): UpgradeGoalStockSplit {
   const result = new Map<string, readonly InventoryUpgrade[]>()
-  if (!inventoryUpgrades) return result
+  const holders = new Map<
+    string,
+    ReadonlyMap<UpgradeId, readonly UpgradeStockHolder[]>
+  >()
+  if (!inventoryUpgrades) return { stock: result, holders }
 
   const stock = new Map<UpgradeId, number>()
   for (const entry of inventoryUpgrades) {
     stock.set(entry.upgradeId, (stock.get(entry.upgradeId) ?? 0) + entry.amount)
   }
-  const take = (id: UpgradeId, count: number) => {
+  // Per material: who took pieces from the stock so far, in draw order.
+  const takenBy = new Map<UpgradeId, Map<string, number>>()
+  const take = (goalId: string, id: UpgradeId, count: number) => {
     const taken = Math.min(stock.get(id) ?? 0, count)
     stock.set(id, (stock.get(id) ?? 0) - taken)
+    if (taken > 0) {
+      const takers = takenBy.get(id) ?? new Map<string, number>()
+      takenBy.set(id, takers)
+      takers.set(goalId, (takers.get(goalId) ?? 0) + taken)
+    }
     return taken
   }
 
-  // Per unit: the slots an earlier goal already drew for, and whether stock held a piece for it.
-  const drawnByUnit = new Map<string, Map<string, boolean>>()
+  // Per unit: the slots an earlier goal already drew for, whether stock held a piece for it, and
+  // which goal drew it.
+  type Drawn = { held: boolean; goalId: string }
+  const drawnByUnit = new Map<string, Map<string, Drawn>>()
   const drawnFor = (entityId: string) => {
-    const drawn = drawnByUnit.get(entityId) ?? new Map<string, boolean>()
+    const drawn = drawnByUnit.get(entityId) ?? new Map<string, Drawn>()
     drawnByUnit.set(entityId, drawn)
     return drawn
   }
 
-  const ordered = inFlightInGlobalOrder([...goals])
+  // A linked Upgrade goal's range is its linked goals' span, so it counts toward exactly those slots.
+  const ordered = inFlightInGlobalOrder(resolveGoalLinks([...goals]))
   const drawOrder = [
     ...ordered.filter((goal) => goal.status === "Active"),
     ...ordered.filter((goal) => goal.status !== "Active"),
@@ -90,34 +145,66 @@ export function allocateUpgradeGoalStock(
       const drawn = drawnFor(goal.entityId)
       const counted = new Set<string>()
       const share = new Map<UpgradeId, number>()
+      const goalHolders = new Map<UpgradeId, UpgradeStockHolder[]>()
       for (const need of goal.config.upgrade?.targets ?? []) {
         const id = need.upgradeId as UpgradeId
-        const slots = rangeItems.filter(
-          (item) => item.id === id && !counted.has(item.key)
-        )
+        // The target's pieces in the range: slots holding it, and its base pieces inside crafted slots.
+        const pieces = (
+          units?.upgradesById
+            ? targetUnitsInSlots(rangeItems, id, units.upgradesById)
+            : rangeItems
+                .filter((item) => item.id === id)
+                .map((item) => ({ slotKey: item.key, key: item.key }))
+        ).filter((piece) => !counted.has(piece.key))
+        // A piece is held by an earlier goal that drew its whole slot, or that claimed the piece itself.
+        const holderOf = (piece: { slotKey: string; key: string }) =>
+          drawn.get(piece.slotKey) ?? drawn.get(piece.key)
         let fromEarlierGoals = 0
-        for (const slot of slots) {
+        const countedFrom = new Map<string, number>()
+        for (const piece of pieces) {
           if (fromEarlierGoals >= need.quantity) break
-          if (drawn.get(slot.key) !== true) continue
-          counted.add(slot.key)
+          const earlier = holderOf(piece)
+          if (earlier?.held !== true) continue
+          counted.add(piece.key)
           fromEarlierGoals++
+          countedFrom.set(
+            earlier.goalId,
+            (countedFrom.get(earlier.goalId) ?? 0) + 1
+          )
         }
         const stillNeeded = need.quantity - fromEarlierGoals
-        const taken = take(id, stillNeeded)
+        // Read before this goal's own draw, so the list holds only goals ahead of it.
+        const takenAhead = [...(takenBy.get(id) ?? [])]
+        const taken = take(goal.goalId, id, stillNeeded)
         let claimed = 0
-        for (const slot of slots) {
+        for (const piece of pieces) {
           if (claimed >= stillNeeded) break
-          if (drawn.has(slot.key)) continue
-          drawn.set(slot.key, claimed < taken)
-          counted.add(slot.key)
+          if (holderOf(piece)) continue
+          drawn.set(piece.key, { held: claimed < taken, goalId: goal.goalId })
+          counted.add(piece.key)
           claimed++
         }
         share.set(id, (share.get(id) ?? 0) + fromEarlierGoals + taken)
+
+        const materialHolders = goalHolders.get(id) ?? []
+        for (const [goalId, amount] of countedFrom) {
+          materialHolders.push({ goalId, amount, counted: true })
+        }
+        if (taken < stillNeeded) {
+          // Pieces already counted toward this goal aren't also "taken ahead" of it.
+          for (const [goalId, amount] of takenAhead) {
+            const ahead = amount - (countedFrom.get(goalId) ?? 0)
+            if (ahead > 0)
+              materialHolders.push({ goalId, amount: ahead, counted: false })
+          }
+        }
+        if (materialHolders.length > 0) goalHolders.set(id, materialHolders)
       }
       result.set(
         goal.goalId,
         [...share].map(([upgradeId, amount]) => ({ upgradeId, amount }))
       )
+      if (goalHolders.size > 0) holders.set(goal.goalId, goalHolders)
       continue
     }
 
@@ -131,8 +218,11 @@ export function allocateUpgradeGoalStock(
     const drawn = drawnFor(goal.entityId)
     for (const item of slotItems) {
       if (drawn.has(item.key)) continue
-      drawn.set(item.key, take(item.id, 1) === 1)
+      drawn.set(item.key, {
+        held: take(goal.goalId, item.id, 1) === 1,
+        goalId: goal.goalId,
+      })
     }
   }
-  return result
+  return { stock: result, holders }
 }

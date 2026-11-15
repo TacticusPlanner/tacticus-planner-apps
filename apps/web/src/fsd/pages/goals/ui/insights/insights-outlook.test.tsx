@@ -58,7 +58,8 @@ describe("InsightsOutlook", () => {
       name: "Goals not in this date",
     })
     expect(excluded).toHaveTextContent("unit-c · Ascension")
-    expect(excluded).toHaveTextContent(
+    // The reason heads its group of goals instead of repeating on each one.
+    expect(excluded.previousElementSibling).toHaveTextContent(
       "No accessible farming location provides a required resource."
     )
   })

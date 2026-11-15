@@ -1,0 +1,8 @@
+{
+  "RelentlessAssault": {
+    "description": "Wenn diese Einheit zum ersten Mal pro Zug eine feindliche Einheit besiegt, führt sie sofort, wenn möglich, einen <style=\"NormalAttack\">Normalen Fernangriff</style> aus.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

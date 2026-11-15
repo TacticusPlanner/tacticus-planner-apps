@@ -205,7 +205,7 @@ export function TargetStep({
                   }}
                   className={cn(
                     "flex min-h-11 flex-col items-start rounded-xl border px-3 py-2 text-left transition-colors",
-                    "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+                    "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
                     checked
                       ? "border-primary bg-primary/10"
                       : "hover:bg-muted/50"
@@ -306,7 +306,6 @@ export function TargetStep({
               showPaidOptions: draft.economy.showPaidOptions,
               values: draft.runValues,
               change: draft.changeRun,
-              setShowPaidOptions: draft.setShowPaidOptions,
             }}
             runs={source.inputs.resolution}
             touch={isMobile}

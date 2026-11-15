@@ -92,7 +92,7 @@ export function IncursionEligibleDialog({
                   }
                   className={cn(
                     "flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                    selected && "border-(--primary)/60 bg-(--primary)/10"
+                    selected && "border-primary/60 bg-primary/10"
                   )}
                   data-testid={`incursion-eligible-${unit.id}`}
                 >
@@ -110,7 +110,7 @@ export function IncursionEligibleDialog({
                   <EntityIcon
                     src={characterIcon(unit.id as UnitId)}
                     alt=""
-                    className="size-8 shrink-0 rounded"
+                    className="size-8 shrink-0 rounded-sm"
                   />
                   <span className="min-w-0 flex-1 space-y-0.5">
                     <span className="block truncate">{name}</span>

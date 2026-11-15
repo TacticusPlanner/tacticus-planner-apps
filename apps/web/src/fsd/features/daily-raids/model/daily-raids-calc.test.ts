@@ -17,18 +17,18 @@ import {
   type BattleId,
 } from "@workspace/game-domain"
 
-import type { GoalDetail } from "@/entities/goal"
+import { activeProjectMembers, type GoalDetail } from "@/entities/goal"
 import type {
   FarmingCharacter,
   FarmingUpgrade,
   FlatSupplier,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 
 import {
   selectFarmNodes,
   type EstimateResourceId,
   type EstimateUpgrade,
-} from "@/features/goal-farming/@x/daily-raids"
+} from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
 import {
@@ -37,9 +37,8 @@ import {
   campaignProgressKey,
   type CampaignEventProgressEntry,
   type CampaignProgressEntry,
-} from "./campaign-event-eligibility"
+} from "@/entities/player-data-override"
 import {
-  activeProjectMembers,
   calculateCombinedResourceUrgency,
   calculateResourceUrgency,
   calculateDailyRaids,
@@ -128,6 +127,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
     },
     snapshot: null,
     dependsOn: [],
+    linkedGoalIds: [],
     projectIds: ["project-1"],
     revision: 1,
     globalPriority: 1,
@@ -149,6 +149,7 @@ function member(
       status,
       notes: null,
       dependsOn: [],
+      linkedGoalIds: [],
       createdAt: "2026-01-01T00:00:00.000Z",
       updatedAt: "2026-01-01T00:00:00.000Z",
     }),

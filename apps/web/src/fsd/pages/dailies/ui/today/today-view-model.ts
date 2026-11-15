@@ -7,6 +7,7 @@ import {
   orderCombinedEntries,
   selectTodayRaids,
   type DailyRaidBattleResource,
+  type DailyRaidResourceProgress,
   type DailyRaidsReadyViewModel,
   type RaidSchedule,
 } from "@/features/daily-raids"
@@ -57,7 +58,8 @@ export function buildTodayView(
     combined
       ? orderCombinedEntries(
           entries,
-          raids.resourceUrgencyByResource ?? new Map()
+          raids.resourceUrgencyByResource ?? new Map(),
+          raids.locationsByBattleId
         )
       : entries
   const selection = selectTodayRaids({
@@ -96,6 +98,7 @@ export function buildTodayView(
     const visual = raids.resourceVisuals.get(entry.resourceId)
     if (!visual) continue
     planResourceByBattle.set(entry.battleId, {
+      resourceId: entry.resourceId,
       label: raids.resourceLabels.get(entry.resourceId) ?? entry.resourceId,
       visual,
     })
@@ -157,4 +160,20 @@ export function buildTodayView(
       overLimit,
     },
   }
+}
+
+/**
+ * The have/need a Today's attempts row shows for the resource its node drops: what the player holds
+ * against the total every goal in the plan needs, so the figure stays visible after the node's plan
+ * card is raided out of Today's plan. `done` once the holding covers the need. Undefined when no goal
+ * needs the resource.
+ */
+export function todaysAttemptProgress(
+  raids: Pick<DailyRaidsReadyViewModel, "resourceTotals">,
+  resourceId: string | undefined
+): (DailyRaidResourceProgress & { done: boolean }) | undefined {
+  if (resourceId === undefined) return undefined
+  const progress = raids.resourceTotals.get(resourceId)
+  if (!progress || progress.target <= 0) return undefined
+  return { ...progress, done: progress.owned >= progress.target }
 }

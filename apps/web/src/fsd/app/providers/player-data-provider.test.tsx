@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { PlayerDataRateLimitError } from "@workspace/player-data"
 import { replacePlayerDataChunk } from "@workspace/player-data/testing"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -90,6 +91,41 @@ describe("PlayerDataProvider", () => {
       finish({ status: "ready", syncedAt: new Date().toISOString() })
     )
     await waitFor(() => expect(sync.refresh).toHaveBeenCalledOnce())
+  })
+
+  it("treats a 429 as a cooldown, not a failure, and starts no sync until it lifts", async () => {
+    sync.run.mockClear()
+    sync.run.mockRejectedValueOnce(new PlayerDataRateLimitError(0.2))
+    const { result } = renderHook(() => usePlayerDataStatus(), { wrapper })
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+
+    act(() => result.current.syncNow())
+    await waitFor(() => expect(result.current.syncBlockedUntil).not.toBeNull())
+    expect(result.current.status).toBe("ready")
+    expect(result.current.error).toBeNull()
+
+    act(() => result.current.syncNow())
+    expect(sync.run).toHaveBeenCalledOnce()
+
+    await waitFor(() => expect(result.current.syncBlockedUntil).toBeNull())
+    sync.run.mockResolvedValueOnce({
+      status: "ready",
+      syncedAt: new Date().toISOString(),
+    })
+    act(() => result.current.syncNow())
+    await waitFor(() => expect(sync.run).toHaveBeenCalledTimes(2))
+  })
+
+  it("falls back to a default cooldown when the 429 has no readable Retry-After", async () => {
+    sync.run.mockRejectedValueOnce(new PlayerDataRateLimitError())
+    const { result } = renderHook(() => usePlayerDataStatus(), { wrapper })
+    await waitFor(() => expect(result.current.status).toBe("ready"))
+
+    act(() => result.current.syncNow())
+
+    await waitFor(() =>
+      expect(result.current.syncBlockedUntil).toBeGreaterThan(Date.now())
+    )
   })
 
   it("shares one in-flight sync between mounted providers and repeated clicks", async () => {

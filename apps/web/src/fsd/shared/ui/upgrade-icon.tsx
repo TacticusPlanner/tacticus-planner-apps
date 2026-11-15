@@ -27,7 +27,7 @@ export function UpgradeIcon({
         src={UpgradeIcons.icon(id)}
         fallback={UpgradeIcons.fallback}
         alt=""
-        className="absolute top-1/2 left-1/2 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 object-contain"
+        className="absolute top-1/2 left-1/2 size-[78%] -translate-1/2 object-contain"
       />
       {rarity ? (
         <img

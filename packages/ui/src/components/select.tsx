@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Select as SelectPrimitive } from "radix-ui"
 
+import { useIsCoarsePointer } from "@workspace/ui/hooks/use-coarse-pointer"
 import { cn } from "@workspace/ui/lib/utils"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
@@ -58,7 +59,7 @@ function SelectTrigger({
 function SelectContent({
   className,
   children,
-  position = "item-aligned",
+  position,
   align = "center",
   container,
   ...props
@@ -70,8 +71,20 @@ function SelectContent({
   // explicitly registers as a "shard") — a select portaled to `document.body` (the default,
   // correct for a standalone trigger) is neither, so it's unopenable/unclickable while a
   // Dialog/Sheet is open. Mirrors PopoverContent's own `container` prop and its doc comment.
+  //
+  // With a `container`, `position` defaults to "popper": "item-aligned" places the list with
+  // `position: fixed` viewport coordinates, which a transformed ancestor (the centered Dialog's
+  // `-translate-1/2`) turns into coordinates relative to that ancestor, so the list opened far
+  // from its trigger. Popper (Floating UI) accounts for the containing block.
   container?: React.ComponentProps<typeof SelectPrimitive.Portal>["container"]
 }) {
+  position ??= container ? "popper" : "item-aligned"
+  // No scroll buttons on touch: the list scrolls natively by swiping, and Radix's scroll button
+  // scrolls the focused option into view whenever it mounts. On open the selected option has focus
+  // and a swipe never moves it (only a mouse hover does), so each time a button appeared mid-swipe
+  // (scrolling off either end) the list jumped back to the selected option — on iOS it could not
+  // be scrolled away from it at all.
+  const showScrollButtons = !useIsCoarsePointer()
   return (
     <SelectPrimitive.Portal container={container}>
       <SelectPrimitive.Content
@@ -87,7 +100,7 @@ function SelectContent({
         align={align}
         {...props}
       >
-        <SelectScrollUpButton />
+        {showScrollButtons && <SelectScrollUpButton />}
         <SelectPrimitive.Viewport
           data-position={position}
           className={cn(
@@ -97,7 +110,7 @@ function SelectContent({
         >
           {children}
         </SelectPrimitive.Viewport>
-        <SelectScrollDownButton />
+        {showScrollButtons && <SelectScrollDownButton />}
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   )

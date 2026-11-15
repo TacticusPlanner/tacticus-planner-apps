@@ -4,18 +4,30 @@
 // write queue.
 export {
   useLegendaryEventPlan,
-  type DepthEstimateContext,
   type LegendaryEventPlanActions,
 } from "./model/use-legendary-event-plan"
+export {
+  depthEstimateContext,
+  estimateSnapshot,
+  type DepthEstimateContext,
+} from "./model/depth-estimate-context"
 export type { PickerEstimates, PickerGoalsPreview } from "./model/team-picker"
 export { assertLaneHasRoom, laneTeams } from "./model/plan-patches"
 export { TeamEditorDialog } from "./ui/team-editor-dialog"
 export { ClearDepthField } from "./ui/clear-depth-field"
 export { editStartsFromEstimate } from "./model/clear-depth-display"
 export { TeamSuggestionsDialog } from "./ui/team-suggestions-dialog"
+export { useTeamSuggestionCount } from "./model/use-team-suggestions"
+export type { TeamSuggestionsSource } from "./model/team-suggestions-state"
 export { useAnnotations } from "./model/use-annotations"
 export { AnnotationMenu } from "./ui/annotation-menu"
-export { AnnotationMarkIcon } from "./ui/annotation-mark"
 export { BattleAnnotationMenu } from "./ui/battle-annotation-menu"
-export { RunInputsDrawer, RunInputsForm } from "./ui/run-inputs-drawer"
+export {
+  RunInputsDrawer,
+  RunInputsForm,
+  RunInputsInline,
+} from "./ui/run-inputs-drawer"
+export { RunMissionsQuickInput } from "./ui/run-missions-quick-input"
+export { useShowPaidOptions } from "./model/use-show-paid-options"
+export { LegendaryEventSettingsButton } from "./ui/legendary-event-settings"
 export { PlanNotesCard } from "./ui/plan-notes-card"

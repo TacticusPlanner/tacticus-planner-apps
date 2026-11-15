@@ -1,0 +1,8 @@
+{
+  "PunishmentInescapable": {
+    "description": "Les unités ennemies qui entrent dans un hexagone adjacent à <style=\"Faction_Custodes\">Boudicari</style> mettent fin à leur déplacement, à l’exception des unités ayant le trait <style=\"Flying\">Vol</style>, <style=\"Unstoppable\">Implacable</style>, <style=\"Vehicle\">Véhicule</style> ou <style=\"Immune\">Immunité</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

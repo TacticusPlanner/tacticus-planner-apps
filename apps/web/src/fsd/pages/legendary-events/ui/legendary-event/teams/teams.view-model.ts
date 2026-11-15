@@ -5,6 +5,7 @@ import {
   objectiveClearedThrough,
   teamDepthForRun,
   teamEffectiveDepth,
+  memberPowers,
   teamPower,
   type ClearEstimate,
   type ClearEstimateRoster,
@@ -17,6 +18,8 @@ import {
   type LegendaryEventRun,
   type LegendaryEventTeam,
   type LegendaryEventUnit,
+  eventUnitChipData,
+  type EventUnitChipData,
 } from "@/entities/legendary-event"
 import { teamPointsLeft } from "../../../lib/team-points"
 
@@ -27,12 +30,6 @@ import type {
   ClearEstimatesViewModel,
   ReadValue,
 } from "../legendary-event-page.view-model"
-
-export interface TeamCardMember {
-  unitId: string
-  /** `undefined` when the roster could not be read. */
-  owned: boolean | undefined
-}
 
 interface TeamCardCoverage {
   index: number
@@ -50,8 +47,8 @@ export interface TeamCardViewModel {
   id: string
   name: string
   team: LegendaryEventTeam
-  members: TeamCardMember[]
-  reserve: TeamCardMember | null
+  members: EventUnitChipData[]
+  reserve: EventUnitChipData | null
   memberCount: number
   /** Fewer than three members (spec: a stored team below three characters is incomplete): the
    *  card warns, shows no depth and no calculation plays the team. */
@@ -79,6 +76,8 @@ export interface TeamCardViewModel {
    *  dash), `noRoster` when the roster is not synced or unreadable (its own reason, not "power
    *  unavailable"), `unavailable` when the power data is absent or failed. */
   teamPowerStatus: TeamPowerStatus
+  /** Each member's power, in member order, for analytics; null whenever `teamPower` is. */
+  memberPowers: number[] | null
   sortOrder: number
 }
 
@@ -125,10 +124,8 @@ export function buildTeamCardViewModel(
   /** The lane's points model; the section builds it once for all its cards. */
   model: LanePointsModel = buildLanePointsModel(lane)
 ): TeamCardViewModel {
-  const member = (unitId: string): TeamCardMember => ({
-    unitId,
-    owned: rosterById ? rosterById.has(unitId) : undefined,
-  })
+  const member = (unitId: string): EventUnitChipData =>
+    eventUnitChipData(unitId, rosterById)
   const derived = new Set(derivedTeamCoverage(team.memberUnitIds, lane, units))
   const stored = new Set(team.objectiveIndexes)
   const members = team.memberUnitIds.map(member)
@@ -195,18 +192,28 @@ function cardTeamPower(
   memberUnitIds: readonly string[],
   rosterById: ClearEstimateRoster | undefined,
   powerSource: TeamPowerSource
-): Pick<TeamCardViewModel, "teamPower" | "teamPowerStatus"> {
-  if (!rosterById) return { teamPower: null, teamPowerStatus: "noRoster" }
+): Pick<TeamCardViewModel, "teamPower" | "teamPowerStatus" | "memberPowers"> {
+  if (!rosterById) {
+    return { teamPower: null, teamPowerStatus: "noRoster", memberPowers: null }
+  }
   if (powerSource === "loading") {
-    return { teamPower: null, teamPowerStatus: "pending" }
+    return { teamPower: null, teamPowerStatus: "pending", memberPowers: null }
   }
   if (powerSource === "error" || powerSource === null) {
-    return { teamPower: null, teamPowerStatus: "unavailable" }
+    return {
+      teamPower: null,
+      teamPowerStatus: "unavailable",
+      memberPowers: null,
+    }
   }
   const power = teamPower(memberUnitIds, rosterById, powerSource)
   return {
     teamPower: power,
     teamPowerStatus: power === null ? "unavailable" : "ready",
+    memberPowers:
+      power === null
+        ? null
+        : memberPowers(memberUnitIds, rosterById, powerSource),
   }
 }
 

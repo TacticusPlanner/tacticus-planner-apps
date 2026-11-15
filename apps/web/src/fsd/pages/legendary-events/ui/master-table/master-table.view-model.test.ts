@@ -6,6 +6,7 @@ import type { LegendaryEventProgress } from "@/entities/legendary-event"
 
 import {
   estimatedAvailability,
+  eventsWithoutTeams,
   masterTableEventInputs,
   nextMasterTableParams,
   parseMasterTableQuery,
@@ -291,5 +292,28 @@ describe("masterTableEventInputs", () => {
     })
 
     expect(input?.run).toBe(1)
+  })
+})
+
+describe("eventsWithoutTeams", () => {
+  const member = (id: string) => ({ memberUnitIds: [id, `${id}2`, `${id}3`] })
+  const plans = [
+    { eventId: "astarLysander", teams: [member("a")] },
+    // Only an incomplete team: In teams lists nobody for it.
+    { eventId: "votanUthar", teams: [{ memberUnitIds: ["b", "c"] }] },
+  ] as unknown as Parameters<typeof eventsWithoutTeams>[0]["plans"]
+  const eventIds = ["astarLysander", "votanUthar", "tauFarsight"]
+
+  it("lists the events with no complete team (or no plan) in In teams", () => {
+    expect(eventsWithoutTeams({ eventIds, plans, unitSet: "inTeams" })).toEqual(
+      ["votanUthar", "tauFarsight"]
+    )
+  })
+
+  it("is empty outside In teams or while the plans are unknown", () => {
+    expect(eventsWithoutTeams({ eventIds, plans, unitSet: "all" })).toEqual([])
+    expect(
+      eventsWithoutTeams({ eventIds, plans: undefined, unitSet: "inTeams" })
+    ).toEqual([])
   })
 })

@@ -175,6 +175,7 @@ export function ready(
       [
         offPlanBattle,
         {
+          resourceId: "adamantium",
           label: "Adamantium",
           visual: {
             kind: "upgrade" as const,
@@ -185,6 +186,8 @@ export function ready(
         },
       ],
     ]),
+    sourcesByResource: new Map(),
+    eligibleBattleIds: new Set([battle]),
     attemptsUsedByBattle: new Map([[battle, 7]]),
     realEnergyUsedToday: 120,
     attemptsLeftByBattle: new Map([[battle, 3]]),

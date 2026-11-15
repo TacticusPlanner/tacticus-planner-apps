@@ -87,7 +87,7 @@ export function LegendaryEventImportResult({
                               </span>
                             ) : null}
                             {showValue && issue.value ? (
-                              <code className="ml-1 rounded bg-muted px-1">
+                              <code className="ml-1 rounded-sm bg-muted px-1">
                                 {issue.value}
                               </code>
                             ) : null}

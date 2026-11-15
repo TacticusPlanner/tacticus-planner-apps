@@ -65,7 +65,7 @@ export function MenuSection({
 }: Omit<React.ComponentProps<"section">, "aria-label"> & { label: string }) {
   return (
     <section aria-label={label} className="flex flex-col gap-0.5" {...props}>
-      <h3 className="px-2 text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
+      <h3 className="px-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
         {label}
       </h3>
       {children}

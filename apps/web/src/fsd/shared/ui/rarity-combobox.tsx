@@ -19,7 +19,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { rarityRank, type Rarity } from "@workspace/game-domain"
 
-import { normalizeSearchText } from "@/shared/lib"
+import { normalizeSearchText } from "../lib"
 
 import { useCommandListId } from "./command-list-id"
 import { closestOverlayContent } from "./overlay-content"
@@ -191,7 +191,7 @@ export function RarityCombobox<TId extends string>({
                     className="gap-2"
                   >
                     {renderIcon ? renderIcon(item.id) : null}
-                    <span className="min-w-0 flex-1 break-words">
+                    <span className="min-w-0 flex-1 wrap-break-word">
                       {item.name}
                     </span>
                     {item.meta}

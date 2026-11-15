@@ -5,10 +5,8 @@ import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 
 import type { RosterDelta, RunHistory } from "../../../lib/run-history"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, progressionText } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
-
-import { progressionStarsKey } from "./last-run.view-model"
 
 /** The Since last run list (or why there is none): per unit, unlocked, rank, stars and each
  *  ability that rose. Absent when the record has no teams. */
@@ -102,10 +100,8 @@ function DeltaRow({ delta }: { delta: RosterDelta }) {
     lines.push({
       key: "stars",
       text: t("history.since.stars", {
-        from: t(
-          `progression:stars.${progressionStarsKey(delta.progression.from)}`
-        ),
-        to: t(`progression:stars.${progressionStarsKey(delta.progression.to)}`),
+        from: progressionText(t, delta.progression.from),
+        to: progressionText(t, delta.progression.to),
       }),
     })
   }

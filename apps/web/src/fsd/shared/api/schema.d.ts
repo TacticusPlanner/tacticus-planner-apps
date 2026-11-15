@@ -59,7 +59,7 @@ export interface paths {
     put?: never
     /**
      * Replaces this staging account's planner data with a copy from production.
-     * @description Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
+     * @description Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, personal roster snapshots, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
      */
     post: operations["TacticusPlannerApiFeaturesStagingTransferImportFromProductionEndpoint"]
     delete?: never
@@ -119,7 +119,7 @@ export interface paths {
     put?: never
     /**
      * Selectively imports integration data, progress, and goals from V1.
-     * @description V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes.
+     * @description V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes. The rosterSnapshots part rebuilds V1 roster snapshots and stores the live ones as V1Import personal snapshots, newest first within the manual limit, skipping ones an earlier run imported; it reports one outcome per V1 snapshot in rosterSnapshotOutcomes.
      */
     post: operations["TacticusPlannerApiFeaturesV1ImportImportV1ProfileEndpoint"]
     delete?: never
@@ -848,6 +848,74 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/npc-encounters": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets where each NPC is encountered. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/npc-encounters/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets where each NPC is encountered. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/npc-tiers": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the horde-mode NPC tier list. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/npc-tiers/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the horde-mode NPC tier list. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/npcs": {
     parameters: {
       query?: never
@@ -1263,7 +1331,7 @@ export interface paths {
     get: operations["TacticusPlannerApiFeaturesGoalsGetGoalEndpoint"]
     /**
      * Edits a goal's target, details, project memberships and priority in one atomic request.
-     * @description Every section is optional and an absent section leaves that aspect unchanged; a request with no section is a no-op. Sections apply in the order target, details, projectIds, priority; if any fails nothing is saved. target carries its own expectedRevision (the goal revision); priority.position is the 1-based position among the account's Active/Paused goals and priority.expectedOrderRevision the order revision the client computed it from. The response carries the updated goal and the new order (null unless priority was supplied).
+     * @description Every section is optional and an absent section leaves that aspect unchanged; a request with no section is a no-op. Sections apply in the order target, details, projectIds, linkedGoalIds, priority; if any fails nothing is saved. target carries its own expectedRevision (the goal revision); priority.position is the 1-based position among the account's Active/Paused goals and priority.expectedOrderRevision the order revision the client computed it from. The response carries the updated goal and the new order (null unless priority was supplied).
      */
     put: operations["TacticusPlannerApiFeaturesGoalsEditGoalEndpoint"]
     post?: never
@@ -1348,7 +1416,7 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Registers a Tacticus guild using a Guild-scoped API token.
+     * Registers a Tacticus guild using an API token with the Guild and Guild Raid scopes.
      * @description Requires the caller to have a configured Tacticus User ID and to appear as the guild's Leader or Co-Leader in the upstream response. Performs a complete synchronization and persists the encrypted token. Re-registering an already-registered guild updates it rather than duplicating it.
      */
     post: operations["TacticusPlannerApiFeaturesGuildsRegisterGuildEndpoint"]
@@ -1489,7 +1557,7 @@ export interface paths {
     get?: never
     /**
      * Writes one run's inputs (missions, completed missions, bundle, close shards).
-     * @description Upserts the given run (1–3) and leaves the other runs untouched. Completed mission arrays list distinct catalog indices, absent means none, and are stored ascending; each count must be at least its completed array's length. Values equal to the stored run, or all zero for a run with none, succeed without bumping the revision.
+     * @description Upserts the given run (1–3) and leaves the other runs untouched. Completed mission arrays list distinct catalog indices, absent means none, and are stored ascending; each count must be at least its completed array's length. Values equal to the stored run succeed without bumping the revision; all zeros for a run with none are stored.
      */
     put: operations["TacticusPlannerApiFeaturesLegendaryEventPlansUpdateLegendaryEventRunInputsEndpoint"]
     post?: never
@@ -1555,6 +1623,78 @@ export interface paths {
     post?: never
     /** Deletes a team and re-densifies its lane's order. */
     delete: operations["TacticusPlannerApiFeaturesLegendaryEventPlansDeleteLegendaryEventTeamEndpoint"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/me/roster-snapshots": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Lists the caller's personal roster snapshots, newest first, without rosters.
+     * @description count is the number that counts toward limit (manual and V1-imported snapshots); autoCount the automatic snapshots, kept to autoLimit by replacing the oldest. Legendary Event run-record rosters are not listed here.
+     */
+    get: operations["TacticusPlannerApiFeaturesRosterSnapshotsListPersonalRosterSnapshotsEndpoint"]
+    put?: never
+    /**
+     * Takes a personal roster snapshot from a fresh sync.
+     * @description Syncs player data from the Tacticus API and, in the same transaction, stores a copy of the whole synced roster as a snapshot with source manual. With fromLastSync=true it copies the last synced roster without calling the Tacticus API (takenAt is that sync's time) and is not rate limited. A sync failure creates nothing. At the limit (manual and V1-imported snapshots) the request is rejected before any sync with 409 rosterSnapshotLimitReached, carrying limit and count.
+     */
+    post: operations["TacticusPlannerApiFeaturesRosterSnapshotsCreatePersonalRosterSnapshotEndpoint"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/me/roster-snapshots/{snapshotId}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Reads the roster of one of the caller's personal snapshots.
+     * @description The roster never changes after creation, so the response may be cached for good.
+     */
+    get: operations["TacticusPlannerApiFeaturesRosterSnapshotsGetPersonalRosterSnapshotEndpoint"]
+    put?: never
+    post?: never
+    /**
+     * Permanently deletes one of the caller's personal snapshots.
+     * @description A hard delete with no trash or restore. The synced roster and run records are not affected.
+     */
+    delete: operations["TacticusPlannerApiFeaturesRosterSnapshotsDeletePersonalRosterSnapshotEndpoint"]
+    options?: never
+    head?: never
+    /**
+     * Renames one of the caller's personal snapshots.
+     * @description The name is trimmed and must be 1–60 characters; it need not be unique. The roster and takenAt do not change.
+     */
+    patch: operations["TacticusPlannerApiFeaturesRosterSnapshotsRenamePersonalRosterSnapshotEndpoint"]
+    trace?: never
+  }
+  "/api/v1/me/roster-snapshots/{snapshotId}/keep": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Keeps one of the caller's automatic snapshots as a manual one.
+     * @description source becomes manual; the name, takenAt and roster do not change. It then counts toward limit, and the automatic quota can no longer replace it.
+     */
+    post: operations["TacticusPlannerApiFeaturesRosterSnapshotsKeepPersonalRosterSnapshotEndpoint"]
+    delete?: never
     options?: never
     head?: never
     patch?: never
@@ -1904,6 +2044,7 @@ export interface components {
       snapshot?: null | components["schemas"]["CreateGoalSnapshotRequest"]
       dependsOnGoalIds?: null | components["schemas"]["ListOfGuid"]
       notes?: null | string
+      linkedGoalIds?: null | components["schemas"]["ListOfGuid"]
     }
     CreateCombinedGoalsRequest: {
       entityType: components["schemas"]["GoalEntityType"]
@@ -1956,6 +2097,9 @@ export interface components {
       expectedBattleClearsSource:
         null | components["schemas"]["LegendaryEventDepthSource"]
     }
+    CreatePersonalRosterSnapshotRequest: {
+      name?: null | string
+    }
     CreateProjectRequest: {
       name: string
       description: null | string
@@ -1988,6 +2132,7 @@ export interface components {
       details?: null | components["schemas"]["UpdateGoalRequest"]
       projectIds?: null | components["schemas"]["ListOfGuid"]
       priority?: null | components["schemas"]["EditGoalPriorityRequest"]
+      linkedGoalIds?: null | components["schemas"]["ListOfGuid"]
     }
     EditGoalResponse: {
       goal: components["schemas"]["GoalDetailResponse"]
@@ -2079,6 +2224,7 @@ export interface components {
       battleIds: components["schemas"]["IReadOnlyListOfString"]
       /** Format: int32 */
       number: number
+      requiredCampaignGroupId: null | string
     }
     GameCatalogCampaignDetailedEnemy: {
       id: string
@@ -2088,6 +2234,8 @@ export interface components {
       /** Format: int32 */
       stars: number
       rank: string
+      /** Format: int32 */
+      servedIndex: number
     }
     GameCatalogCampaignGuaranteedReward: {
       id: string
@@ -2403,6 +2551,25 @@ export interface components {
       datasetHash: string
       data: null | components["schemas"]["IReadOnlyListOfGameCatalogNpc"]
     }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data:
+        null | components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounter"]
+    }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      data: null | components["schemas"]["IReadOnlyListOfGameCatalogNpcTiers"]
+    }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogOnslaughtReward: {
       version: string
       schemaHash: string
@@ -2592,6 +2759,8 @@ export interface components {
       battleFatigueFleeChanceOverkill: number
       traitVariables: components["schemas"]["IReadOnlyDictionaryOfStringAndJsonElement"]
       staminaShopTiers: components["schemas"]["IReadOnlyListOfGameCatalogStaminaShopTier"]
+      /** Format: int32 */
+      eliteCampaignMinPowerLevel: number
     }
     GameCatalogGuildRaidMetaBossView: {
       bossUnitSetId: string
@@ -3088,6 +3257,32 @@ export interface components {
       passiveAbilities: components["schemas"]["IReadOnlyListOfString"]
       stats: components["schemas"]["IReadOnlyListOfGameCatalogNpcStat"]
     }
+    GameCatalogNpcEncounter: {
+      npcId: string
+      source: string
+      groupId: string
+      battles: components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounterBattle"]
+    }
+    GameCatalogNpcEncounterBattle: {
+      battleId: null | string
+      track: null | string
+      /** Format: int32 */
+      tier: null | number
+      /** Format: int32 */
+      number: null | number
+      challenge: boolean
+      role: string
+      rounds: components["schemas"]["IReadOnlyListOfInt32"]
+      /** Format: int32 */
+      count: null | number
+      levels: components["schemas"]["IReadOnlyListOfGameCatalogNpcEncounterLevel"]
+    }
+    GameCatalogNpcEncounterLevel: {
+      /** Format: int32 */
+      servedIndex: null | number
+      /** Format: int32 */
+      count: number
+    }
     GameCatalogNpcStat: {
       /** Format: int32 */
       abilityLevel: number
@@ -3103,6 +3298,17 @@ export interface components {
       rank: number
       /** Format: int32 */
       stars: number
+    }
+    GameCatalogNpcTier: {
+      npcId: string
+      tier: string
+      /** Format: double */
+      multiplier?: null | number
+    }
+    GameCatalogNpcTiers: {
+      id: string
+      tiers: components["schemas"]["IReadOnlyListOfGameCatalogHordeModeTier"]
+      npcs: components["schemas"]["IReadOnlyListOfGameCatalogNpcTier"]
     }
     GameCatalogOhSoCloseOffer: {
       unlock: components["schemas"]["GameCatalogOhSoCloseOfferPrice"]
@@ -3445,6 +3651,7 @@ export interface components {
       config: components["schemas"]["GoalConfigResponse"]
       snapshot: null | components["schemas"]["GoalSnapshotResponse"]
       dependsOn: components["schemas"]["ListOfGuid"]
+      linkedGoalIds: components["schemas"]["ListOfGuid"]
       projectIds: components["schemas"]["ListOfGuid"]
       /** Format: date-time */
       createdAt: string
@@ -3589,6 +3796,8 @@ export interface components {
       legendaryEventPlans: number
       /** Format: int32 */
       legendaryEventRunRecords: number
+      /** Format: int32 */
+      personalRosterSnapshots: number
       settings: boolean
       overrides: boolean
     }
@@ -3614,6 +3823,8 @@ export interface components {
       outcomes: components["schemas"]["IReadOnlyListOfV1GoalOutcome"]
       legendaryEventPlans: components["schemas"]["ImportPartResult"]
       legendaryEventOutcomes: components["schemas"]["IReadOnlyListOfV1LegendaryEventOutcome"]
+      rosterSnapshots: components["schemas"]["ImportPartResult"]
+      rosterSnapshotOutcomes: components["schemas"]["IReadOnlyListOfV1RosterSnapshotOutcome"]
       /** Format: uuid */
       importProjectId: null | string
       /** Format: uuid */
@@ -3636,6 +3847,8 @@ export interface components {
       automaticPrerequisites?: boolean
       /** @default false */
       legendaryEventPlans?: boolean
+      /** @default false */
+      rosterSnapshots?: boolean
     }
     IncursionBattleProgressOverrideRequest: {
       mowId: string
@@ -3750,7 +3963,12 @@ export interface components {
     IReadOnlyListOfGameCatalogMythicQuestTaskView: components["schemas"]["GameCatalogMythicQuestTaskView"][]
     IReadOnlyListOfGameCatalogMythicQuestView: components["schemas"]["GameCatalogMythicQuestView"][]
     IReadOnlyListOfGameCatalogNpc: components["schemas"]["GameCatalogNpc"][]
+    IReadOnlyListOfGameCatalogNpcEncounter: components["schemas"]["GameCatalogNpcEncounter"][]
+    IReadOnlyListOfGameCatalogNpcEncounterBattle: components["schemas"]["GameCatalogNpcEncounterBattle"][]
+    IReadOnlyListOfGameCatalogNpcEncounterLevel: components["schemas"]["GameCatalogNpcEncounterLevel"][]
     IReadOnlyListOfGameCatalogNpcStat: components["schemas"]["GameCatalogNpcStat"][]
+    IReadOnlyListOfGameCatalogNpcTier: components["schemas"]["GameCatalogNpcTier"][]
+    IReadOnlyListOfGameCatalogNpcTiers: components["schemas"]["GameCatalogNpcTiers"][]
     IReadOnlyListOfGameCatalogOnslaughtReward: components["schemas"]["GameCatalogOnslaughtReward"][]
     IReadOnlyListOfGameCatalogProgressionRules: components["schemas"]["GameCatalogProgressionRules"][]
     IReadOnlyListOfGameCatalogQuestBattleView: components["schemas"]["GameCatalogQuestBattleView"][]
@@ -3797,6 +4015,7 @@ export interface components {
     IReadOnlyListOfLegendaryEventRunRecordTeamResponse: components["schemas"]["LegendaryEventRunRecordTeamResponse"][]
     IReadOnlyListOfLegendaryEventTeamResponse: components["schemas"]["LegendaryEventTeamResponse"][]
     IReadOnlyListOfLegendaryEventTeamRunDepthResponse: components["schemas"]["LegendaryEventTeamRunDepthResponse"][]
+    IReadOnlyListOfPersonalRosterSnapshotResponse: components["schemas"]["PersonalRosterSnapshotResponse"][]
     IReadOnlyListOfPlayerDataManifestChunk: components["schemas"]["PlayerDataManifestChunk"][]
     IReadOnlyListOfRosterAbilityResponse: components["schemas"]["RosterAbilityResponse"][]
     IReadOnlyListOfRosterCharacterResponse: components["schemas"]["RosterCharacterResponse"][]
@@ -3806,6 +4025,7 @@ export interface components {
     IReadOnlyListOfV1GoalOutcome: components["schemas"]["V1GoalOutcome"][]
     IReadOnlyListOfV1LegendaryEventIssue: components["schemas"]["V1LegendaryEventIssue"][]
     IReadOnlyListOfV1LegendaryEventOutcome: components["schemas"]["V1LegendaryEventOutcome"][]
+    IReadOnlyListOfV1RosterSnapshotOutcome: components["schemas"]["V1RosterSnapshotOutcome"][]
     /** @enum {string} */
     LegendaryEventAnnotationStatus: "maybeClear" | "stopHere"
     /** @enum {string} */
@@ -3976,6 +4196,29 @@ export interface components {
     /** @enum {string} */
     OnslaughtSector:
       "Stone" | "Iron" | "Bronze" | "Silver" | "Gold" | "Diamond" | "Adamantine"
+    PersonalRosterSnapshotListResponse: {
+      /** Format: int32 */
+      limit: number
+      /** Format: int32 */
+      count: number
+      /** Format: int32 */
+      autoLimit: number
+      /** Format: int32 */
+      autoCount: number
+      items: components["schemas"]["IReadOnlyListOfPersonalRosterSnapshotResponse"]
+    }
+    PersonalRosterSnapshotResponse: {
+      /** Format: uuid */
+      id: string
+      name: string
+      source: components["schemas"]["RosterSnapshotSource"]
+      /** Format: date-time */
+      takenAt: string
+      /** Format: int32 */
+      characterCount: number
+      /** Format: int32 */
+      mowCount: number
+    }
     PlayerDataChunkEnvelopeOfObject: {
       /** Format: int32 */
       schemaVersion: number
@@ -4101,6 +4344,9 @@ export interface components {
     RegisterGuildRequest: {
       guildApiToken: string
     }
+    RenamePersonalRosterSnapshotRequest: {
+      name: null | string
+    }
     RosterAbilityResponse: {
       abilityId: string
       /** Format: int32 */
@@ -4149,6 +4395,8 @@ export interface components {
       characters: components["schemas"]["IReadOnlyListOfRosterCharacterResponse"]
       mows: components["schemas"]["IReadOnlyListOfRosterMowResponse"]
     }
+    /** @enum {string} */
+    RosterSnapshotSource: "manual" | "auto" | "v1Import"
     UnitId: string
     /** @enum {string} */
     UnitProgression:
@@ -4346,7 +4594,7 @@ export interface components {
       xpBookRarity: components["schemas"]["XpBookRarity"]
       /** Format: int64 */
       revision: number
-      watchAds?: null | boolean
+      preferences?: null | components["schemas"]["UserPreferenceArray"]
     }
     UpgradeMaterialTargetRequest: {
       upgradeId: string
@@ -4385,11 +4633,15 @@ export interface components {
     UserJotTokenResponse: {
       token: string
     }
+    /** @enum {string} */
+    UserPreference:
+      "LegendaryEventShowPaidOptions" | "LegendaryEventSkipDailyAds"
+    UserPreferenceArray: components["schemas"]["UserPreference"][]
     UserSettingsResponse: {
       /** Format: int32 */
       dailyEnergy: number
       xpBookRarity: components["schemas"]["XpBookRarity"]
-      watchAds: boolean
+      preferences: components["schemas"]["UserPreferenceArray"]
       /** Format: int64 */
       revision: number
     }
@@ -4430,6 +4682,22 @@ export interface components {
       annotationsImported: number
       issues: components["schemas"]["IReadOnlyListOfV1LegendaryEventIssue"]
     }
+    V1RosterSnapshotOutcome: {
+      name: string
+      /** Format: date-time */
+      takenAt: string
+      status: components["schemas"]["V1RosterSnapshotOutcomeStatus"]
+      code: null | string
+      /** Format: int32 */
+      droppedUnits: number
+    }
+    /** @enum {string} */
+    V1RosterSnapshotOutcomeStatus:
+      | "imported"
+      | "skippedDeleted"
+      | "skippedDuplicate"
+      | "skippedLimit"
+      | "failed"
     /** @enum {string} */
     XpBookRarity:
       "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary" | "Mythic"
@@ -6746,6 +7014,190 @@ export interface operations {
       }
     }
   }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per npc, source and group naming every battle the npc fights in as an enemy: source is campaign, campaignEvent, legendaryEvent, questEvent, incursion, guildRaid, survival or onslaught; groupId is the campaign group, event id (lreId or featured character), MoW, raid boss / prime unit set, Survival battle set or onslaught; each battle carries the served battle id, track, tier, node or battle number, challenge flag, guild raid role and the wave rounds where the source has them. Ids and numbers only; no schedule. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcEncountersEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per npc, source and group naming every battle the npc fights in as an enemy: source is campaign, campaignEvent, legendaryEvent, questEvent, incursion, guildRaid, survival or onslaught; groupId is the campaign group, event id (lreId or featured character), MoW, raid boss / prime unit set, Survival battle set or onslaught; each battle carries the served battle id, track, tier, node or battle number, challenge flag, guild raid role and the wave rounds where the source has them. Ids and numbers only; no schedule. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcEncounter"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The single S/A/B/C/D tier list of enemy NPCs for horde modes, with each tier's power multiplier applied to an NPC's power in clear estimates; an NPC may override its tier's multiplier, and one not listed is unrated (multiplier 1.0). */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcTiersEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The single S/A/B/C/D tier list of enemy NPCs for horde modes, with each tier's power multiplier applied to an NPC's power in clear estimates; an NPC may override its tier's multiplier, and one not listed is unrated (multiplier 1.0). */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogNpcTiers"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
   TacticusPlannerApiFeaturesGameCatalogGetGameCatalogNpcsEndpoint1: {
     parameters: {
       query?: never
@@ -8336,7 +8788,7 @@ export interface operations {
           "application/problem+json": components["schemas"]["ApiProblem"]
         }
       }
-      /** @description The upstream credential or response was rejected. */
+      /** @description The upstream credential (issueCode guildRaidTokenRejected) or response was rejected. */
       502: {
         headers: {
           [name: string]: unknown
@@ -8378,7 +8830,7 @@ export interface operations {
           "application/json": components["schemas"]["RegisteredGuildResponse"]
         }
       }
-      /** @description Blank/invalid token, malformed upstream guild response, or no Tacticus User ID configured. */
+      /** @description Blank/invalid token, a token without Guild Raid access, malformed upstream guild response, or no Tacticus User ID configured. */
       400: {
         headers: {
           [name: string]: unknown
@@ -9228,6 +9680,358 @@ export interface operations {
         }
       }
       /** @description expectedRevision is stale or another write won (issueCode legendaryEventPlanStale), or a reorder's ids are not the lane's team set (legendaryEventOrderSetMismatch). current is the plan as it stands. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsListPersonalRosterSnapshotsEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PersonalRosterSnapshotListResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsCreatePersonalRosterSnapshotEndpoint: {
+    parameters: {
+      query?: {
+        fromLastSync?: null | boolean
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreatePersonalRosterSnapshotRequest"]
+      }
+    }
+    responses: {
+      /** @description The created snapshot. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PersonalRosterSnapshotResponse"]
+        }
+      }
+      /** @description The name is too long, no Tacticus API key is configured, or the Tacticus API rejected it. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The authenticated user has not signed up yet. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description rosterSnapshotLimitReached (with limit and count), or playerDataNotSynced for fromLastSync=true. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The per-profile upstream-call limit for this endpoint is exhausted; see Retry-After. */
+      429: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The Tacticus API failed or timed out (upstreamUnavailable). */
+      503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsGetPersonalRosterSnapshotEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        snapshotId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["RosterSnapshotResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description No snapshot with this id belongs to the caller. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsDeletePersonalRosterSnapshotEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        snapshotId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The snapshot was deleted. */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description No snapshot with this id belongs to the caller. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsRenamePersonalRosterSnapshotEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        snapshotId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RenamePersonalRosterSnapshotRequest"]
+      }
+    }
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PersonalRosterSnapshotResponse"]
+        }
+      }
+      /** @description The name is blank or longer than 60 characters. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description No snapshot with this id belongs to the caller. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesRosterSnapshotsKeepPersonalRosterSnapshotEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        snapshotId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PersonalRosterSnapshotResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description No snapshot with this id belongs to the caller. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description rosterSnapshotLimitReached (extensions limit, count) at the limit; rosterSnapshotNotAutomatic (current is the snapshot) when it is not automatic. */
       409: {
         headers: {
           [name: string]: unknown

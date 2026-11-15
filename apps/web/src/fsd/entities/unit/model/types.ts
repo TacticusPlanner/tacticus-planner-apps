@@ -45,6 +45,13 @@ export interface UnownedUnitTileData {
 
 type UnitTileData = OwnedUnitTileData | UnownedUnitTileData
 
+/** Shown on a tile or row when the list is not grouped by faction. */
+export interface UnitFaction {
+  id: string
+  /** Localized; added to the accessible name. */
+  name: string
+}
+
 export interface UnitTileUnit {
   kind: UnitKind
   unitId: UnitId

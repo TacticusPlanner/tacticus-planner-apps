@@ -4,7 +4,7 @@ import { campaignIdSchema } from "@workspace/game-domain"
 import { refreshLocalDataAfterSync } from "@/shared/local-data"
 import { act, render, screen, waitFor } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
-import { availableCampaignBattles } from "@/features/daily-raids"
+import { availableCampaignBattles } from "@/entities/player-data-override"
 
 import { CampaignEventTile } from "./campaign-event-status"
 import {
@@ -155,7 +155,7 @@ describe("CampaignEventTile", () => {
     const tile = await renderWith(knownId, unconfirmedWindow)
     const text = screen.getByText(/end time not confirmed/)
     expect(tile).toContainElement(text)
-    expect(text).toHaveClass("break-words")
+    expect(text).toHaveClass("wrap-break-word")
     expect(text).not.toHaveClass("truncate")
   })
 

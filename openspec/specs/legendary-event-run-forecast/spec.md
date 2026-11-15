@@ -11,7 +11,7 @@ Defines how the planner counts the tokens a Legendary Event's remaining runs sup
 The planner SHALL count, for each run 1–3, the tokens still to come:
 
 - **Run states.** With the event active, runs before the resolved current run are **Done** and supply nothing, the current run is **Now**, and later runs are **Planned**. With the event upcoming, the runs that have ended (`legendary-event-run-resolution`) are Done and every later run is Planned; the first Planned run is labelled **Next**. When the run is unknown the supply is one **Next** run with the Planned token count and no other run. An archived event, or one whose three runs have all ended, has no forecast.
-- **Now.** Free tokens = the synced bucket's `current`, + 1 when the next token instant (the instant the chunk was observed + `nextTokenInSeconds`) is before the run's end, + ⌊(run end − next token instant) ÷ `regenDelayInSeconds`⌋ (when the bucket is null, free tokens = ⌊(run end − now) ÷ 10,800 s⌋ with no + 1, as in V1). Ad tokens = ⌊(run end − now − 1 ms) ÷ 1 day⌋, + 1 when `hasUsedAdForExtraTokenToday` is not true. Bonus-delivery tokens = 6 when the run's premium track is planned (stored premium missions > 0 with Show paid options on) and not already bought (synced `extraCurrencyPerPayout` not > 0); else 0.
+- **Now.** Free tokens = the synced bucket's `current`, + 1 when the next token instant (the instant the chunk was observed + `nextTokenInSeconds`) is before the run's end, + ⌊(run end − next token instant) ÷ `regenDelayInSeconds`⌋ (when the bucket is null, free tokens = ⌊(run end − now) ÷ 10,800 s⌋ with no + 1, as in V1). Ad tokens = ⌊(run end − now − 1 ms) ÷ 1 day⌋, + 1 for today's ad unless `hasUsedAdForExtraTokenToday` is true and was observed in the same run day as now (run days count back from the run's end; a flag observed in an earlier run day is yesterday's ad, so today's still counts). When today's ad counts, the run's tokens line SHALL add "Includes today's ad token, not watched yet". Bonus-delivery tokens = 6 when the run's premium track is planned (stored premium missions > 0 with Show paid options on) and not already bought (synced `extraCurrencyPerPayout` not > 0); else 0.
 - **Planned.** 61 free + 7 ad tokens, + 6 bonus-delivery tokens when that run's stored premium missions > 0 and Show paid options is on.
 
 Assumptions:
@@ -105,12 +105,31 @@ Assumptions:
 
 ### Requirement: Run forecast section
 
-Below the token plan the Overview tab SHALL show a collapsible **Run forecast**, collapsed by default and remembered per device, headed by the last forecast run's outcome ("By the end of run 3: 6,136 points · Unlock 75 shards short"). Expanded, it SHALL show one block per run 1–3 with its state (Done, Now, Next, Planned); Done blocks show "Finished" only; other blocks show tokens available as free + ad + bonus delivery, "uses N" and "N left over", ending points, currency, chests, shards, the steps reached, the next step with shards missing, and the Oh So Close hint when present. When any run has tokens left over and the plan is shorter than the supply, a line SHALL say "N tokens with nothing to play: add a team or raise a depth to use them" linking to the first lane with points left. An **Edit inputs** link SHALL open the Stage 3 run inputs drawer (which carries Show paid options); the forecast recomputes when the drawer saves. With an empty plan the forecast SHALL still render (inputs alone can open chests). While supply inputs load the section SHALL show a skeleton; when the event's catalog record failed to load it SHALL be hidden with the Run status card's failure note.
+The Plan tab SHALL open with a collapsible **Run forecast**, above the Token plan, collapsed by default and remembered per device, headed by the last forecast run's outcome ("By the end of run 3: 6,136 points · Unlock 75 shards short"). Expanded, it SHALL show one block per run 1–3 with its state (Done, Now, Next, Planned); Done blocks show "Finished" only; other blocks open with an icon summary (tokens used of the supply, ending points, chests and shards, each by its game glyph), then only what the summary does not show, each fact once and each line with its icon: the supply split ("28 free + 4 ad", with "+ B bonus delivery" when non-zero; omitted when every token is free) with "N left over" when non-zero and the unwatched-ad note when today's ad counts; what the run adds ("+1,136 points · +175 currency earned, 35 left after chests · +1 chests"); the character step ("Reached <steps> · Next: <step> · S shards short", or just the next step, or "Every reward step reached"); and the Oh So Close hint when present; and, signed in, that run's inputs (`legendary-event-run-inputs`: missions, packs) edited in place. When any run has tokens left over and the plan is shorter than the supply, a line SHALL say "N tokens with nothing to play: add a team or raise a depth to use them" linking to the first lane with points left. The forecast SHALL recompute when a run's inputs save. With an empty plan the forecast SHALL still render (inputs alone can open chests). While supply inputs load the section SHALL show a skeleton; when the event's catalog record failed to load it SHALL be hidden with the Run status card's failure note.
+
+On the run tab the Run status card SHALL show every fact once (with synced values; otherwise its usual loading, unavailable and no-entry states): "Event N of 3"; the token line ("0/12 tokens, next in 7 min") with, under it, the Now run's supply (else the Next run's) as "T left this run", plus "A from ads", "B bonus delivery" and "U with nothing to play" when non-zero (U only when the plan plays some of the run's tokens), and the unwatched-ad note; one table of Points, Currency, Chests and Shards with a **Now** column (synced) and an **End of run R** column ("End of next run" for an unknown run) holding the forecast's ending value and what the run adds ("+95", currency "+300 earned"); the next points milestone; one character step line: "<step> at token N this run · then <next step>, S shards short" when a planned token of this run reaches a step, else "Next: <step> · S shards short at the end of the run", with "· reached at token N (run R)" when a later run's token reaches it, or "Every reward step reached"; the Oh So Close hint when present; and the run's Close the gap section. Without a forecast the table SHALL have only the Now column and there is no step line. On Overview the Run status card SHALL show the same token lines, table and step line, followed by a compact Reward outlook headed "To reach <step>" without its own shards line (hidden once every step is reached); the run tab shows no Reward outlook.
+
+#### Scenario: Run status on the run tab
+
+- **GIVEN** one token left in run 1, 12,413 points, 160 currency, 15 chests and 375 shards, and a plan whose token reaches milestone 27 and Unlock
+- **WHEN** the run tab renders
+- **THEN** Run status shows "1 left this run", the rows Points 12,413 → 12,508 +95, Currency 160 → 110 +300 earned, Chests 15 → 16 +1, Shards 375 → 400 +25 under "Now" and "End of run 1", "Next milestone: 87 points to milestone 27 (+300 currency)" and "Unlock at token 1 this run · then 4 stars, 120 shards short", with no Reward outlook
+
+#### Scenario: Stale ad flag
+
+- **GIVEN** the worked example with `hasUsedAdForExtraTokenToday` true observed 21 hours ago (the run day before)
+- **WHEN** the supply is computed
+- **THEN** the Now run counts 4 ad tokens, today's included
 
 #### Scenario: Forecast header on the worked example
 
-- **WHEN** the Overview renders the worked forecast
+- **WHEN** the Plan tab renders the worked forecast
 - **THEN** the collapsed header reads "By the end of run 3: 6,136 points · Unlock 75 shards short"
+
+#### Scenario: Run block lines on the worked example
+
+- **WHEN** the worked forecast is expanded
+- **THEN** run 2's block shows its icon summary (6/32 tokens, 6,136 points, 11 chests, 275 shards), then "28 free + 4 ad · 26 left over", "+1,136 points · +175 currency earned, 35 left after chests · +1 chests" and "Next: Unlock · 125 shards short", without repeating the summary's totals
 
 #### Scenario: Leftover tokens line
 
@@ -125,4 +144,28 @@ Below the token plan the Overview tab SHALL show a collapsible **Run forecast**,
 #### Scenario: Mobile layout
 
 - **WHEN** the forecast is expanded below 768px
-- **THEN** the run blocks stack in run order, the Now (or Next) block open and the others collapsed to their state and ending points, with no horizontal scroll
+- **THEN** the run blocks stack in run order, the Now (or Next) block open and the others collapsed to their state and icon summary, with no horizontal scroll
+
+### Requirement: Close the gap
+
+When the Now run's forecast ends short of its next reward step by at most two chests of shards, and a points milestone within the event's ladder would reach that step, the Now run's block (on Plan and in the Current run tab's Run status) SHALL show "Close the gap: +N points for {step}", where N is the fewest extra points this run that reach that milestone. Below it, the system SHALL list up to five pushes: battles the plan leaves out, each planned as one extra token by replanning with that battle put back:
+
+- a team stopped right before a battle marked Maybe clear gets that battle back ("{team} · Maybe clear retry")
+- a team whose manual depth is below its clear estimate, with no mark on its next battle, gets one more battle ("{team} · one more battle")
+- a Stop here cell is lifted only when another team of the lane reaches the battle ("Try another team: {team}")
+
+A team is never pushed onto a battle marked Stop here, since Stop here means no chance with that team.
+
+Pushes SHALL be ranked by the points they add to the run net of the token the fixed supply pushes out, one token each (a retry is never counted in the ranking). Each push SHALL read as two lines: an icon for why it is listed (the Maybe clear mark, a people icon for Try another team, a double chevron for a lowered depth), its battle ("{lane} battle {n}") and a check when it alone reaches the step, with its net gain by the points icon on the right; then, smaller, the team and, by a swap icon, the run token it replaces when the run has no spare token. The cost of a failed attempt ("A failed try costs 1 more token and drops {lane} battle {n} (−points)", or "uses a spare token") SHALL be one footer line when every push shares it, else a short "retry drops {lane} battle {n}" on each push. When no push reaches the step alone, the footer SHALL name the fewest top pushes that do together, or say that even together they fall short. A last footer line SHALL be a legend of the three reason icons ("Checks: Maybe clear · Try another team · Lowered depth"), so a short list reads as complete. The block is hidden in the 1-click plan draft and when no push adds points.
+
+#### Scenario: One Stop here push closes a one-chest gap
+
+- **GIVEN** Uthar run 1 Now with 3 tokens, 5,000 points, 375 shards (Unlock at 400, 25 shards a chest) and Alpha battle 3's defeat-all marked Stop here
+- **WHEN** the forecast is built
+- **THEN** it reads "Close the gap: +295 points for Unlock" and lists Alpha battle 3 as a push that closes the gap, replacing Alpha battle 1 (+65)
+
+#### Scenario: Gap too wide
+
+- **GIVEN** the same run with 300 shards (100 short, four chests)
+- **WHEN** the forecast is built
+- **THEN** no Close the gap block shows

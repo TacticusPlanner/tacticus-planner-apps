@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
+  defeatAllIcon,
   ObjectiveIcon,
   useObjectiveLabel,
   type LegendaryEventLane,
@@ -29,13 +30,22 @@ export function TokenObjectives({
     >
       {clearedIds.map((id) => {
         if (id === 0) {
+          const label = t("progress.defeatAll")
           return (
             <li
-              className="rounded-full border px-1.5 text-xs text-muted-foreground"
+              className="flex items-center gap-1 text-xs"
               data-objective="0"
               key={id}
+              title={label}
             >
-              {t("progress.defeatAll")}
+              <ObjectiveIcon
+                className={cn(
+                  "overflow-hidden rounded-md",
+                  compact ? "size-6" : "size-5"
+                )}
+                icon={{ src: defeatAllIcon }}
+              />
+              <span className={cn(compact && "sr-only")}>{label}</span>
             </li>
           )
         }
@@ -51,7 +61,10 @@ export function TokenObjectives({
             key={id}
             title={label}
           >
-            <ObjectiveIcon className="size-4" icon={icon} />
+            <ObjectiveIcon
+              className={compact ? "size-6" : "size-5"}
+              icon={icon}
+            />
             <span className={cn(compact && "sr-only")}>{label}</span>
           </li>
         )

@@ -14,6 +14,8 @@ export {
 
 export { type PlayerDataMetadataStorageModel } from "./player-data.storage"
 
+export { PlayerDataRateLimitError } from "./player-data-errors"
+
 // The HTTP client, sync loop and zod schemas live behind `@workspace/player-data/sync` so they load
 // only when a sync runs; the types stay here because they are erased.
 export type { PlayerDataClient } from "./player-data-api"

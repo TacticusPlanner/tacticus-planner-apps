@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
@@ -88,9 +89,36 @@ export function UpgradesStep({ draft }: { draft: PlanDraft }) {
           })
   }
 
+  const missingOnslaught = draft.missingOnslaughtAlliances
+  const onslaughtNotice =
+    missingOnslaught.length > 0 ? (
+      <p
+        className="rounded-lg border bg-muted/40 px-3 py-2 text-sm"
+        data-testid="plan-wizard-upgrades-onslaught"
+        role="status"
+      >
+        {t("planWizard.upgrades.onslaughtMissing", {
+          count: missingOnslaught.length,
+          alliances: new Intl.ListFormat(i18n.language, {
+            type: "conjunction",
+          }).format(
+            missingOnslaught.map((alliance) =>
+              t(`common:alliances.${alliance}` as never, {
+                defaultValue: alliance,
+              })
+            )
+          ),
+        })}{" "}
+        <Link className="font-medium underline" to="/my-game/onslaught">
+          {t("planWizard.upgrades.onslaughtLink")}
+        </Link>
+      </p>
+    ) : null
+
   return (
     <section className="flex flex-col gap-4" data-testid="plan-wizard-upgrades">
       {header}
+      {onslaughtNotice}
       {list.length === 0 && recommendations.status === "done" ? (
         <p className="text-sm text-muted-foreground">
           {t("planWizard.upgrades.none")}

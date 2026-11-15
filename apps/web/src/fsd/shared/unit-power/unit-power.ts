@@ -147,6 +147,20 @@ export function mowPowerAt(
   })
 }
 
+/**
+ * An NPC's estimated power at a Legendary Event wave enemy's `ladderIndex` (the 1-based position in
+ * its served `stats`; 0 or less reads the first row); null when the NPC, the row or its power data is
+ * unavailable.
+ */
+export function npcPowerAtLadder(
+  npcId: string,
+  ladderIndex: number,
+  context: UnitPowerContext
+): number | null {
+  const row = context.npcs.get(npcId)?.stats?.[Math.max(0, ladderIndex - 1)]
+  return row ? npcPowerAt(npcId, row, context) : null
+}
+
 /** An NPC's estimated power at one of its catalog `stats` rows; null when unavailable. */
 export function npcPowerAt(
   npcId: string,

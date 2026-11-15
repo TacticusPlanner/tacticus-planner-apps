@@ -1,16 +1,25 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronDown } from "lucide-react"
+import {
+  ChevronDown,
+  Coins,
+  Flag,
+  Sparkles,
+  TriangleAlert,
+  type LucideIcon,
+} from "lucide-react"
 import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useAnalyticsActions } from "@/shared/analytics"
-import { IconLine } from "@/shared/ui"
+import { EntityIcon, IconLine } from "@/shared/ui"
 
+import type { MilestoneGap } from "../lib/milestone-push"
 import type { RunForecast } from "../lib/run-forecast"
 import type { TokenPlanView } from "../lib/token-plan-view"
+import { MilestoneGapSection } from "./milestone-gap"
 import { useStoredOpen } from "../model/use-stored-open"
 import type { OpenTeamsHandler } from "./next-token-card"
 
@@ -24,15 +33,16 @@ const REGION_ID = "legendary-event-run-forecast-runs"
 
 /**
  * The Overview's collapsible Run forecast (spec: Run forecast section): headed by the last run's
- * outcome; expanded, one block per run with its supply, use and ending figures, the leftover-tokens
- * line and Edit inputs (`editInputs`, the run inputs drawer the page renders). Hidden on an archived
- * event, signed out, without synced progress or the event's reward ladder.
+ * outcome; expanded, one block per run with an icon summary (tokens, points, chests, shards), its
+ * supply, use and ending figures and, when the page gives `runInputs`, that run's inputs (missions
+ * and packs), then the leftover-tokens line. Hidden on an archived event, signed out, without
+ * synced progress or the event's reward ladder.
  */
 export function RunForecastSection({
   eventId,
   view,
   isMobile,
-  editInputs,
+  runInputs,
   onOpenTeams,
   openKey = OPEN_KEY,
   defaultOpen = false,
@@ -41,7 +51,8 @@ export function RunForecastSection({
   eventId: string
   view: TokenPlanView
   isMobile: boolean
-  editInputs: ReactNode
+  /** A run's inputs (missions and packs), shown in its block; absent where they can't be edited. */
+  runInputs?: (run: RunForecast) => ReactNode
   onOpenTeams: OpenTeamsHandler
   /** Where the open state is remembered; another page keeps its own. */
   openKey?: string
@@ -81,7 +92,7 @@ export function RunForecastSection({
         <Button
           aria-controls={REGION_ID}
           aria-expanded={open}
-          className="h-auto w-full justify-between px-1 py-1 text-left whitespace-normal"
+          className="h-auto w-full justify-between p-1 text-left whitespace-normal"
           data-testid="run-forecast-toggle"
           onClick={toggle}
           type="button"
@@ -108,7 +119,15 @@ export function RunForecastSection({
         <div className="flex min-w-0 flex-col gap-3" id={REGION_ID}>
           <ol className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-3">
             {runs.map((run) => (
-              <RunBlock isMobile={isMobile} key={run.run} run={run} />
+              <RunBlock
+                gap={
+                  view.milestoneGap?.run === run.run ? view.milestoneGap : null
+                }
+                inputs={runInputs?.(run)}
+                isMobile={isMobile}
+                key={run.run}
+                run={run}
+              />
             ))}
           </ol>
           {view.leftover ? (
@@ -118,7 +137,6 @@ export function RunForecastSection({
               tokens={view.leftover.tokens}
             />
           ) : null}
-          <div>{editInputs}</div>
         </div>
       ) : null}
     </section>
@@ -143,9 +161,169 @@ function ForecastHeader({ last }: { last: RunForecast }) {
     : t("tokenPlan.forecast.header", { run: last.run, points, step, shards })
 }
 
-function RunBlock({ run, isMobile }: { run: RunForecast; isMobile: boolean }) {
+/** A line with a lucide glyph where the game has none (currency, steps, the next step). */
+function GlyphLine({
+  icon: Icon,
+  children,
+  testId,
+}: {
+  icon: LucideIcon
+  children: ReactNode
+  testId?: string
+}) {
+  return (
+    <li className="flex items-center gap-1.5" data-testid={testId}>
+      <Icon
+        aria-hidden="true"
+        className="size-4 shrink-0 text-muted-foreground"
+      />
+      <span className="min-w-0">{children}</span>
+    </li>
+  )
+}
+
+/** The run's ending figures at a glance: tokens used, points, chests and shards, each by its game
+ *  glyph (the collapsed run on mobile, and the head of every run block). */
+function RunSummary({ run }: { run: RunForecast }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
+  const items = [
+    {
+      key: "tokens",
+      icon: tokensIcon,
+      value: `${number.format(run.tokensUsed)}/${number.format(run.supply.total)}`,
+      label: t("tokenPlan.forecast.summary.tokens"),
+    },
+    {
+      key: "points",
+      icon: pointsIcon,
+      value: number.format(run.endingPoints),
+      label: t("tokenPlan.forecast.summary.points"),
+    },
+    {
+      key: "chests",
+      icon: chestsIcon,
+      value: number.format(run.chestsClaimed),
+      label: t("tokenPlan.forecast.summary.chests"),
+    },
+    {
+      key: "shards",
+      icon: shardsIcon,
+      value: number.format(run.endingShards),
+      label: t("tokenPlan.forecast.summary.shards"),
+    },
+  ]
+  return (
+    <span
+      className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm tabular-nums"
+      data-testid="run-forecast-summary"
+    >
+      {items.map((item) => (
+        <span
+          className="inline-flex items-center gap-1"
+          data-stat={item.key}
+          key={item.key}
+          title={item.label}
+        >
+          <EntityIcon
+            alt={item.label}
+            className="size-4 shrink-0"
+            src={item.icon}
+          />
+          {item.value}
+        </span>
+      ))}
+    </span>
+  )
+}
+
+/** What the run's icon summary (tokens used of the supply, ending points, chests, shards) does not
+ *  already say: where the tokens come from and how many go unused, what the run earns, and the
+ *  steps it reaches with the next one. */
+function RunDetails({ run }: { run: RunForecast }) {
+  const { t, i18n } = useTranslation("legendaryEvents")
+  const number = new Intl.NumberFormat(i18n.language)
+  const { supply } = run
+  const tokenParts = [
+    supply.ad > 0 || supply.bonusDelivery > 0
+      ? supply.bonusDelivery > 0
+        ? t("tokenPlan.forecast.splitBonus", {
+            free: supply.free,
+            ad: supply.ad,
+            bonus: supply.bonusDelivery,
+          })
+        : t("tokenPlan.forecast.split", { free: supply.free, ad: supply.ad })
+      : null,
+    run.tokensLeftOver > 0
+      ? t("tokenPlan.forecast.leftOver", { count: run.tokensLeftOver })
+      : null,
+  ].filter((part) => part !== null)
+  const steps = run.stepsReached
+    .map((step) => t(`outlook.steps.${step}`))
+    .join(", ")
+  const next =
+    run.next.step === "fullyAscended"
+      ? t("tokenPlan.forecast.allSteps")
+      : t("tokenPlan.forecast.next", {
+          step: t(`outlook.steps.${run.next.step}`),
+          shards: number.format(run.shardsMissing),
+        })
+  return (
+    <ul className="flex flex-col gap-0.5 text-sm">
+      {tokenParts.length > 0 || supply.adTodayPending ? (
+        <IconLine icon={tokensIcon} testId="run-forecast-tokens">
+          {tokenParts.join(" · ")}
+          {supply.adTodayPending ? (
+            <span
+              className="block text-xs text-muted-foreground"
+              data-testid="run-forecast-ad-today"
+            >
+              {t("tokenPlan.forecast.adToday")}
+            </span>
+          ) : null}
+        </IconLine>
+      ) : null}
+      <GlyphLine icon={Coins} testId="run-forecast-gains">
+        {t("tokenPlan.forecast.gains", {
+          points: number.format(run.pointsEarned),
+          earned: number.format(run.currencyEarned),
+          currency: number.format(run.endingCurrency),
+          chests: number.format(run.chestsOpened),
+        })}
+      </GlyphLine>
+      <GlyphLine
+        icon={run.stepsReached.length > 0 ? Sparkles : Flag}
+        testId="run-forecast-step"
+      >
+        {run.stepsReached.length > 0
+          ? t("tokenPlan.forecast.reachedThen", { steps, next })
+          : next}
+      </GlyphLine>
+      {run.ohSoClose ? (
+        <GlyphLine icon={TriangleAlert} testId="run-forecast-oh-so-close">
+          {t("tokenPlan.forecast.ohSoClose", {
+            shards: run.ohSoClose.shards,
+            blackstone: number.format(run.ohSoClose.blackstone),
+          })}
+        </GlyphLine>
+      ) : null}
+    </ul>
+  )
+}
+
+function RunBlock({
+  run,
+  gap,
+  isMobile,
+  inputs,
+}: {
+  run: RunForecast
+  /** The run's "Close the gap" pushes (the run in progress only). */
+  gap: MilestoneGap | null
+  isMobile: boolean
+  inputs: ReactNode
+}) {
+  const { t } = useTranslation("legendaryEvents")
   const title = (
     <span className="flex items-baseline gap-2">
       <span className="font-semibold">
@@ -169,71 +347,21 @@ function RunBlock({ run, isMobile }: { run: RunForecast; isMobile: boolean }) {
         {t("tokenPlan.forecast.finished")}
       </p>
     ) : (
-      <ul className="flex flex-col gap-0.5 text-sm">
-        <IconLine icon={tokensIcon} testId="run-forecast-supply">
-          {t("tokenPlan.forecast.supply", {
-            total: run.supply.total,
-            free: run.supply.free,
-            ad: run.supply.ad,
-            bonus: run.supply.bonusDelivery,
-          })}
-        </IconLine>
-        <li data-testid="run-forecast-uses">
-          {t("tokenPlan.forecast.uses", {
-            used: run.tokensUsed,
-            left: run.tokensLeftOver,
-          })}
-        </li>
-        <IconLine icon={pointsIcon} testId="run-forecast-points">
-          {t("tokenPlan.forecast.points", {
-            points: number.format(run.endingPoints),
-            earned: number.format(run.pointsEarned),
-          })}
-        </IconLine>
-        <li>
-          {t("tokenPlan.forecast.currency", {
-            currency: number.format(run.endingCurrency),
-            earned: number.format(run.currencyEarned),
-          })}
-        </li>
-        <IconLine icon={chestsIcon}>
-          {t("tokenPlan.forecast.chests", {
-            claimed: run.chestsClaimed,
-            opened: run.chestsOpened,
-          })}
-        </IconLine>
-        <IconLine icon={shardsIcon}>
-          {t("tokenPlan.forecast.shards", {
-            shards: number.format(run.endingShards),
-          })}
-        </IconLine>
-        {run.stepsReached.length > 0 ? (
-          <li data-testid="run-forecast-reached">
-            {t("tokenPlan.forecast.reached", {
-              steps: run.stepsReached
-                .map((step) => t(`outlook.steps.${step}`))
-                .join(", "),
-            })}
-          </li>
-        ) : null}
-        <li data-testid="run-forecast-next">
-          {run.next.step === "fullyAscended"
-            ? t("tokenPlan.forecast.allSteps")
-            : t("tokenPlan.forecast.next", {
-                step: t(`outlook.steps.${run.next.step}`),
-                shards: number.format(run.shardsMissing),
-              })}
-        </li>
-        {run.ohSoClose ? (
-          <li data-testid="run-forecast-oh-so-close">
-            {t("tokenPlan.forecast.ohSoClose", {
-              shards: run.ohSoClose.shards,
-              blackstone: number.format(run.ohSoClose.blackstone),
-            })}
-          </li>
-        ) : null}
-      </ul>
+      <div className="flex min-w-0 flex-col gap-2">
+        <RunDetails run={run} />
+        {gap ? <MilestoneGapSection gap={gap} /> : null}
+      </div>
     )
+
+  const inputsBlock =
+    inputs && run.state !== "done" ? (
+      <div
+        className="flex min-w-0 flex-col gap-2 border-t pt-2"
+        data-testid="run-forecast-inputs"
+      >
+        {inputs}
+      </div>
+    ) : null
 
   if (isMobile) {
     return (
@@ -243,13 +371,14 @@ function RunBlock({ run, isMobile }: { run: RunForecast; isMobile: boolean }) {
         data-testid="run-forecast-run"
       >
         <details open={run.state === "now" || run.state === "next"}>
-          <summary className="flex cursor-pointer items-baseline justify-between gap-2">
+          <summary className="flex cursor-pointer flex-col gap-1">
             {title}
-            <span className="text-sm tabular-nums">
-              {number.format(run.endingPoints)}
-            </span>
+            {run.state === "done" ? null : <RunSummary run={run} />}
           </summary>
-          <div className="pt-2">{body}</div>
+          <div className="flex flex-col gap-3 pt-2">
+            {body}
+            {inputsBlock}
+          </div>
         </details>
       </li>
     )
@@ -261,7 +390,9 @@ function RunBlock({ run, isMobile }: { run: RunForecast; isMobile: boolean }) {
       data-testid="run-forecast-run"
     >
       {title}
+      {run.state === "done" ? null : <RunSummary run={run} />}
       {body}
+      {inputsBlock}
     </li>
   )
 }

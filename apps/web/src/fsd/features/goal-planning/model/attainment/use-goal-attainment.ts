@@ -34,7 +34,7 @@ export function useGoalAttainmentState(
 ): GoalAttainmentState {
   const goalIds = useStableIds(requestedGoalIds)
   const goals = useGoalsFor(goalIds)
-  const { getCharacter, getMow } = useGoalCatalog()
+  const { getCharacter, getMow, upgradesById } = useGoalCatalog()
   const charactersRead = usePlayerChunk("characters", chunkOrUndefined)
   const mowsRead = usePlayerChunk("mows", chunkOrUndefined)
   const upgradesRead = usePlayerChunk("inventory-upgrades", chunkOrUndefined)
@@ -63,7 +63,13 @@ export function useGoalAttainmentState(
     const upgradeStock = allocateUpgradeGoalStock(
       goals.goalsById.values(),
       inventoryUpgrades,
-      { getCharacter, getMow, playerCharacterById, playerMowById }
+      {
+        getCharacter,
+        getMow,
+        playerCharacterById,
+        playerMowById,
+        upgradesById,
+      }
     )
     const result = new Map<string, GoalAttainment>()
     goalIds.forEach((goalId) => {
@@ -94,6 +100,7 @@ export function useGoalAttainmentState(
     inventoryItems,
     getCharacter,
     getMow,
+    upgradesById,
   ])
   // A failed read stays pending, as it did before reads reported errors.
   const pending =

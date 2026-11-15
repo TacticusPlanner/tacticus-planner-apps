@@ -10,6 +10,9 @@ import {
 import type { LegendaryEventRunInputs } from "../model/plan.types"
 import {
   battleEnemies,
+  currentMissions,
+  doneMissionCount,
+  doneMissionIndexes,
   eventMissions,
   openMissions,
   tokenMissionAmount,
@@ -71,21 +74,41 @@ describe("eventMissions", () => {
   })
 })
 
+describe("done missions", () => {
+  const missions = eventMissions(lysanderEvent, "regular")
+
+  it("counts the stored done missions, at most the track's length", () => {
+    expect(doneMissionCount(missions, [4, 1, 1])).toBe(2)
+    expect(doneMissionCount(missions.slice(0, 2), [0, 1, 2, 3])).toBe(2)
+  })
+
+  it("stores the first missions in order as done", () => {
+    expect(doneMissionIndexes(missions, 3)).toEqual(
+      missions.slice(0, 3).map((mission) => mission.index)
+    )
+    expect(doneMissionIndexes(missions, -1)).toEqual([])
+  })
+})
+
 describe("openMissions", () => {
-  it("lists the current run's regular missions not ticked Done", () => {
+  it("lists the current run's regular missions after the done ones, in order", () => {
     const open = openMissions({
       event: lysanderEvent,
       runs: [
         runInputs(1, { completedRegularMissions: [0, 1, 2] }),
+        // Two stored as done: missions finish in order, so missions 1 and 2 are the done ones.
         runInputs(2, { completedRegularMissions: [1, 4] }),
       ],
       currentRun: 2,
       showPaidOptions: false,
     })
     expect(open.map((entry) => entry.mission.index)).toEqual([
-      0, 2, 3, 5, 6, 7, 8, 9,
+      2, 3, 4, 5, 6, 7, 8, 9,
     ])
     expect(open.every((entry) => entry.track === "regular")).toBe(true)
+    expect(currentMissions(open).map((entry) => entry.mission.index)).toEqual([
+      2,
+    ])
   })
 
   it("adds premium missions only with paid options on and the premium track planned", () => {
@@ -191,6 +214,38 @@ describe("tokenProgressesMission", () => {
         undefined
       )
     ).toBe(false)
+  })
+})
+
+describe("battleEnemies", () => {
+  it("counts each served entry as many enemies as its count", () => {
+    const npcs = new Map([
+      ["pinkHorror", { factionId: "Tzeentch", traits: ["Daemon"] }],
+      ["bloodletter", { factionId: "Khorne", traits: ["Daemon"] }],
+    ])
+    const wave = (horrors: number, letters: number) => ({
+      round: 1,
+      power: 100,
+      enemies: [
+        { id: "pinkHorror", ladderIndex: 1, count: horrors },
+        { id: "bloodletter", ladderIndex: 1, count: letters },
+      ],
+    })
+    const battle = battleEnemies(
+      {
+        waves: [wave(4, 3), wave(3, 2), wave(2, 3), wave(2, 2)],
+      } as Parameters<typeof battleEnemies>[0],
+      npcs
+    )
+    expect(battle.counts).toEqual({
+      waves: 4,
+      enemies: 21,
+      byFaction: new Map([
+        ["Tzeentch", 11],
+        ["Khorne", 10],
+      ]),
+      byTrait: new Map([["Daemon", 21]]),
+    })
   })
 })
 

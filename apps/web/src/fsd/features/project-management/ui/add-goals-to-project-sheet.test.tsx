@@ -39,7 +39,10 @@ const updateProjectGoals = vi.fn()
 // The project's non-archived members (its `goalIds`), as the project list reports them.
 let members: string[] = []
 
-vi.mock("@/entities/goal", () => ({
+vi.mock("@/entities/goal", async () => ({
+  compareGoalTypes: (
+    await vi.importActual<typeof import("@/entities/goal")>("@/entities/goal")
+  ).compareGoalTypes,
   goalRankTargetKey: (goal: {
     goalType: string
     config?: { rank?: { end: number } }
@@ -169,11 +172,11 @@ describe("AddGoalsToProjectSheet", () => {
     expect(screen.getByTestId("add-goals-row-goal-2")).toBeInTheDocument()
   })
 
-  it("groups by unit or goal type without reordering, and keeps selections made under a filter", async () => {
+  it("groups by unit or goal type without reordering rows, and keeps selections made under a filter", async () => {
     listGoals.mockResolvedValue({
       goals: [
-        goal({ goalId: "goal-1", entityId: "hero1", goalType: "Rank" }),
         goal({ goalId: "goal-2", entityId: "hero2", goalType: "Ascension" }),
+        goal({ goalId: "goal-1", entityId: "hero1", goalType: "Rank" }),
         goal({ goalId: "goal-3", entityId: "hero1", goalType: "Ascension" }),
       ],
     })
@@ -199,6 +202,15 @@ describe("AddGoalsToProjectSheet", () => {
     ).toBeInTheDocument()
 
     await user.click(screen.getByTestId("add-goals-group-type"))
+    // Type sections lead with Rank, even though an Ascension goal is first in priority.
+    expect(
+      screen
+        .getAllByTestId(/^add-goals-group-section-/)
+        .map((section) => section.dataset.testid)
+    ).toEqual([
+      "add-goals-group-section-Rank",
+      "add-goals-group-section-Ascension",
+    ])
     const ascension = screen.getByTestId("add-goals-group-section-Ascension")
     expect(
       within(ascension)

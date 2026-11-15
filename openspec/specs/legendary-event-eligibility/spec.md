@@ -99,7 +99,7 @@ Assumptions:
 
 ### Requirement: Eligibility leaderboard section on the event page
 
-Each lane tab SHALL render an Eligibility leaderboard section after the Synced progress grid, for that lane only. It SHALL list every allowed character with: portrait and localized name; a **trait marker** (the trait's icon with the localized trait name as accessible text) after the name for each of Healer and Mechanic the unit's catalog traits include; owned state (present in the synced `characters` chunk) with the owned unit's rarity and rank, or a "locked" marker; one objective icon per lane objective in the lane's objective order, full-strength when satisfied and muted (reduced opacity, never colour alone) when not, each with accessible text; the unit's points figure (remaining points by default, see the Deduct scored points requirement); the objectives count labelled "Objectives"; and the unit's estimated clears on this lane labelled "Clears" (see `legendary-event-clear-estimates`: "~n" for an owned unit, "—" for a locked unit or unknown ownership, a placeholder dash while loading, and absent when estimates are unavailable). Order SHALL be the points figure descending, then objectives count descending, then name ascending, with no user sort control; estimated clears do not affect order. Filters: "Only unlocked" (default off) and the objective multi-select (see its requirement). Filter and toggle state are shared by the three lanes and the Overview leaderboard, persist while on the page and reset on leaving it. The Overview leaderboard does not show estimated clears. A lane with no allowed units SHALL show a "no eligible units" body. When the roster chunk is unavailable every unit SHALL render with unknown ownership (no locked marker, rarity, rank or estimate), an inline "roster not synced" note, and "Only unlocked" disabled.
+The Teams tab SHALL render, under the Event board when exactly one lane is shown, an Eligibility leaderboard section for that lane only. It SHALL list every allowed character with: portrait and localized name; a **trait marker** (the trait's icon with the localized trait name as accessible text) after the name for each of Healer and Mechanic the unit's catalog traits include; owned state (present in the synced `characters` chunk) with the owned unit's rarity and rank, or a "locked" marker; one objective icon per lane objective in the lane's objective order, full-strength when satisfied and muted (reduced opacity, never colour alone) when not, each with accessible text; the unit's points figure (remaining points by default, see the Deduct scored points requirement); the objectives count labelled "Objectives"; and the unit's estimated clears on this lane labelled "Clears" (see `legendary-event-clear-estimates`: "~n" for an owned unit, "—" for a locked unit or unknown ownership, a placeholder dash while loading, and absent when estimates are unavailable). Order SHALL be the points figure descending, then objectives count descending, then name ascending, with no user sort control; estimated clears do not affect order. Filters: "Only unlocked" (default off) and the objective multi-select (see its requirement). Filter and toggle state are shared by the three lanes and the cross-lane leaderboard, persist while on the page and reset on leaving it. The cross-lane leaderboard does not show estimated clears. A lane with no allowed units SHALL show a "no eligible units" body. When the roster chunk is unavailable every unit SHALL render with unknown ownership (no locked marker, rarity, rank or estimate), an inline "roster not synced" note, and "Only unlocked" disabled.
 
 #### Scenario: Default order
 
@@ -201,7 +201,7 @@ The leaderboard controls SHALL include a **Deduct scored points** switch, on by 
 
 ### Requirement: Objective multi-select filter
 
-The leaderboard controls SHALL include an objective filter listing the current lane's objectives (icon and label) as multi-select chips in the lane's objective order; on the Overview leaderboard the chips SHALL be grouped per lane under Alpha, Beta and Gamma headings in that order, each group listing that lane's objectives, so an objective shared by two lanes appears in each lane's group. When synced progress is available every chip's label SHALL be followed by "cleared / battles" for that lane's objective (the number of the lane's battles whose synced progress has the objective cleared, of the lane's battle count; 0 for a lane with no synced record); when the progress read failed the chips carry no count. A chip's selection is the objective's filter identity, so selecting a shared objective in one group selects it in every group. A unit stays listed only when it satisfies every selected objective (on Overview, on at least one lane for each selected objective). A selection that matches no unit SHALL show a "no unit satisfies these objectives" body with a clear-filter action.
+The leaderboard controls SHALL include an objective filter listing the current lane's objectives (icon and label) as multi-select chips in the lane's objective order; on the cross-lane leaderboard the chips SHALL be grouped per lane under Alpha, Beta and Gamma headings in that order, each group listing that lane's objectives, so an objective shared by two lanes appears in each lane's group. When synced progress is available every chip's label SHALL be followed by "cleared / battles" for that lane's objective (the number of the lane's battles whose synced progress has the objective cleared, of the lane's battle count; 0 for a lane with no synced record); when the progress read failed the chips carry no count. A chip's selection is the objective's filter identity, so selecting a shared objective in one group selects it in every group. A unit stays listed only when it satisfies every selected objective (on Overview, on at least one lane for each selected objective). A selection that matches no unit SHALL show a "no unit satisfies these objectives" body with a clear-filter action.
 
 #### Scenario: Two objectives selected
 
@@ -216,7 +216,7 @@ The leaderboard controls SHALL include an objective filter listing the current l
 
 #### Scenario: Grouped Overview chips with counts
 
-- **GIVEN** Lysander on Overview with synced progress where Alpha clears Flying in 11 of 18 battles and Beta clears Flying in 3 of 18
+- **GIVEN** Lysander's cross-lane leaderboard with synced progress where Alpha clears Flying in 11 of 18 battles and Beta clears Flying in 3 of 18
 - **WHEN** the controls render
 - **THEN** the chips sit under Alpha, Beta and Gamma headings; the Alpha Flying chip reads "Flying 11 / 18" and the Beta Flying chip "Flying 3 / 18"; selecting either marks both pressed and keeps only units satisfying Flying
 
@@ -232,9 +232,9 @@ The leaderboard controls SHALL include an objective filter listing the current l
 - **WHEN** the controls render
 - **THEN** the chips show labels without counts and the "synced progress unavailable" note is shown
 
-### Requirement: Cross-lane eligibility leaderboard on Overview
+### Requirement: Cross-lane eligibility leaderboard on Teams
 
-The Overview tab SHALL render an Eligibility leaderboard with one row per character allowed on at least one lane, showing portrait, name, trait markers, owned state with rarity and rank, and one cell per lane (Alpha, Beta, Gamma) carrying the lane's objective icons as met / muted indicators in the lane's objective order, each with accessible text, above the lane's points figure following the Deduct scored points toggle; a lane that does not allow the unit shows "—" and no indicators. Rows are ordered by the sum of the three figures descending, then name. The row's accessible text names each lane's figure. Filters and toggles are the shared ones.
+The Teams tab SHALL render, under the Event board when two or three lanes are shown, a cross-lane Eligibility leaderboard with its own lane multi-select (a dropdown of lane checkboxes, every lane by default, remembered per browser apart from the page's lane switches; the last lane stays checked) and one row per character allowed on at least one of its lanes, showing portrait, name, trait markers and the row's actions menu right after the name, a **Progression** column (the owned unit's rarity icon, star icon and star count, as the collection's roster view shows it), a **Rank** column (the rank icon on a background in the rank's colour, as on team tiles), and one cell per lane (Alpha, Beta, Gamma) carrying the lane's objective icons as met / muted indicators in the lane's objective order, each with accessible text, above the lane's points figure following the Deduct scored points toggle; a lane that does not allow the unit shows "—" and no indicators. Rows are ordered by the sum of the lanes' figures descending, then name; pressing the Progression, Rank or a lane heading SHALL sort by it descending, again ascending, and a third time return to that order, with ties and locked units (no value) kept in that order, last. The row's accessible text names each lane's figure. Filters and toggles are the shared ones; like the collection page, they sit in a panel behind a **Filters** button that counts the active filters (selected objectives, Only unlocked, Goals Preview) and opens at first when any is active.
 
 #### Scenario: Cross-lane row
 
@@ -276,15 +276,15 @@ Opening the menu SHALL NOT change the row's order, filters or the Goals Preview 
 #### Scenario: Create goal for a locked unit
 
 - **GIVEN** Certus is not owned and Goals Preview is on with an Active Unlock goal previewing him as owned
-- **WHEN** the user chooses Create goal from his row's actions menu on Overview
+- **WHEN** the user chooses Create goal from his row's actions menu on the cross-lane leaderboard
 - **THEN** the sheet opens with Certus selected and goal type Unlock
 
 #### Scenario: Desktop menu
 
-- **WHEN** a leaderboard renders at or above 768px
-- **THEN** each table row ends with a three-dots button in a narrow trailing column whose header's accessible name is "Actions", and the table keeps no horizontal page scroll
+- **WHEN** a lane leaderboard renders at or above 768px
+- **THEN** each table row ends with a three-dots button in a narrow trailing column whose header's accessible name is "Actions", and the table keeps no horizontal page scroll; the cross-lane leaderboard's rows carry it right after the unit's name instead
 
 #### Scenario: Mobile menu
 
-- **WHEN** a leaderboard renders below 768px
-- **THEN** each row card has a three-dots button in its top-right corner with a touch target of at least 44px, and opening it does not navigate or expand the card
+- **WHEN** a lane leaderboard renders below 768px
+- **THEN** each row card has a three-dots button in its top-right corner (right after the unit's name on the cross-lane leaderboard) with a touch target of at least 44px, and opening it does not navigate or expand the card

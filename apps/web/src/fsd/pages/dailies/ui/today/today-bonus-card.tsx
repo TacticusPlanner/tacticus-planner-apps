@@ -3,7 +3,7 @@ import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
-import { RaidSchedule } from "@/features/daily-raids"
+import { RaidSchedule, type RaidLocationTarget } from "@/features/daily-raids"
 
 import { TodayCard } from "./today-card"
 import { INSET_CARDS_CLASS_NAME } from "./today-plan-card"
@@ -20,12 +20,14 @@ export function TodayBonusCard({
   notice,
   onShowLess,
   onShowMore,
+  onShowLocation,
   view,
   wide,
 }: {
   notice?: ReactNode
   onShowLess: () => void
   onShowMore: () => void
+  onShowLocation?: (target: RaidLocationTarget) => void
   view: TodayView
   wide: boolean
 }) {
@@ -57,6 +59,7 @@ export function TodayBonusCard({
           <RaidSchedule
             {...view.scheduleProps}
             entries={view.bonusShown}
+            onShowLocation={onShowLocation}
             testId="bonus-raid-list"
           />
         </div>

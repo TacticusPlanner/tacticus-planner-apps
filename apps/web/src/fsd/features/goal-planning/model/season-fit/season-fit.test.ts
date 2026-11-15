@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import type { EstimateOutcome } from "@/features/goal-farming/@x/goal-planning"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 
 import {
   completionInstantMs,

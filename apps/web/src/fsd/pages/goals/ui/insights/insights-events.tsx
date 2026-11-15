@@ -9,12 +9,12 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 
-import type { EstimateResourceId } from "@/features/goal-farming"
+import type { EstimateResourceId } from "@/entities/goal-farming"
 import { useGoalCatalog, type PlanFarmingSpot } from "@/features/goal-planning"
 import {
   CampaignInsightList,
   type CampaignInsight,
-} from "@/features/campaign-insights"
+} from "@/entities/campaign-insight"
 
 import { GoalLink } from "./insights-goal-link"
 import { useGoalLabel, type InsightsGoalInfo } from "./insights-view"
@@ -97,10 +97,11 @@ export function InsightsEvents({
                     <span className="text-xs text-muted-foreground">
                       {t("goals.insights.helpsGoals")}
                     </span>
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                    <div className="flex flex-wrap gap-1.5">
                       {goalIds.map((goalId) => (
                         <GoalLink
                           goalId={goalId}
+                          info={goalInfoById.get(goalId)}
                           key={goalId}
                           label={goalLabel(goalId)}
                         />

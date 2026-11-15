@@ -3,7 +3,9 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 /** goals-navigation spec: desktop has an actions row (Create goal first, the bulk actions, Planning
  *  Settings at the far right) above a filters row (status, Type/Group, order hint); mobile keeps the
- *  status filter in its own row and compresses the rest to icon-only triggers in a second row. */
+ *  status filter in its own row and compresses the rest to icon-only triggers in a second row. The
+ *  Table/Cards switch (goal-list-layout) ends the desktop filters row and leads the mobile mode toggles,
+ *  with Collapse/Expand all (only while grouped) just before it. */
 export function GoalsToolbar({
   projectScope,
   statusFilter,
@@ -15,6 +17,8 @@ export function GoalsToolbar({
   orderHint,
   reorderToggle,
   selectToggle,
+  viewToggle,
+  collapseToggle,
 }: {
   projectScope: ReactNode
   statusFilter: ReactNode
@@ -27,13 +31,15 @@ export function GoalsToolbar({
   orderHint: ReactNode
   reorderToggle: ReactNode
   selectToggle: ReactNode
+  viewToggle: ReactNode
+  collapseToggle?: ReactNode
 }) {
   const isMobile = useIsMobile()
 
   if (isMobile) {
     return (
       <>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {projectScope}
           {statusFilter}
         </div>
@@ -43,6 +49,8 @@ export function GoalsToolbar({
         >
           {filters}
           {seasonFit}
+          {collapseToggle}
+          {viewToggle}
           {reorderToggle}
           {selectToggle}
           {orderHint}
@@ -76,6 +84,10 @@ export function GoalsToolbar({
           {filters}
           {seasonFit}
           {orderHint}
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          {collapseToggle}
+          {viewToggle}
         </div>
       </div>
     </div>

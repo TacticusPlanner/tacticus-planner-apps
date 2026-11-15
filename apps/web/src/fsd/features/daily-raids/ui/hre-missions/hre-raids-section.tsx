@@ -22,8 +22,10 @@ import {
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { useActiveHomeScreenEvent } from "../../model/use-active-home-screen-event"
+import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/today-quick-filters"
 import { useDailyRaids } from "../../model/use-daily-raids"
 import { useHomeScreenEventName } from "../home-screen-event/use-home-screen-event-name"
+import type { RaidLocationTarget } from "../raid-location-name"
 import { RaidState } from "../raid-state"
 import { HreHandBattles } from "./hre-hand-battles"
 import {
@@ -68,6 +70,10 @@ export function HreRaidsSection({
   remainingBattles,
   daysLeft,
   renderTeams,
+  projectId,
+  controls,
+  quickFilters,
+  onShowLocation,
 }: {
   request: HreRaidsRequest | null
   notice: ReactNode
@@ -76,6 +82,15 @@ export function HreRaidsSection({
   /** The teams for the battles to fight by hand: one per group of nodes that allow the same
    * factions, shown under the list. */
   renderTeams?: (groups: readonly MissionDeployGroup[]) => ReactNode
+  /** The Dailies project: narrows the goals the suggestions serve first (none: every active goal). */
+  projectId?: string
+  /** The project selector and Raids Filters, shown under the title. */
+  controls?: ReactNode
+  /** Today's quick filters picked in `controls`: "Combine goals" drops goal priority from the order,
+   * "Raidable only" leaves battles to play manually out of the raids. */
+  quickFilters?: TodayQuickFilterOptions
+  /** Makes each suggested battle's name open its enemies. */
+  onShowLocation?: (target: RaidLocationTarget) => void
 }) {
   const { t } = useTranslation("hre")
   // A running Home Screen Event with a raid rule ranks the nodes too, so both events progress.
@@ -115,16 +130,17 @@ export function HreRaidsSection({
         : SUMMARY_ONLY,
     [hasRequest, battlesToGo, eventOnly, manual]
   )
-  const raids = useDailyRaids(undefined, {
+  const raids = useDailyRaids(projectId, {
     homeScreenEventRule: runningEventRule ?? undefined,
     eventFarm: false,
     missionRaids,
+    quickFilters,
   })
   const loaded = raids.status !== "loading" && raids.status !== "error"
   const plan = loaded ? raids.missionRaids : undefined
   const locations = loaded ? raids.locationsByBattleId : undefined
   const view = raids.status === "ready" ? raids : null
-  const rowsView: RaidRowsView = { locations, view }
+  const rowsView: RaidRowsView = { locations, view, onShowLocation }
   const shown = request && (request.raids || manual || request.manualNotice)
   const hseNote =
     runningEvent &&
@@ -154,6 +170,7 @@ export function HreRaidsSection({
           </Badge>
         ) : null}
       </div>
+      {controls}
       {raids.status === "loading" || raids.status === "error" ? (
         <RaidState state={raids.status} />
       ) : !shown ? (
@@ -169,7 +186,7 @@ export function HreRaidsSection({
             className="text-sm text-muted-foreground"
             data-testid="hre-raids-budget"
           >
-            {t("raids.budget", { energy: plan.energyBudget })}
+            {t("raids.unlimitedEnergy")}
             {hseNote ? ` ${hseNote}` : null}
           </p>
           {request.manualNotice ? (

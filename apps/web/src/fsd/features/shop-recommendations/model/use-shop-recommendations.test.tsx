@@ -24,16 +24,14 @@ const state = vi.hoisted(() => ({
 }))
 vi.mock("@/entities/goal", () => ({
   useGlobalGoalPlan: () => state.globalPlan,
-}))
-vi.mock("@/features/rank-lookup/@x/shop-recommendations", () => ({
-  mapCharacterStorageToDomain: (record: unknown) => record,
-  mapUpgradeStorageToDomain: (record: unknown) => record,
-}))
-vi.mock("@/features/daily-raids/@x/shop-recommendations", () => ({
   activeProjectMembers: (members: unknown) => {
     state.members = members
     return state.active
   },
+}))
+vi.mock("@/entities/rank-lookup", () => ({
+  mapCharacterStorageToDomain: (record: unknown) => record,
+  mapUpgradeStorageToDomain: (record: unknown) => record,
 }))
 vi.mock("./shop-needs", () => ({ aggregateShopNeeds: () => ({}) }))
 vi.mock("./shop-recommendations", () => ({

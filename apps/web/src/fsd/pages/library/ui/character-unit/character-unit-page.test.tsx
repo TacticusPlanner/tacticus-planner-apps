@@ -2,6 +2,7 @@ import { useLocation } from "react-router"
 import { progressionRulesFixture } from "@workspace/game-catalog/testing"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { CreateGoalLauncherContext } from "@/entities/goal"
 import { unitOriginState } from "@/entities/unit"
 import type { ReadState } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
@@ -303,6 +304,9 @@ const ownedTigurius = {
   equippedItems: [{ slotId: "relic", equipmentId: "R_Tigurius", level: 3 }],
 }
 
+const launchCreateGoal = vi.fn()
+beforeEach(() => launchCreateGoal.mockClear())
+
 function Where() {
   const location = useLocation()
   return (
@@ -320,10 +324,10 @@ async function renderUnit(url: string, state?: unknown) {
   }
   const [pathname, search] = url.split("?")
   const { queryClient } = render(
-    <>
+    <CreateGoalLauncherContext.Provider value={launchCreateGoal}>
       <CharacterUnitPage />
       <Where />
-    </>,
+    </CreateGoalLauncherContext.Provider>,
     {
       route: "/library/characters/:entityId",
       initialEntries: [{ pathname, search: search ? `?${search}` : "", state }],
@@ -380,9 +384,17 @@ describe("CharacterUnitPage", () => {
     env.roster = [ownedTigurius]
     await renderUnit("/library/characters/ultraTigurius")
 
-    expect(screen.getByTestId("unit-your-line")).toHaveTextContent(
-      "Your unit: Mythic · Two Blue Stars · Adamantine II · abilities 58 / 46 · relic level 3"
+    const yourLine = screen.getByTestId("unit-your-line")
+    expect(yourLine).toHaveTextContent(
+      "Your unit: 2··abilities 58 / 46 · relic level 3"
     )
+    // Progression and rank show as icons, named for assistive technology.
+    expect(
+      within(yourLine).getByRole("img", { name: "Mythic 2★" })
+    ).toBeInTheDocument()
+    expect(
+      within(yourLine).getByRole("img", { name: "Adamantine II" })
+    ).toBeInTheDocument()
     expect(
       within(screen.getByTestId("unit-glance-health")).getByText("7,955")
     ).toBeInTheDocument()
@@ -408,7 +420,7 @@ describe("CharacterUnitPage", () => {
       "true"
     )
     expect(screen.getByTestId("unit-not-unlocked")).toHaveTextContent(
-      "Not unlocked. Values start at Uncommon, Two Stars, Stone I."
+      "Not unlocked. Values start at Uncommon 2★, Stone I."
     )
     const progress = screen.getByRole("progressbar", {
       name: "Shards towards unlocking",
@@ -568,13 +580,43 @@ describe("CharacterUnitPage", () => {
       "data-greyed"
     )
     expect(screen.getByTestId("unit-showing-starting")).toHaveTextContent(
-      "Showing Uncommon, Two Stars, Stone I, abilities level 1."
+      "Showing Uncommon 2★, Stone I, abilities level 1."
     )
     expect(
       within(screen.getByTestId("unit-sign-in-banner")).getByRole("button", {
         name: "Sign in",
       })
     ).toBeInTheDocument()
+  })
+
+  it("offers no Create goal signed out", async () => {
+    await renderUnit("/library/characters/ultraTigurius")
+    expect(screen.queryByTestId("unit-create-goal")).not.toBeInTheDocument()
+  })
+
+  it("opens goal creation for an owned unit with only the unit prefilled", async () => {
+    env.authenticated = true
+    env.roster = [ownedTigurius]
+    await renderUnit("/library/characters/ultraTigurius")
+    fireEvent.click(
+      screen.getByRole("button", { name: "Create goal for Tigurius" })
+    )
+    expect(launchCreateGoal).toHaveBeenCalledWith({
+      entityType: "Character",
+      entityId: "ultraTigurius",
+    })
+  })
+
+  it("opens goal creation on Unlock for a unit the player doesn't own", async () => {
+    env.authenticated = true
+    env.roster = []
+    await renderUnit("/library/characters/ultraTigurius")
+    fireEvent.click(screen.getByTestId("unit-create-goal"))
+    expect(launchCreateGoal).toHaveBeenCalledWith({
+      entityType: "Character",
+      entityId: "ultraTigurius",
+      goalType: "Unlock",
+    })
   })
 
   it("points a signed-in visitor without a synced roster at Sync with Tacticus", async () => {
@@ -592,6 +634,7 @@ describe("CharacterUnitPage", () => {
     env.rosterPending = true
     await renderUnit("/library/characters/ultraTigurius")
     expect(screen.getByTestId("unit-header")).toBeInTheDocument()
+    expect(screen.getByTestId("unit-create-goal")).toBeDisabled()
     expect(screen.queryByTestId("unit-sign-in-banner")).not.toBeInTheDocument()
     expect(
       screen.queryByTestId("unit-showing-starting")

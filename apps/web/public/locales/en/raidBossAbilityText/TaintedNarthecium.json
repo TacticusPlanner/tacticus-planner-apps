@@ -1,6 +1,6 @@
 {
   "TaintedNarthecium": {
-    "description": "An adjacent friendly <style=\"Aliance_Chaos\">Chaos</style> unit that is defeated has a <style=\"Stat_Chance\">{[chance]}% chance</style> to be revived with a maximum of <style=\"Stat_Health\">{[hp]} Health</style>, even if <style=\"Overkill\">Overkilled</style>. Can only be triggered once per turn.",
+    "description": "An adjacent friendly non-<style=\"Mechanical\">Mechanical</style> <style=\"Aliance_Chaos\">Chaos</style> unit that is defeated has a <style=\"Stat_Chance\">{[chance]}% chance</style> to be revived with a maximum of <style=\"Stat_Health\">{[hp]} Health</style>, even if <style=\"Overkill\">Overkilled</style>. Can only be triggered once per turn.",
     "variables": {
       "hp": [
         49, 59, 69, 78, 88, 99, 111, 122, 133, 145, 156, 167, 178, 190, 201,

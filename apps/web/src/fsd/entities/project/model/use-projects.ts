@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
-import { projectQueries, type ProjectSummary } from "@/entities/project"
+import { projectQueries } from "../api/project.queries"
+import type { ProjectSummary } from "./types"
 import { ApiError } from "@/shared/api"
 
 type FetchState =

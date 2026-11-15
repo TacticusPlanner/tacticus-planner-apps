@@ -46,7 +46,7 @@ export function MowUnitDetails({
               value={ability}
               data-testid={`unit-section-${ability}`}
             >
-              <AccordionTrigger className="min-h-[52px] items-center">
+              <AccordionTrigger className="min-h-13 items-center">
                 <span className="flex min-w-0 flex-1 flex-col text-left">
                   <span className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
                     {t(`mowUnit.abilities.${ability}`)}
@@ -76,7 +76,7 @@ export function MowUnitDetails({
       <h2 id="mow-abilities-title" className="font-heading text-lg font-bold">
         {t("mowUnit.abilities.title")}
       </h2>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(400px,100%),1fr))] gap-4">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(25rem,100%),1fr))] gap-4">
         {panels.primary}
         {panels.secondary}
         {panels.mythic}

@@ -4,12 +4,13 @@ import { variationMode, variationModeLabelKey } from "./variation-mode"
 
 describe("variationMode", () => {
   it.each([
-    ["necroBossWardenLHE", "lhe"],
-    ["astarCyrus_LHE", "lhe"],
+    ["necroBossWardenLHE", "questEvent"],
+    ["astarCyrus_LHE", "questEvent"],
     ["necroBossWardenLEG", "legendary"],
     ["necroNpc1WarriorSurv", "survival"],
     ["necroBossC1Warden", "campaign"],
-    ["admecBossDominusCE", "championEvent"],
+    ["admecBossDominusCE", "campaignEvent"],
+    ["admecBossMarshallCE", "campaignEvent"],
     ["tyranNpc4WarriorCE2Gorgon", "gorgon"],
     ["necroNpc1TutWarrior", "tutorial"],
     ["necroNpc1TutWarriorFTUEtest", "tutorial"],
@@ -31,6 +32,8 @@ describe("variationMode", () => {
   })
 
   it("maps a mode to its library namespace key", () => {
-    expect(variationModeLabelKey("lhe")).toBe("npcs.variationMode.lhe")
+    expect(variationModeLabelKey("questEvent")).toBe(
+      "npcs.variationMode.questEvent"
+    )
   })
 })

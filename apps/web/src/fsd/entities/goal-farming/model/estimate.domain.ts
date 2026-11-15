@@ -1,0 +1,304 @@
+import type {
+  BattleId,
+  Rank,
+  Rarity,
+  UnitId,
+  UpgradeId,
+} from "@workspace/game-domain"
+
+import type { Battle, FarmLocation } from "@/shared/lib"
+
+// Input/output shapes for the day-by-day estimation engine (estimate.ts). Kept separate from the
+// calc functions themselves, mirroring rank-lookup.domain.ts / rank-lookup-calc.ts.
+
+/** A farmable character shard resource (plan §16 phase 7) — folded into the same day-by-day engine
+ *  as upgrade materials via a synthetic `EstimateUpgrade` entry keyed by this id, since a character's
+ *  `shardLocations` use the identical `FarmLocation` shape as an upgrade's. */
+export type ShardResourceId = `shard:${string}`
+
+export function shardResourceId(entityId: string): ShardResourceId {
+  return `shard:${entityId}`
+}
+
+/** A mythic character shard resource (tacticus-planner-apps#103) — mythic shards have no campaign-
+ *  node farm source (Onslaught/Shops only, never a `FarmLocation`), so a mythic need only ever enters
+ *  the simulator via a `FlatSupplier` (an Onslaught or Shop acquisition source); with none selected it
+ *  stays count-only, as it always has. */
+export type MythicShardResourceId = `mythic-shard:${string}`
+
+export function mythicShardResourceId(entityId: string): MythicShardResourceId {
+  return `mythic-shard:${entityId}`
+}
+
+/** Any resource the engine can farm a day-by-day estimate for: an upgrade material, or (phase 7) a
+ *  farmable character shard (regular or, via a flat supplier only, mythic). */
+export type EstimateResourceId =
+  UpgradeId | ShardResourceId | MythicShardResourceId
+
+/** How much of one farmable resource is still needed. */
+export interface CountedResourceNeed<TId extends string> {
+  id: TId
+  count: number
+}
+
+export type UpgradeNeed = CountedResourceNeed<EstimateResourceId>
+
+/** The minimal shape the engine needs from an upgrade (or shard) record — any richer catalog type
+ *  (e.g. rank-lookup's `UpgradeWithFarmLocations`) satisfies this structurally. */
+export interface EstimateUpgrade {
+  id: EstimateResourceId
+  farmLocations: FarmLocation[]
+}
+
+export interface FarmingCharacter {
+  id: UnitId
+  name: string
+  rankUpUpgrades: { rank: Rank; upgradeIds: UpgradeId[] }[]
+}
+
+interface FarmingRecipeIngredient {
+  material: UpgradeId
+  count: number
+  recipe?: FarmingRecipeIngredient[] | null
+}
+
+export interface FarmingUpgrade extends EstimateUpgrade {
+  id: UpgradeId
+  label: string
+  rarity: Rarity
+  stat: string
+  crafted: boolean
+  recipe: FarmingRecipeIngredient[]
+}
+
+/** An energy-free per-day contributor to a resource's need — a selected daily-shop offer or an
+ *  Onslaught source (plan: acquisition-source picker, tacticus-planner-apps#103). `supplyOnDay` is
+ *  called once per simulated day with a 0-based day index (day 1 of the simulation = index 0) and
+ *  returns that day's available amount (already accounting for weekday availability / expected-value
+ *  weighting) — never consulted for daily energy or raid counts. `key` is a stable identity for
+ *  this individual source (a shop offer id, or `onslaught:regular`/`onslaught:mythic`) so a
+ *  consumer can read back how many shards this one source contributed even when several suppliers
+ *  feed the same `resourceId`. */
+export interface FlatSupplier {
+  key: string
+  resourceId: EstimateResourceId
+  supplyOnDay: (dayIndex: number) => number
+  /** Set only on an Onslaught source: the average shards one token (run) yields, so a consumer can
+   *  turn the shards it supplied into projected tokens (V1's `oTokensTotal`). In `estimatePlan`
+   *  every Onslaught source draws on one account-wide daily pool of runs (`supplyOnDay` over this),
+   *  in goal priority order (spec: *Onslaught tokens are shared across goals in priority order*). */
+  shardsPerRun?: number
+  /** Set only on a shop offer: what one purchase yields and costs, so a consumer can turn the amount
+   *  it supplied into currency spent (display only — the cost never enters the estimate). A supplier
+   *  with `shop` set also draws on the offer's account-wide daily capacity, pooled by `key` across
+   *  every goal in `estimatePlan` (spec: *A shop offer's daily capacity is shared across goals*). */
+  shop?: { perPurchase: number; currency: string; cost: number }
+}
+
+/** One battle node's farming economics for a single material. */
+export interface FarmNode {
+  battleId: BattleId
+  energyCost: number
+  dropRate: number
+  /** The node's daily attempt cap — shared across every material farmed from the same battle within
+   *  one simulated day (see spendDay's per-battleId attempt tracking), since it's the same real-world
+   *  battle regardless of which material happens to drop there. */
+  dailyAttempts: number
+  /** The battle's expected gold payout, used only to break a tie in `selectFarmNodes` when two
+   *  candidates are otherwise equally energy-efficient. `null`/absent sorts lowest. */
+  expectedGold?: number | null
+}
+
+export interface RaidBreakdownEntry {
+  goalId: string
+  resourceId: EstimateResourceId
+  battleId: BattleId
+  raidsPerformed: number
+  itemsFarmed: number
+  energySpent: number
+  dailyAttempts: number
+  /** How many of `resourceId` this goal still needed when raiding this node began: the real
+   *  remaining need, less the expected drops of nodes raided earlier the same day. */
+  remainingBefore: number
+}
+
+/** One selected shop offer's projected contribution to one goal on one plan day (spec: the plan
+ *  schedule records each selected shop offer's per-day purchases). Display-only — it never feeds back
+ *  into the estimate. */
+export interface ShopScheduleEntry {
+  goalId: string
+  /** The `ShopRewardOffer.offerId` (`<shopId>:<rewardType>`). */
+  offerId: string
+  /** Expected amount (shards, or Mythic-material items) the offer supplied that day. */
+  expectedAmount: number
+}
+
+/** One goal's projected Onslaught contribution on one plan day: the expected shards its selected
+ *  Onslaught source supplied and the runs they take (shards over the source's shards per run).
+ *  Display-only — it never feeds back into the estimate and consumes no energy. */
+export interface OnslaughtScheduleEntry {
+  goalId: string
+  expectedShards: number
+  runs: number
+}
+
+export interface RaidDaySchedule {
+  day: number
+  entries: RaidBreakdownEntry[]
+  shopEntries: ShopScheduleEntry[]
+  onslaughtEntries: OnslaughtScheduleEntry[]
+  attemptsUsedByBattle: ReadonlyMap<BattleId, number>
+  energyTotal: number
+  raidsTotal: number
+}
+
+export interface RaidPlanSummary {
+  totalDays: number
+  totalEnergy: number
+  totalRaids: number
+  daysWithUnusedEnergy: number
+  /** `null` while any goal still has a blocker or hit the simulation limit: the schedule's last day
+   *  is then only the end of the obtainable work, never a completion. A blocked goal flagged
+   *  `excludeFromCompletion` does not suppress it; it is listed in `excludedGoalIds` instead. */
+  completionDate: string | null
+  /** Blocked goals flagged `excludeFromCompletion`, in plan order: left out of `completionDate`, so a
+   *  surface showing the date can say which goals it does not cover. */
+  excludedGoalIds: string[]
+}
+
+export interface RaidPlanSchedule {
+  days: RaidDaySchedule[]
+  outcomes: ReadonlyMap<string, EstimateOutcome>
+  summary: RaidPlanSummary
+}
+
+/** One goal's material demand within a priority-shared plan estimate (`estimatePlan`). */
+export interface InventoryAllocationGoal<TId extends string> {
+  goalId: string
+  /** Position in the account-wide goal order (`Goal.GlobalPriority`) — lower runs first and claims shared
+   *  inventory/energy ahead of higher numbers. */
+  priority: number
+  needs: CountedResourceNeed<TId>[]
+  /** Ordered farming segments for this goal. Missing/empty means one TotalUpgrades stage. */
+  stages?: readonly { target: string; needs: CountedResourceNeed<TId>[] }[]
+}
+
+/** One goal's farmable material demand within a priority-shared plan estimate. */
+export interface GoalNeed extends InventoryAllocationGoal<EstimateResourceId> {
+  /** Restricts farming to these battle ids when set (goal's `config.farmingLocationIds`); otherwise
+   *  the engine auto-selects the least-energy node(s) per material. */
+  farmingLocationIds?: readonly string[] | null
+  /** This goal's selected non-campaign acquisition sources (shop offers, Onslaught), if any — see
+   *  `FlatSupplier`. */
+  flatSuppliers?: readonly FlatSupplier[]
+  /** When this goal is blocked, leave it out of the plan's `completionDate` instead of suppressing
+   *  the date (a shop-only unit's Unlock goal: its shards are bought, never raided). */
+  excludeFromCompletion?: boolean
+}
+
+interface InventoryAllocationStage<TId extends string> {
+  target: string
+  needs: CountedResourceNeed<TId>[]
+  remaining: CountedResourceNeed<TId>[]
+}
+
+export interface GoalInventoryAllocation<
+  TId extends string = EstimateResourceId,
+> {
+  goalId: string
+  stages: InventoryAllocationStage<TId>[]
+}
+
+interface EstimateResult {
+  status?: "Estimated"
+  /** Days of farming until every material need is met. */
+  days: number
+  /** ISO `yyyy-mm-dd` completion date, with the estimate's reference date treated as Day 1. */
+  date: string
+  energyTotal: number
+  raidsTotal: number
+  /** How much of each resource's need was covered by a `FlatSupplier` rather than campaign farming —
+   *  present whenever any `FlatSupplier` contributed. UI reads a source's own contribution from here
+   *  rather than recomputing it (plan: one canonical result structure). */
+  flatSupplyTotal?: ReadonlyMap<EstimateResourceId, number>
+  /** The same contribution split by the individual `FlatSupplier.key` that supplied it, so a
+   *  consumer can attribute shards to one shop offer or the Onslaught source when several feed the
+   *  same resource — present whenever any `FlatSupplier` contributed. */
+  flatSupplyBySupplier?: ReadonlyMap<string, number>
+  /** Projected Onslaught tokens (runs) this estimate uses: each Onslaught supplier's supplied shards
+   *  over its shards per run, rounded up. Absent when no Onslaught source contributed. */
+  onslaughtTokens?: number
+  /** Projected shop currency this estimate spends, by currency id: each shop supplier's supplied
+   *  shards over its shards per purchase, times its cost. Absent when no shop offer contributed. */
+  shopSpend?: ReadonlyMap<string, number>
+  /** When each of the goal's farming-strategy checkpoints (its stages, see `InventoryAllocationGoal.
+   *  stages`) is reached, in order — present only for a goal with more than one stage, so a staged
+   *  goal ("Every step", "Milestones", …) can show its intermediate targets, not just the final one. */
+  checkpoints?: readonly GoalCheckpointEstimate[]
+}
+
+/** One farming-strategy checkpoint of an estimated goal. */
+export interface GoalCheckpointEstimate {
+  /** The stage's `target` (a Rank goal: the rank index; a MoW Ability goal: `track:level`). */
+  target: string
+  /** Days of farming until this checkpoint's materials are all in hand (0: already covered). */
+  days: number
+  /** ISO `yyyy-mm-dd` date the checkpoint is reached, the reference date being Day 1. */
+  date: string
+  /** Energy spent on this checkpoint alone (not cumulative). */
+  energy: number
+}
+
+export type EstimateBlockedReason =
+  | "NoFarmLocation"
+  | "FarmingOverrideUnavailable"
+  | "InsufficientDailyEnergy"
+  | "SimulationLimit"
+  | "UnsupportedCost"
+  /** Every farm node failed the caller's `FarmNodeFilter` (Today/Bonus Raids Filters only). */
+  | "FilteredOut"
+
+/** One residual need (after inventory) with no usable supported source. */
+export interface EstimateBlocker {
+  resourceId: EstimateResourceId
+  reason: EstimateBlockedReason
+  remaining: number
+  /** `FilteredOut` only: the goal pins `farmingLocationIds`, so the pin is what the filter excluded. */
+  pinned?: boolean
+}
+
+/** Whether a battle may be farmed for a resource. Applied before the cheapest nodes are picked. */
+export type FarmNodeFilter = (
+  battleId: BattleId,
+  resourceId: EstimateResourceId
+) => boolean
+
+/** A need a `FarmNodeFilter` removed every farm node of, as reported by a Today run. */
+export interface FilteredOutNeed {
+  goalId: string
+  resourceId: EstimateResourceId
+  remaining: number
+  pinned: boolean
+}
+
+interface EstimateBlocked {
+  status: "Blocked"
+  /** The first blocker's reason (`blockers[0]`). */
+  reason: EstimateBlockedReason
+  /** Every blocked resource. */
+  resourceIds: EstimateResourceId[]
+  /** Every unsatisfied requirement with its reason and remaining quantity. Absent for goal-wide
+   *  blocks (`SimulationLimit`, `UnsupportedCost`). */
+  blockers?: EstimateBlocker[]
+  /** Resources still scheduled for raiding/supply despite the blocker. Non-empty means a partial
+   *  plan: the schedule holds this goal's obtainable work but the goal cannot complete. */
+  actionableResourceIds?: EstimateResourceId[]
+  days?: never
+  date?: never
+  energyTotal?: never
+  raidsTotal?: never
+}
+
+export type EstimateOutcome = EstimateResult | EstimateBlocked
+
+export type { Battle, FarmLocation }

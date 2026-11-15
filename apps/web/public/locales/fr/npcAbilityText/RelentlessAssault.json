@@ -1,0 +1,8 @@
+{
+  "RelentlessAssault": {
+    "description": "La première fois chaque tour que cette unité élimine une unité ennemie, elle effectue immédiatement une <style=\"NormalAttack\">attaque à distance normale</style>, si possible.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

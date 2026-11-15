@@ -126,7 +126,7 @@ function EventDetails({
                     src={characterIcon(id as UnitId)}
                     alt={label}
                     className={cn(
-                      "size-9 rounded",
+                      "size-9 rounded-sm",
                       !owned && "opacity-40 grayscale"
                     )}
                   />

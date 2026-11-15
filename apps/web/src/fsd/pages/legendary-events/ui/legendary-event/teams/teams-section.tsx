@@ -1,7 +1,8 @@
-import { useId, useMemo, useState } from "react"
+import { useCallback, useId, useMemo, useState } from "react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Plus, Sparkles } from "lucide-react"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
@@ -14,15 +15,19 @@ import {
   type LegendaryEventLaneId,
   type LegendaryEventRun,
   type LegendaryEventTeam,
+  type LegendaryEventUnit,
   type TeamSuggestion,
 } from "@/entities/legendary-event"
 import {
   TeamSuggestionsDialog,
   laneTeams,
+  useTeamSuggestionCount,
   type LegendaryEventPlanActions,
   type PickerGoalsPreview,
+  type TeamSuggestionsSource,
 } from "@/features/legendary-event-plan"
 import { ConfirmationDialog, SortableList } from "@/shared/ui"
+import { useUnitName } from "@/shared/unit-name"
 
 import {
   laneEstimateInputs,
@@ -44,6 +49,8 @@ import {
   type TeamPowerSource,
   type TeamsSectionState,
 } from "./teams.view-model"
+
+const NO_UNITS: readonly LegendaryEventUnit[] = []
 
 type TeamsActions = Pick<
   LegendaryEventPlanActions,
@@ -83,7 +90,7 @@ export interface TeamsViewModel {
 }
 
 /**
- * A lane's Teams section (design D5, D6), between the lane overview and the progress grid: one
+ * A lane's Teams section (design D5, D6), under its Event board column's unit table: one
  * card per team in stored order, an explicit Add team button, Suggest teams (also in the empty
  * state), delete confirmation, and reorder — drag on desktop, Move up / Move down in the card
  * menu on mobile. Add team, Edit and Use this team open the page's single editor through
@@ -110,6 +117,7 @@ export function TeamsSection({
   // The open Suggest teams dialog's mount key (null when closed): a fresh mount resets its toggles.
   const [suggesting, setSuggesting] = useState<number | null>(null)
   const suggestReasonId = useId()
+  const titleId = useId()
   const { state, run, actions, estimates, unitPower } = teams
   const estimateTeam =
     estimates.kind === "ready" ? estimates.byLane[laneId].team : undefined
@@ -122,6 +130,41 @@ export function TeamsSection({
 
   // A lane holds at most MAX_TEAMS_PER_LANE teams (the API refuses one more).
   const laneFull = savedTeams.length >= MAX_TEAMS_PER_LANE
+
+  // What Suggest teams reads; the button shows how many proposals the dialog opens with.
+  const unitName = useUnitName()
+  const nameOfUnit = useCallback(
+    (unit: { id: string }) => unitName("Character", unit.id),
+    [unitName]
+  )
+  const suggestionsSource: TeamSuggestionsSource = useMemo(
+    () => ({
+      eventId: teams.eventId,
+      laneId,
+      lane,
+      units: state.kind === "ready" ? state.units : NO_UNITS,
+      teams: savedTeams,
+      run,
+      model,
+      progress: teams.progressByLane?.[laneId],
+      // Nothing to count until the section's data is ready.
+      estimates: state.kind === "ready" ? estimateInputs : undefined,
+      goalUnitIds: teams.goals.goalUnitIds,
+    }),
+    [
+      teams.eventId,
+      laneId,
+      lane,
+      state,
+      savedTeams,
+      run,
+      model,
+      teams.progressByLane,
+      estimateInputs,
+      teams.goals.goalUnitIds,
+    ]
+  )
+  const suggestionCount = useTeamSuggestionCount(suggestionsSource, nameOfUnit)
 
   const displayName = useTeamDisplayName()
   const nameOf = (team: LegendaryEventTeam) =>
@@ -180,12 +223,18 @@ export function TeamsSection({
     editor.openTeamEditor({
       laneId,
       memberUnitIds: suggestion.memberUnitIds,
+      reserveUnitId: suggestion.reserveUnitId,
       objectiveIndexes: suggestion.objectiveIndexes,
       suggestionRank: rank,
     })
   const suggestButton = (testId: string) => (
     <Button
       aria-describedby={estimateInputs ? undefined : suggestReasonId}
+      aria-label={
+        suggestionCount === null
+          ? undefined
+          : t("suggestions.buttonWithCount", { count: suggestionCount })
+      }
       data-testid={testId}
       disabled={!estimateInputs}
       onClick={openSuggestions}
@@ -194,6 +243,16 @@ export function TeamsSection({
     >
       <Sparkles />
       {t("suggestions.button")}
+      {suggestionCount === null ? null : (
+        <Badge
+          aria-hidden
+          className="min-w-5 px-1.5 tabular-nums"
+          data-testid="legendary-event-suggest-teams-count"
+          variant={suggestionCount > 0 ? "default" : "secondary"}
+        >
+          {suggestionCount}
+        </Badge>
+      )}
     </Button>
   )
   const ids = cards.map((card) => card.id)
@@ -221,15 +280,15 @@ export function TeamsSection({
 
   return (
     <section
-      aria-labelledby="legendary-event-teams-title"
-      className="flex min-w-0 scroll-mt-[calc(var(--mobile-header-height)+3rem)] flex-col gap-3 md:scroll-mt-4"
+      aria-labelledby={titleId}
+      className="flex min-w-0 scroll-mt-[calc(var(--mobile-header-height)+6.25rem)] flex-col gap-3 md:scroll-mt-4"
       data-lane={laneId}
       data-testid="legendary-event-teams"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold" id="legendary-event-teams-title">
+        <h4 className="font-semibold" id={titleId}>
           {t("teams.title")}
-        </h2>
+        </h4>
         {state.kind === "ready" ? (
           <div className="flex flex-wrap items-center gap-2">
             {estimateInputs ? null : (
@@ -332,7 +391,7 @@ export function TeamsSection({
             <Link
               className="self-start text-sm text-primary underline-offset-4 hover:underline"
               data-testid="team-suggestions-plan-wizard"
-              to={`/legendary-events/${teams.eventId}/plan?from=suggestions`}
+              to={`/legendary-events/${teams.eventId}/plan/edit?from=suggestions`}
             >
               {t("planWizard.openFromSuggestions")}
             </Link>
@@ -342,18 +401,7 @@ export function TeamsSection({
           onClose={() => setSuggesting(null)}
           onUseSuggestion={acceptSuggestion}
           open={editor.editor?.suggestionRank === undefined}
-          source={{
-            eventId: teams.eventId,
-            laneId,
-            lane,
-            units: state.units,
-            teams: savedTeams,
-            run,
-            model,
-            progress: teams.progressByLane?.[laneId],
-            estimates: estimateInputs,
-            goalUnitIds: teams.goals.goalUnitIds,
-          }}
+          source={suggestionsSource}
         />
       ) : null}
 

@@ -1,6 +1,6 @@
 {
   "WaaaghEnergy": {
-    "description": "Cada vez que otra unidad en un radio de 2 hexágonos realiza un ataque, <style=\"Faction_Orks\">Zapspitta</style> gana una <i>carga de ¡Waaagh!</i>. Al atacar, inflige <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> por cada una de sus <i>cargas de ¡Waaagh!</i> y pierde el {[effectLevelPct]}% de ellas después de atacar. Al final de su turno, si tiene <style=\"STAT\">{[effectLevel]}</style> o más <i>cargas de ¡Waaagh!</i>, Zapspitta pierde el {[hpPct]}% de su <style=\"Stat_Health\">Salud</style> máxima actual.",
+    "description": "Cada vez que otra unidad en un radio de 2 hexágonos realiza un ataque, <style=\"Faction_Orks\">Zapspitta</style> gana un nivel de <i>Energía de ¡Waaagh!</i>. Al atacar, inflige <style=\"Stat_Damage\">+{[extraDmg]} de Daño</style> por cada nivel y pierde el {[effectLevelPct]}% de los niveles actuales después de atacar. Al final de su turno, si tiene <style=\"STAT\">{[effectLevel]}</style> o más niveles de <i>Energía de ¡Waaagh!</i>, Zapspitta pierde el {[hpPct]}% de su <style=\"Stat_Health\">Salud</style> máxima actual.",
     "variables": {
       "extraDmg": [
         1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 17, 18,
@@ -9,7 +9,7 @@
         119, 121, 123, 126, 128, 131, 134, 137, 140, 143, 146
       ],
       "effectLevel": [
-        5, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6,
+        4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6,
         6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
         7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
       ]

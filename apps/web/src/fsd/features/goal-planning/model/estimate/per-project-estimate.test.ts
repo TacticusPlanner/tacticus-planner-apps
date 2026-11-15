@@ -19,14 +19,14 @@ import {
 import type {
   Character,
   UpgradeWithFarmLocations,
-} from "@/features/rank-lookup/@x/goal-planning"
+} from "@/entities/rank-lookup"
 import type {
   AcquisitionSource,
   CombinedGoalSpec,
   GoalDetail,
 } from "@/entities/goal"
 
-import type { Battle } from "@/features/goal-farming/@x/goal-planning"
+import type { Battle } from "@/entities/goal-farming"
 import {
   buildPreviewGoalDetails,
   estimateNewGoalsForProject,
@@ -59,6 +59,7 @@ function goalDetail(overrides: Partial<GoalDetail>): GoalDetail {
     },
     snapshot: null,
     dependsOn: [],
+    linkedGoalIds: [],
     projectIds: [],
     revision: 1,
     ...overrides,

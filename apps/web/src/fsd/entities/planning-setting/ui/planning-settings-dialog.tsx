@@ -22,16 +22,13 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Slider } from "@workspace/ui/components/slider"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import {
-  normalizeXpBookRarity,
-  usePlanningSettings,
-  xpBookRarityOptions,
-} from "@/entities/planning-setting"
 import { ApiError } from "@/shared/api"
 import { useCatalogDataset } from "@/shared/local-data"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 
 import { energySourceLabel, toDailyEnergyTiers } from "../model/energy-tiers"
+import { normalizeXpBookRarity, xpBookRarityOptions } from "../model/types"
+import { usePlanningSettings } from "../model/use-planning-settings"
 
 /**
  * The one Planning Settings dialog, reused from both Plan > Goals (`/plan/goals`) and Dailies >
@@ -69,7 +66,7 @@ export function PlanningSettingsDialog({
       await save({
         dailyEnergy,
         xpBookRarity,
-        watchAds: settings.watchAds,
+        preferences: settings.preferences,
         revision: settings.revision,
       })
       onOpenChange(false)

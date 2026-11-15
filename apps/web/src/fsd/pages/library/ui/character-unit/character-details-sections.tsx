@@ -46,7 +46,7 @@ export function DetailsCard({
   return (
     <section
       className={cn(
-        "flex min-w-0 flex-col gap-3 rounded-[10px] border bg-card p-4",
+        "flex min-w-0 flex-col gap-3 rounded-lg border bg-card p-4",
         className
       )}
       data-testid={testId}
@@ -193,7 +193,7 @@ export function AtAGlance({
             <dd
               className={cn(
                 "font-bold tabular-nums",
-                compact ? "text-lg" : "text-[22px]"
+                compact ? "text-lg" : "text-2xl"
               )}
             >
               {box.value === undefined ? "—" : format.format(box.value)}
@@ -269,7 +269,7 @@ export function TraitsList({ traits }: { traits: readonly string[] }) {
               <EntityIcon src={traitIcon(trait)} alt="" className="size-7" />
             </span>
             <div className="min-w-0">
-              <p className="text-[15px] font-semibold">
+              <p className="text-base font-semibold">
                 {t(`traits:${trait}`, { defaultValue: trait })}
               </p>
               {text ? <TraitDescription text={text} /> : null}
@@ -385,7 +385,7 @@ export function StatsByRank({
   }
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(min(200px,100%),1fr))] gap-4">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(min(12.5rem,100%),1fr))] gap-4">
       {statKeys.map((key) => {
         const points = byRank.map((stats) => [stats[key]])
         const { from, to } = describeSeries(points, locale)

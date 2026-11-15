@@ -1,10 +1,15 @@
 import type { i18n as I18n } from "i18next"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
-import type {
-  LegendaryEventPlan,
-  LegendaryEventTeam,
+import {
+  RankShadingProvider,
+  type LegendaryEventLaneId,
+  type LegendaryEventPlan,
+  type LegendaryEventRosterUnit,
+  type LegendaryEventTeam,
 } from "@/entities/legendary-event"
+import { safeStorage } from "@/shared/lib"
+import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
@@ -53,20 +58,52 @@ const ready: TeamsSectionState = {
   roster: undefined,
 }
 
-function renderBoard(teams: TeamsSectionState = ready) {
-  const onOpenLane = vi.fn()
-  const onOpenTeam = vi.fn()
-  render(
-    <EventBoard
-      event={lysanderEvent}
-      onOpenLane={onOpenLane}
-      onOpenTeam={onOpenTeam}
-      progressGrid={{ kind: "unavailable" }}
-      teams={teams}
-    />,
+const rosterUnit = (unitId: string): LegendaryEventRosterUnit =>
+  ({
+    unitId,
+    rank: "Gold2",
+    progressionIndex: "Legendary:RedFourStars",
+    abilities: [
+      { abilityId: "active", level: 35 },
+      { abilityId: "passive", level: 28 },
+    ],
+  }) as unknown as LegendaryEventRosterUnit
+
+const withUnits: TeamsSectionState = {
+  kind: "ready",
+  plan,
+  units: legendaryEventCharacters as never,
+  roster: [rosterUnit("ultraCalgar")],
+}
+
+function renderBoard(
+  teams: TeamsSectionState = ready,
+  catalog: Parameters<typeof EventBoard>[0]["catalog"] = teams.kind === "ready"
+    ? { units: teams.units, roster: teams.roster }
+    : { units: "loading", roster: undefined },
+  laneIds: readonly LegendaryEventLaneId[] = ["alpha", "beta", "gamma"]
+) {
+  const onAddTeam = vi.fn()
+  // The page provides Rank shading around the board.
+  const { unmount } = render(
+    <RankShadingProvider>
+      <EventBoard
+        catalog={catalog}
+        event={lysanderEvent}
+        laneFigures={(laneId) => <p data-testid="lane-figures">{laneId}</p>}
+        laneIds={laneIds}
+        laneTeamsSection={(laneId) => (
+          <p data-testid="lane-teams">{`${laneId} teams`}</p>
+        )}
+        onAddTeam={onAddTeam}
+        progressGrid={{ kind: "unavailable" }}
+        teams={teams}
+        unitPower={null}
+      />
+    </RankShadingProvider>,
     { wrapper: i18nWrapper(i18n) }
   )
-  return { onOpenLane, onOpenTeam }
+  return { onAddTeam, unmount }
 }
 
 const lane = (laneId: string) =>
@@ -79,19 +116,72 @@ describe("EventBoard", () => {
     i18n = await createTestI18n("en")
   })
 
-  it("shows all three lanes with their objectives and saved teams", () => {
+  it("turns Rank shading off for every chip and keeps it off after a remount", () => {
+    safeStorage.remove("legendaryEvents.unitChips.rankShading")
+    const shaded = () =>
+      screen
+        .getAllByTestId("event-board-unit")
+        .filter((chip) => chip.dataset.shaded === "true").length
+    const { unmount } = renderBoard(withUnits)
+    const toggle = screen.getByRole("switch", { name: "Rank shading" })
+    expect(toggle).toBeChecked()
+    expect(shaded()).toBeGreaterThan(0)
+
+    fireEvent.click(toggle)
+    expect(toggle).not.toBeChecked()
+    expect(shaded()).toBe(0)
+
+    unmount()
+    renderBoard(withUnits)
+    expect(
+      screen.getByRole("switch", { name: "Rank shading" })
+    ).not.toBeChecked()
+    expect(shaded()).toBe(0)
+    safeStorage.remove("legendaryEvents.unitChips.rankShading")
+  }, 15_000)
+
+  it("shows every given lane with its objectives, figures and Teams section", () => {
     renderBoard()
     expect(screen.getAllByTestId("event-board-lane")).toHaveLength(3)
     for (const laneId of ["alpha", "beta", "gamma"] as const) {
-      expect(
-        within(lane(laneId)).getAllByTestId("event-board-objective")
-      ).toHaveLength(lysanderEvent[laneId].unitsRestrictions.length)
+      const column = within(lane(laneId))
+      expect(column.getAllByTestId("event-board-objective")).toHaveLength(
+        lysanderEvent[laneId].unitsRestrictions.length
+      )
+      expect(column.getByTestId("lane-figures")).toHaveTextContent(laneId)
+      expect(column.getByTestId("lane-teams")).toHaveTextContent(
+        `${laneId} teams`
+      )
     }
     expect(
-      within(lane("alpha")).getByRole("button", { name: "Edit Alpha squad" })
-    ).toBeInTheDocument()
-    expect(within(lane("beta")).getByText("1 team")).toBeInTheDocument()
-    expect(within(lane("gamma")).getByText("No teams yet.")).toBeInTheDocument()
+      within(lane("alpha")).getByTestId("legendary-event-lane-label")
+    ).toHaveTextContent("Alpha · No Xenos")
+  })
+
+  it("keeps the sticky heading row as wide as the columns so it scrolls sideways with them", () => {
+    renderBoard(ready, undefined, ["alpha"])
+    const table = within(lane("alpha")).getByTestId("event-board-table")
+    const content = within(table).getByTestId("event-board-table-content")
+    // The scroll box holds one content block at least as wide as the columns' minimum, and
+    // the sticky heading row and the columns both sit inside it.
+    expect(content.parentElement).toBe(table)
+    // Sideways it always scrolls; up and down only from 768px (on a phone the page scrolls).
+    expect(table).toHaveClass("overflow-x-auto", "md:overflow-y-auto")
+    expect(content).toHaveClass("w-full")
+    const columnCount = lysanderEvent.alpha.unitsRestrictions.length
+    expect(content.style.minWidth).toContain(`${columnCount * 5.9}rem`)
+    const heading = within(content).getByRole("group", { name: "Objectives" })
+    expect(heading).toHaveClass("sticky")
+    expect(content).toContainElement(
+      within(content).getAllByTestId("event-board-column")[0]!
+    )
+  })
+
+  it("renders only the shown lanes", () => {
+    renderBoard(ready, undefined, ["beta"])
+    expect(
+      screen.getAllByTestId("event-board-lane").map((c) => c.dataset.lane)
+    ).toEqual(["beta"])
   })
 
   it("marks the objectives no saved team covers", () => {
@@ -106,16 +196,6 @@ describe("EventBoard", () => {
     ).toBe(true)
   })
 
-  it("opens the team editor from a team and the lane tab from its heading", () => {
-    const { onOpenLane, onOpenTeam } = renderBoard()
-    fireEvent.click(
-      within(lane("beta")).getByRole("button", { name: "Edit Beta squad" })
-    )
-    expect(onOpenTeam).toHaveBeenCalledWith("beta", plan.teams[1])
-    fireEvent.click(screen.getByRole("button", { name: "Open the Gamma tab" }))
-    expect(onOpenLane).toHaveBeenCalledWith("gamma")
-  })
-
   it("shows objectives without coverage marks while teams load", () => {
     renderBoard({ kind: "loading" })
     expect(
@@ -123,6 +203,127 @@ describe("EventBoard", () => {
         .getAllByTestId("event-board-objective")
         .some((entry) => entry.dataset.uncovered === "true")
     ).toBe(false)
-    expect(screen.queryByTestId("event-board-team")).not.toBeInTheDocument()
+  })
+
+  it("lists each objective's units and starts a team from one", () => {
+    const { onAddTeam } = renderBoard(withUnits)
+    const alpha = within(lane("alpha"))
+    const columns = alpha.getAllByTestId("event-board-column")
+    expect(columns).toHaveLength(lysanderEvent.alpha.unitsRestrictions.length)
+    const [firstUnit] = within(columns[0]!).getAllByTestId(
+      "event-board-add-team"
+    )
+    fireEvent.click(firstUnit!)
+    const firstIndex = Math.min(
+      ...lysanderEvent.alpha.unitsRestrictions.map(
+        (objective) => objective.index
+      )
+    )
+    const firstUnitId = within(firstUnit!)
+      .getByTestId("event-board-unit")
+      .getAttribute("data-unit-id")
+    expect(onAddTeam).toHaveBeenCalledExactlyOnceWith(
+      "alpha",
+      [firstIndex],
+      firstUnitId
+    )
+  })
+
+  it("makes each unit table one Tab stop and moves between its units with the arrow keys", () => {
+    renderBoard(withUnits)
+    const alpha = within(lane("alpha"))
+    const columns = alpha.getAllByTestId("event-board-column")
+    const cells = columns.map((column) =>
+      within(column).queryAllByTestId("event-board-add-team")
+    )
+    const all = cells.flat()
+    expect(all.filter((cell) => cell.tabIndex === 0)).toEqual([cells[0]![0]])
+    expect(
+      alpha.getByRole("group", {
+        description: "Use the arrow keys to move between units.",
+      })
+    ).toContainElement(cells[0]![0]!)
+
+    const first = cells[0]![0]!
+    first.focus()
+    fireEvent.keyDown(first, { key: "ArrowDown" })
+    expect(cells[0]![1]).toHaveFocus()
+    fireEvent.keyDown(cells[0]![1]!, { key: "ArrowRight" })
+    const right = cells.findIndex(
+      (column, index) => index > 0 && column.length > 0
+    )
+    expect(cells[right]![Math.min(1, cells[right]!.length - 1)]).toHaveFocus()
+    fireEvent.keyDown(document.activeElement!, { key: "End" })
+    expect(cells[right]!.at(-1)).toHaveFocus()
+    fireEvent.keyDown(document.activeElement!, { key: "Home" })
+    expect(cells[right]![0]).toHaveFocus()
+
+    // The focused unit is the table's Tab stop from now on.
+    expect(all.filter((cell) => cell.tabIndex === 0)).toEqual([
+      cells[right]![0],
+    ])
+  })
+
+  it("lists each column's best seven and shows the rest on request", () => {
+    renderBoard(withUnits)
+    const columns = () =>
+      within(lane("alpha")).getAllByTestId("event-board-column")
+    const shown = () =>
+      columns().map((column) =>
+        within(column)
+          .queryAllByTestId("event-board-unit")
+          .map((chip) => chip.dataset.unitId)
+      )
+    // Each column's full list, in order, as the column names its count ("12 units").
+    const totals = columns().map((column) =>
+      Number(column.getAttribute("aria-label")!.match(/\d+/)![0])
+    )
+    const collapsed = shown()
+    expect(Math.max(...totals)).toBeGreaterThan(7)
+    collapsed.forEach((units, index) =>
+      expect(units).toHaveLength(Math.min(totals[index]!, 7))
+    )
+
+    const showAll = within(lane("alpha")).getByTestId("event-board-show-all")
+    expect(showAll).toHaveTextContent(/Show all units/)
+    fireEvent.click(showAll)
+    const expanded = shown()
+    expanded.forEach((units, index) => {
+      expect(units).toHaveLength(totals[index]!)
+      // The best seven stay first, in the same order.
+      expect(units.slice(0, collapsed[index]!.length)).toEqual(collapsed[index])
+    })
+    expect(showAll).toHaveTextContent("Show the best 7")
+
+    fireEvent.click(showAll)
+    expect(shown()).toEqual(collapsed)
+  })
+
+  it("merges the selected objectives into one column and clears them", () => {
+    renderBoard(withUnits)
+    const alpha = within(lane("alpha"))
+    const count = alpha.getAllByTestId("event-board-column").length
+    const [first, second] = alpha.getAllByTestId("event-board-objective")
+    fireEvent.click(first!)
+    fireEvent.click(second!)
+    expect(alpha.getAllByTestId("event-board-column")).toHaveLength(count - 1)
+    expect(
+      alpha
+        .getAllByTestId("event-board-objective")
+        .filter((entry) => entry.getAttribute("aria-pressed") === "true")
+    ).toHaveLength(2)
+    fireEvent.click(alpha.getByRole("button", { name: "Clear selection" }))
+    expect(alpha.getAllByTestId("event-board-column")).toHaveLength(count)
+  }, 15_000) // Renders every lane's full unit table, which runs past 5s under a parallel run.
+
+  it("lists units for a signed-out visitor, with ownership unknown", () => {
+    renderBoard(
+      { kind: "hidden" },
+      { units: legendaryEventCharacters as never, roster: undefined }
+    )
+    const units = within(lane("alpha")).getAllByTestId("event-board-unit")
+    expect(units.length).toBeGreaterThan(0)
+    expect(units.every((unit) => unit.dataset.owned === undefined)).toBe(true)
+    expect(screen.queryByTestId("lane-teams")).not.toBeInTheDocument()
   })
 })

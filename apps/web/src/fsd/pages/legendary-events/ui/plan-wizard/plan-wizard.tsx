@@ -16,6 +16,8 @@ import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { UnsavedChangesGuard } from "@/shared/ui"
 
+import { useShowPaidOptions } from "@/features/legendary-event-plan"
+
 import { PLAN_WIZARD_STEPS, type PlanWizardStep } from "./plan-draft"
 import {
   planWrites,
@@ -71,7 +73,13 @@ export function PlanWizard({
 }) {
   const { t } = useTranslation("legendaryEvents")
   const navigate = useNavigate()
-  const draft = usePlanDraft(source, initialTarget)
+  // Show paid options can change from the Legendary Event settings while the wizard is open.
+  const paid = useShowPaidOptions()
+  const draft = usePlanDraft(
+    source,
+    initialTarget,
+    paid.loading ? undefined : paid.showPaidOptions
+  )
   const create = usePlanCreate(source.event.id)
   const destination = usePlanDestination(source, draft.target)
   const isMobile = useIsMobile()

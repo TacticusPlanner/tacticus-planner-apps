@@ -1,0 +1,251 @@
+import type {
+  AscensionCostStorageModel,
+  UnlockShardCostStorageModel,
+} from "@workspace/game-catalog"
+import {
+  progressionOrder,
+  type Progression,
+  type Rarity,
+} from "@workspace/game-domain"
+
+import type { AbilityMaterials } from "./ability-materials"
+import {
+  shardResourceId,
+  type ShardResourceId,
+  type UpgradeNeed,
+} from "../model/estimate.domain"
+
+// Need-derivation for Ascension and Unlock goals — the sibling of
+// `goal-spec-builder.ts`'s `computeMissingUpgrades` (Character Rank) and `mow-ability-calc.ts`'s
+// `computeMowMissingUpgrades` (MoW Ability). These three goal types are costed in Ascension Orbs and
+// shard counts rather than `UpgradeId` materials, via the ascension-costs/unlock-shard-costs catalog
+// datasets (plan §16 phase 7 part A/B). Character Ability stays uncosted — no data exists anywhere for
+// it (not even in V1) — so it has no sibling here.
+
+/** A goal's derived resource demand: farmable materials/shards (empty `materials` for these goal
+ *  types) plus the count-only orb/mythic-shard totals no simulator can farm (Onslaught/events only,
+ *  no campaign-node source). `shardId` is set only when there's a net shard need AND the entity is a
+ *  Character (a MoW has no `shardLocations` to farm from — plan §16 phase 7 scope notes). */
+export type ResourceNeed = {
+  upgrades: UpgradeNeed[]
+  shardId: ShardResourceId | null
+  shards: number
+  mythicShards: number
+  orbsByType: Partial<Record<Rarity, number>>
+  /** Rank goals only — unfilled upgrade *slots* (6 per rank) still ahead, net of whatever's already
+   *  applied at the current rank. `null` for every other goal kind, which has no fixed slot count to
+   *  count against. Distinct from `upgrades`' raw material total: a handful of slots can still expand
+   *  to a large crafting-material count once recipes are factored in, so the two numbers intentionally
+   *  don't agree — this is the "how many rank-up actions are left" reading, not "how much to farm". */
+  upgradeSlotsRemaining: number | null
+  /** Rank goals in a shared plan only: an earlier goal for the same character already covers every
+   *  slot this goal would need, so it adds no work of its own (it stays uncompleted until synced
+   *  progression reaches its target). */
+  coveredByEarlierGoal?: boolean
+  /** Ability goals only: gold, ability badges, forge badges and components still needed, summed from
+   *  the catalog's per-level cost ladders. Absent for other goal kinds, and for an Ability goal whose
+   *  ladder is not loaded or that has nothing left to raise. */
+  abilityMaterials?: AbilityMaterials
+  /** Rank goals in a shared plan only: gold to apply the level-up books the goal still needs (V1's
+   *  Rank "Gold"); never netted against inventory. */
+  levelGold?: number
+  /** Ascension goals in the plan: each orb rarity the goal needs (gross) beside the player's stock of it
+   *  at the goal's turn in priority order, uncapped (V1's orb "x/y"; the Machine of War pool logic). */
+  orbPool?: {
+    neededByRarity: Partial<Record<Rarity, number>>
+    availableByRarity: Partial<Record<Rarity, number>>
+  }
+  /** Ascension goals only: owned shards applied to the goal's own steps against what those steps cost
+   *  in total (V1's "Shards 120 / 400" bars), gross of what's still to farm. */
+  shardProgress?: {
+    shards: { owned: number; needed: number }
+    mythicShards: { owned: number; needed: number }
+  }
+  /** Rank goals partly covered by a higher-priority goal for the same unit: what the goal would cost
+   *  alone (upgrade slots and estimated energy), shown as a tooltip beside the plan-aware figures. */
+  standalone?: { slots: number; energy: number }
+  /** The unit's alliance, which picks the ability-badge, component and orb art. Set by the overview
+   *  metrics from the catalog. */
+  alliance?: string
+}
+
+/** Whether a unit's *current* progression is already in the Mythic tier — the point at which
+ *  further ascension is costed in Mythic Shards rather than regular ones (each progression step in
+ *  the catalog ladder carries both `shards`/`mythicShards` fields, but only one is ever non-zero
+ *  per tier). Used to decide which shard count is the relevant one to surface for an owned unit;
+ *  a locked unit (no current progression yet) never satisfies this, since unlocking always costs
+ *  regular shards regardless of the character's starting rarity (see `unlockResourceNeed`). */
+export function isMythicProgression(progression: Progression): boolean {
+  return progression.startsWith("Mythic:")
+}
+
+const EMPTY_NEED: ResourceNeed = {
+  upgrades: [],
+  shardId: null,
+  shards: 0,
+  mythicShards: 0,
+  orbsByType: {},
+  upgradeSlotsRemaining: null,
+}
+
+/** A unit's Ascension allocation across a plan (goal-milestone-planning): the goal each progression
+ *  step is charged to, and the owned shards each goal drew. Keyed by goal so computing one goal's need
+ *  again (plan builders do, for several views) reads back the same allocation. */
+export type AscensionCoverage = {
+  steps: Map<number, string>
+  shardDraws: Map<string, { shards: number; mythicShards: number }>
+}
+
+export const createAscensionCoverage = (): AscensionCoverage => ({
+  steps: new Map(),
+  shardDraws: new Map(),
+})
+
+/** The shards/mythic shards/orbs to cross every progression step in `(start, end]`, net of what's
+ *  already owned (shards/orbs accumulate and carry over between steps, so netting the *total* owned
+ *  against the *total* crossed cost is correct regardless of step ordering — the same "total need
+ *  minus total owned" shape `computeMissingUpgrades` uses for materials). `[]`/0 for an empty or
+ *  invalid range, or when a step is missing from the catalog (defensive — the served dataset always
+ *  covers the full ladder). Orbs are reported gross (not netted against owned orb inventory) and are
+ *  never farmable — see `ResourceNeed`'s doc comment. */
+export function ascensionResourceNeed(params: {
+  start: string
+  end: string
+  entityId: string
+  isMow: boolean
+  ownedShards: number
+  ownedMythicShards: number
+  currentProgression?: string
+  ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
+  /** Plan allocation across a unit's Ascension goals, invoked in priority order: a step another goal
+   *  claimed is skipped and the rest are claimed for `goalId`; owned shards other goals drew are not
+   *  netted again. Omit for a standalone estimate. */
+  coverage?: { goalId: string; allocation: AscensionCoverage }
+}): ResourceNeed {
+  const {
+    start,
+    end,
+    entityId,
+    isMow,
+    ownedShards,
+    ownedMythicShards,
+    ascensionCostsById,
+    currentProgression,
+    coverage,
+  } = params
+
+  const configuredStartIndex = progressionOrder.indexOf(start as Progression)
+  const currentIndex = currentProgression
+    ? progressionOrder.indexOf(currentProgression as Progression)
+    : -1
+  const startIndex = Math.max(configuredStartIndex, currentIndex)
+  const endIndex = progressionOrder.indexOf(end as Progression)
+  if (startIndex < 0 || endIndex <= startIndex) return EMPTY_NEED
+
+  let shards = 0
+  let mythicShards = 0
+  const orbsByType: Partial<Record<Rarity, number>> = {}
+
+  for (let index = startIndex + 1; index <= endIndex; index++) {
+    if (coverage) {
+      const owner = coverage.allocation.steps.get(index)
+      if (owner !== undefined && owner !== coverage.goalId) continue
+      coverage.allocation.steps.set(index, coverage.goalId)
+    }
+    const progression = progressionOrder[index]
+    const step = progression && ascensionCostsById.get(progression)
+    if (!step) continue
+
+    shards += step.shards
+    mythicShards += step.mythicShards
+    if (step.orbs > 0 && step.orbRarity) {
+      const rarity = step.orbRarity
+      orbsByType[rarity] = (orbsByType[rarity] ?? 0) + step.orbs
+    }
+  }
+
+  let availableShards = ownedShards
+  let availableMythicShards = ownedMythicShards
+  if (coverage) {
+    for (const [goalId, drawn] of coverage.allocation.shardDraws) {
+      if (goalId === coverage.goalId) continue
+      availableShards -= drawn.shards
+      availableMythicShards -= drawn.mythicShards
+    }
+    availableShards = Math.max(0, availableShards)
+    availableMythicShards = Math.max(0, availableMythicShards)
+    // A gross-demand call (owned stock zeroed by the caller) leaves the recorded draw alone.
+    if (ownedShards > 0 || ownedMythicShards > 0) {
+      coverage.allocation.shardDraws.set(coverage.goalId, {
+        shards: Math.min(shards, availableShards),
+        mythicShards: Math.min(mythicShards, availableMythicShards),
+      })
+    }
+  }
+  const netShards = Math.max(0, shards - availableShards)
+  const netMythicShards = Math.max(0, mythicShards - availableMythicShards)
+  const shardProgress = {
+    shards: { owned: Math.min(shards, availableShards), needed: shards },
+    mythicShards: {
+      owned: Math.min(mythicShards, availableMythicShards),
+      needed: mythicShards,
+    },
+  }
+  if (
+    netShards === 0 &&
+    netMythicShards === 0 &&
+    Object.keys(orbsByType).length === 0
+  ) {
+    // Fully funded isn't reached: the card still shows the bars.
+    return shards > 0 || mythicShards > 0
+      ? { ...EMPTY_NEED, shardProgress }
+      : EMPTY_NEED
+  }
+
+  return {
+    upgrades: [],
+    shardId: !isMow && netShards > 0 ? shardResourceId(entityId) : null,
+    shards: netShards,
+    mythicShards: netMythicShards,
+    orbsByType,
+    upgradeSlotsRemaining: null,
+    shardProgress,
+  }
+}
+
+/** The shards to unlock a character of `initialRarity`, net of owned shards. Keyed by the
+ *  *character's* starting rarity — the MoW catalog carries no rarity field at all, so a MoW's unlock
+ *  economy has no data to key this table by and is left uncosted (`isMow` short-circuits to empty,
+ *  same "no data, don't fake it" boundary as Character Ability). Zero once `owned` — mirrors
+ *  `goal-attainment.ts`'s `fromBoolean(!!owned)` for the Unlock goal kind. */
+export function unlockResourceNeed(params: {
+  initialRarity: string | undefined
+  entityId: string
+  isMow: boolean
+  owned: boolean
+  ownedShards: number
+  unlockShardCostsById: ReadonlyMap<string, UnlockShardCostStorageModel>
+}): ResourceNeed {
+  const {
+    initialRarity,
+    entityId,
+    isMow,
+    owned,
+    ownedShards,
+    unlockShardCostsById,
+  } = params
+  if (isMow || !initialRarity || owned) return EMPTY_NEED
+
+  const totalShards = unlockShardCostsById.get(initialRarity)?.shards ?? 0
+  const netShards = Math.max(0, totalShards - ownedShards)
+  if (netShards === 0) return EMPTY_NEED
+
+  return {
+    upgrades: [],
+    shardId: shardResourceId(entityId),
+    shards: netShards,
+    mythicShards: 0,
+    orbsByType: {},
+    upgradeSlotsRemaining: null,
+  }
+}

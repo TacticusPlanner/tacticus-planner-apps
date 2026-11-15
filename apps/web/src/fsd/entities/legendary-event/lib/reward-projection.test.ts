@@ -13,6 +13,7 @@ import {
   ASCENSION_STEPS,
   nextAscensionStep,
   projectRewards,
+  syncedChestsClaimed,
   unitNextAscensionStep,
   type RewardProjectionInput,
 } from "./reward-projection"
@@ -169,6 +170,9 @@ const dante: LegendaryEventRewards = {
   shardsPerChest: 25,
 }
 
+/** Every run stored with nothing planned (a run without stored inputs plans all 10 free missions). */
+const NO_RUN_INPUTS = ([1, 2, 3] as const).map((run) => runInputs(run, 0))
+
 describe("projectRewards", () => {
   it("works the Uthar example without the premium track", () => {
     const projection = projectRewards(utharExample)
@@ -197,6 +201,7 @@ describe("projectRewards", () => {
     })
     expect(projection.currency).toEqual({
       required: 3350,
+      forChestsToGo: 1850,
       collected: 1620,
       futureMissions: 250,
       futureBundles: 300,
@@ -225,6 +230,7 @@ describe("projectRewards", () => {
     expect(projection.bonusPerPayout).toBe(15)
     expect(projection.currency).toEqual({
       required: 3350,
+      forChestsToGo: 1850,
       collected: 1620,
       futureMissions: 800,
       futureBundles: 315,
@@ -271,21 +277,23 @@ describe("projectRewards", () => {
       shards: 0,
     })
     expect(projection.futureRuns.map((run) => run.run)).toEqual([1, 2, 3])
-    expect(projection.currency?.futureMissions).toBe(250)
-    // 16 chests for unlock: 3,350 − 250 from run 1's missions.
-    expect(projection.currency?.fromPoints).toBe(3100)
+    // Run 1 stores 10 missions; runs 2 and 3 have no inputs, so they plan all 10 free ones.
+    expect(projection.currency?.futureMissions).toBe(750)
+    // 16 chests for unlock: 3,350 − 750 from the three runs' missions.
+    expect(projection.currency?.fromPoints).toBe(2600)
   })
 
-  it("never counts chests to go below zero when fewer shards are held than chests claimed", () => {
+  it("counts an unowned unit's chests from its shards when the synced index is higher", () => {
     const projection = projectRewards({
       ...utharExample,
       progress: synced({ currentClaimedChestIndex: 20, currentShards: 100 }),
     })
 
+    expect(projection.base.chestsClaimed).toBe(4)
     expect(projection.goal).toMatchObject({ step: "unlock", threshold: 400 })
     expect(projection.chests).toEqual({
       beyondChestLadder: false,
-      required: 32,
+      required: 16,
       toGo: 12,
     })
   })
@@ -300,11 +308,32 @@ describe("projectRewards", () => {
     expect(projection.points).toEqual({ state: "affordableNow" })
   })
 
-  it("reports a goal beyond the chest ladder without currency or points", () => {
-    // Uthar has 54 chests; 41 claimed and 50 shards need 14 more for unlock: 55.
+  it("does not call later runs' missions currency in hand", () => {
+    // Enough to cover the chests with the later runs' missions, but not with the currency in hand.
+    const before = projectRewards({ ...utharExample, progress: synced() })
+    const later =
+      before.currency!.futureMissions + before.currency!.futureBundles
     const projection = projectRewards({
       ...utharExample,
-      progress: synced({ currentClaimedChestIndex: 41, currentShards: 50 }),
+      progress: synced({
+        currentCurrency: 120 + before.currency!.fromPoints + later - 100,
+      }),
+    })
+
+    expect(projection.currency?.fromPoints).toBeLessThanOrEqual(0)
+    expect(projection.points).toEqual({
+      state: "coveredByLaterRuns",
+      shortNow: 100,
+    })
+  })
+
+  it("reports a goal beyond the chest ladder without currency or points", () => {
+    // Uthar has 54 chests; owned at red 3 stars, 51 claimed and 25 shards need 4 more for 4 stars
+    // (120): 55.
+    const projection = projectRewards({
+      ...utharExample,
+      progress: synced({ currentClaimedChestIndex: 51, currentShards: 25 }),
+      unit: { progressionIndex: "Legendary:RedThreeStars" },
     })
 
     expect(projection.chests).toEqual({
@@ -323,7 +352,7 @@ describe("projectRewards", () => {
       progress: synced({ currentPoints: 26_900, currentCurrency: 0 }),
       resolution: inRun(2),
       unit: undefined,
-      runs: [],
+      runs: NO_RUN_INPUTS,
       showPaidOptions: false,
     })
 
@@ -414,7 +443,7 @@ describe("projectRewards", () => {
       }),
       resolution: inRun(1),
       unit: undefined,
-      runs: [],
+      runs: NO_RUN_INPUTS,
       showPaidOptions: false,
     })
 
@@ -435,7 +464,7 @@ describe("projectRewards", () => {
       }),
       resolution: inRun(1),
       unit: undefined,
-      runs: [],
+      runs: NO_RUN_INPUTS,
       showPaidOptions: false,
     })
 
@@ -458,7 +487,7 @@ describe("projectRewards: resolved runs and the unit's step", () => {
       }),
       resolution: between(2),
       unit: { progressionIndex: "Legendary:RedThreeStars" },
-      runs: [],
+      runs: NO_RUN_INPUTS,
       showPaidOptions: true,
     })
 
@@ -479,6 +508,7 @@ describe("projectRewards: resolved runs and the unit's step", () => {
     // Chests 1–21 cost 5,250; chests 1–17 3,710 + 60 in hand = 3,770.
     expect(projection.currency).toEqual({
       required: 5250,
+      forChestsToGo: 1540,
       collected: 3770,
       futureMissions: 0,
       futureBundles: 0,
@@ -673,5 +703,50 @@ describe("projectRewards: a chosen target step", () => {
       targetStep: "fourStars",
     })
     expect(projection.chests).toMatchObject({ beyondChestLadder: true })
+  })
+})
+
+describe("syncedChestsClaimed", () => {
+  const entry = (currentClaimedChestIndex: number, currentShards: number) => ({
+    currentClaimedChestIndex,
+    currentShards,
+  })
+
+  it("reads the synced index as a count, -1 and no entry as 0", () => {
+    expect(syncedChestsClaimed(entry(10, 250), 25, "unlock")).toBe(10)
+    expect(syncedChestsClaimed(entry(-1, 0), 25, "unlock")).toBe(0)
+    expect(syncedChestsClaimed(undefined, 25, "unlock")).toBe(0)
+  })
+
+  it("caps an unowned unit's count at the chests its shards account for", () => {
+    // Farsight report: index 5 with 100 shards is four chests of 25.
+    expect(syncedChestsClaimed(entry(5, 100), 25, "unlock")).toBe(4)
+    // Oh So Close shards only add, so more shards than chests never raise the count.
+    expect(syncedChestsClaimed(entry(4, 150), 25, "unlock")).toBe(4)
+  })
+
+  it("does not cap an owned unit, whose shards are spent on each step", () => {
+    expect(syncedChestsClaimed(entry(17, 25), 25, "fourStars")).toBe(17)
+    expect(syncedChestsClaimed(entry(17, 25), 25, "fullyAscended")).toBe(17)
+  })
+
+  it("projects the Farsight report from four chests", () => {
+    const projection = projectRewards({
+      ...utharExample,
+      progress: synced({
+        currentPoints: 2013,
+        currentCurrency: 115,
+        currentClaimedChestIndex: 5,
+        currentShards: 100,
+      }),
+    })
+    expect(projection.base.chestsClaimed).toBe(4)
+    expect(projection.chests).toEqual({
+      beyondChestLadder: false,
+      required: 16,
+      toGo: 12,
+    })
+    expect(projection.currency?.required).toBe(3350)
+    expect(projection.currency?.forChestsToGo).toBe(2990)
   })
 })

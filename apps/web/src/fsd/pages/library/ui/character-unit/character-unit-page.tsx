@@ -21,6 +21,7 @@ import {
 import { useAbilityText } from "@/shared/ability-text"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { useTourPageSteps } from "@/shared/tour"
+import { CompactProgression, RankBadge } from "@/shared/ui"
 
 import { buildRadarPopulation, buildStatRadar } from "../../model/stat-radar"
 import { usePierceRatios } from "../../model/use-pierce-ratios"
@@ -28,6 +29,7 @@ import { CharacterRankUpTab } from "../character/character-rank-up-tab"
 import { useCharacterListItems } from "../characters/use-character-list-items"
 import { useCharactersCatalog } from "../characters/use-characters-catalog"
 import { AbilityPanel } from "../unit/ability-panel"
+import { UnitCreateGoalButton } from "../unit/unit-create-goal-button"
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { UnitPowerValue } from "../unit/unit-power-value"
 import { UnitTabs } from "../unit/unit-tabs"
@@ -230,27 +232,34 @@ function CharacterUnit({
         }
       : undefined
 
-  const yourUnitLine = player
-    ? [
-        t(
-          `progression:rarities.${progressionRarity(player.progressionIndex)}`,
-          {
-            defaultValue: progressionRarity(player.progressionIndex),
-          }
-        ),
-        t(`progression:stars.${player.progressionIndex.split(":")[1]}`, {
-          defaultValue: player.progressionIndex,
-        }),
-        t(`progression:ranks.${player.rank}`, { defaultValue: player.rank }),
-        t("characterUnit.header.abilities", {
-          active: (activeId && levels.get(activeId)) ?? 1,
-          passive: (passiveId && levels.get(passiveId)) ?? 1,
-        }),
-        ...(relic?.equippedLevel !== undefined
-          ? [t("characterUnit.header.relic", { level: relic.equippedLevel })]
-          : []),
-      ].join(" · ")
-    : undefined
+  // The rarity, stars and rank as icons (names in tooltips), then the levels as text.
+  const yourUnitLine = player ? (
+    <>
+      <CompactProgression
+        iconClassName="size-4"
+        value={player.progressionIndex}
+      />
+      <span aria-hidden="true">·</span>
+      <RankBadge
+        iconClassName="size-4"
+        rank={player.rank}
+        showLabel={false}
+        tooltip
+      />
+      <span aria-hidden="true">·</span>
+      <span>
+        {[
+          t("characterUnit.header.abilities", {
+            active: (activeId && levels.get(activeId)) ?? 1,
+            passive: (passiveId && levels.get(passiveId)) ?? 1,
+          }),
+          ...(relic?.equippedLevel !== undefined
+            ? [t("characterUnit.header.relic", { level: relic.equippedLevel })]
+            : []),
+        ].join(" · ")}
+      </span>
+    </>
+  ) : undefined
 
   useTourPageSteps(
     useCharacterUnitTutorial({
@@ -357,6 +366,17 @@ function CharacterUnit({
                     unlockCosts?.get(character.initialRarity)?.shards ?? 0,
                 }
               : undefined
+          }
+          action={
+            isAuthenticated ? (
+              <UnitCreateGoalButton
+                entityType="Character"
+                unitId={unitId}
+                name={name}
+                ownership={ownership}
+                isMobile={isMobile}
+              />
+            ) : undefined
           }
           isMobile={isMobile}
         />

@@ -1,8 +1,11 @@
 import {
   currentLegendaryEventRun,
+  isCompleteTeam,
   laneBattlePowers,
+  laneThresholdPowers,
   resolveLegendaryEventRunsAt,
   LEGENDARY_EVENT_LANE_IDS,
+  type ClearEstimateConfig,
   type ClearEstimateConfigState,
   type LegendaryEvent,
   type LegendaryEventBattle,
@@ -234,6 +237,7 @@ export function masterTableEventInputs({
   progress,
   battles,
   nowMs,
+  config,
 }: {
   events: readonly LegendaryEvent[]
   /** Undefined while the list loads or failed (no teams). */
@@ -243,6 +247,8 @@ export function masterTableEventInputs({
   battles: Record<string, LegendaryEventBattle[]> | undefined
   /** The clock the run each event's depths are read for is resolved at. */
   nowMs: number
+  /** Scales each battle by its enemies' NPC tier multipliers; the catalog powers without it. */
+  config?: Pick<ClearEstimateConfig, "npcMultipliers" | "unitPower">
 }): MasterTableEventInput[] {
   return events.map((event) => {
     const entry = progress?.find((candidate) => candidate.id === event.id)
@@ -257,15 +263,42 @@ export function masterTableEventInputs({
         ? Object.fromEntries(
             LEGENDARY_EVENT_LANE_IDS.map((laneId) => [
               laneId,
-              laneBattlePowers(
-                event[laneId].battleIds,
-                battles[event.id] ?? []
-              ),
+              config
+                ? laneThresholdPowers(
+                    event[laneId].battleIds,
+                    battles[event.id] ?? [],
+                    config
+                  )
+                : laneBattlePowers(
+                    event[laneId].battleIds,
+                    battles[event.id] ?? []
+                  ),
             ])
           )
         : undefined,
     }
   })
+}
+
+/** The selected events In teams lists no unit for: none of their plan's teams is complete (or
+ *  there is no plan). Their columns are all zero, which reads as a bug unless it is called out.
+ *  Empty outside In teams. */
+export function eventsWithoutTeams({
+  eventIds,
+  plans,
+  unitSet,
+}: {
+  eventIds: readonly string[]
+  plans: readonly Pick<LegendaryEventPlan, "eventId" | "teams">[] | undefined
+  unitSet: MasterTableUnitSet
+}): string[] {
+  if (unitSet !== "inTeams" || !plans) return []
+  return eventIds.filter(
+    (eventId) =>
+      !plans.some(
+        (plan) => plan.eventId === eventId && plan.teams.some(isCompleteTeam)
+      )
+  )
 }
 
 /** The Total group's second figure: Σ objectives (All, Unlocked) or Σ teams (In teams). */

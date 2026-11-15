@@ -8,7 +8,7 @@ export function UiKitNav() {
   return (
     <nav
       aria-label={t("uiKit.navLabel")}
-      className="sticky top-0 flex flex-wrap items-center gap-2 border-b bg-background/95 px-6 py-3 backdrop-blur"
+      className="sticky top-0 flex flex-wrap items-center gap-2 border-b bg-background/95 px-6 py-3 backdrop-blur-sm"
       data-testid="ui-kit-nav"
     >
       {uiKitSections.map((section) => (

@@ -10,9 +10,10 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { LegendaryEventAnnotationStatus } from "@/entities/legendary-event"
-
-import { AnnotationMarkIcon } from "./annotation-mark"
+import {
+  AnnotationMarkIcon,
+  type LegendaryEventAnnotationStatus,
+} from "@/entities/legendary-event"
 
 /**
  * An incomplete battle row's action (design D9): Maybe clear, Stop here or Clear marks for every

@@ -47,6 +47,19 @@ describe("TokenAvailability", () => {
     )
   })
 
+  it("holds a row of rings while loading when this device showed tokens last time", () => {
+    window.localStorage.setItem("home-token-count", "4")
+
+    render(<TokenAvailability />)
+
+    const loading = screen.getByTestId("token-availability-loading")
+    expect(loading).toHaveTextContent("Loading token status…")
+    expect(
+      loading.querySelectorAll('[data-slot="skeleton"].rounded-full')
+    ).toHaveLength(4)
+    window.localStorage.removeItem("home-token-count")
+  })
+
   it("shows an empty state, not loading forever, when the account has never synced", async () => {
     // A never-synced account has no "live-progress" chunk at all (`usePlayerChunk` yields `null`);
     // this asserts that resolved-null case renders the empty state instead of loading forever.

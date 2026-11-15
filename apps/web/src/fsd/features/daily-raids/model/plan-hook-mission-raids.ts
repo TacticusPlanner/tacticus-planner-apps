@@ -60,6 +60,11 @@ export function planHookMissionRaids(input: {
   eventPointsByBattleId?: ReadonlyMap<BattleId, number>
   /** Each node's enemy health and enemies per faction, from the `npcs` dataset. */
   enemyStatsByBattleId?: ReadonlyMap<BattleId, BattleEnemyStats>
+  /** Today's "Combine goals": goal priority no longer breaks ties between nodes. */
+  combineGoals?: boolean
+  /** Today's "Raidable only": the battles to play manually, left out of the raid suggestions (they
+   * stay available for the battles fought by hand). */
+  raidableOnly?: ReadonlySet<string>
 }): MissionRaidPlan {
   const eventCampaignIds = new Set(
     input.campaignDefinitions
@@ -104,7 +109,12 @@ export function planHookMissionRaids(input: {
     realEnergyUsedToday: input.realEnergyUsedToday,
     goalNodesByBattle: input.calculation?.missionGoalNodes ?? new Map(),
     eventPointsByBattle: input.eventPointsByBattleId,
+    combineGoals: input.combineGoals,
+    // The HRE list is not bound to today's energy: the player may refill, so only attempts and the
+    // objective cap it.
+    unlimitedEnergy: true,
     passesFilter: (battleId) => {
+      if (input.raidableOnly?.has(battleId)) return false
       const battle = input.filterBattlesById.get(battleId)
       return !battle || passLocationFilter(battle, raidFilters)
     },

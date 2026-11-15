@@ -166,20 +166,6 @@ export function tierSummary(mowId: string, tier: IncursionTier): TierSummary {
   }
 }
 
-/** A tier's rarity and its 1-based number among the tiers of that rarity ("Epic 2"). */
-export function tierLabels(
-  tiers: readonly IncursionTier[]
-): Map<number, { rarity: string; number: number }> {
-  const seen = new Map<string, number>()
-  return new Map(
-    tiers.map((tier) => {
-      const number = (seen.get(tier.rarity) ?? 0) + 1
-      seen.set(tier.rarity, number)
-      return [tier.index, { rarity: tier.rarity, number }]
-    })
-  )
-}
-
 /** Newest first: the latest debut or revamp leads, then by MoW id. */
 export function orderIncursions(incursions: readonly Incursion[]): Incursion[] {
   return [...incursions].sort(
@@ -198,9 +184,9 @@ export function enhancementSubject(
 }
 
 /**
- * The stat row an Incursion enemy level points at. Unlike campaign battles, every Incursion level is
- * 1-based: levels run up to exactly the npc's row count, and with 1-based rows the battle powers
- * match the tier power the game shows. Capped at both ends; `undefined` without stats.
+ * The stat row an Incursion enemy level points at. Every Incursion level is 1-based: levels run up to
+ * exactly the npc's row count, and with 1-based rows the battle powers match the tier power the game
+ * shows. Capped at both ends; `undefined` without stats.
  */
 export function enemyStatRow<T>(
   npc: { stats: readonly T[] },

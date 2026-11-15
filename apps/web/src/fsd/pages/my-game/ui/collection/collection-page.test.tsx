@@ -16,7 +16,14 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { readUnitOrigin } from "@/entities/unit"
 import type { TourPageSteps } from "@/shared/tour"
 import { createTestI18n } from "@/test/i18n"
-import { fireEvent, render, screen, waitFor, within } from "@/test/render"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
 import type { CollectionQuery } from "../../model/collection-query"
@@ -25,6 +32,7 @@ import {
   type CollectionCatalog,
   type CollectionRoster,
 } from "../../model/collection-view"
+import type { CollectionCompareState } from "../../model/use-collection-compare"
 import type {
   CollectionViewState,
   QuickFilterAvailability,
@@ -59,18 +67,69 @@ vi.mock("../../model/use-collection-options", () => ({
 const sync = vi.hoisted(() => ({
   isSyncing: false,
   statusText: "Never synced",
+  syncDisabled: false,
+  cooldownMinutes: null,
   syncNow: vi.fn(),
 }))
 vi.mock("@/features/player-data-sync", () => ({
   usePlayerDataSyncStatus: () => sync,
 }))
 
-const msal = vi.hoisted(() => ({ loginRedirect: vi.fn() }))
+const msal = vi.hoisted(() => ({
+  loginRedirect: vi.fn(),
+  authenticated: false,
+}))
 vi.mock("@azure/msal-react", () => ({
   useMsal: () => ({
     inProgress: "none",
     instance: { loginRedirect: msal.loginRedirect },
   }),
+  useIsAuthenticated: () => msal.authenticated,
+}))
+
+// Compare mode's own data is covered by its model tests; here the page only renders its states.
+const compareState = vi.hoisted(() => ({
+  current: { mode: "off" } as CollectionCompareState,
+}))
+vi.mock("../../model/use-collection-compare", () => ({
+  useCollectionCompare: () => ({
+    state: compareState.current,
+    toRoster: undefined,
+  }),
+}))
+vi.mock("@/entities/roster-snapshot", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/roster-snapshot")>()),
+  useRosterSnapshots: () => ({
+    data: { limit: 20, count: 20, items: [] },
+  }),
+  useCreateRosterSnapshot: () => ({ mutate: vi.fn(), reset: vi.fn() }),
+  useRenameRosterSnapshot: () => ({ mutate: vi.fn() }),
+  useDeleteRosterSnapshot: () => ({ mutate: vi.fn() }),
+}))
+vi.mock("@/shared/player-data-status", () => ({
+  usePlayerDataStatus: () => ({ lastSyncedAt: null, syncNow: vi.fn() }),
+}))
+
+// The dialog's own behavior is covered by its feature tests; here it lists the units it was given.
+vi.mock("@/features/goal-planning", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/goal-planning")>()),
+  BulkGoalDialog: ({
+    open,
+    units,
+    onCreated,
+  }: {
+    open: boolean
+    units: readonly { name: string }[]
+    onCreated: () => void
+  }) =>
+    open ? (
+      <div data-testid="bulk-goal-dialog">
+        {units.map((unit) => unit.name).join(", ")}
+        <button onClick={onCreated} type="button">
+          created
+        </button>
+      </div>
+    ) : null,
 }))
 
 const tour = vi.hoisted(() => ({
@@ -178,6 +237,7 @@ function quickFilters(
   return {
     readyToRankUp: availability,
     needToAscend: availability,
+    canPromote: availability,
     canAscend: availability,
     needToLevel: availability,
     blueStarReady: availability,
@@ -224,8 +284,11 @@ beforeEach(() => {
   localStorage.clear()
   tour.steps = undefined
   sync.isSyncing = false
+  sync.syncDisabled = false
   sync.syncNow.mockReset()
   msal.loginRedirect.mockReset().mockResolvedValue(undefined)
+  msal.authenticated = false
+  compareState.current = { mode: "off" }
   // The shared sign-in request reads the API scope when a button spreads it.
   vi.stubEnv("VITE_API_SCOPE", "api://test/access_as_user")
 })
@@ -243,13 +306,25 @@ function UnitPageProbe() {
   )
 }
 
+function SearchProbe() {
+  return <p data-testid="location">{useLocation().search}</p>
+}
+
 function renderPage(width: number, entry = "/my-game/collection") {
   setViewportWidth(width)
   return render(
     <I18nextProvider i18n={i18n}>
       <MemoryRouter initialEntries={[entry]}>
         <Routes>
-          <Route path="/my-game/collection" element={<CollectionPage />} />
+          <Route
+            path="/my-game/collection"
+            element={
+              <>
+                <CollectionPage />
+                <SearchProbe />
+              </>
+            }
+          />
           <Route path="/library/*" element={<UnitPageProbe />} />
         </Routes>
       </MemoryRouter>
@@ -321,11 +396,28 @@ describe.each([
     expectTourTargetsExist(form)
     expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
       '[data-testid="collection-toolbar"]',
+      '[data-testid="collection-view-switch"]',
       '[data-testid="collection-quick-filters"]',
       '[data-testid="collection-summary"]',
       '[data-testid="collection-faction-group"]',
       '[data-testid="collection-owned-tile"]',
       '[data-testid="collection-unowned-tile"]',
+    ])
+  })
+
+  it("points the tour at Roster sections and rows in the Roster view", () => {
+    ready(synced)
+    renderPage(width, "/my-game/collection?view=roster")
+
+    expectTourTargetsExist(form)
+    expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
+      '[data-testid="collection-toolbar"]',
+      '[data-testid="collection-view-switch"]',
+      '[data-testid="collection-quick-filters"]',
+      '[data-testid="collection-summary"]',
+      '[data-testid="collection-roster-section"]',
+      '[data-testid="collection-owned-row"]',
+      '[data-testid="collection-unowned-row"]',
     ])
   })
 
@@ -351,6 +443,7 @@ describe.each([
     expectTourTargetsExist(form)
     expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
       '[data-testid="collection-toolbar"]',
+      '[data-testid="collection-view-switch"]',
       '[data-testid="collection-quick-filters"]',
       '[data-testid="collection-summary"]',
       '[data-testid="collection-faction-group"]',
@@ -381,6 +474,7 @@ describe.each([
     expectTourTargetsExist(form)
     expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
       '[data-testid="collection-toolbar"]',
+      '[data-testid="collection-view-switch"]',
       '[data-testid="collection-quick-filters"]',
       '[data-testid="collection-faction-group"]',
       '[data-testid="collection-unowned-tile"]',
@@ -482,6 +576,7 @@ describe("CollectionPage states", () => {
 
   it("disables the sync action while a sync is running", () => {
     sync.isSyncing = true
+    sync.syncDisabled = true
     ready({
       state: "signedIn",
       characters: undefined,
@@ -720,12 +815,11 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(
       within(fields).getByRole("group", { name: "Rank range" })
     ).toHaveAccessibleDescription(
-      "Rank, stars and ownership filters need a synced roster."
+      "Rank and stars filters need a synced roster."
     )
     expect(
       within(fields).getByRole("combobox", { name: "Lowest rank" })
     ).toBeDisabled()
-    expect(within(fields).getByLabelText("Ownership")).toBeDisabled()
   })
 
   it("explains a quick filter that needs the synced inventory", () => {
@@ -830,5 +924,685 @@ describe("CollectionPage toolbar on mobile", () => {
     expect(
       screen.getByRole("button", { name: "Filters (1)" })
     ).toBeInTheDocument()
+  })
+})
+
+describe("CollectionPage snapshots and compare", () => {
+  it("tells a guest to sign in instead of offering Compare and Take snapshot", () => {
+    ready({ state: "anonymous" })
+    renderPage(1280, "/my-game/collection?compare=abc&to=current")
+
+    expect(screen.getByTestId("snapshots-sign-in-prompt")).toBeInTheDocument()
+    expect(screen.queryByTestId("compare-toggle")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("take-snapshot")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("compare-section")).not.toBeInTheDocument()
+  })
+
+  it("disables Take snapshot at the limit and tours Compare right after the toolbar", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    expect(screen.getByTestId("take-snapshot")).toBeDisabled()
+    expect(screen.getByTestId("manage-snapshots")).toHaveTextContent("20/20")
+    expect(tour.steps?.desktop.slice(0, 5).map((step) => step.target)).toEqual([
+      '[data-testid="collection-toolbar"]',
+      '[data-testid="collection-view-switch"]',
+      '[data-testid="collection-quick-filters"]',
+      '[data-testid="compare-toggle"]',
+      '[data-testid="take-snapshot"]',
+    ])
+  })
+
+  it("turns compare mode on with compare=latest", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    fireEvent.click(
+      within(screen.getByTestId("compare-toggle")).getByRole("switch")
+    )
+    expect(screen.getByTestId("location")).toHaveTextContent("compare=latest")
+  })
+
+  it("shows the empty state in place of the faction cards when no source exists", () => {
+    msal.authenticated = true
+    compareState.current = {
+      mode: "empty",
+      sources: {
+        sources: [],
+        personal: {
+          limit: 20,
+          count: 0,
+          autoLimit: 12,
+          autoCount: 0,
+          items: [],
+        },
+        plans: [],
+        eventNames: new Map(),
+      },
+    }
+    ready(synced)
+    renderPage(1280, "/my-game/collection?compare=latest")
+
+    expect(screen.getByTestId("compare-empty")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-faction-group")
+    ).not.toBeInTheDocument()
+  })
+
+  it("lists changed units by power gain with their chips", async () => {
+    msal.authenticated = true
+    const diff = (unitId: string, delta: number) => ({
+      unitId,
+      kind: "character" as const,
+      unlocked: false,
+      changed: delta !== 0,
+      progression: null,
+      rank: delta ? { from: "Gold1" as const, to: "Gold2" as const } : null,
+      upgrades: null,
+      xpLevel: null,
+      xpGained: null,
+      shards: null,
+      mythicShards: null,
+      abilities: [],
+      equipment: [],
+      power: { from: 1000, to: 1000 + delta, delta },
+    })
+    const snapshot = {
+      kind: "snapshot" as const,
+      id: "s1",
+      name: "Before LE",
+      source: "manual" as const,
+      takenAt: "2026-10-01T00:00:00Z",
+    }
+    compareState.current = {
+      mode: "ready",
+      sources: {
+        sources: [snapshot],
+        personal: {
+          limit: 20,
+          count: 1,
+          autoLimit: 12,
+          autoCount: 0,
+          items: [],
+        },
+        plans: [],
+        eventNames: new Map(),
+      },
+      from: snapshot,
+      to: null,
+      diffs: new Map([["ultraTitus", diff("ultraTitus", 4650)]]),
+      teamUnitIds: null,
+    }
+    ready(synced)
+    renderPage(1280, "/my-game/collection?compare=latest")
+
+    const tiles = screen.getAllByTestId("compare-tile")
+    expect(tiles.map((tile) => tile.dataset.unit)).toEqual(["ultraTitus"])
+    expect(within(tiles[0]!).getByTestId("compare-chips")).toHaveTextContent(
+      "Gold I → Gold II"
+    )
+    expect(screen.getByTestId("compare-summary")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-faction-group")
+    ).not.toBeInTheDocument()
+
+    cleanup()
+    renderPage(420, "/my-game/collection?compare=latest")
+    // On mobile the options button names both rosters and sits right below the Compare switch.
+    const options = screen.getByTestId("compare-options")
+    expect(options).toHaveTextContent("Before LE")
+    expect(options).toHaveTextContent("→ Current roster")
+    expect(
+      screen.getByTestId("snapshot-actions").compareDocumentPosition(options) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      screen
+        .getByTestId("collection-toolbar")
+        .compareDocumentPosition(screen.getByTestId("snapshot-actions")) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    // The options come before the comparison's summary, on the page and in the tour.
+    expect(
+      options.compareDocumentPosition(screen.getByTestId("compare-summary")) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    const mobileTargets = tour.steps?.mobile?.map((step) => step.target) ?? []
+    const optionsStep = mobileTargets.indexOf('[data-testid="compare-options"]')
+    expect(optionsStep).toBeGreaterThan(-1)
+    expect(mobileTargets[optionsStep + 1]).toBe(
+      '[data-testid="compare-summary"]'
+    )
+    // The options sheet closes from a button at its bottom.
+    fireEvent.click(options)
+    const close = await screen.findByTestId("compare-options-close")
+    expect(close).toHaveAccessibleName("Close")
+    fireEvent.click(close)
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId("compare-options-sheet")
+      ).not.toBeInTheDocument()
+    )
+    // Focus goes back to the opener.
+    await waitFor(() => expect(options).toHaveFocus())
+  })
+})
+
+const rosterSections = () =>
+  screen
+    .queryAllByTestId("collection-roster-section")
+    .map((section) => section.getAttribute("data-faction"))
+const listedNames = () =>
+  [
+    ...document.querySelectorAll<HTMLElement>(
+      '[data-testid^="collection-owned-"],[data-testid^="collection-unowned-"]'
+    ),
+  ].map((unit) => unit.getAttribute("title"))
+
+describe("CollectionPage when Hide unowned hides every match", () => {
+  it("keeps the summary and offers to show unowned units, not to clear filters", () => {
+    ready({ ...synced, characters: [] })
+    renderPage(1280, "/my-game/collection?owned=owned")
+
+    expect(screen.queryByTestId("collection-empty")).not.toBeInTheDocument()
+    expect(screen.getByTestId("collection-summary")).toHaveTextContent(
+      "0 of 4 units owned"
+    )
+    const hidden = screen.getByTestId("collection-all-hidden")
+    expect(hidden).toHaveTextContent(
+      "Hide unowned is hiding all of these units."
+    )
+    expect(
+      screen.queryByRole("button", { name: "Clear filters" })
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(
+      within(hidden).getByRole("button", { name: "Show unowned units" })
+    )
+
+    expect(listedNames()).toHaveLength(4)
+    expect(
+      screen.getByRole("switch", { name: "Hide unowned" })
+    ).toHaveAttribute("aria-checked", "false")
+  })
+
+  it("also offers Clear filters when a filter is set", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?owned=owned&q=calgar")
+
+    const hidden = screen.getByTestId("collection-all-hidden")
+    fireEvent.click(
+      within(hidden).getByRole("button", { name: "Clear filters" })
+    )
+
+    expect(listedNames()).toEqual(["Titus"])
+    expect(
+      screen.getByRole("switch", { name: "Hide unowned" })
+    ).toHaveAttribute("aria-checked", "true")
+  })
+
+  it("keeps the no-match state when the filters match nothing at all", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?owned=owned&q=zzz")
+
+    expect(screen.getByTestId("collection-empty")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-all-hidden")
+    ).not.toBeInTheDocument()
+  })
+})
+
+describe("CollectionPage view switch and Roster on desktop", () => {
+  it("switches to Roster with the same units, order and filters", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?alliance=Imperial&sort=rank")
+    const cardsOrder = listedNames()
+
+    const views = screen.getByRole("radiogroup", { name: "View" })
+    expect(within(views).getByRole("radio", { name: "Cards" })).toHaveAttribute(
+      "aria-checked",
+      "true"
+    )
+    fireEvent.click(within(views).getByRole("radio", { name: "Roster" }))
+
+    expect(
+      within(views).getByRole("radio", { name: "Roster" })
+    ).toHaveAttribute("aria-checked", "true")
+    expect(
+      screen.queryByTestId("collection-faction-group")
+    ).not.toBeInTheDocument()
+    expect(rosterSections()).toEqual(["Ultramarines"])
+    expect(listedNames()).toEqual(cardsOrder)
+    expect(
+      screen.getByRole("button", { name: "Filters (1)" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("combobox", { name: "Sort: Rank" })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("collection-faction-owned")).toHaveTextContent(
+      "1/3"
+    )
+    expect(localStorage.getItem("collection.view")).toBe("roster")
+  })
+
+  it("keeps the Roster view when filters are cleared", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?q=ti&quick=needToLevel&view=roster")
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
+
+    expect(rosterSections()).toEqual(["Ultramarines", "BlackLegion"])
+    expect(
+      screen.getByRole("radio", { name: "Roster", checked: true })
+    ).toBeInTheDocument()
+  })
+
+  it("links each row to its Library page with Collection's order", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?view=roster")
+
+    const calgar = screen.getByRole("link", { name: /^Marneus Calgar,/ })
+    expect(calgar).toHaveAttribute("data-testid", "collection-unowned-row")
+    expect(calgar).toHaveTextContent("75/400")
+    fireEvent.click(calgar)
+
+    expect(openedUnit()).toEqual({
+      path: "/library/characters/ultraCalgar",
+      origin: {
+        kind: "collection",
+        ids: ["ultraTitus", "ultraCalgar", "blackHaarken"],
+      },
+    })
+  })
+
+  it("shows greyed rows under the sign-in prompt when signed out", () => {
+    ready({ state: "anonymous" })
+    renderPage(1280, "/my-game/collection?view=roster")
+
+    expect(screen.getByTestId("collection-sign-in-prompt")).toBeInTheDocument()
+    const rows = screen.getAllByTestId("collection-unowned-row")
+    expect(rows).toHaveLength(4)
+    expect(screen.getAllByTestId("unit-tile-starts")).toHaveLength(3)
+  })
+
+  it("shows the empty state in Roster when nothing matches", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?view=roster&q=zzz")
+
+    expect(screen.getByTestId("collection-empty")).toBeInTheDocument()
+    expect(rosterSections()).toEqual([])
+  })
+})
+
+describe("CollectionPage Unowned toggle", () => {
+  it("hides unowned units as a display setting, not a filter", () => {
+    ready(synced)
+    renderPage(1280)
+
+    const toggle = screen.getByRole("switch", { name: "Hide unowned" })
+    expect(toggle).toHaveAttribute("aria-checked", "false")
+    fireEvent.click(toggle)
+
+    expect(toggle).toHaveAttribute("aria-checked", "true")
+    expect(listedNames()).toEqual(["Titus"])
+    expect(factionsShown()).toEqual(["Ultramarines"])
+    // The counts keep the hidden units, and nothing counts as a filter.
+    expect(screen.getByTestId("collection-summary")).toHaveTextContent(
+      "1 of 4 units owned"
+    )
+    expect(screen.getByTestId("collection-faction-owned")).toHaveTextContent(
+      "1/3"
+    )
+    expect(
+      screen.queryByRole("button", { name: "Clear filters" })
+    ).not.toBeInTheDocument()
+    // The switch is the only ownership control: the Filters panel has none.
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    expect(screen.queryByLabelText("Ownership")).not.toBeInTheDocument()
+  })
+
+  it("keeps unowned units hidden when other filters are cleared", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?owned=owned&alliance=Imperial")
+
+    expect(
+      screen.getByRole("button", { name: "Filters (1)" })
+    ).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
+
+    expect(
+      screen.getByRole("switch", { name: "Hide unowned" })
+    ).toHaveAttribute("aria-checked", "true")
+    expect(listedNames()).toEqual(["Titus"])
+  })
+
+  it("ignores the removed Not owned value in an old link, and reads Hide unowned from a link", () => {
+    ready(synced)
+    const { unmount } = renderPage(1280, "/my-game/collection?owned=unowned")
+    expect(
+      screen.getByRole("switch", { name: "Hide unowned" })
+    ).toHaveAttribute("aria-checked", "false")
+    expect(listedNames()).toHaveLength(4)
+    expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument()
+    unmount()
+
+    renderPage(1280, "/my-game/collection?owned=owned")
+    expect(
+      screen.getByRole("switch", { name: "Hide unowned" })
+    ).toHaveAttribute("aria-checked", "true")
+    expect(listedNames()).toEqual(["Titus"])
+  })
+
+  it("is disabled and explained without a roster", () => {
+    ready({ state: "anonymous" })
+    renderPage(1280)
+
+    const toggle = screen.getByRole("switch", { name: "Hide unowned" })
+    expect(toggle).toBeDisabled()
+    expect(toggle).toHaveAttribute("aria-checked", "false")
+    expect(toggle).toHaveAccessibleDescription(
+      "Hiding unowned units needs a synced roster."
+    )
+    expect(listedNames()).toHaveLength(4)
+  })
+})
+
+describe("CollectionPage view switch and Roster on mobile", () => {
+  it("offers the views as icon buttons next to Sort, and the toggle below them", () => {
+    ready(synced)
+    renderPage(420)
+
+    expect(screen.getByRole("radio", { name: "Cards" })).toBeChecked()
+    fireEvent.click(screen.getByRole("radio", { name: "Roster" }))
+
+    expect(screen.getByRole("radio", { name: "Roster" })).toBeChecked()
+    expect(rosterSections()).toEqual(["Ultramarines", "BlackLegion"])
+    expect(
+      screen.getByRole("switch", { name: "Hide unowned" })
+    ).toBeInTheDocument()
+  })
+
+  it("closes an expanded row that leaves the list, so it does not come back open", async () => {
+    ready(synced)
+    renderPage(420, "/my-game/collection?view=roster")
+
+    fireEvent.click(screen.getByRole("button", { name: /^Titus,/ }))
+    expect(screen.getByRole("button", { name: /^Titus,/ })).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    )
+
+    fireEvent.change(screen.getByRole("searchbox", { name: "Search units" }), {
+      target: { value: "calgar" },
+    })
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("button", { name: /^Titus,/ })
+      ).not.toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
+
+    expect(screen.getByRole("button", { name: /^Titus,/ })).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    )
+  })
+
+  it("expands one row at a time and opens the unit from the expanded row", () => {
+    ready(synced)
+    renderPage(420, "/my-game/collection?view=roster")
+
+    expect(screen.queryByRole("link")).not.toBeInTheDocument()
+    const titusRow = screen.getByRole("button", { name: /^Titus,/ })
+    const calgarRow = screen.getByRole("button", { name: /^Marneus Calgar,/ })
+
+    fireEvent.click(titusRow)
+    expect(titusRow).toHaveAttribute("aria-expanded", "true")
+    fireEvent.click(calgarRow)
+    expect(calgarRow).toHaveAttribute("aria-expanded", "true")
+    expect(titusRow).toHaveAttribute("aria-expanded", "false")
+
+    fireEvent.click(screen.getByRole("link", { name: "Open Marneus Calgar" }))
+    expect(openedUnit()).toEqual({
+      path: "/library/characters/ultraCalgar",
+      origin: {
+        kind: "collection",
+        ids: ["ultraTitus", "ultraCalgar", "blackHaarken"],
+      },
+    })
+  })
+})
+
+describe("CollectionPage faction grouping", () => {
+  // Haarken (Black Legion) outranks Titus, so the ungrouped order differs from the grouped one.
+  const haarkenAhead: CollectionRoster = {
+    ...synced,
+    characters: [
+      titus,
+      {
+        ...titus,
+        unitId: "blackHaarken" as UnitId,
+        progressionIndex: "Mythic:OneBlueStar",
+        rank: "Adamantine1",
+      } as PlayerCharacter,
+    ],
+  }
+
+  it("lists every unit across factions in sort order when switched off", () => {
+    ready(haarkenAhead)
+    renderPage(1280)
+
+    expect(factionsShown()).toEqual(["Ultramarines", "BlackLegion"])
+    const toggle = screen.getByRole("switch", { name: "Group by faction" })
+    expect(toggle).toHaveAttribute("aria-checked", "true")
+
+    fireEvent.click(toggle)
+
+    expect(toggle).toHaveAttribute("aria-checked", "false")
+    expect(factionsShown()).toEqual([])
+    expect(screen.getByTestId("collection-ungrouped")).toBeInTheDocument()
+    expect(listedNames()).toEqual([
+      "Haarken",
+      "Titus",
+      "Marneus Calgar",
+      "Galatian",
+    ])
+    expect(
+      screen.getByRole("link", { name: /^Haarken, Black Legion,/ })
+    ).toBeInTheDocument()
+    expect(screen.getAllByTestId("unit-tile-faction")).toHaveLength(4)
+    // A setting, not a filter: the summary and the filter count are unchanged.
+    expect(screen.getByTestId("collection-summary")).toHaveTextContent(
+      "2 of 4 units owned"
+    )
+    expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument()
+    expect(localStorage.getItem("collection.group")).toBe("none")
+  })
+
+  it("opens a unit with the ungrouped order", () => {
+    ready(haarkenAhead)
+    renderPage(1280, "/my-game/collection?group=none")
+
+    fireEvent.click(screen.getByRole("link", { name: /^Titus,/ }))
+
+    expect(openedUnit()).toEqual({
+      path: "/library/characters/ultraTitus",
+      origin: {
+        kind: "collection",
+        ids: ["blackHaarken", "ultraTitus", "ultraCalgar"],
+      },
+    })
+  })
+
+  it("lists Roster rows ungrouped and keeps the setting through Clear filters", () => {
+    ready(synced)
+    renderPage(
+      1280,
+      "/my-game/collection?group=none&view=roster&alliance=Imperial"
+    )
+
+    expect(rosterSections()).toEqual([])
+    expect(listedNames()).toEqual(["Titus", "Marneus Calgar", "Galatian"])
+    expect(screen.getAllByTestId("unit-row-faction")).toHaveLength(3)
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
+
+    expect(listedNames()).toHaveLength(4)
+    expect(rosterSections()).toEqual([])
+    expect(
+      screen.getByRole("switch", { name: "Group by faction" })
+    ).toHaveAttribute("aria-checked", "false")
+  })
+
+  it("lists the greyed catalog ungrouped when signed out", () => {
+    ready({ state: "anonymous" })
+    renderPage(1280, "/my-game/collection?group=none")
+
+    expect(screen.getByTestId("collection-sign-in-prompt")).toBeInTheDocument()
+    expect(screen.getAllByTestId("collection-unowned-tile")).toHaveLength(4)
+    expect(factionsShown()).toEqual([])
+  })
+
+  it.each([
+    ["desktop", 1280],
+    ["mobile", 420],
+  ] as const)("leaves the faction tour step out on %s", (form, width) => {
+    ready(synced)
+    renderPage(width, "/my-game/collection?group=none")
+
+    expectTourTargetsExist(form)
+    expect(tour.steps?.[form]?.map((step) => step.target)).toEqual([
+      '[data-testid="collection-toolbar"]',
+      '[data-testid="collection-view-switch"]',
+      '[data-testid="collection-quick-filters"]',
+      '[data-testid="collection-summary"]',
+      '[data-testid="collection-owned-tile"]',
+      '[data-testid="collection-unowned-tile"]',
+    ])
+  })
+
+  it("offers the toggle on mobile next to the view buttons", () => {
+    ready(synced)
+    renderPage(420)
+
+    const row = screen.getByTestId("collection-view-switch")
+    expect(
+      within(row).getByRole("radio", { name: "Cards" })
+    ).toBeInTheDocument()
+    expect(
+      within(row).getByRole("switch", { name: "Group by faction" })
+    ).toBeInTheDocument()
+    expect(
+      within(row).getByRole("switch", { name: "Hide unowned" })
+    ).toBeInTheDocument()
+  })
+})
+
+describe("CollectionPage select mode", () => {
+  it("is offered beside the summary only when signed in", () => {
+    ready(synced)
+    renderPage(1280)
+    expect(
+      screen.queryByTestId("collection-select-toggle")
+    ).not.toBeInTheDocument()
+    cleanup()
+
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+    expect(screen.getByTestId("collection-select-toggle")).toBeInTheDocument()
+    expect(tour.steps?.desktop.map((step) => step.target)).toContain(
+      '[data-testid="collection-select-toggle"]'
+    )
+  })
+
+  it("selects units instead of opening them and hands them to the dialog", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    fireEvent.click(screen.getByTestId("collection-select-toggle"))
+    expect(screen.getByTestId("collection-select-create")).toBeDisabled()
+    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    fireEvent.click(
+      screen.getByRole("button", { name: "Select Marneus Calgar" })
+    )
+    expect(
+      screen.getByRole("button", { name: "Select Titus" })
+    ).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "2 selected"
+    )
+    expect(screen.queryByTestId("unit-page")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("collection-select-create"))
+    expect(screen.getByTestId("bulk-goal-dialog")).toHaveTextContent(
+      "Titus, Marneus Calgar"
+    )
+  })
+
+  it("selects all shown, clears, and ends with Done", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    fireEvent.click(screen.getByTestId("collection-select-toggle"))
+    fireEvent.click(screen.getByTestId("collection-select-all"))
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "4 selected"
+    )
+    fireEvent.click(screen.getByTestId("collection-select-clear"))
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "0 selected"
+    )
+    fireEvent.click(screen.getByTestId("collection-select-done"))
+    expect(
+      screen.queryByTestId("collection-select-bar")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-select-unit")
+    ).not.toBeInTheDocument()
+  })
+
+  it("ends select mode once the dialog created every unit's goals", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280)
+
+    fireEvent.click(screen.getByTestId("collection-select-toggle"))
+    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    fireEvent.click(screen.getByTestId("collection-select-create"))
+    fireEvent.click(screen.getByRole("button", { name: "created" }))
+    expect(
+      screen.queryByTestId("collection-select-bar")
+    ).not.toBeInTheDocument()
+  })
+
+  it("ends select mode when Compare is turned on", () => {
+    msal.authenticated = true
+    ready(synced)
+    // A fresh element each time, so a rerender reaches the page and reads the new compare state.
+    const tree = () => (
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter initialEntries={["/my-game/collection"]}>
+          <CollectionPage />
+        </MemoryRouter>
+      </I18nextProvider>
+    )
+    setViewportWidth(1280)
+    const view = render(tree())
+
+    fireEvent.click(screen.getByTestId("collection-select-toggle"))
+    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    compareState.current = { mode: "loading" }
+    view.rerender(tree())
+    compareState.current = { mode: "off" }
+    view.rerender(tree())
+    expect(
+      screen.queryByTestId("collection-select-bar")
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId("collection-select-toggle")).toBeInTheDocument()
   })
 })

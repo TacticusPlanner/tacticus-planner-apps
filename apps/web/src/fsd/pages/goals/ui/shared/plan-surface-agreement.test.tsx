@@ -11,12 +11,10 @@ import {
 
 import { render, screen } from "@/test/render"
 import type { GoalDetail } from "@/entities/goal"
-import {
-  availableCampaignBattles,
-  calculateDailyRaids,
-} from "@/features/daily-raids"
+import { availableCampaignBattles } from "@/entities/player-data-override"
+import { calculateDailyRaids } from "@/features/daily-raids"
 import type { RaidsFilters } from "@/features/daily-raids"
-import type { FarmingCharacter, FarmingUpgrade } from "@/features/goal-farming"
+import type { FarmingCharacter, FarmingUpgrade } from "@/entities/goal-farming"
 
 import { computeGoalBlockers } from "@/features/goal-planning"
 import { BlockedIndicator } from "./status-badge"
@@ -134,6 +132,7 @@ function rankGoal(): GoalDetail {
     snapshot: null,
     events: [],
     dependsOn: [],
+    linkedGoalIds: [],
     projectIds: ["project-1"],
     revision: 1,
     globalPriority: 1,

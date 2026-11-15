@@ -8,6 +8,8 @@ import {
   featuredHeroState,
   passesObjective,
   selectQuestTeam,
+  questPickedPower,
+  toggleQuestPick,
   type QuestTeamCandidate,
   type QuestTeamCharacter,
 } from "./quest-team"
@@ -218,6 +220,15 @@ describe("selectQuestTeam", () => {
       "u4",
     ])
     expect(team.totalPower).toBe(1000 + 700 + 700 + 500 + 400)
+    // Every other option too, strongest first.
+    expect(team.eligible.map((option) => option.unitId)).toEqual([
+      "u7",
+      "u8",
+      "u5",
+      "u4",
+      "u2",
+      "u1",
+    ])
   })
 
   it("swaps the weakest pick for the strongest unit dealing a required damage type", () => {
@@ -280,5 +291,31 @@ describe("selectQuestTeam", () => {
       "low",
     ])
     expect(team).toMatchObject({ powerUnavailable: true, totalPower: null })
+  })
+})
+
+describe("toggleQuestPick", () => {
+  it("picks while a slot is free and always unpicks", () => {
+    expect(toggleQuestPick(["a"], "b", 2)).toEqual(["a", "b"])
+    expect(toggleQuestPick(["a", "b"], "c", 2)).toEqual(["a", "b"])
+    expect(toggleQuestPick(["a", "b"], "a", 2)).toEqual(["b"])
+  })
+})
+
+describe("questPickedPower", () => {
+  const options = [
+    { unitId: "a", power: 500 },
+    { unitId: "b", power: 300 },
+    { unitId: "c", power: null },
+  ]
+
+  it("adds the picked options to the featured hero", () => {
+    expect(questPickedPower(1000, options, ["a", "b"])).toBe(1800)
+    expect(questPickedPower(1000, options, [])).toBe(1000)
+  })
+
+  it("is unknown when a picked unit or the hero has no power", () => {
+    expect(questPickedPower(1000, options, ["c"])).toBeNull()
+    expect(questPickedPower(null, options, ["a"])).toBeNull()
   })
 })

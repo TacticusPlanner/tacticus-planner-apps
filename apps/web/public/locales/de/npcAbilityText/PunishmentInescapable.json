@@ -1,0 +1,8 @@
+{
+  "PunishmentInescapable": {
+    "description": "Feindliche Einheiten, die ein an <style=\"Faction_Custodes\">Boudicari</style> angrenzendes Feld betreten, beenden ihre Bewegung, ausgenommen Einheiten mit den Eigenschaften <style=\"Flying\">Fliegend</style>, <style=\"Unstoppable\">Unaufhaltsam</style>, <style=\"Vehicle\">Fahrzeug</style> oder <style=\"Immune\">Immun</style>.",
+    "variables": {},
+    "constants": {},
+    "scaled": []
+  }
+}

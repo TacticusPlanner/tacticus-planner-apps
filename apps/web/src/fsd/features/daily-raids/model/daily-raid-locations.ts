@@ -42,12 +42,14 @@ export function buildLocationsByBattleId(
         battleId,
         {
           id: battleId,
+          campaignKey: `${battle.campaignGroupId}:${battle.type}`,
           ...campaignLocationLabels(battleId, battle, descriptor, display),
           shortLabel: short
             ? `${short.name} ${short.code} ${battle.nodeNumber}${short.challenge ? "B" : ""}`
             : battle.campaignGroupId,
           challenge: battle.challenge,
           manual: manualBattleIds.has(battleId),
+          isEvent: descriptor?.isEvent ?? false,
           icon: campaignIcon(
             battle.campaignGroupId,
             battle.type,

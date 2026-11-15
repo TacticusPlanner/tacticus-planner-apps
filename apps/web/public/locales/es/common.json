@@ -82,6 +82,7 @@
       "nextAutoSync": "Próxima sincronización automática {{time}}",
       "syncProgress": "Sincronizando {{downloaded}} / {{total}}…",
       "retrySync": "Error de sincronización — reintentar",
+      "rateLimited": "Límite de sincronización alcanzado. Reintenta {{time}}.",
       "reauthRequired": "Sesión expirada — toca para iniciar sesión",
       "refreshRequired": "Actualización necesaria · {{lastSync}}",
       "syncNow": "Sincronizar ahora"
@@ -138,7 +139,8 @@
       "replaceWarning": "Aplicar un código reemplaza tus objetivos, planes y ajustes actuales.",
       "confirm": "Entendido",
       "applied": "Código aplicado.",
-      "apply": "Aplicar código"
+      "apply": "Aplicar código",
+      "traceId": "ID de traza: {{traceId}}"
     }
   },
   "accountGate": {
@@ -271,6 +273,7 @@
     "dailies": "Diarias",
     "dailiesDescription": "Tareas diarias y periódicas del juego",
     "eventLive": "Evento activo",
+    "live": "En vivo",
     "home": "Inicio",
     "homeDescription": "Resumen de tu cuenta y accesos directos",
     "createGoal": "Crear objetivo",
@@ -290,6 +293,7 @@
     "noResults": "No se encontraron páginas ni acciones coincidentes.",
     "search": "Buscar páginas y acciones",
     "sync": "Sincronizar",
+    "syncCooldown": "{{minutes}} min",
     "syncWithTacticus": "Sincronizar con Tacticus",
     "skipToContent": "Saltar al contenido",
     "primaryNavigation": "Navegación principal",
@@ -342,15 +346,6 @@
     "rewardsTitle": "Referencia de recompensas de fragmentos",
     "sectorTier": "Sector / nivel",
     "current": "Progreso actual de la alianza",
-    "rewards": {
-      "Common": "Común",
-      "Uncommon": "Poco común",
-      "Rare": "Raro",
-      "Epic": "Épico",
-      "Legendary": "Legendario",
-      "LegendaryBlue": "Legendario 1★ azul",
-      "Mythic": "Mítico"
-    },
     "unsaved": {
       "message": "Tienes cambios sin guardar",
       "save": "Guardar",
@@ -400,8 +395,17 @@
           "rarity": "Rareza",
           "rank": "Rango",
           "abilities": "Habilidades",
-          "shards": "Fragmentos"
+          "shards": "Fragmentos",
+          "power": "Poder"
         },
+        "view": "Vista",
+        "views": {
+          "cards": "Tarjetas",
+          "roster": "Lista"
+        },
+        "groupByFaction": "Agrupar por facción",
+        "hideUnowned": "Ocultar no desbloqueadas",
+        "hideUnownedNeedsRoster": "Para ocultar las unidades no desbloqueadas hace falta una plantilla sincronizada.",
         "filters": "Filtros",
         "filtersCount_one": "Filtros ({{count}})",
         "filtersCount_other": "Filtros ({{count}})",
@@ -422,19 +426,16 @@
         "clearRankTo": "Quitar rango máximo",
         "searchRanks": "Buscar rangos",
         "noRanks": "Ningún rango coincide",
-        "ownership": "Posesión",
-        "ownershipAll": "Todas las unidades",
-        "owned": "En tu poder",
-        "unowned": "Sin desbloquear",
         "kind": "Tipo de unidad",
         "kindAll": "Todos los tipos",
         "character": "Personajes",
         "mow": "Máquinas de Guerra",
-        "needsRoster": "Los filtros de rango, estrellas y posesión necesitan una plantilla sincronizada.",
+        "needsRoster": "Los filtros de rango y estrellas necesitan una plantilla sincronizada.",
         "quickFilters": "Filtros rápidos",
         "quick": {
           "readyToRankUp": "Lista para subir de rango",
           "needToAscend": "Necesita ascender",
+          "canPromote": "Puede promocionar",
           "canAscend": "Puede ascender",
           "needToLevel": "Necesita subir de nivel",
           "blueStarReady": "Lista para la estrella azul",
@@ -444,6 +445,7 @@
         "quickHelp": {
           "readyToRankUp": "Tu inventario de mejoras cubre todos los materiales que aún faltan en el rango actual.",
           "needToAscend": "En el rango más alto de su rareza, con una Ascensión aún pendiente.",
+          "canPromote": "Tus fragmentos y orbes alcanzan para la siguiente estrella dentro de la rareza actual.",
           "canAscend": "Tus fragmentos y orbes alcanzan para la siguiente rareza (la siguiente estrella en Mítico).",
           "needToLevel": "Por debajo del nivel máximo de su rareza.",
           "blueStarReady": "Tus fragmentos y orbes alcanzan para todos los pasos hasta la primera estrella azul.",
@@ -452,6 +454,7 @@
         },
         "quickNeedsRoster": "Los filtros rápidos necesitan una plantilla sincronizada.",
         "quickNeedsInventory": "{{filters}}: necesita tu inventario sincronizado.",
+        "quickCurrentOnly": "{{filters}}: usa tu plantilla e inventario actuales, así que se desactiva al comparar una instantánea.",
         "quickFailed": "{{filters}}: no se pudieron cargar sus datos del juego.",
         "rankRange": "Intervalo de rangos",
         "groupUnit": "Unidad",
@@ -504,9 +507,164 @@
       },
       "empty": {
         "title": "Ninguna unidad coincide con estos filtros",
-        "body": "Cambia o borra los filtros para ver más unidades."
+        "body": "Cambia o borra los filtros para ver más unidades.",
+        "hiddenTitle": "No hay unidades desbloqueadas aquí",
+        "hiddenBody": "«Ocultar no desbloqueadas» está ocultando todas estas unidades.",
+        "showUnowned": "Mostrar unidades no desbloqueadas"
+      },
+      "compare": {
+        "toggle": "Comparar",
+        "loading": "Cargando la comparación…",
+        "options": "Opciones de comparación",
+        "from": "Desde",
+        "to": "Hasta",
+        "current": "Plantilla actual",
+        "personalGroup": "Tus instantáneas",
+        "leGroup": "Eventos legendarios",
+        "runRecordLabel": "{{event}} · ronda {{run}} · {{date}}",
+        "event": "Evento legendario",
+        "anyEvent": "Todas las unidades",
+        "lane": "Carril",
+        "anyLane": "Todos los carriles",
+        "lanes": {
+          "alpha": "Alfa",
+          "beta": "Beta",
+          "gamma": "Gamma"
+        },
+        "order": "Orden",
+        "orderGain": "Poder ganado",
+        "fields": "Campos ({{count}}/{{total}})",
+        "fieldNames": {
+          "shards": "Fragmentos",
+          "mythicShards": "Fragmentos míticos",
+          "xp": "EXP",
+          "upgrades": "Mejoras",
+          "abilities": "Habilidades",
+          "equipment": "Equipo",
+          "power": "Poder"
+        },
+        "showUnchanged": "Mostrar sin cambios",
+        "summaryTitle": "{{from}} → {{to}}",
+        "summaryFor_one": "para {{count}} unidad coincidente",
+        "summaryFor_other": "para {{count}} unidades coincidentes",
+        "metricHint": "Selecciona un número para listar solo las unidades que lo forman.",
+        "metrics": {
+          "unlocked": "Desbloqueadas",
+          "ascensions": "Ascensos de rareza",
+          "promotions": "Promociones",
+          "rankUps": "Subidas de rango",
+          "abilityLevels": "Niveles de habilidad",
+          "upgradesApplied": "Mejoras aplicadas",
+          "shardsEarned": "Fragmentos obtenidos",
+          "mythicShardsEarned": "Fragmentos míticos obtenidos",
+          "power": "Poder ganado"
+        },
+        "noChanges": "No hay cambios para estas unidades",
+        "emptyTitle": "Toma tu primera instantánea",
+        "emptyBody": "Una instantánea guarda toda tu plantilla tal como está ahora, para que puedas compararla con tu progreso posterior.",
+        "errorTitle": "No se pudieron cargar las instantáneas",
+        "errorBody": "La comparación no se puede mostrar sin ellas. Inténtalo de nuevo.",
+        "fromTo": "{{from}} → {{to}}",
+        "chips": {
+          "unlocked": "Desbloqueada",
+          "upgrades": "{{value}} mejoras",
+          "xpLevel": "{{value}} niveles",
+          "shards": "{{value}} fragmentos",
+          "mythicShards": "{{value}} míticos",
+          "equipment": "{{value}} objetos",
+          "power": "{{value}} poder"
+        },
+        "details": {
+          "none": "Sin cambios.",
+          "unlocked": "Desbloqueada",
+          "rank": "Rango",
+          "stars": "Estrellas",
+          "upgrades": "Mejoras aplicadas",
+          "xpLevel": "Nivel de EXP",
+          "xpGained": "EXP obtenida",
+          "activeAbility": "Habilidad activa",
+          "passiveAbility": "Habilidad pasiva",
+          "primaryAbility": "Habilidad principal",
+          "secondaryAbility": "Habilidad secundaria",
+          "shards": "Fragmentos",
+          "mythicShards": "Fragmentos míticos",
+          "shardsBreakdown": "neto {{net}} · gastados {{spent}} · obtenidos {{earned}}",
+          "equipment": "Objeto",
+          "power": "Poder",
+          "openLibrary": "Abrir en la Biblioteca",
+          "items": {
+            "I_Crit": "Objeto de crítico",
+            "I_Block": "Objeto de bloqueo",
+            "I_Booster_Crit": "Potenciador de crítico",
+            "I_Booster_Block": "Potenciador de bloqueo",
+            "I_Defensive": "Objeto defensivo"
+          }
+        },
+        "closeOptions": "Cerrar"
+      },
+      "snapshots": {
+        "signIn": "Inicia sesión para guardar instantáneas de tu plantilla y compararlas.",
+        "take": "Tomar instantánea",
+        "manage": "Instantáneas",
+        "usage": "{{count}}/{{limit}}",
+        "limitTooltip": "Elimina una instantánea para tomar otra",
+        "dialogTitle": "Tomar una instantánea",
+        "dialogBody": "Primero sincroniza con Tacticus y después guarda toda tu plantilla.",
+        "name": "Nombre (opcional)",
+        "nameLabel": "Nombre de la instantánea",
+        "namePlaceholder": "La fecha de hoy",
+        "nameTooLong": "Usa como máximo {{max}} caracteres.",
+        "cancel": "Cancelar",
+        "confirm": "Tomar instantánea",
+        "syncing": "Sincronizando…",
+        "retry": "Reintentar",
+        "syncFailed": "La sincronización con Tacticus falló.",
+        "rateLimited": "Demasiadas sincronizaciones. Puedes volver a intentarlo {{time}}.",
+        "rateLimitedSoon": "Demasiadas sincronizaciones. Inténtalo de nuevo en un momento.",
+        "notSynced": "Sincroniza tu plantilla antes de tomar una instantánea.",
+        "fromLastSync": "Tomar de la última sincronización ({{time}})",
+        "taken": "Instantánea guardada",
+        "compare": "Comparar",
+        "manageTitle": "Gestionar instantáneas",
+        "none": "Aún no hay instantáneas.",
+        "rename": "Renombrar",
+        "delete": "Eliminar",
+        "deleteTitle": "¿Eliminar «{{name}}»?",
+        "deleteBody": "La instantánea se elimina de forma permanente.",
+        "deleteConfirm": "Eliminar",
+        "renameFailed": "No se pudo renombrar la instantánea.",
+        "deleteFailed": "No se pudo eliminar la instantánea.",
+        "autoLabel": "Auto · {{date}}",
+        "v1ImportLabel": "V1 · {{name}}",
+        "autoBadge": "Auto",
+        "v1ImportBadge": "V1",
+        "autoTitle": "Automáticas",
+        "autoHint": "Se toman tras una sincronización si tu plantilla no tiene ninguna instantánea de los últimos 30 días. Se guardan hasta {{limit}}; la más antigua se reemplaza.",
+        "keep": "Conservar",
+        "keepLimitTooltip": "Elimina una instantánea para conservar esta",
+        "keepFailed": "No se pudo conservar la instantánea."
+      },
+      "select": {
+        "start": "Seleccionar unidades",
+        "unit": "Seleccionar {{name}}",
+        "count_one": "{{count}} seleccionada",
+        "count_other": "{{count}} seleccionadas",
+        "selectAll": "Seleccionar todas las mostradas",
+        "clear": "Limpiar",
+        "createGoals": "Crear objetivos",
+        "done": "Listo"
       }
     }
+  },
+  "unitRow": {
+    "level": "Nv. {{level}}",
+    "active": "Activa",
+    "passive": "Pasiva",
+    "primary": "Primaria",
+    "secondary": "Secundaria",
+    "equipment": "Equipo",
+    "shards": "Fragmentos",
+    "open": "Abrir {{name}}"
   },
   "unitTile": {
     "characterAbilities": "Habilidad activa nivel {{first}}, habilidad pasiva nivel {{second}}",
@@ -813,12 +971,14 @@
         "goals": "Objetivos",
         "onslaughtProgress": "Progreso de Onslaught",
         "campaignEventProgress": "Progreso de eventos de campaña",
-        "legendaryEventPlans": "Equipos de Eventos Legendarios"
+        "legendaryEventPlans": "Equipos de Eventos Legendarios",
+        "rosterSnapshots": "Instantáneas de la plantilla"
       },
       "partDescriptions": {
         "userId": "Vincula tu cuenta del planificador con tu jugador del juego, algo que necesitan las funciones de gremio.",
         "guildKey": "Solo se usa si eres líder o colíder de tu gremio: registra tu gremio en el planificador para que todos los miembros puedan usar las funciones de gremio.",
-        "legendaryEventPlans": "Equipos creados a mano, notas, datos de misiones y packs por ronda y marcas «Quizá superable» / «Parar aquí» de los eventos que conoce el planificador. El progreso del evento no se importa."
+        "legendaryEventPlans": "Equipos creados a mano, notas, datos de misiones y packs por ronda y marcas «Quizá superable» / «Parar aquí» de los eventos que conoce el planificador. El progreso del evento no se importa.",
+        "rosterSnapshots": "Tus instantáneas de la plantilla de V1, de la más reciente a la más antigua, hasta el límite de instantáneas. V1 no guardaba la XP total ni las mejoras aplicadas, así que las comparaciones las omiten."
       },
       "submit": "Importar selección",
       "submitting": "Importando…",
@@ -948,6 +1108,8 @@
         "goals_other": "{{count}} objetivos",
         "legendaryEvents_one": "Equipos de Legendary Event para {{count}} evento",
         "legendaryEvents_other": "Equipos de Legendary Event para {{count}} eventos",
+        "rosterSnapshots_one": "{{count}} instantánea de la plantilla",
+        "rosterSnapshots_other": "{{count}} instantáneas de la plantilla",
         "parts": {
           "personalTacticusApiKey": "Clave de API",
           "tacticusUserId": "ID de usuario de Tacticus",
@@ -960,6 +1122,26 @@
       "partReasons": {
         "invalidTacticusUserId": "El ID de usuario de Tacticus de V1 no es un GUID válido, así que no se importó.",
         "tacticusUserIdConflict": "Este ID de usuario de Tacticus ya está vinculado a otra cuenta del planificador, así que no se importó."
+      },
+      "rosterSnapshots": {
+        "title": "Instantáneas de la plantilla",
+        "unnamed": "Instantánea sin nombre",
+        "droppedUnits_one": "Se omitió {{count}} unidad u objeto que el planificador no conoce",
+        "droppedUnits_other": "Se omitieron {{count}} unidades u objetos que el planificador no conoce",
+        "reasons": {
+          "imported": "Importada",
+          "skippedDuplicate": "Ya importada",
+          "skippedDeleted": "En la papelera de V1",
+          "skippedLimit": "Se alcanzó el límite de instantáneas",
+          "failed": "No se pudo leer esta instantánea"
+        },
+        "partReasons": {
+          "missing_roster_snapshots": "Tu perfil de V1 no tiene instantáneas de la plantilla.",
+          "invalid_roster_snapshots": "No se pudieron leer tus instantáneas de la plantilla de V1.",
+          "no_roster_snapshot_imported": "No llegó ninguna instantánea nueva.",
+          "roster_snapshot_import_failed": "No se pudo leer ninguna de tus instantáneas de V1.",
+          "roster_snapshot_import_conflict": "Tus instantáneas cambiaron durante la importación. Inténtalo de nuevo."
+        }
       }
     },
     "empty": {
@@ -1026,6 +1208,7 @@
       "pause": "Pausar",
       "resume": "Reanudar",
       "delete": "Eliminar",
+      "deleteGoal": "Eliminar objetivo de {{entity}}",
       "moveToTop": "Mover al principio",
       "moveUp": "Subir",
       "moveDown": "Bajar",
@@ -1346,7 +1529,17 @@
         },
         "owned": "tienes {{count}}",
         "alreadyMet": "Ya tienes esa cantidad, así que este objetivo ya está cumplido.",
-        "noResources": "Ya tienes todos los materiales en estas cantidades."
+        "noResources": "Ya tienes todos los materiales en estas cantidades.",
+        "addRarity": {
+          "label": "Añadir todos:",
+          "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Cuenta para",
+          "hint": "Sus materiales cuentan para estos objetivos en lugar de farmearse aparte.",
+          "option": "{{type}} → {{target}}",
+          "empty": "No hay un objetivo en curso de esta unidad para el que pueda contar."
+        }
       },
       "previewTitle": "Recursos necesarios",
       "showAll": "Mostrar todo ({{count}})",
@@ -1361,6 +1554,7 @@
       "submit": "Crear objetivo",
       "close": "Cerrar",
       "genericError": "No se pudo crear el objetivo. Inténtalo de nuevo.",
+      "serverError": "No se pudo conectar con el servidor. Inténtalo de nuevo.",
       "previewEstimate": "≈ {{days}} días",
       "previewEnergy": "{{energy}} energía",
       "reviewTitle": "Lo que se creará",
@@ -1383,7 +1577,7 @@
         "upgradeTargetsRequired": "Selecciona al menos una mejora para farmear para el objetivo de mejora.",
         "rankMaxed": "Este personaje ya ha alcanzado el rango máximo.",
         "progressionMaxed": "Esta unidad ya ha alcanzado el nivel máximo de ascensión.",
-        "abilityMaxed": "Las habilidades de esta unidad ya han alcanzado el nivel máximo para su rareza actual.",
+        "abilityMaxed": "Las habilidades de esta unidad ya han alcanzado el nivel máximo.",
         "activeOrPausedGoalExists": "Ya existe un objetivo de {{goalType}} activo o pausado para esta unidad.",
         "upgradeQuantity": "Introduce un número entero del 1 al 10.000.",
         "alreadyUnlocked_mow": "Esta máquina de guerra ya está desbloqueada.",
@@ -1442,10 +1636,18 @@
       }
     },
     "estimate": {
+      "checkpoints": {
+        "summary": "{{count}} puntos de control",
+        "next": "Siguiente",
+        "title": "Puntos de control",
+        "ready": "Listo ya",
+        "energy": "{{energy}} de energía"
+      },
       "none": "—",
       "days": "en {{days}} días",
       "blockedLabel": "Bloqueado",
       "unavailableRow": "{{material}} ×{{count}}: {{reason}}",
+      "materialCount": "{{material}} ×{{count}}",
       "blocked": {
         "NoFarmLocation": "Ningún lugar de farmeo accesible proporciona un recurso necesario.",
         "FarmingOverrideUnavailable": "Los lugares de farmeo seleccionados no proporcionan todos los recursos necesarios.",
@@ -1453,7 +1655,16 @@
         "SimulationLimit": "El objetivo no pudo completarse dentro del horizonte de planificación.",
         "UnsupportedCost": "El cálculo detallado de coste no es compatible con este objetivo.",
         "FilteredOut": "Todos los lugares de farmeo están excluidos por tus filtros de incursiones."
-      }
+      },
+      "unlockAt": "Se desbloquea en",
+      "battlesToGo_one": "falta {{count}} batalla",
+      "battlesToGo_other": "faltan {{count}} batallas",
+      "battlesToGoNotStarted_one": "sin empezar, falta {{count}} batalla",
+      "battlesToGoNotStarted_other": "sin empezar, faltan {{count}} batallas",
+      "unlockDuringEvent": "durante el evento de campaña",
+      "unlockMore_one": "+{{count}} ubicación más",
+      "unlockMore_other": "+{{count}} ubicaciones más",
+      "unlockFewer": "Mostrar menos"
     },
     "unlockFlavor": "Reúne los fragmentos del personaje y prepáralo para unirse a tu plantel.",
     "filters": {
@@ -1463,11 +1674,14 @@
       "groupByLabel": "Agrupar por",
       "groupNone": "Sin agrupar",
       "groupByType": "Agrupar por tipo",
+      "groupByTypePriority": "Agrupar por tipo (por prioridad)",
       "groupByUnit": "Agrupar por unidad",
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos",
       "statusFilterLabel": "Filtro de estado de objetivos",
       "groupCount_one": "{{count}} objetivo",
-      "groupCount_other": "{{count}} objetivos"
+      "groupCount_other": "{{count}} objetivos",
+      "collapseAllGroups": "Contraer todo",
+      "expandAllGroups": "Expandir todo"
     },
     "seasonFit": {
       "label": "Ajuste a temporada",
@@ -1526,24 +1740,22 @@
       "orbs": "Orbes {{rarity}}",
       "abilityBadges": "Insignias de habilidad {{rarity}}",
       "forgeBadges": "Insignias de forja {{rarity}}",
+      "orbsTotal": "Orbes",
+      "abilityBadgesTotal": "Insignias de habilidad",
+      "forgeBadgesTotal": "Insignias de forja",
+      "byRarityLabel": "{{label}}. Ver por rareza",
       "xpBooks": "Libros de XP {{rarity}}",
       "xpBooksValue": "{{available}} de {{needed}}",
       "chipLabel": "{{name}}: {{quantity}}",
       "poolLabel": "{{name}}: {{available}} de {{needed}}",
-      "standalone": "Por sí solo: {{slots}} ranuras de mejora, {{energy}} de energía",
-      "rarity": {
-        "Common": "Común",
-        "Uncommon": "Poco común",
-        "Rare": "Raro",
-        "Epic": "Épico",
-        "Legendary": "Legendario",
-        "Mythic": "Mítico"
-      }
+      "standalone": "Por sí solo: {{slots}} ranuras de mejora, {{energy}} de energía"
     },
     "overview": {
       "levelProgress": "Nv {{current}} → {{target}}",
       "ownedOfRequired": "{{owned}} / {{required}}",
       "upgradeMaterial": "{{name}}: {{owned}} / {{quantity}}",
+      "upgradeMaterialCounted": "Incluye {{amount}} del objetivo de {{goalType}} de {{unit}} (#{{priority}})",
+      "upgradeMaterialTakenFirst": "{{amount}} reservados antes por el objetivo de {{goalType}} de {{unit}} (#{{priority}})",
       "abilityTrack": {
         "active": "Activa",
         "passive": "Pasiva",
@@ -1630,7 +1842,8 @@
       "holdingBackTitle": "Qué te frena",
       "holdingBackDescription": "Lo que ningún farmeo resuelve y, después, los recursos que más energía cuestan en los nodos que elegiste.",
       "holdingBackNone": "Nada frena estos objetivos.",
-      "neededFor": "Necesario para {{units}}",
+      "neededFor": "Necesario para",
+      "blockedGoals": "Objetivos bloqueados",
       "missingFarmed": "Recursos farmeados",
       "missingUpgrades": "Mejoras",
       "missingShards": "Fragmentos",
@@ -1639,7 +1852,21 @@
       "farmingSpot_other": "{{count}} recursos · {{days}}",
       "farmingSpotHint": "Ordenado por cuánto de lo que aún necesitan tus objetivos cae por energía. Cada fila muestra cuántos recursos necesarios caen allí y los días para farmearlos todos allí, con tu energía diaria y los intentos diarios de cada nodo.",
       "openSchedule": "Plan día a día",
-      "helpsGoals": "Ayuda a estos objetivos"
+      "helpsGoals": "Ayuda a estos objetivos",
+      "progressionTitle": "Campañas para avanzar",
+      "progressionDescription": "Campañas sin completar que desbloquean tus objetivos o abaratan su farmeo, con lo que aún te impide jugarlas.",
+      "battlesLeft_one": "falta {{count}} batalla",
+      "battlesLeft_other": "faltan {{count}} batallas",
+      "battlesLeftNotStarted_one": "Sin empezar, {{count}} batalla",
+      "battlesLeftNotStarted_other": "Sin empezar, {{count}} batallas",
+      "unblocks_one": "Desbloquea {{material}} en {{count}} batalla",
+      "unblocks_other": "Desbloquea {{material}} en {{count}} batallas",
+      "energySaved": "Ahorra unos {{energy}} de energía",
+      "lockMissingCore": "Desbloquea a {{units}} para jugarla",
+      "lockRequiredCampaign_one": "Completa antes {{campaign}} (falta {{count}} batalla)",
+      "lockRequiredCampaign_other": "Completa antes {{campaign}} (faltan {{count}} batallas)",
+      "lockPowerLevel": "Alcanza el nivel de poder {{required}} (tienes {{current}})",
+      "createUnlockGoal": "Añadir objetivo de desbloqueo para {{unit}}"
     },
     "target": {
       "title": "Objetivo",
@@ -1717,6 +1944,7 @@
     "card": {
       "ladder": {
         "current": "Actual",
+        "start": "Inicio",
         "taken": "Ya es un objetivo"
       },
       "range": {
@@ -1732,6 +1960,7 @@
         "decrease": "Bajar {{track}}",
         "increase": "Subir {{track}}",
         "noChange": "Sin cambios",
+        "current": "Actual {{level}}",
         "quickPicks": "{{track}}: selección rápida"
       }
     },
@@ -1739,6 +1968,61 @@
       "goalLimitReached": "Ya tienes {{max}} objetivos de tipo {{type}} sin archivar. Archiva o elimina algunos primero.",
       "goalLimitReachedGeneric": "Puedes tener como máximo {{max}} objetivos sin archivar de un mismo tipo. Archiva o elimina algunos primero.",
       "projectLimitReached": "Ya tienes {{max}} proyectos sin archivar. Archiva uno para hacer sitio."
+    },
+    "view": {
+      "label": "Vista de objetivos",
+      "cards": "Tarjetas",
+      "table": "Tabla"
+    },
+    "bulkCreate": {
+      "title_one": "Crear objetivos para {{count}} unidad",
+      "title_other": "Crear objetivos para {{count}} unidades",
+      "targets": {
+        "unlock": "Desbloquear las unidades que no tienes",
+        "ascension": "Ascensión",
+        "ascensionTo": "Ascender hasta",
+        "rank": "Rango",
+        "rankTo": "Subir de rango hasta",
+        "ability": "Habilidades",
+        "abilityTo": "Nivel de habilidad",
+        "abilityDecrease": "Bajar el nivel de habilidad",
+        "abilityIncrease": "Subir el nivel de habilidad",
+        "allAtTop": "Todas las unidades seleccionadas ya están al máximo."
+      },
+      "summary_one": "{{count}} objetivo para {{units}}",
+      "summary_other": "{{count}} objetivos para {{units}}",
+      "unitCount_one": "{{count}} unidad",
+      "unitCount_other": "{{count}} unidades",
+      "created_one": "Se creó {{count}} objetivo.",
+      "created_other": "Se crearon {{count}} objetivos.",
+      "overLimit": "Se superaría el límite de {{max}} objetivos por tipo en: {{types}}. Quita antes algunas unidades u objetivos.",
+      "cancel": "Cancelar",
+      "submit_one": "Crear {{count}} objetivo",
+      "submit_other": "Crear {{count}} objetivos",
+      "retryFailed_one": "Reintentar {{count}} fallido",
+      "retryFailed_other": "Reintentar {{count}} fallidos",
+      "done": "Listo",
+      "status": {
+        "pending": "creando",
+        "done": "creado",
+        "failed": "fallido"
+      },
+      "skipped": "{{type}} omitido: {{reason}}",
+      "skipReasons": {
+        "reached": "ya alcanzado",
+        "alreadyGoal": "ya es un objetivo",
+        "notForMow": "no aplica a Máquinas de Guerra",
+        "notOwned": "no la tienes (activa Desbloquear)"
+      },
+      "nothingToCreate": "No hay nada que crear para esta unidad.",
+      "removeUnit": "Quitar {{name}}",
+      "goal": {
+        "range": "{{type}} {{start}} → {{end}}",
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (necesaria)",
+        "active": "Activa",
+        "passive": "Pasiva",
+        "needed": "necesaria"
+      }
     }
   },
   "language": {
@@ -1875,6 +2159,10 @@
         "seasonFit": {
           "title": "Ajuste a temporada",
           "content": "Elige una temporada del Pase de batalla, de Incursión de gremio o de Guerra de gremios para ver qué objetivos terminan a tiempo. Una línea marca dónde los objetivos pasan a la siguiente temporada."
+        },
+        "viewToggle": {
+          "title": "Tarjetas o tabla",
+          "content": "Cambia entre las tarjetas de objetivos y la tabla compacta. Tu elección se guarda en este dispositivo."
         }
       }
     },
@@ -1949,6 +2237,22 @@
     },
     "collection": {
       "steps": {
+        "compare": {
+          "title": "Compara con una instantánea",
+          "content": "Activa Comparar para ver qué cambió desde una instantánea o una ronda de un evento legendario: primero las mayores ganancias de poder."
+        },
+        "takeSnapshot": {
+          "title": "Toma una instantánea",
+          "content": "Guarda toda tu plantilla tras una sincronización nueva, para compararla con tu progreso posterior."
+        },
+        "compareOptions": {
+          "title": "Opciones de comparación",
+          "content": "Elige las instantáneas que comparar, filtra por un evento legendario, cambia el orden y elige qué cambios mostrar."
+        },
+        "compareSummary": {
+          "title": "Qué ha cambiado",
+          "content": "Totales de las unidades listadas. Selecciona un número para listar solo las unidades que lo forman."
+        },
         "summary": {
           "title": "Tu colección de un vistazo",
           "content": "Cuántos de los personajes y Máquinas de Guerra del juego tienes."
@@ -1972,6 +2276,34 @@
         "quickFilters": {
           "title": "Filtros rápidos",
           "content": "Con un toque ves las unidades en las que trabajar a continuación: lista para subir de rango, necesita ascender, puede ascender, necesita subir de nivel o lista para la estrella azul. Vuelve a seleccionar un filtro para quitarlo."
+        },
+        "view": {
+          "title": "Tarjetas o lista",
+          "content": "Cambia entre las tarjetas de facción y la lista, una vista más compacta con una fila por unidad. Tu elección se recuerda. Desactiva «Agrupar por facción» para ver todas las unidades juntas en tu orden, y usa «Ocultar no desbloqueadas» para ver solo las que tienes."
+        },
+        "factionRoster": {
+          "title": "Agrupadas por facción",
+          "content": "Cada sección reúne los personajes y Máquinas de Guerra de una facción; las unidades que tienes van primero."
+        },
+        "ownedRoster": {
+          "title": "Una unidad que tienes",
+          "content": "Cada fila muestra el retrato con un anillo del color de su rareza y, después, su rango, estrellas, nivel de PX, niveles de habilidad y equipo. Selecciona una fila para abrir sus detalles en la Biblioteca."
+        },
+        "ownedRosterMobile": {
+          "title": "Una unidad que tienes",
+          "content": "Cada fila muestra el retrato, el rango, las estrellas y el nivel de PX. Toca una fila para ver sus niveles de habilidad, equipo y fragmentos, y abre desde ahí sus detalles en la Biblioteca."
+        },
+        "unownedRoster": {
+          "title": "Aún no desbloqueada",
+          "content": "Las filas en gris no están en tu plantilla. La barra muestra lo cerca que estás de desbloquearlas. Selecciona una fila para abrir sus detalles en la Biblioteca."
+        },
+        "unownedRosterMobile": {
+          "title": "Aún no desbloqueada",
+          "content": "Las filas en gris no están en tu plantilla. Toca una fila para ver lo cerca que estás de desbloquearla y abre desde ahí sus detalles en la Biblioteca."
+        },
+        "selectUnits": {
+          "title": "Objetivos para muchas unidades",
+          "content": "Selecciona varias unidades y crea a la vez el mismo objetivo de Ascensión, Rango, Habilidades o Desbloqueo para todas."
         }
       }
     },

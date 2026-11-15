@@ -22,7 +22,7 @@ export function EventsCalendar() {
   const showLegend = calendar.status === "ready"
 
   return (
-    <Card data-testid="events-calendar">
+    <Card data-testid="events-calendar" id="home-calendar">
       <CardHeader>
         <CardTitle>{t("home.calendar.title")}</CardTitle>
       </CardHeader>

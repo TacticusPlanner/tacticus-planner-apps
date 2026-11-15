@@ -7,8 +7,8 @@ import { TourProvider, useTour } from "./tour-provider"
 
 const { reportError } = vi.hoisted(() => ({ reportError: vi.fn() }))
 
-vi.mock("@/shared/lib", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/shared/lib")>()),
+vi.mock("../lib", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../lib")>()),
   reportError,
 }))
 // The tour runtime's chunk failing to download (a non-stale failure, so it is reported).

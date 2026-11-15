@@ -56,6 +56,7 @@ export function PlayerDataSyncButton() {
     requiresReauth,
     status,
     statusText,
+    syncDisabled,
     syncNow,
   } = usePlayerDataSyncStatus()
   const Icon =
@@ -93,7 +94,7 @@ export function PlayerDataSyncButton() {
       )}
       data-testid="player-data-sync-button"
       onClick={syncNow}
-      disabled={isSyncing}
+      disabled={syncDisabled}
       size="lg"
       tooltip={tooltip}
     >

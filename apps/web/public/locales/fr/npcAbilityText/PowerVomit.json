@@ -1,6 +1,6 @@
 {
   "PowerVomit": {
-    "description": "Affecte 3 hexagones en ligne droite dans l’une des 6 directions. Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> à toutes les unités sur les hexagones affectés. Inflige <style=\"Stat_Damage\">+{[extraDmg_2]} Dégâts</style> aux unités ennemies pour chaque <i>charge de Waaagh!</i> que <style=\"Faction_Orks\">Zapspitta</style> possède. Pendant <style=\"STAT\">{[nrOfRounds]} manches</style>, tous les <style=\"DMG_Psychic\">Dégâts Psychiques</style> subis et infligés par les unités affectées sont augmentés de <style=\"Stat_Damage\">+{[extraDmg]} Dégâts</style>.\n\n{[S/AbilityDamageExplanation]}",
+    "description": "Affecte 3 hexagones en ligne droite dans l’une des 6 directions. Inflige <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style> à toutes les unités sur les hexagones affectés. Inflige <style=\"Stat_Damage\">+{[extraDmg_2]} Dégâts</style> aux unités ennemies pour chaque niveau d'<i>énergie Waaagh!</i> que <style=\"Faction_Orks\">Zapspitta</style> possède. Pendant <style=\"STAT\">{[nrOfRounds]} manches</style>, tous les <style=\"DMG_Psychic\">Dégâts Psychiques</style> subis et infligés par les unités affectées sont augmentés de <style=\"Stat_Damage\">+{[extraDmg]} Dégâts</style>.\n\n{[S/AbilityDamageExplanation]}",
     "variables": {
       "minDmg": [
         12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,

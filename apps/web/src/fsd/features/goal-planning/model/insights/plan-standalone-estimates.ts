@@ -7,8 +7,8 @@ import {
   estimatePlan,
   type FlatSupplier,
   type GoalNeed,
-} from "@/features/goal-farming/@x/goal-planning"
-import type { RankSlotAllocation } from "@/features/goal-farming/@x/goal-planning"
+} from "@/entities/goal-farming"
+import type { RankSlotAllocation } from "@/entities/goal-farming"
 
 type NeedParams = Parameters<typeof calculateGoalResourceNeed>[0]
 type EstimateParams = Parameters<typeof estimatePlan>[0]

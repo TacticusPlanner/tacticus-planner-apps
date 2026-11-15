@@ -62,7 +62,7 @@ type Props = {
  * each only where it has a target, then "Move to priority…", which asks for the number in a small
  * dialog), Pause or Resume, the scoped project's
  * removal (only while the page is scoped to a project), then a destructive Delete gated behind
- * `DeleteGoalDialog`. Removal is an ordinary item that acts at once; Delete is account-wide and confirmed. Reaching a goal's target is computed automatically (see
+ * `DeleteGoalDialog` (a Reached goal's Delete acts at once, unconfirmed). Removal is an ordinary item that acts at once; Delete is account-wide and confirmed. Reaching a goal's target is computed automatically (see
  * `model/attainment/`), never a manual action here. */
 export function GoalRowActions({
   row,
@@ -179,7 +179,10 @@ export function GoalRowActions({
             data-testid={`goal-row-delete-${goalId}`}
             disabled={pending}
             variant="destructive"
-            onSelect={() => setConfirmOpen(true)}
+            onSelect={() =>
+              // A Reached goal is done, so deleting it is routine cleanup: no confirmation.
+              reached ? void actions.remove(goalId) : setConfirmOpen(true)
+            }
           >
             {t("goals.actions.delete")}
           </DropdownMenuItem>

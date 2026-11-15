@@ -6,12 +6,12 @@ import {
 } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { mowAbilityUpgradeIds } from "@/features/goal-farming"
+import { mowAbilityUpgradeIds } from "@/entities/goal-farming"
 import {
   aggregateBaseUpgrades,
   aggregateOwnedBaseUpgrades,
   type UpgradeWithFarmLocations,
-} from "@/features/rank-lookup"
+} from "@/entities/rank-lookup"
 
 export type MowAbility = "primary" | "secondary"
 

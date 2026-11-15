@@ -9,9 +9,9 @@ import {
   parseHreProgress,
   switchMission,
   type HreProgress,
-} from "./hre-progress"
-import type { HreMission } from "./hre-missions"
-import type { HreOwnedInput } from "./hre-pace"
+} from "@/entities/hre-mission"
+import type { HreMission } from "@/entities/hre-mission"
+import type { HreOwnedInput } from "@/entities/hre-mission"
 import { accountStorageKey, safeStorage } from "@/shared/lib"
 
 // Design D4: one entry per HRE instance (occurrence id), per browser. Every storage access is

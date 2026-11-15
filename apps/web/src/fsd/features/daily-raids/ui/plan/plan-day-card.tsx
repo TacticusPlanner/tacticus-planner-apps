@@ -3,7 +3,7 @@ import { raidTicketIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { DailyRaidsReadyViewModel } from "../../model/daily-raids.domain"
-import type { RaidDaySchedule } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidDaySchedule } from "@/entities/goal-farming"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import type { PlanCell, PlanDayCells } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"
@@ -34,6 +34,14 @@ export function PlanDayCard({
   const date = new Date()
   date.setDate(date.getDate() + day.day - 1)
 
+  // Today only: nodes whose real attempts are spent can't be an alternative until tomorrow.
+  const exhaustedBattleIds = new Set(
+    day.day === 1
+      ? [...raids.attemptsLeftByBattle]
+          .filter(([, left]) => left === 0)
+          .map(([battleId]) => battleId)
+      : []
+  )
   const renderCells = (list: PlanCell[], testId: string) => (
     <div className="grid grid-cols-3 gap-1.5" data-testid={testId}>
       {list.map((cell) => (
@@ -44,6 +52,9 @@ export function PlanDayCard({
             selectedUnitId !== undefined &&
             !cell.units.some((unit) => unit.unitId === selectedUnitId)
           }
+          eligibleBattleIds={raids.eligibleBattleIds}
+          exhaustedBattleIds={exhaustedBattleIds}
+          sourcesByResource={raids.sourcesByResource}
           label={raids.resourceLabels.get(cell.resourceId) ?? cell.resourceId}
           locationsByBattleId={raids.locationsByBattleId}
           testId={`plan-cell-${day.day}-${cell.resourceId}`}
@@ -55,7 +66,7 @@ export function PlanDayCard({
 
   return (
     <section
-      className="flex h-[var(--plan-card-h,28rem)] min-h-112 w-[85vw] max-w-84 shrink-0 flex-col gap-2 rounded-[min(var(--radius-4xl),24px)] bg-card p-3 shadow-sm ring-1 ring-foreground/5 md:w-84 dark:ring-foreground/10"
+      className="flex h-(--plan-card-h,28rem) min-h-112 w-[85vw] max-w-84 shrink-0 flex-col gap-2 rounded-[min(var(--radius-4xl),24px)] bg-card p-3 shadow-sm ring-1 ring-foreground/5 md:w-84 dark:ring-foreground/10"
       data-plan-day={day.day}
       data-testid={`plan-day-${day.day}`}
     >

@@ -46,6 +46,12 @@
     "lint": {
       "dependsOn": ["^build", "^lint"]
     },
+    "lint:eslint": {
+      "dependsOn": ["^build"]
+    },
+    "lint:knip": {
+      "dependsOn": ["^build"]
+    },
     "lint:fsd": {
       "dependsOn": ["^lint:fsd"]
     },

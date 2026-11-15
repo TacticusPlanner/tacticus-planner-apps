@@ -4,7 +4,7 @@ import type {
   EventsCalendarStorageModel,
 } from "@workspace/game-catalog"
 
-import type { EstimateOutcome } from "@/features/goal-farming/@x/goal-planning"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset } from "@/shared/local-data"
 

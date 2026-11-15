@@ -52,12 +52,17 @@ export type HomeEventRow =
       campaignId: string | null
     })
   | (HomeEventRowBase & { type: "incursion" })
+  | (HomeEventRowBase & {
+      type: "quest"
+      /** The quest's featured hero, from the calendar occurrence; null when it names none. */
+      featuredCharacterId: string | null
+    })
 
 /** Upcoming rows on Home, the pinned Legendary Event included. */
 const UPCOMING_ROW_LIMIT = 3
 
 export interface HomeEvents {
-  /** Running now: the live Home Screen Event, Legendary Event, Campaign Event, then Incursion. */
+  /** Running now: the live Home Screen Event, Legendary Event, Campaign Event, Incursion, then Quest. */
   live: HomeEventRow[]
   /** Not started yet, by start, at most three. */
   upcoming: HomeEventRow[]
@@ -68,15 +73,16 @@ export interface HomeEvents {
  * what starts next (UTC instants decide; the device timezone only changes the displayed text). The
  * Legendary Event is pinned: when none is live, the next one with a known start always takes an
  * upcoming slot, replacing the latest of the three, so earlier Home Screen Events never push it off
- * Home. Either source may be `null` when its read failed or is pending. The Campaign Event and
- * Incursion (`null` while the calendar is pending or has none) are live like any event, else
- * compete for an upcoming slot by start.
+ * Home. Either source may be `null` when its read failed or is pending. The Campaign Event,
+ * Incursion and Quest Event (`null` while the calendar is pending or has none) are live like any
+ * event, else compete for an upcoming slot by start.
  */
 export function selectHomeEvents({
   homeScreen,
   legendary,
   campaignEvent = null,
   incursion = null,
+  quest = null,
   nowMs,
   limit = UPCOMING_ROW_LIMIT,
 }: {
@@ -90,6 +96,7 @@ export function selectHomeEvents({
   } | null
   campaignEvent?: (CalendarWindow & { campaignId: string | null }) | null
   incursion?: CalendarWindow | null
+  quest?: (CalendarWindow & { featuredCharacterId: string | null }) | null
   nowMs: number
   limit?: number
 }): HomeEvents {
@@ -159,6 +166,18 @@ export function selectHomeEvents({
       startMs: incursion.startMs,
       endMs: incursion.endMs,
       destination: "/my-game/incursions",
+    })
+  }
+  if (quest) {
+    windowRows.push({
+      type: "quest",
+      key: `quest:${quest.startMs}`,
+      featuredCharacterId: quest.featuredCharacterId,
+      live: quest.status === "live",
+      startMs: quest.startMs,
+      endMs: quest.endMs,
+      // The Quest tab opens on the running quest, else the next one.
+      destination: "/dailies/quest",
     })
   }
   for (const row of windowRows) (row.live ? live : upcoming).push(row)

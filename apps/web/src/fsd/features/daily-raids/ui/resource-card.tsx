@@ -5,7 +5,7 @@ import { Card, CardContent } from "@workspace/ui/components/card"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { goalTypeIcon } from "@/entities/goal"
-import type { RaidBreakdownEntry } from "@/features/goal-farming/@x/daily-raids"
+import type { RaidBreakdownEntry } from "@/entities/goal-farming"
 import type {
   DailyRaidGoalViewModel,
   DailyRaidLocationViewModel,
@@ -14,15 +14,23 @@ import type {
 } from "../model/daily-raids.domain"
 import { isLocationVisible } from "../model/location-visibility"
 import { CantRaidMenu, ManualBattleBadge } from "./manual-battle"
-import { plannedRaidNeedForEntry } from "../model/planned-raid-need"
+import {
+  materialNeed,
+  plannedRaidNeedForEntry,
+} from "../model/planned-raid-need"
 import { PlannedRaidNeedBadge } from "./planned-raid-need-badge"
+import { RaidLocationName, type RaidLocationTarget } from "./raid-location-name"
 import { ResourceIcon, ResourceIconWithTooltip } from "./resource-icon"
-import { EntityIcon, LocationChips, RankBadge } from "@/shared/ui"
+import {
+  CompactProgression,
+  EntityIcon,
+  LocationChips,
+  RankBadge,
+} from "@/shared/ui"
 
-/** A goal's target, icon-led: Rank goals pair the goal-type icon with the rank icon (an accessible
- * name is enough, no text — see `RankBadge`'s `showLabel={false}`); every other kind pairs its
- * goal-type icon with the existing text label, matching the Create Goal sheet's goal-type picker
- * treatment. */
+/** A goal's target, icon-led: Rank goals pair the goal-type icon with the rank icon (its name in a
+ * tooltip), Ascension goals with the compact progression; every other kind pairs its goal-type icon
+ * with the existing text label, matching the Create Goal sheet's goal-type picker treatment. */
 export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
   if (goal.goalKind === "Rank" && goal.targetRank) {
     return (
@@ -32,7 +40,22 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
           className="size-3.5 shrink-0"
           src={goalTypeIcon(goal.goalKind, goal.unitType)}
         />
-        <RankBadge rank={goal.targetRank} showLabel={false} />
+        <RankBadge rank={goal.targetRank} showLabel={false} tooltip />
+      </span>
+    )
+  }
+  if (goal.goalKind === "Ascension" && goal.targetProgression) {
+    return (
+      <span className="inline-flex items-center gap-1">
+        <EntityIcon
+          alt=""
+          className="size-3.5 shrink-0"
+          src={goalTypeIcon(goal.goalKind, goal.unitType)}
+        />
+        <CompactProgression
+          iconClassName="size-4"
+          value={goal.targetProgression}
+        />
       </span>
     )
   }
@@ -50,6 +73,7 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
 
 export function ResourceCard({
   onCantRaid,
+  onShowLocation,
   attemptsLeftByBattle,
   attemptsUsedByBattle,
   emphasis,
@@ -63,6 +87,8 @@ export function ResourceCard({
 }: {
   /** Opens the battle progress dialog for a planned location (Today's plan only). */
   onCantRaid?: (battleId: BattleId) => void
+  /** Opens a planned location's battle and enemies (the "location" emphasis only). */
+  onShowLocation?: (target: RaidLocationTarget) => void
   // Real, per-node attempts remaining today (see daily-raids-energy.ts) — the "location" emphasis
   // path de-dupes a location out of this list once it hits zero, deferring to Today's Attempts.
   attemptsLeftByBattle: ReadonlyMap<BattleId, number>
@@ -87,6 +113,7 @@ export function ResourceCard({
       isLocationVisible(entry, attemptsLeftByBattle)
     )
     if (visibleEntries.length === 0) return null
+    const need = materialNeed(resourceEntries)
 
     return (
       <Card
@@ -133,20 +160,26 @@ export function ResourceCard({
                         src={location.icon}
                       />
                     ) : null}
-                    <div className="min-w-0 flex-1 leading-tight">
-                      <div className="text-sm font-medium break-words">
-                        {location?.campaignName ?? entry.battleId}
+                    {/* Name takes the full row width with the badges below it (same on mobile
+                        and desktop), so a long campaign name never wraps mid-word beside them. */}
+                    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+                      <div className="min-w-0 basis-full">
+                        <RaidLocationName
+                          battleId={entry.battleId}
+                          fallbackLabel={entry.battleId}
+                          location={location}
+                          onShow={onShowLocation}
+                        />
                       </div>
-                      {location?.nodeLabel ? (
-                        <div className="text-xs break-words text-muted-foreground">
-                          {location.nodeLabel}
-                        </div>
-                      ) : null}
+                      {location?.manual ? <ManualBattleBadge /> : null}
+                      {/* The card's owned/target count already says what is needed. */}
+                      {progress ? null : (
+                        <PlannedRaidNeedBadge
+                          compact
+                          need={plannedRaidNeedForEntry(entry, need)}
+                        />
+                      )}
                     </div>
-                    {location?.manual ? <ManualBattleBadge /> : null}
-                    <PlannedRaidNeedBadge
-                      need={plannedRaidNeedForEntry(entry)}
-                    />
                   </div>
                 )
               })}
@@ -186,9 +219,12 @@ export function ResourceCard({
               )}
             </div>
             <div className="flex shrink-0 items-center gap-1">
-              {resourceEntries[0] ? (
+              {resourceEntries[0] && !progress ? (
                 <PlannedRaidNeedBadge
-                  need={plannedRaidNeedForEntry(resourceEntries[0])}
+                  need={plannedRaidNeedForEntry(
+                    resourceEntries[0],
+                    materialNeed(resourceEntries)
+                  )}
                 />
               ) : null}
               {onCantRaid ? (

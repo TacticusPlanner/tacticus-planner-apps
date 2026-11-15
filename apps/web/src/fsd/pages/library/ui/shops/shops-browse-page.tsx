@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { ShopsBrowseDesktop } from "./desktop/shops-browse-desktop"
-import { useLibraryShops } from "./hooks/use-library-shops"
+import { useLibraryShops } from "../../model/shops/use-library-shops"
 import { ShopsBrowseMobile } from "./mobile/shops-browse-mobile"
 import { ShopsBrowseState } from "./shops-browse-state"
 import { useShopsBrowseTutorial } from "./shops-browse-page.tutorial"

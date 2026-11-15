@@ -137,7 +137,8 @@ export function stepTargets(
           step,
           kind: "points",
           points:
-            points.state === "affordableNow"
+            points.state === "affordableNow" ||
+            points.state === "coveredByLaterRuns"
               ? projection.base.points
               : points.cumulativePoints,
         },

@@ -211,6 +211,56 @@ describe("selectHomeEvents", () => {
     expect(events.upcoming[0]).toMatchObject({ campaignId: null })
   })
 
+  it("lists a live Quest Event after the other live events, linking to the Quest tab", () => {
+    const events = selectHomeEvents({
+      homeScreen: { active: machineHunt, upcoming: [] },
+      legendary: null,
+      incursion: {
+        status: "live",
+        startMs: Date.parse("2026-10-02T00:00:00Z"),
+        endMs: Date.parse("2026-10-05T00:00:00Z"),
+      },
+      quest: {
+        status: "live",
+        startMs: Date.parse("2026-10-03T00:00:00Z"),
+        endMs: Date.parse("2026-10-06T00:00:00Z"),
+        featuredCharacterId: "votanChampion",
+      },
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(summary(events.live)).toEqual([
+      ["hse-machine-hunt", true],
+      ["incursion", true],
+      ["quest", true],
+    ])
+    expect(events.live[2]).toMatchObject({
+      featuredCharacterId: "votanChampion",
+      destination: "/dailies/quest",
+    })
+  })
+
+  it("gives an upcoming Quest Event a slot by start", () => {
+    const events = selectHomeEvents({
+      homeScreen: { active: null, upcoming: [trainingRush] },
+      legendary: null,
+      quest: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-04T00:00:00Z"),
+        endMs: Date.parse("2026-10-07T00:00:00Z"),
+        featuredCharacterId: null,
+      },
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(events.live).toEqual([])
+    expect(summary(events.upcoming)).toEqual([
+      ["quest", false],
+      ["hse-training-rush", false],
+    ])
+    expect(events.upcoming[0]).toMatchObject({ featuredCharacterId: null })
+  })
+
   it("gives an upcoming Incursion a slot by start, only when one is free", () => {
     const incursion = {
       status: "upcoming" as const,

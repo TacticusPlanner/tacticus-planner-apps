@@ -14,6 +14,7 @@ import { useQueryClient, type QueryClient } from "@tanstack/react-query"
 import {
   getManifestMetadata,
   getPlayerDataMetadata,
+  PlayerDataRateLimitError,
   type PlayerDataSyncProgress,
   type PlayerDataSyncResult,
 } from "@workspace/player-data"
@@ -46,6 +47,11 @@ import {
 } from "@/shared/player-data-status"
 
 const progressStore = createProgressStore<PlayerDataSyncProgress>()
+
+/** Used when a 429 carries no readable Retry-After, as with an API build that doesn't expose it yet. */
+const defaultRateLimitCooldownSeconds = 60
+
+type SyncBlock = { accountId: string; until: number }
 
 async function runPlayerDataSync(
   baseUrl: string,
@@ -115,6 +121,9 @@ export function PlayerDataProvider({
   const [requiresReauth, setRequiresReauth] = useState(false)
   const hasRequestedApiAccess = useRef(false)
   const queryClient = useQueryClient()
+  // The ref is what `runSync` checks, so it stays stable; the state is what the controls render from.
+  const syncBlockRef = useRef<SyncBlock | null>(null)
+  const [syncBlock, setSyncBlock] = useState<SyncBlock | null>(null)
 
   // An account that has not finished setup has no Tacticus key yet, so a sync could only fail (400,
   // or 404 before GET /account provisions it) and leave a "sync failed" badge where setup belongs.
@@ -126,9 +135,30 @@ export function PlayerDataProvider({
 
   // The account to sync for, or null while signed out or not set up yet.
   const syncAccountId = isAuthenticated && setupComplete ? accountId : null
+  // The limit is per profile, so another account signing in on this tab isn't blocked by it.
+  const syncBlockedUntil =
+    syncBlock?.accountId === syncAccountId ? (syncBlock?.until ?? null) : null
+
+  useEffect(() => {
+    if (syncBlockedUntil === null) {
+      return
+    }
+
+    const timeout = setTimeout(
+      () => setSyncBlock(null),
+      syncBlockedUntil - Date.now()
+    )
+    return () => clearTimeout(timeout)
+  }, [syncBlockedUntil])
 
   const runSync = useCallback(
     async (activeAccountId: string) => {
+      // Every trigger lands here (auto-sync, each Sync control, the keyboard shortcut, quick actions).
+      const block = syncBlockRef.current
+      if (block?.accountId === activeAccountId && Date.now() < block.until) {
+        return
+      }
+
       setStatus("syncing")
       setError(null)
       setRequiresReauth(false)
@@ -146,6 +176,25 @@ export function PlayerDataProvider({
         // Legendary Event run records and plans) now that it has finished.
         void refreshServerReadsAfterSync(queryClient)
       } catch (caught) {
+        if (caught instanceof PlayerDataRateLimitError) {
+          const nextBlock = {
+            accountId: activeAccountId,
+            until:
+              Date.now() +
+              (caught.retryAfterSeconds ?? defaultRateLimitCooldownSeconds) *
+                1000,
+          }
+          syncBlockRef.current = nextBlock
+          setSyncBlock(nextBlock)
+          // The stored data is untouched, so this is not a failed state; `syncBlockedUntil` says the rest.
+          // A failed read must not leave the status stuck on "syncing".
+          const metadata = await getPlayerDataMetadata().catch(() => null)
+          setStatus(
+            metadata && getManifestMetadata(metadata) ? "ready" : "idle"
+          )
+          return
+        }
+
         const syncError =
           caught instanceof Error ? caught : new Error(String(caught))
 
@@ -252,9 +301,10 @@ export function PlayerDataProvider({
       lastSyncedAt,
       error,
       requiresReauth,
+      syncBlockedUntil,
       syncNow,
     }),
-    [status, lastSyncedAt, error, requiresReauth, syncNow]
+    [status, lastSyncedAt, error, requiresReauth, syncBlockedUntil, syncNow]
   )
 
   return (

@@ -1,11 +1,16 @@
 import { progressionOrder, type Progression } from "@workspace/game-domain"
 
-import type { QuestScore } from "./quest-score"
+import { MAX_MEDALS, type QuestScore } from "./quest-score"
 
-/** Shards per medal without the Quest Bundle; the bundle adds 2 per medal (wiki). */
-const SHARDS_PER_MEDAL = 1
-const BUNDLE_MULTIPLIER = 3
-const MEDALS_PER_QUEST = 51
+/**
+ * A battle pays the featured hero's shards once, for its first medal (datamine `linearHeroEvent`
+ * `loot.star1`, x1 in game); the second and third medals pay XP and an ability badge instead.
+ */
+const SHARDS_PER_WON_BATTLE = 1
+/** The Quest Bundle adds 2 shards for every medal (datamine `offerBundleBonus.rewardsPerStar`). */
+const BUNDLE_SHARDS_PER_MEDAL = 2
+const BATTLES_PER_QUEST = 17
+const MEDALS_PER_QUEST = BATTLES_PER_QUEST * MAX_MEDALS
 
 export type QuestCrateView<TCrate> = {
   crate: TCrate
@@ -19,6 +24,8 @@ export type QuestShards = {
   earned: number
   max: number
   reachable: number
+  /** Medals not yet won across the quest's battles. */
+  medalsLeft: number
 }
 
 /** The crate track against the score: opened, the next one and the points it needs. */
@@ -36,15 +43,79 @@ export function crateTrack<TCrate extends { number: number; points: number }>(
     }))
 }
 
-/** Featured-hero shards from medals: earned, the quest maximum and what is still reachable. */
+/**
+ * Featured-hero shards from medals (one entry per battle): earned, the quest maximum and what is
+ * still reachable. 1 shard per won battle, plus 2 per medal with the Quest Bundle (17 or 119 max).
+ */
 export function questShards(
   medals: readonly number[],
   bundle: boolean
 ): QuestShards {
-  const multiplier = SHARDS_PER_MEDAL * (bundle ? BUNDLE_MULTIPLIER : 1)
-  const earned = medals.reduce((sum, count) => sum + count, 0) * multiplier
-  const max = MEDALS_PER_QUEST * multiplier
-  return { earned, max, reachable: Math.max(0, max - earned) }
+  const bundlePerMedal = bundle ? BUNDLE_SHARDS_PER_MEDAL : 0
+  const won = medals.filter((count) => count > 0).length
+  const medalsWon = medals.reduce(
+    (sum, count) => sum + Math.min(Math.max(count, 0), MAX_MEDALS),
+    0
+  )
+  const earned = won * SHARDS_PER_WON_BATTLE + medalsWon * bundlePerMedal
+  const max =
+    BATTLES_PER_QUEST * SHARDS_PER_WON_BATTLE +
+    MEDALS_PER_QUEST * bundlePerMedal
+  return {
+    earned,
+    max,
+    reachable: Math.max(0, max - earned),
+    medalsLeft: Math.max(0, MEDALS_PER_QUEST - medalsWon),
+  }
+}
+
+type CrateRewardLike = {
+  type: string
+  min: number
+  max: number
+  rarity?: string | null
+  maxRarity?: string | null
+}
+
+export type QuestRewardsLeft<TReward extends CrateRewardLike> = {
+  /** Medals not yet won across the quest's battles. */
+  medals: number
+  /** The featured hero's shards still reachable. */
+  shards: number
+  /** Crates not opened yet. */
+  crates: number
+  /** What the unopened crates hold, summed by reward type and rarity, in first-seen order. */
+  rewards: TReward[]
+}
+
+/**
+ * The one-time rewards still to earn: the shards of the medals not won yet and the contents of the
+ * crates not opened yet, summed so the whole remainder reads at a glance.
+ */
+export function questRewardsLeft<TReward extends CrateRewardLike>(
+  shards: QuestShards,
+  crates: readonly QuestCrateView<{ rewards: readonly TReward[] }>[] | null
+): QuestRewardsLeft<TReward> {
+  const unopened = (crates ?? []).filter((view) => !view.opened)
+  const summed = new Map<string, TReward>()
+  for (const { crate } of unopened) {
+    for (const reward of crate.rewards) {
+      const key = `${reward.type}:${reward.rarity ?? ""}:${reward.maxRarity ?? ""}`
+      const seen = summed.get(key)
+      summed.set(
+        key,
+        seen
+          ? { ...seen, min: seen.min + reward.min, max: seen.max + reward.max }
+          : { ...reward }
+      )
+    }
+  }
+  return {
+    medals: shards.medalsLeft,
+    shards: shards.reachable,
+    crates: unopened.length,
+    rewards: [...summed.values()],
+  }
 }
 
 export type ShardMeaning =

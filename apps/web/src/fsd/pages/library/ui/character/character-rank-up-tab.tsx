@@ -6,15 +6,15 @@ import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { mapCharacterStorageToDomain } from "@/features/rank-lookup"
+import { mapCharacterStorageToDomain } from "@/entities/rank-lookup"
 import { usePlayerChunk } from "@/shared/local-data"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { CharacterLookupDesktopPage } from "./desktop/character-lookup-desktop-page"
 import { CharacterLookupMobilePage } from "./mobile/character-lookup-mobile-page"
-import { useCharacterLookupCalc } from "./hooks/use-character-lookup-calc"
-import { useCharacterLookupCatalog } from "./hooks/use-character-lookup-catalog"
-import { useLookupSelection } from "./hooks/use-lookup-selection"
+import { useCharacterLookupCalc } from "../../model/character/use-character-lookup-calc"
+import { useCharacterLookupCatalog } from "../../model/character/use-character-lookup-catalog"
+import { useLookupSelection } from "../../model/character/use-lookup-selection"
 
 /**
  * The unit page's Rank-up materials tab: the former Character Lookup calculator, moved in complete

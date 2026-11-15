@@ -12,6 +12,11 @@ import type { PostHog, PostHogConfig } from "posthog-js"
 
 import type { AnalyticsEvent } from "./analytics-event"
 import { sanitizeCapture, setReportedRoutePattern } from "./capture-sanitizer"
+import { startInteractionTracking } from "./web-vitals-routes"
+import {
+  battleSnapshotProperties,
+  estimateSnapshotProperties,
+} from "./estimate-snapshot"
 
 // Read fresh (not cached at module scope) so tests can flip VITE_ANALYTICS_ENABLED /
 // VITE_POSTHOG_PROJECT_TOKEN with vi.stubEnv without needing vi.resetModules() + a dynamic re-import.
@@ -125,6 +130,8 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
         .then((posthog) => {
           const id = pendingId.current
           if (!id) return
+          // Lets INP be labelled with the page of the slow tap, not the page open when it's sent.
+          startInteractionTracking()
           const instance = posthog.init(token, initOptions)
           instance.identify(id)
           instance.opt_in_capturing(optInOptions)
@@ -206,6 +213,37 @@ export function useAnalyticsActions() {
             depth: event.depth,
             estimate: event.estimate,
             from_estimate: event.fromEstimate,
+            source: event.source,
+            ...estimateSnapshotProperties(event),
+          })
+          break
+        case "legendary_event_token_result":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            run: event.run,
+            lane_id: event.laneId,
+            battle_index: event.battleIndex,
+            outcome: event.outcome,
+            estimate: event.estimate,
+            depth_before: event.depthBefore,
+            depth_before_manual: event.depthBeforeManual,
+            depth_after: event.depthAfter,
+            other_team_reaches: event.otherTeamReaches,
+            ...estimateSnapshotProperties(event),
+            ...battleSnapshotProperties(event),
+          })
+          break
+        case "legendary_event_token_cleared":
+          client.capture(event.type, {
+            event_id: event.eventId,
+            run: event.run,
+            lane_id: event.laneId,
+            battle_index: event.battleIndex,
+            estimate: event.estimate,
+            depth: event.depth,
+            depth_manual: event.depthManual,
+            ...estimateSnapshotProperties(event),
+            ...battleSnapshotProperties(event),
           })
           break
         case "legendary_event_depth_estimate_restored":
@@ -226,7 +264,7 @@ export function useAnalyticsActions() {
           })
           break
         case "legendary_event_paid_options_toggled":
-          client.capture(event.type, { event_id: event.eventId, on: event.on })
+          client.capture(event.type, { on: event.on })
           break
         case "legendary_event_notes_saved":
           client.capture(event.type, {
@@ -277,6 +315,19 @@ export function useAnalyticsActions() {
             event_id: event.eventId,
             lane_id: event.laneId,
             source: event.source,
+            goal_type: event.goalType,
+          })
+          break
+        case "collection_bulk_goals_created":
+          client.capture(event.type, {
+            unit_count: event.unitCount,
+            goal_count: event.goalCount,
+            failed_unit_count: event.failedUnitCount,
+          })
+          break
+        case "library_unit_create_goal_opened":
+          client.capture(event.type, {
+            entity_type: event.entityType,
             goal_type: event.goalType,
           })
           break
@@ -363,6 +414,43 @@ export function useAnalyticsActions() {
           break
         case "app_install_card_dismissed":
           client.capture(event.type, { platform: event.platform })
+          break
+        case "roster_snapshot_taken":
+          client.capture(event.type, {
+            from_last_sync: event.fromLastSync,
+            count: event.count,
+          })
+          break
+        case "roster_compare_opened":
+          client.capture(event.type, {
+            from_kind: event.fromKind,
+            to_kind: event.toKind,
+          })
+          break
+        case "roster_compare_metric_selected":
+          client.capture(event.type, { metric: event.metric })
+          break
+        case "roster_snapshot_renamed":
+        case "roster_snapshot_deleted":
+        case "roster_snapshot_kept":
+          client.capture(event.type)
+          break
+        case "auth_step":
+          client.capture(
+            event.type,
+            {
+              step: event.step,
+              page_load: event.pageLoad,
+              outcome: event.outcome,
+              error_code: event.errorCode,
+              from: event.from,
+              reason: event.reason,
+              trigger: event.trigger,
+              method: event.method,
+              fresh_login: event.freshLogin,
+            },
+            { timestamp: new Date(event.occurredAt) }
+          )
           break
         case "client_error": {
           // Rebuilt from the already-sanitised text, so Error Tracking parses the stack into frames

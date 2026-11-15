@@ -7,9 +7,12 @@ import { EntityIcon } from "@/shared/ui"
 
 import type { QuestScore } from "../model/quest-score"
 
+/** The battles with the most points left that the card names; the battle list shows the rest. */
+const POINTS_LEFT_SHOWN = 3
+
 /**
  * The points total against the quest's maximum, the crates it opens and the points to the next one,
- * and the battles where points are left (most first), each selecting its battle. `crateCount` null
+ * and the three battles with the most points left, each selecting its battle (the rest are counted). `crateCount` null
  * (crates loading or failed) shows a dash for the crate line only.
  */
 export function QuestSummary({
@@ -90,16 +93,16 @@ export function QuestSummary({
         )}
       </p>
       {score.pointsLeft.length > 0 ? (
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <h4 className="text-sm font-medium">{t("summary.pointsLeft")}</h4>
           <ul
-            className="flex flex-wrap gap-1.5"
+            className="flex flex-wrap items-center gap-1.5"
             data-testid="quest-points-left"
           >
-            {score.pointsLeft.map((battle) => (
+            {score.pointsLeft.slice(0, POINTS_LEFT_SHOWN).map((battle) => (
               <li key={battle.number}>
                 <button
-                  className="inline-flex min-h-9 items-center gap-1 rounded-full border px-3 text-sm transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  className="inline-flex min-h-8 items-center gap-1 rounded-full border px-2.5 text-xs transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                   data-battle={battle.number}
                   onClick={() => onSelect(battle.number)}
                   type="button"
@@ -115,6 +118,16 @@ export function QuestSummary({
                 </button>
               </li>
             ))}
+            {score.pointsLeft.length > POINTS_LEFT_SHOWN ? (
+              <li
+                className="text-xs text-muted-foreground"
+                data-testid="quest-points-left-more"
+              >
+                {t("summary.pointsLeftMore", {
+                  count: score.pointsLeft.length - POINTS_LEFT_SHOWN,
+                })}
+              </li>
+            ) : null}
           </ul>
         </div>
       ) : null}

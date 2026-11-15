@@ -29,7 +29,9 @@ export const catalogDbName = "tacticus-planner-game-catalog"
 // v16: add the `progression-rules` store (same additive cascade).
 // v17: add the `hre` store (same additive cascade).
 // v18: add the `incursions` store (same additive cascade).
-export const catalogDbVersion = 18
+// v19: add the `npc-encounters` store (same additive cascade).
+// v20: add the `npc-tiers` store (same additive cascade).
+export const catalogDbVersion = 20
 
 // One EntityTable per served dataset, keyed by "id" — computed from the same union that builds the
 // stores below (GameCatalogDatasetKey === typeof servedDatasetKeys[number]), so every dataset store is

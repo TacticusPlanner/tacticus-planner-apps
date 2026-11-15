@@ -5,6 +5,7 @@ import globalValues from "./schemas/global-values.fixture.json"
 import progressionRules from "./schemas/progression-rules.fixture.json"
 import hre from "./schemas/hre.fixture.json"
 import incursions from "./schemas/incursions.fixture.json"
+import npcEncounters from "./schemas/npc-encounters.fixture.json"
 import questCrates from "./schemas/quest-crates.fixture.json"
 import questEvents from "./schemas/quest-events.fixture.json"
 import {
@@ -466,6 +467,29 @@ describe("catalog schemas", () => {
     expect(
       schema.safeParse([{ ...record, tiers: [{ tier: "S", multiplier: 0 }] }])
         .success
+    ).toBe(false)
+  })
+
+  it("validates the npc-tiers record and rejects a non-positive multiplier", () => {
+    const record = {
+      id: "npc-tiers",
+      tiers: [
+        { tier: "S", multiplier: 1.9 },
+        { tier: "D", multiplier: 1 },
+      ],
+      npcs: [
+        { npcId: "darkaNpc2Hellblaster", tier: "S", multiplier: 1.8 },
+        { npcId: "eldarNpc1Guardian", tier: "D" },
+      ],
+    }
+    const schema = datasetPayloadSchemas["npc-tiers"]
+
+    expect(schema.safeParse([record]).success).toBe(true)
+    expect(schema.safeParse([{ ...record, npcs: [] }]).success).toBe(true)
+    expect(
+      schema.safeParse([
+        { ...record, npcs: [{ npcId: "x", tier: "D", multiplier: 0 }] },
+      ]).success
     ).toBe(false)
   })
 
@@ -1015,6 +1039,80 @@ describe("hre schema", () => {
         },
       ]).success
     ).toBe(false)
+  })
+})
+
+describe("npc-encounters schema", () => {
+  it("parses the served records", () => {
+    const records = datasetPayloadSchemas["npc-encounters"].parse(npcEncounters)
+    const onslaught = records.find(
+      (record) =>
+        record.npcId === "tyranNpc3Termagant" && record.source === "onslaught"
+    )
+    expect(onslaught?.battles[0]).toEqual({
+      battleId: null,
+      track: null,
+      tier: 2,
+      number: null,
+      challenge: false,
+      role: "enemy",
+      rounds: [1, 3, 4, 5, 6, 8],
+      count: 2,
+      levels: [{ servedIndex: 0, count: 2 }],
+    })
+  })
+
+  it.each([0, -1])("rejects a count of %i", (count) => {
+    const record = npcEncounters[0]!
+    const battle = record.battles[0]!
+    const parse = (changed: unknown) =>
+      datasetPayloadSchemas["npc-encounters"].safeParse([
+        { ...record, battles: [changed] },
+      ]).success
+
+    expect(parse({ ...battle, count: 1 })).toBe(true)
+    expect(parse({ ...battle, count })).toBe(false)
+    expect(parse({ ...battle, levels: [{ servedIndex: 0, count }] })).toBe(
+      false
+    )
+  })
+
+  it("skips a record with a source this build does not know", () => {
+    const record = npcEncounters[0]!
+    expect(
+      datasetPayloadSchemas["npc-encounters"].parse([
+        record,
+        { ...record, source: "syncPvp" },
+      ])
+    ).toHaveLength(1)
+  })
+
+  it("skips a battle with a role this build does not know", () => {
+    const record = npcEncounters[0]!
+    const battle = record.battles[0]!
+    const unknown = { ...battle, role: "miniboss" }
+    const parse = (battles: unknown[]) =>
+      datasetPayloadSchemas["npc-encounters"].parse([{ ...record, battles }])
+
+    expect(parse([battle, unknown])[0]?.battles).toHaveLength(1)
+    expect(parse([unknown])).toEqual([])
+  })
+
+  it("still rejects a source that is not a name", () => {
+    const record = npcEncounters[0]!
+    expect(
+      datasetPayloadSchemas["npc-encounters"].safeParse([
+        { ...record, source: 7 },
+      ]).success
+    ).toBe(false)
+  })
+
+  it("tolerates a field the server adds later", () => {
+    const [record] = npcEncounters
+    const parsed = datasetPayloadSchemas["npc-encounters"].parse([
+      { ...record, addedLater: 1 },
+    ])
+    expect(parsed[0]).toMatchObject({ addedLater: 1 })
   })
 })
 

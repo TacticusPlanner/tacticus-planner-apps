@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import { toById, useCatalogDataset } from "@/shared/local-data"
+import { toById, useCatalogDataset } from "../local-data"
 
 /**
  * Display name for a unit (Character or Mow) by id — the single copy every layer shares. It used to

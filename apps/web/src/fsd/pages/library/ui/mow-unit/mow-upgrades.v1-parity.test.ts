@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import type { Rarity, UpgradeId } from "@workspace/game-domain"
 
-import type { UpgradeWithFarmLocations } from "@/features/rank-lookup"
+import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 
 import fixture from "./v1-mow-lookup.fixture.json"
 import { calculateMowUpgrades, type MowCostRung } from "./mow-upgrades.model"

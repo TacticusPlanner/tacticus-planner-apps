@@ -86,7 +86,7 @@ const plan = [
 
 describe("missionOrder", () => {
   it("moves the run's mission battles first, keeping each lane's order and the run's points", () => {
-    const result = missionOrder(input(plan, [ANY_BATTLE, ADMECH]))
+    const result = missionOrder(input(plan, [ADMECH]))
 
     expect(
       result.tokens.map((entry) => `${entry.laneId}${entry.battleIndex + 1}`)
@@ -95,7 +95,12 @@ describe("missionOrder", () => {
       1200, 1350, 1650, 1930,
     ])
     expect(result.steps[0]).toEqual([
-      expect.objectContaining({ total: 40, needed: 75, completes: false }),
+      expect.objectContaining({
+        total: 40,
+        gained: 40,
+        needed: 75,
+        completes: false,
+      }),
     ])
     expect(result.steps[1]).toEqual([
       expect.objectContaining({ total: 75, needed: 75, completes: true }),
@@ -106,10 +111,26 @@ describe("missionOrder", () => {
         missions: [
           { ref: ADMECH, needed: 75, reached: 75, doneAt: 1, estimate: false },
         ],
-        untracked: [ANY_BATTLE],
+        untracked: [],
         completed: [],
       },
     ])
+  })
+
+  it("counts only the current mission: an any-battle mission first finishes with one token", () => {
+    // Missions finish in order: "any battle" is current, so the AdMech battles wait one token.
+    const result = missionOrder(input(plan, [ANY_BATTLE, ADMECH]))
+
+    expect(
+      result.tokens.map((entry) => `${entry.laneId}${entry.battleIndex + 1}`)
+    ).toEqual(["alpha1", "beta1", "beta2", "alpha2"])
+    expect(result.tokens.map((entry) => entry.runningPoints)).toEqual([
+      1300, 1500, 1650, 1930,
+    ])
+    expect(result.runs[0]).toMatchObject({
+      missions: [{ ref: ADMECH, reached: 75, doneAt: 2 }],
+      untracked: [ANY_BATTLE],
+    })
   })
 
   it("keeps points order when no open mission tells the tokens apart", () => {

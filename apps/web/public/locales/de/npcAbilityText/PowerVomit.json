@@ -1,6 +1,6 @@
 {
   "PowerVomit": {
-    "description": "Betrifft 3 Felder in einer geraden Linie in eine von 6 Richtungen. Verursacht bei allen Einheiten auf den betroffenen Feldern <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style>. Verursacht bei feindlichen Einheiten <style=\"Stat_Damage\">+{[extraDmg_2]} Schaden</style> für jede <i>Waaagh!-Ladung</i>, die <style=\"Faction_Orks\">Zappaspukka</style> hat. Für <style=\"STAT\">{[nrOfRounds]} Runden</style> wird jeder <style=\"DMG_Psychic\">Psi-Schaden</style>, den betroffene Einheiten erleiden und verursachen, um <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> erhöht.\n\n{[S/AbilityDamageExplanation]}",
+    "description": "Betrifft 3 Felder in einer geraden Linie in eine von 6 Richtungen. Verursacht bei allen Einheiten auf betroffenen Feldern <style=\"Stat_Hits\">{[nrOfHits]}x</style> <style={[DamageProfileTypeStyle]}>{[minDmg]}-{[maxDmg]} {[DamageProfileType]}</style>. Verursacht bei feindlichen Einheiten <style=\"Stat_Damage\">+{[extraDmg_2]} Schaden</style> für jede Stufe von <i>Waaagh!-Energie</i>, die <style=\"Faction_Orks\">Zappaspucka</style> hat. Für <style=\"STAT\">{[nrOfRounds]} Runden</style> wird aller <style=\"DMG_Psychic\">Psi-Schaden</style>, den betroffene Einheiten erleiden und verursachen, um <style=\"Stat_Damage\">+{[extraDmg]} Schaden</style> erhöht.\n\n{[S/AbilityDamageExplanation]}",
     "variables": {
       "minDmg": [
         12, 14, 17, 19, 22, 24, 27, 30, 33, 35, 38, 41, 44, 46, 49, 52, 55, 57,

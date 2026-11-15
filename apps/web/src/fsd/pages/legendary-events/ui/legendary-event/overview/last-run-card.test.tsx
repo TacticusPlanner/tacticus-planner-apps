@@ -205,7 +205,7 @@ describe("LastRunCard", () => {
     expect(deltaLines()).toEqual({
       ultraCalgar: [
         "Rank Diamond I → Diamond III",
-        "Stars Red Five Stars → One Blue Star",
+        "Stars Legendary 5★ → Legendary 1★",
         "Active ability 40 → 45",
       ],
       ultraTigurius: ["Unlocked since last run"],

@@ -10,7 +10,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 describe("useGoalsOverviewTutorial", () => {
-  it("registers localized desktop and mobile steps, differing only in the reprioritize, select and bulk-actions targets", () => {
+  it("registers localized desktop and mobile steps, differing only in the view toggle, reprioritize, select and bulk-actions targets", () => {
     renderHook(() => useGoalsOverviewTutorial())
     const steps = register.mock.lastCall?.[0] as {
       desktop: { target: string; title: string; content: string }[]
@@ -29,6 +29,7 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-status-filter"]',
       '[data-testid="goals-type-filter"]',
       '[data-testid="goals-season-fit"]',
+      '[data-testid="goals-view-toggle"]',
       '[data-testid="goal-row-drag-handle"]',
       '[data-testid="goals-select-all"]',
       '[data-testid="goals-bulk-actions"]',
@@ -56,6 +57,10 @@ describe("useGoalsOverviewTutorial", () => {
     expect(steps.desktop[3]).toMatchObject({
       title: "Season fit",
       content: expect.stringContaining("which goals finish in time"),
+    })
+    expect(steps.desktop[4]).toMatchObject({
+      title: "Cards or table",
+      content: expect.stringContaining("saved on this device"),
     })
     for (const list of [steps.desktop, steps.mobile]) {
       expect(list[0]).toMatchObject({

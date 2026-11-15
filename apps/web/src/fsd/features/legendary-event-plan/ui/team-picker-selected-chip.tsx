@@ -23,7 +23,7 @@ export function SelectedChip({
   return (
     <li
       className={cn(
-        "flex items-center gap-1 rounded-full border bg-muted/40 py-0.5 pr-0.5 pl-0.5 text-xs",
+        "flex items-center gap-1 rounded-full border bg-muted/40 p-0.5 text-xs",
         reserve && "border-dashed"
       )}
       data-reserve={reserve ? "true" : undefined}

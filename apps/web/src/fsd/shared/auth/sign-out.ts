@@ -1,6 +1,12 @@
 import type { IPublicClientApplication } from "@azure/msal-browser"
 import { clearAccountLocalData } from "./account-local-data"
-import { forgetAccountHint, forgetFreshLogin } from "./authentication"
+import { forgetAuthJournal } from "./auth-journal"
+import {
+  forgetAccountHint,
+  forgetFreshLogin,
+  forgetAutoRedirects,
+  forgetQuietRenewal,
+} from "./authentication"
 
 export async function signOut(
   instance: IPublicClientApplication,
@@ -10,6 +16,9 @@ export async function signOut(
   // A new tab must show the signed-out experience, not try to restore this account.
   forgetAccountHint()
   forgetFreshLogin()
+  forgetQuietRenewal()
+  forgetAutoRedirects()
+  forgetAuthJournal()
   const account = instance
     .getAllAccounts()
     .find((candidate) => candidate.homeAccountId === accountId)

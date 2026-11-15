@@ -7,6 +7,7 @@ import {
   abilitiesBehindLevel,
   blueStarReady,
   canAscend,
+  canPromote,
   missingEquipment,
   needToAscend,
   needToLevel,
@@ -61,6 +62,72 @@ const character = (
   shards: 0,
   mythicShards: 0,
   ...overrides,
+})
+
+describe("canPromote", () => {
+  it("pays for the next star within the rarity: Epic red one star to red two stars is 65 shards", () => {
+    const unit = (shards: number) =>
+      character({ progression: "Epic:RedOneStar", shards })
+    expect(canPromote(unit(65), ladder, {})).toBe(true)
+    expect(canPromote(unit(64), ladder, {})).toBe(false)
+  })
+
+  it("counts the step's orbs: Legendary red three to red four stars is 150 shards and 10 orbs", () => {
+    const unit = character({
+      progression: "Legendary:RedThreeStars",
+      shards: 150,
+    })
+    expect(canPromote(unit, ladder, { Legendary: 10 })).toBe(true)
+    expect(canPromote(unit, ladder, { Legendary: 9 })).toBe(false)
+  })
+
+  it("never lists a unit on its rarity's last star, whose next step is an ascension", () => {
+    for (const progression of [
+      "Common:TwoStars",
+      "Rare:RedOneStar",
+      "Epic:RedThreeStars",
+      "Legendary:OneBlueStar",
+    ] as const) {
+      const unit = character({
+        progression,
+        shards: 10_000,
+        mythicShards: 1000,
+      })
+      expect(
+        canPromote(unit, ladder, {
+          Uncommon: 99,
+          Rare: 99,
+          Epic: 99,
+          Legendary: 99,
+          Mythic: 99,
+        })
+      ).toBe(false)
+    }
+  })
+
+  it("promotes within Mythic on mythic shards and Mythic orbs, never past Mythic wings", () => {
+    const unit = character({
+      progression: "Mythic:TwoBlueStars",
+      mythicShards: 50,
+    })
+    expect(canPromote(unit, ladder, { Mythic: 15 })).toBe(true)
+    expect(canPromote(unit, ladder, { Mythic: 14 })).toBe(false)
+    const wings = character({
+      progression: "Mythic:MythicWings",
+      mythicShards: 1000,
+    })
+    expect(canPromote(wings, ladder, { Mythic: 1000 })).toBe(false)
+  })
+
+  it("applies to Machines of War", () => {
+    const mow: QuickFilterUnit = {
+      kind: "mow",
+      progression: "Rare:FourStars",
+      shards: 30,
+      mythicShards: 0,
+    }
+    expect(canPromote(mow, ladder, {})).toBe(true)
+  })
 })
 
 describe("canAscend", () => {

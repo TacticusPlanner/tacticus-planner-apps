@@ -80,7 +80,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
 import { ProjectsListPage } from "./projects-list-page"
-import { CreateGoalLauncherProvider } from "@/features/goal-create"
+import { CreateGoalLauncherProvider } from "@/features/goal-planning"
 
 const onLaunch = vi.fn()
 
@@ -150,6 +150,17 @@ describe("ProjectsListPage", () => {
     expect(intro.closest("[data-slot='popover-content']")).toBeNull()
     expect(intro.closest("details")).toBeNull()
     expect(intro.closest("[hidden]")).toBeNull()
+  })
+
+  it("shows the intro and placeholder rows while the projects load, not the empty state", async () => {
+    listProjects.mockReturnValue(new Promise(() => {}))
+    renderPage()
+
+    expect(
+      await screen.findByTestId("projects-page-loading")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("projects-page-intro")).toBeVisible()
+    expect(screen.queryByTestId("projects-page-empty")).not.toBeInTheDocument()
   })
 
   it("keeps the dashboard explanation out of the empty state, which carries its own wording", async () => {

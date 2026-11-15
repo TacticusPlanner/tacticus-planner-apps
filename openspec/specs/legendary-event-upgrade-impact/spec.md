@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines lane reachable points (the event points a lane's teams can still earn within their depths), the next upgrade steps of a team member, how much each step adds to a lane, the Upgrade impact section on a lane tab with its Create goal action, and its tour step.
+Defines lane reachable points (the event points a lane's teams can still earn within their depths), the next upgrade steps of a team member, how much each step adds to a lane, the Upgrade impact sections on the Plan tab with their Create goal action, and its tour step.
 
 ## Requirements
 
@@ -105,9 +105,9 @@ Power in every re-estimate is the `character-combat-power` estimate of the unit 
 - **WHEN** upgrade impact is computed
 - **THEN** unlocking Certus adds his base power 45, for 88,362.4, still below battle 6's 90,944.4, so no Unlock row is listed
 
-### Requirement: Upgrade impact section on a lane tab
+### Requirement: Upgrade impact section on the Plan tab
 
-Each lane tab SHALL render an **Upgrade impact** section after the Teams section and before the Synced progress grid. It SHALL be collapsed by default and its open state SHALL be remembered per device. Its header SHALL always show a summary derived from the rows ("4 upgrades add points · best +191", or the empty-state reason). Each row SHALL show the unit's portrait, localized name and goal badge, the step ("Unlock", "Rank to Gold II", "Ascension to Epic 3 red stars"), each affected team's depth change ("Four: battle 5 → 6") and the gain ("+191 points"). It SHALL also show a **Create goal** action that opens the shell's goal-creation sheet prefilled for that step (see `goal-creation-entry-points`). When the unit already has an Active goal whose target is at or beyond the step, the row SHALL show "In goals" instead of Create goal. The section SHALL NOT render on Overview.
+The Plan tab SHALL render, between the Run forecast and the Token plan, one **Upgrade impact** section per lane in lane order, each headed "Upgrade impact · <lane>" (Plan has no lane selection). It SHALL be collapsed by default and its open state SHALL be remembered per device, shared by the three sections. Its header SHALL always show a summary derived from the rows ("4 upgrades add points · best +191", or the empty-state reason). Each row SHALL show the unit's portrait, localized name and goal badge, the step ("Unlock", "Rank to Gold II", "Ascension to Epic 3 red stars"), each affected team's depth change ("Four: battle 5 → 6") and the gain ("+191 points"). It SHALL also show a **Create goal** action that opens the shell's goal-creation sheet prefilled for that step (see `goal-creation-entry-points`). When the unit already has an Active goal whose target is at or beyond the step, the row SHALL show "In goals" instead of Create goal. The section SHALL NOT render on any other tab.
 
 The body SHALL distinguish:
 
@@ -119,7 +119,7 @@ The body SHALL distinguish:
 #### Scenario: Collapsed by default with a summary
 
 - **GIVEN** the worked example
-- **WHEN** the Alpha tab renders for the first time on a device
+- **WHEN** the Plan tab renders Alpha's section for the first time on a device
 - **THEN** the Upgrade impact header reads "4 upgrades add points · best +191" and the rows are hidden until it is expanded
 
 #### Scenario: Create goal from a row
@@ -136,7 +136,7 @@ The body SHALL distinguish:
 #### Scenario: No teams
 
 - **GIVEN** Beta has no teams
-- **WHEN** the Beta tab renders
+- **WHEN** the Plan tab renders Beta's section
 - **THEN** the section header reads "Add a team to see which upgrades add points"
 
 #### Scenario: Desktop rows
@@ -151,12 +151,12 @@ The body SHALL distinguish:
 
 ### Requirement: Upgrade impact is in the event page tour
 
-The event page tour SHALL include an **Upgrade impact** step right after the Teams step, targeting the Alpha section's header (`data-testid="legendary-event-upgrade-impact"`) on both forms. The Teams step's copy SHALL mention Suggest teams, and the lane leaderboard step's copy SHALL mention Goals Preview and the row actions menu. Step titles and content SHALL be localized in en/de/es/fr.
+The event page tour SHALL include an **Upgrade impact** step on Plan right after the Token plan step, targeting Alpha's section header (`data-testid="legendary-event-upgrade-impact"`) on both forms. The Teams step's copy SHALL mention Suggest teams, and the eligibility leaderboard step's copy SHALL mention the row actions menu (Create goal, Add to new team). Step titles and content SHALL be localized in en/de/es/fr.
 
 #### Scenario: Tour on desktop
 
 - **WHEN** the event page tour runs at or above 768px
-- **THEN** after the Teams step, a step highlights Alpha's Upgrade impact header, and the following steps continue with the progress grid and the leaderboard
+- **THEN** after the Token plan step, a step on Plan highlights Alpha's Upgrade impact header, and the following steps continue with the Battles heading and the run tab
 
 #### Scenario: Tour on mobile
 

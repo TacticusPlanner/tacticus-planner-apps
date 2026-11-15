@@ -1,39 +1,64 @@
 import type { ReactNode } from "react"
+import type { TFunction } from "i18next"
 import { useTranslation } from "react-i18next"
-import { characterIcon } from "@workspace/game-catalog"
-import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 
 import type {
+  EventUnitChipData,
   LegendaryEvent,
   LegendaryEventAnnotationStatus,
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
-import { EntityIcon } from "@/shared/ui"
-import { useUnitName } from "@/shared/unit-name"
 
-import type { NextTokenEmpty, TokenPlanView } from "../lib/token-plan-view"
-import { useNextTokenShown } from "../model/use-next-token-shown"
+import { gainsFromProgress, type MissionGain } from "../lib/mission-gains"
+import type { TokenMissionStep } from "../lib/mission-order"
+import type { NextTokenChoice, PlannedToken } from "../lib/token-plan"
 import {
-  MissionAlternativeView,
-  MissionsProgressed,
-} from "./next-token-missions"
+  missionsNextToken,
+  upNextTokens,
+  tokenClearBand,
+  type NextTokenEmpty,
+  type TokenPlanView,
+} from "../lib/token-plan-view"
+import { unknownChip } from "../lib/unit-chips"
+import { useMissionsOrder } from "../model/token-plan-order"
+import { useNextTokenShown } from "../model/use-next-token-shown"
+import { useTokenShown } from "../model/use-token-shown"
+import { TokenPlanOrderSwitch } from "./mission-order-view"
+import { BattleInfoButton } from "./battle-info"
 import { TokenMarkButtons } from "./token-mark-buttons"
+import { TokenRow } from "./token-plan-rows"
 import { TokenObjectives } from "./token-objectives"
+import { TokenMissionsPopover, TokenTeamPopover } from "./token-popovers"
 
 export type MarkTokenHandler = (
   laneId: LegendaryEventLaneId,
   battleIndex: number,
   objectiveIds: number[],
-  status: LegendaryEventAnnotationStatus
+  status: LegendaryEventAnnotationStatus,
+  /** The token's team: it fell short, so its depth drops to the battles before this one. */
+  teamId: string
 ) => void
+
+/** Try another team: ends a team before `battleIndex` (its depth becomes the battles before it) without
+ *  marking any cell, so the plan moves on to other teams. */
+export type StopTeamHandler = (
+  laneId: LegendaryEventLaneId,
+  battleIndex: number,
+  teamId: string
+) => void
+
+/** The card showed a playable Next token (analytics remember it to see whether sync clears it). */
+export type TokenShownHandler = (token: PlannedToken) => void
 
 /** Opens a lane's Teams section, scrolled to one team's card when `teamId` is given. */
 export type OpenTeamsHandler = (
@@ -41,10 +66,15 @@ export type OpenTeamsHandler = (
   teamId?: string
 ) => void
 
+type ReadyView = Extract<TokenPlanView, { kind: "ready" }>
+
 /**
- * The Overview's Next token card (spec: Next token card heads the Overview tab): the battle to play
- * next with its team, points, cleared cells and reason, and the Partly cleared / Couldn't clear
- * actions; or what is missing for a plan. Hidden on an archived event and when signed out.
+ * The run tab's Next token card (spec: Next token card heads the run tab): the battle to play next
+ * with its team, points, cleared cells and reason, and the Maybe clear / Stop here mark
+ * actions (plus Try another team on a likely clear), then the next few planned tokens with View full plan; or what is missing for a plan.
+ * A Points / Missions switch (shared with the Token plan) reads the plan in Missions order, with
+ * the missions each token moves and the run's mission ticks. Hidden on an archived event and when
+ * signed out.
  */
 export function NextTokenCard({
   eventId,
@@ -52,7 +82,13 @@ export function NextTokenCard({
   view,
   isMobile,
   onMarkToken,
+  onStopTeam,
+  onTokenShown,
+  run = null,
   onOpenTeams,
+  onViewPlan,
+  missionsInput,
+  chipOf = unknownChip,
 }: {
   eventId: string
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
@@ -60,11 +96,29 @@ export function NextTokenCard({
   isMobile: boolean
   /** Absent while marks cannot be written (the plan has not loaded). */
   onMarkToken: MarkTokenHandler | undefined
+  /** Try another team on a likely-clear token; absent while depths cannot be written. */
+  onStopTeam?: StopTeamHandler
+  /** The shown token, once per battle and team while it can be marked. */
+  onTokenShown?: TokenShownHandler
+  /** The current run, so a token still shown after a run change reports again. */
+  run?: number | null
   onOpenTeams: OpenTeamsHandler
+  /** Opens the full token plan. */
+  onViewPlan?: () => void
+  /** The run's mission ticks, shown in Missions order (the plan feature's quick input). */
+  missionsInput?: ReactNode
+  /** A unit's chip in the team popover (rank, rarity, abilities from the synced roster). */
+  chipOf?: (unitId: string) => EventUnitChipData
 }) {
   const { t } = useTranslation("legendaryEvents")
+  const [byMissions, setByMissions] = useMissionsOrder()
   useNextTokenShown(eventId, view)
   if (view.kind === "hidden") return null
+  const canOrder = view.kind === "ready" && view.missionOrder !== null
+  const ordered =
+    view.kind === "ready" && byMissions && view.next
+      ? missionsNextToken(view)
+      : null
 
   return (
     <Card data-testid="legendary-event-next-token">
@@ -72,6 +126,14 @@ export function NextTokenCard({
         <CardTitle>
           <h2>{t("tokenPlan.nextToken.title")}</h2>
         </CardTitle>
+        {canOrder && view.kind === "ready" && view.next ? (
+          <CardAction data-testid="next-token-order">
+            <TokenPlanOrderSwitch
+              onChange={(order) => setByMissions(order === "missions")}
+              order={ordered ? "missions" : "points"}
+            />
+          </CardAction>
+        ) : null}
       </CardHeader>
       <CardContent>
         {view.kind === "loading" ? (
@@ -91,22 +153,66 @@ export function NextTokenCard({
         {view.kind === "ready" && view.empty ? (
           <EmptyState empty={view.empty} onOpenTeams={onOpenTeams} />
         ) : null}
-        {view.kind === "ready" && view.next ? (
-          <div className="flex flex-col gap-3">
+        {view.kind === "ready" && view.next && ordered ? (
+          <div className="flex flex-col gap-3" data-order="missions">
             <TokenView
               event={event}
               isMobile={isMobile}
               onMarkToken={onMarkToken}
+              onStopTeam={onStopTeam}
+              onTokenShown={onTokenShown}
+              run={run}
+              chipOf={chipOf}
+              gains={ordered.gains}
+              reason={t("tokenPlan.nextToken.reasons.missionsOrder")}
+              token={ordered.token}
               view={view}
             />
-            {view.missions?.alternative ? (
-              <MissionAlternativeView
-                alternative={view.missions.alternative}
-                event={event}
-                isMobile={isMobile}
-                onMarkToken={view.upcoming === null ? onMarkToken : undefined}
-              />
+            {missionsInput ? (
+              <div
+                className="flex min-w-0 flex-col gap-2 border-t pt-3"
+                data-testid="next-token-missions-input"
+              >
+                {missionsInput}
+              </div>
             ) : null}
+            <UpNext
+              event={event}
+              isMobile={isMobile}
+              nextIndex={ordered.index}
+              onViewPlan={onViewPlan}
+              runEnd={view.runEnd}
+              steps={view.missionOrder?.steps}
+              tokens={view.missionOrder?.tokens ?? []}
+              total={view.plan.tokens.length}
+            />
+          </div>
+        ) : null}
+        {view.kind === "ready" && view.next && !ordered ? (
+          <div className="flex flex-col gap-3" data-order="points">
+            <TokenView
+              event={event}
+              isMobile={isMobile}
+              onMarkToken={onMarkToken}
+              onStopTeam={onStopTeam}
+              onTokenShown={onTokenShown}
+              run={run}
+              chipOf={chipOf}
+              gains={gainsFromProgress(view.missions?.progressed ?? [])}
+              reason={nextTokenReason(t, view.next)}
+              token={view.next.token}
+              view={view}
+            />
+            <UpNext
+              event={event}
+              isMobile={isMobile}
+              nextIndex={view.next.index}
+              onViewPlan={onViewPlan}
+              runEnd={view.runEnd}
+              steps={undefined}
+              tokens={view.plan.tokens}
+              total={view.plan.tokens.length}
+            />
           </div>
         ) : null}
       </CardContent>
@@ -117,22 +223,35 @@ export function NextTokenCard({
 function TokenView({
   event,
   view,
+  token,
+  reason: reasonText,
   isMobile,
   onMarkToken,
+  onStopTeam,
+  onTokenShown,
+  run,
+  gains,
+  chipOf,
 }: {
   event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
-  view: Extract<TokenPlanView, { kind: "ready" }>
+  view: ReadyView
+  token: PlannedToken
+  /** Why this token is next. */
+  reason: string
   isMobile: boolean
   onMarkToken: MarkTokenHandler | undefined
+  onStopTeam: StopTeamHandler | undefined
+  onTokenShown: TokenShownHandler | undefined
+  run: number | null
+  /** The missions it moves. */
+  gains: readonly MissionGain[]
+  chipOf: (unitId: string) => EventUnitChipData
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const unitName = useUnitName()
   const number = new Intl.NumberFormat(i18n.language)
-  const { token, reason } = view.next!
   const lane = t(`lanes.${token.laneId}`)
   const battle = token.battleIndex + 1
   const members = view.membersByTeam.get(token.teamId) ?? []
-  const reasonText = t(`tokenPlan.nextToken.reasons.${reason}`)
   const reasonLine =
     view.upcoming === null
       ? reasonText
@@ -144,6 +263,9 @@ function TokenView({
           })
   const canMark =
     onMarkToken !== undefined && view.upcoming === null && token.playableNow
+  useTokenShown(token, run, canMark ? onTokenShown : undefined)
+  const teamDepth = view.depthByTeam.get(token.teamId)
+  const band = tokenClearBand(teamDepth, token.battleIndex)
 
   return (
     <div
@@ -158,28 +280,22 @@ function TokenView({
           <span className="font-semibold" data-testid="next-token-team">
             {token.teamName}
           </span>
-          <ul
-            aria-label={t("tokenPlan.nextToken.members")}
-            className="flex items-center gap-1"
-          >
-            {members.map((unitId) => (
-              <li
-                data-testid="next-token-member"
-                data-unit={unitId}
-                key={unitId}
-              >
-                <EntityIcon
-                  alt={unitName("Character", unitId)}
-                  className="size-8 rounded-full"
-                  src={characterIcon(unitId as UnitId)}
-                />
-              </li>
-            ))}
-          </ul>
+          <TokenTeamPopover
+            depth={teamDepth}
+            members={members.map((unitId) => chipOf(unitId))}
+            teamName={token.teamName}
+            testId="next-token-team-details"
+          />
+          <TokenMissionsPopover gains={gains} testId="next-token-progresses" />
         </div>
         <div className="flex flex-wrap items-baseline gap-x-3 text-sm">
           <span data-testid="next-token-battle">
-            {t("tokenPlan.nextToken.battle", { lane, battle })}
+            <BattleInfoButton
+              battleIndex={token.battleIndex}
+              laneId={token.laneId}
+            >
+              {t("tokenPlan.nextToken.battle", { lane, battle })}
+            </BattleInfoButton>
           </span>
           <span
             className="font-semibold tabular-nums"
@@ -189,6 +305,26 @@ function TokenView({
               points: number.format(token.points),
             })}
           </span>
+          {band ? (
+            <span
+              className={cn(
+                "text-xs font-medium",
+                band === "sure"
+                  ? "text-success-foreground"
+                  : "text-(--season-fit-caution)"
+              )}
+              data-band={band}
+              data-testid="next-token-clear-band"
+            >
+              {band === "sure"
+                ? t("tokenPlan.nextToken.clear.sure")
+                : teamDepth?.sureDepth
+                  ? t("tokenPlan.nextToken.clear.likelySure", {
+                      sure: teamDepth.sureDepth,
+                    })
+                  : t("tokenPlan.nextToken.clear.likely")}
+            </span>
+          ) : null}
           {token.maybe ? (
             <span
               className="text-xs text-muted-foreground"
@@ -208,21 +344,111 @@ function TokenView({
         >
           {reasonLine}
         </p>
-        <MissionsProgressed
-          missions={view.missions?.progressed ?? []}
-          testId="next-token-progresses"
-        />
       </div>
       {canMark && onMarkToken ? (
         <TokenMarkButtons
           isMobile={isMobile}
           onMarkToken={onMarkToken}
+          onStopTeam={
+            band === "likely" && token.battleIndex > 0 ? onStopTeam : undefined
+          }
           testIdPrefix="next-token"
           token={token}
         />
       ) : null}
     </div>
   )
+}
+
+/** The planned tokens after the next one (plan-wide numbers), and View full plan. */
+function UpNext({
+  event,
+  tokens,
+  nextIndex,
+  steps,
+  total,
+  runEnd,
+  isMobile,
+  onViewPlan,
+}: {
+  event: Pick<LegendaryEvent, "alpha" | "beta" | "gamma">
+  /** The plan's tokens in the shown order. */
+  tokens: readonly PlannedToken[]
+  nextIndex: number
+  /** Per token, the missions it moves (Missions order only). */
+  steps: readonly (readonly TokenMissionStep[])[] | undefined
+  total: number
+  /** The plan index the current run ends at: Up next stops at the run's tokens. */
+  runEnd: number | null
+  isMobile: boolean
+  onViewPlan: (() => void) | undefined
+}) {
+  const { t } = useTranslation("legendaryEvents")
+  const upcoming = upNextTokens(
+    { tokens },
+    { index: nextIndex },
+    undefined,
+    runEnd
+  )
+  if (upcoming.length === 0) return null
+  return (
+    <section
+      aria-labelledby="next-token-up-next-title"
+      className="flex min-w-0 flex-col gap-1 border-t pt-3"
+      data-testid="next-token-up-next"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold" id="next-token-up-next-title">
+          {t("tokenPlan.nextToken.upNext")}
+        </h3>
+        {onViewPlan ? (
+          <Button
+            className="h-auto px-0"
+            data-testid="next-token-view-plan"
+            onClick={onViewPlan}
+            type="button"
+            variant="link"
+          >
+            {t("tokenPlan.nextToken.viewPlan", {
+              count: total,
+            })}
+          </Button>
+        ) : null}
+      </div>
+      <ol className="flex min-w-0 flex-col divide-y">
+        {upcoming.map(({ token, index }) => (
+          <TokenRow
+            event={event}
+            index={index}
+            isMobile={isMobile}
+            key={index}
+            marker={undefined}
+            missionsPopover
+            steps={steps?.[index]}
+            token={token}
+          />
+        ))}
+      </ol>
+    </section>
+  )
+}
+
+/** Why the Next token is next; the safest path names the milestone (and step) it still reaches. */
+function nextTokenReason(
+  t: TFunction<"legendaryEvents">,
+  next: NextTokenChoice
+) {
+  if (next.reason !== "safestToMilestone" || !next.goal) {
+    return t(`tokenPlan.nextToken.reasons.${next.reason}`)
+  }
+  return next.goal.step
+    ? t("tokenPlan.nextToken.reasons.safestToStep", {
+        milestone: next.goal.milestone,
+        step: t(`outlook.steps.${next.goal.step}`),
+      })
+    : t("tokenPlan.nextToken.reasons.safestToMilestone", {
+        milestone: next.goal.milestone,
+      })
 }
 
 function EmptyState({

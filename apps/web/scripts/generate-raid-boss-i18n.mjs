@@ -6,6 +6,7 @@
 //     { <abilityId>: { description, variables, constants, scaled } }
 //   public/locales/en/raidBossAbilityTextGaps.json          sorted referenced ability ids with no rules text
 //   public/locales/{en,de,es,fr}/raidBossTraitText.json     traitId   -> { description, styledName, variables }
+//   public/locales/{en,de,es,fr}/npcTraitText.json          traitId   -> { description, variables } (traits NPCs carry)
 //
 // Source: the pinned data-mines commit (datamine/REF, see scripts/datamine.mjs): the guild-boss unit
 // sets, the ability tables, the global trait constants and the game's own language files. Boss names are
@@ -215,6 +216,13 @@ const raidBossAbilities = {}
 const raidBossTraits = {}
 const raidBossAbilityText = {}
 const raidBossTraitText = {}
+const npcTraitText = {}
+// Every trait an NPC carries; the pseudo-traits (Boss, Object…) have no description and drop out.
+const npcTraitIds = new Set(
+  Object.values(readJson(`${datamine}/raw/gameconfig/units/npc.json`)).flatMap(
+    (npc) => npc.traits ?? []
+  )
+)
 const PLACEHOLDER_DESCRIPTIONS = new Set(["", "Coming soon!"])
 
 for (const locale of LOCALES) {
@@ -271,6 +279,21 @@ for (const locale of LOCALES) {
       variables: getTraitVariables(traitId),
     }
   }
+
+  // NPC trait rules-text: the same description and variables for every trait an NPC carries.
+  npcTraitText[locale] = {}
+  for (const traitId of [...npcTraitIds].sort()) {
+    const key = `Traits/${traitId}_Description`
+    if (
+      !traitIds.has(traitId) ||
+      PLACEHOLDER_DESCRIPTIONS.has((languages.en[key] ?? "").trim())
+    )
+      continue
+    npcTraitText[locale][traitId] = {
+      description: term(locale, key),
+      variables: getTraitVariables(traitId),
+    }
+  }
 }
 
 const sortObject = (obj) =>
@@ -308,6 +331,10 @@ for (const locale of LOCALES) {
     `${outDir}/raidBossTraitText.json`,
     sortObject(raidBossTraitText[locale])
   )
+  await writeJson(
+    `${outDir}/npcTraitText.json`,
+    sortObject(npcTraitText[locale])
+  )
 
   // Ability rules text: one file (and i18next namespace) per ability id, so the detail view fetches
   // only the abilities it shows. The directory is emptied first, so a dropped ability's file disappears.
@@ -331,3 +358,4 @@ console.log("raidBossAbilities:", Object.keys(raidBossAbilities.en).length)
 console.log("raidBossTraits:", Object.keys(raidBossTraits.en).length)
 console.log("raidBossAbilityText:", Object.keys(raidBossAbilityText.en).length)
 console.log("raidBossTraitText:", Object.keys(raidBossTraitText.en).length)
+console.log("npcTraitText:", Object.keys(npcTraitText.en).length)

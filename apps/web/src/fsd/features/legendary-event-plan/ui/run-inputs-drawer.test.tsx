@@ -8,7 +8,7 @@ import type {
 } from "@/entities/legendary-event"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
+import { act, fireEvent, render, screen, within } from "@/test/render"
 
 import { RunInputsDrawer } from "./run-inputs-drawer"
 
@@ -67,8 +67,12 @@ let i18n: I18n
 const SETTINGS = {
   dailyEnergy: 288,
   xpBookRarity: "Legendary",
-  watchAds: true,
+  preferences: [] as string[],
   revision: 4,
+}
+const PAID_SETTINGS = {
+  ...SETTINGS,
+  preferences: ["LegendaryEventShowPaidOptions"],
 }
 
 const RUN_2_ACTIVE: LegendaryEventRunResolution = {
@@ -109,30 +113,33 @@ describe("RunInputsDrawer", () => {
     api.put.mockReset()
   })
 
-  it("labels runs Done, Now and Planned for a run-2 account with the stored values", async () => {
+  it("shows only the current run, labelled Now, with all free missions planned by default", async () => {
     const drawer = await openDrawer(RUN_2_ACTIVE)
 
     expect(within(drawer).getByText("Run inputs")).toBeInTheDocument()
-    const phases = [1, 2, 3].map(
-      (run) => within(runBlock(run)).getByTestId("run-inputs-phase").textContent
-    )
-    expect(phases).toEqual(["Done", "Now", "Planned"])
-    // Only the current run says its inputs wait for the next run in the outlook.
     expect(
-      [1, 2, 3].map(
-        (run) =>
-          within(runBlock(run)).queryByTestId("run-inputs-now-hint") !== null
-      )
-    ).toEqual([false, true, false])
-    const regular = [1, 2, 3].map((run) =>
-      stepperIn(runBlock(run), "run-inputs-regular")
+      screen.getAllByTestId("run-inputs-run").map((block) => block.dataset.run)
+    ).toEqual(["2"])
+    expect(
+      within(runBlock(2)).getByTestId("run-inputs-phase").textContent
+    ).toBe("Now")
+    expect(
+      within(runBlock(2)).getByTestId("run-inputs-now-hint")
+    ).toBeInTheDocument()
+    // Run 2 has no stored inputs: 0 done, all 10 free missions planned.
+    expect(
+      stepperIn(runBlock(2), "run-inputs-regular-done")
         .getByTestId("number-stepper-input")
         .getAttribute("value")
-    )
-    expect(regular).toEqual(["10", "0", "0"])
+    ).toBe("0")
+    expect(
+      stepperIn(runBlock(2), "run-inputs-regular-count")
+        .getByTestId("number-stepper-input")
+        .getAttribute("value")
+    ).toBe("10")
   })
 
-  it("labels Uthar's runs Done, Done, Planned between runs 2 and 3, with no now hint", async () => {
+  it("shows the next run between runs 2 and 3, labelled Planned, with no now hint", async () => {
     await openDrawer({
       kind: "known",
       endedRuns: 2,
@@ -142,15 +149,15 @@ describe("RunInputsDrawer", () => {
     })
 
     expect(
-      [1, 2, 3].map(
-        (run) =>
-          within(runBlock(run)).getByTestId("run-inputs-phase").textContent
-      )
-    ).toEqual(["Done", "Done", "Planned"])
+      screen.getAllByTestId("run-inputs-run").map((block) => block.dataset.run)
+    ).toEqual(["3"])
+    expect(
+      within(runBlock(3)).getByTestId("run-inputs-phase").textContent
+    ).toBe("Planned")
     expect(screen.queryByTestId("run-inputs-now-hint")).toBeNull()
   })
 
-  it("labels no run while the run is unknown, keeping every run editable", async () => {
+  it("lists every run, unlabelled, while the run is unknown", async () => {
     await openDrawer({
       kind: "unknown",
       endedRuns: null,
@@ -162,154 +169,104 @@ describe("RunInputsDrawer", () => {
     expect(screen.queryAllByTestId("run-inputs-phase")).toEqual([])
     expect(screen.queryByTestId("run-inputs-now-hint")).toBeNull()
     expect(
-      [1, 2, 3].map(
-        (run) => stepperIn(runBlock(run), "run-inputs-regular") !== null
-      )
-    ).toEqual([true, true, true])
+      screen.getAllByTestId("run-inputs-run").map((block) => block.dataset.run)
+    ).toEqual(["1", "2", "3"])
   })
 
-  it("shows only regular missions while Show paid options is off", async () => {
+  it("shows only regular missions while Show paid options is off, with no settings switches", async () => {
     const drawer = await openDrawer()
 
-    expect(
-      within(drawer).getByRole("switch", { name: "Show paid options" })
-    ).toHaveAttribute("aria-checked", "false")
-    expect(within(drawer).getAllByTestId("run-inputs-regular")).toHaveLength(3)
+    expect(within(drawer).getAllByTestId("run-inputs-regular")).toHaveLength(1)
     expect(within(drawer).queryByTestId("run-inputs-premium")).toBeNull()
     expect(within(drawer).queryByTestId("run-inputs-bundle")).toBeNull()
     expect(within(drawer).queryByTestId("run-inputs-close-shards")).toBeNull()
+    // Show paid options and Watch daily ads live in Legendary Event settings now.
+    expect(
+      within(drawer).queryByRole("switch", { name: "Show paid options" })
+    ).toBeNull()
+    expect(
+      within(drawer).queryByRole("switch", { name: "Watch daily ads" })
+    ).toBeNull()
   })
 
-  it("shows every paid field once Show paid options is on, saving the plan with its notes", async () => {
-    api.put.mockResolvedValue(plan({ revision: 3, showPaidOptions: true }))
-    const drawer = await openDrawer()
+  it("shows every paid field with the account's Show paid options on", async () => {
+    api.settings = PAID_SETTINGS
+    await openDrawer()
 
-    await act(async () => {
-      fireEvent.click(
-        within(drawer).getByRole("switch", { name: "Show paid options" })
-      )
-    })
-
-    expect(api.put).toHaveBeenCalledWith({
-      path: "/api/v1/legendary-event-plans/{eventId}",
-      params: { path: { eventId: "votanUthar" } },
-      body: {
-        expectedRevision: 2,
-        notes: "Beta last",
-        showPaidOptions: true,
-      },
-    })
-    for (const run of [1, 2, 3]) {
-      const block = runBlock(run)
-      expect(
-        within(block).getByTestId("run-inputs-premium")
-      ).toBeInTheDocument()
-      expect(within(block).getByTestId("run-inputs-bundle")).toBeInTheDocument()
-      expect(
-        within(block).getByTestId("run-inputs-close-shards")
-      ).toBeInTheDocument()
-    }
-  })
-
-  it("turns Watch daily ads off in the account settings", async () => {
-    api.put.mockResolvedValue({ ...SETTINGS, watchAds: false, revision: 5 })
-    const drawer = await openDrawer()
-    const ads = await within(drawer).findByRole("switch", {
-      name: "Watch daily ads",
-    })
-    expect(ads).toBeChecked()
-
-    await act(async () => {
-      fireEvent.click(ads)
-    })
-
-    expect(api.put).toHaveBeenCalledWith({
-      path: "/api/v1/settings",
-      params: undefined,
-      body: { ...SETTINGS, watchAds: false },
-    })
-    // The switch follows the saved settings.
-    await waitFor(() =>
-      expect(
-        within(drawer).getByRole("switch", { name: "Watch daily ads" })
-      ).not.toBeChecked()
-    )
+    const block = runBlock(2)
+    await within(block).findByTestId("run-inputs-premium")
+    expect(within(block).getByTestId("run-inputs-bundle")).toBeInTheDocument()
+    expect(
+      within(block).getByTestId("run-inputs-close-shards")
+    ).toBeInTheDocument()
   })
 
   it("holds missions and Oh So Close shards at their bounds", async () => {
+    api.settings = PAID_SETTINGS
     api.plan = plan({
-      showPaidOptions: true,
-      runs: [stored(1, { regularMissions: 10, closeShards: 75 })],
+      runs: [stored(2, { regularMissions: 10, closeShards: 75 })],
     })
     await openDrawer()
-    const first = runBlock(1)
+    const now = runBlock(2)
+    await within(now).findByTestId("run-inputs-close-shards")
 
     // Uthar has 10 regular missions; V1's bound on close shards is 75.
-    const regular = stepperIn(first, "run-inputs-regular")
+    const regular = stepperIn(now, "run-inputs-regular-count")
     expect(regular.getByTestId("number-stepper-increase")).toBeDisabled()
-    const shards = stepperIn(first, "run-inputs-close-shards")
+    const shards = stepperIn(now, "run-inputs-close-shards")
     expect(shards.getByTestId("number-stepper-increase")).toBeDisabled()
     expect(
       shards.getByTestId("number-stepper-input").getAttribute("value")
     ).toBe("75")
-
-    const second = stepperIn(runBlock(2), "run-inputs-close-shards")
-    fireEvent.click(second.getByTestId("number-stepper-increase"))
-    expect(
-      second.getByTestId("number-stepper-input").getAttribute("value")
-    ).toBe("25")
   })
 
-  it("ticks missions per run with the Now run expanded and the others collapsed", async () => {
+  it("lists the missions in order with the done ones struck through and the current one marked Now", async () => {
     api.plan = plan({
       runs: [
-        stored(1, {
-          regularMissions: 10,
-          completedRegularMissions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        }),
+        stored(2, { regularMissions: 5, completedRegularMissions: [0, 1, 2] }),
       ],
     })
     await openDrawer()
+    const now = runBlock(2)
 
-    const ticked = [1, 2, 3].map(
-      (run) =>
-        within(runBlock(run)).getByTestId("run-inputs-regular-ticked")
-          .textContent
-    )
-    expect(ticked).toEqual(["10 of 10 done", "0 of 10 done", "0 of 10 done"])
     expect(
-      [1, 2, 3].map(
-        (run) =>
-          within(runBlock(run)).queryAllByTestId("run-inputs-regular-mission")
-            .length
-      )
-    ).toEqual([0, 10, 0])
-    fireEvent.click(
-      within(runBlock(1)).getByTestId("run-inputs-regular-toggle")
-    )
+      within(now).getByTestId("run-inputs-regular-ticked").textContent
+    ).toBe("3 of 10 done")
+    const states = within(now)
+      .getAllByTestId("run-inputs-regular-mission")
+      .map((row) => row.dataset.state)
+    expect(states).toEqual([
+      "done",
+      "done",
+      "done",
+      "current",
+      ...Array.from({ length: 6 }, () => "later"),
+    ])
+    // The current row carries the "Now" label (the run's badge says Now too).
     expect(
-      within(runBlock(1))
-        .getAllByTestId("run-inputs-regular-mission")
-        .every((row) => row.dataset.done === "true")
-    ).toBe(true)
+      within(now).getAllByTestId("run-inputs-regular-mission")[3]
+    ).toHaveTextContent("Now")
   })
 
-  it("raises Plan to complete when a tick passes it and saves both in one write", async () => {
+  it("sets Done by picking a mission, raises Plan to complete and saves both in one write", async () => {
+    api.plan = plan({ runs: [stored(2, { regularMissions: 1 })] })
     api.put.mockResolvedValue(plan({ revision: 3 }))
     await openDrawer()
     const now = runBlock(2)
 
     fireEvent.click(
-      within(now).getByRole("checkbox", { name: "Defeat 30 Necrons" })
+      within(now).getAllByTestId("run-inputs-regular-mission")[2]!
+        .firstElementChild!
     )
 
     expect(
       within(now).getByTestId("run-inputs-regular-ticked").textContent
-    ).toBe("1 of 10 done")
-    const count = stepperIn(now, "run-inputs-regular-count")
+    ).toBe("3 of 10 done")
     expect(
-      count.getByTestId("number-stepper-input").getAttribute("value")
-    ).toBe("1")
+      stepperIn(now, "run-inputs-regular-count")
+        .getByTestId("number-stepper-input")
+        .getAttribute("value")
+    ).toBe("3")
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 700))
     })
@@ -318,16 +275,16 @@ describe("RunInputsDrawer", () => {
       path: "/api/v1/legendary-event-plans/{eventId}/runs/{run}",
       params: { path: { eventId: "votanUthar", run: "2" } },
       body: expect.objectContaining({
-        regularMissions: 1,
-        completedRegularMissions: [1],
+        regularMissions: 3,
+        completedRegularMissions: [0, 1, 2],
       }),
     })
   })
 
-  it("never lets Plan to complete drop below the ticked missions", async () => {
+  it("never lets Plan to complete drop below the done missions", async () => {
     api.plan = plan({
       runs: [
-        stored(2, { regularMissions: 5, completedRegularMissions: [1, 2, 3] }),
+        stored(2, { regularMissions: 5, completedRegularMissions: [0, 1, 2] }),
       ],
     })
     await openDrawer()

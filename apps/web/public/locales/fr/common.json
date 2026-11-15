@@ -82,6 +82,7 @@
       "nextAutoSync": "Prochaine synchronisation automatique {{time}}",
       "syncProgress": "Synchronisation {{downloaded}} / {{total}}…",
       "retrySync": "Échec de la synchronisation — réessayer",
+      "rateLimited": "Limite de synchronisation atteinte. Réessayez {{time}}.",
       "reauthRequired": "Connexion expirée — appuyez pour vous connecter",
       "refreshRequired": "Actualisation requise · {{lastSync}}",
       "syncNow": "Synchroniser maintenant"
@@ -138,7 +139,8 @@
       "replaceWarning": "Appliquer un code remplace vos objectifs, plans et réglages actuels.",
       "confirm": "J'ai compris",
       "applied": "Code appliqué.",
-      "apply": "Appliquer le code"
+      "apply": "Appliquer le code",
+      "traceId": "ID de trace : {{traceId}}"
     }
   },
   "accountGate": {
@@ -271,6 +273,7 @@
     "dailies": "Quotidiennes",
     "dailiesDescription": "Tâches quotidiennes et périodiques du jeu",
     "eventLive": "Événement en cours",
+    "live": "En cours",
     "home": "Accueil",
     "homeDescription": "Aperçu de votre compte et raccourcis",
     "createGoal": "Créer un objectif",
@@ -290,6 +293,7 @@
     "noResults": "Aucune page ou action correspondante trouvée.",
     "search": "Rechercher des pages et des actions",
     "sync": "Synchroniser",
+    "syncCooldown": "{{minutes}} min",
     "syncWithTacticus": "Synchroniser avec Tacticus",
     "skipToContent": "Aller au contenu",
     "primaryNavigation": "Navigation principale",
@@ -342,15 +346,6 @@
     "rewardsTitle": "Référence des récompenses en éclats",
     "sectorTier": "Secteur / palier",
     "current": "Progression actuelle de l'alliance",
-    "rewards": {
-      "Common": "Commun",
-      "Uncommon": "Peu commun",
-      "Rare": "Rare",
-      "Epic": "Épique",
-      "Legendary": "Légendaire",
-      "LegendaryBlue": "Légendaire 1★ bleu",
-      "Mythic": "Mythique"
-    },
     "unsaved": {
       "message": "Vous avez des modifications non enregistrées",
       "save": "Enregistrer",
@@ -400,8 +395,17 @@
           "rarity": "Rareté",
           "rank": "Rang",
           "abilities": "Capacités",
-          "shards": "Éclats"
+          "shards": "Éclats",
+          "power": "Puissance"
         },
+        "view": "Affichage",
+        "views": {
+          "cards": "Cartes",
+          "roster": "Liste"
+        },
+        "groupByFaction": "Grouper par faction",
+        "hideUnowned": "Masquer les non débloquées",
+        "hideUnownedNeedsRoster": "Masquer les unités non débloquées nécessite un effectif synchronisé.",
         "filters": "Filtres",
         "filtersCount_one": "Filtres ({{count}})",
         "filtersCount_other": "Filtres ({{count}})",
@@ -422,19 +426,16 @@
         "clearRankTo": "Retirer le rang maximum",
         "searchRanks": "Rechercher des rangs",
         "noRanks": "Aucun rang ne correspond",
-        "ownership": "Possession",
-        "ownershipAll": "Toutes les unités",
-        "owned": "Possédées",
-        "unowned": "Non possédées",
         "kind": "Type d'unité",
         "kindAll": "Tous les types",
         "character": "Personnages",
         "mow": "Machines de guerre",
-        "needsRoster": "Les filtres de rang, d'étoiles et de possession nécessitent un effectif synchronisé.",
+        "needsRoster": "Les filtres de rang et d'étoiles nécessitent un effectif synchronisé.",
         "quickFilters": "Filtres rapides",
         "quick": {
           "readyToRankUp": "Prête à monter en rang",
           "needToAscend": "Doit être ascensionnée",
+          "canPromote": "Peut être promue",
           "canAscend": "Peut être ascensionnée",
           "needToLevel": "Doit monter de niveau",
           "blueStarReady": "Prête pour l'étoile bleue",
@@ -444,6 +445,7 @@
         "quickHelp": {
           "readyToRankUp": "Votre inventaire d'améliorations couvre tous les matériaux encore nécessaires au rang actuel.",
           "needToAscend": "Au rang maximum de sa rareté, avec une Ascension encore à venir.",
+          "canPromote": "Vos éclats et orbes suffisent pour l'étoile suivante dans la rareté actuelle.",
           "canAscend": "Vos éclats et orbes suffisent pour la rareté suivante (l'étoile suivante en Mythique).",
           "needToLevel": "Sous le niveau maximum de sa rareté.",
           "blueStarReady": "Vos éclats et orbes suffisent pour toutes les étapes jusqu'à la première étoile bleue.",
@@ -452,6 +454,7 @@
         },
         "quickNeedsRoster": "Les filtres rapides nécessitent un effectif synchronisé.",
         "quickNeedsInventory": "{{filters}} : nécessite votre inventaire synchronisé.",
+        "quickCurrentOnly": "{{filters}} : lit votre roster et votre inventaire actuels, donc il est désactivé pendant la comparaison avec un instantané.",
         "quickFailed": "{{filters}} : ses données de jeu n'ont pas pu être chargées.",
         "rankRange": "Plage de rangs",
         "groupUnit": "Unité",
@@ -504,9 +507,164 @@
       },
       "empty": {
         "title": "Aucune unité ne correspond à ces filtres",
-        "body": "Modifiez ou effacez les filtres pour voir plus d'unités."
+        "body": "Modifiez ou effacez les filtres pour voir plus d'unités.",
+        "hiddenTitle": "Aucune unité débloquée ici",
+        "hiddenBody": "« Masquer les non débloquées » masque toutes ces unités.",
+        "showUnowned": "Afficher les unités non débloquées"
+      },
+      "compare": {
+        "toggle": "Comparer",
+        "loading": "Chargement de la comparaison…",
+        "options": "Options de comparaison",
+        "from": "Depuis",
+        "to": "Jusqu’à",
+        "current": "Effectif actuel",
+        "personalGroup": "Vos instantanés",
+        "leGroup": "Événements légendaires",
+        "runRecordLabel": "{{event}} · manche {{run}} · {{date}}",
+        "event": "Événement légendaire",
+        "anyEvent": "Toutes les unités",
+        "lane": "Voie",
+        "anyLane": "Toutes les voies",
+        "lanes": {
+          "alpha": "Alpha",
+          "beta": "Bêta",
+          "gamma": "Gamma"
+        },
+        "order": "Ordre",
+        "orderGain": "Puissance gagnée",
+        "fields": "Champs ({{count}}/{{total}})",
+        "fieldNames": {
+          "shards": "Fragments",
+          "mythicShards": "Fragments mythiques",
+          "xp": "XP",
+          "upgrades": "Améliorations",
+          "abilities": "Capacités",
+          "equipment": "Équipement",
+          "power": "Puissance"
+        },
+        "showUnchanged": "Afficher les inchangées",
+        "summaryTitle": "{{from}} → {{to}}",
+        "summaryFor_one": "pour {{count}} unité correspondante",
+        "summaryFor_other": "pour {{count}} unités correspondantes",
+        "metricHint": "Sélectionnez un nombre pour ne lister que les unités concernées.",
+        "metrics": {
+          "unlocked": "Débloquées",
+          "ascensions": "Ascensions",
+          "promotions": "Promotions",
+          "rankUps": "Montées de rang",
+          "abilityLevels": "Niveaux de capacité",
+          "upgradesApplied": "Améliorations appliquées",
+          "shardsEarned": "Fragments gagnés",
+          "mythicShardsEarned": "Fragments mythiques gagnés",
+          "power": "Puissance gagnée"
+        },
+        "noChanges": "Aucun changement pour ces unités",
+        "emptyTitle": "Prenez votre premier instantané",
+        "emptyBody": "Un instantané enregistre tout votre effectif tel qu’il est maintenant, pour le comparer à votre progression ultérieure.",
+        "errorTitle": "Impossible de charger les instantanés",
+        "errorBody": "La comparaison ne peut pas s’afficher sans eux. Réessayez.",
+        "fromTo": "{{from}} → {{to}}",
+        "chips": {
+          "unlocked": "Débloquée",
+          "upgrades": "{{value}} améliorations",
+          "xpLevel": "{{value}} niveaux",
+          "shards": "{{value}} fragments",
+          "mythicShards": "{{value}} mythiques",
+          "equipment": "{{value}} objets",
+          "power": "{{value}} puissance"
+        },
+        "details": {
+          "none": "Aucun changement.",
+          "unlocked": "Débloquée",
+          "rank": "Rang",
+          "stars": "Étoiles",
+          "upgrades": "Améliorations appliquées",
+          "xpLevel": "Niveau d’XP",
+          "xpGained": "XP gagnée",
+          "activeAbility": "Capacité active",
+          "passiveAbility": "Capacité passive",
+          "primaryAbility": "Capacité principale",
+          "secondaryAbility": "Capacité secondaire",
+          "shards": "Fragments",
+          "mythicShards": "Fragments mythiques",
+          "shardsBreakdown": "net {{net}} · dépensés {{spent}} · gagnés {{earned}}",
+          "equipment": "Objet",
+          "power": "Puissance",
+          "openLibrary": "Ouvrir dans la Bibliothèque",
+          "items": {
+            "I_Crit": "Objet critique",
+            "I_Block": "Objet de blocage",
+            "I_Booster_Crit": "Amplificateur critique",
+            "I_Booster_Block": "Amplificateur de blocage",
+            "I_Defensive": "Objet défensif"
+          }
+        },
+        "closeOptions": "Fermer"
+      },
+      "snapshots": {
+        "signIn": "Connectez-vous pour enregistrer des instantanés de votre effectif et les comparer.",
+        "take": "Prendre un instantané",
+        "manage": "Instantanés",
+        "usage": "{{count}}/{{limit}}",
+        "limitTooltip": "Supprimez un instantané pour en prendre un nouveau",
+        "dialogTitle": "Prendre un instantané",
+        "dialogBody": "Synchronise d’abord avec Tacticus, puis enregistre tout votre effectif.",
+        "name": "Nom (facultatif)",
+        "nameLabel": "Nom de l’instantané",
+        "namePlaceholder": "La date du jour",
+        "nameTooLong": "Utilisez au plus {{max}} caractères.",
+        "cancel": "Annuler",
+        "confirm": "Prendre l’instantané",
+        "syncing": "Synchronisation…",
+        "retry": "Réessayer",
+        "syncFailed": "La synchronisation avec Tacticus a échoué.",
+        "rateLimited": "Trop de synchronisations. Vous pourrez réessayer {{time}}.",
+        "rateLimitedSoon": "Trop de synchronisations. Réessayez dans un instant.",
+        "notSynced": "Synchronisez votre effectif avant de prendre un instantané.",
+        "fromLastSync": "Prendre depuis la dernière synchronisation ({{time}})",
+        "taken": "Instantané enregistré",
+        "compare": "Comparer",
+        "manageTitle": "Gérer les instantanés",
+        "none": "Aucun instantané pour l’instant.",
+        "rename": "Renommer",
+        "delete": "Supprimer",
+        "deleteTitle": "Supprimer « {{name}} » ?",
+        "deleteBody": "L’instantané est supprimé définitivement.",
+        "deleteConfirm": "Supprimer",
+        "renameFailed": "Impossible de renommer l’instantané.",
+        "deleteFailed": "Impossible de supprimer l’instantané.",
+        "autoLabel": "Auto · {{date}}",
+        "v1ImportLabel": "V1 · {{name}}",
+        "autoBadge": "Auto",
+        "v1ImportBadge": "V1",
+        "autoTitle": "Automatiques",
+        "autoHint": "Pris après une synchronisation quand votre roster n'a aucun instantané des 30 derniers jours. Jusqu'à {{limit}} sont conservés ; le plus ancien est remplacé.",
+        "keep": "Conserver",
+        "keepLimitTooltip": "Supprimez un instantané pour conserver celui-ci",
+        "keepFailed": "L'instantané n'a pas pu être conservé."
+      },
+      "select": {
+        "start": "Sélectionner des unités",
+        "unit": "Sélectionner {{name}}",
+        "count_one": "{{count}} sélectionnée",
+        "count_other": "{{count}} sélectionnées",
+        "selectAll": "Tout sélectionner (affichées)",
+        "clear": "Effacer",
+        "createGoals": "Créer des objectifs",
+        "done": "Terminé"
       }
     }
+  },
+  "unitRow": {
+    "level": "Niv. {{level}}",
+    "active": "Active",
+    "passive": "Passive",
+    "primary": "Principale",
+    "secondary": "Secondaire",
+    "equipment": "Équipement",
+    "shards": "Éclats",
+    "open": "Ouvrir {{name}}"
   },
   "unitTile": {
     "characterAbilities": "Capacité active niveau {{first}}, capacité passive niveau {{second}}",
@@ -813,12 +971,14 @@
         "goals": "Objectifs",
         "onslaughtProgress": "Progression de l'Onslaught",
         "campaignEventProgress": "Progression des événements de campagne",
-        "legendaryEventPlans": "Équipes des Événements Légendaires"
+        "legendaryEventPlans": "Équipes des Événements Légendaires",
+        "rosterSnapshots": "Instantanés du roster"
       },
       "partDescriptions": {
         "userId": "Relie votre compte du planificateur à votre joueur en jeu, ce dont les fonctions de guilde ont besoin.",
         "guildKey": "Utilisé uniquement si vous êtes chef ou co-chef de votre guilde : il enregistre votre guilde dans le planificateur pour que tous les membres puissent utiliser les fonctions de guilde.",
-        "legendaryEventPlans": "Les équipes composées à la main, les notes, les saisies de missions et de packs par manche et les marques « Peut-être faisable » / « S'arrêter ici » des événements que le planificateur connaît. La progression des événements n'est pas importée."
+        "legendaryEventPlans": "Les équipes composées à la main, les notes, les saisies de missions et de packs par manche et les marques « Peut-être faisable » / « S'arrêter ici » des événements que le planificateur connaît. La progression des événements n'est pas importée.",
+        "rosterSnapshots": "Vos instantanés du roster de V1, du plus récent au plus ancien, jusqu'à la limite d'instantanés. V1 n'enregistrait ni l'XP totale ni les améliorations appliquées, les comparaisons les ignorent donc."
       },
       "submit": "Importer la sélection",
       "submitting": "Importation en cours…",
@@ -948,6 +1108,8 @@
         "goals_other": "{{count}} objectifs",
         "legendaryEvents_one": "Équipes de Legendary Event pour {{count}} événement",
         "legendaryEvents_other": "Équipes de Legendary Event pour {{count}} événements",
+        "rosterSnapshots_one": "{{count}} instantané du roster",
+        "rosterSnapshots_other": "{{count}} instantanés du roster",
         "parts": {
           "personalTacticusApiKey": "Clé API",
           "tacticusUserId": "ID utilisateur Tacticus",
@@ -960,6 +1122,26 @@
       "partReasons": {
         "invalidTacticusUserId": "L'ID utilisateur Tacticus de V1 n'est pas un GUID valide, il n'a donc pas été importé.",
         "tacticusUserIdConflict": "Cet ID utilisateur Tacticus est déjà lié à un autre compte du planificateur, il n'a donc pas été importé."
+      },
+      "rosterSnapshots": {
+        "title": "Instantanés du roster",
+        "unnamed": "Instantané sans nom",
+        "droppedUnits_one": "{{count}} unité ou objet inconnu du planificateur a été ignoré",
+        "droppedUnits_other": "{{count}} unités ou objets inconnus du planificateur ont été ignorés",
+        "reasons": {
+          "imported": "Importé",
+          "skippedDuplicate": "Déjà importé",
+          "skippedDeleted": "Dans la corbeille de V1",
+          "skippedLimit": "La limite d'instantanés est atteinte",
+          "failed": "Cet instantané n'a pas pu être lu"
+        },
+        "partReasons": {
+          "missing_roster_snapshots": "Votre profil V1 n'a aucun instantané du roster.",
+          "invalid_roster_snapshots": "Vos instantanés du roster de V1 n'ont pas pu être lus.",
+          "no_roster_snapshot_imported": "Aucun nouvel instantané n'a été importé.",
+          "roster_snapshot_import_failed": "Aucun de vos instantanés de V1 n'a pu être lu.",
+          "roster_snapshot_import_conflict": "Vos instantanés ont changé pendant l'import. Réessayez."
+        }
       }
     },
     "empty": {
@@ -1026,6 +1208,7 @@
       "pause": "Mettre en pause",
       "resume": "Reprendre",
       "delete": "Supprimer",
+      "deleteGoal": "Supprimer l’objectif de {{entity}}",
       "moveToTop": "Placer en premier",
       "moveUp": "Monter",
       "moveDown": "Descendre",
@@ -1346,7 +1529,17 @@
         },
         "owned": "{{count}} possédés",
         "alreadyMet": "Vous en possédez déjà autant : cet objectif est donc déjà atteint.",
-        "noResources": "Vous possédez déjà tous les matériaux dans ces quantités."
+        "noResources": "Vous possédez déjà tous les matériaux dans ces quantités.",
+        "addRarity": {
+          "label": "Tout ajouter :",
+          "option": "{{rarity}} ({{count}})"
+        },
+        "links": {
+          "label": "Compte pour",
+          "hint": "Ses matériaux comptent pour ces objectifs au lieu d'être farmés en plus.",
+          "option": "{{type}} → {{target}}",
+          "empty": "Aucun objectif en cours pour cette unité."
+        }
       },
       "previewTitle": "Ressources nécessaires",
       "showAll": "Tout afficher ({{count}})",
@@ -1361,6 +1554,7 @@
       "submit": "Créer l'objectif",
       "close": "Fermer",
       "genericError": "Impossible de créer l'objectif. Veuillez réessayer.",
+      "serverError": "Impossible de joindre le serveur. Veuillez réessayer.",
       "previewEstimate": "≈ {{days}} jours",
       "previewEnergy": "{{energy}} énergie",
       "reviewTitle": "Ce qui sera créé",
@@ -1383,7 +1577,7 @@
         "upgradeTargetsRequired": "Sélectionnez au moins une amélioration à farmer pour l'objectif d'amélioration.",
         "rankMaxed": "Ce personnage a déjà atteint le rang maximum.",
         "progressionMaxed": "Cette unité a déjà atteint le niveau d'ascension maximum.",
-        "abilityMaxed": "Les capacités de cette unité ont déjà atteint le niveau maximum pour sa rareté actuelle.",
+        "abilityMaxed": "Les capacités de cette unité ont déjà atteint le niveau maximum.",
         "activeOrPausedGoalExists": "Un objectif {{goalType}} actif ou en pause existe déjà pour cette unité.",
         "upgradeQuantity": "Saisissez un nombre entier de 1 à 10 000.",
         "alreadyUnlocked_mow": "Cette machine de guerre est déjà débloquée.",
@@ -1442,10 +1636,18 @@
       }
     },
     "estimate": {
+      "checkpoints": {
+        "summary": "{{count}} étapes",
+        "next": "Prochaine",
+        "title": "Étapes",
+        "ready": "Déjà prêt",
+        "energy": "{{energy}} énergie"
+      },
       "none": "—",
       "days": "dans {{days}} jours",
       "blockedLabel": "Bloqué",
       "unavailableRow": "{{material}} ×{{count}} : {{reason}}",
+      "materialCount": "{{material}} ×{{count}}",
       "blocked": {
         "NoFarmLocation": "Aucun lieu de farming accessible ne fournit une ressource requise.",
         "FarmingOverrideUnavailable": "Les lieux de farming sélectionnés ne fournissent pas toutes les ressources requises.",
@@ -1453,7 +1655,16 @@
         "SimulationLimit": "L'objectif n'a pas pu être terminé dans l'horizon de planification.",
         "UnsupportedCost": "Le calcul détaillé du coût n'est pas pris en charge pour cet objectif.",
         "FilteredOut": "Tous les lieux de farming sont exclus par vos filtres de raids."
-      }
+      },
+      "unlockAt": "Se débloque à",
+      "battlesToGo_one": "encore {{count}} combat",
+      "battlesToGo_other": "encore {{count}} combats",
+      "battlesToGoNotStarted_one": "non commencé, encore {{count}} combat",
+      "battlesToGoNotStarted_other": "non commencé, encore {{count}} combats",
+      "unlockDuringEvent": "pendant l'événement de campagne",
+      "unlockMore_one": "+{{count}} autre lieu",
+      "unlockMore_other": "+{{count}} autres lieux",
+      "unlockFewer": "Afficher moins"
     },
     "unlockFlavor": "Rassemblez les éclats du personnage et préparez-le à rejoindre votre effectif.",
     "filters": {
@@ -1463,11 +1674,14 @@
       "groupByLabel": "Regrouper par",
       "groupNone": "Aucun regroupement",
       "groupByType": "Regrouper par type",
+      "groupByTypePriority": "Regrouper par type (par priorité)",
       "groupByUnit": "Regrouper par unité",
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés",
       "statusFilterLabel": "Filtre de statut des objectifs",
       "groupCount_one": "{{count}} objectif",
-      "groupCount_other": "{{count}} objectifs"
+      "groupCount_other": "{{count}} objectifs",
+      "collapseAllGroups": "Tout réduire",
+      "expandAllGroups": "Tout développer"
     },
     "seasonFit": {
       "label": "Calage sur la saison",
@@ -1526,24 +1740,22 @@
       "orbs": "Orbes {{rarity}}",
       "abilityBadges": "Badges de capacité {{rarity}}",
       "forgeBadges": "Badges de forge {{rarity}}",
+      "orbsTotal": "Orbes",
+      "abilityBadgesTotal": "Badges de capacité",
+      "forgeBadgesTotal": "Badges de forge",
+      "byRarityLabel": "{{label}}. Afficher par rareté",
       "xpBooks": "Livres d’XP {{rarity}}",
       "xpBooksValue": "{{available}} sur {{needed}}",
       "chipLabel": "{{name}} : {{quantity}}",
       "poolLabel": "{{name}} : {{available}} sur {{needed}}",
-      "standalone": "Seul : {{slots}} emplacements d'amélioration, {{energy}} d'énergie",
-      "rarity": {
-        "Common": "Commun",
-        "Uncommon": "Peu commun",
-        "Rare": "Rare",
-        "Epic": "Épique",
-        "Legendary": "Légendaire",
-        "Mythic": "Mythique"
-      }
+      "standalone": "Seul : {{slots}} emplacements d'amélioration, {{energy}} d'énergie"
     },
     "overview": {
       "levelProgress": "Niv {{current}} → {{target}}",
       "ownedOfRequired": "{{owned}} / {{required}}",
       "upgradeMaterial": "{{name}} : {{owned}} / {{quantity}}",
+      "upgradeMaterialCounted": "Inclut {{amount}} de l’objectif {{goalType}} de {{unit}} (#{{priority}})",
+      "upgradeMaterialTakenFirst": "{{amount}} déjà réservés par l’objectif {{goalType}} de {{unit}} (#{{priority}})",
       "abilityTrack": {
         "active": "Actif",
         "passive": "Passif",
@@ -1630,7 +1842,8 @@
       "holdingBackTitle": "Ce qui vous freine",
       "holdingBackDescription": "Ce qu'aucun farming ne résout, puis les ressources qui coûtent le plus d'énergie sur les nœuds choisis.",
       "holdingBackNone": "Rien ne freine ces objectifs.",
-      "neededFor": "Nécessaire pour {{units}}",
+      "neededFor": "Nécessaire pour",
+      "blockedGoals": "Objectifs bloqués",
       "missingFarmed": "Ressources farmées",
       "missingUpgrades": "Améliorations",
       "missingShards": "Éclats",
@@ -1639,7 +1852,21 @@
       "farmingSpot_other": "{{count}} ressources · {{days}}",
       "farmingSpotHint": "Classé selon la part de ce dont vos objectifs ont encore besoin qui tombe par point d'énergie. Chaque ligne indique combien de ressources nécessaires y tombent et les jours pour toutes les y farmer, selon votre énergie quotidienne et les tentatives quotidiennes de chaque nœud.",
       "openSchedule": "Plan jour par jour",
-      "helpsGoals": "Aide ces objectifs"
+      "helpsGoals": "Aide ces objectifs",
+      "progressionTitle": "Campagnes à faire avancer",
+      "progressionDescription": "Campagnes non terminées qui débloquent vos objectifs ou rendent leur farm moins cher, avec ce qui vous empêche encore de les jouer.",
+      "battlesLeft_one": "encore {{count}} combat",
+      "battlesLeft_other": "encore {{count}} combats",
+      "battlesLeftNotStarted_one": "Non commencée, {{count}} combat",
+      "battlesLeftNotStarted_other": "Non commencée, {{count}} combats",
+      "unblocks_one": "Débloque {{material}} en {{count}} combat",
+      "unblocks_other": "Débloque {{material}} en {{count}} combats",
+      "energySaved": "Économise environ {{energy}} d'énergie",
+      "lockMissingCore": "Débloquez {{units}} pour la jouer",
+      "lockRequiredCampaign_one": "Terminez d'abord {{campaign}} (encore {{count}} combat)",
+      "lockRequiredCampaign_other": "Terminez d'abord {{campaign}} (encore {{count}} combats)",
+      "lockPowerLevel": "Atteignez le niveau de puissance {{required}} (actuellement {{current}})",
+      "createUnlockGoal": "Ajouter un objectif de déblocage pour {{unit}}"
     },
     "target": {
       "title": "Objectif",
@@ -1717,6 +1944,7 @@
     "card": {
       "ladder": {
         "current": "Actuel",
+        "start": "Départ",
         "taken": "Déjà un objectif"
       },
       "range": {
@@ -1732,6 +1960,7 @@
         "decrease": "Baisser {{track}}",
         "increase": "Augmenter {{track}}",
         "noChange": "Aucun changement",
+        "current": "Actuel {{level}}",
         "quickPicks": "{{track}} : choix rapides"
       }
     },
@@ -1739,6 +1968,61 @@
       "goalLimitReached": "Vous avez déjà {{max}} objectifs de type {{type}} non archivés. Archivez ou supprimez-en d'abord.",
       "goalLimitReachedGeneric": "Vous pouvez avoir au plus {{max}} objectifs non archivés d'un même type. Archivez ou supprimez-en d'abord.",
       "projectLimitReached": "Vous avez déjà {{max}} projets non archivés. Archivez-en un pour faire de la place."
+    },
+    "view": {
+      "label": "Affichage des objectifs",
+      "cards": "Cartes",
+      "table": "Tableau"
+    },
+    "bulkCreate": {
+      "title_one": "Créer des objectifs pour {{count}} unité",
+      "title_other": "Créer des objectifs pour {{count}} unités",
+      "targets": {
+        "unlock": "Débloquer les unités que vous n'avez pas",
+        "ascension": "Ascension",
+        "ascensionTo": "Ascension jusqu'à",
+        "rank": "Rang",
+        "rankTo": "Monter de rang jusqu'à",
+        "ability": "Compétences",
+        "abilityTo": "Niveau de compétence",
+        "abilityDecrease": "Baisser le niveau de compétence",
+        "abilityIncrease": "Augmenter le niveau de compétence",
+        "allAtTop": "Toutes les unités sélectionnées sont déjà au maximum."
+      },
+      "summary_one": "{{count}} objectif pour {{units}}",
+      "summary_other": "{{count}} objectifs pour {{units}}",
+      "unitCount_one": "{{count}} unité",
+      "unitCount_other": "{{count}} unités",
+      "created_one": "{{count}} objectif créé.",
+      "created_other": "{{count}} objectifs créés.",
+      "overLimit": "Cela dépasserait la limite de {{max}} objectifs par type pour : {{types}}. Retirez d'abord des unités ou des objectifs.",
+      "cancel": "Annuler",
+      "submit_one": "Créer {{count}} objectif",
+      "submit_other": "Créer {{count}} objectifs",
+      "retryFailed_one": "Réessayer {{count}} échec",
+      "retryFailed_other": "Réessayer {{count}} échecs",
+      "done": "Terminé",
+      "status": {
+        "pending": "création en cours",
+        "done": "créé",
+        "failed": "échec"
+      },
+      "skipped": "{{type}} ignoré : {{reason}}",
+      "skipReasons": {
+        "reached": "déjà atteint",
+        "alreadyGoal": "déjà un objectif",
+        "notForMow": "pas pour les Machines de guerre",
+        "notOwned": "non possédée (activez Débloquer)"
+      },
+      "nothingToCreate": "Rien à créer pour cette unité.",
+      "removeUnit": "Retirer {{name}}",
+      "goal": {
+        "range": "{{type}} {{start}} → {{end}}",
+        "ascensionAdded": "{{type}} {{start}} → {{end}} (nécessaire)",
+        "active": "Active",
+        "passive": "Passive",
+        "needed": "nécessaire"
+      }
     }
   },
   "language": {
@@ -1875,6 +2159,10 @@
         "seasonFit": {
           "title": "Calage sur la saison",
           "content": "Choisissez une saison de Passe de combat, de Raid de guilde ou de Guerre de guilde pour voir quels objectifs seront terminés à temps. Une ligne indique où les objectifs débordent sur la saison suivante."
+        },
+        "viewToggle": {
+          "title": "Cartes ou tableau",
+          "content": "Passez des cartes d'objectifs au tableau compact. Votre choix est enregistré sur cet appareil."
         }
       }
     },
@@ -1949,6 +2237,22 @@
     },
     "collection": {
       "steps": {
+        "compare": {
+          "title": "Comparer avec un instantané",
+          "content": "Activez Comparer pour voir ce qui a changé depuis un instantané ou une manche d’événement légendaire : les plus gros gains de puissance d’abord."
+        },
+        "takeSnapshot": {
+          "title": "Prendre un instantané",
+          "content": "Enregistre tout votre effectif après une nouvelle synchronisation, pour le comparer à votre progression ultérieure."
+        },
+        "compareOptions": {
+          "title": "Options de comparaison",
+          "content": "Choisissez les instantanés à comparer, filtrez par événement légendaire, changez l’ordre et choisissez les changements à afficher."
+        },
+        "compareSummary": {
+          "title": "Ce qui a changé",
+          "content": "Les totaux des unités listées. Sélectionnez un nombre pour ne lister que les unités concernées."
+        },
         "summary": {
           "title": "Votre collection en un coup d'œil",
           "content": "Combien de personnages et de Machines de guerre du jeu vous possédez."
@@ -1972,6 +2276,34 @@
         "quickFilters": {
           "title": "Filtres rapides",
           "content": "D'un geste, affichez les unités à faire progresser ensuite : prête à monter en rang, doit être ascensionnée, peut être ascensionnée, doit monter de niveau ou prête pour l'étoile bleue. Sélectionnez à nouveau un filtre pour le retirer."
+        },
+        "view": {
+          "title": "Cartes ou liste",
+          "content": "Passez des cartes de faction à la liste, un affichage plus dense avec une ligne par unité. Votre choix est mémorisé. Désactivez « Grouper par faction » pour voir toutes les unités ensemble dans votre tri, et « Masquer les non débloquées » pour ne voir que vos unités."
+        },
+        "factionRoster": {
+          "title": "Regroupées par faction",
+          "content": "Chaque section réunit les personnages et Machines de guerre d'une faction ; vos unités viennent en premier."
+        },
+        "ownedRoster": {
+          "title": "Une unité possédée",
+          "content": "Chaque ligne montre le portrait cerclé de la couleur de sa rareté, puis son rang, ses étoiles, son niveau d'XP, ses niveaux de capacité et son équipement. Sélectionnez une ligne pour ouvrir ses détails dans la Bibliothèque."
+        },
+        "ownedRosterMobile": {
+          "title": "Une unité possédée",
+          "content": "Chaque ligne montre le portrait, le rang, les étoiles et le niveau d'XP. Touchez une ligne pour voir ses niveaux de capacité, son équipement et ses éclats, puis ouvrez de là ses détails dans la Bibliothèque."
+        },
+        "unownedRoster": {
+          "title": "Pas encore débloquée",
+          "content": "Les lignes grisées ne sont pas dans votre effectif. La barre montre où vous en êtes de leur déblocage. Sélectionnez une ligne pour ouvrir ses détails dans la Bibliothèque."
+        },
+        "unownedRosterMobile": {
+          "title": "Pas encore débloquée",
+          "content": "Les lignes grisées ne sont pas dans votre effectif. Touchez une ligne pour voir où vous en êtes de son déblocage, puis ouvrez de là ses détails dans la Bibliothèque."
+        },
+        "selectUnits": {
+          "title": "Des objectifs pour plusieurs unités",
+          "content": "Sélectionnez plusieurs unités, puis créez d'un coup le même objectif d'Ascension, de Rang, de Compétences ou de Déblocage pour toutes."
         }
       }
     },

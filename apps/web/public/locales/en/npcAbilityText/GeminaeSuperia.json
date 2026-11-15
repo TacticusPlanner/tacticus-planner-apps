@@ -1,6 +1,6 @@
 {
   "GeminaeSuperia": {
-    "description": "When attacked, summons a <style=\"Summon\"><style=\"Faction_Sisterhood\">Geminae Superia</style></style> in a free adjacent hex, and immediately triggers its passive ability <link=\"tooltip:Keywords/Lifewards><style=\"KEY\">Lifewards</style></link>. Can do this twice per battle.\n\nGeminae Superia’s stats:\n<style=\"Stat_Health\">{[summonHp]} Health</style>\n<style=\"Stat_Damage\">{[summonDmg]} Damage</style>\n<style=\"Stat_Armor\">{[summonArmor]} Armour</style>",
+    "description": "When attacked, summons a <style=\"Summon\"><style=\"Faction_Sisterhood\">Geminae Superia</style></style> in a free adjacent hex, and immediately triggers its passive ability <link=\"tooltip:Keywords/Lifewards\"><style=\"KEY\">Lifewards</style></link>. Can do this twice per battle.\n\nGeminae Superia’s stats:\n<style=\"Stat_Health\">{[summonHp]} Health</style>\n<style=\"Stat_Damage\">{[summonDmg]} Damage</style>\n<style=\"Stat_Armor\">{[summonArmor]} Armour</style>",
     "variables": {
       "summonHp": [
         48, 58, 67, 77, 86, 97, 108, 120, 131, 142, 153, 164, 175, 186, 197,

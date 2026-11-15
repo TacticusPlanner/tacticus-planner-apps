@@ -61,17 +61,27 @@ const actions = () => ({
   onUseEstimate: vi.fn(),
 })
 
-const NO_ESTIMATE = { estimate: null, fromEstimate: false }
+const NO_ESTIMATE = expect.objectContaining({
+  estimate: null,
+  fromEstimate: false,
+})
 
 /** The worked Uthar Alpha team's estimate (spec: 6, 21% above, 32% short). */
-const estimateOf = (overrides: Partial<ClearEstimate> = {}): ClearEstimate => ({
-  depth: 6,
-  battleCount: 18,
-  marginAbovePct: 21,
-  shortfallToNextPct: 32,
-  calibrated: true,
-  ...overrides,
-})
+const estimateOf = (overrides: Partial<ClearEstimate> = {}): ClearEstimate => {
+  const depth = overrides.depth ?? 6
+  return {
+    depth,
+    sureDepth: depth,
+    stretchDepth: depth,
+    battleCount: 18,
+    power: 100_000,
+    balanceFactor: 1,
+    marginAbovePct: 21,
+    shortfallToNextPct: 32,
+    calibrated: true,
+    ...overrides,
+  }
+}
 
 const ownedRoster = (unitIds: readonly string[]): LegendaryEventRosterUnit[] =>
   unitIds.map((unitId) => ({
@@ -313,6 +323,32 @@ describe("TeamCard", () => {
     )
   })
 
+  it("draws each owned member as the Event board does, with rank, stars and ability levels", () => {
+    renderEstimatedCard(team(), estimateOf(), {
+      roster: [
+        {
+          ...ownedRoster([teamUnits.a.id])[0]!,
+          abilities: [
+            { abilityId: "active", level: 35 },
+            { abilityId: "passive", level: 28 },
+          ],
+        } as LegendaryEventRosterUnit,
+      ],
+    })
+    const [owned, locked] = screen
+      .getAllByTestId("team-card-member")
+      .map((member) => within(member).getByTestId("event-board-unit"))
+    expect(owned).toHaveAttribute("data-rank", "Gold1")
+    expect(owned).toHaveAttribute("data-owned", "true")
+    expect(
+      within(owned!).queryByTestId("event-board-unit-stars")
+    ).not.toBeInTheDocument()
+    expect(owned!.getAttribute("aria-label")).toContain(
+      "Active ability level 35, passive ability level 28"
+    )
+    expect(locked).toHaveAttribute("data-owned", "false")
+  })
+
   it("marks a covered objective already cleared through the depth", () => {
     const model = buildLanePointsModel(teamLane)
     const progress = buildSyncedLaneProgress(model, {
@@ -356,6 +392,37 @@ describe("TeamCard", () => {
     expect(screen.getByTestId("team-card-points")).toHaveTextContent(
       "Can't clear battle 1 yet"
     )
+  })
+
+  it("spells out the estimate's bands in Details and stripes the close and stretch battles", () => {
+    renderEstimatedCard(
+      team(),
+      estimateOf({ depth: 6, sureDepth: 5, stretchDepth: 7 }),
+      { run: 2 }
+    )
+    expect(screen.getByTestId("team-card-bands")).toHaveTextContent(
+      "Clears battles 1–5 safely, 6 likely, up to 7 at best"
+    )
+    const segments = [
+      ...screen
+        .getByTestId("team-card-depth-bar")
+        .querySelectorAll("[data-band]"),
+    ]
+    expect(
+      segments.map((segment) => segment.getAttribute("data-band"))
+    ).toEqual(["sure", "sure", "sure", "sure", "sure", "close", "stretch"])
+    expect((segments[5] as HTMLElement).style.backgroundImage).toContain(
+      "repeating-linear-gradient"
+    )
+    expect((segments[6] as HTMLElement).style.backgroundImage).toContain(
+      "repeating-linear-gradient"
+    )
+  })
+
+  it("leaves the bands out of Details when they match the depth", () => {
+    renderEstimatedCard(team(), estimateOf(), { run: 2 })
+    expect(screen.getByTestId("team-card-details")).toBeInTheDocument()
+    expect(screen.queryByTestId("team-card-bands")).toBeNull()
   })
 
   it("shows a plain dash for an incomplete team", () => {
@@ -480,10 +547,19 @@ describe("TeamCard", () => {
       act(() => {
         vi.advanceTimersByTime(400)
       })
-      expect(cardActions.onDepthChange).toHaveBeenCalledWith(7, {
-        estimate: 6,
-        fromEstimate: true,
-      })
+      expect(cardActions.onDepthChange).toHaveBeenCalledWith(
+        7,
+        expect.objectContaining({
+          estimate: 6,
+          fromEstimate: true,
+          sureDepth: 6,
+          stretchDepth: 6,
+          effectivePower: 100_000,
+          unitIds: [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id],
+          objectiveIndexes: [0, 1],
+          source: "card",
+        })
+      )
     } finally {
       vi.useRealTimers()
     }
@@ -570,9 +646,44 @@ describe("TeamCard", () => {
       .getAllByTestId("team-card-objective")
       .filter((chip) => chip.dataset.muted === "true")
     expect(muted).toHaveLength(1)
-    expect(muted[0]).toHaveAttribute(
-      "title",
-      "Not covered by the current members"
+    expect(muted[0]!.title).toMatch(/· Not covered by the current members$/)
+  })
+
+  it("shows every lane objective in the coverage strip, faint where the team does not cover it", () => {
+    renderCard(team({ objectiveIndexes: [0] }))
+    const strip = screen.getByRole("list", { name: "Objectives" })
+    expect(within(strip).getAllByRole("listitem")).toHaveLength(
+      teamLane.unitsRestrictions.length
+    )
+    expect(within(strip).getAllByTestId("team-card-objective")).toHaveLength(1)
+  })
+
+  it("shows the depth as a bar with its headline and hides the stepper until Edit", () => {
+    renderCard(team())
+    expect(screen.getByTestId("team-card-depth-headline")).toHaveTextContent(
+      "Battles 1–7"
+    )
+    const bar = screen.getByRole("img", { name: /^Clears battles 1–7 of / })
+    expect(bar).toBeInTheDocument()
+    const editor = screen.getByTestId("team-card-depth-editor")
+    expect(editor).not.toBeVisible()
+    fireEvent.click(screen.getByRole("button", { name: "Edit clear depth" }))
+    expect(editor).toBeVisible()
+  })
+
+  it("reads a depth past the lane's last battle as the whole lane", () => {
+    const card = {
+      ...buildTeamCardViewModel(team(), teamLane, teamUnitList, undefined, 1),
+      displayedDepth: 30,
+    }
+    render(
+      <ul>
+        <TeamCard actions={actions()} card={card} lane={teamLane} />
+      </ul>,
+      { wrapper: i18nWrapper(i18n) }
+    )
+    expect(screen.getByTestId("team-card-depth-headline")).toHaveTextContent(
+      `Battles 1–${teamLane.battleIds.length}`
     )
   })
 
@@ -595,11 +706,11 @@ describe("TeamCard", () => {
       const power = renderPower({ teamPower: 98895, teamPowerStatus: "ready" })
       expect(power).toHaveTextContent("Team power 98,895")
       expect(power).toHaveAttribute("data-state", "ready")
-      // Beside the points left; the line wraps between the two, never inside either (French at
-      // 375px).
+      // Beside the points left in Details; the line wraps between the two, never inside either
+      // (French at 375px).
       const points = screen.getByTestId("team-card-points")
       expect(power.parentElement).toBe(points.parentElement)
-      expect(power.parentElement).toHaveClass("flex-wrap", "min-w-0")
+      expect(power.parentElement).toHaveClass("flex-wrap")
       expect(power.parentElement).not.toHaveClass("whitespace-nowrap")
       expect(power).toHaveClass("whitespace-nowrap")
       expect(points).toHaveClass("whitespace-nowrap")
@@ -647,14 +758,12 @@ describe("TeamCard", () => {
   })
 
   describe("last run line (spec: legendary-event-teams)", () => {
-    it("reads what the same team cleared last run beside the stepper, which keeps this run's depth", () => {
+    it("reads what the same team cleared last run in Details, which keeps this run's depth", () => {
       renderCard(team(), 1, actions(), 3)
       const line = screen.getByTestId("team-card-last-run")
       expect(line).toHaveTextContent("Last run: cleared up to battle 3")
       expect(stepperInput()).toHaveValue(7)
-      // Beside the depth stepper: the same row as the stepper.
-      expect(line.parentElement).toBe(depthField().parentElement)
-      expect(line).toHaveClass("md:basis-auto")
+      expect(screen.getByTestId("team-card-details")).toContainElement(line)
     })
 
     it("says no battle was cleared rather than battle 0", () => {
@@ -667,13 +776,6 @@ describe("TeamCard", () => {
     it("shows no line for a team created since the previous run", () => {
       renderCard(team(), 1, actions(), undefined)
       expect(screen.queryByTestId("team-card-last-run")).toBeNull()
-    })
-
-    it("wraps under the stepper below 768px", () => {
-      renderCard(team(), 1, actions(), 3)
-      // A full-width flex item wraps onto its own line under the stepper; md:basis-auto puts it
-      // back beside it at 768px and up.
-      expect(screen.getByTestId("team-card-last-run")).toHaveClass("basis-full")
     })
   })
 

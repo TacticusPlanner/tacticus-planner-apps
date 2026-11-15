@@ -245,6 +245,28 @@ Hovering or focusing a material cell, or tapping it on a touch device, SHALL sho
 - **WHEN** the user taps a material cell below the 768px breakpoint
 - **THEN** the same tooltip content is shown, and tapping elsewhere dismisses it
 
+### Requirement: Material cell tooltip lists alternative sources
+
+For an upgrade material or character shards, the material cell tooltip SHALL also list, under "Also available from", the resource's other catalog sources in three separately labelled groups, each omitted when empty:
+
+- "Campaigns": standing-campaign nodes that drop it,
+- "Campaign events": campaign-event nodes that drop it,
+- "Shops": shops that sell it, each with its cheapest listing (quantity and price in the shop's currency).
+
+Campaign and campaign-event groups SHALL exclude nodes the cell's day already raids for it, list nodes the plan could raid first, then nodes the plan cannot use (campaign not unlocked or progressed far enough, campaign event not running or reached), each marked with a lock icon labelled "Locked". Each group SHALL list at most four entries, followed by "+N more". The whole section SHALL be omitted when every group is empty.
+
+#### Scenario: Grouped sources
+
+- **GIVEN** an upgrade cell scheduled on Indomitus Elite 1, whose material also drops at a campaign-event node the player hasn't reached and is sold in the Arena shop
+- **WHEN** the user opens the cell's tooltip
+- **THEN** "Also available from" shows a "Campaign events" group with that node and a "Locked" icon, and a "Shops" group with the Arena shop and its price; there is no "Campaigns" group and Indomitus Elite 1 is not repeated
+
+#### Scenario: Shard cell
+
+- **GIVEN** a shard cell for a character whose shards also drop at an unraided campaign node and are sold in a shop
+- **WHEN** the user opens the cell's tooltip
+- **THEN** the same grouped sources are listed for that character's shards
+
 ### Requirement: Every day separates raided materials
 
 Every day card SHALL present its Raided cells in a separate section labelled "Raided", placed after the actionable cells. A cell SHALL be Raided on any day when its merged owned amount is at least its merged target at the start of that day. On Day 1 only, a cell SHALL also be Raided when every node it is scheduled on has real synced attempts left today of exactly zero. Nodes with positive or unknown real attempts SHALL NOT count as exhausted. There SHALL be no control to toggle this.

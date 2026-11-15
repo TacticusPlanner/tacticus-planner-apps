@@ -6,7 +6,12 @@ import type { GoalStatusFilterValue } from "../ui/status-filter-select"
 /** Type guard for a value read back from persisted storage (`usePersistedSelection`) — callers
  *  that remember the user's Group selection across visits use this to validate what they read. */
 export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
-  return value === "none" || value === "unit" || value === "type"
+  return (
+    value === "none" ||
+    value === "unit" ||
+    value === "type" ||
+    value === "typePriority"
+  )
 }
 
 export const STATUS_VALUES: readonly GoalStatusFilterValue[] = [
@@ -25,6 +30,17 @@ export const GOAL_TYPE_VALUES: readonly GoalKind[] = [
   "Unlock",
   "Upgrade",
 ]
+
+/** Orders goal types the way Group by type lists its sections: Rank first, as in v1, then
+ *  Ascension, Ability, Unlock and Upgrade (`GOAL_TYPE_VALUES` order). Takes plain strings so a
+ *  group key can be compared directly; an unknown type sorts last. */
+export function compareGoalTypes(a: string, b: string) {
+  const rank = (type: string) => {
+    const index = (GOAL_TYPE_VALUES as readonly string[]).indexOf(type)
+    return index === -1 ? GOAL_TYPE_VALUES.length : index
+  }
+  return rank(a) - rank(b)
+}
 
 /** Type guard for a value read back from the URL (`?status=` on the Goals page). */
 export function isGoalStatusFilterValue(

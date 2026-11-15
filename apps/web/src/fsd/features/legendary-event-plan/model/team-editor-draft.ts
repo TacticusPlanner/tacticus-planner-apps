@@ -55,7 +55,7 @@ export function emptyEditorDraft(): TeamEditorDraft {
   }
 }
 
-/** A new team's draft (empty, or from a suggestion's members in order), or a saved team's. Either
+/** A new team's draft (empty, or from a suggestion's members in order and its reserve), or a saved team's. Either
  *  way the coverage is what the members derive, whatever the saved team stored. A saved team's name field starts from `displayName` (the
  *  readable name of a team stored under its lane id, spec: editing offers the readable name), else
  *  its stored name. */
@@ -64,12 +64,20 @@ export function initialEditorDraft(
   run: LegendaryEventRun,
   context: CoverageContext,
   initialMemberUnitIds: readonly string[] = [],
-  displayName?: string
+  displayName?: string,
+  initialReserveUnitId: string | null = null
 ): TeamEditorDraft {
   if (!team) {
+    const memberUnitIds = initialMemberUnitIds.slice(0, MAX_TEAM_MEMBERS)
     return withMembers(
-      emptyEditorDraft(),
-      initialMemberUnitIds.slice(0, MAX_TEAM_MEMBERS),
+      {
+        ...emptyEditorDraft(),
+        reserveUnitId:
+          initialReserveUnitId && !memberUnitIds.includes(initialReserveUnitId)
+            ? initialReserveUnitId
+            : null,
+      },
+      memberUnitIds,
       context
     )
   }

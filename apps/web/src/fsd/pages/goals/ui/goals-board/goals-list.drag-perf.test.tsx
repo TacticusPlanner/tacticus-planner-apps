@@ -38,6 +38,14 @@ vi.mock("../shared/goal-resource-chips", () => ({
     counts.chips++
     return null
   },
+  GoalResourceChipList: () => {
+    counts.chips++
+    return null
+  },
+}))
+
+vi.mock("../shared/use-goal-resource-chips", () => ({
+  useGoalResourceChips: () => [],
 }))
 
 vi.mock(
@@ -122,6 +130,7 @@ describe("GoalsList drag performance", () => {
     const onReorder = vi.fn()
     const { queryClient } = render(
       <GoalsList
+        view="Table"
         actions={actions}
         onReorder={onReorder}
         reorderEnabled
@@ -171,6 +180,7 @@ describe("GoalsList mobile reorder cards drag performance", () => {
     const onReorder = vi.fn()
     const { queryClient } = render(
       <GoalsList
+        view="Table"
         actions={actions}
         mobileReorderActive
         onReorder={onReorder}
@@ -216,4 +226,84 @@ describe("GoalsList mobile reorder cards drag performance", () => {
       start.catalog + overOnce.catalog + overTwice.catalog
     ).toBeLessThanOrEqual(2)
   }, 15_000)
+})
+
+describe("GoalsList desktop Cards view drag performance", () => {
+  // 150 goals laid out three per grid row, so a keyboard move crosses grid rows.
+  const CARDS = 150
+  const PER_ROW = 3
+  const cardRows: GoalRow[] = Array.from({ length: CARDS }, (_, i) => ({
+    ...rows[0]!,
+    goalId: `goal-${i}`,
+    entityId: `hero${i % ROWS}`,
+    priority: i + 1,
+  }))
+
+  beforeEach(() => {
+    Element.prototype.getBoundingClientRect = function () {
+      const id = (this as HTMLElement).getAttribute?.("data-goal-id")
+      const index = id ? Number(id.split("-")[1]) : null
+      const left = index === null ? 0 : (index % PER_ROW) * 330
+      const top = index === null ? 0 : Math.floor(index / PER_ROW) * 220
+      return {
+        top,
+        bottom: top + (index === null ? 0 : 200),
+        left,
+        right: left + (index === null ? 0 : 310),
+        width: index === null ? 0 : 310,
+        height: index === null ? 0 : 200,
+        x: left,
+        y: top,
+        toJSON: () => ({}),
+      }
+    }
+  })
+
+  it("does not re-render every card on drag start / over change", async () => {
+    const onReorder = vi.fn()
+    const { queryClient } = render(
+      <GoalsList
+        actions={actions}
+        onReorder={onReorder}
+        reorderEnabled
+        rows={cardRows}
+        view="Cards"
+      />
+    )
+    const handles = await screen.findAllByTestId("goal-row-drag-handle")
+    await settleLiveQueries(queryClient)
+    expect(handles).toHaveLength(CARDS)
+    const reset = () => {
+      counts.chips = 0
+      counts.catalog = 0
+    }
+
+    reset()
+    handles[10]!.focus()
+    await act(async () => {
+      fireEvent.keyDown(handles[10]!, { code: "Space", key: " " })
+    })
+    const start = { ...counts }
+    reset()
+    await act(async () => {
+      fireEvent.keyDown(document, { code: "ArrowDown", key: "ArrowDown" })
+    })
+    const overOnce = { ...counts }
+    reset()
+    await act(async () => {
+      fireEvent.keyDown(document, { code: "ArrowDown", key: "ArrowDown" })
+    })
+    const overTwice = { ...counts }
+    await act(async () => {
+      fireEvent.keyDown(document, { code: "Space", key: " " })
+    })
+
+    expect(onReorder).toHaveBeenCalled()
+    // Only the cards whose own sortable state changed may re-render their content.
+    expect(start.chips).toBeLessThanOrEqual(2)
+    expect(overOnce.chips + overTwice.chips).toBeLessThanOrEqual(2)
+    expect(
+      start.catalog + overOnce.catalog + overTwice.catalog
+    ).toBeLessThanOrEqual(3)
+  }, 60_000)
 })

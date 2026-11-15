@@ -101,7 +101,7 @@ export function DesktopSectionNavigation({
                   to={child.path}
                 >
                   <NavChildIcon child={child} className="mr-2" />
-                  <span className="min-w-0 break-words">
+                  <span className="min-w-0 wrap-break-word">
                     {subItemLabel(t, child)}
                   </span>
                   <NavLiveDot item={child} />

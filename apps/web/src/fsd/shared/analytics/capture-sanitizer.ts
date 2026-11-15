@@ -1,5 +1,12 @@
 import type { CaptureResult, Properties } from "posthog-js"
 
+import {
+  recordRouteChange,
+  resetWebVitalsRoutes,
+  routeAt,
+  routeOfInteraction,
+} from "./web-vitals-routes"
+
 // The route pattern of the page currently reported (e.g. "/library/characters/:entityId"); set
 // with every $pageview and applied to every later event's URL until the next one.
 let reportedRoutePattern: string | null = null
@@ -17,6 +24,7 @@ export function setReportedRoutePattern(
   previousRoutePattern = reportedRoutePattern
   reportedRoutePattern = routePattern
   if (pathname) patternByPath.set(pathname, routePattern)
+  recordRouteChange(routePattern)
 }
 
 /** Test-only: forget the reported route patterns between tests. */
@@ -24,6 +32,7 @@ export function resetReportedRoutePattern() {
   reportedRoutePattern = null
   previousRoutePattern = null
   patternByPath.clear()
+  resetWebVitalsRoutes()
 }
 
 // The route pattern for a page URL: its own path's pattern when that path was reported, otherwise
@@ -57,6 +66,64 @@ function redactUrls(properties: Properties | undefined, usePatterns: boolean) {
   }
 }
 
+const WEB_VITALS_METRICS = ["CLS", "INP", "LCP", "FCP"] as const
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object"
+    ? (value as Record<string, unknown>)
+    : null
+}
+
+// CLS and INP are final only when the page is hidden, so their URL is the route open then. Their
+// own route is found from the largest shift's time and from the interaction INP picked.
+function measuredRoute(
+  metric: (typeof WEB_VITALS_METRICS)[number],
+  metricEvent: Record<string, unknown>,
+  value: unknown
+): string | null {
+  if (metric === "CLS") {
+    const shiftTime = asRecord(metricEvent.attribution)?.largestShiftTime
+    return typeof shiftTime === "number" ? routeAt(shiftTime) : null
+  }
+  if (metric === "INP") {
+    return typeof value === "number" ? routeOfInteraction(value) : null
+  }
+  return null
+}
+
+/**
+ * Labels each web vitals metric with the route it was measured on: its nested `$current_url` and
+ * a `web_vitals_<metric>_route` property (one event can carry metrics from different pages). When
+ * every metric in the event agrees, the event's own URL and path follow.
+ */
+function labelWebVitals(properties: Properties) {
+  const routes = new Set<string>()
+  for (const metric of WEB_VITALS_METRICS) {
+    const metricEvent = asRecord(properties[`$web_vitals_${metric}_event`])
+    if (!metricEvent) continue
+    const url = metricEvent.$current_url
+    if (typeof url !== "string" || !URL.canParse(url)) continue
+    const route =
+      measuredRoute(
+        metric,
+        metricEvent,
+        properties[`$web_vitals_${metric}_value`]
+      ) ?? new URL(url).pathname
+    metricEvent.$current_url = new URL(route, url).toString()
+    properties[`web_vitals_${metric.toLowerCase()}_route`] = route
+    routes.add(route)
+  }
+  const [only] = routes
+  if (routes.size !== 1 || only === undefined) return
+  properties.$pathname = only
+  if (
+    typeof properties.$current_url === "string" &&
+    URL.canParse(properties.$current_url)
+  ) {
+    properties.$current_url = new URL(only, properties.$current_url).toString()
+  }
+}
+
 /**
  * `before_send` hook. posthog-js attaches the full browser URL to every event on its own, which
  * would report the ids and query strings the declared events deliberately leave out. Query
@@ -79,6 +146,7 @@ export function sanitizeCapture(result: CaptureResult): CaptureResult {
   redactUrls(result.$set_once, false)
 
   if (pagePattern) properties.$pathname = pagePattern
+  if (result.event === "$web_vitals") labelWebVitals(properties)
   if ("$prev_pageview_pathname" in properties) {
     const previous =
       result.event === "$pageview" ? previousRoutePattern : pattern

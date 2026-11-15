@@ -57,7 +57,7 @@ export function LegendaryEventPlanButton({ eventId }: { eventId: string }) {
   }
   return (
     <Button asChild data-testid="home-le-plan" size="sm" variant="outline">
-      <Link to={`/legendary-events/${eventId}/plan`}>
+      <Link to={`/legendary-events/${eventId}/plan/edit`}>
         {t("home.events.planEvent")}
       </Link>
     </Button>

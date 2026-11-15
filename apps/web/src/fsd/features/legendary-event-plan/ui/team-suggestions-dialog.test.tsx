@@ -108,6 +108,27 @@ describe("TeamSuggestionsDialog", () => {
     setViewportWidth(1280)
   })
 
+  it("shows a Healer that would lower the depth as the reserve", async () => {
+    // Incisus at Stone 1 gives way to the stronger Inceptor Sgt and is offered as the reserve.
+    const estimates = source.estimates
+    if (!estimates || estimates === "pending") throw new Error("fixture")
+    const roster = new Map([
+      ...estimates.roster,
+      [
+        "ultraApothecary",
+        { ...rosterUnit("ultraApothecary"), rank: "Stone1" as const },
+      ],
+      ["ultraInceptorSgt", rosterUnit("ultraInceptorSgt")],
+    ])
+    renderDialog({ estimates: { ...estimates, roster } })
+    await screen.findAllByText("Titus")
+    const reserves = screen.getAllByTestId("team-suggestion-reserve")
+    expect(reserves.map((element) => element.dataset.unit)).toContain(
+      "ultraApothecary"
+    )
+    expect(reserves[0]).toHaveTextContent("Reserve")
+  })
+
   it("shows the three worked proposals with their reasons", async () => {
     renderDialog()
     await screen.findAllByText("Incisus")
@@ -237,7 +258,7 @@ describe("TeamSuggestionsDialog", () => {
   it("says when no team adds points and when estimates are unavailable", () => {
     const { onClose } = renderDialog({ model: { ...model, battles: [] } })
     expect(screen.getByTestId("team-suggestions-empty")).toHaveTextContent(
-      "No team adds points over your current teams"
+      "No team adds points or saves tokens over your current teams"
     )
     expect(onClose).not.toHaveBeenCalled()
   })

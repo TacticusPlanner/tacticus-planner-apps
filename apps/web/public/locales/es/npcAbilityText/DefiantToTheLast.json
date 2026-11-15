@@ -1,0 +1,10 @@
+{
+  "DefiantToTheLast": {
+    "description": "Los <style=\"Character\">personajes</style>  <style=\"Rarity_Mythic\">Míticos</style> aliados infligen <style=\"Stat_Damage\">+{[extraDmgPct]} % de Daño</style> si han usado una Habilidad Activa en esta batalla o están adyacentes a <style=\"Faction_Custodes\">Boudicari</style>.",
+    "variables": {
+      "extraDmgPct": [10, 13, 16, 20]
+    },
+    "constants": {},
+    "scaled": ["extraDmgPct"]
+  }
+}
