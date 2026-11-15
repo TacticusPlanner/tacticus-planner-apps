@@ -1972,7 +1972,9 @@
       "ladder": {
         "current": "Aktuell",
         "start": "Start",
-        "taken": "Bereits ein Ziel"
+        "taken": "Bereits ein Ziel",
+        "belowRange": "{{from}} – {{to}}",
+        "showBelow": "{{from}} – {{to}} anzeigen"
       },
       "range": {
         "span": "{{start}} → {{end}}",

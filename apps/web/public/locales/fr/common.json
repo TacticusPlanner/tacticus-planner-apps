@@ -1972,7 +1972,9 @@
       "ladder": {
         "current": "Actuel",
         "start": "Départ",
-        "taken": "Déjà un objectif"
+        "taken": "Déjà un objectif",
+        "belowRange": "{{from}} – {{to}}",
+        "showBelow": "Afficher {{from}} – {{to}}"
       },
       "range": {
         "span": "{{start}} → {{end}}",
