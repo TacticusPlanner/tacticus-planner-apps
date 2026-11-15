@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Select as SelectPrimitive } from "radix-ui"
 
+import { useIsCoarsePointer } from "@workspace/ui/hooks/use-coarse-pointer"
 import { cn } from "@workspace/ui/lib/utils"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
@@ -78,6 +79,12 @@ function SelectContent({
   container?: React.ComponentProps<typeof SelectPrimitive.Portal>["container"]
 }) {
   position ??= container ? "popper" : "item-aligned"
+  // No scroll buttons on touch: the list scrolls natively by swiping, and Radix's scroll button
+  // scrolls the focused option into view whenever it mounts. On open the selected option has focus
+  // and a swipe never moves it (only a mouse hover does), so each time a button appeared mid-swipe
+  // (scrolling off either end) the list jumped back to the selected option — on iOS it could not
+  // be scrolled away from it at all.
+  const showScrollButtons = !useIsCoarsePointer()
   return (
     <SelectPrimitive.Portal container={container}>
       <SelectPrimitive.Content
@@ -93,7 +100,7 @@ function SelectContent({
         align={align}
         {...props}
       >
-        <SelectScrollUpButton />
+        {showScrollButtons && <SelectScrollUpButton />}
         <SelectPrimitive.Viewport
           data-position={position}
           className={cn(
@@ -103,7 +110,7 @@ function SelectContent({
         >
           {children}
         </SelectPrimitive.Viewport>
-        <SelectScrollDownButton />
+        {showScrollButtons && <SelectScrollDownButton />}
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   )
