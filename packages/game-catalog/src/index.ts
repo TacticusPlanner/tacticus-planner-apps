@@ -62,6 +62,7 @@ export type {
   GameCatalogShopSlot,
   GameCatalogShopVariant,
   GameCatalogEventShop,
+  GameCatalogEventShopRecord,
   GameCatalogEventShopWeek,
   GameCatalogEventShopMission,
   GameCatalogEventShopMissionChain,
@@ -113,11 +114,13 @@ export {
 } from "./shops/shop-resolve"
 export { bpSeasonStartMs } from "./shops/season-locks"
 export {
+  compareEventShopsByStart,
   defaultEventDay,
   eventDay,
   eventDayIndex,
   eventDays,
   eventStatus,
+  isDatedEventShop,
   resolveEventDaySlots,
   type EventShopDay,
   type EventShopStatus,

@@ -8,6 +8,7 @@ import {
   hasCatalogSynced,
   hasDatasetSynced,
 } from "./game-catalog-storage"
+import { compareEventShopsByStart } from "./shops/event-days"
 // The app's read layer (`apps/web/src/fsd/shared/local-data`) caches whole datasets read through this.
 export { getDatasetRecords }
 
@@ -157,13 +158,12 @@ export async function getShopsMap(): Promise<Map<string, ShopStorageModel>> {
   return new Map(shops.map((shop) => [shop.id, shop]))
 }
 
-// Every stored seasonal event shop, ordered by start (`startUtc`, an ISO-8601 UTC instant). Empty both
-// when the API serves none and when the dataset has not synced (it is optional).
+// Every stored seasonal event shop, dated ones by start (`startUtc`, an ISO-8601 UTC instant), then the
+// undated ones (start date to be announced). Empty both when the API serves none and when the dataset has
+// not synced (it is optional).
 export async function getEventShops(): Promise<EventShopStorageModel[]> {
   const events = await getDatasetRecords("event-shops")
-  return [...events].sort(
-    (a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc)
-  )
+  return [...events].sort(compareEventShopsByStart)
 }
 
 // One stored event shop by its id (`october-2026`), or `undefined` when no such event is stored.

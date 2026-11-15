@@ -2907,10 +2907,10 @@ export interface components {
     GameCatalogEventShopView: {
       id: string
       eventKey: string
-      definitionId: string
+      definitionId: null | string
       currency: string
       /** Format: date-time */
-      startUtc: string
+      startUtc: null | string
       /** Format: int32 */
       dayCount: number
       milestones: components["schemas"]["IReadOnlyListOfGameCatalogRewardTierView"]
