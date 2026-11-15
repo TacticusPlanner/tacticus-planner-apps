@@ -1349,7 +1349,19 @@
       "eventArchived_other": "+{{count}} archivés",
       "eventNoProject": "Aucun projet pour cet événement",
       "eventOpenProjects": "Aller aux projets",
-      "membershipConflictTarget": "{{unit}} a déjà un objectif {{type}} actif ou en pause avec la cible {{target}}."
+      "membershipConflictTarget": "{{unit}} a déjà un objectif {{type}} actif ou en pause avec la cible {{target}}.",
+      "portraits": {
+        "more_one": "{{names}} et {{count}} autre",
+        "more_other": "{{names}} et {{count}} autres"
+      },
+      "addToAnother": "Ajouter à un autre projet…",
+      "addToAnotherTitle": "Ajouter à un autre projet",
+      "addedToProjects": "Ajouté à {{projects}}.",
+      "projectsSaved": "Projets enregistrés.",
+      "projectsSaveFailed": "Impossible d'enregistrer les projets. Vérifiez votre connexion et réessayez.",
+      "addToProjectsDescription": "Choisissez un ou plusieurs projets auxquels ajouter les objectifs sélectionnés, ou créez-en un nouveau.",
+      "addToProjectsConfirm": "Ajouter",
+      "addToProjectsConfirmCount": "Ajouter à {{count}} projets"
     },
     "toasts": {
       "statusConflict": "{{goal}} n'a pas pu être modifié : {{reason}}",
@@ -1369,7 +1381,12 @@
       "goalsRemovedAndMoved_one": "{{count}} objectif retiré de {{project}} ; {{moved}} déplacé vers {{destination}}.",
       "goalsRemovedAndMoved_other": "{{count}} objectifs retirés de {{project}} ; {{moved}} déplacés vers {{destination}}.",
       "movedButNotRemoved_one": "{{count}} objectif a été ajouté à {{destination}}, mais n'a pas pu être retiré de {{project}} : {{error}}",
-      "movedButNotRemoved_other": "{{count}} objectifs ont été ajoutés à {{destination}}, mais n'ont pas pu être retirés de {{project}} : {{error}}"
+      "movedButNotRemoved_other": "{{count}} objectifs ont été ajoutés à {{destination}}, mais n'ont pas pu être retirés de {{project}} : {{error}}",
+      "goalsAddedToProjects_one": "{{count}} objectif ajouté à {{projects}}.",
+      "goalsAddedToProjects_other": "{{count}} objectifs ajoutés à {{projects}}.",
+      "addedToSomeProjects": "Ajouté à {{added}}. Échec pour {{failed}}.",
+      "addToProjectsFailed": "Impossible d'ajouter les objectifs à {{failed}}.",
+      "retry": "Réessayer"
     },
     "create": {
       "title": "Créer un objectif",
@@ -1898,7 +1915,17 @@
       "estimatesRetry": "Réessayer les estimations",
       "listNote": "Vos objectifs sont classés par priorité. Faites glisser un objectif actif ou en pause pour le déplacer : le changement s'applique dans tous les projets, dans Aujourd'hui, le plan de raid et les Analyses.",
       "hintLabel": "À propos de l'ordre",
-      "scopedNote": "Chaque numéro est la position de l'objectif dans l'ordre de priorité de tout votre compte : les objectifs d'un projet peuvent donc afficher des écarts comme 1, 3, 5. Déplacer un objectif ici le déplace aussi dans cet ordre ; les objectifs des autres projets gardent leur ordre relatif."
+      "scopedNote": "Chaque numéro est la position de l'objectif dans l'ordre de priorité de tout votre compte : les objectifs d'un projet peuvent donc afficher des écarts comme 1, 3, 5. Déplacer un objectif ici le déplace aussi dans cet ordre ; les objectifs des autres projets gardent leur ordre relatif.",
+      "projectMove": {
+        "menuItem": "Placer les objectifs en tête",
+        "alreadyFirst": "Les objectifs de ce projet sont déjà en tête.",
+        "moved_one": "{{count}} objectif déplacé en priorité 1.",
+        "moved_other": "{{count}} objectifs déplacés en priorité 1.",
+        "undo": "Annuler",
+        "undone": "Ordre rétabli.",
+        "staleUndo": "L'ordre a changé entre-temps. Rien n'a été annulé.",
+        "staleMove": "L'ordre a changé pendant le déplacement. Vérifiez l'ordre actualisé et réessayez."
+      }
     },
     "edit": {
       "title": "Modifier l'objectif",
@@ -2211,6 +2238,10 @@
         "newProject": {
           "title": "Créer un projet",
           "content": "Créez un nouveau projet ici. Le menu d'actions d'un projet permet d'y créer un objectif, de gérer les objectifs qu'il contient et de le renommer, recolorer, archiver ou restaurer."
+        },
+        "moveGoals": {
+          "title": "Placer les objectifs d'un projet en tête",
+          "content": "Ouvrez le menu d'un projet et choisissez « Placer les objectifs en tête » pour mettre tous ses objectifs actifs et en pause en tête de votre ordre de priorité. Vous pouvez annuler depuis le message qui suit."
         }
       }
     },

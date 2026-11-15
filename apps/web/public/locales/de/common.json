@@ -1349,7 +1349,19 @@
       "eventArchived_other": "+{{count}} archiviert",
       "eventNoProject": "Kein Projekt für dieses Event",
       "eventOpenProjects": "Zu den Projekten",
-      "membershipConflictTarget": "{{unit}} hat bereits ein aktives oder pausiertes {{type}}-Ziel mit dem Ziel {{target}}."
+      "membershipConflictTarget": "{{unit}} hat bereits ein aktives oder pausiertes {{type}}-Ziel mit dem Ziel {{target}}.",
+      "portraits": {
+        "more_one": "{{names}} und {{count}} weitere",
+        "more_other": "{{names}} und {{count}} weitere"
+      },
+      "addToAnother": "Zu weiterem Projekt hinzufügen…",
+      "addToAnotherTitle": "Zu weiterem Projekt hinzufügen",
+      "addedToProjects": "Zu {{projects}} hinzugefügt.",
+      "projectsSaved": "Projekte gespeichert.",
+      "projectsSaveFailed": "Die Projekte konnten nicht gespeichert werden. Prüfe deine Verbindung und versuche es erneut.",
+      "addToProjectsDescription": "Wähle ein oder mehrere Projekte für die ausgewählten Ziele oder erstelle ein neues.",
+      "addToProjectsConfirm": "Hinzufügen",
+      "addToProjectsConfirmCount": "Zu {{count}} Projekten hinzufügen"
     },
     "toasts": {
       "statusConflict": "{{goal}} konnte nicht geändert werden: {{reason}}",
@@ -1369,7 +1381,12 @@
       "goalsRemovedAndMoved_one": "{{count}} Ziel aus {{project}} entfernt; {{moved}} nach {{destination}} verschoben.",
       "goalsRemovedAndMoved_other": "{{count}} Ziele aus {{project}} entfernt; {{moved}} nach {{destination}} verschoben.",
       "movedButNotRemoved_one": "{{count}} Ziel wurde zu {{destination}} hinzugefügt, konnte aber nicht aus {{project}} entfernt werden: {{error}}",
-      "movedButNotRemoved_other": "{{count}} Ziele wurden zu {{destination}} hinzugefügt, konnten aber nicht aus {{project}} entfernt werden: {{error}}"
+      "movedButNotRemoved_other": "{{count}} Ziele wurden zu {{destination}} hinzugefügt, konnten aber nicht aus {{project}} entfernt werden: {{error}}",
+      "goalsAddedToProjects_one": "{{count}} Ziel zu {{projects}} hinzugefügt.",
+      "goalsAddedToProjects_other": "{{count}} Ziele zu {{projects}} hinzugefügt.",
+      "addedToSomeProjects": "Zu {{added}} hinzugefügt. {{failed}} fehlgeschlagen.",
+      "addToProjectsFailed": "Die Ziele konnten nicht zu {{failed}} hinzugefügt werden.",
+      "retry": "Erneut versuchen"
     },
     "create": {
       "title": "Ziel erstellen",
@@ -1898,7 +1915,17 @@
       "estimatesRetry": "Schätzungen erneut laden",
       "listNote": "Deine Ziele stehen in Prioritätsreihenfolge. Ziehe ein aktives oder pausiertes Ziel, um es zu verschieben – die Änderung gilt in jedem Projekt, bei Heute, im Raid-Plan und in den Einblicken.",
       "hintLabel": "Zur Reihenfolge",
-      "scopedNote": "Jede Zahl ist die Position des Ziels in deiner kontoweiten Prioritätsreihenfolge, daher können die Ziele eines Projekts Lücken wie 1, 3, 5 zeigen. Ein Ziel hier zu verschieben verschiebt es auch in dieser Reihenfolge; Ziele anderer Projekte behalten ihre relative Reihenfolge."
+      "scopedNote": "Jede Zahl ist die Position des Ziels in deiner kontoweiten Prioritätsreihenfolge, daher können die Ziele eines Projekts Lücken wie 1, 3, 5 zeigen. Ein Ziel hier zu verschieben verschiebt es auch in dieser Reihenfolge; Ziele anderer Projekte behalten ihre relative Reihenfolge.",
+      "projectMove": {
+        "menuItem": "Ziele nach oben verschieben",
+        "alreadyFirst": "Die Ziele dieses Projekts stehen bereits an erster Stelle.",
+        "moved_one": "{{count}} Ziel auf Priorität 1 verschoben.",
+        "moved_other": "{{count}} Ziele auf Priorität 1 verschoben.",
+        "undo": "Rückgängig",
+        "undone": "Reihenfolge wiederhergestellt.",
+        "staleUndo": "Die Reihenfolge hat sich inzwischen geändert. Es wurde nichts rückgängig gemacht.",
+        "staleMove": "Die Reihenfolge hat sich während des Verschiebens geändert. Prüfe die aktualisierte Reihenfolge und versuche es erneut."
+      }
     },
     "edit": {
       "title": "Ziel bearbeiten",
@@ -2211,6 +2238,10 @@
         "newProject": {
           "title": "Ein Projekt erstellen",
           "content": "Starte hier ein neues Projekt. Über das Aktionsmenü eines Projekts erstellst du darin ein Ziel, verwaltest seine Ziele und kannst es umbenennen, umfärben, archivieren oder wiederherstellen."
+        },
+        "moveGoals": {
+          "title": "Ziele eines Projekts nach vorne",
+          "content": "Öffne das Menü eines Projekts und wähle „Ziele nach oben verschieben“, um alle aktiven und pausierten Ziele an den Anfang deiner Prioritäten zu setzen. Über die folgende Meldung kannst du es rückgängig machen."
         }
       }
     },

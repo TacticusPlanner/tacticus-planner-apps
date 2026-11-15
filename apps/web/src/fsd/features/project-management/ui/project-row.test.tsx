@@ -410,6 +410,76 @@ describe("ProjectRow", () => {
     expect(onCreateGoal).toHaveBeenCalledWith(otherProject)
   })
 
+  it("offers Move goals to top after Manage goals and reports the project", async () => {
+    const user = userEvent.setup()
+    const onMoveGoalsToTop = vi.fn()
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness()}
+          moveGoalsToTop="enabled"
+          onCreateGoal={vi.fn()}
+          onEdit={vi.fn()}
+          onManageGoals={vi.fn()}
+          onMoveGoalsToTop={onMoveGoalsToTop}
+          project={otherProject}
+        />
+      </ul>
+    )
+
+    await openActions(user, otherProject.projectId)
+    expect(
+      screen.getAllByRole("menuitem").map((item) => item.textContent)
+    ).toEqual([
+      "goals.project.createGoalTrigger",
+      "goals.project.addGoalsTrigger",
+      "goals.order.projectMove.menuItem",
+      "goals.project.edit",
+      "goals.project.archive",
+      "goals.project.delete",
+    ])
+    await user.click(screen.getByTestId("project-move-goals"))
+    expect(onMoveGoalsToTop).toHaveBeenCalledWith(otherProject)
+  })
+
+  it("disables Move goals to top when the project's goals are already first", async () => {
+    const user = userEvent.setup()
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness()}
+          moveGoalsToTop="disabled"
+          onEdit={vi.fn()}
+          onMoveGoalsToTop={vi.fn()}
+          project={otherProject}
+        />
+      </ul>
+    )
+
+    await openActions(user, otherProject.projectId)
+    expect(screen.getByTestId("project-move-goals")).toHaveAttribute(
+      "data-disabled"
+    )
+  })
+
+  it("hides Move goals to top on an archived row", async () => {
+    const user = userEvent.setup()
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness()}
+          moveGoalsToTop="enabled"
+          onEdit={vi.fn()}
+          onMoveGoalsToTop={vi.fn()}
+          project={archivedProject}
+        />
+      </ul>
+    )
+
+    await openActions(user, archivedProject.projectId)
+    expect(screen.queryByTestId("project-move-goals")).toBeNull()
+  })
+
   it("offers only Edit, Restore and Delete on an archived row", async () => {
     const user = userEvent.setup()
     render(

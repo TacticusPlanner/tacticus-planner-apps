@@ -429,6 +429,43 @@ describe("GoalEditDialog", () => {
       }
     })
 
+    it("shows priority first, before the Rank goal's target, notes and projects", async () => {
+      renderDialog()
+      await loaded()
+
+      const priority = screen.getByTestId("goal-edit-priority")
+      const following = [
+        screen.getByTestId("goal-edit-target"),
+        screen.getByLabelText("Notes"),
+        screen.getByTestId("goal-edit-projects"),
+      ]
+      for (const field of following) {
+        expect(
+          priority.compareDocumentPosition(field) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy()
+      }
+    })
+
+    it("shows priority first, before an Unlock goal's sources, notes and projects", async () => {
+      goalOnScreen(unlockGoal)
+      renderDialog()
+      await loaded()
+
+      const priority = screen.getByTestId("goal-edit-priority")
+      const following = [
+        screen.getByTestId("create-goal-acquisition-sources"),
+        screen.getByLabelText("Notes"),
+        screen.getByTestId("goal-edit-projects"),
+      ]
+      for (const field of following) {
+        expect(
+          priority.compareDocumentPosition(field) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy()
+      }
+    })
+
     it("offers no control that changes the goal's kind", async () => {
       renderDialog()
       await loaded()

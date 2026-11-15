@@ -13,6 +13,11 @@ export {
   goalMenuMoves,
   type GoalMenuMoves,
 } from "./model/goal-order/menu-moves"
+export {
+  projectGoalsAlreadyFirst,
+  projectInFlightGoalIds,
+} from "./model/goal-order/project-moves"
+export { useMoveProjectGoals } from "./model/goal-order/use-move-project-goals"
 export { useGoalsSelection } from "./model/goals-data/use-goals-selection"
 export {
   useGoalEditParam,
@@ -117,6 +122,7 @@ export {
   type CreateGoalPrefill,
 } from "./model/goal-creation-form/create-goal-launcher-context"
 export { GoalEditDialog } from "./ui/goal-edit/goal-edit-dialog"
+export { AddToAnotherProjectDialog } from "./ui/projects/add-to-another-project-dialog"
 export { GoalProjectBadges, GoalUnitIcon } from "./ui/shared/goal-visuals"
 // Bulk goal creation: one shared target for several units at once (Collection's select mode).
 export { BulkGoalDialog } from "./ui/bulk-create/bulk-goal-dialog"

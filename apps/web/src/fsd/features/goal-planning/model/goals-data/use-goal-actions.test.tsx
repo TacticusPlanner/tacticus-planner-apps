@@ -266,6 +266,85 @@ describe("useGoalActions", () => {
       )
     })
 
+    it("adds the selection to several projects, one request each, with one toast", async () => {
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+      const chaos = { projectId: "p2", name: "Chaos Core", goalIds: [] }
+      const lavi = { projectId: "p3", name: "Team Lavi", goalIds: [] }
+
+      await act(() =>
+        result.current.addToProjects([{ goalId: "a" }, { goalId: "b" }], [
+          chaos,
+          lavi,
+        ] as never)
+      )
+
+      expect(changeProjectMembership.mock.calls.map(([id]) => id)).toEqual([
+        "p2",
+        "p3",
+      ])
+      expect(listGoal("a")?.projectIds).toEqual(["p1", "p2", "p3"])
+      expect(toast.success).toHaveBeenCalledExactlyOnceWith(
+        "Added 2 goals to Chaos Core and Team Lavi."
+      )
+    })
+
+    it("counts only the goals that were not already members", async () => {
+      members.set("p2", ["a"])
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+
+      await act(() =>
+        result.current.addToProjects(
+          [{ goalId: "a" }, { goalId: "b" }, { goalId: "c" }],
+          [{ projectId: "p2", name: "B", goalIds: ["a"] }] as never
+        )
+      )
+
+      expect(members.get("p2")).toEqual(["a", "b", "c"])
+      expect(toast.success).toHaveBeenCalledExactlyOnceWith(
+        "Added 2 goals to B."
+      )
+    })
+
+    it("keeps the successful destinations and offers Retry for the failed ones only", async () => {
+      const apply = changeProjectMembership.getMockImplementation()!
+      changeProjectMembership
+        .mockImplementationOnce(apply)
+        .mockRejectedValueOnce(new ApiError(500, "Server error"))
+      const { result } = renderHook(() => useGoalActions(), { wrapper })
+      const chaos = { projectId: "p2", name: "Chaos Core", goalIds: [] }
+      const lavi = { projectId: "p3", name: "Team Lavi", goalIds: [] }
+
+      await act(() =>
+        result.current.addToProjects([{ goalId: "a" }], [chaos, lavi] as never)
+      )
+
+      expect(members.get("p2")).toEqual(["a"])
+      expect(toast.success).not.toHaveBeenCalled()
+      expect(toast.error).toHaveBeenCalledTimes(1)
+      const [message, options] = vi.mocked(toast.error).mock.calls[0]! as [
+        string,
+        { action: { label: string; onClick: () => void } },
+      ]
+      expect(message).toBe("Added to Chaos Core. Team Lavi failed.")
+      expect(options.action.label).toBe("Retry")
+
+      changeProjectMembership.mockClear()
+      await act(async () => {
+        options.action.onClick()
+        await Promise.resolve()
+      })
+      await vi.waitFor(() =>
+        expect(changeProjectMembership.mock.calls.map(([id]) => id)).toEqual([
+          "p3",
+        ])
+      )
+      await vi.waitFor(() =>
+        expect(toast.success).toHaveBeenCalledExactlyOnceWith(
+          "Added 1 goal to Team Lavi."
+        )
+      )
+    })
+
     it("moves last-membership rows to the destination before removing", async () => {
       members.set("p1", ["a", "b", "c"])
       members.set("p3", ["x"])

@@ -5,6 +5,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
 
 import type { ProjectCardSummary } from "./project-row"
+import { ProjectUnitPortraits } from "./project-unit-portraits"
 
 /** A condensed, identity-only project row for the home dashboard's Your Projects widget: color,
  * name, Default badge, and a units/goals summary — no lifecycle actions (home-projects-widget
@@ -41,9 +42,16 @@ export function ProjectSummaryRow({
           {summary?.status === "loading" ? (
             <Skeleton className="mt-2 h-4 w-28" />
           ) : summary?.status === "success" ? (
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t("goals.project.unitGoalSummary", summary)}
-            </p>
+            <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+              {summary.portraitUnits ? (
+                <ProjectUnitPortraits
+                  size="widget"
+                  total={summary.units}
+                  units={summary.portraitUnits}
+                />
+              ) : null}
+              <p>{t("goals.project.unitGoalSummary", summary)}</p>
+            </div>
           ) : summary?.status === "error" ? (
             <p className="mt-1 text-xs text-destructive">
               {t("home.projects.summaryUnavailable")}

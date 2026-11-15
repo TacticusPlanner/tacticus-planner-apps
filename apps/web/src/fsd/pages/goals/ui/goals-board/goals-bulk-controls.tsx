@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useTranslation } from "react-i18next"
 
 import type { ProjectSummary } from "@/entities/project"
 import {
@@ -10,7 +9,7 @@ import {
 import type { useGoalActions, GoalRow } from "@/features/goal-planning"
 import { DeleteGoalDialog } from "./delete-goal-dialog"
 import { GoalsBulkActions } from "./goals-bulk-actions"
-import { ProjectPickerDialog } from "./project-picker-dialog"
+import { ProjectMultiPickerDialog } from "./project-multi-picker-dialog"
 import type { ProjectRemoval } from "./project-removal-flow"
 
 type Props = {
@@ -25,8 +24,8 @@ type Props = {
   projectRemoval?: ProjectRemoval
 }
 
-/** The bulk actions plus what they open: the delete confirmation and the Add-to-project destination
- *  picker (or project creation when no non-archived project exists). Remove from project goes through
+/** The bulk actions plus what they open: the delete confirmation and the Add-to-project multi-select
+ *  destination picker (or project creation when no non-archived project exists). Remove from project goes through
  *  the page's shared `projectRemoval` flow, whose destination picker the page renders once. Mounted once
  *  per platform — in the desktop actions row or the mobile select bar — so the flows cannot drift. */
 export function GoalsBulkControls({
@@ -38,17 +37,16 @@ export function GoalsBulkControls({
   compact,
   projectRemoval,
 }: Props) {
-  const { t } = useTranslation()
   const projectActions = useProjectActions()
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
   const choosable = projects.filter((project) => project.status !== "Archived")
 
-  const addSelectionTo = (project: ProjectSummary) => {
+  const addSelectionTo = (destinations: ProjectSummary[]) => {
     setPickerOpen(false)
     setCreateOpen(false)
-    void actions.addToProject(selectedRows, project).then(clearSelection)
+    void actions.addToProjects(selectedRows, destinations).then(clearSelection)
   }
 
   return (
@@ -86,22 +84,20 @@ export function GoalsBulkControls({
         pending={false}
         projectName={projectRemoval?.project.name}
       />
-      <ProjectPickerDialog
-        description={t("goals.project.addToProjectDescription")}
-        onCreateNew={() => {
-          setPickerOpen(false)
-          setCreateOpen(true)
-        }}
-        onOpenChange={setPickerOpen}
-        onSelect={addSelectionTo}
-        open={pickerOpen}
-        pending={false}
-        projects={choosable}
-        title={t("goals.project.addToProjectTitle")}
-      />
+      {pickerOpen ? (
+        <ProjectMultiPickerDialog
+          onConfirm={addSelectionTo}
+          onCreateNew={() => {
+            setPickerOpen(false)
+            setCreateOpen(true)
+          }}
+          onOpenChange={setPickerOpen}
+          projects={choosable}
+        />
+      ) : null}
       <ManageProjectsSheet
         actions={projectActions}
-        onCreated={addSelectionTo}
+        onCreated={(project) => addSelectionTo([project])}
         onOpenChange={setCreateOpen}
         open={createOpen}
         project={undefined}

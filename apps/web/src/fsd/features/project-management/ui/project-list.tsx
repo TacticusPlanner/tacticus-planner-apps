@@ -8,6 +8,9 @@ type Props = {
   onEdit: (project: ProjectSummary) => void
   onCreateGoal?: (project: ProjectSummary) => void
   onManageGoals?: (project: ProjectSummary) => void
+  /** Per project id, whether Move goals to top is offered (`enabled`/`disabled`); absent hides it. */
+  moveGoalsToTop?: ReadonlyMap<string, "enabled" | "disabled">
+  onMoveGoalsToTop?: (project: ProjectSummary) => void
   onSelect: (project: ProjectSummary) => void
   summaries?: ReadonlyMap<string, ProjectCardSummary>
 }
@@ -24,6 +27,8 @@ export function ProjectList({
   onEdit,
   onCreateGoal,
   onManageGoals,
+  moveGoalsToTop,
+  onMoveGoalsToTop,
   onSelect,
   summaries,
 }: Props) {
@@ -36,6 +41,8 @@ export function ProjectList({
           onCreateGoal={onCreateGoal}
           onEdit={onEdit}
           onManageGoals={onManageGoals}
+          moveGoalsToTop={moveGoalsToTop?.get(project.projectId)}
+          onMoveGoalsToTop={onMoveGoalsToTop}
           onSelect={() => onSelect(project)}
           project={project}
           summary={summaries?.get(project.projectId)}

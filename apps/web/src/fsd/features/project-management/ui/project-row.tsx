@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import {
   Archive,
   ArchiveRestore,
+  ArrowUpToLine,
   ListChecks,
   MoreHorizontal,
   Pencil,
@@ -20,8 +21,10 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { formatEstimateDate, useDateLocale } from "@/shared/lib"
 import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
+import type { PortraitUnit } from "../model/project-unit-portraits"
 import type { useProjectActions } from "../model/use-project-actions"
 import { DeleteProjectDialog } from "./delete-project-dialog"
+import { ProjectUnitPortraits } from "./project-unit-portraits"
 import { ProjectTargetChip } from "./project-target-chip"
 
 type Props = {
@@ -32,6 +35,10 @@ type Props = {
    *  project-specific action"); offered on non-archived rows only. */
   onCreateGoal?: (project: ProjectSummary) => void
   onManageGoals?: (project: ProjectSummary) => void
+  /** Move goals to top (project-goal-moves): `enabled` or `disabled` (the block is already first);
+   *  absent hides the item (no in-flight goals, an archived project, or not offered here). */
+  moveGoalsToTop?: "enabled" | "disabled"
+  onMoveGoalsToTop?: (project: ProjectSummary) => void
   /** Present where clicking the card should open the project on the Goals page. */
   onSelect?: () => void
   summary?: ProjectCardSummary
@@ -50,6 +57,8 @@ export type ProjectCardSummary =
       /** How many of the project's goals are not behind `completionDate` (plan-completion-outlook).
        *  Shown whether or not a date is, so an omitted date never reads as "no information". */
       unestimatedGoalCount?: number
+      /** The first in-flight units, in priority order, for the card's portraits (add-project-unit-portraits). */
+      portraitUnits?: readonly PortraitUnit[]
     }
 
 /** A project's row: color dot, name, progress summary, and lifecycle actions. */
@@ -59,6 +68,8 @@ export function ProjectRow({
   onEdit,
   onCreateGoal,
   onManageGoals,
+  moveGoalsToTop,
+  onMoveGoalsToTop,
   onSelect,
   summary,
 }: Props) {
@@ -87,7 +98,13 @@ export function ProjectRow({
         {summary?.status === "loading" ? (
           <Skeleton className="mt-2 h-4 w-36" />
         ) : summary?.status === "success" ? (
-          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            {summary.portraitUnits ? (
+              <ProjectUnitPortraits
+                total={summary.units}
+                units={summary.portraitUnits}
+              />
+            ) : null}
             <span>{t("goals.project.unitGoalSummary", summary)}</span>
             {summary.reached !== undefined ? (
               <span>
@@ -186,6 +203,21 @@ export function ProjectRow({
               >
                 <ListChecks />
                 {t("goals.project.addGoalsTrigger")}
+              </DropdownMenuItem>
+            ) : null}
+            {!archived && moveGoalsToTop && onMoveGoalsToTop ? (
+              <DropdownMenuItem
+                data-testid="project-move-goals"
+                disabled={moveGoalsToTop === "disabled"}
+                onSelect={() => onMoveGoalsToTop(project)}
+                title={
+                  moveGoalsToTop === "disabled"
+                    ? t("goals.order.projectMove.alreadyFirst")
+                    : undefined
+                }
+              >
+                <ArrowUpToLine />
+                {t("goals.order.projectMove.menuItem")}
               </DropdownMenuItem>
             ) : null}
             <DropdownMenuItem

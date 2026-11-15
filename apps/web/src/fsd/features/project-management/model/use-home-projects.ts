@@ -2,6 +2,7 @@ import type { ProjectSummary } from "@/entities/project"
 
 import type { ProjectCardSummary } from "../ui/project-row"
 import { orderDefaultFirst } from "./order-default-first"
+import { projectPortraitUnits } from "./project-unit-portraits"
 import { useProjectsWithGoals } from "./use-projects-with-goals"
 
 /** Default project + up to 2 more non-archived projects (home-projects-widget spec: "Default
@@ -71,6 +72,7 @@ export function useHomeProjects(
       status: "success",
       units,
       goals: inFlightMembers.length,
+      portraitUnits: projectPortraitUnits(inFlightMembers),
     })
   }
 
