@@ -1,4 +1,4 @@
-import { render, screen } from "@/test/render"
+import { render, screen, waitFor } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
@@ -48,7 +48,7 @@ vi.mock("@/features/goal-planning/model/shared/use-goal-catalog", () => ({
   }),
 }))
 
-import { BlockedIndicator } from "./status-badge"
+import { BlockedIndicator, StatusBadge } from "./status-badge"
 
 describe("BlockedIndicator", () => {
   it("renders nothing when not blocked", () => {
@@ -474,5 +474,44 @@ describe("BlockedIndicator", () => {
       />
     )
     expect(screen.getByTestId("goal-blocked-indicator")).toBeInTheDocument()
+  })
+})
+
+describe("StatusBadge quick toggle", () => {
+  it("shows the new status at once and runs the toggle after that paint", async () => {
+    const user = userEvent.setup()
+    let settle: () => void = () => {}
+    const onToggle = vi.fn(
+      () => new Promise<void>((resolve) => (settle = resolve))
+    )
+    const { rerender } = render(
+      <StatusBadge onToggle={onToggle} status="Active" />
+    )
+    const chip = screen.getByTestId("goal-status-badge")
+
+    await user.click(chip)
+    // The chip repaints first; the cache write (and the list re-render) waits a frame.
+    expect(chip).toHaveTextContent("Paused")
+    expect(chip).toBeDisabled()
+    await waitFor(() => expect(onToggle).toHaveBeenCalledWith("Paused"))
+
+    rerender(<StatusBadge onToggle={onToggle} status="Paused" />)
+    settle()
+    await waitFor(() => expect(chip).toBeEnabled())
+    expect(chip).toHaveTextContent("Paused")
+    expect(onToggle).toHaveBeenCalledTimes(1)
+  })
+
+  it("goes back to the stored status when the toggle is rolled back", async () => {
+    const user = userEvent.setup()
+    const onToggle = vi.fn(() => Promise.resolve())
+    render(<StatusBadge onToggle={onToggle} status="Paused" />)
+    const chip = screen.getByTestId("goal-status-badge")
+
+    await user.click(chip)
+    await waitFor(() => expect(onToggle).toHaveBeenCalledWith("Active"))
+    // The request failed and the goal stayed Paused: the chip follows `status` again.
+    await waitFor(() => expect(chip).toBeEnabled())
+    expect(chip).toHaveTextContent("Paused")
   })
 })

@@ -90,4 +90,31 @@ describe("LegendaryEventPage memo boundaries", () => {
     expect(last().nowMs).toBeGreaterThan(settled.nowMs)
     expect(last().runStatus).not.toBe(settled.runStatus)
   })
+
+  it("opens and closes the team editor without re-rendering the page view", async () => {
+    const I18nWrapper = i18nWrapper(i18n)
+    const { queryClient } = render(<LegendaryEventPage />, {
+      route: "/legendary-events/:eventId",
+      initialEntries: ["/legendary-events/astarLysander"],
+      wrapper: ({ children }) => (
+        <CreateGoalLauncherContext.Provider value={launchCreateGoal}>
+          <I18nWrapper>{children}</I18nWrapper>
+        </CreateGoalLauncherContext.Provider>
+      ),
+    })
+    await waitFor(() => expect(views.length).toBeGreaterThan(0))
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+    await waitFor(() => expect(last().runStatus.kind).toBe("noEntry"))
+    const launcher = last().teamEditor
+    const count = views.length
+
+    // The editor's open state lives outside the page, so Add team, Edit, a board chip or a
+    // leaderboard's Add to new team re-render only the editor host (INP audit 2026-11-15).
+    act(() => launcher.openTeamEditor({ laneId: "alpha" }))
+    expect(launcher.getEditor()).toMatchObject({ laneId: "alpha", key: 1 })
+    act(() => launcher.closeTeamEditor())
+    expect(launcher.getEditor()).toBeNull()
+    expect(views.length).toBe(count)
+    expect(last().teamEditor).toBe(launcher)
+  })
 })
