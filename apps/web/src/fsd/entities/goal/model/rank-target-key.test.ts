@@ -14,7 +14,7 @@ const target = (end: Rank, endPointFive = false, endAppliedUpgrades = 0) => ({
 })
 
 describe("rankTargetKey", () => {
-  it("treats point-five and three applied slots as one target below Adamantine1", () => {
+  it("treats point-five and three applied slots as one target below Diamond3", () => {
     expect(rankTargetKey(target(Rank.Silver3, true, 0))).toBe(
       rankTargetKey(target(Rank.Silver3, false, 3))
     )
@@ -35,6 +35,18 @@ describe("rankTargetKey", () => {
     )
     expect(rankTargetKey(target(Rank.Silver3, false, 5))).toBe(
       rankTargetKey(target(Rank.Silver3, false, 3))
+    )
+  })
+
+  it("numbers Diamond3's slots individually, keeping a saved point-five as 3", () => {
+    expect(rankTargetKey(target(Rank.Diamond3, false, 4))).toBe(
+      `${rankIndex(Rank.Diamond3)}:4`
+    )
+    expect(rankTargetKey(target(Rank.Diamond3, true, 0))).toBe(
+      rankTargetKey(target(Rank.Diamond3, false, 3))
+    )
+    expect(rankTargetKey(target(Rank.Diamond3, false, 5))).not.toBe(
+      rankTargetKey(target(Rank.Diamond3, false, 3))
     )
   })
 

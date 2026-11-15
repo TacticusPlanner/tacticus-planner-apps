@@ -9,15 +9,21 @@ import {
 
 import type { LevelRules } from "./level-rules"
 
-/** True from Adamantine1 onward, where partial targets use numbered upgrade slots. A
- * character rank's 6 upgrade slots are 2 rows of 3 (1 Health + 1 Damage + 1 Armour per row): before
- * Adamantine1 the top row is immediately appliable at the current rank, while the bottom row needs the
- * unit to have already advanced a further level — so only the top row's 1-3 slots are ever
- * independently targetable there. An Adamantine rank's 6 slots aren't row-paired that way; V1
- * numbers those slots individually instead (see `additionalTargetOptions`). */
+/** True from Diamond3 onward, where partial targets use numbered upgrade slots. A character rank's 6
+ * upgrade slots are 2 rows of 3 (1 Health + 1 Damage + 1 Armour per row): below Diamond3 the top row
+ * is immediately appliable at the current rank, while the bottom row needs the unit to have already
+ * advanced a further level — so only the top row's 1-3 slots are ever independently targetable there.
+ * From Diamond3 on each slot after the first needs its own further level, in book-reading order (top
+ * row, then bottom row), so all 1-5 of 6 are meaningful stopping points — V1 numbered them from
+ * Diamond3 too (see `additionalTargetOptions`). */
 function usesNumberedUpgradeTargets(rank: RankType): boolean {
-  return rankIndex(rank) >= rankIndex(Rank.Adamantine1)
+  return rankIndex(rank) >= rankIndex(Rank.Diamond3)
 }
+
+/** A rank's 6 upgrade slot indices (column-major over the 2x3 grid) in book-reading order — top row
+ * left to right, then bottom row — the order the game gates them by level from Diamond3 on, and so the
+ * order a numbered `"RowN"` target applies them in. */
+export const BOOK_ORDER_SLOT_INDICES: readonly number[] = [0, 2, 4, 1, 3, 5]
 
 /** The XP level the `count`-th cheapest of `slots` needs (1-based, clamped to the slots there are). */
 function nthSlotLevel(slots: readonly number[], count: number): number {
@@ -47,10 +53,10 @@ function topRowLevel(rank: RankType, count: number, rules: LevelRules): number {
 
 /**
  * The Rank goal's "Additional target" value — how far past a clean rank boundary the goal's target
- * actually reaches. `"None"` (the default for every rank) is a clean boundary. Before Adamantine1:
+ * actually reaches. `"None"` (the default for every rank) is a clean boundary. Below Diamond3:
  * `"TopRow1"`/`"TopRow2"` are 1 or 2 of the top row's 3 upgrades (Health, then + Damage); `"TopRow"`
- * is all 3 (+ Armour) — V1's "Rank Point Five". Adamantine1+: no top row — instead the rank's own 6
- * upgrade slots are numbered individually as `"Row1"`-`"Row5"` (V1's "Mythic-tier" partial target),
+ * is all 3 (+ Armour) — V1's "Rank Point Five". Diamond3+: the rank's own 6 upgrade slots are
+ * numbered individually as `"Row1"`-`"Row5"` (V1's "N of 6" partial target) in book-reading order,
  * each at its own XP level.
  */
 export type RankAdditionalTarget =
@@ -73,8 +79,8 @@ const rowTargets: readonly RankAdditionalTarget[] = [
 ]
 
 /** Every selectable "Additional target" for `rank`: clean or 1/6-3/6 (the top row) below
- * Adamantine, clean plus 1/6-5/6 at non-maximum Adamantine ranks, and clean only at the current
- * maximum rank. */
+ * Diamond3, clean plus 1/6-5/6 from Diamond3 up to (not including) the current maximum rank, and clean
+ * only at the maximum rank. */
 export function additionalTargetOptions(
   rank: RankType
 ): readonly RankAdditionalTarget[] {
@@ -95,11 +101,11 @@ export function rowCount(value: RankAdditionalTarget): number | null {
  * client-side resource preview need:
  * - `pointFive`/`appliedUpgrades` are the backend's `RankTarget` fields — it only ever checks their
  *   *count* (`Math.Max(appliedUpgrades, pointFive ? 3 : 0)` against the player's distinct applied
- *   slot count, `GoalAchievementEvaluator.RankAchieved`), so it doesn't matter that pre-Adamantine and
- *   Adamantine1+ reach the same numbers via different upgrade subsets.
- * - `topRowCount` is client-preview-only (`rankUpUpgradeIds`'s third mode) — needed to disambiguate
- *   what the *same* `appliedUpgrades` count actually selects: the first N of the top-row subset
- *   below Adamantine1, vs. the first N of the raw 6 at Adamantine1+.
+ *   slot count), so it doesn't matter that below-Diamond3 and Diamond3+ targets reach the same numbers
+ *   via different values.
+ * - `topRowCount` is client-preview-only (`rankUpUpgradeIds`'s third mode). Both it and a numbered
+ *   `appliedUpgrades` apply slots in book-reading order (top row first), so for 1-3 slots they pick
+ *   the same upgrades.
  */
 export function additionalTargetSelection(value: RankAdditionalTarget): {
   pointFive: boolean
@@ -196,16 +202,20 @@ export function reachableRankProgress(
 /** The inverse of `additionalTargetSelection` — reconstructs the Additional target a persisted goal
  * (`GoalDetail.config.rank`) was created with, for read-only display (the edit flow never lets a
  * user change a goal's rank target, only re-derives this for the Farming Strategy availability
- * calc). Needs `rank` too — the wire pair alone can't tell a pre-Adamantine `"TopRow2"` apart from an
- * Adamantine1+ `"Row2"`, since both send `appliedUpgrades: 2`. */
+ * calc). Needs `rank` too — the wire pair alone can't tell a below-Diamond3 `"TopRow2"` apart from a
+ * Diamond3+ `"Row2"`, since both send `appliedUpgrades: 2`. A Diamond3 goal saved before Diamond3
+ * used numbered targets may carry point-five (the whole top row): that is the same three slots as
+ * `"Row3"`. */
 export function additionalTargetFromWire(
   rank: RankType,
   wire: { endPointFive: boolean; endAppliedUpgrades: number }
 ): RankAdditionalTarget {
   if (usesNumberedUpgradeTargets(rank)) {
-    return wire.endAppliedUpgrades > 0
-      ? (rowTargets[wire.endAppliedUpgrades - 1] ?? "None")
-      : "None"
+    const count = Math.max(
+      wire.endAppliedUpgrades,
+      wire.endPointFive && rankIndex(rank) < rankIndex(Rank.Adamantine1) ? 3 : 0
+    )
+    return count > 0 ? (rowTargets[count - 1] ?? "None") : "None"
   }
   if (wire.endPointFive || wire.endAppliedUpgrades >= 3) return "TopRow"
   if (wire.endAppliedUpgrades === 2) return "TopRow2"
@@ -216,8 +226,8 @@ export function additionalTargetFromWire(
 const topRowSlots: readonly number[] = [0, 2, 4]
 
 /** The end rank's slot indices an Additional target applies — the same slots `rankUpSlotOccurrences`
- * charges for it: the first N top-row slots (0/2/4) below Adamantine1, the first N raw slots from
- * Adamantine1 on, and none for a clean rank boundary. */
+ * charges for it: the first N top-row slots (0/2/4) below Diamond3, the first N slots in book-reading
+ * order from Diamond3 on, and none for a clean rank boundary. */
 export function additionalTargetSlots(
   value: RankAdditionalTarget
 ): readonly number[] {
@@ -225,7 +235,7 @@ export function additionalTargetSlots(
     additionalTargetSelection(value)
   if (topRowCount > 0) return topRowSlots.slice(0, topRowCount)
   if (appliedUpgrades > 0)
-    return Array.from({ length: appliedUpgrades }, (_, slot) => slot)
+    return BOOK_ORDER_SLOT_INDICES.slice(0, appliedUpgrades)
   return pointFive ? topRowSlots : []
 }
 
