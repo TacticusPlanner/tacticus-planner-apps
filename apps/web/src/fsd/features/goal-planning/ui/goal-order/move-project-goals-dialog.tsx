@@ -76,10 +76,14 @@ export function MoveProjectGoalsDialog({
   const placement = choices.placementFor(choice, referenceId)
   const canMove = !pending && choices.changes(placement)
 
+  // While the save runs the dialog cannot close, so a late result never closes a dialog opened after
+  // it; a failed save keeps the dialog and its choice for a retry.
+  const requestOpenChange = (open: boolean) => {
+    if (!pending) onOpenChange(open)
+  }
   const confirm = async () => {
     if (!placement) return
-    await move(choices.movedIds, placement)
-    onOpenChange(false)
+    if (await move(choices.movedIds, placement)) onOpenChange(false)
   }
 
   return (
@@ -87,7 +91,7 @@ export function MoveProjectGoalsDialog({
       contentRef={setPortalContainer}
       data-testid="move-project-goals-dialog"
       desktopClassName="sm:max-w-md"
-      onOpenChange={onOpenChange}
+      onOpenChange={requestOpenChange}
       open
     >
       <ResponsiveDialogHeader>
@@ -171,7 +175,11 @@ export function MoveProjectGoalsDialog({
         ) : null}
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter>
-        <Button onClick={() => onOpenChange(false)} variant="outline">
+        <Button
+          disabled={pending}
+          onClick={() => requestOpenChange(false)}
+          variant="outline"
+        >
           {t("goals.order.projectMove.cancel")}
         </Button>
         <Button

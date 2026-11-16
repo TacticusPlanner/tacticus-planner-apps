@@ -91,6 +91,29 @@ describe("MoveProjectGoalsDialog", () => {
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
+  it("stays open with the choice kept when the move fails", async () => {
+    moveMock.mockResolvedValue(false)
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    render(
+      <MoveProjectGoalsDialog
+        goals={goals}
+        onOpenChange={onOpenChange}
+        project={projects[2]!}
+        projects={projects}
+      />
+    )
+
+    await user.click(await screen.findByTestId("move-goals-choice-before"))
+    await user.click(screen.getByTestId("move-goals-reference"))
+    await user.click(await screen.findByRole("option", { name: "GW S29" }))
+    await user.click(screen.getByTestId("move-goals-confirm"))
+
+    expect(moveMock).toHaveBeenCalledTimes(1)
+    expect(onOpenChange).not.toHaveBeenCalled()
+    expect(screen.getByTestId("move-goals-confirm")).toBeEnabled()
+  })
+
   it("offers only To the top when no other project can be placed against", async () => {
     render(
       <MoveProjectGoalsDialog

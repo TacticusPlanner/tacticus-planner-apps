@@ -28,7 +28,6 @@ import {
   useGoalsOverviewMetrics,
   MoveProjectGoalsDialog,
   moveGoalsChoices,
-  useMoveProjectGoals,
   usePlanInsights,
   useProjectFitCounts,
 } from "@/features/goal-planning"
@@ -131,8 +130,8 @@ export function ProjectsListPage() {
   }
 
   // Move goals… (project-goal-moves): offered on live projects holding in-flight goals, disabled when
-  // no placement would change the order or a move is saving. The dialog is one for the whole page.
-  const projectMoves = useMoveProjectGoals()
+  // no placement would change the order. The dialog is one for the whole page and stays open while
+  // its move saves.
   const [moveGoalsProject, setMoveGoalsProject] = useState<
     ProjectSummary | undefined
   >(undefined)
@@ -149,8 +148,7 @@ export function ProjectsListPage() {
       if (choices.movedIds.length === 0) continue
       moveGoals.set(
         project.projectId,
-        projectMoves.pending ||
-          (!choices.topChanges && choices.references.length === 0)
+        !choices.topChanges && choices.references.length === 0
           ? "disabled"
           : "enabled"
       )
