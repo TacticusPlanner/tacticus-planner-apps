@@ -2,7 +2,7 @@
 
 ## 0. Prerequisite
 
-- [ ] 0.1 `add-project-deadline-fit` has merged (it provides `resolveProjectDeadline`, `useProjectDeadline` and `legendaryEventRunDates` in `entities/legendary-event`)
+- [x] 0.1 `add-project-deadline-fit` has merged (#625) (it provides `resolveProjectDeadline`, `useProjectDeadline` and `legendaryEventRunDates` in `entities/legendary-event`)
 - [ ] 0.2 Companion `tacticus-planner-api` change `add-project-deadline-targets` merges first; regenerate `apps/web/src/fsd/shared/api/schema.d.ts` and update the hand-written `entities/project/model/types.ts` target union and mapper (absent `run` reads as null)
 
 ## 1. Season windows move to an entity
