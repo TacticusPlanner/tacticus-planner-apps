@@ -293,7 +293,7 @@ export function selectHomeEvents({
 }
 
 /** Upcoming rows shown before "Show more". */
-export const UPCOMING_COLLAPSED_LIMIT = 3
+const UPCOMING_COLLAPSED_LIMIT = 3
 
 /**
  * The upcoming rows Home shows collapsed: the first `limit` by start, with the next Legendary Event
