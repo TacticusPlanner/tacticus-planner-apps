@@ -813,7 +813,8 @@
       "planEvent": "Event planen",
       "showMore_one": "{{count}} weitere anzeigen",
       "showMore_other": "{{count}} weitere anzeigen",
-      "showLess": "Weniger anzeigen"
+      "showLess": "Weniger anzeigen",
+      "viewCalendar": "Kalender anzeigen"
     },
     "calendar": {
       "title": "Ereigniskalender"

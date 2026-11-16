@@ -396,11 +396,25 @@ describe("Home events (Right now + Upcoming events)", () => {
     expect(types()).toEqual(["quest", "hre", "legendaryEvent"])
     const toggle = screen.getByTestId("home-events-toggle")
     expect(toggle).toHaveTextContent("home.events.showMore:1")
+    expect(screen.queryByTestId("home-events-view-calendar")).toBeNull()
 
     await user.click(toggle)
 
     expect(types()).toEqual(["quest", "hre", "homeScreen", "legendaryEvent"])
     expect(toggle).toHaveTextContent("home.events.showLess")
+
+    // Expanded, the card offers the calendar below.
+    const calendar = document.createElement("div")
+    calendar.id = "home-calendar"
+    const scrollIntoView = vi.fn()
+    calendar.scrollIntoView = scrollIntoView
+    document.body.append(calendar)
+    await user.click(screen.getByTestId("home-events-view-calendar"))
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "start",
+    })
+    calendar.remove()
   })
 
   it("lists an upcoming Incursion in Upcoming events, not Right now", () => {

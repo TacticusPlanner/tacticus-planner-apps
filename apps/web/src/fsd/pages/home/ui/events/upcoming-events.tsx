@@ -79,18 +79,29 @@ export function UpcomingEvents({ events }: { events: HomeEventsState }) {
           </ul>
         )}
         {hiddenCount > 0 ? (
-          <Button
-            aria-expanded={expanded}
-            className="self-start"
-            data-testid="home-events-toggle"
-            onClick={() => setExpanded((value) => !value)}
-            size="sm"
-            variant="ghost"
-          >
-            {expanded
-              ? t("home.events.showLess")
-              : t("home.events.showMore", { count: hiddenCount })}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              aria-expanded={expanded}
+              data-testid="home-events-toggle"
+              onClick={() => setExpanded((value) => !value)}
+              size="sm"
+              variant="ghost"
+            >
+              {expanded
+                ? t("home.events.showLess")
+                : t("home.events.showMore", { count: hiddenCount })}
+            </Button>
+            {expanded ? (
+              <Button
+                data-testid="home-events-view-calendar"
+                onClick={scrollToCalendar}
+                size="sm"
+                variant="outline"
+              >
+                {t("home.events.viewCalendar")}
+              </Button>
+            ) : null}
+          </div>
         ) : null}
       </div>
     )
@@ -104,6 +115,16 @@ export function UpcomingEvents({ events }: { events: HomeEventsState }) {
       <CardContent>{body}</CardContent>
     </Card>
   )
+}
+
+/** The Events calendar's card id on Home. */
+const CALENDAR_ID = "home-calendar"
+
+/** Brings the Events calendar further down Home into view. */
+function scrollToCalendar() {
+  document
+    .getElementById(CALENDAR_ID)
+    ?.scrollIntoView({ behavior: "smooth", block: "start" })
 }
 
 function EmptyBody() {

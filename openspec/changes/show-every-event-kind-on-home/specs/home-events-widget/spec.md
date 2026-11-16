@@ -36,7 +36,7 @@ Right now SHALL show each live event as a tile with a visible LIVE label (text, 
 
 ### Requirement: Upcoming events lists the next three, the Legendary Event always among them
 
-Upcoming events SHALL show the next occurrence of each kind that has not started: the Home Screen Events that start first (several when they start together; same selection as the HSE tab), the next Legendary Event with a known start (catalog `lres`, lifecycle per `legendary-events-hub`), the Campaign Event, Incursion, Quest, Hero Release Event and event shop, in ascending start order, each with its local start date and time and a "starts in …" countdown. The card SHALL show the first three rows and a "Show N more" toggle for the rest; when no Legendary Event is live and the next one is not among the first three, it SHALL replace the third collapsed row, so a Legendary Event is always visible in Right now or Upcoming events. A kind's next occurrence SHALL be listed even while another of the same kind runs. The event shop row SHALL be the next dated shop, else the first shop with no start date, which reads "Start date TBA" without a countdown and sorts last. Ordering uses UTC instants; the device timezone only affects the displayed start text, and rows and countdowns use the same instant. The countdowns in Right now, Upcoming events and the calendar's Ongoing list SHALL keep the hours from a day out ("3 days 12 hr", whole days and hours, zero hours dropped), and use hours and minutes under a day.
+Upcoming events SHALL show the next occurrence of each kind that has not started: the Home Screen Events that start first (several when they start together; same selection as the HSE tab), the next Legendary Event with a known start (catalog `lres`, lifecycle per `legendary-events-hub`), the Campaign Event, Incursion, Quest, Hero Release Event and event shop, in ascending start order, each with its local start date and time and a "starts in …" countdown. The card SHALL show the first three rows and a "Show N more" toggle for the rest; expanded, it SHALL also offer a "View calendar" button that scrolls Home's Events calendar into view; when no Legendary Event is live and the next one is not among the first three, it SHALL replace the third collapsed row, so a Legendary Event is always visible in Right now or Upcoming events. A kind's next occurrence SHALL be listed even while another of the same kind runs. The event shop row SHALL be the next dated shop, else the first shop with no start date, which reads "Start date TBA" without a countdown and sorts last. Ordering uses UTC instants; the device timezone only affects the displayed start text, and rows and countdowns use the same instant. The countdowns in Right now, Upcoming events and the calendar's Ongoing list SHALL keep the hours from a day out ("3 days 12 hr", whole days and hours, zero hours dropped), and use hours and minutes under a day.
 
 Assumptions:
 
@@ -58,7 +58,7 @@ Assumptions:
 
 - **GIVEN** five upcoming rows
 - **WHEN** the user activates "Show 2 more"
-- **THEN** all five rows show in start order and the toggle reads "Show less"
+- **THEN** all five rows show in start order, the toggle reads "Show less", and a "View calendar" button appears that scrolls the Events calendar into view
 
 #### Scenario: Shop with no start date
 
