@@ -6,7 +6,7 @@ Home's Right now and Upcoming events miss Hero Release Events and event shops en
 
 - Blood Tithe (`hse-global-blood-tithe`) gets its datamined medallion, banner and points icon.
 - Right now lists every running Home Screen Event, plus the running Quest, Hero Release Event and dated event shop.
-- Upcoming events lists the next occurrence of each kind (Home Screen Events starting first, Legendary Event, Campaign Event, Incursion, Quest, Hero Release Event, event shop) instead of the first three by start; the Legendary Event pin is no longer needed. A shop with no start date shows last as "Start date TBA" when no dated shop is coming, and is never live.
+- Upcoming events lists the next occurrence of each kind (Home Screen Events starting first, Legendary Event, Campaign Event, Incursion, Quest, Hero Release Event, event shop) sorted by start; the first three show (the next Legendary Event pinned among them unless one is live) and a "Show N more" toggle reveals the rest. A shop with no start date shows last as "Start date TBA" when no dated shop is coming, and is never live.
 - The calendar's details popover gains an "Open planner" link to the occurrence's planner page.
 
 ## Capabilities

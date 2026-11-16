@@ -291,3 +291,30 @@ export function selectHomeEvents({
 
   return { live, upcoming }
 }
+
+/** Upcoming rows shown before "Show more". */
+export const UPCOMING_COLLAPSED_LIMIT = 3
+
+/**
+ * The upcoming rows Home shows collapsed: the first `limit` by start, with the next Legendary Event
+ * pinned into the last slot when none is live, so a Legendary Event is always visible in Right now
+ * or Upcoming events. The rest stay behind "Show more", in start order.
+ */
+export function collapseUpcoming(
+  { live, upcoming }: HomeEvents,
+  limit = UPCOMING_COLLAPSED_LIMIT
+): HomeEventRow[] {
+  const shown = upcoming.slice(0, limit)
+  const hasLiveLegendary = live.some((row) => row.type === "legendaryEvent")
+  const nextLegendary = upcoming.find((row) => row.type === "legendaryEvent")
+  if (
+    !hasLiveLegendary &&
+    nextLegendary &&
+    !shown.includes(nextLegendary) &&
+    limit > 0
+  ) {
+    // Every shown row starts before it, so it stays last in start order.
+    shown.splice(limit - 1, 1, nextLegendary)
+  }
+  return shown
+}

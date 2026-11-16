@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import {
@@ -6,10 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { formatEventCountdown, useDateLocale } from "@/shared/lib"
 
+import { collapseUpcoming } from "../../model/select-home-events"
 import type { HomeEventRow } from "../../model/select-home-events"
 import type { HomeEventsState } from "../../model/use-home-events"
 import { CountdownChip, HomeEventVisual } from "./home-event-visual"
@@ -17,11 +20,13 @@ import { LegendaryEventPlanButton } from "./legendary-event-plan-button"
 import { useHomeEventName } from "./use-home-event-name"
 
 /** Home's "Upcoming events" card: the next occurrence of each kind (Home Screen Event, Legendary
- *  Event, Campaign Event, Incursion, Quest, Hero Release Event, event shop) by start; a shop with no
+ *  Event, Campaign Event, Incursion, Quest, Hero Release Event, event shop) by start; three rows
+ *  until "Show more", the next Legendary Event pinned among them unless one is live. A shop with no
  *  start date yet reads "Start date TBA". Distinct from the Events calendar. Each row links to its
  *  own planner page. */
 export function UpcomingEvents({ events }: { events: HomeEventsState }) {
   const { t } = useTranslation("common")
+  const [expanded, setExpanded] = useState(false)
 
   const body = (() => {
     if (events.status === "loading") {
@@ -48,6 +53,10 @@ export function UpcomingEvents({ events }: { events: HomeEventsState }) {
           ? t("home.events.openLegendaryEvents")
           : undefined
 
+    const collapsed = collapseUpcoming(events)
+    const hiddenCount = events.upcoming.length - collapsed.length
+    const shown = expanded ? events.upcoming : collapsed
+
     return (
       <div className="flex flex-col gap-2">
         {failedType ? (
@@ -62,13 +71,27 @@ export function UpcomingEvents({ events }: { events: HomeEventsState }) {
           <EmptyBody />
         ) : (
           <ul className="flex flex-col gap-2" data-testid="home-events-list">
-            {events.upcoming.map((row) => (
+            {shown.map((row) => (
               <li key={row.key}>
                 <UpcomingEventRow nowMs={events.nowMs} row={row} />
               </li>
             ))}
           </ul>
         )}
+        {hiddenCount > 0 ? (
+          <Button
+            aria-expanded={expanded}
+            className="self-start"
+            data-testid="home-events-toggle"
+            onClick={() => setExpanded((value) => !value)}
+            size="sm"
+            variant="ghost"
+          >
+            {expanded
+              ? t("home.events.showLess")
+              : t("home.events.showMore", { count: hiddenCount })}
+          </Button>
+        ) : null}
       </div>
     )
   })()

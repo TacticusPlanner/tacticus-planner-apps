@@ -810,7 +810,10 @@
       "openProject": "Projekt öffnen",
       "projects_one": "{{count}} Projekt",
       "projects_other": "{{count}} Projekte",
-      "planEvent": "Event planen"
+      "planEvent": "Event planen",
+      "showMore_one": "{{count}} weitere anzeigen",
+      "showMore_other": "{{count}} weitere anzeigen",
+      "showLess": "Weniger anzeigen"
     },
     "calendar": {
       "title": "Ereigniskalender"

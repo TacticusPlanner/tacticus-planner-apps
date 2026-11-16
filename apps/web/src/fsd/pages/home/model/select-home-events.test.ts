@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { selectHomeEvents } from "./select-home-events"
+import { collapseUpcoming, selectHomeEvents } from "./select-home-events"
 import type { HomeEventRow } from "./select-home-events"
 
 const hse = (definitionId: string, startUtc: string, endUtc: string) => ({
@@ -512,5 +512,61 @@ describe("selectHomeEvents", () => {
       ["hse-x", false],
     ])
     expect(honolulu).toEqual(utc)
+  })
+})
+
+describe("collapseUpcoming", () => {
+  const nowMs = Date.parse("2026-10-03T12:00:00Z")
+
+  it("shows the first three by start", () => {
+    const events = selectHomeEvents({
+      homeScreen: { live: [], upcoming: [early1] },
+      legendary: { events: [lysander], progress: [] },
+      campaignEvent: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-05T00:00:00Z"),
+        endMs: Date.parse("2026-10-08T00:00:00Z"),
+        campaignId: null,
+      },
+      incursion: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-06T00:00:00Z"),
+        endMs: Date.parse("2026-10-09T00:00:00Z"),
+      },
+      eventShops: [eventShop("november-2026", "2026-10-07T00:00:00Z")],
+      nowMs,
+    })
+
+    expect(events.upcoming).toHaveLength(4)
+    expect(summary(collapseUpcoming(events))).toEqual([
+      ["hse-a", false],
+      ["campaignEvent", false],
+      ["incursion", false],
+    ])
+  })
+
+  it("pins the next Legendary Event into the last slot when none is live", () => {
+    const events = selectHomeEvents({
+      homeScreen: { live: [], upcoming: [early1] },
+      legendary: { events: [uthar], progress: [] },
+      campaignEvent: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-05T00:00:00Z"),
+        endMs: Date.parse("2026-10-08T00:00:00Z"),
+        campaignId: null,
+      },
+      incursion: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-06T00:00:00Z"),
+        endMs: Date.parse("2026-10-09T00:00:00Z"),
+      },
+      nowMs,
+    })
+
+    expect(summary(collapseUpcoming(events))).toEqual([
+      ["hse-a", false],
+      ["campaignEvent", false],
+      ["votanUthar", false],
+    ])
   })
 })

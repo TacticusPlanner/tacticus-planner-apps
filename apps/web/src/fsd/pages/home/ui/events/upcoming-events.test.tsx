@@ -371,6 +371,38 @@ describe("Home events (Right now + Upcoming events)", () => {
     )
   })
 
+  it("shows three upcoming rows until Show more", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    calendarMock.mockReturnValue({
+      status: "ready",
+      data: [
+        entry("quest", "2026-10-04T00:00:00Z", "2026-10-07T00:00:00Z"),
+        entry(
+          "new-character-event",
+          "2026-10-05T00:00:00Z",
+          "2026-10-19T00:00:00Z"
+        ),
+      ],
+    })
+    hseMock.mockReturnValue(hseReady(null, [rush]))
+    legendaryMock.mockReturnValue(legendaryReady([uthar]))
+    renderWidget()
+
+    const types = () =>
+      within(screen.getByTestId("home-events-list"))
+        .getAllByTestId("home-events-row")
+        .map((row) => row.dataset.type)
+    // Uthar is pinned into the third row.
+    expect(types()).toEqual(["quest", "hre", "legendaryEvent"])
+    const toggle = screen.getByTestId("home-events-toggle")
+    expect(toggle).toHaveTextContent("home.events.showMore:1")
+
+    await user.click(toggle)
+
+    expect(types()).toEqual(["quest", "hre", "homeScreen", "legendaryEvent"])
+    expect(toggle).toHaveTextContent("home.events.showLess")
+  })
+
   it("lists an upcoming Incursion in Upcoming events, not Right now", () => {
     incursionWindowMock.mockReturnValue({
       status: "upcoming",
