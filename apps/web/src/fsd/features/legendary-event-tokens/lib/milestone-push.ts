@@ -4,17 +4,10 @@ import type {
   LegendaryEventRun,
 } from "@/entities/legendary-event"
 
-import {
-  forecastRuns,
-  type ForecastInput,
-  type RunForecast,
-} from "./run-forecast"
-import {
-  planTokens,
-  type PlannedToken,
-  type TokenPlanInput,
-  type TokenPlanLane,
-} from "./token-plan"
+import { forecastRuns } from "./run-forecast"
+import type { ForecastInput, RunForecast } from "./run-forecast"
+import { planTokens } from "./token-plan"
+import type { PlannedToken, TokenPlanInput, TokenPlanLane } from "./token-plan"
 import { splitPlanByRun } from "./token-runs"
 
 // "Close the gap": when the current run's forecast falls short of the next reward step, which of the
@@ -174,13 +167,12 @@ function relax(
     )
     return {
       ...lane,
-      annotations: lane.annotations.filter(
-        (annotation) =>
-          !lifted.some(
-            (cell) =>
-              cell.battleIndex === annotation.battleIndex &&
-              cell.objectiveId === annotation.objectiveId
-          )
+      annotations: lane.annotations.filter((annotation) =>
+        lifted.every(
+          (cell) =>
+            cell.battleIndex !== annotation.battleIndex ||
+            cell.objectiveId !== annotation.objectiveId
+        )
       ),
       teams: lane.teams.map((team) =>
         raised.has(team.id) && team.depth !== null
@@ -312,7 +304,7 @@ export function milestoneGap(input: MilestoneGapInput): MilestoneGap | null {
   const ranked = [...unique.values()].slice(0, MAX_PUSHES)
 
   let combined: MilestoneGap["combined"] = null
-  if (ranked.length > 1 && !ranked.some((push) => push.closesGap)) {
+  if (ranked.length > 1 && ranked.every((push) => !push.closesGap)) {
     for (let count = 2; count <= ranked.length; count++) {
       const applied = ranked.slice(0, count)
       const after = runOf(

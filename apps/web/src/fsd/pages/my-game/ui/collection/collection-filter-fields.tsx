@@ -10,9 +10,8 @@ import {
   progressionOrder,
   rankOrder,
   rarityOrder,
-  type Progression,
-  type Rank,
 } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 import { Label } from "@workspace/ui/components/label"
 import {
   Select,
@@ -30,9 +29,9 @@ import {
   ProgressionBadge,
   RankBadge,
   SearchableSelect,
-  type SelectOption,
   progressionText,
 } from "@/shared/ui"
+import type { SelectOption } from "@/shared/ui"
 
 import {
   collectionAlliances,
@@ -41,8 +40,8 @@ import {
   isCollectionAlliance,
   isCollectionAttackType,
   isCollectionKind,
-  type CollectionQuery,
 } from "../../model/collection-query"
+import type { CollectionQuery } from "../../model/collection-query"
 import type { CollectionOptions } from "../../model/use-collection-options"
 
 const ANY = "__any__"

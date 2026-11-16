@@ -16,8 +16,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import { formatRelativeTime } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
-import type { HseProjectionMode } from "@/entities/home-screen-event"
 import type {
+  HseProjectionMode,
   HseEventPointsState,
   HseProjectionView,
 } from "@/entities/home-screen-event"

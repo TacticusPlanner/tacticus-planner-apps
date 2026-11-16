@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from "react"
+import { useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -41,7 +42,7 @@ export function DisplayNameForm({
   const problem = value ? validateDisplayName(value) : null
   const canSubmit = !updateDisplayName.isPending && !validateDisplayName(value)
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault()
 
     if (!canSubmit) {

@@ -22,7 +22,7 @@ Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, i
 - **WHEN** the user chooses Create goal on a non-default project's row
 - **THEN** the goal-creation sheet opens with that project preselected as the goal's membership, and the URL stays `/plan/projects`
 
-#### Scenario: An empty project has no Move goals
+#### Scenario: An empty project has no Move goals to top
 
 - **WHEN** the user opens the menu of a project with no in-flight goals
 - **THEN** Move goals… is not offered

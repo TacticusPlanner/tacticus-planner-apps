@@ -1,4 +1,5 @@
-import { useUnitPowerContext, type UnitPowerContext } from "@/shared/unit-power"
+import { useUnitPowerContext } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 
 /** The power context the strength ordering reads: `loading` until it is read, then the context, or
  *  null when the `unit-power` dataset is absent or failed to load (every character then counts as

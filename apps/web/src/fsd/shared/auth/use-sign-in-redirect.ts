@@ -2,12 +2,8 @@ import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import {
-  AuthError,
-  InteractionStatus,
-  PromptValue,
-  type RedirectRequest,
-} from "@azure/msal-browser"
+import { AuthError, InteractionStatus, PromptValue } from "@azure/msal-browser"
+import type { RedirectRequest } from "@azure/msal-browser"
 import { useMsal } from "@azure/msal-react"
 
 import { takePendingRedirect } from "./auth-journal"

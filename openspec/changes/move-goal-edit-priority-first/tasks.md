@@ -2,15 +2,15 @@
 
 ## 1. Dialog
 
-- [ ] 1.1 Move the Priority field first in `features/goal-planning/ui/goal-edit/` on desktop and mobile; test the field order for a Rank goal and an Unlock goal; the existing priority scenarios still pass
+- [x] 1.1 Move the Priority field first in `features/goal-planning/ui/goal-edit/` on desktop and mobile; test the field order for a Rank goal and an Unlock goal; the existing priority scenarios still pass
 
 ## 2. Tour
 
-- [ ] 2.1 `goal-edit-dialog.tutorial.tsx`: priority step first in the desktop and mobile step lists; tutorial test passes
+- [x] 2.1 `goal-edit-dialog.tutorial.tsx`: priority step first in the desktop and mobile step lists; tutorial test passes
 
 ## 3. Gates
 
-- [ ] 3.1 Targeted tests, `pnpm typecheck`, `pnpm lint` (changed files), `pnpm lint:fsd`, `git diff --check`; the full suite runs in CI
+- [x] 3.1 Targeted tests, `pnpm typecheck`, `pnpm lint` (changed files), `pnpm lint:fsd`, `git diff --check`; the full suite runs in CI
 
 ## 4. Desktop verification (viewport at or above 768px)
 

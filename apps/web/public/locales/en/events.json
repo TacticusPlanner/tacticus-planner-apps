@@ -27,6 +27,7 @@
     "break": "Break"
   },
   "wikiLink": "Wiki",
+  "plannerLink": "Open planner",
   "agenda": {
     "ongoing": "Ongoing",
     "endsIn": "Ends in {{when}}"
@@ -96,7 +97,9 @@
     "guild-raid-break": "Guild Raid Break",
     "guild-war-season": "Guild War",
     "anniversary-event": "Anniversary Event",
-    "crusade-season": "Crusade Season"
+    "crusade-season": "Crusade Season",
+    "armageddon-shop": "Armageddon Shop",
+    "skull-harvest-shop": "Skull Harvest"
   },
   "families": {
     "campaigns": "Campaigns",

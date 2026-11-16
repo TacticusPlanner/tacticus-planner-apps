@@ -4,18 +4,23 @@ import {
   progressionOrder,
   rankAt,
   rankIndex,
-  type Progression,
-  type Rank,
-  type Rarity,
-  type UpgradeId,
+} from "@workspace/game-domain"
+import type {
+  Progression,
+  Rank,
+  Rarity,
+  UpgradeId,
 } from "@workspace/game-domain"
 import type { UnlockShardCostStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { rankTargetSlots, type GoalKind } from "@/entities/goal"
-import { reachableRankProgress, type LevelRules } from "@/entities/goal-farming"
+import { rankTargetSlots } from "@/entities/goal"
+import type { GoalKind } from "@/entities/goal"
+import { reachableRankProgress } from "@/entities/goal-farming"
+import type { LevelRules } from "@/entities/goal-farming"
 
-import { abilityTrackLevel, type GoalAttainmentParams } from "./goal-attainment"
+import { abilityTrackLevel } from "./goal-attainment"
+import type { GoalAttainmentParams } from "./goal-attainment"
 
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
 

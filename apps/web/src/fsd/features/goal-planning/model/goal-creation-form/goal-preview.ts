@@ -1,5 +1,6 @@
 import type { MowStorageModel } from "@workspace/game-catalog"
-import { rankIndex, type Rank, type UpgradeId } from "@workspace/game-domain"
+import { rankIndex } from "@workspace/game-domain"
+import type { Rank, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type {
@@ -8,13 +9,13 @@ import type {
 } from "@/entities/rank-lookup"
 import type { GoalKind } from "@/entities/goal"
 
-import { estimateGoal } from "@/entities/goal-farming"
-import type { EstimateOutcome } from "@/entities/goal-farming"
 import {
-  computeMissingUpgrades,
-  type MissingUpgradeEntry,
-} from "./goal-spec-builder"
-import { computeMowMissingUpgrades } from "@/entities/goal-farming"
+  estimateGoal,
+  computeMowMissingUpgrades,
+} from "@/entities/goal-farming"
+import type { EstimateOutcome } from "@/entities/goal-farming"
+import { computeMissingUpgrades } from "./goal-spec-builder"
+import type { MissingUpgradeEntry } from "./goal-spec-builder"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]

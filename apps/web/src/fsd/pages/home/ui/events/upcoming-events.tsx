@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import {
@@ -6,21 +7,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { formatEventCountdown, useDateLocale } from "@/shared/lib"
 
+import { collapseUpcoming } from "../../model/select-home-events"
 import type { HomeEventRow } from "../../model/select-home-events"
 import type { HomeEventsState } from "../../model/use-home-events"
 import { CountdownChip, HomeEventVisual } from "./home-event-visual"
 import { LegendaryEventPlanButton } from "./legendary-event-plan-button"
 import { useHomeEventName } from "./use-home-event-name"
 
-/** Home's "Upcoming events" card: the next Home Screen Events, Legendary Events, Campaign Event and Incursion by start, three
- *  rows at most, the next Legendary Event always among them unless one is live (then it is in Right
- *  now). Distinct from the Events calendar. Each row links to its own destination. */
+/** Home's "Upcoming events" card: the next occurrence of each kind (Home Screen Event, Legendary
+ *  Event, Campaign Event, Incursion, Quest, Hero Release Event, event shop) by start; three rows
+ *  until "Show more", the next Legendary Event pinned among them unless one is live. A shop with no
+ *  start date yet reads "Start date TBA". Distinct from the Events calendar. Each row links to its
+ *  own planner page. */
 export function UpcomingEvents({ events }: { events: HomeEventsState }) {
   const { t } = useTranslation("common")
+  const [expanded, setExpanded] = useState(false)
 
   const body = (() => {
     if (events.status === "loading") {
@@ -47,6 +53,10 @@ export function UpcomingEvents({ events }: { events: HomeEventsState }) {
           ? t("home.events.openLegendaryEvents")
           : undefined
 
+    const collapsed = collapseUpcoming(events)
+    const hiddenCount = events.upcoming.length - collapsed.length
+    const shown = expanded ? events.upcoming : collapsed
+
     return (
       <div className="flex flex-col gap-2">
         {failedType ? (
@@ -61,13 +71,38 @@ export function UpcomingEvents({ events }: { events: HomeEventsState }) {
           <EmptyBody />
         ) : (
           <ul className="flex flex-col gap-2" data-testid="home-events-list">
-            {events.upcoming.map((row) => (
+            {shown.map((row) => (
               <li key={row.key}>
                 <UpcomingEventRow nowMs={events.nowMs} row={row} />
               </li>
             ))}
           </ul>
         )}
+        {hiddenCount > 0 ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              aria-expanded={expanded}
+              data-testid="home-events-toggle"
+              onClick={() => setExpanded((value) => !value)}
+              size="sm"
+              variant="ghost"
+            >
+              {expanded
+                ? t("home.events.showLess")
+                : t("home.events.showMore", { count: hiddenCount })}
+            </Button>
+            {expanded ? (
+              <Button
+                data-testid="home-events-view-calendar"
+                onClick={scrollToCalendar}
+                size="sm"
+                variant="outline"
+              >
+                {t("home.events.viewCalendar")}
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     )
   })()
@@ -80,6 +115,16 @@ export function UpcomingEvents({ events }: { events: HomeEventsState }) {
       <CardContent>{body}</CardContent>
     </Card>
   )
+}
+
+/** The Events calendar's card id on Home. */
+const CALENDAR_ID = "home-calendar"
+
+/** Brings the Events calendar further down Home into view. */
+function scrollToCalendar() {
+  document
+    .getElementById(CALENDAR_ID)
+    ?.scrollIntoView({ behavior: "smooth", block: "start" })
 }
 
 function EmptyBody() {
@@ -113,6 +158,7 @@ function UpcomingEventRow({
   const { t, i18n } = useTranslation("common")
   const dateLocale = useDateLocale()
   const eventName = useHomeEventName()
+  const dateTba = row.type === "eventShop" && row.dateTba
   const startsIn = t("home.events.startsIn", {
     when: formatEventCountdown(row.startMs, nowMs, i18n.language, {
       withHours: true,
@@ -135,15 +181,19 @@ function UpcomingEventRow({
             className="block text-sm text-muted-foreground"
             data-testid="home-events-start"
           >
-            {new Date(row.startMs).toLocaleString(dateLocale, {
-              dateStyle: "medium",
-              timeStyle: "short",
-            })}
+            {dateTba
+              ? t("home.events.startDateTba")
+              : new Date(row.startMs).toLocaleString(dateLocale, {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
           </span>
         </span>
       </Link>
       <div className="flex shrink-0 flex-col items-end gap-1.5">
-        <CountdownChip className="text-muted-foreground" text={startsIn} />
+        {dateTba ? null : (
+          <CountdownChip className="text-muted-foreground" text={startsIn} />
+        )}
         {row.type === "legendaryEvent" ? (
           <LegendaryEventPlanButton eventId={row.unitId} />
         ) : null}

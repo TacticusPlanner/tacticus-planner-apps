@@ -19,7 +19,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { normalizeSearchText } from "@/shared/lib"
 import { closestOverlayContent, useCommandListId } from "@/shared/ui"
-import { RaidBossPortrait, type RaidBossListItem } from "@/entities/raid-boss"
+import { RaidBossPortrait } from "@/entities/raid-boss"
+import type { RaidBossListItem } from "@/entities/raid-boss"
 
 export type RaidBossMobilePickerGroup = {
   boss: RaidBossListItem

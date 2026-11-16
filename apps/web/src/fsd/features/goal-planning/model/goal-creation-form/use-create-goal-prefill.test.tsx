@@ -165,8 +165,7 @@ describe("useCreateGoalPrefill", () => {
 
     rerender({ quantities: ladderQuantities })
 
-    expect(fns.addUpgradeTarget).toHaveBeenCalledOnce()
-    expect(fns.addUpgradeTarget).toHaveBeenCalledWith("upgHpC001", 4)
+    expect(fns.addUpgradeTarget).toHaveBeenCalledExactlyOnceWith("upgHpC001", 4)
   })
 
   it("selects only the unit for a unit-only prefill and keeps the project fallback", () => {

@@ -4,10 +4,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { DailyRaidLocationViewModel } from "../../model/daily-raids.domain"
 import { useIsLoneCampaignRow } from "../campaign-group-context"
-import {
-  RaidLocationName,
-  type RaidLocationTarget,
-} from "../raid-location-name"
+import { RaidLocationName } from "../raid-location-name"
+import type { RaidLocationTarget } from "../raid-location-name"
 
 /**
  * One campaign location on the HSE/HRE lists, as a row under its campaign's header (`CampaignGroup`):

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { allocateLevelXp, type LevelXpNeed } from "./level-xp-allocation"
+import { allocateLevelXp } from "./level-xp-allocation"
+import type { LevelXpNeed } from "./level-xp-allocation"
 import { levelRules } from "@/test/fixtures/level-rules"
 
 const bellator = (

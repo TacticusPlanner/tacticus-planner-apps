@@ -11,8 +11,8 @@ import {
   rankIndex,
   unitIdSchema,
   upgradeIdSchema,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 
 import type { LegendaryEventRosterUnit } from "@/entities/legendary-event"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
@@ -22,8 +22,8 @@ import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 import {
   createFarmingDaysEstimator,
   upgradeChainGoalSpecs,
-  type FarmingDaysInputs,
 } from "./farming-days"
+import type { FarmingDaysInputs } from "./farming-days"
 
 const unitId = unitIdSchema.parse
 const upgradeId = upgradeIdSchema.parse
@@ -119,7 +119,7 @@ describe("createFarmingDaysEstimator", () => {
     id: unitId("hero1"),
     name: "Hero One",
     rankUpUpgrades: [
-      { rank: "Stone1", upgradeIds: Array(6).fill(upgradeId("mat1")) },
+      { rank: "Stone1", upgradeIds: new Array(6).fill(upgradeId("mat1")) },
     ],
   }
   const characterView = {

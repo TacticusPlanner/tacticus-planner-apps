@@ -4,18 +4,16 @@ import type { Rarity } from "@workspace/game-domain"
 
 import type { GoalStatus } from "@/entities/goal"
 import type {
-  ActiveSeasonFit,
   GoalMenuMoves,
   GoalOverviewMetrics,
+  GoalRow,
+  useGoalActions,
 } from "@/features/goal-planning"
-import {
-  levelBookAvailability,
-  type EstimateOutcome,
-} from "@/entities/goal-farming"
+import { levelBookAvailability } from "@/entities/goal-farming"
+import type { EstimateOutcome } from "@/entities/goal-farming"
 import type { XpBookFigure } from "../shared/level-requirement-display"
-import type { GoalRow } from "@/features/goal-planning"
-import type { useGoalActions } from "@/features/goal-planning"
 import type { ProjectRemoval } from "./project-removal-flow"
+import type { GoalFitView } from "./season-fit-copy"
 
 /** The data a prerequisite pause/resume cascade needs about every goal currently in view, not just
  *  the row being acted on — built once per page render from its full row set (`buildCascadeContext`),
@@ -81,10 +79,14 @@ export function toggleGoalStatus(
 
 export type GoalsListProps = {
   rows: GoalRow[]
-  /** The Season fit being shown (goal-season-fit), null or absent while Off. */
-  seasonFit?: ActiveSeasonFit | null
-  /** The goal the season cut-off divider sits before, null for none. */
+  /** The Season fit being shown (goal-season-fit), or in a targeted scope the project deadline fit
+   *  (project-deadline-fit); null or absent while Off. */
+  seasonFit?: GoalFitView | null
+  /** The goal the season cut-off divider sits before, null for none. In a targeted scope it is the
+   *  Legendary Event run's start. */
   seasonCutoffGoalId?: string | null
+  /** In a targeted scope, the goal the run's end divider sits before, null for none. */
+  eventEndCutoffGoalId?: string | null
   actions: ReturnType<typeof useGoalActions>
   /** Ids of the selected goals (the page owns the selection). Absent renders nothing selected. */
   selection?: ReadonlySet<string>
@@ -235,9 +237,10 @@ export function sameRowSlice<P extends RowSliceProps>(
     props.levelPoolXpAvailable?.get(id),
     props.reachedByGoalId?.get(id),
     props.seasonFit?.fits.get(id),
-    props.seasonFit?.season,
-    props.seasonFit?.seasonNumber,
     props.seasonFit?.deadlineMs,
+    ...(props.seasonFit && "kind" in props.seasonFit
+      ? [props.seasonFit.chip, props.seasonFit.endMs]
+      : [props.seasonFit?.season, props.seasonFit?.seasonNumber]),
     ...(a.row.dependsOn ?? []).flatMap((dep) => [
       props.cascadeContext?.statusById.get(dep),
       props.cascadeContext?.dependentCountById.get(dep),

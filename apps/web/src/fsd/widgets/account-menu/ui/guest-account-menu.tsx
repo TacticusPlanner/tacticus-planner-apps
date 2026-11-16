@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { MapIcon, Newspaper, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -18,8 +19,8 @@ import {
   MenuRow,
   MenuSection,
   PreferencesSection,
-  type AccountMenuView,
 } from "./account-menu-parts"
+import type { AccountMenuView } from "./account-menu-parts"
 
 /** Guest Preferences (theme, language), Help & feedback (the tour on mobile, Roadmap, Changelog), Community,
  *  caller-supplied extra content, and the legal links as a footer. Language opens an in-card picker; the view

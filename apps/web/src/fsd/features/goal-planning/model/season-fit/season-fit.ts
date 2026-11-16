@@ -59,7 +59,7 @@ export function isSeasonFitEligible(
 ): estimate is EstimateOutcome & { date: string } {
   return (
     row.status === "Active" &&
-    !(row.goalType === "Ability" && row.entityType !== "Mow") &&
+    (row.goalType !== "Ability" || row.entityType === "Mow") &&
     !reached &&
     !!estimate &&
     estimate.status !== "Blocked" &&

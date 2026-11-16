@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy } from "react"
-import { Navigate, type RouteObject } from "react-router"
+import { Navigate } from "react-router"
+import type { RouteObject } from "react-router"
 
 import { preloadOnMatch } from "@/shared/lib"
 
@@ -28,6 +29,11 @@ const loadGuildRaidsPage = () =>
     default: module.GuildRaidsPage,
   }))
 const GuildRaidsPage = lazy(loadGuildRaidsPage)
+const loadEventShopPage = () =>
+  import("./ui/event-shop/event-shop-page").then((module) => ({
+    default: module.EventShopPage,
+  }))
+const EventShopPage = lazy(loadEventShopPage)
 
 export const routes: RouteObject[] = [
   { index: true, element: <Navigate replace to="/dailies/raids" /> },
@@ -46,6 +52,17 @@ export const routes: RouteObject[] = [
   },
   // Shop recommendations now sit on the Raids tab; old Shops links and bookmarks land there.
   { path: "shops", element: <Navigate replace to="/dailies/raids" /> },
+  // `/dailies/event-shop` picks the default event (EventShopPage redirects to it).
+  {
+    path: "event-shop",
+    element: <EventShopPage />,
+    loader: preloadOnMatch(loadEventShopPage),
+  },
+  {
+    path: "event-shop/:eventId",
+    element: <EventShopPage />,
+    loader: preloadOnMatch(loadEventShopPage),
+  },
   {
     path: "guild-raids",
     element: <GuildRaidsPage />,

@@ -18,11 +18,9 @@ import type {
 } from "../../model/daily-raids.domain"
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 import type { PlanCell } from "../../model/plan-day-cells"
-import {
-  planCellAlternatives,
-  type PlanCellAlternative,
-} from "../../model/plan-cell-alternatives"
-import { shopCurrencyIcon } from "@/entities/shop-reward"
+import { planCellAlternatives } from "../../model/plan-cell-alternatives"
+import type { PlanCellAlternative } from "../../model/plan-cell-alternatives"
+import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { shopIcon } from "@workspace/game-catalog"
 import { ManualBattleBadge } from "../manual-battle"
 import { UnitIcon } from "../resource-card"

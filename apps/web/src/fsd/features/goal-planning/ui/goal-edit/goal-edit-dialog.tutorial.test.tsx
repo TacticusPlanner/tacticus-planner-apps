@@ -14,25 +14,25 @@ import {
 
 describe("useGoalEditDialogTutorial", () => {
   it.each(["desktop", "mobile"] as const)(
-    "%s steps target the target, priority and project fields inside the dialog or sheet body",
+    "%s steps target the priority, target and project fields inside the dialog or sheet body",
     (viewport) => {
       const { result } = renderHook(() => useGoalEditDialogTutorial())
 
       const steps = result.current[viewport] ?? []
       expect(steps.map((step) => step.target)).toEqual([
-        '[data-testid="goal-card-target"]',
         '[data-testid="goal-edit-priority"]',
+        '[data-testid="goal-card-target"]',
         '[data-testid="goal-edit-projects"]',
         '[data-testid="goal-mythic-material-sources"]',
       ])
       expect(steps.map((step) => [step.title, step.content])).toEqual([
         [
-          "Target",
-          "Pick where this goal ends on the ladder or the level stepper. It keeps its history, and your plan recalculates when you save.",
-        ],
-        [
           "Priority",
           "Pick this goal's position in your priority order. It moves there when you save, and the goals in between shift by one place.",
+        ],
+        [
+          "Target",
+          "Pick where this goal ends on the ladder or the level stepper. It keeps its history, and your plan recalculates when you save.",
         ],
         [
           "Projects",

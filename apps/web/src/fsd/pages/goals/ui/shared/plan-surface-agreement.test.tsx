@@ -16,9 +16,11 @@ import { calculateDailyRaids } from "@/features/daily-raids"
 import type { RaidsFilters } from "@/features/daily-raids"
 import type { FarmingCharacter, FarmingUpgrade } from "@/entities/goal-farming"
 
-import { computeGoalBlockers } from "@/features/goal-planning"
+import {
+  computeGoalBlockers,
+  computePlanInsights,
+} from "@/features/goal-planning"
 import { BlockedIndicator } from "./status-badge"
-import { computePlanInsights } from "@/features/goal-planning"
 
 // Goals (computePlanInsights), Today and Raids Plan (calculateDailyRaids) fed the SAME eligible node
 // set (the daily-raids rule the Goals catalog now consumes) must agree on blocker, date and

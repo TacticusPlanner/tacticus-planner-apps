@@ -1,6 +1,8 @@
-import { progressionOrder, type Progression } from "@workspace/game-domain"
+import { progressionOrder } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 
-import { MAX_MEDALS, type QuestScore } from "./quest-score"
+import { MAX_MEDALS } from "./quest-score"
+import type { QuestScore } from "./quest-score"
 
 /**
  * A battle pays the featured hero's shards once, for its first medal (datamine `linearHeroEvent`

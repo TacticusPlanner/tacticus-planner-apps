@@ -1,4 +1,5 @@
-import { useId, useState, type FormEvent } from "react"
+import { useId, useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -15,8 +16,8 @@ import {
   DISPLAY_NAME_MAX_LENGTH,
   useUpdateDisplayName,
   validateDisplayName,
-  type CurrentUser,
 } from "@/entities/account"
+import type { CurrentUser } from "@/entities/account"
 
 import { dialogActionClassName } from "./dialog-action-slot"
 import { DialogAction } from "./dialog-actions"
@@ -36,7 +37,7 @@ export function ProfileTab({ user }: { user: CurrentUser }) {
   const problem = value ? validateDisplayName(value) : null
   const canSubmit = !updateDisplayName.isPending && !validateDisplayName(value)
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault()
 
     if (!canSubmit) {

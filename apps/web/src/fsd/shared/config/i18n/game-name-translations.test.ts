@@ -63,6 +63,39 @@ describe("game name translations", () => {
     }
   })
 
+  it("generates the event mission texts in every locale", () => {
+    const missions = import.meta.glob<
+      Record<"tasks" | "chains" | "gameModes", Record<string, string>>
+    >("../../../../../public/locales/*/eventMissions.json", {
+      eager: true,
+      import: "default",
+    })
+    type MissionTable = (typeof missions)[string]
+    const byLocale: Record<string, MissionTable> = Object.fromEntries(
+      Object.entries(missions).map(([path, table]) => [
+        /\/locales\/([^/]+)\//.exec(path)?.[1] ?? path,
+        table,
+      ])
+    )
+    expect(Object.keys(byLocale).sort()).toEqual(["de", "en", "es", "fr"])
+    for (const group of ["tasks", "chains", "gameModes"] as const) {
+      const enKeys = Object.keys(byLocale.en?.[group] ?? {}).sort()
+      expect(enKeys.length, group).toBeGreaterThan(0)
+      for (const [code, table] of Object.entries(byLocale)) {
+        expect(Object.keys(table[group]).sort(), `${group}/${code}`).toEqual(
+          enKeys
+        )
+      }
+    }
+    expect(byLocale.en?.tasks.TraverseHexes).toBe(
+      "Traverse {[TARGET_AMOUNT]} hexes with your characters"
+    )
+    expect(byLocale.de?.chains.October2026FreeMissionChain).toBe(
+      "GRABENKÄMPFER – {[CHAIN_POSITION]}/{[CHAIN_LENGTH]}"
+    )
+    expect(byLocale.fr?.gameModes.Survival).toBe("Survie")
+  })
+
   it("carries the game's own localized terms", () => {
     expect(tables.characters?.en?.votanUthar).toBe("Ûthar")
     expect(tables.traits?.de?.Flying).toBe("Fliegend")

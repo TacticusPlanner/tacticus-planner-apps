@@ -18,20 +18,18 @@ import {
   useLegendaryEventUnits,
   useLegendaryEvents,
   usePlanWriteQueue,
-  type LegendaryEvent,
-  type LegendaryEventLifecycle,
-  type LegendaryEventGoalTarget,
-} from "@/entities/legendary-event"
-import {
   legendaryEventRunDates,
-  type LegendaryEventRunDates,
-} from "../../lib/run-dates"
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventLifecycle,
+  LegendaryEventGoalTarget,
+  LegendaryEventRunDates,
+} from "@/entities/legendary-event"
 import { useLegendaryEventGoalTargets } from "@/features/legendary-event-goals"
 import { useShowPaidOptions } from "@/features/legendary-event-plan"
-import {
-  useTokenMissionsSource,
-  type TokenPlanMissionsSource,
-} from "@/features/legendary-event-tokens"
+import { useTokenMissionsSource } from "@/features/legendary-event-tokens"
+import type { TokenPlanMissionsSource } from "@/features/legendary-event-tokens"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 

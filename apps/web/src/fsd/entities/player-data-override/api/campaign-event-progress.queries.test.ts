@@ -26,15 +26,15 @@ describe("campaign event progress queries", () => {
 
   it("lets every eligibility consumer share one fetch instead of refetching on mount", async () => {
     const client = appClient()
-    await client.fetchQuery(campaignEventProgressQueries.current())
-    await client.fetchQuery(campaignEventProgressQueries.current())
+    await client.query(campaignEventProgressQueries.current())
+    await client.query(campaignEventProgressQueries.current())
     expect(getOverrides).toHaveBeenCalledTimes(1)
   })
 
   it("still refetches when a caller forces it (the reload after a 409)", async () => {
     const client = appClient()
-    await client.fetchQuery(campaignEventProgressQueries.current())
-    await client.fetchQuery({
+    await client.query(campaignEventProgressQueries.current())
+    await client.query({
       ...campaignEventProgressQueries.current(),
       staleTime: 0,
     })

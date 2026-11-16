@@ -6,10 +6,8 @@ import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 
-import {
-  useCreateRosterSnapshot,
-  type PersonalRosterSnapshot,
-} from "@/entities/roster-snapshot"
+import { useCreateRosterSnapshot } from "@/entities/roster-snapshot"
+import type { PersonalRosterSnapshot } from "@/entities/roster-snapshot"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { formatRelativeTime } from "@/shared/lib"
 import { usePlayerDataStatus } from "@/shared/player-data-status"

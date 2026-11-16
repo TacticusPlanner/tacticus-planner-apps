@@ -13,6 +13,13 @@ export {
   goalMenuMoves,
   type GoalMenuMoves,
 } from "./model/goal-order/menu-moves"
+export {
+  projectGoalsAlreadyFirst,
+  projectInFlightGoalIds,
+} from "./model/goal-order/project-moves"
+export { useMoveProjectGoals } from "./model/goal-order/use-move-project-goals"
+export { moveGoalsChoices } from "./model/goal-order/move-goals-choices"
+export { MoveProjectGoalsDialog } from "./ui/goal-order/move-project-goals-dialog"
 export { useGoalsSelection } from "./model/goals-data/use-goals-selection"
 export {
   useGoalEditParam,
@@ -74,6 +81,19 @@ export {
   type ActiveSeasonFit,
   type SeasonFitState,
 } from "./model/season-fit/use-season-fit"
+export {
+  deadlineCutoffGoalId,
+  eventEndCutoffGoalId,
+  deadlineFitTone,
+  type DeadlineFitSummary,
+  type DeadlineGoalFit,
+} from "./model/deadline-fit/deadline-fit"
+export {
+  useProjectDeadlineFit,
+  useProjectFitCounts,
+  type ProjectDeadlineFit,
+  type ProjectFitCount,
+} from "./model/deadline-fit/use-project-deadline-fit"
 export { orderRowsByGlobalPriority } from "./model/shared/goal-row-order"
 export { expandedRows, groupRows, rowGroupId } from "./model/shared/row-groups"
 export { useCollapsedGroups } from "./model/shared/use-collapsed-groups"
@@ -117,6 +137,7 @@ export {
   type CreateGoalPrefill,
 } from "./model/goal-creation-form/create-goal-launcher-context"
 export { GoalEditDialog } from "./ui/goal-edit/goal-edit-dialog"
+export { AddToAnotherProjectDialog } from "./ui/projects/add-to-another-project-dialog"
 export { GoalProjectBadges, GoalUnitIcon } from "./ui/shared/goal-visuals"
 // Bulk goal creation: one shared target for several units at once (Collection's select mode).
 export { BulkGoalDialog } from "./ui/bulk-create/bulk-goal-dialog"

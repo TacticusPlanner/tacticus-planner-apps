@@ -1,17 +1,11 @@
-import {
-  chestIcon,
-  incursionEnhancementIcon,
-  type ChestTier,
-} from "@workspace/game-catalog"
+import { chestIcon, incursionEnhancementIcon } from "@workspace/game-catalog"
+import type { ChestTier } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
 
-import {
-  nodeName,
-  type Incursion,
-  type IncursionNode,
-} from "../../model/incursions.model"
+import { nodeName } from "../../model/incursions.model"
+import type { Incursion, IncursionNode } from "../../model/incursions.model"
 import { medalIcon } from "./medal-icon"
 
 const CHEST_TIERS: Record<string, ChestTier> = {

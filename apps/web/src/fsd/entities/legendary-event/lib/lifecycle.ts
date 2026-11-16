@@ -28,7 +28,7 @@ export function isLegendaryEventFinished(
   const lastStart = starts[LEGENDARY_EVENT_RUN_COUNT - 1]
   return (
     lastStart !== undefined &&
-    !starts.some((start) => Number.isNaN(start)) &&
+    starts.every((start) => !Number.isNaN(start)) &&
     nowMs >= lastStart + LEGENDARY_EVENT_RUN_DURATION_MS
   )
 }

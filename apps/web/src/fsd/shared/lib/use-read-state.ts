@@ -1,5 +1,6 @@
 import { useMemo } from "react"
-import { useQuery, type UseQueryResult } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
+import type { UseQueryResult } from "@tanstack/react-query"
 
 /** A local read's state: `loading` until the first result, then `ready` or `error`. */
 export type ReadState<T> =

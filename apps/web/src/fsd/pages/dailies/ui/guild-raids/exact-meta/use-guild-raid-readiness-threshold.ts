@@ -1,10 +1,8 @@
 import { useMemo } from "react"
 import type { RaidBossesStorageModel } from "@workspace/game-catalog"
 
-import {
-  resolveGuildRaidLiveInvestmentThreshold,
-  type GuildRaidInvestmentThreshold,
-} from "@/entities/guild-raid-meta"
+import { resolveGuildRaidLiveInvestmentThreshold } from "@/entities/guild-raid-meta"
+import type { GuildRaidInvestmentThreshold } from "@/entities/guild-raid-meta"
 import { useCatalogDataset } from "@/shared/local-data"
 
 const toBosses = (rows: RaidBossesStorageModel[]) => rows[0]?.bosses ?? null

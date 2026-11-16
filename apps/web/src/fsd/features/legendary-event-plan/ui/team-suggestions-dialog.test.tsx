@@ -4,8 +4,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import {
   buildLanePointsModel,
   buildSyncedLaneProgress,
-  type LegendaryEventRosterUnit,
 } from "@/entities/legendary-event"
+import type { LegendaryEventRosterUnit } from "@/entities/legendary-event"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"

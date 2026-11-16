@@ -80,9 +80,7 @@ describe("ScrollToTopButton", () => {
     render(<ScrollToTopButton />)
 
     fireEvent.scroll(window)
-    const button = await waitFor(() =>
-      screen.getByTestId("scroll-to-top-button")
-    )
+    const button = await screen.findByTestId("scroll-to-top-button")
     fireEvent.click(button)
 
     expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: "smooth" })

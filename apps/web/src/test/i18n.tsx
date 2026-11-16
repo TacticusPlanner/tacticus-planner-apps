@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
-import i18next, { type i18n as I18n } from "i18next"
+import i18next from "i18next"
+import type { i18n as I18n } from "i18next"
 import { I18nextProvider, initReactI18next } from "react-i18next"
 
 import enCharacters from "../../public/locales/en/characters.json"

@@ -1,10 +1,5 @@
-import {
-  rankAt,
-  rankIndex,
-  type Rank,
-  type UnitId,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import { rankAt, rankIndex } from "@workspace/game-domain"
+import type { Rank, UnitId, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal"
@@ -15,10 +10,8 @@ import {
   computeUpgradeGoalNeed,
 } from "../goal-creation-form/goal-spec-builder"
 import type { useGoalCatalog } from "../shared/use-goal-catalog"
-import {
-  goalTargetEditFromDraft,
-  type GoalTargetDraft,
-} from "../target-edit/goal-target-edit"
+import { goalTargetEditFromDraft } from "../target-edit/goal-target-edit"
+import type { GoalTargetDraft } from "../target-edit/goal-target-edit"
 
 /** The upgrades in the applied slots of `rank`, as one-each inventory entries. */
 function appliedOnRank(

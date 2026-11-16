@@ -83,7 +83,7 @@ export function createPlanMissingResources() {
   ) => {
     for (const need of allocation?.stages[0]?.remaining ?? []) {
       // `orb:<alliance>:<rarity>` (orb-potential-allocation.ts).
-      const [, key, rarity] = need.id.split(":")
+      const [, key, rarity] = need.id.split(":", 3)
       const alliance = key ? ALLIANCE_BY_KEY[key] : undefined
       if (!alliance || !rarity || need.count <= 0) continue
       addTo((missing.orbs[alliance] ??= {}), rarity as Rarity, need.count)

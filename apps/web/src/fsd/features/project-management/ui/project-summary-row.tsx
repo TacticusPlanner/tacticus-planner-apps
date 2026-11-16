@@ -2,9 +2,14 @@ import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { ProjectColorDot, type ProjectSummary } from "@/entities/project"
+import { ProjectColorDot } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 
 import type { ProjectCardSummary } from "./project-row"
+import { ProjectFitCount } from "./project-fit-count"
+import type { ProjectCardFitCount } from "./project-fit-count"
+import { useEventTargetName } from "../model/event-target-options"
+import { ProjectUnitPortraits } from "./project-unit-portraits"
 
 /** A condensed, identity-only project row for the home dashboard's Your Projects widget: color,
  * name, Default badge, and a units/goals summary — no lifecycle actions (home-projects-widget
@@ -13,12 +18,17 @@ export function ProjectSummaryRow({
   onSelect,
   project,
   summary,
+  fitCount,
 }: {
   onSelect: () => void
   project: ProjectSummary
   summary: ProjectCardSummary | undefined
+  /** The deadline fit count slot (project-deadline-fit), filled by the home page; absent for an
+   *  untargeted or ended project. */
+  fitCount?: ProjectCardFitCount
 }) {
   const { t } = useTranslation()
+  const targetName = useEventTargetName(project.target?.eventId ?? "")
 
   return (
     <li>
@@ -41,10 +51,29 @@ export function ProjectSummaryRow({
           {summary?.status === "loading" ? (
             <Skeleton className="mt-2 h-4 w-28" />
           ) : summary?.status === "success" ? (
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t("goals.project.unitGoalSummary", summary)}
-            </p>
-          ) : summary?.status === "error" ? (
+            <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+              {summary.portraitUnits ? (
+                <ProjectUnitPortraits
+                  size="widget"
+                  total={summary.units}
+                  units={summary.portraitUnits}
+                />
+              ) : null}
+              <p>{t("goals.project.unitGoalSummary", summary)}</p>
+            </div>
+          ) : null}
+          {/* Plain text, not the chip's link: the whole row is already a button. */}
+          {project.target && fitCount ? (
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
+              <Badge data-testid="home-project-target" variant="outline">
+                {t("goals.project.targetChip", {
+                  name: targetName ?? project.target.eventId,
+                })}
+              </Badge>
+              <ProjectFitCount count={fitCount} />
+            </div>
+          ) : null}
+          {summary?.status === "error" ? (
             <p className="mt-1 text-xs text-destructive">
               {t("home.projects.summaryUnavailable")}
             </p>

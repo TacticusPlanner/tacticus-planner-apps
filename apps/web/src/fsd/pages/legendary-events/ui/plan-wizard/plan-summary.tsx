@@ -4,7 +4,8 @@ import { ChevronDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { writeCounts, type PlanWrites } from "./plan-create"
+import { writeCounts } from "./plan-create"
+import type { PlanWrites } from "./plan-create"
 import { planSummaryFacts } from "./plan-summary.model"
 import type { PlanDraft } from "./use-plan-draft"
 

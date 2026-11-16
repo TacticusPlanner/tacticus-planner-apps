@@ -21,8 +21,8 @@ import {
   historyDeltaCount,
   previousRunRecord,
   teamLastRunClearedBattle,
-  type LastRunInput,
 } from "./last-run.view-model"
+import type { LastRunInput } from "./last-run.view-model"
 
 const roster = rosterAfterRun1 as unknown as LegendaryEventRosterUnit[]
 const run3Record: LegendaryEventRunRecord = {

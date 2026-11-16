@@ -9,7 +9,7 @@ import { useTourPageSteps } from "@/shared/tour"
  * filter / Type-Group filters / Planning Settings row) plus how to reprioritize the one account-wide
  * order. Mirrors the Dailies tutorials' shape (registered via `useTourPageSteps`).
  */
-export function useGoalsOverviewTutorial() {
+export function useGoalsOverviewTutorial(deadlineScope = false) {
   const { t } = useTranslation()
   const steps = useMemo(() => {
     const createStep = (
@@ -19,6 +19,7 @@ export function useGoalsOverviewTutorial() {
         | "statusFilter"
         | "filters"
         | "seasonFit"
+        | "deadlineFit"
         | "viewToggle"
         | "select"
         | "bulkActions"
@@ -37,7 +38,10 @@ export function useGoalsOverviewTutorial() {
       createStep('[data-testid="goals-project-scope"]', "projectScope"),
       createStep('[data-testid="goals-status-filter"]', "statusFilter"),
       createStep('[data-testid="goals-type-filter"]', "filters"),
-      createStep('[data-testid="goals-season-fit"]', "seasonFit"),
+      // A targeted project scope replaces Season fit with its deadline (project-deadline-fit).
+      deadlineScope
+        ? createStep('[data-testid="goals-deadline-fit"]', "deadlineFit")
+        : createStep('[data-testid="goals-season-fit"]', "seasonFit"),
     ]
     const after = [
       createStep('[data-testid="goals-order-hint"]', "orderHint"),
@@ -68,6 +72,6 @@ export function useGoalsOverviewTutorial() {
         ...after,
       ],
     }
-  }, [t])
+  }, [t, deadlineScope])
   useTourPageSteps(steps)
 }

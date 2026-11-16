@@ -4,8 +4,8 @@ import {
   EllipsisVertical,
   Share,
   SquarePlus,
-  type LucideIcon,
 } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { DialogDescription } from "@workspace/ui/components/dialog"
@@ -20,7 +20,8 @@ import {
 
 import { APP_SHORTCUTS } from "../model/app-shortcuts"
 import type { InstallPromptOutcome } from "../model/install-prompt-store"
-import { installSteps, type InstallStepIcon } from "../model/install-steps"
+import { installSteps } from "../model/install-steps"
+import type { InstallStepIcon } from "../model/install-steps"
 import type { AppInstallState } from "../model/use-app-install"
 
 const STEP_ICONS: Record<InstallStepIcon, LucideIcon> = {

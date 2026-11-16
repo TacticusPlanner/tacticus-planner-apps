@@ -1,12 +1,14 @@
 import { useState, useMemo } from "react"
 import {
-  type UnitId,
   startingProgression,
   firstRank,
   rankIndex,
-  type Rank,
-  type UpgradeId,
-  type FactionGroup,
+} from "@workspace/game-domain"
+import type {
+  UnitId,
+  Rank,
+  UpgradeId,
+  FactionGroup,
 } from "@workspace/game-domain"
 import type { FarmingStrategy, GoalKind } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
@@ -15,8 +17,8 @@ import {
   additionalTargetSelection,
   useUnitShopShardSupply,
   additionalTargetOptions,
-  type RankAdditionalTarget,
 } from "@/entities/goal-farming"
+import type { RankAdditionalTarget } from "@/entities/goal-farming"
 import { useAcquisitionSourceSelection } from "./use-acquisition-source-selection"
 import { useMythicMaterialSelection } from "./use-mythic-material-selection"
 import { useEntityShardSummary } from "./use-entity-shard-summary"
@@ -521,6 +523,7 @@ export function useCreateGoalForm({
     // 1-based position in the global order; the new goals go last unless the user moves them.
     priorityPosition: priorityPosition ?? inFlightCount + 1,
     priorityTotal: inFlightCount + 1,
+    priorityOccupants: globalPlan.inFlight,
     setPriorityPosition: (position: number) =>
       setPriorityPosition(position > inFlightCount ? null : position),
     takenTargetsFor: takenTargets.takenFor,

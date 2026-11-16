@@ -1,9 +1,8 @@
-import {
-  plTier,
-  resolveHseVariant,
-  type GameCatalogHseConfig,
-  type GameCatalogHseTier,
-  type GameCatalogHseVariant,
+import { plTier, resolveHseVariant } from "@workspace/game-catalog"
+import type {
+  GameCatalogHseConfig,
+  GameCatalogHseTier,
+  GameCatalogHseVariant,
 } from "@workspace/game-catalog"
 
 /** The reward tier a player's account earns (V1 `plTier`, keyed as the served tiers are). */

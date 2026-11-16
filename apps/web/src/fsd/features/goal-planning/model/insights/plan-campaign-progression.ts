@@ -9,10 +9,8 @@ import type {
 } from "@/entities/goal-farming"
 import type { Battle, FarmLocation } from "@/shared/lib"
 
-import {
-  campaignTrackGate,
-  type GateCampaignDefinition,
-} from "../unlock-paths/campaign-track-gate"
+import { campaignTrackGate } from "../unlock-paths/campaign-track-gate"
+import type { GateCampaignDefinition } from "../unlock-paths/campaign-track-gate"
 import { netGoalNeeds } from "./plan-bottlenecks"
 import type { PlanCampaignProgression } from "./use-plan-insights.domain"
 

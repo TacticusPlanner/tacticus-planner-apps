@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest"
 import type { BattleId } from "@workspace/game-domain"
 
-import {
-  planMissionRaids,
-  type MissionGoalNode,
-  type MissionRaidBattle,
-  type PlanMissionRaidsInput,
+import { planMissionRaids } from "./mission-raids"
+import type {
+  MissionGoalNode,
+  MissionRaidBattle,
+  PlanMissionRaidsInput,
 } from "./mission-raids"
 
 const id = (value: string) => value as BattleId

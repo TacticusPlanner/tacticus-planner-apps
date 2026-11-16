@@ -1,10 +1,8 @@
 import { describe, expect, it } from "vitest"
 
 import { isAccountSetupComplete } from "./current-user"
-import {
-  mapCurrentUserDtoToDomain,
-  type CurrentUserDto,
-} from "./current-user.mapper"
+import { mapCurrentUserDtoToDomain } from "./current-user.mapper"
+import type { CurrentUserDto } from "./current-user.mapper"
 
 const base: CurrentUserDto = {
   applicationUserId: "user-1",

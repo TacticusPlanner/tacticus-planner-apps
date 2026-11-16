@@ -29,8 +29,7 @@ describe("sign-in account kept notice", () => {
     renderHook(() => useSignInAccountKeptNotice())
     renderHook(() => useSignInAccountKeptNotice())
 
-    expect(toastError).toHaveBeenCalledOnce()
-    expect(toastError).toHaveBeenCalledWith(
+    expect(toastError).toHaveBeenCalledExactlyOnceWith(
       "manageAccount.account.signInAccountKeptTitle",
       expect.objectContaining({
         description: "manageAccount.account.signInAccountKeptDescription",

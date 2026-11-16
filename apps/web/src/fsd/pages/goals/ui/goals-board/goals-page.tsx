@@ -7,7 +7,39 @@ import {
   StatusFilterSelect,
   isGoalGroupValue,
 } from "@/entities/goal"
-import { MobileReorderBar, OrderConflictBanner } from "@/features/goal-planning"
+import {
+  MobileReorderBar,
+  OrderConflictBanner,
+  useGoalAttainmentState,
+  useGoalsOverviewMetrics,
+  usePlanInsights,
+  orderRowsByGlobalPriority,
+  expandedRows,
+  groupRows,
+  rowGroupId,
+  useCollapsedGroups,
+  useProjectsByGoalId,
+  useStableMap,
+  useGoalActions,
+  useGoalsMobileModes,
+  useGoalsSelection,
+  useGoals,
+  useGoalEditParam,
+  useGoalsListFilters,
+  goalMenuMoves,
+  useGoalsPageReorder,
+  isGoalsListLoading,
+  useGoalCatalog,
+  useGoalsProjectScope,
+  isSeasonFitMode,
+  deadlineCutoffGoalId,
+  eventEndCutoffGoalId,
+  seasonCutoffGoalId,
+  useProjectDeadlineFit,
+  useSeasonFit,
+  GoalEditDialog,
+  goalRowFromSummary,
+} from "@/features/goal-planning"
 import { PendingMaterialSteps } from "@/features/v1-import"
 import {
   normalizeXpBookRarity,
@@ -17,30 +49,10 @@ import {
 } from "@/entities/planning-setting"
 import { usePersistedSelection } from "@/shared/lib"
 
-import { useGoalAttainmentState } from "@/features/goal-planning"
-import { useGoalsOverviewMetrics } from "@/features/goal-planning"
-import { usePlanInsights } from "@/features/goal-planning"
-import { orderRowsByGlobalPriority } from "@/features/goal-planning"
-import {
-  expandedRows,
-  groupRows,
-  rowGroupId,
-  useCollapsedGroups,
-} from "@/features/goal-planning"
-import { goalRowFromSummary, type GoalRow } from "@/features/goal-planning"
-import { useProjectsByGoalId } from "@/features/goal-planning"
-import { useStableMap } from "@/features/goal-planning"
-import { useGoalActions } from "@/features/goal-planning"
-import { useGoalsMobileModes } from "@/features/goal-planning"
-import { useGoalsSelection } from "@/features/goal-planning"
-import { useGoals } from "@/features/goal-planning"
-import { useGoalEditParam, useGoalsListFilters } from "@/features/goal-planning"
+import type { GoalRow } from "@/features/goal-planning"
 import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
-import { goalMenuMoves, useGoalsPageReorder } from "@/features/goal-planning"
-import { isGoalsListLoading } from "@/features/goal-planning"
 import { useProjects } from "@/entities/project"
-import { useGoalCatalog } from "@/features/goal-planning"
 import { GoalsCardsSelectAll } from "./goals-cards"
 import { GoalsList } from ".//goals-list"
 import { GoalGroupSection } from "./goal-group-section"
@@ -52,20 +64,18 @@ import { GoalsViewToggle } from "./goals-view-toggle"
 import { GoalsCollapseAllToggle } from "./goals-collapse-all-toggle"
 import { useGoalsView } from "./use-goals-view"
 import { SeasonFitSelect } from "./season-fit-select"
+import { DeadlineFitHeader, DeadlineOverrideChip } from "./deadline-fit-header"
+import type { GoalFitView } from "./season-fit-copy"
+import { useEventTargetName } from "@/features/project-management"
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
 import { GoalsMobileSelectToggle } from "./goals-mobile-select-toggle"
 import { MobileSelectBar } from "./mobile-select-bar"
 import { GoalsOrderHint } from "./goals-order-hint"
 import { GoalsProjectScope } from "./goals-project-scope"
-import { useGoalsProjectScope } from "@/features/goal-planning"
-import {
-  isSeasonFitMode,
-  seasonCutoffGoalId,
-  useSeasonFit,
-} from "@/features/goal-planning"
+import { GoalsMoveProjectGoalsButton } from "./goals-move-project-goals-button"
 import { useLevelRules } from "@/entities/goal-farming"
-import { buildCascadeContext, type SelectedXpBook } from "./goal-row-utils"
-import { GoalEditDialog } from "@/features/goal-planning"
+import { buildCascadeContext } from "./goal-row-utils"
+import type { SelectedXpBook } from "./goal-row-utils"
 import { PageTourButton } from "@/shared/tour"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
@@ -111,8 +121,6 @@ export function GoalsPage() {
     const rarity = normalizeXpBookRarity(planningSettings.xpBookRarity)
     return { rarity, xp: levelRules.xpBooks[rarity].xp }
   }, [levelRules, planningSettings.xpBookRarity])
-  useGoalsOverviewTutorial()
-
   const projects = useProjects()
   // Membership as a URL-backed filter dimension (`?project=`), not a project selection: deliberately
   // unconnected to the project filter Dailies and Insights use, so scoping Goals never changes what
@@ -276,14 +284,62 @@ export function GoalsPage() {
     reachedByGoalId
   )
   const activeSeasonFit = seasonFit.status === "ready" ? seasonFit.active : null
+  // A project with a target measures its goals against its own deadline instead of Season fit
+  // (project-deadline-fit); the stored Season fit choice applies again outside that scope.
+  const scopedProject = projects.projects.find(
+    (project) => project.projectId === scopeId
+  )
+  const scopedRows = useMemo(
+    () =>
+      scopeId
+        ? nonArchivedRows.filter((row) =>
+            (row.projects ?? []).some(
+              (membership) => membership.projectId === scopeId
+            )
+          )
+        : [],
+    [nonArchivedRows, scopeId]
+  )
+  const estimatesPending =
+    (insightsRun.loading && stableEstimates.size === 0) || attainmentPending
+  const deadlineFit = useProjectDeadlineFit(
+    scopedProject,
+    scopedRows,
+    estimatesPending ? undefined : stableEstimates,
+    reachedByGoalId
+  )
+  const targetName = useEventTargetName(scopedProject?.target?.eventId ?? "")
+  const fitView: GoalFitView | null =
+    deadlineFit.status === "off"
+      ? activeSeasonFit
+      : deadlineFit.status === "ready"
+        ? {
+            kind: "deadline",
+            chip: t("goals.project.targetChip", {
+              name: targetName ?? deadlineFit.target.eventId,
+            }),
+            deadlineMs: deadlineFit.deadline.deadlineMs,
+            endMs: deadlineFit.deadline.endMs,
+            fits: deadlineFit.byGoalId,
+          }
+        : null
+  useGoalsOverviewTutorial(deadlineFit.status !== "off")
   // The divider follows the one account-wide priority order, which only an ungrouped list shows.
-  const cutoffGoalId =
-    activeSeasonFit && group === "none"
-      ? seasonCutoffGoalId(
-          rows.map((row) => row.goalId),
-          activeSeasonFit.fits
-        )
+  const orderedIds = rows.map((row) => row.goalId)
+  const showCutoffs = group === "none" && fitView !== null
+  // A Legendary Event run gets two dividers: its start, then its end. When no goal finishes during
+  // the run they would sit together, so only the end one shows.
+  const endCutoffGoalId =
+    showCutoffs && "kind" in fitView
+      ? eventEndCutoffGoalId(orderedIds, fitView.fits)
       : null
+  const startCutoffGoalId = !showCutoffs
+    ? null
+    : "kind" in fitView
+      ? deadlineCutoffGoalId(orderedIds, fitView.fits)
+      : seasonCutoffGoalId(orderedIds, fitView.fits)
+  const cutoffGoalId =
+    startCutoffGoalId === endCutoffGoalId ? null : startCutoffGoalId
 
   // Selection is page-local and discarded whenever what the list shows changes by user control.
   const {
@@ -401,19 +457,32 @@ export function GoalsPage() {
     />
   )
 
+  // In a targeted scope Move goals sits in the deadline header, otherwise beside the scope chips.
+  const moveGoalsButton =
+    scopedProject && nonArchivedGoals.fetchState.status === "success" ? (
+      <GoalsMoveProjectGoalsButton
+        goals={nonArchivedGoals.fetchState.goals}
+        project={scopedProject}
+        projects={projects.projects}
+      />
+    ) : null
+
   return (
     <div className="flex flex-col gap-6" data-testid="goals-page">
       <GoalsToolbar
         projectScope={
-          <GoalsProjectScope
-            counts={scopeCounts}
-            failed={projects.fetchState.status === "error"}
-            loading={projects.loading}
-            onSelect={setScopeId}
-            projects={projects.projects}
-            selectedId={scopeId}
-            totalCount={nonArchivedRows.length}
-          />
+          <>
+            <GoalsProjectScope
+              counts={scopeCounts}
+              failed={projects.fetchState.status === "error"}
+              loading={projects.loading}
+              onSelect={setScopeId}
+              projects={projects.projects}
+              selectedId={scopeId}
+              totalCount={nonArchivedRows.length}
+            />
+            {deadlineFit.status === "off" ? moveGoalsButton : null}
+          </>
         }
         bulkActions={bulkActions}
         createGoal={<GoalsCreateButton scopeId={scopeId ?? null} />}
@@ -427,11 +496,15 @@ export function GoalsPage() {
         }
         orderHint={orderHint}
         seasonFit={
-          <SeasonFitSelect
-            onValueChange={setSeasonFitMode}
-            state={seasonFit}
-            value={seasonFitMode}
-          />
+          deadlineFit.status === "off" ? (
+            <SeasonFitSelect
+              onValueChange={setSeasonFitMode}
+              state={seasonFit}
+              value={seasonFitMode}
+            />
+          ) : (
+            <DeadlineOverrideChip />
+          )
         }
         planningSettings={
           <PlanningSettingsTrigger
@@ -460,6 +533,10 @@ export function GoalsPage() {
           />
         }
       />
+
+      {deadlineFit.status === "off" ? null : (
+        <DeadlineFitHeader action={moveGoalsButton} fit={deadlineFit} />
+      )}
 
       <PendingMaterialSteps />
 
@@ -521,7 +598,8 @@ export function GoalsPage() {
               reorderPending={orderActions.pending}
               rows={rowGroup.rows}
               seasonCutoffGoalId={cutoffGoalId}
-              seasonFit={activeSeasonFit}
+              eventEndCutoffGoalId={endCutoffGoalId}
+              seasonFit={fitView}
               selectActive={selectActive}
               selection={selection}
               view={goalsView.view}

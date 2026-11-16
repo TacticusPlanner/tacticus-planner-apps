@@ -7,8 +7,8 @@ import {
   maxAbilityLevel,
   maxRankForProgression,
   progressionRarity,
-  type UnitId,
 } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -36,7 +36,8 @@ import { UnitTabs } from "../unit/unit-tabs"
 import { useUnitTab } from "../unit/use-unit-tab"
 import { useCharacterUnitTutorial } from "./character-unit.tutorial"
 import { CharacterUnitDetails } from "./character-unit-details"
-import { CharacterUnitHeader, type ValuesMode } from "./character-unit-header"
+import { CharacterUnitHeader } from "./character-unit-header"
+import type { ValuesMode } from "./character-unit-header"
 import { MythicQuestsList } from "./mythic-quests-card"
 import { RelicPanel } from "./relic-panel"
 import { useCharacterPowerView } from "./use-character-power-view"
@@ -48,8 +49,8 @@ import {
   relicFor,
   startingValues,
   unitOwnership,
-  type ShownValues,
 } from "./character-unit.view-model"
+import type { ShownValues } from "./character-unit.view-model"
 
 const CHARACTERS_PATH = "/library/characters"
 const TABS = ["details", "rankup"] as const

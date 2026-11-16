@@ -6,7 +6,8 @@ import { Button } from "@workspace/ui/components/button"
 import { useCreateGoalLauncher } from "@/entities/goal"
 import { useAnalyticsActions } from "@/shared/analytics"
 
-import { unitCreateGoalPrefill, type UnitEntityType } from "./unit-create-goal"
+import { unitCreateGoalPrefill } from "./unit-create-goal"
+import type { UnitEntityType } from "./unit-create-goal"
 import type { UnitOwnership } from "./unit-ownership"
 
 /**

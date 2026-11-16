@@ -1,4 +1,5 @@
-import { useState, type RefObject } from "react"
+import { useState } from "react"
+import type { RefObject } from "react"
 import { Link, useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -19,10 +20,8 @@ import { NavChildRow } from "./nav-child-row"
 import { filterNavigationItems } from "./navigation-filter"
 import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
-import {
-  filterQuickActions,
-  type QuickActionsController,
-} from "./quick-actions"
+import { filterQuickActions } from "./quick-actions"
+import type { QuickActionsController } from "./quick-actions"
 import { QuickActionsGroup } from "./quick-actions-group"
 
 export function DesktopNavigationDialog({
@@ -93,7 +92,7 @@ export function DesktopNavigationDialog({
             }}
             rowClassName="group/nav-row flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors"
           />
-          {filteredItems.length ? (
+          {filteredItems.length > 0 ? (
             <section aria-labelledby="pages-heading">
               <h3
                 className="px-3 pb-1 text-xs font-medium text-muted-foreground"
@@ -158,7 +157,7 @@ export function DesktopNavigationDialog({
                 })}
               </div>
             </section>
-          ) : filteredActions.length ? null : (
+          ) : filteredActions.length > 0 ? null : (
             <p className="py-8 text-center text-muted-foreground">
               {t("nav.noResults")}
             </p>

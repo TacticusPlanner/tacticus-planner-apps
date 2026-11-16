@@ -1,10 +1,5 @@
-import {
-  subItemDescription,
-  subItemLabel,
-  type NavItem,
-  type NavSubItem,
-  type NavTranslate,
-} from "./nav-items"
+import { subItemDescription, subItemLabel } from "./nav-items"
+import type { NavItem, NavSubItem, NavTranslate } from "./nav-items"
 
 function matches(
   item: NavItem | NavSubItem,

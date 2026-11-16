@@ -1,9 +1,10 @@
-import { apiClient, unwrap, type ApiSchemas } from "@/shared/api"
+import { apiClient, unwrap } from "@/shared/api"
+import type { ApiSchemas } from "@/shared/api"
 
-import {
-  onslaughtTiers,
-  type OnslaughtAllianceProgress,
-  type OnslaughtProgress,
+import { onslaughtTiers } from "../model/types"
+import type {
+  OnslaughtAllianceProgress,
+  OnslaughtProgress,
 } from "../model/types"
 
 type S = ApiSchemas

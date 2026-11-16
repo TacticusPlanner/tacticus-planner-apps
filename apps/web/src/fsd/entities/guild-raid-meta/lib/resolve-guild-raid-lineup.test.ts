@@ -4,10 +4,8 @@ import { describe, expect, it } from "vitest"
 
 import type { GuildRaidInvestmentFacts } from "./resolve-guild-raid-investment-readiness"
 import type { GuildRaidInvestmentThreshold } from "./resolve-guild-raid-investment-threshold"
-import {
-  resolveGuildRaidLineup,
-  type GuildRaidReadinessRoster,
-} from "./resolve-guild-raid-lineup"
+import { resolveGuildRaidLineup } from "./resolve-guild-raid-lineup"
+import type { GuildRaidReadinessRoster } from "./resolve-guild-raid-lineup"
 
 const requiredIndex = 10
 const requiredAbilityLevel = 20

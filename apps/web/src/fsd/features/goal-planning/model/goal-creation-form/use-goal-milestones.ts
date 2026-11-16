@@ -7,9 +7,8 @@ import {
   nextAbilityMilestone,
   nextProgressionMilestone,
   nextRankMilestone,
-  type AbilityMilestone,
-  type GoalMilestones,
 } from "./goal-milestones"
+import type { AbilityMilestone, GoalMilestones } from "./goal-milestones"
 
 /**
  * The extra end targets of the Rank, Ascension and Ability ladders ("Add milestone",

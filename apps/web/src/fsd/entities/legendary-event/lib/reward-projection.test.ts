@@ -15,8 +15,8 @@ import {
   projectRewards,
   syncedChestsClaimed,
   unitNextAscensionStep,
-  type RewardProjectionInput,
 } from "./reward-projection"
+import type { RewardProjectionInput } from "./reward-projection"
 import type { LegendaryEventRunResolution } from "./run-resolution"
 
 const uthar = utharEvent.rewards
@@ -107,7 +107,7 @@ const danteChestCosts = [
   370,
   380,
   390,
-  ...Array<number>(16).fill(400),
+  ...new Array<number>(16).fill(400),
   800,
   900,
   1000,
@@ -115,7 +115,7 @@ const danteChestCosts = [
   1200,
   1300,
   1400,
-  ...Array<number>(11).fill(1500),
+  ...new Array<number>(11).fill(1500),
 ]
 const dantePayouts = [
   [100, 25],

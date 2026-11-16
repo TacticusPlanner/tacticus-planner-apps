@@ -6,10 +6,12 @@ import {
   goalOrderConflict,
   goalQueries,
   goalRevisionConflict,
-  type EditGoalRequest,
-  type GoalDetail,
-  type GoalListResponse,
-  type GoalOrderResponse,
+} from "@/entities/goal"
+import type {
+  EditGoalRequest,
+  GoalDetail,
+  GoalListResponse,
+  GoalOrderResponse,
 } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { ApiError } from "@/shared/api"
@@ -164,7 +166,7 @@ function invalidSections(
 ): GoalEditSection[] {
   if (!errors) return []
   const sections = Object.keys(errors).flatMap((key): GoalEditSection[] => {
-    const root = key.split(/[.[]/)[0]?.toLowerCase()
+    const root = key.split(/[.[]/, 1)[0]?.toLowerCase()
     return root === "target" || root === "details" || root === "priority"
       ? [root]
       : root === "projectids"

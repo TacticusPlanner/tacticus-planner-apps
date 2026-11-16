@@ -1,5 +1,6 @@
 import type { LanePointsModel } from "./lane-points-model"
-import { laneReachablePoints, type LaneReach } from "./reachable-points"
+import { laneReachablePoints } from "./reachable-points"
+import type { LaneReach } from "./reachable-points"
 import type { LaneProgressView } from "./synced-lane-progress"
 
 /** Fewest of `masks` whose union includes `target` (an exact cover over a few bits). */

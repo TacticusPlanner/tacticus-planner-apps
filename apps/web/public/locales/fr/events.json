@@ -27,6 +27,7 @@
     "break": "Pause"
   },
   "wikiLink": "Wiki",
+  "plannerLink": "Ouvrir le planificateur",
   "agenda": {
     "ongoing": "En cours",
     "endsIn": "Se termine dans {{when}}"
@@ -96,7 +97,9 @@
     "guild-raid-break": "Pause du raid de guilde",
     "guild-war-season": "Guerre de guilde",
     "anniversary-event": "Événement Anniversaire",
-    "crusade-season": "Saison de Croisade"
+    "crusade-season": "Saison de Croisade",
+    "armageddon-shop": "Boutique d'Armageddon",
+    "skull-harvest-shop": "Récolte de Crânes"
   },
   "families": {
     "campaigns": "Campagnes",

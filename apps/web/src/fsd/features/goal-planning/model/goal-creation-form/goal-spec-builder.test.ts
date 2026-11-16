@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest"
-import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
+import {
+  unitIdSchema,
+  upgradeIdSchema,
+  minProgressionForRank,
+} from "@workspace/game-domain"
 
 import type { MowStorageModel } from "@workspace/game-catalog"
 import type {
@@ -15,7 +19,6 @@ import {
   mowRelevantUpgradeQuantities,
 } from "./goal-spec-builder"
 import { emptyAcquisitionPlan } from "./acquisition-plan"
-import { minProgressionForRank } from "@workspace/game-domain"
 
 const upgradeId = upgradeIdSchema.parse
 const upgradeIds = (values: string[]) => values.map((value) => upgradeId(value))

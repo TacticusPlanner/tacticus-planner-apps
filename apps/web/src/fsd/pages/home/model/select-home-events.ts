@@ -1,8 +1,9 @@
+import { eventStatus } from "@workspace/game-catalog"
+import type { GameCatalogEventShopRecord } from "@workspace/game-catalog"
+
 import { homeScreenEventInstanceKey } from "@/features/daily-raids"
-import {
-  deriveLegendaryEventLifecycle,
-  type LegendaryEventProgress,
-} from "@/entities/legendary-event"
+import { deriveLegendaryEventLifecycle } from "@/entities/legendary-event"
+import type { LegendaryEventProgress } from "@/entities/legendary-event"
 
 import type { CalendarWindow } from "./calendar-window"
 
@@ -22,6 +23,27 @@ export interface LegendaryEventEntry {
   id: string
   eventStageStartDatesUtc: readonly string[]
 }
+
+/** A calendar occurrence with a featured hero (a Quest or a Hero Release Event). */
+export interface FeaturedOccurrence {
+  /** Opens the event's planner tab on this occurrence, where the tab supports it. */
+  key: string
+  startMs: number
+  endMs: number
+  featuredCharacterId: string | null
+}
+
+/** Running occurrences, by start, and the next one to start. */
+export interface LiveAndNext<T> {
+  live: readonly T[]
+  next: T | null
+}
+
+/** The fields the rows read from a catalog event shop. */
+export type EventShopEntry = Pick<
+  GameCatalogEventShopRecord,
+  "id" | "eventKey" | "definitionId" | "startUtc" | "dayCount"
+>
 
 interface HomeEventRowBase {
   /** Stable React key. */
@@ -57,25 +79,39 @@ export type HomeEventRow =
       /** The quest's featured hero, from the calendar occurrence; null when it names none. */
       featuredCharacterId: string | null
     })
+  | (HomeEventRowBase & {
+      type: "hre"
+      /** The Hero Release Event's featured hero; null when the occurrence names none. */
+      featuredCharacterId: string | null
+    })
+  | (HomeEventRowBase & {
+      type: "eventShop"
+      /** The calendar definition (names the shop); null while its start date is TBA. */
+      definitionId: string | null
+      /** The game's event key (names an undated shop, e.g. `November2026`). */
+      eventKey: string
+      /** True when the start date is not announced yet: `startMs`/`endMs` are then Infinity. */
+      dateTba: boolean
+    })
 
-/** Upcoming rows on Home, the pinned Legendary Event included. */
-const UPCOMING_ROW_LIMIT = 3
+const DAY_MS = 86_400_000
 
 export interface HomeEvents {
-  /** Running now: the live Home Screen Event, Legendary Event, Campaign Event, Incursion, then Quest. */
+  /** Running now: the live Home Screen Events, Legendary Event, Campaign Event, Incursion, Quest,
+   *  Hero Release Event, then event shop. */
   live: HomeEventRow[]
-  /** Not started yet, by start, at most three. */
+  /** The next of each kind, by start (a shop with its start date TBA last). */
   upcoming: HomeEventRow[]
 }
 
 /**
- * Splits the Home Screen Event selection and the Legendary Event lifecycle into what runs now and
- * what starts next (UTC instants decide; the device timezone only changes the displayed text). The
- * Legendary Event is pinned: when none is live, the next one with a known start always takes an
- * upcoming slot, replacing the latest of the three, so earlier Home Screen Events never push it off
- * Home. Either source may be `null` when its read failed or is pending. The Campaign Event,
- * Incursion and Quest Event (`null` while the calendar is pending or has none) are live like any
- * event, else compete for an upcoming slot by start.
+ * Splits Home's event sources into what runs now and what starts next (UTC instants decide; the
+ * device timezone only changes the displayed text). Every running occurrence is live. Upcoming holds
+ * the next occurrence of each kind, so a run of Home Screen Events never pushes a Quest, Hero Release
+ * Event or event shop off Home: the Home Screen Events that start first (several when they start
+ * together), the next Legendary Event with a known start, Campaign Event, Incursion, Quest, Hero
+ * Release Event, and the next dated event shop, else one whose start date is TBA. A shop with no date
+ * is never live. Any source may be `null` when its read failed or is pending.
  */
 export function selectHomeEvents({
   homeScreen,
@@ -83,11 +119,12 @@ export function selectHomeEvents({
   campaignEvent = null,
   incursion = null,
   quest = null,
+  hre = null,
+  eventShops = null,
   nowMs,
-  limit = UPCOMING_ROW_LIMIT,
 }: {
   homeScreen: {
-    active: HomeScreenEventEntry | null
+    live: readonly HomeScreenEventEntry[]
     upcoming: readonly HomeScreenEventEntry[]
   } | null
   legendary: {
@@ -96,9 +133,10 @@ export function selectHomeEvents({
   } | null
   campaignEvent?: (CalendarWindow & { campaignId: string | null }) | null
   incursion?: CalendarWindow | null
-  quest?: (CalendarWindow & { featuredCharacterId: string | null }) | null
+  quest?: LiveAndNext<FeaturedOccurrence> | null
+  hre?: LiveAndNext<FeaturedOccurrence> | null
+  eventShops?: readonly EventShopEntry[] | null
   nowMs: number
-  limit?: number
 }): HomeEvents {
   const hseRow = (
     entry: HomeScreenEventEntry,
@@ -117,11 +155,17 @@ export function selectHomeEvents({
 
   const live: HomeEventRow[] = []
   const upcoming: HomeEventRow[] = []
-  if (homeScreen?.active) live.push(hseRow(homeScreen.active, true))
+  for (const entry of homeScreen?.live ?? []) live.push(hseRow(entry, true))
+  const firstHseStartMs = Math.min(
+    ...(homeScreen?.upcoming ?? []).map((entry) => Date.parse(entry.startUtc))
+  )
   for (const entry of homeScreen?.upcoming ?? []) {
-    upcoming.push(hseRow(entry, false))
+    if (Date.parse(entry.startUtc) === firstHseStartMs) {
+      upcoming.push(hseRow(entry, false))
+    }
   }
 
+  let nextLegendary: HomeEventRow | null = null
   for (const event of legendary?.events ?? []) {
     const lifecycle = deriveLegendaryEventLifecycle(event, nowMs)
     if (lifecycle.runStartMs === undefined) continue // archived, or upcoming with the date TBA
@@ -142,8 +186,11 @@ export function selectHomeEvents({
         : {}),
     }
     if (isLive) live.push(row)
-    else upcoming.push(row)
+    else if (!nextLegendary || row.startMs < nextLegendary.startMs) {
+      nextLegendary = row
+    }
   }
+  if (nextLegendary) upcoming.push(nextLegendary)
 
   const windowRows: HomeEventRow[] = []
   if (campaignEvent) {
@@ -168,21 +215,95 @@ export function selectHomeEvents({
       destination: "/my-game/incursions",
     })
   }
-  if (quest) {
-    windowRows.push({
-      type: "quest",
-      key: `quest:${quest.startMs}`,
-      featuredCharacterId: quest.featuredCharacterId,
-      live: quest.status === "live",
-      startMs: quest.startMs,
-      endMs: quest.endMs,
-      // The Quest tab opens on the running quest, else the next one.
-      destination: "/dailies/quest",
-    })
-  }
   for (const row of windowRows) (row.live ? live : upcoming).push(row)
 
-  upcoming.sort((a, b) => a.startMs - b.startMs)
+  const questRow = (
+    occurrence: FeaturedOccurrence,
+    isLive: boolean
+  ): HomeEventRow => ({
+    type: "quest",
+    key: `quest:${occurrence.startMs}`,
+    featuredCharacterId: occurrence.featuredCharacterId,
+    live: isLive,
+    startMs: occurrence.startMs,
+    endMs: occurrence.endMs,
+    // The Quest tab opens on the running quest, else the next one.
+    destination: "/dailies/quest",
+  })
+  for (const occurrence of quest?.live ?? []) {
+    live.push(questRow(occurrence, true))
+  }
+  if (quest?.next) upcoming.push(questRow(quest.next, false))
+
+  const hreRow = (
+    occurrence: FeaturedOccurrence,
+    isLive: boolean
+  ): HomeEventRow => ({
+    type: "hre",
+    key: `hre:${occurrence.startMs}`,
+    featuredCharacterId: occurrence.featuredCharacterId,
+    live: isLive,
+    startMs: occurrence.startMs,
+    endMs: occurrence.endMs,
+    // Opens the HRE tab on this occurrence.
+    destination: `/dailies/hre?event=${encodeURIComponent(occurrence.key)}`,
+  })
+  for (const occurrence of hre?.live ?? []) live.push(hreRow(occurrence, true))
+  if (hre?.next) upcoming.push(hreRow(hre.next, false))
+
+  const shopRow = (shop: EventShopEntry, isLive: boolean): HomeEventRow => {
+    const startMs =
+      shop.startUtc === null
+        ? Number.POSITIVE_INFINITY
+        : Date.parse(shop.startUtc)
+    return {
+      type: "eventShop",
+      key: `event-shop:${shop.id}`,
+      definitionId: shop.definitionId,
+      eventKey: shop.eventKey,
+      dateTba: shop.startUtc === null,
+      live: isLive,
+      startMs,
+      endMs: startMs + shop.dayCount * DAY_MS,
+      destination: `/dailies/event-shop/${encodeURIComponent(shop.id)}`,
+    }
+  }
+  let nextShop: HomeEventRow | null = null
+  for (const shop of eventShops ?? []) {
+    if (shop.startUtc === null) continue
+    const status = eventStatus(
+      { startUtc: shop.startUtc, dayCount: shop.dayCount },
+      nowMs
+    )
+    if (status === "running") live.push(shopRow(shop, true))
+    else if (status === "upcoming") {
+      const row = shopRow(shop, false)
+      if (!nextShop || row.startMs < nextShop.startMs) nextShop = row
+    }
+  }
+  // Only while no dated shop is coming: the served order puts the soonest undated one first.
+  const undated = (eventShops ?? []).find((shop) => shop.startUtc === null)
+  if (!nextShop && undated) nextShop = shopRow(undated, false)
+  if (nextShop) upcoming.push(nextShop)
+
+  // Infinity − Infinity is NaN, so two TBA starts compare equal explicitly.
+  upcoming.sort((a, b) => (a.startMs === b.startMs ? 0 : a.startMs - b.startMs))
+
+  return { live, upcoming }
+}
+
+/** Upcoming rows shown before "Show more". */
+const UPCOMING_COLLAPSED_LIMIT = 3
+
+/**
+ * The upcoming rows Home shows collapsed: the first `limit` by start, with the next Legendary Event
+ * pinned into the last slot when none is live, so a Legendary Event is always visible in Right now
+ * or Upcoming events. The rest stay behind "Show more", in start order.
+ */
+export function collapseUpcoming(
+  { live, upcoming }: HomeEvents,
+  limit = UPCOMING_COLLAPSED_LIMIT
+): HomeEventRow[] {
   const shown = upcoming.slice(0, limit)
   const hasLiveLegendary = live.some((row) => row.type === "legendaryEvent")
   const nextLegendary = upcoming.find((row) => row.type === "legendaryEvent")
@@ -195,6 +316,5 @@ export function selectHomeEvents({
     // Every shown row starts before it, so it stays last in start order.
     shown.splice(limit - 1, 1, nextLegendary)
   }
-
-  return { live, upcoming: shown }
+  return shown
 }

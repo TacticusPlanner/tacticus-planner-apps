@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from "react"
+import { useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
@@ -8,9 +9,8 @@ import {
   buildCreateGoalSnapshot,
   createCombinedGoals,
   goalQueries,
-  type GoalKind,
-  type ProjectMembership,
 } from "@/entities/goal"
+import type { GoalKind, ProjectMembership } from "@/entities/goal"
 import { projectQueries } from "@/entities/project"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -120,7 +120,7 @@ export function useGoalSubmit({
   const error = createGoals.error
   const errorMessage = error ? goalCreateErrorText(t, error, getUnitName) : null
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault()
     if (!entityId || !canSubmit) {
       return

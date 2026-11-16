@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { selectHomeEvents, type HomeEventRow } from "./select-home-events"
+import { collapseUpcoming, selectHomeEvents } from "./select-home-events"
+import type { HomeEventRow } from "./select-home-events"
 
 const hse = (definitionId: string, startUtc: string, endUtc: string) => ({
   definitionId,
@@ -64,12 +65,18 @@ const both = (events: ReturnType<typeof selectHomeEvents>) => [
   ...events.upcoming,
 ]
 
+const eventShop = (
+  id: string,
+  startUtc: string | null,
+  definitionId: string | null = "skull-harvest-shop"
+) => ({ id, eventKey: "November2026", definitionId, startUtc, dayCount: 7 })
+
 describe("selectHomeEvents", () => {
   afterEach(() => vi.unstubAllEnvs())
 
   it("splits the live HSE and Legendary Event from the upcoming ones", () => {
     const events = selectHomeEvents({
-      homeScreen: { active: machineHunt, upcoming: [trainingRush] },
+      homeScreen: { live: [machineHunt], upcoming: [trainingRush] },
       legendary: { events: [uthar, lysander], progress: [lysanderProgress] },
       nowMs: Date.parse("2026-10-03T12:00:00Z"),
     })
@@ -98,7 +105,7 @@ describe("selectHomeEvents", () => {
   it("keys an authored HSE occurrence by its occurrence id", () => {
     const events = selectHomeEvents({
       homeScreen: {
-        active: { ...machineHunt, occurrenceId: "occ-machine-hunt" },
+        live: [{ ...machineHunt, occurrenceId: "occ-machine-hunt" }],
         upcoming: [],
       },
       legendary: { events: [], progress: [] },
@@ -113,7 +120,7 @@ describe("selectHomeEvents", () => {
   it("orders only-upcoming events across both types by start", () => {
     const rows = both(
       selectHomeEvents({
-        homeScreen: { active: null, upcoming: [trainingRush] },
+        homeScreen: { live: [], upcoming: [trainingRush] },
         legendary: {
           events: [le("votanUthar", "2026-10-04T00:00:00Z")],
           progress: [],
@@ -129,11 +136,16 @@ describe("selectHomeEvents", () => {
     expect(rows[0]).not.toHaveProperty("runNumber")
   })
 
-  it("caps upcoming at three rows", () => {
+  it("lists only the Home Screen Events that start first", () => {
     const events = selectHomeEvents({
       homeScreen: {
-        active: machineHunt,
-        upcoming: [trainingRush, warpSurge, nightfall, extra],
+        live: [machineHunt],
+        upcoming: [
+          trainingRush,
+          { ...warpSurge, startUtc: trainingRush.startUtc },
+          nightfall,
+          extra,
+        ],
       },
       legendary: { events: [lysander, uthar], progress: [] },
       nowMs: Date.parse("2026-10-03T12:00:00Z"),
@@ -141,14 +153,32 @@ describe("selectHomeEvents", () => {
 
     expect(summary(events.upcoming)).toEqual([
       ["hse-training-rush", false],
-      ["votanUthar", false],
       ["hse-warp-surge", false],
+      ["votanUthar", false],
+    ])
+  })
+
+  it("lists every running Home Screen Event", () => {
+    const bloodTithe = hse(
+      "hse-global-blood-tithe",
+      "2026-10-02T08:00:00Z",
+      "2026-10-09T08:00:00Z"
+    )
+    const events = selectHomeEvents({
+      homeScreen: { live: [bloodTithe, machineHunt], upcoming: [] },
+      legendary: null,
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(summary(events.live)).toEqual([
+      ["hse-global-blood-tithe", true],
+      ["hse-machine-hunt", true],
     ])
   })
 
   it("lists a live Incursion as live, after the other live events", () => {
     const events = selectHomeEvents({
-      homeScreen: { active: machineHunt, upcoming: [] },
+      homeScreen: { live: [machineHunt], upcoming: [] },
       legendary: null,
       incursion: {
         status: "live",
@@ -192,7 +222,7 @@ describe("selectHomeEvents", () => {
 
   it("lists an upcoming Campaign Event by start, without a campaign", () => {
     const events = selectHomeEvents({
-      homeScreen: { active: null, upcoming: [trainingRush] },
+      homeScreen: { live: [], upcoming: [trainingRush] },
       legendary: null,
       campaignEvent: {
         status: "upcoming",
@@ -213,7 +243,7 @@ describe("selectHomeEvents", () => {
 
   it("lists a live Quest Event after the other live events, linking to the Quest tab", () => {
     const events = selectHomeEvents({
-      homeScreen: { active: machineHunt, upcoming: [] },
+      homeScreen: { live: [machineHunt], upcoming: [] },
       legendary: null,
       incursion: {
         status: "live",
@@ -221,10 +251,20 @@ describe("selectHomeEvents", () => {
         endMs: Date.parse("2026-10-05T00:00:00Z"),
       },
       quest: {
-        status: "live",
-        startMs: Date.parse("2026-10-03T00:00:00Z"),
-        endMs: Date.parse("2026-10-06T00:00:00Z"),
-        featuredCharacterId: "votanChampion",
+        live: [
+          {
+            key: "occ-quest-1",
+            startMs: Date.parse("2026-10-03T00:00:00Z"),
+            endMs: Date.parse("2026-10-06T00:00:00Z"),
+            featuredCharacterId: "votanChampion",
+          },
+        ],
+        next: {
+          key: "occ-quest-2",
+          startMs: Date.parse("2026-10-10T00:00:00Z"),
+          endMs: Date.parse("2026-10-13T00:00:00Z"),
+          featuredCharacterId: "orksWeirdboy",
+        },
       },
       nowMs: Date.parse("2026-10-03T12:00:00Z"),
     })
@@ -238,17 +278,24 @@ describe("selectHomeEvents", () => {
       featuredCharacterId: "votanChampion",
       destination: "/dailies/quest",
     })
+    // The following quest is already upcoming while this one runs.
+    expect(events.upcoming).toMatchObject([
+      { type: "quest", featuredCharacterId: "orksWeirdboy", live: false },
+    ])
   })
 
   it("gives an upcoming Quest Event a slot by start", () => {
     const events = selectHomeEvents({
-      homeScreen: { active: null, upcoming: [trainingRush] },
+      homeScreen: { live: [], upcoming: [trainingRush] },
       legendary: null,
       quest: {
-        status: "upcoming",
-        startMs: Date.parse("2026-10-04T00:00:00Z"),
-        endMs: Date.parse("2026-10-07T00:00:00Z"),
-        featuredCharacterId: null,
+        live: [],
+        next: {
+          key: "quest@2026-10-04T00:00:00Z",
+          startMs: Date.parse("2026-10-04T00:00:00Z"),
+          endMs: Date.parse("2026-10-07T00:00:00Z"),
+          featuredCharacterId: null,
+        },
       },
       nowMs: Date.parse("2026-10-03T12:00:00Z"),
     })
@@ -261,7 +308,7 @@ describe("selectHomeEvents", () => {
     expect(events.upcoming[0]).toMatchObject({ featuredCharacterId: null })
   })
 
-  it("gives an upcoming Incursion a slot by start, only when one is free", () => {
+  it("gives an upcoming Incursion a row by start, however many events start before it", () => {
     const incursion = {
       status: "upcoming" as const,
       startMs: Date.parse("2026-10-10T00:00:00Z"),
@@ -272,7 +319,7 @@ describe("selectHomeEvents", () => {
     expect(
       summary(
         selectHomeEvents({
-          homeScreen: { active: null, upcoming: [trainingRush] },
+          homeScreen: { live: [], upcoming: [trainingRush] },
           legendary: null,
           incursion,
           nowMs,
@@ -282,50 +329,141 @@ describe("selectHomeEvents", () => {
       ["hse-training-rush", false],
       ["incursion", false],
     ])
-    // Three events start before it.
     expect(
       summary(
         selectHomeEvents({
-          homeScreen: { active: null, upcoming: [early1, early2, early3] },
+          homeScreen: { live: [], upcoming: [early1, early2, early3] },
           legendary: null,
           incursion,
           nowMs,
         }).upcoming
-      ).map(([id]) => id)
-    ).not.toContain("incursion")
+      )
+    ).toEqual([
+      ["hse-a", false],
+      ["incursion", false],
+    ])
   })
 
-  it("pins the next Legendary Event into the last upcoming slot when none is live", () => {
-    // Nothing live; three HSEs start before Uthar's run (2026-10-11).
+  it("lists only the next Legendary Event", () => {
+    const later = le("bloodDante", "2026-11-20T00:00:00Z")
     const events = selectHomeEvents({
-      homeScreen: {
-        active: null,
-        upcoming: [early1, early2, early3],
-      },
-      legendary: { events: [uthar], progress: [] },
+      homeScreen: { live: [], upcoming: [early1, early2, early3] },
+      legendary: { events: [later, uthar], progress: [] },
       nowMs: Date.parse("2026-10-03T12:00:00Z"),
     })
 
     expect(summary(events.upcoming)).toEqual([
       ["hse-a", false],
-      ["hse-b", false],
       ["votanUthar", false],
     ])
   })
 
-  it("does not pin an upcoming Legendary Event while one is live", () => {
+  it("lists a running Hero Release Event and the next one, opening the HRE tab on each", () => {
     const events = selectHomeEvents({
-      homeScreen: { active: null, upcoming: [early1, early2, early3] },
-      legendary: { events: [lysander, uthar], progress: [] },
+      homeScreen: null,
+      legendary: null,
+      hre: {
+        live: [
+          {
+            key: "occ-hre-1",
+            startMs: Date.parse("2026-10-01T00:00:00Z"),
+            endMs: Date.parse("2026-10-15T00:00:00Z"),
+            featuredCharacterId: "lostaFearmonger",
+          },
+        ],
+        next: {
+          key: "new-character-event@2026-10-20T00:00:00Z",
+          startMs: Date.parse("2026-10-20T00:00:00Z"),
+          endMs: Date.parse("2026-11-03T00:00:00Z"),
+          featuredCharacterId: null,
+        },
+      },
       nowMs: Date.parse("2026-10-03T12:00:00Z"),
     })
 
-    expect(summary(events.live)).toEqual([["astarLysander", true]])
-    expect(summary(events.upcoming)).toEqual([
-      ["hse-a", false],
-      ["hse-b", false],
-      ["hse-c", false],
+    expect(events.live).toMatchObject([
+      {
+        type: "hre",
+        live: true,
+        featuredCharacterId: "lostaFearmonger",
+        destination: "/dailies/hre?event=occ-hre-1",
+      },
     ])
+    expect(events.upcoming).toMatchObject([
+      {
+        type: "hre",
+        live: false,
+        destination: `/dailies/hre?event=${encodeURIComponent("new-character-event@2026-10-20T00:00:00Z")}`,
+      },
+    ])
+  })
+
+  describe("event shops", () => {
+    const nowMs = Date.parse("2026-10-03T12:00:00Z")
+
+    it("lists a running shop as live, opening its own shop", () => {
+      const events = selectHomeEvents({
+        homeScreen: null,
+        legendary: null,
+        eventShops: [eventShop("october-2026", "2026-10-01T00:00:00Z")],
+        nowMs,
+      })
+
+      expect(events.live).toMatchObject([
+        {
+          type: "eventShop",
+          live: true,
+          dateTba: false,
+          endMs: Date.parse("2026-10-08T00:00:00Z"),
+          destination: "/dailies/event-shop/october-2026",
+        },
+      ])
+      expect(events.upcoming).toEqual([])
+    })
+
+    it("lists the next dated shop by start, never an ended one", () => {
+      const events = selectHomeEvents({
+        homeScreen: { live: [], upcoming: [trainingRush] },
+        legendary: null,
+        eventShops: [
+          eventShop("june-2026", "2026-06-01T00:00:00Z"),
+          eventShop("december-2026", "2026-12-01T00:00:00Z"),
+          eventShop("november-2026", "2026-10-05T00:00:00Z"),
+          eventShop("january-2027", null, null),
+        ],
+        nowMs,
+      })
+
+      expect(events.live).toEqual([])
+      expect(summary(events.upcoming)).toEqual([
+        ["eventShop", false],
+        ["hse-training-rush", false],
+      ])
+      expect(events.upcoming[0]).toMatchObject({
+        key: "event-shop:november-2026",
+      })
+    })
+
+    it("lists a shop with no start date as TBA, last and never live", () => {
+      const events = selectHomeEvents({
+        homeScreen: { live: [], upcoming: [trainingRush] },
+        legendary: null,
+        eventShops: [eventShop("december-2026", null, null)],
+        nowMs,
+      })
+
+      expect(events.live).toEqual([])
+      expect(summary(events.upcoming)).toEqual([
+        ["hse-training-rush", false],
+        ["eventShop", false],
+      ])
+      expect(events.upcoming[1]).toMatchObject({
+        dateTba: true,
+        definitionId: null,
+        eventKey: "November2026",
+        destination: "/dailies/event-shop/december-2026",
+      })
+    })
   })
 
   it("skips archived Legendary Events and tolerates a missing source", () => {
@@ -343,7 +481,7 @@ describe("selectHomeEvents", () => {
 
     expect(
       selectHomeEvents({
-        homeScreen: { active: null, upcoming: [trainingRush] },
+        homeScreen: { live: [], upcoming: [trainingRush] },
         legendary: null,
         nowMs: Date.parse("2026-10-03T12:00:00Z"),
       }).upcoming
@@ -353,7 +491,7 @@ describe("selectHomeEvents", () => {
   it("decides order and liveness by UTC instants, independent of the device timezone", () => {
     const input = {
       homeScreen: {
-        active: null,
+        live: [],
         upcoming: [
           hse("hse-x", "2026-10-02T08:00:00Z", "2026-10-05T08:00:00Z"),
         ],
@@ -374,5 +512,61 @@ describe("selectHomeEvents", () => {
       ["hse-x", false],
     ])
     expect(honolulu).toEqual(utc)
+  })
+})
+
+describe("collapseUpcoming", () => {
+  const nowMs = Date.parse("2026-10-03T12:00:00Z")
+
+  it("shows the first three by start", () => {
+    const events = selectHomeEvents({
+      homeScreen: { live: [], upcoming: [early1] },
+      legendary: { events: [lysander], progress: [] },
+      campaignEvent: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-05T00:00:00Z"),
+        endMs: Date.parse("2026-10-08T00:00:00Z"),
+        campaignId: null,
+      },
+      incursion: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-06T00:00:00Z"),
+        endMs: Date.parse("2026-10-09T00:00:00Z"),
+      },
+      eventShops: [eventShop("november-2026", "2026-10-07T00:00:00Z")],
+      nowMs,
+    })
+
+    expect(events.upcoming).toHaveLength(4)
+    expect(summary(collapseUpcoming(events))).toEqual([
+      ["hse-a", false],
+      ["campaignEvent", false],
+      ["incursion", false],
+    ])
+  })
+
+  it("pins the next Legendary Event into the last slot when none is live", () => {
+    const events = selectHomeEvents({
+      homeScreen: { live: [], upcoming: [early1] },
+      legendary: { events: [uthar], progress: [] },
+      campaignEvent: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-05T00:00:00Z"),
+        endMs: Date.parse("2026-10-08T00:00:00Z"),
+        campaignId: null,
+      },
+      incursion: {
+        status: "upcoming",
+        startMs: Date.parse("2026-10-06T00:00:00Z"),
+        endMs: Date.parse("2026-10-09T00:00:00Z"),
+      },
+      nowMs,
+    })
+
+    expect(summary(collapseUpcoming(events))).toEqual([
+      ["hse-a", false],
+      ["campaignEvent", false],
+      ["votanUthar", false],
+    ])
   })
 })

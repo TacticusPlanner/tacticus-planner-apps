@@ -7,10 +7,8 @@ import {
   TokenPlanList,
 } from "@/features/legendary-event-tokens"
 
-import {
-  eventUnitChipData,
-  type LegendaryEventLaneId,
-} from "@/entities/legendary-event"
+import { eventUnitChipData } from "@/entities/legendary-event"
+import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 
 import { rosterMap } from "../legendary-event/teams/teams.view-model"
 

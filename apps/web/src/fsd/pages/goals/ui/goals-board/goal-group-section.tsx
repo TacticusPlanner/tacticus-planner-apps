@@ -1,4 +1,5 @@
-import { startTransition, useId, useOptimistic, type ReactNode } from "react"
+import { startTransition, useId, useOptimistic } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
@@ -52,7 +53,10 @@ export function GoalGroupSection({
           </span>
         </button>
       </h2>
-      <div hidden={collapsed} id={contentId}>
+      {/* Hidden as soon as it is tapped (the optimistic state), so the goals below move up in the
+          tap's own frame, which the browser does not count as a layout shift; unmounting the
+          group's goals follows in the transition (CLS audit 2026-11-15). */}
+      <div hidden={shownCollapsed} id={contentId}>
         {collapsed ? null : children}
       </div>
     </section>

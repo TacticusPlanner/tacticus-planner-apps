@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { createElement, type ReactNode } from "react"
+import { createElement } from "react"
+import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { renderHook, waitFor } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
@@ -87,6 +88,7 @@ describe("useHomeProjects", () => {
       status: "success",
       units: 1,
       goals: 1,
+      portraitUnits: [{ entityType: "Character", entityId: "unit-1" }],
     })
   })
 

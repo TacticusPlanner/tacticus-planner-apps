@@ -20,10 +20,10 @@ import {
   drawsPotentialBar,
   isReachedRow,
   REACHED_ROW_CLASS,
-  type GoalsListProps,
 } from "./goal-row-utils"
+import type { GoalsListProps } from "./goal-row-utils"
 import { GoalsReorderCards } from "./goals-reorder-cards"
-import { SEASON_FIT_ROW_ACCENT } from "./season-fit-copy"
+import { goalFitOffset, SEASON_FIT_ROW_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffRow } from "./season-fit-ui"
 import type { GoalsView } from "./use-goals-view"
 
@@ -88,6 +88,7 @@ function GoalsTable({
   selectActive = false,
   seasonFit,
   seasonCutoffGoalId,
+  eventEndCutoffGoalId,
 }: GoalsListProps & { isMobile: boolean }) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
@@ -176,7 +177,7 @@ function GoalsTable({
           onReorder={(orderedIds, movedId) => onReorder?.(orderedIds, movedId)}
           renderItem={(row, sortable) => {
             const reached = isReachedRow(row, reachedByGoalId)
-            const fit = seasonFit?.fits.get(row.goalId)
+            const fitOffset = goalFitOffset(seasonFit, row.goalId)
             return (
               <Fragment key={row.goalId}>
                 {seasonFit && seasonCutoffGoalId === row.goalId ? (
@@ -185,11 +186,18 @@ function GoalsTable({
                     seasonFit={seasonFit}
                   />
                 ) : null}
+                {seasonFit && eventEndCutoffGoalId === row.goalId ? (
+                  <SeasonCutoffRow
+                    colSpan={COLUMN_COUNT}
+                    edge="end"
+                    seasonFit={seasonFit}
+                  />
+                ) : null}
                 <TableRow
                   className={cn(
                     "h-16 transition-colors duration-700 data-dragging:relative data-dragging:z-10 data-dragging:bg-card data-dragging:outline-2 data-dragging:-outline-offset-2 data-dragging:outline-ring data-just-moved:bg-accent",
                     reached && REACHED_ROW_CLASS,
-                    fit && SEASON_FIT_ROW_ACCENT[fit.offset]
+                    fitOffset !== undefined && SEASON_FIT_ROW_ACCENT[fitOffset]
                   )}
                   data-dragging={sortable.isDragging || undefined}
                   data-goal-id={row.goalId}
@@ -197,7 +205,7 @@ function GoalsTable({
                     highlightedGoalId === row.goalId || undefined
                   }
                   data-reached={reached || undefined}
-                  data-season-fit={fit?.offset}
+                  data-season-fit={fitOffset}
                   data-testid="goal-row"
                   ref={sortable.setNodeRef}
                   style={sortable.style}

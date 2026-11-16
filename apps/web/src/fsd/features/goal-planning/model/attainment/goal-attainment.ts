@@ -1,8 +1,5 @@
-import {
-  progressionOrder,
-  rankIndex,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import { progressionOrder, rankIndex } from "@workspace/game-domain"
+import type { UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal"

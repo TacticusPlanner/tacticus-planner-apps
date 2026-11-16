@@ -84,7 +84,7 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
   }
 })
 vi.mock(
-  "@/features/shop-recommendations/model/use-shop-recommendations",
+  "@/features/shops/recommendations/model/use-shop-recommendations",
   () => ({
     useShopRecommendations: (projectId: string | undefined) =>
       useShopRecommendations(projectId),
@@ -121,13 +121,15 @@ describe("Dailies navigation", () => {
     useIsMobileMock.mockReturnValue(false)
   })
 
+  // The first test of the file pays for the Today page's cold lazy load: give it more than the 5 s
+  // its route lookup waits, so a slow transform can't time the test out before the lookup does.
   it("redirects /dailies to Raids, which is the Today page with no sub-tab bar", async () => {
     renderDailies()
 
     expect(await findRouteContent("dailies-no-farmable")).toBeInTheDocument()
     expect(screen.getByTestId("dailies-raids-layout")).toBeInTheDocument()
     expect(screen.queryByRole("tab")).not.toBeInTheDocument()
-  })
+  }, 15_000)
 
   it.each(["/dailies/raids/today", "/dailies/raids/plan"])(
     "no longer serves %s",

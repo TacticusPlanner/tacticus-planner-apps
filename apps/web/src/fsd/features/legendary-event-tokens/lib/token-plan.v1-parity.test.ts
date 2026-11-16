@@ -1,19 +1,16 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  buildLanePointsModel,
-  type LanePointsModel,
-  type LegendaryEventLaneId,
-  type LegendaryEventLaneRecord,
-  type LegendaryEventObjective,
+import { buildLanePointsModel } from "@/entities/legendary-event"
+import type {
+  LanePointsModel,
+  LegendaryEventLaneId,
+  LegendaryEventLaneRecord,
+  LegendaryEventObjective,
 } from "@/entities/legendary-event"
 
 import { lostaBileLanes } from "./token-plan.lostabile.fixtures"
-import {
-  planTokens,
-  type TokenPlanLane,
-  type TokenPlanTeam,
-} from "./token-plan"
+import { planTokens } from "./token-plan"
+import type { TokenPlanLane, TokenPlanTeam } from "./token-plan"
 
 // V1 `token-estimation-service.spec.ts` › computeNextToken / computeAllTokenUsage, translated:
 // V1's `_killPoints` and `_highScore` (equal in every case) are the battle's two awards of one V2

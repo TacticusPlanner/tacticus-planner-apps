@@ -4,13 +4,13 @@
 
 ### Requirement: A Legendary Event target resolves to a run start
 
-The client SHALL resolve a Legendary Event target to one UTC instant: the start of its run when the target names one, otherwise the start of the first run whose start is after now (next run). When that run is unannounced, it SHALL use the earliest estimate (`legendary-event-run-date-estimate`) and be marked estimated.
+The client SHALL resolve a Legendary Event target to one UTC instant: the start of its run when the target names one, otherwise the start of the first run whose start is after now (next run). When that run is unannounced, it SHALL use the earliest estimate (`legendary-event-run-date-estimate`) and be marked estimated. The run SHALL also resolve its end, 7 days after its start, which `project-deadline-fit` measures goals finishing during the event against.
 
 #### Scenario: Existing target without a run
 
 - **GIVEN** now is 2026-11-03T22:00Z, a project targets `{ kind "legendaryEvent", eventId "votanUthar" }`, and Uthar's next run starts 2026-11-27T00:00Z
 - **WHEN** the target is resolved
-- **THEN** the deadline is 2026-11-27T00:00Z
+- **THEN** the deadline is 2026-11-27T00:00Z and the run ends 2026-12-04T00:00Z
 
 #### Scenario: Announced run
 

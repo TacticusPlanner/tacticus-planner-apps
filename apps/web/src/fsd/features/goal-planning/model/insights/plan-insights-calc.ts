@@ -29,30 +29,29 @@ import {
   createCraftedInventoryPool,
   estimatePlan,
   resourceLabel,
-  type EstimateResourceId,
-  type EstimateUpgrade,
-  type GoalNeed,
-  type LevelRules,
-  type UpgradeNeed,
-} from "@/entities/goal-farming"
-import {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,
   computeGoalAcquisition,
   createUnitCoverage,
   isMowDetail,
   rankSlotAllocation,
-  type RankSlotAllocation,
-  type UnitCoverage,
+} from "@/entities/goal-farming"
+import type {
+  EstimateResourceId,
+  EstimateUpgrade,
+  GoalNeed,
+  LevelRules,
+  UpgradeNeed,
+  RankSlotAllocation,
+  UnitCoverage,
 } from "@/entities/goal-farming"
 import { createAbilityMaterialsPlan } from "./plan-ability-materials"
 import { buildPotentialProgressByGoalId } from "./potential-progress"
 import {
   allocateOrbInventory,
   createOrbGoalNeed,
-  type InventoryOrbs,
-  type OrbGoalNeed,
 } from "./orb-potential-allocation"
+import type { InventoryOrbs, OrbGoalNeed } from "./orb-potential-allocation"
 import { buildLevelPotentialProgress } from "./level-potential-progress"
 import { computeBottlenecks, netGoalNeeds } from "./plan-bottlenecks"
 import { computeCampaignProgression } from "./plan-campaign-progression"

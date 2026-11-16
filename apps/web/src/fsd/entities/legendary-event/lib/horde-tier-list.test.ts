@@ -8,8 +8,8 @@ import {
   buildHordeTierList,
   effectiveHordeMultiplier,
   hordeRelics,
-  type HordeTierListFilters,
 } from "./horde-tier-list"
+import type { HordeTierListFilters } from "./horde-tier-list"
 
 const names = new Map<string, string>(
   legendaryEventCharacters.map((unit) => [unit.id, unit.name])

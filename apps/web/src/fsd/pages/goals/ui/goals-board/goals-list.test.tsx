@@ -23,8 +23,7 @@ beforeEach(async () => {
   await seedGameCatalog({ characters, mows })
 })
 
-import type { GoalRow } from "@/features/goal-planning"
-import type { useGoalActions } from "@/features/goal-planning"
+import type { GoalRow, useGoalActions } from "@/features/goal-planning"
 import { GoalsList } from ".//goals-list"
 
 const stubActions = {

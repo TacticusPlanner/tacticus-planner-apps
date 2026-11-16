@@ -1,21 +1,21 @@
 import { Fragment, memo } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { UNKNOWN_PROGRESS } from "@/features/goal-planning"
-import { useGoalCatalog } from "@/features/goal-planning"
+import {
+  UNKNOWN_PROGRESS,
+  useGoalCatalog,
+  GoalUnitIcon,
+} from "@/features/goal-planning"
 import { GoalDragHandle } from "./goal-drag-handle"
 import { GoalTargetDisplay } from "../shared/goal-progress-visuals"
-import { GoalUnitIcon } from "@/features/goal-planning"
-import { SortableList, type SortableRenderProps } from "@/shared/ui"
-import { SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
+import { SortableList } from "@/shared/ui"
+import type { SortableRenderProps } from "@/shared/ui"
+import { goalFitOffset, SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffItem, SeasonFitLabel } from "./season-fit-ui"
 import { StatusBadge } from "../shared/status-badge"
 import { GoalPriorityNumber } from "./goal-row-shared"
-import {
-  isInFlightStatus,
-  isReachedRow,
-  type GoalsListProps,
-} from "./goal-row-utils"
+import { isInFlightStatus, isReachedRow } from "./goal-row-utils"
+import type { GoalsListProps } from "./goal-row-utils"
 
 type ReorderCardBodyProps = {
   row: NonNullable<GoalsListProps["rows"]>[number]
@@ -67,12 +67,13 @@ export function GoalsReorderCards({
   reachedByGoalId,
   seasonFit,
   seasonCutoffGoalId,
+  eventEndCutoffGoalId,
 }: GoalsListProps) {
   const { getEntityName } = useGoalCatalog()
 
   const seasonFitAccent = (goalId: string) => {
-    const fit = seasonFit?.fits.get(goalId)
-    return fit ? SEASON_FIT_CARD_ACCENT[fit.offset] : null
+    const offset = goalFitOffset(seasonFit, goalId)
+    return offset === undefined ? null : SEASON_FIT_CARD_ACCENT[offset]
   }
   // Only in-flight rows are worth showing in reorder mode — a historical row has nothing to
   // reorder and would just be inert clutter in a screen whose only purpose is dragging.
@@ -92,6 +93,9 @@ export function GoalsReorderCards({
           <Fragment key={row.goalId}>
             {seasonFit && seasonCutoffGoalId === row.goalId ? (
               <SeasonCutoffItem seasonFit={seasonFit} />
+            ) : null}
+            {seasonFit && eventEndCutoffGoalId === row.goalId ? (
+              <SeasonCutoffItem edge="end" seasonFit={seasonFit} />
             ) : null}
             <li
               className={cn(

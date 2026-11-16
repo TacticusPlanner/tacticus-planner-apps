@@ -1,7 +1,5 @@
-import {
-  UNTRACKED_MISSION_KINDS,
-  type LegendaryEventMissionRef,
-} from "@/entities/legendary-event"
+import { UNTRACKED_MISSION_KINDS } from "@/entities/legendary-event"
+import type { LegendaryEventMissionRef } from "@/entities/legendary-event"
 
 import type { TokenMissionStep } from "./mission-order"
 import type { MissionProgress } from "./token-missions"

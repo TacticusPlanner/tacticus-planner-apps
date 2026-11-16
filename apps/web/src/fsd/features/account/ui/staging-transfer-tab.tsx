@@ -1,4 +1,5 @@
-import { useId, useState, type FormEvent } from "react"
+import { useId, useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, Copy } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -20,11 +21,8 @@ import {
 } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 
-import {
-  minutesUntil,
-  supportTraceId,
-  type StagingTransferMode,
-} from "../model/staging-transfer"
+import { minutesUntil, supportTraceId } from "../model/staging-transfer"
+import type { StagingTransferMode } from "../model/staging-transfer"
 import { dialogActionClassName } from "./dialog-action-slot"
 import { DialogAction } from "./dialog-actions"
 
@@ -165,7 +163,7 @@ function ImportPanel() {
   const trimmed = code.trim()
   const canImport = trimmed !== "" && confirmed && !importData.isPending
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     if (canImport) importData.mutate(trimmed)
   }

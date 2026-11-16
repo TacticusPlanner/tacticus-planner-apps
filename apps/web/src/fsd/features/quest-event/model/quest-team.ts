@@ -1,9 +1,5 @@
-import {
-  progressionIndex,
-  rankIndex,
-  type Progression,
-  type Rank,
-} from "@workspace/game-domain"
+import { progressionIndex, rankIndex } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 
 import { unitDealtDamageTypes } from "@/entities/legendary-event"
 import type { CharacterPowerValues } from "@/shared/unit-power"

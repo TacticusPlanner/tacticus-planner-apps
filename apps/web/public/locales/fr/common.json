@@ -798,6 +798,7 @@
       "live": "EN COURS",
       "endsIn": "Se termine dans {{when}}",
       "startsIn": "Commence dans {{when}}",
+      "startDateTba": "Date de début à venir",
       "empty": "Aucun événement programmé.",
       "error": "Impossible de charger les événements.",
       "loading": "Chargement des événements…",
@@ -809,7 +810,11 @@
       "openProject": "Ouvrir le projet",
       "projects_one": "{{count}} projet",
       "projects_other": "{{count}} projets",
-      "planEvent": "Planifier cet événement"
+      "planEvent": "Planifier cet événement",
+      "showMore_one": "Afficher {{count}} de plus",
+      "showMore_other": "Afficher {{count}} de plus",
+      "showLess": "Afficher moins",
+      "viewCalendar": "Voir le calendrier"
     },
     "calendar": {
       "title": "Calendrier des événements"
@@ -1349,7 +1354,19 @@
       "eventArchived_other": "+{{count}} archivés",
       "eventNoProject": "Aucun projet pour cet événement",
       "eventOpenProjects": "Aller aux projets",
-      "membershipConflictTarget": "{{unit}} a déjà un objectif {{type}} actif ou en pause avec la cible {{target}}."
+      "membershipConflictTarget": "{{unit}} a déjà un objectif {{type}} actif ou en pause avec la cible {{target}}.",
+      "portraits": {
+        "more_one": "{{names}} et {{count}} autre",
+        "more_other": "{{names}} et {{count}} autres"
+      },
+      "addToAnother": "Ajouter à un autre projet…",
+      "addToAnotherTitle": "Ajouter à un autre projet",
+      "addedToProjects": "Ajouté à {{projects}}.",
+      "projectsSaved": "Projets enregistrés.",
+      "projectsSaveFailed": "Impossible d'enregistrer les projets. Vérifiez votre connexion et réessayez.",
+      "addToProjectsDescription": "Choisissez un ou plusieurs projets auxquels ajouter les objectifs sélectionnés, ou créez-en un nouveau.",
+      "addToProjectsConfirm": "Ajouter",
+      "addToProjectsConfirmCount": "Ajouter à {{count}} projets"
     },
     "toasts": {
       "statusConflict": "{{goal}} n'a pas pu être modifié : {{reason}}",
@@ -1369,7 +1386,12 @@
       "goalsRemovedAndMoved_one": "{{count}} objectif retiré de {{project}} ; {{moved}} déplacé vers {{destination}}.",
       "goalsRemovedAndMoved_other": "{{count}} objectifs retirés de {{project}} ; {{moved}} déplacés vers {{destination}}.",
       "movedButNotRemoved_one": "{{count}} objectif a été ajouté à {{destination}}, mais n'a pas pu être retiré de {{project}} : {{error}}",
-      "movedButNotRemoved_other": "{{count}} objectifs ont été ajoutés à {{destination}}, mais n'ont pas pu être retirés de {{project}} : {{error}}"
+      "movedButNotRemoved_other": "{{count}} objectifs ont été ajoutés à {{destination}}, mais n'ont pas pu être retirés de {{project}} : {{error}}",
+      "goalsAddedToProjects_one": "{{count}} objectif ajouté à {{projects}}.",
+      "goalsAddedToProjects_other": "{{count}} objectifs ajoutés à {{projects}}.",
+      "addedToSomeProjects": "Ajouté à {{added}}. Échec pour {{failed}}.",
+      "addToProjectsFailed": "Impossible d'ajouter les objectifs à {{failed}}.",
+      "retry": "Réessayer"
     },
     "create": {
       "title": "Créer un objectif",
@@ -1713,6 +1735,33 @@
       "dividerEnds": "La {{season}} se termine le {{deadline}} – l’objectif suivant finit plus tard.",
       "dividerStarts": "La {{season}} commence le {{deadline}} – l’objectif suivant finit après."
     },
+    "deadlineFit": {
+      "header": {
+        "label": "Échéance :",
+        "runs": "du {{date}} au {{end}}",
+        "runsEstimated": "du {{date}} au {{end}} (estimation)",
+        "count": "{{fit}} sur {{total}} à temps",
+        "duringEvent_one": "{{count}} pendant l'événement",
+        "duringEvent_other": "{{count}} pendant l'événement",
+        "allDone_one": "{{count}} terminé",
+        "allDone_other": "Les {{count}} terminés",
+        "notEstimated_one": "{{count}} non estimé",
+        "notEstimated_other": "{{count}} non estimés",
+        "ended": "Terminé le {{date}}",
+        "unavailable": "Aucune date disponible",
+        "separator": " · "
+      },
+      "fits": "À temps",
+      "duringEvent": "Pendant l'événement",
+      "misses_one": "En retard de {{count}} j",
+      "misses_other": "En retard de {{count}} j",
+      "tooltip": "Terminé le {{date}}, avant que {{chip}} ne commence le {{deadline}}",
+      "tooltipDuring": "Terminé le {{date}}, pendant {{chip}} ({{deadline}} – {{end}})",
+      "tooltipAfter": "Terminé le {{date}}, après la fin de {{chip}} le {{end}}",
+      "divider": "{{chip}} commence le {{deadline}} – l’objectif suivant finit pendant l’événement.",
+      "dividerEnd": "{{chip}} se termine le {{end}} – l’objectif suivant finit après.",
+      "overrideChip": "Échéance du projet utilisée"
+    },
     "detail": {
       "notes": "Notes",
       "projectsTitle": "Projets",
@@ -1898,7 +1947,27 @@
       "estimatesRetry": "Réessayer les estimations",
       "listNote": "Vos objectifs sont classés par priorité. Faites glisser un objectif actif ou en pause pour le déplacer : le changement s'applique dans tous les projets, dans Aujourd'hui, le plan de raid et les Analyses.",
       "hintLabel": "À propos de l'ordre",
-      "scopedNote": "Chaque numéro est la position de l'objectif dans l'ordre de priorité de tout votre compte : les objectifs d'un projet peuvent donc afficher des écarts comme 1, 3, 5. Déplacer un objectif ici le déplace aussi dans cet ordre ; les objectifs des autres projets gardent leur ordre relatif."
+      "scopedNote": "Chaque numéro est la position de l'objectif dans l'ordre de priorité de tout votre compte : les objectifs d'un projet peuvent donc afficher des écarts comme 1, 3, 5. Déplacer un objectif ici le déplace aussi dans cet ordre ; les objectifs des autres projets gardent leur ordre relatif.",
+      "projectMove": {
+        "menuItem": "Déplacer les objectifs…",
+        "alreadyFirst": "Les objectifs de ce projet sont déjà en tête.",
+        "moved_one": "{{count}} objectif déplacé en priorité {{priority}}.",
+        "moved_other": "{{count}} objectifs déplacés en priorité {{priority}}.",
+        "undo": "Annuler",
+        "undone": "Ordre rétabli.",
+        "staleUndo": "L'ordre a changé entre-temps. Rien n'a été annulé.",
+        "staleMove": "L'ordre a changé pendant le déplacement. Vérifiez l'ordre actualisé et réessayez.",
+        "dialogTitle": "Déplacer les objectifs",
+        "dialogDescription": "Placez les objectifs en cours de {{name}} en un seul bloc. Leur ordre dans le bloc reste le même.",
+        "toTop": "Tout en haut",
+        "before": "Avant",
+        "after": "Après",
+        "projectLabel": "Projet",
+        "projectPlaceholder": "Choisir un projet",
+        "noReference": "Aucun autre projet par rapport auquel placer",
+        "confirm": "Déplacer",
+        "cancel": "Annuler"
+      }
     },
     "edit": {
       "title": "Modifier l'objectif",
@@ -1945,7 +2014,9 @@
       "ladder": {
         "current": "Actuel",
         "start": "Départ",
-        "taken": "Déjà un objectif"
+        "taken": "Déjà un objectif",
+        "belowRange": "{{from}} – {{to}}",
+        "showBelow": "Afficher {{from}} – {{to}}"
       },
       "range": {
         "span": "{{start}} → {{end}}",
@@ -2160,6 +2231,10 @@
           "title": "Calage sur la saison",
           "content": "Choisissez une saison de Passe de combat, de Raid de guilde ou de Guerre de guilde pour voir quels objectifs seront terminés à temps. Une ligne indique où les objectifs débordent sur la saison suivante."
         },
+        "deadlineFit": {
+          "title": "Échéance du projet",
+          "content": "Ce projet a une cible : ses objectifs sont donc mesurés par rapport à cette échéance plutôt qu'au calage sur la saison. Chaque objectif affiche À temps ou En retard de N j, et une ligne marque le premier objectif qui finit trop tard."
+        },
         "viewToggle": {
           "title": "Cartes ou tableau",
           "content": "Passez des cartes d'objectifs au tableau compact. Votre choix est enregistré sur cet appareil."
@@ -2211,6 +2286,10 @@
         "newProject": {
           "title": "Créer un projet",
           "content": "Créez un nouveau projet ici. Le menu d'actions d'un projet permet d'y créer un objectif, de gérer les objectifs qu'il contient et de le renommer, recolorer, archiver ou restaurer."
+        },
+        "moveGoals": {
+          "title": "Déplacer les objectifs d'un projet",
+          "content": "Ouvrez le menu d'un projet et choisissez « Déplacer les objectifs… » pour mettre tous ses objectifs actifs et en pause tout en haut, ou juste avant ou après un autre projet. Vous pouvez annuler depuis le message qui suit."
         }
       }
     },

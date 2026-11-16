@@ -12,15 +12,10 @@ import {
   isGoalLimitError,
   MAX_GOALS_PER_TYPE,
   updateGoalsStatus,
-  type GoalDetail,
-  type GoalListResponse,
-  type GoalStatus,
 } from "@/entities/goal"
-import {
-  changeProjectMembership,
-  projectQueries,
-  type ProjectSummary,
-} from "@/entities/project"
+import type { GoalDetail, GoalListResponse, GoalStatus } from "@/entities/goal"
+import { changeProjectMembership, projectQueries } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -32,10 +27,8 @@ import { goalSlotConflict } from "../projects/project-membership"
 import { isOnlyMemberOf } from "../projects/project-removal"
 import type { GoalRow } from "../shared/types"
 import { applyOptimisticGoalRemoval } from "./optimistic-goal-removal"
-import {
-  applyOptimisticGoalStatus,
-  type GoalFieldPatch,
-} from "./optimistic-goal-status"
+import { applyOptimisticGoalStatus } from "./optimistic-goal-status"
+import type { GoalFieldPatch } from "./optimistic-goal-status"
 
 /** A prerequisite cascade target: the id to also transition, and its status immediately before the
  *  transition, needed to revert its row if the transition is rejected. */
@@ -51,11 +44,10 @@ const movesOrder = (status: GoalStatus) =>
  * shared by the list, grid and row-actions menu. A status change of any number of goals is one atomic
  * `POST goals/status` (spec: goal-status-actions): its response is written into the cached details
  * and lists, a rejection reverts every optimistic row and is reported once. `pendingIds` disables every
- * row whose action is in flight; `onChanged` is the caller's list `retry`.
+ * row whose action is in flight.
  */
-export function useGoalActions(_onChanged?: () => void) {
-  void _onChanged
-  const { t } = useTranslation()
+export function useGoalActions() {
+  const { t, i18n } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()
   const getUnitName = useUnitName()
@@ -333,40 +325,92 @@ export function useGoalActions(_onChanged?: () => void) {
     }
   }
 
-  /** Adds every row to `project` in one membership request, keeping each goal's other memberships;
-   *  goals already in the project are left as they are. The request is atomic, so a rejection adds none
-   *  of them and is reported once. */
-  const addToProject = async (
+  /**
+   * Adds every row to each of `projects`, one membership request per project, in turn
+   * (add-goal-to-several-projects). Each request keeps the goals' other memberships, leaves goals
+   * already in that project as they are, and re-applies itself once on a `membershipStale` rejection
+   * (`changeProjectMembership`). One toast reports the outcome: the destinations and the goals added,
+   * or, when some requests failed, the failed destinations with a Retry for those only; the successful
+   * ones stay added.
+   */
+  const addToProjects = async (
     rows: readonly Pick<GoalRow, "goalId">[],
-    project: ProjectSummary
-  ) => {
-    if (!isAuthenticated || rows.length === 0) return
+    projects: readonly ProjectSummary[]
+  ): Promise<void> => {
+    if (!isAuthenticated || rows.length === 0 || projects.length === 0) return
     const goalIds = rows.map((row) => row.goalId)
     goalIds.forEach(addPending)
+    const added = new Set<string>()
+    const succeeded: ProjectSummary[] = []
+    const addedTo: ProjectSummary[] = []
+    const failed: ProjectSummary[] = []
+    let lastError: unknown
     try {
-      const { before, after } = await changeProjectMembership(
-        project.projectId,
-        project.goalIds,
-        (current) => [...current, ...goalIds]
-      )
-      const added = after.length - before.length
-      if (added > 0) {
-        patchGoalProjects(goalIds, project.projectId, true)
-        void refreshProjects()
-        toast.success(
-          t("goals.toasts.goalsAddedToProject", {
-            project: project.name,
-            count: added,
-          })
-        )
+      for (const project of projects) {
+        try {
+          const { before, after } = await changeProjectMembership(
+            project.projectId,
+            project.goalIds,
+            (current) => [...current, ...goalIds]
+          )
+          succeeded.push(project)
+          const newIds = after.filter((goalId) => !before.includes(goalId))
+          if (newIds.length > 0) {
+            newIds.forEach((goalId) => added.add(goalId))
+            addedTo.push(project)
+            patchGoalProjects(goalIds, project.projectId, true)
+          }
+        } catch (error) {
+          failed.push(project)
+          lastError = error
+        }
       }
-    } catch (error) {
-      void refreshProjects()
-      toast.error(membershipErrorText(t, error))
     } finally {
+      void refreshProjects()
       goalIds.forEach(removePending)
     }
+
+    const names = (list: readonly ProjectSummary[]) =>
+      new Intl.ListFormat(i18n.language, { type: "conjunction" }).format(
+        list.map((project) => project.name)
+      )
+    if (failed.length === 0) {
+      if (added.size === 0) return
+      toast.success(
+        addedTo.length === 1
+          ? t("goals.toasts.goalsAddedToProject", {
+              project: addedTo[0]!.name,
+              count: added.size,
+            })
+          : t("goals.toasts.goalsAddedToProjects", {
+              projects: names(addedTo),
+              count: added.size,
+            })
+      )
+      return
+    }
+    const message =
+      succeeded.length > 0
+        ? t("goals.toasts.addedToSomeProjects", {
+            added: names(succeeded),
+            failed: names(failed),
+          })
+        : failed.length === 1
+          ? membershipErrorText(t, lastError)
+          : t("goals.toasts.addToProjectsFailed", { failed: names(failed) })
+    toast.error(message, {
+      action: {
+        label: t("goals.toasts.retry"),
+        onClick: () => void addToProjects(rows, failed),
+      },
+    })
   }
+
+  /** Adds every row to `project` (one membership request); see `addToProjects`. */
+  const addToProject = (
+    rows: readonly Pick<GoalRow, "goalId">[],
+    project: ProjectSummary
+  ) => addToProjects(rows, [project])
 
   /**
    * Takes every row out of `project`, leaving its other memberships alone. A row whose only project is
@@ -465,6 +509,7 @@ export function useGoalActions(_onChanged?: () => void) {
     remove,
     removeMany,
     addToProject,
+    addToProjects,
     removeFromProject,
     pendingIds,
   }

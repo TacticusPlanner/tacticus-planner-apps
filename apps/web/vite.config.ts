@@ -3,7 +3,8 @@ import path from "path"
 import posthogSourceMaps from "@posthog/rollup-plugin"
 import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
-import { defineConfig, type Plugin } from "vite"
+import { defineConfig } from "vite"
+import type { Plugin } from "vite"
 import { configDefaults, coverageConfigDefaults } from "vitest/config"
 
 // Writes dist/.vite/chunk-packages.json ({ chunk file: [npm package names] }) so

@@ -10,7 +10,8 @@ import {
 
 // Battle id "<campaign>:<node>": the campaign is the part before the colon.
 const battle = (id: string) => id as BattleId
-const campaignOf = (battleId: BattleId) => battleId.split(":")[0] || undefined
+const campaignOf = (battleId: BattleId) =>
+  battleId.split(":", 1)[0] || undefined
 
 type Entry = { battleId: BattleId }
 const resource = (resourceId: string, ...battles: string[]) => ({

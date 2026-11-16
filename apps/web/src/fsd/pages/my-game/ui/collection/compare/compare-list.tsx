@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { ExternalLink } from "lucide-react"
@@ -31,10 +32,12 @@ import {
   compareChips,
   detailRows,
   focusChips,
-  type CompareFocus,
-  type ProgressionPart,
   itemSlotType,
-  type CompareChip,
+} from "../../../model/compare-chips"
+import type {
+  CompareFocus,
+  ProgressionPart,
+  CompareChip,
 } from "../../../model/compare-chips"
 import { formatSigned } from "../../../model/compare-labels"
 import type { CompareField, CompareItem } from "../../../model/compare-view"

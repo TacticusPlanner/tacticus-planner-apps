@@ -8,8 +8,8 @@ import {
   buildBattleAttemptIndex,
   buildTodaysAttempts,
   calculateRealEnergyUsedToday,
-  type RealBattleAttempt,
 } from "./daily-raids-energy"
+import type { RealBattleAttempt } from "./daily-raids-energy"
 
 function battle(
   overrides: Omit<Partial<Battle>, "campaignGroupId"> & {

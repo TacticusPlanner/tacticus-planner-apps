@@ -6,12 +6,13 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import type { ActiveSeasonFit } from "@/features/goal-planning"
 import {
+  goalFitCopy,
+  goalFitOffset,
+  isDeadlineFitView,
   seasonCutoffText,
-  seasonFitLabel,
-  seasonFitTooltip,
 } from "./season-fit-copy"
+import type { CutoffEdge, GoalFitView } from "./season-fit-copy"
 import { useDateLocale } from "@/shared/lib"
 
 /** The fit label beside a goal's Done By date, nothing for a goal without a fit (goal-season-fit
@@ -21,36 +22,45 @@ export function SeasonFitLabel({
   seasonFit,
 }: {
   goalId: string
-  seasonFit: ActiveSeasonFit | null | undefined
+  seasonFit: GoalFitView | null | undefined
 }) {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
-  const fit = seasonFit?.fits.get(goalId)
-  if (!seasonFit || !fit) return null
+  const offset = goalFitOffset(seasonFit, goalId)
+  const copy = goalFitCopy(seasonFit, goalId, t, dateLocale)
+  if (offset === undefined || !copy) return null
+  const { label, tooltip } = copy
   return (
     <Tooltip>
       {/* Focusable so the deadline stays reachable by keyboard. */}
       <TooltipTrigger asChild>
         <button
           className="text-xs font-medium text-muted-foreground underline decoration-dotted underline-offset-2"
-          data-offset={fit.offset}
-          data-testid="goal-season-fit"
+          data-offset={offset}
+          data-testid={
+            seasonFit && isDeadlineFitView(seasonFit)
+              ? "goal-deadline-fit"
+              : "goal-season-fit"
+          }
           type="button"
         >
-          {seasonFitLabel(t, fit)}
+          {label}
         </button>
       </TooltipTrigger>
-      <TooltipContent>
-        {seasonFitTooltip(t, dateLocale, seasonFit, fit)}
-      </TooltipContent>
+      <TooltipContent>{tooltip}</TooltipContent>
     </Tooltip>
   )
 }
 
-function useCutoffText(seasonFit: ActiveSeasonFit) {
+const CUTOFF_TEST_ID = {
+  start: "goals-season-cutoff",
+  end: "goals-event-end-cutoff",
+} as const satisfies Record<CutoffEdge, string>
+
+function useCutoffText(seasonFit: GoalFitView, edge: CutoffEdge) {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
-  return seasonCutoffText(t, dateLocale, seasonFit)
+  return seasonCutoffText(t, dateLocale, seasonFit, edge)
 }
 
 /** Desktop season cut-off: a full-width row before the first goal past the season. Not a sortable
@@ -58,15 +68,17 @@ function useCutoffText(seasonFit: ActiveSeasonFit) {
 export function SeasonCutoffRow({
   seasonFit,
   colSpan,
+  edge = "start",
 }: {
-  seasonFit: ActiveSeasonFit
+  seasonFit: GoalFitView
   colSpan: number
+  edge?: CutoffEdge
 }) {
-  const text = useCutoffText(seasonFit)
+  const text = useCutoffText(seasonFit, edge)
   return (
     <TableRow
       className="hover:bg-transparent"
-      data-testid="goals-season-cutoff"
+      data-testid={CUTOFF_TEST_ID[edge]}
     >
       <TableCell className="py-1" colSpan={colSpan}>
         <SeasonCutoffLine text={text} />
@@ -79,12 +91,14 @@ export function SeasonCutoffRow({
  *  it spans every column, so the goal after it starts a new grid row. */
 export function SeasonCutoffItem({
   seasonFit,
+  edge = "start",
 }: {
-  seasonFit: ActiveSeasonFit
+  seasonFit: GoalFitView
+  edge?: CutoffEdge
 }) {
-  const text = useCutoffText(seasonFit)
+  const text = useCutoffText(seasonFit, edge)
   return (
-    <li className="col-span-full" data-testid="goals-season-cutoff">
+    <li className="col-span-full" data-testid={CUTOFF_TEST_ID[edge]}>
       <SeasonCutoffLine text={text} />
     </li>
   )

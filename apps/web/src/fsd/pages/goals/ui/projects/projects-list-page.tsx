@@ -14,25 +14,31 @@ import {
   ManageProjectsSheet,
   NewProjectFab,
   ProjectList,
-  type ProjectCardSummary,
   orderDefaultFirst,
+  projectPortraitUnits,
   useProjectActions,
   useProjectsWithGoals,
 } from "@/features/project-management"
+import type { ProjectCardSummary } from "@/features/project-management"
 import type { ProjectSummary } from "@/entities/project"
 
-import { useCreateGoalLauncher } from "@/features/goal-planning"
-import { useGoalAttainment } from "@/features/goal-planning"
-import { useGoalsOverviewMetrics } from "@/features/goal-planning"
-import { usePlanInsights } from "@/features/goal-planning"
+import {
+  useCreateGoalLauncher,
+  useGoalAttainment,
+  useGoalsOverviewMetrics,
+  MoveProjectGoalsDialog,
+  moveGoalsChoices,
+  usePlanInsights,
+  useProjectFitCounts,
+} from "@/features/goal-planning"
 import { useProjectsListTutorial } from "./projects-list-page.tutorial"
 
 /**
  * The dedicated project-management surface (project-management spec: "The list route shows every
  * project without its goal table") - every project (including archived) as its own row with
  * inline lifecycle-action icons, a narrowed create/edit form Sheet opened via a row's Edit action
- * or the "New project" FAB, and the project-specific actions (Create goal, Manage goals) in each
- * row's menu. No goal table, filters, or project selector here - clicking a row opens the project on
+ * or the "New project" FAB, and the project-specific actions (Create goal, Manage goals, Move goals…) in
+ * each row's menu. No goal table, filters, or project selector here - clicking a row opens the project on
  * the Goals page (`/plan/goals?project=`).
  */
 export function ProjectsListPage() {
@@ -82,6 +88,8 @@ export function ProjectsListPage() {
     defaultGoalIds,
     defaultInsights.estimates
   )
+  // Targeted cards' deadline fit counts (project-deadline-fit), from the one global-plan run.
+  const fitCounts = useProjectFitCounts(projects.projects)
   const summaries = new Map<string, ProjectCardSummary>()
   for (const project of summaryProjects) {
     if (goalsRead.loading) {
@@ -105,6 +113,7 @@ export function ProjectsListPage() {
       status: "success",
       units,
       goals: members.length,
+      portraitUnits: projectPortraitUnits(members),
       ...(project.isDefault
         ? {
             reached: members.filter(
@@ -118,6 +127,32 @@ export function ProjectsListPage() {
           }
         : {}),
     })
+  }
+
+  // Move goals… (project-goal-moves): offered on live projects holding in-flight goals, disabled when
+  // no placement would change the order. The dialog is one for the whole page and stays open while
+  // its move saves.
+  const [moveGoalsProject, setMoveGoalsProject] = useState<
+    ProjectSummary | undefined
+  >(undefined)
+  const allGoals = [...goalsRead.goalsById.values()]
+  const moveGoals = new Map<string, "enabled" | "disabled">()
+  if (!goalsRead.loading && !goalsRead.isError) {
+    for (const project of projectsWithGoals.projects) {
+      if (project.status === "Archived") continue
+      const choices = moveGoalsChoices(
+        project.projectId,
+        projects.projects,
+        allGoals
+      )
+      if (choices.movedIds.length === 0) continue
+      moveGoals.set(
+        project.projectId,
+        !choices.topChanges && choices.references.length === 0
+          ? "disabled"
+          : "enabled"
+      )
+    }
   }
 
   const openNewProject = () => {
@@ -161,10 +196,13 @@ export function ProjectsListPage() {
               actions={projectActions}
               onCreateGoal={createGoalIn}
               onEdit={openEditProject}
+              moveGoals={moveGoals}
               onManageGoals={setManageGoalsProject}
+              onMoveGoals={setMoveGoalsProject}
               onSelect={openProjectOnGoals}
               projects={available}
               summaries={summaries}
+              fitCounts={fitCounts}
             />
           )}
           {archived.length > 0 ? (
@@ -207,6 +245,16 @@ export function ProjectsListPage() {
         open={sheetOpen}
         project={sheetProject}
       />
+      {moveGoalsProject ? (
+        <MoveProjectGoalsDialog
+          goals={allGoals}
+          onOpenChange={(open) => {
+            if (!open) setMoveGoalsProject(undefined)
+          }}
+          project={moveGoalsProject}
+          projects={projects.projects}
+        />
+      ) : null}
       {manageGoalsProject ? (
         <AddGoalsToProjectSheet
           onCreateGoal={() => createGoalIn(manageGoalsProject)}

@@ -51,11 +51,24 @@ const escapeRegExp = (text: string) =>
  */
 function isFromOurScripts(error: unknown, origin: string): boolean {
   // A DOMException is not an Error in every engine, and IndexedDB / fetch failures are ours.
-  if (!(error instanceof Error || error instanceof DOMException)) return false
+  if (!(error instanceof Error) && !(error instanceof DOMException))
+    return false
   if (!error.stack) return true
   return new RegExp(
     `${escapeRegExp(origin)}/[^\\s:)]+\\.(?:m?js|tsx?)\\b`
   ).test(error.stack)
+}
+
+/**
+ * A request this app cancelled on purpose: TanStack Query aborts a query's `signal` when its last
+ * observer unmounts, and a promise still chained to that fetch rejects with an AbortError ("signal is
+ * aborted without reason") nobody is left to handle. It means "no longer needed", never a failure.
+ */
+function isCancellation(reason: unknown): boolean {
+  return (
+    (reason instanceof DOMException || reason instanceof Error) &&
+    reason.name === "AbortError"
+  )
 }
 
 /**
@@ -71,6 +84,7 @@ export function installGlobalErrorCapture(target: Window = window) {
     reportError(event.error, "window.error")
   })
   target.addEventListener("unhandledrejection", (event) => {
+    if (isCancellation(event.reason)) return
     if (!isFromOurScripts(event.reason, origin)) return
     reportError(event.reason, "unhandledrejection")
   })

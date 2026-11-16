@@ -1,8 +1,8 @@
-import {
-  laneReachablePoints,
-  type LanePointsModel,
-  type LaneProgressView,
-  type LaneReach,
+import { laneReachablePoints } from "@/entities/legendary-event"
+import type {
+  LanePointsModel,
+  LaneProgressView,
+  LaneReach,
 } from "@/entities/legendary-event"
 
 /**

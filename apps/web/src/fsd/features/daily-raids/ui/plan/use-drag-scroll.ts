@@ -1,4 +1,5 @@
-import { useEffect, type RefObject } from "react"
+import { useEffect } from "react"
+import type { RefObject } from "react"
 
 const DRAG_THRESHOLD_PX = 4
 

@@ -17,8 +17,6 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
-
 import { purgeGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
 
@@ -43,10 +41,6 @@ function purgeErrorKey(error: unknown) {
 }
 
 type Props = {
-  /** @deprecated Authentication is resolved by the shared API client. */
-  account?: AccountInfo
-  /** @deprecated Authentication is resolved by the shared API client. */
-  instance?: IPublicClientApplication
   open: boolean
   onOpenChange: (open: boolean) => void
   onPurged: () => void

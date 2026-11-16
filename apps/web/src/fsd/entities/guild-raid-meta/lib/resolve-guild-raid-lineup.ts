@@ -4,8 +4,8 @@ import { matchGuildRaidCandidates } from "./match-guild-raid-candidates"
 import {
   resolveGuildRaidHeroReadiness,
   resolveGuildRaidMowReadiness,
-  type GuildRaidInvestmentFacts,
 } from "./resolve-guild-raid-investment-readiness"
+import type { GuildRaidInvestmentFacts } from "./resolve-guild-raid-investment-readiness"
 import type { GuildRaidInvestmentThreshold } from "./resolve-guild-raid-investment-threshold"
 import { resolveGuildRaidTeamReadiness } from "./resolve-guild-raid-team-readiness"
 

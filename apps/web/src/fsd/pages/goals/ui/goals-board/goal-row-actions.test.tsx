@@ -23,11 +23,36 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 const updateGoalsStatus = vi.fn()
 const onEdit = vi.fn()
 const deleteGoal = vi.fn()
+const editGoal = vi.fn()
 
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
   updateGoalsStatus: (...args: unknown[]) => updateGoalsStatus(...args),
   deleteGoal: (...args: unknown[]) => deleteGoal(...args),
+  editGoal: (...args: unknown[]) => editGoal(...args),
+}))
+
+const projectSummary = (projectId: string, name: string) => ({
+  projectId,
+  name,
+  color: null,
+  description: null,
+  status: "Active",
+  isDefault: false,
+  revision: 1,
+  goalIds: [],
+})
+vi.mock("@/entities/project", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/project")>()),
+  useProjects: () => ({
+    projects: [
+      projectSummary("chaos", "Chaos Core"),
+      projectSummary("lavi", "Team Lavi"),
+    ],
+    loading: false,
+    fetchState: { status: "success" },
+    retry: vi.fn(),
+  }),
 }))
 
 /** A status change answers with the changed goals and the order revision. */
@@ -136,6 +161,7 @@ describe("GoalRowActions", () => {
     updateGoalsStatus.mockReset()
     onEdit.mockReset()
     deleteGoal.mockReset()
+    editGoal.mockReset()
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
   })
@@ -155,6 +181,71 @@ describe("GoalRowActions", () => {
     expect(await menuItems(user)).toEqual(["edit", "pause", "delete"])
     await user.click(screen.getByTestId("goal-row-edit-goal-1"))
     expect(onEdit).toHaveBeenCalledExactlyOnceWith("goal-1")
+  })
+
+  it("offers Add to another project… right after Edit", async () => {
+    const user = userEvent.setup()
+    render(
+      <Harness
+        goalRow={row({
+          projects: [{ projectId: "chaos", name: "Chaos Core", color: null }],
+        })}
+      />
+    )
+
+    await openMenu(user)
+    const items = await screen.findAllByRole("menuitem")
+    expect(items.slice(0, 2).map((item) => item.textContent)).toEqual([
+      "Edit",
+      "Add to another project…",
+    ])
+    expect(
+      screen.getByTestId("goal-row-add-to-project-goal-1")
+    ).not.toHaveAttribute("data-disabled")
+  })
+
+  it("disables Add to another project… until the goal's projects are known", async () => {
+    const user = userEvent.setup()
+    render(<Harness />)
+
+    await openMenu(user)
+    expect(
+      await screen.findByTestId("goal-row-add-to-project-goal-1")
+    ).toHaveAttribute("data-disabled")
+  })
+
+  it("adds the goal to a second project with a membership-only save", async () => {
+    editGoal.mockResolvedValue({
+      goal: { ...row(), projectIds: ["chaos", "lavi"] },
+      order: null,
+    })
+    const user = userEvent.setup()
+    render(
+      <Harness
+        goalRow={row({
+          projects: [{ projectId: "chaos", name: "Chaos Core", color: null }],
+        })}
+      />
+    )
+
+    await openMenu(user)
+    await user.click(
+      await screen.findByTestId("goal-row-add-to-project-goal-1")
+    )
+    const dialog = await screen.findByTestId("add-to-another-project-dialog")
+    expect(
+      within(dialog).getByTestId("add-to-another-project-chip-chaos")
+    ).toBeInTheDocument()
+    await user.click(within(dialog).getByTestId("add-to-another-add-project"))
+    await user.click(await screen.findByRole("option", { name: /Team Lavi/ }))
+    await user.click(within(dialog).getByTestId("add-to-another-save"))
+
+    await vi.waitFor(() =>
+      expect(editGoal).toHaveBeenCalledExactlyOnceWith("goal-1", {
+        projectIds: ["chaos", "lavi"],
+      })
+    )
+    expect(toast.success).toHaveBeenCalledExactlyOnceWith("Added to Team Lavi.")
   })
 
   it("offers Resume instead of Pause for a Paused goal", async () => {

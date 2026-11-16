@@ -2,7 +2,8 @@ import type {
   LegendaryEventRun,
   LegendaryEventRunInputs,
 } from "../model/plan.types"
-import { progressionIndex, type Progression } from "@workspace/game-domain"
+import { progressionIndex } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 
 import type {
   LegendaryEventProgress,

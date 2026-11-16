@@ -1,7 +1,7 @@
 import type { GameCatalogHseTracker } from "@workspace/game-catalog"
 import type { Alliance, UnitId } from "@workspace/game-domain"
 
-import { type HreTeamPlan, type HreTeamRule } from "@/entities/hre-mission"
+import type { HreTeamPlan, HreTeamRule } from "@/entities/hre-mission"
 import { characterDamageTypes } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
@@ -11,11 +11,11 @@ import { hseEventUnitPools } from "./hse-team-recommendations"
 import type { HseTeamMode } from "./hse-team-recommendations.types"
 import { combatPowerOf } from "./team-eligibility"
 import { buildTeamRecommendations } from "./team-recommendations"
-import {
-  MIN_TEAM_SIZE,
-  type TeamCategory,
-  type TeamPoolSpec,
-  type TeamRosterCharacter,
+import { MIN_TEAM_SIZE } from "./team-recommendations.types"
+import type {
+  TeamCategory,
+  TeamPoolSpec,
+  TeamRosterCharacter,
 } from "./team-recommendations.types"
 
 export const HRE_TEAM_SIZE = 5
@@ -153,7 +153,10 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
       (character) => !input.catalog.get(character.unitId)?.rangedDamage
     )
   } else {
-    if (!featured || !all.some((character) => character.unitId === featured)) {
+    if (
+      !featured ||
+      all.every((character) => !(character.unitId === featured))
+    ) {
       return { status: "locked-hero" }
     }
     pools.push(pool("featured-hero", [featured]))

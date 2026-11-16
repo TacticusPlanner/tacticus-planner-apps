@@ -9,7 +9,7 @@ import { TodayShops } from "./today-shops"
 import type {
   ShopRecommendationSectionView,
   ShopRecommendationsViewModel,
-} from "@/features/shop-recommendations"
+} from "@/features/shops/recommendations"
 
 const useShopRecommendations = vi.fn<() => ShopRecommendationsViewModel>()
 const { useIsMobileMock } = vi.hoisted(() => ({
@@ -24,7 +24,7 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 vi.mock(
-  "@/features/shop-recommendations/model/use-shop-recommendations",
+  "@/features/shops/recommendations/model/use-shop-recommendations",
   () => ({
     useShopRecommendations: () => useShopRecommendations(),
   })

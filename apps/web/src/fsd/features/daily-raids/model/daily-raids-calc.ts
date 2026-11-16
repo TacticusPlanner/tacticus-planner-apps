@@ -7,20 +7,12 @@ import type {
   ShopRewardOffer,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
-import {
-  rankAt,
-  type BattleId,
-  type UnitId,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import { rankAt } from "@workspace/game-domain"
+import type { BattleId, UnitId, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import {
-  activeProjectMembers,
-  globalPriorityOf,
-  type GoalDetail,
-  type GoalPlanEntry,
-} from "@/entities/goal"
+import { activeProjectMembers, globalPriorityOf } from "@/entities/goal"
+import type { GoalDetail, GoalPlanEntry } from "@/entities/goal"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
 import {
   allocatePlanInventory,
@@ -34,14 +26,16 @@ import {
   estimateGoal,
   estimatePlanSchedule,
   estimateTodayRun,
-  type EstimatePlanParams,
-  type UnitCoverage,
-  type EstimateResourceId,
-  type EstimateUpgrade,
-  type FarmingCharacter,
-  type FarmingUpgrade,
-  type GoalNeed,
-  type RaidPlanSchedule,
+} from "@/entities/goal-farming"
+import type {
+  EstimatePlanParams,
+  UnitCoverage,
+  EstimateResourceId,
+  EstimateUpgrade,
+  FarmingCharacter,
+  FarmingUpgrade,
+  GoalNeed,
+  RaidPlanSchedule,
 } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
@@ -49,10 +43,12 @@ import { blockedGoalsOf } from "./blocked-goals"
 import {
   goalTargetLabel,
   projectResourceProgress,
+  resourceMilestoneTargets,
   resourceProgress,
   totalResourceProgress,
 } from "./daily-raids-progress"
-import { planEventFarm, type EventFarmOrder } from "./home-screen-event-farm"
+import { planEventFarm } from "./home-screen-event-farm"
+import type { EventFarmOrder } from "./home-screen-event-farm"
 import { buildMissionGoalNodes } from "./mission-raids"
 import { buildFarmNodeFilter } from "./raids-filters/build-farm-node-filter"
 import type {
@@ -65,9 +61,9 @@ import type {
   DailyRaidResourceProgress,
   DailyRaidResourceUrgency,
   DailyRaidResourceVisual,
+  DailyRaidResourceLabels,
 } from "./daily-raids.domain"
 import { dailyRaidResourceKey, shardResourceLabel } from "./daily-raids.domain"
-import type { DailyRaidResourceLabels } from "./daily-raids.domain"
 import type { TodayQuickFilterOptions } from "./today-quick-filters/today-quick-filters"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
@@ -426,9 +422,40 @@ export function calculateDailyRaids(
       inventory,
       new Set(shardCatalog.keys())
     ),
-    resourceProgressByDay: projectResourceProgress(plan.days, initialProgress),
+    // Per-goal cards count toward the milestone the schedule is farming; `resourceTotals` above
+    // stays over each goal's final target (Combine goals and the HSE list pool every stage).
+    resourceProgressByDay: projectResourceProgress(
+      plan.days,
+      initialProgress,
+      resourceMilestoneTargets(goals)
+    ),
     attemptsUsedByBattle: today.attemptsUsedByBattle,
   }
+}
+
+/**
+ * The schedule farms a goal's stages (milestones) in order, so a resource is as urgent as what the
+ * first stage still needing it lacks, not its remaining need over every later stage.
+ */
+function firstStageRemaining(
+  stages: readonly {
+    remaining: readonly { id: EstimateResourceId; count: number }[]
+  }[]
+) {
+  const result = new Map<EstimateResourceId, number>()
+  for (const stage of stages) {
+    const stageRemaining = new Map<EstimateResourceId, number>()
+    for (const need of stage.remaining) {
+      stageRemaining.set(
+        need.id,
+        (stageRemaining.get(need.id) ?? 0) + need.count
+      )
+    }
+    for (const [resourceId, count] of stageRemaining) {
+      if (!result.has(resourceId)) result.set(resourceId, count)
+    }
+  }
+  return result
 }
 
 export function calculateResourceUrgency(
@@ -443,15 +470,9 @@ export function calculateResourceUrgency(
   const allocations = allocatePlanInventory([...goals], [...inventory])
 
   for (const goal of goals) {
-    const remainingByResource = new Map<EstimateResourceId, number>()
-    for (const stage of allocations.get(goal.goalId)?.stages ?? []) {
-      for (const need of stage.remaining) {
-        remainingByResource.set(
-          need.id,
-          (remainingByResource.get(need.id) ?? 0) + need.count
-        )
-      }
-    }
+    const remainingByResource = firstStageRemaining(
+      allocations.get(goal.goalId)?.stages ?? []
+    )
 
     for (const [resourceId, count] of remainingByResource) {
       const outcome = estimateGoal({

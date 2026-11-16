@@ -4,9 +4,8 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
-  type QueryFunction,
-  type QueryKey,
 } from "@tanstack/react-query"
+import type { QueryFunction, QueryKey } from "@tanstack/react-query"
 
 import { ApiError } from "./api-client"
 
@@ -135,7 +134,7 @@ export function useRevisionedDraft<
           return "conflict"
         }
         try {
-          await queryClient.fetchQuery({ ...queryOptions, staleTime: 0 })
+          await queryClient.query({ ...queryOptions, staleTime: 0 })
           refreshSharedRevision()
           setEdited(null)
           mutation.reset()

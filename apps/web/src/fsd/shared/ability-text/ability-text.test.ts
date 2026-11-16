@@ -5,9 +5,8 @@ import {
   parseAbilityText,
   resolveI2p,
   resolveVariable,
-  type AbilityContext,
-  type StyledNode,
 } from "./ability-text"
+import type { AbilityContext, StyledNode } from "./ability-text"
 
 // Ported from V1 `3-features/character-details/ability-text.spec.ts` — the deterministic parser /
 // resolver / i2p cases. The V1 data-sweep tests (over `new-ability-data.json`) live with the

@@ -20,7 +20,7 @@ const { i18n, listeners } = vi.hoisted(() => {
 
 vi.mock("@/shared/config", () => ({
   i18n,
-  getSupportedLanguage: (language: string) => language.split("-")[0],
+  getSupportedLanguage: (language: string) => language.split("-", 1)[0],
 }))
 vi.mock("../routes/auth-route-guards", () => ({
   AuthResolving: () => <div data-testid="app-loading" />,

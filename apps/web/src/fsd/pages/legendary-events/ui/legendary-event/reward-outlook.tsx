@@ -1,8 +1,6 @@
 import { useTranslation } from "react-i18next"
-import {
-  legendaryEventResourceIcon,
-  type LegendaryEventResource,
-} from "@workspace/game-catalog"
+import { legendaryEventResourceIcon } from "@workspace/game-catalog"
+import type { LegendaryEventResource } from "@workspace/game-catalog"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { RewardProjection } from "@/entities/legendary-event"
@@ -42,8 +40,10 @@ export function RewardOutlook({
           : t("outlook.title")}
       </h3>
       {outlook.kind === "loading" ? (
+        // About the loaded lines' height (three lines and the disclosure, wrapping on a phone),
+        // so the card doesn't grow under the content below it (CLS audit 2026-11-15).
         <Skeleton
-          className="h-12 w-full rounded-lg"
+          className="h-40 w-full rounded-lg sm:h-32"
           data-testid="reward-outlook-loading"
         />
       ) : (

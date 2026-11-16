@@ -27,6 +27,7 @@
     "break": "Pause"
   },
   "wikiLink": "Wiki",
+  "plannerLink": "Planer öffnen",
   "agenda": {
     "ongoing": "Laufend",
     "endsIn": "Endet in {{when}}"
@@ -96,7 +97,9 @@
     "guild-raid-break": "Gildenraid-Pause",
     "guild-war-season": "Gildenkrieg",
     "anniversary-event": "Jubiläums-Event",
-    "crusade-season": "Kreuzzug-Saison"
+    "crusade-season": "Kreuzzug-Saison",
+    "armageddon-shop": "Armageddon-Shop",
+    "skull-harvest-shop": "Schädelernte"
   },
   "families": {
     "campaigns": "Kampagnen",

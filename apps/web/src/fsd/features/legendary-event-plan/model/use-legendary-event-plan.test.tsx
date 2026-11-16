@@ -10,8 +10,10 @@ import {
   legendaryEventPlanQueries,
   resolveLegendaryEventRunsAt,
   teamDepthForRun,
-  type LegendaryEventPlan,
-  type LegendaryEventTeam,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventPlan,
+  LegendaryEventTeam,
 } from "@/entities/legendary-event"
 import { ApiError } from "@/shared/api"
 import { setTestAuth } from "@/test/auth"
@@ -638,7 +640,7 @@ describe("useLegendaryEventPlan", () => {
       plan(4, [team("a", 0), team("b", 1)])
     )
     const refetch = queryClient
-      .fetchQuery({
+      .query({
         queryKey: legendaryEventPlanQueries.detail(EVENT).queryKey,
         queryFn: () =>
           new Promise<LegendaryEventPlan>((resolve) => {

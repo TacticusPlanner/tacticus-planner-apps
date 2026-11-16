@@ -68,6 +68,7 @@ export function CreateGoalOptions({
           compact={footer}
           hint={t("goals.create.priorityHint")}
           lastLabel
+          occupants={form.priorityOccupants}
           onChange={form.setPriorityPosition}
           portalContainer={portalContainer}
           position={form.priorityPosition}

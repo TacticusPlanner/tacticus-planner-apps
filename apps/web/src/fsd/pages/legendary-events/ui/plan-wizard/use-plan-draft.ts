@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import {
-  runInputValues,
-  type AscensionStep,
-  type LegendaryEventLaneId,
-  type LegendaryEventRun,
-  type LegendaryEventRunInputValues,
-  type UpgradeStep,
-  useTeamDisplayName,
+import { runInputValues, useTeamDisplayName } from "@/entities/legendary-event"
+import type {
+  AscensionStep,
+  LegendaryEventLaneId,
+  LegendaryEventRun,
+  LegendaryEventRunInputValues,
+  UpgradeStep,
 } from "@/entities/legendary-event"
 import { stepInGoals } from "@/features/legendary-event-goals"
 
@@ -21,29 +20,17 @@ import {
   targetOptions,
   toggleRecommendation,
 } from "./plan-draft"
-import {
-  NO_TEAM_ADJUSTMENTS,
-  createPlanEvaluator,
-  type PlanEvaluator,
-  type TeamAdjustments,
-} from "./plan-evaluator"
-import {
-  PLAN_LANE_IDS,
-  planRuns,
-  type PlanEconomy,
-  type PlanInputs,
-} from "./plan-inputs"
+import { NO_TEAM_ADJUSTMENTS, createPlanEvaluator } from "./plan-evaluator"
+import type { PlanEvaluator, TeamAdjustments } from "./plan-evaluator"
+import { PLAN_LANE_IDS, planRuns } from "./plan-inputs"
+import type { PlanEconomy, PlanInputs } from "./plan-inputs"
 import type { DraftTeam } from "./plan-teams"
-import {
-  chosenFrom,
-  recommendUpgrades,
-  type UpgradeRecommendation,
-} from "./plan-upgrades"
-import { browserSliceClock, runSliced, type SlicedRun } from "./run-sliced"
-import {
-  createSearchProgressTracker,
-  type SearchProgressStore,
-} from "./search-progress"
+import { chosenFrom, recommendUpgrades } from "./plan-upgrades"
+import type { UpgradeRecommendation } from "./plan-upgrades"
+import { browserSliceClock, runSliced } from "./run-sliced"
+import type { SlicedRun } from "./run-sliced"
+import { createSearchProgressTracker } from "./search-progress"
+import type { SearchProgressStore } from "./search-progress"
 import type { PlanSource } from "./use-plan-source"
 import { useDebouncedValue } from "./use-debounced-value"
 import { useUpgradeFarmingDays } from "./use-upgrade-farming-days"

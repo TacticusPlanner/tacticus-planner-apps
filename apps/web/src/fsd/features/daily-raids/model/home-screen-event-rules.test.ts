@@ -3,16 +3,15 @@ import { describe, expect, it } from "vitest"
 import {
   hseDefinitionConfig,
   hseVariant,
-  type HseFixtureId,
 } from "@/test/fixtures/home-screen-event-scoring"
+import type { HseFixtureId } from "@/test/fixtures/home-screen-event-scoring"
 
 import {
   battleEventPoints,
   campaignBattleGameMode,
   eventCampaignGroupIds,
-  type RuleBattle,
-  type RuleNpc,
 } from "./home-screen-event-rules"
+import type { RuleBattle, RuleNpc } from "./home-screen-event-rules"
 import { homeScreenEventRaidRule } from "./home-screen-event-raid-rule"
 
 const npc = (partial: Partial<RuleNpc> = {}): RuleNpc => ({

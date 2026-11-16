@@ -19,16 +19,16 @@ import type {
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
-import { gainsFromProgress, type MissionGain } from "../lib/mission-gains"
+import { gainsFromProgress } from "../lib/mission-gains"
+import type { MissionGain } from "../lib/mission-gains"
 import type { TokenMissionStep } from "../lib/mission-order"
 import type { NextTokenChoice, PlannedToken } from "../lib/token-plan"
 import {
   missionsNextToken,
   upNextTokens,
   tokenClearBand,
-  type NextTokenEmpty,
-  type TokenPlanView,
 } from "../lib/token-plan-view"
+import type { NextTokenEmpty, TokenPlanView } from "../lib/token-plan-view"
 import { unknownChip } from "../lib/unit-chips"
 import { useMissionsOrder } from "../model/token-plan-order"
 import { useNextTokenShown } from "../model/use-next-token-shown"
@@ -122,7 +122,9 @@ export function NextTokenCard({
 
   return (
     <Card data-testid="legendary-event-next-token">
-      <CardHeader>
+      {/* While loading, the Order switch's height, so the content doesn't move down when it
+          appears (CLS audit 2026-11-15). */}
+      <CardHeader className={view.kind === "loading" ? "min-h-9" : undefined}>
         <CardTitle>
           <h2>{t("tokenPlan.nextToken.title")}</h2>
         </CardTitle>
@@ -139,7 +141,10 @@ export function NextTokenCard({
         {view.kind === "loading" ? (
           <div data-testid="next-token-loading">
             <span className="sr-only">{t("tokenPlan.nextToken.loading")}</span>
-            <Skeleton className="h-16 w-full rounded-lg" />
+            {/* About a planned token's height (the token and four Up next rows, which stack on a
+                phone), the common state on this card, so the cards below don't jump down when the
+                plan arrives (CLS audit 2026-11-15). */}
+            <Skeleton className="h-100 w-full rounded-lg md:h-76" />
           </div>
         ) : null}
         {view.kind === "unavailable" ? (

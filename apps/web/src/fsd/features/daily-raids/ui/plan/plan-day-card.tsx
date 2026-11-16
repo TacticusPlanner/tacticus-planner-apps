@@ -50,7 +50,7 @@ export function PlanDayCard({
           cell={cell}
           dimmed={
             selectedUnitId !== undefined &&
-            !cell.units.some((unit) => unit.unitId === selectedUnitId)
+            cell.units.every((unit) => !(unit.unitId === selectedUnitId))
           }
           eligibleBattleIds={raids.eligibleBattleIds}
           exhaustedBattleIds={exhaustedBattleIds}

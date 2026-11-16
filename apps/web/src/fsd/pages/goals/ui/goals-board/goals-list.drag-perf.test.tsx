@@ -63,8 +63,7 @@ vi.mock(
   }
 )
 
-import type { GoalRow } from "@/features/goal-planning"
-import type { useGoalActions } from "@/features/goal-planning"
+import type { GoalRow, useGoalActions } from "@/features/goal-planning"
 import { GoalsList } from ".//goals-list"
 
 const ROWS = 30
@@ -94,7 +93,7 @@ beforeEach(() => {
         ? String(Array.prototype.indexOf.call(el.parentElement!.children, el))
         : null
     const key = id ?? (card ? `goal-${card}` : null)
-    const top = key ? Number(key.split("-")[1]) * 56 : 0
+    const top = key ? Number(key.split("-", 2)[1]) * 56 : 0
     return {
       top,
       bottom: top + 56,
@@ -242,7 +241,7 @@ describe("GoalsList desktop Cards view drag performance", () => {
   beforeEach(() => {
     Element.prototype.getBoundingClientRect = function () {
       const id = (this as HTMLElement).getAttribute?.("data-goal-id")
-      const index = id ? Number(id.split("-")[1]) : null
+      const index = id ? Number(id.split("-", 2)[1]) : null
       const left = index === null ? 0 : (index % PER_ROW) * 330
       const top = index === null ? 0 : Math.floor(index / PER_ROW) * 220
       return {

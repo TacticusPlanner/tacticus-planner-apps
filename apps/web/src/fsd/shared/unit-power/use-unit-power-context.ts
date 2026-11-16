@@ -9,13 +9,12 @@ import type {
 } from "@workspace/game-catalog"
 import { hasGameCatalogSynced } from "@workspace/game-catalog/queries"
 
-import { combineReadStates, useReadState, type ReadState } from "../lib"
+import { combineReadStates, useReadState } from "../lib"
+import type { ReadState } from "../lib"
 import { useCatalogDataset } from "../local-data"
 
-import {
-  buildUnitPowerContext,
-  type UnitPowerContext,
-} from "./unit-power-context"
+import { buildUnitPowerContext } from "./unit-power-context"
+import type { UnitPowerContext } from "./unit-power-context"
 
 function firstRecord<T>(records: T[]): T | null {
   return records[0] ?? null

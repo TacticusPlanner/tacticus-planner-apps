@@ -1,4 +1,5 @@
-import { useId, useState, type FormEvent } from "react"
+import { useId, useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { ExternalLink } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -34,8 +35,8 @@ import {
   tacticusUserIdProblem,
   updateTacticusIntegration,
   useCurrentUser,
-  type CurrentUser,
 } from "@/entities/account"
+import type { CurrentUser } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 import { getAccountEmail, getSignInMethod, signOut } from "@/shared/auth"
 import { appEnvironment } from "@/shared/config"
@@ -221,7 +222,7 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
         : t("manageAccount.integration.genericError")
       : null
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault()
     if (userIdFormatInvalid) return
     updateIntegration.mutate({

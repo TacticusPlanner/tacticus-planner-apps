@@ -9,13 +9,14 @@ import {
   orbAllianceIcon,
   orbIcon,
   shardIcon,
-  type GameIcon,
 } from "@workspace/game-catalog"
-import { rarityOrder, type Rarity } from "@workspace/game-domain"
+import type { GameIcon } from "@workspace/game-catalog"
+import { rarityOrder } from "@workspace/game-domain"
+import type { Rarity } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
 import type { ResourceNeed } from "@/entities/goal-farming"
-import { shopCurrencyIcon } from "@/entities/shop-reward"
+import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { sumPools } from "./goal-resource-totals"
 
 const EMPTY_AVAILABLE = {

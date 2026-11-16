@@ -7,11 +7,8 @@ import {
 } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 
-import {
-  materialSteps,
-  V1ImportPanel,
-  type V1ImportSelection,
-} from "@/features/v1-import"
+import { materialSteps, V1ImportPanel } from "@/features/v1-import"
+import type { V1ImportSelection } from "@/features/v1-import"
 import type { ImportV1ProfileResult } from "@/entities/account"
 
 const ALL_SELECTED: V1ImportSelection = {

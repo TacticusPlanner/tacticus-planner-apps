@@ -5,8 +5,8 @@ import {
   npcAdjustedBattlePower,
   npcEventIds,
   npcTierMultipliers,
-  type NpcTierListRecord,
 } from "./npc-tier-list"
+import type { NpcTierListRecord } from "./npc-tier-list"
 
 const record: NpcTierListRecord = {
   tiers: [

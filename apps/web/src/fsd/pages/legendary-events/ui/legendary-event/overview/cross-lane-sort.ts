@@ -1,10 +1,10 @@
 import { progressionIndex, rankIndex } from "@workspace/game-domain"
 
-import {
-  crossLaneFigure,
-  type CrossLaneLeaderboardRow,
-  type LeaderboardFigure,
-  type LegendaryEventLaneId,
+import { crossLaneFigure } from "@/entities/legendary-event"
+import type {
+  CrossLaneLeaderboardRow,
+  LeaderboardFigure,
+  LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 
 /** What the cross-lane leaderboard is ordered by: its default order (the lanes' sum), a unit's

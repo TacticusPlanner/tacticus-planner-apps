@@ -15,7 +15,7 @@ import { accountQueries } from "./account.queries"
 // Instant retries: the retry *predicate* is what's under test, not the backoff.
 function fetchCurrentUser() {
   const client = new QueryClient()
-  return client.fetchQuery({ ...accountQueries.current(), retryDelay: 0 })
+  return client.query({ ...accountQueries.current(), retryDelay: 0 })
 }
 
 describe("accountQueries.current retry policy", () => {
@@ -69,8 +69,8 @@ describe("accountQueries.current freshness", () => {
   async function readTwice(first: object) {
     const client = new QueryClient()
     getCurrentUser.mockReset().mockResolvedValue(first)
-    await client.fetchQuery(accountQueries.current())
-    await client.fetchQuery(accountQueries.current())
+    await client.query(accountQueries.current())
+    await client.query(accountQueries.current())
     return getCurrentUser.mock.calls.length
   }
 

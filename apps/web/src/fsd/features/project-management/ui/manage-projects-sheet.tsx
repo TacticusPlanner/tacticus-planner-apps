@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from "react"
+import { useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
@@ -12,7 +13,8 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/sheet"
 
-import { isProjectNameValid, type ProjectSummary } from "@/entities/project"
+import { isProjectNameValid } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 import { useEventTargetOptions } from "../model/event-target-options"
 import type { useProjectActions } from "../model/use-project-actions"
 import { ProjectColorPicker } from ".//project-color-picker"
@@ -103,7 +105,7 @@ function ProjectForm({
   )
   const targetOptions = useEventTargetOptions()
 
-  const submit = (event: FormEvent) => {
+  const submit = (event: SubmitEvent) => {
     event.preventDefault()
     if (!isProjectNameValid(name)) return
     const trimmedName = name.trim()

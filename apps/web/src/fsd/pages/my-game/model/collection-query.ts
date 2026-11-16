@@ -1,11 +1,9 @@
-import {
-  isProgression,
-  isRank,
-  rarityOrder,
-  type Alliance,
-  type Progression,
-  type Rank,
-  type Rarity,
+import { isProgression, isRank, rarityOrder } from "@workspace/game-domain"
+import type {
+  Alliance,
+  Progression,
+  Rank,
+  Rarity,
 } from "@workspace/game-domain"
 
 import type { UnitKind } from "@/entities/unit"

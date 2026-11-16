@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
-import { progressionStarsIndex, type Progression } from "@workspace/game-domain"
+import { progressionStarsIndex } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 
 import { progressionText } from "@/shared/ui"
 

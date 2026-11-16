@@ -15,8 +15,8 @@ Agreed with Severyn on 3 Nov (decisions 14 to 19 in the planning notes):
 
 ## What Changes
 
-- **Deadline header.** On Goals scoped to a project with a target: "Deadline: LE · Uthar starts Nov 27 · 2 of 4 fit · 1 not estimated", or "All 7 done", or "Ended Nov 15".
-- **Per-goal fit.** Beside Done By: "Fits" or "Misses by N d", with an accent. On track for fits, caution for a miss of 1 to 7 days, urgent for more.
+- **Deadline header.** On Goals scoped to a project with a target: "Deadline: LE · Uthar runs Nov 27 – Dec 4 · 2 of 4 fit · 1 during the event · 1 not estimated", or "All 7 done", or "Ended Nov 15".
+- **Per-goal fit.** Beside Done By: "Fits", "During event" (done after the run starts but before it ends) or "Misses by N d" (days after the run ends), with an accent: on track, caution, urgent.
 - **Divider** before the first goal that misses, with Group None.
 - **Season fit override.** In a targeted scope the Season fit select is replaced by a read-only "Using project deadline" chip. Unscoped Goals and untargeted projects keep the select.
 - **Cards.** Targeted project cards on the Projects page and the home widget show "2 of 4 fit" next to their chip.

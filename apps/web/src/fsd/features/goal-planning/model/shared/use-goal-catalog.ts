@@ -1,11 +1,7 @@
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  factionRank,
-  groupByFaction,
-  type FactionGroup,
-  type UnitId,
-} from "@workspace/game-domain"
+import { factionRank, groupByFaction } from "@workspace/game-domain"
+import type { FactionGroup, UnitId } from "@workspace/game-domain"
 import type {
   CampaignDefinitionStorageModel,
   UpgradeStorageModel,

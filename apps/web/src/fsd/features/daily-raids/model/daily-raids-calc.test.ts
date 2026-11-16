@@ -14,36 +14,37 @@ import {
   rankOrder,
   unitIdSchema,
   upgradeIdSchema,
-  type BattleId,
 } from "@workspace/game-domain"
+import type { BattleId } from "@workspace/game-domain"
 
-import { activeProjectMembers, type GoalDetail } from "@/entities/goal"
+import { activeProjectMembers } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 import type {
   FarmingCharacter,
   FarmingUpgrade,
   FlatSupplier,
+  EstimateResourceId,
+  EstimateUpgrade,
 } from "@/entities/goal-farming"
 
-import {
-  selectFarmNodes,
-  type EstimateResourceId,
-  type EstimateUpgrade,
-} from "@/entities/goal-farming"
+import { selectFarmNodes } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
 import {
   availableCampaignBattles,
   campaignEventProgressKey,
   campaignProgressKey,
-  type CampaignEventProgressEntry,
-  type CampaignProgressEntry,
+} from "@/entities/player-data-override"
+import type {
+  CampaignEventProgressEntry,
+  CampaignProgressEntry,
 } from "@/entities/player-data-override"
 import {
   calculateCombinedResourceUrgency,
   calculateResourceUrgency,
   calculateDailyRaids,
-  type DailyRaidsCalculationInput,
 } from "./daily-raids-calc"
+import type { DailyRaidsCalculationInput } from "./daily-raids-calc"
 import { playerUnitIds } from "./use-daily-raids"
 
 function eventBattle(overrides: {
@@ -227,6 +228,70 @@ describe("daily raid derivation", () => {
     expect(urgency.get("lower-priority:fast")).toEqual({
       days: 1,
       energyTotal: 6,
+    })
+  })
+
+  it("rates a staged goal's resource by the first milestone still needing it, not every milestone", () => {
+    const wingId = upgradeIdSchema.parse("wing")
+    const nodeId = battleIdSchema.parse("B1")
+    const urgency = calculateResourceUrgency(
+      [
+        {
+          goalId: "atlacoya",
+          priority: 1,
+          needs: [{ id: wingId, count: 64 }],
+          stages: [
+            { target: "G1", needs: [{ id: wingId, count: 28 }] },
+            { target: "D3", needs: [{ id: wingId, count: 36 }] },
+          ],
+        },
+      ],
+      [{ id: wingId, count: 1 }],
+      new Map([
+        [
+          wingId,
+          {
+            id: wingId,
+            label: wingId,
+            rarity: "Common",
+            stat: "health",
+            crafted: false,
+            recipe: [],
+            farmLocations: [
+              {
+                battleId: nodeId,
+                guaranteed: true,
+                effectiveRate: null,
+                numerator: null,
+                denominator: null,
+                isMythic: false,
+              },
+            ],
+          } satisfies FarmingUpgrade,
+        ],
+      ]),
+      new Map([
+        [
+          nodeId,
+          {
+            campaignGroupId: campaignIdSchema.parse("CG1"),
+            type: "Normal",
+            challenge: false,
+            nodeNumber: 1,
+            battleIndex: 0,
+            energyCost: 6,
+            dailyAttempts: 1,
+          },
+        ],
+      ]),
+      60,
+      new Date("2026-01-01T00:00:00.000Z")
+    )
+
+    // G1 needs 28 and 1 is held: 27 raids at 1 a day, not the 63 the whole D3 goal lacks.
+    expect(urgency.get("atlacoya:wing")).toEqual({
+      days: 27,
+      energyTotal: 162,
     })
   })
 

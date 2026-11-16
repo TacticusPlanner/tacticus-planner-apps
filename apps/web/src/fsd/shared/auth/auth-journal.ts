@@ -15,10 +15,10 @@ import type { SignInMethod } from "./account-identity"
 export type AuthStep =
   /** The app-load restore from cached tokens (access token or refresh token, no frame). */
   | { step: "restore_cache"; outcome: "success" | "failed"; errorCode?: string }
-  /** The hidden `prompt=none` frame (ssoSilent). */
+  /** The hidden `prompt=none` frame (ssoSilent); skipped where the browser blocks it. */
   | {
       step: "restore_frame"
-      outcome: "success" | "failed"
+      outcome: "success" | "failed" | "skipped"
       errorCode?: string
       /** Whether the frame was asked about a cached account or only a remembered hint. */
       from: "account" | "hint"
@@ -28,7 +28,8 @@ export type AuthStep =
   /** A quiet renewal was due but not run. */
   | {
       step: "quiet_renewal_skipped"
-      reason: "cooldown" | "fresh_login" | "interaction" | "google"
+      reason:
+        "cooldown" | "fresh_login" | "interaction" | "google" | "other_tab"
     }
   /** The response to a quiet renewal, read on the page it returned to. */
   | {
@@ -44,8 +45,12 @@ export type AuthStep =
       method: SignInMethod | "unknown"
       freshLogin: boolean
     }
-  /** An automatic interactive redirect was refused by the loop guard. */
-  | { step: "interactive_redirect_skipped"; reason: "loop_guard" }
+  /** An automatic interactive redirect was refused by the loop guard, or left to another tab that
+   *  was already redirecting. */
+  | {
+      step: "interactive_redirect_skipped"
+      reason: "loop_guard" | "other_tab"
+    }
   /** The response to an interactive redirect, read on the page it returned to. */
   | {
       step: "interactive_redirect_returned"
@@ -63,9 +68,35 @@ export type JournaledAuthStep = AuthStep & {
 }
 
 const JOURNAL_KEY = "tp.auth.journal"
-// Which redirect left the page last, so the page it returns to can tell "the response never
-// arrived" (no_response) apart from an ordinary load.
+// Which redirect left this tab last, so the page it returns to can tell "the response never
+// arrived" (no_response) apart from an ordinary load. Kept per tab (sessionStorage, which survives
+// the tab's own redirect round trip): in localStorage, a tab opening alongside one that had just
+// left read its marker and reported a no_response that never happened.
 const PENDING_REDIRECT_KEY = "tp.auth.pendingRedirect"
+
+const tabStorage = {
+  get(key: string): string | null {
+    try {
+      return window.sessionStorage.getItem(key)
+    } catch {
+      return null
+    }
+  },
+  set(key: string, value: string) {
+    try {
+      window.sessionStorage.setItem(key, value)
+    } catch {
+      // Best effort: without it the cooldown tells a quiet renewal's response apart.
+    }
+  },
+  remove(key: string) {
+    try {
+      window.sessionStorage.removeItem(key)
+    } catch {
+      // Best effort, as above.
+    }
+  },
+}
 // A loop is a handful of steps per load; this keeps a few days of them and bounds the storage.
 const MAX_ENTRIES = 60
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000
@@ -121,12 +152,14 @@ export type RedirectKind = "quiet" | "interactive"
 
 /** Remembers that a redirect of this kind is about to leave the page. */
 export function markRedirectPending(kind: RedirectKind) {
-  safeStorage.set(PENDING_REDIRECT_KEY, kind)
+  tabStorage.set(PENDING_REDIRECT_KEY, kind)
 }
 
 /** The redirect this page load returns from, if one left the page; read once. */
 export function takePendingRedirect(): RedirectKind | null {
-  const kind = safeStorage.get(PENDING_REDIRECT_KEY)
+  const kind = tabStorage.get(PENDING_REDIRECT_KEY)
+  tabStorage.remove(PENDING_REDIRECT_KEY)
+  // The device-wide marker earlier versions wrote.
   safeStorage.remove(PENDING_REDIRECT_KEY)
   return kind === "quiet" || kind === "interactive" ? kind : null
 }
@@ -135,6 +168,7 @@ export function takePendingRedirect(): RedirectKind | null {
 export function forgetAuthJournal() {
   safeStorage.remove(JOURNAL_KEY)
   safeStorage.remove(PENDING_REDIRECT_KEY)
+  tabStorage.remove(PENDING_REDIRECT_KEY)
 }
 
 const AADSTS_CODE = /AADSTS\d+/

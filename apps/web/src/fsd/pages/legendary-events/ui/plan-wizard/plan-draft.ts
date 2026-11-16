@@ -6,12 +6,8 @@ import type {
   UpgradeStep,
 } from "@/entities/legendary-event"
 
-import {
-  bestStepWithinReach,
-  stepVerdict,
-  type StepTarget,
-  type StepVerdict,
-} from "./plan-ceiling"
+import { bestStepWithinReach, stepVerdict } from "./plan-ceiling"
+import type { StepTarget, StepVerdict } from "./plan-ceiling"
 import type { UpgradeChainRequest } from "./farming-days"
 import type { UpgradeRecommendation } from "./plan-upgrades"
 

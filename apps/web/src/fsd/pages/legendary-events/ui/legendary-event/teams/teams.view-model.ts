@@ -7,19 +7,21 @@ import {
   teamEffectiveDepth,
   memberPowers,
   teamPower,
-  type ClearEstimate,
-  type ClearEstimateRoster,
-  type LanePointsModel,
-  type LaneProgressView,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
-  type LegendaryEventUnit,
   eventUnitChipData,
-  type EventUnitChipData,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimate,
+  ClearEstimateRoster,
+  LanePointsModel,
+  LaneProgressView,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
+  LegendaryEventRosterUnit,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+  LegendaryEventUnit,
+  EventUnitChipData,
 } from "@/entities/legendary-event"
 import { teamPointsLeft } from "../../../lib/team-points"
 
@@ -120,7 +122,7 @@ export function buildTeamCardViewModel(
   /** `roster` keyed by unit id; the section builds it once for all its cards. */
   rosterById: ClearEstimateRoster | undefined = roster && rosterMap(roster),
   /** The lane's synced progress; undefined while it loads or failed (nothing counts as cleared). */
-  progress: LaneProgressView | undefined = undefined,
+  progress?: LaneProgressView,
   /** The lane's points model; the section builds it once for all its cards. */
   model: LanePointsModel = buildLanePointsModel(lane)
 ): TeamCardViewModel {

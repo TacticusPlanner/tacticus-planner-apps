@@ -12,15 +12,15 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
-import { estimateGoal, selectFarmNodes } from "@/entities/goal-farming"
-import { mythicShardResourceId, shardResourceId } from "@/entities/goal-farming"
 import {
+  estimateGoal,
+  selectFarmNodes,
+  mythicShardResourceId,
+  shardResourceId,
   ascensionResourceNeed,
   isMythicProgression,
   unlockResourceNeed,
-} from "@/entities/goal-farming"
-import { estimateRemainingShardEnergy } from "@/entities/goal-farming"
-import {
+  estimateRemainingShardEnergy,
   projectOnslaughtSupply,
   projectShopSupply,
   shopOfferPerDay,
@@ -395,7 +395,7 @@ export function summariseShopCurrencySpend(
       (byCurrency.get(offer.cost.currency) ?? 0) + spend
     )
   }
-  return [...byCurrency.entries()].map(([currency, amount]) => ({
+  return [...byCurrency].map(([currency, amount]) => ({
     currency,
     amount,
   }))

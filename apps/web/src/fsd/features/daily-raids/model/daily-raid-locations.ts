@@ -1,16 +1,11 @@
-import {
-  campaignDescriptor,
-  campaignIcon,
-  type CampaignDescriptor,
-} from "@workspace/game-catalog"
+import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
+import type { CampaignDescriptor } from "@workspace/game-catalog"
 import type { BattleId } from "@workspace/game-domain"
 
 import type { Battle } from "@/shared/lib"
 
-import {
-  campaignLocationLabels,
-  type DailyRaidLocationViewModel,
-} from "./daily-raids.domain"
+import { campaignLocationLabels } from "./daily-raids.domain"
+import type { DailyRaidLocationViewModel } from "./daily-raids.domain"
 
 /**
  * Display view model of every catalog battle, keyed by battle id: the campaign's name, difficulty +

@@ -129,6 +129,23 @@ describe("installGlobalErrorCapture", () => {
     expect(log).not.toHaveBeenCalled()
   })
 
+  it("ignores a rejection from a cancelled request", () => {
+    const target = new EventTarget() as Window
+    installGlobalErrorCapture(target)
+    const report = vi.fn()
+    setErrorReporter(report)
+    const log = vi.spyOn(console, "error").mockImplementation(() => {})
+
+    target.dispatchEvent(
+      rejection(
+        new DOMException("signal is aborted without reason", "AbortError")
+      )
+    )
+
+    expect(report).not.toHaveBeenCalled()
+    expect(log).not.toHaveBeenCalled()
+  })
+
   it("keeps an error without a stack", () => {
     const target = new EventTarget() as Window
     installGlobalErrorCapture(target)

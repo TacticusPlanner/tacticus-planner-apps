@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { lazy, useState, type ComponentProps } from "react"
+import { lazy, useState } from "react"
+import type { ComponentProps } from "react"
 import { Link, MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"

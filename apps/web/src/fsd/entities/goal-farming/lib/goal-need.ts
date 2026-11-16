@@ -2,7 +2,8 @@ import type {
   CharacterStorageModel,
   MowStorageModel,
 } from "@workspace/game-catalog"
-import { rankAt, rankIndex, type UpgradeId } from "@workspace/game-domain"
+import { rankAt, rankIndex } from "@workspace/game-domain"
+import type { UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal/@x/goal-farming"
@@ -19,11 +20,8 @@ import {
 } from "./rank-additional-target"
 import { mowAbilityTrackLevel } from "./mow-ability-calc"
 import { slotsBaseNeed } from "./slot-components"
-import {
-  rankUpSlotOccurrences,
-  type CraftedInventoryPool,
-  type RankSlotOccurrence,
-} from "./upgrade-recipe"
+import { rankUpSlotOccurrences } from "./upgrade-recipe"
+import type { CraftedInventoryPool, RankSlotOccurrence } from "./upgrade-recipe"
 
 // Rank/Ability raw material need-derivation for the Insights plan-wide aggregation
 // (plan-insights-calc.ts), shared with goal-requirements.ts and upgrade-goal-need.ts.

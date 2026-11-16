@@ -1,7 +1,5 @@
-import {
-  CLEAR_ESTIMATE_CURVE_VERSION,
-  type ClearEstimate,
-} from "@/entities/legendary-event"
+import { CLEAR_ESTIMATE_CURVE_VERSION } from "@/entities/legendary-event"
+import type { ClearEstimate } from "@/entities/legendary-event"
 
 /** Where a depth was set from (analytics): the team card's stepper, the team editor, or a Next
  *  token card action. */

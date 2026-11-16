@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { shopIcon } from "@workspace/game-catalog"
 
-import type { ShopRecommendationSectionView } from "@/features/shop-recommendations"
+import type { ShopRecommendationSectionView } from "@/features/shops/recommendations"
 import { EntityIcon } from "@/shared/ui"
 import { ShopRecommendationCard } from "./shop-recommendation-card"
 

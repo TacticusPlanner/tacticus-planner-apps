@@ -31,6 +31,17 @@ const mocks = vi.hoisted(() => {
   }
 })
 
+const frames = vi.hoisted(() => ({ blocked: vi.fn(() => false) }))
+vi.mock("./hidden-frame-support", () => ({
+  hiddenFrameCannotSeeSession: frames.blocked,
+}))
+
+const pageReload = vi.hoisted(() => vi.fn())
+vi.mock("./redirect-lock", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./redirect-lock")>()),
+  reloadPage: pageReload,
+}))
+
 vi.mock("../config/environment", () => ({
   getRequiredEnvironmentValue: mocks.environment,
 }))
@@ -102,6 +113,7 @@ describe("authentication", () => {
     mocks.instance.getAllAccounts.mockReturnValue([])
     mocks.instance.clearCache.mockResolvedValue(undefined)
     localStorage.clear()
+    sessionStorage.clear()
   })
 
   it("resolves the API scope only when it is accessed", () => {
@@ -803,6 +815,46 @@ describe("authentication", () => {
       ).toBeGreaterThan(0)
     })
 
+    it("goes straight to the quiet renewal where the browser blocks the hidden frame", async () => {
+      frames.blocked.mockReturnValue(true)
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("redirecting")
+
+      expect(mocks.instance.ssoSilent).not.toHaveBeenCalled()
+      expect(mocks.instance.acquireTokenRedirect).toHaveBeenCalledOnce()
+      expect(
+        JSON.parse(localStorage.getItem("tp.auth.journal") ?? "[]")
+      ).toMatchObject([
+        { step: "restore_cache", outcome: "failed" },
+        { step: "restore_frame", outcome: "skipped", from: "account" },
+        { step: "quiet_renewal_started", from: "account" },
+      ])
+      frames.blocked.mockReturnValue(false)
+    })
+
+    it("leaves the quiet renewal to another tab that is already redirecting", async () => {
+      localStorage.setItem(
+        "tp.auth.redirectLock",
+        JSON.stringify({ tab: "other", at: Date.now() })
+      )
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+
+      await expect(
+        auth.attemptSilentSignIn(mocks.instance as never)
+      ).resolves.toBe("redirecting")
+      expect(mocks.instance.acquireTokenRedirect).not.toHaveBeenCalled()
+      expect(localStorage.getItem("tp.auth.quietRenewal")).toBeNull()
+
+      // The other tab comes back: this one reloads to pick up its tokens.
+      localStorage.removeItem("tp.auth.redirectLock")
+      await vi.waitFor(() => expect(pageReload).toHaveBeenCalledOnce(), {
+        timeout: 2000,
+      })
+    })
+
     it("skips the hidden frame and the quiet renewal for a Google account", async () => {
       mocks.instance.getAllAccounts.mockReturnValue([googleAccount] as never)
 
@@ -1127,18 +1179,18 @@ describe("authentication", () => {
     })
 
     it("records a redirect whose response never arrived", async () => {
-      localStorage.setItem("tp.auth.pendingRedirect", "interactive")
+      sessionStorage.setItem("tp.auth.pendingRedirect", "interactive")
 
       await auth.initializeAuthentication()
 
       expect(journal()).toMatchObject([
         { step: "interactive_redirect_returned", outcome: "no_response" },
       ])
-      expect(localStorage.getItem("tp.auth.pendingRedirect")).toBeNull()
+      expect(sessionStorage.getItem("tp.auth.pendingRedirect")).toBeNull()
     })
 
     it("records a completed interactive redirect", async () => {
-      localStorage.setItem("tp.auth.pendingRedirect", "interactive")
+      sessionStorage.setItem("tp.auth.pendingRedirect", "interactive")
       mocks.instance.handleRedirectPromise.mockResolvedValue({
         account: emailAccount,
       })
@@ -1197,6 +1249,44 @@ describe("authentication", () => {
       await auth.initializeAuthentication()
     }
 
+    it("leaves an automatic redirect to another tab that is already redirecting", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([googleAccount] as never)
+      localStorage.setItem(
+        "tp.auth.redirectLock",
+        JSON.stringify({ tab: "other", at: Date.now() })
+      )
+      await auth.initializeAuthentication()
+
+      void auth.requestInteraction()
+      await vi.waitFor(() =>
+        expect(journal()).toContainEqual(
+          expect.objectContaining({
+            step: "interactive_redirect_skipped",
+            reason: "other_tab",
+          })
+        )
+      )
+      expect(mocks.instance.loginRedirect).not.toHaveBeenCalled()
+      // Not counted against the loop guard.
+      expect(localStorage.getItem("tp.auth.autoRedirects")).toBeNull()
+
+      localStorage.removeItem("tp.auth.redirectLock")
+      await vi.waitFor(() => expect(pageReload).toHaveBeenCalledOnce(), {
+        timeout: 2000,
+      })
+    })
+
+    it("lets the page a redirect returns to release its lock", async () => {
+      mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+      await auth.initializeAuthentication()
+      await auth.requestInteraction()
+      expect(localStorage.getItem("tp.auth.redirectLock")).not.toBeNull()
+
+      await reload()
+
+      expect(localStorage.getItem("tp.auth.redirectLock")).toBeNull()
+    })
+
     it("keeps the quiet renewal cooldown when an automatic redirect starts", async () => {
       mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
       localStorage.setItem("tp.auth.quietRenewal", String(Date.now() - 2000))
@@ -1210,7 +1300,7 @@ describe("authentication", () => {
     it("reads an interactive response as interactive while the cooldown runs", async () => {
       vi.spyOn(console, "warn").mockImplementation(() => {})
       localStorage.setItem("tp.auth.quietRenewal", String(Date.now() - 2000))
-      localStorage.setItem("tp.auth.pendingRedirect", "interactive")
+      sessionStorage.setItem("tp.auth.pendingRedirect", "interactive")
       mocks.instance.handleRedirectPromise.mockRejectedValue(
         new AuthError("server_error", "message")
       )

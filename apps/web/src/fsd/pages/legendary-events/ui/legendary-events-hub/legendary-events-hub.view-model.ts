@@ -1,15 +1,14 @@
 import {
   orderLegendaryEventsForHub,
-  type LegendaryEvent,
-  type LegendaryEventLifecycle,
-  type LegendaryEventProgress,
-  type ReadState,
-} from "@/entities/legendary-event"
-
-import {
   legendaryEventRunDates,
   legendaryEventRunWindow,
-} from "../../lib/run-dates"
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEvent,
+  LegendaryEventLifecycle,
+  LegendaryEventProgress,
+  ReadState,
+} from "@/entities/legendary-event"
 
 /** What a hub card shows from the sync, for an active event only. */
 type HubCardSynced =

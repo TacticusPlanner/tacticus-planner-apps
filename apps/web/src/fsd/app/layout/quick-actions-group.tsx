@@ -16,7 +16,7 @@ export function QuickActionsGroup({
 }) {
   const { t } = useTranslation()
 
-  if (!actions.length) return null
+  if (actions.length === 0) return null
 
   return (
     <section

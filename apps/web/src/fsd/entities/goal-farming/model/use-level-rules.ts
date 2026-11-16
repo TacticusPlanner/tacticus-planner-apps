@@ -1,6 +1,7 @@
 import { useCatalogDataset } from "@/shared/local-data"
 
-import { toLevelRules, type LevelRules } from "../lib/level-rules"
+import { toLevelRules } from "../lib/level-rules"
+import type { LevelRules } from "../lib/level-rules"
 
 /** The game's XP and rank-up level rules; undefined until `progression-rules` has loaded. */
 export function useLevelRules(): LevelRules | undefined {

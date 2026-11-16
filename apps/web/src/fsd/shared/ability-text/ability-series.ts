@@ -1,10 +1,5 @@
-import {
-  parseAbilityText,
-  resolveVariable,
-  type AbilityContext,
-  type AstNode,
-  type VariableNode,
-} from "./ability-text"
+import { parseAbilityText, resolveVariable } from "./ability-text"
+import type { AbilityContext, AstNode, VariableNode } from "./ability-text"
 import type { AbilityTextEntry } from "./use-ability-text"
 
 export type AbilitySeries = {
@@ -33,7 +28,7 @@ function flatten(nodes: AstNode[], out: Token[] = []): Token[] {
 
 const RANGE_SEPARATOR = /^\s*[-–]\s*$/
 
-const LINKING_WORD = /^(by|to|of|for|with|and|up|is|at|a|an|the)$/i
+const LINKING_WORD = /^(?:by|to|of|for|with|and|up|is|at|a|an|the)$/i
 
 const capitalise = (text: string) =>
   text ? text.charAt(0).toLocaleUpperCase() + text.slice(1) : text
@@ -46,7 +41,7 @@ const capitalise = (text: string) =>
 function labelFor(tokens: Token[], first: number, last: number): string {
   const next = tokens[last + 1]
   if (next?.kind === "text") {
-    const words = (next.text.split(/[.,;:\n(]/)[0] ?? "")
+    const words = (next.text.split(/[.,;:\n(]/, 1)[0] ?? "")
       .trim()
       .split(/\s+/)
       .filter((word) => /\p{L}/u.test(word))

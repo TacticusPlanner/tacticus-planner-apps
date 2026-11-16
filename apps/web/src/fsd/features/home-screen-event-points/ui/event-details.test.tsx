@@ -1,7 +1,14 @@
 import userEvent from "@testing-library/user-event"
 import type { i18n as I18n } from "i18next"
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest"
-import { vi } from "vitest"
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 
 import { screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"

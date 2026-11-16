@@ -1,15 +1,16 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  eventMissions,
-  type BattleEnemies,
-  type LegendaryEventMissionRef,
-  type LegendaryEventUnit,
+import { eventMissions } from "@/entities/legendary-event"
+import type {
+  BattleEnemies,
+  LegendaryEventMissionRef,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { fixtureCharacter } from "@/test/fixtures/legendary-event-characters"
 import { utharEvent } from "@/test/fixtures/legendary-events"
 
-import { missionOrder, type MissionOrderInput } from "./mission-order"
+import { missionOrder } from "./mission-order"
+import type { MissionOrderInput } from "./mission-order"
 import type { PlannedToken } from "./token-plan"
 
 const ref = (index: number): LegendaryEventMissionRef => ({

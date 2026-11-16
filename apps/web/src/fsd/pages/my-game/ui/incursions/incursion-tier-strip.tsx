@@ -7,10 +7,8 @@ import { EntityIcon } from "@/shared/ui"
 import { RARITY_FILL, RARITY_FILL_FAINT } from "@/entities/incursion"
 
 import type { Incursion } from "../../model/incursions.model"
-import {
-  tierClearance,
-  type TierStars,
-} from "../../model/incursion-progress.model"
+import { tierClearance } from "../../model/incursion-progress.model"
+import type { TierStars } from "../../model/incursion-progress.model"
 import { useTierName } from "./use-tier-name"
 
 /**

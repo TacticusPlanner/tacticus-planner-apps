@@ -1,9 +1,11 @@
-import { Link, type To } from "react-router"
+import { Link } from "react-router"
+import type { To } from "react-router"
 import { useTranslation } from "react-i18next"
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 
-import { COLLECTION_ORIGIN_PATH, type UnitOrigin } from "@/entities/unit"
+import { COLLECTION_ORIGIN_PATH } from "@/entities/unit"
+import type { UnitOrigin } from "@/entities/unit"
 
 type NavTarget = { to: To; name: string; state: unknown }
 

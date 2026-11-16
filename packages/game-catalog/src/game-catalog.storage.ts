@@ -27,6 +27,7 @@ export type CampaignDefinitionStorageModel =
 export type EventDefinitionStorageModel = StorageModel<"event-definitions">
 export type EventsCalendarStorageModel = StorageModel<"events-calendar">
 export type ShopStorageModel = StorageModel<"shops">
+export type EventShopStorageModel = StorageModel<"event-shops">
 export type RaidBossesStorageModel = StorageModel<"raid-bosses">
 export type GuildRaidMetaStorageModel = StorageModel<"guild-raid-meta">
 export type MythicQuestsStorageModel = StorageModel<"mythic-quests">

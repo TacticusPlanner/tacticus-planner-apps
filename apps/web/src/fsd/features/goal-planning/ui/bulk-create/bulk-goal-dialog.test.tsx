@@ -119,9 +119,7 @@ describe("BulkGoalDialog", () => {
     const { onCreated, onOpenChange } = renderDialog([ragnar, tigurius])
 
     fireEvent.click(screen.getByTestId("bulk-goal-create"))
-    await waitFor(() =>
-      expect(screen.getByTestId("bulk-goal-retry")).toBeInTheDocument()
-    )
+    expect(await screen.findByTestId("bulk-goal-retry")).toBeInTheDocument()
     expect(api.create).toHaveBeenCalledTimes(2)
     expect(api.create.mock.calls[0]![0]).toMatchObject({
       entityType: "Character",

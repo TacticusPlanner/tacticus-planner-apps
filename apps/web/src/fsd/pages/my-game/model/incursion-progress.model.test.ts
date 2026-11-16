@@ -19,8 +19,8 @@ import {
   toIncursionProgressDraft,
   toIncursionProgressPayload,
   unclaimedStarRewards,
-  type IncursionProgressDraft,
 } from "./incursion-progress.model"
+import type { IncursionProgressDraft } from "./incursion-progress.model"
 
 // The fixture keeps only tiers 0 and 12 (Common 1 and Mythic 1); each has 12 or 15 battles.
 const broadside = incursionsFixture.find(

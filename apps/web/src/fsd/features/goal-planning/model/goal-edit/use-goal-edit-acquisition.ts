@@ -5,8 +5,8 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import type { AcquisitionSource, GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import type { estimateGoal } from "@/entities/goal-farming"
 import {
-  estimateGoal,
   isMythicProgression,
   toOnslaughtRunsPerDay,
   useUnitShopShardSupply,

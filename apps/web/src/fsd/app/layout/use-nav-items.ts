@@ -7,13 +7,16 @@ import type { UnitId } from "@workspace/game-domain"
 import {
   orderLegendaryEventsForHub,
   useLegendaryEvents,
-  type LegendaryEventLifecycle,
-  type LegendaryEventLifecycleState,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventLifecycle,
+  LegendaryEventLifecycleState,
 } from "@/entities/legendary-event"
 import { useEnabledFeatureFlags } from "@/shared/feature-flags"
 import { useUnitName } from "@/shared/unit-name"
 
-import { navItems, type DynamicNavSubItem, type NavItem } from "./nav-items"
+import { navItems } from "./nav-items"
+import type { DynamicNavSubItem, NavItem } from "./nav-items"
 import { useDateLocale } from "@/shared/lib"
 
 const DESCRIPTION_KEY = {

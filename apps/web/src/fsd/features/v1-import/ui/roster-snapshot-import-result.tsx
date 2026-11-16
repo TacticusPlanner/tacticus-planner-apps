@@ -2,10 +2,10 @@ import { useTranslation } from "react-i18next"
 
 import { formatSnapshotDate } from "@/entities/roster-snapshot"
 
-import {
-  reasonKeyForRosterSnapshotOutcome,
-  type RosterSnapshotBucketKey,
-  type RosterSnapshotBuckets,
+import { reasonKeyForRosterSnapshotOutcome } from "../model/roster-snapshot-outcome-buckets"
+import type {
+  RosterSnapshotBucketKey,
+  RosterSnapshotBuckets,
 } from "../model/roster-snapshot-outcome-buckets"
 
 const BUCKET_ORDER: readonly RosterSnapshotBucketKey[] = [

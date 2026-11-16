@@ -1,6 +1,7 @@
 import type { Namespace, TFunction } from "i18next"
 import { progressionVisual } from "@workspace/game-catalog"
-import { progressionRarity, type Progression } from "@workspace/game-domain"
+import { progressionRarity } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 
 /**
  * A progression as short text — "Legendary 5★", "Mythic wings", or just "Common" before the first

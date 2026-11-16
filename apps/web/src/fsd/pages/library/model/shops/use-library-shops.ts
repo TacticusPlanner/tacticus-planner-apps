@@ -1,19 +1,14 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import {
-  resolveShopSlotsForDay,
-  todayDow,
-  type ShopDayOfWeek,
-} from "@workspace/game-catalog"
+import { resolveShopSlotsForDay, todayDow } from "@workspace/game-catalog"
+import type { ShopDayOfWeek } from "@workspace/game-catalog"
 
-import { shopRewardDisplay } from "@/entities/shop-reward"
+import { shopRewardDisplay } from "@/entities/shops/reward"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
-import {
-  buildLibraryShopSlots,
-  type LibraryShopSlotView,
-} from "../../ui/shops/library-shops.view-model"
+import { buildLibraryShopSlots } from "../../ui/shops/library-shops.view-model"
+import type { LibraryShopSlotView } from "../../ui/shops/library-shops.view-model"
 
 export const LIBRARY_SHOP_IDS = [
   "guild",

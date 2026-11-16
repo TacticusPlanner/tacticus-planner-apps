@@ -10,44 +10,48 @@ import {
   buildLanePointsModel,
   MAX_TEAMS_PER_LANE,
   useTeamDisplayName,
-  type LaneProgressView,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
-  type LegendaryEventUnit,
-  type TeamSuggestion,
+} from "@/entities/legendary-event"
+import type {
+  LaneProgressView,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+  LegendaryEventUnit,
+  TeamSuggestion,
 } from "@/entities/legendary-event"
 import {
   TeamSuggestionsDialog,
   laneTeams,
   useTeamSuggestionCount,
-  type LegendaryEventPlanActions,
-  type PickerGoalsPreview,
-  type TeamSuggestionsSource,
+} from "@/features/legendary-event-plan"
+import type {
+  LegendaryEventPlanActions,
+  PickerGoalsPreview,
+  TeamSuggestionsSource,
 } from "@/features/legendary-event-plan"
 import { ConfirmationDialog, SortableList } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-import {
-  laneEstimateInputs,
-  type ClearEstimatesViewModel,
-} from "../legendary-event-page.view-model"
-import {
-  teamLastRunClearedBattle,
-  type LastRunClears,
-} from "../overview/last-run.view-model"
+import { laneEstimateInputs } from "../legendary-event-page.view-model"
+import type { ClearEstimatesViewModel } from "../legendary-event-page.view-model"
+import { teamLastRunClearedBattle } from "../overview/last-run.view-model"
+import type { LastRunClears } from "../overview/last-run.view-model"
 
-import { TeamCard, type TeamCardActions } from "./team-card"
+import { TeamCard } from "./team-card"
+import type { TeamCardActions } from "./team-card"
+import { useTeamEditorSuggestionOpen } from "./team-editor-launcher"
 import type { TeamEditorLauncher } from "./team-editor-launcher"
 import { TeamsEmptyState } from "./teams-empty-state"
 import {
   buildTeamCardViewModel,
   moveTargets,
   rosterMap,
-  type TeamCardViewModel,
-  type TeamPowerSource,
-  type TeamsSectionState,
+} from "./teams.view-model"
+import type {
+  TeamCardViewModel,
+  TeamPowerSource,
+  TeamsSectionState,
 } from "./teams.view-model"
 
 const NO_UNITS: readonly LegendaryEventUnit[] = []
@@ -109,7 +113,7 @@ export function TeamsSection({
   teams: TeamsViewModel
   isMobile: boolean
   /** The page's team editor. */
-  editor: Pick<TeamEditorLauncher, "editor" | "openTeamEditor">
+  editor: TeamEditorLauncher
 }) {
   const { t } = useTranslation("legendaryEvents")
   const [suggestCount, setSuggestCount] = useState(0)
@@ -117,6 +121,8 @@ export function TeamsSection({
   // The open Suggest teams dialog's mount key (null when closed): a fresh mount resets its toggles.
   const [suggesting, setSuggesting] = useState<number | null>(null)
   const suggestReasonId = useId()
+  // The suggestions dialog steps aside while a suggestion is open in the editor.
+  const suggestionEditorOpen = useTeamEditorSuggestionOpen(editor)
   const titleId = useId()
   const { state, run, actions, estimates, unitPower } = teams
   const estimateTeam =
@@ -400,7 +406,7 @@ export function TeamsSection({
           key={suggesting}
           onClose={() => setSuggesting(null)}
           onUseSuggestion={acceptSuggestion}
-          open={editor.editor?.suggestionRank === undefined}
+          open={!suggestionEditorOpen}
           source={suggestionsSource}
         />
       ) : null}

@@ -6,16 +6,12 @@ import {
   progressionIndex,
   rankIndex,
   rarityOrder,
-  type Progression,
-  type Rank,
-  type Rarity,
 } from "@workspace/game-domain"
+import type { Progression, Rank, Rarity } from "@workspace/game-domain"
 
 import type { GoalKind } from "@/entities/goal"
-import {
-  rankTargetReached,
-  type RankAdditionalTarget,
-} from "@/entities/goal-farming"
+import { rankTargetReached } from "@/entities/goal-farming"
+import type { RankAdditionalTarget } from "@/entities/goal-farming"
 
 /** The rarity ability caps (see `abilityCapByRarity` in `@workspace/game-domain`, which mirrors
  * the backend's `AbilityCaps` table) paired with their rarity tier, in rarity order — used to

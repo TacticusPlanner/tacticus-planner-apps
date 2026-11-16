@@ -1,10 +1,9 @@
-import {
-  characterIcon,
-  mowIcon,
-  type GameCatalogGuildRaidMeta,
-  type GameCatalogGuildRaidMetaBoss,
-  type GameCatalogGuildRaidMetaHeroSlot,
-  type GameCatalogGuildRaidMetaRecommendation,
+import { characterIcon, mowIcon } from "@workspace/game-catalog"
+import type {
+  GameCatalogGuildRaidMeta,
+  GameCatalogGuildRaidMetaBoss,
+  GameCatalogGuildRaidMetaHeroSlot,
+  GameCatalogGuildRaidMetaRecommendation,
 } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 
@@ -82,8 +81,8 @@ export type GuildRaidMetaPresentationResolver = {
 
 function readableFallback(id: string): string {
   return id
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/[_-]+/g, " ")
+    .replaceAll(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replaceAll(/[_-]+/g, " ")
     .trim()
 }
 

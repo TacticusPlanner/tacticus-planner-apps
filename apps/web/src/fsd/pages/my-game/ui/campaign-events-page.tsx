@@ -13,8 +13,10 @@ import {
   campaignEventProgressQueries,
   playerDataOverrideKey,
   updateCampaignEventProgressOverrides,
-  type CampaignEventProgressOverride,
-  type CampaignEventProgressOverrides,
+} from "@/entities/player-data-override"
+import type {
+  CampaignEventProgressOverride,
+  CampaignEventProgressOverrides,
 } from "@/entities/player-data-override"
 import { useSavedBattleProgress } from "@/features/daily-raids"
 import { useRevisionedDraft } from "@/shared/api"

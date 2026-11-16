@@ -28,9 +28,9 @@ vi.mock("@/entities/account", () => ({
   accountQueries: { userJotToken: () => ({ queryKey: ["userjot-token"] }) },
 }))
 
-const fetchQueryMock = vi.fn()
+const queryMock = vi.fn()
 // Stable like the real client, so identify() is not recreated on every render.
-const queryClient = { fetchQuery: fetchQueryMock }
+const queryClient = { query: queryMock }
 vi.mock("@tanstack/react-query", () => ({
   useQueryClient: () => queryClient,
 }))
@@ -85,7 +85,7 @@ describe("UserJotProvider", () => {
         },
       },
     })
-    fetchQueryMock.mockReset().mockResolvedValue({ token: "signed-jwt" })
+    queryMock.mockReset().mockResolvedValue({ token: "signed-jwt" })
     fetchUserJotToken.mockReset()
     identify.mockClear().mockResolvedValue({ identityTrust: "signed" })
     logout.mockClear()
@@ -214,7 +214,7 @@ describe("UserJotProvider", () => {
         },
       },
     })
-    fetchQueryMock.mockResolvedValue({ token: "fresh-jwt" })
+    queryMock.mockResolvedValue({ token: "fresh-jwt" })
     rerender(
       <UserJotProvider>
         <Consumer />
@@ -239,7 +239,7 @@ describe("UserJotProvider", () => {
   })
 
   it("stays anonymous without throwing when the token fetch fails", async () => {
-    fetchQueryMock.mockRejectedValue(new Error("network down"))
+    queryMock.mockRejectedValue(new Error("network down"))
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
 
     renderProvider()
@@ -269,7 +269,7 @@ describe("UserJotProvider", () => {
 
   it("does not apply a stale identify that resolves after signing out mid-fetch", async () => {
     let resolveToken!: (value: { token: string }) => void
-    fetchQueryMock.mockReturnValue(
+    queryMock.mockReturnValue(
       new Promise<{ token: string }>((resolve) => {
         resolveToken = resolve
       })
@@ -278,7 +278,7 @@ describe("UserJotProvider", () => {
     const { rerender } = renderProvider()
 
     await waitFor(() => {
-      expect(fetchQueryMock).toHaveBeenCalledTimes(1)
+      expect(queryMock).toHaveBeenCalledTimes(1)
     })
 
     // Sign out while the first user's token fetch is still in flight.
@@ -315,13 +315,13 @@ describe("UserJotProvider", () => {
     listeners.get("open")?.()
     await Promise.resolve()
 
-    expect(fetchQueryMock).toHaveBeenCalledTimes(1)
+    expect(queryMock).toHaveBeenCalledTimes(1)
     expect(identify).toHaveBeenCalledTimes(1)
   })
 
   it("logs out and retries on the next open when a signed identify fails", async () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
-    fetchQueryMock.mockRejectedValueOnce(new Error("network"))
+    queryMock.mockRejectedValueOnce(new Error("network"))
     renderProvider()
 
     await waitFor(() => {
@@ -346,7 +346,7 @@ describe("UserJotProvider", () => {
     })
 
     now.mockReturnValue(50 * 60 * 1000)
-    fetchQueryMock.mockResolvedValue({ token: "second-jwt" })
+    queryMock.mockResolvedValue({ token: "second-jwt" })
     listeners.get("open")?.()
 
     await waitFor(() => {

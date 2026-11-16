@@ -4,10 +4,8 @@ import { unitIdSchema, upgradeIdSchema } from "@workspace/game-domain"
 import type { GoalDetail } from "@/entities/goal"
 import type { Character } from "@/entities/rank-lookup"
 
-import {
-  goalEditMaterialNeeds,
-  type GoalEditLiveProgress,
-} from "./goal-edit-material-needs"
+import { goalEditMaterialNeeds } from "./goal-edit-material-needs"
+import type { GoalEditLiveProgress } from "./goal-edit-material-needs"
 
 const upgradeIds = (values: string[]) =>
   values.map((value) => upgradeIdSchema.parse(value))

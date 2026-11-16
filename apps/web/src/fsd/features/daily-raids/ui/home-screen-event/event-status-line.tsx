@@ -7,10 +7,10 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { formatRelativeTime, useDateLocale } from "@/shared/lib"
 import { EntityIcon, EventIcon } from "@/shared/ui"
 
-import {
-  homeScreenEventInstanceKey,
-  type HomeScreenEventEntry,
-  type HomeScreenEventInstance,
+import { homeScreenEventInstanceKey } from "../../model/select-active-home-screen-event"
+import type {
+  HomeScreenEventEntry,
+  HomeScreenEventInstance,
 } from "../../model/select-active-home-screen-event"
 import type { ActiveHomeScreenEventState } from "../../model/use-active-home-screen-event"
 import { useHomeScreenEventName } from "./use-home-screen-event-name"
@@ -77,8 +77,8 @@ export function EventStatusLine({
 
   if (instance?.status === "upcoming") {
     const startMs = Date.parse(instance.entry.startUtc)
-    const noneRunning = !state.instances.some(
-      (candidate) => candidate.status === "running"
+    const noneRunning = state.instances.every(
+      (candidate) => !(candidate.status === "running")
     )
     const isNext =
       state.next !== null &&

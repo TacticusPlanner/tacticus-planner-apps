@@ -14,6 +14,7 @@ describe("installForeignDomGuard", () => {
     // What Google Translate does: React's text node ends up inside a <font> it inserted.
     parent = document.createElement("div")
     text = document.createTextNode("hello")
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- reproducing what the translator inserts
     font = document.createElement("font")
     parent.append(font)
     font.append(text)

@@ -3,8 +3,8 @@ import {
   battleIdSchema,
   campaignIdSchema,
   upgradeIdSchema,
-  type BattleId,
 } from "@workspace/game-domain"
+import type { BattleId } from "@workspace/game-domain"
 
 import type {
   EstimateResourceId,
@@ -13,10 +13,8 @@ import type {
 } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
 
-import {
-  planEventFarm,
-  type PlanEventFarmInput,
-} from "./home-screen-event-farm"
+import { planEventFarm } from "./home-screen-event-farm"
+import type { PlanEventFarmInput } from "./home-screen-event-farm"
 
 const battle = battleIdSchema.parse
 const upgrade = upgradeIdSchema.parse

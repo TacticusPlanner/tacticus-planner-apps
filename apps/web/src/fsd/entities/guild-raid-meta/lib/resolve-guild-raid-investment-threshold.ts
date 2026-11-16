@@ -4,9 +4,8 @@ import {
   progressionAt,
   progressionIndex as progressionOrdinal,
   rankIndex,
-  type Progression,
-  type Rank,
 } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 import type { GameCatalogRaidBoss } from "@workspace/game-catalog"
 
 export type GuildRaidInvestmentThreshold = {

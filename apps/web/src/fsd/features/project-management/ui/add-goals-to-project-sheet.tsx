@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -21,16 +22,15 @@ import {
   goalQueries,
   compareGoalTypes,
   goalRankTargetKey,
-  type GoalDetail,
-  type GoalGroupValue,
 } from "@/entities/goal"
+import type { GoalDetail, GoalGroupValue } from "@/entities/goal"
 import {
   projectLastMembership,
   projectMembershipConflict,
   projectQueries,
   updateProjectGoals,
-  type ProjectSummary,
 } from "@/entities/project"
+import type { ProjectSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 import { RankBadge } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
@@ -41,8 +41,8 @@ import {
   isInDesiredSet,
   reconcileDraft,
   toggleGoal,
-  type MembershipDraft,
 } from "../model/membership-draft"
+import type { MembershipDraft } from "../model/membership-draft"
 import type { MembershipConflict } from "../model/membership-conflict"
 import { MembershipConflictBanner } from "./membership-conflict-banner"
 import { MembershipGoalRow } from "./membership-goal-row"

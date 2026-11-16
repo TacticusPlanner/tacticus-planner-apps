@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from "react"
+import { useState } from "react"
+import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -73,7 +74,7 @@ function MoveToPriorityForm({
   const displaced = displacedForPriority(priorityOrder, goalId, Number(value))
   const fieldId = `move-to-priority-${goalId}`
 
-  const submit = (event: FormEvent) => {
+  const submit = (event: SubmitEvent) => {
     event.preventDefault()
     if (displaced) onMove(displaced)
   }

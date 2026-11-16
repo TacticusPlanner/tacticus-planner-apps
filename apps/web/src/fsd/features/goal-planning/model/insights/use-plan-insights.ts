@@ -16,10 +16,8 @@ import { useCampaignDisplay } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { computePlanInsights } from "./plan-insights-calc"
-import {
-  EMPTY_PLAN_INSIGHTS_RESULT,
-  type PlanInsightsResult,
-} from "./use-plan-insights.domain"
+import { EMPTY_PLAN_INSIGHTS_RESULT } from "./use-plan-insights.domain"
+import type { PlanInsightsResult } from "./use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { useCampaignGateContext } from "../unlock-paths/use-campaign-gate-context"
 import {
@@ -156,12 +154,11 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   ].join("|")
   const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}:${progressionKey}:${eligibleBattlesKey}`
   // A project scope that holds none of the plan's Active goals has nothing to report.
-  const hasQuery = Boolean(
+  const hasQuery =
     isAuthenticated &&
     activeMembers.length > 0 &&
     (!scopeIds ||
       activeMembers.some((member) => scopeIds.has(member.goal.goalId)))
-  )
   const onslaughtProgressQuery = useQuery({
     ...onslaughtProgressQueries.current(),
     enabled: hasQuery,
@@ -214,24 +211,21 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
           inventoryShardEntries,
         ] = await Promise.all([
           Promise.all(
-            entityIds.map((id) =>
-              getPlayerCharacter(unitIdSchema.parse(id)).then(
-                (data) => [id, data] as const
-              )
+            entityIds.map(
+              async (id) =>
+                [id, await getPlayerCharacter(unitIdSchema.parse(id))] as const
             )
           ),
           Promise.all(
-            entityIds.map((id) =>
-              getPlayerMow(unitIdSchema.parse(id)).then(
-                (data) => [id, data] as const
-              )
+            entityIds.map(
+              async (id) =>
+                [id, await getPlayerMow(unitIdSchema.parse(id))] as const
             )
           ),
           Promise.all(
-            entityIds.map((id) =>
-              getInventoryShard(unitIdSchema.parse(id)).then(
-                (data) => [id, data] as const
-              )
+            entityIds.map(
+              async (id) =>
+                [id, await getInventoryShard(unitIdSchema.parse(id))] as const
             )
           ),
         ])

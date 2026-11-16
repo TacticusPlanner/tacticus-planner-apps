@@ -1,10 +1,8 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  MOBILE_CREATE_STEPS,
-  type MobileCreateStep,
-} from "./mobile-create-step"
+import { MOBILE_CREATE_STEPS } from "./mobile-create-step"
+import type { MobileCreateStep } from "./mobile-create-step"
 
 /** The mobile create flow's step indicator: all three steps, the current one marked. */
 export function MobileStepIndicator({ step }: { step: MobileCreateStep }) {

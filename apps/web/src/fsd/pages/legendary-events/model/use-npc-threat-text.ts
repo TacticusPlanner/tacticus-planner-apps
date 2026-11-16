@@ -1,7 +1,8 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import { parseNpcThreatText, type NpcThreatText } from "../lib/npc-threat"
+import { parseNpcThreatText } from "../lib/npc-threat"
+import type { NpcThreatText } from "../lib/npc-threat"
 
 /** Resolves an enemy NPC's threat text from the `npcThreats` namespace in the reader's language,
  *  field by field falling back to English. */

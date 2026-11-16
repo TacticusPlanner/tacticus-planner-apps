@@ -3,23 +3,25 @@ import type { Rarity } from "@workspace/game-domain"
 import {
   LEGENDARY_EVENT_LANE_IDS,
   currentLegendaryEventRun,
-  type ClearEstimateConfig,
-  type LaneProgressView,
-  type LanePointsModel,
-  type LegendaryEvent,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventLifecycle,
-  type LegendaryEventPlan,
-  type LegendaryEventProgress,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
-  type LegendaryEventRunInputs,
-  type LegendaryEventRunResolution,
-  type LegendaryEventUnit,
-  type UpgradeStep,
 } from "@/entities/legendary-event"
-import type { LegendaryEventRunStart } from "../../lib/run-dates"
+import type {
+  ClearEstimateConfig,
+  LaneProgressView,
+  LanePointsModel,
+  LegendaryEvent,
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventLifecycle,
+  LegendaryEventPlan,
+  LegendaryEventProgress,
+  LegendaryEventRosterUnit,
+  LegendaryEventRun,
+  LegendaryEventRunInputs,
+  LegendaryEventRunResolution,
+  LegendaryEventUnit,
+  UpgradeStep,
+  LegendaryEventRunStart,
+} from "@/entities/legendary-event"
 
 // The 1-click plan's generation model (change add-legendary-event-one-click-plan): everything the
 // target verdicts, team generation and upgrade recommendations read, gathered once by the wizard.

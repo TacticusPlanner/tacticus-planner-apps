@@ -2,7 +2,8 @@
 import { describe, expect, it, vi } from "vitest"
 import { act, renderHook } from "@testing-library/react"
 import type { ShopRewardOffer } from "@workspace/game-catalog"
-import { Rarity, type UpgradeId } from "@workspace/game-domain"
+import { Rarity } from "@workspace/game-domain"
+import type { UpgradeId } from "@workspace/game-domain"
 
 import type { MythicMaterialCatalog } from "@/entities/goal-farming"
 

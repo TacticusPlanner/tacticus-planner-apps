@@ -3,11 +3,13 @@ import {
   derivedTeamCoverage,
   teamDepthForRun,
   withLanePrefix,
-  type LegendaryEventLane,
-  type LegendaryEventLaneId,
-  type LegendaryEventRun,
-  type LegendaryEventTeam,
-  type LegendaryEventUnit,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventLane,
+  LegendaryEventLaneId,
+  LegendaryEventRun,
+  LegendaryEventTeam,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
 import type { TeamDraft } from "./plan-patches"

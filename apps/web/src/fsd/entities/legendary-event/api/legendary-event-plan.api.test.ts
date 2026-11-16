@@ -213,11 +213,11 @@ describe("legendary event plan API", () => {
     client.setQueryData(options.queryKey, plan(5))
 
     fetch.mockResolvedValueOnce(json(plan(4)))
-    await client.fetchQuery({ ...options, staleTime: 0 })
+    await client.query({ ...options, staleTime: 0 })
     expect(client.getQueryData(options.queryKey)?.revision).toBe(5)
 
     fetch.mockResolvedValueOnce(json(plan(6)))
-    await client.fetchQuery({ ...options, staleTime: 0 })
+    await client.query({ ...options, staleTime: 0 })
     expect(client.getQueryData(options.queryKey)?.revision).toBe(6)
   })
 
@@ -272,7 +272,7 @@ describe("legendary event plan API", () => {
           nextAfter: null,
         })
       )
-    const pages = await client.fetchInfiniteQuery({ ...options, pages: 2 })
+    const pages = await client.infiniteQuery({ ...options, pages: 2 })
     expect(
       pages.pages.flatMap((page) => page.records.map((record) => record.id))
     ).toEqual(["r3", "r2", "r1"])
@@ -282,12 +282,12 @@ describe("legendary event plan API", () => {
 
     fetch.mockResolvedValueOnce(json({ title: "not found" }, 404))
     expect(
-      (await client.fetchInfiniteQuery({ ...options, staleTime: 0 })).pages
+      (await client.infiniteQuery({ ...options, staleTime: 0 })).pages
     ).toEqual([{ eventId: "astarLysander", records: [], nextAfter: null }])
 
     fetch.mockResolvedValueOnce(json({ detail: "boom" }, 500))
     await expect(
-      client.fetchInfiniteQuery({ ...options, staleTime: 0, retry: false })
+      client.infiniteQuery({ ...options, staleTime: 0, retry: false })
     ).rejects.toThrow("boom")
 
     expect(
@@ -307,7 +307,7 @@ describe("legendary event plan API", () => {
     const uthar = legendaryEventPlanQueries.detail("votanUthar").queryKey
     client.setQueryData(uthar, plan(9, "votanUthar"))
 
-    expect(await client.fetchQuery(list)).toHaveLength(2)
+    expect(await client.query(list)).toHaveLength(2)
     expect(
       client.getQueryData(
         legendaryEventPlanQueries.detail("astarLysander").queryKey

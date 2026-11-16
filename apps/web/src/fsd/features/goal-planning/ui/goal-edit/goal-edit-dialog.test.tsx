@@ -12,7 +12,13 @@ const getGoal = vi.fn()
 const editGoal = vi.fn()
 const listProjects = vi.fn()
 const plan = vi.hoisted(() => ({
-  inFlight: [] as { goalId: string; status: string }[],
+  inFlight: [] as {
+    goalId: string
+    status: string
+    entityType?: string
+    entityId?: string
+    goalType?: string
+  }[],
   orderRevision: 4,
   loading: false,
 }))
@@ -358,7 +364,7 @@ const onslaughtRewards = [
     id: "Gold-3",
     sector: "Gold",
     tier: 3,
-    regular: Array(5).fill({ min: 2, max: 4 }),
+    regular: new Array(5).fill({ min: 2, max: 4 }),
     mythic: { min: 1, max: 1 },
   },
 ]
@@ -426,6 +432,43 @@ describe("GoalEditDialog", () => {
         "goals.detail.farmingGuidanceTitle",
       ]) {
         expect(screen.queryByText(removed)).not.toBeInTheDocument()
+      }
+    })
+
+    it("shows priority first, before the Rank goal's target, notes and projects", async () => {
+      renderDialog()
+      await loaded()
+
+      const priority = screen.getByTestId("goal-edit-priority")
+      const following = [
+        screen.getByTestId("goal-edit-target"),
+        screen.getByLabelText("Notes"),
+        screen.getByTestId("goal-edit-projects"),
+      ]
+      for (const field of following) {
+        expect(
+          priority.compareDocumentPosition(field) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy()
+      }
+    })
+
+    it("shows priority first, before an Unlock goal's sources, notes and projects", async () => {
+      goalOnScreen(unlockGoal)
+      renderDialog()
+      await loaded()
+
+      const priority = screen.getByTestId("goal-edit-priority")
+      const following = [
+        screen.getByTestId("create-goal-acquisition-sources"),
+        screen.getByLabelText("Notes"),
+        screen.getByTestId("goal-edit-projects"),
+      ]
+      for (const field of following) {
+        expect(
+          priority.compareDocumentPosition(field) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy()
       }
     })
 
@@ -1201,6 +1244,28 @@ describe("GoalEditDialog", () => {
       expect(editGoal).toHaveBeenCalledWith("e", {
         priority: { position: 3, expectedOrderRevision: 4 },
       })
+    })
+
+    it("shows the unit and goal type holding each position", async () => {
+      plan.inFlight = ["a", "b", "c", "d", "e"].map((goalId, index) => ({
+        goalId,
+        status: "Active",
+        entityType: "Character",
+        entityId: `unit-${goalId}`,
+        goalType: index === 1 ? "Ascension" : "Rank",
+      }))
+      stayOnScreen("e")
+      renderDialog({ goalId: "e" })
+      await loaded()
+
+      fireEvent.click(screen.getByTestId("goal-edit-priority-select"))
+      const listbox = await screen.findByRole("listbox")
+      expect(
+        within(listbox).getByTestId("priority-option-occupant-2")
+      ).toHaveAttribute("title", "Entity unit-b · Ascension")
+      expect(
+        within(listbox).getByTestId("priority-option-occupant-2")
+      ).toContainElement(within(listbox).getByAltText("Ascension"))
     })
 
     it("moves C down to position 5", async () => {

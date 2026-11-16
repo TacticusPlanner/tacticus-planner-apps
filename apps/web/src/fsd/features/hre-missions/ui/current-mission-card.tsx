@@ -18,12 +18,12 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import {
-  hreMission,
-  type HreMission,
-  type HreObjective,
+import { hreMission, isMissionComplete } from "@/entities/hre-mission"
+import type {
+  HreMission,
+  HreObjective,
+  HreProgress,
 } from "@/entities/hre-mission"
-import { isMissionComplete, type HreProgress } from "@/entities/hre-mission"
 import type { HreProgressActions } from "../model/use-hre-progress"
 import { EntityIcon } from "@/shared/ui"
 

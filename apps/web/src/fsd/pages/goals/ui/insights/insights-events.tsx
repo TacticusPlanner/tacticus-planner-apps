@@ -10,14 +10,14 @@ import {
 } from "@workspace/ui/components/card"
 
 import type { EstimateResourceId } from "@/entities/goal-farming"
-import { useGoalCatalog, type PlanFarmingSpot } from "@/features/goal-planning"
-import {
-  CampaignInsightList,
-  type CampaignInsight,
-} from "@/entities/campaign-insight"
+import { useGoalCatalog } from "@/features/goal-planning"
+import type { PlanFarmingSpot } from "@/features/goal-planning"
+import { CampaignInsightList } from "@/entities/campaign-insight"
+import type { CampaignInsight } from "@/entities/campaign-insight"
 
 import { GoalLink } from "./insights-goal-link"
-import { useGoalLabel, type InsightsGoalInfo } from "./insights-view"
+import { useGoalLabel } from "./insights-view"
+import type { InsightsGoalInfo } from "./insights-view"
 
 /** "Where to farm": the campaigns (or events) that drop the most of what the plan still needs, each
  *  summarised as how many needed resources drop there and the days to clear them, and opening to the

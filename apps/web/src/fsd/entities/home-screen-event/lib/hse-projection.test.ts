@@ -2,12 +2,8 @@ import { describe, expect, it } from "vitest"
 
 import { hseTier, hseVariant } from "@/test/fixtures/home-screen-event-scoring"
 
-import {
-  ceilToTenth,
-  hseModeScoring,
-  projectHsePoints,
-  type HseProjectionInput,
-} from "./hse-projection"
+import { ceilToTenth, hseModeScoring, projectHsePoints } from "./hse-projection"
+import type { HseProjectionInput } from "./hse-projection"
 
 const psyker = {
   tier: hseTier("hse-trait-boost-psyker", "High"),

@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
@@ -34,6 +34,12 @@ export function useGlobalGoalPlan() {
     }
   }, [query.data])
 
+  // Stable (the query's `refetch` is), so consumers can memoise objects that carry it.
+  const { refetch } = query
+  const retry = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
   return {
     /** Active and Paused goals in global order (what the Goals page reorders), each linked Upgrade
      *  goal carrying its linked goals' span as its range (see `withLinkedRanges`). */
@@ -47,8 +53,6 @@ export function useGlobalGoalPlan() {
     /** True until the first response; a failed load is `isError`, never an empty plan. */
     loading: isAuthenticated && query.isPending,
     isError: query.isError,
-    retry: () => {
-      void query.refetch()
-    },
+    retry,
   }
 }

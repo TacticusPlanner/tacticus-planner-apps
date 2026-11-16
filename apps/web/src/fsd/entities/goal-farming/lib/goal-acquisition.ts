@@ -10,11 +10,8 @@ import {
   resolveMythicMaterialShopOffers,
   resolveUnitShardShopOffers,
 } from "@workspace/game-catalog"
-import {
-  progressionStarsIndex,
-  type Progression,
-  type UpgradeId,
-} from "@workspace/game-domain"
+import { progressionStarsIndex } from "@workspace/game-domain"
+import type { Progression, UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type {
@@ -24,15 +21,15 @@ import type {
 import {
   onslaughtReward,
   progressForAlliance,
-  type OnslaughtProgress,
 } from "@/entities/player-data-override/@x/goal-farming"
+import type { OnslaughtProgress } from "@/entities/player-data-override/@x/goal-farming"
 
 import { projectOnslaughtSupply, projectShopSupply } from "./shop-supply"
-import {
-  shardResourceId,
-  type FlatSupplier,
-  type ShardResourceId,
-  type UpgradeNeed,
+import { shardResourceId } from "../model/estimate.domain"
+import type {
+  FlatSupplier,
+  ShardResourceId,
+  UpgradeNeed,
 } from "../model/estimate.domain"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
@@ -215,8 +212,10 @@ export function computeGoalAcquisition(params: {
       ? params.playerMowById.get(detail.entityId)?.progressionIndex
       : params.playerCharacterById.get(detail.entityId)?.progressionIndex
     const rarity =
-      (currentProgression ?? detail.config.progression.start).split(":")[0] ??
-      ""
+      (currentProgression ?? detail.config.progression.start).split(
+        ":",
+        1
+      )[0] ?? ""
     const regularReward = onslaughtReward(
       params.onslaughtRewards ?? [],
       allianceProgress.sector,

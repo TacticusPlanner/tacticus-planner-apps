@@ -10,7 +10,7 @@ import {
 } from "@workspace/ui/components/dialog"
 import { chanceIcon } from "@workspace/game-catalog"
 
-import { shopCurrencyIcon } from "@/entities/shop-reward"
+import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { EntityIcon } from "@/shared/ui"
 import type {
   LibraryShopRewardView,

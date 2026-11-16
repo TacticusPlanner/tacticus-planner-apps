@@ -1,7 +1,8 @@
 import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import { useQueryClient, type QueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
+import type { QueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
@@ -11,9 +12,8 @@ import {
   inFlightInGlobalOrder,
   moveOntoDisplaced,
   updateGoalOrder,
-  type GoalListResponse,
-  type GoalOrderResponse,
 } from "@/entities/goal"
+import type { GoalListResponse, GoalOrderResponse } from "@/entities/goal"
 import { moveProjectGoal } from "@/entities/project"
 import { ApiError } from "@/shared/api"
 
@@ -81,7 +81,7 @@ function applyOptimisticMove(
 
 /** Adopts the order a 409 reports as current into every cached goal list (spec: api-error-handling:
  * a conflict's current state is adopted at once). */
-function adoptOrder(queryClient: QueryClient, order: GoalOrderResponse) {
+export function adoptOrder(queryClient: QueryClient, order: GoalOrderResponse) {
   const position = new Map(order.goalIds.map((id, index) => [id, index + 1]))
   queryClient.setQueriesData<GoalListResponse>(
     { queryKey: goalQueries.lists() },
@@ -165,7 +165,7 @@ export function useGoalOrderActions() {
 
     const before =
       cachedOrder(queryClient) ??
-      (await queryClient.fetchQuery(goalQueries.list(false)))
+      (await queryClient.query(goalQueries.list(false)))
     const ids = inFlightInGlobalOrder(before.goals).map((goal) => goal.goalId)
     // The complete order this gesture produces, captured now: a later gesture's optimistic write must
     // not leak into what this request submits.

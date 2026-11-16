@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
-import { fireEvent, render, screen, within } from "@/test/render"
+import { fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
 const { useIsMobileMock } = vi.hoisted(() => ({
@@ -206,7 +206,10 @@ describe("Goal cards", () => {
 
     const footer = await screen.findByTestId("goal-card-footer")
     fireEvent.click(within(footer).getByRole("button", { name: /Pause/ }))
-    expect(setStatus).toHaveBeenCalledWith("g1", "Paused", "Active", [])
+    // The cache write waits for the chip's own paint (web vitals audit 2026-11-15).
+    await waitFor(() =>
+      expect(setStatus).toHaveBeenCalledWith("g1", "Paused", "Active", [])
+    )
   })
 
   it("shows no drag handle where the list isn't reorderable", async () => {

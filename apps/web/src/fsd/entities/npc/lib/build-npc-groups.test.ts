@@ -122,6 +122,6 @@ describe("npcSlug", () => {
     const slugs = unitNames.map(npcSlug)
     expect(unitNames.length).toBeGreaterThan(150)
     expect(new Set(slugs).size).toBe(slugs.length)
-    expect(slugs.every((s) => /^[a-z0-9]+(-[a-z0-9]+)*$/.test(s))).toBe(true)
+    expect(slugs.every((s) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s))).toBe(true)
   })
 })

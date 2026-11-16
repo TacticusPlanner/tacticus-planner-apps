@@ -6,10 +6,8 @@ import {
 } from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
-import {
-  useMissionLabel,
-  type LegendaryEventMissionRef,
-} from "@/entities/legendary-event"
+import { useMissionLabel } from "@/entities/legendary-event"
+import type { LegendaryEventMissionRef } from "@/entities/legendary-event"
 
 import type { RunMissionSummary, TokenMissionStep } from "../lib/mission-order"
 

@@ -1,7 +1,8 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { CharacterStorageModel } from "@workspace/game-catalog"
-import { allianceRank, type Alliance } from "@workspace/game-domain"
+import { allianceRank } from "@workspace/game-domain"
+import type { Alliance } from "@workspace/game-domain"
 
 import { useCatalogDataset } from "@/shared/local-data"
 

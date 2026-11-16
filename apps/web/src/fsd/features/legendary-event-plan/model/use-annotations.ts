@@ -5,10 +5,12 @@ import {
   legendaryEventPlanQueries,
   updateLegendaryEventAnnotations,
   usePlanWriteQueue,
-  type LegendaryEventAnnotationStatus,
-  type LegendaryEventLaneId,
-  type LegendaryEventPlan,
-  type PlanMutationOutcome,
+} from "@/entities/legendary-event"
+import type {
+  LegendaryEventAnnotationStatus,
+  LegendaryEventLaneId,
+  LegendaryEventPlan,
+  PlanMutationOutcome,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 

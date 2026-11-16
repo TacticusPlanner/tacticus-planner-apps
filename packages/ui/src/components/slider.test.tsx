@@ -18,6 +18,14 @@ describe("Slider", () => {
     )
   })
 
+  it("names the thumb, the element assistive tech announces as the slider", () => {
+    render(<Slider aria-label="Packs planned" defaultValue={[2]} max={5} />)
+
+    expect(
+      screen.getByRole("slider", { name: "Packs planned" })
+    ).toBeInTheDocument()
+  })
+
   it("honors its range and step for keyboard input", () => {
     const onValueChange = vi.fn()
     render(

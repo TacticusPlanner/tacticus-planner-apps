@@ -1,12 +1,5 @@
-import {
-  useDeferredValue,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-  type KeyboardEvent,
-  type ReactNode,
-} from "react"
+import { useDeferredValue, useId, useMemo, useRef, useState } from "react"
+import type { KeyboardEvent, ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -20,7 +13,7 @@ import { RunInputsForm } from "@/features/legendary-event-plan"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useDateLocale, safeStorage } from "@/shared/lib"
 
-import { legendaryEventRunWindow } from "../../lib/run-dates"
+import { legendaryEventRunWindow } from "@/entities/legendary-event"
 import { RosterPotentialMap } from "../legendary-event/roster-potential-map"
 import { planPotentials } from "./plan-potential"
 import { TargetCard } from "./target-card"

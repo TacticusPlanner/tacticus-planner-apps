@@ -135,6 +135,22 @@ Today's raid schedule and Bonus Raids SHALL group their entries by the goal(s) t
 - **WHEN** Today loads
 - **THEN** Bonus Raids is grouped by goal the same way the main schedule is, in the same goal-priority order
 
+### Requirement: A staged goal's resource cards count toward its current milestone
+
+When a goal's farming strategy splits it into stages (milestones), the schedule farms them in order, so a resource card in that goal's group (Today, Bonus Raids and each Raids Plan day) SHALL show its owned/target progress toward the first milestone whose cumulative need for that resource the player's allocated holding has not reached, and SHALL move on to the next milestone's cumulative target once it is reached; past the last milestone it shows the goal's final target. The resource's urgency in that group's order SHALL use the remaining need of that same milestone, not the remaining need over every later milestone. Combine goals' cards and urgency, and the HSE farm list, SHALL keep pooling every stage.
+
+#### Scenario: Rank goal with a Major Milestones strategy
+
+- **GIVEN** a Rank goal to Diamond3 with a Gold1 milestone, where Gold1 needs 28 Auramite Wing, Diamond3 needs 64 in total, and the player holds 1
+- **WHEN** Today shows that goal's Auramite Wing card
+- **THEN** its progress reads 1 / 28, and its urgency is that of the 27 still needed for Gold1
+
+#### Scenario: The milestone is reached during the plan
+
+- **GIVEN** the same goal, and the Raids Plan farms the remaining 27 Auramite Wing on day 1
+- **WHEN** day 2's card is shown
+- **THEN** its progress reads 28 / 64
+
 ### Requirement: Bonus Raids
 
 Today SHALL show a Bonus raids card: upgrades or shards that receive zero raids under the real daily energy budget but would receive at least one raid if energy were unlimited. The card's header SHALL say that these raids apply if energy is left. While the daily energy limit is not spent, an upgrade or shard that already receives at least one raid in the real schedule SHALL NOT appear in Bonus Raids; once it is spent, the rule below applies instead. Bonus Raids SHALL be ordered by the same goal-priority order the main schedule uses. Below the limit, when no entry qualifies, the Bonus raids card SHALL NOT be rendered.

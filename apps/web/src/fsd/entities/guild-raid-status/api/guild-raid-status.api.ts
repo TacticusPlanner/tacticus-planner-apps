@@ -1,4 +1,5 @@
-import { ApiError, apiClient, unwrap, type ApiSchemas } from "@/shared/api"
+import { ApiError, apiClient, unwrap } from "@/shared/api"
+import type { ApiSchemas } from "@/shared/api"
 
 // Wire shapes, generated from the API's OpenAPI document (spec: api-contract-sync); never hand-written.
 type S = ApiSchemas

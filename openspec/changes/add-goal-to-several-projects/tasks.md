@@ -2,19 +2,19 @@
 
 ## 1. Bulk add to several projects
 
-- [ ] 1.1 Multi-select destination picker (desktop popover with checkboxes, mobile sheet); sequential per-destination requests with the existing stale retry; combined and partial-failure toasts with Retry for failed destinations only; tests for every `goal-bulk-actions` scenario
+- [x] 1.1 Multi-select destination picker (desktop popover with checkboxes, mobile sheet); sequential per-destination requests with the existing stale retry; combined and partial-failure toasts with Retry for failed destinations only; tests for every `goal-bulk-actions` scenario
 
 ## 2. Add to another project
 
-- [ ] 2.1 Row menu item after Edit (Table and Cards view, scoped and unscoped, desktop and mobile) opening the membership picker; membership-only save; disabled while projects load; tests
+- [x] 2.1 Row menu item after Edit (Table and Cards view, scoped and unscoped, desktop and mobile) opening the membership picker; membership-only save; disabled while projects load; tests
 
 ## 3. Copy
 
-- [ ] 3.1 `goals.bulk.*` and `goals.project.*` keys (multi-select picker, toasts, Retry, row menu item) in `apps/web/public/locales/{en,de,es,fr}/common.json` with real de/es/fr translations; parity test passes
+- [x] 3.1 `goals.bulk.*` and `goals.project.*` keys (multi-select picker, toasts, Retry, row menu item) in `apps/web/public/locales/{en,de,es,fr}/common.json` with real de/es/fr translations; parity test passes
 
 ## 4. Gates
 
-- [ ] 4.1 Targeted tests, `pnpm typecheck`, `pnpm lint` (changed files), `pnpm lint:fsd`, `git diff --check`; the full suite runs in CI
+- [x] 4.1 Targeted tests, `pnpm typecheck`, `pnpm lint` (changed files), `pnpm lint:fsd`, `git diff --check`; the full suite runs in CI
 
 ## 5. Desktop verification (viewport at or above 768px)
 

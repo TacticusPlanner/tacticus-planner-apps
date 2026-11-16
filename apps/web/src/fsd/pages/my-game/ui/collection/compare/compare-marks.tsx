@@ -1,10 +1,7 @@
 import type { ReactNode } from "react"
 import { abilityIcon, EquipmentIcons, rankIcon } from "@workspace/game-catalog"
-import {
-  equipmentIdSchema,
-  type Progression,
-  type Rank,
-} from "@workspace/game-domain"
+import { equipmentIdSchema } from "@workspace/game-domain"
+import type { Progression, Rank } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { CompactProgression, EntityIcon } from "@/shared/ui"

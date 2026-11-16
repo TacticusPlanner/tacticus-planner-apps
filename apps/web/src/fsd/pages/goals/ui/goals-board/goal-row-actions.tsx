@@ -12,6 +12,7 @@ import {
 
 import type { GoalStatus } from "@/entities/goal"
 
+import { AddToAnotherProjectDialog } from "@/features/goal-planning"
 import type {
   GoalMenuMoves,
   GoalRow,
@@ -19,12 +20,10 @@ import type {
 } from "@/features/goal-planning"
 import { DeleteGoalDialog } from ".//delete-goal-dialog"
 import { MoveToPriorityDialog } from "./move-to-priority-dialog"
-import { toggleGoalStatus, type CascadeContext } from "./goal-row-utils"
-import {
-  canRemoveFromProject,
-  removalMovesRow,
-  type ProjectRemoval,
-} from "./project-removal-flow"
+import { toggleGoalStatus } from "./goal-row-utils"
+import type { CascadeContext } from "./goal-row-utils"
+import { canRemoveFromProject, removalMovesRow } from "./project-removal-flow"
+import type { ProjectRemoval } from "./project-removal-flow"
 
 type MoveDirection = Exclude<keyof GoalMenuMoves, "priorityOrder">
 
@@ -58,7 +57,7 @@ type Props = {
   onMove?: (displacedGoalId: string) => void
 }
 
-/** A goal row's single "…" menu, on both platforms: Edit, the priority moves (Move to top / up / down,
+/** A goal row's single "…" menu, on both platforms: Edit, Add to another project…, the priority moves (Move to top / up / down,
  * each only where it has a target, then "Move to priority…", which asks for the number in a small
  * dialog), Pause or Resume, the scoped project's
  * removal (only while the page is scoped to a project), then a destructive Delete gated behind
@@ -78,6 +77,7 @@ export function GoalRowActions({
   const { t } = useTranslation()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [priorityOpen, setPriorityOpen] = useState(false)
+  const [projectsOpen, setProjectsOpen] = useState(false)
   const goalId = row.goalId
   const pending = actions.pendingIds.has(goalId)
 
@@ -125,6 +125,14 @@ export function GoalRowActions({
             onSelect={() => onEdit(goalId)}
           >
             {t("goals.actions.edit")}
+          </DropdownMenuItem>
+          {/* Memberships are known once the goal and project lists have loaded. */}
+          <DropdownMenuItem
+            data-testid={`goal-row-add-to-project-${goalId}`}
+            disabled={pending || row.projects === undefined}
+            onSelect={() => setProjectsOpen(true)}
+          >
+            {t("goals.project.addToAnother")}
           </DropdownMenuItem>
           {hasMoves ? <DropdownMenuSeparator /> : null}
           {moveItems.map(([direction, displacedGoalId]) => (
@@ -196,6 +204,16 @@ export function GoalRowActions({
           onOpenChange={setPriorityOpen}
           open={priorityOpen}
           priorityOrder={priorityOrder}
+        />
+      ) : null}
+
+      {projectsOpen ? (
+        <AddToAnotherProjectDialog
+          goal={row}
+          onOpenChange={setProjectsOpen}
+          projectIds={(row.projects ?? []).map(
+            (membership) => membership.projectId
+          )}
         />
       ) : null}
 

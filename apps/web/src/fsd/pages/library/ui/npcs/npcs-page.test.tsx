@@ -11,11 +11,8 @@ import { seedGameCatalog } from "@/test/seed"
 import type { NpcRecord, NpcStatRow } from "@/entities/npc"
 import type { ReadState } from "@/shared/lib"
 import { refreshLocalDataAfterSync } from "@/shared/local-data"
-import {
-  buildUnitPowerContext,
-  npcPowerAt,
-  type UnitPowerContext,
-} from "@/shared/unit-power"
+import { buildUnitPowerContext, npcPowerAt } from "@/shared/unit-power"
+import type { UnitPowerContext } from "@/shared/unit-power"
 import { unitPowerCatalog } from "@/test/fixtures/unit-power"
 
 function at<T>(xs: readonly T[] | undefined, index: number): T {
@@ -222,7 +219,10 @@ const openFilters = (user: ReturnType<typeof userEvent.setup>) =>
 /** `toLocaleString` grouping differs per machine locale; match digits regardless of separators. */
 const numberText = (value: number) =>
   new RegExp(
-    String(value).replace(/\B(?=(\d{3})+(?!\d))/g, "[\\s,.\\u00a0\\u202f]?")
+    String(value).replaceAll(
+      /\B(?=(?:\d{3})+(?!\d))/g,
+      "[\\s,.\\u00a0\\u202f]?"
+    )
   )
 
 describe("NpcsPage", () => {
@@ -776,7 +776,7 @@ describe("NpcsPage power card", () => {
     await user.click(at(options, 5))
     await waitFor(() => expect(location()).not.toMatch(/level=2$/))
     const level = Number(
-      new URLSearchParams(location().split("?")[1]).get("level")
+      new URLSearchParams(location().split("?", 2)[1]).get("level")
     )
     const expected = npcPowerAt(
       "darkaNpc1Infiltrator",

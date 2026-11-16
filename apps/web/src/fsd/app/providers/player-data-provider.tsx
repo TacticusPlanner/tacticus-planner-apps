@@ -5,18 +5,21 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
-  type ReactNode,
 } from "react"
+import type { ReactNode } from "react"
 
 import { useIsAuthenticated } from "@azure/msal-react"
-import { useQueryClient, type QueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
+import type { QueryClient } from "@tanstack/react-query"
 
 import {
   getManifestMetadata,
   getPlayerDataMetadata,
   PlayerDataRateLimitError,
-  type PlayerDataSyncProgress,
-  type PlayerDataSyncResult,
+} from "@workspace/player-data"
+import type {
+  PlayerDataSyncProgress,
+  PlayerDataSyncResult,
 } from "@workspace/player-data"
 
 import {
@@ -42,8 +45,10 @@ import {
   autoSyncIntervalMs,
   PlayerDataContext,
   PlayerDataProgressContext,
-  type PlayerDataContextValue,
-  type PlayerDataStatus,
+} from "@/shared/player-data-status"
+import type {
+  PlayerDataContextValue,
+  PlayerDataStatus,
 } from "@/shared/player-data-status"
 
 const progressStore = createProgressStore<PlayerDataSyncProgress>()
@@ -86,7 +91,8 @@ function fetchPlayerDataSync(
   baseUrl: string,
   accountId: string
 ): Promise<PlayerDataSyncResult> {
-  return queryClient.fetchQuery({
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps -- one sync per account; the client is the cache and baseUrl is fixed per app
+  return queryClient.query({
     queryKey: ["sync", "player", accountId],
     queryFn: () => runPlayerDataSync(baseUrl, queryClient),
     staleTime: 0,

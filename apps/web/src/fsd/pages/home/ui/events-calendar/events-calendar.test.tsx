@@ -1,4 +1,5 @@
 import userEvent from "@testing-library/user-event"
+import { MemoryRouter } from "react-router"
 import { describe, expect, it } from "vitest"
 
 import { render, screen, waitFor } from "@/test/render"
@@ -146,7 +147,12 @@ describe("EventsCalendar", () => {
       },
     ])
 
-    render(<EventsCalendar />)
+    // The details popover links to the event's planner page.
+    render(
+      <MemoryRouter>
+        <EventsCalendar />
+      </MemoryRouter>
+    )
 
     await screen.findAllByTestId("event-entry-card")
 

@@ -27,6 +27,7 @@
     "break": "Descanso"
   },
   "wikiLink": "Wiki",
+  "plannerLink": "Abrir planificador",
   "agenda": {
     "ongoing": "En curso",
     "endsIn": "Termina en {{when}}"
@@ -96,7 +97,9 @@
     "guild-raid-break": "Descanso de incursión de hermandad",
     "guild-war-season": "Guerra de hermandades",
     "anniversary-event": "Evento de Aniversario",
-    "crusade-season": "Temporada de Cruzada"
+    "crusade-season": "Temporada de Cruzada",
+    "armageddon-shop": "Tienda de Armageddon",
+    "skull-harvest-shop": "Cosecha de Cráneos"
   },
   "families": {
     "campaigns": "Campañas",

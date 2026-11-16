@@ -12,9 +12,8 @@ import {
   MAX_PROJECTS,
   updateProject,
   projectQueries,
-  type ProjectSummary,
-  type ProjectTarget,
 } from "@/entities/project"
+import type { ProjectSummary, ProjectTarget } from "@/entities/project"
 import { goalQueries } from "@/entities/goal"
 import { ApiError, apiIssue } from "@/shared/api"
 
@@ -25,8 +24,7 @@ import { ApiError, apiIssue } from "@/shared/api"
  * the returned project is written into the cached project list; nothing about goals changes, so no goal
  * read is refetched, and a 409 refetches the project list only.
  */
-export function useProjectActions(_onChanged?: () => void) {
-  void _onChanged
+export function useProjectActions() {
   const { t } = useTranslation()
   const isAuthenticated = useIsAuthenticated()
   const queryClient = useQueryClient()

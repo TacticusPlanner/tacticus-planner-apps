@@ -2,18 +2,12 @@ import type {
   AscensionCostStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
-import {
-  progressionOrder,
-  type Progression,
-  type Rarity,
-} from "@workspace/game-domain"
+import { progressionOrder } from "@workspace/game-domain"
+import type { Progression, Rarity } from "@workspace/game-domain"
 
 import type { AbilityMaterials } from "./ability-materials"
-import {
-  shardResourceId,
-  type ShardResourceId,
-  type UpgradeNeed,
-} from "../model/estimate.domain"
+import { shardResourceId } from "../model/estimate.domain"
+import type { ShardResourceId, UpgradeNeed } from "../model/estimate.domain"
 
 // Need-derivation for Ascension and Unlock goals — the sibling of
 // `goal-spec-builder.ts`'s `computeMissingUpgrades` (Character Rank) and `mow-ability-calc.ts`'s

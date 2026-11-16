@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest"
 
 import { hseVariant } from "@/test/fixtures/home-screen-event-scoring"
 
-import { hseDescriptionLines, type HseText } from "./hse-description"
+import { hseDescriptionLines } from "./hse-description"
+import type { HseText } from "./hse-description"
 
 const keys = (lines: HseText[]) =>
   lines.map((line) => line.key.replace("dailies:hse.details.", ""))

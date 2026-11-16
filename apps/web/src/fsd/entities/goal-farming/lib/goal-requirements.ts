@@ -6,7 +6,8 @@ import type {
   MowUpgradeCostStorageModel,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
-import { startingProgression, type UpgradeId } from "@workspace/game-domain"
+import { startingProgression } from "@workspace/game-domain"
+import type { UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalDetail } from "@/entities/goal/@x/goal-farming"
@@ -20,16 +21,15 @@ import {
   abilityResourceNeed,
   rankResourceNeed,
   rankSlotsRemaining,
-  type AbilityCoverage,
 } from "./goal-need"
+import type { AbilityCoverage } from "./goal-need"
 import { upgradeResourceNeed } from "./upgrade-goal-need"
 import {
   ascensionResourceNeed,
   createAscensionCoverage,
   unlockResourceNeed,
-  type AscensionCoverage,
-  type ResourceNeed,
 } from "./progression-cost-calc"
+import type { AscensionCoverage, ResourceNeed } from "./progression-cost-calc"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]

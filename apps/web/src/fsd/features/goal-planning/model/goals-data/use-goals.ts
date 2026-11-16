@@ -2,7 +2,8 @@ import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
-import { goalQueries, type GoalDetail } from "@/entities/goal"
+import { goalQueries } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 import { ApiError } from "@/shared/api"
 
 export type GoalsFetchState =

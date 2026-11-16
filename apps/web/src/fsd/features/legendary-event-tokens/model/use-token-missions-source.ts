@@ -1,11 +1,11 @@
 import { useMemo } from "react"
 
-import {
-  battleEnemies,
-  type BattleEnemies,
-  type LegendaryEvent,
-  type LegendaryEventBattle,
-  type LegendaryEventUnit,
+import { battleEnemies } from "@/entities/legendary-event"
+import type {
+  BattleEnemies,
+  LegendaryEvent,
+  LegendaryEventBattle,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 import { useNpcsById } from "@/entities/npc"
 

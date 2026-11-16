@@ -9,52 +9,51 @@ import {
   teamDepthForRun,
   teamEffectiveDepth,
   unitNextAscensionStep,
-  type ClearEstimate,
-  type LegendaryEvent,
-  type LegendaryEventLaneId,
-  type LegendaryEventLifecycle,
-  type LegendaryEventPlan,
-  type LegendaryEventProgress,
-  type LegendaryEventRosterUnit,
-  type LegendaryEventRun,
-  type LegendaryEventRunResolution,
-  type LegendaryEventTeam,
-  type LegendaryEventUnit,
+} from "@/entities/legendary-event"
+import type {
+  ClearEstimate,
+  LegendaryEvent,
+  LegendaryEventLaneId,
+  LegendaryEventLifecycle,
+  LegendaryEventPlan,
+  LegendaryEventProgress,
+  LegendaryEventRosterUnit,
+  LegendaryEventRun,
+  LegendaryEventRunResolution,
+  LegendaryEventTeam,
+  LegendaryEventUnit,
 } from "@/entities/legendary-event"
 
-import {
-  fewestTokensForFullClear,
-  type FullClearFigure,
-} from "./minimum-tokens"
-import { forecastRuns, type Forecast } from "./run-forecast"
-import { milestoneGap, type MilestoneGap } from "./milestone-push"
-import {
-  nextToken,
-  planTokens,
-  playableNext,
-  type NextTokenChoice,
-  type PlannedToken,
-  type TokenPlan,
-  type RunSlots,
-  type TokenPlanLane,
+import { fewestTokensForFullClear } from "./minimum-tokens"
+import type { FullClearFigure } from "./minimum-tokens"
+import { forecastRuns } from "./run-forecast"
+import { milestoneGap } from "./milestone-push"
+import type { MilestoneGap } from "./milestone-push"
+import { nextToken, planTokens, playableNext } from "./token-plan"
+import type {
+  NextTokenChoice,
+  PlannedToken,
+  TokenPlan,
+  RunSlots,
+  TokenPlanLane,
 } from "./token-plan"
-import { runTokenSupply, type RunSupply } from "./token-supply"
-import { safestNextToken, type TokenRisk } from "./safest-next"
-import {
-  nextTokenMissions,
-  tokenMissionProgress,
-  type MissionProgress,
-  type NextTokenMissions,
-  type TokenMissionsInput,
+import { runTokenSupply } from "./token-supply"
+import type { RunSupply } from "./token-supply"
+import { safestNextToken } from "./safest-next"
+import type { TokenRisk } from "./safest-next"
+import { nextTokenMissions, tokenMissionProgress } from "./token-missions"
+import type {
+  MissionProgress,
+  NextTokenMissions,
+  TokenMissionsInput,
 } from "./token-missions"
-import {
-  gainsFromProgress,
-  gainsFromSteps,
-  type MissionGain,
-} from "./mission-gains"
-import { splitPlanByRun, type PlanByRun } from "./token-runs"
-import { missionOrder, type MissionOrder } from "./mission-order"
-import type { TokenMarker } from "./run-forecast"
+import { gainsFromProgress, gainsFromSteps } from "./mission-gains"
+import type { MissionGain } from "./mission-gains"
+import { splitPlanByRun } from "./token-runs"
+import type { PlanByRun } from "./token-runs"
+import { missionOrder } from "./mission-order"
+import type { MissionOrder } from "./mission-order"
+import type { TokenMarker, Forecast } from "./run-forecast"
 
 /** A lane's team estimator, as the page builds it from the Stage 5 clear estimates. */
 type LaneTeamEstimator = {

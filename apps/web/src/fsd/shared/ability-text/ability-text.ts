@@ -279,7 +279,7 @@ export type AstNode = TextNode | VariableNode | StyledNode
 // bare form tolerates a lone quote on either side (`<style=Buff_Infiltrate">`, Blood Angels Dante).
 // No style value spans `<` or `>`, so a tag missing its closing quote cannot swallow later tags.
 const TOKEN_RE =
-  /(<style="[^"<>]*">|<style=\{[^}]+\}>|<style="?[^"{}<>]+"?>|<\/style>|<link="[^"]*">|<link=[^"<>]+>|<\/link>|<i>|<\/i>|\{[^}]+\})/gi
+  /<style="[^"<>]*">|<style=\{[^}]+\}>|<style="?[^"{}<>]+"?>|<\/style>|<link="[^"]*">|<link=[^"<>]+>|<\/link>|<i>|<\/i>|\{[^}]+\}/gi
 
 function parseToken(
   raw: string
@@ -405,7 +405,7 @@ export function resolveVariable(
   const constantValue = lookupTrimmed(context.constants, node.name)
   if (constantValue !== undefined) {
     if (node.splitIndex !== undefined) {
-      return String(constantValue).split(",")[node.splitIndex] ?? ""
+      return constantValue.split(",")[node.splitIndex] ?? ""
     }
     return constantValue
   }

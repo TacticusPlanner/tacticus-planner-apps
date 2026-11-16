@@ -9,8 +9,8 @@ import {
   goalTargetKeyOf,
   linkCandidates,
   useGlobalGoalPlan,
-  type GoalDetail,
 } from "@/entities/goal"
+import type { GoalDetail } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { projectQueries } from "@/entities/project"
 import { ResponsiveDialogBody, ResponsiveDialogFooter } from "@/shared/ui"
@@ -20,8 +20,8 @@ import {
   buildEditGoalRequest,
   goalEditChanges,
   isGoalEditDirty,
-  type GoalEditDraft,
 } from "../../model/goal-edit/goal-edit-draft"
+import type { GoalEditDraft } from "../../model/goal-edit/goal-edit-draft"
 import { useGoalEditAcquisition } from "../../model/goal-edit/use-goal-edit-acquisition"
 import { goalEditMaterialNeeds } from "../../model/goal-edit/goal-edit-material-needs"
 import { useMythicMaterialSelection } from "../../model/goal-creation-form/use-mythic-material-selection"
@@ -265,6 +265,17 @@ export function GoalEditForm({
           className="grid content-start items-start gap-x-6 gap-y-3 pb-3 text-sm @2xl:grid-cols-2"
           data-testid="goal-edit-form"
         >
+          {/* Priority comes first: it is the edit players make most (move-goal-edit-priority-first). */}
+          {draft.priorityPosition !== null ? (
+            <GoalEditPriorityField
+              onChange={(priorityPosition) => edit({ priorityPosition })}
+              portalContainer={portalContainer}
+              occupants={plan.inFlight}
+              position={draft.priorityPosition}
+              total={total}
+            />
+          ) : null}
+
           {draft.target || detail.goalType === "Unlock" ? (
             <div className="col-span-full">
               <GoalEditTarget detail={detail}>
@@ -310,15 +321,6 @@ export function GoalEditForm({
               {notesField}
             </div>
           )}
-
-          {draft.priorityPosition !== null ? (
-            <GoalEditPriorityField
-              onChange={(priorityPosition) => edit({ priorityPosition })}
-              portalContainer={portalContainer}
-              position={draft.priorityPosition}
-              total={total}
-            />
-          ) : null}
 
           <GoalProjectsField
             onSelectionChange={(projectIds) => edit({ projectIds })}

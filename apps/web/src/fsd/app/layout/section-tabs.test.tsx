@@ -22,7 +22,8 @@ vi.mock("react-i18next", () => ({
 // `@/shared/config` module, which also calls `initReactI18next` at import time.
 vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 
-import { navItems, type NavItem } from "./nav-items"
+import { navItems } from "./nav-items"
+import type { NavItem } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
 
 /** Reports the current pathname, and offers a Back control so a test can tell one pushed history
@@ -122,7 +123,7 @@ describe("SectionTabs", () => {
     )
   })
 
-  it("shows the five Dailies tabs in order: Raids, HSE, HRE, Quest, Guild Raids", () => {
+  it("shows the six Dailies tabs in order: Raids, HSE, HRE, Quest, Event shop, Guild Raids", () => {
     renderTabs(section("/dailies"), "/dailies/raids")
 
     expect(
@@ -132,6 +133,7 @@ describe("SectionTabs", () => {
       "section-tab-dailies-hse",
       "section-tab-dailies-hre",
       "section-tab-dailies-quest",
+      "section-tab-dailies-event-shop",
       "section-tab-dailies-guild-raids",
     ])
     expect(screen.getByTestId("section-tab-dailies-raids")).toHaveAttribute(

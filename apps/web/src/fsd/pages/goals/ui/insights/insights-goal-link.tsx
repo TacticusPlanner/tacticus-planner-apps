@@ -4,10 +4,12 @@ import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { goalTypeIcon, type GoalKind } from "@/entities/goal"
+import { goalTypeIcon } from "@/entities/goal"
+import type { GoalKind } from "@/entities/goal"
 import { EntityIcon } from "@/shared/ui"
 
-import { goalHref, type InsightsGoalInfo } from "./insights-view"
+import { goalHref } from "./insights-view"
+import type { InsightsGoalInfo } from "./insights-view"
 
 /** A goal shown as its unit's portrait, the unit's name and the goal type's icon (the type is
  *  spelled out for screen readers), opening its edit dialog on the Goals list. `row` sizes the

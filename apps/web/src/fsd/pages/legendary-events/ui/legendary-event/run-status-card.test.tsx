@@ -23,9 +23,11 @@ import { fireEvent, render, screen, within } from "@/test/render"
 import {
   buildRewardOutlookViewModel,
   buildRunStatusViewModel,
-  type RewardOutlookViewModel,
-  type RunInputsViewModel,
-  type RunStatusViewModel,
+} from "./legendary-event-page.view-model"
+import type {
+  RewardOutlookViewModel,
+  RunInputsViewModel,
+  RunStatusViewModel,
 } from "./legendary-event-page.view-model"
 import { RewardOutlook } from "./reward-outlook"
 import { RunStatusCard } from "./run-status-card"
@@ -59,7 +61,7 @@ const build = (
   progress: BuildInput["progress"],
   rewards: BuildInput["rewards"],
   progressObservedAtMs: number | null = OBSERVED,
-  unit: BuildInput["unit"] = undefined
+  unit?: BuildInput["unit"]
 ) =>
   buildRunStatusViewModel({
     progress,
