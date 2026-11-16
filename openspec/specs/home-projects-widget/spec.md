@@ -57,15 +57,27 @@ Below the 768px breakpoint, the widget SHALL cap the list to 3 project cards tot
 
 ### Requirement: Project cards are condensed and identity-only
 
-Each card SHALL show that project's color, name, and a units/goals summary (the count of the project's in-flight goals and of the distinct units among them, derived from the project's `goalIds` joined with the loaded goals list — no per-project read), condensed for the smaller widget footprint. Cards in this widget SHALL NOT render lifecycle actions (Make current, Edit, Archive/Restore) — the widget is for navigation and at-a-glance status only.
+Each card SHALL show that project's color, name, and a units/goals summary (the count of the project's in-flight goals and of the distinct units among them, derived from the project's `goalIds` joined with the loaded goals list — no per-project read), condensed for the smaller widget footprint. A card for a project with a resolvable, not-ended target SHALL also show its target chip and deadline fit count (`project-deadline-fit`). The home page computes it from one global-plan run, only when at least one listed project has such a target. Cards in this widget SHALL NOT render lifecycle actions (Make current, Edit, Archive/Restore) — the widget is for navigation and at-a-glance status only.
 
-Implementation note: the Projects dashboard's full available/blocked/estimate summary is computed by a larger subsystem (`use-goal-attainment.ts`, `use-plan-insights.ts`, `use-goals-overview-metrics.ts`) that lives in `pages/goals/model`, not `features/project-management`. Relocating that subsystem so a home-page glance card could reach it was judged disproportionate to this widget's purpose and descoped; the units/goals count is the permanent home-widget summary, not an interim state.
+Implementation note: the estimate subsystem now lives in `features/goal-planning`, so `pages/home` can compose the fit count without relocating it. Projects without targets keep the units/goals count as their only summary.
 
 #### Scenario: Card shows identity and summary
 
 - **GIVEN** a project with a color, name, and the goals list loaded
 - **WHEN** its card renders in the widget
 - **THEN** the card shows the project's color, name, and its units/goals summary, without any action controls
+
+#### Scenario: Targeted card shows its fit count
+
+- **GIVEN** a project targeting the Legendary Event Uthar with 2 of 4 counted goals fitting
+- **WHEN** its card renders in the widget
+- **THEN** the card also shows "LE · Uthar" and "2 of 4 fit"
+
+#### Scenario: No target, no plan run
+
+- **GIVEN** no listed project has a target
+- **WHEN** the widget renders
+- **THEN** no plan run is computed for the widget
 
 #### Scenario: Summary still loading
 
@@ -116,3 +128,13 @@ Activating a project card SHALL navigate to the Goals page scoped to that projec
 
 - **WHEN** the user activates a project card in the widget
 - **THEN** `/plan/goals?project={id}` opens with that project's scope chip selected
+
+### Requirement: Widget cards show unit portraits
+
+Each project card in the home widget SHALL show the same unit portraits as the Projects page card (`project-management`), at a smaller size, with "+N" past 4 units. They come from the goals list the widget already reads, with no extra request.
+
+#### Scenario: Portraits without extra reads
+
+- **GIVEN** the player has five non-archived projects with goals
+- **WHEN** the widget renders
+- **THEN** each card shows its unit portraits, and the projects list and the goals list are still the only reads

@@ -65,7 +65,7 @@ The list route SHALL NOT render its own "Projects" (or equivalent) page title �
 
 ### Requirement: Project cards communicate planning value
 
-Every project card SHALL show color, name, description when present, and a goal/unit summary derived from the project's `goalIds` joined with the loaded goals list — no per-project read. Where summary data is available, the Default project card only SHALL also show reached, blocked, and estimate/progress information (completion date and unestimated goals), computed from the one global run; other project cards show the goal/unit summary only. Identity and actions SHALL remain usable while the goals list or a summary calculation loads or fails.
+Every project card SHALL show color, name, description when present, and a goal/unit summary derived from the project's `goalIds` joined with the loaded goals list — no per-project read. Where summary data is available, the Default project card only SHALL also show reached, blocked, and estimate/progress information (completion date and unestimated goals), computed from the one global run. A non-archived project with a resolvable, not-ended target SHALL also show its deadline fit count (`project-deadline-fit`), from the same run. Other project cards show the goal/unit summary only. Identity and actions SHALL remain usable while the goals list or a summary calculation loads or fails.
 
 #### Scenario: Summary loads progressively
 
@@ -77,6 +77,12 @@ Every project card SHALL show color, name, description when present, and a goal/
 
 - **WHEN** the goals list read fails
 - **THEN** every card shows its identity with an unavailable/retry summary state, and one retry re-reads the goals list
+
+#### Scenario: Targeted card shows its fit count
+
+- **GIVEN** a project targets the Legendary Event Uthar and 2 of its 4 counted goals fit
+- **WHEN** its card renders with summary data available
+- **THEN** it shows "2 of 4 fit" beside the "LE · Uthar" chip
 
 ### Requirement: Historical goals stay outside the in-flight ordering
 
@@ -186,12 +192,12 @@ The system SHALL NOT present a per-project goal detail route. A project's goals 
 
 ### Requirement: The Projects row menu hosts every project-specific action
 
-Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, in order: **Create goal**, **Manage goals**, **Move goals to top** (only when the project holds at least one in-flight goal; see `project-goal-moves`), **Edit**, **Archive**, then **Delete** (the Default project offers neither Archive nor Delete; see "The Default project is permanent"). An archived project row's menu SHALL offer **Edit**, **Restore** and **Delete** only. Create goal SHALL open goal creation with that row's project preselected (see `goal-creation-entry-points`). Manage goals SHALL open the bulk membership surface for that row's project. Activating Create goal, Manage goals or Move goals to top SHALL NOT navigate away from the Projects page.
+Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, in order: **Create goal**, **Manage goals**, **Move goals…** (only when the project holds at least one in-flight goal; see `project-goal-moves`), **Edit**, **Archive**, then **Delete** (the Default project offers neither Archive nor Delete; see "The Default project is permanent"). An archived project row's menu SHALL offer **Edit**, **Restore** and **Delete** only. Create goal SHALL open goal creation with that row's project preselected (see `goal-creation-entry-points`). Manage goals SHALL open the bulk membership surface for that row's project. Activating Create goal, Manage goals or Move goals… SHALL NOT navigate away from the Projects page.
 
 #### Scenario: A live project's menu lists the four actions
 
 - **WHEN** the user opens the overflow menu of a non-archived, non-Default project row that holds in-flight goals
-- **THEN** Create goal, Manage goals, Move goals to top, Edit, and Archive appear, in that order, with text labels, followed by Delete
+- **THEN** Create goal, Manage goals, Move goals…, Edit, and Archive appear, in that order, with text labels, followed by Delete
 
 #### Scenario: Manage goals opens for that row's project
 
@@ -207,12 +213,12 @@ Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, i
 #### Scenario: An empty project has no Move goals to top
 
 - **WHEN** the user opens the menu of a project with no in-flight goals
-- **THEN** Move goals to top is not offered
+- **THEN** Move goals… is not offered
 
 #### Scenario: An archived project's menu is lifecycle-only
 
 - **WHEN** the user opens the overflow menu of an archived project row
-- **THEN** Edit, Restore and Delete appear, and neither Create goal, Manage goals nor Move goals to top is offered
+- **THEN** Edit, Restore and Delete appear, and neither Create goal, Manage goals nor Move goals… is offered
 
 ### Requirement: A project row opens that project on Goals
 
@@ -309,3 +315,13 @@ The API keeps at most 100 non-archived projects. Creating a project from the Pro
 
 - **WHEN** 100 projects are not archived and the user creates another
 - **THEN** no request is sent and the message "You already have 100 projects that are not archived. Archive one to make room." shows
+
+### Requirement: Project cards show unit portraits
+
+Each project card on the Projects page SHALL show round portraits of the first 4 distinct units among the project's in-flight goals, ordered by the global priority of each unit's highest goal, followed by "+N" when more units exist, beside the colour dot. They come from the goals list the card already joins, with no extra read. A project with no in-flight goals shows no portraits. While the goals list loads the portraits are part of the summary skeleton.
+
+#### Scenario: Six units
+
+- **GIVEN** project Chaos Core has in-flight goals for Kharn, Abaddon, Typhus, Lucius, Ahriman and Angrax, in that priority order
+- **WHEN** its card renders
+- **THEN** it shows the portraits of Kharn, Abaddon, Typhus and Lucius, then "+2"

@@ -54,6 +54,18 @@ Assumptions:
 - **WHEN** Home renders at 2026-11-15
 - **THEN** Upcoming events lists Squig Smash, the Campaign Event and the next Legendary Event, with "Show 4 more" revealing the Hero Release Event, Skull Harvest, the Quest and the Incursion, and never Blood Tithe (a later Home Screen Event)
 
+#### Scenario: Legendary Event pinned to the third row
+
+- **GIVEN** nothing is live, a Home Screen Event starts 2026-10-04, a Campaign Event 2026-10-06, a Quest 2026-10-08, an Incursion 2026-10-10, and Uthar starts 2026-10-11
+- **WHEN** Home renders
+- **THEN** the collapsed card lists the Home Screen Event, the Campaign Event, then Uthar, and "Show 2 more" reveals the Quest and the Incursion
+
+#### Scenario: Cap of three
+
+- **GIVEN** a live Legendary Event and four upcoming rows of other kinds
+- **WHEN** Home renders
+- **THEN** the collapsed card lists only the three earliest rows and a "Show 1 more" toggle
+
 #### Scenario: Show more
 
 - **GIVEN** five upcoming rows

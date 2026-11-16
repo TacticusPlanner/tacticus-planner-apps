@@ -342,3 +342,18 @@ When the Goals page is scoped to a project, each goal row's "⋯" menu, on deskt
 - **GIVEN** the Goals page is scoped to project A, the goals have loaded and the project list is still loading
 - **WHEN** a goal's row menu is opened
 - **THEN** the project-removal item is disabled until the project list loads, and is then enabled at once; no member-list request is ever issued
+
+### Requirement: The goal row menu offers Add to another project
+
+Every goal row's "⋯" menu on the Goals page, scoped or not, on desktop and mobile, SHALL offer **Add to another project…** right after Edit. It SHALL open the membership picker for that goal (a dialog on desktop, a sheet on mobile) with its current projects checked, and saving SHALL submit only the membership change, without changing status, target or priority. The item SHALL be disabled while the account's projects are not loaded.
+
+#### Scenario: Add a goal to a second project
+
+- **GIVEN** Kharn's Ascension goal belongs to Chaos Core
+- **WHEN** the user picks Add to another project… in its row menu, checks Team Lavi and saves
+- **THEN** the goal belongs to Chaos Core and Team Lavi, and a toast names Team Lavi
+
+#### Scenario: Mobile sheet
+
+- **WHEN** the user picks Add to another project… on a mobile card
+- **THEN** the picker opens as a sheet with the goal's current projects checked

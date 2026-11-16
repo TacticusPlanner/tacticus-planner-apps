@@ -343,20 +343,6 @@ While a rule-bearing Home Screen Event runs, each HRE row whose raids earn its p
 - **GIVEN** Machine Hunt runs and no suggested node has its enemies
 - **THEN** the note does not mention Machine Hunt
 
-### Requirement: The HRE tab has no raid header controls
-
-The HRE tab SHALL NOT show the project selector, the Raids Filters action or the Planning Settings action. Its raid suggestions SHALL cover every active goal, whatever project Today has selected, SHALL keep using the persisted Raids Filters and the Planning Settings daily energy set on Today, and the empty-list action to open or reset the filters SHALL remain.
-
-#### Scenario: Running event
-
-- **GIVEN** an HRE is running
-- **THEN** the HRE tab's title row shows no project selector, Raids Filters or Planning Settings control
-
-#### Scenario: Project picked on Today
-
-- **GIVEN** a project is selected on Today
-- **THEN** the HRE suggestions still rank nodes by every active goal
-
 ### Requirement: HRE suggestion rows are grouped by campaign
 
 Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) SHALL show each run of consecutive rows in one campaign (with its difficulty) under one header with the campaign icon and the campaign's name, mirror qualifier and difficulty word; each row SHALL name just its battle ("Battle 7") ahead of its goals, drop and counts. A campaign with a single row in a group SHALL show no header: that row SHALL instead name the location in full ("Saim-Hann Elite 33") after the campaign icon, on one line. Grouping SHALL NOT reorder the list, and paging counts rows, not groups. As on the HSE lists, a raid row SHALL NOT show its raid count or energy (a by-hand battle row keeps its battle count, an open-ended row its energy per battle), and each row's battle name SHALL open the battle and its enemies.
@@ -366,3 +352,17 @@ Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) 
 - **GIVEN** the list's rows, in its order, are Octarius Mirror Elite 26, Indomitus Mirror Elite 7, Indomitus Mirror Elite 38, Octarius Mirror Elite 15, 21 and 39
 - **WHEN** the list renders
 - **THEN** it shows an "Octarius Mirror Elite" group with Battle 26, an "Indomitus Mirror Elite" group with Battle 7 and Battle 38, then an "Octarius Mirror Elite" group with Battle 15, 21 and 39, each row keeping its own badges and drop
+
+### Requirement: The HRE raids section has raid list controls
+
+The HRE tab's raids section SHALL show, under its title, the Dailies project selector (with "All projects") and the Raids Filters action, and SHALL NOT show the Planning Settings action. The project selection SHALL be the one Dailies-wide, session-only selection shared with Today and the HSE tab. The suggestions SHALL serve the selected project's Active goals first (every Active goal without one), SHALL use the persisted Raids Filters (except the campaign-type filter, as before) and the Planning Settings daily energy set on Today, and the empty-list action to reset the filters SHALL remain. A past event SHALL NOT show the raids section.
+
+#### Scenario: Controls in the raids section
+
+- **GIVEN** an HRE is running
+- **THEN** the raids section shows the project selector and the Raids Filters action, and the title row shows neither
+
+#### Scenario: Project picked on Today
+
+- **GIVEN** a project is selected on Today
+- **THEN** the HRE suggestions rank nodes that feed that project's goals first
