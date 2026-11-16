@@ -1,7 +1,9 @@
+import type { ReactElement } from "react"
 import userEvent from "@testing-library/user-event"
+import { MemoryRouter } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
-import { render, screen } from "@/test/render"
+import { render as renderWithProviders, screen } from "@/test/render"
 
 import type { PositionedEventEntry } from "../../model/events-calendar.types"
 import { EventAgendaRow, EventBar } from "./event-entry-card"
@@ -13,6 +15,10 @@ vi.mock("react-i18next", () => ({
     i18n: { resolvedLanguage: "en", language: "en" },
   }),
 }))
+
+// The details popover links to the event's planner page.
+const render = (ui: ReactElement) =>
+  renderWithProviders(<MemoryRouter>{ui}</MemoryRouter>)
 
 function baseEntry(
   overrides: Partial<PositionedEventEntry>
@@ -114,6 +120,38 @@ describe("EventBar", () => {
     expect(
       screen.queryByRole("link", { name: "wikiLink" })
     ).not.toBeInTheDocument()
+  })
+})
+
+describe("EventBar planner link", () => {
+  it("links a Home Screen Event's details to the HSE tab on that occurrence", async () => {
+    const user = userEvent.setup()
+    render(
+      <EventBar
+        entry={baseEntry({
+          definitionId: "hse-global-blood-tithe",
+          definitionType: "HomeScreenEvent",
+          occurrenceId: "occ-2026-11-22-hse-global-blood-tithe",
+        })}
+      />
+    )
+
+    await user.click(screen.getByTestId("event-entry-card"))
+
+    expect(await screen.findByTestId("event-planner-link")).toHaveAttribute(
+      "href",
+      "/dailies/hse?event=occ-2026-11-22-hse-global-blood-tithe"
+    )
+  })
+
+  it("has no planner link for an event without a planner page", async () => {
+    const user = userEvent.setup()
+    render(<EventBar entry={baseEntry({})} />)
+
+    await user.click(screen.getByTestId("event-entry-card"))
+
+    await screen.findByTestId("event-details")
+    expect(screen.queryByTestId("event-planner-link")).not.toBeInTheDocument()
   })
 })
 

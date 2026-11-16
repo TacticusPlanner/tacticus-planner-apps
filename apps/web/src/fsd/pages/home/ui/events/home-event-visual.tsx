@@ -14,7 +14,8 @@ import type { HomeEventRow } from "../../model/select-home-events"
 
 /** A Home event's picture: the featured hero's portrait for a Legendary Event, the running
  *  campaign's icon (else the Campaign Events menu icon) for a Campaign Event, Incursion's icon, the
- *  featured hero's portrait (else the Quests menu icon) for a Quest Event, else
+ *  featured hero's portrait (else the Quests menu icon) for a Quest Event, the featured hero's
+ *  portrait (else the HRE icon) for a Hero Release Event, the event shop icon for an event shop, else
  *  the Home Screen Event's game medallion. Decorative; the row names the event. */
 export function HomeEventVisual({
   row,
@@ -63,6 +64,33 @@ export function HomeEventVisual({
         alt=""
         className={cn("shrink-0", className)}
         src={gameMenuIcon("quests")}
+      />
+    )
+  }
+  if (row.type === "hre") {
+    return row.featuredCharacterId ? (
+      <EntityIcon
+        alt=""
+        className={cn(
+          "shrink-0 rounded-full ring-2 ring-(--event-family-heroes)",
+          className
+        )}
+        src={characterIcon(row.featuredCharacterId as UnitId)}
+      />
+    ) : (
+      <EventIcon
+        className={cn("shrink-0", className)}
+        definitionId="new-character-event"
+        definitionType="NewCharacterEvent"
+      />
+    )
+  }
+  if (row.type === "eventShop") {
+    return (
+      <EventIcon
+        className={cn("shrink-0", className)}
+        definitionId={row.definitionId ?? ""}
+        definitionType="ShopEvent"
       />
     )
   }

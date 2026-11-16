@@ -798,6 +798,7 @@
       "live": "LIVE",
       "endsIn": "Ends in {{when}}",
       "startsIn": "Starts in {{when}}",
+      "startDateTba": "Start date TBA",
       "empty": "No events scheduled.",
       "error": "Couldn't load events.",
       "loading": "Loading events…",
@@ -809,7 +810,11 @@
       "openProject": "Open project",
       "projects_one": "{{count}} project",
       "projects_other": "{{count}} projects",
-      "planEvent": "Plan this event"
+      "planEvent": "Plan this event",
+      "showMore_one": "Show {{count}} more",
+      "showMore_other": "Show {{count}} more",
+      "showLess": "Show less",
+      "viewCalendar": "View calendar"
     },
     "calendar": {
       "title": "Events Calendar"

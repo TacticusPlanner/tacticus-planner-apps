@@ -798,6 +798,7 @@
       "live": "EN VIVO",
       "endsIn": "Termina en {{when}}",
       "startsIn": "Empieza en {{when}}",
+      "startDateTba": "Fecha de inicio por anunciar",
       "empty": "No hay eventos programados.",
       "error": "No se pudieron cargar los eventos.",
       "loading": "Cargando eventos…",
@@ -809,7 +810,11 @@
       "openProject": "Abrir proyecto",
       "projects_one": "{{count}} proyecto",
       "projects_other": "{{count}} proyectos",
-      "planEvent": "Planificar este evento"
+      "planEvent": "Planificar este evento",
+      "showMore_one": "Mostrar {{count}} más",
+      "showMore_other": "Mostrar {{count}} más",
+      "showLess": "Mostrar menos",
+      "viewCalendar": "Ver calendario"
     },
     "calendar": {
       "title": "Calendario de eventos"

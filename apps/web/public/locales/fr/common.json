@@ -798,6 +798,7 @@
       "live": "EN COURS",
       "endsIn": "Se termine dans {{when}}",
       "startsIn": "Commence dans {{when}}",
+      "startDateTba": "Date de début à venir",
       "empty": "Aucun événement programmé.",
       "error": "Impossible de charger les événements.",
       "loading": "Chargement des événements…",
@@ -809,7 +810,11 @@
       "openProject": "Ouvrir le projet",
       "projects_one": "{{count}} projet",
       "projects_other": "{{count}} projets",
-      "planEvent": "Planifier cet événement"
+      "planEvent": "Planifier cet événement",
+      "showMore_one": "Afficher {{count}} de plus",
+      "showMore_other": "Afficher {{count}} de plus",
+      "showLess": "Afficher moins",
+      "viewCalendar": "Voir le calendrier"
     },
     "calendar": {
       "title": "Calendrier des événements"

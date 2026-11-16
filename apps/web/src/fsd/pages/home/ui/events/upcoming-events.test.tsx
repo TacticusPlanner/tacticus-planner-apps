@@ -15,7 +15,9 @@ const {
   progressMock,
   incursionWindowMock,
   calendarMock,
+  eventShopsMock,
 } = vi.hoisted(() => ({
+  eventShopsMock: vi.fn((): unknown => ({ status: "loading" })),
   incursionWindowMock: vi.fn((): unknown => null),
   calendarMock: vi.fn((): unknown => ({ status: "loading" })),
   eventProjectsMock: vi.fn(),
@@ -65,10 +67,12 @@ vi.mock("@/shared/local-data", async (importOriginal) => {
     useCatalogDataset: (dataset: string, ...rest: unknown[]) =>
       dataset === "events-calendar"
         ? calendarMock()
-        : (actual.useCatalogDataset as (...args: unknown[]) => unknown)(
-            dataset,
-            ...rest
-          ),
+        : dataset === "event-shops"
+          ? eventShopsMock()
+          : (actual.useCatalogDataset as (...args: unknown[]) => unknown)(
+              dataset,
+              ...rest
+            ),
   }
 })
 vi.mock("@/entities/incursion", () => ({
@@ -123,6 +127,10 @@ const hseReady = (active: typeof hunt | null, upcoming: (typeof hunt)[]) => ({
   active,
   next: upcoming[0] ?? null,
   upcoming,
+  instances: [
+    ...(active ? [{ entry: active, status: "running" }] : []),
+    ...upcoming.map((item) => ({ entry: item, status: "upcoming" })),
+  ],
   nowMs: NOW,
 })
 const legendaryReady = (events: unknown[]) => ({
@@ -177,6 +185,8 @@ describe("Home events (Right now + Upcoming events)", () => {
     vi.setSystemTime(NOW)
     hseMock.mockReturnValue(hseReady(hunt, [rush]))
     legendaryMock.mockReturnValue(legendaryReady([lysander, uthar]))
+    calendarMock.mockReturnValue({ status: "loading" })
+    eventShopsMock.mockReturnValue({ status: "loading" })
     progressMock.mockReturnValue(
       progressReady([
         { id: "astarLysander", currentEventRun: 2, currentPoints: 3410 },
@@ -301,6 +311,110 @@ describe("Home events (Right now + Upcoming events)", () => {
     ).toEqual(["quest", "homeScreen", "legendaryEvent"])
     expect(upcomingItems()[0]).toHaveTextContent("definitions.quest")
     calendarMock.mockReturnValue({ status: "loading" })
+  })
+
+  it("lists a live Hero Release Event in Right now and an undated event shop as TBA", () => {
+    calendarMock.mockReturnValue({
+      status: "ready",
+      data: [
+        {
+          ...entry(
+            "new-character-event",
+            "2026-10-01T00:00:00Z",
+            "2026-10-15T00:00:00Z"
+          ),
+          occurrenceId: "occ-hre",
+          parameters: { featuredCharacterId: "votanChampion" },
+        },
+      ],
+    })
+    eventShopsMock.mockReturnValue({
+      status: "ready",
+      data: [
+        {
+          id: "december-2026",
+          eventKey: "December2026",
+          definitionId: null,
+          startUtc: null,
+          dayCount: 14,
+        },
+      ],
+    })
+    hseMock.mockReturnValue(hseReady(null, [rush]))
+    legendaryMock.mockReturnValue(legendaryReady([uthar]))
+    renderWidget()
+
+    const hre = liveTiles().find((item) => item.dataset.type === "hre")
+    if (!hre) throw new Error("no live HRE tile")
+    expect(hre).toHaveTextContent(
+      "withCharacter:definitions.new-character-event,Kîmm"
+    )
+    expect(within(hre).getByTestId("home-events-row")).toHaveAttribute(
+      "href",
+      "/dailies/hre?event=occ-hre"
+    )
+    const rows = within(
+      screen.getByTestId("home-events-widget")
+    ).getAllByTestId("home-events-row")
+    expect(rows.map((row) => row.dataset.type)).toEqual([
+      "homeScreen",
+      "legendaryEvent",
+      "eventShop",
+    ])
+    const shop = upcomingItems().at(-1)
+    if (!shop) throw new Error("no upcoming rows")
+    expect(shop).toHaveTextContent("home.events.startDateTba")
+    expect(shop).not.toHaveTextContent("home.events.startsIn")
+    expect(within(shop).getByTestId("home-events-row")).toHaveAttribute(
+      "href",
+      "/dailies/event-shop/december-2026"
+    )
+  })
+
+  it("shows three upcoming rows until Show more", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    calendarMock.mockReturnValue({
+      status: "ready",
+      data: [
+        entry("quest", "2026-10-04T00:00:00Z", "2026-10-07T00:00:00Z"),
+        entry(
+          "new-character-event",
+          "2026-10-05T00:00:00Z",
+          "2026-10-19T00:00:00Z"
+        ),
+      ],
+    })
+    hseMock.mockReturnValue(hseReady(null, [rush]))
+    legendaryMock.mockReturnValue(legendaryReady([uthar]))
+    renderWidget()
+
+    const types = () =>
+      within(screen.getByTestId("home-events-list"))
+        .getAllByTestId("home-events-row")
+        .map((row) => row.dataset.type)
+    // Uthar is pinned into the third row.
+    expect(types()).toEqual(["quest", "hre", "legendaryEvent"])
+    const toggle = screen.getByTestId("home-events-toggle")
+    expect(toggle).toHaveTextContent("home.events.showMore:1")
+    expect(screen.queryByTestId("home-events-view-calendar")).toBeNull()
+
+    await user.click(toggle)
+
+    expect(types()).toEqual(["quest", "hre", "homeScreen", "legendaryEvent"])
+    expect(toggle).toHaveTextContent("home.events.showLess")
+
+    // Expanded, the card offers the calendar below.
+    const calendar = document.createElement("div")
+    calendar.id = "home-calendar"
+    const scrollIntoView = vi.fn()
+    calendar.scrollIntoView = scrollIntoView
+    document.body.append(calendar)
+    await user.click(screen.getByTestId("home-events-view-calendar"))
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "start",
+    })
+    calendar.remove()
   })
 
   it("lists an upcoming Incursion in Upcoming events, not Right now", () => {
