@@ -1753,8 +1753,8 @@
       "tooltip": "Fertig am {{date}}, bevor {{chip}} am {{deadline}} beginnt",
       "tooltipDuring": "Fertig am {{date}}, während {{chip}} läuft ({{deadline}} – {{end}})",
       "tooltipAfter": "Fertig am {{date}}, nachdem {{chip}} am {{end}} endet",
-      "divider": "{{chip}} beginnt am {{deadline}}. Die Ziele darunter werden während des Events fertig.",
-      "dividerEnd": "{{chip}} endet am {{end}}. Die Ziele darunter werden danach fertig.",
+      "divider": "{{chip}} beginnt am {{deadline}} – das nächste Ziel wird während des Events fertig.",
+      "dividerEnd": "{{chip}} endet am {{end}} – das nächste Ziel wird danach fertig.",
       "overrideChip": "Projektfrist wird verwendet"
     },
     "detail": {

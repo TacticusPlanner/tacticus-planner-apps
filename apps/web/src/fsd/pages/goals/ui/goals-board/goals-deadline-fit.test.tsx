@@ -92,12 +92,12 @@ describe("GoalsList deadline fit", () => {
 
     const cutoff = await screen.findByTestId("goals-season-cutoff")
     expect(cutoff).toHaveTextContent(
-      "LE · Uthar starts Nov 27. Goals below finish during the event."
+      "LE · Uthar starts Nov 27. The next goal finishes during the event."
     )
     expect(cutoff.nextElementSibling).toHaveAttribute("data-goal-id", "kharn")
     const endCutoff = screen.getByTestId("goals-event-end-cutoff")
     expect(endCutoff).toHaveTextContent(
-      "LE · Uthar ends Dec 4. Goals below finish after it."
+      "LE · Uthar ends Dec 4. The next goal finishes after it."
     )
     expect(endCutoff.nextElementSibling).toHaveAttribute(
       "data-goal-id",

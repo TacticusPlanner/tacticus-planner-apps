@@ -44,8 +44,8 @@ With Group None, the list SHALL render a start divider before the first eligible
 #### Scenario: Divider placement
 
 - **WHEN** the Uthar project's goals render with Group None
-- **THEN** the start divider sits between Ragnar and Kharn and reads "LE · Uthar starts Nov 27. Goals below finish during the event."
-- **AND** the end divider sits between Kharn and Calgar and reads "LE · Uthar ends Dec 4. Goals below finish after it."
+- **THEN** the start divider sits between Ragnar and Kharn and reads "LE · Uthar starts Nov 27. The next goal finishes during the event."
+- **AND** the end divider sits between Kharn and Calgar and reads "LE · Uthar ends Dec 4. The next goal finishes after it."
 
 ### Requirement: An ended or unavailable deadline shows no fits
 

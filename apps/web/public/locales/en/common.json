@@ -1753,8 +1753,8 @@
       "tooltip": "Done by {{date}}, before {{chip}} starts on {{deadline}}",
       "tooltipDuring": "Done by {{date}}, while {{chip}} runs ({{deadline}} – {{end}})",
       "tooltipAfter": "Done by {{date}}, after {{chip}} ends on {{end}}",
-      "divider": "{{chip}} starts {{deadline}}. Goals below finish during the event.",
-      "dividerEnd": "{{chip}} ends {{end}}. Goals below finish after it.",
+      "divider": "{{chip}} starts {{deadline}}. The next goal finishes during the event.",
+      "dividerEnd": "{{chip}} ends {{end}}. The next goal finishes after it.",
       "overrideChip": "Using project deadline"
     },
     "detail": {

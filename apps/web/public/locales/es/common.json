@@ -1753,8 +1753,8 @@
       "tooltip": "Terminado el {{date}}, antes de que {{chip}} empiece el {{deadline}}",
       "tooltipDuring": "Terminado el {{date}}, mientras {{chip}} está en curso ({{deadline}} – {{end}})",
       "tooltipAfter": "Terminado el {{date}}, después de que {{chip}} termine el {{end}}",
-      "divider": "{{chip}} empieza el {{deadline}}. Los objetivos de abajo terminan durante el evento.",
-      "dividerEnd": "{{chip}} termina el {{end}}. Los objetivos de abajo terminan después.",
+      "divider": "{{chip}} empieza el {{deadline}}. El siguiente objetivo termina durante el evento.",
+      "dividerEnd": "{{chip}} termina el {{end}}. El siguiente objetivo termina después.",
       "overrideChip": "Usando la fecha límite del proyecto"
     },
     "detail": {
