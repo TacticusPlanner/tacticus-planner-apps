@@ -28,6 +28,7 @@
     "jsdom": "catalog:",
     "knip": "catalog:",
     "typescript": "catalog:",
+    "typescript7": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:"
   },

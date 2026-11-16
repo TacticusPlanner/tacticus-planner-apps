@@ -21,6 +21,7 @@
     "eslint": "catalog:",
     "globals": "catalog:",
     "typescript": "catalog:",
+    "typescript7": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:"
   },

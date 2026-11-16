@@ -57,6 +57,7 @@
     "prettier": "catalog:",
     "tailwindcss": "^4.3.5",
     "typescript": "catalog:",
+    "typescript7": "catalog:",
     "typescript-eslint": "catalog:",
     "vitest": "catalog:"
   },

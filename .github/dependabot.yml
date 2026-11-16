@@ -142,6 +142,11 @@ updates:
       - dependency-name: "@types/node"
         update-types:
           - version-update:semver-major
+      # TS 7 runs as the typescript7 alias (see pnpm-workspace.yaml); `typescript` stays on 6.x for
+      # typescript-eslint and openapi-typescript until they support TS 7.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: /
