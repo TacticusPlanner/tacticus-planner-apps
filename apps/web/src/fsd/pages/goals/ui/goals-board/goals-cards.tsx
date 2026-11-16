@@ -88,6 +88,7 @@ export function GoalsCards({
   selectActive = false,
   seasonFit,
   seasonCutoffGoalId,
+  eventEndCutoffGoalId,
 }: GoalsListProps & { isMobile: boolean }) {
   const { getEntityName } = useGoalCatalog()
   const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
@@ -111,6 +112,9 @@ export function GoalsCards({
       <Fragment key={row.goalId}>
         {seasonFit && seasonCutoffGoalId === row.goalId ? (
           <SeasonCutoffItem seasonFit={seasonFit} />
+        ) : null}
+        {seasonFit && eventEndCutoffGoalId === row.goalId ? (
+          <SeasonCutoffItem edge="end" seasonFit={seasonFit} />
         ) : null}
         <li
           className={cn(

@@ -11,11 +11,13 @@ import type {
 } from "@/features/goal-planning"
 
 /** A project deadline's fits as the list shows them (project-deadline-fit), in place of Season fit
- *  in a targeted scope. `chip` is the target's chip text ("LE · Uthar"). */
+ *  in a targeted scope. `chip` is the target's chip text ("LE · Uthar"); `deadlineMs` and `endMs`
+ *  are the run's start and end. */
 export type DeadlineFitView = {
   kind: "deadline"
   chip: string
   deadlineMs: number
+  endMs: number
   fits: ReadonlyMap<string, DeadlineGoalFit>
 }
 
@@ -35,8 +37,8 @@ const DEADLINE_TONE_OFFSET = {
   urgent: 2,
 } as const satisfies Record<ReturnType<typeof deadlineFitTone>, SeasonFitOffset>
 
-/** A goal's accent as a Season fit offset: the season offset, or for a deadline fit 0 (fits), 1 (a
- *  miss of 1 to 7 days) or 2 (more), so both use the same tokens. Undefined for no fit. */
+/** A goal's accent as a Season fit offset: the season offset, or for a deadline fit 0 (fits), 1
+ *  (finishes during the run) or 2 (after it), so both use the same tokens. Undefined for no fit. */
 export function goalFitOffset(
   view: GoalFitView | null | undefined,
   goalId: string
@@ -116,9 +118,18 @@ function seasonFitTooltip(
 }
 
 function deadlineFitLabel(t: TFunction, fit: DeadlineGoalFit): string {
-  return fit.fits
-    ? t("goals.deadlineFit.fits")
+  if (fit.fits) return t("goals.deadlineFit.fits")
+  return fit.duringEvent
+    ? t("goals.deadlineFit.duringEvent")
     : t("goals.deadlineFit.misses", { count: fit.daysLate })
+}
+
+/** The tooltip key per fit: before the start, during the run, after its end. */
+function deadlineTooltipKey(fit: DeadlineGoalFit) {
+  if (fit.fits) return "goals.deadlineFit.tooltip" as const
+  return fit.duringEvent
+    ? ("goals.deadlineFit.tooltipDuring" as const)
+    : ("goals.deadlineFit.tooltipAfter" as const)
 }
 
 function deadlineFitTooltip(
@@ -127,23 +138,34 @@ function deadlineFitTooltip(
   view: DeadlineFitView,
   fit: DeadlineGoalFit
 ): string {
-  return t(`goals.deadlineFit.tooltip${fit.fits ? "" : "After"}`, {
+  return t(deadlineTooltipKey(fit), {
     date: formatEstimateDate(fit.date, locale) ?? fit.date,
     chip: view.chip,
     deadline: formatDeadline(view.deadlineMs, locale),
+    end: formatDeadline(view.endMs, locale),
   })
 }
+
+/** Which divider: the deadline (a season's, or a run's start), or a Legendary Event run's end. */
+export type CutoffEdge = "start" | "end"
 
 export function seasonCutoffText(
   t: TFunction,
   locale: string,
-  active: GoalFitView
+  active: GoalFitView,
+  edge: CutoffEdge = "start"
 ): string {
   if (isDeadlineFitView(active)) {
-    return t("goals.deadlineFit.divider", {
-      chip: active.chip,
-      deadline: formatDeadline(active.deadlineMs, locale),
-    })
+    return t(
+      edge === "end"
+        ? "goals.deadlineFit.dividerEnd"
+        : "goals.deadlineFit.divider",
+      {
+        chip: active.chip,
+        deadline: formatDeadline(active.deadlineMs, locale),
+        end: formatDeadline(active.endMs, locale),
+      }
+    )
   }
   return t(`goals.seasonFit.divider${deadlineVerb(active.season)}`, {
     season: seasonName(t, active),

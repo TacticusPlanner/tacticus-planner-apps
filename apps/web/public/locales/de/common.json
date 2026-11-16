@@ -1733,9 +1733,11 @@
     "deadlineFit": {
       "header": {
         "label": "Frist:",
-        "starts": "beginnt am {{date}}",
-        "startsEstimated": "beginnt am {{date}} (geschätzt)",
+        "runs": "läuft {{date}} – {{end}}",
+        "runsEstimated": "läuft {{date}} – {{end}} (geschätzt)",
         "count": "{{fit}} von {{total}} passen",
+        "duringEvent_one": "{{count}} während des Events",
+        "duringEvent_other": "{{count}} während des Events",
         "allDone_one": "{{count}} erledigt",
         "allDone_other": "Alle {{count}} erledigt",
         "notEstimated_one": "{{count}} nicht geschätzt",
@@ -1745,11 +1747,14 @@
         "separator": " · "
       },
       "fits": "Passt",
+      "duringEvent": "Während des Events",
       "misses_one": "{{count}} T zu spät",
       "misses_other": "{{count}} T zu spät",
       "tooltip": "Fertig am {{date}}, bevor {{chip}} am {{deadline}} beginnt",
-      "tooltipAfter": "Fertig am {{date}}, nachdem {{chip}} am {{deadline}} beginnt",
-      "divider": "{{chip}} beginnt am {{deadline}}. Die Ziele darunter werden später fertig.",
+      "tooltipDuring": "Fertig am {{date}}, während {{chip}} läuft ({{deadline}} – {{end}})",
+      "tooltipAfter": "Fertig am {{date}}, nachdem {{chip}} am {{end}} endet",
+      "divider": "{{chip}} beginnt am {{deadline}}. Die Ziele darunter werden während des Events fertig.",
+      "dividerEnd": "{{chip}} endet am {{end}}. Die Ziele darunter werden danach fertig.",
       "overrideChip": "Projektfrist wird verwendet"
     },
     "detail": {

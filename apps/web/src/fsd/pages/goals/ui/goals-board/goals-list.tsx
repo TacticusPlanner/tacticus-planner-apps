@@ -88,6 +88,7 @@ function GoalsTable({
   selectActive = false,
   seasonFit,
   seasonCutoffGoalId,
+  eventEndCutoffGoalId,
 }: GoalsListProps & { isMobile: boolean }) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
@@ -182,6 +183,13 @@ function GoalsTable({
                 {seasonFit && seasonCutoffGoalId === row.goalId ? (
                   <SeasonCutoffRow
                     colSpan={COLUMN_COUNT}
+                    seasonFit={seasonFit}
+                  />
+                ) : null}
+                {seasonFit && eventEndCutoffGoalId === row.goalId ? (
+                  <SeasonCutoffRow
+                    colSpan={COLUMN_COUNT}
+                    edge="end"
                     seasonFit={seasonFit}
                   />
                 ) : null}

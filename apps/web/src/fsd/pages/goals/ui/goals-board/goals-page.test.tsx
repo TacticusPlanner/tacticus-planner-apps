@@ -1430,7 +1430,7 @@ describe("GoalsPage", () => {
     })
 
     describe("in a project targeting a Legendary Event", () => {
-      // Uthar's run 3 starts Nov 27; goal-b is done Nov 30, so it misses by ceil(4 d) = 4 days.
+      // Uthar's run 3 runs Nov 27 to Dec 4; goal-b is done Nov 30, so it finishes during the run.
       const uthar = {
         id: "votanUthar",
         name: "Uthar",
@@ -1464,14 +1464,16 @@ describe("GoalsPage", () => {
 
         const header = await screen.findByTestId("goals-deadline-fit")
         await vi.waitFor(() =>
-          expect(header).toHaveTextContent("starts Nov 27 · 0 of 1 fit")
+          expect(header).toHaveTextContent(
+            "runs Nov 27 – Dec 4 · 0 of 1 fit · 1 during the event"
+          )
         )
         expect(
           screen.getByTestId("goals-season-fit-override")
         ).toHaveTextContent("Using project deadline")
         expect(screen.queryByTestId("goals-season-fit")).toBeNull()
         expect(screen.getByTestId("goal-deadline-fit")).toHaveTextContent(
-          "Misses by 4 d"
+          "During event"
         )
         expect(fitOf(goalB.goalId)).toBe("1")
         expect(

@@ -38,6 +38,7 @@ describe("useProjectDeadline", () => {
       expect(result.current).toEqual({
         status: "ready",
         deadlineMs: Date.parse("2026-12-13T00:00:00Z"),
+        endMs: Date.parse("2026-12-20T00:00:00Z"),
         run: 2,
         estimated: false,
         ended: false,

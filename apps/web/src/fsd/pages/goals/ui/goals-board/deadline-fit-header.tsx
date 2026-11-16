@@ -32,9 +32,12 @@ export function DeadlineFitHeader({
     parts.push(
       t(
         fit.deadline.estimated
-          ? "goals.deadlineFit.header.startsEstimated"
-          : "goals.deadlineFit.header.starts",
-        { date: formatDeadline(fit.deadline.deadlineMs, dateLocale) }
+          ? "goals.deadlineFit.header.runsEstimated"
+          : "goals.deadlineFit.header.runs",
+        {
+          date: formatDeadline(fit.deadline.deadlineMs, dateLocale),
+          end: formatDeadline(fit.deadline.endMs, dateLocale),
+        }
       )
     )
     const { summary } = fit
@@ -44,6 +47,13 @@ export function DeadlineFitHeader({
       )
     } else if (summary.total > 0) {
       parts.push(t("goals.deadlineFit.header.count", summary))
+      if (summary.duringEvent > 0) {
+        parts.push(
+          t("goals.deadlineFit.header.duringEvent", {
+            count: summary.duringEvent,
+          })
+        )
+      }
     }
     if (summary.notEstimated > 0) {
       parts.push(

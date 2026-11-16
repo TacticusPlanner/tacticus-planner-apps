@@ -33,6 +33,7 @@ import {
   useGoalsProjectScope,
   isSeasonFitMode,
   deadlineCutoffGoalId,
+  eventEndCutoffGoalId,
   seasonCutoffGoalId,
   useProjectDeadlineFit,
   useSeasonFit,
@@ -318,18 +319,27 @@ export function GoalsPage() {
               name: targetName ?? deadlineFit.target.eventId,
             }),
             deadlineMs: deadlineFit.deadline.deadlineMs,
+            endMs: deadlineFit.deadline.endMs,
             fits: deadlineFit.byGoalId,
           }
         : null
   useGoalsOverviewTutorial(deadlineFit.status !== "off")
   // The divider follows the one account-wide priority order, which only an ungrouped list shows.
   const orderedIds = rows.map((row) => row.goalId)
+  const showCutoffs = group === "none" && fitView !== null
+  // A Legendary Event run gets two dividers: its start, then its end. When no goal finishes during
+  // the run they would sit together, so only the end one shows.
+  const endCutoffGoalId =
+    showCutoffs && "kind" in fitView
+      ? eventEndCutoffGoalId(orderedIds, fitView.fits)
+      : null
+  const startCutoffGoalId = !showCutoffs
+    ? null
+    : "kind" in fitView
+      ? deadlineCutoffGoalId(orderedIds, fitView.fits)
+      : seasonCutoffGoalId(orderedIds, fitView.fits)
   const cutoffGoalId =
-    group !== "none" || !fitView
-      ? null
-      : "kind" in fitView
-        ? deadlineCutoffGoalId(orderedIds, fitView.fits)
-        : seasonCutoffGoalId(orderedIds, fitView.fits)
+    startCutoffGoalId === endCutoffGoalId ? null : startCutoffGoalId
 
   // Selection is page-local and discarded whenever what the list shows changes by user control.
   const {
@@ -588,6 +598,7 @@ export function GoalsPage() {
               reorderPending={orderActions.pending}
               rows={rowGroup.rows}
               seasonCutoffGoalId={cutoffGoalId}
+              eventEndCutoffGoalId={endCutoffGoalId}
               seasonFit={fitView}
               selectActive={selectActive}
               selection={selection}

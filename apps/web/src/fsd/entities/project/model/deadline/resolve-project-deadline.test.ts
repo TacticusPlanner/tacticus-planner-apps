@@ -50,6 +50,7 @@ describe("resolveProjectDeadline", () => {
     ).toEqual({
       status: "ready",
       deadlineMs: ms("2026-11-27T00:00Z"),
+      endMs: ms("2026-12-04T00:00Z"),
       run: 3,
       estimated: false,
       ended: false,
@@ -66,6 +67,7 @@ describe("resolveProjectDeadline", () => {
     expect(deadline).toEqual({
       status: "ready",
       deadlineMs: ms("2027-02-21T00:00Z"),
+      endMs: ms("2027-02-28T00:00Z"),
       run: 3,
       estimated: true,
       ended: false,
@@ -82,6 +84,7 @@ describe("resolveProjectDeadline", () => {
     ).toEqual({
       status: "ready",
       deadlineMs: ms("2026-11-08T00:00Z"),
+      endMs: ms("2026-11-15T00:00Z"),
       run: 1,
       estimated: false,
       ended: false,
@@ -132,6 +135,7 @@ describe("resolveProjectDeadline", () => {
     ).toEqual({
       status: "ready",
       deadlineMs: ms("2026-11-02T00:00Z"),
+      endMs: ms("2026-11-09T00:00Z"),
       run: 3,
       estimated: false,
       ended: true,

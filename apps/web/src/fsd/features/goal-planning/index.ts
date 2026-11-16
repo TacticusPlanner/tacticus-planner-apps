@@ -83,6 +83,7 @@ export {
 } from "./model/season-fit/use-season-fit"
 export {
   deadlineCutoffGoalId,
+  eventEndCutoffGoalId,
   deadlineFitTone,
   type DeadlineFitSummary,
   type DeadlineGoalFit,

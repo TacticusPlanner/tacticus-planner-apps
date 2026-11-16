@@ -1,4 +1,7 @@
-import { legendaryEventRunDates } from "@/entities/legendary-event/@x/project"
+import {
+  LEGENDARY_EVENT_RUN_DURATION_MS,
+  legendaryEventRunDates,
+} from "@/entities/legendary-event/@x/project"
 import type {
   LegendaryEventRun,
   LegendaryEventSchedule,
@@ -15,7 +18,8 @@ export type ProjectDeadlineTarget = ProjectTarget & {
 /** One catalog Legendary Event: its id and run start dates. */
 export type ProjectDeadlineEvent = LegendaryEventSchedule & { id: string }
 
-/** A project target's deadline (project-deadline). `deadlineMs` is a UTC instant; `estimated` marks
+/** A project target's deadline (project-deadline). `deadlineMs` is a UTC instant (the run's start)
+ *  and `endMs` the run's end, 7 days later; `estimated` marks
  *  an unannounced run's earliest estimated start; `ended` holds once the instant is at or before
  *  now (for a target without a run, once run 3 has started). */
 export type ProjectDeadline =
@@ -24,6 +28,7 @@ export type ProjectDeadline =
   | {
       status: "ready"
       deadlineMs: number
+      endMs: number
       run: LegendaryEventRun
       estimated: boolean
       ended: boolean
@@ -51,6 +56,7 @@ export function resolveProjectDeadline(
     return {
       status: "ready",
       deadlineMs: start.startMs,
+      endMs: start.startMs + LEGENDARY_EVENT_RUN_DURATION_MS,
       run: start.run,
       estimated: start.estimated,
       ended: start.startMs <= nowMs,
@@ -63,6 +69,7 @@ export function resolveProjectDeadline(
       return {
         status: "ready",
         deadlineMs: start.startMs,
+        endMs: start.startMs + LEGENDARY_EVENT_RUN_DURATION_MS,
         run: start.run,
         estimated: start.estimated,
         ended: false,
@@ -75,6 +82,7 @@ export function resolveProjectDeadline(
   return {
     status: "ready",
     deadlineMs: last.startMs,
+    endMs: last.startMs + LEGENDARY_EVENT_RUN_DURATION_MS,
     run: last.run,
     estimated: last.estimated,
     ended: true,

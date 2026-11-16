@@ -4,23 +4,23 @@
 
 ### Requirement: Each eligible goal shows whether it fits the project deadline
 
-On Goals scoped to a project whose target has a deadline that has not passed, each eligible goal (Season fit's rule: Active, not Reached, not a character Ability goal, estimated) SHALL show "Fits" or "Misses by N d" beside Done By. Its completion instant is 00:00 UTC on Done By + 1 day. It fits when that is at or before the deadline; otherwise N = ceil((completion − deadline) / 1 day).
+On Goals scoped to a project whose target has a deadline that has not passed, each eligible goal (Season fit's rule) SHALL show "Fits", "During event" or "Misses by N d" beside Done By. Its completion instant is 00:00 UTC on Done By + 1 day. It fits at or before the run's start, is "During event" at or before the run's end, and otherwise misses by N = ceil((completion − end) / 1 day).
 
 - Assumption: Done By is the global-plan date, in UTC calendar days, anchored to each goal's target.
 
 #### Scenario: Legendary Event next run, worked example
 
-- **GIVEN** a project targets the Legendary Event Uthar with no run, and Uthar's next run starts 2026-11-27T00:00Z, so the deadline is 2026-11-27T00:00Z
+- **GIVEN** a project targets the Legendary Event Uthar with no run, and Uthar's next run starts 2026-11-27T00:00Z and ends 2026-12-04T00:00Z, so the deadline is 2026-11-27T00:00Z
 - **AND** its Active goals in priority order are Ragnar Rank (Done By Nov 26), Kharn Ascension (Done By Nov 27) and Calgar Rank (Done By Dec 10)
 - **WHEN** the fits are computed
 - **THEN** the completion instants are 2026-11-27T00:00Z, 2026-11-28T00:00Z and 2026-12-11T00:00Z
 - **AND** Ragnar fits (its completion instant equals the deadline)
-- **AND** Kharn misses by ceil(24 h / 24 h) = 1, shown "Misses by 1 d"
-- **AND** Calgar misses by ceil(14 d / 1 d) = 14, shown "Misses by 14 d"
+- **AND** Kharn finishes during the run, shown "During event"
+- **AND** Calgar misses the run's end by ceil(7 d / 1 d) = 7, shown "Misses by 7 d"
 
 ### Requirement: Fit labels carry an accent
 
-A fitting goal SHALL carry the on-track accent. A goal missing by 1 to 7 days SHALL carry the caution accent, and one missing by more than 7 days the urgent accent. These are the Season fit tokens, with the same contrast targets (`goal-visual-accessibility`). The text label is always shown, so colour never carries the meaning alone. Table rows and cards (desktop Cards view and mobile) SHALL show the same label and accent.
+A fitting goal SHALL carry the on-track accent. A goal that finishes during the run SHALL carry the caution accent, and one that misses the run's end the urgent accent. These are the Season fit tokens, with the same contrast targets (`goal-visual-accessibility`). The text label is always shown, so colour never carries the meaning alone. Table rows and cards (desktop Cards view and mobile) SHALL show the same label and accent.
 
 #### Scenario: Accents for the worked example
 
@@ -29,22 +29,23 @@ A fitting goal SHALL carry the on-track accent. A goal missing by 1 to 7 days SH
 
 ### Requirement: A header summarizes the project deadline
 
-The targeted scope SHALL show a header naming the deadline and the count: "Deadline: <chip> <ends|starts> <date> · <fit> of <total> fit". Total counts the eligible goals plus Reached and Completed goals, which count as fitting. When any Active or Paused goal of the project is not eligible (Paused, Blocked, unestimated), the header SHALL add "· N not estimated". When every counted goal is Reached or Completed, it SHALL read "All N done".
+The targeted scope SHALL show a header: "Deadline: <chip> runs <start> – <end> · <fit> of <total> fit". Total counts the eligible goals plus Reached and Completed goals, which count as fitting. It SHALL add "· N during the event" for eligible goals finishing during the run and "· N not estimated" for Active or Paused goals that are not eligible. When every counted goal is Reached or Completed, it SHALL read "All N done".
 
 #### Scenario: Counts with a reached and a paused goal
 
 - **GIVEN** the Uthar project also holds a Reached Abaddon Rank goal and a Paused Trajann Ascension goal
 - **WHEN** the header renders
-- **THEN** it reads "Deadline: LE · Uthar starts Nov 27 · 2 of 4 fit · 1 not estimated"
+- **THEN** it reads "Deadline: LE · Uthar runs Nov 27 – Dec 4 · 2 of 4 fit · 1 during the event · 1 not estimated"
 
-### Requirement: A divider marks the first goal that misses
+### Requirement: Dividers mark the run's start and end
 
-With Group set to None, the list SHALL render a divider just before the first eligible goal in display order that misses, reading "<chip> <ends|starts> <date>. Goals below finish later." There SHALL be no divider when no goal misses or when Group is Type or Unit. The divider SHALL NOT be draggable or selectable, and SHALL render in each view (Table row, full-width grid row in desktop Cards view, list item on mobile and in mobile reorder mode) as Season fit's divider does.
+With Group None, the list SHALL render a start divider before the first eligible goal in display order that does not fit, and an end divider before the first that misses the run's end. When both fall on the same goal, only the end divider SHALL render. There SHALL be no divider when every goal fits or when grouped. Dividers SHALL NOT be draggable or selectable, and SHALL render in each view as Season fit's divider does.
 
 #### Scenario: Divider placement
 
 - **WHEN** the Uthar project's goals render with Group None
-- **THEN** the divider sits between Ragnar and Kharn and reads "LE · Uthar starts Nov 27. Goals below finish later."
+- **THEN** the start divider sits between Ragnar and Kharn and reads "LE · Uthar starts Nov 27. Goals below finish during the event."
+- **AND** the end divider sits between Kharn and Calgar and reads "LE · Uthar ends Dec 4. Goals below finish after it."
 
 ### Requirement: An ended or unavailable deadline shows no fits
 

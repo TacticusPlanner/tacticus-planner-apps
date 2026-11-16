@@ -33,7 +33,7 @@
 
 ## 6. Desktop verification (viewport at or above 768px)
 
-Required data states: a project targeting a Legendary Event whose next run is in the future, with goals that fit, miss by 1 to 7 days and miss by more than 7 days, plus a Reached and a Paused goal; a project targeting an event whose run 3 has started (ended); a project targeting an event the catalog doesn't serve; an untargeted project; Season fit set to Battle Pass.
+Required data states: a project targeting a Legendary Event whose next run is in the future, with goals that fit, finish during the run and finish after it ends, plus a Reached and a Paused goal; a project targeting an event whose run 3 has started (ended); a project targeting an event the catalog doesn't serve; an untargeted project; Season fit set to Battle Pass.
 
 - [x] 6.1 Header text and counts, labels, accents and divider in the targeted scope, in Table and Cards view
 - [ ] 6.2 Ended project header and no labels; unavailable project header reads No date available

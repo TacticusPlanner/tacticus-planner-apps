@@ -11,6 +11,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 }))
 
 import type {
+  DeadlineGoalFit,
   GoalRow,
   ProjectDeadlineFit,
   useGoalActions,
@@ -38,23 +39,30 @@ const row = (goalId: string, priority: number): GoalRow => ({
 
 const rows = [row("ragnar", 1), row("kharn", 2), row("calgar", 3)]
 const DEADLINE = Date.parse("2026-11-27T00:00:00Z")
+const END = Date.parse("2026-12-04T00:00:00Z")
 const target = { kind: "legendaryEvent" as const, eventId: "votanUthar" }
 
-// The Uthar worked example: Ragnar fits, Kharn misses by 1 day, Calgar by 14.
+// The Uthar worked example (run 3, Nov 27 to Dec 4): Ragnar fits, Kharn finishes during the run,
+// Calgar 7 days after it ends.
 const uthar: DeadlineFitView = {
   kind: "deadline",
   chip: "LE · Uthar",
   deadlineMs: DEADLINE,
-  fits: new Map([
+  endMs: END,
+  fits: new Map<string, DeadlineGoalFit>([
     ["ragnar", { fits: true, date: "2026-11-26" }],
-    ["kharn", { fits: false, daysLate: 1, date: "2026-11-27" }],
-    ["calgar", { fits: false, daysLate: 14, date: "2026-12-10" }],
+    ["kharn", { fits: false, duringEvent: true, date: "2026-11-27" }],
+    [
+      "calgar",
+      { fits: false, duringEvent: false, daysLate: 7, date: "2026-12-10" },
+    ],
   ]),
 }
 
 const deadline = {
   status: "ready" as const,
   deadlineMs: DEADLINE,
+  endMs: END,
   run: 3 as const,
   estimated: false,
   ended: false,
@@ -68,7 +76,7 @@ beforeEach(async () => {
 })
 
 describe("GoalsList deadline fit", () => {
-  it("labels and accents each goal and puts the divider before the first miss", async () => {
+  it("labels and accents each goal and divides at the run's start and end", async () => {
     render(
       <GoalsList
         view="Table"
@@ -77,21 +85,30 @@ describe("GoalsList deadline fit", () => {
         reorderEnabled
         rows={rows}
         seasonCutoffGoalId="kharn"
+        eventEndCutoffGoalId="calgar"
         seasonFit={uthar}
       />
     )
 
     const cutoff = await screen.findByTestId("goals-season-cutoff")
     expect(cutoff).toHaveTextContent(
-      "LE · Uthar starts Nov 27. Goals below finish later."
+      "LE · Uthar starts Nov 27. Goals below finish during the event."
     )
     expect(cutoff.nextElementSibling).toHaveAttribute("data-goal-id", "kharn")
+    const endCutoff = screen.getByTestId("goals-event-end-cutoff")
+    expect(endCutoff).toHaveTextContent(
+      "LE · Uthar ends Dec 4. Goals below finish after it."
+    )
+    expect(endCutoff.nextElementSibling).toHaveAttribute(
+      "data-goal-id",
+      "calgar"
+    )
     expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(3)
     const labels = screen.getAllByTestId("goal-deadline-fit")
     expect(labels.map((label) => label.textContent)).toEqual([
       "Fits",
-      "Misses by 1 d",
-      "Misses by 14 d",
+      "During event",
+      "Misses by 7 d",
     ])
     const [ragnar, kharn, calgar] = screen.getAllByTestId("goal-row")
     expect(ragnar!.className).toContain("--season-fit-on-track")
@@ -109,6 +126,7 @@ describe("GoalsList deadline fit", () => {
         reorderEnabled
         rows={rows}
         seasonCutoffGoalId="kharn"
+        eventEndCutoffGoalId="calgar"
         seasonFit={uthar}
       />
     )
@@ -118,9 +136,13 @@ describe("GoalsList deadline fit", () => {
       "data-testid",
       "goal-row-reorder-card"
     )
-    const [ragnar, kharn] = screen.getAllByTestId("goal-row-reorder-card")
+    expect(screen.getByTestId("goals-event-end-cutoff")).toBeInTheDocument()
+    const [ragnar, kharn, calgar] = screen.getAllByTestId(
+      "goal-row-reorder-card"
+    )
     expect(ragnar).toHaveTextContent("Fits")
-    expect(kharn).toHaveTextContent("Misses by 1 d")
+    expect(kharn).toHaveTextContent("During event")
+    expect(calgar).toHaveTextContent("Misses by 7 d")
   })
 })
 
@@ -135,27 +157,39 @@ describe("DeadlineFitHeader", () => {
     summary,
   })
 
-  it("names the deadline, the count and the goals not estimated", async () => {
+  it("names the run, the count, the goals during the run and those not estimated", async () => {
     render(
       <DeadlineFitHeader
-        fit={ready({ fit: 2, total: 4, notEstimated: 1, allDone: false })}
+        fit={ready({
+          fit: 2,
+          duringEvent: 1,
+          total: 4,
+          notEstimated: 1,
+          allDone: false,
+        })}
       />
     )
     const header = await screen.findByTestId("goals-deadline-fit")
     expect(header).toHaveTextContent("Deadline:")
     expect(header).toHaveTextContent(
-      "starts Nov 27 · 2 of 4 fit · 1 not estimated"
+      "runs Nov 27 – Dec 4 · 2 of 4 fit · 1 during the event · 1 not estimated"
     )
   })
 
   it("reads All N done when every counted goal is done", async () => {
     render(
       <DeadlineFitHeader
-        fit={ready({ fit: 7, total: 7, notEstimated: 0, allDone: true })}
+        fit={ready({
+          fit: 7,
+          duringEvent: 0,
+          total: 7,
+          notEstimated: 0,
+          allDone: true,
+        })}
       />
     )
     expect(await screen.findByTestId("goals-deadline-fit")).toHaveTextContent(
-      "starts Nov 27 · All 7 done"
+      "runs Nov 27 – Dec 4 · All 7 done"
     )
   })
 

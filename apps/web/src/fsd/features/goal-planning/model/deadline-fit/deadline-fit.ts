@@ -8,15 +8,23 @@ import type { GoalRow } from "../shared/types"
 
 const DAY_MS = 86_400_000
 
-/** One eligible goal against a project deadline: it fits, or misses by whole UTC days. */
+/** One eligible goal against a Legendary Event run (project-deadline-fit): it fits (done before the
+ *  run starts), finishes during the run, or misses it, by whole UTC days after the run ends. */
 export type DeadlineGoalFit =
-  { fits: true; date: string } | { fits: false; daysLate: number; date: string }
+  | { fits: true; date: string }
+  | { fits: false; duringEvent: true; date: string }
+  | { fits: false; duringEvent: false; daysLate: number; date: string }
+
+/** The window a goal is measured against: the run's start (the deadline) and its end. */
+export type DeadlineWindow = { deadlineMs: number; endMs: number }
 
 /** The header and card count (project-deadline-fit). `total` counts the eligible goals plus the
- *  Reached and Completed ones, which count as fitting; `notEstimated` the Active or Paused goals that
- *  are not eligible. `allDone` holds when every counted goal is Reached or Completed. */
+ *  Reached and Completed ones, which count as fitting; `duringEvent` the eligible goals that finish
+ *  while the run is on; `notEstimated` the Active or Paused goals that are not eligible. `allDone`
+ *  holds when every counted goal is Reached or Completed. */
 export type DeadlineFitSummary = {
   fit: number
+  duringEvent: number
   total: number
   notEstimated: number
   allDone: boolean
@@ -25,20 +33,25 @@ export type DeadlineFitSummary = {
 type FitRow = Pick<GoalRow, "goalId" | "status" | "goalType" | "entityType">
 
 /**
- * A goal with Done By `isoDate` against `deadlineMs`: its completion instant is 00:00 UTC the day after
- * Done By (Season fit's rule). It fits when that is at or before the deadline; otherwise it misses by
- * ceil((completion − deadline) / 1 day). Null for an unparseable date.
+ * A goal with Done By `isoDate` against a run: its completion instant is 00:00 UTC the day after Done
+ * By (Season fit's rule). It fits when that is at or before the run's start, finishes during the run
+ * when it is at or before the run's end, and otherwise misses by ceil((completion − end) / 1 day).
+ * Null for an unparseable date.
  */
 export function deadlineFit(
   isoDate: string,
-  deadlineMs: number
+  window: DeadlineWindow
 ): DeadlineGoalFit | null {
   const completionMs = completionInstantMs(isoDate)
   if (completionMs === null) return null
-  if (completionMs <= deadlineMs) return { fits: true, date: isoDate }
+  if (completionMs <= window.deadlineMs) return { fits: true, date: isoDate }
+  if (completionMs <= window.endMs) {
+    return { fits: false, duringEvent: true, date: isoDate }
+  }
   return {
     fits: false,
-    daysLate: Math.ceil((completionMs - deadlineMs) / DAY_MS),
+    duringEvent: false,
+    daysLate: Math.ceil((completionMs - window.endMs) / DAY_MS),
     date: isoDate,
   }
 }
@@ -48,14 +61,14 @@ export function computeDeadlineFits(
   rows: readonly FitRow[],
   estimates: ReadonlyMap<string, EstimateOutcome>,
   reachedByGoalId: ReadonlyMap<string, boolean>,
-  deadlineMs: number
+  window: DeadlineWindow
 ): Map<string, DeadlineGoalFit> {
   const fits = new Map<string, DeadlineGoalFit>()
   for (const row of rows) {
     const estimate = estimates.get(row.goalId)
     const reached = reachedByGoalId.get(row.goalId) ?? false
     if (!isSeasonFitEligible(row, estimate, reached)) continue
-    const fit = deadlineFit(estimate.date, deadlineMs)
+    const fit = deadlineFit(estimate.date, window)
     if (fit) fits.set(row.goalId, fit)
   }
   return fits
@@ -68,6 +81,7 @@ export function deadlineFitSummary(
   reachedByGoalId: ReadonlyMap<string, boolean>
 ): DeadlineFitSummary {
   let fit = 0
+  let duringEvent = 0
   let total = 0
   let done = 0
   let notEstimated = 0
@@ -83,15 +97,22 @@ export function deadlineFitSummary(
     if (goalFit) {
       total += 1
       if (goalFit.fits) fit += 1
+      else if (goalFit.duringEvent) duringEvent += 1
       continue
     }
     if (row.status === "Active" || row.status === "Paused") notEstimated += 1
   }
-  return { fit, total, notEstimated, allDone: total > 0 && done === total }
+  return {
+    fit,
+    duringEvent,
+    total,
+    notEstimated,
+    allDone: total > 0 && done === total,
+  }
 }
 
-/** The first goal, in display order, that misses the deadline - the divider sits before it. Null
- *  when every fitted goal makes it. */
+/** The first goal, in display order, that does not fit before the run starts - the start divider
+ *  sits before it. Null when every fitted goal makes it. */
 export function deadlineCutoffGoalId(
   orderedGoalIds: readonly string[],
   fits: ReadonlyMap<string, DeadlineGoalFit>
@@ -101,11 +122,25 @@ export function deadlineCutoffGoalId(
   )
 }
 
-/** The accent a fit carries: on track when it fits, caution for a miss of 1 to 7 days, urgent for
- *  more (Season fit's tokens). */
+/** The first goal, in display order, that finishes after the run ends - the end divider sits before
+ *  it. Null when none does. */
+export function eventEndCutoffGoalId(
+  orderedGoalIds: readonly string[],
+  fits: ReadonlyMap<string, DeadlineGoalFit>
+): string | null {
+  return (
+    orderedGoalIds.find((goalId) => {
+      const fit = fits.get(goalId)
+      return fit?.fits === false && !fit.duringEvent
+    }) ?? null
+  )
+}
+
+/** The accent a fit carries (Season fit's tokens): on track when it fits, caution when it finishes
+ *  during the run, urgent when it finishes after the run ends. */
 export function deadlineFitTone(
   fit: DeadlineGoalFit
 ): "onTrack" | "caution" | "urgent" {
   if (fit.fits) return "onTrack"
-  return fit.daysLate <= 7 ? "caution" : "urgent"
+  return fit.duringEvent ? "caution" : "urgent"
 }

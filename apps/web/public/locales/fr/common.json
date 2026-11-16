@@ -1733,9 +1733,11 @@
     "deadlineFit": {
       "header": {
         "label": "Échéance :",
-        "starts": "commence le {{date}}",
-        "startsEstimated": "commence le {{date}} (estimation)",
+        "runs": "du {{date}} au {{end}}",
+        "runsEstimated": "du {{date}} au {{end}} (estimation)",
         "count": "{{fit}} sur {{total}} à temps",
+        "duringEvent_one": "{{count}} pendant l'événement",
+        "duringEvent_other": "{{count}} pendant l'événement",
         "allDone_one": "{{count}} terminé",
         "allDone_other": "Les {{count}} terminés",
         "notEstimated_one": "{{count}} non estimé",
@@ -1745,11 +1747,14 @@
         "separator": " · "
       },
       "fits": "À temps",
+      "duringEvent": "Pendant l'événement",
       "misses_one": "En retard de {{count}} j",
       "misses_other": "En retard de {{count}} j",
       "tooltip": "Terminé le {{date}}, avant que {{chip}} ne commence le {{deadline}}",
-      "tooltipAfter": "Terminé le {{date}}, après le début de {{chip}} le {{deadline}}",
-      "divider": "{{chip}} commence le {{deadline}}. Les objectifs ci-dessous finissent plus tard.",
+      "tooltipDuring": "Terminé le {{date}}, pendant {{chip}} ({{deadline}} – {{end}})",
+      "tooltipAfter": "Terminé le {{date}}, après la fin de {{chip}} le {{end}}",
+      "divider": "{{chip}} commence le {{deadline}}. Les objectifs ci-dessous finissent pendant l'événement.",
+      "dividerEnd": "{{chip}} se termine le {{end}}. Les objectifs ci-dessous finissent après.",
       "overrideChip": "Échéance du projet utilisée"
     },
     "detail": {

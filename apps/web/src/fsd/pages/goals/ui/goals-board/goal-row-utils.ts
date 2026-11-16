@@ -82,8 +82,11 @@ export type GoalsListProps = {
   /** The Season fit being shown (goal-season-fit), or in a targeted scope the project deadline fit
    *  (project-deadline-fit); null or absent while Off. */
   seasonFit?: GoalFitView | null
-  /** The goal the season cut-off divider sits before, null for none. */
+  /** The goal the season cut-off divider sits before, null for none. In a targeted scope it is the
+   *  Legendary Event run's start. */
   seasonCutoffGoalId?: string | null
+  /** In a targeted scope, the goal the run's end divider sits before, null for none. */
+  eventEndCutoffGoalId?: string | null
   actions: ReturnType<typeof useGoalActions>
   /** Ids of the selected goals (the page owns the selection). Absent renders nothing selected. */
   selection?: ReadonlySet<string>
@@ -236,7 +239,7 @@ export function sameRowSlice<P extends RowSliceProps>(
     props.seasonFit?.fits.get(id),
     props.seasonFit?.deadlineMs,
     ...(props.seasonFit && "kind" in props.seasonFit
-      ? [props.seasonFit.chip]
+      ? [props.seasonFit.chip, props.seasonFit.endMs]
       : [props.seasonFit?.season, props.seasonFit?.seasonNumber]),
     ...(a.row.dependsOn ?? []).flatMap((dep) => [
       props.cascadeContext?.statusById.get(dep),

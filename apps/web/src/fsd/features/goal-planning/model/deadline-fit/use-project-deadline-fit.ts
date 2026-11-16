@@ -53,7 +53,7 @@ function projectDeadlineFit(
     rows,
     estimates,
     reachedByGoalId,
-    deadline.deadlineMs
+    deadline
   )
   return {
     status: "ready",

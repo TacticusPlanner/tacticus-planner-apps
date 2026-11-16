@@ -1733,9 +1733,11 @@
     "deadlineFit": {
       "header": {
         "label": "Deadline:",
-        "starts": "starts {{date}}",
-        "startsEstimated": "starts {{date}} (estimated)",
+        "runs": "runs {{date}} – {{end}}",
+        "runsEstimated": "runs {{date}} – {{end}} (estimated)",
         "count": "{{fit}} of {{total}} fit",
+        "duringEvent_one": "{{count}} during the event",
+        "duringEvent_other": "{{count}} during the event",
         "allDone_one": "All {{count}} done",
         "allDone_other": "All {{count}} done",
         "notEstimated_one": "{{count}} not estimated",
@@ -1745,11 +1747,14 @@
         "separator": " · "
       },
       "fits": "Fits",
+      "duringEvent": "During event",
       "misses_one": "Misses by {{count}} d",
       "misses_other": "Misses by {{count}} d",
       "tooltip": "Done by {{date}}, before {{chip}} starts on {{deadline}}",
-      "tooltipAfter": "Done by {{date}}, after {{chip}} starts on {{deadline}}",
-      "divider": "{{chip}} starts {{deadline}}. Goals below finish later.",
+      "tooltipDuring": "Done by {{date}}, while {{chip}} runs ({{deadline}} – {{end}})",
+      "tooltipAfter": "Done by {{date}}, after {{chip}} ends on {{end}}",
+      "divider": "{{chip}} starts {{deadline}}. Goals below finish during the event.",
+      "dividerEnd": "{{chip}} ends {{end}}. Goals below finish after it.",
       "overrideChip": "Using project deadline"
     },
     "detail": {
