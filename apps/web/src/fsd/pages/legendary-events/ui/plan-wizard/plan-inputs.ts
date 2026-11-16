@@ -20,8 +20,8 @@ import type {
   LegendaryEventRunResolution,
   LegendaryEventUnit,
   UpgradeStep,
+  LegendaryEventRunStart,
 } from "@/entities/legendary-event"
-import type { LegendaryEventRunStart } from "../../lib/run-dates"
 
 // The 1-click plan's generation model (change add-legendary-event-one-click-plan): everything the
 // target verdicts, team generation and upgrade recommendations read, gathered once by the wizard.

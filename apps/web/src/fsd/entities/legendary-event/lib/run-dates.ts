@@ -1,11 +1,9 @@
+import type { LegendaryEventRun } from "../model/plan.types"
 import {
   LEGENDARY_EVENT_RUN_COUNT,
   LEGENDARY_EVENT_RUN_DURATION_MS,
-} from "@/entities/legendary-event"
-import type {
-  LegendaryEventRun,
-  LegendaryEventSchedule,
-} from "@/entities/legendary-event"
+} from "./lifecycle"
+import type { LegendaryEventSchedule } from "./lifecycle"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 

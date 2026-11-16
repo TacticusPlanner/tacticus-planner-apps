@@ -121,10 +121,54 @@ describe("useMoveProjectGoals", () => {
         .goals.find((entry) => entry.goalId === "E")?.status
     ).toBe("Paused")
     expect(toast.success).toHaveBeenCalledWith(
-      'goals.order.projectMove.moved:{"count":2}',
+      'goals.order.projectMove.moved:{"count":2,"priority":1}',
       expect.objectContaining({ duration: 10_000 })
     )
     expect(undoAction().action.label).toBe("goals.order.projectMove.undo")
+  })
+
+  it("places the block before another project and announces its new first priority", async () => {
+    updateGoalOrderMock.mockImplementation((goalIds: string[]) =>
+      Promise.resolve({ goalIds, revision: 5 })
+    )
+    const { result } = setup()
+
+    let saved = false
+    await act(async () => {
+      saved = await result.current.move(["C", "E"], {
+        kind: "before",
+        referenceIds: ["B", "D"],
+      })
+    })
+
+    expect(saved).toBe(true)
+    expect(updateGoalOrderMock).toHaveBeenCalledExactlyOnceWith(
+      ["A", "C", "E", "B", "D", "F"],
+      4
+    )
+    expect(toast.success).toHaveBeenCalledWith(
+      'goals.order.projectMove.moved:{"count":2,"priority":2}',
+      expect.objectContaining({ duration: 10_000 })
+    )
+  })
+
+  it("places the block after another project", async () => {
+    updateGoalOrderMock.mockImplementation((goalIds: string[]) =>
+      Promise.resolve({ goalIds, revision: 5 })
+    )
+    const { result } = setup()
+
+    await act(async () => {
+      await result.current.move(["C", "E"], {
+        kind: "after",
+        referenceIds: ["B", "D"],
+      })
+    })
+
+    expect(updateGoalOrderMock).toHaveBeenCalledExactlyOnceWith(
+      ["A", "B", "D", "C", "E", "F"],
+      4
+    )
   })
 
   it("sends nothing when the block is already first", async () => {

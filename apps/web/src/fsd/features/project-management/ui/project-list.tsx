@@ -2,6 +2,7 @@ import type { ProjectSummary } from "@/entities/project"
 import type { useProjectActions } from "../model/use-project-actions"
 import { ProjectRow } from "./project-row"
 import type { ProjectCardSummary } from "./project-row"
+import type { ProjectCardFitCount } from "./project-fit-count"
 
 type Props = {
   projects: ProjectSummary[]
@@ -9,11 +10,13 @@ type Props = {
   onEdit: (project: ProjectSummary) => void
   onCreateGoal?: (project: ProjectSummary) => void
   onManageGoals?: (project: ProjectSummary) => void
-  /** Per project id, whether Move goals to top is offered (`enabled`/`disabled`); absent hides it. */
-  moveGoalsToTop?: ReadonlyMap<string, "enabled" | "disabled">
-  onMoveGoalsToTop?: (project: ProjectSummary) => void
+  /** Per project id, whether Move goals… is offered (`enabled`/`disabled`); absent hides it. */
+  moveGoals?: ReadonlyMap<string, "enabled" | "disabled">
+  onMoveGoals?: (project: ProjectSummary) => void
   onSelect: (project: ProjectSummary) => void
   summaries?: ReadonlyMap<string, ProjectCardSummary>
+  /** Deadline fit counts by project id (project-deadline-fit), computed by the page. */
+  fitCounts?: ReadonlyMap<string, ProjectCardFitCount>
 }
 
 /**
@@ -28,10 +31,11 @@ export function ProjectList({
   onEdit,
   onCreateGoal,
   onManageGoals,
-  moveGoalsToTop,
-  onMoveGoalsToTop,
+  moveGoals,
+  onMoveGoals,
   onSelect,
   summaries,
+  fitCounts,
 }: Props) {
   return (
     <ul className="grid gap-3 md:grid-cols-2" data-testid="project-list">
@@ -42,11 +46,12 @@ export function ProjectList({
           onCreateGoal={onCreateGoal}
           onEdit={onEdit}
           onManageGoals={onManageGoals}
-          moveGoalsToTop={moveGoalsToTop?.get(project.projectId)}
-          onMoveGoalsToTop={onMoveGoalsToTop}
+          moveGoals={moveGoals?.get(project.projectId)}
+          onMoveGoals={onMoveGoals}
           onSelect={() => onSelect(project)}
           project={project}
           summary={summaries?.get(project.projectId)}
+          fitCount={fitCounts?.get(project.projectId)}
         />
       ))}
     </ul>

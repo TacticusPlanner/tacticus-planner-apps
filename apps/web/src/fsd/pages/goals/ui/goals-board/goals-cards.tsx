@@ -14,7 +14,7 @@ import {
   REACHED_ROW_CLASS,
 } from "./goal-row-utils"
 import type { GoalsListProps } from "./goal-row-utils"
-import { SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
+import { goalFitOffset, SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
 import { SeasonCutoffItem } from "./season-fit-ui"
 
 const EMPTY_SELECTION: ReadonlySet<string> = new Set()
@@ -88,6 +88,7 @@ export function GoalsCards({
   selectActive = false,
   seasonFit,
   seasonCutoffGoalId,
+  eventEndCutoffGoalId,
 }: GoalsListProps & { isMobile: boolean }) {
   const { getEntityName } = useGoalCatalog()
   const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
@@ -106,23 +107,26 @@ export function GoalsCards({
     sortable?: SortableRenderProps
   ) => {
     const reached = isReachedRow(row, reachedByGoalId)
-    const fit = seasonFit?.fits.get(row.goalId)
+    const fitOffset = goalFitOffset(seasonFit, row.goalId)
     return (
       <Fragment key={row.goalId}>
         {seasonFit && seasonCutoffGoalId === row.goalId ? (
           <SeasonCutoffItem seasonFit={seasonFit} />
         ) : null}
+        {seasonFit && eventEndCutoffGoalId === row.goalId ? (
+          <SeasonCutoffItem edge="end" seasonFit={seasonFit} />
+        ) : null}
         <li
           className={cn(
             "flex min-w-0 flex-col gap-2.5 rounded-2xl border bg-card p-3 text-sm shadow-xs transition-colors duration-700 data-dragging:relative data-dragging:z-10 data-dragging:border-ring data-dragging:shadow-lg data-just-moved:bg-accent",
             reached && REACHED_ROW_CLASS,
-            fit && SEASON_FIT_CARD_ACCENT[fit.offset]
+            fitOffset !== undefined && SEASON_FIT_CARD_ACCENT[fitOffset]
           )}
           data-dragging={sortable?.isDragging || undefined}
           data-goal-id={row.goalId}
           data-just-moved={highlightedGoalId === row.goalId || undefined}
           data-reached={reached || undefined}
-          data-season-fit={fit?.offset}
+          data-season-fit={fitOffset}
           data-testid="goal-row"
           ref={sortable?.setNodeRef}
           style={sortable?.style}

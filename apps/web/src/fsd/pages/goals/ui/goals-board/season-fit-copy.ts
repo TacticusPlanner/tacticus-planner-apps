@@ -1,12 +1,55 @@
 import type { TFunction } from "i18next"
 
 import { formatEstimateDate } from "@/shared/lib"
+import { deadlineFitTone } from "@/features/goal-planning"
 import type {
   ActiveSeasonFit,
+  DeadlineGoalFit,
   GoalSeasonFit,
   SeasonFitOffset,
   SeasonFitSeason,
 } from "@/features/goal-planning"
+
+/** A project deadline's fits as the list shows them (project-deadline-fit), in place of Season fit
+ *  in a targeted scope. `chip` is the target's chip text ("LE · Uthar"); `deadlineMs` and `endMs`
+ *  are the run's start and end. */
+export type DeadlineFitView = {
+  kind: "deadline"
+  chip: string
+  deadlineMs: number
+  endMs: number
+  fits: ReadonlyMap<string, DeadlineGoalFit>
+}
+
+/** What the list measures goals against: a Season fit, or the scoped project's deadline. Both share
+ *  the labels' slot, the accents and the divider. */
+export type GoalFitView = ActiveSeasonFit | DeadlineFitView
+
+export function isDeadlineFitView(
+  view: GoalFitView | null | undefined
+): view is DeadlineFitView {
+  return !!view && "kind" in view
+}
+
+const DEADLINE_TONE_OFFSET = {
+  onTrack: 0,
+  caution: 1,
+  urgent: 2,
+} as const satisfies Record<ReturnType<typeof deadlineFitTone>, SeasonFitOffset>
+
+/** A goal's accent as a Season fit offset: the season offset, or for a deadline fit 0 (fits), 1
+ *  (finishes during the run) or 2 (after it), so both use the same tokens. Undefined for no fit. */
+export function goalFitOffset(
+  view: GoalFitView | null | undefined,
+  goalId: string
+): SeasonFitOffset | undefined {
+  if (!view) return undefined
+  if (isDeadlineFitView(view)) {
+    const fit = view.fits.get(goalId)
+    return fit ? DEADLINE_TONE_OFFSET[deadlineFitTone(fit)] : undefined
+  }
+  return view.fits.get(goalId)?.offset
+}
 
 const FIT_LABEL_KEY = {
   0: "thisSeason",
@@ -39,7 +82,7 @@ function deadlineVerb(season: SeasonFitSeason): "Ends" | "Starts" {
 }
 
 /** A UTC instant as the same short date the Done By cell shows. */
-function formatDeadline(ms: number, locale: string): string {
+export function formatDeadline(ms: number, locale: string): string {
   return (
     formatEstimateDate(new Date(ms).toISOString().slice(0, 10), locale) ?? ""
   )
@@ -56,11 +99,11 @@ function seasonName(t: TFunction, active: ActiveSeasonFit): string {
     : t(`goals.seasonFit.season.${active.season}Numbered`, { number })
 }
 
-export function seasonFitLabel(t: TFunction, fit: GoalSeasonFit): string {
+function seasonFitLabel(t: TFunction, fit: GoalSeasonFit): string {
   return t(`goals.seasonFit.fit.${FIT_LABEL_KEY[fit.offset]}`)
 }
 
-export function seasonFitTooltip(
+function seasonFitTooltip(
   t: TFunction,
   locale: string,
   active: ActiveSeasonFit,
@@ -74,13 +117,84 @@ export function seasonFitTooltip(
   })
 }
 
+function deadlineFitLabel(t: TFunction, fit: DeadlineGoalFit): string {
+  if (fit.fits) return t("goals.deadlineFit.fits")
+  return fit.duringEvent
+    ? t("goals.deadlineFit.duringEvent")
+    : t("goals.deadlineFit.misses", { count: fit.daysLate })
+}
+
+/** The tooltip key per fit: before the start, during the run, after its end. */
+function deadlineTooltipKey(fit: DeadlineGoalFit) {
+  if (fit.fits) return "goals.deadlineFit.tooltip" as const
+  return fit.duringEvent
+    ? ("goals.deadlineFit.tooltipDuring" as const)
+    : ("goals.deadlineFit.tooltipAfter" as const)
+}
+
+function deadlineFitTooltip(
+  t: TFunction,
+  locale: string,
+  view: DeadlineFitView,
+  fit: DeadlineGoalFit
+): string {
+  return t(deadlineTooltipKey(fit), {
+    date: formatEstimateDate(fit.date, locale) ?? fit.date,
+    chip: view.chip,
+    deadline: formatDeadline(view.deadlineMs, locale),
+    end: formatDeadline(view.endMs, locale),
+  })
+}
+
+/** Which divider: the deadline (a season's, or a run's start), or a Legendary Event run's end. */
+export type CutoffEdge = "start" | "end"
+
 export function seasonCutoffText(
   t: TFunction,
   locale: string,
-  active: ActiveSeasonFit
+  active: GoalFitView,
+  edge: CutoffEdge = "start"
 ): string {
+  if (isDeadlineFitView(active)) {
+    return t(
+      edge === "end"
+        ? "goals.deadlineFit.dividerEnd"
+        : "goals.deadlineFit.divider",
+      {
+        chip: active.chip,
+        deadline: formatDeadline(active.deadlineMs, locale),
+        end: formatDeadline(active.endMs, locale),
+      }
+    )
+  }
   return t(`goals.seasonFit.divider${deadlineVerb(active.season)}`, {
     season: seasonName(t, active),
     deadline: formatDeadline(active.deadlineMs, locale),
   })
+}
+
+/** A goal's label and tooltip under the view in force, null for a goal without a fit. */
+export function goalFitCopy(
+  view: GoalFitView | null | undefined,
+  goalId: string,
+  t: TFunction,
+  locale: string
+): { label: string; tooltip: string } | null {
+  if (!view) return null
+  if (isDeadlineFitView(view)) {
+    const fit = view.fits.get(goalId)
+    return fit
+      ? {
+          label: deadlineFitLabel(t, fit),
+          tooltip: deadlineFitTooltip(t, locale, view, fit),
+        }
+      : null
+  }
+  const fit = view.fits.get(goalId)
+  return fit
+    ? {
+        label: seasonFitLabel(t, fit),
+        tooltip: seasonFitTooltip(t, locale, view, fit),
+      }
+    : null
 }

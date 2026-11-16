@@ -186,12 +186,12 @@ The system SHALL NOT present a per-project goal detail route. A project's goals 
 
 ### Requirement: The Projects row menu hosts every project-specific action
 
-Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, in order: **Create goal**, **Manage goals**, **Edit**, **Archive**, then **Delete** (the Default project offers neither Archive nor Delete; see "The Default project is permanent"). An archived project row's menu SHALL offer **Edit**, **Restore** and **Delete** only. Create goal SHALL open goal creation with that row's project preselected (see `goal-creation-entry-points`). Manage goals SHALL open the bulk membership surface for that row's project. Activating Create goal or Manage goals SHALL NOT navigate away from the Projects page.
+Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, in order: **Create goal**, **Manage goals**, **Move goals to top** (only when the project holds at least one in-flight goal; see `project-goal-moves`), **Edit**, **Archive**, then **Delete** (the Default project offers neither Archive nor Delete; see "The Default project is permanent"). An archived project row's menu SHALL offer **Edit**, **Restore** and **Delete** only. Create goal SHALL open goal creation with that row's project preselected (see `goal-creation-entry-points`). Manage goals SHALL open the bulk membership surface for that row's project. Activating Create goal, Manage goals or Move goals to top SHALL NOT navigate away from the Projects page.
 
 #### Scenario: A live project's menu lists the four actions
 
-- **WHEN** the user opens the overflow menu of a non-archived, non-Default project row
-- **THEN** Create goal, Manage goals, Edit, and Archive appear, in that order, with text labels, followed by Delete
+- **WHEN** the user opens the overflow menu of a non-archived, non-Default project row that holds in-flight goals
+- **THEN** Create goal, Manage goals, Move goals to top, Edit, and Archive appear, in that order, with text labels, followed by Delete
 
 #### Scenario: Manage goals opens for that row's project
 
@@ -204,10 +204,15 @@ Each non-archived project row's overflow menu on `/plan/projects` SHALL offer, i
 - **WHEN** the user chooses Create goal on a non-default project's row
 - **THEN** the goal-creation sheet opens with that project preselected as the goal's membership, and the URL stays `/plan/projects`
 
+#### Scenario: An empty project has no Move goals to top
+
+- **WHEN** the user opens the menu of a project with no in-flight goals
+- **THEN** Move goals to top is not offered
+
 #### Scenario: An archived project's menu is lifecycle-only
 
 - **WHEN** the user opens the overflow menu of an archived project row
-- **THEN** Edit, Restore and Delete appear, and neither Create goal nor Manage goals is offered
+- **THEN** Edit, Restore and Delete appear, and neither Create goal, Manage goals nor Move goals to top is offered
 
 ### Requirement: A project row opens that project on Goals
 
