@@ -41,6 +41,58 @@ export function resourceProgress(
 }
 
 /**
+ * The cumulative target each farming stage (milestone) of a goal sets for a resource, in stage
+ * order: for Atlacoya to D3 with a G1 milestone, Auramite Wing's targets are [28, 64]. Only goals
+ * with more than one stage that needs the resource get an entry. A per-goal card counts toward the
+ * first of these the player has not reached yet, the milestone the schedule is farming, rather than
+ * the goal's final target (`projectResourceProgress`).
+ */
+export function resourceMilestoneTargets(
+  goals: GoalNeed[]
+): Map<string, number[]> {
+  const milestones = new Map<string, number[]>()
+  for (const goal of goals) {
+    if (!goal.stages || goal.stages.length < 2) continue
+    const cumulative = new Map<EstimateResourceId, number[]>()
+    const totals = new Map<EstimateResourceId, number>()
+    for (const stage of goal.stages) {
+      for (const [resourceId, count] of countById(stage.needs)) {
+        const total = (totals.get(resourceId) ?? 0) + count
+        totals.set(resourceId, total)
+        cumulative.set(resourceId, [
+          ...(cumulative.get(resourceId) ?? []),
+          total,
+        ])
+      }
+    }
+    for (const [resourceId, targets] of cumulative) {
+      if (targets.length < 2) continue
+      milestones.set(dailyRaidResourceKey(goal.goalId, resourceId), targets)
+    }
+  }
+  return milestones
+}
+
+function countById(
+  needs: readonly { id: EstimateResourceId; count: number }[]
+) {
+  const counts = new Map<EstimateResourceId, number>()
+  for (const need of needs) {
+    counts.set(need.id, (counts.get(need.id) ?? 0) + need.count)
+  }
+  return counts
+}
+
+/** The first milestone target above what is owned, else the final target. */
+function milestoneTarget(
+  owned: number,
+  finalTarget: number,
+  milestones: readonly number[] | undefined
+) {
+  return milestones?.find((target) => target > owned) ?? finalTarget
+}
+
+/**
  * One have/need figure per resource over every goal in the run (the HSE farm list's "X/Y"): Y is the
  * total target and X what the player holds. An upgrade material's target is the sum of its goals'
  * targets and X the inventory count (held once, however many goals want it, and uncapped). A shard
@@ -77,7 +129,8 @@ export function totalResourceProgress(
 
 export function projectResourceProgress(
   days: DailyRaidsCalculationViewModel["today"][],
-  initial: ReadonlyMap<string, DailyRaidResourceProgress>
+  initial: ReadonlyMap<string, DailyRaidResourceProgress>,
+  milestones: ReadonlyMap<string, readonly number[]> = new Map()
 ) {
   const gained = new Map<string, number>()
   const result = new Map<
@@ -89,16 +142,17 @@ export function projectResourceProgress(
     result.set(
       day.day,
       new Map(
-        [...initial].map(([key, progress]) => [
-          key,
-          {
-            owned: Math.min(
-              progress.target,
-              Math.floor(progress.owned + (gained.get(key) ?? 0) + 1e-9)
-            ),
-            target: progress.target,
-          },
-        ])
+        [...initial].map(([key, progress]) => {
+          const owned = Math.floor(
+            progress.owned + (gained.get(key) ?? 0) + 1e-9
+          )
+          const target = milestoneTarget(
+            owned,
+            progress.target,
+            milestones.get(key)
+          )
+          return [key, { owned: Math.min(target, owned), target }]
+        })
       )
     )
     for (const entry of day.entries) {
