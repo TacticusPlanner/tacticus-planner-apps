@@ -231,6 +231,70 @@ describe("daily raid derivation", () => {
     })
   })
 
+  it("rates a staged goal's resource by the first milestone still needing it, not every milestone", () => {
+    const wingId = upgradeIdSchema.parse("wing")
+    const nodeId = battleIdSchema.parse("B1")
+    const urgency = calculateResourceUrgency(
+      [
+        {
+          goalId: "atlacoya",
+          priority: 1,
+          needs: [{ id: wingId, count: 64 }],
+          stages: [
+            { target: "G1", needs: [{ id: wingId, count: 28 }] },
+            { target: "D3", needs: [{ id: wingId, count: 36 }] },
+          ],
+        },
+      ],
+      [{ id: wingId, count: 1 }],
+      new Map([
+        [
+          wingId,
+          {
+            id: wingId,
+            label: wingId,
+            rarity: "Common",
+            stat: "health",
+            crafted: false,
+            recipe: [],
+            farmLocations: [
+              {
+                battleId: nodeId,
+                guaranteed: true,
+                effectiveRate: null,
+                numerator: null,
+                denominator: null,
+                isMythic: false,
+              },
+            ],
+          } satisfies FarmingUpgrade,
+        ],
+      ]),
+      new Map([
+        [
+          nodeId,
+          {
+            campaignGroupId: campaignIdSchema.parse("CG1"),
+            type: "Normal",
+            challenge: false,
+            nodeNumber: 1,
+            battleIndex: 0,
+            energyCost: 6,
+            dailyAttempts: 1,
+          },
+        ],
+      ]),
+      60,
+      new Date("2026-01-01T00:00:00.000Z")
+    )
+
+    // G1 needs 28 and 1 is held: 27 raids at 1 a day, not the 63 the whole D3 goal lacks.
+    expect(urgency.get("atlacoya:wing")).toEqual({
+      days: 27,
+      energyTotal: 162,
+    })
+  })
+
   it("pools every goal's remaining need per resource for Combine goals", () => {
     const sharedId = upgradeIdSchema.parse("shared")
     const nodeId = battleIdSchema.parse("B1")

@@ -43,6 +43,7 @@ import { blockedGoalsOf } from "./blocked-goals"
 import {
   goalTargetLabel,
   projectResourceProgress,
+  resourceMilestoneTargets,
   resourceProgress,
   totalResourceProgress,
 } from "./daily-raids-progress"
@@ -421,9 +422,40 @@ export function calculateDailyRaids(
       inventory,
       new Set(shardCatalog.keys())
     ),
-    resourceProgressByDay: projectResourceProgress(plan.days, initialProgress),
+    // Per-goal cards count toward the milestone the schedule is farming; `resourceTotals` above
+    // stays over each goal's final target (Combine goals and the HSE list pool every stage).
+    resourceProgressByDay: projectResourceProgress(
+      plan.days,
+      initialProgress,
+      resourceMilestoneTargets(goals)
+    ),
     attemptsUsedByBattle: today.attemptsUsedByBattle,
   }
+}
+
+/**
+ * The schedule farms a goal's stages (milestones) in order, so a resource is as urgent as what the
+ * first stage still needing it lacks, not its remaining need over every later stage.
+ */
+function firstStageRemaining(
+  stages: readonly {
+    remaining: readonly { id: EstimateResourceId; count: number }[]
+  }[]
+) {
+  const result = new Map<EstimateResourceId, number>()
+  for (const stage of stages) {
+    const stageRemaining = new Map<EstimateResourceId, number>()
+    for (const need of stage.remaining) {
+      stageRemaining.set(
+        need.id,
+        (stageRemaining.get(need.id) ?? 0) + need.count
+      )
+    }
+    for (const [resourceId, count] of stageRemaining) {
+      if (!result.has(resourceId)) result.set(resourceId, count)
+    }
+  }
+  return result
 }
 
 export function calculateResourceUrgency(
@@ -438,15 +470,9 @@ export function calculateResourceUrgency(
   const allocations = allocatePlanInventory([...goals], [...inventory])
 
   for (const goal of goals) {
-    const remainingByResource = new Map<EstimateResourceId, number>()
-    for (const stage of allocations.get(goal.goalId)?.stages ?? []) {
-      for (const need of stage.remaining) {
-        remainingByResource.set(
-          need.id,
-          (remainingByResource.get(need.id) ?? 0) + need.count
-        )
-      }
-    }
+    const remainingByResource = firstStageRemaining(
+      allocations.get(goal.goalId)?.stages ?? []
+    )
 
     for (const [resourceId, count] of remainingByResource) {
       const outcome = estimateGoal({
