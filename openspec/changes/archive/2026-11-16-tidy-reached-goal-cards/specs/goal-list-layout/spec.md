@@ -27,5 +27,3 @@ Wherever the Goals list renders (desktop table or mobile cards, on the Goals pag
 - **GIVEN** the status filter is set to "Reached"
 - **WHEN** the list renders
 - **THEN** every Reached goal is listed as a completed row, in the same priority order as other rows
-
-### Requirement: The Remaining column shows resource chips, not prose

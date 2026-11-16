@@ -37,23 +37,23 @@ Companion API change: `add-personal-roster-snapshots`. Shared contract: `GET/POS
 
 ## V1-parity checklist
 
-| V1 element | Decision |
-|---|---|
-| Route `input/roster-snapshots`, standalone page with its own menu item | **Redesign**: compare mode inside Collection; no new nav item |
-| Take Snapshot dialog (required unique name, default "Snapshot <date>") | **Redesign**: name optional, default date, duplicates allowed |
+| V1 element                                                               | Decision                                                                                      |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| Route `input/roster-snapshots`, standalone page with its own menu item   | **Redesign**: compare mode inside Collection; no new nav item                                 |
+| Take Snapshot dialog (required unique name, default "Snapshot <date>")   | **Redesign**: name optional, default date, duplicates allowed                                 |
 | Manage dialog: rename, delete to trash, restore, delete all, empty trash | **Keep** rename and delete; **drop** trash, restore and delete all (hard delete with confirm) |
-| 20-snapshot cap including trashed, with tooltip | **Keep** 20 (live only) with "12/20" usage and a disabled-button tooltip |
-| "Active / Deleted snapshots" counter line | **Redesign**: "12/20" in the take dialog and manage sheet |
-| Left / Right selects, right defaults to Current | **Keep**, plus LE run-record rosters as read-only sources |
-| No snapshots: roster shown sorted by power | **Redesign**: normal Collection, plus an empty-state prompt in compare mode |
-| Side-by-side and Detailed diff styles | **Drop**: one tile with chips plus a detail popover |
-| 8 Never/WhenNonZero/Always settings | **Redesign**: one fields multi-select |
-| Team / team-category filters (GW off/def, raid, TA, horde) | **Defer**: no V2 Teams yet |
-| LE event × track filter | **Keep**, as a Collection filter in compare mode |
-| Zoom slider | **Drop**: Collection density and the mobile rows cover it |
-| `fixSnapshot` legacy star repair | **Drop** here; handled by the API V1 import |
-| Tooltips on unit portraits | **Redesign**: detail popover (desktop) or bottom sheet (mobile) |
-| V1 asset and icon ids reused | Collection's existing V2 unit portraits and rarity/rank icons; no V1 assets |
+| 20-snapshot cap including trashed, with tooltip                          | **Keep** 20 (live only) with "12/20" usage and a disabled-button tooltip                      |
+| "Active / Deleted snapshots" counter line                                | **Redesign**: "12/20" in the take dialog and manage sheet                                     |
+| Left / Right selects, right defaults to Current                          | **Keep**, plus LE run-record rosters as read-only sources                                     |
+| No snapshots: roster shown sorted by power                               | **Redesign**: normal Collection, plus an empty-state prompt in compare mode                   |
+| Side-by-side and Detailed diff styles                                    | **Drop**: one tile with chips plus a detail popover                                           |
+| 8 Never/WhenNonZero/Always settings                                      | **Redesign**: one fields multi-select                                                         |
+| Team / team-category filters (GW off/def, raid, TA, horde)               | **Defer**: no V2 Teams yet                                                                    |
+| LE event × track filter                                                  | **Keep**, as a Collection filter in compare mode                                              |
+| Zoom slider                                                              | **Drop**: Collection density and the mobile rows cover it                                     |
+| `fixSnapshot` legacy star repair                                         | **Drop** here; handled by the API V1 import                                                   |
+| Tooltips on unit portraits                                               | **Redesign**: detail popover (desktop) or bottom sheet (mobile)                               |
+| V1 asset and icon ids reused                                             | Collection's existing V2 unit portraits and rarity/rank icons; no V1 assets                   |
 
 ## Risks / Trade-offs
 

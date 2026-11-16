@@ -79,7 +79,7 @@ Event points SHALL NOT change Today, Bonus Raids, the Home raids widget or the R
 
 ### Requirement: The farm list covers the whole schedule and is filled to the energy budget
 
-The HSE tab's main list, titled "Farm list for event points", SHALL be computed over the whole schedule, not from Today's picks. The scope SHALL be every Active goal in global priority order, whatever project Today has selected (Paused goals do not plan; a goal in several projects counts once), and the need SHALL be each goal's remaining need over all of its stages after the Plan's priority-ordered inventory allocation, summed per resource.
+The HSE tab's main list, titled "Farm list for event points", SHALL be computed over the whole schedule, not from Today's picks. The scope SHALL be the Active goals of the Dailies project selected in the raid list controls (see "The HSE tab has raid list controls"), or every Active goal without one, in global priority order (Paused goals do not plan; a goal in several projects counts once), and the need SHALL be each goal's remaining need over all of its stages after the Plan's priority-ordered inventory allocation, summed per resource.
 
 A location SHALL be a candidate only when all of these hold: (1) it earns event points for the active rule (points per raid greater than 0); (2) it is unlocked by the player's campaign progress, has an energy cost above 0 and has attempts left today (the synced attempts left when known, otherwise the node's daily cap, where a cap of 0 means unlimited); (3) it drops a resource that an in-scope goal still needs somewhere in the schedule, where a goal that pins its farm locations is served only by the pinned ones; (4) it passes the persisted Raids Filters, evaluated with the resource it drops.
 
@@ -135,6 +135,11 @@ The energy budget SHALL be the planning-settings daily energy minus the energy t
 
 - **GIVEN** a Raids Filter excludes the highest-ratio location
 - **THEN** it is not a candidate and the list is filled from the remaining passing locations; no material is reported as filtered out
+
+#### Scenario: A selected project narrows the farm list
+
+- **GIVEN** the project "Necrons" is selected in the raid list controls (or on Today)
+- **THEN** the farm list serves only that project's Active goals, and the top-10 lists are unchanged
 
 ### Requirement: The HSE tab shows the farm list and the best locations
 
@@ -400,3 +405,18 @@ The farm list and the "Ignore goals" list SHALL show each run of consecutive row
 - **GIVEN** the list's rows, in its order, are Octarius Mirror Elite 26, Indomitus Mirror Elite 7, Indomitus Mirror Elite 38, Octarius Mirror Elite 15, 21 and 39
 - **WHEN** the list renders
 - **THEN** it shows an "Octarius Mirror Elite" group with Battle 26, an "Indomitus Mirror Elite" group with Battle 7 and Battle 38, then an "Octarius Mirror Elite" group with Battle 15, 21 and 39, each row keeping its own badges and drop
+
+### Requirement: The HSE tab has raid list controls
+
+When the raid lists are shown, the HSE tab SHALL show, above them and not in the title row, the Dailies project selector (with "All projects") and the Raids Filters action. The project selection SHALL be the one Dailies-wide, session-only selection shared with Today and the HRE tab. The farm list SHALL follow the selected project; the top-10 lists SHALL stay goal-independent. Both lists SHALL follow the Raids Filters. The tab SHALL NOT show the Planning Settings action.
+
+#### Scenario: Controls above the raid lists
+
+- **GIVEN** a rule-bearing HSE is running
+- **THEN** the project selector and Raids Filters show above the farm list and the top-10 lists, and no Planning Settings action is shown
+
+#### Scenario: Project shared across Dailies tabs
+
+- **GIVEN** a project is picked on the HSE tab
+- **WHEN** the player opens Today
+- **THEN** Today shows the same project selected
