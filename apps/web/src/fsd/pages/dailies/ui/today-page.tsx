@@ -19,8 +19,8 @@ import { useTodayTutorial } from "./today.tutorial"
 /**
  * Dailies > Raids is the Today page itself (the multi-day plan is Plan > Schedule): one controls row
  * (quick filters, the Dailies-wide project selector, Raids Filters, the shared Planning Settings
- * dialog), then the dashboard of glance tiles and cards. Raids Filters and the quick filters (URL
- * state) change Today's plan and Bonus raids only.
+ * dialog), then the dashboard of glance tiles and cards. Raids Filters and the quick filters (both
+ * remembered per browser) change Today's plan and Bonus raids only.
  */
 export function TodayPage() {
   const context = useOutletContext<DailiesOutletContext>()

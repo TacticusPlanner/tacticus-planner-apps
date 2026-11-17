@@ -900,7 +900,7 @@ Campaign names and node labels in Today's schedule rows, and in the shared locat
 
 ### Requirement: Today quick filters
 
-Today SHALL show a quick-filter chip row, captioned "Quick filters", next to the Raids Filters trigger, with two chips: **Fewer raids** and **Combine goals**. Either, both or neither MAY be on. Each chip SHALL carry a tooltip explaining what it does, and while a chip is on Today SHALL show one line under the row stating what it changes. The state SHALL live in the URL (`quick` search parameter, a comma-separated list; unknown values are ignored; the earlier value `bottlenecks` SHALL be read as `combineGoals`) so reload and shared links restore it, and it SHALL NOT be stored anywhere else, so leaving Today without the parameter shows the defaults.
+Today SHALL show a quick-filter chip row, captioned "Quick filters", next to the Raids Filters trigger, with two chips: **Fewer raids** and **Combine goals**. Either, both or neither MAY be on. Each chip SHALL carry a tooltip explaining what it does, and while a chip is on Today SHALL show one line under the row stating what it changes. The state SHALL be remembered per device (in this browser's storage, not the URL), so reload and opening Today again from the navigation restore the last chips chosen on this device; the HSE and HRE tabs show the same chips. It SHALL NOT be written to the URL. A link that still carries the earlier `quick` search parameter (a comma-separated list; unknown values are ignored; the earlier value `bottlenecks` SHALL be read as `combineGoals`) SHALL be honoured once: its chips are applied and remembered on this device, and the parameter is removed from the URL.
 
 The chips SHALL change only Today's plan and Bonus Raids (including the raids-left list after the daily energy limit). Plan > Schedule, Goals estimates and dates, Insights, the HSE and HRE tabs and the Home raids widget SHALL be computed as if both chips were off. The chips combine with the applied Raids Filters.
 
@@ -910,7 +910,7 @@ The chips SHALL change only Today's plan and Bonus Raids (including the raids-le
 
 #### Scenario: Chips off
 
-- **GIVEN** the URL has no `quick` parameter
+- **GIVEN** no chip has been turned on on this device and the URL has no `quick` parameter
 - **WHEN** Today loads
 - **THEN** the schedule is identical to the schedule without this requirement
 
@@ -942,10 +942,16 @@ The chips SHALL change only Today's plan and Bonus Raids (including the raids-le
 - **GIVEN** a chip is on
 - **THEN** Plan > Schedule, Goals, Insights, the HSE and HRE tabs and the Home raids widget are unchanged
 
-#### Scenario: State in the URL
+#### Scenario: State remembered per device
 
 - **WHEN** the player turns on Combine goals
-- **THEN** the URL gains `quick=combineGoals`; reloading keeps the chip on, and opening Today from the navigation shows both chips off
+- **THEN** the URL does not change; reloading keeps the chip on, and opening Today from the navigation on the same device shows Combine goals on
+
+#### Scenario: Older link with chips
+
+- **GIVEN** the URL carries `quick=fewerRaids`
+- **WHEN** Today loads
+- **THEN** Fewer raids is on and remembered on this device, and `quick` is removed from the URL
 
 ### Requirement: Today lists today's Onslaught runs
 

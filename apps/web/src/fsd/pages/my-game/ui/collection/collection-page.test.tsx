@@ -792,6 +792,50 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(screen.getAllByRole("link")).toHaveLength(4)
   })
 
+  it("remembers the quick filter on this device, not in the URL", () => {
+    ready(synced)
+    const first = renderPage(1280)
+
+    fireEvent.click(
+      within(
+        screen.getByRole("radiogroup", { name: "Quick filters" })
+      ).getByRole("radio", { name: "Need to level" })
+    )
+
+    expect(screen.getByTestId("location")).toHaveTextContent("")
+    expect(localStorage.getItem("collection.quick")).toBe("needToLevel")
+
+    first.unmount()
+    renderPage(1280)
+
+    expect(
+      within(
+        screen.getByRole("radiogroup", { name: "Quick filters" })
+      ).getByRole("radio", { name: "Need to level" })
+    ).toHaveAttribute("aria-checked", "true")
+    expect(screen.getAllByRole("link")).toHaveLength(1)
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
+
+    expect(localStorage.getItem("collection.quick")).toBe("")
+    expect(screen.getAllByRole("link")).toHaveLength(4)
+  })
+
+  it("applies an older link's quick filter, remembers it and drops the parameter", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?quick=needToLevel&alliance=Imperial")
+
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "?alliance=Imperial"
+    )
+    expect(localStorage.getItem("collection.quick")).toBe("needToLevel")
+    expect(
+      within(
+        screen.getByRole("radiogroup", { name: "Quick filters" })
+      ).getByRole("radio", { name: "Need to level" })
+    ).toHaveAttribute("aria-checked", "true")
+  })
+
   it("disables the roster-dependent controls without a roster and says why", () => {
     ready({ state: "anonymous" })
     renderPage(1280, "/my-game/collection?quick=canAscend&alliance=Imperial")
