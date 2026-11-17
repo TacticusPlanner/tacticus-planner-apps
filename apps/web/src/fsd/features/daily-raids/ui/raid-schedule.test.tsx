@@ -940,6 +940,31 @@ describe("RaidSchedule raid grouping", () => {
     expect(screen.queryByTestId("raid-card-g1-Y")).not.toBeInTheDocument()
   })
 
+  it("lists a battle once on its upgrade card when two goals farm it there", () => {
+    window.localStorage.setItem("dailies.raid-grouping.v1", "upgrade")
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[
+          { ...entry(b1, 1), resourceId: "X" as never },
+          { ...entry(b1, 2), goalId: "g2", resourceId: "X" as never },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        grouping="combined"
+        locationsByBattleId={
+          new Map([[b1, location("B1", "Indomitus", "Elite 4", "Elite")]])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+    expect(screen.getAllByTestId("raid-location-B1")).toHaveLength(1)
+  })
+
   it("groups the battles by campaign by default", () => {
     renderSchedule()
 

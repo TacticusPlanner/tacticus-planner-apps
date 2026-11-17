@@ -85,4 +85,22 @@ describe("RaidGroupingSwitch", () => {
     render(<SwitchAndList />)
     expect(screen.getByRole("radio", { name: "Campaign" })).toBeChecked()
   })
+
+  it("keeps the pick on this tab when storage refuses the write, even with an older value stored", async () => {
+    window.localStorage.setItem(RAID_GROUPING_STORAGE_KEY, "campaign")
+    const setItem = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new DOMException("full", "QuotaExceededError")
+      })
+    try {
+      render(<SwitchAndList />)
+      await userEvent.click(screen.getByRole("radio", { name: "Upgrade" }))
+
+      expect(screen.getByRole("radio", { name: "Upgrade" })).toBeChecked()
+      expect(screen.getByTestId("campaign-group-B2")).toHaveTextContent("B2")
+    } finally {
+      setItem.mockRestore()
+    }
+  })
 })

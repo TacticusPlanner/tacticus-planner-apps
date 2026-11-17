@@ -110,9 +110,18 @@ export function ResourceCard({
     // here — once every location for this entry is spent, the whole card is omitted (nothing left
     // to raid). Missing real data (e.g. an event-campaign node) is treated as "not exhausted"
     // rather than guessed at.
-    const visibleEntries = resourceEntries.filter((entry) =>
-      isLocationVisible(entry, attemptsLeftByBattle)
-    )
+    // Combine goals lists a location once per goal that farms it there: one row is enough, as in
+    // the campaign groups.
+    const seenBattles = new Set<string>()
+    const visibleEntries = resourceEntries.filter((entry) => {
+      if (
+        seenBattles.has(entry.battleId) ||
+        !isLocationVisible(entry, attemptsLeftByBattle)
+      )
+        return false
+      seenBattles.add(entry.battleId)
+      return true
+    })
     if (visibleEntries.length === 0) return null
     const need = materialNeed(resourceEntries)
 

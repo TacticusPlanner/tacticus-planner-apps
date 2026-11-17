@@ -39,15 +39,18 @@ function subscribe(listener: () => void) {
 }
 
 function setRaidGrouping(next: RaidGrouping) {
-  // Best-effort: the in-memory value below still updates for this tab.
-  safeStorage.set(RAID_GROUPING_STORAGE_KEY, next)
-  // Cache what storage now holds, so `lastRaw` and `lastValue` always agree. Nothing stored means
-  // the write did not land (storage blocked): keep `next` in memory for this tab. Anything else is
-  // read back, so another tab's write racing this one wins consistently in both.
-  const raw = safeStorage.get(RAID_GROUPING_STORAGE_KEY)
-  lastRaw = raw
-  lastValue =
-    raw === null ? next : isRaidGrouping(raw) ? raw : DEFAULT_RAID_GROUPING
+  if (safeStorage.trySet(RAID_GROUPING_STORAGE_KEY, next)) {
+    // Cache what storage now holds, so `lastRaw` and `lastValue` always agree: another tab's write
+    // racing this one wins consistently in both.
+    const raw = safeStorage.get(RAID_GROUPING_STORAGE_KEY)
+    lastRaw = raw
+    lastValue = isRaidGrouping(raw) ? raw : DEFAULT_RAID_GROUPING
+  } else {
+    // The write did not land (storage blocked or full): keep the pick in memory for this tab, keyed
+    // to whatever storage still holds so the next read keeps it until storage changes.
+    lastRaw = safeStorage.get(RAID_GROUPING_STORAGE_KEY)
+    lastValue = next
+  }
   for (const listener of listeners) listener()
 }
 
