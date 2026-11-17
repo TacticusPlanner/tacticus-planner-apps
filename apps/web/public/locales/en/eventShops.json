@@ -98,7 +98,7 @@
     "max": "Max",
     "maxValue": "{{count}} max",
     "lineTotal": "{{count}} × {{cost}} =",
-    "boughtAction": "Bought",
+    "boughtAction": "Bought in game",
     "more": "More actions",
     "claimInGame": "Claim it in game every day; nothing to plan.",
     "freebieShort": "Free daily",
@@ -152,7 +152,7 @@
       "all": "All"
     },
     "needsReviewHint": "Past days with packs you didn't mark bought",
-    "markBought": "Bought",
+    "markBought": "Bought in game",
     "boughtSome": "Bought some…",
     "missed": "Missed",
     "today": "Today",
