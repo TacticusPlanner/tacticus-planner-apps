@@ -16,7 +16,7 @@ import type {
   ProjectDeadlineFit,
   useGoalActions,
 } from "@/features/goal-planning"
-import { DeadlineFitHeader, DeadlineOverrideChip } from "./deadline-fit-header"
+import { DeadlineFitHeader } from "./deadline-fit-header"
 import { GoalsList } from "./goals-list"
 import type { DeadlineFitView } from "./season-fit-copy"
 
@@ -220,21 +220,6 @@ describe("DeadlineFitHeader", () => {
     render(<DeadlineFitHeader fit={{ status: "loading", target }} />)
     expect(
       await screen.findByTestId("goals-deadline-fit-loading")
-    ).toBeInTheDocument()
-  })
-})
-
-describe("DeadlineOverrideChip", () => {
-  it("reads Using project deadline, icon-only with a name on mobile", async () => {
-    const { unmount } = render(<DeadlineOverrideChip />)
-    expect(
-      await screen.findByTestId("goals-season-fit-override")
-    ).toHaveTextContent("Using project deadline")
-    unmount()
-    useIsMobileMock.mockReturnValue(true)
-    render(<DeadlineOverrideChip />)
-    expect(
-      await screen.findByRole("img", { name: "Using project deadline" })
     ).toBeInTheDocument()
   })
 })

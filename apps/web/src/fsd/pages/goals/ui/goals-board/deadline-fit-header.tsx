@@ -1,9 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { CalendarClock } from "lucide-react"
-import { Badge } from "@workspace/ui/components/badge"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import type { ProjectDeadlineFit } from "@/features/goal-planning"
 import { ProjectTargetChip } from "@/features/project-management"
@@ -94,27 +91,5 @@ export function DeadlineFitHeader({
       )}
       {action === undefined ? null : <span className="ml-auto">{action}</span>}
     </div>
-  )
-}
-
-/** The read-only chip that takes the Season fit select's place in a targeted scope
- *  (goal-season-fit). Icon-only with an accessible name on mobile, like the other compressed
- *  controls. */
-export function DeadlineOverrideChip() {
-  const { t } = useTranslation()
-  const isMobile = useIsMobile()
-  const label = t("goals.deadlineFit.overrideChip")
-  return (
-    <Badge
-      aria-label={isMobile ? label : undefined}
-      className="h-8 gap-1.5 px-2.5"
-      data-testid="goals-season-fit-override"
-      role={isMobile ? "img" : undefined}
-      title={label}
-      variant="outline"
-    >
-      <CalendarClock aria-hidden />
-      {isMobile ? null : label}
-    </Badge>
   )
 }

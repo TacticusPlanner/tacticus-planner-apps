@@ -64,7 +64,12 @@ import { GoalsViewToggle } from "./goals-view-toggle"
 import { GoalsCollapseAllToggle } from "./goals-collapse-all-toggle"
 import { useGoalsView } from "./use-goals-view"
 import { SeasonFitSelect } from "./season-fit-select"
-import { DeadlineFitHeader, DeadlineOverrideChip } from "./deadline-fit-header"
+import {
+  TARGETED_FIT_STORAGE_KEY,
+  effectiveSeasonFitMode,
+  isTargetedFitChoice,
+} from "./targeted-fit-choice"
+import { DeadlineFitHeader } from "./deadline-fit-header"
 import type { GoalFitView } from "./season-fit-copy"
 import { useEventTargetName } from "@/features/project-management"
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
@@ -107,6 +112,12 @@ export function GoalsPage() {
     "goals.overview.seasonFit",
     isSeasonFitMode,
     "off"
+  )
+  // A targeted project scope has its own choice, defaulting to the project's deadline.
+  const [targetedFitChoice, setTargetedFitChoice] = usePersistedSelection(
+    TARGETED_FIT_STORAGE_KEY,
+    isTargetedFitChoice,
+    "projectDeadline"
   )
   const [settingsOpen, setSettingsOpen] = useState(false)
   const { getEntityName } = useGoalCatalog()
@@ -277,18 +288,20 @@ export function GoalsPage() {
     shownGroupIds.length > 0 && shownGroupIds.every((id) => collapsed.has(id))
   // Folded sections are out of view, so select-all and the bulk actions only reach expanded rows.
   const shownRows = expandedRows(rowGroups, collapsed)
+  // A project with a target offers its own deadline in the Season fit select, chosen by default
+  // (project-deadline-fit); the unscoped Season fit choice applies again outside that scope.
+  const scopedProject = projects.projects.find(
+    (project) => project.projectId === scopeId
+  )
+  const targeted = scopedProject?.target != null
+  const deadlineChosen = targeted && targetedFitChoice === "projectDeadline"
   const seasonFit = useSeasonFit(
-    seasonFitMode,
+    effectiveSeasonFitMode(targeted, seasonFitMode, targetedFitChoice),
     nonArchivedRows,
     stableEstimates,
     reachedByGoalId
   )
   const activeSeasonFit = seasonFit.status === "ready" ? seasonFit.active : null
-  // A project with a target measures its goals against its own deadline instead of Season fit
-  // (project-deadline-fit); the stored Season fit choice applies again outside that scope.
-  const scopedProject = projects.projects.find(
-    (project) => project.projectId === scopeId
-  )
   const scopedRows = useMemo(
     () =>
       scopeId
@@ -303,7 +316,7 @@ export function GoalsPage() {
   const estimatesPending =
     (insightsRun.loading && stableEstimates.size === 0) || attainmentPending
   const deadlineFit = useProjectDeadlineFit(
-    scopedProject,
+    deadlineChosen ? scopedProject : undefined,
     scopedRows,
     estimatesPending ? undefined : stableEstimates,
     reachedByGoalId
@@ -323,7 +336,7 @@ export function GoalsPage() {
             fits: deadlineFit.byGoalId,
           }
         : null
-  useGoalsOverviewTutorial(deadlineFit.status !== "off")
+  useGoalsOverviewTutorial(deadlineChosen)
   // The divider follows the one account-wide priority order, which only an ungrouped list shows.
   const orderedIds = rows.map((row) => row.goalId)
   const showCutoffs = group === "none" && fitView !== null
@@ -496,14 +509,19 @@ export function GoalsPage() {
         }
         orderHint={orderHint}
         seasonFit={
-          deadlineFit.status === "off" ? (
+          targeted ? (
+            <SeasonFitSelect
+              onValueChange={setTargetedFitChoice}
+              projectDeadline
+              state={seasonFit}
+              value={targetedFitChoice}
+            />
+          ) : (
             <SeasonFitSelect
               onValueChange={setSeasonFitMode}
               state={seasonFit}
               value={seasonFitMode}
             />
-          ) : (
-            <DeadlineOverrideChip />
           )
         }
         planningSettings={

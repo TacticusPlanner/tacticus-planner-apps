@@ -1708,6 +1708,7 @@
     "seasonFit": {
       "label": "Season fit",
       "options": {
+        "projectDeadline": "Project deadline",
         "off": "No season fit",
         "battlePass": "Battle Pass",
         "guildRaid": "Guild Raid",
@@ -1759,8 +1760,7 @@
       "tooltipDuring": "Done by {{date}}, while {{chip}} runs ({{deadline}} – {{end}})",
       "tooltipAfter": "Done by {{date}}, after {{chip}} ends on {{end}}",
       "divider": "{{chip}} starts {{deadline}}. The next goal finishes during the event.",
-      "dividerEnd": "{{chip}} ends {{end}}. The next goal finishes after it.",
-      "overrideChip": "Using project deadline"
+      "dividerEnd": "{{chip}} ends {{end}}. The next goal finishes after it."
     },
     "detail": {
       "notes": "Notes",
@@ -2233,7 +2233,7 @@
         },
         "deadlineFit": {
           "title": "Project deadline",
-          "content": "This project has a target, so its goals are measured against that deadline instead of Season fit. Each goal shows Fits or Misses by N d, and a line marks the first goal that finishes too late."
+          "content": "This project has a target, so Season fit measures its goals against that deadline by default. Each goal shows Fits, During event or Misses by N d, and lines mark where goals start finishing late. Pick another option to switch."
         },
         "viewToggle": {
           "title": "Cards or table",

@@ -1708,6 +1708,7 @@
     "seasonFit": {
       "label": "Calage sur la saison",
       "options": {
+        "projectDeadline": "Échéance du projet",
         "off": "Aucun calage",
         "battlePass": "Passe de combat",
         "guildRaid": "Raid de guilde",
@@ -1759,8 +1760,7 @@
       "tooltipDuring": "Terminé le {{date}}, pendant {{chip}} ({{deadline}} – {{end}})",
       "tooltipAfter": "Terminé le {{date}}, après la fin de {{chip}} le {{end}}",
       "divider": "{{chip}} commence le {{deadline}} – l’objectif suivant finit pendant l’événement.",
-      "dividerEnd": "{{chip}} se termine le {{end}} – l’objectif suivant finit après.",
-      "overrideChip": "Échéance du projet utilisée"
+      "dividerEnd": "{{chip}} se termine le {{end}} – l’objectif suivant finit après."
     },
     "detail": {
       "notes": "Notes",
@@ -2233,7 +2233,7 @@
         },
         "deadlineFit": {
           "title": "Échéance du projet",
-          "content": "Ce projet a une cible : ses objectifs sont donc mesurés par rapport à cette échéance plutôt qu'au calage sur la saison. Chaque objectif affiche À temps ou En retard de N j, et une ligne marque le premier objectif qui finit trop tard."
+          "content": "Ce projet a une cible : le calage sur la saison mesure donc ses objectifs par rapport à cette échéance par défaut. Chaque objectif affiche À temps, Pendant l'événement ou En retard de N j, et des lignes marquent où les objectifs commencent à finir trop tard. Choisissez une autre option pour changer."
         },
         "viewToggle": {
           "title": "Cartes ou tableau",
