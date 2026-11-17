@@ -26,7 +26,7 @@ type CollectionStepKey =
   | "unownedRosterMobile"
 
 /**
- * Walks the toolbar (search, sort and filters), the view switch with the Unowned toggle, the quick
+ * Walks the toolbar (search, Filters and Owned only), the View slot (the View button on mobile), the quick
  * filters, the summary, the first faction group (left out while units are not grouped by faction),
  * an owned unit and a greyed-out unowned unit. The
  * faction and unit steps point at the view shown: a card and tiles in Cards, a section and rows in

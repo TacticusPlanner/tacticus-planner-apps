@@ -4,6 +4,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   GoalFilters,
+  GoalGroupBy,
   StatusFilterSelect,
   isGoalGroupValue,
 } from "@/entities/goal"
@@ -44,7 +45,6 @@ import { PendingMaterialSteps } from "@/features/v1-import"
 import {
   normalizeXpBookRarity,
   PlanningSettingsDialog,
-  PlanningSettingsTrigger,
   usePlanningSettings,
 } from "@/entities/planning-setting"
 import { usePersistedSelection } from "@/shared/lib"
@@ -82,6 +82,7 @@ import { useLevelRules } from "@/entities/goal-farming"
 import { buildCascadeContext } from "./goal-row-utils"
 import type { SelectedXpBook } from "./goal-row-utils"
 import { PageTourButton } from "@/shared/tour"
+import { PageSettingsButton } from "@/shared/ui"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
 /**
@@ -498,15 +499,12 @@ export function GoalsPage() {
           </>
         }
         bulkActions={bulkActions}
+        bulkActive={selectedRows.length > 0}
         createGoal={<GoalsCreateButton scopeId={scopeId ?? null} />}
         filters={
-          <GoalFilters
-            goalType={goalType}
-            group={group}
-            onGoalTypeChange={setGoalType}
-            onGroupChange={setGroup}
-          />
+          <GoalFilters goalType={goalType} onGoalTypeChange={setGoalType} />
         }
+        groupBy={<GoalGroupBy group={group} onGroupChange={setGroup} />}
         orderHint={orderHint}
         seasonFit={
           targeted ? (
@@ -525,7 +523,7 @@ export function GoalsPage() {
           )
         }
         planningSettings={
-          <PlanningSettingsTrigger
+          <PageSettingsButton
             onClick={() => setSettingsOpen(true)}
             testId="goals-planning-settings"
           />
@@ -543,7 +541,7 @@ export function GoalsPage() {
             />
           ) : null
         }
-        viewToggle={
+        layoutToggle={
           <GoalsViewToggle
             disabled={isMobile && reorderActive}
             onViewChange={goalsView.setView}

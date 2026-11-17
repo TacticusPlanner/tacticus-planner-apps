@@ -4,7 +4,6 @@ import { LayoutGrid, List, Search, Funnel, X } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
 import {
   Select,
   SelectContent,
@@ -12,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { Switch } from "@workspace/ui/components/switch"
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -21,11 +19,16 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
+  FILTER_CHIP_CLASS_NAME,
+  GroupByControl,
+  PageToolbar,
   ResponsiveDialog,
   ResponsiveDialogBody,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
+  SegmentedControl,
+  useViewPlacement,
 } from "@/shared/ui"
 
 import {
@@ -33,10 +36,10 @@ import {
   activeStandaloneFilterCount,
   collectionLayouts,
   collectionSorts,
-  isCollectionLayout,
   isCollectionSort,
 } from "../../model/collection-query"
 import type {
+  CollectionGrouping,
   CollectionLayout,
   CollectionQuery,
   CollectionQuickFilter,
@@ -58,19 +61,13 @@ export interface CollectionToolbarProps {
 }
 
 /**
- * Search, sort, filters, the view switch and quick filters above the faction groups. Desktop keeps
- * search, Sort, Filters, the view switch, the grouping and Unowned toggles on one wrapping row and opens the
- * filters inline below it (already open when one is set, so a short list is never unexplained).
- * Mobile keeps it to three short rows: search with an icon Filters button, Sort with icon view
- * buttons, then the grouping and Unowned switches side by side; the filters open in a bottom sheet
- * and the quick-filter chips scroll sideways in one row. Desktop wraps its chips below.
+ * Collection's page toolbar (ui-style-guide rule 2). Find: search and the "Filters" button (badge =
+ * active count); the chip row below starts with "Owned only", then the quick filters. View: Layout
+ * (Cards / Roster), Group by (None / Faction) and Sort, which mobile keeps in the View sheet.
+ * Desktop opens the filters inline below the row (already open when one is set, so a short list is
+ * never unexplained); mobile opens them in a bottom sheet and scrolls the chips sideways.
  */
 export function CollectionToolbar(props: CollectionToolbarProps) {
-  const isMobile = useIsMobile()
-  return isMobile ? <MobileToolbar {...props} /> : <DesktopToolbar {...props} />
-}
-
-function DesktopToolbar(props: CollectionToolbarProps) {
   const {
     query,
     update,
@@ -81,166 +78,115 @@ function DesktopToolbar(props: CollectionToolbarProps) {
     onRetry,
   } = props
   const { t } = useTranslation("common")
+  const isMobile = useIsMobile()
   const setSearch = useCallback(
     (search: string) => update({ search }),
     [update]
   )
-  const [open, setOpen] = useState(() => activeStandaloneFilterCount(query) > 0)
+  // Desktop: the inline panel's open state. Mobile: the sheet's (closed until asked for).
+  const [panelOpen, setPanelOpen] = useState(
+    () => activeStandaloneFilterCount(query) > 0
+  )
+  const [sheetOpen, setSheetOpen] = useState(false)
   const panelId = useId()
   const active = activeFilterCount(query)
 
   return (
-    <div className="flex flex-col gap-3">
-      <div
-        className="flex flex-wrap items-center gap-2"
-        role="search"
-        aria-label={t("myGame.collection.toolbar.label")}
-        data-testid="collection-toolbar"
-      >
-        <SearchField
-          value={query.search}
-          onChange={setSearch}
-          className="min-w-48 flex-1"
-        />
-        <SortSelect query={query} update={update} />
-        <FiltersButton
-          count={active}
-          expanded={open}
-          controls={panelId}
-          onClick={() => setOpen((value) => !value)}
-        />
-        <div
-          className="flex flex-wrap items-center gap-x-4 gap-y-2"
-          data-testid="collection-view-switch"
-        >
-          <ViewButtons query={query} update={update} />
-          <GroupToggle query={query} update={update} />
-          <UnownedToggle
-            query={query}
-            update={update}
-            rosterAvailable={rosterAvailable}
-          />
-        </div>
-        {active > 0 ? <ClearFiltersButton onClick={clear} /> : null}
-      </div>
-      {open ? (
-        <div id={panelId}>
-          <CollectionFilterFields
-            query={query}
-            update={update}
-            options={options}
-            rosterAvailable={rosterAvailable}
-            layout="panel"
-          />
-        </div>
-      ) : null}
-      <QuickFilterChips
-        value={query.quick}
-        availability={quickFilters}
-        onChange={(quick) => update({ quick })}
-        onRetry={onRetry}
-      />
-    </div>
-  )
-}
-
-function MobileToolbar(props: CollectionToolbarProps) {
-  const {
-    query,
-    update,
-    clear,
-    options,
-    rosterAvailable,
-    quickFilters,
-    onRetry,
-  } = props
-  const { t } = useTranslation("common")
-  const setSearch = useCallback(
-    (search: string) => update({ search }),
-    [update]
-  )
-  const [open, setOpen] = useState(false)
-  const active = activeFilterCount(query)
-
-  return (
-    <div className="flex flex-col gap-3">
-      <div
-        className="flex flex-col gap-2"
-        role="search"
-        aria-label={t("myGame.collection.toolbar.label")}
-        data-testid="collection-toolbar"
-      >
-        <div className="flex gap-2">
-          <SearchField
-            value={query.search}
-            onChange={setSearch}
-            className="min-w-0 flex-1"
-          />
-          <FiltersButton
-            count={active}
-            expanded={open}
-            onClick={() => setOpen(true)}
-            compact
-          />
-        </div>
-        <div
-          className="flex flex-col gap-1"
-          data-testid="collection-view-switch"
-        >
-          <div className="flex gap-2">
-            <div className="min-w-0 flex-1">
-              <SortSelect query={query} update={update} />
+    <>
+      <PageToolbar
+        below={
+          !isMobile && panelOpen ? (
+            <div id={panelId}>
+              <CollectionFilterFields
+                query={query}
+                update={update}
+                options={options}
+                rosterAvailable={rosterAvailable}
+                layout="panel"
+              />
             </div>
-            <ViewButtons query={query} update={update} compact />
+          ) : null
+        }
+        chips={
+          <QuickFilterChips
+            value={query.quick}
+            availability={quickFilters}
+            onChange={(quick) => update({ quick })}
+            onRetry={onRetry}
+            scroll={isMobile}
+            leading={
+              <OwnedOnlyChip
+                query={query}
+                update={update}
+                rosterAvailable={rosterAvailable}
+              />
+            }
+          />
+        }
+        find={
+          <div
+            className="flex min-w-0 flex-1 flex-wrap items-center gap-2"
+            role="search"
+            aria-label={t("myGame.collection.toolbar.label")}
+          >
+            <SearchField
+              value={query.search}
+              onChange={setSearch}
+              className="min-w-40 flex-1"
+            />
+            <FiltersButton
+              count={active}
+              expanded={isMobile ? sheetOpen : panelOpen}
+              controls={isMobile ? undefined : panelId}
+              onClick={() =>
+                isMobile ? setSheetOpen(true) : setPanelOpen((value) => !value)
+              }
+            />
+            {active > 0 ? <ClearFiltersButton onClick={clear} /> : null}
           </div>
-          <div className="flex flex-wrap items-center gap-x-4">
-            <GroupToggle query={query} update={update} />
-            <UnownedToggle
+        }
+        testId="collection-toolbar"
+        view={
+          <>
+            <LayoutControl query={query} update={update} />
+            <GroupControl query={query} update={update} />
+            <SortSelect query={query} update={update} />
+          </>
+        }
+        viewTestId="collection-view-switch"
+      />
+      {isMobile ? (
+        <ResponsiveDialog
+          open={sheetOpen}
+          onOpenChange={setSheetOpen}
+          data-testid="collection-filter-sheet"
+        >
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>
+              {t("myGame.collection.toolbar.filters")}
+            </ResponsiveDialogTitle>
+          </ResponsiveDialogHeader>
+          <ResponsiveDialogBody>
+            <CollectionFilterFields
               query={query}
               update={update}
+              options={options}
               rosterAvailable={rosterAvailable}
+              layout="sheet"
             />
-          </div>
-        </div>
-        {active > 0 ? <ClearFiltersButton onClick={clear} /> : null}
-      </div>
-      <QuickFilterChips
-        value={query.quick}
-        availability={quickFilters}
-        onChange={(quick) => update({ quick })}
-        onRetry={onRetry}
-        scroll
-      />
-      <ResponsiveDialog
-        open={open}
-        onOpenChange={setOpen}
-        data-testid="collection-filter-sheet"
-      >
-        <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>
-            {t("myGame.collection.toolbar.filters")}
-          </ResponsiveDialogTitle>
-        </ResponsiveDialogHeader>
-        <ResponsiveDialogBody>
-          <CollectionFilterFields
-            query={query}
-            update={update}
-            options={options}
-            rosterAvailable={rosterAvailable}
-            layout="sheet"
-          />
-        </ResponsiveDialogBody>
-        <ResponsiveDialogFooter>
-          <Button variant="ghost" onClick={clear} disabled={active === 0}>
-            <X aria-hidden />
-            {t("myGame.collection.toolbar.clearFilters")}
-          </Button>
-          <Button onClick={() => setOpen(false)}>
-            {t("myGame.collection.toolbar.done")}
-          </Button>
-        </ResponsiveDialogFooter>
-      </ResponsiveDialog>
-    </div>
+          </ResponsiveDialogBody>
+          <ResponsiveDialogFooter>
+            <Button variant="ghost" onClick={clear} disabled={active === 0}>
+              <X aria-hidden />
+              {t("myGame.collection.toolbar.clearFilters")}
+            </Button>
+            <Button onClick={() => setSheetOpen(false)}>
+              {t("myGame.collection.toolbar.done")}
+            </Button>
+          </ResponsiveDialogFooter>
+        </ResponsiveDialog>
+      ) : null}
+    </>
   )
 }
 
@@ -301,6 +247,7 @@ function SortSelect({
   update,
 }: Pick<CollectionToolbarProps, "query" | "update">) {
   const { t } = useTranslation("common")
+  const inSheet = useViewPlacement() === "sheet"
   return (
     <Select
       value={query.sort}
@@ -310,7 +257,7 @@ function SortSelect({
     >
       {/* A combobox is not named by its content, so the label carries the current sort too. */}
       <SelectTrigger
-        className="w-full md:w-44"
+        className={inSheet ? "w-full" : "w-44"}
         aria-label={`${t("myGame.collection.toolbar.sort")}: ${t(`myGame.collection.toolbar.sortOptions.${query.sort}`)}`}
       >
         <span className="text-muted-foreground">
@@ -334,43 +281,13 @@ function FiltersButton({
   expanded,
   controls,
   onClick,
-  compact = false,
 }: {
   count: number
   expanded: boolean
   controls?: string
   onClick: () => void
-  /** Icon only, with the active count as a badge (the mobile search row). */
-  compact?: boolean
 }) {
   const { t } = useTranslation("common")
-  const label =
-    count > 0
-      ? t("myGame.collection.toolbar.filtersCount", { count })
-      : t("myGame.collection.toolbar.filters")
-  if (compact) {
-    return (
-      <Button
-        variant="outline"
-        size="icon"
-        className="relative size-8 shrink-0 after:absolute after:-inset-1.5 after:content-['']"
-        aria-label={label}
-        aria-expanded={expanded}
-        aria-controls={controls}
-        onClick={onClick}
-      >
-        <Funnel aria-hidden />
-        {count > 0 ? (
-          <span
-            aria-hidden
-            className="absolute -top-1.5 -right-1.5 flex min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs/5 font-semibold text-primary-foreground tabular-nums"
-          >
-            {count}
-          </span>
-        ) : null}
-      </Button>
-    )
-  }
   return (
     <Button
       variant="outline"
@@ -379,7 +296,9 @@ function FiltersButton({
       onClick={onClick}
     >
       <Funnel aria-hidden />
-      {label}
+      {count > 0
+        ? t("myGame.collection.toolbar.filtersCount", { count })
+        : t("myGame.collection.toolbar.filters")}
     </Button>
   )
 }
@@ -399,128 +318,94 @@ const layoutIcons: Record<CollectionLayout, LucideIcon> = {
   roster: List,
 }
 
-/**
- * Desktop: the views as one joined segmented control, the site's mode switch (the Library unit
- * page's Starting | Custom, the theme switcher).
- */
-function ViewButtons({
-  query,
-  update,
-  compact = false,
-}: Pick<CollectionToolbarProps, "query" | "update"> & {
-  /** Icons only, named for screen readers (the mobile sort row). */
-  compact?: boolean
-}) {
-  const { t } = useTranslation("common")
-  return (
-    <ToggleGroup
-      aria-label={t("myGame.collection.toolbar.view")}
-      type="single"
-      variant="outline"
-      spacing={0}
-      value={query.view}
-      onValueChange={(view) => {
-        // Radix emits "" when the selected item is clicked again; a view is always shown.
-        if (isCollectionLayout(view)) update({ view })
-      }}
-    >
-      {collectionLayouts.map((layout) => {
-        const Icon = layoutIcons[layout]
-        return (
-          <ToggleGroupItem
-            key={layout}
-            value={layout}
-            className={
-              compact
-                ? "relative h-8 w-9 after:absolute after:inset-x-0 after:-inset-y-1.5 after:content-['']"
-                : "px-3"
-            }
-            aria-label={
-              compact
-                ? t(`myGame.collection.toolbar.views.${layout}`)
-                : undefined
-            }
-          >
-            <Icon aria-hidden />
-            {compact ? null : t(`myGame.collection.toolbar.views.${layout}`)}
-          </ToggleGroupItem>
-        )
-      })}
-    </ToggleGroup>
-  )
-}
-
-/** A labelled on/off switch, the site's toolbar toggle (as the tier list's "Only owned"). */
-function ToolbarSwitch({
-  label,
-  checked,
-  onCheckedChange,
-  disabledHint,
-}: {
-  label: string
-  checked: boolean
-  onCheckedChange: (checked: boolean) => void
-  /** Disables the switch and says why, next to it. */
-  disabledHint?: string
-}) {
-  const id = useId()
-  const hintId = useId()
-  return (
-    <div className="flex min-h-11 items-center gap-2 md:min-h-0">
-      <Switch
-        id={id}
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        disabled={disabledHint !== undefined}
-        aria-describedby={disabledHint ? hintId : undefined}
-      />
-      <Label htmlFor={id}>{label}</Label>
-      {disabledHint ? (
-        <span id={hintId} className="text-xs text-muted-foreground">
-          {disabledHint}
-        </span>
-      ) : null}
-    </div>
-  )
-}
-
-/**
- * Hides the units the player does not own: a display setting kept in `?owned=owned`, not a filter.
- * Without a roster nothing can be owned, so it is disabled and explained.
- */
-function UnownedToggle({
-  query,
-  update,
-  rosterAvailable,
-}: Pick<CollectionToolbarProps, "query" | "update" | "rosterAvailable">) {
-  const { t } = useTranslation("common")
-  return (
-    <ToolbarSwitch
-      label={t("myGame.collection.toolbar.hideUnowned")}
-      checked={query.hideUnowned}
-      onCheckedChange={(hideUnowned) => update({ hideUnowned })}
-      disabledHint={
-        rosterAvailable
-          ? undefined
-          : t("myGame.collection.toolbar.hideUnownedNeedsRoster")
-      }
-    />
-  )
-}
-
-/** On while units are grouped by faction; off lists them together across factions. */
-function GroupToggle({
+/** Layout: Cards / Roster, the shared labelled segmented control. */
+function LayoutControl({
   query,
   update,
 }: Pick<CollectionToolbarProps, "query" | "update">) {
   const { t } = useTranslation("common")
   return (
-    <ToolbarSwitch
-      label={t("myGame.collection.toolbar.groupByFaction")}
-      checked={query.group === "faction"}
-      onCheckedChange={(grouped) =>
-        update({ group: grouped ? "faction" : "none" })
-      }
+    <SegmentedControl
+      label={t("pageToolbar.layout")}
+      onValueChange={(view) => update({ view })}
+      options={collectionLayouts.map((layout) => {
+        const Icon = layoutIcons[layout]
+        return {
+          value: layout,
+          label: t(`myGame.collection.toolbar.views.${layout}`),
+          icon: <Icon aria-hidden />,
+        }
+      })}
+      value={query.view}
     />
+  )
+}
+
+/** None first, as on every page's Group by. */
+const groupOrder: readonly CollectionGrouping[] = ["none", "faction"]
+
+/** Group by: None lists every unit together across factions; Faction groups them. */
+function GroupControl({
+  query,
+  update,
+}: Pick<CollectionToolbarProps, "query" | "update">) {
+  const { t } = useTranslation("common")
+  return (
+    <GroupByControl
+      onValueChange={(group) => update({ group })}
+      options={groupOrder.map((group) => ({
+        value: group,
+        label: t(`myGame.collection.toolbar.groupOptions.${group}`),
+      }))}
+      testId="collection-group-by"
+      value={query.group}
+    />
+  )
+}
+
+/**
+ * Lists only the units the player owns: a filter chip kept in `?owned=owned`. Without a roster
+ * nothing can be owned, so it is disabled and says why on hover and to screen readers.
+ */
+function OwnedOnlyChip({
+  query,
+  update,
+  rosterAvailable,
+}: Pick<CollectionToolbarProps, "query" | "update" | "rosterAvailable">) {
+  const { t } = useTranslation("common")
+  const hintId = useId()
+  const hint = rosterAvailable
+    ? undefined
+    : t("myGame.collection.toolbar.hideUnownedNeedsRoster")
+  return (
+    <>
+      <ToggleGroup
+        type="multiple"
+        variant="outline"
+        size="sm"
+        spacing={1}
+        className="shrink-0"
+        value={query.hideUnowned ? ["owned"] : []}
+        onValueChange={(values) =>
+          update({ hideUnowned: values.includes("owned") })
+        }
+        disabled={!rosterAvailable}
+      >
+        <ToggleGroupItem
+          value="owned"
+          className={FILTER_CHIP_CLASS_NAME}
+          aria-describedby={hint ? hintId : undefined}
+          data-testid="owned-only-chip"
+          title={hint}
+        >
+          {t("myGame.collection.toolbar.ownedOnly")}
+        </ToggleGroupItem>
+      </ToggleGroup>
+      {hint ? (
+        <span id={hintId} className="sr-only">
+          {hint}
+        </span>
+      ) : null}
+    </>
   )
 }

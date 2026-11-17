@@ -79,19 +79,17 @@ describe("Raids Filters trigger and dialog", () => {
     window.localStorage.clear()
   })
 
-  it("shows the label on desktop", () => {
+  it("is labelled Filters on desktop", () => {
     renderTrigger()
-    expect(screen.getByTestId("raids-filters")).toHaveTextContent(
-      "Raids Filters"
-    )
+    expect(screen.getByTestId("raids-filters")).toHaveTextContent("Filters")
   })
 
-  it("is icon-only with an accessible name on mobile", () => {
+  it("is labelled Filters on mobile too", () => {
     useIsMobileMock.mockReturnValue(true)
     renderTrigger()
     const mobile = screen.getByTestId("raids-filters")
-    expect(mobile).toHaveAccessibleName("Raids Filters")
-    expect(mobile).not.toHaveTextContent("Raids Filters")
+    expect(mobile).toHaveAccessibleName("Filters")
+    expect(mobile).toHaveTextContent("Filters")
   })
 
   it("renders the four sections in order with a Close, Reset and Apply footer", async () => {
@@ -137,7 +135,7 @@ describe("Raids Filters trigger and dialog", () => {
     expect(screen.queryByTestId("raids-filters-dialog")).toBeNull()
     expect(screen.getByTestId("raids-filters-badge")).toHaveTextContent("2")
     expect(screen.getByTestId("raids-filters")).toHaveAccessibleName(
-      "Raids Filters, 2 active"
+      "Filters, 2 active"
     )
   })
 

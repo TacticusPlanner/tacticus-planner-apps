@@ -1,4 +1,5 @@
 import { useId } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -45,6 +46,7 @@ export function QuickFilterChips({
   onChange,
   onRetry,
   scroll = false,
+  leading,
 }: {
   value: CollectionQuickFilter | null
   availability: Record<CollectionQuickFilter, QuickFilterAvailability>
@@ -52,6 +54,8 @@ export function QuickFilterChips({
   onRetry: () => void
   /** One row that scrolls sideways instead of wrapping (mobile). */
   scroll?: boolean
+  /** A chip that is not a quick filter but sits first in the row (Owned only). */
+  leading?: ReactNode
 }) {
   const { t, i18n } = useTranslation("common")
   const noteId = useId()
@@ -98,40 +102,51 @@ export function QuickFilterChips({
         className={scroll ? "scrollbar-none overflow-x-auto pb-1" : undefined}
         style={mask ? { maskImage: mask, WebkitMaskImage: mask } : undefined}
       >
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          spacing={1}
-          className={scroll ? "w-max flex-nowrap justify-start" : "flex-wrap"}
-          aria-labelledby={`${noteId}-label`}
-          value={value ?? ""}
-          onValueChange={(next) =>
-            onChange(isCollectionQuickFilter(next) ? next : null)
+        <div
+          className={
+            scroll ? "flex w-max items-center gap-1" : "flex items-start gap-1"
           }
         >
-          {collectionQuickFilters.map((quick) => {
-            const status = availability[quick]
-            return (
-              <ToggleGroupItem
-                key={quick}
-                value={quick}
-                className={
-                  scroll
-                    ? `${FILTER_CHIP_CLASS_NAME} shrink-0`
-                    : FILTER_CHIP_CLASS_NAME
-                }
-                disabled={status !== "available"}
-                title={t(`myGame.collection.toolbar.quickHelp.${quick}`)}
-                aria-describedby={
-                  isUnavailable(status) ? `${noteId}-${status}` : undefined
-                }
-              >
-                {label(quick)}
-              </ToggleGroupItem>
-            )
-          })}
-        </ToggleGroup>
+          {leading}
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            size="sm"
+            spacing={1}
+            className={
+              scroll
+                ? "w-max flex-nowrap justify-start"
+                : "min-w-0 flex-1 flex-wrap"
+            }
+            aria-labelledby={`${noteId}-label`}
+            value={value ?? ""}
+            onValueChange={(next) =>
+              onChange(isCollectionQuickFilter(next) ? next : null)
+            }
+          >
+            {collectionQuickFilters.map((quick) => {
+              const status = availability[quick]
+              return (
+                <ToggleGroupItem
+                  key={quick}
+                  value={quick}
+                  className={
+                    scroll
+                      ? `${FILTER_CHIP_CLASS_NAME} shrink-0`
+                      : FILTER_CHIP_CLASS_NAME
+                  }
+                  disabled={status !== "available"}
+                  title={t(`myGame.collection.toolbar.quickHelp.${quick}`)}
+                  aria-describedby={
+                    isUnavailable(status) ? `${noteId}-${status}` : undefined
+                  }
+                >
+                  {label(quick)}
+                </ToggleGroupItem>
+              )
+            })}
+          </ToggleGroup>
+        </div>
       </div>
       {notes.map((note) => (
         <p

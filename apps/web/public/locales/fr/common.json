@@ -398,13 +398,15 @@
           "shards": "Éclats",
           "power": "Puissance"
         },
-        "view": "Affichage",
         "views": {
           "cards": "Cartes",
           "roster": "Liste"
         },
-        "groupByFaction": "Grouper par faction",
-        "hideUnowned": "Masquer les non débloquées",
+        "groupOptions": {
+          "none": "Aucun",
+          "faction": "Faction"
+        },
+        "ownedOnly": "Débloquées uniquement",
         "hideUnownedNeedsRoster": "Masquer les unités non débloquées nécessite un effectif synchronisé.",
         "filters": "Filtres",
         "filtersCount_one": "Filtres ({{count}})",
@@ -509,7 +511,7 @@
         "title": "Aucune unité ne correspond à ces filtres",
         "body": "Modifiez ou effacez les filtres pour voir plus d'unités.",
         "hiddenTitle": "Aucune unité débloquée ici",
-        "hiddenBody": "« Masquer les non débloquées » masque toutes ces unités.",
+        "hiddenBody": "« Débloquées uniquement » masque toutes ces unités.",
         "showUnowned": "Afficher les unités non débloquées"
       },
       "compare": {
@@ -1703,7 +1705,16 @@
       "groupCount_one": "{{count}} objectif",
       "groupCount_other": "{{count}} objectifs",
       "collapseAllGroups": "Tout réduire",
-      "expandAllGroups": "Tout développer"
+      "expandAllGroups": "Tout développer",
+      "groupOptions": {
+        "none": "Aucun",
+        "unit": "Unité",
+        "type": "Type",
+        "typePriority": "Type par priorité"
+      },
+      "groupOptionHelp": {
+        "typePriority": "Groupes de type triés par leur objectif principal"
+      }
     },
     "seasonFit": {
       "label": "Calage sur la saison",
@@ -2041,7 +2052,6 @@
       "projectLimitReached": "Vous avez déjà {{max}} projets non archivés. Archivez-en un pour faire de la place."
     },
     "view": {
-      "label": "Affichage des objectifs",
       "cards": "Cartes",
       "table": "Tableau"
     },
@@ -2196,16 +2206,12 @@
           "content": "Filtrez les objectifs : non atteints, atteints, bloqués, actifs ou en pause."
         },
         "filters": {
-          "title": "Type et regroupement",
-          "content": "Filtrez par type d'objectif ou regroupez des objectifs liés."
+          "title": "Type d'objectif",
+          "content": "Limitez la liste à un type d'objectif."
         },
         "select": {
           "title": "Sélectionner des objectifs",
-          "content": "Cochez des objectifs avec leur case. Celle de l'en-tête sélectionne tous les objectifs affichés (sur mobile, activez d'abord « Sélectionner »)."
-        },
-        "bulkActions": {
-          "title": "Actions groupées",
-          "content": "Mettez en pause, reprenez, ajoutez à un projet ou supprimez d'un coup tous les objectifs sélectionnés. La pause et la reprise groupées ne touchent que les objectifs sélectionnés."
+          "content": "Cochez des objectifs avec leur case. Celle de l'en-tête sélectionne tous les objectifs affichés (sur mobile, activez d'abord « Sélectionner »). La barre qui apparaît permet de les mettre en pause, les reprendre, les ajouter à un projet ou les supprimer ensemble."
         },
         "createGoal": {
           "title": "Créer un objectif",
@@ -2236,8 +2242,12 @@
           "content": "Ce projet a une cible : le calage sur la saison mesure donc ses objectifs par rapport à cette échéance par défaut. Chaque objectif affiche À temps, Pendant l'événement ou En retard de N j, et des lignes marquent où les objectifs commencent à finir trop tard. Choisissez une autre option pour changer."
         },
         "viewToggle": {
-          "title": "Cartes ou tableau",
-          "content": "Passez des cartes d'objectifs au tableau compact. Votre choix est enregistré sur cet appareil."
+          "title": "Disposition et groupement",
+          "content": "Passez des cartes d'objectifs au tableau compact et regroupez les objectifs liés. Votre choix est enregistré sur cet appareil."
+        },
+        "viewOptions": {
+          "title": "Affichage",
+          "content": "La disposition (cartes ou tableau), le groupement et l'ajustement à la saison sont ici. Votre choix est enregistré sur cet appareil."
         }
       }
     },
@@ -2349,16 +2359,16 @@
           "content": "Les unités en grisé ne font pas partie de votre effectif. La barre montre à quel point vous êtes proche de les débloquer. Sélectionnez une unité pour ouvrir ses détails dans la Bibliothèque."
         },
         "toolbar": {
-          "title": "Rechercher, trier et filtrer",
-          "content": "Trouvez une unité par son nom, changez l'ordre dans chaque faction et affinez la liste avec les filtres. Vos choix restent dans l'adresse de la page : vous pouvez la recharger ou la partager."
+          "title": "Rechercher et filtrer",
+          "content": "Trouvez une unité par son nom, affinez la liste avec les filtres et touchez « Débloquées uniquement » pour ne voir que vos unités. Vos choix restent dans l'adresse de la page : vous pouvez la recharger ou la partager."
         },
         "quickFilters": {
           "title": "Filtres rapides",
           "content": "D'un geste, affichez les unités à faire progresser ensuite : prête à monter en rang, doit être ascensionnée, peut être ascensionnée, doit monter de niveau ou prête pour l'étoile bleue. Sélectionnez à nouveau un filtre pour le retirer."
         },
         "view": {
-          "title": "Cartes ou liste",
-          "content": "Passez des cartes de faction à la liste, un affichage plus dense avec une ligne par unité. Votre choix est mémorisé. Désactivez « Grouper par faction » pour voir toutes les unités ensemble dans votre tri, et « Masquer les non débloquées » pour ne voir que vos unités."
+          "title": "Affichage",
+          "content": "Disposition passe des cartes de faction à la liste, un affichage plus dense avec une ligne par unité. « Grouper par : Aucun » montre toutes les unités ensemble, et le tri change l'ordre. Sur téléphone, tout cela est derrière « Affichage »."
         },
         "factionRoster": {
           "title": "Regroupées par faction",
@@ -2554,5 +2564,13 @@
     "goHome": "Aller à l'accueil",
     "browseLibrary": "Parcourir la bibliothèque",
     "goToStart": "Aller à la page de départ"
+  },
+  "pageToolbar": {
+    "view": "Affichage",
+    "viewTitle": "Options d'affichage",
+    "groupBy": "Grouper par",
+    "layout": "Disposition",
+    "done": "Terminé",
+    "none": "Aucun"
   }
 }

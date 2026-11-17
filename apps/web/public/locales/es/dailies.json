@@ -544,8 +544,8 @@
     "row": "{{material}} ×{{count}}: {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Filtros de incursiones",
-    "triggerActive": "Filtros de incursiones, {{count}} activos",
+    "trigger": "Filtros",
+    "triggerActive": "Filtros, {{count}} activos",
     "title": "Filtros de incursiones",
     "description": "Limita qué ubicaciones de campaña pueden usar Hoy, las incursiones extra y la pestaña EPI. El plan y los objetivos no se ven afectados.",
     "sections": {
@@ -607,7 +607,6 @@
     }
   },
   "grouping": {
-    "label": "Agrupar por",
     "upgrade": "Mejora",
     "campaign": "Campaña",
     "help": {

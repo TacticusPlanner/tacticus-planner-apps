@@ -544,8 +544,8 @@
     "row": "{{material}} ×{{count}}: {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Raids Filters",
-    "triggerActive": "Raids Filters, {{count}} active",
+    "trigger": "Filters",
+    "triggerActive": "Filters, {{count}} active",
     "title": "Raids Filters",
     "description": "Limit which campaign locations Today, Bonus Raids and the HSE tab may use. Plan and Goals are not affected.",
     "sections": {
@@ -607,7 +607,6 @@
     }
   },
   "grouping": {
-    "label": "Group by",
     "upgrade": "Upgrade",
     "campaign": "Campaign",
     "help": {

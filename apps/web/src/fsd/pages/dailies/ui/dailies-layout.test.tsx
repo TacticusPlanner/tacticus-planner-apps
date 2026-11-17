@@ -238,17 +238,13 @@ describe("Dailies navigation", () => {
     expect(mobileSelect).not.toHaveTextContent(/\S/)
   })
 
-  it("exposes the shared Planning Settings action trailing the project selector on Today", async () => {
+  it("exposes the shared Planning Settings action as the page's Settings button on Today", async () => {
     renderDailies("/dailies/raids")
     await findRouteContent("dailies-no-farmable")
 
-    const settingsButton = screen.getByTestId("raids-planning-settings")
-    expect(settingsButton).toHaveAccessibleName("goals.planningSettings.button")
-    const select = screen.getByTestId("raids-project-select")
-    expect(
-      select.compareDocumentPosition(settingsButton) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
+    expect(screen.getByTestId("raids-planning-settings")).toHaveAccessibleName(
+      "settings.label"
+    )
   })
 
   it("opens the shared Planning Settings dialog from Raids", async () => {

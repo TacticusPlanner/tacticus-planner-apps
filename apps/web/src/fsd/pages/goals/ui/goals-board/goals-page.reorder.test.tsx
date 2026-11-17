@@ -276,10 +276,7 @@ describe("GoalsPage reordering", () => {
   it("keeps a grouped drop inside its own group section", async () => {
     const user = userEvent.setup()
     render(<GoalsPage />, { route: "/plan/goals" })
-    await user.click(screen.getByTestId("goals-group-by"))
-    await user.click(
-      await screen.findByRole("option", { name: "Group by type" })
-    )
+    await user.click(screen.getByTestId("goals-group-by-type"))
 
     expect(screen.getAllByTestId("goals-list")).toHaveLength(2)
     fireEvent.click(screen.getByTestId("move-up-e"))
@@ -293,10 +290,7 @@ describe("GoalsPage reordering", () => {
   it("moves a goal up from its row menu across a group boundary (grouped by type, E's Move up displaces D)", async () => {
     const user = userEvent.setup()
     render(<GoalsPage />, { route: "/plan/goals" })
-    await user.click(screen.getByTestId("goals-group-by"))
-    await user.click(
-      await screen.findByRole("option", { name: "Group by type" })
-    )
+    await user.click(screen.getByTestId("goals-group-by-type"))
 
     fireEvent.click(screen.getByTestId("menu-up-e"))
 

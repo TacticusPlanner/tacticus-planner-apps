@@ -544,8 +544,8 @@
     "row": "{{material}} ×{{count}} : {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Filtres de raids",
-    "triggerActive": "Filtres de raids, {{count}} actifs",
+    "trigger": "Filtres",
+    "triggerActive": "Filtres, {{count}} actifs",
     "title": "Filtres de raids",
     "description": "Limitez les lieux de campagne que Aujourd'hui, les raids bonus et l'onglet ÉÉA peuvent utiliser. Le plan et les objectifs ne sont pas affectés.",
     "sections": {
@@ -607,7 +607,6 @@
     }
   },
   "grouping": {
-    "label": "Regrouper par",
     "upgrade": "Amélioration",
     "campaign": "Campagne",
     "help": {

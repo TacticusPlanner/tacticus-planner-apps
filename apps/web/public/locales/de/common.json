@@ -398,13 +398,15 @@
           "shards": "Scherben",
           "power": "Macht"
         },
-        "view": "Ansicht",
         "views": {
           "cards": "Karten",
           "roster": "Liste"
         },
-        "groupByFaction": "Nach Fraktion gruppieren",
-        "hideUnowned": "Nicht freigeschaltete ausblenden",
+        "groupOptions": {
+          "none": "Keine",
+          "faction": "Fraktion"
+        },
+        "ownedOnly": "Nur freigeschaltete",
         "hideUnownedNeedsRoster": "Zum Ausblenden nicht freigeschalteter Einheiten braucht es einen synchronisierten Kader.",
         "filters": "Filter",
         "filtersCount_one": "Filter ({{count}})",
@@ -509,7 +511,7 @@
         "title": "Keine Einheit passt zu diesen Filtern",
         "body": "Ändere die Filter oder setze sie zurück, um mehr Einheiten zu sehen.",
         "hiddenTitle": "Hier gibt es keine freigeschalteten Einheiten",
-        "hiddenBody": "„Nicht freigeschaltete ausblenden“ blendet alle diese Einheiten aus.",
+        "hiddenBody": "„Nur freigeschaltete“ blendet alle diese Einheiten aus.",
         "showUnowned": "Nicht freigeschaltete Einheiten anzeigen"
       },
       "compare": {
@@ -1703,7 +1705,16 @@
       "groupCount_one": "{{count}} Ziel",
       "groupCount_other": "{{count}} Ziele",
       "collapseAllGroups": "Alle einklappen",
-      "expandAllGroups": "Alle ausklappen"
+      "expandAllGroups": "Alle ausklappen",
+      "groupOptions": {
+        "none": "Keine",
+        "unit": "Einheit",
+        "type": "Typ",
+        "typePriority": "Typ nach Priorität"
+      },
+      "groupOptionHelp": {
+        "typePriority": "Typgruppen nach ihrem wichtigsten Ziel sortiert"
+      }
     },
     "seasonFit": {
       "label": "Saison-Passung",
@@ -2041,7 +2052,6 @@
       "projectLimitReached": "Du hast bereits {{max}} nicht archivierte Projekte. Archiviere eines, um Platz zu schaffen."
     },
     "view": {
-      "label": "Zielansicht",
       "cards": "Karten",
       "table": "Tabelle"
     },
@@ -2196,16 +2206,12 @@
           "content": "Filtere Ziele nach unerfüllt, erreicht, blockiert, aktiv oder pausiert."
         },
         "filters": {
-          "title": "Typ und Gruppierung",
-          "content": "Filtere nach Zieltyp oder gruppiere verwandte Ziele."
+          "title": "Zieltyp",
+          "content": "Beschränke die Liste auf einen Zieltyp."
         },
         "select": {
           "title": "Ziele auswählen",
-          "content": "Markiere Ziele mit ihrem Kontrollkästchen. Das Kästchen in der Kopfzeile wählt alle angezeigten Ziele aus (auf Mobilgeräten zuerst „Auswählen“ aktivieren)."
-        },
-        "bulkActions": {
-          "title": "Sammelaktionen",
-          "content": "Pausiere, setze fort, füge zu einem Projekt hinzu oder lösche alle ausgewählten Ziele auf einmal. Sammel-Pausieren und -Fortsetzen betreffen nur die ausgewählten Ziele."
+          "content": "Markiere Ziele mit ihrem Kontrollkästchen. Das Kästchen in der Kopfzeile wählt alle angezeigten Ziele aus (auf Mobilgeräten zuerst „Auswählen“ aktivieren). Über die dann erscheinende Leiste kannst du sie gemeinsam pausieren, fortsetzen, einem Projekt hinzufügen oder löschen."
         },
         "createGoal": {
           "title": "Ziel erstellen",
@@ -2236,8 +2242,12 @@
           "content": "Dieses Projekt hat ein Ziel, daher misst die Saison-Passung seine Ziele standardmäßig an dieser Frist. Jedes Ziel zeigt „Passt“, „Während des Events“ oder „N T zu spät“, und Linien markieren, ab wo Ziele zu spät fertig werden. Wähle eine andere Option, um zu wechseln."
         },
         "viewToggle": {
-          "title": "Karten oder Tabelle",
-          "content": "Wechsle zwischen Zielkarten und der kompakten Tabelle. Deine Wahl wird auf diesem Gerät gespeichert."
+          "title": "Layout und Gruppierung",
+          "content": "Wechsle zwischen Zielkarten und der kompakten Tabelle und gruppiere verwandte Ziele. Deine Wahl wird auf diesem Gerät gespeichert."
+        },
+        "viewOptions": {
+          "title": "Ansicht",
+          "content": "Hier findest du Layout (Karten oder Tabelle), Gruppierung und Saison-Passung. Deine Wahl wird auf diesem Gerät gespeichert."
         }
       }
     },
@@ -2349,16 +2359,16 @@
           "content": "Ausgegraute Einheiten sind nicht in deinem Kader. Der Balken zeigt, wie nah du an der Freischaltung bist. Wähle eine Einheit aus, um ihre Details in der Bibliothek zu öffnen."
         },
         "toolbar": {
-          "title": "Suchen, sortieren und filtern",
-          "content": "Finde eine Einheit nach Namen, ändere die Reihenfolge innerhalb jeder Fraktion und grenze die Liste mit den Filtern ein. Deine Auswahl bleibt in der Seitenadresse, sodass du neu laden oder sie teilen kannst."
+          "title": "Suchen und filtern",
+          "content": "Finde eine Einheit nach Namen, grenze die Liste mit den Filtern ein und tippe auf „Nur freigeschaltete“, um nur deine eigenen Einheiten zu sehen. Deine Auswahl bleibt in der Seitenadresse, sodass du neu laden oder sie teilen kannst."
         },
         "quickFilters": {
           "title": "Schnellfilter",
           "content": "Ein Tipp zeigt die Einheiten, an denen du als Nächstes arbeiten kannst: bereit zum Rangaufstieg, Aufstieg nötig, Aufstieg möglich, Stufe erhöhen oder bereit für den blauen Stern. Wähle einen Chip erneut, um ihn zu entfernen."
         },
         "view": {
-          "title": "Karten oder Liste",
-          "content": "Wechsle zwischen den Fraktionskarten und der Liste, einer dichteren Ansicht mit einer Zeile pro Einheit. Deine Wahl wird gespeichert. Schalte „Nach Fraktion gruppieren“ aus, um alle Einheiten zusammen in deiner Sortierung zu sehen, und „Nicht freigeschaltete ausblenden“, um nur deine eigenen Einheiten zu zeigen."
+          "title": "Ansicht",
+          "content": "Layout wechselt zwischen den Fraktionskarten und der Liste, einer dichteren Ansicht mit einer Zeile pro Einheit. „Gruppieren nach: Keine“ zeigt alle Einheiten zusammen, und die Sortierung ändert die Reihenfolge. Auf dem Handy liegt das hinter „Ansicht“."
         },
         "factionRoster": {
           "title": "Nach Fraktion gruppiert",
@@ -2554,5 +2564,13 @@
     "goHome": "Zur Startseite",
     "browseLibrary": "Bibliothek durchsuchen",
     "goToStart": "Zur Einstiegsseite"
+  },
+  "pageToolbar": {
+    "view": "Ansicht",
+    "viewTitle": "Ansichtsoptionen",
+    "groupBy": "Gruppieren nach",
+    "layout": "Layout",
+    "done": "Fertig",
+    "none": "Keine"
   }
 }

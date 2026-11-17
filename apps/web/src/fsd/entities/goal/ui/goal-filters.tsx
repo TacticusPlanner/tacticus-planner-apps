@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Filter, Group as GroupIcon } from "lucide-react"
+import { Filter } from "lucide-react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import {
   Select,
@@ -8,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+
+import { GroupByControl } from "@/shared/ui"
 
 import { GOAL_TYPE_VALUES } from "../model/types"
 import type { GoalKind } from "../model/types"
@@ -25,128 +27,86 @@ const DEFAULT_GROUP_OPTIONS: readonly GoalGroupValue[] = [
   "typePriority",
 ]
 
-type Props = {
-  /** Required only while `showTypeFilter` is (its default) `true` — Project Detail, which hides
-   *  the control, has no goal-type-filter state at all and omits both. */
-  goalType?: GoalTypeFilterValue
-  onGoalTypeChange?: (value: GoalTypeFilterValue) => void
-  group: GoalGroupValue
-  onGroupChange: (value: GoalGroupValue) => void
-  /** Hides the Type filter where every goal type is always shown. Defaults to `true`, matching
-   *  the Goals page. */
-  showTypeFilter?: boolean
-  /** Restricts which Group options render (default: all four, the Goals page's behavior). */
-  groupOptions?: readonly GoalGroupValue[]
-}
-
 /**
- * The Goals page's Type/Group filter row (goals-navigation spec, Decision 1) — extracted verbatim
- * from `goals-page.tsx` (external behavior/testids/mobile pattern unchanged), and relocated here
- * pre-emptively even though only Overview consumes it today. Filter/sort/group *application* to a
- * page's own row data stays with that page (`GoalRow` is page-local); this component only owns the
- * controlled UI for choosing the values.
+ * The Goals page's Type filter, a Find-slot select (goals-navigation spec, Decision 1). Filter
+ * *application* to a page's own row data stays with that page (`GoalRow` is page-local); this
+ * component only owns the controlled UI for choosing the value.
  */
 export function GoalFilters({
   goalType,
   onGoalTypeChange,
-  group,
-  onGroupChange,
-  showTypeFilter = true,
-  groupOptions = DEFAULT_GROUP_OPTIONS,
-}: Props) {
+}: {
+  goalType: GoalTypeFilterValue
+  onGoalTypeChange: (value: GoalTypeFilterValue) => void
+}) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
 
   const goalTypeLabel =
-    !goalType || goalType === "all"
+    goalType === "all"
       ? t("goals.filters.allTypes")
       : t(`goals.create.goalTypes.${goalType}`)
-  const groupLabel =
-    group === "none"
-      ? t("goals.filters.groupNone")
-      : group === "unit"
-        ? t("goals.filters.groupByUnit")
-        : group === "typePriority"
-          ? t("goals.filters.groupByTypePriority")
-          : t("goals.filters.groupByType")
-  // A stable purpose name for each filter's accessible name, not the current value alone — a
-  // screen-reader user on mobile (where the visible `SelectValue` is hidden) would otherwise hear
-  // just "Rank" with no indication of what that value is filtering/sorting/grouping by.
-  const typeFilterAriaLabel = t("goals.filters.typeFilterLabel")
-  const groupAriaLabel = t("goals.filters.groupByLabel")
 
+  // Mobile hides `SelectValue`, so the trigger keeps a stable purpose name and says the value
+  // through `aria-describedby`. Radix's default "item-aligned" positioning measures `SelectValue`
+  // to place the list (without it the list renders off-screen behind the scroll lock), so the
+  // content uses `position="popper"`, which positions against the trigger instead.
   return (
-    <div className="flex items-center gap-2">
-      {/* Every trigger below hides `SelectValue` on mobile, but Radix's default "item-aligned"
-       *  content positioning depends on measuring that node to align the selected item over the
-       *  trigger — without it, the content renders far off-screen (at the document's full scroll
-       *  height) while the page underneath stays inert (Radix's open-select scroll lock), making
-       *  the trigger look unresponsive. `position="popper"` positions the content relative to the
-       *  trigger itself instead, which doesn't need `SelectValue` to work. */}
-      {showTypeFilter && goalType && onGoalTypeChange ? (
-        <Select
-          onValueChange={(value) =>
-            onGoalTypeChange(value as GoalTypeFilterValue)
-          }
-          value={goalType}
-        >
-          <SelectTrigger
-            aria-describedby="goals-type-filter-value"
-            aria-label={typeFilterAriaLabel}
-            data-testid="goals-type-filter"
-          >
-            <Filter />
-            {isMobile ? null : <SelectValue />}
-            <span className="sr-only" id="goals-type-filter-value">
-              {goalTypeLabel}
-            </span>
-          </SelectTrigger>
-          <SelectContent position="popper">
-            <SelectItem value="all">{t("goals.filters.allTypes")}</SelectItem>
-            {GOAL_TYPE_VALUES.map((type) => (
-              <SelectItem key={type} value={type}>
-                {t(`goals.create.goalTypes.${type}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ) : null}
-      <Select
-        onValueChange={(value) => onGroupChange(value as GoalGroupValue)}
-        value={group}
+    <Select
+      onValueChange={(value) => onGoalTypeChange(value as GoalTypeFilterValue)}
+      value={goalType}
+    >
+      <SelectTrigger
+        aria-describedby="goals-type-filter-value"
+        aria-label={t("goals.filters.typeFilterLabel")}
+        data-testid="goals-type-filter"
       >
-        <SelectTrigger
-          aria-describedby="goals-group-value"
-          aria-label={groupAriaLabel}
-          data-testid="goals-group-by"
-        >
-          <GroupIcon />
-          {isMobile ? null : <SelectValue />}
-          <span className="sr-only" id="goals-group-value">
-            {groupLabel}
-          </span>
-        </SelectTrigger>
-        <SelectContent position="popper">
-          {groupOptions.includes("none") ? (
-            <SelectItem value="none">{t("goals.filters.groupNone")}</SelectItem>
-          ) : null}
-          {groupOptions.includes("unit") ? (
-            <SelectItem value="unit">
-              {t("goals.filters.groupByUnit")}
-            </SelectItem>
-          ) : null}
-          {groupOptions.includes("type") ? (
-            <SelectItem value="type">
-              {t("goals.filters.groupByType")}
-            </SelectItem>
-          ) : null}
-          {groupOptions.includes("typePriority") ? (
-            <SelectItem value="typePriority">
-              {t("goals.filters.groupByTypePriority")}
-            </SelectItem>
-          ) : null}
-        </SelectContent>
-      </Select>
-    </div>
+        <Filter />
+        {isMobile ? null : <SelectValue />}
+        <span className="sr-only" id="goals-type-filter-value">
+          {goalTypeLabel}
+        </span>
+      </SelectTrigger>
+      <SelectContent position="popper">
+        <SelectItem value="all">{t("goals.filters.allTypes")}</SelectItem>
+        {GOAL_TYPE_VALUES.map((type) => (
+          <SelectItem key={type} value={type}>
+            {t(`goals.create.goalTypes.${type}`)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
+}
+
+/**
+ * Group by for a goal list: the shared labelled segmented control in the page toolbar's View slot
+ * (ui-style-guide rule 3). `groupOptions` limits the choices (default: all four).
+ */
+export function GoalGroupBy({
+  group,
+  onGroupChange,
+  groupOptions = DEFAULT_GROUP_OPTIONS,
+}: {
+  group: GoalGroupValue
+  onGroupChange: (value: GoalGroupValue) => void
+  groupOptions?: readonly GoalGroupValue[]
+}) {
+  const { t } = useTranslation()
+  return (
+    <GroupByControl
+      onValueChange={onGroupChange}
+      options={groupOptions.map((value) => ({
+        value,
+        label: t(`goals.filters.groupOptions.${value}`),
+        title:
+          value === "typePriority"
+            ? t("goals.filters.groupOptionHelp.typePriority")
+            : undefined,
+        testId: `goals-group-by-${value}`,
+      }))}
+      testId="goals-group-by"
+      value={group}
+    />
   )
 }

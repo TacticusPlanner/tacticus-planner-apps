@@ -1,11 +1,15 @@
 import type { ReactNode } from "react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-/** goals-navigation spec: desktop has an actions row (Create goal first, the bulk actions, Planning
- *  Settings at the far right) above a filters row (status, Type/Group, order hint); mobile keeps the
- *  status filter in its own row and compresses the rest to icon-only triggers in a second row. The
- *  Table/Cards switch (goal-list-layout) ends the desktop filters row and leads the mobile mode toggles,
- *  with Collapse/Expand all (only while grouped) just before it. */
+import { PageHeaderSettings, PageToolbar } from "@/shared/ui"
+
+/** The Goals page toolbar (ui-style-guide rule 2, goals-navigation spec), under the project scope
+ *  chip row. Find: the status and Type filters and the order hint, plus the reorder and select
+ *  mode toggles on mobile. View: Layout, Group by, Season fit and, while grouped, Collapse/Expand
+ *  all; on mobile they sit in the View sheet. Actions: Create goal on desktop (mobile has the bottom
+ *  nav's Add Goal, which preselects the same project scope). Planning settings is the page
+ *  header's Settings button. The bulk actions show in their own row only while goals are selected
+ *  (desktop; mobile has its select bar). */
 export function GoalsToolbar({
   projectScope,
   statusFilter,
@@ -13,83 +17,83 @@ export function GoalsToolbar({
   seasonFit,
   createGoal,
   bulkActions,
+  bulkActive,
   planningSettings,
   orderHint,
   reorderToggle,
   selectToggle,
-  viewToggle,
+  layoutToggle,
+  groupBy,
   collapseToggle,
 }: {
   projectScope: ReactNode
   statusFilter: ReactNode
   filters: ReactNode
-  /** The Season fit select (goal-season-fit), after the Type/Group filters on both layouts. */
+  /** The Season fit select (goal-season-fit). */
   seasonFit: ReactNode
   createGoal: ReactNode
   bulkActions: (compact: boolean) => ReactNode
+  /** Whether any goal is selected, so the bulk actions row is shown. */
+  bulkActive: boolean
   planningSettings: ReactNode
   orderHint: ReactNode
   reorderToggle: ReactNode
   selectToggle: ReactNode
-  viewToggle: ReactNode
+  layoutToggle: ReactNode
+  groupBy: ReactNode
   collapseToggle?: ReactNode
 }) {
   const isMobile = useIsMobile()
 
-  if (isMobile) {
-    return (
-      <>
-        <div className="flex flex-wrap items-center gap-2">
-          {projectScope}
-          {statusFilter}
-        </div>
-        <div
-          className="flex flex-wrap items-center gap-2"
-          data-testid="goals-filter-group"
-        >
-          {filters}
-          {seasonFit}
-          {collapseToggle}
-          {viewToggle}
-          {reorderToggle}
-          {selectToggle}
-          {orderHint}
-          {createGoal}
-          {planningSettings}
-        </div>
-      </>
-    )
-  }
-
   return (
-    <div className="flex flex-col gap-3">
-      <div
-        className="flex flex-wrap items-center gap-2"
-        data-testid="goals-actions-row"
-      >
-        {createGoal}
-        {bulkActions(false)}
-        <div className="ml-auto">{planningSettings}</div>
-      </div>
-      <div
-        className="flex flex-wrap items-center gap-2"
-        data-testid="goals-filters-row"
-      >
+    <>
+      <PageHeaderSettings>{planningSettings}</PageHeaderSettings>
+      {/* The project scope chips stay the one row above the toolbar (goals-navigation): they
+          scope the page rather than filter it. */}
+      <div className="flex flex-col gap-3">
         {projectScope}
-        {statusFilter}
-        <div
-          className="flex items-center gap-2"
-          data-testid="goals-filter-group"
-        >
-          {filters}
-          {seasonFit}
-          {orderHint}
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          {collapseToggle}
-          {viewToggle}
-        </div>
+        <PageToolbar
+          actions={isMobile ? null : createGoal}
+          below={
+            !isMobile && bulkActive ? (
+              <div
+                className="flex flex-wrap items-center gap-2"
+                data-testid="goals-actions-row"
+              >
+                {bulkActions(false)}
+              </div>
+            ) : null
+          }
+          find={
+            <>
+              {statusFilter}
+              <div
+                className="flex items-center gap-2"
+                data-testid="goals-filter-group"
+              >
+                {filters}
+                {orderHint}
+              </div>
+              {isMobile ? (
+                <>
+                  {reorderToggle}
+                  {selectToggle}
+                </>
+              ) : null}
+            </>
+          }
+          testId="goals-toolbar"
+          viewTestId="goals-view-options"
+          view={
+            <>
+              {layoutToggle}
+              {groupBy}
+              {seasonFit}
+              {collapseToggle}
+            </>
+          }
+        />
       </div>
-    </div>
+    </>
   )
 }

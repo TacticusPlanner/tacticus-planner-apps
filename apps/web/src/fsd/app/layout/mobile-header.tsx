@@ -14,6 +14,7 @@ import {
   TourButton,
   useTourControlledPopoverOpen,
 } from "@/shared/tour"
+import { PageHeaderSettingsSlot } from "@/shared/ui"
 
 import { AuthControl } from "../providers/auth-control"
 import { useUserJot } from "../providers/userjot-provider"
@@ -68,6 +69,7 @@ export function MobileHeader({
         <div className="flex shrink-0 items-center gap-1">
           {/* Renders only on a page that registered its own tour - the app-wide navigation tour
               lives on the "Show me around" button inside the account menu. */}
+          <PageHeaderSettingsSlot />
           <PageTourButton iconOnly />
           {!isAuthenticated ? (
             <>

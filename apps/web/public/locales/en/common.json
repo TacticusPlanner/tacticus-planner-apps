@@ -398,13 +398,15 @@
           "shards": "Shards",
           "power": "Power"
         },
-        "view": "View",
         "views": {
           "cards": "Cards",
           "roster": "Roster"
         },
-        "groupByFaction": "Group by faction",
-        "hideUnowned": "Hide unowned",
+        "groupOptions": {
+          "none": "None",
+          "faction": "Faction"
+        },
+        "ownedOnly": "Owned only",
         "hideUnownedNeedsRoster": "Hiding unowned units needs a synced roster.",
         "filters": "Filters",
         "filtersCount_one": "Filters ({{count}})",
@@ -509,7 +511,7 @@
         "title": "No unit matches these filters",
         "body": "Change or clear the filters to see more units.",
         "hiddenTitle": "No owned units here",
-        "hiddenBody": "Hide unowned is hiding all of these units.",
+        "hiddenBody": "Owned only is hiding all of these units.",
         "showUnowned": "Show unowned units"
       },
       "compare": {
@@ -1703,7 +1705,16 @@
       "groupCount_one": "{{count}} goal",
       "groupCount_other": "{{count}} goals",
       "collapseAllGroups": "Collapse all",
-      "expandAllGroups": "Expand all"
+      "expandAllGroups": "Expand all",
+      "groupOptions": {
+        "none": "None",
+        "unit": "Unit",
+        "type": "Type",
+        "typePriority": "Type by priority"
+      },
+      "groupOptionHelp": {
+        "typePriority": "Type groups ordered by their top goal"
+      }
     },
     "seasonFit": {
       "label": "Season fit",
@@ -2041,7 +2052,6 @@
       "projectLimitReached": "You already have {{max}} projects that are not archived. Archive one to make room."
     },
     "view": {
-      "label": "Goals view",
       "cards": "Cards",
       "table": "Table"
     },
@@ -2196,16 +2206,12 @@
           "content": "Filter goals by Unfulfilled, Reached, Blocked, Active, or Paused."
         },
         "filters": {
-          "title": "Type and group",
-          "content": "Narrow by goal type or group related goals together."
+          "title": "Goal type",
+          "content": "Narrow the list to one goal type."
         },
         "select": {
           "title": "Select goals",
-          "content": "Tick goals to select them. The checkbox in the header selects every goal shown (on mobile, turn on Select first)."
-        },
-        "bulkActions": {
-          "title": "Bulk actions",
-          "content": "Pause, resume, add to a project or delete every selected goal at once. Bulk pause and resume act only on the goals you selected."
+          "content": "Tick goals to select them. The checkbox in the header selects every goal shown (on mobile, turn on Select first). Pause, resume, add to a project or delete them together from the bar that appears."
         },
         "createGoal": {
           "title": "Create a goal",
@@ -2236,8 +2242,12 @@
           "content": "This project has a target, so Season fit measures its goals against that deadline by default. Each goal shows Fits, During event or Misses by N d, and lines mark where goals start finishing late. Pick another option to switch."
         },
         "viewToggle": {
-          "title": "Cards or table",
-          "content": "Switch between goal cards and the compact table. Your choice is saved on this device."
+          "title": "Layout and Group by",
+          "content": "Switch between goal cards and the compact table, and group related goals together. Your choices are saved on this device."
+        },
+        "viewOptions": {
+          "title": "View",
+          "content": "Layout (cards or table), Group by and Season fit are here. Your choices are saved on this device."
         }
       }
     },
@@ -2349,16 +2359,16 @@
           "content": "Greyed-out units aren't in your roster. The bar shows how close you are to unlocking them. Select a unit to open its details in the Library."
         },
         "toolbar": {
-          "title": "Search, sort and filter",
-          "content": "Find a unit by name, change the order inside each faction, and narrow the list with Filters. Your choices stay in the page address, so you can reload or share them."
+          "title": "Search and filter",
+          "content": "Find a unit by name, narrow the list with Filters, and tap Owned only to see just the units you own. Your choices stay in the page address, so you can reload or share them."
         },
         "quickFilters": {
           "title": "Quick filters",
           "content": "One tap shows the units to work on next: ready to rank up, need to ascend, can ascend, need to level or blue star ready. Select a chip again to clear it."
         },
         "view": {
-          "title": "Cards or Roster",
-          "content": "Switch between the faction cards and Roster, a denser list with one row per unit. Your choice is remembered. Turn off Group by faction to list every unit together in your sort order, and Hide unowned to see only the units you own."
+          "title": "View",
+          "content": "Layout switches between the faction cards and Roster, a denser list with one row per unit. Group by None lists every unit together, and Sort changes the order. On a phone these are behind View."
         },
         "factionRoster": {
           "title": "Grouped by faction",
@@ -2554,5 +2564,13 @@
     "goHome": "Go to Home",
     "browseLibrary": "Browse the library",
     "goToStart": "Go to the start page"
+  },
+  "pageToolbar": {
+    "view": "View",
+    "viewTitle": "View options",
+    "groupBy": "Group by",
+    "layout": "Layout",
+    "done": "Done",
+    "none": "None"
   }
 }

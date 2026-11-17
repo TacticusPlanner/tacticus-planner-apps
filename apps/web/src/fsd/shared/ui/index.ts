@@ -51,3 +51,12 @@ export {
   formatEventWindow,
   groupSwitcherInstances,
 } from "./event-instance-switcher.model"
+export {
+  PageHeader,
+  PageHeaderSettings,
+  PageHeaderSettingsSlot,
+  PageHeaderSlotProvider,
+  PageSettingsButton,
+} from "./page-header"
+export { GroupByControl, PageToolbar, SegmentedControl } from "./page-toolbar"
+export { useViewPlacement } from "./view-placement"

@@ -10,13 +10,14 @@ import {
 } from "@workspace/ui/components/select"
 
 import { SEASON_FIT_MODES } from "@/features/goal-planning"
+import { useViewPlacement } from "@/shared/ui"
 import type { SeasonFitState } from "@/features/goal-planning"
 
 import type { TargetedFitChoice } from "./targeted-fit-choice"
 
 /**
- * The Goals toolbar's Season fit select (goal-season-fit spec): labelled on desktop, icon-only with an
- * accessible name on mobile like the Type/Group filters. A mode the catalog has no season dates for is
+ * The Goals toolbar's Season fit select (goal-season-fit spec), in the View slot: it shows its value
+ * on desktop and full width in the mobile View sheet. A mode the catalog has no season dates for is
  * disabled with the reason; while the catalog loads every mode is disabled. In a project scope with
  * a target, `projectDeadline` adds that project's deadline as the first option (project-deadline-fit).
  */
@@ -33,6 +34,9 @@ export function SeasonFitSelect<Value extends TargetedFitChoice>({
 }) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
+  // Mobile shows it in the View sheet, full width with its value; icon-only only in a bar.
+  const inSheet = useViewPlacement() === "sheet"
+  const iconOnly = isMobile && !inSheet
   const optionLabel = (mode: TargetedFitChoice) =>
     t(`goals.seasonFit.options.${mode}`)
 
@@ -44,10 +48,11 @@ export function SeasonFitSelect<Value extends TargetedFitChoice>({
       <SelectTrigger
         aria-describedby="goals-season-fit-value"
         aria-label={t("goals.seasonFit.label")}
+        className={inSheet ? "w-full" : undefined}
         data-testid="goals-season-fit"
       >
         <CalendarRange />
-        {isMobile ? null : <SelectValue />}
+        {iconOnly ? null : <SelectValue />}
         <span className="sr-only" id="goals-season-fit-value">
           {optionLabel(value)}
         </span>

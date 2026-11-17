@@ -398,13 +398,15 @@
           "shards": "Fragmentos",
           "power": "Poder"
         },
-        "view": "Vista",
         "views": {
           "cards": "Tarjetas",
           "roster": "Lista"
         },
-        "groupByFaction": "Agrupar por facción",
-        "hideUnowned": "Ocultar no desbloqueadas",
+        "groupOptions": {
+          "none": "Ninguno",
+          "faction": "Facción"
+        },
+        "ownedOnly": "Solo desbloqueadas",
         "hideUnownedNeedsRoster": "Para ocultar las unidades no desbloqueadas hace falta una plantilla sincronizada.",
         "filters": "Filtros",
         "filtersCount_one": "Filtros ({{count}})",
@@ -509,7 +511,7 @@
         "title": "Ninguna unidad coincide con estos filtros",
         "body": "Cambia o borra los filtros para ver más unidades.",
         "hiddenTitle": "No hay unidades desbloqueadas aquí",
-        "hiddenBody": "«Ocultar no desbloqueadas» está ocultando todas estas unidades.",
+        "hiddenBody": "«Solo desbloqueadas» oculta todas estas unidades.",
         "showUnowned": "Mostrar unidades no desbloqueadas"
       },
       "compare": {
@@ -1703,7 +1705,16 @@
       "groupCount_one": "{{count}} objetivo",
       "groupCount_other": "{{count}} objetivos",
       "collapseAllGroups": "Contraer todo",
-      "expandAllGroups": "Expandir todo"
+      "expandAllGroups": "Expandir todo",
+      "groupOptions": {
+        "none": "Ninguno",
+        "unit": "Unidad",
+        "type": "Tipo",
+        "typePriority": "Tipo por prioridad"
+      },
+      "groupOptionHelp": {
+        "typePriority": "Grupos de tipo ordenados por su objetivo principal"
+      }
     },
     "seasonFit": {
       "label": "Ajuste a temporada",
@@ -2041,7 +2052,6 @@
       "projectLimitReached": "Ya tienes {{max}} proyectos sin archivar. Archiva uno para hacer sitio."
     },
     "view": {
-      "label": "Vista de objetivos",
       "cards": "Tarjetas",
       "table": "Tabla"
     },
@@ -2196,16 +2206,12 @@
           "content": "Filtra los objetivos por no cumplidos, alcanzados, bloqueados, activos o en pausa."
         },
         "filters": {
-          "title": "Tipo y agrupación",
-          "content": "Filtra por tipo de objetivo o agrupa objetivos relacionados."
+          "title": "Tipo de objetivo",
+          "content": "Limita la lista a un tipo de objetivo."
         },
         "select": {
           "title": "Seleccionar objetivos",
-          "content": "Marca objetivos con su casilla. La casilla del encabezado selecciona todos los que se muestran (en el móvil, activa primero «Seleccionar»)."
-        },
-        "bulkActions": {
-          "title": "Acciones en lote",
-          "content": "Pausa, reanuda, añade a un proyecto o elimina a la vez todos los objetivos seleccionados. Pausar y reanudar en lote solo afectan a los objetivos que elijas."
+          "content": "Marca objetivos con su casilla. La casilla del encabezado selecciona todos los que se muestran (en el móvil, activa primero «Seleccionar»). Desde la barra que aparece puedes pausarlos, reanudarlos, añadirlos a un proyecto o eliminarlos a la vez."
         },
         "createGoal": {
           "title": "Crear un objetivo",
@@ -2236,8 +2242,12 @@
           "content": "Este proyecto tiene un objetivo, así que el ajuste a temporada mide sus objetivos con esa fecha límite por defecto. Cada objetivo muestra A tiempo, Durante el evento o Tarde por N d, y unas líneas marcan dónde empiezan a terminar tarde. Elige otra opción para cambiar."
         },
         "viewToggle": {
-          "title": "Tarjetas o tabla",
-          "content": "Cambia entre las tarjetas de objetivos y la tabla compacta. Tu elección se guarda en este dispositivo."
+          "title": "Diseño y agrupación",
+          "content": "Cambia entre las tarjetas de objetivos y la tabla compacta, y agrupa los objetivos relacionados. Tu elección se guarda en este dispositivo."
+        },
+        "viewOptions": {
+          "title": "Vista",
+          "content": "Aquí están el diseño (tarjetas o tabla), la agrupación y el ajuste a la temporada. Tu elección se guarda en este dispositivo."
         }
       }
     },
@@ -2349,16 +2359,16 @@
           "content": "Las unidades en gris no están en tu plantilla. La barra muestra lo cerca que estás de desbloquearlas. Selecciona una unidad para abrir sus detalles en la Biblioteca."
         },
         "toolbar": {
-          "title": "Buscar, ordenar y filtrar",
-          "content": "Encuentra una unidad por su nombre, cambia el orden dentro de cada facción y acota la lista con los filtros. Tus elecciones quedan en la dirección de la página, así que puedes recargarla o compartirla."
+          "title": "Buscar y filtrar",
+          "content": "Encuentra una unidad por su nombre, acota la lista con los filtros y pulsa «Solo desbloqueadas» para ver solo las que tienes. Tus elecciones quedan en la dirección de la página, así que puedes recargarla o compartirla."
         },
         "quickFilters": {
           "title": "Filtros rápidos",
           "content": "Con un toque ves las unidades en las que trabajar a continuación: lista para subir de rango, necesita ascender, puede ascender, necesita subir de nivel o lista para la estrella azul. Vuelve a seleccionar un filtro para quitarlo."
         },
         "view": {
-          "title": "Tarjetas o lista",
-          "content": "Cambia entre las tarjetas de facción y la lista, una vista más compacta con una fila por unidad. Tu elección se recuerda. Desactiva «Agrupar por facción» para ver todas las unidades juntas en tu orden, y usa «Ocultar no desbloqueadas» para ver solo las que tienes."
+          "title": "Vista",
+          "content": "Diseño cambia entre las tarjetas de facción y la lista, una vista más compacta con una fila por unidad. «Agrupar por: Ninguno» muestra todas las unidades juntas y el orden cambia la secuencia. En el móvil están tras «Vista»."
         },
         "factionRoster": {
           "title": "Agrupadas por facción",
@@ -2554,5 +2564,13 @@
     "goHome": "Ir a Inicio",
     "browseLibrary": "Explorar la biblioteca",
     "goToStart": "Ir a la página principal"
+  },
+  "pageToolbar": {
+    "view": "Vista",
+    "viewTitle": "Opciones de vista",
+    "groupBy": "Agrupar por",
+    "layout": "Diseño",
+    "done": "Listo",
+    "none": "Ninguno"
   }
 }
