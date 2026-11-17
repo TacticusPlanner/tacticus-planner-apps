@@ -313,7 +313,7 @@ The estimates-failed notice (with its retry) and the "no farmable demand" line S
 
 ### Requirement: Users choose between a Cards view and a Table view, Cards by default
 
-The Goals toolbar SHALL contain a two-option Table/Cards toggle at every width: in the filters row (`goals-navigation`) at or above the mobile breakpoint, and in the mobile control row below it. The toggle SHALL have an accessible group name and an accessible name and pressed state for each option. Selecting an option SHALL switch the Goals list between the cards and the table at once, without reloading goals or estimates, and SHALL keep the current filters, Group, project scope, season-fit mode, selection and scroll context.
+The Goals toolbar SHALL contain a two-option Layout control (Cards, Table) at every width: the shared labelled segmented control in the page toolbar's View slot (`goals-navigation`), behind the View button below the mobile breakpoint. It SHALL be labelled "Layout" and be exposed as a radio group with the selected layout checked. Selecting an option SHALL switch the Goals list between the cards and the table at once, without reloading goals or estimates, and SHALL keep the current filters, Group, project scope, season-fit mode, selection and scroll context.
 
 The choice SHALL be stored per device, in browser storage, so a player can keep Cards on a phone and Table on a desktop. It SHALL NOT be stored in the URL or in the account's user settings, and SHALL NOT follow the account to another browser. The default SHALL be `Cards`. The client SHALL treat a missing or unrecognized stored value as `Cards`. When the browser refuses the write, the choice SHALL still apply for the rest of the visit (`browser-storage-resilience`).
 
@@ -323,7 +323,7 @@ The stored view SHALL be read synchronously, so the list SHALL NOT wait for it a
 
 - **GIVEN** a browser that has never stored a Goals view
 - **WHEN** the Goals page opens at 1280px or 420px wide
-- **THEN** the list renders as cards and the toggle shows Cards as pressed
+- **THEN** the list renders as cards and the Layout control shows Cards as checked
 
 #### Scenario: Switching to Table persists on this device
 
@@ -347,7 +347,7 @@ The stored view SHALL be read synchronously, so the list SHALL NOT wait for it a
 
 - **GIVEN** the Goals page below the mobile breakpoint in Table view
 - **WHEN** the user turns reorder mode on
-- **THEN** the list shows the collapsed reorder cards with the Table/Cards toggle disabled, and leaving reorder mode returns to the table
+- **THEN** the list shows the collapsed reorder cards with the Layout control disabled, and leaving reorder mode returns to the table
 
 ### Requirement: Goal cards share one layout on every platform
 

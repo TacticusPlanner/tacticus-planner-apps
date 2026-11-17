@@ -75,33 +75,38 @@ When there is at least one goal in the Reached status and the status filter's cu
 
 ### Requirement: Goals controls compress on mobile
 
-Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row first, then keep the status filter (with its reached-indicator) in its own row. The Type/Group filters, the reorder-mode toggle (always present; disabled while goals load or when reordering is unavailable), the select-mode toggle (`goal-bulk-actions`; always present, disabled while goals load or when no row is visible), the order info affordance, the contextual Create Goal action, and the Planning Settings control SHALL render as icon-only triggers in a third row, each retaining an accessible name for its full label. Because every control in this row is present from the first render, the row SHALL NOT shift when goals finish loading. The bulk actions themselves SHALL NOT render in this row; they live in the select-mode bottom bar. When the controls do not fit one line (for example at 360px, and with the density control (`goal-list-layout`)), the row SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
+Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row first, then the page toolbar (`app-page-layout`). The toolbar's Find slot SHALL hold the status filter (with its reached-indicator), the Type filter, the order info affordance, the reorder-mode toggle (always present; disabled while goals load or when reordering is unavailable) and the select-mode toggle (`goal-bulk-actions`; always present, disabled while goals load or when no row is visible); the Type filter and the toggles SHALL render as icon-only triggers, each retaining an accessible name for its full label. The View button SHALL sit at the top right of the toolbar and open a sheet holding Layout, Group by, Season fit and Collapse all, stacked and full width. Planning Settings SHALL be the page header's Settings icon button. Create Goal SHALL NOT render in the toolbar on mobile; the bottom navigation's Add goal button is the mobile entry point (`goal-creation-entry-points`). Because every control is present from the first render, the toolbar SHALL NOT shift when goals finish loading. The bulk actions themselves SHALL NOT render in the toolbar; they live in the select-mode bottom bar. When the Find controls do not fit one line (for example at 360px), they SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
 
-#### Scenario: Mobile Overview keeps the status filter on its own row
-
-- **WHEN** Goals is viewed below the 768px breakpoint
-- **THEN** the scope chip row renders first, the status filter renders in its own row beneath it, and the Type/Group filters, reorder and select toggles, order info affordance, contextual Create Goal action, and Planning Settings control render in a row beneath that
-
-#### Scenario: Mobile filter and settings controls show icons without text labels
+#### Scenario: Mobile Goals order
 
 - **WHEN** Goals is viewed below the 768px breakpoint
-- **THEN** the Type/Group filters, the select-mode toggle, the contextual Create Goal action, and the Planning Settings control render their icon only, without visible text labels, while each remains identifiable via its accessible name
+- **THEN** the scope chip row renders first, and the toolbar beneath it holds the status filter, Type filter, order info affordance and reorder and select toggles, with the View button at its top right
 
-#### Scenario: The mobile reorder toggle is a control-row icon
+#### Scenario: Mobile filter controls show icons without text labels
+
+- **WHEN** Goals is viewed below the 768px breakpoint
+- **THEN** the Type filter, the reorder-mode toggle and the select-mode toggle render their icon only, without visible text labels, while each remains identifiable via its accessible name, and the header's Settings button is an icon button named "Settings"
+
+#### Scenario: Mobile View sheet
+
+- **WHEN** the user taps View below the 768px breakpoint
+- **THEN** a sheet titled "View options" opens with Layout, Group by, Season fit and Collapse all, and Done closes it
+
+#### Scenario: The mobile reorder toggle is a toolbar icon
 
 - **GIVEN** at least two Active or Paused goals are visible and the status filter allows reordering
 - **WHEN** Goals is viewed below the 768px breakpoint
-- **THEN** an icon-only reorder-mode toggle with an accessible name appears enabled in the same control row, and it stays in place but disabled when reordering is unavailable
+- **THEN** an icon-only reorder-mode toggle with an accessible name appears enabled in the toolbar, and it stays in place but disabled when reordering is unavailable
 
-#### Scenario: The mobile control row does not shift while goals load
+#### Scenario: The mobile toolbar does not shift while goals load
 
 - **WHEN** Goals is viewed below the 768px breakpoint and the goal list is still loading
-- **THEN** the reorder-mode and select-mode toggles render disabled in their final positions, and Create Goal and Planning Settings do not move when the list arrives
+- **THEN** the reorder-mode and select-mode toggles render disabled in their final positions, and the View button does not move when the list arrives
 
-#### Scenario: A crowded mobile control row wraps
+#### Scenario: A crowded mobile toolbar wraps
 
 - **WHEN** Goals is viewed at 360px with every control present
-- **THEN** the controls wrap onto a further line and none is clipped, hidden, or reachable only by horizontal scrolling
+- **THEN** the Find controls wrap onto a further line and none is clipped, hidden, or reachable only by horizontal scrolling
 
 ### Requirement: Project-aware browsing defaults to all goals
 
@@ -279,7 +284,7 @@ While a project scope is selected, Goals' contextual Create goal action SHALL la
 
 ### Requirement: Goals explains its priority order compactly
 
-Goals SHALL present its priority-order explanation as an info affordance in the control row (an icon with an accessible name whose content opens on click or tap and on keyboard focus) rather than a full-width paragraph, at both breakpoints. With "All goals" selected the content SHALL state that goals are in the account-wide priority order, that dragging an Active or Paused goal moves it, and that the change applies to every project, Today, Raids Plan, and Insights. With a project selected it SHALL additionally state that each number is the goal's position in the account-wide order, so a project's goals can show gaps such as 1, 3, 5, and that moving a goal here also moves it in that order. The affordance SHALL render only when reordering is available and the list is non-empty.
+Goals SHALL present its priority-order explanation as an info affordance in the page toolbar's Find slot (an icon with an accessible name whose content opens on click or tap and on keyboard focus) rather than a full-width paragraph, at both breakpoints. With "All goals" selected the content SHALL state that goals are in the account-wide priority order, that dragging an Active or Paused goal moves it, and that the change applies to every project, Today, Raids Plan, and Insights. With a project selected it SHALL additionally state that each number is the goal's position in the account-wide order, so a project's goals can show gaps such as 1, 3, 5, and that moving a goal here also moves it in that order. The affordance SHALL render only when reordering is available and the list is non-empty.
 
 #### Scenario: Unscoped explanation
 
@@ -326,20 +331,20 @@ The Goals page's project scope chip row SHALL NOT be treated as a project select
 - **WHEN** the scope chip row lists projects
 - **THEN** it may show them as color-and-name chips without a Default marker without violating the consistent-project-selector requirement
 
-### Requirement: Goals controls form an actions row and a filters row on desktop
+### Requirement: Goals controls form one toolbar on desktop
 
-At or above the 768px desktop breakpoint, Goals SHALL render, directly beneath the project scope chip row, first an actions row and then a filters row, and no other row of controls. The actions row SHALL contain, in order from the left: the contextual Create Goal action, then the bulk actions Pause, Resume, Add to project and Delete (`goal-bulk-actions`: disabled with an empty selection, labelled with the selected count otherwise), and at the far right the Planning Settings control. The filters row SHALL contain, in order: the status filter, the Type and Group filters, and the order info affordance. The bulk actions SHALL remain present, disabled, when nothing is selected rather than appearing only on selection, so the row does not change shape as the selection changes. Neither row SHALL wrap at or above 1024px with every control present.
+At or above the 768px desktop breakpoint, Goals SHALL render, directly beneath the project scope chip row, the page toolbar (`app-page-layout`) and no other row of controls. Its Find slot SHALL hold, in order, the status filter, the Type filter and the order info affordance; its View slot SHALL hold Layout, Group by, Season fit and Collapse all; its Actions slot, at the far right, SHALL hold the filled Create Goal action. Planning Settings SHALL be the page header's Settings button. While at least one goal is selected, the toolbar SHALL show a bulk actions row under its controls with Pause, Resume, Add to project and Delete (`goal-bulk-actions`); with nothing selected that row SHALL NOT render. When the window is too narrow for one line, the View and Actions slots SHALL wrap together under Find, still at the right, so Create Goal is never alone on a line.
 
-#### Scenario: Desktop Goals renders two control rows
+#### Scenario: Desktop Goals renders one toolbar
 
-- **WHEN** Goals is viewed at or above the 768px breakpoint
-- **THEN** an actions row holding Create Goal, Pause, Resume, Add to project, Delete and Planning Settings appears immediately below the scope chip row, a filters row holding the status filter, Type/Group filters and order info affordance appears immediately below it, and no further control row renders
+- **WHEN** Goals is viewed at or above the 768px breakpoint with no goal selected
+- **THEN** the toolbar below the scope chip row holds the status filter, Type filter and order info affordance on the left, Layout, Group by, Season fit and Collapse all toward the right, Create Goal at the far right, and no bulk actions row; Settings sits at the right end of the page header
 
-#### Scenario: The actions row keeps its shape with nothing selected
+#### Scenario: Selecting goals shows the bulk actions
 
 - **GIVEN** no goal is selected
-- **WHEN** the actions row renders
-- **THEN** Pause, Resume, Add to project and Delete are present and disabled, occupying the same positions they occupy with a selection
+- **WHEN** the user selects two goals
+- **THEN** a bulk actions row with Pause, Resume, Add to project and Delete appears under the toolbar controls, and it goes away when the selection is cleared
 
 ### Requirement: Goals list controls are URL state
 

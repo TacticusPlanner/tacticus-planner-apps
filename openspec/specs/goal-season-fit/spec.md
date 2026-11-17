@@ -10,7 +10,7 @@ Lets the Goals page show, for a chosen season type (Battle Pass, Guild Raid or G
 
 The Goals page SHALL offer a **Season fit** select with the options Off, Battle Pass, Guild Raid and Guild War, defaulting to Off. The choice SHALL be persisted per browser and SHALL survive navigating away and a reload. The same choice SHALL apply on the unscoped Goals page and when Goals is scoped to a project without a target (`?project=`); changing scope SHALL NOT reset it. When Goals is scoped to a project with a target, the select SHALL be replaced by a read-only "Using project deadline" chip, the project's deadline fit (`project-deadline-fit`) SHALL apply instead, and the stored choice SHALL be kept and apply again when the scope changes. It SHALL NOT be URL state and SHALL NOT affect Dailies, Schedule or Insights.
 
-On desktop the select (or the chip) SHALL sit in the filters row after the Type and Group filters. On mobile it SHALL sit in the second control row as an icon-only trigger with an accessible name, like the other compressed filters.
+The select (or the chip) SHALL sit in the page toolbar's View slot after Group by. On mobile the View slot is behind the toolbar's View button; in that sheet the select SHALL be full width and show its current value.
 
 #### Scenario: Choice survives reload and scope change
 
@@ -32,7 +32,7 @@ On desktop the select (or the chip) SHALL sit in the filters row after the Type 
 #### Scenario: Mobile control
 
 - **WHEN** the Goals page renders below 768px
-- **THEN** the Season fit trigger is an icon button named "Season fit" in the second control row, and choosing a mode from it updates the cards
+- **THEN** the Season fit select is in the toolbar's View sheet, full width with its current value, and choosing a mode from it updates the cards
 
 ### Requirement: Season windows come from the events catalog
 
