@@ -12,7 +12,7 @@ import type {
   DailyRaidResourceProgress,
   DailyRaidResourceVisual,
 } from "../model/daily-raids.domain"
-import { isLocationVisible } from "../model/location-visibility"
+import { visibleLocationEntries } from "../model/location-visibility"
 import { CantRaidMenu, ManualBattleBadge } from "./manual-battle"
 import {
   materialNeed,
@@ -110,8 +110,9 @@ export function ResourceCard({
     // here — once every location for this entry is spent, the whole card is omitted (nothing left
     // to raid). Missing real data (e.g. an event-campaign node) is treated as "not exhausted"
     // rather than guessed at.
-    const visibleEntries = resourceEntries.filter((entry) =>
-      isLocationVisible(entry, attemptsLeftByBattle)
+    const visibleEntries = visibleLocationEntries(
+      resourceEntries,
+      attemptsLeftByBattle
     )
     if (visibleEntries.length === 0) return null
     const need = materialNeed(resourceEntries)

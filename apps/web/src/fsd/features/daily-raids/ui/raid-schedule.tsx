@@ -17,6 +17,7 @@ import {
 } from "../model/campaign-clustering"
 import { groupScheduleByCampaign } from "../model/campaign-groups"
 import { isLocationVisible } from "../model/location-visibility"
+import { useRaidGrouping } from "../model/raid-grouping/use-raid-grouping"
 import { CampaignGroup } from "./campaign-group"
 import type { RaidLocationTarget } from "./raid-location-name"
 import { GoalTargetBadge, ResourceCard, UnitIcon } from "./resource-card"
@@ -78,6 +79,10 @@ export function RaidSchedule({
   grouping?: "goal" | "combined"
   testId: string
 }) {
+  const [raidGrouping] = useRaidGrouping()
+  // The location lists (Today, Bonus Raids) follow the grouping picked on Dailies > Raids: one card
+  // per upgrade, or one group per campaign. The material lists (Raids Plan) are always by upgrade.
+  const byCampaign = emphasis === "location" && raidGrouping === "campaign"
   const group = (groupedEntries: RaidBreakdownEntry[]) =>
     grouping === "combined"
       ? combineEntries(groupedEntries)
@@ -111,9 +116,9 @@ export function RaidSchedule({
     const onlyVisual = onlyResource
       ? resourceVisuals.get(onlyResource.resourceId)
       : undefined
-    // Campaign groups name no unit, so only the material cards fold the goal into a shard card.
+    // Campaign groups name no unit, so only the upgrade cards fold the goal into a shard card.
     const combinesShardIdentity =
-      emphasis === "material" &&
+      !byCampaign &&
       grouping === "goal" &&
       onlyVisual?.kind === "shard" &&
       onlyVisual.unitId === goal.unitId
@@ -143,7 +148,7 @@ export function RaidSchedule({
           className="grid gap-2 md:grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))] md:gap-3"
           data-testid={`raid-resource-grid-${goal.goalId}`}
         >
-          {emphasis === "location"
+          {byCampaign
             ? groupScheduleByCampaign(
                 resources,
                 (battleId) => locationsByBattleId.get(battleId)?.campaignKey,

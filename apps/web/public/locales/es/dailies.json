@@ -606,6 +606,15 @@
       "insights": "Ver en Insights lo que no se puede farmear"
     }
   },
+  "grouping": {
+    "label": "Agrupar por",
+    "upgrade": "Mejora",
+    "campaign": "Campaña",
+    "help": {
+      "upgrade": "Una tarjeta por mejora, con las batallas que la sueltan. Se aplica a todas las listas de incursiones en este dispositivo.",
+      "campaign": "Un encabezado por campaña con una fila por batalla, para quedarte en una campaña. Se aplica a todas las listas de incursiones en este dispositivo."
+    }
+  },
   "quickFilters": {
     "label": "Filtros rápidos",
     "chip": {

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { PlanningSettingsTrigger } from "@/entities/planning-setting"
 import { ProjectSelect } from "@/entities/project"
 import {
+  RaidGroupingSwitch,
   RaidsFiltersTrigger,
   TodayQuickFilterChips,
 } from "@/features/daily-raids"
@@ -13,8 +14,8 @@ import type { DailiesOutletContext } from "../dailies-layout"
 type QuickFilters = ReturnType<typeof useTodayQuickFilters>[0]
 
 /**
- * Today's one controls row: the quick filter chips, then the project selector, Raids Filters and
- * Planning settings. It wraps chips first when narrow; a quick filter's note sits under the row.
+ * Today's one controls row: the quick filter chips, then the raid grouping switch (the only place it
+ * is picked; every raid list follows it), the project selector, Raids Filters and Planning settings. It wraps chips first when narrow; a quick filter's note sits under the row.
  */
 export function TodayControls({
   context,
@@ -39,6 +40,7 @@ export function TodayControls({
         onChange={onQuickFiltersChange}
         trailing={
           <div className="flex flex-wrap items-center gap-2">
+            <RaidGroupingSwitch />
             <ProjectSelect
               allowAll
               onProjectIdChange={context.setProjectId}
