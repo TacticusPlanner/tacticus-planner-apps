@@ -689,6 +689,58 @@ describe("shopping list", () => {
     )
   })
 
+  describe("budget", () => {
+    const withIncome = (free: number, bonusShipment: number) => ({
+      ...runningEvent,
+      weeks: runningEvent.weeks.map((week) => ({
+        ...week,
+        estimatedWeeklyIncome: { free, bonusShipment },
+      })),
+    })
+    // Spend = bought 1 × 15 (Mon) + still to buy 2 × 15 (Fri) = 45; Mon's missed pack is not spent.
+    const cart = () =>
+      plan([
+        cartEntry("MON", 2, "abilityTokenUncommon_Imperial", 2, 1),
+        cartEntry("FRI", 2, "abilityTokenUncommon_Imperial", 2, 0),
+      ])
+
+    it("compares what the plan spends with the event's income", () => {
+      events = [endedEvent, withIncome(750, 1000), upcomingEvent]
+      storedPlan = cart()
+      renderPage("/plan/event-shop/october-2026")
+
+      expect(screen.getByTestId("event-shop-budget")).toHaveTextContent(
+        "list.budget.title 45"
+      )
+      expect(screen.getByTestId("event-shop-budget-free")).toHaveTextContent(
+        "list.budget.free 1,5001,455list.budget.left"
+      )
+      expect(
+        screen.getByTestId("event-shop-budget-withBonus")
+      ).toHaveTextContent("list.budget.withBonus 3,5003,455list.budget.left")
+    })
+
+    it("says how far over the income the plan goes", () => {
+      events = [endedEvent, withIncome(10, 5), upcomingEvent]
+      storedPlan = cart()
+      renderPage("/plan/event-shop/october-2026")
+
+      expect(screen.getByTestId("event-shop-budget-free")).toHaveTextContent(
+        "list.budget.free 2025list.budget.over"
+      )
+      expect(
+        screen.getByTestId("event-shop-budget-withBonus")
+      ).toHaveTextContent("list.budget.withBonus 3015list.budget.over")
+    })
+
+    it("is absent while a week has no income estimate", () => {
+      storedPlan = cart()
+      renderPage("/plan/event-shop/october-2026")
+
+      expect(screen.queryByTestId("event-shop-budget")).toBeNull()
+    })
+  })
+
   it("marks all of today bought", async () => {
     storedPlan = plan([cartEntry("THU", 2, "abilityTokenUncommon_Imperial", 2)])
     renderPage("/plan/event-shop/october-2026")

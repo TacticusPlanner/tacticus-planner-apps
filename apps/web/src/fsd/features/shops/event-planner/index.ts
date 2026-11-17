@@ -10,6 +10,7 @@ export {
   setQuantity,
   undoBought,
 } from "./model/cart"
+export { eventShopBudget, type EventShopBudget } from "./model/budget"
 export { classifyCart, type ClassifiedEntry } from "./model/classify"
 export { entryKey } from "./model/entry"
 export {

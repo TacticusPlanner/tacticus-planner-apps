@@ -146,6 +146,13 @@
       "missed": "Manqué",
       "inCart": "Prévu"
     },
+    "budget": {
+      "title": "Acheté + reste à acheter",
+      "free": "≈ gratuits",
+      "withBonus": "≈ avec livraison bonus",
+      "left": "restants",
+      "over": "en trop"
+    },
     "view": {
       "label": "Afficher",
       "upcoming": "À venir",
