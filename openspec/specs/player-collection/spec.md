@@ -588,14 +588,14 @@ While no synced roster is available (signed out, not synced, only part of the ro
 
 ### Requirement: Collection toolbar state lives in the URL and the sort is remembered
 
-The search text, every standalone filter, the quick filter and the sort SHALL be held in the page URL's query parameters, so that reload, Back and a shared link restore them.
+The search text, every standalone filter and the sort SHALL be held in the page URL's query parameters, so that reload, Back and a shared link restore them.
 
-- A value equal to its default (empty search, unset filter, no quick filter) SHALL NOT appear in the URL.
+- A value equal to its default (empty search, unset filter) SHALL NOT appear in the URL.
 - Changing them SHALL replace the current history entry rather than add one.
 
 Invalid query values SHALL be handled as follows:
 
-- An invalid value SHALL be dropped from the URL and treated as unset. This covers an unknown faction, rarity, rank, progression step, damage type, trait, shard source, quick filter or sort, and a number the catalog does not offer.
+- An invalid value SHALL be dropped from the URL and treated as unset. This covers an unknown faction, rarity, rank, progression step, kind, damage type, trait, shard source or sort, and a number the catalog does not offer.
 - In a list of factions, rarities, damage types, traits or shard sources, only the unknown items SHALL be dropped, and the valid ones SHALL still apply.
 - A range set backwards SHALL be rewritten in the URL with its ends swapped.
 
@@ -605,7 +605,9 @@ The sort the user last selected SHALL also be remembered in this browser and SHA
 
 The view is held and remembered the same way (see "Collection view is remembered").
 
-Search, filters and quick filter SHALL NOT be remembered beyond the URL: opening `/my-game/collection` without query parameters shows every unit.
+The quick filter SHALL be remembered per device (in this browser's storage) instead of the URL: selecting or clearing a chip, or Clear filters, SHALL NOT change the URL, and opening `/my-game/collection` again on the same device shows the last quick filter chosen there. The URL SHALL NOT carry the quick filter, and an unknown stored value is treated as none.
+
+Search and filters SHALL NOT be remembered beyond the URL: opening `/my-game/collection` without query parameters shows every unit that matches the remembered quick filter (every unit when none is remembered).
 
 Hide unowned SHALL be held as `owned=owned`. Unlike the sort, view and grouping, it SHALL NOT be remembered in the browser: it applies only while the URL carries it.
 
@@ -613,19 +615,19 @@ Hide unowned SHALL be held as `owned=owned`. Unlike the sort, view and grouping,
 
 - **GIVEN** the user has set the Xenos alliance filter, the Can ascend quick filter and sort Shards
 - **WHEN** they reload the page
-- **THEN** the same filter, quick filter and sort are applied
+- **THEN** the same filter, quick filter and sort are applied; the quick filter comes from this device, not the URL
 
 #### Scenario: Remembered sort on a fresh visit
 
-- **GIVEN** the user last selected sort Rank and later opens `/my-game/collection` from the navigation, with no query parameters
+- **GIVEN** the user last selected sort Rank and the Need to level quick filter, and later opens `/my-game/collection` from the navigation, with no query parameters
 - **WHEN** the page renders
-- **THEN** sort Rank is applied and no filter is active
+- **THEN** sort Rank and the Need to level quick filter are applied and no other filter is active
 
 #### Scenario: Invalid value in the URL
 
-- **GIVEN** the URL carries an unknown quick filter value
+- **GIVEN** the URL carries an unknown kind value
 - **WHEN** the page renders
-- **THEN** that value is removed from the URL and no quick filter is applied
+- **THEN** that value is removed from the URL and no kind filter is applied
 
 #### Scenario: Unknown faction in a shared link
 

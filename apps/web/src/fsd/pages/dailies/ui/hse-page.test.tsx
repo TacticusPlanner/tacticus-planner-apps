@@ -619,8 +619,9 @@ describe("HSE list controls", () => {
     ).toBeNull()
     await user.click(screen.getByTestId("today-quick-filter-combineGoals"))
 
-    expect(screen.getByTestId("location")).toHaveTextContent(
-      "quick=combineGoals"
+    expect(screen.getByTestId("location")).not.toHaveTextContent("quick")
+    expect(localStorage.getItem("dailies.quick-filters.v1")).toBe(
+      "combineGoals"
     )
     expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
       quickFilters: { combineGoals: true },

@@ -12,8 +12,8 @@ import type { DailiesOutletContext } from "./dailies-layout"
 type QuickFilters = ReturnType<typeof useTodayQuickFilters>[0]
 
 /**
- * The raid list controls of the HSE and HRE tabs: Today's quick filter chips (the same `quick` URL
- * state, so they carry with a shared link), then the Dailies-wide project selector (shared with
+ * The raid list controls of the HSE and HRE tabs: Today's quick filter chips (the same chips,
+ * remembered per browser), then the Dailies-wide project selector (shared with
  * Today, so a project picked on one tab holds on the others) and the Raids Filters action (the one
  * persisted filter). The project narrows the goals the suggestions serve; the filters and the quick
  * filters narrow or reorder the locations.

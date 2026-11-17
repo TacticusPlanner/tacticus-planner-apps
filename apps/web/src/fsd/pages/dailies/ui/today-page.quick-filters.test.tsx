@@ -64,6 +64,8 @@ function renderToday(entry = "/") {
   )
 }
 
+const STORAGE_KEY = "dailies.quick-filters.v1"
+
 const lastQuickFilters = () =>
   (dailyRaidsArgs.at(-1)?.[1] as { quickFilters: unknown }).quickFilters
 
@@ -89,7 +91,7 @@ describe("Today quick filters", () => {
     expect(screen.getByTestId("search")).toHaveTextContent("")
   })
 
-  it("turns chips on together, explains each and writes the URL", async () => {
+  it("turns chips on together, explains each and remembers them on this device", async () => {
     const user = userEvent.setup()
     renderToday()
 
@@ -102,9 +104,8 @@ describe("Today quick filters", () => {
     expect(
       screen.getByTestId("today-quick-filter-note-combineGoals")
     ).toBeInTheDocument()
-    expect(screen.getByTestId("search")).toHaveTextContent(
-      "?quick=combineGoals"
-    )
+    expect(screen.getByTestId("search")).toHaveTextContent("")
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBe("combineGoals")
 
     await user.click(screen.getByTestId("today-quick-filter-fewerRaids"))
     expect(lastQuickFilters()).toEqual({
@@ -115,8 +116,8 @@ describe("Today quick filters", () => {
     expect(
       screen.getByTestId("today-quick-filter-note-fewerRaids")
     ).toBeInTheDocument()
-    expect(screen.getByTestId("search")).toHaveTextContent(
-      "?quick=fewerRaids%2CcombineGoals"
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBe(
+      "fewerRaids,combineGoals"
     )
 
     await user.click(screen.getByTestId("today-quick-filter-combineGoals"))
@@ -126,7 +127,21 @@ describe("Today quick filters", () => {
       combineGoals: false,
       raidableOnly: false,
     })
-    expect(screen.getByTestId("search")).toHaveTextContent("")
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull()
+  })
+
+  it("restores the remembered chips when Today opens again", () => {
+    window.localStorage.setItem(STORAGE_KEY, "fewerRaids,nope")
+    renderToday()
+    expect(lastQuickFilters()).toEqual({
+      fewerRaids: true,
+      combineGoals: false,
+      raidableOnly: false,
+    })
+    expect(screen.getByTestId("today-quick-filter-fewerRaids")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
   })
 
   it("reopens Bonus raids on its top 3 when a quick filter changes", async () => {
@@ -145,31 +160,6 @@ describe("Today quick filters", () => {
     expect(
       screen.getByRole("button", { name: "Show 1 more" })
     ).toBeInTheDocument()
-  })
-
-  it("restores chips from the URL and ignores unknown values", () => {
-    renderToday("/?quick=fewerRaids,nope")
-    expect(lastQuickFilters()).toEqual({
-      fewerRaids: true,
-      combineGoals: false,
-      raidableOnly: false,
-    })
-    expect(screen.getByTestId("today-quick-filter-fewerRaids")).toHaveAttribute(
-      "data-state",
-      "on"
-    )
-  })
-
-  it("reads an old Bottlenecks link as Combine goals", () => {
-    renderToday("/?quick=bottlenecks")
-    expect(lastQuickFilters()).toEqual({
-      fewerRaids: false,
-      combineGoals: true,
-      raidableOnly: false,
-    })
-    expect(
-      screen.getByTestId("today-quick-filter-combineGoals")
-    ).toHaveAttribute("data-state", "on")
   })
 
   it("offers Raidable only only while today's plan raids a manual battle", async () => {
@@ -192,7 +182,8 @@ describe("Today quick filters", () => {
   })
 
   it("keeps Raidable only visible while it is on, so it can be turned off", () => {
-    renderToday("/?quick=raidableOnly")
+    window.localStorage.setItem(STORAGE_KEY, "raidableOnly")
+    renderToday()
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
       combineGoals: false,

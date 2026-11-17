@@ -47,8 +47,8 @@ const IGNORE_GOALS_PARAM = "ignoreGoals"
  * data gets its event details (tier, description, milestones) and, when running or upcoming and
  * personal, its points projection and event teams for Arena, Onslaught and Salvage Run. Only a
  * running or upcoming rule-bearing instance also gets the raid list, which follows the Dailies
- * project (every active goal without one), the Raids Filters and Today's quick filters (the `quick`
- * URL state), all picked in the controls row above it (and shared with Today), and the Planning
+ * project (every active goal without one), the Raids Filters and Today's quick filters (remembered
+ * per browser), all picked in the controls row above it (and shared with Today), and the Planning
  * Settings chosen on Today. The list's Sort switch (points per energy, energy per item, or "Ignore
  * goals", which swaps the farm list for every point-earning location) is held in the `order` URL
  * parameter. Order: status line, details (beside

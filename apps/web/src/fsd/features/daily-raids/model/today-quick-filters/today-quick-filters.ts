@@ -17,24 +17,15 @@ export type TodayQuickFilterOptions = {
 export const isTodayQuickFilter = (value: string): value is TodayQuickFilter =>
   (TODAY_QUICK_FILTERS as readonly string[]).includes(value)
 
-/** Earlier `quick` values still accepted from saved links: "bottlenecks" became "combineGoals". */
-const LEGACY_QUICK_FILTERS: Readonly<Record<string, TodayQuickFilter>> = {
-  bottlenecks: "combineGoals",
-}
-
-/** The `quick` search parameter as a comma list: unknown values are dropped, display order kept. */
+/** The stored quick filters as a comma list: unknown values are dropped, display order kept. */
 export function parseTodayQuickFilters(
   value: string | null
 ): TodayQuickFilter[] {
-  const values = new Set(
-    (value ?? "")
-      .split(",")
-      .map((quick) => LEGACY_QUICK_FILTERS[quick] ?? quick)
-  )
+  const values = new Set((value ?? "").split(","))
   return TODAY_QUICK_FILTERS.filter((quick) => values.has(quick))
 }
 
-/** The `quick` search parameter for `filters`, or `null` to remove it. */
+/** The stored value for `filters`, or `null` when none is on. */
 export function serializeTodayQuickFilters(
   filters: readonly TodayQuickFilter[]
 ): string | null {
