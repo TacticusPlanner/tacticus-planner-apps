@@ -174,7 +174,7 @@ export function UnitHeader({
                 key={option}
                 value={option}
                 size="sm"
-                className={cn("px-3", isMobile && "h-9.5")}
+                className="px-3"
                 data-testid={`unit-values-${option}`}
               >
                 {option === "base" ? baseLabel : t("unit.values.custom")}

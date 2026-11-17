@@ -338,7 +338,8 @@ function StoryCard({
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full justify-between"
+                // Wraps instead of overlapping when the stats and the label don't fit on one line.
+                className="h-auto w-full flex-wrap justify-between gap-x-3 gap-y-1 py-1.5 whitespace-normal"
                 onClick={() => onEditMedals(track.definition.groupId)}
                 data-testid={`campaign-medals-${track.definition.groupId}`}
               >
@@ -347,7 +348,7 @@ function StoryCard({
                 ) : (
                   <EntityIcon alt="" src={medalIcon} className="size-4" />
                 )}
-                <span className="inline-flex items-center gap-1">
+                <span className="ml-auto inline-flex items-center gap-1 whitespace-nowrap">
                   {t("dailies:battleProgress.edit")}
                   <ChevronRight aria-hidden className="size-4" />
                 </span>

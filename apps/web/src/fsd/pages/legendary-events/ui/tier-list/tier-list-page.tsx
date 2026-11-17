@@ -22,7 +22,6 @@ import {
 import type { HordeTierList } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
-import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 
 import { NpcTierListView } from "./npc-tier-list-view"
@@ -92,15 +91,11 @@ function TierListKindSwitch({
         const next = TIER_LIST_KINDS.find((item) => item === value)
         if (next) onKindChange(next)
       }}
-      size="sm"
-      spacing={1}
       type="single"
       value={kind}
-      variant="outline"
     >
       {TIER_LIST_KINDS.map((item) => (
         <ToggleGroupItem
-          className={FILTER_CHIP_CLASS_NAME}
           data-testid={`tier-list-kind-${item}`}
           key={item}
           value={item}
