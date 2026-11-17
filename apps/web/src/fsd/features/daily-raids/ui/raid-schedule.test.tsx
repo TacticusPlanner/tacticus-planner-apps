@@ -858,9 +858,15 @@ describe("RaidSchedule card layout", () => {
 
 describe("RaidSchedule raid grouping", () => {
   const b3 = battleIdSchema.parse("B3")
-  const renderSchedule = () =>
+  const renderSchedule = (
+    attemptsLeftByBattle?: ReadonlyMap<
+      ReturnType<typeof battleIdSchema.parse>,
+      number
+    >
+  ) =>
     render(
       <RaidSchedule
+        attemptsLeftByBattle={attemptsLeftByBattle}
         attemptsUsedByBattle={new Map()}
         emphasis="location"
         entries={[
@@ -915,6 +921,23 @@ describe("RaidSchedule raid grouping", () => {
         "raid-location-B3"
       )
     ).toBeInTheDocument()
+  })
+
+  it("leaves raided-out battles off the upgrade cards, and a fully raided-out upgrade's card out", () => {
+    window.localStorage.setItem("dailies.raid-grouping.v1", "upgrade")
+    renderSchedule(
+      new Map([
+        [b2, 0],
+        [b3, 0],
+      ])
+    )
+
+    const cardX = screen.getByTestId("raid-card-g1-X")
+    expect(within(cardX).getByTestId("raid-location-B1")).toBeInTheDocument()
+    expect(
+      within(cardX).queryByTestId("raid-location-B2")
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId("raid-card-g1-Y")).not.toBeInTheDocument()
   })
 
   it("groups the battles by campaign by default", () => {

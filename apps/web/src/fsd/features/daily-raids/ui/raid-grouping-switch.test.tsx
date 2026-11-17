@@ -50,10 +50,7 @@ describe("RaidGroupingSwitch", () => {
   it("starts on Campaign, with a campaign's battles in one group", () => {
     render(<SwitchAndList />)
 
-    expect(screen.getByTestId("raid-grouping-campaign")).toHaveAttribute(
-      "data-state",
-      "on"
-    )
+    expect(screen.getByRole("radio", { name: "Campaign" })).toBeChecked()
     expect(screen.getByTestId("campaign-group-B1")).toHaveTextContent("B1B2")
     expect(screen.queryByTestId("campaign-group-B2")).not.toBeInTheDocument()
   })
@@ -61,7 +58,7 @@ describe("RaidGroupingSwitch", () => {
   it("puts every battle on its own by upgrade, remembers it on the device and reports the switch", async () => {
     render(<SwitchAndList />)
 
-    await userEvent.click(screen.getByTestId("raid-grouping-upgrade"))
+    await userEvent.click(screen.getByRole("radio", { name: "Upgrade" }))
 
     expect(window.localStorage.getItem(RAID_GROUPING_STORAGE_KEY)).toBe(
       "upgrade"
@@ -74,24 +71,18 @@ describe("RaidGroupingSwitch", () => {
     expect(screen.getByTestId("campaign-group-B2")).toHaveTextContent("B2")
 
     // Pressing the picked grouping again neither unpicks it nor reports anything.
-    await userEvent.click(screen.getByTestId("raid-grouping-upgrade"))
+    await userEvent.click(screen.getByRole("radio", { name: "Upgrade" }))
     expect(captureEvent).toHaveBeenCalledTimes(1)
   })
 
   it("restores the remembered grouping, ignoring an unknown stored value", () => {
     window.localStorage.setItem(RAID_GROUPING_STORAGE_KEY, "upgrade")
     const { unmount } = render(<SwitchAndList />)
-    expect(screen.getByTestId("raid-grouping-upgrade")).toHaveAttribute(
-      "data-state",
-      "on"
-    )
+    expect(screen.getByRole("radio", { name: "Upgrade" })).toBeChecked()
     unmount()
 
     window.localStorage.setItem(RAID_GROUPING_STORAGE_KEY, "nonsense")
     render(<SwitchAndList />)
-    expect(screen.getByTestId("raid-grouping-campaign")).toHaveAttribute(
-      "data-state",
-      "on"
-    )
+    expect(screen.getByRole("radio", { name: "Campaign" })).toBeChecked()
   })
 })

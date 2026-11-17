@@ -446,5 +446,15 @@ describe("RaidsWidget", () => {
     expect(screen.getByTestId("home-raid-location-node-0")).toHaveTextContent(
       "Indomitus Elite 1"
     )
+
+    // An unknown stored value reads as the default, so the campaign groups come back.
+    act(() => {
+      window.localStorage.setItem("dailies.raid-grouping.v1", "nonsense")
+      window.dispatchEvent(
+        new StorageEvent("storage", { key: "dailies.raid-grouping.v1" })
+      )
+    })
+
+    expect(groupRows()).toEqual([["0", "2"], ["1"], ["3"], ["4", "5"], ["6"]])
   })
 })
