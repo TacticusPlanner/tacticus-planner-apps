@@ -1,19 +1,8 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
-import { Search, SlidersHorizontal } from "lucide-react"
+import { Search } from "lucide-react"
 import { onslaughtAllianceIcon } from "@workspace/game-catalog"
-import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@workspace/ui/components/sheet"
-import { Switch } from "@workspace/ui/components/switch"
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -21,19 +10,20 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { HordeTierAlliance } from "@/entities/legendary-event"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, FILTER_CHIP_CLASS_NAME, PageToolbar } from "@/shared/ui"
 
 import { TIER_LIST_ALLIANCES } from "./tier-list.view-model"
 import type { TierListUrlFilters } from "./tier-list.view-model"
 
 export interface TierListFiltersProps {
   filters: TierListUrlFilters
-  /** False while the roster is unknown: Only owned is disabled with "Sync your roster". */
+  /** False while the roster is unknown: Owned only is disabled with "Sync your roster". */
   rosterKnown: boolean
-  /** The roster read is still pending (no "Sync your roster" note yet; a requested Only owned
+  /** The roster read is still pending (no "Sync your roster" note yet; a requested Owned only
    *  stays on while the page waits for it). */
   rosterLoading: boolean
   onChange: (patch: Partial<TierListUrlFilters>) => void
+  isMobile: boolean
 }
 
 function SearchField({
@@ -63,162 +53,127 @@ function SearchField({
   )
 }
 
-function OnlyOwnedSwitch({
+/**
+ * The Hero tier list's toolbar (ui-style-guide rule 2): the search in the Find slot, then one chip
+ * row with "Owned only" and a chip per alliance (picking the selected alliance again shows every
+ * alliance). The chips scroll sideways on mobile. The toolbar is the tour's filters target.
+ */
+export function TierListFilters(props: TierListFiltersProps) {
+  const { filters, onChange, isMobile } = props
+  return (
+    <PageToolbar
+      chips={
+        <div
+          className={cn(
+            "flex items-center gap-2",
+            isMobile ? "overflow-x-auto pb-1" : "flex-wrap"
+          )}
+        >
+          <OwnedOnlyChip {...props} />
+          <AllianceChips
+            alliance={filters.alliance}
+            onChange={(alliance) => onChange({ alliance })}
+          />
+        </div>
+      }
+      find={
+        <SearchField
+          onChange={(query) => onChange({ query })}
+          query={filters.query}
+        />
+      }
+      testId="tier-list-filters"
+    />
+  )
+}
+
+function OwnedOnlyChip({
   filters,
   rosterKnown,
   rosterLoading,
   onChange,
 }: TierListFiltersProps) {
   const { t } = useTranslation("legendaryEvents")
-  const id = useId()
   const hintId = useId()
   const showHint = !rosterKnown && !rosterLoading
+  const on = (rosterKnown || rosterLoading) && filters.onlyOwned
   return (
-    <div className="flex min-h-11 items-center gap-2 md:min-h-0">
-      <Switch
-        aria-describedby={showHint ? hintId : undefined}
-        checked={(rosterKnown || rosterLoading) && filters.onlyOwned}
-        data-testid="tier-list-only-owned"
+    <>
+      <ToggleGroup
+        className="shrink-0"
         disabled={!rosterKnown}
-        id={id}
-        onCheckedChange={(onlyOwned) => onChange({ onlyOwned })}
-      />
-      <Label htmlFor={id}>{t("tierList.onlyOwned")}</Label>
+        onValueChange={(values) =>
+          onChange({ onlyOwned: values.includes("owned") })
+        }
+        size="sm"
+        spacing={1}
+        type="multiple"
+        value={on ? ["owned"] : []}
+        variant="outline"
+      >
+        <ToggleGroupItem
+          aria-describedby={showHint ? hintId : undefined}
+          className={FILTER_CHIP_CLASS_NAME}
+          data-testid="tier-list-only-owned"
+          value="owned"
+        >
+          {t("tierList.onlyOwned")}
+        </ToggleGroupItem>
+      </ToggleGroup>
       {showHint ? (
         <span
-          className="text-xs text-muted-foreground"
+          className="shrink-0 text-sm text-muted-foreground"
           data-testid="tier-list-roster-unknown"
           id={hintId}
         >
           {t("tierList.syncRoster")}
         </span>
       ) : null}
-    </div>
+    </>
   )
 }
 
-function AllianceFilter({
+function AllianceChips({
   alliance,
-  isMobile,
   onChange,
 }: {
   alliance: HordeTierAlliance
-  isMobile: boolean
   onChange: (alliance: HordeTierAlliance) => void
 }) {
   const { t } = useTranslation(["legendaryEvents", "common"])
   return (
     <ToggleGroup
       aria-label={t("tierList.alliance")}
-      className={cn(isMobile && "w-full")}
+      className="shrink-0"
       data-testid="tier-list-alliance"
       onValueChange={(value) => {
-        // Re-picking the selected item yields "": the filter keeps its value.
+        // Picking the selected chip again clears it: every alliance shows.
         const next = TIER_LIST_ALLIANCES.find((item) => item === value)
-        if (next) onChange(next)
+        onChange(next ?? "all")
       }}
+      size="sm"
+      spacing={1}
       type="single"
-      value={alliance}
+      value={alliance === "all" ? "" : alliance}
+      variant="outline"
     >
-      {TIER_LIST_ALLIANCES.map((item) => (
+      {TIER_LIST_ALLIANCES.filter((item) => item !== "all").map((item) => (
         <ToggleGroupItem
-          className={cn(isMobile && "flex-1")}
+          className={FILTER_CHIP_CLASS_NAME}
           data-alliance={item}
           key={item}
           value={item}
         >
-          {item === "all" ? (
-            t("tierList.allianceAll")
-          ) : (
-            <>
-              <EntityIcon
-                alt=""
-                className="h-4 w-auto shrink-0"
-                height={16}
-                src={onslaughtAllianceIcon(item)}
-                width={16}
-              />
-              {t(`common:alliances.${item}`)}
-            </>
-          )}
+          <EntityIcon
+            alt=""
+            className="size-4 shrink-0"
+            height={16}
+            src={onslaughtAllianceIcon(item)}
+            width={16}
+          />
+          {t(`common:alliances.${item}`)}
         </ToggleGroupItem>
       ))}
     </ToggleGroup>
-  )
-}
-
-/** Desktop: search, Only owned and the alliance filter in one row (the tour's filters target). */
-export function TierListFiltersRow(props: TierListFiltersProps) {
-  const { filters, onChange } = props
-  return (
-    <div
-      className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2"
-      data-testid="tier-list-filters"
-    >
-      <SearchField
-        onChange={(query) => onChange({ query })}
-        query={filters.query}
-      />
-      <OnlyOwnedSwitch {...props} />
-      <AllianceFilter
-        alliance={filters.alliance}
-        isMobile={false}
-        onChange={(alliance) => onChange({ alliance })}
-      />
-    </div>
-  )
-}
-
-/** Mobile: the search and a Filters button in a compact bar; Only owned and the alliance filter
- *  sit in a bottom sheet. The Filters button is the tour's filters target. */
-export function TierListFiltersBar(props: TierListFiltersProps) {
-  const { filters, onChange } = props
-  const { t } = useTranslation("legendaryEvents")
-  const active =
-    (filters.onlyOwned && (props.rosterKnown || props.rosterLoading) ? 1 : 0) +
-    (filters.alliance === "all" ? 0 : 1)
-  return (
-    <div className="flex min-w-0 items-center gap-2">
-      <SearchField
-        onChange={(query) => onChange({ query })}
-        query={filters.query}
-      />
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button
-            className="min-h-11 shrink-0"
-            data-testid="tier-list-filters"
-            variant="outline"
-          >
-            <SlidersHorizontal aria-hidden="true" />
-            {t("tierList.filters")}
-            {active > 0 ? (
-              <span
-                className="rounded-full bg-primary px-1.5 text-xs text-primary-foreground tabular-nums"
-                data-testid="tier-list-filters-count"
-              >
-                {active}
-              </span>
-            ) : null}
-          </Button>
-        </SheetTrigger>
-        <SheetContent data-testid="tier-list-filters-sheet" side="bottom">
-          <SheetHeader>
-            <SheetTitle>{t("tierList.filters")}</SheetTitle>
-            <SheetDescription className="sr-only">
-              {t("tierList.filtersDescription")}
-            </SheetDescription>
-          </SheetHeader>
-          <div className="flex flex-col gap-4 px-4 pb-6">
-            <OnlyOwnedSwitch {...props} />
-            <AllianceFilter
-              alliance={filters.alliance}
-              isMobile
-              onChange={(alliance) => onChange({ alliance })}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
-    </div>
   )
 }

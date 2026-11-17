@@ -915,8 +915,6 @@
     }
   },
   "masterTable": {
-    "title": "Master Table",
-    "subtitle": "Every unit's points across the Legendary Events you pick.",
     "loading": "Loading the master table",
     "error": "The Legendary Events could not be loaded.",
     "noEvents": "Pick at least one event.",
@@ -926,10 +924,6 @@
       "trigger_one": "{{count}} event",
       "trigger_other": "{{count}} events",
       "archived": "Archived"
-    },
-    "controls": {
-      "open": "Controls",
-      "title": "Master table controls"
     },
     "unitSet": {
       "label": "Units",
@@ -1033,12 +1027,9 @@
     "whatThisMeans": "What this means",
     "explainer": "A character's multiplier scales its combat power in the Legendary Event clear estimates. Tiered characters use their own multiplier when they have one, otherwise their tier's; untiered characters use 1.0.",
     "search": "Search characters",
-    "onlyOwned": "Only owned",
+    "onlyOwned": "Owned only",
     "syncRoster": "Sync your roster",
     "alliance": "Alliance",
-    "allianceAll": "All",
-    "filters": "Filters",
-    "filtersDescription": "Show only owned characters or one alliance.",
     "override": "Own multiplier",
     "relicMark": "Relic rating",
     "tileLabel": "{{name}}, {{multiplier}}",
@@ -1305,7 +1296,6 @@
     "unknown": "date unknown"
   },
   "settings": {
-    "button": "Legendary Event settings",
     "title": "Legendary Event settings",
     "description": "These apply to every Legendary Event's plan and are saved to your account.",
     "showPaidOptionsHint": "On: plan with what you pay for — premium missions, the 300 currency bundle and Oh So Close shards. Off: plan with free rewards only."

@@ -915,8 +915,6 @@
     }
   },
   "masterTable": {
-    "title": "Tableau général",
-    "subtitle": "Les points de chaque unité sur les Événements Légendaires choisis.",
     "loading": "Chargement du tableau général",
     "error": "Les Événements Légendaires n'ont pas pu être chargés.",
     "noEvents": "Choisissez au moins un événement.",
@@ -926,10 +924,6 @@
       "trigger_one": "{{count}} événement",
       "trigger_other": "{{count}} événements",
       "archived": "Archivés"
-    },
-    "controls": {
-      "open": "Réglages",
-      "title": "Réglages du tableau général"
     },
     "unitSet": {
       "label": "Unités",
@@ -1036,9 +1030,6 @@
     "onlyOwned": "Possédés uniquement",
     "syncRoster": "Synchronisez votre effectif",
     "alliance": "Alliance",
-    "allianceAll": "Toutes",
-    "filters": "Filtres",
-    "filtersDescription": "Afficher uniquement vos personnages ou une alliance.",
     "override": "Multiplicateur propre",
     "relicMark": "Note avec relique",
     "tileLabel": "{{name}}, {{multiplier}}",
@@ -1305,7 +1296,6 @@
     "unknown": "date inconnue"
   },
   "settings": {
-    "button": "Paramètres des événements légendaires",
     "title": "Paramètres des événements légendaires",
     "description": "Ils s'appliquent au plan de chaque événement légendaire et sont enregistrés dans votre compte.",
     "showPaidOptionsHint": "Activé : planifie avec ce que vous payez — missions premium, le pack de 300 devises et les éclats Oh So Close. Désactivé : récompenses gratuites uniquement."

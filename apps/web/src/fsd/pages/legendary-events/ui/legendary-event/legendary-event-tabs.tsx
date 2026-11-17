@@ -1,6 +1,5 @@
 import { startTransition, useEffect, useOptimistic, useRef } from "react"
 import { useTranslation } from "react-i18next"
-import { CheckIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 import {
   ToggleGroup,
@@ -26,7 +25,8 @@ const RUN_TAB_LABEL = {
   archived: "tabs.run.last",
 } as const
 
-/** The Overview / Teams / Plan / run strip (design D3). It scrolls sideways when it does not fit,
+/** The Overview / Teams / Plan / run strip (design D3): left-aligned underline tabs (ui-style-guide
+ *  rule 4). It scrolls sideways when it does not fit,
  *  and on mobile it sticks under the app header, so a tab can be switched from anywhere on the
  *  page. */
 export function LegendaryEventTabs({
@@ -95,7 +95,7 @@ export function LegendaryEventTabs({
           >
             {LEGENDARY_EVENT_TABS.map((tab) => (
               <TabsTrigger
-                className="flex-none px-2.5 sm:flex-1"
+                className="flex-none px-2.5"
                 data-testid={`legendary-event-tab-${tab}`}
                 key={tab}
                 value={tab}
@@ -111,7 +111,8 @@ export function LegendaryEventTabs({
 }
 
 /**
- * The page's lane selection (spec: one lane selection): a segmented control above the lane blocks.
+ * The page's lane selection (spec: one lane selection): the shared segmented style (outline
+ * `ToggleGroup`, joined items, as `SegmentedControl`) above the lane blocks.
  * Desktop: one toggle per lane, pressed while it shows, any one to three at once (the last pressed
  * lane stays). Mobile: one lane at a time, as a segmented single choice that sticks under the tab
  * strip.
@@ -153,7 +154,7 @@ export function LaneSelector({
         >
           {LEGENDARY_EVENT_LANE_IDS.map((lane) => (
             <ToggleGroupItem
-              className="flex-1"
+              className="flex-1 px-3"
               data-testid={`legendary-event-lane-pick-${lane}`}
               id={`le-lane-pick-${lane}`}
               key={lane}
@@ -189,26 +190,18 @@ export function LaneSelector({
       value={[...shown]}
       variant="outline"
     >
-      {LEGENDARY_EVENT_LANE_IDS.map((laneId) => {
-        const isShown = shown.includes(laneId)
-        return (
-          <ToggleGroupItem
-            className="min-w-24 gap-1.5 px-3"
-            data-lane={laneId}
-            data-testid="legendary-event-lane-switch"
-            id={`le-lane-switch-${laneId}`}
-            key={laneId}
-            value={laneId}
-          >
-            {isShown ? (
-              <CheckIcon aria-hidden className="size-3.5" />
-            ) : (
-              <span aria-hidden className="size-3.5" />
-            )}
-            {t(`lanes.${laneId}`)}
-          </ToggleGroupItem>
-        )
-      })}
+      {LEGENDARY_EVENT_LANE_IDS.map((laneId) => (
+        <ToggleGroupItem
+          className="px-3"
+          data-lane={laneId}
+          data-testid="legendary-event-lane-switch"
+          id={`le-lane-switch-${laneId}`}
+          key={laneId}
+          value={laneId}
+        >
+          {t(`lanes.${laneId}`)}
+        </ToggleGroupItem>
+      ))}
     </ToggleGroup>
   )
 }

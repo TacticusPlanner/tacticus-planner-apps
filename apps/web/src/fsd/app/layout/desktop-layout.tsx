@@ -145,10 +145,15 @@ export function DesktopShell({
                     {/* Renders only on a page that registered its own tour - the app-wide navigation
                       tour lives on the sidebar footer's persistent "Show me around" button. */}
                     <PageTourButton className="shrink-0" />
-                    <SectionActions item={activeSection} />
                   </>
                 }
-                settings={<PageHeaderSettingsSlot />}
+                settings={
+                  <>
+                    {/* The section's own Settings (Legendary Events), at the header's right end. */}
+                    <SectionActions item={activeSection} />
+                    <PageHeaderSettingsSlot />
+                  </>
+                }
                 title={
                   <DesktopSectionHeader
                     item={activeSection}

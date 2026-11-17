@@ -437,10 +437,9 @@ describe("MasterTablePage", () => {
     await ready()
     // Segmented (spacing 0): the selected-segment tint only applies inside such a group.
     for (const id of ["unit-set", "points-mode"]) {
-      expect(screen.getByTestId(`master-table-${id}`)).toHaveAttribute(
-        "data-spacing",
-        "0"
-      )
+      expect(
+        within(screen.getByTestId(`master-table-${id}`)).getByRole("radiogroup")
+      ).toHaveAttribute("data-spacing", "0")
     }
     const onClasses = [
       "group-data-[spacing=0]/toggle-group:data-[state=on]:bg-primary/10",
@@ -673,7 +672,7 @@ describe("MasterTablePage", () => {
     )
   })
 
-  it("renders cards with one line per event and a Controls sheet with Sort by on mobile", async () => {
+  it("renders cards with one line per event and a View sheet with Sort by on mobile", async () => {
     setViewportWidth(390)
     renderPage("?events=astarLysander,votanUthar&points=all")
     await ready()
@@ -687,19 +686,21 @@ describe("MasterTablePage", () => {
       "Ûthar · 5,004 · 3 objectives",
       "Lysander · 6,534 · 5 objectives",
     ])
-    fireEvent.click(screen.getByTestId("master-table-controls"))
-    const sheet = await screen.findByTestId("master-table-controls-sheet")
-    expect(within(sheet).getByTestId("master-table-events")).toBeVisible()
+    // The event picker stays in the toolbar; Units, Points and Sort by sit in the View sheet.
+    expect(screen.getByTestId("master-table-events")).toBeVisible()
+    fireEvent.click(screen.getByTestId("master-table-view"))
+    const sheet = await screen.findByTestId("page-toolbar-view-sheet")
+    expect(within(sheet).getByTestId("master-table-unit-set")).toBeVisible()
     expect(within(sheet).getByTestId("master-table-points-mode")).toBeVisible()
     expect(within(sheet).getByTestId("master-table-sort")).toBeVisible()
   })
 
-  it("registers the same four tour steps on both forms", async () => {
+  it("registers the four tour steps, pointing at the View button for points on mobile", async () => {
     renderPage()
     await ready()
     const steps = data.steps as {
       desktop: { target: string }[]
-      mobile: { target: string; before?: unknown }[]
+      mobile: { target: string }[]
     }
     const targets = [
       '[data-testid="master-table-controls"]',
@@ -708,9 +709,9 @@ describe("MasterTablePage", () => {
       '[data-testid="master-table-first-row"]',
     ]
     expect(steps.desktop.map((step) => step.target)).toEqual(targets)
-    expect(steps.mobile.map((step) => step.target)).toEqual(targets)
-    expect(steps.mobile[1]?.before).toBeTypeOf("function")
-    expect(steps.mobile[3]?.before).toBeTypeOf("function")
+    expect(steps.mobile.map((step) => step.target)).toEqual(
+      targets.with(2, '[data-testid="master-table-view"]')
+    )
   })
 
   it("keeps a linked Unlocked while the roster loads: spinner, no hint, skeleton rows, then the table", async () => {
@@ -851,47 +852,5 @@ describe("MasterTablePage", () => {
     fireEvent.click(screen.getByTestId("master-table-unit-set-all"))
     expect(search().toString()).toBe(before)
     expect(changedEvents()).toEqual([])
-  })
-
-  it("keeps the mobile controls sheet open and clickable through the tour's sheet steps", async () => {
-    // The steps wait for the sheet with a Date-based deadline.
-    vi.useRealTimers()
-    setViewportWidth(390)
-    renderPage()
-    await ready()
-    const steps = (
-      data.steps as {
-        mobile: {
-          before?: () => Promise<void>
-          disableFocusTrap?: boolean
-          styles?: { tooltip?: { pointerEvents?: string } }
-        }[]
-      }
-    ).mobile
-    for (const index of [1, 2]) {
-      expect(steps[index]?.disableFocusTrap).toBe(true)
-      expect(steps[index]?.styles?.tooltip?.pointerEvents).toBe("auto")
-    }
-    // Back from the first row lands on the points-mode step, which reopens the sheet.
-    await act(() => steps[3]!.before!())
-    expect(screen.queryByTestId("master-table-controls-sheet")).toBeNull()
-    await act(() => steps[2]!.before!())
-    expect(screen.getByTestId("master-table-controls-sheet")).toBeVisible()
-
-    // Tapping the tour's tooltip is not an outside click that closes the sheet.
-    const portal = document.createElement("div")
-    portal.id = "react-joyride-portal"
-    document.body.append(portal)
-    // Radix attaches its outside-pointer listener a tick after the sheet opens.
-    await act(() => new Promise((resolve) => setTimeout(resolve, 20)))
-    try {
-      fireEvent.pointerDown(portal)
-      fireEvent.click(portal)
-      expect(screen.getByTestId("master-table-controls-sheet")).toBeVisible()
-    } finally {
-      portal.remove()
-    }
-    await act(() => steps[0]!.before!())
-    expect(screen.queryByTestId("master-table-controls-sheet")).toBeNull()
   })
 })

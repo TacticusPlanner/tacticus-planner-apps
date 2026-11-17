@@ -218,6 +218,10 @@ type SegmentedOption<T extends string> = {
   /** Extra help on hover (a native title: a Radix tooltip would overwrite the item's state). */
   title?: string
   icon?: ReactNode
+  /** Shown after the label, e.g. a loading spinner. */
+  trailing?: ReactNode
+  /** This one choice cannot be picked right now (its data is missing or still loading). */
+  disabled?: boolean
   testId?: string
 }
 
@@ -263,12 +267,14 @@ export function SegmentedControl<T extends string>({
           <ToggleGroupItem
             className={cn("px-3", stretch && "flex-auto")}
             data-testid={option.testId}
+            disabled={option.disabled}
             key={option.value}
             title={option.title}
             value={option.value}
           >
             {option.icon}
             {option.label}
+            {option.trailing}
           </ToggleGroupItem>
         ))}
       </ToggleGroup>

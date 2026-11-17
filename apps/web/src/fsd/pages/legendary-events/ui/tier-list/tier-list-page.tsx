@@ -5,10 +5,7 @@ import { useSearchParams } from "react-router"
 import { ChevronDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
+import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -31,7 +28,7 @@ import {
   tierListKindSearchParams,
 } from "./npc-tier-list.view-model"
 import type { TierListKind } from "./npc-tier-list.view-model"
-import { TierListFiltersBar, TierListFiltersRow } from "./tier-list-filters"
+import { TierListFilters } from "./tier-list-filters"
 import { useTierListTutorial } from "./tier-list.tutorial"
 import {
   DEFAULT_TIER_LIST_FILTERS,
@@ -74,7 +71,7 @@ export function TierListPage() {
   )
 }
 
-/** The Heroes / Enemies switch. */
+/** The Heroes / Enemies switch: the page's underline tabs (ui-style-guide rule 4). */
 function TierListKindSwitch({
   kind,
   onKindChange,
@@ -84,26 +81,31 @@ function TierListKindSwitch({
 }) {
   const { t } = useTranslation("legendaryEvents")
   return (
-    <ToggleGroup
-      aria-label={t("npcTierList.kind.label")}
-      data-testid="tier-list-kind"
+    <Tabs
       onValueChange={(value) => {
         const next = TIER_LIST_KINDS.find((item) => item === value)
         if (next) onKindChange(next)
       }}
-      type="single"
       value={kind}
     >
-      {TIER_LIST_KINDS.map((item) => (
-        <ToggleGroupItem
-          data-testid={`tier-list-kind-${item}`}
-          key={item}
-          value={item}
-        >
-          {t(`npcTierList.kind.${item}`)}
-        </ToggleGroupItem>
-      ))}
-    </ToggleGroup>
+      <TabsList
+        aria-label={t("npcTierList.kind.label")}
+        className="justify-start"
+        data-testid="tier-list-kind"
+        variant="line"
+      >
+        {TIER_LIST_KINDS.map((item) => (
+          <TabsTrigger
+            className="flex-none px-2.5"
+            data-testid={`tier-list-kind-${item}`}
+            key={item}
+            value={item}
+          >
+            {t(`npcTierList.kind.${item}`)}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
   )
 }
 
@@ -226,6 +228,7 @@ function HeroTierList() {
     rosterKnown,
     rosterLoading: roster.status === "loading",
     onChange: changeFilters,
+    isMobile,
   }
   const tile = (
     view: TierTileView,
@@ -320,13 +323,7 @@ function HeroTierList() {
   return (
     <div className="flex min-w-0 flex-col gap-4" data-testid="tier-list-page">
       <TierListExplainer />
-      {built ? (
-        isMobile ? (
-          <TierListFiltersBar {...filterProps} />
-        ) : (
-          <TierListFiltersRow {...filterProps} />
-        )
-      ) : null}
+      {built ? <TierListFilters {...filterProps} /> : null}
       {content}
       {isMobile ? (
         <TierTileDetailsSheet

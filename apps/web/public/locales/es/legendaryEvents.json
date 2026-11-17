@@ -915,8 +915,6 @@
     }
   },
   "masterTable": {
-    "title": "Tabla maestra",
-    "subtitle": "Los puntos de cada unidad en los Eventos Legendarios que elijas.",
     "loading": "Cargando la tabla maestra",
     "error": "No se pudieron cargar los Eventos Legendarios.",
     "noEvents": "Elige al menos un evento.",
@@ -926,10 +924,6 @@
       "trigger_one": "{{count}} evento",
       "trigger_other": "{{count}} eventos",
       "archived": "Archivados"
-    },
-    "controls": {
-      "open": "Controles",
-      "title": "Controles de la tabla maestra"
     },
     "unitSet": {
       "label": "Unidades",
@@ -1036,9 +1030,6 @@
     "onlyOwned": "Solo los míos",
     "syncRoster": "Sincroniza tu plantilla",
     "alliance": "Alianza",
-    "allianceAll": "Todas",
-    "filters": "Filtros",
-    "filtersDescription": "Muestra solo tus personajes o una alianza.",
     "override": "Multiplicador propio",
     "relicMark": "Valoración con reliquia",
     "tileLabel": "{{name}}, {{multiplier}}",
@@ -1305,7 +1296,6 @@
     "unknown": "fecha desconocida"
   },
   "settings": {
-    "button": "Ajustes de eventos legendarios",
     "title": "Ajustes de eventos legendarios",
     "description": "Se aplican al plan de cada evento legendario y se guardan en tu cuenta.",
     "showPaidOptionsHint": "Activado: planifica con lo que pagas: misiones premium, el paquete de 300 de moneda y los fragmentos Oh So Close. Desactivado: solo recompensas gratuitas."
