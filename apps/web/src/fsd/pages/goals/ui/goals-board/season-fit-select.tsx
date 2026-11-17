@@ -10,30 +10,35 @@ import {
 } from "@workspace/ui/components/select"
 
 import { SEASON_FIT_MODES } from "@/features/goal-planning"
-import type { SeasonFitMode, SeasonFitState } from "@/features/goal-planning"
+import type { SeasonFitState } from "@/features/goal-planning"
+
+import type { TargetedFitChoice } from "./targeted-fit-choice"
 
 /**
  * The Goals toolbar's Season fit select (goal-season-fit spec): labelled on desktop, icon-only with an
  * accessible name on mobile like the Type/Group filters. A mode the catalog has no season dates for is
- * disabled with the reason; while the catalog loads every mode is disabled.
+ * disabled with the reason; while the catalog loads every mode is disabled. In a project scope with
+ * a target, `projectDeadline` adds that project's deadline as the first option (project-deadline-fit).
  */
-export function SeasonFitSelect({
+export function SeasonFitSelect<Value extends TargetedFitChoice>({
   value,
   onValueChange,
   state,
+  projectDeadline = false,
 }: {
-  value: SeasonFitMode
-  onValueChange: (value: SeasonFitMode) => void
+  value: Value
+  onValueChange: (value: Value) => void
   state: SeasonFitState
+  projectDeadline?: boolean
 }) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
-  const optionLabel = (mode: SeasonFitMode) =>
+  const optionLabel = (mode: TargetedFitChoice) =>
     t(`goals.seasonFit.options.${mode}`)
 
   return (
     <Select
-      onValueChange={(next) => onValueChange(next as SeasonFitMode)}
+      onValueChange={(next) => onValueChange(next as Value)}
       value={value}
     >
       <SelectTrigger
@@ -49,6 +54,11 @@ export function SeasonFitSelect({
       </SelectTrigger>
       {/* `popper` for the same reason as GoalFilters: mobile hides SelectValue. */}
       <SelectContent position="popper">
+        {projectDeadline ? (
+          <SelectItem value="projectDeadline">
+            {optionLabel("projectDeadline")}
+          </SelectItem>
+        ) : null}
         {SEASON_FIT_MODES.map((mode) => {
           const available =
             mode === "off" ||

@@ -38,10 +38,11 @@ export function useGoalsOverviewTutorial(deadlineScope = false) {
       createStep('[data-testid="goals-project-scope"]', "projectScope"),
       createStep('[data-testid="goals-status-filter"]', "statusFilter"),
       createStep('[data-testid="goals-type-filter"]', "filters"),
-      // A targeted project scope replaces Season fit with its deadline (project-deadline-fit).
-      deadlineScope
-        ? createStep('[data-testid="goals-deadline-fit"]', "deadlineFit")
-        : createStep('[data-testid="goals-season-fit"]', "seasonFit"),
+      createStep('[data-testid="goals-season-fit"]', "seasonFit"),
+      // With a targeted project's deadline chosen, its header follows (project-deadline-fit).
+      ...(deadlineScope
+        ? [createStep('[data-testid="goals-deadline-fit"]', "deadlineFit")]
+        : []),
     ]
     const after = [
       createStep('[data-testid="goals-order-hint"]', "orderHint"),

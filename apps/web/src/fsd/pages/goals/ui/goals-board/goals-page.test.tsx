@@ -1459,7 +1459,7 @@ describe("GoalsPage", () => {
         window.localStorage.setItem("goals.overview.seasonFit", "battlePass")
       })
 
-      it("replaces Season fit with the project deadline and keeps the stored choice elsewhere", async () => {
+      it("defaults Season fit to the project deadline and keeps the stored choice elsewhere", async () => {
         const view = renderPage("/plan/goals?project=proj-2")
 
         const header = await screen.findByTestId("goals-deadline-fit")
@@ -1469,9 +1469,8 @@ describe("GoalsPage", () => {
           )
         )
         expect(
-          screen.getByTestId("goals-season-fit-override")
-        ).toHaveTextContent("Using project deadline")
-        expect(screen.queryByTestId("goals-season-fit")).toBeNull()
+          document.getElementById("goals-season-fit-value")
+        ).toHaveTextContent("Project deadline")
         expect(screen.getByTestId("goal-deadline-fit")).toHaveTextContent(
           "During event"
         )
@@ -1487,6 +1486,40 @@ describe("GoalsPage", () => {
         expect(
           document.getElementById("goals-season-fit-value")
         ).toHaveTextContent("Battle Pass")
+      })
+
+      it("switches the targeted scope to Off or a season from the Season fit select", async () => {
+        const user = userEvent.setup()
+        const view = renderPage("/plan/goals?project=proj-2")
+        await screen.findByTestId("goals-deadline-fit")
+
+        await user.click(screen.getByTestId("goals-season-fit"))
+        await user.click(
+          await screen.findByRole("option", { name: "No season fit" })
+        )
+        expect(screen.queryByTestId("goals-deadline-fit")).toBeNull()
+        expect(screen.queryByTestId("goal-deadline-fit")).toBeNull()
+        expect(screen.queryByTestId("goals-season-cutoff")).toBeNull()
+
+        await user.click(screen.getByTestId("goals-season-fit"))
+        await user.click(
+          await screen.findByRole("option", { name: "Battle Pass" })
+        )
+        await vi.waitFor(() => expect(fitOf(goalB.goalId)).toBe("1"))
+        expect(screen.queryByTestId("goals-deadline-fit")).toBeNull()
+
+        // The choice sticks for targeted scopes; the unscoped choice is untouched.
+        view.unmount()
+        window.localStorage.setItem("goals.overview.seasonFit", "off")
+        const again = renderPage("/plan/goals?project=proj-2")
+        await vi.waitFor(() => expect(fitOf(goalB.goalId)).toBe("1"))
+        expect(screen.queryByTestId("goals-deadline-fit")).toBeNull()
+        again.unmount()
+        renderPage()
+        await screen.findByTestId("goals-list-table")
+        expect(
+          document.getElementById("goals-season-fit-value")
+        ).toHaveTextContent("No season fit")
       })
 
       it("keeps Season fit in an untargeted project", async () => {

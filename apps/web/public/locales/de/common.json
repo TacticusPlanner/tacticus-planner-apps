@@ -1708,6 +1708,7 @@
     "seasonFit": {
       "label": "Saison-Passung",
       "options": {
+        "projectDeadline": "Projektfrist",
         "off": "Keine Saison-Passung",
         "battlePass": "Battle Pass",
         "guildRaid": "Gildenraid",
@@ -1759,8 +1760,7 @@
       "tooltipDuring": "Fertig am {{date}}, während {{chip}} läuft ({{deadline}} – {{end}})",
       "tooltipAfter": "Fertig am {{date}}, nachdem {{chip}} am {{end}} endet",
       "divider": "{{chip}} beginnt am {{deadline}} – das nächste Ziel wird während des Events fertig.",
-      "dividerEnd": "{{chip}} endet am {{end}} – das nächste Ziel wird danach fertig.",
-      "overrideChip": "Projektfrist wird verwendet"
+      "dividerEnd": "{{chip}} endet am {{end}} – das nächste Ziel wird danach fertig."
     },
     "detail": {
       "notes": "Notizen",
@@ -2233,7 +2233,7 @@
         },
         "deadlineFit": {
           "title": "Projektfrist",
-          "content": "Dieses Projekt hat ein Ziel, daher werden seine Ziele an dieser Frist statt an der Saison-Passung gemessen. Jedes Ziel zeigt „Passt“ oder „N T zu spät“, und eine Linie markiert das erste Ziel, das zu spät fertig wird."
+          "content": "Dieses Projekt hat ein Ziel, daher misst die Saison-Passung seine Ziele standardmäßig an dieser Frist. Jedes Ziel zeigt „Passt“, „Während des Events“ oder „N T zu spät“, und Linien markieren, ab wo Ziele zu spät fertig werden. Wähle eine andere Option, um zu wechseln."
         },
         "viewToggle": {
           "title": "Karten oder Tabelle",

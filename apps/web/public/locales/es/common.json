@@ -1708,6 +1708,7 @@
     "seasonFit": {
       "label": "Ajuste a temporada",
       "options": {
+        "projectDeadline": "Fecha límite del proyecto",
         "off": "Sin ajuste a temporada",
         "battlePass": "Pase de batalla",
         "guildRaid": "Incursión de gremio",
@@ -1759,8 +1760,7 @@
       "tooltipDuring": "Terminado el {{date}}, mientras {{chip}} está en curso ({{deadline}} – {{end}})",
       "tooltipAfter": "Terminado el {{date}}, después de que {{chip}} termine el {{end}}",
       "divider": "{{chip}} empieza el {{deadline}}. El siguiente objetivo termina durante el evento.",
-      "dividerEnd": "{{chip}} termina el {{end}}. El siguiente objetivo termina después.",
-      "overrideChip": "Usando la fecha límite del proyecto"
+      "dividerEnd": "{{chip}} termina el {{end}}. El siguiente objetivo termina después."
     },
     "detail": {
       "notes": "Notas",
@@ -2233,7 +2233,7 @@
         },
         "deadlineFit": {
           "title": "Fecha límite del proyecto",
-          "content": "Este proyecto tiene un objetivo, así que sus objetivos se miden con esa fecha límite en lugar del ajuste a temporada. Cada objetivo muestra A tiempo o Tarde por N d, y una línea marca el primero que termina demasiado tarde."
+          "content": "Este proyecto tiene un objetivo, así que el ajuste a temporada mide sus objetivos con esa fecha límite por defecto. Cada objetivo muestra A tiempo, Durante el evento o Tarde por N d, y unas líneas marcan dónde empiezan a terminar tarde. Elige otra opción para cambiar."
         },
         "viewToggle": {
           "title": "Tarjetas o tabla",
