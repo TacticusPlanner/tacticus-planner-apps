@@ -606,6 +606,15 @@
       "insights": "In Insights sehen, was nicht farmbar ist"
     }
   },
+  "grouping": {
+    "label": "Gruppieren nach",
+    "upgrade": "Upgrade",
+    "campaign": "Kampagne",
+    "help": {
+      "upgrade": "Eine Karte pro Upgrade mit den Kämpfen, die es droppen. Gilt für alle Raid-Listen auf diesem Gerät.",
+      "campaign": "Eine Überschrift pro Kampagne mit einer Zeile pro Kampf, damit du in einer Kampagne bleibst. Gilt für alle Raid-Listen auf diesem Gerät."
+    }
+  },
   "quickFilters": {
     "label": "Schnellfilter",
     "chip": {

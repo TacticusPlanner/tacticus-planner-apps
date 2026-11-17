@@ -855,3 +855,76 @@ describe("RaidSchedule card layout", () => {
     )
   })
 })
+
+describe("RaidSchedule raid grouping", () => {
+  const b3 = battleIdSchema.parse("B3")
+  const renderSchedule = () =>
+    render(
+      <RaidSchedule
+        attemptsUsedByBattle={new Map()}
+        emphasis="location"
+        entries={[
+          { ...entry(b1, 1), resourceId: "X" as never },
+          { ...entry(b2, 1), resourceId: "X" as never },
+          { ...entry(b3, 1), resourceId: "Y" as never },
+        ]}
+        goalsById={new Map([["g1", goal]])}
+        locationsByBattleId={
+          new Map([
+            [
+              b1,
+              {
+                ...location("B1", "Indomitus", "Elite 4", "Elite"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+            [
+              b2,
+              {
+                ...location("B2", "Fall of Cadia", "Elite 7", "Elite"),
+                campaignKey: "cadia:Elite",
+              },
+            ],
+            [
+              b3,
+              {
+                ...location("B3", "Indomitus", "Elite 9", "Elite"),
+                campaignKey: "indomitus:Elite",
+              },
+            ],
+          ])
+        }
+        resourceLabels={new Map()}
+        resourceProgress={new Map()}
+        resourceVisuals={new Map()}
+        testId="schedule"
+      />
+    )
+
+  it("shows one card per upgrade, listing its battles, once upgrade grouping is picked", () => {
+    window.localStorage.setItem("dailies.raid-grouping.v1", "upgrade")
+    renderSchedule()
+
+    const grid = screen.getByTestId("raid-resource-grid-g1")
+    expect(within(grid).queryAllByRole("heading", { level: 3 })).toEqual([])
+    const cardX = screen.getByTestId("raid-card-g1-X")
+    expect(within(cardX).getByTestId("raid-location-B1")).toBeInTheDocument()
+    expect(within(cardX).getByTestId("raid-location-B2")).toBeInTheDocument()
+    expect(
+      within(screen.getByTestId("raid-card-g1-Y")).getByTestId(
+        "raid-location-B3"
+      )
+    ).toBeInTheDocument()
+  })
+
+  it("groups the battles by campaign by default", () => {
+    renderSchedule()
+
+    expect(screen.queryByTestId("raid-card-g1-X")).not.toBeInTheDocument()
+    expect(
+      within(screen.getByTestId("raid-resource-grid-g1"))
+        .getAllByRole("heading", { level: 3 })
+        .map((heading) => heading.textContent)
+    ).toEqual(["Indomitus Elite"])
+  })
+})

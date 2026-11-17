@@ -342,6 +342,16 @@ Today's plan and Bonus Raids SHALL group their battles by campaign instead of by
 - **WHEN** Today renders
 - **THEN** a "Saim-Hann Elite" group lists Battle 33 and 11, followed by Indomitus Mirror Elite 12 and Indomitus 19, each alone in its group as one row naming the location in full
 
+### Requirement: Raid grouping is picked once and remembered per device
+
+Dailies › Raids SHALL offer a "Group by" switch with **Campaign** (the default: "Today groups raids by campaign", and the HSE, HRE and Home lists in campaign groups) and **Upgrade** (one card per upgrade listing the battles that drop it, as before campaign grouping; the HSE, HRE and Home lists show every battle on its own row naming its location in full, in the list's own order). It SHALL be the only place the grouping is picked, and every raid list (Today's plan, Bonus Raids, HSE, HRE, Home's raids widget) SHALL follow it. The choice SHALL be remembered in that browser (an unknown stored value reads as Campaign) and SHALL apply in other open tabs. Plan › Schedule is unaffected. Each change SHALL report `daily_raids_grouping_changed` with the picked grouping and nothing else; picking the current grouping again reports nothing.
+
+#### Scenario: Switching to upgrade grouping
+
+- **GIVEN** the player has never picked a grouping on this browser
+- **WHEN** they pick Upgrade on Dailies › Raids and then open Home
+- **THEN** Today lists one card per upgrade, Home lists each battle on its own row, `daily_raids_grouping_changed` is reported with `upgrade`, and reloading keeps Upgrade picked
+
 ### Requirement: Only the active campaign event is farmable
 
 Standing campaign battles SHALL be eligible for raid calculations only once the player has reached them: a battle's `battleIndex` (the zero-based index `campaign-progress` payloads are keyed against for that battle's `{campaignGroupId, type}` track — distinct from the display-only `nodeNumber`) SHALL be at most that track's `highestCompletedBattleIndex`, per the `campaign-progress` chunk. That synced value is the highest index in the Tacticus API's `battles[]` list, which runs up to and including the frontier battle — the next battle not beaten yet. The frontier is eligible but SHALL be marked as a manual battle (it cannot be raided until it has 3 medals), as SHALL every battle the player's battle progress overrides record with fewer than 3 medals; the API carries no medal data. Manual battles stay eligible by default and carry a "Play manually" marker; Today's "Raidable only" quick filter, offered only while Today's plan raids a manual battle (or while it is on), removes them from Today's eligible set. A track with no `campaign-progress` entry yet SHALL be treated as not reached (no battle eligible). Unlike event campaigns, `campaign-progress` carries no separate completed-challenge-ids list, so a standing challenge battle SHALL be gated by the same `battleIndex` comparison as every other battle in its track, not treated as reachable in any order. An unreached standing battle SHALL be excluded from raid calculations the same way an unreached event-campaign battle already is: it SHALL NOT be scheduled a real raid, and a resource whose only farm location is such a battle SHALL have no farmable location today — the same outcome, not a distinct status or fallback presentation.

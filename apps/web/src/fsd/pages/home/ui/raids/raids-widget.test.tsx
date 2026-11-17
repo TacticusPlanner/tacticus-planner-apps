@@ -2,7 +2,7 @@ import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 import type { BattleId } from "@workspace/game-domain"
 
-import { render, screen } from "@/test/render"
+import { act, render, screen } from "@/test/render"
 
 import { RaidsWidget } from "./raids-widget"
 
@@ -424,5 +424,27 @@ describe("RaidsWidget", () => {
     await user.click(screen.getByTestId("home-raids-toggle"))
 
     expect(groupRows()).toEqual([["0", "2"], ["1"], ["3"], ["4", "5"], ["6"]])
+
+    // Grouped by upgrade (picked on Dailies > Raids, here from another tab), every row stands
+    // alone in plan order, naming its location in full.
+    act(() => {
+      window.localStorage.setItem("dailies.raid-grouping.v1", "upgrade")
+      window.dispatchEvent(
+        new StorageEvent("storage", { key: "dailies.raid-grouping.v1" })
+      )
+    })
+
+    expect(groupRows()).toEqual([
+      ["0"],
+      ["1"],
+      ["2"],
+      ["3"],
+      ["4"],
+      ["5"],
+      ["6"],
+    ])
+    expect(screen.getByTestId("home-raid-location-node-0")).toHaveTextContent(
+      "Indomitus Elite 1"
+    )
   })
 })

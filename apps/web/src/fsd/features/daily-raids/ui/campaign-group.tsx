@@ -6,6 +6,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 
 import { groupConsecutiveByCampaign } from "../model/campaign-groups"
+import { useRaidGrouping } from "../model/raid-grouping/use-raid-grouping"
 import type { CampaignGroup as CampaignRowGroup } from "../model/campaign-groups"
 import { LoneCampaignRowContext } from "./campaign-group-context"
 import type { DailyRaidLocationViewModel } from "../model/daily-raids.domain"
@@ -60,9 +61,11 @@ export function CampaignGroup({
 }
 
 /**
- * A one-row-per-battle list (HSE, HRE, Home) in campaign groups: each run of consecutive rows in
- * one campaign shows under one header, in the list's own order (`groupConsecutiveByCampaign`).
- * `groupRows` replaces that grouping (Home groups its rows the way Today does).
+ * A one-row-per-battle list (HSE, HRE, Home). Grouped by campaign (the grouping picked on Dailies >
+ * Raids), each run of consecutive rows in one campaign shows under one header, in the list's own
+ * order (`groupConsecutiveByCampaign`); `groupRows` replaces that grouping (Home groups its rows the
+ * way Today does). Grouped by upgrade, every row stands alone in the list's own order, naming its
+ * location in full beside the campaign icon.
  */
 export function CampaignGroupedList<Row>({
   rows,
@@ -80,14 +83,22 @@ export function CampaignGroupedList<Row>({
   groupRows?: (rows: readonly Row[]) => CampaignRowGroup<Row>[]
   testId: string
 }) {
+  const [grouping] = useRaidGrouping()
   const locationOf = (row: Row) => locationsByBattleId?.get(battleIdOf(row))
-  const groups = groupRows
-    ? groupRows(rows)
-    : groupConsecutiveByCampaign(
-        rows,
-        (row) => locationOf(row)?.campaignKey,
-        battleIdOf
-      )
+  const groups: CampaignRowGroup<Row>[] =
+    grouping === "upgrade"
+      ? rows.map((row) => ({
+          key: battleIdOf(row),
+          campaignKey: locationOf(row)?.campaignKey,
+          items: [row],
+        }))
+      : groupRows
+        ? groupRows(rows)
+        : groupConsecutiveByCampaign(
+            rows,
+            (row) => locationOf(row)?.campaignKey,
+            battleIdOf
+          )
   return (
     <div className="grid gap-2" data-testid={testId}>
       {groups.map((group) => (

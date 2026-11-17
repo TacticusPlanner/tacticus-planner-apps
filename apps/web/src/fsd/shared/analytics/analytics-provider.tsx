@@ -430,6 +430,9 @@ export function useAnalyticsActions() {
         case "roster_compare_metric_selected":
           client.capture(event.type, { metric: event.metric })
           break
+        case "daily_raids_grouping_changed":
+          client.capture(event.type, { grouping: event.grouping })
+          break
         case "roster_snapshot_renamed":
         case "roster_snapshot_deleted":
         case "roster_snapshot_kept":

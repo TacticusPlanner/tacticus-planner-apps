@@ -13,6 +13,9 @@ export { useRaidsFilters } from "./model/raids-filters/use-raids-filters"
 export { TodayQuickFilterChips } from "./ui/today-quick-filters/today-quick-filter-chips"
 export { useTodayQuickFilters } from "./model/today-quick-filters/use-today-quick-filters"
 export { todayQuickFilterOptions } from "./model/today-quick-filters/today-quick-filters"
+// Raid list grouping (by upgrade or by campaign): picked on Today, remembered per browser, followed
+// by every raid list inside this slice.
+export { RaidGroupingSwitch } from "./ui/raid-grouping-switch"
 // Dailies > HSE: the active event, the instance switcher, its raid-point rules and the tab's sections.
 export { useActiveHomeScreenEvent } from "./model/use-active-home-screen-event"
 export {

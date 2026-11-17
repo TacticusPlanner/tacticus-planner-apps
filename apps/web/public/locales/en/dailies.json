@@ -606,6 +606,15 @@
       "insights": "See what can't be farmed in Insights"
     }
   },
+  "grouping": {
+    "label": "Group by",
+    "upgrade": "Upgrade",
+    "campaign": "Campaign",
+    "help": {
+      "upgrade": "One card per upgrade, listing the battles that drop it. Applies to every raid list on this device.",
+      "campaign": "One header per campaign with a row per battle, so you stay in one campaign. Applies to every raid list on this device."
+    }
+  },
   "quickFilters": {
     "label": "Quick filters",
     "chip": {

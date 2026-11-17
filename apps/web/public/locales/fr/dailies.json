@@ -606,6 +606,15 @@
       "insights": "Voir dans Insights ce qui ne peut pas être farmé"
     }
   },
+  "grouping": {
+    "label": "Regrouper par",
+    "upgrade": "Amélioration",
+    "campaign": "Campagne",
+    "help": {
+      "upgrade": "Une carte par amélioration, avec les batailles qui la donnent. S'applique à toutes les listes de raids sur cet appareil.",
+      "campaign": "Un en-tête par campagne avec une ligne par bataille, pour rester dans une campagne. S'applique à toutes les listes de raids sur cet appareil."
+    }
+  },
   "quickFilters": {
     "label": "Filtres rapides",
     "chip": {

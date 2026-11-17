@@ -367,6 +367,13 @@ type RosterSnapshotManagedEvent = {
     | "roster_snapshot_kept"
 }
 
+/** The raid list grouping was switched on Dailies > Raids (by upgrade or by campaign). It applies to
+ *  every raid list on that browser, so the latest event per person is their current choice. */
+type DailyRaidsGroupingChangedEvent = {
+  type: "daily_raids_grouping_changed"
+  grouping: "upgrade" | "campaign"
+}
+
 /** An error nothing else handled (spec: client-error-reporting), sent as PostHog's `$exception` so
  *  it lands in Error Tracking. Message and stack have URL query strings removed; the route is
  *  reported as its nav section, never the URL. */
@@ -442,5 +449,6 @@ export type AnalyticsEvent =
   | RosterCompareOpenedEvent
   | RosterCompareMetricSelectedEvent
   | RosterSnapshotManagedEvent
+  | DailyRaidsGroupingChangedEvent
   | AuthStepEvent
   | ClientErrorEvent
