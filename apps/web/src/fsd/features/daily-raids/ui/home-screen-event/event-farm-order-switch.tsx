@@ -41,15 +41,11 @@ export function EventFarmOrderSwitch({
           const next = ORDERS.find((item) => item === value)
           if (next) onViewChange({ ...view, order: next })
         }}
-        size="sm"
-        spacing={1}
         type="single"
         value={view.order}
-        variant="outline"
       >
         {ORDERS.map((item) => (
           <ToggleGroupItem
-            className={FILTER_CHIP_CLASS_NAME}
             data-testid={`hse-raids-order-${item}`}
             key={item}
             title={t(`hse.raids.order.help.${item}`)}

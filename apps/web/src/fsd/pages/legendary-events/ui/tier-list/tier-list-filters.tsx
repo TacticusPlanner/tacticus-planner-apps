@@ -21,7 +21,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { HordeTierAlliance } from "@/entities/legendary-event"
-import { EntityIcon, FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
+import { EntityIcon } from "@/shared/ui"
 
 import { TIER_LIST_ALLIANCES } from "./tier-list.view-model"
 import type { TierListUrlFilters } from "./tier-list.view-model"
@@ -110,22 +110,19 @@ function AllianceFilter({
   return (
     <ToggleGroup
       aria-label={t("tierList.alliance")}
-      className={cn("flex-wrap", isMobile && "w-full")}
+      className={cn(isMobile && "w-full")}
       data-testid="tier-list-alliance"
       onValueChange={(value) => {
         // Re-picking the selected item yields "": the filter keeps its value.
         const next = TIER_LIST_ALLIANCES.find((item) => item === value)
         if (next) onChange(next)
       }}
-      size={isMobile ? "default" : "sm"}
-      spacing={1}
       type="single"
       value={alliance}
-      variant="outline"
     >
       {TIER_LIST_ALLIANCES.map((item) => (
         <ToggleGroupItem
-          className={cn(FILTER_CHIP_CLASS_NAME, isMobile && "min-h-11 flex-1")}
+          className={cn(isMobile && "flex-1")}
           data-alliance={item}
           key={item}
           value={item}

@@ -42,7 +42,6 @@ export function TeamPickerSort({
       >
         <ToggleGroupItem
           aria-label={t("teams.picker.sortPointsLeft")}
-          className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground max-md:h-11 max-md:min-w-11"
           data-testid="team-picker-sort-points"
           size="sm"
           title={t("teams.picker.sortPointsLeft")}
@@ -57,7 +56,6 @@ export function TeamPickerSort({
         <ToggleGroupItem
           aria-describedby={powerAvailable ? undefined : reasonId}
           aria-label={t("teams.picker.sortPower")}
-          className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground max-md:h-11 max-md:min-w-11"
           data-testid="team-picker-sort-power"
           disabled={!powerAvailable}
           size="sm"

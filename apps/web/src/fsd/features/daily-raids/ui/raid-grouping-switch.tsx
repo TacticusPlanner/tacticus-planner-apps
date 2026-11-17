@@ -5,8 +5,6 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 
-import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
-
 import {
   isRaidGrouping,
   RAID_GROUPINGS,
@@ -31,15 +29,11 @@ export function RaidGroupingSwitch() {
         onValueChange={(value) => {
           if (isRaidGrouping(value)) pick(value)
         }}
-        size="sm"
-        spacing={1}
         type="single"
         value={grouping}
-        variant="outline"
       >
         {RAID_GROUPINGS.map((item) => (
           <ToggleGroupItem
-            className={FILTER_CHIP_CLASS_NAME}
             data-testid={`raid-grouping-${item}`}
             key={item}
             title={t(`grouping.help.${item}`)}
