@@ -33,14 +33,19 @@ screen width.
 | Decorative icon inside a badge               | 12–14px                    | 12–14px                      | `size-3` / `size-3.5`            |
 | Button / input height                        | 40px visual, 48px hit area | 32px (`sm` 28px in toolbars) | `h-10` / `h-8`                   |
 | Smallest tap target                          | 48px                       | 24px                         | —                                |
-| Portrait in a list or lane                   | ≥ 40px                     | ≥ 36px                       | `size-10` / `size-9`             |
-| Portrait in a card                           | 88–96px                    | 88–96px                      | `size-22` / `size-24`            |
+| Portrait in a list, chip or lane             | 40px                       | 40px                         | `size-10`                        |
+| Portrait in a grid                           | 64px                       | 64px                         | `size-16`                        |
+| Portrait in a card                           | 96px                       | 96px                         | `size-24`                        |
 | Spacing                                      | 4px grid                   | 4px grid                     | `gap-2` / `gap-3` / `gap-4` …    |
 
 Text classes: `text-2xs` (only numerals or glyphs such as ≥ on a solid badge over art; labels and captions never), `text-xs`, `text-sm`,
 `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`. Never
 an arbitrary `text-[…]`. Line height: the class default, a `leading-*` step,
 or the `text-sm/5` shorthand.
+
+Game icons (portraits, upgrades, equipment, factions, traits…) use the role
+sizes in the `ui-style-guide` skill (rule 6). Layout, controls and copy are
+there too; this skill is its sizing chapter.
 
 Today's app is still denser than this table in places (see the UI sizing
 plan); new code should follow the table, and existing code moves to it page by

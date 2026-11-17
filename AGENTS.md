@@ -150,6 +150,11 @@ targets are 48px (Material 3), mouse controls 32px. The
 `better-tailwindcss/no-restricted-classes` lint rule enforces this — see the
 `ui-sizing` skill for the full guideline and what to use instead.
 
+Page layout, toolbars, which control to use for which option, tabs, game
+icon sizes (unit portraits, upgrades, equipment, factions…) and UI copy follow
+the `ui-style-guide` skill. Read it before adding or changing a page, a
+toolbar control, a game icon or a user-facing string.
+
 ## Internationalization
 
 User-facing strings go through `react-i18next`; translation resources live in
