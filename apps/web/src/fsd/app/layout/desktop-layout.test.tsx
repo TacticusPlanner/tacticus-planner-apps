@@ -331,7 +331,7 @@ describe("DesktopShell", () => {
 
     const menu = screen.getByTestId("desktop-section-navigation")
     const links = within(menu).getAllByRole("link")
-    expect(links).toHaveLength(4)
+    expect(links).toHaveLength(5)
     links.forEach((link) =>
       expect(link.querySelector("svg, img")).not.toBeNull()
     )

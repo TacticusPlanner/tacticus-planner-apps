@@ -242,6 +242,12 @@ export const navItems: NavItem[] = [
         labelKey: "goals.tabs.schedule",
         descriptionKey: "goals.tabs.scheduleDescription",
       },
+      {
+        path: "/plan/event-shop",
+        artSrc: gameMenuIcon("shop"),
+        labelKey: "dailies:tabs.eventShop",
+        descriptionKey: "dailies:tabs.eventShopDescription",
+      },
     ],
   },
   {
@@ -280,12 +286,6 @@ export const navItems: NavItem[] = [
         labelKey: "dailies:tabs.quest",
         descriptionKey: "dailies:tabs.questDescription",
         liveIndicator: "quest",
-      },
-      {
-        path: "/dailies/event-shop",
-        artSrc: gameMenuIcon("shop"),
-        labelKey: "dailies:tabs.eventShop",
-        descriptionKey: "dailies:tabs.eventShopDescription",
       },
       {
         path: "/dailies/guild-raids",

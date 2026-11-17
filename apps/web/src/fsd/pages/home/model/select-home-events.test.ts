@@ -415,7 +415,7 @@ describe("selectHomeEvents", () => {
           live: true,
           dateTba: false,
           endMs: Date.parse("2026-10-08T00:00:00Z"),
-          destination: "/dailies/event-shop/october-2026",
+          destination: "/plan/event-shop/october-2026",
         },
       ])
       expect(events.upcoming).toEqual([])
@@ -461,7 +461,7 @@ describe("selectHomeEvents", () => {
         dateTba: true,
         definitionId: null,
         eventKey: "November2026",
-        destination: "/dailies/event-shop/december-2026",
+        destination: "/plan/event-shop/december-2026",
       })
     })
   })

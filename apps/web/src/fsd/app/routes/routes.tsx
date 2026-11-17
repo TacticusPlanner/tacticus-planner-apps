@@ -10,6 +10,7 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import {
   routes as dailiesRoutes,
+  eventShopRoutes,
   DailiesLayout,
   preloadDailiesLayout,
 } from "@/pages/dailies"
@@ -222,6 +223,18 @@ const appRoutes: RouteObject[] = [
         ),
         children: libraryRoutes,
         loader: preloadLibraryPage,
+      },
+      // Plan › Event shop: a Plan tab, but under the Dailies layout, whose project filter its
+      // Coverage panel reads. The more specific path wins over "/plan" below.
+      {
+        path: "/plan/event-shop",
+        element: (
+          <ProtectedRoute>
+            <DailiesLayout />
+          </ProtectedRoute>
+        ),
+        children: eventShopRoutes,
+        loader: preloadDailiesLayout,
       },
       {
         path: "/plan",

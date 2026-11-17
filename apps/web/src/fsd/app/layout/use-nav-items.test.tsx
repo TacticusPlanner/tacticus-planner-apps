@@ -159,7 +159,7 @@ describe("useNavItems", () => {
   it("leaves every other section untouched", async () => {
     const items = await renderNavItems()
     expect(items.find((item) => item.path === "/plan")?.children).toHaveLength(
-      4
+      5
     )
   })
 })

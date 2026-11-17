@@ -367,7 +367,7 @@ describe("Home events (Right now + Upcoming events)", () => {
     expect(shop).not.toHaveTextContent("home.events.startsIn")
     expect(within(shop).getByTestId("home-events-row")).toHaveAttribute(
       "href",
-      "/dailies/event-shop/december-2026"
+      "/plan/event-shop/december-2026"
     )
   })
 

@@ -488,15 +488,15 @@
         },
         "calendar": {
           "title": "Elige un día",
-          "content": "Cada día muestra lo que planificaste, coloreado por estado: comprado, por comprar o por revisar. Haz clic en un día para ver sus ofertas."
+          "content": "Cada día muestra lo que planificaste, coloreado por estado: comprado, planificado o por revisar. Haz clic en un día para ver sus ofertas."
         },
         "chips": {
           "title": "Elige un día",
-          "content": "El punto bajo cada día muestra lo que planificaste: comprado, por comprar o por revisar."
+          "content": "El punto bajo cada día muestra lo que planificaste: comprado, planificado o por revisar."
         },
         "slots": {
           "title": "Ofertas del día",
-          "content": "Cada espacio muestra la oferta que te corresponde según tu plantilla, con su paquete, precio y límite diario. Añádela al carrito y márcala como comprada cuando la compres en el juego."
+          "content": "Cada espacio muestra la oferta que te corresponde según tu plantilla, con su paquete, precio y límite diario. Planea la compra y márcala como comprada cuando la compres en el juego."
         },
         "tiles": {
           "title": "Ofertas del día",
@@ -520,7 +520,7 @@
         },
         "stillToBuy": {
           "title": "Por comprar",
-          "content": "Lo que aún cuesta tu carrito. Toca para abrir tu plan."
+          "content": "Lo que aún cuesta tu plan. Toca para abrir tu plan."
         },
         "coverage": {
           "title": "Cobertura",

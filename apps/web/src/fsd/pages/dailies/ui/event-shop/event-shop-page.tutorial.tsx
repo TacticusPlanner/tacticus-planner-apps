@@ -23,7 +23,7 @@ type StepKey =
   | "search"
 
 /**
- * Joyride tour for Dailies > Event shop (spec event-shop-planner: onboarding tour): the event picker,
+ * Joyride tour for Plan > Event shop (spec event-shop-planner: onboarding tour): the event picker,
  * the day picker, the slots and adding to the cart, then the shopping list where the form keeps it
  * (desktop side column, tablet drawer button, phone Plan tab and bar), Coverage and the reward tabs.
  * The tour has desktop and mobile arrays: the desktop one is the tablet steps on a tablet. `hasTick`

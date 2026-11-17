@@ -488,15 +488,15 @@
         },
         "calendar": {
           "title": "Tag wählen",
-          "content": "Jeder Tag zeigt, was du geplant hast, nach Stand gefärbt: gekauft, zu kaufen oder zu prüfen. Klicke auf einen Tag, um seine Angebote zu sehen."
+          "content": "Jeder Tag zeigt, was du geplant hast, nach Stand gefärbt: gekauft, geplant oder zu prüfen. Klicke auf einen Tag, um seine Angebote zu sehen."
         },
         "chips": {
           "title": "Tag wählen",
-          "content": "Der Punkt unter jedem Tag zeigt, was du geplant hast: gekauft, zu kaufen oder zu prüfen."
+          "content": "Der Punkt unter jedem Tag zeigt, was du geplant hast: gekauft, geplant oder zu prüfen."
         },
         "slots": {
           "title": "Angebote des Tages",
-          "content": "Jeder Platz zeigt das Angebot für deinen Kader mit Paket, Preis und Tageslimit. Lege es in den Warenkorb und markiere es als gekauft, sobald du es im Spiel kaufst."
+          "content": "Jeder Platz zeigt das Angebot für deinen Kader mit Paket, Preis und Tageslimit. Plane den Kauf und markiere es als gekauft, sobald du es im Spiel kaufst."
         },
         "tiles": {
           "title": "Angebote des Tages",
@@ -520,7 +520,7 @@
         },
         "stillToBuy": {
           "title": "Noch zu kaufen",
-          "content": "Was dein Warenkorb noch kostet. Tippe, um deinen Plan zu öffnen."
+          "content": "Was dein Plan noch kostet. Tippe, um deinen Plan zu öffnen."
         },
         "coverage": {
           "title": "Abdeckung",

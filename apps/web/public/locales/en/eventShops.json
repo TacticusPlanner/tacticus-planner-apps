@@ -5,12 +5,12 @@
     "empty": "No event shops yet",
     "emptyDescription": "Event shops show up here once the game data has one.",
     "notFound": "That event shop isn't available",
-    "planLoading": "Loading your cart…",
-    "planError": "Couldn't load your cart. You can browse the shop, but cart controls stay off until it loads.",
-    "saveError": "Couldn't save your cart. Your changes are kept.",
-    "reloaded": "Your cart was changed elsewhere and has been reloaded",
-    "removed_one": "{{count}} cart item is no longer sold and was removed",
-    "removed_other": "{{count}} cart items are no longer sold and were removed",
+    "planLoading": "Loading your plan…",
+    "planError": "Couldn't load your plan. You can browse the shop, but planning stays off until it loads.",
+    "saveError": "Couldn't save your plan. Your changes are kept.",
+    "reloaded": "Your plan was changed elsewhere and has been reloaded",
+    "removed_one": "{{count}} planned item is no longer sold and was removed",
+    "removed_other": "{{count}} planned items are no longer sold and were removed",
     "dismiss": "Dismiss",
     "unsynced": "Sync your account to see offers for your roster"
   },
@@ -49,7 +49,7 @@
     "nextWeek": "Next week",
     "legend": {
       "bought": "Bought",
-      "toBuy": "To buy",
+      "toBuy": "Planned",
       "needsReview": "Needs review"
     },
     "nothingPlanned": "Nothing planned",
@@ -72,20 +72,20 @@
     "dependsOnTier": "Depends on your tier",
     "dependsOnProgress": "Depends on unit progress",
     "dependsOnRandom": "Picked at random each day",
-    "add": "Add to cart",
-    "addAmount": "Add {{count}} to cart",
+    "add": "Plan to buy",
+    "addAmount": "Plan to buy {{count}}",
     "quantity": "Packs planned",
     "decrease": "One pack fewer",
     "increase": "One pack more",
-    "markBought": "Mark {{count}} bought",
+    "markBought": "Mark {{count}} bought in game",
     "bought": "{{bought}} of {{quantity}} bought",
     "boughtState": "Bought {{count}}",
     "undoBought": "Undo bought",
-    "remove": "Remove from cart",
+    "remove": "Remove from plan",
     "planned": "{{count}} planned",
     "alliance": "For {{alliance}}",
     "changeAlliance": "Change alliance",
-    "tick": "Mark all planned packs bought",
+    "tick": "Mark planned packs bought in game",
     "untick": "Mark as not bought",
     "sheetSubtitle": "Slot {{number}} · {{date}}",
     "costCap": "{{cost}} a pack · max {{cap}} a day",
@@ -115,7 +115,7 @@
     "cancel": "Cancel",
     "alliance": {
       "title": "Choose an alliance",
-      "description": "{{reward}} goes to one alliance. Pick it before adding the offer to your cart."
+      "description": "{{reward}} goes to one alliance. Pick it before planning to buy the offer."
     },
     "replace": {
       "title": "Replace the planned offer?",
@@ -130,8 +130,8 @@
     },
     "clearWeek": {
       "title": "Clear week {{week}}?",
-      "toBuy_one": "{{count}} item still to buy ({{cost}}) leaves the cart.",
-      "toBuy_other": "{{count}} items still to buy ({{cost}}) leave the cart.",
+      "toBuy_one": "{{count}} item still to buy ({{cost}}) leaves the plan.",
+      "toBuy_other": "{{count}} items still to buy ({{cost}}) leave the plan.",
       "review_one": "{{count}} item to review keeps only its bought packs.",
       "review_other": "{{count}} items to review keep only their bought packs.",
       "keeps": "Every bought pack stays.",
@@ -144,7 +144,7 @@
       "stillToBuy": "Still to buy",
       "bought": "Bought",
       "missed": "Missed",
-      "inCart": "In cart"
+      "inCart": "Planned"
     },
     "view": {
       "label": "Show",
@@ -158,7 +158,7 @@
     "today": "Today",
     "allTodayBought": "All of today bought",
     "done": "Done ({{count}})",
-    "empty": "Your cart is empty. Add offers from the day's slots.",
+    "empty": "Nothing planned yet. Use Plan to buy on the day's offers.",
     "packs": "{{toBuy}} of {{quantity}} to buy",
     "boughtPacks": "{{bought}} of {{quantity}} bought",
     "more": "More actions",
@@ -238,6 +238,6 @@
   "undated": {
     "weeks_one": "{{count}} week",
     "weeks_other": "{{count}} weeks",
-    "description": "This event shop is already in the game data, but its start date isn't announced yet. Days and your cart open once it is."
+    "description": "This event shop is already in the game data, but its start date isn't announced yet. Days and your plan open once it is."
   }
 }

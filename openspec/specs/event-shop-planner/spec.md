@@ -2,23 +2,28 @@
 
 ## Purpose
 
-The Dailies › Event shop page: lets a signed-in player browse a seasonal event shop day by day, plan and track purchases, see milestones and missions, search everything the shop sells and see on which days, and see how the plan covers their goals' needs.
+The Plan › Event shop page: lets a signed-in player browse a seasonal event shop day by day, plan and track purchases, see milestones and missions, search everything the shop sells and see on which days, and see how the plan covers their goals' needs.
 
 ## Requirements
 
-### Requirement: Event shop is a signed-in Dailies page
+### Requirement: Event shop is a signed-in Plan page
 
-The page SHALL live at `/dailies/event-shop` and `/dailies/event-shop/:eventId` inside the protected Dailies section, with a Dailies nav child "Event shop". `/dailies/event-shop` SHALL redirect (replace) to the default event: the running event; else the next upcoming one; else the most recently started one. An unknown `:eventId` SHALL redirect to the default event and show a notice that the event was not found.
+The page SHALL live at `/plan/event-shop` and `/plan/event-shop/:eventId` inside the protected Plan section, with a Plan nav child "Event shop" after Schedule. The former `/dailies/event-shop` and `/dailies/event-shop/:eventId` SHALL redirect (replace) to the matching Plan path, keeping the query (`?day=`, `?tab=`), so earlier links and bookmarks still open the same event, day and tab. `/plan/event-shop` SHALL redirect (replace) to the default event: the running event; else the next upcoming one; else the most recently started one. An unknown `:eventId` SHALL redirect to the default event and show a notice that the event was not found.
 
 #### Scenario: Default event is the running one
 
 - **WHEN** the catalog has `june-2026`, `august-2026` and `october-2026`, and today is 2026-10-29
-- **THEN** `/dailies/event-shop` opens `/dailies/event-shop/october-2026`
+- **THEN** `/plan/event-shop` opens `/plan/event-shop/october-2026`
 
 #### Scenario: Unknown event id
 
-- **WHEN** the user opens `/dailies/event-shop/may-2025`
+- **WHEN** the user opens `/plan/event-shop/may-2025`
 - **THEN** the page replaces the URL with the default event and shows "That event shop isn't available"
+
+#### Scenario: An old Dailies link opens the Plan page
+
+- **WHEN** the user opens `/dailies/event-shop/november-2026?day=3&tab=plan`
+- **THEN** the app replaces it with `/plan/event-shop/november-2026?day=3&tab=plan`
 
 ### Requirement: Page states are distinct
 
@@ -32,7 +37,7 @@ The page SHALL distinguish: catalog loading (skeleton); catalog load failure (er
 #### Scenario: Plan fails to load
 
 - **WHEN** the catalog is ready but `GET /event-shop-plans/{eventId}` fails
-- **THEN** the day's slots are visible, add-to-cart and mark-bought are disabled, and an error with Retry is shown
+- **THEN** the day's slots are visible, plan-to-buy and mark-bought are disabled, and an error with Retry is shown
 
 ### Requirement: The header names the event and its timing
 
@@ -110,7 +115,7 @@ Assumptions:
 #### Scenario: On desktop and tablet a slot is a card
 
 - **WHEN** the viewport is at least 768px wide
-- **THEN** slots are cards in a three-column grid, three a row like the in-game shop, showing icon, name, pack, slot number, cost, "max N a day", the free bonus as a badge and any lock note; a card in the cart keeps the size of the other cards in its row: it is outlined, its price line reads "N × cost = total", and in place of "Add to cart" one row holds a slider from 1 to the cap (none when the cap is 1), "N/cap", a tick that marks every planned pack bought (and unmarks them) and a remove button; a bought card turns green
+- **THEN** slots are cards in a three-column grid, three a row like the in-game shop, showing icon, name, pack, slot number, cost, "max N a day", the free bonus as a badge and any lock note; a card in the cart keeps the size of the other cards in its row: it is outlined, its price line reads "N × cost = total", and in place of "Plan to buy" one row holds a slider from 1 to the cap (none when the cap is 1), "N/cap", a tick that marks every planned pack bought (and unmarks them) and a remove button; a bought card turns green
 
 #### Scenario: On phone a slot is a tile
 
@@ -119,7 +124,9 @@ Assumptions:
 
 ### Requirement: Cart and purchase tracking
 
-For a slot offer on the selected day, the user SHALL be able to add it to the cart, which plans the offer's per-day cap (most players buy every pack), set its quantity from 1 to that cap without stepping one pack at a time, remove it, mark all planned packs bought in one action (a tick on the card or tile, "Bought" in the slot sheet, "Mark N bought" on a list row), and record buying fewer packs than planned by lowering the packs first and then marking them bought. A slot SHALL hold at most one cart entry per day; choosing another option of the same slot (possible only without synced data) replaces it after confirmation. A `draft_*` reward SHALL require choosing an alliance (Imperial, Xenos, Chaos) before it is added, and the chosen alliance SHALL be shown and changeable. Each change SHALL update the UI immediately and be saved to `/event-shop-plans/{eventId}` as the whole entry set; saves SHALL be debounced to at most one in flight. A 409 `eventShopPlanStale` SHALL reload the server plan, discard the local edit and show "Your cart was changed elsewhere and has been reloaded". Before writing, entries that no longer resolve against the catalog (missing week, slot, day or reward) SHALL be dropped and the user told how many were removed.
+For a slot offer on the selected day, the user SHALL be able to add it to the cart, which plans the offer's per-day cap (most players buy every pack), set its quantity from 1 to that cap without stepping one pack at a time, remove it, mark all planned packs bought in one action (a tick on the card or tile, "Bought" in the slot sheet, "Mark N bought in game" on a list row), and record buying fewer packs than planned by lowering the packs first and then marking them bought. A slot SHALL hold at most one cart entry per day; choosing another option of the same slot (possible only without synced data) replaces it after confirmation. A `draft_*` reward SHALL require choosing an alliance (Imperial, Xenos, Chaos) before it is added, and the chosen alliance SHALL be shown and changeable. Each change SHALL update the UI immediately and be saved to `/event-shop-plans/{eventId}` as the whole entry set; saves SHALL be debounced to at most one in flight. A 409 `eventShopPlanStale` SHALL reload the server plan, discard the local edit and show "Your cart was changed elsewhere and has been reloaded". Before writing, entries that no longer resolve against the catalog (missing week, slot, day or reward) SHALL be dropped and the user told how many were removed.
+
+The controls SHALL keep planning apart from buying: adding an offer reads "Plan to buy" (the legend and the totals call such packs "Planned"), and every action that records a purchase says it was bought in game ("Mark N bought in game", "Mark planned packs bought in game"). No control SHALL call the plan a cart.
 
 #### Scenario: The daily freebie is not planned
 
@@ -144,12 +151,12 @@ For a slot offer on the selected day, the user SHALL be able to add it to the ca
 #### Scenario: Phone sheet for an unplanned slot
 
 - **WHEN** the user taps a tile that is not in the cart on a phone
-- **THEN** the slot sheet opens with the packs slider at the day's max, "N × cost = total" and "Add N to cart"; adding plans that many packs and closes the sheet, and the tile then shows its planned count and its tick box for marking it bought
+- **THEN** the slot sheet opens with the packs slider at the day's max, "N × cost = total" and "Plan to buy N"; adding plans that many packs and closes the sheet, and the tile then shows its planned count and its tick box for marking it bought
 
 #### Scenario: Phone slot sheet
 
 - **WHEN** the user taps the planned Yarrick tile on a phone
-- **THEN** a bottom sheet shows the reward, "Slot 2 · Thu 29 Oct · Today", "45 a pack · max 5 a day", the other days it is sold ("Also Sun 1 Nov"), a planned-packs slider ("2 / 5", from 1 to "5 max") with "2 × 45 = 90", a primary "Bought" button and a "Remove from cart" action
+- **THEN** a bottom sheet shows the reward, "Slot 2 · Thu 29 Oct · Today", "45 a pack · max 5 a day", the other days it is sold ("Also Sun 1 Nov"), a planned-packs slider ("2 / 5", from 1 to "5 max") with "2 × 45 = 90", a primary "Bought" button and a "Remove from plan" action
 
 ### Requirement: Rewards are read-only references
 
@@ -279,9 +286,9 @@ The event picker SHALL list an undated event (served `startUtc` null) above the 
 #### Scenario: Undated event in the picker
 
 - **WHEN** the catalog has `october-2026` (dated) and `january-2027` (undated)
-- **THEN** the picker lists `january-2027` first with "Start date TBA", and `/dailies/event-shop` still opens the running `october-2026`
+- **THEN** the picker lists `january-2027` first with "Start date TBA", and `/plan/event-shop` still opens the running `october-2026`
 
 #### Scenario: Opening an undated event
 
-- **WHEN** the user opens `/dailies/event-shop/january-2027`
-- **THEN** the page shows "Start date TBA", "2 weeks" and the notice, and no days or add-to-cart controls
+- **WHEN** the user opens `/plan/event-shop/january-2027`
+- **THEN** the page shows "Start date TBA", "2 weeks" and the notice, and no days or plan-to-buy controls

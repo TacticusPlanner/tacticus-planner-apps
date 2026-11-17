@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy } from "react"
-import { Navigate } from "react-router"
+import { Navigate, useLocation, useParams } from "react-router"
 import type { RouteObject } from "react-router"
 
 import { preloadOnMatch } from "@/shared/lib"
@@ -52,20 +52,38 @@ export const routes: RouteObject[] = [
   },
   // Shop recommendations now sit on the Raids tab; old Shops links and bookmarks land there.
   { path: "shops", element: <Navigate replace to="/dailies/raids" /> },
-  // `/dailies/event-shop` picks the default event (EventShopPage redirects to it).
-  {
-    path: "event-shop",
-    element: <EventShopPage />,
-    loader: preloadOnMatch(loadEventShopPage),
-  },
-  {
-    path: "event-shop/:eventId",
-    element: <EventShopPage />,
-    loader: preloadOnMatch(loadEventShopPage),
-  },
+  // Event shop moved to Plan; old links and bookmarks land there with their event, day and tab.
+  { path: "event-shop", element: <EventShopRedirect /> },
+  { path: "event-shop/:eventId", element: <EventShopRedirect /> },
   {
     path: "guild-raids",
     element: <GuildRaidsPage />,
     loader: preloadOnMatch(loadGuildRaidsPage),
+  },
+]
+
+/** `/dailies/event-shop[/:eventId]` -> `/plan/event-shop[/:eventId]`, keeping the query (`?day=`, `?tab=`). */
+function EventShopRedirect() {
+  const { eventId } = useParams()
+  const { search } = useLocation()
+  const path = eventId
+    ? `/plan/event-shop/${encodeURIComponent(eventId)}`
+    : "/plan/event-shop"
+  return <Navigate replace to={`${path}${search}`} />
+}
+
+// Plan › Event shop, mounted by app/routes.tsx at `/plan/event-shop` under `DailiesLayout`, which
+// carries the project filter its Coverage panel reads. The bare path picks the default event
+// (EventShopPage redirects to it).
+export const eventShopRoutes: RouteObject[] = [
+  {
+    index: true,
+    element: <EventShopPage />,
+    loader: preloadOnMatch(loadEventShopPage),
+  },
+  {
+    path: ":eventId",
+    element: <EventShopPage />,
+    loader: preloadOnMatch(loadEventShopPage),
   },
 ]

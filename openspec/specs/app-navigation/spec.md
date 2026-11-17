@@ -231,7 +231,7 @@ This applies to the desktop sidebar only. On mobile, sections reachable via the 
 
 ### Requirement: The shared page header hosts each section's child-page picker
 
-On mobile, each top-level section that has child pages (`NavItem.children`) SHALL expose them via a routed tab row directly beneath the header's title and description. This applies to every multi-child section, including Dailies and Plan (whose children are Goals, Projects, Insights, and Schedule). No child page renders a further level of tabs inside its own content.
+On mobile, each top-level section that has child pages (`NavItem.children`) SHALL expose them via a routed tab row directly beneath the header's title and description. This applies to every multi-child section, including Dailies and Plan (whose children are Goals, Projects, Insights, Schedule, and Event shop). No child page renders a further level of tabs inside its own content.
 
 On desktop, the header does not host a child-page picker at all — a section's child pages are discovered through the desktop section menu instead (see the persistent desktop section menu requirement), and the desktop header shows only the active page's title, plus a reopen button and "{Section} ›" breadcrumb while the section menu is collapsed (see the header title requirement). On mobile, the menu drawer also lists a section's child pages, per the drawer requirement — that duplication with the mobile header's tab row is intentional.
 
@@ -462,12 +462,12 @@ On desktop, a section with one or more child pages SHALL expose them in a persis
 #### Scenario: Sibling pages stay visible
 
 - **WHEN** a user visits Plan with its section menu expanded and selects Schedule
-- **THEN** Goals, Projects, Insights, and Schedule remain visible and Schedule becomes active
+- **THEN** Goals, Projects, Insights, Schedule, and Event shop remain visible and Schedule becomes active
 
 #### Scenario: Section rows lead with an icon
 
 - **WHEN** a signed-in user views the Plan section menu
-- **THEN** Goals, Projects, Insights, and Schedule each render with a leading icon and no count badge
+- **THEN** Goals, Projects, Insights, Schedule, and Event shop each render with a leading icon and no count badge
 
 #### Scenario: Rail tools sit at the top of the rail
 

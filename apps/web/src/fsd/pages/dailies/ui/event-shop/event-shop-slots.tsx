@@ -242,7 +242,7 @@ function DraftAllianceLine({
 }
 
 /**
- * A card's in-cart controls in the footprint of its "Add to cart" button, so a planned card stays the
+ * A card's in-cart controls in the footprint of its "Plan to buy" button, so a planned card stays the
  * size of its row: the packs slider and count, the bought tick and a remove button. The line total sits
  * in the card's price line. Bought fewer is the slider: lower the packs, then tick.
  */

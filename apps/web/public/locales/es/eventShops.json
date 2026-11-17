@@ -5,12 +5,12 @@
     "empty": "Aún no hay tiendas de evento",
     "emptyDescription": "Las tiendas de evento aparecen aquí cuando los datos del juego incluyen una.",
     "notFound": "Esa tienda de evento no está disponible",
-    "planLoading": "Cargando tu carrito…",
-    "planError": "No se pudo cargar tu carrito. Puedes ver la tienda, pero los controles del carrito siguen desactivados hasta que cargue.",
-    "saveError": "No se pudo guardar tu carrito. Tus cambios se conservan.",
-    "reloaded": "Tu carrito se cambió en otro lugar y se ha vuelto a cargar",
-    "removed_one": "{{count}} elemento del carrito ya no está a la venta y se quitó",
-    "removed_other": "{{count}} elementos del carrito ya no están a la venta y se quitaron",
+    "planLoading": "Cargando tu plan…",
+    "planError": "No se pudo cargar tu plan. Puedes ver la tienda, pero la planificación sigue desactivada hasta que cargue.",
+    "saveError": "No se pudo guardar tu plan. Tus cambios se conservan.",
+    "reloaded": "Tu plan se cambió en otro lugar y se ha vuelto a cargar",
+    "removed_one": "{{count}} elemento planificado ya no está a la venta y se quitó",
+    "removed_other": "{{count}} elementos planificados ya no están a la venta y se quitaron",
     "dismiss": "Cerrar",
     "unsynced": "Sincroniza tu cuenta para ver las ofertas de tu plantilla"
   },
@@ -49,7 +49,7 @@
     "nextWeek": "Semana siguiente",
     "legend": {
       "bought": "Comprado",
-      "toBuy": "Por comprar",
+      "toBuy": "Planificado",
       "needsReview": "Por revisar"
     },
     "nothingPlanned": "Nada planificado",
@@ -72,20 +72,20 @@
     "dependsOnTier": "Depende de tu nivel",
     "dependsOnProgress": "Depende del progreso de la unidad",
     "dependsOnRandom": "Elegido al azar cada día",
-    "add": "Añadir al carrito",
-    "addAmount": "Añadir {{count}} al carrito",
+    "add": "Planear compra",
+    "addAmount": "Planear comprar {{count}}",
     "quantity": "Paquetes planificados",
     "decrease": "Un paquete menos",
     "increase": "Un paquete más",
-    "markBought": "Marcar {{count}} como comprados",
+    "markBought": "Marcar {{count}} comprados en el juego",
     "bought": "{{bought}} de {{quantity}} comprados",
     "boughtState": "{{count}} comprados",
     "undoBought": "Deshacer compra",
-    "remove": "Quitar del carrito",
+    "remove": "Quitar del plan",
     "planned": "{{count}} planificados",
     "alliance": "Para {{alliance}}",
     "changeAlliance": "Cambiar alianza",
-    "tick": "Marcar todos los paquetes planificados como comprados",
+    "tick": "Marcar los paquetes planificados como comprados en el juego",
     "untick": "Marcar como no comprado",
     "sheetSubtitle": "Espacio {{number}} · {{date}}",
     "costCap": "{{cost}} por paquete · máx. {{cap}} al día",
@@ -115,7 +115,7 @@
     "cancel": "Cancelar",
     "alliance": {
       "title": "Elige una alianza",
-      "description": "{{reward}} es para una alianza. Elígela antes de añadir la oferta al carrito."
+      "description": "{{reward}} es para una alianza. Elígela antes de planear la compra de la oferta."
     },
     "replace": {
       "title": "¿Sustituir la oferta planificada?",
@@ -130,8 +130,8 @@
     },
     "clearWeek": {
       "title": "¿Vaciar la semana {{week}}?",
-      "toBuy_one": "{{count}} elemento por comprar ({{cost}}) sale del carrito.",
-      "toBuy_other": "{{count}} elementos por comprar ({{cost}}) salen del carrito.",
+      "toBuy_one": "{{count}} elemento por comprar ({{cost}}) sale del plan.",
+      "toBuy_other": "{{count}} elementos por comprar ({{cost}}) salen del plan.",
       "review_one": "{{count}} elemento por revisar conserva solo sus paquetes comprados.",
       "review_other": "{{count}} elementos por revisar conservan solo sus paquetes comprados.",
       "keeps": "Todos los paquetes comprados se quedan.",
@@ -144,7 +144,7 @@
       "stillToBuy": "Por comprar",
       "bought": "Comprado",
       "missed": "Perdido",
-      "inCart": "En el carrito"
+      "inCart": "Planificado"
     },
     "view": {
       "label": "Mostrar",
@@ -158,7 +158,7 @@
     "today": "Hoy",
     "allTodayBought": "Todo lo de hoy comprado",
     "done": "Hecho ({{count}})",
-    "empty": "Tu carrito está vacío. Añade ofertas de los espacios del día.",
+    "empty": "Aún no hay nada planificado. Usa Planear compra en las ofertas del día.",
     "packs": "{{toBuy}} de {{quantity}} por comprar",
     "boughtPacks": "{{bought}} de {{quantity}} comprados",
     "more": "Más acciones",
@@ -238,6 +238,6 @@
   "undated": {
     "weeks_one": "{{count}} semana",
     "weeks_other": "{{count}} semanas",
-    "description": "Esta tienda de evento ya está en los datos del juego, pero aún no se ha anunciado su fecha de inicio. Los días y tu carrito se abrirán cuando se anuncie."
+    "description": "Esta tienda de evento ya está en los datos del juego, pero aún no se ha anunciado su fecha de inicio. Los días y tu plan se abrirán cuando se anuncie."
   }
 }

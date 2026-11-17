@@ -123,7 +123,7 @@ describe("SectionTabs", () => {
     )
   })
 
-  it("shows the six Dailies tabs in order: Raids, HSE, HRE, Quest, Event shop, Guild Raids", () => {
+  it("shows the five Dailies tabs in order: Raids, HSE, HRE, Quest, Guild Raids", () => {
     renderTabs(section("/dailies"), "/dailies/raids")
 
     expect(
@@ -133,10 +133,27 @@ describe("SectionTabs", () => {
       "section-tab-dailies-hse",
       "section-tab-dailies-hre",
       "section-tab-dailies-quest",
-      "section-tab-dailies-event-shop",
       "section-tab-dailies-guild-raids",
     ])
     expect(screen.getByTestId("section-tab-dailies-raids")).toHaveAttribute(
+      "data-state",
+      "active"
+    )
+  })
+
+  it("shows Event shop as the last Plan tab, active on an event's page", () => {
+    renderTabs(section("/plan"), "/plan/event-shop/november-2026")
+
+    expect(
+      screen.getAllByRole("tab").map((tab) => tab.getAttribute("data-testid"))
+    ).toEqual([
+      "section-tab-plan-goals",
+      "section-tab-plan-projects",
+      "section-tab-plan-insights",
+      "section-tab-plan-schedule",
+      "section-tab-plan-event-shop",
+    ])
+    expect(screen.getByTestId("section-tab-plan-event-shop")).toHaveAttribute(
       "data-state",
       "active"
     )
