@@ -12,7 +12,12 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { ClassifiedEntry, DayGroup } from "@/features/shops/event-planner"
+import { eventShopBudget } from "@/features/shops/event-planner"
+import type {
+  ClassifiedEntry,
+  DayGroup,
+  EventShopBudget,
+} from "@/features/shops/event-planner"
 import { EntityIcon } from "@/shared/ui"
 
 import { DESTRUCTIVE_TEXT, TOUCH_ICON, TOUCH_SM } from "./day-state-style"
@@ -102,6 +107,7 @@ export function ShoppingList({
           </div>
         ))}
       </dl>
+      <Budget budget={eventShopBudget(event, list.totals)} cost={cost} />
       {list.ended ? (
         <div
           className="flex flex-wrap items-center gap-x-2 rounded-md bg-muted p-2 text-sm"
@@ -299,6 +305,58 @@ export function ShoppingList({
           </div>
         </>
       )}
+    </section>
+  )
+}
+
+/**
+ * What the plan spends (bought + still to buy) against the event's estimated income, free and with the
+ * bonus shipment, each with what is left or how far over. Absent when the event has no income estimate.
+ */
+function Budget({
+  budget,
+  cost,
+}: {
+  budget: EventShopBudget | null
+  cost: (amount: number) => ReactNode
+}) {
+  const { t } = useTranslation("eventShops")
+  if (!budget) return null
+  const line = (kind: "free" | "withBonus") => {
+    const income = budget[kind]
+    const left = income - budget.spend
+    return (
+      <div
+        className="flex flex-wrap items-center justify-between gap-x-2"
+        data-testid={`event-shop-budget-${kind}`}
+      >
+        <dt className="inline-flex items-center gap-1 text-muted-foreground">
+          {t(`list.budget.${kind}`)} {cost(income)}
+        </dt>
+        <dd
+          className={cn(
+            "inline-flex items-center gap-1 font-semibold",
+            left < 0 && "text-amber-700 dark:text-amber-400"
+          )}
+        >
+          {cost(Math.abs(left))}
+          {left < 0 ? t("list.budget.over") : t("list.budget.left")}
+        </dd>
+      </div>
+    )
+  }
+  return (
+    <section
+      className="flex flex-col gap-1 rounded-md bg-muted/60 p-2 text-xs"
+      data-testid="event-shop-budget"
+    >
+      <h3 className="inline-flex items-center gap-1 font-semibold">
+        {t("list.budget.title")} {cost(budget.spend)}
+      </h3>
+      <dl className="flex flex-col gap-1">
+        {line("free")}
+        {line("withBonus")}
+      </dl>
     </section>
   )
 }

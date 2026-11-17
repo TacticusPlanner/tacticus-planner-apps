@@ -98,7 +98,7 @@
     "max": "Max.",
     "maxValue": "{{count}} max.",
     "lineTotal": "{{count}} × {{cost}} =",
-    "boughtAction": "Acheté",
+    "boughtAction": "Acheté en jeu",
     "more": "Plus d'actions",
     "claimInGame": "Récupérez-le en jeu chaque jour ; rien à prévoir.",
     "freebieShort": "Gratuit chaque jour",
@@ -146,13 +146,20 @@
       "missed": "Manqué",
       "inCart": "Prévu"
     },
+    "budget": {
+      "title": "Acheté + reste à acheter",
+      "free": "≈ gratuits",
+      "withBonus": "≈ avec livraison bonus",
+      "left": "restants",
+      "over": "en trop"
+    },
     "view": {
       "label": "Afficher",
       "upcoming": "À venir",
       "all": "Tout"
     },
     "needsReviewHint": "Jours passés avec des lots que vous n'avez pas marqués achetés",
-    "markBought": "Acheté",
+    "markBought": "Acheté en jeu",
     "boughtSome": "Acheté en partie…",
     "missed": "Manqué",
     "today": "Aujourd'hui",

@@ -73,7 +73,7 @@
     "dependsOnProgress": "Hängt vom Fortschritt der Einheit ab",
     "dependsOnRandom": "Jeden Tag zufällig gewählt",
     "add": "Kauf planen",
-    "addAmount": "{{count}} Kauf planen",
+    "addAmount": "Kauf von {{count}} planen",
     "quantity": "Geplante Pakete",
     "decrease": "Ein Paket weniger",
     "increase": "Ein Paket mehr",
@@ -98,7 +98,7 @@
     "max": "Max.",
     "maxValue": "{{count}} max.",
     "lineTotal": "{{count}} × {{cost}} =",
-    "boughtAction": "Gekauft",
+    "boughtAction": "Im Spiel gekauft",
     "more": "Weitere Aktionen",
     "claimInGame": "Hol es dir jeden Tag im Spiel; nichts zu planen.",
     "freebieShort": "Täglich gratis",
@@ -146,13 +146,20 @@
       "missed": "Verpasst",
       "inCart": "Geplant"
     },
+    "budget": {
+      "title": "Gekauft + noch zu kaufen",
+      "free": "≈ gratis",
+      "withBonus": "≈ mit Bonuslieferung",
+      "left": "übrig",
+      "over": "zu viel"
+    },
     "view": {
       "label": "Anzeigen",
       "upcoming": "Kommend",
       "all": "Alle"
     },
     "needsReviewHint": "Vergangene Tage mit Paketen, die du nicht als gekauft markiert hast",
-    "markBought": "Gekauft",
+    "markBought": "Im Spiel gekauft",
     "boughtSome": "Einige gekauft…",
     "missed": "Verpasst",
     "today": "Heute",

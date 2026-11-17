@@ -59,7 +59,7 @@ Every list row and group header SHALL show the entry's weekday and calendar date
 
 ### Requirement: Needs review collects past unfinished entries
 
-When any entry needs review, the list SHALL show a "Needs review (N)" group with the explanation of what it holds, listing each such entry with its date, reward, packs, bought/quantity and the cost of its unbought packs ("60 missed"), and two actions on its row: **Bought** (sets `purchasedQuantity` to `quantity`) and **Missed** (drops the unbought packs: `quantity` becomes `purchasedQuantity`, and an entry with nothing bought leaves the cart); **Bought some…** (sets `purchasedQuantity` to a chosen 0..quantity, then treats the rest as missed) SHALL be in the row's "⋯" menu. The group SHALL offer **Mark the rest missed**, which applies Missed to every entry it holds, and SHALL list the first 5 entries with "Show all N" for the rest. Resolving every entry SHALL hide the group. On phone, the Plan tab badge and the Shop bottom bar SHALL show the Needs review count.
+When any entry needs review, the list SHALL show a "Needs review (N)" group with the explanation of what it holds, listing each such entry with its date, reward, packs, bought/quantity and the cost of its unbought packs ("60 missed"), and two actions on its row: **Bought in game** (sets `purchasedQuantity` to `quantity`) and **Missed** (drops the unbought packs: `quantity` becomes `purchasedQuantity`, and an entry with nothing bought leaves the cart); **Bought some…** (sets `purchasedQuantity` to a chosen 0..quantity, then treats the rest as missed) SHALL be in the row's "⋯" menu. The group SHALL offer **Mark the rest missed**, which applies Missed to every entry it holds, and SHALL list the first 5 entries with "Show all N" for the rest. Resolving every entry SHALL hide the group. On phone, the Plan tab badge and the Shop bottom bar SHALL show the Needs review count.
 
 #### Scenario: Mark the rest missed
 
@@ -134,3 +134,22 @@ The planned supply used by Coverage SHALL be, per resource, Σ over entries of `
 
 - **WHEN** a past entry for 25 Yarrick shards was never bought
 - **THEN** Coverage's planned Yarrick shards do not include those 25
+
+### Requirement: A budget compares the plan's spend with the event's income
+
+When every week of the event has an estimated income (served `estimatedWeeklyIncome`), the list SHALL show a Budget block under its totals: what the plan spends, Bought + Still to buy (Missed packs were never paid for), and two lines comparing it with the event's estimated income summed over all weeks — the free income, and the free income plus the bonus shipment — each showing the income and what is left, or how far over the plan goes, highlighted when over. When any week has no estimate the block SHALL NOT be shown, so a partial sum never reads as the event's budget.
+
+#### Scenario: The plan fits the free income
+
+- **WHEN** the event's two weeks each estimate 750 free and 1,000 bonus shipment, and the list has Bought 15 and Still to buy 30 (Missed 15)
+- **THEN** the Budget block shows 45 spent, "≈ free income 1,500" with 1,455 left, and "≈ with bonus shipment 3,500" with 3,455 left
+
+#### Scenario: The plan goes over
+
+- **WHEN** the two weeks each estimate 10 free and 5 bonus shipment and the plan spends 45
+- **THEN** the free line shows 25 over and the bonus line 15 over, both highlighted
+
+#### Scenario: No estimate, no budget
+
+- **WHEN** one week of the event has no estimated income
+- **THEN** no Budget block is shown
