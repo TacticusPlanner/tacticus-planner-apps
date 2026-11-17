@@ -13,9 +13,9 @@ import type { TrackMedalStats } from "../model/battle-progress"
 export function MedalStats({ stats }: { stats: TrackMedalStats }) {
   const { t } = useTranslation("dailies")
   return (
-    <span className="inline-flex items-center gap-3 text-xs tabular-nums">
+    <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1 text-xs tabular-nums">
       <span
-        className="inline-flex items-center gap-1"
+        className="inline-flex items-center gap-1 whitespace-nowrap"
         title={t("battleProgress.medalsEarned")}
       >
         <EntityIcon
@@ -27,7 +27,7 @@ export function MedalStats({ stats }: { stats: TrackMedalStats }) {
       </span>
       {stats.maxLightningVictories > 0 ? (
         <span
-          className="inline-flex items-center gap-1"
+          className="inline-flex items-center gap-1 whitespace-nowrap"
           title={t("battleProgress.lightningVictory")}
         >
           <EntityIcon
@@ -40,7 +40,7 @@ export function MedalStats({ stats }: { stats: TrackMedalStats }) {
       ) : null}
       {stats.maxGoldMilestones ? (
         <span
-          className="inline-flex items-center gap-1"
+          className="inline-flex items-center gap-1 whitespace-nowrap"
           title={t("battleProgress.goldMilestones")}
         >
           <EntityIcon

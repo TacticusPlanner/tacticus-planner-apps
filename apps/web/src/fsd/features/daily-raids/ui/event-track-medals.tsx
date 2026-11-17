@@ -76,14 +76,19 @@ export function EventTrackMedals({
       <Button
         variant="outline"
         size="sm"
-        className={stats ? "w-full justify-between" : "self-end"}
+        className={
+          stats
+            ? // Wraps instead of overlapping when the stats and the label don't fit on one line.
+              "h-auto w-full flex-wrap justify-between gap-x-3 gap-y-1 py-1.5 whitespace-normal"
+            : "self-end"
+        }
         onClick={() => setOpen(true)}
         data-testid={`event-track-medals-open-${groupId}-${type}`}
       >
         {stats ? (
           <>
             <MedalStats stats={stats} />
-            <span className="inline-flex items-center gap-1">
+            <span className="ml-auto inline-flex items-center gap-1 whitespace-nowrap">
               {t("battleProgress.edit")}
               <ChevronRight aria-hidden className="size-4" />
             </span>

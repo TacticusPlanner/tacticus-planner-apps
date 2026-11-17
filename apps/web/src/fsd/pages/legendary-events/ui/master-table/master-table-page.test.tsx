@@ -432,13 +432,11 @@ describe("MasterTablePage", () => {
     expect(vi.mocked(sortMasterTable).mock.calls.length).toBeGreaterThan(sorts)
   })
 
-  it("marks the selected chips with the thick primary border, tint and checked state", async () => {
+  it("marks the selected segments with the primary tint and checked state", async () => {
     renderPage("?units=all&points=remaining")
     await ready()
     const onClasses = [
-      "data-[state=on]:border-2",
-      "data-[state=on]:border-primary",
-      "data-[state=on]:bg-primary/10",
+      "group-data-[spacing=0]/toggle-group:data-[state=on]:bg-primary/10",
     ]
     for (const id of ["unit-set-all", "points-remaining"]) {
       const chip = screen.getByTestId(`master-table-${id}`)

@@ -799,7 +799,7 @@ describe("TierListPage", () => {
       expect(within(filters).getByTestId("tier-list-alliance")).toBeVisible()
     })
 
-    it("marks the selected alliance chip with the thick primary border, tint and checked state", async () => {
+    it("marks the selected alliance segment with the primary tint and checked state", async () => {
       setViewportWidth(1280)
       renderPage("/legendary-events/tier-list?alliance=chaos")
       await ready()
@@ -809,9 +809,7 @@ describe("TierListPage", () => {
       expect(chaos).toHaveAttribute("data-state", "on")
       expect(chaos).toHaveAttribute("aria-checked", "true")
       expect(chaos).toHaveClass(
-        "data-[state=on]:border-2",
-        "data-[state=on]:border-primary",
-        "data-[state=on]:bg-primary/10"
+        "group-data-[spacing=0]/toggle-group:data-[state=on]:bg-primary/10"
       )
       for (const name of ["All", "Imperial", "Xenos"]) {
         expect(within(alliance).getByRole("radio", { name })).toHaveAttribute(

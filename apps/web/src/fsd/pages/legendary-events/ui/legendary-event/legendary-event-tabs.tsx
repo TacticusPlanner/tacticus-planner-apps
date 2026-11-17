@@ -153,7 +153,7 @@ export function LaneSelector({
         >
           {LEGENDARY_EVENT_LANE_IDS.map((lane) => (
             <ToggleGroupItem
-              className="min-h-11 flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+              className="flex-1"
               data-testid={`legendary-event-lane-pick-${lane}`}
               id={`le-lane-pick-${lane}`}
               key={lane}
@@ -193,7 +193,7 @@ export function LaneSelector({
         const isShown = shown.includes(laneId)
         return (
           <ToggleGroupItem
-            className="min-w-24 gap-1.5 px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            className="min-w-24 gap-1.5 px-3"
             data-lane={laneId}
             data-testid="legendary-event-lane-switch"
             id={`le-lane-switch-${laneId}`}

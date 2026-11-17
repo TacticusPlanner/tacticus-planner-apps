@@ -430,11 +430,7 @@ function ViewButtons({
           <ToggleGroupItem
             key={layout}
             value={layout}
-            className={
-              compact
-                ? "relative h-8 w-9 after:absolute after:inset-x-0 after:-inset-y-1.5 after:content-['']"
-                : "px-3"
-            }
+            className={compact ? "w-9" : "px-3"}
             aria-label={
               compact
                 ? t(`myGame.collection.toolbar.views.${layout}`)
