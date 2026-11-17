@@ -805,6 +805,8 @@ describe("TierListPage", () => {
       await ready()
 
       const alliance = screen.getByTestId("tier-list-alliance")
+      // Segmented (spacing 0): the selected-segment tint only applies inside such a group.
+      expect(alliance).toHaveAttribute("data-spacing", "0")
       const chaos = within(alliance).getByRole("radio", { name: "Chaos" })
       expect(chaos).toHaveAttribute("data-state", "on")
       expect(chaos).toHaveAttribute("aria-checked", "true")

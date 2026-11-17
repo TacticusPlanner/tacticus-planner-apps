@@ -435,6 +435,13 @@ describe("MasterTablePage", () => {
   it("marks the selected segments with the primary tint and checked state", async () => {
     renderPage("?units=all&points=remaining")
     await ready()
+    // Segmented (spacing 0): the selected-segment tint only applies inside such a group.
+    for (const id of ["unit-set", "points-mode"]) {
+      expect(screen.getByTestId(`master-table-${id}`)).toHaveAttribute(
+        "data-spacing",
+        "0"
+      )
+    }
     const onClasses = [
       "group-data-[spacing=0]/toggle-group:data-[state=on]:bg-primary/10",
     ]
