@@ -31,8 +31,10 @@ import type {
 } from "./collection-query"
 import type { CollectionOptions } from "./use-collection-options"
 
-/** The query parameter each part of the query lives in. `quick` is remembered in the browser
- *  instead; its parameter is only read from older links (see `useCollectionQuery`). */
+/** The parts of the query the URL carries; the quick filter is remembered in the browser instead. */
+type UrlQueryKey = Exclude<keyof CollectionQuery, "quick">
+
+/** The query parameter each part of the query lives in. */
 const PARAM = {
   search: "q",
   alliance: "alliance",
@@ -53,11 +55,10 @@ const PARAM = {
   damageTypes: "damage",
   traits: "trait",
   shardSources: "source",
-  quick: "quick",
   sort: "sort",
   view: "view",
   group: "group",
-} as const satisfies Record<keyof CollectionQuery, string>
+} as const satisfies Record<UrlQueryKey, string>
 
 /** The value of `?owned=` that hides unowned units; any other value is dropped from the URL. */
 const HIDE_UNOWNED_VALUE = "owned"
@@ -230,25 +231,12 @@ function readCollectionQuery(
           ) ?? false
       )
     ),
-    // An older link's `quick` applies until the hook moves it into the browser; the parameter is
-    // always removed from the URL.
-    quick: linkedQuick(params, fixes) ?? remembered.quick,
+    quick: remembered.quick,
     sort: one(PARAM.sort, isCollectionSort) ?? remembered.sort,
     view: one(PARAM.view, isCollectionLayout) ?? remembered.view,
     group: one(PARAM.group, isCollectionGrouping) ?? remembered.group,
   }
   return { query, fixes }
-}
-
-/** The valid `quick` value an older link carries, marking the parameter for removal either way. */
-function linkedQuick(
-  params: URLSearchParams,
-  fixes: ParamFixes
-): CollectionQuickFilter | null {
-  const raw = params.get(PARAM.quick)
-  if (raw === null) return null
-  fixes[PARAM.quick] = null
-  return isCollectionQuickFilter(raw) ? raw : null
 }
 
 /** A query part as its URL value; `null` removes the parameter (the part is at its default). */
@@ -288,7 +276,7 @@ export interface CollectionQueryState {
  * those raw values are kept and not applied yet. The last selected sort, view and grouping are
  * remembered in this browser and apply when the URL carries none; a value arriving in a link is
  * shown without being remembered. The quick filter is remembered in this browser only, not in the
- * URL; an older link's `?quick=` is applied, remembered and removed from the URL.
+ * URL.
  */
 export function useCollectionQuery(
   options: CollectionOptions | undefined
@@ -334,13 +322,6 @@ export function useCollectionQuery(
       rememberedQuick,
     ]
   )
-
-  // An older link's quick filter is remembered before the fix below removes it from the URL.
-  const linked = params.get(PARAM.quick)
-  useEffect(() => {
-    if (linked !== null && isCollectionQuickFilter(linked))
-      rememberQuick(linked)
-  }, [linked, rememberQuick])
 
   // One replacement for every fix, so fixes to several parameters cannot overwrite each other.
   const fixesKey = Object.keys(fixes).length > 0 ? JSON.stringify(fixes) : ""

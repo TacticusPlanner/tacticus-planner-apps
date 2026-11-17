@@ -162,34 +162,6 @@ describe("Today quick filters", () => {
     ).toBeInTheDocument()
   })
 
-  it("applies an older link's chips, remembers them and drops the parameter", () => {
-    window.localStorage.setItem(STORAGE_KEY, "combineGoals")
-    renderToday("/?quick=fewerRaids,nope")
-    expect(lastQuickFilters()).toEqual({
-      fewerRaids: true,
-      combineGoals: false,
-      raidableOnly: false,
-    })
-    expect(screen.getByTestId("today-quick-filter-fewerRaids")).toHaveAttribute(
-      "data-state",
-      "on"
-    )
-    expect(screen.getByTestId("search")).toHaveTextContent("")
-    expect(window.localStorage.getItem(STORAGE_KEY)).toBe("fewerRaids")
-  })
-
-  it("reads an old Bottlenecks link as Combine goals", () => {
-    renderToday("/?quick=bottlenecks")
-    expect(lastQuickFilters()).toEqual({
-      fewerRaids: false,
-      combineGoals: true,
-      raidableOnly: false,
-    })
-    expect(
-      screen.getByTestId("today-quick-filter-combineGoals")
-    ).toHaveAttribute("data-state", "on")
-  })
-
   it("offers Raidable only only while today's plan raids a manual battle", async () => {
     renderToday()
     expect(

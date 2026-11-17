@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useSyncExternalStore } from "react"
-import { useSearchParams } from "react-router"
+import { useSyncExternalStore } from "react"
 
 import {
   parseTodayQuickFilters,
@@ -8,10 +7,8 @@ import {
 import type { TodayQuickFilter } from "./today-quick-filters"
 import { safeStorage } from "@/shared/lib"
 
-/** Where this browser remembers the chips, in the same comma format the URL used to carry. */
+/** Where this browser remembers the chips, as a comma-separated list. */
 const TODAY_QUICK_FILTERS_STORAGE_KEY = "dailies.quick-filters.v1"
-/** The URL parameter that held the chips before they were remembered per device. */
-const LEGACY_PARAM = "quick"
 
 // One shared value for every mount and tab, as with the Raids Filters. `lastRaw` keeps the snapshot
 // referentially stable until the stored string changes; when storage is unavailable the value set in
@@ -56,33 +53,16 @@ function setTodayQuickFilters(next: readonly TodayQuickFilter[]) {
 
 /**
  * Today's quick filters (shared with the HSE and HRE tabs), remembered in this browser so they
- * survive navigating away and reloading. A link still carrying the earlier `quick` URL parameter is
- * honoured once: its chips are applied and remembered, and the parameter is removed from the URL.
+ * survive navigating away and reloading.
  */
 export function useTodayQuickFilters(): [
   TodayQuickFilter[],
   (next: readonly TodayQuickFilter[]) => void,
 ] {
-  const [params, setParams] = useSearchParams()
-  const linked = params.get(LEGACY_PARAM)
-  const stored = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
-
-  useEffect(() => {
-    if (linked === null) return
-    setTodayQuickFilters(parseTodayQuickFilters(linked))
-    setParams(
-      (previous) => {
-        previous.delete(LEGACY_PARAM)
-        return previous
-      },
-      { replace: true }
-    )
-  }, [linked, setParams])
-
-  // Until the effect above moves a linked value into storage, show it rather than the stored one.
-  const fromLink = useMemo(
-    () => (linked === null ? null : parseTodayQuickFilters(linked)),
-    [linked]
+  const filters = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
   )
-  return [fromLink ?? stored, setTodayQuickFilters]
+  return [filters, setTodayQuickFilters]
 }

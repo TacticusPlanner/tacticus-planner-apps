@@ -595,7 +595,7 @@ The search text, every standalone filter and the sort SHALL be held in the page 
 
 Invalid query values SHALL be handled as follows:
 
-- An invalid value SHALL be dropped from the URL and treated as unset. This covers an unknown faction, rarity, rank, progression step, damage type, trait, shard source or sort, and a number the catalog does not offer.
+- An invalid value SHALL be dropped from the URL and treated as unset. This covers an unknown faction, rarity, rank, progression step, kind, damage type, trait, shard source or sort, and a number the catalog does not offer.
 - In a list of factions, rarities, damage types, traits or shard sources, only the unknown items SHALL be dropped, and the valid ones SHALL still apply.
 - A range set backwards SHALL be rewritten in the URL with its ends swapped.
 
@@ -605,7 +605,7 @@ The sort the user last selected SHALL also be remembered in this browser and SHA
 
 The view is held and remembered the same way (see "Collection view is remembered").
 
-The quick filter SHALL be remembered per device (in this browser's storage) instead of the URL: selecting or clearing a chip, or Clear filters, SHALL NOT change the URL, and opening `/my-game/collection` again on the same device shows the last quick filter chosen there. A link that still carries the earlier `quick` parameter SHALL be honoured once: a known value is applied and remembered on this device, and the parameter is removed from the URL whether or not the value is known.
+The quick filter SHALL be remembered per device (in this browser's storage) instead of the URL: selecting or clearing a chip, or Clear filters, SHALL NOT change the URL, and opening `/my-game/collection` again on the same device shows the last quick filter chosen there. The URL SHALL NOT carry the quick filter, and an unknown stored value is treated as none.
 
 Search and filters SHALL NOT be remembered beyond the URL: opening `/my-game/collection` without query parameters shows every unit that matches the remembered quick filter (every unit when none is remembered).
 
@@ -625,15 +625,9 @@ Hide unowned SHALL be held as `owned=owned`. Unlike the sort, view and grouping,
 
 #### Scenario: Invalid value in the URL
 
-- **GIVEN** the URL carries an unknown quick filter value and no quick filter is remembered on this device
+- **GIVEN** the URL carries an unknown kind value
 - **WHEN** the page renders
-- **THEN** that value is removed from the URL and no quick filter is applied
-
-#### Scenario: Older link with a quick filter
-
-- **GIVEN** the URL carries `quick=needToLevel`
-- **WHEN** the page renders
-- **THEN** Need to level is applied and remembered on this device, and `quick` is removed from the URL
+- **THEN** that value is removed from the URL and no kind filter is applied
 
 #### Scenario: Unknown faction in a shared link
 

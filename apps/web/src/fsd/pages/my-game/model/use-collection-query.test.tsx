@@ -49,7 +49,7 @@ describe("useCollectionQuery", () => {
 
   it("reads every part of the query from the URL", () => {
     const { result } = renderAt(
-      "/my-game/collection?q=ti&alliance=Xenos&faction=Aeldari,Ultramarines&rarity=Epic,Legendary&rankMin=Gold1&rankMax=Diamond3&owned=owned&kind=mow&quick=canAscend&sort=shards"
+      "/my-game/collection?q=ti&alliance=Xenos&faction=Aeldari,Ultramarines&rarity=Epic,Legendary&rankMin=Gold1&rankMax=Diamond3&owned=owned&kind=mow&sort=shards"
     )
     expect(result.current.state.query).toEqual({
       ...defaultCollectionQuery,
@@ -61,9 +61,22 @@ describe("useCollectionQuery", () => {
       rankMax: "Diamond3",
       hideUnowned: true,
       kind: "mow",
-      quick: "canAscend",
       sort: "shards",
     })
+  })
+
+  it("reads the quick filter from this browser, not the URL", () => {
+    localStorage.setItem("collection.quick", "canAscend")
+    const { result } = renderAt("/my-game/collection?quick=needToLevel")
+    expect(result.current.state.query.quick).toBe("canAscend")
+  })
+
+  it("remembers the quick filter in this browser without touching the URL", () => {
+    const { result } = renderAt("/my-game/collection?alliance=Chaos")
+    act(() => result.current.state.update({ quick: "needToLevel" }))
+    expect(result.current.state.query.quick).toBe("needToLevel")
+    expect(localStorage.getItem("collection.quick")).toBe("needToLevel")
+    expect(result.current.location.search).toBe("?alliance=Chaos")
   })
 
   it("reads the stars range and the combat filters", () => {
@@ -118,7 +131,7 @@ describe("useCollectionQuery", () => {
     expect(result.current.location.search).toBe("?trait=Psyker&move=3")
   })
 
-  it("writes changes to the URL so a reload restores them", () => {
+  it("restores changes after a reload (URL parts and the remembered quick filter)", () => {
     const first = renderAt("/my-game/collection")
     act(() =>
       first.result.current.state.update({
@@ -140,11 +153,15 @@ describe("useCollectionQuery", () => {
   })
 
   it("removes an invalid value from the URL and does not apply it", () => {
-    const { result } = renderAt(
-      "/my-game/collection?quick=readyToAscend&alliance=Chaos"
-    )
-    expect(result.current.state.query.quick).toBeNull()
+    const { result } = renderAt("/my-game/collection?kind=robot&alliance=Chaos")
+    expect(result.current.state.query.kind).toBeNull()
     expect(result.current.location.search).toBe("?alliance=Chaos")
+  })
+
+  it("ignores an unknown remembered quick filter", () => {
+    localStorage.setItem("collection.quick", "readyToAscend")
+    const { result } = renderAt("/my-game/collection")
+    expect(result.current.state.query.quick).toBeNull()
   })
 
   it("fixes several invalid values in one replacement", () => {
@@ -216,8 +233,9 @@ describe("useCollectionQuery", () => {
   })
 
   it("clears every filter in one replacement and keeps the sort", () => {
+    localStorage.setItem("collection.quick", "needToLevel")
     const { result } = renderAt(
-      "/my-game/collection?q=ti&alliance=Imperial&quick=needToLevel&sort=rank"
+      "/my-game/collection?q=ti&alliance=Imperial&sort=rank"
     )
     const historyLength = window.history.length
     act(() => result.current.state.clear())
@@ -227,6 +245,7 @@ describe("useCollectionQuery", () => {
       sort: "rank",
     })
     expect(result.current.location.search).toBe("?sort=rank")
+    expect(localStorage.getItem("collection.quick")).toBe("")
     expect(result.current.navigationType).toBe("REPLACE")
     expect(window.history.length).toBe(historyLength)
   })
@@ -281,9 +300,8 @@ describe("useCollectionQuery", () => {
     })
 
     it("keeps the view when filters are cleared", () => {
-      const { result } = renderAt(
-        "/my-game/collection?q=ti&quick=needToLevel&view=roster"
-      )
+      localStorage.setItem("collection.quick", "needToLevel")
+      const { result } = renderAt("/my-game/collection?q=ti&view=roster")
       act(() => result.current.state.clear())
       expect(result.current.state.query.view).toBe("roster")
       expect(result.current.location.search).toBe("?view=roster")

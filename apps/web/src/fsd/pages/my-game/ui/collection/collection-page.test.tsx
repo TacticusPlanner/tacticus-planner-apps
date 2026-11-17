@@ -695,10 +695,8 @@ describe("CollectionPage toolbar on desktop", () => {
 
   it("reports the active filters and clears them in one action, keeping the sort", () => {
     ready(synced)
-    renderPage(
-      1280,
-      "/my-game/collection?q=ti&alliance=Imperial&quick=needToLevel&sort=rank"
-    )
+    localStorage.setItem("collection.quick", "needToLevel")
+    renderPage(1280, "/my-game/collection?q=ti&alliance=Imperial&sort=rank")
 
     expect(
       screen.getByRole("button", { name: "Filters (3)" })
@@ -821,24 +819,10 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(screen.getAllByRole("link")).toHaveLength(4)
   })
 
-  it("applies an older link's quick filter, remembers it and drops the parameter", () => {
-    ready(synced)
-    renderPage(1280, "/my-game/collection?quick=needToLevel&alliance=Imperial")
-
-    expect(screen.getByTestId("location")).toHaveTextContent(
-      "?alliance=Imperial"
-    )
-    expect(localStorage.getItem("collection.quick")).toBe("needToLevel")
-    expect(
-      within(
-        screen.getByRole("radiogroup", { name: "Quick filters" })
-      ).getByRole("radio", { name: "Need to level" })
-    ).toHaveAttribute("aria-checked", "true")
-  })
-
   it("disables the roster-dependent controls without a roster and says why", () => {
     ready({ state: "anonymous" })
-    renderPage(1280, "/my-game/collection?quick=canAscend&alliance=Imperial")
+    localStorage.setItem("collection.quick", "canAscend")
+    renderPage(1280, "/my-game/collection?alliance=Imperial")
 
     const quick = screen.getByRole("radiogroup", { name: "Quick filters" })
     for (const chip of within(quick).getAllByRole("radio")) {
@@ -847,7 +831,7 @@ describe("CollectionPage toolbar on desktop", () => {
         "Quick filters need a synced roster."
       )
     }
-    // The alliance applies; the quick filter from the link does not.
+    // The alliance applies; the remembered quick filter does not.
     expect(factionsShown()).toEqual(["Ultramarines"])
     expect(screen.getAllByRole("link")).toHaveLength(3)
     expect(
@@ -1235,7 +1219,8 @@ describe("CollectionPage view switch and Roster on desktop", () => {
 
   it("keeps the Roster view when filters are cleared", () => {
     ready(synced)
-    renderPage(1280, "/my-game/collection?q=ti&quick=needToLevel&view=roster")
+    localStorage.setItem("collection.quick", "needToLevel")
+    renderPage(1280, "/my-game/collection?q=ti&view=roster")
 
     fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
 
