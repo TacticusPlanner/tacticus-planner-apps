@@ -13,3 +13,20 @@ export function isLocationVisible(
 ): boolean {
   return attemptsLeftByBattle.get(entry.battleId) !== 0
 }
+
+/** The entries `ResourceCard` lists as location rows: those still visible today, each battle once.
+ * Combine goals lists a location once per goal that farms it there; one row is enough, as in the
+ * campaign groups (`groupScheduleByCampaign`). */
+export function visibleLocationEntries<
+  Entry extends Pick<RaidBreakdownEntry, "battleId">,
+>(
+  entries: readonly Entry[],
+  attemptsLeftByBattle: ReadonlyMap<BattleId, number>
+): Entry[] {
+  const seen = new Set<BattleId>()
+  return entries.filter((entry) => {
+    if (seen.has(entry.battleId)) return false
+    seen.add(entry.battleId)
+    return isLocationVisible(entry, attemptsLeftByBattle)
+  })
+}
