@@ -488,15 +488,15 @@
         },
         "calendar": {
           "title": "Choisir un jour",
-          "content": "Chaque jour liste ce que vous avez prévu, coloré selon son état : acheté, à acheter ou à vérifier. Cliquez sur un jour pour voir ses offres."
+          "content": "Chaque jour liste ce que vous avez prévu, coloré selon son état : acheté, prévu ou à vérifier. Cliquez sur un jour pour voir ses offres."
         },
         "chips": {
           "title": "Choisir un jour",
-          "content": "Le point sous chaque jour indique ce que vous avez prévu : acheté, à acheter ou à vérifier."
+          "content": "Le point sous chaque jour indique ce que vous avez prévu : acheté, prévu ou à vérifier."
         },
         "slots": {
           "title": "Offres du jour",
-          "content": "Chaque emplacement montre l'offre que vous obtenez selon votre roster, avec son lot, son prix et sa limite quotidienne. Ajoutez-la au panier et marquez-la achetée une fois achetée en jeu."
+          "content": "Chaque emplacement montre l'offre que vous obtenez selon votre roster, avec son lot, son prix et sa limite quotidienne. Prévoyez l'achat, puis marquez-la achetée une fois achetée en jeu."
         },
         "tiles": {
           "title": "Offres du jour",
@@ -520,7 +520,7 @@
         },
         "stillToBuy": {
           "title": "Reste à acheter",
-          "content": "Ce que coûte encore votre panier. Touchez pour ouvrir votre plan."
+          "content": "Ce que coûte encore votre plan. Touchez pour ouvrir votre plan."
         },
         "coverage": {
           "title": "Couverture",

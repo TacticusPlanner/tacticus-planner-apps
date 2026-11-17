@@ -133,10 +133,10 @@ function renderPage(path: string) {
               <LocationProbe />
             </>
           }
-          path="/dailies"
+          path="/plan/event-shop"
         >
-          <Route element={<EventShopPage />} path="event-shop" />
-          <Route element={<EventShopPage />} path="event-shop/:eventId" />
+          <Route element={<EventShopPage />} index />
+          <Route element={<EventShopPage />} path=":eventId" />
         </Route>
       </Routes>
     </MemoryRouter>
@@ -162,17 +162,17 @@ afterEach(() => {
 
 describe("routes and page states", () => {
   it("opens the running event by default", async () => {
-    renderPage("/dailies/event-shop")
+    renderPage("/plan/event-shop")
     await waitFor(() =>
-      expect(location()).toBe("/dailies/event-shop/october-2026")
+      expect(location()).toBe("/plan/event-shop/october-2026")
     )
     expect(screen.queryByTestId("event-shop-not-found")).toBeNull()
   })
 
   it("redirects an unknown event to the default one with a notice", async () => {
-    renderPage("/dailies/event-shop/may-2025")
+    renderPage("/plan/event-shop/may-2025")
     await waitFor(() =>
-      expect(location()).toBe("/dailies/event-shop/october-2026")
+      expect(location()).toBe("/plan/event-shop/october-2026")
     )
     expect(screen.getByTestId("event-shop-not-found")).toHaveTextContent(
       "states.notFound"
@@ -181,7 +181,7 @@ describe("routes and page states", () => {
 
   it("shows the empty state without events and no picker", () => {
     events = []
-    renderPage("/dailies/event-shop")
+    renderPage("/plan/event-shop")
     expect(screen.getByTestId("event-shop-empty")).toHaveTextContent(
       "states.empty"
     )
@@ -190,18 +190,18 @@ describe("routes and page states", () => {
 
   it("shows a skeleton while the catalog loads and a retry when it fails", async () => {
     events = "loading"
-    const { unmount } = renderPage("/dailies/event-shop")
+    const { unmount } = renderPage("/plan/event-shop")
     expect(screen.getByTestId("event-shop-loading")).toBeInTheDocument()
     unmount()
     events = "error"
-    renderPage("/dailies/event-shop")
+    renderPage("/plan/event-shop")
     await userEvent.click(screen.getByRole("button", { name: "states.retry" }))
     expect(retryCatalog).toHaveBeenCalled()
   })
 
   it("keeps the slots but disables the cart when the plan fails to load", async () => {
     planState = "error"
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-plan-error")).toBeInTheDocument()
     expect(screen.getByTestId("event-shop-add-2")).toBeDisabled()
     await userEvent.click(
@@ -213,7 +213,7 @@ describe("routes and page states", () => {
   it("opens an ended event on its last day with working controls", () => {
     vi.setSystemTime(Date.parse("2026-11-09T12:00:00Z"))
     events = [runningEvent]
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-status")).toHaveTextContent(
       "header.status.ended"
     )
@@ -228,23 +228,23 @@ describe("routes and page states", () => {
 describe("event with no start date yet", () => {
   it("keeps the running event as the default", async () => {
     events = [runningEvent, undatedEvent]
-    renderPage("/dailies/event-shop")
+    renderPage("/plan/event-shop")
     await waitFor(() =>
-      expect(location()).toBe("/dailies/event-shop/october-2026")
+      expect(location()).toBe("/plan/event-shop/october-2026")
     )
   })
 
   it("opens the undated event when it is the only one", async () => {
     events = [undatedEvent]
-    renderPage("/dailies/event-shop")
+    renderPage("/plan/event-shop")
     await waitFor(() =>
-      expect(location()).toBe("/dailies/event-shop/january-2027")
+      expect(location()).toBe("/plan/event-shop/january-2027")
     )
   })
 
   it("shows Start date TBA, its weeks and no days or cart", () => {
     events = [runningEvent, undatedEvent]
-    renderPage("/dailies/event-shop/january-2027")
+    renderPage("/plan/event-shop/january-2027")
     expect(screen.getByTestId("event-shop-status")).toHaveTextContent(
       "header.tba"
     )
@@ -258,7 +258,7 @@ describe("event with no start date yet", () => {
 
   it("names the undated event from the game text and its event month", () => {
     events = [runningEvent, undatedEvent]
-    renderPage("/dailies/event-shop/january-2027")
+    renderPage("/plan/event-shop/january-2027")
     expect(screen.getByTestId("event-shop-picker")).toHaveTextContent(
       "eventMissions:events.January2027"
     )
@@ -267,7 +267,7 @@ describe("event with no start date yet", () => {
 
 describe("header", () => {
   it("names the event, its status, sync time and the week's income", () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-status")).toHaveTextContent(
       "header.status.running"
     )
@@ -281,7 +281,7 @@ describe("header", () => {
 
   it("says Not synced without player data", () => {
     roster = { lockContext: null, powerLevel: undefined, lastSyncedAt: null }
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-synced")).toHaveTextContent(
       "header.notSynced"
     )
@@ -294,7 +294,7 @@ describe("header", () => {
 
 describe("desktop", () => {
   it("shows the week calendar, slot cards and the side column on Shop", () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-desktop")).toBeInTheDocument()
     expect(screen.getByTestId("event-shop-week-calendar")).toBeInTheDocument()
     expect(screen.getByTestId("event-shop-side-column")).toBeInTheDocument()
@@ -305,7 +305,7 @@ describe("desktop", () => {
   })
 
   it("resolves locks from the roster: tier and unit progress", () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     const orbs = screen.getByTestId("event-shop-slot-1")
     expect(orbs).toHaveTextContent("slot.tier")
     expect(orbs).toHaveTextContent('"qty":"5"')
@@ -316,7 +316,7 @@ describe("desktop", () => {
   it("keeps a planned reward on its card after the roster resolves the slot to another", () => {
     // Yarrick at 3 stars resolves slot 0 to shards; the plan still holds mythic shards from before.
     storedPlan = plan([cartEntry("THU", 0, "mythicShards_astraYarrick", 1)])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     const card = screen.getByTestId("event-shop-slot-0")
     expect(card).toHaveAttribute("data-in-cart", "true")
     expect(card).toHaveTextContent(/mythicShards/)
@@ -324,7 +324,7 @@ describe("desktop", () => {
 
   it("lists every option and the sync notice without player data", () => {
     roster = { lockContext: null, powerLevel: undefined, lastSyncedAt: null }
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-unsynced")).toBeInTheDocument()
     const orbs = screen.getByTestId("event-shop-slot-1")
     expect(orbs).toHaveTextContent("slot.dependsOnTier")
@@ -334,7 +334,7 @@ describe("desktop", () => {
   })
 
   it("adds an offer at the day's max and marks it bought with one tick", async () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     await userEvent.click(screen.getByTestId("event-shop-add-2"))
     const card = screen.getByTestId("event-shop-slot-2")
     expect(card).toHaveAttribute("data-in-cart", "true")
@@ -366,7 +366,7 @@ describe("desktop", () => {
 
   it("plans fewer with the card's slider", async () => {
     storedPlan = plan([cartEntry("THU", 0, "shards_astraYarrick", 5)])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     const card = screen.getByTestId("event-shop-slot-0")
     const slider = within(card).getByRole("slider")
     slider.focus()
@@ -377,7 +377,7 @@ describe("desktop", () => {
 
   it("removes a card's plan with its remove button, no menu", async () => {
     storedPlan = plan([cartEntry("THU", 2, "abilityTokenUncommon_Imperial", 2)])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     const card = screen.getByTestId("event-shop-slot-2")
     expect(within(card).queryByRole("button", { name: "slot.more" })).toBeNull()
     await userEvent.click(
@@ -387,7 +387,7 @@ describe("desktop", () => {
   })
 
   it("asks for an alliance before adding a draft reward", async () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     await userEvent.click(screen.getByTestId("event-shop-add-3"))
     await userEvent.click(
       screen.getByRole("button", { name: "alliances.xenos" })
@@ -432,7 +432,7 @@ describe("desktop", () => {
     roster = { lockContext: null, powerLevel: undefined, lastSyncedAt: null }
     const orb = cartEntry("THU", 1, "heroAscensionOrbLegendary_Imperial", 3)
     storedPlan = plan([orb])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
 
     await userEvent.click(draftAdd())
     expect(screen.getByRole("dialog")).not.toHaveTextContent(
@@ -474,7 +474,7 @@ describe("desktop", () => {
     storedPlan = plan([
       cartEntry("THU", 1, "heroAscensionOrbLegendary_Imperial", 3, 2),
     ])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
 
     await userEvent.click(draftAdd())
 
@@ -484,7 +484,7 @@ describe("desktop", () => {
   })
 
   it("keeps the day in the URL and hides the calendar on Milestones", async () => {
-    renderPage("/dailies/event-shop/october-2026?day=8")
+    renderPage("/plan/event-shop/october-2026?day=8")
     expect(screen.getByTestId("event-shop-day-8")).toHaveAttribute(
       "aria-pressed",
       "true"
@@ -498,7 +498,7 @@ describe("desktop", () => {
   })
 
   it("shows daily missions in game text and each chain as one card (Mi1)", async () => {
-    renderPage("/dailies/event-shop/october-2026?tab=missions")
+    renderPage("/plan/event-shop/october-2026?tab=missions")
     const daily = screen.getByTestId("event-shop-daily-missions")
     expect(daily).toHaveTextContent("Traverse 150 hexes with your characters")
     expect(daily).toHaveTextContent('rewards.dailyLabel:{"count":1}')
@@ -514,7 +514,7 @@ describe("desktop", () => {
   })
 
   it("switches the week of the rewards tabs with their own week picker", async () => {
-    renderPage("/dailies/event-shop/october-2026?tab=missions")
+    renderPage("/plan/event-shop/october-2026?tab=missions")
     await userEvent.click(screen.getByTestId("event-shop-rewards-week"))
     await userEvent.click(
       await screen.findByRole("option", { name: 'days.week:{"week":2}' })
@@ -526,7 +526,7 @@ describe("desktop", () => {
   })
 
   it("shows every milestone as a tile (M2)", () => {
-    renderPage("/dailies/event-shop/october-2026?tab=milestones")
+    renderPage("/plan/event-shop/october-2026?tab=milestones")
     const ladder = screen.getByTestId("event-shop-milestone-ladder")
     expect(within(ladder).getAllByRole("listitem")).toHaveLength(7)
     // Every tier pays gold in a +10% range: noted once, not on each tile.
@@ -536,7 +536,7 @@ describe("desktop", () => {
   })
 
   it("maps a phone-only tab to its nearest desktop tab", () => {
-    renderPage("/dailies/event-shop/october-2026?tab=rewards")
+    renderPage("/plan/event-shop/october-2026?tab=rewards")
     expect(screen.getByTestId("event-shop-milestones")).toBeInTheDocument()
   })
 })
@@ -554,7 +554,7 @@ describe("needs review and the ended event", () => {
 
   it("marks every review entry missed at once and lists five before Show all", async () => {
     storedPlan = reviewPlan()
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     const group = screen.getByTestId("event-shop-needs-review")
     expect(group).toHaveTextContent('list.needsReviewCount:{"count":6}')
     expect(
@@ -572,21 +572,21 @@ describe("needs review and the ended event", () => {
   it("replaces Coverage and the phone bar once the event has ended", () => {
     vi.setSystemTime(Date.parse("2026-11-20T12:00:00Z"))
     setViewportWidth(390)
-    renderPage("/dailies/event-shop/october-2026?tab=plan")
+    renderPage("/plan/event-shop/october-2026?tab=plan")
     expect(screen.getByTestId("event-shop-coverage-ended")).toBeInTheDocument()
   })
 
   it("hides the phone bar on an ended event with nothing to review", () => {
     vi.setSystemTime(Date.parse("2026-11-20T12:00:00Z"))
     setViewportWidth(390)
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.queryByTestId("event-shop-still-to-buy-bar")).toBeNull()
   })
 })
 
 describe("daily freebie", () => {
   it("shows the freebie as free event currency ×5, without letting it into the cart", () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     const card = screen.getByTestId("event-shop-slot-4")
     expect(card).toHaveTextContent('slot.pack:{"qty":"5"}')
     expect(card).not.toHaveTextContent('slot.pack:{"qty":"1"}')
@@ -601,7 +601,7 @@ describe("daily freebie", () => {
 
   it("opens the freebie's sheet on phone without an Add button", async () => {
     setViewportWidth(390)
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-tile-4")).toHaveTextContent(
       "slot.freebieShort"
     )
@@ -620,7 +620,7 @@ describe("daily freebie", () => {
 
 describe("shop search", () => {
   it("finds a unit's shards as you type and opens a day", async () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     await userEvent.type(
       screen.getByRole("searchbox", { name: "search.title" }),
       "yarr"
@@ -636,7 +636,7 @@ describe("shop search", () => {
   })
 
   it("searches every reward, not only units", async () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     await userEvent.type(
       screen.getByRole("searchbox", { name: "search.title" }),
       "orb"
@@ -650,7 +650,7 @@ describe("shop search", () => {
   })
 
   it("says when nothing matches", async () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     await userEvent.type(
       screen.getByRole("searchbox", { name: "search.title" }),
       "zzzz"
@@ -668,7 +668,7 @@ describe("shopping list", () => {
       cartEntry("TUE", 2, "abilityTokenUncommon_Imperial", 1, 0),
       cartEntry("FRI", 2, "abilityTokenUncommon_Imperial", 2, 0),
     ])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     const review = screen.getByTestId("event-shop-needs-review")
     expect(within(review).getAllByRole("listitem")).toHaveLength(2)
     await userEvent.click(screen.getByTestId("event-shop-missed-1-2"))
@@ -691,7 +691,7 @@ describe("shopping list", () => {
 
   it("marks all of today bought", async () => {
     storedPlan = plan([cartEntry("THU", 2, "abilityTokenUncommon_Imperial", 2)])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     await userEvent.click(
       screen.getByRole("button", { name: "list.allTodayBought" })
     )
@@ -704,7 +704,7 @@ describe("shopping list", () => {
       cartEntry("MON", 2, "abilityTokenUncommon_Imperial", 2),
       cartEntry("THU", 2, "abilityTokenUncommon_Imperial", 2),
     ])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-nothing-left")).toHaveTextContent(
       "list.nothingLeft"
     )
@@ -726,7 +726,7 @@ describe("shopping list", () => {
     storedPlan = plan([
       cartEntry("FRI", 2, "abilityTokenUncommon_Imperial", 2, 2),
     ])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     const note = screen.getByTestId("event-shop-bought-ahead-4-2")
     expect(note).toHaveTextContent("list.notOnSale")
     await userEvent.click(within(note).getByRole("button"))
@@ -741,7 +741,7 @@ describe("shopping list", () => {
   it("links an ended event's recap to All", async () => {
     vi.setSystemTime(Date.parse("2026-11-20T12:00:00Z"))
     storedPlan = plan([cartEntry("MON", 2, "abilityTokenUncommon_Imperial", 1)])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     await userEvent.click(screen.getByTestId("event-shop-ended-see-all"))
     expect(screen.getByTestId("event-shop-all")).toBeInTheDocument()
   })
@@ -752,7 +752,7 @@ describe("shopping list", () => {
       now: Date.parse("2026-10-29T23:59:30Z"),
     })
     storedPlan = plan([cartEntry("THU", 2, "abilityTokenUncommon_Imperial", 2)])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-today")).toBeInTheDocument()
 
     await act(() => vi.advanceTimersByTimeAsync(60_000))
@@ -761,14 +761,14 @@ describe("shopping list", () => {
   })
 
   it("points at the slots when the cart is empty", () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-list-empty")).toBeInTheDocument()
   })
 })
 
 describe("coverage", () => {
   it("links to Goals without goals", () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(
       screen.getByTestId("event-shop-coverage-no-goals")
     ).toHaveTextContent("coverage.noGoals")
@@ -793,7 +793,7 @@ describe("coverage", () => {
         },
       ],
     }
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     const row = screen.getByTestId(
       "event-shop-coverage-badge:Imperial:Uncommon"
     )
@@ -806,7 +806,7 @@ describe("coverage", () => {
 describe("tablet", () => {
   it("opens the shopping list in a drawer from the sticky button", async () => {
     setViewportWidth(900)
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-tablet")).toBeInTheDocument()
     expect(screen.queryByTestId("event-shop-side-column")).toBeNull()
     await userEvent.click(screen.getByTestId("event-shop-list-button"))
@@ -823,7 +823,7 @@ describe("phone", () => {
 
   it("shows day chips and tiles, and the tick marks a planned tile bought", async () => {
     storedPlan = plan([cartEntry("THU", 2, "abilityTokenUncommon_Imperial", 2)])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-day-chips")).toBeInTheDocument()
     expect(screen.getByTestId("event-shop-selected-day")).toHaveTextContent(
       "days.selectedToday"
@@ -848,7 +848,7 @@ describe("phone", () => {
     storedPlan = plan([
       cartEntry("THU", 2, "abilityTokenUncommon_Imperial", 2, 1),
     ])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     expect(screen.getByTestId("event-shop-tile-2")).toHaveAttribute(
       "data-purchase",
       "partial"
@@ -859,7 +859,7 @@ describe("phone", () => {
   })
 
   it("adds from the sheet with the slider at the max, then the tile's tick marks it bought", async () => {
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     await userEvent.click(
       within(screen.getByTestId("event-shop-tile-0")).getAllByRole("button")[0]!
     )
@@ -883,7 +883,7 @@ describe("phone", () => {
 
   it("opens the slot sheet with the other days it is sold", async () => {
     storedPlan = plan([cartEntry("THU", 0, "shards_astraYarrick", 2)])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     await userEvent.click(
       within(screen.getByTestId("event-shop-tile-0")).getAllByRole("button")[0]!
     )
@@ -898,12 +898,12 @@ describe("phone", () => {
 
   it("shows the Plan tab with the review badge and maps desktop tabs to Rewards", async () => {
     storedPlan = plan([cartEntry("MON", 2, "abilityTokenUncommon_Imperial", 1)])
-    const { unmount } = renderPage("/dailies/event-shop/october-2026?tab=plan")
+    const { unmount } = renderPage("/plan/event-shop/october-2026?tab=plan")
     expect(screen.getByTestId("event-shop-review-badge")).toHaveTextContent("1")
     expect(screen.getByTestId("event-shop-shopping-list")).toBeInTheDocument()
     expect(screen.queryByTestId("event-shop-day-chips")).toBeNull()
     unmount()
-    renderPage("/dailies/event-shop/october-2026?tab=missions")
+    renderPage("/plan/event-shop/october-2026?tab=missions")
     // Rewards opens on Milestones; its switch shows Missions.
     expect(screen.getByTestId("event-shop-milestones")).toBeInTheDocument()
     await userEvent.click(screen.getByTestId("event-shop-rewards-missions"))
@@ -912,7 +912,7 @@ describe("phone", () => {
 
   it("opens Plan from the Still to buy bar", async () => {
     storedPlan = plan([cartEntry("FRI", 2, "abilityTokenUncommon_Imperial", 2)])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     await userEvent.click(screen.getByTestId("event-shop-still-to-buy-bar"))
     expect(location()).toContain("tab=plan")
   })
@@ -930,7 +930,7 @@ describe("tour", () => {
       storedPlan = plan([
         cartEntry("THU", 2, "abilityTokenUncommon_Imperial", 2),
       ])
-      renderPage("/dailies/event-shop/october-2026")
+      renderPage("/plan/event-shop/october-2026")
       const steps = (
         registeredTour.mock.lastCall?.[0] as Record<
           string,
@@ -948,7 +948,7 @@ describe("tour", () => {
   it("targets the tick and the day chips on phone, not the side column", () => {
     setViewportWidth(390)
     storedPlan = plan([cartEntry("THU", 2, "abilityTokenUncommon_Imperial", 2)])
-    renderPage("/dailies/event-shop/october-2026")
+    renderPage("/plan/event-shop/october-2026")
     const targets = (
       registeredTour.mock.lastCall?.[0] as { mobile: { target: string }[] }
     ).mobile.map((step) => step.target)

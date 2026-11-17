@@ -1,1 +1,6 @@
-export { routes, DailiesLayout, preloadDailiesLayout } from "./route"
+export {
+  routes,
+  eventShopRoutes,
+  DailiesLayout,
+  preloadDailiesLayout,
+} from "./route"

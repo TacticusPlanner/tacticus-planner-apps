@@ -265,7 +265,7 @@ export function selectHomeEvents({
       live: isLive,
       startMs,
       endMs: startMs + shop.dayCount * DAY_MS,
-      destination: `/dailies/event-shop/${encodeURIComponent(shop.id)}`,
+      destination: `/plan/event-shop/${encodeURIComponent(shop.id)}`,
     }
   }
   let nextShop: HomeEventRow | null = null

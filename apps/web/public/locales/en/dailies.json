@@ -488,15 +488,15 @@
         },
         "calendar": {
           "title": "Pick a day",
-          "content": "Each day lists what you planned, coloured by state: bought, to buy or needs review. Click a day to see its offers."
+          "content": "Each day lists what you planned, coloured by state: bought, planned or needs review. Click a day to see its offers."
         },
         "chips": {
           "title": "Pick a day",
-          "content": "The dot under each day shows what you planned: bought, to buy or needs review."
+          "content": "The dot under each day shows what you planned: bought, planned or needs review."
         },
         "slots": {
           "title": "The day's offers",
-          "content": "Each slot shows the offer you get for your roster, with its pack, price and daily cap. Add it to your cart and mark it bought once you buy it in game."
+          "content": "Each slot shows the offer you get for your roster, with its pack, price and daily cap. Plan to buy it, then mark it bought once you buy it in game."
         },
         "tiles": {
           "title": "The day's offers",
@@ -520,7 +520,7 @@
         },
         "stillToBuy": {
           "title": "Still to buy",
-          "content": "What your cart still costs. Tap to open your plan."
+          "content": "What your plan still costs. Tap to open your plan."
         },
         "coverage": {
           "title": "Coverage",

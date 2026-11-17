@@ -64,11 +64,9 @@ describe("resolveEventPlannerPath", () => {
 
   it("opens an event shop on its shop, else the Event shop tab", () => {
     expect(resolveEventPlannerPath(entry("ShopEvent"), "november-2026")).toBe(
-      "/dailies/event-shop/november-2026"
+      "/plan/event-shop/november-2026"
     )
-    expect(resolveEventPlannerPath(entry("ShopEvent"))).toBe(
-      "/dailies/event-shop"
-    )
+    expect(resolveEventPlannerPath(entry("ShopEvent"))).toBe("/plan/event-shop")
   })
 
   it("has no link for an event without a planner page", () => {

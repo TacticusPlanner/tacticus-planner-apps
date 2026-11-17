@@ -35,7 +35,7 @@ import { EventShopView } from "./event-shop-view"
 import { useEventShopController } from "./use-event-shop-controller"
 import { useEventShopForm } from "./use-event-shop-form"
 
-const BASE = "/dailies/event-shop"
+const BASE = "/plan/event-shop"
 
 const byStart = (events: GameCatalogEventShopRecord[]) =>
   [...events].sort(compareEventShopsByStart)
@@ -44,7 +44,7 @@ const byStart = (events: GameCatalogEventShopRecord[]) =>
 type RedirectState = { notFound?: boolean } | null
 
 /**
- * Dailies › Event shop (spec event-shop-planner). `/dailies/event-shop` and an unknown event id
+ * Plan › Event shop (spec event-shop-planner). `/plan/event-shop` and an unknown event id
  * redirect to the default event; the event shows in its desktop, tablet or phone form with `?day=`
  * and `?tab=` in the URL. An event with no start date yet shows as "Start date TBA".
  */

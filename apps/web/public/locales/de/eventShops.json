@@ -5,10 +5,10 @@
     "empty": "Noch keine Event-Shops",
     "emptyDescription": "Event-Shops erscheinen hier, sobald die Spieldaten einen enthalten.",
     "notFound": "Dieser Event-Shop ist nicht verfügbar",
-    "planLoading": "Warenkorb wird geladen…",
-    "planError": "Dein Warenkorb konnte nicht geladen werden. Du kannst den Shop ansehen, aber die Warenkorb-Steuerung bleibt aus, bis er geladen ist.",
-    "saveError": "Dein Warenkorb konnte nicht gespeichert werden. Deine Änderungen bleiben erhalten.",
-    "reloaded": "Dein Warenkorb wurde woanders geändert und neu geladen",
+    "planLoading": "Plan wird geladen…",
+    "planError": "Dein Plan konnte nicht geladen werden. Du kannst den Shop ansehen, aber das Planen bleibt aus, bis er geladen ist.",
+    "saveError": "Dein Plan konnte nicht gespeichert werden. Deine Änderungen bleiben erhalten.",
+    "reloaded": "Dein Plan wurde woanders geändert und neu geladen",
     "removed_one": "{{count}} Eintrag wird nicht mehr verkauft und wurde entfernt",
     "removed_other": "{{count}} Einträge werden nicht mehr verkauft und wurden entfernt",
     "dismiss": "Schließen",
@@ -49,7 +49,7 @@
     "nextWeek": "Nächste Woche",
     "legend": {
       "bought": "Gekauft",
-      "toBuy": "Zu kaufen",
+      "toBuy": "Geplant",
       "needsReview": "Zu prüfen"
     },
     "nothingPlanned": "Nichts geplant",
@@ -72,20 +72,20 @@
     "dependsOnTier": "Hängt von deiner Stufe ab",
     "dependsOnProgress": "Hängt vom Fortschritt der Einheit ab",
     "dependsOnRandom": "Jeden Tag zufällig gewählt",
-    "add": "In den Warenkorb",
-    "addAmount": "{{count}} in den Warenkorb",
+    "add": "Kauf planen",
+    "addAmount": "{{count}} Kauf planen",
     "quantity": "Geplante Pakete",
     "decrease": "Ein Paket weniger",
     "increase": "Ein Paket mehr",
-    "markBought": "{{count}} als gekauft markieren",
+    "markBought": "{{count}} als im Spiel gekauft markieren",
     "bought": "{{bought}} von {{quantity}} gekauft",
     "boughtState": "{{count}} gekauft",
     "undoBought": "Kauf zurücknehmen",
-    "remove": "Aus dem Warenkorb entfernen",
+    "remove": "Aus dem Plan entfernen",
     "planned": "{{count}} geplant",
     "alliance": "Für {{alliance}}",
     "changeAlliance": "Allianz ändern",
-    "tick": "Alle geplanten Pakete als gekauft markieren",
+    "tick": "Geplante Pakete als im Spiel gekauft markieren",
     "untick": "Als nicht gekauft markieren",
     "sheetSubtitle": "Platz {{number}} · {{date}}",
     "costCap": "{{cost}} pro Paket · max. {{cap}} pro Tag",
@@ -115,7 +115,7 @@
     "cancel": "Abbrechen",
     "alliance": {
       "title": "Allianz wählen",
-      "description": "{{reward}} gilt für eine Allianz. Wähle sie, bevor du das Angebot in den Warenkorb legst."
+      "description": "{{reward}} gilt für eine Allianz. Wähle sie, bevor du den Kauf des Angebots planst."
     },
     "replace": {
       "title": "Geplantes Angebot ersetzen?",
@@ -130,8 +130,8 @@
     },
     "clearWeek": {
       "title": "Woche {{week}} leeren?",
-      "toBuy_one": "{{count}} noch zu kaufender Eintrag ({{cost}}) verlässt den Warenkorb.",
-      "toBuy_other": "{{count}} noch zu kaufende Einträge ({{cost}}) verlassen den Warenkorb.",
+      "toBuy_one": "{{count}} noch zu kaufender Eintrag ({{cost}}) verlässt den Plan.",
+      "toBuy_other": "{{count}} noch zu kaufende Einträge ({{cost}}) verlassen den Plan.",
       "review_one": "{{count}} zu prüfender Eintrag behält nur seine gekauften Pakete.",
       "review_other": "{{count}} zu prüfende Einträge behalten nur ihre gekauften Pakete.",
       "keeps": "Jedes gekaufte Paket bleibt.",
@@ -144,7 +144,7 @@
       "stillToBuy": "Noch zu kaufen",
       "bought": "Gekauft",
       "missed": "Verpasst",
-      "inCart": "Im Warenkorb"
+      "inCart": "Geplant"
     },
     "view": {
       "label": "Anzeigen",
@@ -158,7 +158,7 @@
     "today": "Heute",
     "allTodayBought": "Alles von heute gekauft",
     "done": "Erledigt ({{count}})",
-    "empty": "Dein Warenkorb ist leer. Füge Angebote aus den Plätzen des Tages hinzu.",
+    "empty": "Noch nichts geplant. Nutze „Kauf planen“ bei den Angeboten des Tages.",
     "packs": "{{toBuy}} von {{quantity}} zu kaufen",
     "boughtPacks": "{{bought}} von {{quantity}} gekauft",
     "more": "Weitere Aktionen",
@@ -238,6 +238,6 @@
   "undated": {
     "weeks_one": "{{count}} Woche",
     "weeks_other": "{{count}} Wochen",
-    "description": "Dieser Event-Shop ist bereits in den Spieldaten, aber sein Startdatum steht noch nicht fest. Tage und dein Warenkorb werden verfügbar, sobald es bekannt ist."
+    "description": "Dieser Event-Shop ist bereits in den Spieldaten, aber sein Startdatum steht noch nicht fest. Tage und dein Plan werden verfügbar, sobald es bekannt ist."
   }
 }

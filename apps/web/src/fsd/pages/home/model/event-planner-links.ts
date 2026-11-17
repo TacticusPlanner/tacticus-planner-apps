@@ -64,8 +64,8 @@ export function resolveEventPlannerPath(
     }
     case "ShopEvent": {
       return eventShopId
-        ? `/dailies/event-shop/${encodeURIComponent(eventShopId)}`
-        : "/dailies/event-shop"
+        ? `/plan/event-shop/${encodeURIComponent(eventShopId)}`
+        : "/plan/event-shop"
     }
     case "LegendaryEvent": {
       const unitId = featuredCharacterId(entry)

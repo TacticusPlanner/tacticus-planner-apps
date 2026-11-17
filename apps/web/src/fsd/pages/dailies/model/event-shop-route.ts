@@ -1,6 +1,6 @@
 import { eventStatus } from "@workspace/game-catalog"
 
-// Route rules of Dailies › Event shop (spec event-shop-planner: Event shop is a signed-in Dailies page;
+// Route rules of Plan › Event shop (spec event-shop-planner: Event shop is a signed-in Plan page;
 // Day selection lives in the Shop tab; Desktop, tablet and phone layouts differ).
 
 interface EventTiming {
