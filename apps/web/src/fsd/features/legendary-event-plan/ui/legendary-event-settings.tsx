@@ -7,6 +7,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@workspace/ui/components/dialog"
 import { Label } from "@workspace/ui/components/label"
 import { Switch } from "@workspace/ui/components/switch"
@@ -24,15 +25,14 @@ import { useWatchAds } from "../model/use-watch-ads"
 export function LegendaryEventSettingsButton() {
   const { t } = useTranslation("legendaryEvents")
   const signedIn = useIsAuthenticated()
-  const [open, setOpen] = useState(false)
   // Settings are account preferences, so signed-out players get no button.
   if (!signedIn) return null
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
-      <PageSettingsButton
-        onClick={() => setOpen(true)}
-        testId="legendary-event-settings"
-      />
+    <Dialog>
+      {/* The trigger, so closing the dialog returns focus to the button. */}
+      <DialogTrigger asChild>
+        <PageSettingsButton testId="legendary-event-settings" />
+      </DialogTrigger>
       <DialogContent data-testid="legendary-event-settings-dialog">
         <DialogHeader>
           <DialogTitle>{t("settings.title")}</DialogTitle>

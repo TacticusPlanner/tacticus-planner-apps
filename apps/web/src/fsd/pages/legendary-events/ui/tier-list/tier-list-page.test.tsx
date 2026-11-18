@@ -627,7 +627,7 @@ describe("TierListPage", () => {
       })
       const onlyOwned = screen.getByTestId("tier-list-only-owned")
       expect(onlyOwned).toBeDisabled()
-      expect(onlyOwned).not.toBeChecked()
+      expect(onlyOwned).toHaveAttribute("aria-pressed", "false")
       // owned=1 is ignored while ownership is unknown.
       expect(tileNames(row("S"))).toHaveLength(10)
       for (const tile of screen.getAllByTestId("tier-list-tile")) {

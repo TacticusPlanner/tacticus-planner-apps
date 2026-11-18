@@ -79,7 +79,10 @@ export function MasterTableControls(props: MasterTableControlsProps) {
                 <ChevronDown aria-hidden="true" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-72 p-2">
+            <PopoverContent
+              align="start"
+              className="max-h-(--radix-popover-content-available-height) w-72 overflow-y-auto p-2"
+            >
               <EventPickerList {...props} />
             </PopoverContent>
           </Popover>

@@ -714,6 +714,20 @@ describe("MasterTablePage", () => {
     )
   })
 
+  it("renders every mobile tour target with the View sheet closed", async () => {
+    setViewportWidth(390)
+    renderPage()
+    await ready()
+    await screen.findByTestId("master-table-first-row")
+    expect(screen.queryByTestId("page-toolbar-view-sheet")).toBeNull()
+    const steps = data.steps as { mobile: { target: string }[] }
+    for (const { target } of steps.mobile) {
+      const element = document.querySelector<HTMLElement>(target)
+      expect(element, target).not.toBeNull()
+      expect(element).toBeVisible()
+    }
+  })
+
   it("keeps a linked Unlocked while the roster loads: spinner, no hint, skeleton rows, then the table", async () => {
     const release = holdRoster()
     renderPage("?events=astarLysander,votanUthar&units=unlocked&points=all")

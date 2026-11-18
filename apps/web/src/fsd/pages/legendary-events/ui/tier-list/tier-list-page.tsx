@@ -5,7 +5,12 @@ import { useSearchParams } from "react-router"
 import { ChevronDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -27,7 +32,6 @@ import {
   parseTierListKind,
   tierListKindSearchParams,
 } from "./npc-tier-list.view-model"
-import type { TierListKind } from "./npc-tier-list.view-model"
 import { TierListFilters } from "./tier-list-filters"
 import { useTierListTutorial } from "./tier-list.tutorial"
 import {
@@ -53,38 +57,21 @@ type TierRef = { tier: string; multiplier: number } | null
 /** `/legendary-events/tier-list`: the Heroes list (the character horde-mode tier list) or, with
  *  `?list=enemies`, the Enemies list (the NPC tier list of the active events), switched at the top. */
 export function TierListPage() {
+  const { t } = useTranslation("legendaryEvents")
   const [searchParams, setSearchParams] = useSearchParams()
   const kind = parseTierListKind(searchParams)
+  // The page's underline tabs (ui-style-guide rule 4); the URL holds the selection, and the
+  // inactive view is unmounted.
   return (
-    <div className="flex min-w-0 flex-col gap-4">
-      <TierListKindSwitch
-        kind={kind}
-        onKindChange={(next) =>
+    <Tabs
+      className="flex min-w-0 flex-col gap-4"
+      onValueChange={(value) => {
+        const next = TIER_LIST_KINDS.find((item) => item === value)
+        if (next)
           setSearchParams(
             (current) => tierListKindSearchParams(current, next),
             { replace: true }
           )
-        }
-      />
-      {kind === "enemies" ? <NpcTierListView /> : <HeroTierList />}
-    </div>
-  )
-}
-
-/** The Heroes / Enemies switch: the page's underline tabs (ui-style-guide rule 4). */
-function TierListKindSwitch({
-  kind,
-  onKindChange,
-}: {
-  kind: TierListKind
-  onKindChange: (kind: TierListKind) => void
-}) {
-  const { t } = useTranslation("legendaryEvents")
-  return (
-    <Tabs
-      onValueChange={(value) => {
-        const next = TIER_LIST_KINDS.find((item) => item === value)
-        if (next) onKindChange(next)
       }}
       value={kind}
     >
@@ -105,6 +92,12 @@ function TierListKindSwitch({
           </TabsTrigger>
         ))}
       </TabsList>
+      <TabsContent className="min-w-0" value="heroes">
+        <HeroTierList />
+      </TabsContent>
+      <TabsContent className="min-w-0" value="enemies">
+        <NpcTierListView />
+      </TabsContent>
     </Tabs>
   )
 }

@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react"
-import type { ReactNode } from "react"
+import type { ComponentProps, ReactNode } from "react"
 import { createPortal } from "react-dom"
 import { Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -104,10 +104,12 @@ export function PageHeaderSettings({ children }: { children: ReactNode }) {
 export function PageSettingsButton({
   onClick,
   testId,
+  ...props
 }: {
-  onClick: () => void
+  /** Optional when the button is a Radix trigger (`asChild`), which passes its own handler. */
+  onClick?: ComponentProps<typeof Button>["onClick"]
   testId?: string
-}) {
+} & Omit<ComponentProps<typeof Button>, "onClick" | "children">) {
   const { t } = useTranslation("common")
   const isMobile = useIsMobile()
   const label = t("settings.label")
@@ -120,11 +122,12 @@ export function PageSettingsButton({
       size="icon"
       title={label}
       variant="ghost"
+      {...props}
     >
       <Settings />
     </Button>
   ) : (
-    <Button data-testid={testId} onClick={onClick} variant="outline">
+    <Button data-testid={testId} onClick={onClick} variant="outline" {...props}>
       <Settings data-icon="inline-start" />
       {label}
     </Button>

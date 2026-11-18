@@ -90,6 +90,19 @@ describe("SectionActions", () => {
     )
   }, 15_000)
 
+  it("returns focus to the Settings button when the dialog closes", async () => {
+    renderActions("/legendary-events")
+    const button = await screen.findByTestId(
+      "legendary-event-settings",
+      undefined,
+      { timeout: 10_000 }
+    )
+    fireEvent.click(button)
+    const dialog = screen.getByTestId("legendary-event-settings-dialog")
+    fireEvent.keyDown(dialog, { key: "Escape" })
+    await waitFor(() => expect(button).toHaveFocus())
+  }, 15_000)
+
   it("shows nothing on another section", () => {
     const { container } = renderActions("/library")
     expect(container).toBeEmptyDOMElement()
