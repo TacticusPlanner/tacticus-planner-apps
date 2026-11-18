@@ -14,19 +14,23 @@ import {
   useDailyRaids,
 } from "@/features/daily-raids"
 import type { DailyRaidsReadyViewModel } from "@/features/daily-raids"
-import {
-  PlanningSettingsDialog,
-  PlanningSettingsTrigger,
-} from "@/entities/planning-setting"
+import { PlanningSettingsDialog } from "@/entities/planning-setting"
 import { ProjectSelect, useProjects } from "@/entities/project"
-import { energyIconUrl, EntityIcon } from "@/shared/ui"
+import {
+  energyIconUrl,
+  EntityIcon,
+  PageHeaderSettings,
+  PageSettingsButton,
+  PageToolbar,
+} from "@/shared/ui"
 import { useScheduleTutorial } from "./schedule-page.tutorial"
 
 /**
  * Plan > Schedule: the day-by-day continuation of Today's raid plan (formerly Dailies > Raids >
  * Raids Plan). Like Insights it owns a session-local project selection (default: all goals) rather
- * than sharing Dailies' outlet-context one, and it carries its own Planning Settings trigger since
- * every total here depends on daily energy. The dailies namespace is kept for its copy - it is
+ * than sharing Dailies' outlet-context one, in the page toolbar's Find slot, and it carries its own
+ * Planning Settings (the page header's Settings button) since every total here depends on daily
+ * energy. The dailies namespace is kept for its copy - it is
  * preloaded app-wide (see nav-items.ts) and the keys did not change meaning by moving sections.
  */
 export function SchedulePage() {
@@ -39,22 +43,28 @@ export function SchedulePage() {
 
   return (
     <div className="space-y-5" data-testid="schedule-page">
-      {/* goals-navigation spec: a subpage with a project selector but no tab/status row renders it
-          right-aligned alone; the Planning Settings trigger trails it (planning-settings-access). */}
-      <div className="flex items-center justify-end gap-2">
-        <ProjectSelect
-          allowAll
-          onProjectIdChange={setProjectId}
-          placeholder={t("project.placeholder")}
-          projectId={projectId}
-          projects={projects.projects}
-          testId="schedule-project-select"
-        />
-        <PlanningSettingsTrigger
+      <PageHeaderSettings>
+        <PageSettingsButton
           onClick={() => setSettingsOpen(true)}
           testId="schedule-planning-settings"
         />
-      </div>
+      </PageHeaderSettings>
+      {/* The page toolbar (ui-style-guide rule 2): the project selector is the Find slot's scope,
+          labelled at every width (no icon-only toolbar control). */}
+      <PageToolbar
+        find={
+          <ProjectSelect
+            allowAll
+            compact={false}
+            onProjectIdChange={setProjectId}
+            placeholder={t("project.placeholder")}
+            projectId={projectId}
+            projects={projects.projects}
+            testId="schedule-project-select"
+          />
+        }
+        testId="schedule-toolbar"
+      />
       {raids.status === "ready" ? (
         <SchedulePlan raids={raids} />
       ) : (

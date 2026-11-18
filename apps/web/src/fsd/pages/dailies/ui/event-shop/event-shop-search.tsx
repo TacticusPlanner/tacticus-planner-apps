@@ -2,13 +2,6 @@ import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Search, X } from "lucide-react"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@workspace/ui/components/dialog"
-import {
   Popover,
   PopoverAnchor,
   PopoverContent,
@@ -84,7 +77,7 @@ function SearchInput({
   return (
     <label
       className={cn(
-        "flex h-8 items-center gap-2 rounded-lg border bg-card px-2.5 text-sm focus-within:ring-2 focus-within:ring-ring/50",
+        "flex h-8 items-center gap-2 rounded-lg border bg-card px-2.5 text-sm focus-within:ring-2 focus-within:ring-ring/50 pointer-coarse:h-10",
         className
       )}
     >
@@ -191,8 +184,9 @@ function SearchResults({
 }
 
 /**
- * Desktop and tablet: the shop search as a field in the tab bar; typing opens the matches under it
- * (spec event-shop-planner: shop search).
+ * The shop search in the toolbar's Find slot, on every form; typing opens the matches under it
+ * (spec event-shop-planner: shop search). On phone it takes the full width of the row below the
+ * event picker.
  */
 export function EventShopSearchField({
   controller,
@@ -211,10 +205,7 @@ export function EventShopSearchField({
   return (
     <Popover onOpenChange={setOpen} open={show}>
       <PopoverAnchor asChild>
-        <div
-          className="mb-1.5 ml-auto w-72 max-w-full"
-          data-testid="event-shop-search-open"
-        >
+        <div className="w-full md:w-72" data-testid="event-shop-search-open">
           <SearchInput
             onFocus={() => setOpen(true)}
             onKeyDown={(event) => {
@@ -232,7 +223,7 @@ export function EventShopSearchField({
         </div>
       </PopoverAnchor>
       <PopoverContent
-        align="end"
+        align="start"
         className="max-h-[min(28rem,70vh)] w-md max-w-[calc(100vw-2rem)] overflow-y-auto p-0"
         data-testid="event-shop-search"
         onInteractOutside={(event) => {
@@ -255,52 +246,5 @@ export function EventShopSearchField({
         />
       </PopoverContent>
     </Popover>
-  )
-}
-
-/** Phone: the shop search in a dialog opened from the header's search icon. */
-export function EventShopSearchDialog({
-  controller,
-  format,
-  open,
-  onOpenChange,
-  onOpenDay,
-}: {
-  controller: EventShopController
-  format: EventShopFormat
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onOpenDay: (dayIndex: number) => void
-}) {
-  const { t } = useTranslation("eventShops")
-  const [query, setQuery] = useState("")
-  const results = useOfferSearch(controller, format, query)
-  return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent
-        className="max-h-[85dvh] overflow-y-auto"
-        data-testid="event-shop-search"
-      >
-        <DialogHeader>
-          <DialogTitle>{t("search.title")}</DialogTitle>
-          <DialogDescription className="sr-only">
-            {t("search.placeholder")}
-          </DialogDescription>
-        </DialogHeader>
-        {/* The dialog focuses its first field, the search, as it opens. */}
-        <SearchInput onQueryChange={setQuery} query={query} />
-        {query.trim() ? (
-          <SearchResults
-            controller={controller}
-            format={format}
-            onOpenDay={(dayIndex) => {
-              onOpenChange(false)
-              onOpenDay(dayIndex)
-            }}
-            results={results}
-          />
-        ) : null}
-      </DialogContent>
-    </Dialog>
   )
 }

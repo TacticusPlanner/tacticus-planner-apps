@@ -3,7 +3,6 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import type { GameCatalogEventShopRecord } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
-import { cn } from "@workspace/ui/lib/utils"
 import {
   Sheet,
   SheetContent,
@@ -31,10 +30,6 @@ import {
   EventShopMissions,
   EventShopRewardsPhone,
 } from "./event-shop-rewards"
-import {
-  EventShopSearchDialog,
-  EventShopSearchField,
-} from "./event-shop-search"
 import { EventShopShoppingListTotalsBar } from "./event-shop-totals-bar"
 import { ShoppingList } from "./event-shop-shopping-list"
 import { SlotSheet } from "./event-shop-slot-sheet"
@@ -70,7 +65,6 @@ export function EventShopView(props: EventShopViewProps) {
   } = props
   const { t } = useTranslation("eventShops")
   const format = useEventShopFormat()
-  const [searchOpen, setSearchOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [sheetSlot, setSheetSlot] = useState<number | null>(null)
   const reviewCount = controller.list.needsReview.length
@@ -121,36 +115,24 @@ export function EventShopView(props: EventShopViewProps) {
       onValueChange={(value) => onSelectTab(value as EventShopTab)}
       value={tab}
     >
-      {/* Underlined tabs on a hairline, as on the canvas: a row of text tabs beside the shard search
-          field on desktop and tablet, three equal tabs across the width on phone. */}
-      <div className="flex items-end gap-4 border-b">
-        <TabsList
-          aria-label={t("tabs.label")}
-          className={cn("h-auto gap-5 p-0", form === "phone" && "w-full gap-0")}
-          variant="line"
-        >
-          {eventShopTabs(form).map((value) => (
-            <TabsTrigger
-              key={value}
-              className={cn(
-                "h-9 flex-none rounded-none px-1 group-data-horizontal/tabs:after:-bottom-px",
-                form === "phone" && "h-12 flex-1"
-              )}
-              data-testid={`event-shop-tab-${value}`}
-              value={value}
-            >
-              {tabLabel(value)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {form !== "phone" ? (
-          <EventShopSearchField
-            controller={controller}
-            format={format}
-            onOpenDay={goToDay}
-          />
-        ) : null}
-      </div>
+      {/* The standard left-aligned underline tabs (ui-style-guide rule 4); the shop search sits in
+          the page toolbar's Find slot. */}
+      <TabsList
+        aria-label={t("tabs.label")}
+        className="justify-start"
+        variant="line"
+      >
+        {eventShopTabs(form).map((value) => (
+          <TabsTrigger
+            key={value}
+            className="flex-none px-2.5"
+            data-testid={`event-shop-tab-${value}`}
+            value={value}
+          >
+            {tabLabel(value)}
+          </TabsTrigger>
+        ))}
+      </TabsList>
       <TabsContent className="flex flex-col gap-4 pt-2" value="shop">
         {form === "phone" ? (
           <>
@@ -216,7 +198,8 @@ export function EventShopView(props: EventShopViewProps) {
         controller={controller}
         events={events}
         format={format}
-        onOpenSearch={form === "phone" ? () => setSearchOpen(true) : undefined}
+        compact={form === "phone"}
+        onOpenDay={goToDay}
         onSelectEvent={onSelectEvent}
       />
       <EventShopNotices controller={controller} />
@@ -272,15 +255,6 @@ export function EventShopView(props: EventShopViewProps) {
           format={format}
           onClose={() => setSheetSlot(null)}
           slotIndex={sheetSlot}
-        />
-      ) : null}
-      {form === "phone" ? (
-        <EventShopSearchDialog
-          controller={controller}
-          format={format}
-          onOpenChange={setSearchOpen}
-          onOpenDay={goToDay}
-          open={searchOpen}
         />
       ) : null}
       <EventShopDialogs controller={controller} format={format} />

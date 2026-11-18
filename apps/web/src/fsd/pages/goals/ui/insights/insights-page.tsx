@@ -13,6 +13,7 @@ import { useGlobalGoalPlan } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
+import { PageToolbar } from "@/shared/ui"
 import { InsightsCampaignProgression } from "./insights-campaign-progression"
 import { InsightsEvents } from "./insights-events"
 import { InsightsHoldingBack } from "./insights-holding-back"
@@ -64,17 +65,21 @@ export function InsightsPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="insights-page">
-      {/* goals-navigation spec: a subpage with a project selector but no tab/status row renders it
-          right-aligned, alone in its own row. */}
-      <div className="flex items-center justify-end gap-4">
-        <ProjectSelect
-          allowAll
-          onProjectIdChange={setProjectId}
-          projectId={projectId}
-          projects={projects.projects}
-          testId="insights-project-select"
-        />
-      </div>
+      {/* The page toolbar (ui-style-guide rule 2): the project selector in the Find slot, labelled
+          at every width (no icon-only toolbar control). */}
+      <PageToolbar
+        find={
+          <ProjectSelect
+            allowAll
+            compact={false}
+            onProjectIdChange={setProjectId}
+            projectId={projectId}
+            projects={projects.projects}
+            testId="insights-project-select"
+          />
+        }
+        testId="insights-toolbar"
+      />
 
       {globalPlan.isError || insightsError ? (
         <Card data-testid="insights-page-error">

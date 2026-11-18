@@ -649,6 +649,19 @@ describe("shop search", () => {
     ).toBeInTheDocument()
   })
 
+  it("keeps the labelled search field in the toolbar on phone", async () => {
+    setViewportWidth(390)
+    renderPage("/plan/event-shop/october-2026")
+    const toolbar = screen.getByTestId("event-shop-toolbar")
+    await userEvent.type(
+      within(toolbar).getByRole("searchbox", { name: "search.title" }),
+      "yarr"
+    )
+    expect(
+      await screen.findByTestId("event-shop-search-results")
+    ).toBeInTheDocument()
+  })
+
   it("says when nothing matches", async () => {
     renderPage("/plan/event-shop/october-2026")
     await userEvent.type(

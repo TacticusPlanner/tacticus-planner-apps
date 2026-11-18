@@ -12,7 +12,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   AddGoalsToProjectSheet,
   ManageProjectsSheet,
-  NewProjectFab,
+  NewProjectButton,
   ProjectList,
   orderDefaultFirst,
   projectPortraitUnits,
@@ -31,13 +31,14 @@ import {
   usePlanInsights,
   useProjectFitCounts,
 } from "@/features/goal-planning"
+import { PageToolbar } from "@/shared/ui"
 import { useProjectsListTutorial } from "./projects-list-page.tutorial"
 
 /**
  * The dedicated project-management surface (project-management spec: "The list route shows every
  * project without its goal table") - every project (including archived) as its own row with
  * inline lifecycle-action icons, a narrowed create/edit form Sheet opened via a row's Edit action
- * or the "New project" FAB, and the project-specific actions (Create goal, Manage goals, Move goals…) in
+ * or the "New project" button in the page toolbar's Actions slot, and the project-specific actions (Create goal, Manage goals, Move goals…) in
  * each row's menu. No goal table, filters, or project selector here - clicking a row opens the project on
  * the Goals page (`/plan/goals?project=`).
  */
@@ -169,6 +170,12 @@ export function ProjectsListPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="projects-page">
+      {/* The page toolbar (ui-style-guide rule 2): nothing to find or view, so only the Actions
+          slot, with New project. */}
+      <PageToolbar
+        actions={<NewProjectButton onClick={openNewProject} />}
+        testId="projects-toolbar"
+      />
       {hasProjects || projectsPending ? (
         <div className="grid gap-8">
           {/* Static page copy, not a tooltip or a dismissible callout: the question it answers is
@@ -238,7 +245,6 @@ export function ProjectsListPage() {
         </Card>
       )}
 
-      <NewProjectFab onClick={openNewProject} />
       <ManageProjectsSheet
         actions={projectActions}
         onOpenChange={setSheetOpen}
