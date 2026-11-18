@@ -88,7 +88,8 @@ describe("Tier List Enemies view", () => {
     renderPage("/legendary-events/tier-list")
     expect(await screen.findByTestId("tier-list")).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole("radio", { name: "Enemies" }))
+    // Radix tabs switch on mouse down, not on click.
+    fireEvent.mouseDown(screen.getByRole("tab", { name: "Enemies" }))
     expect(await screen.findByTestId("npc-tier-list")).toBeInTheDocument()
     expect(screen.getByTestId("search")).toHaveTextContent("?list=enemies")
   })

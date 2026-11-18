@@ -62,7 +62,6 @@ export function MasterTablePage() {
   const searchNamesOf = useUnitSearchNames()
   const { captureEvent } = useAnalyticsActions()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [controlsOpen, setControlsOpen] = useState(false)
 
   const events = useLegendaryEvents()
   const units = useLegendaryEventUnits()
@@ -261,7 +260,7 @@ export function MasterTablePage() {
       pointsMode: state.points,
     })
   }, [settled, captureEvent, eventCount, state.unitSet, state.points])
-  useTourPageSteps(useMasterTableTutorial(setControlsOpen))
+  useTourPageSteps(useMasterTableTutorial())
 
   const update = (
     changes: Parameters<typeof nextMasterTableParams>[1],
@@ -347,18 +346,7 @@ export function MasterTablePage() {
       className="flex min-w-0 flex-col gap-4"
       data-testid="master-table-page"
     >
-      <header className="flex flex-col gap-1">
-        <h1 className="text-xl font-semibold">{t("masterTable.title")}</h1>
-        <p className="text-sm text-muted-foreground">
-          {t("masterTable.subtitle")}
-        </p>
-      </header>
-      <MasterTableControls
-        {...controls}
-        controlsOpen={controlsOpen}
-        isMobile={isMobile}
-        onControlsOpenChange={setControlsOpen}
-      />
+      <MasterTableControls {...controls} />
       <MasterTableNotes
         estimatedFallback={state.estimatedFallback}
         noTeamEventNames={

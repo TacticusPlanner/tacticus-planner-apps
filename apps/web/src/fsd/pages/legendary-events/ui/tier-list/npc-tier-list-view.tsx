@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
 import {
   Select,
   SelectContent,
@@ -34,6 +33,8 @@ import {
 } from "@/entities/legendary-event"
 import type { NpcTierTile } from "@/entities/legendary-event"
 import { NpcPortrait, useNpcLabels, useNpcsById } from "@/entities/npc"
+import { useTourPageSteps } from "@/shared/tour"
+import { PageToolbar } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import { useNpcThreatText } from "../../model/use-npc-threat-text"
@@ -43,6 +44,8 @@ import {
   rotationEventIds,
 } from "./npc-tier-list.view-model"
 import type { NpcTierListUrlFilters } from "./npc-tier-list.view-model"
+import { TierListSearchField } from "./tier-list-search-field"
+import { useNpcTierListTutorial } from "./tier-list.tutorial"
 import { formatMultiplier } from "./tier-list.view-model"
 import { TierRow } from "./tier-row"
 
@@ -74,6 +77,17 @@ export function NpcTierListView() {
     )
   const eventName = (eventId: string) => unitName("Character", eventId)
   const format = (value: number) => formatMultiplier(value, i18n.language)
+
+  useTourPageSteps(
+    useNpcTierListTutorial({
+      hasFilters:
+        events.status === "ready" &&
+        battles.status === "ready" &&
+        tiers.status === "ready" &&
+        tiers.data !== null &&
+        eventIds.length > 0,
+    })
+  )
 
   const changeFilters = (patch: Partial<NpcTierListUrlFilters>) =>
     setSearchParams(
@@ -165,38 +179,41 @@ export function NpcTierListView() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4" data-testid="npc-tier-list">
-      <p className="text-sm text-muted-foreground">{t("npcTierList.intro")}</p>
-      <div className="flex flex-wrap items-center gap-2">
-        <Input
-          aria-label={t("npcTierList.search")}
-          className="w-full sm:w-64"
-          data-testid="npc-tier-list-search"
-          onChange={(event) => changeFilters({ query: event.target.value })}
-          placeholder={t("npcTierList.search")}
-          type="search"
-          value={filters.query}
-        />
-        <Select
-          onValueChange={(value) => changeFilters({ eventId: value })}
-          value={eventId}
-        >
-          <SelectTrigger
-            aria-label={t("npcTierList.event")}
-            className="w-full sm:w-56"
-            data-testid="npc-tier-list-event"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("npcTierList.allEvents")}</SelectItem>
-            {eventIds.map((id) => (
-              <SelectItem key={id} value={id}>
-                {eventName(id)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <PageToolbar
+        find={
+          <>
+            <TierListSearchField
+              label={t("npcTierList.search")}
+              onChange={(query) => changeFilters({ query })}
+              query={filters.query}
+              testId="npc-tier-list-search"
+            />
+            <Select
+              onValueChange={(value) => changeFilters({ eventId: value })}
+              value={eventId}
+            >
+              <SelectTrigger
+                aria-label={t("npcTierList.event")}
+                className="w-full sm:w-56"
+                data-testid="npc-tier-list-event"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  {t("npcTierList.allEvents")}
+                </SelectItem>
+                {eventIds.map((id) => (
+                  <SelectItem key={id} value={id}>
+                    {eventName(id)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </>
+        }
+        testId="npc-tier-list-toolbar"
+      />
       <div className="flex min-w-0 flex-col gap-3">
         {list.rows.map((row) => (
           <TierRow

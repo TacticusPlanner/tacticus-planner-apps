@@ -136,9 +136,7 @@ function HubGroup({
       className="flex min-w-0 flex-col gap-3"
       data-testid={`legendary-events-group-${group}`}
     >
-      <h2 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-        {title}
-      </h2>
+      <h2 className="text-sm font-medium">{title}</h2>
       <ul
         className={cn(
           "min-w-0 gap-3",

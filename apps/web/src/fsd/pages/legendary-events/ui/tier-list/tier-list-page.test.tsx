@@ -168,11 +168,6 @@ describe("TierListPage", () => {
     const isMobile = form === "mobile"
     beforeEach(() => setViewportWidth(width))
 
-    /** On mobile the Only owned switch and the alliance filter sit in the Filters sheet. */
-    const openFilters = () => {
-      if (isMobile) fireEvent.click(screen.getByTestId("tier-list-filters"))
-    }
-
     it("renders tier S of the worked example in order, with the override marks", async () => {
       renderPage()
       await ready()
@@ -333,7 +328,6 @@ describe("TierListPage", () => {
       expect(tileOf(row("S"), "Kariyan")).toHaveAttribute("data-muted", "true")
       expect(tileOf(row("A"), "Calgar")).toHaveAttribute("data-muted", "false")
 
-      openFilters()
       fireEvent.click(screen.getByTestId("tier-list-only-owned"))
 
       await waitFor(() =>
@@ -352,8 +346,10 @@ describe("TierListPage", () => {
 
       await waitFor(() => expect(tileNames(row("S"))).toEqual([]))
       expect(tileNames(row("A"))).toEqual(["Calgar"])
-      openFilters()
-      expect(screen.getByTestId("tier-list-only-owned")).toBeChecked()
+      expect(screen.getByTestId("tier-list-only-owned")).toHaveAttribute(
+        "aria-pressed",
+        "true"
+      )
     })
 
     it("waits for the roster on an owned=1 link: loading with the switch on, never the unfiltered list", async () => {
@@ -361,14 +357,14 @@ describe("TierListPage", () => {
       renderPage("/legendary-events/tier-list?owned=1")
 
       // The catalog is ready (the filters render) but the roster is not.
-      await screen.findByTestId(
-        isMobile ? "tier-list-filters" : "tier-list-only-owned"
-      )
+      await screen.findByTestId("tier-list-only-owned")
       expect(screen.getByTestId("tier-list-loading")).toBeInTheDocument()
       expect(screen.queryByTestId("tier-list")).toBeNull()
       expect(screen.queryAllByTestId("tier-list-tile")).toHaveLength(0)
-      openFilters()
-      expect(screen.getByTestId("tier-list-only-owned")).toBeChecked()
+      expect(screen.getByTestId("tier-list-only-owned")).toHaveAttribute(
+        "aria-pressed",
+        "true"
+      )
 
       rosterHold.set(false)
       await ready()
@@ -406,7 +402,6 @@ describe("TierListPage", () => {
       renderPage()
       await ready()
 
-      openFilters()
       fireEvent.click(
         within(screen.getByTestId("tier-list-alliance")).getByRole("radio", {
           name: "Xenos",
@@ -626,14 +621,13 @@ describe("TierListPage", () => {
       await ready()
 
       await waitFor(() => {
-        openFilters()
         expect(
           screen.getByTestId("tier-list-roster-unknown")
         ).toHaveTextContent("Sync your roster")
       })
       const onlyOwned = screen.getByTestId("tier-list-only-owned")
       expect(onlyOwned).toBeDisabled()
-      expect(onlyOwned).not.toBeChecked()
+      expect(onlyOwned).toHaveAttribute("aria-pressed", "false")
       // owned=1 is ignored while ownership is unknown.
       expect(tileNames(row("S"))).toHaveLength(10)
       for (const tile of screen.getAllByTestId("tier-list-tile")) {
@@ -648,7 +642,6 @@ describe("TierListPage", () => {
       renderPage()
       await ready()
 
-      openFilters()
       expect(
         await screen.findByTestId("tier-list-roster-unknown")
       ).toBeInTheDocument()
@@ -728,7 +721,7 @@ describe("TierListPage", () => {
       expect(views).toHaveLength(1)
     })
 
-    it("registers the tour: S row, first tile, filters, each rendered", async () => {
+    it("registers the tour: intro, S row, first tile, filters, each rendered", async () => {
       renderPage()
       await ready()
 
@@ -738,6 +731,7 @@ describe("TierListPage", () => {
       }
       for (const list of [steps.desktop, steps.mobile]) {
         expect(list.map((step) => step.target)).toEqual([
+          '[data-testid="tier-list-kind"]',
           '[data-testid="tier-list-row-S"]',
           '[data-testid="tier-list-first-tile"]',
           '[data-testid="tier-list-filters"]',
@@ -757,7 +751,9 @@ describe("TierListPage", () => {
       const filters = document.querySelector(
         '[data-testid="tier-list-filters"]'
       )!
-      expect(filters.tagName).toBe(isMobile ? "BUTTON" : "DIV")
+      expect(
+        within(filters as HTMLElement).getByTestId("tier-list-search")
+      ).toBeVisible()
     })
   })
 
@@ -772,6 +768,7 @@ describe("TierListPage", () => {
       }
       for (const list of [steps.desktop, steps.mobile]) {
         expect(list.map((step) => step.target)).toEqual([
+          '[data-testid="tier-list-kind"]',
           '[data-testid="tier-list-filters"]',
         ])
         for (const step of list) {
@@ -799,21 +796,22 @@ describe("TierListPage", () => {
       expect(within(filters).getByTestId("tier-list-alliance")).toBeVisible()
     })
 
-    it("marks the selected alliance segment with the primary tint and checked state", async () => {
+    it("marks the selected alliance chip with the filter-chip style and checked state", async () => {
       setViewportWidth(1280)
       renderPage("/legendary-events/tier-list?alliance=chaos")
       await ready()
 
       const alliance = screen.getByTestId("tier-list-alliance")
-      // Segmented (spacing 0): the selected-segment tint only applies inside such a group.
-      expect(alliance).toHaveAttribute("data-spacing", "0")
       const chaos = within(alliance).getByRole("radio", { name: "Chaos" })
       expect(chaos).toHaveAttribute("data-state", "on")
       expect(chaos).toHaveAttribute("aria-checked", "true")
-      expect(chaos).toHaveClass(
-        "group-data-[spacing=0]/toggle-group:data-[state=on]:bg-primary/10"
+      expect(chaos).toHaveClass("data-[state=on]:border-primary")
+      // Picking the selected chip again shows every alliance.
+      fireEvent.click(chaos)
+      await waitFor(() =>
+        expect(screen.getByTestId("search")).not.toHaveTextContent("alliance=")
       )
-      for (const name of ["All", "Imperial", "Xenos"]) {
+      for (const name of ["Imperial", "Xenos", "Chaos"]) {
         expect(within(alliance).getByRole("radio", { name })).toHaveAttribute(
           "aria-checked",
           "false"
@@ -836,9 +834,11 @@ describe("TierListPage", () => {
           "truncate"
         )
       }
-      // Only owned and alliance live in the Filters sheet.
-      expect(screen.queryByTestId("tier-list-only-owned")).toBeNull()
-      expect(container.querySelector('[class*="overflow-x"]')).toBeNull()
+      // Owned only and the alliance chips share one row that scrolls sideways.
+      expect(screen.getByTestId("tier-list-only-owned")).toBeVisible()
+      expect(
+        screen.getByTestId("tier-list-alliance").parentElement
+      ).toHaveClass("overflow-x-auto")
       expect(container.querySelector('[class*="min-w-["]')).toBeNull()
     })
   })

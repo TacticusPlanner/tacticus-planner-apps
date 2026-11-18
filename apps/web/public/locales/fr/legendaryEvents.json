@@ -17,7 +17,13 @@
     "startsTba": "Date de début à annoncer",
     "syncedUnavailable": "Données synchronisées indisponibles",
     "runs": "Manches",
-    "run": "Manche {{run}} : {{date}}"
+    "run": "Manche {{run}} : {{date}}",
+    "runStatus": {
+      "past": "Terminée",
+      "current": "En cours",
+      "upcoming": "Annoncée",
+      "maybe": "Non annoncée"
+    }
   },
   "lifecycle": {
     "active": "En cours",
@@ -611,6 +617,9 @@
         "filters": {
           "title": "Filtres",
           "content": "Recherchez par nom, affichez uniquement vos personnages ou choisissez une alliance. Les filtres s'appliquent à toutes les lignes, Non classés compris."
+        },
+        "npcFilters": {
+          "content": "Recherchez les ennemis par nom ou choisissez un événement pour ne voir que ses ennemis."
         }
       }
     },
@@ -915,8 +924,6 @@
     }
   },
   "masterTable": {
-    "title": "Tableau général",
-    "subtitle": "Les points de chaque unité sur les Événements Légendaires choisis.",
     "loading": "Chargement du tableau général",
     "error": "Les Événements Légendaires n'ont pas pu être chargés.",
     "noEvents": "Choisissez au moins un événement.",
@@ -926,10 +933,6 @@
       "trigger_one": "{{count}} événement",
       "trigger_other": "{{count}} événements",
       "archived": "Archivés"
-    },
-    "controls": {
-      "open": "Réglages",
-      "title": "Réglages du tableau général"
     },
     "unitSet": {
       "label": "Unités",
@@ -1030,15 +1033,11 @@
   },
   "tierList": {
     "intro": "Les tiers du mode horde de chaque personnage, avec le multiplicateur qu'il reçoit.",
-    "whatThisMeans": "Qu'est-ce que cela signifie ?",
     "explainer": "Le multiplicateur d'un personnage ajuste sa puissance de combat dans les estimations de progression des Événements Légendaires. Les personnages classés utilisent leur propre multiplicateur s'ils en ont un, sinon celui de leur tier ; les personnages non classés utilisent 1,0.",
     "search": "Rechercher des personnages",
     "onlyOwned": "Possédés uniquement",
     "syncRoster": "Synchronisez votre effectif",
     "alliance": "Alliance",
-    "allianceAll": "Toutes",
-    "filters": "Filtres",
-    "filtersDescription": "Afficher uniquement vos personnages ou une alliance.",
     "override": "Multiplicateur propre",
     "relicMark": "Note avec relique",
     "tileLabel": "{{name}}, {{multiplier}}",
@@ -1305,7 +1304,6 @@
     "unknown": "date inconnue"
   },
   "settings": {
-    "button": "Paramètres des événements légendaires",
     "title": "Paramètres des événements légendaires",
     "description": "Ils s'appliquent au plan de chaque événement légendaire et sont enregistrés dans votre compte.",
     "showPaidOptionsHint": "Activé : planifie avec ce que vous payez — missions premium, le pack de 300 devises et les éclats Oh So Close. Désactivé : récompenses gratuites uniquement."

@@ -21,11 +21,26 @@ type HubCardSynced =
       points: number
     }
 
+/** Where a run stands: finished, running now, announced and still ahead, or only guessed
+ *  (or not estimable at all). */
+export type HubCardRunStatus = "past" | "current" | "upcoming" | "maybe"
+
 /** One run of an unfinished event: its announced or guessed start, null when not estimable. */
 interface HubCardRun {
   run: number
   startMs: number | null
   guessed: boolean
+  status: HubCardRunStatus
+}
+
+function runStatus(
+  window: { startMs: number; endMs: number; guessed: boolean } | null,
+  nowMs: number
+): HubCardRunStatus {
+  if (!window) return "maybe"
+  if (window.endMs <= nowMs) return "past"
+  if (window.guessed) return "maybe"
+  return window.startMs <= nowMs ? "current" : "upcoming"
 }
 
 export interface HubCardViewModel {
@@ -42,7 +57,8 @@ export interface HubCardViewModel {
 function hubRuns(
   event: LegendaryEvent,
   lifecycle: LegendaryEventLifecycle,
-  events: readonly LegendaryEvent[]
+  events: readonly LegendaryEvent[],
+  nowMs: number
 ): HubCardRun[] {
   if (lifecycle.state === "archived") return []
   return legendaryEventRunDates(event, events).starts.map((start) => {
@@ -51,6 +67,7 @@ function hubRuns(
       run: start.run,
       startMs: window?.startMs ?? null,
       guessed: window?.guessed ?? false,
+      status: runStatus(window, nowMs),
     }
   })
 }
@@ -106,7 +123,7 @@ export function buildHubViewModel(
       name: nameOf(event.id),
       lifecycle,
       synced: withSync ? syncedFor(event.id, progress) : { kind: "none" },
-      runs: hubRuns(event, lifecycle, events),
+      runs: hubRuns(event, lifecycle, events, nowMs),
     })
   return {
     active: groups.active.map(toCard(true)),

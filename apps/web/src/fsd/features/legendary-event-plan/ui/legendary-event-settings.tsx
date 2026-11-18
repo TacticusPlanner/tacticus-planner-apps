@@ -1,8 +1,6 @@
 import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
-import { Settings } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
   DialogContent,
@@ -14,12 +12,14 @@ import {
 import { Label } from "@workspace/ui/components/label"
 import { Switch } from "@workspace/ui/components/switch"
 
+import { PageSettingsButton } from "@/shared/ui"
+
 import { useShowPaidOptions } from "../model/use-show-paid-options"
 import { useWatchAds } from "../model/use-watch-ads"
 
 /**
- * The Legendary Events settings button (spec: Legendary Event settings): a gear beside the event
- * tabs that opens a dialog with the account-wide Show paid options and Watch daily ads switches.
+ * The Legendary Events settings button (spec: Legendary Event settings): the page header's
+ * "Settings" button (ui-style-guide rule 1) on every Legendary Events page, opening a dialog with the account-wide Show paid options and Watch daily ads switches.
  * Each switch saves at once and applies to every event's planner.
  */
 export function LegendaryEventSettingsButton() {
@@ -29,17 +29,9 @@ export function LegendaryEventSettingsButton() {
   if (!signedIn) return null
   return (
     <Dialog>
+      {/* The trigger, so closing the dialog returns focus to the button. */}
       <DialogTrigger asChild>
-        <Button
-          aria-label={t("settings.button")}
-          data-testid="legendary-event-settings"
-          size="icon-sm"
-          title={t("settings.button")}
-          type="button"
-          variant="ghost"
-        >
-          <Settings aria-hidden="true" />
-        </Button>
+        <PageSettingsButton testId="legendary-event-settings" />
       </DialogTrigger>
       <DialogContent data-testid="legendary-event-settings-dialog">
         <DialogHeader>

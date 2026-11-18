@@ -69,6 +69,7 @@ export function MobileHeader({
         <div className="flex shrink-0 items-center gap-1">
           {/* Renders only on a page that registered its own tour - the app-wide navigation tour
               lives on the "Show me around" button inside the account menu. */}
+          <SectionActions item={activeSection} />
           <PageHeaderSettingsSlot />
           <PageTourButton iconOnly />
           {!isAuthenticated ? (
@@ -82,9 +83,8 @@ export function MobileHeader({
         </div>
       </div>
       {activeSection?.children?.length ? (
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1 border-t px-4 py-1.5">
+        <div className="border-t px-4 py-1.5">
           <SectionTabs item={activeSection} />
-          <SectionActions item={activeSection} />
         </div>
       ) : null}
     </header>

@@ -17,7 +17,13 @@
     "startsTba": "Startdatum folgt",
     "syncedUnavailable": "Synchronisierte Daten nicht verfügbar",
     "runs": "Durchläufe",
-    "run": "Durchlauf {{run}}: {{date}}"
+    "run": "Durchlauf {{run}}: {{date}}",
+    "runStatus": {
+      "past": "Beendet",
+      "current": "Läuft gerade",
+      "upcoming": "Angekündigt",
+      "maybe": "Nicht angekündigt"
+    }
   },
   "lifecycle": {
     "active": "Aktiv",
@@ -611,6 +617,9 @@
         "filters": {
           "title": "Filter",
           "content": "Suche nach Namen, zeige nur deine eigenen Charaktere oder wähle eine Allianz. Die Filter gelten für jede Zeile, auch für „Ohne Tier“."
+        },
+        "npcFilters": {
+          "content": "Suche Gegner nach Namen oder wähle ein Event, um nur dessen Gegner zu sehen."
         }
       }
     },
@@ -915,8 +924,6 @@
     }
   },
   "masterTable": {
-    "title": "Gesamttabelle",
-    "subtitle": "Die Punkte jeder Einheit über die gewählten Legendären Events.",
     "loading": "Gesamttabelle wird geladen",
     "error": "Die Legendären Events konnten nicht geladen werden.",
     "noEvents": "Wähle mindestens ein Event.",
@@ -926,10 +933,6 @@
       "trigger_one": "{{count}} Event",
       "trigger_other": "{{count}} Events",
       "archived": "Archiviert"
-    },
-    "controls": {
-      "open": "Einstellungen",
-      "title": "Einstellungen der Gesamttabelle"
     },
     "unitSet": {
       "label": "Einheiten",
@@ -1030,15 +1033,11 @@
   },
   "tierList": {
     "intro": "Die Horde-Modus-Tiers aller Charaktere mit dem Multiplikator, den jeder erhält.",
-    "whatThisMeans": "Was bedeutet das?",
     "explainer": "Der Multiplikator eines Charakters skaliert seine Stärke in den Abschlussschätzungen der Legendären Events. Charaktere mit Tier nutzen ihren eigenen Multiplikator, falls sie einen haben, sonst den ihres Tiers; Charaktere ohne Tier nutzen 1,0.",
     "search": "Charaktere suchen",
     "onlyOwned": "Nur eigene",
     "syncRoster": "Synchronisiere deinen Kader",
     "alliance": "Allianz",
-    "allianceAll": "Alle",
-    "filters": "Filter",
-    "filtersDescription": "Nur eigene Charaktere oder eine Allianz anzeigen.",
     "override": "Eigener Multiplikator",
     "relicMark": "Relikt-Wertung",
     "tileLabel": "{{name}}, {{multiplier}}",
@@ -1305,7 +1304,6 @@
     "unknown": "Termin unbekannt"
   },
   "settings": {
-    "button": "Einstellungen für Legendäre Events",
     "title": "Einstellungen für Legendäre Events",
     "description": "Diese gelten für den Plan jedes Legendären Events und werden in deinem Konto gespeichert.",
     "showPaidOptionsHint": "An: mit Bezahlinhalten planen – Premium-Missionen, dem 300-Währungs-Paket und Oh-So-Close-Splittern. Aus: nur mit kostenlosen Belohnungen planen."

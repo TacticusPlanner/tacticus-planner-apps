@@ -1,7 +1,7 @@
 import { useId } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronDown, Search, SlidersHorizontal } from "lucide-react"
+import { ChevronDown, Search } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
@@ -20,25 +20,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@workspace/ui/components/sheet"
 import { Spinner } from "@workspace/ui/components/spinner"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
 
 import type {
   MasterTablePointsMode,
   MasterTableUnitSet,
 } from "@/entities/legendary-event"
-import { EntityIcon } from "@/shared/ui"
-
-import { isTourElement } from "./master-table-tour"
+import {
+  EntityIcon,
+  PageToolbar,
+  SegmentedControl,
+  useViewPlacement,
+} from "@/shared/ui"
 
 import { POINTS_MODES, UNIT_SETS } from "./master-table.view-model"
 import type {
@@ -64,85 +57,47 @@ export interface MasterTableControlsProps {
 }
 
 /**
- * The master table's controls (design D5): on desktop one row (event picker popover, unit set,
- * points mode, search); on mobile a bar with the search and a Controls button opening a bottom
- * sheet with the picker, unit set, points mode and Sort by. Tour targets keep the same test ids on
- * both forms.
+ * The master table's toolbar (ui-style-guide rule 2): Find holds the search and the event picker;
+ * View holds the Units and Points segmented controls (on mobile behind the View button, whose sheet
+ * also has Sort by, as the card list has no sortable headers). Notes on why a choice is disabled
+ * sit under the row. Tour targets keep the same test ids on both forms.
  */
-export function MasterTableControls({
-  isMobile,
-  controlsOpen,
-  onControlsOpenChange,
-  ...props
-}: MasterTableControlsProps & {
-  isMobile: boolean
-  controlsOpen: boolean
-  onControlsOpenChange: (open: boolean) => void
-}) {
+export function MasterTableControls(props: MasterTableControlsProps) {
   const { t } = useTranslation("legendaryEvents")
-  if (!isMobile) {
-    return (
-      <div
-        className="flex min-w-0 flex-wrap items-start gap-x-4 gap-y-3"
-        data-testid="master-table-controls"
-      >
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button data-testid="master-table-events" variant="outline">
-              {t("masterTable.events.trigger", {
-                count: props.state.selectedEventIds.length,
-              })}
-              <ChevronDown aria-hidden="true" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="start" className="w-72 p-2">
-            <EventPickerList {...props} />
-          </PopoverContent>
-        </Popover>
-        <UnitSetControl {...props} />
-        <PointsModeControl {...props} />
-        <SearchField {...props} />
-      </div>
-    )
-  }
   return (
-    <div className="flex min-w-0 items-center gap-2">
-      <SearchField {...props} />
-      <Button
-        className="min-h-11 shrink-0"
-        data-testid="master-table-controls"
-        onClick={() => onControlsOpenChange(true)}
-        variant="outline"
-      >
-        <SlidersHorizontal aria-hidden="true" />
-        {t("masterTable.controls.open")}
-      </Button>
-      <Sheet onOpenChange={onControlsOpenChange} open={controlsOpen}>
-        <SheetContent
-          className="max-h-[85vh] overflow-y-auto"
-          data-testid="master-table-controls-sheet"
-          // The tour's tooltip sits outside the sheet: tapping it must not dismiss the sheet.
-          onInteractOutside={(event) => {
-            if (isTourElement(event.target)) event.preventDefault()
-          }}
-          side="bottom"
-        >
-          <SheetHeader>
-            <SheetTitle>{t("masterTable.controls.title")}</SheetTitle>
-          </SheetHeader>
-          <div className="flex flex-col gap-4 px-4 pb-4">
-            <ControlField label={t("masterTable.events.label")}>
-              <div data-testid="master-table-events">
-                <EventPickerList {...props} />
-              </div>
-            </ControlField>
-            <UnitSetControl {...props} />
-            <PointsModeControl {...props} />
-            <SortSelect {...props} />
-          </div>
-        </SheetContent>
-      </Sheet>
-    </div>
+    <PageToolbar
+      below={<ControlHints {...props} />}
+      find={
+        <>
+          <SearchField {...props} />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button data-testid="master-table-events" variant="outline">
+                {t("masterTable.events.trigger", {
+                  count: props.state.selectedEventIds.length,
+                })}
+                <ChevronDown aria-hidden="true" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              className="max-h-(--radix-popover-content-available-height) w-72 overflow-y-auto p-2"
+            >
+              <EventPickerList {...props} />
+            </PopoverContent>
+          </Popover>
+        </>
+      }
+      testId="master-table-controls"
+      view={
+        <>
+          <UnitSetControl {...props} />
+          <PointsModeControl {...props} />
+          <SortSelect {...props} />
+        </>
+      }
+      viewTestId="master-table-view"
+    />
   )
 }
 
@@ -155,7 +110,7 @@ function ControlField({
 }) {
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <span className="text-sm font-medium">{label}</span>
       {children}
     </div>
   )
@@ -246,13 +201,6 @@ function UnitSetControl({
   onUnitSetChange,
 }: MasterTableControlsProps) {
   const { t } = useTranslation("legendaryEvents")
-  // Both causes can hold at once (no roster and failed plans): each gets its own line.
-  const hints = [
-    unitSets.unlocked === "noRoster" ? t("masterTable.unitSet.noRoster") : null,
-    unitSets.inTeams === "failed"
-      ? t("masterTable.unitSet.teamsUnavailable")
-      : null,
-  ].filter((hint): hint is string => hint !== null)
   const loadingLabel = (set: MasterTableUnitSet) =>
     set === "unlocked" && unitSets.unlocked === "loading"
       ? t("masterTable.unitSet.rosterLoading")
@@ -260,47 +208,26 @@ function UnitSetControl({
         ? t("masterTable.unitSet.teamsLoading")
         : null
   return (
-    <ControlField label={t("masterTable.unitSet.label")}>
-      <ToggleGroup
-        aria-label={t("masterTable.unitSet.label")}
-        data-testid="master-table-unit-set"
-        onValueChange={(value) => {
-          const next = UNIT_SETS.find((entry) => entry === value)
-          if (next) onUnitSetChange(next)
-        }}
-        type="single"
-        value={state.unitSet}
-      >
-        {UNIT_SETS.map((set) => {
-          const loading = loadingLabel(set)
-          return (
-            <ToggleGroupItem
-              data-testid={`master-table-unit-set-${set}`}
-              disabled={
-                (set === "unlocked" && unitSets.unlocked !== "ready") ||
-                (set === "inTeams" && unitSets.inTeams !== "ready")
-              }
-              key={set}
-              value={set}
-            >
-              {t(`masterTable.unitSet.${set}`)}
-              {loading ? (
-                <Spinner aria-label={loading} className="size-3" />
-              ) : null}
-            </ToggleGroupItem>
-          )
-        })}
-      </ToggleGroup>
-      {hints.map((hint) => (
-        <span
-          className="text-xs text-muted-foreground"
-          data-testid="master-table-unit-set-hint"
-          key={hint}
-        >
-          {hint}
-        </span>
-      ))}
-    </ControlField>
+    <SegmentedControl
+      label={t("masterTable.unitSet.label")}
+      onValueChange={onUnitSetChange}
+      options={UNIT_SETS.map((set) => {
+        const loading = loadingLabel(set)
+        return {
+          value: set,
+          label: t(`masterTable.unitSet.${set}`),
+          testId: `master-table-unit-set-${set}`,
+          disabled:
+            (set === "unlocked" && unitSets.unlocked !== "ready") ||
+            (set === "inTeams" && unitSets.inTeams !== "ready"),
+          trailing: loading ? (
+            <Spinner aria-label={loading} className="size-3" />
+          ) : undefined,
+        }
+      })}
+      testId="master-table-unit-set"
+      value={state.unitSet}
+    />
   )
 }
 
@@ -310,64 +237,71 @@ function PointsModeControl({
   onPointsChange,
 }: MasterTableControlsProps) {
   const { t } = useTranslation("legendaryEvents")
-  const hint =
+  return (
+    <SegmentedControl
+      label={t("masterTable.points.label")}
+      onValueChange={onPointsChange}
+      options={POINTS_MODES.map((mode) => ({
+        value: mode,
+        label: t(`masterTable.points.${mode}`),
+        testId: `master-table-points-${mode}`,
+        disabled: mode === "estimated" && estimated !== "ready",
+        trailing:
+          mode === "estimated" && estimated === "loading" ? (
+            <Spinner
+              aria-label={t("masterTable.points.estimatesLoading")}
+              className="size-3"
+            />
+          ) : undefined,
+      }))}
+      testId="master-table-points-mode"
+      value={state.points}
+    />
+  )
+}
+
+/** Why a Units or Points choice is disabled: each cause on its own line under the toolbar. */
+function ControlHints({ unitSets, estimated }: MasterTableControlsProps) {
+  const { t } = useTranslation("legendaryEvents")
+  // Both unit-set causes can hold at once (no roster and failed plans).
+  const unitSetHints = [
+    unitSets.unlocked === "noRoster" ? t("masterTable.unitSet.noRoster") : null,
+    unitSets.inTeams === "failed"
+      ? t("masterTable.unitSet.teamsUnavailable")
+      : null,
+  ].filter((hint): hint is string => hint !== null)
+  const pointsHint =
     estimated === "unavailable"
       ? t("masterTable.points.needsEstimates")
-      : estimated === "noRoster"
+      : estimated === "noRoster" && unitSets.unlocked !== "noRoster"
         ? t("masterTable.unitSet.noRoster")
         : null
+  if (unitSetHints.length === 0 && !pointsHint) return null
   return (
-    <ControlField label={t("masterTable.points.label")}>
-      <ToggleGroup
-        aria-label={t("masterTable.points.label")}
-        data-testid="master-table-points-mode"
-        onValueChange={(value) => {
-          const next = POINTS_MODES.find((entry) => entry === value)
-          if (next) onPointsChange(next)
-        }}
-        type="single"
-        value={state.points}
-      >
-        {POINTS_MODES.map((mode) => (
-          <ToggleGroupItem
-            data-testid={`master-table-points-${mode}`}
-            disabled={mode === "estimated" && estimated !== "ready"}
-            key={mode}
-            value={mode}
-          >
-            {t(`masterTable.points.${mode}`)}
-            {mode === "estimated" && estimated === "loading" ? (
-              <Spinner
-                aria-label={t("masterTable.points.estimatesLoading")}
-                className="size-3"
-              />
-            ) : null}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
-      {hint ? (
-        <span
-          className="text-xs text-muted-foreground"
-          data-testid="master-table-points-hint"
-        >
+    <div className="flex flex-col gap-0.5 text-sm text-muted-foreground">
+      {unitSetHints.map((hint) => (
+        <span data-testid="master-table-unit-set-hint" key={hint}>
           {hint}
         </span>
+      ))}
+      {pointsHint ? (
+        <span data-testid="master-table-points-hint">{pointsHint}</span>
       ) : null}
-    </ControlField>
+    </div>
   )
 }
 
 function SearchField({ state, onQueryChange }: MasterTableControlsProps) {
   const { t } = useTranslation("legendaryEvents")
   return (
-    <div className="relative min-w-0 flex-1 md:max-w-64 md:self-end">
+    <div className="relative min-w-40 flex-1 md:max-w-64">
       <Search
         aria-hidden="true"
         className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
       />
       <Input
         aria-label={t("masterTable.search.label")}
-        className="min-h-11 pl-8 md:min-h-9"
+        className="pl-8"
         data-testid="master-table-search"
         onChange={(event) => onQueryChange(event.target.value)}
         placeholder={t("masterTable.search.placeholder")}
@@ -384,6 +318,8 @@ function SortSelect({
   onSortChange,
 }: MasterTableControlsProps) {
   const { t } = useTranslation("legendaryEvents")
+  // The desktop table sorts from its headers; only the mobile View sheet needs this.
+  if (useViewPlacement() !== "sheet") return null
   return (
     <ControlField label={t("masterTable.sort.label")}>
       <Select
@@ -394,7 +330,7 @@ function SortSelect({
       >
         <SelectTrigger
           aria-label={t("masterTable.sort.label")}
-          className="min-h-11 w-full"
+          className="w-full"
           data-testid="master-table-sort"
         >
           <SelectValue />

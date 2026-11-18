@@ -8,51 +8,23 @@ const MASTER_TABLE_TOUR_TARGETS = {
   controls: '[data-testid="master-table-controls"]',
   events: '[data-testid="master-table-events"]',
   pointsMode: '[data-testid="master-table-points-mode"]',
+  // Mobile: the Units and Points controls sit behind the toolbar's View button.
+  view: '[data-testid="master-table-view"]',
   firstRow: '[data-testid="master-table-first-row"]',
 } as const
-const SHEET_SELECTOR = '[data-testid="master-table-controls-sheet"]'
-
-/** Resolves once `selector` is (or is no longer, with `present` false) in the document, or after
- *  `timeoutMs`. */
-function waitForElement(
-  selector: string,
-  timeoutMs: number,
-  present = true
-): Promise<void> {
-  return new Promise((resolve) => {
-    const deadline = Date.now() + timeoutMs
-    const check = () => {
-      if (
-        (document.querySelector(selector) !== null) === present ||
-        Date.now() >= deadline
-      ) {
-        resolve()
-        return
-      }
-      setTimeout(check, 16)
-    }
-    check()
-  })
-}
-
 /**
- * The master table tour (design D5): the controls (on mobile the Controls button), the event
- * picker, the points mode and the first row. The targets are the same on both forms; on mobile the
- * picker and points-mode steps open the controls sheet (so Back from the first row reopens it) and
- * the controls and first-row steps close it. The sheet is modal (body pointer events off, focus
- * trapped), so its steps keep the tooltip clickable and skip Joyride's focus trap, as the general
- * tour's account-drawer step does.
+ * The master table tour (design D5): the toolbar, the event picker, the points mode and the first
+ * row. On mobile the points-mode step points at the View button, whose sheet holds the control.
  */
-export function useMasterTableTutorial(
-  setControlsOpen: (open: boolean) => void
-): TourPageSteps {
+export function useMasterTableTutorial(): TourPageSteps {
   const { t } = useTranslation("legendaryEvents")
   return useMemo(() => {
     const step = (
-      key: keyof typeof MASTER_TABLE_TOUR_TARGETS,
-      placement: Step["placement"]
+      key: Exclude<keyof typeof MASTER_TABLE_TOUR_TARGETS, "view">,
+      placement: Step["placement"],
+      target: string = MASTER_TABLE_TOUR_TARGETS[key]
     ): Step => ({
-      target: MASTER_TABLE_TOUR_TARGETS[key],
+      target,
       placement,
       title: t(`tour.masterTable.steps.${key}.title`),
       content: t(`tour.masterTable.steps.${key}.content`),
@@ -63,27 +35,12 @@ export function useMasterTableTutorial(
       step("pointsMode", "bottom"),
       step("firstRow", "top"),
     ]
-    const openSheet = async () => {
-      setControlsOpen(true)
-      await waitForElement(SHEET_SELECTOR, 1000)
-    }
-    const closeSheet = async () => {
-      setControlsOpen(false)
-      await waitForElement(SHEET_SELECTOR, 1000, false)
-    }
-    const inSheet = (step: Step): Step => ({
-      ...step,
-      before: openSheet,
-      // The modal sheet disables body pointer events; the portaled tooltip must stay tappable.
-      styles: { tooltip: { pointerEvents: "auto" } },
-      disableFocusTrap: true,
-    })
     const mobile: Step[] = [
-      { ...step("controls", "bottom"), before: closeSheet },
-      inSheet(step("events", "top")),
-      inSheet(step("pointsMode", "top")),
-      { ...step("firstRow", "bottom"), before: closeSheet },
+      step("controls", "bottom"),
+      step("events", "bottom"),
+      step("pointsMode", "bottom", MASTER_TABLE_TOUR_TARGETS.view),
+      step("firstRow", "bottom"),
     ]
     return { desktop, mobile }
-  }, [setControlsOpen, t])
+  }, [t])
 }

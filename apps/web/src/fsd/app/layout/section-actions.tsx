@@ -10,8 +10,8 @@ const LegendaryEventSettingsButton = lazy(() =>
   }))
 )
 
-/** A section's own header actions beside its tabs (mobile) or title (desktop): the Legendary Events
- *  settings; nothing for any other section. */
+/** A section's own Settings button in the page header's settings slot (ui-style-guide rule 1): the
+ *  Legendary Events settings; nothing for any other section. */
 export function SectionActions({ item }: { item: NavItem | undefined }) {
   if (item?.path !== "/legendary-events") return null
   return (

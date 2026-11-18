@@ -51,13 +51,15 @@ describe("SectionActions", () => {
     renderActions("/legendary-events")
 
     fireEvent.click(
-      await screen.findByTestId("legendary-event-settings", undefined, {
-        timeout: 10_000,
-      })
+      await screen.findByRole(
+        "button",
+        { name: "Settings" },
+        { timeout: 10_000 }
+      )
     )
     expect(
-      screen.getByTestId("legendary-event-settings-dialog")
-    ).toHaveTextContent("Legendary Event settings")
+      screen.getByRole("dialog", { name: "Legendary Event settings" })
+    ).toBeInTheDocument()
     fireEvent.click(screen.getByTestId("legendary-event-settings-paid"))
 
     expect(save).toHaveBeenCalledWith(
@@ -88,6 +90,19 @@ describe("SectionActions", () => {
     await waitFor(() =>
       expect(screen.getByTestId("legendary-event-settings-ads")).toBeEnabled()
     )
+  }, 15_000)
+
+  it("returns focus to the Settings button when the dialog closes", async () => {
+    renderActions("/legendary-events")
+    const button = await screen.findByTestId(
+      "legendary-event-settings",
+      undefined,
+      { timeout: 10_000 }
+    )
+    fireEvent.click(button)
+    const dialog = screen.getByTestId("legendary-event-settings-dialog")
+    fireEvent.keyDown(dialog, { key: "Escape" })
+    await waitFor(() => expect(button).toHaveFocus())
   }, 15_000)
 
   it("shows nothing on another section", () => {

@@ -35,7 +35,7 @@ import {
   lysanderBattles,
 } from "@/test/fixtures/lysander-battles"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { act, fireEvent, render, screen, within } from "@/test/render"
+import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
 import {
   resetTestDatabases,
   seedGameCatalog,
@@ -365,19 +365,17 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     vi.unstubAllGlobals()
   })
 
-  it("opens an active event on Current run: name, lifecycle badge, the strip, Run status, progress grid", async () => {
+  it("opens an active event on Current run: the countdown, the strip, Run status, progress grid", async () => {
     renderPage("/legendary-events/astarLysander")
     const page = await screen.findByTestId("legendary-event-page")
 
-    expect(screen.getByTestId("legendary-event-title")).toHaveTextContent(
-      "Lysander"
-    )
-    expect(screen.getByTestId("legendary-event-lifecycle")).toHaveTextContent(
-      "Active"
-    )
-    // The run timing sits in the header, so it shows on every tab.
-    expect(screen.getByTestId("event-timing-countdown")).toHaveTextContent(
-      /^Ends in /
+    // The page header names the event, its lifecycle and date; the row above the tabs adds only
+    // the countdown, so it shows on every tab without repeating them.
+    expect(screen.queryByTestId("legendary-event-title")).toBeNull()
+    expect(screen.queryByTestId("legendary-event-lifecycle")).toBeNull()
+    expect(screen.queryByTestId("event-timing-date")).toBeNull()
+    expect(screen.getByTestId("legendary-event-header")).toHaveTextContent(
+      /^Ends in \d+ days?/
     )
     expect(selectedTab()).toHaveTextContent("Current run")
     expect(
@@ -548,11 +546,21 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     act(() => selectTab("plan"))
 
     fireEvent.click(screen.getByTestId("open-uthar"))
-    await screen.findByText("Ûthar", { selector: "h1" })
+    await waitFor(() =>
+      expect(screen.getByTestId("legendary-event-page")).toHaveAttribute(
+        "data-event-id",
+        "votanUthar"
+      )
+    )
     expect(selectedTab()).toHaveTextContent("Overview")
 
     fireEvent.click(screen.getByTestId("open-lysander"))
-    await screen.findByText("Lysander", { selector: "h1" })
+    await waitFor(() =>
+      expect(screen.getByTestId("legendary-event-page")).toHaveAttribute(
+        "data-event-id",
+        "astarLysander"
+      )
+    )
     expect(selectedTab()).toHaveTextContent("Current run")
   }, 30_000)
 
@@ -780,7 +788,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(screen.getByTestId("leaderboard-points")).toHaveTextContent("152")
 
     fireEvent.click(screen.getByTestId("open-uthar"))
-    await screen.findByText("Ûthar", { selector: "h1" })
+    await waitFor(() =>
+      expect(screen.getByTestId("legendary-event-page")).toHaveAttribute(
+        "data-event-id",
+        "votanUthar"
+      )
+    )
     await overviewReady()
     act(() => selectTab("teams"))
     await screen.findByTestId("legendary-event-leaderboard")
@@ -826,7 +839,12 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     )
 
     fireEvent.click(screen.getByTestId("open-uthar"))
-    await screen.findByText("Ûthar", { selector: "h1" })
+    await waitFor(() =>
+      expect(screen.getByTestId("legendary-event-page")).toHaveAttribute(
+        "data-event-id",
+        "votanUthar"
+      )
+    )
     await overviewReady()
     act(() => selectTab("teams"))
     await screen.findByTestId("legendary-event-overview-leaderboard")
