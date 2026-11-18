@@ -88,14 +88,14 @@ function renderLine(
 }
 
 describe("EventStatusLine", () => {
-  it("shows a past instance's name and Ended on date, nothing about points", () => {
+  it("shows a past instance's name and Ended date, nothing about points", () => {
     vi.setSystemTime(new Date("2026-10-07T00:00:00Z"))
     const state = stateAt("2026-10-07T00:00:00Z")
     renderLine(state, instanceOf(state, hunt))
 
     const line = screen.getByTestId("hse-status-past")
     expect(line).toHaveTextContent("Machine Hunt")
-    expect(line).toHaveTextContent("Ended on")
+    expect(line).toHaveTextContent("Ended")
     expect(line).toHaveTextContent("Oct 6, 2026")
     expect(line).not.toHaveTextContent("event points")
   })

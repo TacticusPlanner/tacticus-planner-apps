@@ -3,6 +3,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useTeamDisplayName } from "@/entities/legendary-event"
+import { formatShortDate } from "@/shared/lib"
 import type {
   LegendaryEventProgress,
   LegendaryEventRosterUnit,
@@ -149,8 +150,7 @@ const follows = (first: HTMLElement, second: HTMLElement) =>
   )
 const controlledRegion = (toggle: HTMLElement) =>
   document.getElementById(toggle.getAttribute("aria-controls") ?? "")
-const localDate = (iso: string) =>
-  new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(iso))
+const localDate = (iso: string) => formatShortDate(iso, "en")
 
 const FORMS = [
   { form: "desktop", width: 1280 },

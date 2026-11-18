@@ -43,7 +43,7 @@ function displayPercent(ratio: number): number {
   return Math.min(99, Math.round(ratio * 100))
 }
 
-/** One pill per ability track still being raised: an uppercase label, the current level, an arrow and
+/** One pill per ability track still being raised: a label, the current level, an arrow and
  *  the emphasised target. A Machine of War's tracks are Primary/Secondary, a Character's are
  *  Active/Passive (`active*` fields hold the first track, `passive*` the second, for both). A track at
  *  or above its target gets no pill. `blocks` draws them as V1's goal card did: soft blocks sharing the
@@ -88,7 +88,7 @@ function AbilityTargetPills({
           data-testid={`goal-ability-pill-${track.key}`}
           key={track.key}
         >
-          <span className="font-medium tracking-wide text-muted-foreground uppercase">
+          <span className="font-medium text-muted-foreground">
             {t(`goals.overview.abilityTrack.${track.key}`)}
           </span>
           <span className="inline-flex items-center gap-1">

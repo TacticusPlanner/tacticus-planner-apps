@@ -300,7 +300,7 @@ function MissingRow({
   const { t } = useTranslation()
   return (
     <div className="flex flex-col gap-1.5" data-testid="insights-missing-row">
-      <dt className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase">
+      <dt className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
         {row.titleIcon ? (
           <EntityIcon
             alt=""

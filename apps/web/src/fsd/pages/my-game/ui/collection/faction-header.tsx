@@ -32,7 +32,7 @@ export function FactionHeader({
         alt=""
         className="size-6 shrink-0"
       />
-      <h2 className="min-w-0 flex-1 truncate text-sm font-bold tracking-wider uppercase">
+      <h2 className="min-w-0 flex-1 truncate text-sm font-bold">
         {group.factionName}
       </h2>
       {showOwned ? (

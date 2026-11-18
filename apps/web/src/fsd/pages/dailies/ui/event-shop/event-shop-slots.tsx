@@ -115,7 +115,7 @@ export function PacksSlider({
         <span
           className={cn(
             "text-xs text-muted-foreground",
-            large && "font-semibold tracking-wide uppercase"
+            large && "font-semibold"
           )}
         >
           {t("slot.packs")}

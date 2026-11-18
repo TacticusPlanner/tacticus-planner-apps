@@ -6,7 +6,7 @@
     "retry": "Réessayer",
     "unknownHero": "Héros inconnu",
     "preview": "Aperçu",
-    "window": "Du {{start}} au {{end}}",
+    "window": "{{start}} – {{end}}",
     "endsIn": "Se termine dans {{when}}",
     "startsIn": "Commence dans {{when}}",
     "previewNote": "Cet événement n'a pas encore commencé. La progression des missions, les raids et le rythme s'ouvrent dès qu'il est en cours.",

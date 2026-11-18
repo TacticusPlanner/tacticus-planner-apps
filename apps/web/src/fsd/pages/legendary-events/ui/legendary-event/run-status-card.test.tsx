@@ -481,10 +481,10 @@ describe("RunStatusCard", () => {
       renderOutlook(outlookFor(synced()))
 
       expect(screen.getByTestId("reward-outlook-next")).toHaveTextContent(
-        "Next: Unlock · 250 / 400 shards"
+        "250 / 400 shards to Unlock"
       )
       expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
-        "6 more chests costing 1,850 currency"
+        "6 chests left · 1,850 currency"
       )
       expect(screen.getByTestId("reward-outlook-points")).toHaveTextContent(
         "5,000 points to reach 10,000 · about 6.7 battles per lane"
@@ -507,10 +507,10 @@ describe("RunStatusCard", () => {
       )
 
       expect(screen.getByTestId("reward-outlook-next")).toHaveTextContent(
-        "Next: Unlock · 100 / 400 shards"
+        "100 / 400 shards to Unlock"
       )
       expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
-        "12 more chests costing 2,990 currency"
+        "12 chests left · 2,990 currency"
       )
       fireEvent.click(screen.getByText("How this is worked out"))
       expect(
@@ -541,10 +541,10 @@ describe("RunStatusCard", () => {
       )
 
       expect(screen.getByTestId("reward-outlook-next")).toHaveTextContent(
-        "Next: 4 stars · 25 / 120 shards"
+        "25 / 120 shards to 4 stars"
       )
       expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
-        "4 more chests costing 1,540 currency"
+        "4 chests left · 1,540 currency"
       )
       expect(screen.getByTestId("reward-outlook-points")).toHaveTextContent(
         "1,611 points to reach 14,750 · about 9.8 battles per lane"
@@ -571,10 +571,10 @@ describe("RunStatusCard", () => {
       )
 
       expect(screen.getByTestId("reward-outlook-next")).toHaveTextContent(
-        "Next: Unlock · 0 / 400 shards"
+        "0 / 400 shards to Unlock"
       )
       expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
-        "16 more chests costing 3,350 currency"
+        "16 chests left · 3,350 currency"
       )
       expect(screen.getByTestId("reward-outlook-points")).toHaveTextContent(
         "13,000 points to reach 13,000"
@@ -624,7 +624,7 @@ describe("RunStatusCard", () => {
       ).toBeInTheDocument()
       expect(screen.queryByTestId("reward-outlook-next")).toBeNull()
       expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
-        "6 more chests costing 1,850 currency"
+        "6 chests left · 1,850 currency"
       )
     })
 
@@ -664,7 +664,7 @@ describe("RunStatusCard", () => {
     it("says when the currency already covers the chests", () => {
       renderOutlook(outlookFor(synced({ currentCurrency: 2000 })))
       expect(screen.getByTestId("reward-outlook-affordable")).toHaveTextContent(
-        "Enough currency for the chests now"
+        "Enough currency in hand for these chests"
       )
     })
 
@@ -686,9 +686,7 @@ describe("RunStatusCard", () => {
       )
       expect(
         screen.getByTestId("reward-outlook-covered-later")
-      ).toHaveTextContent(
-        "190 currency short today · your later runs' missions and bundles cover it"
-      )
+      ).toHaveTextContent("190 currency short · later runs cover it")
       expect(screen.queryByTestId("reward-outlook-affordable")).toBeNull()
     })
 
@@ -701,7 +699,7 @@ describe("RunStatusCard", () => {
       )
       expect(
         screen.getByTestId("reward-outlook-beyond-points")
-      ).toHaveTextContent("Points alone can't cover it: 1,135 currency short")
+      ).toHaveTextContent("1,135 currency short after every points milestone")
     })
 
     it("computes from zero with a note without a synced entry", () => {
@@ -715,10 +713,10 @@ describe("RunStatusCard", () => {
         "No synced progress yet"
       )
       expect(screen.getByTestId("reward-outlook-next")).toHaveTextContent(
-        "Next: Unlock · 0 / 400 shards"
+        "0 / 400 shards to Unlock"
       )
       expect(screen.getByTestId("reward-outlook-chests")).toHaveTextContent(
-        "16 more chests costing 3,350 currency"
+        "16 chests left · 3,350 currency"
       )
     })
 

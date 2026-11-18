@@ -37,7 +37,7 @@ export function ShopList({
           </h3>
           {section.guaranteed.length > 0 ? (
             <div className="space-y-1.5" data-testid="shop-group-guaranteed">
-              <h4 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <h4 className="text-xs font-medium text-muted-foreground">
                 {t("group.guaranteed")}
               </h4>
               {section.guaranteed.map((card) => (
@@ -47,7 +47,7 @@ export function ShopList({
           ) : null}
           {section.possible.length > 0 ? (
             <div className="space-y-1.5" data-testid="shop-group-possible">
-              <h4 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <h4 className="text-xs font-medium text-muted-foreground">
                 {t("group.possible")}
               </h4>
               {section.possible.map((card) => (

@@ -175,7 +175,7 @@ function CalendarDay({
         </span>
       </span>
       {today ? (
-        <span className="text-xs font-semibold text-primary uppercase">
+        <span className="text-xs font-semibold text-primary">
           {t("days.today")}
         </span>
       ) : null}

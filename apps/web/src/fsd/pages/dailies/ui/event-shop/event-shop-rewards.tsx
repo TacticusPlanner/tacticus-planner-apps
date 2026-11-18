@@ -93,7 +93,7 @@ function RewardsHeader({
   )
 }
 
-/** A card with an uppercase label and a note on the right ("DAILY · 6 A DAY · 600 Event points a day"). */
+/** A card with a label and a note on the right ("Daily · 6 a day · 600 Event points a day"). */
 function Panel({
   label,
   note,
@@ -116,9 +116,7 @@ function Panel({
       data-testid={testId}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-          {label}
-        </h3>
+        <h3 className="text-xs font-semibold text-muted-foreground">{label}</h3>
         {note ? (
           <span className="inline-flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
             {note}

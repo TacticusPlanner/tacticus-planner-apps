@@ -147,7 +147,7 @@
     "preview": "Vorschau",
     "starsLabel": "{{earned}} von {{max}} Sternen",
     "markCleared": "Alle auf 3★",
-    "reset": "Zurücksetzen",
+    "reset": "Sterne zurücksetzen",
     "markHint": "Setzt alle Kämpfe dieser Stufe auf einmal. Speichere, um die Änderung zu behalten.",
     "markTier": "Alle Kämpfe von {{tier}} auf 3 Sterne setzen",
     "resetTier": "Sterne von {{tier}} zurücksetzen"

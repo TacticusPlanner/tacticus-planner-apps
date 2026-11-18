@@ -6,7 +6,7 @@
     "retry": "Erneut versuchen",
     "unknownHero": "Unbekannter Held",
     "preview": "Vorschau",
-    "window": "{{start}} bis {{end}}",
+    "window": "{{start}} – {{end}}",
     "endsIn": "Endet in {{when}}",
     "startsIn": "Beginnt in {{when}}",
     "previewNote": "Dieses Event hat noch nicht begonnen. Missionsfortschritt, Raids und Tempo werden freigeschaltet, sobald es läuft.",

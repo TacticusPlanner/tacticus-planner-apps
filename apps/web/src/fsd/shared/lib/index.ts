@@ -7,7 +7,9 @@ export {
 } from "./battles"
 export { characterDamageTypes } from "./character-damage-types"
 export {
+  formatDateRange,
   formatEstimateDate,
+  formatShortDate,
   localIsoDate,
   formatEventCountdown,
   formatRelativeTime,

@@ -424,7 +424,7 @@ export function AddGoalsToProjectSheet({
                   key={entry.key}
                 >
                   {entry.heading ? (
-                    <h3 className="px-1 text-xs font-medium text-muted-foreground uppercase">
+                    <h3 className="px-1 text-xs font-medium text-muted-foreground">
                       {entry.heading}
                     </h3>
                   ) : null}

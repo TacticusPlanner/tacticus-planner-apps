@@ -12,15 +12,15 @@
     "raids": "Incursiones",
     "raidsDescription": "Gasta la energía de hoy en tus objetivos activos por orden de prioridad.",
     "hse": "EPI",
-    "hseDescription": "Evento de pantalla de inicio: haz incursiones donde el evento actual da puntos",
+    "hseDescription": "Haz incursiones donde el evento de pantalla de inicio actual da puntos.",
     "hre": "ELH",
-    "hreDescription": "Evento de lanzamiento de héroe: sigue tus misiones y haz incursiones para ellas con la menor energía",
+    "hreDescription": "Haz incursiones para tus misiones del evento de lanzamiento de héroe con la menor energía.",
     "quest": "Misiones",
-    "questDescription": "Evento de Misión: sigue tu puntuación por batalla y mira el mapa, los enemigos y el botín de cada batalla",
+    "questDescription": "Tu puntuación del Evento de Misión y el mapa, los enemigos y el botín de cada batalla.",
     "eventShop": "Tienda del evento",
-    "eventShopDescription": "Tienda del evento de temporada: planifica qué comprar cada día, registra tus compras y mira cómo la tienda cubre tus objetivos",
+    "eventShopDescription": "Planifica qué comprar cada día en la tienda del evento de temporada.",
     "guild-raids": "Incursiones de gremio",
-    "guild-raidsDescription": "Consulta el estado actual de la Incursión de gremio y tus recursos personales de incursión."
+    "guild-raidsDescription": "El estado de la Incursión de gremio y tus recursos de incursión."
   },
   "placeholder": {
     "title": "Esta diaria está en construcción",
@@ -91,7 +91,7 @@
       "due": "Disponible ahora",
       "full": "Completo",
       "missingTitle": "Sincroniza tus datos de jugador",
-      "missingDescription": "Tus fichas de incursión aparecerán aquí una vez que se sincronicen tus datos de jugador."
+      "missingDescription": "Sincroniza con Tacticus para ver aquí tus fichas de incursión."
     },
     "exactMeta": {
       "title": "Preparación Meta",
@@ -121,7 +121,7 @@
       "efficiencyLabel": "{{value}}x",
       "absentMeta": {
         "title": "Sincroniza los datos de Meta de Incursión de gremio",
-        "description": "Las recomendaciones de Meta exacta aparecerán aquí una vez que se sincronice el conjunto de datos seleccionado."
+        "description": "Las recomendaciones de Meta exacta aún no están disponibles."
       },
       "noBossRecommendation": {
         "title": "No hay recomendación seleccionada para este jefe",
@@ -292,7 +292,7 @@
       "steps": {
         "purpose": {
           "title": "Incursiones de gremio",
-          "content": "Esta página combinará los datos sincronizados de tu gremio con herramientas de planificación de incursiones."
+          "content": "El estado de incursión de tu gremio y tus propios recursos de incursión, en un solo lugar."
         },
         "access": {
           "title": "Acceso al gremio",
@@ -300,7 +300,7 @@
         },
         "status": {
           "title": "Estado de la Incursión de gremio",
-          "content": "El jefe actual de tu gremio, PS, progreso de nivel y modificadores de primes, sincronizados automáticamente al abrir la página si los datos tienen más de una hora, o actualizados en cualquier momento a petición."
+          "content": "El jefe actual de tu gremio, PS, progreso de nivel y modificadores de primes. Se sincroniza al abrir la página si tiene más de una hora, y puedes actualizarlo cuando quieras."
         },
         "resources": {
           "title": "Tus recursos de incursión",
@@ -339,7 +339,7 @@
           "content": "Cada incursión real que has hecho hoy en toda tu cuenta, tanto si aún le quedan intentos como si ha alcanzado su límite."
         },
         "filters": {
-          "title": "Filtros de incursiones",
+          "title": "Filtros",
           "content": "Limita Hoy y las incursiones extra a las ubicaciones de campaña que quieras, por ejemplo solo nodos Élite de 5 espacios o una facción enemiga concreta. La insignia muestra cuántos filtros están activos."
         },
         "quickFilters": {
@@ -550,7 +550,7 @@
   "raidsFilters": {
     "trigger": "Filtros",
     "triggerActive": "Filtros, {{count}} activos",
-    "title": "Filtros de incursiones",
+    "title": "Filtros",
     "description": "Limita qué ubicaciones de campaña pueden usar Hoy, las incursiones extra y la pestaña EPI. El plan y los objetivos no se ven afectados.",
     "sections": {
       "allies": "Aliados",
@@ -593,8 +593,8 @@
     "slotsOption": "{{count}} espacios",
     "actions": {
       "close": "Cerrar",
-      "reset": "Restablecer",
-      "apply": "Aplicar"
+      "reset": "Restablecer filtros",
+      "apply": "Aplicar filtros"
     },
     "filteredOut": {
       "title": "Los filtros de incursiones quitaron algunos materiales",

@@ -1,29 +1,29 @@
 {
   "section": {
     "label": "Library",
-    "description": "Browse characters, Machines of War, NPCs, Guild Raid Bosses, and Daily Shops"
+    "description": "Characters, Machines of War, NPCs, Guild Raid Bosses and Daily Shops."
   },
   "collections": {
     "characters": {
       "label": "Characters",
-      "description": "Browse character details and stats"
+      "description": "Character details and stats."
     },
     "machinesOfWar": {
       "label": "Machines of War",
-      "description": "Browse Machine of War abilities and upgrade costs"
+      "description": "Machine of War abilities and upgrade costs."
     },
     "npcs": {
       "label": "NPCs",
-      "description": "Browse NPC details and stats"
+      "description": "NPC details and stats."
     },
     "raidBosses": {
       "label": "Guild Raid Bosses",
-      "description": "Browse Guild Raid Boss information"
+      "description": "Guild Raid Boss stats, abilities and meta teams."
     },
     "noRecords": "No selectable entities are available.",
     "shops": {
       "label": "Daily Shops",
-      "description": "Browse what each daily shop can offer on any day of the week"
+      "description": "What each daily shop can offer on each day of the week."
     }
   },
   "loading": "Loading Library records…",
@@ -162,7 +162,7 @@
           "content": "Compare the recommended and alternate hero lineups for each Guild Raid Boss."
         },
         "metaFilter": {
-          "title": "Filter by Comp",
+          "title": "Filter by comp",
           "content": "Narrow the recommendations and Comp guidance to a specific team archetype."
         },
         "metaGuidance": {
@@ -191,9 +191,9 @@
     "adjustedColumn": "Adjusted",
     "weaponHits": "Weapon hits",
     "enemyRemoved": "{{count}}× {{name}} removed",
-    "syncFailed": "Couldn't load Guild Raid Bosses. The catalog may still be syncing.",
+    "syncFailed": "Couldn't load Guild Raid Bosses. Game data may still be loading.",
     "loading": "Loading Guild Raid Boss data…",
-    "unavailable": "Guild Raid Boss data is not available in the catalog yet.",
+    "unavailable": "Guild Raid Boss data isn't available yet.",
     "tabs": {
       "seasons": "Seasons",
       "meta": "Meta",
@@ -212,11 +212,11 @@
     "guildXp": "{{xp}} Guild XP",
     "turns": "{{count}} turns",
     "meta": {
-      "loading": "Loading Guild Raid Boss Meta…",
+      "loading": "Loading Guild Raid Boss meta…",
       "unavailable": "Guild Raid Boss Meta is not available yet.",
       "failed": "Couldn't load Guild Raid Boss Meta.",
-      "compFilter": "Filter by Comp",
-      "allComps": "All Comps",
+      "compFilter": "Filter by comp",
+      "allComps": "All comps",
       "updated": "Updated {{date}} · Source:",
       "noResults": "No recommendations match this Comp.",
       "meta": "Meta",

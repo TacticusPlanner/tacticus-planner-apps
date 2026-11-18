@@ -4,6 +4,7 @@ import type { i18n as I18n } from "i18next"
 
 import { render, screen, within } from "@/test/render"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
+import { formatDateRange } from "@/shared/lib"
 
 import enDailies from "../../../../../../public/locales/en/dailies.json"
 import { listHomeScreenEventInstances } from "../../model/select-active-home-screen-event"
@@ -101,7 +102,7 @@ describe("EventSwitcher", () => {
     renderSwitcher("occ-psyker")
 
     expect(screen.getByTestId("hse-event-select")).toHaveTextContent(
-      "Trait Boost: Psyker · Oct 19 – 23, 2026"
+      `Trait Boost: Psyker · ${formatDateRange("2026-10-19T08:00:00Z", "2026-10-23T08:00:00Z", "en")}`
     )
     expect(screen.getByTestId("hse-event-select")).toHaveAccessibleName(
       "Choose a Home Screen Event"

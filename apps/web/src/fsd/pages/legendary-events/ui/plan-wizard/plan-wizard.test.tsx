@@ -149,7 +149,7 @@ describe("PlanWizard", () => {
       screen.getByRole("heading", { name: /by the end of run 2\?/ })
     ).toBeInTheDocument()
     expect(screen.getByTestId("plan-wizard-deadline")).toHaveTextContent(
-      "Run 2 ends Oct 12, 2026"
+      /^Run 2 ends Oct 12(, 2026)?$/
     )
     expect(screen.getByTestId("plan-wizard-horizon-2")).toBeChecked()
     const options = screen.getAllByTestId("plan-wizard-target-option")

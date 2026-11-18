@@ -179,7 +179,7 @@ describe("LegendaryEventsHubPage", () => {
     // Each run sits on its own line, with its status for screen readers.
     const runs = within(uthar).getAllByRole("listitem")
     expect(runs.map((run) => run.textContent)).toEqual([
-      "AnnouncedRun 1: Oct 4, 2026",
+      "AnnouncedRun 1: Oct 4",
       "Not announcedRun 2: maybe ~Mar 2027",
       "Not announcedRun 3: maybe ~Sep 2027",
     ])

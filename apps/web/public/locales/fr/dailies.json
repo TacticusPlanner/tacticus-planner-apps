@@ -12,15 +12,15 @@
     "raids": "Raids",
     "raidsDescription": "Dépensez l'énergie du jour pour vos objectifs actifs par ordre de priorité.",
     "hse": "ÉÉA",
-    "hseDescription": "Événement d'écran d'accueil : raidez là où l'événement en cours rapporte des points",
+    "hseDescription": "Raidez là où l'événement d'écran d'accueil en cours rapporte des points.",
     "hre": "ÉSH",
-    "hreDescription": "Événement de sortie de héros : suivez vos missions et raidez pour elles avec le moins d'énergie possible",
+    "hreDescription": "Raidez pour vos missions de l'événement de sortie de héros avec le moins d'énergie possible.",
     "quest": "Quêtes",
-    "questDescription": "Événement de Quête : suivez votre score par combat et voyez la carte, les ennemis et le butin de chaque combat",
+    "questDescription": "Votre score à l'Événement de Quête et la carte, les ennemis et le butin de chaque combat.",
     "eventShop": "Boutique d'événement",
-    "eventShopDescription": "Boutique d'événement saisonnier : planifiez vos achats jour par jour, suivez-les et voyez comment la boutique couvre vos objectifs",
+    "eventShopDescription": "Planifiez vos achats quotidiens dans la boutique d'événement saisonnier.",
     "guild-raids": "Raids de guilde",
-    "guild-raidsDescription": "Consultez le statut actuel du Raid de guilde et vos ressources personnelles de raid."
+    "guild-raidsDescription": "Le statut du Raid de guilde et vos ressources de raid."
   },
   "placeholder": {
     "title": "Cette quotidienne est en construction",
@@ -91,7 +91,7 @@
       "due": "Disponible maintenant",
       "full": "Complet",
       "missingTitle": "Synchronisez vos données de joueur",
-      "missingDescription": "Vos jetons de raid apparaîtront ici une fois vos données de joueur synchronisées."
+      "missingDescription": "Synchronisez avec Tacticus pour voir vos jetons de raid ici."
     },
     "exactMeta": {
       "title": "Préparation Meta",
@@ -121,7 +121,7 @@
       "efficiencyLabel": "{{value}}x",
       "absentMeta": {
         "title": "Synchronisez les données Meta du Raid de guilde",
-        "description": "Les recommandations Meta exactes apparaîtront ici une fois le jeu de données sélectionné synchronisé."
+        "description": "Les recommandations Meta exactes ne sont pas encore disponibles."
       },
       "noBossRecommendation": {
         "title": "Aucune recommandation sélectionnée pour ce boss",
@@ -292,7 +292,7 @@
       "steps": {
         "purpose": {
           "title": "Raids de guilde",
-          "content": "Cette page combinera les données synchronisées de votre guilde avec les outils de planification des raids."
+          "content": "Le statut de raid de votre guilde et vos propres ressources de raid, au même endroit."
         },
         "access": {
           "title": "Accès à la guilde",
@@ -300,7 +300,7 @@
         },
         "status": {
           "title": "Statut du Raid de guilde",
-          "content": "Le boss actuel de votre guilde, ses PV, la progression de palier et les modificateurs des primes, synchronisés automatiquement à l'ouverture de la page si les données datent de plus d'une heure, ou actualisés à tout moment à la demande."
+          "content": "Le boss actuel de votre guilde, ses PV, la progression de palier et les modificateurs des primes. Ils se synchronisent à l'ouverture de la page s'ils datent de plus d'une heure, et vous pouvez les actualiser à tout moment."
         },
         "resources": {
           "title": "Vos ressources de raid",
@@ -339,7 +339,7 @@
           "content": "Chaque raid réel effectué aujourd'hui sur tout le compte, qu'il reste des tentatives ou que la limite soit atteinte."
         },
         "filters": {
-          "title": "Filtres de raids",
+          "title": "Filtres",
           "content": "Limitez Aujourd'hui et les raids bonus aux lieux de campagne souhaités, par exemple uniquement les nœuds Élite à 5 emplacements ou une faction ennemie précise. Le badge indique le nombre de filtres actifs."
         },
         "quickFilters": {
@@ -550,7 +550,7 @@
   "raidsFilters": {
     "trigger": "Filtres",
     "triggerActive": "Filtres, {{count}} actifs",
-    "title": "Filtres de raids",
+    "title": "Filtres",
     "description": "Limitez les lieux de campagne que Aujourd'hui, les raids bonus et l'onglet ÉÉA peuvent utiliser. Le plan et les objectifs ne sont pas affectés.",
     "sections": {
       "allies": "Alliés",
@@ -593,8 +593,8 @@
     "slotsOption": "{{count}} emplacements",
     "actions": {
       "close": "Fermer",
-      "reset": "Réinitialiser",
-      "apply": "Appliquer"
+      "reset": "Réinitialiser les filtres",
+      "apply": "Appliquer les filtres"
     },
     "filteredOut": {
       "title": "Les filtres de raids ont retiré certains matériaux",

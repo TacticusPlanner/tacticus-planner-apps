@@ -895,7 +895,7 @@ describe("CreateGoalSheet", () => {
     })
     expect(
       screen.queryByText(
-        "Unlock is unavailable because this character has no catalog shard locations."
+        "Unlock is unavailable because no shard locations are known for this character."
       )
     ).not.toBeInTheDocument()
     fireEvent.click(screen.getByTestId("create-goal-type-toggle-Unlock"))
@@ -934,7 +934,7 @@ describe("CreateGoalSheet", () => {
 
     expect(
       await screen.findByText(
-        "Unlock is unavailable because this character has no catalog shard locations."
+        "Unlock is unavailable because no shard locations are known for this character."
       )
     ).toBeInTheDocument()
     expect(screen.getByTestId("create-goal-type-toggle-Unlock")).toBeDisabled()
@@ -2821,10 +2821,9 @@ describe("CreateGoalSheet", () => {
       expect(hint).toHaveTextContent(
         "There's already an Unlock goal for this unit."
       )
-      expect(within(hint).getByRole("link", { name: "Open" })).toHaveAttribute(
-        "href",
-        "/plan/goals?goal=unlock-1"
-      )
+      expect(
+        within(hint).getByRole("link", { name: "Open goal" })
+      ).toHaveAttribute("href", "/plan/goals?goal=unlock-1")
       fireEvent.click(screen.getByTestId("create-goal-type-toggle-Rank"))
       await screen.findByTestId("create-goal-type-card-Rank")
       expect(

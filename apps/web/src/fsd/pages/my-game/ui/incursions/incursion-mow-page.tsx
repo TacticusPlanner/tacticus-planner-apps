@@ -13,7 +13,7 @@ import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { RARITY_BORDER, RARITY_TEXT } from "@/entities/incursion"
-import { useDateLocale } from "@/shared/lib"
+import { formatShortDate, useDateLocale } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
 import {
@@ -185,10 +185,7 @@ export function IncursionMowPage() {
   const stars = progress?.starsOf(incursion.mowId)
   const plan =
     plans.status === "ready" ? plans.plans.get(incursion.mowId) : undefined
-  const firstRun = new Date(incursion.availableFromUtc).toLocaleDateString(
-    dateLocale,
-    { dateStyle: "medium" }
-  )
+  const firstRun = formatShortDate(incursion.availableFromUtc, dateLocale)
   const testId = `incursion-${incursion.mowId}`
 
   return (

@@ -32,7 +32,7 @@
     "bestPathHint": "MoW shards from 3-star wins and chests along the richest path through this tier."
   },
   "map": {
-    "title": "Run Layout",
+    "title": "Run layout",
     "step": "Step {{number}}",
     "pickOne": "Pick one",
     "after": "After {{names}}",
@@ -147,7 +147,7 @@
     "preview": "Preview",
     "starsLabel": "{{earned}} of {{max}} stars",
     "markCleared": "Mark all 3★",
-    "reset": "Reset",
+    "reset": "Reset stars",
     "markHint": "Sets every battle in this tier at once. Save to keep the change.",
     "markTier": "Mark every battle of {{tier}} at 3 stars",
     "resetTier": "Reset the stars of {{tier}}"

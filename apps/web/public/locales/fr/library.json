@@ -1,29 +1,29 @@
 {
   "section": {
     "label": "Bibliothèque",
-    "description": "Parcourez les personnages, Machines de guerre, PNJ, boss de raid de guilde et boutiques quotidiennes"
+    "description": "Personnages, Machines de guerre, PNJ, boss de raid de guilde et boutiques quotidiennes."
   },
   "collections": {
     "characters": {
       "label": "Personnages",
-      "description": "Parcourez les détails et statistiques des personnages"
+      "description": "Détails et statistiques des personnages."
     },
     "machinesOfWar": {
       "label": "Machines de guerre",
-      "description": "Parcourez les capacités et les coûts d’amélioration des Machines de guerre"
+      "description": "Capacités et coûts d’amélioration des Machines de guerre."
     },
     "npcs": {
       "label": "PNJ",
-      "description": "Parcourez les détails et statistiques des PNJ"
+      "description": "Détails et statistiques des PNJ."
     },
     "raidBosses": {
       "label": "Boss de raid de guilde",
-      "description": "Parcourez les informations des boss de raid de guilde"
+      "description": "Statistiques, capacités et équipes méta des boss de raid de guilde."
     },
     "noRecords": "Aucune entité sélectionnable n’est disponible.",
     "shops": {
       "label": "Boutiques quotidiennes",
-      "description": "Découvrez ce que chaque boutique quotidienne peut proposer selon le jour de la semaine"
+      "description": "Ce que chaque boutique quotidienne peut proposer chaque jour de la semaine."
     }
   },
   "loading": "Chargement des données de la bibliothèque…",
@@ -162,7 +162,7 @@
           "content": "Comparez les compositions de héros recommandées et alternatives pour chaque boss de raid de guilde."
         },
         "metaFilter": {
-          "title": "Filtrer par Comp",
+          "title": "Filtrer par comp",
           "content": "Limitez les recommandations et le guide des Comps à un archétype d’équipe précis."
         },
         "metaGuidance": {
@@ -191,9 +191,9 @@
     "adjustedColumn": "Ajustée",
     "weaponHits": "Touches d'arme",
     "enemyRemoved": "{{count}}× {{name}} retiré",
-    "syncFailed": "Impossible de charger les boss de raid de guilde. Le catalogue est peut-être encore en cours de synchronisation.",
+    "syncFailed": "Impossible de charger les boss de raid de guilde. Les données de jeu sont peut-être encore en cours de chargement.",
     "loading": "Chargement des données des boss de raid de guilde…",
-    "unavailable": "Les données des boss de raid de guilde ne sont pas encore disponibles dans le catalogue.",
+    "unavailable": "Les données des boss de raid de guilde ne sont pas encore disponibles.",
     "tabs": {
       "seasons": "Configuration des saisons",
       "meta": "Meta",
@@ -215,8 +215,8 @@
       "loading": "Chargement de la Meta des boss de raid de guilde…",
       "unavailable": "La Meta des boss de raid de guilde n’est pas encore disponible.",
       "failed": "Impossible de charger la Meta des boss de raid de guilde.",
-      "compFilter": "Filtrer par Comp",
-      "allComps": "Tous les Comps",
+      "compFilter": "Filtrer par comp",
+      "allComps": "Toutes les comps",
       "updated": "Mis à jour {{date}} · Source :",
       "noResults": "Aucune recommandation ne correspond à ce Comp.",
       "meta": "Meta",

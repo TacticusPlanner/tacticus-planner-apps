@@ -99,7 +99,7 @@ function LandingHero({
               </div>
             </div>
           ) : null}
-          <p className="text-xs font-semibold tracking-widest text-chart-4 uppercase">
+          <p className="text-xs font-semibold text-chart-4">
             {t("hero.eyebrow")}
           </p>
           <h1

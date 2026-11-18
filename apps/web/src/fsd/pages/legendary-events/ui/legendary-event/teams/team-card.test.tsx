@@ -612,7 +612,7 @@ describe("TeamCard", () => {
     renderEstimatedCard(team(), estimateOf({ calibrated: false }), { run: 2 })
     expect(screen.getByTestId("team-card-depth-estimated")).toHaveAttribute(
       "title",
-      expect.stringContaining("Uncalibrated")
+      expect.stringContaining("Rough guide")
     )
   })
 

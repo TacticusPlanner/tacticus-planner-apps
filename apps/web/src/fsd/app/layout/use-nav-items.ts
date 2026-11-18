@@ -17,7 +17,7 @@ import { useUnitName } from "@/shared/unit-name"
 
 import { navItems } from "./nav-items"
 import type { DynamicNavSubItem, NavItem } from "./nav-items"
-import { useDateLocale } from "@/shared/lib"
+import { formatShortDate, useDateLocale } from "@/shared/lib"
 
 const DESCRIPTION_KEY = {
   active: "legendaryEvents.tabs.activeEventDescription",
@@ -34,9 +34,10 @@ function runDate(
 ): string | undefined {
   if (lifecycle.runStartMs === undefined) return undefined
   const active = lifecycle.state === "active"
-  const date = new Date(
-    active ? lifecycle.runEndMs : lifecycle.runStartMs
-  ).toLocaleDateString(locale, { dateStyle: "medium" })
+  const date = formatShortDate(
+    active ? lifecycle.runEndMs : lifecycle.runStartMs,
+    locale
+  )
   return t(
     active
       ? "legendaryEvents.tabs.runEndsOn"

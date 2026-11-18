@@ -194,9 +194,7 @@ function AlternativeGroup({
   if (count === 0) return null
   return (
     <div data-testid={testId}>
-      <span className="text-xs tracking-wide uppercase opacity-80">
-        {label}
-      </span>
+      <span className="text-xs opacity-80">{label}</span>
       <ul className="space-y-0.5">{children}</ul>
       {count > ALTERNATIVE_LIMIT ? (
         <span>

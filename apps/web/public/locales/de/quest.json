@@ -203,7 +203,7 @@
   },
   "estimate": {
     "title": "Siegesschätzung",
-    "labelUncalibrated": "Schätzung · unkalibriert",
+    "labelUncalibrated": "grobe Schätzung",
     "unknown": "Keine Schätzung: Gegnerdaten unvollständig",
     "verdict": {
       "clears": "Schaffbar",
@@ -221,8 +221,8 @@
     "givenUpNoUnit": "verzichtet auf {{objective}}",
     "short": "{{percent}} zu schwach",
     "capGain": "{{name}}: +{{gain}} Stärke am Limit",
-    "projected": "Prognose: {{total}} / {{max}} · {{opened}} von {{count}} Kisten (Schätzung, unkalibriert)",
-    "projectedShards": "Prognose: {{shards}} Splitter (Schätzung, unkalibriert)"
+    "projected": "Prognose: {{total}} / {{max}} · {{opened}} von {{count}} Kisten (grobe Schätzung)",
+    "projectedShards": "Prognose: {{shards}} Splitter (grobe Schätzung)"
   },
   "goalDrops": {
     "title": "Beute für deine Ziele",

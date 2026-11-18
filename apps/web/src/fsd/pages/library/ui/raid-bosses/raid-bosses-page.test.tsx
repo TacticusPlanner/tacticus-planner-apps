@@ -294,7 +294,7 @@ describe("RaidBossesPage", () => {
 
     await waitFor(() =>
       expect(screen.getByTestId("raid-bosses-library-page")).toHaveTextContent(
-        "Guild Raid Boss data is not available in the catalog yet."
+        "Guild Raid Boss data isn't available yet."
       )
     )
   })
@@ -306,7 +306,7 @@ describe("RaidBossesPage", () => {
 
     const failure = await screen.findByTestId("raid-bosses-sync-failed")
     expect(failure).toHaveTextContent(
-      "Couldn't load Guild Raid Bosses. The catalog may still be syncing."
+      "Couldn't load Guild Raid Bosses. Game data may still be loading."
     )
 
     failing.mockRestore()
@@ -555,7 +555,7 @@ describe("RaidBossesPage", () => {
     )
 
     await user.selectOptions(
-      screen.getByRole("combobox", { name: "Filter by Comp" }),
+      screen.getByRole("combobox", { name: "Filter by comp" }),
       "admech"
     )
 
@@ -644,9 +644,7 @@ describe("RaidBossesPage", () => {
         }
       )
       if (first === "guild-raid-meta") {
-        await screen.findByText(
-          "Guild Raid Boss data is not available in the catalog yet."
-        )
+        await screen.findByText("Guild Raid Boss data isn't available yet.")
       } else {
         await screen.findByTestId("raid-boss-tabs")
       }

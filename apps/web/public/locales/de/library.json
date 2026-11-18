@@ -1,29 +1,29 @@
 {
   "section": {
     "label": "Bibliothek",
-    "description": "Durchsuche Charaktere, Kriegsmaschinen, NPCs, Gildenraid-Bosse und Tages-Shops"
+    "description": "Charaktere, Kriegsmaschinen, NPCs, Gildenraid-Bosse und Tages-Shops."
   },
   "collections": {
     "characters": {
       "label": "Charaktere",
-      "description": "Charakterdetails und Werte durchsuchen"
+      "description": "Charakterdetails und Werte."
     },
     "machinesOfWar": {
       "label": "Kriegsmaschinen",
-      "description": "Fähigkeiten und Upgrade-Kosten von Kriegsmaschinen durchsuchen"
+      "description": "Fähigkeiten und Upgrade-Kosten von Kriegsmaschinen."
     },
     "npcs": {
       "label": "NPCs",
-      "description": "NPC-Details und Werte durchsuchen"
+      "description": "NPC-Details und Werte."
     },
     "raidBosses": {
       "label": "Gildenraid-Bosse",
-      "description": "Informationen zu Gildenraid-Bossen durchsuchen"
+      "description": "Werte, Fähigkeiten und Meta-Teams der Gildenraid-Bosse."
     },
     "noRecords": "Keine auswählbaren Einheiten verfügbar.",
     "shops": {
       "label": "Tages-Shops",
-      "description": "Sieh dir an, was jeder Tages-Shop an jedem Wochentag anbieten kann"
+      "description": "Was jeder Tages-Shop an jedem Wochentag anbieten kann."
     }
   },
   "loading": "Bibliotheksdaten werden geladen…",
@@ -191,9 +191,9 @@
     "adjustedColumn": "Angepasst",
     "weaponHits": "Waffentreffer",
     "enemyRemoved": "{{count}}× {{name}} entfernt",
-    "syncFailed": "Gildenraid-Bosse konnten nicht geladen werden. Der Katalog wird möglicherweise noch synchronisiert.",
+    "syncFailed": "Gildenraid-Bosse konnten nicht geladen werden. Die Spieldaten werden möglicherweise noch geladen.",
     "loading": "Gildenraid-Boss-Daten werden geladen…",
-    "unavailable": "Gildenraid-Boss-Daten sind noch nicht im Katalog verfügbar.",
+    "unavailable": "Gildenraid-Boss-Daten sind noch nicht verfügbar.",
     "tabs": {
       "seasons": "Saisonkonfiguration",
       "meta": "Meta",

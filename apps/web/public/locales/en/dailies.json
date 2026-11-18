@@ -12,15 +12,15 @@
     "raids": "Raids",
     "raidsDescription": "Spend today's energy on your active goals in priority order.",
     "hse": "HSE",
-    "hseDescription": "Home Screen Event: raid where the current event earns points",
+    "hseDescription": "Raid where the current Home Screen Event earns points.",
     "hre": "HRE",
-    "hreDescription": "Hero Release Event: track your missions and raid for them with the least energy",
+    "hreDescription": "Raid for your Hero Release Event missions with the least energy.",
     "quest": "Quests",
-    "questDescription": "Quest Event: track your score per battle and see each battle's board, enemies and drop",
+    "questDescription": "Your Quest Event score and each battle's board, enemies and drop.",
     "eventShop": "Event shop",
-    "eventShopDescription": "Seasonal event shop: plan what to buy each day, track purchases and see how the shop covers your goals",
+    "eventShopDescription": "Plan what to buy in the seasonal event shop each day.",
     "guild-raids": "Guild Raids",
-    "guild-raidsDescription": "See your guild's current Guild Raid status and your personal raid resources."
+    "guild-raidsDescription": "Your guild's Guild Raid status and your raid resources."
   },
   "placeholder": {
     "title": "This daily is under construction",
@@ -91,7 +91,7 @@
       "due": "Ready now",
       "full": "Full",
       "missingTitle": "Sync your player data",
-      "missingDescription": "Your raid token counts will appear here once your player data is synchronized."
+      "missingDescription": "Sync with Tacticus to see your raid tokens here."
     },
     "exactMeta": {
       "title": "Meta readiness",
@@ -121,7 +121,7 @@
       "efficiencyLabel": "{{value}}x",
       "absentMeta": {
         "title": "Sync Guild Raid Meta data",
-        "description": "Exact-Meta recommendations will appear here once the curated dataset is synchronized."
+        "description": "Exact-Meta recommendations aren't available yet."
       },
       "noBossRecommendation": {
         "title": "No curated recommendation for this boss",
@@ -292,7 +292,7 @@
       "steps": {
         "purpose": {
           "title": "Guild Raids",
-          "content": "This page will combine your synchronized guild data with Guild Raid planning tools."
+          "content": "Your guild's raid status and your own raid resources, in one place."
         },
         "access": {
           "title": "Guild access",
@@ -300,7 +300,7 @@
         },
         "status": {
           "title": "Guild Raid status",
-          "content": "Your guild's current boss, HP, tier progress, and prime modifiers — synced automatically when the page loads if the data is over an hour old, or refreshed anytime on demand."
+          "content": "Your guild's current boss, HP, tier progress and prime modifiers. It syncs when you open the page if it's over an hour old, and you can refresh it anytime."
         },
         "resources": {
           "title": "Your raid resources",
@@ -339,7 +339,7 @@
           "content": "Every real raid you've made today, account-wide — whether it still has attempts left or has hit its cap."
         },
         "filters": {
-          "title": "Raids Filters",
+          "title": "Filters",
           "content": "Limit Today and Bonus Raids to the campaign locations you want, for example only 5-slot Elite nodes or a specific enemy faction. The badge shows how many filters are active."
         },
         "quickFilters": {
@@ -550,7 +550,7 @@
   "raidsFilters": {
     "trigger": "Filters",
     "triggerActive": "Filters, {{count}} active",
-    "title": "Raids Filters",
+    "title": "Filters",
     "description": "Limit which campaign locations Today, Bonus Raids and the HSE tab may use. Plan and Goals are not affected.",
     "sections": {
       "allies": "Allies",
@@ -593,17 +593,17 @@
     "slotsOption": "{{count}} slots",
     "actions": {
       "close": "Close",
-      "reset": "Reset",
-      "apply": "Apply"
+      "reset": "Reset filters",
+      "apply": "Apply filters"
     },
     "filteredOut": {
-      "title": "Raids Filters removed some materials",
+      "title": "Filters removed some materials",
       "materials_one": "{{count}} material has no allowed location with these filters.",
       "materials_other": "{{count}} materials have no allowed location with these filters.",
-      "pinned_one": "{{count}} goal is pinned to a location excluded by your Raids Filters. Reset the filters or change the pin.",
-      "pinned_other": "{{count}} goals are pinned to a location excluded by your Raids Filters. Reset the filters or change the pin.",
+      "pinned_one": "{{count}} goal is pinned to a location excluded by your raid filters. Reset the filters or change the pin.",
+      "pinned_other": "{{count}} goals are pinned to a location excluded by your raid filters. Reset the filters or change the pin.",
       "reset": "Reset filters",
-      "listLabel": "Materials your Raids Filters skip",
+      "listLabel": "Materials your raid filters skip",
       "pinnedBadge": "Pinned",
       "showAll": "Show all {{count}}",
       "showLess": "Show less",
@@ -658,7 +658,7 @@
       "noneRunning": "No Home Screen Event is running right now.",
       "next": "Next event: {{name}}",
       "startsIn": "Starts {{when}} ({{date}})",
-      "endedOn": "Ended on {{date}}",
+      "endedOn": "Ended {{date}}",
       "noneScheduled": "No Home Screen Event is scheduled.",
       "error": "Event data could not be loaded. The rest of Dailies is unaffected."
     },
@@ -676,7 +676,7 @@
         "noGoals": "You have no active goals, so there is nothing to farm.",
         "noEnergy": "There is no energy left today for any of these locations.",
         "nothingContributes": "No location that earns event points drops a resource your goals still need. See the best locations below for where to raid for points.",
-        "filtered": "No location matches your Raids Filters.",
+        "filtered": "No location matches your raid filters.",
         "noLocations": "No unlocked location with attempts left earns event points."
       },
       "goals": "Goals: {{goals}}",

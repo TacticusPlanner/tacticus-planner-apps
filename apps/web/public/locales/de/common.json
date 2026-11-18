@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "Tacticus Planner",
-    "beta": "BETA"
+    "beta": "Beta"
   },
   "common": {
     "close": "Schließen",
@@ -28,22 +28,22 @@
   },
   "catalog": {
     "badge": {
-      "error": "Katalogfehler",
-      "idle": "Katalog inaktiv",
-      "ready": "Spielkatalog Version {{version}}",
-      "stale": "Katalog veraltet",
-      "syncing": "Katalog wird synchronisiert"
+      "error": "Spieldatenfehler",
+      "idle": "Spieldaten nicht geladen",
+      "ready": "Spieldaten Version {{version}}",
+      "stale": "Spieldaten veraltet",
+      "syncing": "Spieldaten werden aktualisiert"
     },
     "init": {
       "firstTimeTitle": "Spieldaten werden eingerichtet",
       "firstTimeDescription": "Erste Verwendung auf diesem Gerät — das kann etwas länger dauern.",
-      "updatingTitle": "Spielkatalog wird aktualisiert",
-      "updatingDescription": "Spielkatalogdaten werden auf Version {{version}} aktualisiert.",
-      "updatingDescriptionNoVersion": "Spielkatalogdaten werden aktualisiert.",
-      "preparing": "Spielkatalog wird vorbereitet…",
+      "updatingTitle": "Spieldaten werden aktualisiert",
+      "updatingDescription": "Spieldaten werden auf Version {{version}} aktualisiert.",
+      "updatingDescriptionNoVersion": "Spieldaten werden aktualisiert.",
+      "preparing": "Spieldaten werden vorbereitet…",
       "progress": "{{done}} / {{total}} werden heruntergeladen…",
       "errorTitle": "Spieldaten konnten nicht geladen werden",
-      "errorDescription": "Beim Laden des Spielkatalogs ist ein Fehler aufgetreten.",
+      "errorDescription": "Beim Laden der Spieldaten ist ein Fehler aufgetreten.",
       "retry": "Erneut versuchen"
     }
   },
@@ -261,7 +261,7 @@
     "current": "Aktuell",
     "target": "Ziel",
     "share": {
-      "action": "Teilen",
+      "action": "Link teilen",
       "copied": "Link in die Zwischenablage kopiert.",
       "error": "Der Link konnte nicht geteilt oder kopiert werden."
     }
@@ -269,22 +269,22 @@
   "nav": {
     "addGoal": "Ziel hinzufügen",
     "dailies": "Tägliches",
-    "dailiesDescription": "Tägliche und wiederkehrende Spielaufgaben",
+    "dailiesDescription": "Tägliche und wiederkehrende Spielaufgaben.",
     "eventLive": "Event aktiv",
     "live": "Live",
     "home": "Startseite",
-    "homeDescription": "Kontoübersicht und Schnellzugriffe",
+    "homeDescription": "Kontoübersicht und Schnellzugriffe.",
     "createGoal": "Ziel erstellen",
     "goals": "Plan",
-    "goalsDescription": "Verfolge deinen Fortschritt zu deinen Zielen",
+    "goalsDescription": "Verfolge deinen Fortschritt zu deinen Zielen.",
     "myGame": "Mein Spiel",
-    "myGameDescription": "Deine Sammlung und dein synchronisierter Spielfortschritt",
+    "myGameDescription": "Deine Sammlung und dein synchronisierter Spielfortschritt.",
     "legendaryEvents": "Legendäre Events",
-    "legendaryEventsDescription": "Aktive, kommende und vergangene Legendäre Events mit deinem synchronisierten Fortschritt",
+    "legendaryEventsDescription": "Aktive, kommende und vergangene Legendäre Events mit deinem synchronisierten Fortschritt.",
     "uiKit": "UI-Kit",
-    "uiKitDescription": "Vorschau der Design-System-Komponenten",
+    "uiKitDescription": "Vorschau der Design-System-Komponenten.",
     "guild": "Gilde",
-    "guildDescription": "Deine Gildenliste und Einstellungen",
+    "guildDescription": "Deine Gildenliste und Einstellungen.",
     "menu": "Menü",
     "navigation": "Navigation",
     "navigationHint": "Wähle eine Seite oder Schnellaktion oder filtere die Liste.",
@@ -303,7 +303,7 @@
       "pagesHeading": "Seiten",
       "createGoalDescription": "Formular für ein neues Ziel öffnen",
       "createProjectDescription": "Leeres Projektformular öffnen",
-      "syncDescription": "Planer über die Tacticus-API aktualisieren",
+      "syncDescription": "Planer mit Tacticus aktualisieren",
       "feedbackLabel": "Feedback senden",
       "feedbackDescription": "Widget für Feedback, Roadmap und Neuigkeiten öffnen",
       "feedbackUnavailable": "Feedback ist gerade nicht verfügbar",
@@ -358,15 +358,15 @@
   "myGame": {
     "tabs": {
       "collection": "Sammlung",
-      "collectionDescription": "Alle Charaktere und Kriegsmaschinen – was du besitzt und wie weit jede Einheit ist.",
+      "collectionDescription": "Alle Charaktere und Kriegsmaschinen und wie weit jede Einheit ist.",
       "onslaught": "Onslaught",
-      "onslaughtDescription": "Wähle für jede Allianz den Sektor und die Stufe, die du gerade farmst. Zielschätzungen verwenden diese Positionen und deine synchronisierten Onslaught-Token; nicht festgelegte Allianzen liefern keine Onslaught-Scherben.",
+      "onslaughtDescription": "Der Sektor und die Stufe, die du in jeder Allianz farmst.",
       "campaigns": "Kampagnen",
-      "campaignsDescription": "Dein Kampagnenfortschritt wird über die Tacticus-API synchronisiert und kann hier nicht bearbeitet werden.",
+      "campaignsDescription": "Dein Kampagnenfortschritt, synchronisiert aus Tacticus.",
       "campaign-events": "Kampagnen-Events",
-      "campaign-eventsDescription": "Passe den Event-Fortschritt manuell an. Synchronisierte Werte bleiben, wenn verfügbar, die Ausgangsbasis.",
+      "campaign-eventsDescription": "Dein Fortschritt in jedem Kampagnen-Event.",
       "incursions": "Incursions",
-      "incursionsDescription": "Die Incursion jeder Kriegsmaschine: Laufkarte, Kämpfe, Gegner und Belohnungen jeder Stufe, mit den meisten Splittern, die ein Abschluss bringt."
+      "incursionsDescription": "Die Incursion jeder Kriegsmaschine: Stufen, Kämpfe, Gegner und Belohnungen."
     },
     "collection": {
       "loading": "Deine Sammlung wird geladen …",
@@ -378,8 +378,8 @@
       "syncBody": "Dein Kader wurde noch nicht synchronisiert, daher werden alle Einheiten ausgegraut angezeigt. Synchronisiere mit Tacticus, um zu sehen, welche Einheiten du besitzt.",
       "rosterErrorTitle": "Dein Kader konnte nicht geladen werden",
       "rosterErrorBody": "Bis er geladen ist, werden alle Einheiten ausgegraut angezeigt. Versuche es erneut.",
-      "catalogErrorTitle": "Der Einheitenkatalog konnte nicht geladen werden",
-      "catalogErrorBody": "Ohne ihn kann die Sammlung nicht angezeigt werden. Versuche es erneut.",
+      "catalogErrorTitle": "Einheiten konnten nicht geladen werden",
+      "catalogErrorBody": "Prüfe deine Verbindung und versuche es erneut.",
       "retry": "Erneut versuchen",
       "factionOwned": "{{owned}} von {{total}} im Besitz",
       "summaryFiltered": "{{owned}} von {{total}} passenden Einheiten im Besitz",
@@ -741,11 +741,11 @@
   "legendaryEvents": {
     "tabs": {
       "allEvents": "Alle Events",
-      "allEventsDescription": "Jedes Legendäre Event: aktiv, kommend und archiviert",
+      "allEventsDescription": "Jedes Legendäre Event: aktiv, kommend und archiviert.",
       "masterTable": "Gesamttabelle",
-      "masterTableDescription": "Die Punkte jeder Einheit über die gewählten Legendären Events",
+      "masterTableDescription": "Die Punkte jeder Einheit über die gewählten Legendären Events.",
       "tierList": "Tier-Liste",
-      "tierListDescription": "Die Horde-Modus-Tier-Liste hinter den Abschlussschätzungen",
+      "tierListDescription": "Charakter- und Gegnerstufen für die Abschlussschätzungen.",
       "activeEventDescription": "Aktives Legendäres Event mit deinem synchronisierten Fortschritt",
       "upcomingEventDescription": "Bevorstehendes Legendäres Event",
       "archivedEventDescription": "Vergangenes Legendäres Event mit deinem synchronisierten Fortschritt",
@@ -843,9 +843,9 @@
     "openManagement": "Gildenverwaltung öffnen",
     "access": {
       "loadErrorTitle": "Gildenzugriff nicht verfügbar",
-      "syncRequiredTitle": "Synchronisiere deine Gilde",
-      "syncRequiredManager": "Deine Gilde ist registriert, hat aber ihre erste Synchronisierung noch nicht abgeschlossen. Synchronisiere sie jetzt, um gildenabhängige Werkzeuge freizuschalten.",
-      "syncRequiredMember": "Deine Gilde ist registriert, hat aber ihre erste Synchronisierung noch nicht abgeschlossen. Bitte einen Anführer oder Ko-Anführer, sie zu synchronisieren."
+      "syncRequiredTitle": "Gilde synchronisieren",
+      "syncRequiredManager": "Deine Gilde ist registriert, wurde aber noch nicht synchronisiert. Synchronisiere sie, um Gildenfunktionen zu nutzen.",
+      "syncRequiredMember": "Deine Gilde ist registriert, wurde aber noch nicht synchronisiert. Bitte einen Anführer oder Ko-Anführer, sie zu synchronisieren."
     },
     "tacticusUserIdRequired": {
       "title": "Tacticus-Benutzer-ID erforderlich",
@@ -923,9 +923,9 @@
     },
     "tabs": {
       "members": "Mitglieder",
-      "membersDescription": "Zeige die Mitgliederliste deiner Gilde",
+      "membersDescription": "Die Mitgliederliste deiner Gilde.",
       "settings": "Einstellungen",
-      "settingsDescription": "Verwalte die Planner-Einstellungen deiner Gilde"
+      "settingsDescription": "Die Planner-Einstellungen deiner Gilde."
     },
     "members": {
       "empty": "Keine Mitglieder gefunden.",
@@ -1128,7 +1128,7 @@
         "empty": "Nichts Neues übernommen. Der Planer hat bereits alles aus deinem V1-Profil."
       },
       "partReasons": {
-        "invalidTacticusUserId": "Die Tacticus-Benutzer-ID aus V1 ist keine gültige GUID und wurde daher nicht importiert.",
+        "invalidTacticusUserId": "Die Tacticus-Benutzer-ID aus V1 ist ungültig und wurde daher nicht importiert.",
         "tacticusUserIdConflict": "Diese Tacticus-Benutzer-ID ist bereits mit einem anderen Planner-Konto verknüpft und wurde daher nicht importiert."
       },
       "rosterSnapshots": {
@@ -1161,13 +1161,13 @@
     "tabs": {
       "goals": "Ziele",
       "overview": "Ziele",
-      "overviewDescription": "Deine Ziele in Prioritätsreihenfolge – filtern, gruppieren und neu priorisieren.",
+      "overviewDescription": "Deine Ziele in Prioritätsreihenfolge.",
       "projects": "Projekte",
-      "projectsDescription": "Organisiere Ziele in fokussierten Gruppen und sieh sie dir getrennt an.",
+      "projectsDescription": "Gruppen von Zielen, die du getrennt ansiehst.",
       "insights": "Einblicke",
-      "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen",
+      "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen für deine Ziele.",
       "schedule": "Zeitplan",
-      "scheduleDescription": "Tag-für-Tag-Raidplan für deine aktiven Ziele – von heute bis sie erreicht sind.",
+      "scheduleDescription": "Tag-für-Tag-Raids für deine aktiven Ziele, bis sie erreicht sind.",
       "all": "Alle Status",
       "toReach": "Unerfüllt",
       "reached": "Erreicht",
@@ -1368,7 +1368,7 @@
       "projectsSaved": "Projekte gespeichert.",
       "projectsSaveFailed": "Die Projekte konnten nicht gespeichert werden. Prüfe deine Verbindung und versuche es erneut.",
       "addToProjectsDescription": "Wähle ein oder mehrere Projekte für die ausgewählten Ziele oder erstelle ein neues.",
-      "addToProjectsConfirm": "Hinzufügen",
+      "addToProjectsConfirm": "Zu Projekten hinzufügen",
       "addToProjectsConfirmCount": "Zu {{count}} Projekten hinzufügen"
     },
     "toasts": {
@@ -1520,7 +1520,7 @@
         }
       },
       "unlockDescription": "Dieses Ziel ist abgeschlossen, sobald der Charakter freigeschaltet ist.",
-      "unlockUnavailable": "Freischalten ist nicht verfügbar, da dieser Charakter keine Katalog-Scherbenorte hat.",
+      "unlockUnavailable": "Freischalten ist nicht verfügbar, da für diesen Charakter keine Splitterfundorte bekannt sind.",
       "unlockCostUnsupportedMow": "Freischaltungsziele werden für Kriegsmaschinen verfolgt, ihre Ressourcenkosten werden aber noch nicht unterstützt.",
       "shardLocations": {
         "labelRegular": "Scherben-Orte",
@@ -1622,10 +1622,10 @@
         "hint": "Jeder Meilenstein wird ein eigenes Ziel, nach dem vorherigen.",
         "notAbove": "Jeder Meilenstein muss über dem vorherigen liegen."
       },
-      "unlockUnavailable_mow": "Freischalten ist nicht verfügbar, da diese Kriegsmaschine keine Splitterfundorte im Katalog hat.",
+      "unlockUnavailable_mow": "Freischalten ist nicht verfügbar, da für diese Kriegsmaschine keine Splitterfundorte bekannt sind.",
       "unlockDescription_mow": "Dieses Ziel ist erreicht, sobald die Kriegsmaschine freigeschaltet ist.",
       "unlockExistingGoal": "Für diese Einheit gibt es bereits ein Freischaltungsziel.",
-      "openGoal": "Öffnen",
+      "openGoal": "Ziel öffnen",
       "takenTarget": "Bereits ein Ziel",
       "issues": {
         "summary_one": "{{count}} Problem zu beheben",
@@ -1677,8 +1677,8 @@
         "NoFarmLocation": "Kein erreichbarer Farm-Ort liefert eine benötigte Ressource.",
         "FarmingOverrideUnavailable": "Die gewählten Farm-Orte liefern nicht jede benötigte Ressource.",
         "InsufficientDailyEnergy": "Die tägliche Energie liegt unter den Kosten des günstigsten nutzbaren Knotens.",
-        "SimulationLimit": "Das Ziel konnte innerhalb des Planungshorizonts nicht abgeschlossen werden.",
-        "UnsupportedCost": "Für dieses Ziel wird keine detaillierte Kostenberechnung unterstützt.",
+        "SimulationLimit": "Dieses Ziel dauert länger, als der Planer schätzen kann.",
+        "UnsupportedCost": "Der Planer kann die Kosten dieses Ziels noch nicht schätzen.",
         "FilteredOut": "Jeder Farm-Ort wird von deinen Raid-Filtern ausgeschlossen."
       },
       "unlockAt": "Freigeschaltet bei",
@@ -2551,7 +2551,7 @@
     }
   },
   "tacticusUserId": {
-    "invalid": "Gib deine Tacticus-Benutzer-ID als GUID ein, zum Beispiel 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
+    "invalid": "Gib deine vollständige Tacticus-Benutzer-ID ein, zum Beispiel 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
     "inUse": "Diese Tacticus-Benutzer-ID ist bereits mit einem anderen Planner-Konto verknüpft."
   },
   "notFound": {
