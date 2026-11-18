@@ -21,7 +21,7 @@ type StepKey =
  * failed; no scoring data; a past, Global or rule-less event), since react-joyride cannot recover
  * from a target that never appears. Desktop and mobile share the same targets: below 768px the
  * switcher moves to its own row and the sections stack, in the same order (the event teams switch
- * to a segmented mode control inside the same `hse-teams` target).
+ * to mode tabs inside the same `hse-teams` target).
  */
 export function useHseTutorial({
   hasSwitcher,

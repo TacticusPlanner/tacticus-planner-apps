@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
 
@@ -38,7 +37,7 @@ export function QuestPicker({
     <Select onValueChange={onChange} value={value ?? undefined}>
       <SelectTrigger
         aria-label={t("quest:picker.label")}
-        className={cn("min-h-11", isMobile ? "w-auto max-w-44" : "w-56")}
+        className={isMobile ? "w-auto max-w-44" : "w-56"}
         data-testid="quest-picker"
       >
         <SelectValue placeholder={t("quest:picker.label")} />

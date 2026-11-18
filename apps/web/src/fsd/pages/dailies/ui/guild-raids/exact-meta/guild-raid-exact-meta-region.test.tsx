@@ -207,8 +207,7 @@ describe("GuildRaidExactMetaRegion", () => {
     ).toHaveTextContent('{"percent":69}')
   })
 
-  it("explains how readiness is scored", async () => {
-    const user = userEvent.setup()
+  it("leaves how readiness is scored to the page tour, not an info button", () => {
     render(
       <GuildRaidExactMetaRegion
         isMobile
@@ -222,11 +221,8 @@ describe("GuildRaidExactMetaRegion", () => {
       />
     )
 
-    await user.click(
-      screen.getByRole("button", { name: "guildRaids.exactMeta.howScored" })
-    )
     expect(
-      await screen.findByText("guildRaids.exactMeta.howScoredReadiness")
-    ).toBeInTheDocument()
+      screen.queryByRole("button", { name: "guildRaids.exactMeta.howScored" })
+    ).toBeNull()
   })
 })

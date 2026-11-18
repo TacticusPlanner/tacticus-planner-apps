@@ -10,7 +10,7 @@ import { HseEnemyHints } from "./hse-enemy-hints"
 import { HseTeamCard } from "./hse-team-card"
 import { hseTeamTestId } from "./hse-team-test-id"
 
-/** Mobile layout (below 768px): a segmented control over the modes the event scores in, defaulting
+/** Mobile layout (below 768px): underline tabs over the modes the event scores in, defaulting
  * to the first, with the chosen mode's hints and teams stacked under it. The choice is local state
  * and resets on navigation. */
 export function HseTeamsMobile({
@@ -33,12 +33,12 @@ export function HseTeamsMobile({
       >
         <TabsList
           aria-label={t("hse.teams.modeLabel")}
-          className="w-full"
+          className="max-w-full justify-start overflow-x-auto"
           data-testid="hse-teams-mode-control"
+          variant="line"
         >
           {modes.map(({ mode }) => (
             <TabsTrigger
-              className="flex-1"
               data-testid={`hse-teams-mode-option-${mode.toLowerCase()}`}
               key={mode}
               value={mode}

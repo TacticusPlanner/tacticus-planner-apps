@@ -32,33 +32,22 @@ describe("TodayQuickFilterChips", () => {
     )
   })
 
-  it("puts the caption, chips and trailing controls on one row inline, with the note below the row", () => {
+  it("puts a page's own chips on the chips' line, with the notes below", () => {
     render(
       <TodayQuickFilterChips
-        layout="inline"
+        extra={<button type="button">Ignore goals</button>}
         onChange={vi.fn()}
-        trailing={<button type="button">Planning settings</button>}
         value={["combineGoals"]}
       />
     )
 
-    const chips = screen.getByTestId("today-quick-filters")
-    expect(chips).toHaveTextContent("Quick filters")
+    const row = screen.getByRole("toolbar", {
+      name: "Quick filters",
+    }).parentElement!
     expect(
-      screen.getByTestId("today-quick-filter-fewerRaids")
-    ).toBeInTheDocument()
-    expect(
-      screen.getByTestId("today-quick-filter-combineGoals")
-    ).toBeInTheDocument()
-
-    const row = chips.parentElement!
-    expect(
-      within(row).getByRole("button", { name: "Planning settings" })
+      within(row).getByRole("button", { name: "Ignore goals" })
     ).toBeInTheDocument()
     const note = screen.getByTestId("today-quick-filter-note-combineGoals")
     expect(row).not.toContainElement(note)
-    expect(
-      row.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
   })
 })

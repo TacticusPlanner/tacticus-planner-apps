@@ -26,6 +26,13 @@ export function useGuildRaidsTutorial(hasActiveBoss: boolean) {
       content: t(`tour.guildRaids.steps.${key}.content`),
     })
 
+    // How readiness is scored: page help, so it lives in the tour rather than behind an "i" button.
+    const scoring: Step = {
+      target: '[data-testid="guild-raid-exact-meta-section"]',
+      title: t("guildRaids.exactMeta.howScored"),
+      content: `${t("guildRaids.exactMeta.howScoredPicks")} ${t("guildRaids.exactMeta.howScoredReadiness")}`,
+    }
+
     return {
       desktop: [
         step("guild-raids-desktop-shell", "purpose"),
@@ -33,7 +40,7 @@ export function useGuildRaidsTutorial(hasActiveBoss: boolean) {
         step("guild-raid-status-section", "status"),
         step("guild-raid-resources-card", "resources"),
         ...(hasActiveBoss
-          ? [step("guild-raid-exact-meta-section", "exactMetaDesktop")]
+          ? [step("guild-raid-exact-meta-section", "exactMetaDesktop"), scoring]
           : []),
       ],
       mobile: [
@@ -42,7 +49,7 @@ export function useGuildRaidsTutorial(hasActiveBoss: boolean) {
         step("guild-raid-status-section", "status"),
         step("guild-raid-resources-card", "resources"),
         ...(hasActiveBoss
-          ? [step("guild-raid-exact-meta-section", "exactMetaMobile")]
+          ? [step("guild-raid-exact-meta-section", "exactMetaMobile"), scoring]
           : []),
       ],
     }

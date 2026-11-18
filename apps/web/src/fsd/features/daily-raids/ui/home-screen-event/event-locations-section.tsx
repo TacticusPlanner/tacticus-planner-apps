@@ -20,8 +20,6 @@ import { CampaignGroupedList } from "../campaign-group"
 import type { RaidLocationTarget } from "../raid-location-name"
 import { ListPagingControls } from "../list-paging-controls"
 import { ResourceIconWithTooltip } from "../resource-icon"
-import { EventFarmOrderSwitch } from "./event-farm-order-switch"
-import type { HseListView } from "./event-farm-order-switch"
 import { EventLocationRow } from "./event-location-row"
 
 /**
@@ -36,14 +34,12 @@ export function EventLocationsSection({
   pointsIcon,
   quickFilters,
   order = "points",
-  onViewChange,
   onShowLocation,
 }: {
   rule: HseRaidRule
   pointsIcon?: string
   quickFilters?: TodayQuickFilterOptions
   order?: EventFarmOrder
-  onViewChange?: (view: HseListView) => void
   /** Makes each battle's name open its enemies. */
   onShowLocation?: (target: RaidLocationTarget) => void
 }) {
@@ -58,12 +54,6 @@ export function EventLocationsSection({
   return (
     <section className="space-y-3" data-testid="hse-raids">
       <h2 className="text-lg font-semibold">{t("hse.raids.title")}</h2>
-      {onViewChange ? (
-        <EventFarmOrderSwitch
-          onViewChange={onViewChange}
-          view={{ order, ignoreGoals: true }}
-        />
-      ) : null}
       <p className="text-sm text-muted-foreground" data-testid="hse-raids-note">
         {order === "energy"
           ? t("hse.raids.noteIgnoreGoalsEnergy")

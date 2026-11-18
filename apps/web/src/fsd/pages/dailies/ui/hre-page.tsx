@@ -46,8 +46,8 @@ import { useRunningHse } from "../model/use-running-hse"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { HreCampaignTeams } from "./hre/hre-campaign-teams"
 import { HreTeamCard } from "./hre/hre-team-card"
+import { DailiesEventToolbar } from "./dailies-event-toolbar"
 import { useHreTutorial } from "./hre-page.tutorial"
-import { RaidsSectionControls } from "./raids-section-controls"
 
 const NO_MISSIONS: readonly HreMission[] = []
 /** The raids count battles, so "Fewer raids" changes nothing here. */
@@ -63,7 +63,8 @@ const EVENT_PARAM = "event"
  * fight by hand for its manual objectives and the raids for its campaign objective, the mission's
  * teams (one per campaign of the battles to fight by hand, and one per token mode it plays; each led by a running HSE's scoring
  * units), the tokens the remaining missions need and the event pace. Every event lists all missions and the remaining-campaign
- * summary. The raids follow the Dailies project and the Raids Filters, picked in the raids section.
+ * summary. The raids follow the Dailies project, Filters and the quick filters, picked in the page
+ * toolbar with the event picker.
  * Desktop: missions on the left, the rest on the right. Mobile: one column with the mission list
  * last, collapsed behind "All missions".
  */
@@ -284,15 +285,6 @@ export function HrePage() {
   const raids =
     event && !past ? (
       <HreRaidsSection
-        controls={
-          <RaidsSectionControls
-            context={context}
-            hiddenQuickFilters={HRE_HIDDEN_QUICK_FILTERS}
-            onQuickFiltersChange={setQuickFilters}
-            quickFilters={quickFilters}
-            testIdPrefix="hre"
-          />
-        }
         notice={notice}
         onShowLocation={battleDialog.show}
         projectId={context.projectId}
@@ -409,22 +401,30 @@ export function HrePage() {
 
   return (
     <section className="space-y-5" data-testid="hre-page">
-      <div className="space-y-3">
-        <div
-          className="flex flex-wrap items-center gap-3"
-          data-testid="hre-title-row"
-        >
-          <h2 className="text-lg font-semibold">{t("hre:title")}</h2>
-          {ready ? (
+      <DailiesEventToolbar
+        context={context}
+        picker={
+          ready ? (
             <HreEventSwitcher
-              className="order-last md:order-0 md:ml-auto"
               heroes={ready.heroes}
               instances={ready.instances}
               onSelect={selectInstance}
               selectedKey={instance?.key ?? null}
             />
-          ) : null}
-        </div>
+          ) : null
+        }
+        raids={
+          event && !past
+            ? {
+                quickFilters,
+                onQuickFiltersChange: setQuickFilters,
+                hiddenQuickFilters: HRE_HIDDEN_QUICK_FILTERS,
+              }
+            : null
+        }
+        testIdPrefix="hre"
+      />
+      <div className="space-y-3">
         <div data-testid="hre-status">
           <HreEventHeader state={state} />
         </div>

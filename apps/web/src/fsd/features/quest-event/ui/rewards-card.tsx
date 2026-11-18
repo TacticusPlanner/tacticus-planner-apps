@@ -124,7 +124,7 @@ function RewardsLeftStrip({
   }
   return (
     <div className="flex flex-col gap-2" data-testid="quest-rewards-left">
-      <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+      <p className="text-sm font-medium text-muted-foreground">
         {t("rewards.left.title")}
       </p>
       <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-semibold tabular-nums">

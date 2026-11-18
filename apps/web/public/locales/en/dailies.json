@@ -95,7 +95,7 @@
     },
     "exactMeta": {
       "title": "Meta readiness",
-      "howScored": "How is readiness scored?",
+      "howScored": "How readiness is scored",
       "howScoredPicks": "Each slot shows the hero you'd bring: the curated pick if you own it, otherwise the best owned substitute the meta source lists for that slot. A hero is only used once per lineup. Tap a slot to see every option.",
       "howScoredReadiness": "A hero's readiness is the average of rank, stars and ability level, each compared with the target for the boss's current step and capped at 100%. A Machine of War is scored on stars only. Team readiness counts essential slots twice.",
       "target": "Target at this boss step:",
@@ -442,9 +442,13 @@
     },
     "quest": {
       "steps": {
+        "picker": {
+          "title": "Choose a quest",
+          "content": "Shows the current quest by default. Pick another quest to browse its battles read-only."
+        },
         "header": {
           "title": "The quest",
-          "content": "The featured hero, who must play every battle, the factions you may deploy and the time left. Pick another quest to browse its battles."
+          "content": "The featured hero, who must play every battle, the factions you may deploy and the time left."
         },
         "summary": {
           "title": "Your score",

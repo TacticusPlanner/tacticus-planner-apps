@@ -110,7 +110,7 @@ function SlotTile({
   const empty = slot.picked === null && slot.ideal.owned === false
 
   const role = (
-    <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+    <span className="text-xs font-medium text-muted-foreground">
       {slotLabel(slot)}
       {slot.essential ? (
         <span

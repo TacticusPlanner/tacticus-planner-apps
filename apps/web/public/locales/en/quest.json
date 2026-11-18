@@ -23,7 +23,7 @@
   },
   "picker": {
     "label": "Quest",
-    "back": "Back to the current quest",
+    "back": "Open the current quest",
     "browsing": "Browsing a past or future quest: read-only."
   },
   "battles": {

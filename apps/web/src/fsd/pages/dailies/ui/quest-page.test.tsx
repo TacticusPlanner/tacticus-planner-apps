@@ -495,7 +495,7 @@ describe("QuestPage", () => {
     expect(screen.queryByTestId("quest-score-entry")).toBeNull()
     expect(screen.queryByTestId("quest-summary")).toBeNull()
     await user.click(
-      screen.getByRole("button", { name: "Back to the current quest" })
+      screen.getByRole("button", { name: "Open the current quest" })
     )
     expect(screen.getByTestId("quest-header-hero")).toHaveTextContent("Nubari")
     expect(screen.getByTestId("quest-summary")).toBeInTheDocument()

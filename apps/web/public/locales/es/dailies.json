@@ -442,6 +442,10 @@
     },
     "quest": {
       "steps": {
+        "picker": {
+          "title": "Elige una misión",
+          "content": "Muestra la misión actual por defecto. Elige otra misión para ver sus batallas en modo de solo lectura."
+        },
         "header": {
           "title": "La misión",
           "content": "El héroe protagonista, que debe jugar todas las batallas, las facciones que puedes desplegar y el tiempo restante. Elige otra misión para ver sus batallas."

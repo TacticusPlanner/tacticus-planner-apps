@@ -70,7 +70,6 @@ export function HreRaidsSection({
   daysLeft,
   renderTeams,
   projectId,
-  controls,
   quickFilters,
   onShowLocation,
 }: {
@@ -83,9 +82,7 @@ export function HreRaidsSection({
   renderTeams?: (groups: readonly MissionDeployGroup[]) => ReactNode
   /** The Dailies project: narrows the goals the suggestions serve first (none: every active goal). */
   projectId?: string
-  /** The project selector and Raids Filters, shown under the title. */
-  controls?: ReactNode
-  /** Today's quick filters picked in `controls`: "Combine goals" drops goal priority from the order,
+  /** Today's quick filters, picked in the page toolbar: "Combine goals" drops goal priority from the order,
    * "Raidable only" leaves battles to play manually out of the raids. */
   quickFilters?: TodayQuickFilterOptions
   /** Makes each suggested battle's name open its enemies. */
@@ -169,7 +166,6 @@ export function HreRaidsSection({
           </Badge>
         ) : null}
       </div>
-      {controls}
       {raids.status === "loading" || raids.status === "error" ? (
         <RaidState state={raids.status} />
       ) : !shown ? (

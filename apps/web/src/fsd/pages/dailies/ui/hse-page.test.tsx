@@ -281,13 +281,12 @@ beforeEach(() => {
 })
 
 describe("HSE tab states", () => {
-  it("renders its title as an h2 under the shell h1", () => {
+  it("does not repeat the page title, which the shell header owns", () => {
     renderHse()
-    // The shell header owns the page h1; the tab starts its hierarchy at h2.
     expect(screen.queryAllByRole("heading", { level: 1 })).toHaveLength(0)
     expect(
-      screen.getByRole("heading", { level: 2, name: "hse.title" })
-    ).toBeInTheDocument()
+      screen.queryByRole("heading", { level: 2, name: "hse.title" })
+    ).toBeNull()
   })
 
   it("shows the live event, its farm list with points per location (no raid or energy counts) and the day totals", () => {
@@ -428,16 +427,26 @@ describe("HSE tab states", () => {
 })
 
 describe("HSE tab header", () => {
-  it("shows the project selector and Raids Filters above the raid lists, not in the title row", () => {
+  it("puts the event picker, project selector and Filters in the page toolbar's Find slot", () => {
     renderHse()
 
-    const title = screen.getByTestId("hse-title-row")
-    expect(within(title).queryByTestId("hse-project-select")).toBeNull()
-    expect(within(title).queryByTestId("hse-raids-filters")).toBeNull()
-    expect(screen.getByTestId("hse-raids-controls")).toBeInTheDocument()
-    expect(screen.getByTestId("hse-project-select")).toBeInTheDocument()
-    expect(screen.getByTestId("hse-raids-filters")).toBeInTheDocument()
+    const find = screen
+      .getByTestId("hse-toolbar")
+      .querySelector('[data-slot="page-toolbar-find"]') as HTMLElement
+    expect(within(find).getByTestId("hse-event-switcher")).toBeInTheDocument()
+    expect(within(find).getByTestId("hse-project-select")).toBeInTheDocument()
+    expect(within(find).getByTestId("hse-raids-filters")).toHaveTextContent(
+      "raidsFilters.trigger"
+    )
     expect(screen.queryByTestId("hse-planning-settings")).toBeNull()
+  })
+
+  it("puts the Sort in the toolbar's View slot", () => {
+    renderHse()
+
+    expect(screen.getByTestId("hse-toolbar-view")).toContainElement(
+      screen.getByTestId("hse-raids-order")
+    )
   })
 
   it("lists for the selected Dailies project", () => {
@@ -609,7 +618,7 @@ describe("HSE list controls", () => {
     const user = userEvent.setup()
     renderHse()
 
-    const controls = screen.getByTestId("hse-raids-controls")
+    const controls = screen.getByTestId("hse-toolbar")
     for (const quick of ["fewerRaids", "combineGoals", "raidableOnly"])
       expect(
         within(controls).getByTestId(`today-quick-filter-${quick}`)
@@ -976,19 +985,15 @@ describe("HSE instance switcher", () => {
     )
   })
 
-  it("sits on the title row at desktop width and on its own full-width row on mobile", () => {
+  it("sits first in the page toolbar", () => {
     renderHse()
 
-    const row = screen.getByTestId("hse-title-row")
-    const switcher = screen.getByTestId("hse-event-switcher")
-    expect(row).toContainElement(switcher)
-    expect(row).toContainElement(
-      screen.getByRole("heading", { level: 2, name: "hse.title" })
+    const find = screen
+      .getByTestId("hse-toolbar")
+      .querySelector('[data-slot="page-toolbar-find"]') as HTMLElement
+    expect(find.firstElementChild).toBe(
+      screen.getByTestId("hse-event-switcher")
     )
-    // Mobile: full width, so it wraps below the title; desktop: inline, pushed right.
-    expect(switcher.className).toContain("w-full")
-    expect(switcher.className).toContain("md:w-auto")
-    expect(row.className).toContain("flex-wrap")
   })
 })
 
