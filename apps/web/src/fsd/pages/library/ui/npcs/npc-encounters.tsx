@@ -776,9 +776,7 @@ export function NpcEncounters({
       className="flex min-w-0 flex-col gap-2"
       data-testid="npc-encounters"
     >
-      <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        {t("npcs.encounters.title")}
-      </h3>
+      <h3 className="text-sm font-medium">{t("npcs.encounters.title")}</h3>
       {body}
     </section>
   )

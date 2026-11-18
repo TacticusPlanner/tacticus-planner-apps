@@ -29,7 +29,6 @@
   "loading": "Chargement des données de la bibliothèque…",
   "shops": {
     "title": "Boutiques quotidiennes",
-    "subtitle": "Chaque emplacement que chaque boutique quotidienne peut proposer le jour sélectionné",
     "dayLabel": "Jour",
     "shopLabel": "Boutique",
     "days": {
@@ -240,6 +239,7 @@
     "trait": "Trait",
     "clearFilters": "Effacer les filtres",
     "filtersCount": "Filtres ({{count}})",
+    "filtersDone": "Terminé",
     "filters": "Filtres",
     "npc": "PNJ",
     "variation": "Variante",
@@ -358,7 +358,7 @@
         },
         "stats": {
           "title": "Statistiques, puissance, attaques et traits",
-          "content": "Points de vie, armure, dégâts, mouvement et puissance estimée au niveau sélectionné, ainsi que les attaques et traits de l’unité."
+          "content": "Points de vie, armure, dégâts, mouvement et puissance estimée au niveau sélectionné, ainsi que les attaques et traits de l’unité. La puissance est estimée à partir des statistiques affichées et peut différer du chiffre du jeu pour les unités dotées de capacités supplémentaires, de critique ou de blocage."
         },
         "encounters": {
           "title": "Où le combattre",
@@ -388,11 +388,7 @@
     "minCount": "Min. dans un combat",
     "meleeOnly": "Corps à corps uniquement",
     "hasRanged": "Avec attaque à distance",
-    "clearOne": "Effacer {{name}}",
-    "power": {
-      "estimateLabel": "À propos de cette estimation",
-      "estimate": "Estimée à partir des statistiques affichées. Elle peut différer du chiffre du jeu pour les unités dotées de capacités supplémentaires, de critique ou de blocage."
-    }
+    "clearOne": "Effacer {{name}}"
   },
   "unit": {
     "nav": {
@@ -590,7 +586,7 @@
         },
         "rankup": {
           "title": "Matériaux de rang",
-          "content": "Choisissez une plage de rangs pour voir les améliorations requises et où les farmer."
+          "content": "Choisissez une plage de rangs pour voir les améliorations requises et où les farmer. L’option « point cinq » ajoute la première amélioration de chaque statistique, applicable dès que le rang cible est atteint. « Inclure mes améliorations » déduit ce qui est déjà appliqué à ce personnage et ce qui se trouve dans votre inventaire."
         }
       }
     },

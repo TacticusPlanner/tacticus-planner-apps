@@ -6,8 +6,8 @@ import type { FactionGroup, FactionId, UnitId } from "@workspace/game-domain"
 import { UnitCombobox } from "@/shared/ui"
 
 import { NpcDetail } from "../npc-detail"
-import { NpcsFilterPanel } from "../npcs-filter-panel"
 import type { NpcsPageViewProps } from "../npcs-page.view-model"
+import { NpcsToolbar } from "../npcs-toolbar"
 
 export function NpcsMobilePage(props: NpcsPageViewProps) {
   const {
@@ -54,6 +54,13 @@ export function NpcsMobilePage(props: NpcsPageViewProps) {
 
   return (
     <div className="flex flex-col gap-4" data-testid="npcs-mobile-page">
+      <NpcsToolbar
+        filters={filters}
+        options={filterOptions}
+        activeCount={activeFilterCount}
+        onChange={onFiltersChange}
+        onClear={onClearFilters}
+      />
       <div className="flex flex-col gap-2" data-testid="npcs-combobox">
         <UnitCombobox
           groups={groups}
@@ -62,13 +69,6 @@ export function NpcsMobilePage(props: NpcsPageViewProps) {
           placeholder={t("npcs.selectNpc")}
           emptyText={t("npcs.noMatchingNpcs")}
           icon={icon}
-        />
-        <NpcsFilterPanel
-          filters={filters}
-          options={filterOptions}
-          activeCount={activeFilterCount}
-          onChange={onFiltersChange}
-          onClear={onClearFilters}
         />
         {items.length === 0 ? (
           <p

@@ -265,22 +265,30 @@ export function RaidBossesPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="raid-bosses-library-page">
-      <p className="text-muted-foreground">
-        {t("collections.raidBosses.description")}
-      </p>
+      {/* The page header already carries the title and description; the views are underline tabs. */}
       <Tabs value={tab} onValueChange={(value) => updateQuery({ tab: value })}>
-        <TabsList
-          className="max-w-full overflow-x-auto"
-          data-testid="raid-boss-tabs"
+        {/* The padding keeps the active tab's underline and the 48px touch hit area inside the scroll
+            box. */}
+        <div
+          className="overflow-x-auto pt-1 pb-1.5"
+          data-testid="raid-boss-tabs-scroll"
         >
-          <TabsTrigger value="seasons">
-            {t("raidBosses.tabs.seasons")}
-          </TabsTrigger>
-          <TabsTrigger value="meta">{t("raidBosses.tabs.meta")}</TabsTrigger>
-          <TabsTrigger value="details">
-            {t("raidBosses.tabs.details")}
-          </TabsTrigger>
-        </TabsList>
+          <TabsList
+            className="w-max min-w-full justify-start"
+            data-testid="raid-boss-tabs"
+            variant="line"
+          >
+            <TabsTrigger className="flex-none px-2.5" value="seasons">
+              {t("raidBosses.tabs.seasons")}
+            </TabsTrigger>
+            <TabsTrigger className="flex-none px-2.5" value="meta">
+              {t("raidBosses.tabs.meta")}
+            </TabsTrigger>
+            <TabsTrigger className="flex-none px-2.5" value="details">
+              {t("raidBosses.tabs.details")}
+            </TabsTrigger>
+          </TabsList>
+        </div>
       </Tabs>
       {tab === "details" ? (
         entityId && selectedUnit ? (

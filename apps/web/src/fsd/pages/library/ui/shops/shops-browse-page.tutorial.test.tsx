@@ -39,7 +39,7 @@ describe("useShopsBrowseTutorial", () => {
 
     // The controls differ per viewport (segmented toggles vs. dropdowns); the copy is shared.
     expect(steps.desktop.map((step) => step.target)).toEqual([
-      '[data-testid="shops-day-toggle"]',
+      '[data-testid="shops-day-select"]',
       '[data-testid="shops-shop-toggle"]',
       '[data-testid="shop-slot-0"]',
     ])

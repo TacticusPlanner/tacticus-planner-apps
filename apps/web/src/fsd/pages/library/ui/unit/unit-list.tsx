@@ -8,13 +8,14 @@ import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 
 import { unitOriginState } from "@/entities/unit"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, PageToolbar } from "@/shared/ui"
 
 import { searchUnits } from "./unit-list.model"
 import type { UnitListItem } from "./unit-list.model"
 
 /**
- * A Library unit list (characters, Machines of War): name search and a wrapping grid of round
+ * A Library unit list (characters, Machines of War): name search in the page toolbar's Find slot
+ * and a wrapping grid of round
  * portrait tiles. A tile opens the unit page under `basePath` and hands it the list's current order
  * for prev/next.
  */
@@ -55,23 +56,27 @@ export function UnitList({
 
   return (
     <>
-      <label
-        className="relative max-w-sm"
-        data-testid={`${testIdPrefix}-search`}
-      >
-        <span className="sr-only">{labels.search}</span>
-        <Search
-          aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-        />
-        <Input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={labels.searchPlaceholder}
-          className="pl-8"
-        />
-      </label>
+      <PageToolbar
+        find={
+          <label
+            className="relative max-w-sm min-w-40 flex-1"
+            data-testid={`${testIdPrefix}-search`}
+          >
+            <span className="sr-only">{labels.search}</span>
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={labels.searchPlaceholder}
+              className="pl-8"
+            />
+          </label>
+        }
+      />
 
       {listed.length === 0 ? (
         <div

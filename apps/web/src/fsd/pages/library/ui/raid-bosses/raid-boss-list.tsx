@@ -21,9 +21,7 @@ function Section({
 
   return (
     <section className="flex flex-col gap-2" data-testid={testId}>
-      <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        {title}
-      </h2>
+      <h2 className="text-sm font-medium">{title}</h2>
       <div className="flex flex-wrap gap-2">
         {items.map((item) => (
           <button
@@ -35,7 +33,7 @@ function Section({
               "flex w-24 flex-col items-center gap-1.5 rounded-lg border p-2 text-center transition-colors",
               "focus-visible:outline-2 focus-visible:outline-primary",
               item.unitSetId === selectedId
-                ? "border-primary bg-accent"
+                ? "border-primary bg-primary/10"
                 : "border-border hover:bg-accent/10"
             )}
           >

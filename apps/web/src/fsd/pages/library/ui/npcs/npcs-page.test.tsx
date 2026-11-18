@@ -583,6 +583,23 @@ describe("NpcsPage", () => {
       isMobileMock.value = true
     })
 
+    it("opens Filters in a sheet and hands focus back to the button on Done", async () => {
+      const user = userEvent.setup()
+      await renderPage("/library/npcs/makhotep")
+      await screen.findByTestId("npc-name")
+
+      const toggle = screen.getByRole("button", { name: "Filters" })
+      await user.click(toggle)
+      const sheet = await screen.findByTestId("npcs-filter-sheet")
+      expect(within(sheet).getByTestId("npcs-filter-bar")).toBeVisible()
+
+      await user.click(within(sheet).getByRole("button", { name: "Done" }))
+      await waitFor(() =>
+        expect(screen.queryByTestId("npcs-filter-sheet")).toBeNull()
+      )
+      expect(toggle).toHaveFocus()
+    })
+
     it("renders the combobox instead of the tile list and navigates on pick", async () => {
       const user = userEvent.setup()
       await renderPage("/library/npcs/makhotep")
@@ -797,59 +814,6 @@ describe("NpcsPage power card", () => {
     )!
     expect(expected).toBeGreaterThan(10)
     expect(powerValue()).toHaveTextContent(numberText(expected))
-  })
-
-  it("opens the estimate note on focus", async () => {
-    await renderPage("/library/npcs/infiltrator")
-    await screen.findByTestId("npc-name")
-    screen.getByTestId("npc-stat-power-note").focus()
-    expect(
-      await screen.findByTestId("npc-stat-power-note-content")
-    ).toHaveTextContent("Estimated from the listed stats.")
-  })
-
-  it("closes the estimate note with Escape and keeps it closed", async () => {
-    const user = userEvent.setup()
-    await renderPage("/library/npcs/infiltrator")
-    await screen.findByTestId("npc-name")
-    const trigger = screen.getByTestId("npc-stat-power-note")
-    trigger.focus()
-    await screen.findByTestId("npc-stat-power-note-content")
-    await user.keyboard("{Escape}")
-    await waitFor(() =>
-      expect(screen.queryByTestId("npc-stat-power-note-content")).toBeNull()
-    )
-    // Focus is not handed back to the trigger, so its onFocus does not reopen the note.
-    await new Promise((resolve) => setTimeout(resolve, 50))
-    expect(screen.queryByTestId("npc-stat-power-note-content")).toBeNull()
-  })
-
-  it("opens the estimate note on hover without moving focus, and closes it on leave", async () => {
-    const user = userEvent.setup()
-    await renderPage("/library/npcs/infiltrator")
-    await screen.findByTestId("npc-name")
-    const trigger = screen.getByTestId("npc-stat-power-note")
-    await user.hover(trigger)
-    const content = await screen.findByTestId("npc-stat-power-note-content")
-    expect(content).not.toContainElement(
-      document.activeElement as HTMLElement | null
-    )
-    await user.unhover(trigger)
-    await waitFor(() =>
-      expect(screen.queryByTestId("npc-stat-power-note-content")).toBeNull()
-    )
-    await new Promise((resolve) => setTimeout(resolve, 50))
-    expect(screen.queryByTestId("npc-stat-power-note-content")).toBeNull()
-  })
-
-  it("opens the estimate note on tap", async () => {
-    const user = userEvent.setup()
-    await renderPage("/library/npcs/infiltrator")
-    await screen.findByTestId("npc-name")
-    await user.click(screen.getByTestId("npc-stat-power-note"))
-    expect(
-      await screen.findByTestId("npc-stat-power-note-content")
-    ).toBeVisible()
   })
 
   it("shows a placeholder while the power data loads", async () => {

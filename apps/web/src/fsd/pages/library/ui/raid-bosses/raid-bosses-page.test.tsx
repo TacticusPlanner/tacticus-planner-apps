@@ -466,7 +466,7 @@ describe("RaidBossesPage", () => {
     await renderPage()
 
     await screen.findByTestId("raid-boss-tabs")
-    await user.click(screen.getByRole("tab", { name: "Seasons Config" }))
+    await user.click(screen.getByRole("tab", { name: "Seasons" }))
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
@@ -583,7 +583,10 @@ describe("RaidBossesPage", () => {
     expect(
       await screen.findByTestId("raid-boss-meta-recommendations")
     ).toHaveClass("flex")
-    expect(screen.getByTestId("raid-boss-tabs")).toHaveClass("overflow-x-auto")
+    // The underline tab strip scrolls sideways rather than wrapping.
+    expect(screen.getByTestId("raid-boss-tabs-scroll")).toHaveClass(
+      "overflow-x-auto"
+    )
   })
 
   it("keeps Details usable when Meta is absent and shows a Meta-only unavailable state", async () => {

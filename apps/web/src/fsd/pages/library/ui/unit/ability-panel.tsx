@@ -127,9 +127,7 @@ export function AbilityPanel({
           />
         ) : null}
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-            {kind}
-          </p>
+          <p className="text-xs font-medium text-muted-foreground">{kind}</p>
           <Heading
             id={`${testId}-name`}
             className="text-base/tight font-semibold"

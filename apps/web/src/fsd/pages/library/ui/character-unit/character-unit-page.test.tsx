@@ -1089,7 +1089,7 @@ describe("CharacterUnitPage", () => {
     expect(back).toHaveAccessibleName("Back to Characters")
   })
 
-  it("on mobile, names the icon-only back button Back to Collection when opened from Collection", async () => {
+  it("on mobile, keeps the back button's text label and names it Back to Collection when opened from Collection", async () => {
     env.isMobile = true
     await renderUnit(
       "/library/characters/ultraCalgar",
@@ -1097,8 +1097,14 @@ describe("CharacterUnitPage", () => {
     )
 
     const back = screen.getByTestId("unit-nav-back")
-    expect(back).not.toHaveTextContent("Collection")
+    expect(back).toHaveTextContent("Collection")
     expect(back).toHaveAccessibleName("Back to Collection")
+    expect(screen.getByRole("button", { name: "Previous" })).toHaveTextContent(
+      "Previous"
+    )
+    expect(screen.getByRole("button", { name: "Next" })).toHaveTextContent(
+      "Next"
+    )
     expect(back).toHaveAttribute("href", "/my-game/collection")
   })
 

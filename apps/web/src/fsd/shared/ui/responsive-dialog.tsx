@@ -21,6 +21,9 @@ type ResponsiveDialogProps = {
   /** Called as the content takes focus on opening; `preventDefault()` keeps the default (the first
    *  field) from taking it. */
   onOpenAutoFocus?: (event: Event) => void
+  /** Called as focus leaves the content on closing. A dialog opened from state (not a Radix
+   *  trigger) uses it to send focus back to the control that opened it. */
+  onCloseAutoFocus?: (event: Event) => void
   "data-testid"?: string
 }
 
@@ -40,6 +43,7 @@ export function ResponsiveDialog({
   desktopClassName,
   contentRef,
   onOpenAutoFocus,
+  onCloseAutoFocus,
   "data-testid": testId,
 }: ResponsiveDialogProps) {
   const isMobile = useIsMobile()
@@ -50,6 +54,7 @@ export function ResponsiveDialog({
       : undefined,
     ref: contentRef,
     onOpenAutoFocus,
+    onCloseAutoFocus,
   }
 
   return isMobile ? (

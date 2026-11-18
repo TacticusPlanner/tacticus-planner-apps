@@ -49,7 +49,7 @@ export function MowUnitDetails({
             >
               <AccordionTrigger className="min-h-13 items-center">
                 <span className="flex min-w-0 flex-1 flex-col text-left">
-                  <span className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
+                  <span className="text-xs font-medium text-muted-foreground">
                     {t(`mowUnit.abilities.${ability}`)}
                   </span>
                   <span className="truncate text-base font-semibold">

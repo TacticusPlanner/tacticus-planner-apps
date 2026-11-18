@@ -8,9 +8,8 @@ type StepKey = "day" | "shop" | "random"
 
 /**
  * Joyride tour for the public Library Shops browsing page: the day selector, the shop selector, and
- * how a randomized "N possible rewards" slot is read. The day/shop controls have different
- * `data-testid`s per viewport (segmented toggles on desktop, dropdowns on mobile), so the two step
- * sets target different elements.
+ * how a randomized "N possible rewards" slot is read. The day select is the same on both; the shop is
+ * underline tabs on desktop and a select on mobile, so that step targets different elements.
  */
 export function useShopsBrowseTutorial() {
   const { t } = useTranslation("library")
@@ -24,7 +23,7 @@ export function useShopsBrowseTutorial() {
 
     return {
       desktop: [
-        step("shops-day-toggle", "day"),
+        step("shops-day-select", "day"),
         step("shops-shop-toggle", "shop"),
         step("shop-slot-0", "random"),
       ] satisfies Step[],

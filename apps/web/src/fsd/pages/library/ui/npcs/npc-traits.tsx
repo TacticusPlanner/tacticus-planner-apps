@@ -96,9 +96,7 @@ export function NpcTraits({
 
   return (
     <section className="flex flex-col gap-2" data-testid="npc-traits">
-      <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        {t("npcs.traits")}
-      </h3>
+      <h3 className="text-sm font-medium">{t("npcs.traits")}</h3>
       {traits.length === 0 ? (
         <p
           className="rounded-lg border border-dashed px-3 py-4 text-center text-sm text-muted-foreground"

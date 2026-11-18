@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, ChevronsUpDown, X } from "lucide-react"
 import { damageTypeIcon, factionIcon, traitIcon } from "@workspace/game-catalog"
@@ -29,7 +29,11 @@ import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { NpcAttackFilter, NpcFilters } from "@/entities/npc"
-import { EntityIcon, useCommandListId } from "@/shared/ui"
+import {
+  closestOverlayContent,
+  EntityIcon,
+  useCommandListId,
+} from "@/shared/ui"
 
 import type { NpcFilterOptions } from "./npcs-page.view-model"
 
@@ -56,6 +60,10 @@ function MultiSelect({
   const { t } = useTranslation("library")
   const [open, setOpen] = useState(false)
   const [listId, listRef] = useCommandListId()
+  // Inside the mobile filter sheet the list must portal into the sheet: Radix's scroll lock blocks
+  // scrolling in a popover portaled to `body`. Elsewhere it keeps the default portal.
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const [portalContainer, setPortalContainer] = useState<HTMLElement>()
   const selectedNames = options
     .filter((option) => value.includes(option.id))
     .map((option) => option.name)
@@ -66,10 +74,17 @@ function MultiSelect({
     )
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        if (next) setPortalContainer(closestOverlayContent(triggerRef.current))
+        setOpen(next)
+      }}
+    >
       <div className="relative flex items-center">
         <PopoverTrigger asChild>
           <Button
+            ref={triggerRef}
             variant="outline"
             role="combobox"
             aria-expanded={open}
@@ -104,7 +119,11 @@ function MultiSelect({
           </button>
         ) : null}
       </div>
-      <PopoverContent className="w-64 p-0" align="start">
+      <PopoverContent
+        className="w-64 p-0"
+        align="start"
+        container={portalContainer}
+      >
         <Command>
           <CommandInput placeholder={label} />
           <CommandList ref={listRef}>
@@ -191,8 +210,8 @@ function IconSelect({
 }
 
 /**
- * The collapsible filter controls. Name search is not here — it is a separate, always-visible input
- * (see `NpcsFilterPanel`): searching by name is how you find a unit you already have in mind, while
+ * The filter controls behind the toolbar's "Filters" button. Name search is not here — it is a separate, always-visible input
+ * (see `NpcsToolbar`): searching by name is how you find a unit you already have in mind, while
  * these narrow a roster you are browsing.
  */
 export function NpcsFilterBar({
@@ -201,6 +220,7 @@ export function NpcsFilterBar({
   activeCount,
   onChange,
   onClear,
+  hideClear = false,
   className,
 }: {
   filters: NpcFilters
@@ -208,6 +228,8 @@ export function NpcsFilterBar({
   activeCount: number
   onChange: (filters: NpcFilters) => void
   onClear: () => void
+  /** The mobile sheet puts "Clear filters" in its footer instead. */
+  hideClear?: boolean
   className?: string
 }) {
   const { t } = useTranslation("library")
@@ -335,16 +357,18 @@ export function NpcsFilterBar({
         onChange={(traits) => onChange({ ...filters, traits })}
         testId="npcs-trait-filter"
       />
-      <Button
-        variant="ghost"
-        onClick={onClear}
-        disabled={activeCount === 0}
-        data-testid="npcs-clear-filters"
-        className="justify-self-start"
-      >
-        <X aria-hidden />
-        {t("npcs.clearFilters")}
-      </Button>
+      {hideClear ? null : (
+        <Button
+          variant="ghost"
+          onClick={onClear}
+          disabled={activeCount === 0}
+          data-testid="npcs-clear-filters"
+          className="justify-self-start"
+        >
+          <X aria-hidden />
+          {t("npcs.clearFilters")}
+        </Button>
+      )}
     </div>
   )
 }

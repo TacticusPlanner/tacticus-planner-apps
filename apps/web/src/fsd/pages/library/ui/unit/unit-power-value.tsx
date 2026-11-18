@@ -34,9 +34,7 @@ export function UnitPowerValue({
       data-testid="unit-power"
       data-status={figure.status}
     >
-      <span className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
-        {label}
-      </span>
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
       {figure.status === "loading" ? (
         <Skeleton
           className="my-1 h-6 w-24 rounded-md"

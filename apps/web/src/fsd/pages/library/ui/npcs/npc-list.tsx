@@ -67,7 +67,7 @@ export function NpcList({
               "flex w-24 flex-col items-center gap-1.5 rounded-lg border p-2 text-center transition-colors",
               "focus-visible:outline-2 focus-visible:outline-primary",
               selected
-                ? "border-primary bg-accent"
+                ? "border-primary bg-primary/10"
                 : "border-border hover:bg-accent/10"
             )}
             data-testid={`npc-tile-${item.id}`}
