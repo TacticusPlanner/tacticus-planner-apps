@@ -50,8 +50,8 @@ import { DailiesEventToolbar } from "./dailies-event-toolbar"
 import { useHreTutorial } from "./hre-page.tutorial"
 
 const NO_MISSIONS: readonly HreMission[] = []
-/** The raids count battles, so "Fewer raids" changes nothing here. */
-const HRE_HIDDEN_QUICK_FILTERS = ["fewerRaids"] as const
+/** The raids count battles, so "Fewer raids" changes nothing here; "CE nodes first" is Today's. */
+const HRE_HIDDEN_QUICK_FILTERS = ["fewerRaids", "preferEvent"] as const
 /** The HRE tab's search parameter holding the selected instance key (HRE-only, never carried over). */
 const EVENT_PARAM = "event"
 
@@ -288,7 +288,10 @@ export function HrePage() {
         notice={notice}
         onShowLocation={battleDialog.show}
         projectId={context.projectId}
-        quickFilters={todayQuickFilterOptions(quickFilters)}
+        quickFilters={{
+          ...todayQuickFilterOptions(quickFilters),
+          preferEvent: false,
+        }}
         daysLeft={
           ready
             ? hreDaysLeft({

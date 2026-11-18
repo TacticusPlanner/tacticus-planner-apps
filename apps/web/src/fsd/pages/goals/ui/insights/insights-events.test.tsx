@@ -64,4 +64,33 @@ describe("InsightsEvents", () => {
       "/plan/goals?goal=g1"
     )
   })
+
+  it("lists the top 3 and shows the rest on Show all", async () => {
+    const insights = ["One", "Two", "Three", "Four", "Five"].map(
+      (label, index) => ({
+        ...insight,
+        id: `campaign${index}:Normal`,
+        label: `Campaign ${label}`,
+      })
+    )
+    render(
+      <InsightsEvents
+        benefitingGoalIdsByInsightId={new Map()}
+        farmingSpotsByInsightId={new Map()}
+        goalInfoById={new Map()}
+        insights={insights}
+        title="Best campaigns to farm"
+      />,
+      { route: "/plan/insights" }
+    )
+
+    expect(screen.getByText("Campaign Three")).toBeInTheDocument()
+    expect(screen.queryByText("Campaign Four")).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole("button", { name: "Show all (5)" }))
+    expect(screen.getByText("Campaign Five")).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole("button", { name: "Show less" }))
+    expect(screen.queryByText("Campaign Four")).not.toBeInTheDocument()
+  })
 })

@@ -623,17 +623,20 @@
     "chip": {
       "fewerRaids": "Fewer raids",
       "combineGoals": "Combine goals",
-      "raidableOnly": "Raidable only"
+      "raidableOnly": "Raidable only",
+      "preferEvent": "CE nodes first"
     },
     "help": {
       "fewerRaids": "When several locations cost the same energy per item, raid only the ones with the highest energy per battle. Same materials for the same energy, in fewer raids. Useful when you're low on raid tickets.",
       "combineGoals": "Combine the remaining materials of all goals (only the selected project's goals when one is picked) and plan today's raids as if they were one goal: one list without goal groups, the materials that take longest to finish first, and goal priority is ignored.",
-      "raidableOnly": "Leave out battles you can't raid yet (fewer than 3 medals) and raid other locations for the same materials. A material with no raidable location shows as blocked."
+      "raidableOnly": "Leave out battles you can't raid yet (fewer than 3 medals) and raid other locations for the same materials. A material with no raidable location shows as blocked.",
+      "preferEvent": "While a campaign event is running, farm each material in the event's battles you've reached whenever one of them drops it, even when another location costs less energy per item. More of your energy goes to event points; other materials are farmed as usual."
     },
     "note": {
       "fewerRaids": "Fewer raids: tied locations with more energy per battle are used, so the same materials take fewer raids.",
       "combineGoals": "Combine goals: today's raids treat all goals as one list, the materials that take longest to finish first. Plan and Goals dates still follow goal priority.",
-      "raidableOnly": "Raidable only: battles that need to be played manually are replaced with raidable locations."
+      "raidableOnly": "Raidable only: battles that need to be played manually are replaced with raidable locations.",
+      "preferEvent": "CE nodes first: materials that drop in the running campaign event are farmed in its battles."
     }
   },
   "hse": {

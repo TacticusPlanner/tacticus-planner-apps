@@ -81,6 +81,7 @@ export function useDailyRaids(
   const fewerRaids = options?.quickFilters?.fewerRaids ?? false
   const combineGoals = options?.quickFilters?.combineGoals ?? false
   const raidableOnly = options?.quickFilters?.raidableOnly ?? false
+  const preferEvent = options?.quickFilters?.preferEvent ?? false
   const eventFarmOrder = options?.eventFarmOrder ?? "points"
   const { t } = useTranslation([
     "dailies",
@@ -209,6 +210,17 @@ export function useDailyRaids(
       ),
     [availableBattles, manualBattleIds, raidableOnly]
   )
+  // The active campaign event's reached nodes: what "CE nodes first" prefers and what offers it.
+  const activeEventBattleIds = useMemo(() => {
+    const activeId = liveProgress?.activeCampaignEventId
+    return new Set(
+      activeId
+        ? availableBattles
+            .filter((battle) => battle.campaignGroupId === activeId)
+            .map((battle) => battle.id)
+        : []
+    )
+  }, [availableBattles, liveProgress])
   const locationsByBattleId = useMemo(
     () =>
       buildLocationsByBattleId(
@@ -413,6 +425,10 @@ export function useDailyRaids(
       raidsFilters,
       filterBattlesById,
       quickFilters: { fewerRaids, combineGoals },
+      preferredBattleIds:
+        preferEvent && activeEventBattleIds.size > 0
+          ? activeEventBattleIds
+          : undefined,
       attemptsLeftByBattle,
       energyUsedToday: realEnergyUsedToday,
       eventFarm: farm
@@ -434,6 +450,7 @@ export function useDailyRaids(
           hasManualRaids: result.today.entries.some((entry) =>
             manualBattleIds.has(entry.battleId)
           ),
+          hasActiveEventBattles: activeEventBattleIds.size > 0,
           resourceByBattleId,
           sourcesByResource,
           eligibleBattleIds,
@@ -447,6 +464,7 @@ export function useDailyRaids(
           locationsByBattleId,
         }
   }, [
+    activeEventBattleIds,
     ascensionCostsById,
     attemptsLeftByBattle,
     availableBattles,
@@ -483,6 +501,7 @@ export function useDailyRaids(
     planLoading,
     playerCharacterById,
     playerMowById,
+    preferEvent,
     raidsFilters,
     raidableOnly,
     realEnergyUsedToday,

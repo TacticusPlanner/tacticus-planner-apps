@@ -3,6 +3,7 @@ export const TODAY_QUICK_FILTERS = [
   "fewerRaids",
   "combineGoals",
   "raidableOnly",
+  "preferEvent",
 ] as const
 export type TodayQuickFilter = (typeof TODAY_QUICK_FILTERS)[number]
 
@@ -12,6 +13,8 @@ export type TodayQuickFilterOptions = {
   combineGoals: boolean
   /** Leave out battles that must be played manually (fewer than 3 medals). */
   raidableOnly?: boolean
+  /** Farm a material at the active campaign event's reached nodes when any of them drops it. */
+  preferEvent?: boolean
 }
 
 export const isTodayQuickFilter = (value: string): value is TodayQuickFilter =>
@@ -40,5 +43,6 @@ export function todayQuickFilterOptions(
     fewerRaids: filters.includes("fewerRaids"),
     combineGoals: filters.includes("combineGoals"),
     raidableOnly: filters.includes("raidableOnly"),
+    preferEvent: filters.includes("preferEvent"),
   }
 }

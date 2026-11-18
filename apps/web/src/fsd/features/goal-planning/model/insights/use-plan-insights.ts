@@ -270,6 +270,15 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             levelRules,
             upgradesById,
             battlesById,
+            eventBattlesById: allBattlesById
+              ? new Map(
+                  [...allBattlesById].filter(
+                    ([, battle]) =>
+                      releaseTypeByGroupId.get(battle.campaignGroupId) ===
+                      "event"
+                  )
+                )
+              : undefined,
             charactersById: charactersById,
             mowsById: mowsById,
             ascensionCostsById: ascensionCostsById,

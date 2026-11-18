@@ -59,6 +59,9 @@ export function selectFarmNodes(
  * Common materials). A goal's pinned locations are filtered like any other set; a material is only
  * filtered out when no candidate passes. `fewerRaids` (Today's "Fewer raids" quick filter) keeps only
  * the costliest per battle of the tied cheapest nodes; pinned locations are used as chosen.
+ * `preferredBattleIds` (Today's "CE nodes first" quick filter) narrows the pick to those nodes when
+ * any of them passes, even at a worse energy per item; the material falls back to the usual pick
+ * when none of its nodes is preferred.
  */
 function pickFarmNodes(
   need: UpgradeNeed,
@@ -66,7 +69,8 @@ function pickFarmNodes(
   battlesById: ReadonlyMap<BattleId, Battle>,
   farmingLocationIds?: readonly string[] | null,
   nodeFilter?: FarmNodeFilter,
-  fewerRaids = false
+  fewerRaids = false,
+  preferredBattleIds?: ReadonlySet<BattleId>
 ): { candidates: FarmNode[]; nodes: FarmNode[] } {
   const upgrade = upgradesById.get(need.id)
   if (!upgrade) return { candidates: [], nodes: [] }
@@ -82,11 +86,15 @@ function pickFarmNodes(
     : candidates
   if (passing.length === 0 || restricted) return { candidates, nodes: passing }
 
+  const preferred = preferredBattleIds
+    ? passing.filter((node) => preferredBattleIds.has(node.battleId))
+    : []
+  const pool = preferred.length > 0 ? preferred : passing
   // Tie test only: two-decimal efficiency as V1 (`campaigns.service.ts`); nodes keep their real dropRate.
   const efficiency = (c: FarmNode) =>
     Number((c.energyCost / c.dropRate).toFixed(2))
-  const minEnergyPerItem = Math.min(...passing.map(efficiency))
-  let cheapest = passing.filter((c) => efficiency(c) === minEnergyPerItem)
+  const minEnergyPerItem = Math.min(...pool.map(efficiency))
+  let cheapest = pool.filter((c) => efficiency(c) === minEnergyPerItem)
   if (fewerRaids) {
     // V1 `leastEnergyFewestTickets`: at equal energy per item, a costlier battle yields more items
     // per raid, so the same items take fewer raids (tickets).
@@ -154,7 +162,8 @@ export function classifyNeed(
   farmingLocationIds: readonly string[] | null | undefined,
   dailyEnergy: number,
   nodeFilter?: FarmNodeFilter,
-  fewerRaids = false
+  fewerRaids = false,
+  preferredBattleIds?: ReadonlySet<BattleId>
 ): {
   nodes: FarmNode[]
   blocker: EstimateBlockedReason | null
@@ -177,7 +186,8 @@ export function classifyNeed(
         battlesById,
         farmingLocationIds,
         nodeFilter,
-        fewerRaids
+        fewerRaids,
+        preferredBattleIds
       )
   if (nodes.length === 0 && !unavailable && !hasSupplier) {
     if (candidates.length > 0) {
