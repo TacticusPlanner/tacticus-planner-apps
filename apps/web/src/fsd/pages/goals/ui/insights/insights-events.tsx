@@ -17,9 +17,15 @@ import type { PlanFarmingSpot } from "@/features/goal-planning"
 import { CampaignInsightList } from "@/entities/campaign-insight"
 import type { CampaignInsight } from "@/entities/campaign-insight"
 
+import { energyIconUrl, EntityIcon } from "@/shared/ui"
+
 import { GoalLink } from "./insights-goal-link"
 import { useGoalLabel } from "./insights-view"
 import type { InsightsGoalInfo } from "./insights-view"
+
+/** Energy to farm one of the needed items there, at the campaign's cheapest node for each. */
+const energyPerItem = (spot: PlanFarmingSpot) =>
+  spot.itemCount > 0 ? spot.energy / spot.itemCount : 0
 
 /** How many campaigns (or events) a card lists before "Show all". */
 const TOP_COUNT = 3
@@ -30,6 +36,7 @@ const TOP_COUNT = 3
 export function InsightsEvents({
   title,
   description,
+  emptyText,
   insights,
   benefitingGoalIdsByInsightId,
   farmingSpotsByInsightId,
@@ -38,17 +45,26 @@ export function InsightsEvents({
   title: string
   /** A line under the title (the events card says it covers events that are not running). */
   description?: string
+  /** Shown in place of the list when nothing ranks; without it the card is hidden instead. */
+  emptyText?: string
   insights: CampaignInsight<EstimateResourceId>[]
   benefitingGoalIdsByInsightId: Map<string, string[]>
   farmingSpotsByInsightId: ReadonlyMap<string, PlanFarmingSpot>
   goalInfoById: ReadonlyMap<string, InsightsGoalInfo>
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { upgradesById } = useGoalCatalog()
+  const number = new Intl.NumberFormat(i18n.resolvedLanguage, {
+    maximumFractionDigits: 0,
+  })
+  const percent = new Intl.NumberFormat(i18n.resolvedLanguage, {
+    style: "percent",
+    maximumFractionDigits: 0,
+  })
   const goalLabel = useGoalLabel(goalInfoById)
   const [showAll, setShowAll] = useState(false)
 
-  if (insights.length === 0) {
+  if (insights.length === 0 && !emptyText) {
     return null
   }
 
@@ -64,6 +80,14 @@ export function InsightsEvents({
         </CardAction>
       </CardHeader>
       <CardContent>
+        {insights.length === 0 ? (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="insights-events-empty"
+          >
+            {emptyText}
+          </p>
+        ) : null}
         <CampaignInsightList
           hint={t("goals.insights.farmingSpotHint")}
           label={title}
@@ -85,23 +109,49 @@ export function InsightsEvents({
             const spot = farmingSpotsByInsightId.get(insight.id)
             if (!spot) return null
             return (
-              <span data-testid="insights-farming-spot">
-                {t("goals.insights.farmingSpot", {
-                  count: spot.resourceCount,
-                  days: t("goals.insights.days", {
-                    count: Math.ceil(spot.days),
-                  }),
+              <span
+                className="inline-flex items-center gap-1"
+                data-testid="insights-farming-spot"
+              >
+                {t("goals.insights.farmingSpotShare", {
+                  share: percent.format(spot.coverage),
+                })}
+                <span aria-hidden>·</span>
+                <EntityIcon
+                  alt={t("goals.insights.energy")}
+                  className="size-4 shrink-0"
+                  src={energyIconUrl}
+                />
+                {t("goals.insights.perItem", {
+                  energy: number.format(energyPerItem(spot)),
                 })}
               </span>
             )
           }}
           renderFooter={(insight) => {
             const goalIds = benefitingGoalIdsByInsightId.get(insight.id) ?? []
+            const spot = farmingSpotsByInsightId.get(insight.id)
             return (
               <div
                 className="mt-2 flex flex-col gap-1"
                 data-testid="insights-event-chip"
               >
+                {spot ? (
+                  <p
+                    className="text-xs text-muted-foreground"
+                    data-testid="insights-farming-spot-detail"
+                  >
+                    {t("goals.insights.farmingSpotDetail", {
+                      count: spot.itemCount,
+                      items: number.format(spot.itemCount),
+                      resources: spot.resourceCount,
+                      energy: number.format(spot.energy),
+                      days: t("goals.insights.days", {
+                        count: Math.ceil(spot.days),
+                      }),
+                    })}
+                  </p>
+                ) : null}
                 {goalIds.length > 0 ? (
                   <>
                     <span className="text-xs text-muted-foreground">

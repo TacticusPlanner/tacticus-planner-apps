@@ -314,5 +314,17 @@ describe("InsightsPage", () => {
     expect(await screen.findByTestId("insights-outlook")).toBeInTheDocument()
     expect((await screen.findAllByText("1")).length).toBeGreaterThan(0)
     expect(getGoal).not.toHaveBeenCalled()
+
+    // The farming cards rank reached nodes until "All" is picked.
+    expect(screen.getByTestId("insights-locations-reached")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    await userEvent.click(screen.getByTestId("insights-locations-all"))
+    expect(screen.getByTestId("insights-locations-all")).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    expect(screen.getByTestId("insights-outlook")).toBeInTheDocument()
   })
 })
