@@ -100,7 +100,7 @@ export function IncursionTierPage() {
       <header className="flex flex-wrap items-center gap-x-6 gap-y-3">
         <div className="space-y-0.5">
           <h2
-            className="text-xl font-semibold tracking-wide uppercase"
+            className="text-xl font-semibold"
             data-testid="incursion-tier-title"
           >
             {title}

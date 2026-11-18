@@ -327,7 +327,6 @@
     "notSet": "Nicht festgelegt",
     "notSetHint": "Wähle den Sektor dieser Allianz, um ihre Scherben pro Lauf zu sehen.",
     "yieldPerRun": "Scherben pro Lauf an dieser Position",
-    "help": "Wähle den Sektor und die Stufe, die du gerade farmst – die dein nächster Lauf verwendet. Sobald du Stufe 3 abgeschlossen hast, aktiviere „Sektor abgeschlossen“; ein abgeschlossener Sektor gibt weiter die Belohnungen von Stufe 3, bis du in den nächsten Sektor wechselst.",
     "sectors": {
       "Stone": "Stein",
       "Iron": "Eisen",
@@ -714,7 +713,7 @@
       "currentEvent": "Aktuelles Event",
       "allEvents": "Alle Events",
       "saveHint": "Ungespeicherte Änderungen erscheinen in einer Leiste am unteren Seitenrand.",
-      "hideCompleted": "Abgeschlossene Events ausblenden",
+      "unfinishedOnly": "Nur unfertige",
       "allCompleted": "Alle Kampagnen-Events sind abgeschlossen.",
       "showCompleted": "Abgeschlossene Events anzeigen",
       "noEvents": "Es gibt noch keine Kampagnen-Events zum Verfolgen.",
@@ -2413,8 +2412,8 @@
           "content": "Jedes Event zeigt seinen Fortschritt auf einen Blick und ob Werte manuell sind oder keine synchronisierten Daten haben. Klappe es zum Bearbeiten auf."
         },
         "hideCompleted": {
-          "title": "Abgeschlossene Events ausblenden",
-          "content": "Unfertige Events stehen oben. Schalte dies ein, um abgeschlossene auszublenden; die Auswahl wird in diesem Browser gespeichert."
+          "title": "Nur unfertige",
+          "content": "Unfertige Events stehen oben. Schalte dies ein, um nur diese anzuzeigen; die Auswahl wird in diesem Browser gespeichert."
         },
         "save": {
           "title": "Änderungen speichern",
@@ -2426,7 +2425,7 @@
       "steps": {
         "alliances": {
           "title": "Fortschritt der Allianzen",
-          "content": "Lege für jede Allianz den Sektor und die Stufe fest, die sie farmt. Jede Karte zeigt die Scherben, die ein Lauf an dieser Position bringt."
+          "content": "Wähle den Sektor und die Stufe, die du gerade farmst – die dein nächster Lauf verwendet. Sobald du Stufe 3 abgeschlossen hast, aktiviere „Sektor abgeschlossen“; ein abgeschlossener Sektor gibt weiter die Belohnungen von Stufe 3, bis du in den nächsten Sektor wechselst. Jede Karte zeigt die Scherben, die ein Lauf an dieser Position bringt."
         },
         "save": {
           "title": "Änderungen speichern",

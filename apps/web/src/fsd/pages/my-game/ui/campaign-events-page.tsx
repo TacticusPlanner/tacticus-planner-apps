@@ -4,9 +4,11 @@ import { useTranslation } from "react-i18next"
 import { Accordion } from "@workspace/ui/components/accordion"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
-import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { Switch } from "@workspace/ui/components/switch"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
 
 import {
   buildEffectiveCampaignEventProgress,
@@ -21,7 +23,12 @@ import type {
 import { useSavedBattleProgress } from "@/features/daily-raids"
 import { useRevisionedDraft } from "@/shared/api"
 import { usePersistedSelection } from "@/shared/lib"
-import { UnsavedChangesBar, UnsavedChangesGuard } from "@/shared/ui"
+import {
+  FILTER_CHIP_CLASS_NAME,
+  PageToolbar,
+  UnsavedChangesBar,
+  UnsavedChangesGuard,
+} from "@/shared/ui"
 
 import {
   applyOverridePatch,
@@ -42,7 +49,9 @@ type MessageKey =
   | "progress.events.conflict"
   | "progress.events.saveError"
 
+// Stored under its old "hide completed" name, so a choice made before the chip still holds.
 const HIDE_COMPLETED_KEY = "progress.campaign-events.hide-completed"
+const UNFINISHED_ONLY = "unfinishedOnly"
 const isOnOff = (value: unknown): value is "on" | "off" =>
   value === "on" || value === "off"
 
@@ -138,6 +147,11 @@ export function CampaignEventsPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="campaign-events-page">
+      <CampaignEventsToolbar
+        hasList={views.list.length > 0}
+        unfinishedOnly={hideCompleted === "on"}
+        onUnfinishedOnlyChange={(on) => setHideCompleted(on ? "on" : "off")}
+      />
       {message ? (
         <Alert
           variant={message.tone === "error" ? "destructive" : "default"}
@@ -180,33 +194,14 @@ export function CampaignEventsPage() {
 
       {views.list.length > 0 ? (
         <section className="space-y-3" data-testid="campaign-events-list">
-          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-            <div className="space-y-0.5">
-              <h2 className="font-semibold">
-                {t("progress.events.allEvents")}
-              </h2>
-              <p
-                className="text-xs text-muted-foreground"
-                data-testid="campaign-events-save-hint"
-              >
-                {t("progress.events.saveHint")}
-              </p>
-            </div>
-            <div
-              className="flex items-center gap-2"
-              data-testid="hide-completed-toggle"
+          <div className="space-y-0.5">
+            <h2 className="font-semibold">{t("progress.events.allEvents")}</h2>
+            <p
+              className="text-xs text-muted-foreground"
+              data-testid="campaign-events-save-hint"
             >
-              <Switch
-                id="hide-completed-events"
-                checked={hideCompleted === "on"}
-                onCheckedChange={(checked) =>
-                  setHideCompleted(checked ? "on" : "off")
-                }
-              />
-              <Label htmlFor="hide-completed-events">
-                {t("progress.events.hideCompleted")}
-              </Label>
-            </div>
+              {t("progress.events.saveHint")}
+            </p>
           </div>
           {listed.length > 0 ? (
             <Accordion type="multiple">
@@ -258,6 +253,48 @@ export function CampaignEventsPage() {
         leaveLabel={t("progress.events.leave.leave")}
       />
     </div>
+  )
+}
+
+/** The page toolbar (ui-style-guide rule 2): the "Unfinished only" filter chip in the Find slot,
+ *  shown while there is an event list to filter. */
+function CampaignEventsToolbar({
+  hasList,
+  unfinishedOnly,
+  onUnfinishedOnlyChange,
+}: {
+  hasList: boolean
+  unfinishedOnly: boolean
+  onUnfinishedOnlyChange: (on: boolean) => void
+}) {
+  const { t } = useTranslation()
+  if (!hasList) return null
+  return (
+    <PageToolbar
+      find={
+        <ToggleGroup
+          aria-label={t("progress.events.unfinishedOnly")}
+          data-testid="hide-completed-toggle"
+          onValueChange={(values) =>
+            onUnfinishedOnlyChange(values.includes(UNFINISHED_ONLY))
+          }
+          size="sm"
+          spacing={1}
+          type="multiple"
+          value={unfinishedOnly ? [UNFINISHED_ONLY] : []}
+          variant="outline"
+        >
+          <ToggleGroupItem
+            className={FILTER_CHIP_CLASS_NAME}
+            data-testid="campaign-events-unfinished-only"
+            value={UNFINISHED_ONLY}
+          >
+            {t("progress.events.unfinishedOnly")}
+          </ToggleGroupItem>
+        </ToggleGroup>
+      }
+      testId="campaign-events-toolbar"
+    />
   )
 }
 

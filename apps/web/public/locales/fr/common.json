@@ -327,7 +327,6 @@
     "notSet": "Non défini",
     "notSetHint": "Choisissez le secteur de cette alliance pour voir ses éclats par partie.",
     "yieldPerRun": "Éclats par partie à cette position",
-    "help": "Choisissez le secteur et le palier que vous farmez actuellement, celui qu'utilisera votre prochaine partie. Une fois le palier 3 terminé, cochez « Secteur terminé » ; un secteur terminé continue de donner les récompenses du palier 3 jusqu'à ce que vous passiez au secteur suivant.",
     "sectors": {
       "Stone": "Pierre",
       "Iron": "Fer",
@@ -714,7 +713,7 @@
       "currentEvent": "Événement en cours",
       "allEvents": "Tous les événements",
       "saveHint": "Les modifications non enregistrées apparaissent dans une barre en bas de la page.",
-      "hideCompleted": "Masquer les événements terminés",
+      "unfinishedOnly": "Inachevés uniquement",
       "allCompleted": "Tous les événements de campagne sont terminés.",
       "showCompleted": "Afficher les événements terminés",
       "noEvents": "Il n'y a encore aucun événement de campagne à suivre.",
@@ -2413,8 +2412,8 @@
           "content": "Chaque événement affiche sa progression d'un coup d'œil et indique si des valeurs sont manuelles ou sans données synchronisées. Dépliez-le pour le modifier."
         },
         "hideCompleted": {
-          "title": "Masquer les événements terminés",
-          "content": "Les événements inachevés apparaissent en premier. Activez cette option pour masquer ceux qui sont terminés ; le choix est mémorisé dans ce navigateur."
+          "title": "Inachevés uniquement",
+          "content": "Les événements inachevés apparaissent en premier. Activez cette option pour n'afficher qu'eux ; le choix est mémorisé dans ce navigateur."
         },
         "save": {
           "title": "Enregistrer vos modifications",
@@ -2426,7 +2425,7 @@
       "steps": {
         "alliances": {
           "title": "Progression des alliances",
-          "content": "Indiquez le secteur et le palier que farme chaque alliance. Chaque carte affiche les éclats que rapporte une partie à cette position."
+          "content": "Choisissez le secteur et le palier que vous farmez actuellement, celui qu'utilisera votre prochaine partie. Une fois le palier 3 terminé, cochez « Secteur terminé » ; un secteur terminé continue de donner les récompenses du palier 3 jusqu'à ce que vous passiez au secteur suivant. Chaque carte affiche les éclats que rapporte une partie à cette position."
         },
         "save": {
           "title": "Enregistrer vos modifications",

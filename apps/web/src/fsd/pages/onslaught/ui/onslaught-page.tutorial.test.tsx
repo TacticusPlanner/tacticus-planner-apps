@@ -30,11 +30,11 @@ describe("useOnslaughtTutorial", () => {
     }
     expect(steps.desktop.map((step) => step.target)).toEqual([
       '[data-testid="onslaught-alliance-cards"]',
-      '[data-testid="onslaught-progress-help"]',
+      "body",
     ])
     expect(steps.mobile.map((step) => step.target)).toEqual([
       '[data-testid="imperial-onslaught-card"]',
-      '[data-testid="onslaught-progress-help"]',
+      "body",
     ])
   })
 })

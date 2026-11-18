@@ -148,13 +148,6 @@ export function OnslaughtPage() {
         })}
       </div>
 
-      <p
-        className="-mt-4 text-sm text-muted-foreground"
-        data-testid="onslaught-progress-help"
-      >
-        {t("onslaught.help")}
-      </p>
-
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">{t("onslaught.rewardsTitle")}</h2>
         {/* `relative` keeps the header's absolutely positioned sr-only labels inside this scroller,
@@ -214,7 +207,7 @@ export function OnslaughtPage() {
                                   ? `${t(`alliances.${alliance}`)} · ${t("onslaught.tierComplete")}`
                                   : t(`alliances.${alliance}`)
                               }
-                              className="size-7"
+                              className="size-8"
                             />
                           ))}
                         </div>

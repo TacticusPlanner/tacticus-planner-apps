@@ -269,9 +269,7 @@ function StorySection({
 }) {
   return (
     <section className="space-y-3">
-      <h3 className="border-b pb-2 text-sm font-semibold tracking-wide uppercase">
-        {title}
-      </h3>
+      <h3 className="border-b pb-2 text-sm font-medium">{title}</h3>
       {stories.map((story) => (
         <StoryCard key={story.key} story={story} onEditMedals={onEditMedals} />
       ))}
@@ -291,7 +289,8 @@ function StoryCard({
   const first = story.definitions[0]
   return (
     <Card>
-      <CardHeader className="flex-row items-center gap-3">
+      {/* `flex` replaces the header's default grid, so icon, title and percent share one row. */}
+      <CardHeader className="flex flex-row items-center gap-3">
         <EntityIcon
           src={first && campaignIcon(first.definition.groupId, first.type)}
           alt=""
@@ -315,7 +314,7 @@ function StoryCard({
                 key={id}
                 src={characterIcon(id as UnitId)}
                 alt={id}
-                className="size-9 rounded-sm"
+                className="size-10 rounded-sm"
               />
             ))}
           </div>

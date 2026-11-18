@@ -21,9 +21,7 @@ export function ProgressSummary({
 }) {
   return (
     <div data-testid={testId}>
-      <p className="text-xs font-semibold text-muted-foreground uppercase">
-        {label}
-      </p>
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
       <p className="text-3xl font-bold tabular-nums">{percent}%</p>
       <p className="text-xs text-muted-foreground">
         {done}/{total} · {cleared} cleared

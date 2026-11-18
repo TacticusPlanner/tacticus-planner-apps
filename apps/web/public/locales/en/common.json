@@ -327,7 +327,6 @@
     "notSet": "Not set",
     "notSetHint": "Choose the sector this alliance is in to see its shards per run.",
     "yieldPerRun": "Shards per run at this position",
-    "help": "Pick the sector and tier you are currently farming — the one your next run uses. Once you have cleared Tier 3, tick “Sector complete”; a completed sector keeps paying Tier 3 rewards until you move to the next sector.",
     "sectors": {
       "Stone": "Stone",
       "Iron": "Iron",
@@ -714,7 +713,7 @@
       "currentEvent": "Current event",
       "allEvents": "All events",
       "saveHint": "Unsaved changes appear in a bar at the bottom of the page.",
-      "hideCompleted": "Hide completed events",
+      "unfinishedOnly": "Unfinished only",
       "allCompleted": "All campaign events are completed.",
       "showCompleted": "Show completed events",
       "noEvents": "There are no campaign events to track yet.",
@@ -2413,8 +2412,8 @@
           "content": "Each event shows its progress at a glance and whether values are manual or have no synced data. Open it to edit."
         },
         "hideCompleted": {
-          "title": "Hide completed events",
-          "content": "Unfinished events are listed first. Turn this on to hide completed ones; the choice is remembered in this browser."
+          "title": "Unfinished only",
+          "content": "Unfinished events are listed first. Turn this on to list only those; the choice is remembered in this browser."
         },
         "save": {
           "title": "Save your changes",
@@ -2426,7 +2425,7 @@
       "steps": {
         "alliances": {
           "title": "Alliance progress",
-          "content": "Set the sector and tier each alliance is farming. Each card shows the shards one run pays at that position."
+          "content": "Pick the sector and tier you are currently farming — the one your next run uses. Once you have cleared Tier 3, tick “Sector complete”; a completed sector keeps paying Tier 3 rewards until you move to the next sector. Each card shows the shards one run pays at that position."
         },
         "save": {
           "title": "Save your changes",

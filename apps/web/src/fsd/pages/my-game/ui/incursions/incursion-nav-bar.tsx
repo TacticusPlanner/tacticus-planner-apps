@@ -2,13 +2,14 @@ import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 type NavTarget = { to: string; name: string }
 
 /**
  * The top bar of an Incursion MoW or tier page, like the Library's unit pages: back to the list it
- * came from, the breadcrumb, and prev/next with the position.
+ * came from, the breadcrumb, and prev/next with the position. Every button keeps its text label on
+ * mobile too (no icon-only controls); the row wraps instead, and the breadcrumb then shows only the
+ * page's own name.
  */
 export function IncursionNavBar({
   back,
@@ -26,9 +27,6 @@ export function IncursionNavBar({
   position?: string
 }) {
   const { t } = useTranslation("incursions")
-  const isMobile = useIsMobile()
-  const size = isMobile ? "size-11" : "h-10"
-  const buttonSize = isMobile ? "icon" : "default"
 
   const stepButton = (
     target: NavTarget | undefined,
@@ -41,7 +39,7 @@ export function IncursionNavBar({
     const content = (
       <>
         {direction === "previous" && <Icon aria-hidden="true" />}
-        {isMobile ? null : t(`nav.${direction}`)}
+        {t(`nav.${direction}`)}
         {direction === "next" && <Icon aria-hidden="true" />}
       </>
     )
@@ -49,8 +47,6 @@ export function IncursionNavBar({
       return (
         <Button
           variant="outline"
-          size={buttonSize}
-          className={size}
           disabled
           aria-label={label}
           data-testid={`incursion-nav-${direction}`}
@@ -60,7 +56,7 @@ export function IncursionNavBar({
       )
     }
     return (
-      <Button asChild variant="outline" size={buttonSize} className={size}>
+      <Button asChild variant="outline">
         <Link
           to={target.to}
           aria-label={label}
@@ -81,28 +77,26 @@ export function IncursionNavBar({
       className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border bg-card px-3 py-2 md:px-4"
       data-testid="incursion-nav-bar"
     >
-      <Button asChild variant="outline" size={buttonSize} className={size}>
+      <Button asChild className="max-w-full min-w-0" variant="outline">
         <Link
           to={back.to}
           aria-label={t("nav.backTo", { label: back.label })}
           data-testid="incursion-nav-back"
         >
           <ArrowLeft aria-hidden="true" />
-          {isMobile ? null : back.label}
+          <span className="truncate">{back.label}</span>
         </Link>
       </Button>
       <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
-        {isMobile
-          ? null
-          : crumbs.map((crumb) => (
-              <span key={crumb}>
-                {crumb}
-                <span aria-hidden="true"> / </span>
-              </span>
-            ))}
+        {crumbs.map((crumb) => (
+          <span key={crumb} className="max-sm:hidden">
+            {crumb}
+            <span aria-hidden="true"> / </span>
+          </span>
+        ))}
         <span className="font-semibold text-foreground">{current}</span>
       </p>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 max-sm:w-full max-sm:justify-between">
         {stepButton(previous, "previous")}
         {position ? (
           <span
