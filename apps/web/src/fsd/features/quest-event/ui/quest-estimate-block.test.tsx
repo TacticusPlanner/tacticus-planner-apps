@@ -59,7 +59,7 @@ describe("QuestEstimateBlock", () => {
     })
 
     expect(screen.getByTestId("quest-estimate")).toHaveTextContent(
-      "estimate · uncalibrated"
+      "rough estimate"
     )
     expect(screen.getByTestId("quest-estimate-first")).toHaveTextContent(
       "With objectives: Doesn't clear · team 40,000 vs 50,000 needed"

@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "Tacticus Planner",
-    "beta": "BETA"
+    "beta": "Beta"
   },
   "common": {
     "close": "Cerrar",
@@ -28,22 +28,22 @@
   },
   "catalog": {
     "badge": {
-      "error": "Error del catálogo",
-      "idle": "Catálogo inactivo",
-      "ready": "Catálogo del juego versión {{version}}",
-      "stale": "Catálogo desactualizado",
-      "syncing": "Sincronizando catálogo"
+      "error": "Error en los datos del juego",
+      "idle": "Datos del juego sin cargar",
+      "ready": "Datos del juego versión {{version}}",
+      "stale": "Datos del juego desactualizados",
+      "syncing": "Actualizando los datos del juego"
     },
     "init": {
       "firstTimeTitle": "Configurando los datos del juego",
       "firstTimeDescription": "Primer uso en este dispositivo — esto puede tardar un poco más.",
-      "updatingTitle": "Actualizando el catálogo del juego",
-      "updatingDescription": "Actualizando los datos del catálogo del juego a la versión {{version}}.",
-      "updatingDescriptionNoVersion": "Actualizando los datos del catálogo del juego.",
-      "preparing": "Preparando el catálogo del juego…",
+      "updatingTitle": "Actualizando los datos del juego",
+      "updatingDescription": "Actualizando los datos del juego a la versión {{version}}.",
+      "updatingDescriptionNoVersion": "Actualizando los datos del juego.",
+      "preparing": "Preparando los datos del juego…",
       "progress": "Descargando {{done}} / {{total}}…",
       "errorTitle": "No se pudieron cargar los datos del juego",
-      "errorDescription": "Algo salió mal al cargar el catálogo del juego.",
+      "errorDescription": "Algo salió mal al cargar los datos del juego.",
       "retry": "Reintentar"
     }
   },
@@ -261,7 +261,7 @@
     "current": "Actual",
     "target": "Objetivo",
     "share": {
-      "action": "Compartir",
+      "action": "Compartir enlace",
       "copied": "Enlace copiado al portapapeles.",
       "error": "No se pudo compartir ni copiar el enlace."
     }
@@ -269,22 +269,22 @@
   "nav": {
     "addGoal": "Añadir objetivo",
     "dailies": "Diarias",
-    "dailiesDescription": "Tareas diarias y periódicas del juego",
+    "dailiesDescription": "Tareas diarias y periódicas del juego.",
     "eventLive": "Evento activo",
     "live": "En vivo",
     "home": "Inicio",
-    "homeDescription": "Resumen de tu cuenta y accesos directos",
+    "homeDescription": "Resumen de tu cuenta y accesos directos.",
     "createGoal": "Crear objetivo",
     "goals": "Plan",
-    "goalsDescription": "Sigue tu progreso hacia tus objetivos",
+    "goalsDescription": "Sigue tu progreso hacia tus objetivos.",
     "myGame": "Mi juego",
-    "myGameDescription": "Tu colección y tu progreso sincronizado del juego",
+    "myGameDescription": "Tu colección y tu progreso sincronizado del juego.",
     "legendaryEvents": "Eventos Legendarios",
-    "legendaryEventsDescription": "Eventos Legendarios activos, próximos y pasados con tu progreso sincronizado",
+    "legendaryEventsDescription": "Eventos Legendarios activos, próximos y pasados con tu progreso sincronizado.",
     "uiKit": "Kit de interfaz",
-    "uiKitDescription": "Vista previa de los componentes del sistema de diseño",
+    "uiKitDescription": "Vista previa de los componentes del sistema de diseño.",
     "guild": "Gremio",
-    "guildDescription": "El plantel y los ajustes de tu gremio",
+    "guildDescription": "El plantel y los ajustes de tu gremio.",
     "menu": "Menú",
     "navigation": "Navegación",
     "navigationHint": "Elige una página o acción rápida, o filtra la lista.",
@@ -303,7 +303,7 @@
       "pagesHeading": "Páginas",
       "createGoalDescription": "Abrir el formulario de nuevo objetivo",
       "createProjectDescription": "Abrir un formulario de proyecto en blanco",
-      "syncDescription": "Actualizar tu Planner desde la API de Tacticus",
+      "syncDescription": "Actualizar tu planificador desde Tacticus",
       "feedbackLabel": "Enviar comentarios",
       "feedbackDescription": "Abrir el widget de comentarios, hoja de ruta y novedades",
       "feedbackUnavailable": "Los comentarios no están disponibles ahora mismo",
@@ -358,15 +358,15 @@
   "myGame": {
     "tabs": {
       "collection": "Colección",
-      "collectionDescription": "Todos los personajes y Máquinas de Guerra: lo que tienes y cuánto ha progresado cada unidad.",
+      "collectionDescription": "Todos los personajes y Máquinas de Guerra, y cuánto ha progresado cada uno.",
       "onslaught": "Onslaught",
-      "onslaughtDescription": "Para cada alianza, elige el sector y el nivel que estás farmeando ahora. Las estimaciones de objetivos usan estas posiciones y tus fichas de Onslaught sincronizadas; las alianzas sin definir no aportan fragmentos de Onslaught.",
+      "onslaughtDescription": "El sector y el nivel que farmeas en cada alianza.",
       "campaigns": "Campañas",
-      "campaignsDescription": "Tu progreso de campaña se sincroniza desde la API de Tacticus y no se puede editar aquí.",
+      "campaignsDescription": "Tu progreso de campaña, sincronizado desde Tacticus.",
       "campaign-events": "Eventos de campaña",
-      "campaign-eventsDescription": "Ajusta el progreso del evento manualmente. Los valores sincronizados, cuando estén disponibles, se mantienen como referencia.",
+      "campaign-eventsDescription": "Tu progreso en cada evento de campaña.",
       "incursions": "Incursiones",
-      "incursionsDescription": "La Incursión de cada Máquina de Guerra: mapa, batallas, enemigos y recompensas de cada nivel, con el máximo de fragmentos por recorrido."
+      "incursionsDescription": "La Incursión de cada Máquina de Guerra: niveles, batallas, enemigos y recompensas."
     },
     "collection": {
       "loading": "Cargando tu colección…",
@@ -378,8 +378,8 @@
       "syncBody": "Tu plantilla aún no se ha sincronizado, así que todas las unidades se muestran en gris. Sincroniza con Tacticus para ver qué unidades tienes.",
       "rosterErrorTitle": "No se pudo cargar tu plantilla",
       "rosterErrorBody": "Todas las unidades se muestran en gris hasta que se cargue. Inténtalo de nuevo.",
-      "catalogErrorTitle": "No se pudo cargar el catálogo de unidades",
-      "catalogErrorBody": "Sin él no se puede mostrar la colección. Inténtalo de nuevo.",
+      "catalogErrorTitle": "No se pudieron cargar las unidades",
+      "catalogErrorBody": "Comprueba tu conexión e inténtalo de nuevo.",
       "retry": "Reintentar",
       "factionOwned": "{{owned}} de {{total}} en tu poder",
       "summaryFiltered": "{{owned}} de {{total}} unidades coincidentes en tu poder",
@@ -741,11 +741,11 @@
   "legendaryEvents": {
     "tabs": {
       "allEvents": "Todos los eventos",
-      "allEventsDescription": "Todos los Eventos Legendarios: activos, próximos y archivados",
+      "allEventsDescription": "Todos los Eventos Legendarios: activos, próximos y archivados.",
       "masterTable": "Tabla maestra",
-      "masterTableDescription": "Los puntos de cada unidad en los Eventos Legendarios que elijas",
+      "masterTableDescription": "Los puntos de cada unidad en los Eventos Legendarios que elijas.",
       "tierList": "Lista de niveles",
-      "tierListDescription": "La lista de niveles del modo horda que usan las estimaciones de avance",
+      "tierListDescription": "Niveles de personajes y enemigos que usan las estimaciones de avance.",
       "activeEventDescription": "Evento Legendario activo con tu progreso sincronizado",
       "upcomingEventDescription": "Próximo Evento Legendario",
       "archivedEventDescription": "Evento Legendario pasado con tu progreso sincronizado",
@@ -844,8 +844,8 @@
     "access": {
       "loadErrorTitle": "El acceso al gremio no está disponible",
       "syncRequiredTitle": "Sincroniza tu gremio",
-      "syncRequiredManager": "Tu gremio está registrado, pero aún no ha completado su primera sincronización. Sincronízalo ahora para desbloquear las herramientas del gremio.",
-      "syncRequiredMember": "Tu gremio está registrado, pero aún no ha completado su primera sincronización. Pide a un líder o colíder que lo sincronice."
+      "syncRequiredManager": "Tu gremio está registrado, pero aún no se ha sincronizado. Sincronízalo para usar las funciones de gremio.",
+      "syncRequiredMember": "Tu gremio está registrado, pero aún no se ha sincronizado. Pide a un líder o colíder que lo sincronice."
     },
     "tacticusUserIdRequired": {
       "title": "Se requiere el ID de usuario de Tacticus",
@@ -923,9 +923,9 @@
     },
     "tabs": {
       "members": "Miembros",
-      "membersDescription": "Consulta el plantel de miembros de tu gremio",
+      "membersDescription": "El plantel de miembros de tu gremio.",
       "settings": "Ajustes",
-      "settingsDescription": "Gestiona los ajustes del planificador de tu gremio"
+      "settingsDescription": "Los ajustes del planificador de tu gremio."
     },
     "members": {
       "empty": "No se encontraron miembros.",
@@ -1128,7 +1128,7 @@
         "empty": "No se trajo nada nuevo. El planificador ya tiene todo lo de tu perfil de V1."
       },
       "partReasons": {
-        "invalidTacticusUserId": "El ID de usuario de Tacticus de V1 no es un GUID válido, así que no se importó.",
+        "invalidTacticusUserId": "El ID de usuario de Tacticus de V1 no es válido, así que no se importó.",
         "tacticusUserIdConflict": "Este ID de usuario de Tacticus ya está vinculado a otra cuenta del planificador, así que no se importó."
       },
       "rosterSnapshots": {
@@ -1161,13 +1161,13 @@
     "tabs": {
       "goals": "Objetivos",
       "overview": "Objetivos",
-      "overviewDescription": "Tus objetivos por orden de prioridad: filtra, agrupa y repriorízalos.",
+      "overviewDescription": "Tus objetivos por orden de prioridad.",
       "projects": "Proyectos",
-      "projectsDescription": "Organiza los objetivos en grupos concretos y consúltalos por separado.",
+      "projectsDescription": "Grupos de objetivos que consultas por separado.",
       "insights": "Información",
-      "insightsDescription": "Recomendaciones de mejoras y campañas",
+      "insightsDescription": "Recomendaciones de mejoras y campañas para tus objetivos.",
       "schedule": "Calendario",
-      "scheduleDescription": "Plan de incursiones día a día para tus objetivos activos, desde hoy hasta completarlos.",
+      "scheduleDescription": "Incursiones día a día para tus objetivos activos hasta completarlos.",
       "all": "Todos los estados",
       "toReach": "No cumplidos",
       "reached": "Alcanzados",
@@ -1368,7 +1368,7 @@
       "projectsSaved": "Proyectos guardados.",
       "projectsSaveFailed": "No se pudieron guardar los proyectos. Revisa tu conexión e inténtalo de nuevo.",
       "addToProjectsDescription": "Elige uno o varios proyectos para añadir los objetivos seleccionados, o crea uno nuevo.",
-      "addToProjectsConfirm": "Añadir",
+      "addToProjectsConfirm": "Añadir a proyectos",
       "addToProjectsConfirmCount": "Añadir a {{count}} proyectos"
     },
     "toasts": {
@@ -1520,7 +1520,7 @@
         }
       },
       "unlockDescription": "Este objetivo se completa en cuanto se desbloquea el personaje.",
-      "unlockUnavailable": "El desbloqueo no está disponible porque este personaje no tiene lugares de fragmentos en el catálogo.",
+      "unlockUnavailable": "El desbloqueo no está disponible porque no se conocen lugares de fragmentos para este personaje.",
       "unlockCostUnsupportedMow": "Los objetivos de desbloqueo se siguen para las Máquinas de Guerra, pero su coste de recursos aún no es compatible.",
       "shardLocations": {
         "labelRegular": "Lugares de fragmentos",
@@ -1622,10 +1622,10 @@
         "hint": "Cada hito se convierte en su propio objetivo, después del anterior.",
         "notAbove": "Cada hito debe estar por encima del anterior."
       },
-      "unlockUnavailable_mow": "Desbloquear no está disponible porque esta máquina de guerra no tiene ubicaciones de fragmentos en el catálogo.",
+      "unlockUnavailable_mow": "El desbloqueo no está disponible porque no se conocen lugares de fragmentos para esta Máquina de Guerra.",
       "unlockDescription_mow": "Este objetivo se completa en cuanto se desbloquea la máquina de guerra.",
       "unlockExistingGoal": "Ya hay un objetivo de desbloqueo para esta unidad.",
-      "openGoal": "Abrir",
+      "openGoal": "Abrir objetivo",
       "takenTarget": "Ya es un objetivo",
       "issues": {
         "summary_one": "{{count}} problema por resolver",
@@ -1677,8 +1677,8 @@
         "NoFarmLocation": "Ningún lugar de farmeo accesible proporciona un recurso necesario.",
         "FarmingOverrideUnavailable": "Los lugares de farmeo seleccionados no proporcionan todos los recursos necesarios.",
         "InsufficientDailyEnergy": "La energía diaria es inferior al coste del nodo utilizable más barato.",
-        "SimulationLimit": "El objetivo no pudo completarse dentro del horizonte de planificación.",
-        "UnsupportedCost": "El cálculo detallado de coste no es compatible con este objetivo.",
+        "SimulationLimit": "Este objetivo tarda más de lo que el planificador puede estimar.",
+        "UnsupportedCost": "El planificador aún no puede estimar el coste de este objetivo.",
         "FilteredOut": "Todos los lugares de farmeo están excluidos por tus filtros de incursiones."
       },
       "unlockAt": "Se desbloquea en",
@@ -2448,7 +2448,7 @@
       },
       "dataDisplay": {
         "description": "Uso básico de tablas y una tabla de datos ordenable y filtrable.",
-        "label": "Visualizacion de datos"
+        "label": "Visualización de datos"
       },
       "feedback": {
         "description": "Alertas, insignias, progreso, esqueletos e indicadores de carga.",
@@ -2551,7 +2551,7 @@
     }
   },
   "tacticusUserId": {
-    "invalid": "Introduce tu ID de usuario de Tacticus como GUID, por ejemplo 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
+    "invalid": "Introduce tu ID de usuario de Tacticus completo, por ejemplo 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
     "inUse": "Este ID de usuario de Tacticus ya está vinculado a otra cuenta del planificador."
   },
   "notFound": {

@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "Tacticus Planner",
-    "beta": "BÊTA"
+    "beta": "Bêta"
   },
   "common": {
     "close": "Fermer",
@@ -28,22 +28,22 @@
   },
   "catalog": {
     "badge": {
-      "error": "Erreur du catalogue",
-      "idle": "Catalogue inactif",
-      "ready": "Catalogue de jeu version {{version}}",
-      "stale": "Catalogue obsolète",
-      "syncing": "Synchronisation du catalogue"
+      "error": "Erreur des données de jeu",
+      "idle": "Données de jeu non chargées",
+      "ready": "Données de jeu version {{version}}",
+      "stale": "Données de jeu obsolètes",
+      "syncing": "Mise à jour des données de jeu"
     },
     "init": {
       "firstTimeTitle": "Configuration des données de jeu",
       "firstTimeDescription": "Première utilisation sur cet appareil — cela peut prendre un peu plus de temps.",
-      "updatingTitle": "Mise à jour du catalogue de jeu",
-      "updatingDescription": "Mise à jour des données du catalogue de jeu vers la version {{version}}.",
-      "updatingDescriptionNoVersion": "Mise à jour des données du catalogue de jeu.",
-      "preparing": "Préparation du catalogue de jeu…",
+      "updatingTitle": "Mise à jour des données de jeu",
+      "updatingDescription": "Mise à jour des données de jeu vers la version {{version}}.",
+      "updatingDescriptionNoVersion": "Mise à jour des données de jeu.",
+      "preparing": "Préparation des données de jeu…",
       "progress": "Téléchargement de {{done}} / {{total}}…",
       "errorTitle": "Impossible de charger les données de jeu",
-      "errorDescription": "Une erreur s'est produite lors du chargement du catalogue de jeu.",
+      "errorDescription": "Une erreur s'est produite lors du chargement des données de jeu.",
       "retry": "Réessayer"
     }
   },
@@ -261,7 +261,7 @@
     "current": "Actuel",
     "target": "Cible",
     "share": {
-      "action": "Partager",
+      "action": "Partager le lien",
       "copied": "Lien copié dans le presse-papiers.",
       "error": "Impossible de partager ou de copier le lien."
     }
@@ -269,22 +269,22 @@
   "nav": {
     "addGoal": "Ajouter un objectif",
     "dailies": "Quotidiennes",
-    "dailiesDescription": "Tâches quotidiennes et périodiques du jeu",
+    "dailiesDescription": "Tâches quotidiennes et périodiques du jeu.",
     "eventLive": "Événement en cours",
     "live": "En cours",
     "home": "Accueil",
-    "homeDescription": "Aperçu de votre compte et raccourcis",
+    "homeDescription": "Aperçu de votre compte et raccourcis.",
     "createGoal": "Créer un objectif",
     "goals": "Plan",
-    "goalsDescription": "Suivez votre progression vers vos objectifs",
+    "goalsDescription": "Suivez votre progression vers vos objectifs.",
     "myGame": "Mon jeu",
-    "myGameDescription": "Votre collection et votre progression de jeu synchronisée",
+    "myGameDescription": "Votre collection et votre progression de jeu synchronisée.",
     "legendaryEvents": "Événements Légendaires",
-    "legendaryEventsDescription": "Événements Légendaires en cours, à venir et passés, avec votre progression synchronisée",
+    "legendaryEventsDescription": "Événements Légendaires en cours, à venir et passés, avec votre progression synchronisée.",
     "uiKit": "Kit d'interface",
-    "uiKitDescription": "Aperçu des composants du système de design",
+    "uiKitDescription": "Aperçu des composants du système de design.",
     "guild": "Guilde",
-    "guildDescription": "Votre effectif et paramètres de guilde",
+    "guildDescription": "Votre effectif et paramètres de guilde.",
     "menu": "Menu",
     "navigation": "Navigation",
     "navigationHint": "Choisissez une page ou une action rapide, ou filtrez la liste.",
@@ -303,7 +303,7 @@
       "pagesHeading": "Pages",
       "createGoalDescription": "Ouvrir le formulaire de nouvel objectif",
       "createProjectDescription": "Ouvrir un formulaire de projet vierge",
-      "syncDescription": "Actualiser votre Planner depuis l'API Tacticus",
+      "syncDescription": "Actualiser votre planificateur depuis Tacticus",
       "feedbackLabel": "Envoyer un avis",
       "feedbackDescription": "Ouvrir le widget d'avis, de feuille de route et de nouveautés",
       "feedbackUnavailable": "Les avis sont indisponibles pour le moment",
@@ -358,15 +358,15 @@
   "myGame": {
     "tabs": {
       "collection": "Collection",
-      "collectionDescription": "Tous les personnages et Machines de guerre : ce que vous possédez et la progression de chaque unité.",
+      "collectionDescription": "Tous les personnages et Machines de guerre, et la progression de chacun.",
       "onslaught": "Onslaught",
-      "onslaughtDescription": "Pour chaque alliance, choisissez le secteur et le palier que vous farmez actuellement. Les estimations d'objectifs utilisent ces positions et vos jetons Onslaught synchronisés ; les alliances non définies ne fournissent aucun éclat d'Onslaught.",
+      "onslaughtDescription": "Le secteur et le palier que vous farmez dans chaque alliance.",
       "campaigns": "Campagnes",
-      "campaignsDescription": "Votre progression de campagne est synchronisée depuis l'API Tacticus et ne peut pas être modifiée ici.",
+      "campaignsDescription": "Votre progression de campagne, synchronisée depuis Tacticus.",
       "campaign-events": "Événements de campagne",
-      "campaign-eventsDescription": "Ajustez manuellement la progression de l'événement. Les valeurs synchronisées, lorsqu'elles sont disponibles, restent la référence.",
+      "campaign-eventsDescription": "Votre progression dans chaque événement de campagne.",
       "incursions": "Incursions",
-      "incursionsDescription": "L'Incursion de chaque Machine de guerre : carte de course, combats, ennemis et récompenses de chaque palier, avec le maximum d'éclats d'un parcours."
+      "incursionsDescription": "L'Incursion de chaque Machine de guerre : paliers, combats, ennemis et récompenses."
     },
     "collection": {
       "loading": "Chargement de votre collection…",
@@ -378,8 +378,8 @@
       "syncBody": "Votre effectif n'a pas encore été synchronisé, toutes les unités sont donc affichées en grisé. Synchronisez avec Tacticus pour voir quelles unités vous possédez.",
       "rosterErrorTitle": "Votre effectif n'a pas pu être chargé",
       "rosterErrorBody": "Toutes les unités restent en grisé jusqu'à son chargement. Réessayez.",
-      "catalogErrorTitle": "Le catalogue des unités n'a pas pu être chargé",
-      "catalogErrorBody": "La collection ne peut pas s'afficher sans lui. Réessayez.",
+      "catalogErrorTitle": "Les unités n'ont pas pu être chargées",
+      "catalogErrorBody": "Vérifiez votre connexion et réessayez.",
       "retry": "Réessayer",
       "factionOwned": "{{owned}} possédées sur {{total}}",
       "summaryFiltered": "{{owned}} unités correspondantes possédées sur {{total}}",
@@ -741,11 +741,11 @@
   "legendaryEvents": {
     "tabs": {
       "allEvents": "Tous les événements",
-      "allEventsDescription": "Tous les Événements Légendaires : en cours, à venir et archivés",
+      "allEventsDescription": "Tous les Événements Légendaires : en cours, à venir et archivés.",
       "masterTable": "Tableau général",
-      "masterTableDescription": "Les points de chaque unité sur les Événements Légendaires choisis",
+      "masterTableDescription": "Les points de chaque unité sur les Événements Légendaires choisis.",
       "tierList": "Liste des tiers",
-      "tierListDescription": "La liste des tiers du mode horde utilisée par les estimations de progression",
+      "tierListDescription": "Tiers des personnages et des ennemis utilisés par les estimations de progression.",
       "activeEventDescription": "Événement Légendaire en cours avec votre progression synchronisée",
       "upcomingEventDescription": "Événement Légendaire à venir",
       "archivedEventDescription": "Événement Légendaire passé avec votre progression synchronisée",
@@ -844,8 +844,8 @@
     "access": {
       "loadErrorTitle": "Accès à la guilde indisponible",
       "syncRequiredTitle": "Synchronisez votre guilde",
-      "syncRequiredManager": "Votre guilde est enregistrée, mais n'a pas encore terminé sa première synchronisation. Synchronisez-la maintenant pour déverrouiller les outils de guilde.",
-      "syncRequiredMember": "Votre guilde est enregistrée, mais n'a pas encore terminé sa première synchronisation. Demandez à un chef ou un co-chef de la synchroniser."
+      "syncRequiredManager": "Votre guilde est enregistrée, mais n'a pas encore été synchronisée. Synchronisez-la pour utiliser les fonctions de guilde.",
+      "syncRequiredMember": "Votre guilde est enregistrée, mais n'a pas encore été synchronisée. Demandez à un chef ou un co-chef de la synchroniser."
     },
     "tacticusUserIdRequired": {
       "title": "ID utilisateur Tacticus requis",
@@ -923,9 +923,9 @@
     },
     "tabs": {
       "members": "Membres",
-      "membersDescription": "Consultez la liste des membres de votre guilde",
+      "membersDescription": "La liste des membres de votre guilde.",
       "settings": "Paramètres",
-      "settingsDescription": "Gérez les paramètres du planificateur pour votre guilde"
+      "settingsDescription": "Les paramètres du planificateur pour votre guilde."
     },
     "members": {
       "empty": "Aucun membre trouvé.",
@@ -1128,7 +1128,7 @@
         "empty": "Rien de nouveau. Le planificateur a déjà tout ce que contient votre profil V1."
       },
       "partReasons": {
-        "invalidTacticusUserId": "L'ID utilisateur Tacticus de V1 n'est pas un GUID valide, il n'a donc pas été importé.",
+        "invalidTacticusUserId": "L'ID utilisateur Tacticus de V1 n'est pas valide, il n'a donc pas été importé.",
         "tacticusUserIdConflict": "Cet ID utilisateur Tacticus est déjà lié à un autre compte du planificateur, il n'a donc pas été importé."
       },
       "rosterSnapshots": {
@@ -1161,13 +1161,13 @@
     "tabs": {
       "goals": "Objectifs",
       "overview": "Objectifs",
-      "overviewDescription": "Vos objectifs par ordre de priorité : filtrez, regroupez et repriorisez.",
+      "overviewDescription": "Vos objectifs par ordre de priorité.",
       "projects": "Projets",
-      "projectsDescription": "Organisez vos objectifs en groupes ciblés et parcourez-les séparément.",
+      "projectsDescription": "Des groupes d'objectifs à parcourir séparément.",
       "insights": "Analyses",
-      "insightsDescription": "Recommandations d'améliorations et de campagnes",
+      "insightsDescription": "Recommandations d'améliorations et de campagnes pour vos objectifs.",
       "schedule": "Calendrier",
-      "scheduleDescription": "Plan de raids jour par jour pour vos objectifs actifs, d'aujourd'hui jusqu'à leur achèvement.",
+      "scheduleDescription": "Raids jour par jour pour vos objectifs actifs jusqu'à leur achèvement.",
       "all": "Tous les statuts",
       "toReach": "Non atteints",
       "reached": "Atteints",
@@ -1368,7 +1368,7 @@
       "projectsSaved": "Projets enregistrés.",
       "projectsSaveFailed": "Impossible d'enregistrer les projets. Vérifiez votre connexion et réessayez.",
       "addToProjectsDescription": "Choisissez un ou plusieurs projets auxquels ajouter les objectifs sélectionnés, ou créez-en un nouveau.",
-      "addToProjectsConfirm": "Ajouter",
+      "addToProjectsConfirm": "Ajouter aux projets",
       "addToProjectsConfirmCount": "Ajouter à {{count}} projets"
     },
     "toasts": {
@@ -1520,7 +1520,7 @@
         }
       },
       "unlockDescription": "Cet objectif est terminé une fois le personnage débloqué.",
-      "unlockUnavailable": "Le déblocage n'est pas disponible car ce personnage n'a aucun lieu d'éclats répertorié.",
+      "unlockUnavailable": "Le déblocage n'est pas disponible car aucun lieu d'éclats n'est connu pour ce personnage.",
       "unlockCostUnsupportedMow": "Les objectifs de déblocage sont suivis pour les machines de guerre, mais leur coût en ressources n'est pas encore pris en charge.",
       "shardLocations": {
         "labelRegular": "Lieux d'éclats",
@@ -1622,10 +1622,10 @@
         "hint": "Chaque étape devient un objectif à part entière, après la précédente.",
         "notAbove": "Chaque étape doit être au-dessus de la précédente."
       },
-      "unlockUnavailable_mow": "Le déblocage est indisponible, car cette machine de guerre n'a aucun lieu d'obtention de fragments dans le catalogue.",
+      "unlockUnavailable_mow": "Le déblocage n'est pas disponible car aucun lieu d'éclats n'est connu pour cette Machine de guerre.",
       "unlockDescription_mow": "Cet objectif est atteint dès que la machine de guerre est débloquée.",
       "unlockExistingGoal": "Il existe déjà un objectif de déblocage pour cette unité.",
-      "openGoal": "Ouvrir",
+      "openGoal": "Ouvrir l'objectif",
       "takenTarget": "Déjà un objectif",
       "issues": {
         "summary_one": "{{count}} problème à corriger",
@@ -1677,8 +1677,8 @@
         "NoFarmLocation": "Aucun lieu de farming accessible ne fournit une ressource requise.",
         "FarmingOverrideUnavailable": "Les lieux de farming sélectionnés ne fournissent pas toutes les ressources requises.",
         "InsufficientDailyEnergy": "L'énergie quotidienne est inférieure au coût du nœud utilisable le moins cher.",
-        "SimulationLimit": "L'objectif n'a pas pu être terminé dans l'horizon de planification.",
-        "UnsupportedCost": "Le calcul détaillé du coût n'est pas pris en charge pour cet objectif.",
+        "SimulationLimit": "Cet objectif prend plus de temps que le planificateur ne peut estimer.",
+        "UnsupportedCost": "Le planificateur ne peut pas encore estimer le coût de cet objectif.",
         "FilteredOut": "Tous les lieux de farming sont exclus par vos filtres de raids."
       },
       "unlockAt": "Se débloque à",
@@ -2448,7 +2448,7 @@
       },
       "dataDisplay": {
         "description": "Utilisation de base des tableaux et tableau de données triable et filtrable.",
-        "label": "Affichage des donnees"
+        "label": "Affichage des données"
       },
       "feedback": {
         "description": "Alertes, badges, progression, squelettes et indicateurs de chargement.",
@@ -2551,7 +2551,7 @@
     }
   },
   "tacticusUserId": {
-    "invalid": "Saisissez votre ID utilisateur Tacticus au format GUID, par exemple 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
+    "invalid": "Saisissez votre ID utilisateur Tacticus complet, par exemple 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
     "inUse": "Cet ID utilisateur Tacticus est déjà lié à un autre compte du planificateur."
   },
   "notFound": {

@@ -12,15 +12,15 @@
     "raids": "Raids",
     "raidsDescription": "Nutze die heutige Energie für deine aktiven Ziele in Prioritätsreihenfolge.",
     "hse": "SBE",
-    "hseDescription": "Startbildschirm-Event: Raide dort, wo das aktuelle Event Punkte bringt",
+    "hseDescription": "Raide dort, wo das aktuelle Startbildschirm-Event Punkte bringt.",
     "hre": "HRE",
-    "hreDescription": "Helden-Release-Event: Verfolge deine Missionen und raide dafür mit möglichst wenig Energie",
+    "hreDescription": "Raide mit möglichst wenig Energie für deine Helden-Release-Event-Missionen.",
     "quest": "Quests",
-    "questDescription": "Quest-Event: verfolge deine Punkte je Kampf und sieh Karte, Gegner und Beute jedes Kampfes",
+    "questDescription": "Deine Quest-Event-Punkte sowie Karte, Gegner und Beute jedes Kampfes.",
     "eventShop": "Event-Shop",
-    "eventShopDescription": "Saisonaler Event-Shop: plane deine Käufe pro Tag, halte sie fest und sieh, wie der Shop deine Ziele abdeckt",
+    "eventShopDescription": "Plane, was du jeden Tag im saisonalen Event-Shop kaufst.",
     "guild-raids": "Gilden-Raids",
-    "guild-raidsDescription": "Sieh dir den aktuellen Gilden-Raid-Status deiner Gilde und deine persönlichen Raid-Ressourcen an."
+    "guild-raidsDescription": "Der Gilden-Raid-Status deiner Gilde und deine Raid-Ressourcen."
   },
   "placeholder": {
     "title": "Dieser Bereich ist in Arbeit",
@@ -91,7 +91,7 @@
       "due": "Jetzt verfügbar",
       "full": "Voll",
       "missingTitle": "Synchronisiere deine Spielerdaten",
-      "missingDescription": "Deine Raid-Markenanzahl erscheint hier, sobald deine Spielerdaten synchronisiert sind."
+      "missingDescription": "Synchronisiere mit Tacticus, um hier deine Raid-Marken zu sehen."
     },
     "exactMeta": {
       "title": "Meta-Bereitschaft",
@@ -121,7 +121,7 @@
       "efficiencyLabel": "{{value}}x",
       "absentMeta": {
         "title": "Gilden-Raid-Meta-Daten synchronisieren",
-        "description": "Exakte-Meta-Empfehlungen erscheinen hier, sobald der kuratierte Datensatz synchronisiert ist."
+        "description": "Exakte-Meta-Empfehlungen sind noch nicht verfügbar."
       },
       "noBossRecommendation": {
         "title": "Keine kuratierte Empfehlung für diesen Boss",
@@ -292,7 +292,7 @@
       "steps": {
         "purpose": {
           "title": "Gilden-Raids",
-          "content": "Diese Seite verbindet deine synchronisierten Gildendaten mit Werkzeugen zur Gilden-Raid-Planung."
+          "content": "Der Raid-Status deiner Gilde und deine eigenen Raid-Ressourcen an einem Ort."
         },
         "access": {
           "title": "Gildenzugriff",
@@ -300,7 +300,7 @@
         },
         "status": {
           "title": "Gilden-Raid-Status",
-          "content": "Der aktuelle Boss deiner Gilde, TP, Stufenfortschritt und Prime-Modifikatoren – beim Öffnen der Seite automatisch synchronisiert, wenn die Daten über eine Stunde alt sind, oder jederzeit auf Wunsch aktualisiert."
+          "content": "Der aktuelle Boss deiner Gilde, TP, Stufenfortschritt und Prime-Modifikatoren. Beim Öffnen der Seite wird synchronisiert, wenn die Daten über eine Stunde alt sind, und du kannst jederzeit aktualisieren."
         },
         "resources": {
           "title": "Deine Raid-Ressourcen",
@@ -339,7 +339,7 @@
           "content": "Jeder echte Raid, den du heute kontoweit gemacht hast — egal ob dort noch Versuche übrig sind oder das Limit erreicht ist."
         },
         "filters": {
-          "title": "Raid-Filter",
+          "title": "Filter",
           "content": "Beschränke Heute und Bonus-Raids auf die gewünschten Kampagnenorte, z. B. nur Elite-Orte mit 5 Slots oder eine bestimmte Gegnerfraktion. Das Abzeichen zeigt, wie viele Filter aktiv sind."
         },
         "quickFilters": {
@@ -550,7 +550,7 @@
   "raidsFilters": {
     "trigger": "Filter",
     "triggerActive": "Filter, {{count}} aktiv",
-    "title": "Raid-Filter",
+    "title": "Filter",
     "description": "Begrenze, welche Kampagnenorte Heute, Bonus-Raids und der SBE-Tab nutzen dürfen. Plan und Ziele sind nicht betroffen.",
     "sections": {
       "allies": "Verbündete",
@@ -593,8 +593,8 @@
     "slotsOption": "{{count}} Slots",
     "actions": {
       "close": "Schließen",
-      "reset": "Zurücksetzen",
-      "apply": "Anwenden"
+      "reset": "Filter zurücksetzen",
+      "apply": "Filter anwenden"
     },
     "filteredOut": {
       "title": "Raid-Filter haben einige Materialien entfernt",
@@ -658,7 +658,7 @@
       "noneRunning": "Aktuell läuft kein Startbildschirm-Event.",
       "next": "Nächstes Event: {{name}}",
       "startsIn": "Beginnt {{when}} ({{date}})",
-      "endedOn": "Beendet am {{date}}",
+      "endedOn": "Beendet {{date}}",
       "noneScheduled": "Es ist kein Startbildschirm-Event geplant.",
       "error": "Eventdaten konnten nicht geladen werden. Der Rest der Dailies ist nicht betroffen."
     },

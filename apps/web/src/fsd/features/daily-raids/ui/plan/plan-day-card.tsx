@@ -131,7 +131,7 @@ export function PlanDayCard({
           {cells.raided.length > 0 ? (
             <>
               <div
-                className="flex items-center gap-3 text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                className="flex items-center gap-3 text-xs font-medium text-muted-foreground"
                 data-testid={`plan-day-${day.day}-raided-divider`}
               >
                 <span aria-hidden="true" className="h-px flex-1 bg-border" />

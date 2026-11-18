@@ -153,7 +153,7 @@ export function PlanSummary({
       className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border px-3 py-2 text-sm 2xl:sticky 2xl:top-4 2xl:order-last 2xl:w-64 2xl:shrink-0 2xl:flex-col 2xl:items-stretch 2xl:gap-1.5 2xl:p-3"
       data-testid="plan-wizard-summary"
     >
-      <h2 className="text-xs font-semibold text-muted-foreground uppercase">
+      <h2 className="text-xs font-semibold text-muted-foreground">
         {t("planWizard.summary.label")}
       </h2>
       <p className="font-medium">{headline}</p>

@@ -619,7 +619,7 @@ describe("CollectionPage states", () => {
     renderPage(1280)
 
     expect(screen.getByTestId("collection-catalog-error")).toHaveTextContent(
-      "The unit catalog couldn't be loaded"
+      "Units couldn't be loaded"
     )
     expect(screen.queryByTestId("collection-page")).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole("button", { name: "Try again" }))

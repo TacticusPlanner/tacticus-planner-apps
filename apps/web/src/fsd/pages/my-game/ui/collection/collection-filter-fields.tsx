@@ -411,7 +411,7 @@ function FieldGroup({
   const id = useId()
   return (
     <section className="grid gap-2" aria-labelledby={id}>
-      <h3 id={id} className="text-xs font-medium tracking-wide uppercase">
+      <h3 id={id} className="text-xs font-medium">
         {title}
       </h3>
       <div className={cn("grid gap-3", className)}>{children}</div>

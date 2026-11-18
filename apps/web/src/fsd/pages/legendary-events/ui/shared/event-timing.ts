@@ -1,24 +1,20 @@
 import type { LegendaryEventLifecycle } from "@/entities/legendary-event"
-import { formatEventCountdown } from "@/shared/lib"
+import { formatEventCountdown, formatShortDate } from "@/shared/lib"
 
 export interface EventTimingText {
-  /** "Ends …" / "Starts …" with the local date and time; absent for an archived event. */
-  atKey: "hub.endsAt" | "hub.startsAt"
+  /** The local date, with the time of day unless the caller drops it. */
   date: string
   inKey: "hub.endsIn" | "hub.startsIn"
+  /** Date and countdown on one line: "Starts Dec 13 · in 25 days". */
+  lineKey: "hub.endsLine" | "hub.startsLine"
   when: string
 }
 
-/** The local date (and time, unless `withTime` is off) of an instant in the device timezone
- *  (event windows stay UTC). */
-function formatLocalDateTime(
-  epochMs: number,
-  dateLocale: string,
-  withTime: boolean
-): string {
+/** The local date and time of an instant in the device timezone (event windows stay UTC). */
+function formatLocalDateTime(epochMs: number, dateLocale: string): string {
   return new Date(epochMs).toLocaleString(dateLocale, {
     dateStyle: "medium",
-    ...(withTime ? { timeStyle: "short" } : {}),
+    timeStyle: "short",
   })
 }
 
@@ -37,9 +33,11 @@ export function eventTiming(
   const active = lifecycle.state === "active"
   const targetMs = active ? lifecycle.runEndMs : lifecycle.runStartMs
   return {
-    atKey: active ? "hub.endsAt" : "hub.startsAt",
-    date: formatLocalDateTime(targetMs, dateLocale, withTime),
+    date: withTime
+      ? formatLocalDateTime(targetMs, dateLocale)
+      : formatShortDate(targetMs, dateLocale, nowMs),
     inKey: active ? "hub.endsIn" : "hub.startsIn",
+    lineKey: active ? "hub.endsLine" : "hub.startsLine",
     when: formatEventCountdown(targetMs, nowMs, locale),
   }
 }

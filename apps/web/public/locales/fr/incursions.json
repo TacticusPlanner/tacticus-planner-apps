@@ -147,7 +147,7 @@
     "preview": "Aperçu",
     "starsLabel": "{{earned}} étoiles sur {{max}}",
     "markCleared": "Tout à 3★",
-    "reset": "Réinitialiser",
+    "reset": "Réinitialiser les étoiles",
     "markHint": "Règle tous les combats de ce palier d'un coup. Enregistrez pour conserver la modification.",
     "markTier": "Mettre tous les combats du {{tier}} à 3 étoiles",
     "resetTier": "Réinitialiser les étoiles du {{tier}}"

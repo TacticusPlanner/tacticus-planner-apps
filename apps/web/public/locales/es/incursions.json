@@ -147,7 +147,7 @@
     "preview": "Vista previa",
     "starsLabel": "{{earned}} de {{max}} estrellas",
     "markCleared": "Todo a 3★",
-    "reset": "Restablecer",
+    "reset": "Restablecer estrellas",
     "markHint": "Ajusta todas las batallas de este nivel a la vez. Guarda para conservar el cambio.",
     "markTier": "Marcar todas las batallas del {{tier}} con 3 estrellas",
     "resetTier": "Restablecer las estrellas del {{tier}}"

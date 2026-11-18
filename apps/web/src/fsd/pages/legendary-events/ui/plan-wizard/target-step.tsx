@@ -11,7 +11,12 @@ import type {
 } from "@/entities/legendary-event"
 import { RunInputsForm } from "@/features/legendary-event-plan"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { useDateLocale, safeStorage } from "@/shared/lib"
+import {
+  formatDateRangeParts,
+  formatShortDate,
+  useDateLocale,
+  safeStorage,
+} from "@/shared/lib"
 
 import { legendaryEventRunWindow } from "@/entities/legendary-event"
 import { RosterPotentialMap } from "../legendary-event/roster-potential-map"
@@ -40,13 +45,6 @@ export function TargetStep({
   const { t, i18n } = useTranslation("legendaryEvents")
   const dateLocale = useDateLocale()
   const number = new Intl.NumberFormat(i18n.language)
-  const date = new Intl.DateTimeFormat(dateLocale, {
-    dateStyle: "medium",
-  })
-  const short = new Intl.DateTimeFormat(dateLocale, {
-    month: "short",
-    day: "numeric",
-  })
   const month = new Intl.DateTimeFormat(dateLocale, {
     month: "short",
     year: "numeric",
@@ -145,17 +143,29 @@ export function TargetStep({
           horizonWindow.guessed
             ? "planWizard.target.runEndsGuessed"
             : "planWizard.target.runEnds",
-          { run: horizon, date: date.format(horizonWindow.endMs) }
+          {
+            run: horizon,
+            date: formatShortDate(
+              horizonWindow.endMs,
+              dateLocale,
+              source.inputs.nowMs
+            ),
+          }
         )
   const runLabel = (run: number) => {
     const window = windowOf(run)
     if (window === null) return t("runDates.unknown")
     return window.guessed
       ? t("runDates.guessed", { date: month.format(window.startMs) })
-      : t("runDates.window", {
-          start: short.format(window.startMs),
-          end: short.format(window.endMs),
-        })
+      : t(
+          "runDates.window",
+          formatDateRangeParts(
+            window.startMs,
+            window.endMs,
+            dateLocale,
+            source.inputs.nowMs
+          )
+        )
   }
 
   return (

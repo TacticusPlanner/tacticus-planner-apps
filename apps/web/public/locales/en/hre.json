@@ -6,7 +6,7 @@
     "retry": "Retry",
     "unknownHero": "Unknown hero",
     "preview": "Preview",
-    "window": "{{start}} to {{end}}",
+    "window": "{{start}} – {{end}}",
     "endsIn": "Ends in {{when}}",
     "startsIn": "Starts in {{when}}",
     "previewNote": "This event has not started yet. Mission progress, raids and pace open once it runs.",

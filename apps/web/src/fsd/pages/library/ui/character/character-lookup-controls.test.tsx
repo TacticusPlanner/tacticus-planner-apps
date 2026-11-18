@@ -148,7 +148,7 @@ describe("CharacterLookupControls", () => {
     shareCurrentLookupUrl.mockResolvedValue("copied")
     renderControls(baseProps())
 
-    fireEvent.click(screen.getByRole("button", { name: "Share" }))
+    fireEvent.click(screen.getByRole("button", { name: "Share link" }))
 
     await vi.waitFor(() => {
       expect(toastSuccess).toHaveBeenCalledWith("Link copied to clipboard.")
@@ -160,7 +160,7 @@ describe("CharacterLookupControls", () => {
     shareCurrentLookupUrl.mockResolvedValue("error")
     renderControls(baseProps())
 
-    fireEvent.click(screen.getByRole("button", { name: "Share" }))
+    fireEvent.click(screen.getByRole("button", { name: "Share link" }))
 
     await vi.waitFor(() => {
       expect(toastError).toHaveBeenCalledWith(
@@ -173,7 +173,7 @@ describe("CharacterLookupControls", () => {
     shareCurrentLookupUrl.mockResolvedValue("shared")
     renderControls(baseProps())
 
-    fireEvent.click(screen.getByRole("button", { name: "Share" }))
+    fireEvent.click(screen.getByRole("button", { name: "Share link" }))
 
     await vi.waitFor(() => {
       expect(shareCurrentLookupUrl).toHaveBeenCalledWith(false)

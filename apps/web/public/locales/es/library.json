@@ -1,29 +1,29 @@
 {
   "section": {
     "label": "Biblioteca",
-    "description": "Explora personajes, Máquinas de Guerra, PNJ, jefes de incursión de gremio y tiendas diarias"
+    "description": "Personajes, Máquinas de Guerra, PNJ, jefes de incursión de gremio y tiendas diarias."
   },
   "collections": {
     "characters": {
       "label": "Personajes",
-      "description": "Explora detalles y estadísticas de personajes"
+      "description": "Detalles y estadísticas de personajes."
     },
     "machinesOfWar": {
       "label": "Máquinas de Guerra",
-      "description": "Explora las habilidades y los costes de mejora de las Máquinas de Guerra"
+      "description": "Habilidades y costes de mejora de las Máquinas de Guerra."
     },
     "npcs": {
       "label": "PNJ",
-      "description": "Explora detalles y estadísticas de PNJ"
+      "description": "Detalles y estadísticas de PNJ."
     },
     "raidBosses": {
       "label": "Jefes de incursión de gremio",
-      "description": "Explora información de jefes de incursión de gremio"
+      "description": "Estadísticas, habilidades y equipos meta de los jefes de incursión de gremio."
     },
     "noRecords": "No hay entidades seleccionables disponibles.",
     "shops": {
       "label": "Tiendas diarias",
-      "description": "Consulta lo que cada tienda diaria puede ofrecer en cualquier día de la semana"
+      "description": "Lo que cada tienda diaria puede ofrecer cada día de la semana."
     }
   },
   "loading": "Cargando registros de la biblioteca…",
@@ -162,7 +162,7 @@
           "content": "Compara las alineaciones de héroes recomendadas y alternativas para cada jefe de incursión de gremio."
         },
         "metaFilter": {
-          "title": "Filtrar por Comp",
+          "title": "Filtrar por comp",
           "content": "Limita las recomendaciones y la guía de Comp a un arquetipo de equipo concreto."
         },
         "metaGuidance": {
@@ -191,9 +191,9 @@
     "adjustedColumn": "Ajustada",
     "weaponHits": "Impactos de arma",
     "enemyRemoved": "{{count}}× {{name}} eliminado",
-    "syncFailed": "No se pudieron cargar los jefes de incursión de gremio. Puede que el catálogo aún se esté sincronizando.",
+    "syncFailed": "No se pudieron cargar los jefes de incursión de gremio. Puede que los datos del juego aún se estén cargando.",
     "loading": "Cargando datos de jefes de incursión de gremio…",
-    "unavailable": "Los datos de jefes de incursión de gremio aún no están disponibles en el catálogo.",
+    "unavailable": "Los datos de jefes de incursión de gremio aún no están disponibles.",
     "tabs": {
       "seasons": "Configuración de temporadas",
       "meta": "Meta",
@@ -215,8 +215,8 @@
       "loading": "Cargando Meta de jefes de incursión de gremio…",
       "unavailable": "La Meta de jefes de incursión de gremio aún no está disponible.",
       "failed": "No se pudo cargar la Meta de jefes de incursión de gremio.",
-      "compFilter": "Filtrar por Comp",
-      "allComps": "Todos los Comps",
+      "compFilter": "Filtrar por comp",
+      "allComps": "Todas las comps",
       "updated": "Actualizado {{date}} · Fuente:",
       "noResults": "Ninguna recomendación coincide con este Comp.",
       "meta": "Meta",

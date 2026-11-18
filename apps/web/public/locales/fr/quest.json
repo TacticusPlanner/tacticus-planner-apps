@@ -203,7 +203,7 @@
   },
   "estimate": {
     "title": "Estimation de victoire",
-    "labelUncalibrated": "estimation · non calibrée",
+    "labelUncalibrated": "estimation approximative",
     "unknown": "Pas d'estimation : données ennemies incomplètes",
     "verdict": {
       "clears": "Gagnable",
@@ -221,8 +221,8 @@
     "givenUpNoUnit": "abandonne {{objective}}",
     "short": "{{percent}} de retard",
     "capGain": "{{name}} : +{{gain}} de puissance au plafond",
-    "projected": "Projection : {{total}} / {{max}} · {{opened}} coffres sur {{count}} (estimation, non calibrée)",
-    "projectedShards": "Projection : {{shards}} fragments (estimation, non calibrée)"
+    "projected": "Projection : {{total}} / {{max}} · {{opened}} coffres sur {{count}} (estimation approximative)",
+    "projectedShards": "Projection : {{shards}} fragments (estimation approximative)"
   },
   "goalDrops": {
     "title": "Butin pour vos objectifs",

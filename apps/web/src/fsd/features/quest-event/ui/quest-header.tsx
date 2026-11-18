@@ -6,7 +6,11 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { formatEventCountdown, useDateLocale } from "@/shared/lib"
+import {
+  formatDateRangeParts,
+  formatEventCountdown,
+  useDateLocale,
+} from "@/shared/lib"
 import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import type { QuestInstanceState } from "../model/use-quest-instance"
@@ -99,8 +103,6 @@ export function QuestHeader({
     : heroId
   const icon = heroName ? characterIcon(heroId as UnitId) : undefined
   const number = new Intl.NumberFormat(i18n.language)
-  const formatDate = (ms: number) =>
-    new Date(ms).toLocaleDateString(dateLocale, { dateStyle: "medium" })
   const nowMs = state.status === "ready" ? state.nowMs : 0
 
   return (
@@ -145,10 +147,14 @@ export function QuestHeader({
           </p>
           {instance ? (
             <p className="text-sm text-muted-foreground">
-              {t("quest:status.window", {
-                start: formatDate(Date.parse(instance.entry.startUtc)),
-                end: formatDate(Date.parse(instance.entry.endUtc)),
-              })}
+              {t(
+                "quest:status.window",
+                formatDateRangeParts(
+                  instance.entry.startUtc,
+                  instance.entry.endUtc,
+                  dateLocale
+                )
+              )}
               {instance.phase === "claim" ? null : (
                 <>
                   {" · "}

@@ -203,7 +203,7 @@
   },
   "estimate": {
     "title": "Estimación de victoria",
-    "labelUncalibrated": "estimación · sin calibrar",
+    "labelUncalibrated": "estimación aproximada",
     "unknown": "Sin estimación: datos de enemigos incompletos",
     "verdict": {
       "clears": "Se gana",
@@ -221,8 +221,8 @@
     "givenUpNoUnit": "renuncia a {{objective}}",
     "short": "faltan {{percent}}",
     "capGain": "{{name}}: +{{gain}} de poder en el límite",
-    "projected": "Previsión: {{total}} / {{max}} · {{opened}} de {{count}} cofres (estimación, sin calibrar)",
-    "projectedShards": "Previsión: {{shards}} fragmentos (estimación, sin calibrar)"
+    "projected": "Previsión: {{total}} / {{max}} · {{opened}} de {{count}} cofres (estimación aproximada)",
+    "projectedShards": "Previsión: {{shards}} fragmentos (estimación aproximada)"
   },
   "goalDrops": {
     "title": "Botín para tus objetivos",

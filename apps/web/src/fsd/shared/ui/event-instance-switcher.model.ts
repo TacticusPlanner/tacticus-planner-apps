@@ -1,3 +1,5 @@
+import { formatDateRange } from "../lib"
+
 /** What the event switcher reads of an event instance: its key and its status at the selection instant. */
 export type SwitcherInstance = {
   key: string
@@ -49,13 +51,10 @@ export function adjacentSwitcherKeys(
   }
 }
 
-/** "Oct 19 – 23, 2026" in the player's locale and timezone (end is the exclusive end instant). */
+/** "Oct 19 – Oct 23" in the player's locale and timezone (end is the exclusive end instant). */
 export function formatEventWindow(
   entry: { startUtc: string; endUtc: string },
   locale: string
 ): string {
-  return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).formatRange(
-    new Date(entry.startUtc),
-    new Date(entry.endUtc)
-  )
+  return formatDateRange(entry.startUtc, entry.endUtc, locale)
 }

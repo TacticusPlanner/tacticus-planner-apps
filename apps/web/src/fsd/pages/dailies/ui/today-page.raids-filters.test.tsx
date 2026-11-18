@@ -181,7 +181,7 @@ describe("Today page Raids Filters", () => {
       screen.queryByTestId("raids-filters-filtered-out-pinned")
     ).not.toBeInTheDocument()
     const list = screen.getByRole("list", {
-      name: "Materials your Raids Filters skip",
+      name: "Materials your raid filters skip",
     })
     expect(within(list).getAllByRole("listitem")).toHaveLength(1)
     expect(list).toHaveTextContent("Ceramite")
@@ -235,7 +235,7 @@ describe("Today page Raids Filters", () => {
     expect(
       screen.getByTestId("raids-filters-filtered-out-pinned")
     ).toHaveTextContent(
-      "1 goal is pinned to a location excluded by your Raids Filters."
+      "1 goal is pinned to a location excluded by your raid filters."
     )
     expect(
       screen.queryByTestId("raids-filters-filtered-out-materials")
@@ -250,7 +250,7 @@ describe("Today page Raids Filters", () => {
     await applySlotsFilter(user)
 
     const list = screen.getByRole("list", {
-      name: "Materials your Raids Filters skip",
+      name: "Materials your raid filters skip",
     })
     expect(within(list).getAllByRole("listitem")).toHaveLength(5)
 
@@ -269,7 +269,7 @@ describe("Today page Raids Filters", () => {
     await applySlotsFilter(user)
 
     expect(
-      screen.getByRole("list", { name: "Materials your Raids Filters skip" })
+      screen.getByRole("list", { name: "Materials your raid filters skip" })
     ).toHaveTextContent("Pinned")
   })
 })

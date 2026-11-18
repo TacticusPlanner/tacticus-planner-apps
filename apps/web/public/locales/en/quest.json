@@ -203,7 +203,7 @@
   },
   "estimate": {
     "title": "Clear estimate",
-    "labelUncalibrated": "estimate · uncalibrated",
+    "labelUncalibrated": "rough estimate",
     "unknown": "No estimate: enemy data incomplete",
     "verdict": {
       "clears": "Clears",
@@ -221,8 +221,8 @@
     "givenUpNoUnit": "gives up {{objective}}",
     "short": "{{percent}} short",
     "capGain": "{{name}}: +{{gain}} power at the cap",
-    "projected": "Projected: {{total}} / {{max}} · {{opened}} of {{count}} crates (estimate, uncalibrated)",
-    "projectedShards": "Projected: {{shards}} shards (estimate, uncalibrated)"
+    "projected": "Projected: {{total}} / {{max}} · {{opened}} of {{count}} crates (rough estimate)",
+    "projectedShards": "Projected: {{shards}} shards (rough estimate)"
   },
   "goalDrops": {
     "title": "Drops for your goals",

@@ -1,5 +1,5 @@
 import userEvent from "@testing-library/user-event"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import type { i18n as I18n } from "i18next"
 
 import { render, screen, within } from "@/test/render"
@@ -97,11 +97,15 @@ function renderSwitcher(
 }
 
 describe("EventSwitcher", () => {
+  afterEach(() => vi.useRealTimers())
+
   it("shows the selected instance's localized name and date range", () => {
+    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.setSystemTime(new Date("2026-10-17T00:00:00Z"))
     renderSwitcher("occ-psyker")
 
     expect(screen.getByTestId("hse-event-select")).toHaveTextContent(
-      "Trait Boost: Psyker · Oct 19 – 23, 2026"
+      "Trait Boost: Psyker · Oct 19 – Oct 23"
     )
     expect(screen.getByTestId("hse-event-select")).toHaveAccessibleName(
       "Choose a Home Screen Event"

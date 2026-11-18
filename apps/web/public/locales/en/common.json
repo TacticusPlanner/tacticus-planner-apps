@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "Tacticus Planner",
-    "beta": "BETA"
+    "beta": "Beta"
   },
   "common": {
     "close": "Close",
@@ -28,29 +28,29 @@
   },
   "catalog": {
     "badge": {
-      "error": "Catalog error",
-      "idle": "Catalog idle",
-      "ready": "Game Catalog version {{version}}",
-      "stale": "Catalog stale",
-      "syncing": "Catalog sync"
+      "error": "Game data error",
+      "idle": "Game data not loaded",
+      "ready": "Game data version {{version}}",
+      "stale": "Game data out of date",
+      "syncing": "Updating game data"
     },
     "init": {
       "firstTimeTitle": "Setting up game data",
       "firstTimeDescription": "First use on this device — this can take a little longer.",
-      "updatingTitle": "Updating game catalog",
-      "updatingDescription": "Updating game catalog data to version {{version}}.",
-      "updatingDescriptionNoVersion": "Updating game catalog data.",
-      "preparing": "Preparing game catalog…",
+      "updatingTitle": "Updating game data",
+      "updatingDescription": "Updating game data to version {{version}}.",
+      "updatingDescriptionNoVersion": "Updating game data.",
+      "preparing": "Preparing game data…",
       "progress": "Downloading {{done}} / {{total}}…",
       "errorTitle": "Could not load game data",
-      "errorDescription": "Something went wrong while loading the game catalog.",
+      "errorDescription": "Something went wrong while loading game data.",
       "retry": "Retry"
     }
   },
   "manageAccount": {
     "title": "Account settings",
     "tabs": {
-      "integration": "Tacticus Integration",
+      "integration": "Tacticus integration",
       "profile": "Profile",
       "account": "Account",
       "staging": "Transfer"
@@ -245,7 +245,7 @@
     "missing": "Missing",
     "rarity": "Rarity",
     "campaignLocations": "Campaign locations",
-    "eventLocations": "Campaign Event Locations",
+    "eventLocations": "Campaign Event locations",
     "byRank": "Upgrades by rank",
     "alreadyApplied": "Already applied",
     "noUpgrades": "Select a character and a valid rank range to see required upgrades.",
@@ -261,30 +261,30 @@
     "current": "Current",
     "target": "Target",
     "share": {
-      "action": "Share",
+      "action": "Share link",
       "copied": "Link copied to clipboard.",
       "error": "Couldn't share or copy the link."
     }
   },
   "nav": {
-    "addGoal": "Add Goal",
+    "addGoal": "Add goal",
     "dailies": "Dailies",
-    "dailiesDescription": "Daily and periodic in-game tasks",
+    "dailiesDescription": "Daily and periodic in-game tasks.",
     "eventLive": "Event live",
     "live": "Live",
     "home": "Home",
-    "homeDescription": "Your account overview and quick links",
-    "createGoal": "Create Goal",
+    "homeDescription": "Your account overview and quick links.",
+    "createGoal": "Create goal",
     "goals": "Plan",
-    "goalsDescription": "Track progress toward your targets",
+    "goalsDescription": "Track progress toward your targets.",
     "myGame": "My Game",
-    "myGameDescription": "Your collection and synced game progress",
+    "myGameDescription": "Your collection and synced game progress.",
     "legendaryEvents": "Legendary Events",
-    "legendaryEventsDescription": "Active, upcoming and past Legendary Events with your synced progress",
+    "legendaryEventsDescription": "Active, upcoming and past Legendary Events with your synced progress.",
     "uiKit": "UI Kit",
-    "uiKitDescription": "Design system component showcase",
+    "uiKitDescription": "Design system component showcase.",
     "guild": "Guild",
-    "guildDescription": "Your guild roster and settings",
+    "guildDescription": "Your guild roster and settings.",
     "menu": "Menu",
     "navigation": "Navigation",
     "navigationHint": "Choose a page or quick action, or filter the list.",
@@ -303,8 +303,8 @@
       "pagesHeading": "Pages",
       "createGoalDescription": "Open the new goal form",
       "createProjectDescription": "Open a blank project form",
-      "syncDescription": "Refresh your Planner from the Tacticus API",
-      "feedbackLabel": "Submit Feedback",
+      "syncDescription": "Refresh your planner from Tacticus",
+      "feedbackLabel": "Submit feedback",
       "feedbackDescription": "Open the feedback, roadmap, and updates widget",
       "feedbackUnavailable": "Feedback is unavailable right now",
       "tourDescription": "Walk through this page's features",
@@ -358,15 +358,15 @@
   "myGame": {
     "tabs": {
       "collection": "Collection",
-      "collectionDescription": "Every character and Machine of War, with what you own and how far each unit has progressed.",
+      "collectionDescription": "Every character and Machine of War, and how far each one has progressed.",
       "onslaught": "Onslaught",
-      "onslaughtDescription": "For each alliance, pick the sector and tier you are currently farming. Goal estimates use these positions and your synchronized Onslaught tokens; alliances you have not set supply no Onslaught shards.",
+      "onslaughtDescription": "The sector and tier you farm in each alliance.",
       "campaigns": "Campaigns",
-      "campaignsDescription": "Your campaign progress is synchronized from the Tacticus API and cannot be edited here.",
+      "campaignsDescription": "Your campaign progress, synced from Tacticus.",
       "campaign-events": "Campaign Events",
-      "campaign-eventsDescription": "Adjust event progress manually. Synchronized values, when available, remain as the baseline.",
+      "campaign-eventsDescription": "Your progress in each campaign event.",
       "incursions": "Incursions",
-      "incursionsDescription": "Each Machine of War's Incursion: every tier's run map, battles, enemies and rewards, with the most shards one clear can pay."
+      "incursionsDescription": "Each Machine of War's Incursion: tiers, battles, enemies and rewards."
     },
     "collection": {
       "loading": "Loading your collection…",
@@ -378,8 +378,8 @@
       "syncBody": "Your roster hasn't been synced yet, so every unit is shown greyed out. Sync with Tacticus to see which units you own.",
       "rosterErrorTitle": "Your roster couldn't be loaded",
       "rosterErrorBody": "Every unit is shown greyed out until it loads. Try again.",
-      "catalogErrorTitle": "The unit catalog couldn't be loaded",
-      "catalogErrorBody": "The collection can't be shown without it. Try again.",
+      "catalogErrorTitle": "Units couldn't be loaded",
+      "catalogErrorBody": "Check your connection and try again.",
       "retry": "Try again",
       "factionOwned": "{{owned}} of {{total}} owned",
       "summaryFiltered": "{{owned}} of {{total}} matching units owned",
@@ -740,12 +740,12 @@
   },
   "legendaryEvents": {
     "tabs": {
-      "allEvents": "All Events",
-      "allEventsDescription": "Every Legendary Event: active, upcoming and archived",
-      "masterTable": "Master Table",
-      "masterTableDescription": "Every unit's points across the Legendary Events you pick",
-      "tierList": "Tier List",
-      "tierListDescription": "The horde-mode tier list behind clear estimates",
+      "allEvents": "All events",
+      "allEventsDescription": "Every Legendary Event: active, upcoming and archived.",
+      "masterTable": "Master table",
+      "masterTableDescription": "Every unit's points across the Legendary Events you pick.",
+      "tierList": "Tier list",
+      "tierListDescription": "Character and enemy tiers used in clear estimates.",
       "activeEventDescription": "Active Legendary Event with your synced progress",
       "upcomingEventDescription": "Upcoming Legendary Event",
       "archivedEventDescription": "Past Legendary Event with your synced progress",
@@ -759,7 +759,7 @@
       "nothingLive": "No event is live right now."
     },
     "tokens": {
-      "title": "Token Availability",
+      "title": "Token availability",
       "full": "Capped",
       "due": "Ready now",
       "fullIn": "Full in {{hours}}h {{minutes}}m",
@@ -769,7 +769,7 @@
       "labels": {
         "arena": "Arena",
         "guildRaid": "Guild Raid",
-        "bombTokens": "Bomb Tokens",
+        "bombTokens": "Bomb tokens",
         "onslaught": "Onslaught",
         "salvageRun": "Salvage Run"
       }
@@ -786,7 +786,7 @@
       "viewAll": "All projects"
     },
     "raids": {
-      "title": "Daily Raids",
+      "title": "Daily raids",
       "empty": "Nothing to raid today.",
       "error": "Couldn't load today's raids.",
       "noGoals": "No active goals yet. Add goals to plan your raids.",
@@ -843,9 +843,9 @@
     "openManagement": "Open Guild management",
     "access": {
       "loadErrorTitle": "Guild access unavailable",
-      "syncRequiredTitle": "Synchronize your guild",
-      "syncRequiredManager": "Your guild is registered but has not completed its first synchronization. Synchronize it now to unlock guild-dependent tools.",
-      "syncRequiredMember": "Your guild is registered but has not completed its first synchronization. Ask a Leader or Co-Leader to synchronize it."
+      "syncRequiredTitle": "Sync your guild",
+      "syncRequiredManager": "Your guild is registered but hasn't been synced yet. Sync it to use guild features.",
+      "syncRequiredMember": "Your guild is registered but hasn't been synced yet. Ask a Leader or Co-Leader to sync it."
     },
     "tacticusUserIdRequired": {
       "title": "Tacticus User ID required",
@@ -867,7 +867,7 @@
       "handoff": "Ask your current Leader or Co-Leader to register the guild with their own Guild API key.",
       "tokenLabel": "Guild API key",
       "tokenPlaceholder": "Paste your Guild API key",
-      "register": "Register Guild",
+      "register": "Register guild",
       "registering": "Registering…",
       "genericError": "Something went wrong. Please try again."
     },
@@ -894,17 +894,17 @@
     "summary": {
       "level": "Level {{level}}",
       "lastSynced": "Last synced {{time}}",
-      "neverSynced": "Never synchronized",
+      "neverSynced": "Never synced",
       "sync": "Sync guild",
       "syncing": "Syncing…",
       "actions": "Guild actions",
-      "syncError": "Something went wrong while synchronizing. Please try again.",
+      "syncError": "Something went wrong while syncing. Please try again.",
       "deleteGuild": "Delete guild",
-      "syncCooldown_one": "This guild was just synchronized. You can sync again in {{count}} second.",
-      "syncCooldown_other": "This guild was just synchronized. You can sync again in {{count}} seconds.",
+      "syncCooldown_one": "This guild was just synced. You can sync again in {{count}} second.",
+      "syncCooldown_other": "This guild was just synced. You can sync again in {{count}} seconds.",
       "syncRateLimited_one": "Too many requests. Try again in {{count}} second.",
       "syncRateLimited_other": "Too many requests. Try again in {{count}} seconds.",
-      "syncForbidden": "Only the guild's Leader or Co-Leader can synchronize it."
+      "syncForbidden": "Only the guild's Leader or Co-Leader can sync it."
     },
     "purge": {
       "title": "Delete guild",
@@ -923,9 +923,9 @@
     },
     "tabs": {
       "members": "Members",
-      "membersDescription": "View your guild's member roster",
+      "membersDescription": "Your guild's member roster.",
       "settings": "Settings",
-      "settingsDescription": "Manage your guild's planner settings"
+      "settingsDescription": "Your guild's planner settings."
     },
     "members": {
       "empty": "No members found.",
@@ -1128,7 +1128,7 @@
         "empty": "Nothing new came across. The planner already has everything from your V1 profile."
       },
       "partReasons": {
-        "invalidTacticusUserId": "The V1 Tacticus user ID is not a valid GUID, so it wasn't imported.",
+        "invalidTacticusUserId": "The V1 Tacticus user ID isn't a valid user ID, so it wasn't imported.",
         "tacticusUserIdConflict": "This Tacticus user ID is already linked to another planner account, so it wasn't imported."
       },
       "rosterSnapshots": {
@@ -1161,13 +1161,13 @@
     "tabs": {
       "goals": "Goals",
       "overview": "Goals",
-      "overviewDescription": "Your goals in priority order — filter, group, and reprioritize.",
+      "overviewDescription": "Your goals in priority order.",
       "projects": "Projects",
-      "projectsDescription": "Organize goals into focused groups and browse them separately.",
+      "projectsDescription": "Groups of goals you browse on their own.",
       "insights": "Insights",
-      "insightsDescription": "Upgrade and campaign recommendations",
+      "insightsDescription": "Upgrade and campaign recommendations for your goals.",
       "schedule": "Schedule",
-      "scheduleDescription": "Day-by-day raid schedule for your active goals, from today until they are done.",
+      "scheduleDescription": "Day-by-day raids for your active goals until they're done.",
       "all": "All statuses",
       "toReach": "Unfulfilled",
       "reached": "Reached",
@@ -1368,7 +1368,7 @@
       "projectsSaved": "Projects saved.",
       "projectsSaveFailed": "Couldn't save the projects. Check your connection and try again.",
       "addToProjectsDescription": "Choose one or more projects to add the selected goals to, or create a new one.",
-      "addToProjectsConfirm": "Add",
+      "addToProjectsConfirm": "Add to projects",
       "addToProjectsConfirmCount": "Add to {{count}} projects"
     },
     "toasts": {
@@ -1520,7 +1520,7 @@
         }
       },
       "unlockDescription": "This goal is complete once the character is unlocked.",
-      "unlockUnavailable": "Unlock is unavailable because this character has no catalog shard locations.",
+      "unlockUnavailable": "Unlock is unavailable because no shard locations are known for this character.",
       "unlockCostUnsupportedMow": "Unlock targets are tracked for Machines of War, but their resource cost is not supported yet.",
       "shardLocations": {
         "labelRegular": "Shard locations",
@@ -1622,10 +1622,10 @@
         "hint": "Each milestone becomes its own goal, after the one before it.",
         "notAbove": "Each milestone must be above the one before it."
       },
-      "unlockUnavailable_mow": "Unlock is unavailable because this Machine of War has no catalog shard locations.",
+      "unlockUnavailable_mow": "Unlock is unavailable because no shard locations are known for this Machine of War.",
       "unlockDescription_mow": "This goal is complete once the Machine of War is unlocked.",
       "unlockExistingGoal": "There's already an Unlock goal for this unit.",
-      "openGoal": "Open",
+      "openGoal": "Open goal",
       "takenTarget": "Already a goal",
       "issues": {
         "summary_one": "{{count}} problem to fix",
@@ -1677,9 +1677,9 @@
         "NoFarmLocation": "No accessible farming location provides a required resource.",
         "FarmingOverrideUnavailable": "The selected farming locations do not provide every required resource.",
         "InsufficientDailyEnergy": "Daily energy is below the cost of the cheapest usable node.",
-        "SimulationLimit": "The goal could not complete within the planning horizon.",
-        "UnsupportedCost": "Detailed costing is not supported for this goal.",
-        "FilteredOut": "Every farming location is excluded by your Raids Filters."
+        "SimulationLimit": "This goal takes longer than the planner can estimate.",
+        "UnsupportedCost": "The planner can't estimate the cost of this goal yet.",
+        "FilteredOut": "Every farming location is excluded by your raid filters."
       },
       "unlockAt": "Unlocks at",
       "battlesToGo_one": "{{count}} battle to go",
@@ -2162,7 +2162,7 @@
       },
       "bottomNavigation": {
         "addGoal": {
-          "title": "Add Goal",
+          "title": "Add goal",
           "content": "Create Character or Machine of War goals, then choose one or more projects. The default project is selected automatically."
         },
         "sync": {
@@ -2448,7 +2448,7 @@
       },
       "dataDisplay": {
         "description": "Basic table usage and a sortable, filterable data table.",
-        "label": "Data Display"
+        "label": "Data display"
       },
       "feedback": {
         "description": "Alerts, badges, progress, skeletons, and loading indicators.",
@@ -2551,7 +2551,7 @@
     }
   },
   "tacticusUserId": {
-    "invalid": "Enter your Tacticus user ID as a GUID, for example 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
+    "invalid": "Enter your full Tacticus user ID, for example 3f2504e0-4f89-11d3-9a0c-0305e82c3301.",
     "inUse": "This Tacticus user ID is already linked to another planner account."
   },
   "notFound": {

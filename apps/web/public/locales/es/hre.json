@@ -6,7 +6,7 @@
     "retry": "Reintentar",
     "unknownHero": "Héroe desconocido",
     "preview": "Vista previa",
-    "window": "Del {{start}} al {{end}}",
+    "window": "{{start}} – {{end}}",
     "endsIn": "Termina en {{when}}",
     "startsIn": "Empieza en {{when}}",
     "previewNote": "Este evento aún no ha empezado. El progreso de misiones, las incursiones y el ritmo se activan cuando esté en curso.",

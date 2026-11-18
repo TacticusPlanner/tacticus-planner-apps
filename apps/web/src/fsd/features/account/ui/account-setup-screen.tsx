@@ -108,7 +108,7 @@ export function AccountSetupScreen({
             </Button>
           ) : null}
           <p
-            className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+            className="text-xs font-medium text-muted-foreground"
             data-testid="account-setup-step-position"
           >
             {t("onboarding.stepPosition", {
@@ -294,7 +294,7 @@ function PathCard({
           <span className="flex items-center gap-2">
             <span className="text-sm font-semibold">{name}</span>
             {badge ? (
-              <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold tracking-wide text-accent-foreground uppercase">
+              <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
                 {badge}
               </span>
             ) : null}

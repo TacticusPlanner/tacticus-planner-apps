@@ -1,6 +1,7 @@
 import { renderHook } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { formatShortDate } from "@/shared/lib"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { lysanderEvent, utharEvent } from "@/test/fixtures/legendary-events"
 
@@ -42,8 +43,7 @@ function legendaryEventsChildren(items: ReturnType<typeof useNavItems>) {
   return items.find((item) => item.path === "/legendary-events")?.children
 }
 
-const localDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en", { dateStyle: "medium" })
+const localDate = (iso: string) => formatShortDate(iso, "en")
 
 const STATIC_CHILDREN = [
   "/legendary-events",
