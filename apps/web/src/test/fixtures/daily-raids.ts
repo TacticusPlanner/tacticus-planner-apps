@@ -147,6 +147,7 @@ export function ready(
       ])
     ),
     hasManualRaids: false,
+    hasActiveEventBattles: false,
     locationsByBattleId: new Map([
       [
         battle,

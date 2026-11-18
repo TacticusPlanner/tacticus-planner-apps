@@ -10,7 +10,7 @@ import { TodayPage } from "./today-page"
 
 const { dailyRaidsArgs, plan } = vi.hoisted(() => ({
   dailyRaidsArgs: [] as unknown[][],
-  plan: { hasManualRaids: false },
+  plan: { hasManualRaids: false, hasActiveEventBattles: false },
 }))
 
 vi.mock("@/features/daily-raids", async (importOriginal) => {
@@ -19,7 +19,11 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
     ...actual,
     useDailyRaids: (...args: unknown[]) => {
       dailyRaidsArgs.push(args)
-      return { ...ready(), hasManualRaids: plan.hasManualRaids }
+      return {
+        ...ready(),
+        hasManualRaids: plan.hasManualRaids,
+        hasActiveEventBattles: plan.hasActiveEventBattles,
+      }
     },
   }
 })
@@ -73,6 +77,7 @@ describe("Today quick filters", () => {
   beforeEach(() => {
     dailyRaidsArgs.length = 0
     plan.hasManualRaids = false
+    plan.hasActiveEventBattles = false
   })
 
   it("starts with both chips off and no note", () => {
@@ -84,6 +89,7 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: false,
       raidableOnly: false,
+      preferEvent: false,
     })
     expect(
       screen.queryByTestId("today-quick-filter-note-fewerRaids")
@@ -100,6 +106,7 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: true,
       raidableOnly: false,
+      preferEvent: false,
     })
     expect(
       screen.getByTestId("today-quick-filter-note-combineGoals")
@@ -112,6 +119,7 @@ describe("Today quick filters", () => {
       fewerRaids: true,
       combineGoals: true,
       raidableOnly: false,
+      preferEvent: false,
     })
     expect(
       screen.getByTestId("today-quick-filter-note-fewerRaids")
@@ -126,6 +134,7 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: false,
       raidableOnly: false,
+      preferEvent: false,
     })
     expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull()
   })
@@ -137,6 +146,7 @@ describe("Today quick filters", () => {
       fewerRaids: true,
       combineGoals: false,
       raidableOnly: false,
+      preferEvent: false,
     })
     expect(screen.getByTestId("today-quick-filter-fewerRaids")).toHaveAttribute(
       "data-state",
@@ -178,6 +188,7 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: false,
       raidableOnly: true,
+      preferEvent: false,
     })
   })
 
@@ -188,9 +199,41 @@ describe("Today quick filters", () => {
       fewerRaids: false,
       combineGoals: false,
       raidableOnly: true,
+      preferEvent: false,
     })
     expect(
       screen.getByTestId("today-quick-filter-raidableOnly")
+    ).toHaveAttribute("data-state", "on")
+  })
+
+  it("offers CE nodes first only while a campaign event with reached nodes is running", async () => {
+    renderToday()
+    expect(
+      screen.queryByTestId("today-quick-filter-preferEvent")
+    ).not.toBeInTheDocument()
+
+    plan.hasActiveEventBattles = true
+    const user = userEvent.setup()
+    renderToday()
+    await user.click(
+      screen.getAllByTestId("today-quick-filter-preferEvent")[0]!
+    )
+    expect(lastQuickFilters()).toEqual({
+      fewerRaids: false,
+      combineGoals: false,
+      raidableOnly: false,
+      preferEvent: true,
+    })
+    expect(
+      screen.getAllByTestId("today-quick-filter-note-preferEvent")[0]
+    ).toBeInTheDocument()
+  })
+
+  it("keeps CE nodes first visible while it is on, so it can be turned off", () => {
+    window.localStorage.setItem(STORAGE_KEY, "preferEvent")
+    renderToday()
+    expect(
+      screen.getByTestId("today-quick-filter-preferEvent")
     ).toHaveAttribute("data-state", "on")
   })
 })

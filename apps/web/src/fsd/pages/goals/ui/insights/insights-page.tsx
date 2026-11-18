@@ -149,6 +149,7 @@ export function InsightsPage() {
                 }
                 farmingSpotsByInsightId={result.farmingSpotsByInsightId}
                 goalInfoById={goalInfoById}
+                description={t("goals.insights.eventsDescription")}
                 insights={result.eventInsights}
                 title={t("goals.insights.eventsTitle")}
               />

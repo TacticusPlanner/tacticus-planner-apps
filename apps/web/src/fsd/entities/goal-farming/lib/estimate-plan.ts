@@ -54,6 +54,10 @@ export type EstimatePlanParams = {
   /** Today quick filter "Fewer raids": among nodes tied on least energy per item, keep only the
    *  costliest per battle. Only Today and Bonus Raids pass it. */
   fewerRaids?: boolean
+  /** Today quick filter "CE nodes first": the active campaign event's reached nodes. A material that
+   *  drops in any of them is farmed there (cheapest among them) instead of at a cheaper standing
+   *  node. Only Today and Bonus Raids pass it. */
+  preferredBattleIds?: ReadonlySet<BattleId>
   /** Today switch "Combine goals" (like V1's "By total materials" farm order): spend each day's
    *  energy on one pool of every goal's remaining need (all stages), longest-to-finish first, as if
    *  every goal were one, instead of goal by goal in priority order. Only Today and Bonus Raids
@@ -194,6 +198,7 @@ function runPlanSchedule(
     attemptsLeftByBattle,
     energyUsedToday = 0,
     fewerRaids = false,
+    preferredBattleIds,
     combineGoals = false,
   }: EstimatePlanParams,
   maxDays: number
@@ -234,7 +239,8 @@ function runPlanSchedule(
           goal.farmingLocationIds,
           dailyEnergy,
           nodeFilter,
-          fewerRaids
+          fewerRaids,
+          preferredBattleIds
         )
         if (blocker) {
           blockers.push({

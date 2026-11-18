@@ -39,6 +39,8 @@ const EVENT_PARAM = "event"
  * link keeps it. */
 const ORDER_PARAM = "order"
 const IGNORE_GOALS_PARAM = "ignoreGoals"
+/** "CE nodes first" changes Today's goal raids only, never the event lists ranked by points. */
+const HSE_HIDDEN_QUICK_FILTERS = ["preferEvent"] as const
 
 /**
  * Dailies > HSE: one Home Screen Event instance at a time. By default the running event (or, with
@@ -64,8 +66,9 @@ export function HsePage() {
   // re-renders only the dialog.
   const battleDialog = useCampaignBattleDialog()
   // One object per selection, so the memoised farm list does not re-render on a keystroke.
+  // "CE nodes first" is Today's: the event lists rank by event points, so it is hidden and off here.
   const quickOptions = useMemo(
-    () => todayQuickFilterOptions(quickFilters),
+    () => ({ ...todayQuickFilterOptions(quickFilters), preferEvent: false }),
     [quickFilters]
   )
   const requestedOrder = searchParams.get(ORDER_PARAM)
@@ -188,6 +191,7 @@ export function HsePage() {
         <div className="space-y-3">
           <RaidsSectionControls
             context={context}
+            hiddenQuickFilters={HSE_HIDDEN_QUICK_FILTERS}
             onQuickFiltersChange={setQuickFilters}
             quickFilters={quickFilters}
             testIdPrefix="hse"

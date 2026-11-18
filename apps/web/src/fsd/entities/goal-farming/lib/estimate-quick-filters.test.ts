@@ -104,6 +104,70 @@ describe("Fewer raids quick filter", () => {
   })
 })
 
+describe("CE nodes first quick filter", () => {
+  // STD costs 6 energy per item, EVENT 10; `other` only drops at STD.
+  const battlesById = new Map([node("STD", 6), node("EVENT", 10)])
+  const upgradesById = new Map<EstimateResourceId, EstimateUpgrade>([
+    [
+      upgrade("mat"),
+      {
+        id: upgrade("mat"),
+        farmLocations: [location("STD"), location("EVENT")],
+      },
+    ],
+    [
+      upgrade("other"),
+      { id: upgrade("other"), farmLocations: [location("STD")] },
+    ],
+  ])
+  const params = (extra: Partial<EstimatePlanParams> = {}) => ({
+    goals: [
+      goal("g", 1, [
+        { id: "mat", count: 2 },
+        { id: "other", count: 1 },
+      ]),
+    ],
+    upgradesById,
+    battlesById,
+    dailyEnergy: 100,
+    inventory: [],
+    referenceDate,
+    ...extra,
+  })
+  const battleOf = (resourceId: string, extra?: Partial<EstimatePlanParams>) =>
+    estimateTodaySchedule(params(extra))
+      .entries.filter((e) => e.resourceId === resourceId)
+      .map((e) => e.battleId)
+  const preferredBattleIds = new Set([battle("EVENT")])
+
+  it("farms at the cheapest node when off", () => {
+    expect(battleOf("mat")).toEqual([battle("STD")])
+  })
+
+  it("farms at the event node when on, and elsewhere what the event does not drop", () => {
+    expect(battleOf("mat", { preferredBattleIds })).toEqual([battle("EVENT")])
+    expect(battleOf("other", { preferredBattleIds })).toEqual([battle("STD")])
+  })
+
+  it("falls back to the usual pick when the filter removes the event node", () => {
+    expect(
+      battleOf("mat", {
+        preferredBattleIds,
+        nodeFilter: (battleId) => battleId !== battle("EVENT"),
+      })
+    ).toEqual([battle("STD")])
+  })
+
+  it("leaves pinned locations as chosen", () => {
+    const pinned = goal("g", 1, [{ id: "mat", count: 2 }], {
+      farmingLocationIds: ["STD"],
+    })
+    expect(battleOf("mat", { preferredBattleIds, goals: [pinned] })).toEqual([
+      battle("STD"),
+    ])
+  })
+})
+
 describe("Combine goals quick filter", () => {
   // FAST drops `quick` guaranteed; SLOW drops `slow` at 0.1 with a cap of 2 raids a day.
   const battlesById = new Map([node("FAST", 10), node("SLOW", 10, 2)])

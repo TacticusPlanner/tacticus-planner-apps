@@ -452,6 +452,7 @@ describe("HSE tab header", () => {
           fewerRaids: false,
           combineGoals: false,
           raidableOnly: false,
+          preferEvent: false,
         },
       },
     ])
