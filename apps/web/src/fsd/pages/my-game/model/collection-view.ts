@@ -17,12 +17,14 @@ import type { UnitKind, UnitTileUnit } from "@/entities/unit"
 import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
 
 import {
+  collectionQuickFilters,
   collectionShardSources,
   defaultCollectionQuery,
   activeFilterCount,
 } from "./collection-query"
 import type {
   CollectionQuery,
+  CollectionQuickFilter,
   CollectionShardSource,
   CollectionSort,
 } from "./collection-query"
@@ -155,6 +157,9 @@ export interface CollectionView {
   /** The query actually applied: the given one without the parts this roster cannot apply. The
    *  toolbar shows this, so it never marks as selected a value that does not narrow the list. */
   query: CollectionQuery
+  /** How many units each quick filter would list with the other filters as they are (0 without a
+   *  roster). Shown on its chip, so a player sees the size of each list before picking it. */
+  quickCounts: Record<CollectionQuickFilter, number>
 }
 
 interface CollectionRow {
@@ -318,6 +323,22 @@ export function buildCollectionView(
           quick: null,
         }
   const matches = rowMatcher(effective, extras, labels)
+  const quickCounts = Object.fromEntries(
+    collectionQuickFilters.map((quick) => [quick, 0])
+  ) as Record<CollectionQuickFilter, number>
+  if (rosterState === "available") {
+    const matchesBesidesQuick = rowMatcher(
+      { ...effective, quick: null },
+      extras,
+      labels
+    )
+    for (const row of rows) {
+      if (!matchesBesidesQuick(row)) continue
+      for (const quick of collectionQuickFilters) {
+        if (matchesQuick(row, quick, extras)) quickCounts[quick] += 1
+      }
+    }
+  }
 
   const groupsById = new Map<string, CollectionFactionGroup>()
   const rowsByFaction = new Map<string, CollectionRow[]>()
@@ -385,6 +406,7 @@ export function buildCollectionView(
     total,
     filtered: activeFilterCount(effective) > 0,
     query: effective,
+    quickCounts,
   }
 }
 

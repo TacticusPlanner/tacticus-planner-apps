@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest"
 
-import { orderRowsByGlobalPriority } from "./goal-row-order"
+import {
+  orderRowsByFinishDate,
+  orderRowsByGlobalPriority,
+} from "./goal-row-order"
 import type { GoalRow } from "./types"
 
 const row = (
@@ -42,5 +45,27 @@ describe("orderRowsByGlobalPriority", () => {
     const rows = [row("b", "Active", 2, ""), row("a", "Active", 1, "")]
     orderRowsByGlobalPriority(rows)
     expect(rows.map((entry) => entry.goalId)).toEqual(["b", "a"])
+  })
+})
+
+describe("orderRowsByFinishDate", () => {
+  it("puts the soonest finish first and goals without an estimate last, keeping priority on ties", () => {
+    const rows = ["a", "b", "c", "d", "e"].map(
+      (goalId) => ({ goalId }) as GoalRow
+    )
+    const days = new Map<string, { days?: number }>([
+      ["a", { days: 30 }],
+      ["b", {}],
+      ["c", { days: 5 }],
+      ["e", { days: 5 }],
+    ])
+
+    expect(orderRowsByFinishDate(rows, days).map((r) => r.goalId)).toEqual([
+      "c",
+      "e",
+      "a",
+      "b",
+      "d",
+    ])
   })
 })

@@ -143,6 +143,11 @@ vi.mock("@/shared/tour", () => ({
 
 import { CollectionPage } from "./collection-page"
 
+/** Opens a Radix dropdown menu (it opens on pointer down, which jsdom's click does not send). */
+function openMenu(trigger: HTMLElement) {
+  fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
+}
+
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 
 // Every character's combat properties; the toolbar tests only filter on name, alliance and rarity.
@@ -969,30 +974,40 @@ describe("CollectionPage snapshots and compare", () => {
     expect(screen.queryByTestId("compare-section")).not.toBeInTheDocument()
   })
 
-  it("disables Take snapshot at the limit and tours Compare right after the toolbar", () => {
+  it("keeps snapshots in one toolbar menu, disables Take snapshot at the limit and tours it after the quick filters", () => {
     msal.authenticated = true
     ready(synced)
     renderPage(1280)
 
-    expect(screen.getByTestId("take-snapshot")).toBeDisabled()
+    const menu = screen.getByTestId("snapshot-actions")
+    expect(
+      within(screen.getByTestId("collection-toolbar")).getByTestId(
+        "snapshot-actions"
+      )
+    ).toBe(menu)
+    openMenu(menu)
+    expect(screen.getByTestId("take-snapshot")).toHaveAttribute(
+      "aria-disabled",
+      "true"
+    )
+    expect(screen.getByTestId("take-snapshot-limit")).toBeInTheDocument()
     expect(screen.getByTestId("manage-snapshots")).toHaveTextContent("20/20")
     expect(tour.steps?.desktop.slice(0, 5).map((step) => step.target)).toEqual([
       '[data-testid="collection-toolbar"]',
       '[data-testid="collection-view-switch"]',
       '[data-testid="collection-quick-filters"]',
-      '[data-testid="compare-toggle"]',
-      '[data-testid="take-snapshot"]',
+      '[data-testid="collection-select-toggle"]',
+      '[data-testid="snapshot-actions"]',
     ])
   })
 
-  it("turns compare mode on with compare=latest", () => {
+  it("turns compare mode on with compare=latest from the Snapshots menu", () => {
     msal.authenticated = true
     ready(synced)
     renderPage(1280)
 
-    fireEvent.click(
-      within(screen.getByTestId("compare-toggle")).getByRole("switch")
-    )
+    openMenu(screen.getByTestId("snapshot-actions"))
+    fireEvent.click(screen.getByTestId("compare-toggle"))
     expect(screen.getByTestId("location")).toHaveTextContent("compare=latest")
   })
 

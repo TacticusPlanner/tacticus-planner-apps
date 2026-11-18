@@ -43,24 +43,24 @@ const isUnavailable = (
 export function QuickFilterChips({
   value,
   availability,
+  counts,
   onChange,
   onRetry,
-  scroll = false,
   leading,
 }: {
   value: CollectionQuickFilter | null
   availability: Record<CollectionQuickFilter, QuickFilterAvailability>
+  /** How many units each chip would list; shown on available chips. */
+  counts?: Record<CollectionQuickFilter, number>
   onChange: (next: CollectionQuickFilter | null) => void
   onRetry: () => void
-  /** One row that scrolls sideways instead of wrapping (mobile). */
-  scroll?: boolean
   /** A chip that is not a quick filter but sits first in the row (Owned only). */
   leading?: ReactNode
 }) {
   const { t, i18n } = useTranslation("common")
   const noteId = useId()
   const [overflow, scrollRef] = useScrollOverflow()
-  const mask = scroll ? overflowMask(overflow) : undefined
+  const mask = overflowMask(overflow)
   const label = (quick: CollectionQuickFilter) =>
     t(`myGame.collection.toolbar.quick.${quick}`)
   const list = new Intl.ListFormat(i18n.language, { type: "conjunction" })
@@ -96,28 +96,20 @@ export function QuickFilterChips({
       <span id={`${noteId}-label`} className="text-xs text-muted-foreground">
         {t("myGame.collection.toolbar.quickFilters")}
       </span>
-      {/* On mobile the row scrolls sideways; the edges hiding chips fade out to show there is more. */}
+      {/* One row that scrolls sideways; the edges hiding chips fade out to show there is more. */}
       <div
-        ref={scroll ? scrollRef : undefined}
-        className={scroll ? "scrollbar-none overflow-x-auto pb-1" : undefined}
+        ref={scrollRef}
+        className="scrollbar-none overflow-x-auto pb-1"
         style={mask ? { maskImage: mask, WebkitMaskImage: mask } : undefined}
       >
-        <div
-          className={
-            scroll ? "flex w-max items-center gap-1" : "flex items-start gap-1"
-          }
-        >
+        <div className="flex w-max items-center gap-1">
           {leading}
           <ToggleGroup
             type="single"
             variant="outline"
             size="sm"
             spacing={1}
-            className={
-              scroll
-                ? "w-max flex-nowrap justify-start"
-                : "min-w-0 flex-1 flex-wrap"
-            }
+            className="w-max flex-nowrap justify-start"
             aria-labelledby={`${noteId}-label`}
             value={value ?? ""}
             onValueChange={(next) =>
@@ -126,28 +118,50 @@ export function QuickFilterChips({
           >
             {collectionQuickFilters.map((quick) => {
               const status = availability[quick]
+              const showCount = status === "available" && counts !== undefined
               return (
                 <ToggleGroupItem
                   key={quick}
                   value={quick}
-                  className={
-                    scroll
-                      ? `${FILTER_CHIP_CLASS_NAME} shrink-0`
-                      : FILTER_CHIP_CLASS_NAME
-                  }
+                  className={`${FILTER_CHIP_CLASS_NAME} shrink-0`}
                   disabled={status !== "available"}
                   title={t(`myGame.collection.toolbar.quickHelp.${quick}`)}
                   aria-describedby={
-                    isUnavailable(status) ? `${noteId}-${status}` : undefined
+                    isUnavailable(status)
+                      ? `${noteId}-${status}`
+                      : showCount
+                        ? `${noteId}-count-${quick}`
+                        : undefined
                   }
                 >
                   {label(quick)}
+                  {showCount ? (
+                    <span
+                      aria-hidden
+                      className="tabular-nums opacity-70"
+                      data-testid={`quick-count-${quick}`}
+                    >
+                      {counts[quick].toLocaleString(i18n.language)}
+                    </span>
+                  ) : null}
                 </ToggleGroupItem>
               )
             })}
           </ToggleGroup>
         </div>
       </div>
+      {/* The chips' names stay the filter names; each count is the chip's description. */}
+      {counts ? (
+        <div hidden>
+          {collectionQuickFilters.map((quick) => (
+            <span id={`${noteId}-count-${quick}`} key={quick}>
+              {t("myGame.collection.toolbar.quickCount", {
+                count: counts[quick],
+              })}
+            </span>
+          ))}
+        </div>
+      ) : null}
       {notes.map((note) => (
         <p
           key={note.reason}

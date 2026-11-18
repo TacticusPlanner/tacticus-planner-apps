@@ -215,6 +215,7 @@ The Collection page SHALL register a page tour, startable from the page's tour c
 - the toolbar (search, sort and filters);
 - the View controls (Layout, Group by and Sort) and the Owned only chip;
 - the quick filters;
+- for a signed-in player, Select units and the Snapshots menu (see `collection-snapshot-compare`);
 - the faction groups;
 - an owned unit's progression indicators;
 - greyed-out unowned units;
@@ -285,7 +286,7 @@ Whichever unit steps remain SHALL still tell the player how a unit opens its Lib
 
 The Collection page SHALL show the page toolbar (`app-page-layout`) above the faction groups whenever the catalog has loaded. The toolbar SHALL contain:
 
-- in its Find slot: a name search, a Filters control and, while any filter is active, a Clear filters action;
+- in its Find slot: a name search, a Filters control, while any filter is active a Clear filters action, then for a signed-in player the Select units button (see "Collection has a select mode for creating goals") and the Snapshots menu (`roster-snapshot-management`);
 - in its View slot: the Layout control (see "Collection switches between the Cards and Roster views"), Group by (see "Faction grouping can be switched off") and a Sort control;
 - on its chip row: the Owned only chip, then the quick-filter chips.
 
@@ -293,13 +294,15 @@ The toolbar SHALL show how many filters are active. The search, each standalone 
 
 The quick-filter chips SHALL be a single-select group: selecting a chip selects that quick filter, and selecting the selected chip again clears it.
 
+Each available quick-filter chip SHALL show, after its label, how many units it would list: the units that match the search, the standalone filters and Owned only together with that quick filter. The count SHALL be the chip's accessible description, not part of its name. A disabled chip SHALL show no count.
+
 While the catalog is loading or has failed to load, the toolbar SHALL NOT be shown.
 
 On desktop (at least 768px):
 
 - Find SHALL lead the first row and the View controls SHALL sit at its right end; when the window is too narrow the View controls SHALL wrap under Find, still at the right, without truncating their labels;
 - the Filters control SHALL expand and collapse the standalone filter controls inline below the toolbar, opening expanded when a standalone filter is already active;
-- the chip row SHALL wrap onto further rows rather than scroll horizontally.
+- the chip row SHALL stay on one line and scroll sideways when the chips do not fit, as on mobile.
 
 On mobile (below 768px):
 
@@ -307,6 +310,17 @@ On mobile (below 768px):
 - the Filters control SHALL open the standalone filter controls in a bottom sheet with its own Clear filters action and a Done action that closes it;
 - the chip row SHALL scroll sideways in one line;
 - the page SHALL NOT scroll horizontally at 420px.
+
+#### Scenario: Quick-filter chips show their counts
+
+- **GIVEN** a synced player with the Xenos alliance filter set, of whose listed Xenos units 3 are ready to rank up
+- **WHEN** the toolbar renders
+- **THEN** the Ready to rank up chip shows 3 and is described as "3 units", and selecting it lists those 3 units
+
+#### Scenario: The desktop chip row stays on one line
+
+- **WHEN** Collection is viewed at 1280px with every quick-filter chip shown
+- **THEN** the chips sit on one line that scrolls sideways if needed, and none wraps onto a second line
 
 #### Scenario: Active filter count and clear
 
@@ -900,7 +914,7 @@ The selected view SHALL be held in the page URL's `view` query parameter, and th
 
 ### Requirement: Collection has a select mode for creating goals
 
-Collection SHALL show a **Select units** toggle beside the summary line when the player is signed in, the roster is available and Compare is off, at every width. Turning it on SHALL enter select mode:
+Collection SHALL show a **Select units** button in the toolbar's Find slot when the player is signed in, the roster is available, at least one unit is listed and Compare is off, at every width; it SHALL be hidden while select mode is on. Pressing it SHALL enter select mode:
 
 - every listed tile (Cards) and row (Roster, including the mobile expandable rows) SHALL show a checkbox, and activating the tile or row SHALL toggle its selection instead of opening the unit page;
 - each selectable item SHALL be a checkbox with an accessible name naming the unit and its checked state;
@@ -929,4 +943,4 @@ The selection SHALL survive search, sort, filter, quick filter, grouping and vie
 #### Scenario: Not available without a roster
 
 - **WHEN** a signed-out visitor, or a signed-in player without a synced roster, opens Collection
-- **THEN** no Select units toggle is shown
+- **THEN** no Select units button is shown

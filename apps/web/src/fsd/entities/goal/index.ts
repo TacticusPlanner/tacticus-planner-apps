@@ -32,11 +32,12 @@ export { GoalTypeBadge } from "./ui/goal-type-badge"
 export { UnitGoalBadge } from "./ui/unit-goal-badge"
 export { goalTypeIcon } from "./model/goal-type-icon"
 export type { GoalStatusFilterValue } from "./ui/status-filter-select"
-export { GoalFilters, GoalGroupBy } from "./ui/goal-filters"
+export { GoalFilters, GoalGroupBy, GoalSort } from "./ui/goal-filters"
 export type { GoalGroupValue, GoalTypeFilterValue } from "./ui/goal-filters"
 export {
   compareGoalTypes,
   isGoalGroupValue,
+  isGoalSortValue,
   isGoalStatusFilterValue,
   isGoalTypeFilterValue,
 } from "./model/types"

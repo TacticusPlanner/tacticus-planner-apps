@@ -8,7 +8,7 @@ TBD - created by archiving change add-personal-roster-snapshots. Update Purpose 
 
 ### Requirement: Collection has a compare mode held in the URL
 
-The Collection toolbar SHALL offer a Compare toggle when the user is signed in and the catalog and roster have loaded. Turning it on SHALL add `compare=latest` to the URL. Turning it off SHALL remove `compare` and `to`. `compare` SHALL hold `latest`, a personal snapshot id, or a Legendary Event run-record source `le:<eventId>:<recordId>`. `to` SHALL hold `current` (the default, omitted from the URL) or another source. `latest` SHALL resolve to the newest source by `takenAt` once the list has loaded.
+The Collection toolbar's Snapshots menu (`roster-snapshot-management`) SHALL offer a Compare with a snapshot toggle when the user is signed in and the catalog has loaded. Turning it on SHALL add `compare=latest` to the URL. Turning it off SHALL remove `compare` and `to`. `compare` SHALL hold `latest`, a personal snapshot id, or a Legendary Event run-record source `le:<eventId>:<recordId>`. `to` SHALL hold `current` (the default, omitted from the URL) or another source. `latest` SHALL resolve to the newest source by `takenAt` once the list has loaded.
 
 The params follow Collection's URL rules (see `player-collection`): replace the history entry, omit defaults, and drop invalid values. An unknown or deleted source SHALL be dropped and fall back to `latest`. A `to` equal to or older than `compare` SHALL be dropped and fall back to `current`. Search, filters and quick filters SHALL keep applying in compare mode. The compare state SHALL NOT be remembered beyond the URL.
 
@@ -39,7 +39,7 @@ In compare mode, the page SHALL show:
 - when no source exists, an empty state "Take your first snapshot" with the Take snapshot action, and no list;
 - when sources exist but no listed unit changed, the summary at zero and "No changes for these units", with "Show unchanged" available.
 
-For guests, the Compare toggle and Take snapshot button SHALL be replaced by a "Sign in to save snapshots" prompt. A guest who opens a URL with `compare` or `to` SHALL see the same prompt, and the page SHALL NOT request snapshot sources.
+For guests, the Snapshots menu SHALL be replaced by a "Sign in to save snapshots" prompt. A guest who opens a URL with `compare` or `to` SHALL see the same prompt, and the page SHALL NOT request snapshot sources.
 
 #### Scenario: No snapshots yet
 
@@ -50,7 +50,7 @@ For guests, the Compare toggle and Take snapshot button SHALL be replaced by a "
 #### Scenario: Guest
 
 - **WHEN** a guest opens Collection
-- **THEN** no Compare toggle or Take snapshot button is shown, and the sign-in prompt is shown
+- **THEN** no Snapshots menu is shown, and the sign-in prompt is shown
 
 #### Scenario: Guest opens a compare URL
 
@@ -113,7 +113,7 @@ Compare mode SHALL offer a fields multi-select: shards, mythic shards, XP, upgra
 
 ### Requirement: Compare mode has tour steps
 
-The Collection tour SHALL gain steps for the Compare toggle, the summary and the Take snapshot button, with separate desktop and mobile targets. Step copy SHALL come from `tour.collection.steps.*` in every supported locale. The mobile Compare options step SHALL be included only while compare mode is on; otherwise it SHALL be left out.
+The Collection tour SHALL gain one Snapshots step, targeting the Snapshots menu button and explaining taking a snapshot and comparing with one, and a step for the summary, with separate desktop and mobile targets. Step copy SHALL come from `tour.collection.steps.*` in every supported locale. The mobile Compare options step SHALL be included only while compare mode is on; otherwise it SHALL be left out.
 
 #### Scenario: Mobile tour targets the options sheet trigger
 

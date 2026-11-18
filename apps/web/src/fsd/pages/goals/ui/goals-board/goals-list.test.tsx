@@ -1022,6 +1022,7 @@ describe("GoalsList selection", () => {
         onToggleSelected={onToggleSelected}
         reorderEnabled
         rows={rows}
+        selectActive
         selection={new Set(["goal-1"])}
       />
     )
@@ -1049,6 +1050,7 @@ describe("GoalsList selection", () => {
         view="Table"
         actions={stubActions}
         rows={[rows[0]!]}
+        selectActive
         selection={new Set(["goal-1", "goal-2"])}
         visibleIds={["goal-1", "goal-2"]}
       />

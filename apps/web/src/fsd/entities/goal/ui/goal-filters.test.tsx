@@ -37,7 +37,7 @@ describe("GoalGroupBy", () => {
     expect(
       screen.getByRole("radio", { name: "goals.filters.groupOptions.none" })
     ).toBeChecked()
-    for (const option of ["unit", "type", "typePriority"]) {
+    for (const option of ["unit", "type"]) {
       expect(
         screen.getByRole("radio", {
           name: `goals.filters.groupOptions.${option}`,

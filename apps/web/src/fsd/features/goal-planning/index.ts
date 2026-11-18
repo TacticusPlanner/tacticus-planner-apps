@@ -94,7 +94,10 @@ export {
   type ProjectDeadlineFit,
   type ProjectFitCount,
 } from "./model/deadline-fit/use-project-deadline-fit"
-export { orderRowsByGlobalPriority } from "./model/shared/goal-row-order"
+export {
+  orderRowsByFinishDate,
+  orderRowsByGlobalPriority,
+} from "./model/shared/goal-row-order"
 export { expandedRows, groupRows, rowGroupId } from "./model/shared/row-groups"
 export { useCollapsedGroups } from "./model/shared/use-collapsed-groups"
 export { goalRowFromSummary, type GoalRow } from "./model/shared/types"

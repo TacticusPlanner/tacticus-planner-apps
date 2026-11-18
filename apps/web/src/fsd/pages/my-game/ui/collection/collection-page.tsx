@@ -52,7 +52,7 @@ import { useCollectionTutorial } from "./collection.tutorial"
 import { CollectionRoster, CollectionRosterList } from "./collection-roster"
 import { CollectionSelectBar } from "./collection-select-bar"
 import { CollectionToolbar } from "./collection-toolbar"
-import { SnapshotActions } from "./compare/compare-bar"
+import { SnapshotsMenu } from "./compare/compare-bar"
 import { CompareSection } from "./compare/compare-section"
 import { ManageSnapshotsSheet } from "./compare/manage-snapshots-sheet"
 import { TakeSnapshotDialog } from "./compare/take-snapshot-dialog"
@@ -187,6 +187,9 @@ export function CollectionPage() {
   const { quickFilters, retry } = state
   const listed = state.view
   const rosterAvailable = listed.rosterState === "available"
+  // Select units sits in the toolbar while there are units to pick and select mode is off.
+  const canSelect =
+    !comparing && !selection.active && rosterAvailable && listed.total > 0
 
   return (
     <div className="space-y-6" data-testid="collection-page">
@@ -202,19 +205,33 @@ export function CollectionPage() {
         options={options ?? EMPTY_OPTIONS}
         rosterAvailable={rosterAvailable}
         quickFilters={quickFilters}
+        quickCounts={listed.quickCounts}
         onRetry={retry}
+        findActions={
+          isAuthenticated ? (
+            <>
+              {canSelect ? (
+                <Button
+                  data-testid="collection-select-toggle"
+                  onClick={selection.start}
+                  variant="outline"
+                >
+                  <ListChecks data-icon="inline-start" />
+                  {t("myGame.collection.select.start")}
+                </Button>
+              ) : null}
+              <SnapshotsMenu
+                compareOn={comparing}
+                onCompareChange={compareQuery.setEnabled}
+                usage={usage}
+                onTake={() => setTakeOpen(true)}
+                onManage={() => setManageOpen(true)}
+              />
+            </>
+          ) : null
+        }
       />
-      {isAuthenticated ? (
-        <SnapshotActions
-          compareOn={comparing}
-          onCompareChange={compareQuery.setEnabled}
-          usage={usage}
-          onTake={() => setTakeOpen(true)}
-          onManage={() => setManageOpen(true)}
-        />
-      ) : (
-        <SnapshotsSignInPrompt />
-      )}
+      {isAuthenticated ? null : <SnapshotsSignInPrompt />}
       {comparing ? (
         <CompareSection
           state={compare}
@@ -225,30 +242,17 @@ export function CollectionPage() {
         />
       ) : null}
       {!comparing && rosterAvailable && listed.total > 0 ? (
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p
-            className="text-sm text-muted-foreground"
-            data-testid="collection-summary"
-          >
-            {t(
-              listed.filtered
-                ? "myGame.collection.summaryFiltered"
-                : "myGame.collection.summary",
-              { owned: listed.owned, total: listed.total }
-            )}
-          </p>
-          {isAuthenticated && !selection.active ? (
-            <Button
-              data-testid="collection-select-toggle"
-              onClick={selection.start}
-              size="sm"
-              variant="outline"
-            >
-              <ListChecks aria-hidden />
-              {t("myGame.collection.select.start")}
-            </Button>
-          ) : null}
-        </div>
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="collection-summary"
+        >
+          {t(
+            listed.filtered
+              ? "myGame.collection.summaryFiltered"
+              : "myGame.collection.summary",
+            { owned: listed.owned, total: listed.total }
+          )}
+        </p>
       ) : null}
       {comparing || listed.groups.length === 0 ? null : !grouped ? (
         listed.query.view === "roster" ? (

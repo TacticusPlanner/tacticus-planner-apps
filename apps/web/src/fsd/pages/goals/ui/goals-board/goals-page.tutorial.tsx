@@ -26,7 +26,6 @@ export function useGoalsOverviewTutorial(deadlineScope = false) {
         | "createGoal"
         | "planningSettings"
         | "reprioritize"
-        | "orderHint"
         | "list"
     ): Step => ({
       target,
@@ -45,7 +44,6 @@ export function useGoalsOverviewTutorial(deadlineScope = false) {
       : []
     // Mobile has no Create goal in the toolbar (the bottom nav's Add Goal is the page action).
     const after = (mobile: boolean) => [
-      createStep('[data-testid="goals-order-hint"]', "orderHint"),
       ...(mobile
         ? []
         : [createStep('[data-testid="goals-create-goal"]', "createGoal")]),
@@ -53,10 +51,10 @@ export function useGoalsOverviewTutorial(deadlineScope = false) {
       createStep('[data-testid="goals-page"]', "list"),
     ]
     // Desktop rows and cards carry a drag handle directly; mobile has a dedicated reorder mode, so the
-    // reprioritize step targets different markup with the same content. The handle and select-all
-    // targets exist in both views. The bulk actions bar shows only while goals are selected, so the
-    // select step mentions it instead of pointing at it. On mobile the View controls (Layout, Group
-    // by, Season fit) sit behind the toolbar's View button, which gets one step.
+    // reprioritize step targets different markup with the same content (and also explains the
+    // order, which no on-page hint does). The select bar shows only in select mode, so the select
+    // step points at Select goals and mentions the bar. On mobile the View controls (Layout, Group
+    // by, Sort, Season fit) sit behind the toolbar's View button, which gets one step.
     return {
       desktop: [
         ...before,
@@ -64,7 +62,7 @@ export function useGoalsOverviewTutorial(deadlineScope = false) {
         ...deadline,
         createStep('[data-testid="goals-view-toggle"]', "viewToggle"),
         createStep('[data-testid="goal-row-drag-handle"]', "reprioritize"),
-        createStep('[data-testid="goals-select-all"]', "select"),
+        createStep('[data-testid="goals-select-toggle"]', "select"),
         ...after(false),
       ],
       mobile: [
@@ -75,7 +73,7 @@ export function useGoalsOverviewTutorial(deadlineScope = false) {
           '[data-testid="goals-mobile-reorder-toggle"]',
           "reprioritize"
         ),
-        createStep('[data-testid="goals-mobile-select-toggle"]', "select"),
+        createStep('[data-testid="goals-select-toggle"]', "select"),
         ...after(true),
       ],
     }
