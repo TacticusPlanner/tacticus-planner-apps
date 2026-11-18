@@ -957,7 +957,6 @@
     "retry": "Erneut versuchen",
     "createButton": "Ziel erstellen",
     "planningSettings": {
-      "button": "Planungseinstellungen",
       "title": "Planungseinstellungen",
       "description": "Wähle das tägliche Energiebudget, das für die tägliche Raid-Planung und für umfassendere Zielschätzungen verwendet wird.",
       "dailyEnergy": "Energie pro Tag",

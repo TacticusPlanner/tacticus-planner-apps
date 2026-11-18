@@ -9,6 +9,8 @@ import {
   ready,
 } from "@/test/fixtures/daily-raids"
 
+import { PageHeaderSettingsSlot, PageHeaderSlotProvider } from "@/shared/ui"
+
 import { SchedulePage } from "./schedule-page"
 
 const useDailyRaids = vi.fn()
@@ -127,16 +129,23 @@ describe("Schedule page", () => {
     expect(screen.getByTestId("plan-day-1")).toBeInTheDocument()
   })
 
-  it("trails the project selector with the shared Planning Settings trigger and opens the dialog", async () => {
+  it("puts the project selector in the toolbar and opens Planning Settings from the header's Settings button", async () => {
     const user = userEvent.setup()
-    render(<SchedulePage />)
+    render(
+      <PageHeaderSlotProvider>
+        <PageHeaderSettingsSlot />
+        <SchedulePage />
+      </PageHeaderSlotProvider>
+    )
 
-    const select = screen.getByTestId("schedule-project-select")
-    const trigger = screen.getByTestId("schedule-planning-settings")
-    expect(trigger).toHaveAccessibleName("Planning settings")
     expect(
-      select.compareDocumentPosition(trigger) & Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
+      within(screen.getByTestId("schedule-toolbar")).getByTestId(
+        "schedule-project-select"
+      )
+    ).toBeInTheDocument()
+    const trigger = within(
+      screen.getByTestId("page-header-settings")
+    ).getByRole("button", { name: "Settings" })
 
     await user.click(trigger)
     expect(
@@ -144,13 +153,13 @@ describe("Schedule page", () => {
     ).toBeInTheDocument()
   })
 
-  it("compresses the project selector to an icon on mobile", () => {
+  it("keeps the project selector's text label on mobile", () => {
     useIsMobileMock.mockReturnValue(true)
     render(<SchedulePage />)
 
-    const select = screen.getByTestId("schedule-project-select")
-    expect(select).toHaveAccessibleName("Select a project")
-    expect(select).not.toHaveTextContent(/\S/)
+    expect(screen.getByTestId("schedule-project-select")).toHaveTextContent(
+      /\S/
+    )
   })
 
   describe("partial plan on Raids Plan", () => {

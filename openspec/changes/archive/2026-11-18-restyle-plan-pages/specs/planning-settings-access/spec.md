@@ -1,0 +1,15 @@
+## MODIFIED Requirements
+
+### Requirement: Raids exposes shared Planning Settings
+
+Dailies > Raids (the Today page) SHALL provide a visible Planning Settings action at mobile and desktop widths as the page's one "Settings" button at the right end of the page header's title row (labelled "Settings" with the settings icon on desktop; an icon button with the accessible name "Settings" on mobile). Plan > Schedule SHALL provide the same action as its page header's Settings button. Activating either SHALL open the same configuration available from Plan > Goals (`/plan/goals`). Saving from any surface SHALL update one persisted setting and affect subsequent raids and broader plan estimates.
+
+#### Scenario: Today and Raids Plan entry
+
+- **WHEN** a user visits Dailies > Raids or Plan > Schedule at either breakpoint
+- **THEN** a keyboard-operable, accessibly named Planning Settings action is present without leaving that section (on Dailies > Raids, the header's Settings button)
+
+#### Scenario: One setting across surfaces
+
+- **WHEN** a user changes daily energy from Raids or Schedule and later opens Planning Settings on Plan > Goals
+- **THEN** the saved value is shown there and both raids and broader estimates use it

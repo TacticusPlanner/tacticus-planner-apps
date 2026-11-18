@@ -8,7 +8,7 @@ Makes the same persisted Planning Settings available where users review their go
 
 ### Requirement: Raids exposes shared Planning Settings
 
-Dailies > Raids (the Today page) SHALL provide a visible Planning Settings action at mobile and desktop widths as the page's one "Settings" button at the right end of the page header's title row (labelled "Settings" with the settings icon on desktop; an icon button with the accessible name "Settings" on mobile). Plan > Schedule SHALL provide the same action trailing its own project selector. Activating either SHALL open the same configuration available from Plan > Goals (`/plan/goals`). Saving from any surface SHALL update one persisted setting and affect subsequent raids and broader plan estimates.
+Dailies > Raids (the Today page) SHALL provide a visible Planning Settings action at mobile and desktop widths as the page's one "Settings" button at the right end of the page header's title row (labelled "Settings" with the settings icon on desktop; an icon button with the accessible name "Settings" on mobile). Plan > Schedule SHALL provide the same action as its page header's Settings button. Activating either SHALL open the same configuration available from Plan > Goals (`/plan/goals`). Saving from any surface SHALL update one persisted setting and affect subsequent raids and broader plan estimates.
 
 #### Scenario: Today and Raids Plan entry
 

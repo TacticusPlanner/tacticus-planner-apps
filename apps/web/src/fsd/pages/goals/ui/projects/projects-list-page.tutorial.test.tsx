@@ -10,7 +10,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 describe("useProjectsListTutorial", () => {
-  it("registers localized desktop and mobile steps targeting the list, the row menu and the New project FAB", () => {
+  it("registers localized desktop and mobile steps targeting the list, the row menu and the New project button", () => {
     renderHook(() => useProjectsListTutorial())
     const steps = register.mock.lastCall?.[0] as {
       desktop: { target: string; title: string; content: string }[]

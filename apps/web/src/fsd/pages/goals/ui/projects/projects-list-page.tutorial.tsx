@@ -6,7 +6,7 @@ import { useTourPageSteps } from "@/shared/tour"
 
 /**
  * Projects list route's guided tour (project-management spec: the on-page project list and the
- * "New project" FAB, whose step copy also introduces each row's action menu - Create goal, Manage
+ * "New project" button, whose step copy also introduces each row's action menu - Create goal, Manage
  * goals, Edit, Archive/Restore), plus a step on the row menu's Move goals….
  */
 export function useProjectsListTutorial() {
