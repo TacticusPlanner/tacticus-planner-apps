@@ -25,6 +25,15 @@ export function getSignInMethod(account: AccountInfo): SignInMethod {
 }
 
 /**
+ * The account's Entra object id (the `oid` claim): the id that finds the user in the Entra admin
+ * center. MSAL keeps it as `localAccountId` even when a cached account comes back without an ID token.
+ */
+export function getAccountObjectId(account: AccountInfo): string {
+  const oid = account.idTokenClaims?.oid
+  return typeof oid === "string" && oid !== "" ? oid : account.localAccountId
+}
+
+/**
  * The address to show for the account, or null when the token has none. A Google user's `username`
  * (`preferred_username`) is a generated `<oid>@<tenant>.onmicrosoft.com`, so it only stands in for local accounts;
  * the `email` optional claim wins whenever the app registration emits it.

@@ -27,6 +27,7 @@ const successState: CurrentUserState = {
     hasCompletedOnboarding: true,
     tacticusApiKeyMasked: "••••••••abcd",
     tacticusUserIdMasked: "••••••••1234",
+    tacticusUserId: "1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d1234",
     analyticsId: "analytics-id-1",
   },
 }
@@ -44,6 +45,7 @@ vi.mock("@azure/msal-react", () => ({
     instance: {
       getActiveAccount: () => ({
         homeAccountId: "acc-1",
+        localAccountId: "0f8c2c51-6a2e-4b7a-9d3e-1c2b3a4d5e6f",
         username: "test@example.com",
       }),
       logoutRedirect,
@@ -52,10 +54,11 @@ vi.mock("@azure/msal-react", () => ({
 }))
 
 vi.mock("@/shared/auth", async () => {
-  const { getAccountEmail, getSignInMethod } =
+  const { getAccountEmail, getAccountObjectId, getSignInMethod } =
     await vi.importActual<typeof import("@/shared/auth")>("@/shared/auth")
   return {
     getAccountEmail,
+    getAccountObjectId,
     getSignInMethod,
     signOut: (...args: unknown[]) => signOut(...args),
   }
@@ -406,14 +409,38 @@ describe("ManageAccountDialog", () => {
     )
   })
 
-  it("shows the masked Tacticus integration values on the integration tab", () => {
+  it("shows the planner account id and the full Tacticus user id on the integration tab", async () => {
+    const user = userEvent.setup()
+    const writeText = vi
+      .spyOn(navigator.clipboard, "writeText")
+      .mockResolvedValue(undefined)
     render(<ManageAccountDialog onOpenChange={vi.fn()} open />)
 
     expect(
+      screen.getByRole("textbox", {
+        name: "manageAccount.integration.plannerAccountId",
+      })
+    ).toHaveValue("0f8c2c51-6a2e-4b7a-9d3e-1c2b3a4d5e6f")
+    expect(
+      screen.getByRole("textbox", {
+        name: "manageAccount.integration.currentUserId",
+      })
+    ).toHaveValue("1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d1234")
+    // The API key stays masked.
+    expect(
       screen.getByTestId("manage-account-current-api-key")
     ).toHaveTextContent("••••••••abcd")
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /manageAccount\.integration\.copyId.*plannerAccountId/,
+      })
+    )
+    expect(writeText).toHaveBeenCalledWith(
+      "0f8c2c51-6a2e-4b7a-9d3e-1c2b3a4d5e6f"
+    )
     expect(
-      screen.getByTestId("manage-account-current-user-id")
-    ).toHaveTextContent("••••••••1234")
+      screen.getByText("manageAccount.integration.copied")
+    ).toBeInTheDocument()
   })
 })

@@ -77,6 +77,7 @@ const baseUser = {
   suggestedDisplayName: null,
   tacticusApiKeyMasked: null,
   tacticusUserIdMasked: null,
+  tacticusUserId: null,
   analyticsId: "analytics-1",
 }
 

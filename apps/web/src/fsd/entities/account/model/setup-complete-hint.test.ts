@@ -15,6 +15,7 @@ const completeUser: CurrentUser = {
   hasCompletedOnboarding: true,
   tacticusApiKeyMasked: "••••abcd",
   tacticusUserIdMasked: null,
+  tacticusUserId: null,
   analyticsId: "analytics-1",
 }
 

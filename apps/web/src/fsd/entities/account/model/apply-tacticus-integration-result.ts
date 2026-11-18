@@ -20,6 +20,7 @@ export function applyTacticusIntegrationResult(
         hasCompletedOnboarding: result.tacticusApiKeyConfigured,
         tacticusApiKeyMasked: result.tacticusApiKeyMasked,
         tacticusUserIdMasked: result.tacticusUserIdMasked,
+        tacticusUserId: result.tacticusUserId,
       }
   )
 }

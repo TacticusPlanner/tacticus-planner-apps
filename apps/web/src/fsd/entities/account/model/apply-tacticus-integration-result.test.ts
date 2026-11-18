@@ -12,6 +12,7 @@ const result = {
   powerLevel: null,
   tacticusApiKeyMasked: "abc…xyz",
   tacticusUserIdMasked: "123…789",
+  tacticusUserId: "1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d1234",
 }
 
 describe("applyTacticusIntegrationResult", () => {
@@ -24,6 +25,7 @@ describe("applyTacticusIntegrationResult", () => {
       hasCompletedOnboarding: false,
       tacticusApiKeyMasked: null,
       tacticusUserIdMasked: null,
+      tacticusUserId: null,
     } as never)
 
     applyTacticusIntegrationResult(client, result)
@@ -34,6 +36,7 @@ describe("applyTacticusIntegrationResult", () => {
       hasCompletedOnboarding: true,
       tacticusApiKeyMasked: "abc…xyz",
       tacticusUserIdMasked: "123…789",
+      tacticusUserId: "1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d1234",
     })
   })
 
