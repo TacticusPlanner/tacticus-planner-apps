@@ -55,6 +55,7 @@ export function useGoalCatalog() {
   // chooses from the same set. Not-yet-loaded event inputs mean no event node is eligible.
   const {
     availableBattles,
+    progressReachedBattles,
     campaignProgressByKey,
     ready: eligibilityReady,
     isError: eligibilityError,
@@ -66,6 +67,18 @@ export function useGoalCatalog() {
         availableBattles.map((b) => [b.id, mapCampaignBattleStorageToDomain(b)])
       ),
     [availableBattles]
+  )
+  // Every node reached by progress, event nodes included while their event is not running: what
+  // Plan > Insights ranks campaigns and events by under "Reached". Estimates never read it.
+  const reachedBattlesById = useMemo(
+    () =>
+      new Map(
+        progressReachedBattles.map((b) => [
+          b.id,
+          mapCampaignBattleStorageToDomain(b),
+        ])
+      ),
+    [progressReachedBattles]
   )
   // Every catalog battle, reached or not: what a blocked resource could be farmed from once unlocked
   // (`useFarmUnlockPaths`). Estimates never read it.
@@ -187,6 +200,7 @@ export function useGoalCatalog() {
     mowsById,
     upgradesById,
     battlesById,
+    reachedBattlesById,
     allBattlesById,
     campaignProgressByKey,
     campaignDefinitions,

@@ -22,7 +22,6 @@ import type {
 } from "@/entities/rank-lookup"
 import type { GoalDetail } from "@/entities/goal"
 import type { OnslaughtProgress } from "@/entities/player-data-override"
-import { computeCampaignInsights } from "@/entities/campaign-insight"
 
 import {
   allocatePlanInventory,
@@ -55,7 +54,7 @@ import type { InventoryOrbs, OrbGoalNeed } from "./orb-potential-allocation"
 import { buildLevelPotentialProgress } from "./level-potential-progress"
 import { computeBottlenecks, netGoalNeeds } from "./plan-bottlenecks"
 import { computeCampaignProgression } from "./plan-campaign-progression"
-import { summarizeFarmingSpots } from "./plan-farming-spots"
+import { buildFarmingInsights } from "./plan-farming-insights"
 import { createPlanMissingResources } from "./plan-missing-resources"
 import { createPlanNetResources } from "./plan-net-resources"
 import { createStandaloneEstimates } from "./plan-standalone-estimates"
@@ -92,6 +91,13 @@ export function computePlanInsights(params: {
   inventoryXpBooks?: readonly { xpBookId: string; amount: number }[]
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
   battlesById: Parameters<typeof estimatePlan>[0]["battlesById"]
+  /** The nodes the Insights farming cards rank over: `reached` (by progress, event nodes included
+   *  while their event is not running) and `all` (every catalog node). Estimates, dates and
+   *  bottlenecks keep reading the eligible `battlesById`; without it the cards use it too. */
+  insightBattles?: {
+    reached: Parameters<typeof estimatePlan>[0]["battlesById"]
+    all: Parameters<typeof estimatePlan>[0]["battlesById"]
+  }
   charactersById: ReadonlyMap<string, CharacterStorageModel>
   mowsById: ReadonlyMap<string, MowStorageModel>
   ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
@@ -480,15 +486,27 @@ export function computePlanInsights(params: {
     dailyEnergy: params.dailyEnergy ?? 288,
   })
 
-  const { campaignInsights, eventInsights } = computeCampaignInsights(
-    campaignNeeds,
-    combinedUpgradesById,
-    params.battlesById,
-    (groupId) => params.releaseTypeByGroupId.get(groupId) === "event",
-    (descriptor, isEvent) =>
-      isEvent
-        ? params.campaignName(descriptor)
-        : params.campaignFullLabel(descriptor)
+  const farmingInsightsOver = (
+    battlesById: Parameters<typeof estimatePlan>[0]["battlesById"]
+  ) =>
+    buildFarmingInsights({
+      needs: campaignNeeds,
+      upgradesById: combinedUpgradesById,
+      battlesById,
+      isEventGroup: (groupId) =>
+        params.releaseTypeByGroupId.get(groupId) === "event",
+      resolveLabel: (descriptor, isEvent) =>
+        isEvent
+          ? params.campaignName(descriptor)
+          : params.campaignFullLabel(descriptor),
+      provenance,
+      dailyEnergy: params.dailyEnergy ?? 288,
+    })
+  const reachedFarming = farmingInsightsOver(
+    params.insightBattles?.reached ?? params.battlesById
+  )
+  const allLocations = farmingInsightsOver(
+    params.insightBattles?.all ?? params.battlesById
   )
 
   const campaignProgression = params.campaignProgression
@@ -505,23 +523,6 @@ export function computePlanInsights(params: {
           resourceLabel(id, params.upgradesById, params.charactersById),
       })
     : []
-
-  const farmingSpotsByInsightId = summarizeFarmingSpots(
-    [...campaignInsights, ...eventInsights],
-    params.battlesById,
-    params.dailyEnergy ?? 288
-  )
-
-  const benefitingGoalIdsByInsightId = new Map<string, string[]>()
-  for (const insight of [...campaignInsights, ...eventInsights]) {
-    const goalIds = new Set<string>()
-    for (const contribution of insight.contributions) {
-      for (const goalId of provenance.get(contribution.upgradeId) ?? []) {
-        goalIds.add(goalId)
-      }
-    }
-    benefitingGoalIdsByInsightId.set(insight.id, [...goalIds])
-  }
 
   // The token wait runs at the served Onslaught cadence (1.5 runs a day until it loads), so it
   // matches the shard supply above.
@@ -565,10 +566,8 @@ export function computePlanInsights(params: {
     excludedGoals,
     bottlenecks,
     blockers,
-    campaignInsights,
-    eventInsights,
-    farmingSpotsByInsightId,
-    benefitingGoalIdsByInsightId,
+    ...reachedFarming,
+    allLocations,
     campaignProgression,
   }
 }

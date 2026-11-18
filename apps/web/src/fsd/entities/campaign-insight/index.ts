@@ -3,4 +3,5 @@ export {
   computeCampaignInsights,
   dropRate,
   type CampaignInsight,
+  type CampaignInsightUpgrade,
 } from "./model/campaign-insights"

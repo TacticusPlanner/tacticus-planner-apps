@@ -211,6 +211,9 @@ export type DailyRaidsReadyViewModel = {
   /** Today's schedule raids at least one battle that must be played manually — Today shows the
    *  "Raidable only" quick filter only then (or while it is on). */
   hasManualRaids: boolean
+  /** The player has reached nodes of a running campaign event — Today offers the "CE nodes first"
+   *  quick filter only then (or while it is on). */
+  hasActiveEventBattles: boolean
   // What every raidable node drops, straight from the catalog and independent of this project's
   // plan — Today's Attempts is account-wide, so it needs an icon for nodes the plan never mentions.
   resourceByBattleId: ReadonlyMap<BattleId, DailyRaidBattleResource>
@@ -242,6 +245,7 @@ export type DailyRaidsCalculationViewModel = Omit<
   DailyRaidsReadyViewModel,
   | "locationsByBattleId"
   | "hasManualRaids"
+  | "hasActiveEventBattles"
   | "resourceByBattleId"
   | "sourcesByResource"
   | "eligibleBattleIds"

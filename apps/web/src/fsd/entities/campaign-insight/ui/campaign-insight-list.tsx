@@ -84,12 +84,23 @@ export function CampaignInsightList<TId extends string>({
                   alt=""
                   className="size-6 shrink-0"
                 />
-                <span className="min-w-0 flex-1 truncate">{insight.label}</span>
                 {renderSummary ? (
-                  <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                    {renderSummary(insight)}
+                  // Name above the summary on a narrow row, so neither is cut off; side by side
+                  // from `sm` up.
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
+                    <span className="min-w-0 truncate sm:flex-1">
+                      {insight.label}
+                    </span>
+                    <span className="text-xs text-muted-foreground tabular-nums sm:shrink-0">
+                      {renderSummary(insight)}
+                    </span>
                   </span>
-                ) : insight.tierScores?.length ? (
+                ) : (
+                  <span className="min-w-0 flex-1 truncate">
+                    {insight.label}
+                  </span>
+                )}
+                {renderSummary ? null : insight.tierScores?.length ? (
                   <span className="flex shrink-0 gap-2 text-xs text-muted-foreground tabular-nums">
                     {insight.tierScores.map(({ tier, score }) => (
                       <span key={tier}>

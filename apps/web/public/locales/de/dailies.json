@@ -620,17 +620,20 @@
     "chip": {
       "fewerRaids": "Weniger Raids",
       "combineGoals": "Ziele kombinieren",
-      "raidableOnly": "Nur raidbar"
+      "raidableOnly": "Nur raidbar",
+      "preferEvent": "Kampagnen-Event zuerst"
     },
     "help": {
       "fewerRaids": "Wenn mehrere Orte gleich viel Energie pro Gegenstand kosten, nur die mit der meisten Energie pro Kampf raiden. Gleiche Materialien für gleiche Energie, mit weniger Raids. Praktisch, wenn Raid-Tickets knapp sind.",
       "combineGoals": "Fasst die restlichen Materialien aller Ziele zusammen (nur die des gewählten Projekts, falls eines gewählt ist) und plant die heutigen Raids, als wären sie ein Ziel: eine Liste ohne Zielgruppen, die Materialien mit der längsten Restdauer zuerst, die Zielpriorität wird ignoriert.",
-      "raidableOnly": "Lässt Kämpfe weg, die du noch nicht raiden kannst (weniger als 3 Medaillen), und raidet andere Orte für dieselben Materialien. Ein Material ohne raidbaren Ort wird als blockiert angezeigt."
+      "raidableOnly": "Lässt Kämpfe weg, die du noch nicht raiden kannst (weniger als 3 Medaillen), und raidet andere Orte für dieselben Materialien. Ein Material ohne raidbaren Ort wird als blockiert angezeigt.",
+      "preferEvent": "Während ein Kampagnen-Event läuft, wird jedes Material in den erreichten Event-Schlachten gefarmt, sobald eine davon es droppt, auch wenn ein anderer Ort weniger Energie pro Gegenstand kostet. So fließt mehr Energie in Event-Punkte; andere Materialien werden wie gewohnt gefarmt."
     },
     "note": {
       "fewerRaids": "Weniger Raids: Gleichwertige Orte mit mehr Energie pro Kampf werden genutzt, damit dieselben Materialien weniger Raids brauchen.",
       "combineGoals": "Ziele kombinieren: Die heutigen Raids behandeln alle Ziele als eine Liste, die Materialien mit der längsten Restdauer zuerst. Daten in Plan und Ziele folgen weiter der Zielpriorität.",
-      "raidableOnly": "Nur raidbar: Kämpfe, die manuell gespielt werden müssen, werden durch raidbare Orte ersetzt."
+      "raidableOnly": "Nur raidbar: Kämpfe, die manuell gespielt werden müssen, werden durch raidbare Orte ersetzt.",
+      "preferEvent": "Kampagnen-Event zuerst: Materialien, die im laufenden Kampagnen-Event droppen, werden in dessen Schlachten gefarmt."
     }
   },
   "hse": {

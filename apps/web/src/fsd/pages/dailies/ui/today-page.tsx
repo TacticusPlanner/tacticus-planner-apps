@@ -33,12 +33,17 @@ export function TodayPage() {
     quickFilters: todayQuickFilterOptions(quickFilters),
   })
   const [raidsFilters] = useRaidsFilters()
-  // "Raidable only" is offered only when today's plan raids a manual battle, or while it is on.
-  const hiddenQuickFilters =
-    (raids.status === "ready" && raids.hasManualRaids) ||
-    quickFilters.includes("raidableOnly")
+  // "Raidable only" is offered only when today's plan raids a manual battle, and "CE nodes first"
+  // only while a campaign event with reached nodes is running; each also while it is on.
+  const ready = raids.status === "ready" ? raids : null
+  const hiddenQuickFilters = [
+    ...(ready?.hasManualRaids || quickFilters.includes("raidableOnly")
       ? []
-      : (["raidableOnly"] as const)
+      : (["raidableOnly"] as const)),
+    ...(ready?.hasActiveEventBattles || quickFilters.includes("preferEvent")
+      ? []
+      : (["preferEvent"] as const)),
+  ]
   useTodayTutorial()
   // A new project or filter set is a new Bonus raids list, so the dashboard starts over: Bonus
   // raids opens on its top 3 again instead of keeping the previous list's expansion.
