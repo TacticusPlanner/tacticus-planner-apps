@@ -2,22 +2,15 @@ import { useMemo } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
 
 import type {
   EventsCalendarView,
   EventsCalendarViewModel,
 } from "../../model/events-calendar.types"
 import { useDateLocale } from "@/shared/lib"
+import { SegmentedControl } from "@/shared/ui"
 
 const VIEWS: readonly EventsCalendarView[] = ["week", "month"]
-
-function isView(value: string): value is EventsCalendarView {
-  return (VIEWS as readonly string[]).includes(value)
-}
 
 export function EventsCalendarNavigation({
   calendar,
@@ -90,26 +83,20 @@ export function EventsCalendarNavigation({
         >
           <ChevronRight />
         </Button>
-        <Button onClick={calendar.goToToday} size="sm" variant="ghost">
+        <Button onClick={calendar.goToToday} variant="outline">
           {t("navigation.today")}
         </Button>
       </div>
-      <ToggleGroup
-        aria-label={t("navigation.view")}
-        onValueChange={(value) => {
-          if (isView(value)) calendar.setView(value)
-        }}
-        size="sm"
-        type="single"
+      <SegmentedControl
+        label={t("navigation.view")}
+        onValueChange={calendar.setView}
+        options={VIEWS.map((view) => ({
+          value: view,
+          label: t(`navigation.views.${view}`),
+        }))}
+        testId="events-calendar-view"
         value={calendar.view}
-        variant="outline"
-      >
-        {VIEWS.map((view) => (
-          <ToggleGroupItem key={view} value={view}>
-            {t(`navigation.views.${view}`)}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+      />
     </div>
   )
 }

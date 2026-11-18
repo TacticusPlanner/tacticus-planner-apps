@@ -775,7 +775,7 @@
       }
     },
     "projects": {
-      "title": "Your Projects",
+      "title": "Your projects",
       "moreCount": "+{{count}} more",
       "summaryUnavailable": "Summary unavailable",
       "emptyTitle": "No projects yet",
@@ -791,14 +791,14 @@
       "error": "Couldn't load today's raids.",
       "noGoals": "No active goals yet. Add goals to plan your raids.",
       "limitReached": "Daily energy limit reached — bonus raids:",
-      "openToday": "Open Today",
+      "openToday": "Open today's raids",
       "showMore_one": "Show {{count}} more",
       "showMore_other": "Show {{count}} more",
       "showLess": "Show less"
     },
     "events": {
       "title": "Upcoming events",
-      "live": "LIVE",
+      "live": "Live",
       "endsIn": "Ends in {{when}}",
       "startsIn": "Starts in {{when}}",
       "startDateTba": "Start date TBA",
@@ -820,7 +820,7 @@
       "viewCalendar": "View calendar"
     },
     "calendar": {
-      "title": "Events Calendar"
+      "title": "Events calendar"
     },
     "betaPromo": {
       "title": "Beta launch gift",
@@ -895,10 +895,11 @@
       "level": "Level {{level}}",
       "lastSynced": "Last synced {{time}}",
       "neverSynced": "Never synchronized",
-      "sync": "Sync Guild",
+      "sync": "Sync guild",
       "syncing": "Syncing…",
+      "actions": "Guild actions",
       "syncError": "Something went wrong while synchronizing. Please try again.",
-      "deleteGuild": "Delete Guild",
+      "deleteGuild": "Delete guild",
       "syncCooldown_one": "This guild was just synchronized. You can sync again in {{count}} second.",
       "syncCooldown_other": "This guild was just synchronized. You can sync again in {{count}} seconds.",
       "syncRateLimited_one": "Too many requests. Try again in {{count}} second.",

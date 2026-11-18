@@ -16,6 +16,7 @@ import { useGuildSync } from "@/entities/guild"
 import type { RegisteredGuild } from "@/entities/guild"
 
 import { formatRelativeTime } from "@/shared/lib"
+import { PageToolbar } from "@/shared/ui"
 import type { GuildOutletContext } from "./guild-outlet-context"
 import { GuildPurgeDialog } from "./guild-purge-dialog"
 
@@ -26,7 +27,8 @@ type Props = {
 }
 
 /**
- * The registered-guild view: name/tag/level summary, a Sync Guild button (Leader/Co-Leader only), and
+ * The registered-guild view: a page toolbar with Sync guild and Delete guild (Leader/Co-Leader only), the
+ * name/tag/level summary, and
  * an `<Outlet/>` for the active tab's content - the Members tab (and any future Guild tabs) are now
  * rendered by the shared app-shell header's section-tabs row (see `section-tabs.tsx`) instead of a tab
  * bar here.
@@ -42,46 +44,47 @@ export function GuildRegisteredView({ guild, onSynced, onPurged }: Props) {
 
   return (
     <div className="flex flex-col gap-4" data-testid="guild-registered">
-      <Card data-testid="guild-summary">
-        <CardHeader className="flex-row items-start justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <CardTitle className="flex items-center gap-2">
-              {guild.name}
-              <Badge variant="outline">{guild.tag}</Badge>
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">
-              {t("guild.summary.level", { level: guild.level })}
-              {" · "}
-              {lastSynced
-                ? t("guild.summary.lastSynced", { time: lastSynced })
-                : t("guild.summary.neverSynced")}
-            </p>
-          </div>
-
-          {guild.canSynchronize ? (
-            <div className="flex items-center gap-2">
+      {guild.canSynchronize ? (
+        <PageToolbar
+          actions={
+            <>
+              <Button
+                className="text-destructive hover:text-destructive"
+                data-testid="guild-purge-open"
+                onClick={() => setIsPurgeDialogOpen(true)}
+                variant="outline"
+              >
+                <Trash2 data-icon="inline-start" />
+                {t("guild.summary.deleteGuild")}
+              </Button>
               <Button
                 data-testid="guild-sync-button"
                 disabled={syncing || coolingDown}
-                size="sm"
-                variant="outline"
                 onClick={sync}
               >
                 {syncing ? <Spinner /> : <RefreshCw data-icon="inline-start" />}
                 {syncing ? t("guild.summary.syncing") : t("guild.summary.sync")}
               </Button>
-              <Button
-                data-testid="guild-purge-open"
-                size="sm"
-                variant="outline"
-                className="text-destructive hover:text-destructive"
-                onClick={() => setIsPurgeDialogOpen(true)}
-              >
-                <Trash2 data-icon="inline-start" />
-                {t("guild.summary.deleteGuild")}
-              </Button>
-            </div>
-          ) : null}
+            </>
+          }
+          label={t("guild.summary.actions")}
+          testId="guild-toolbar"
+        />
+      ) : null}
+
+      <Card data-testid="guild-summary">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            {guild.name}
+            <Badge variant="outline">{guild.tag}</Badge>
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {t("guild.summary.level", { level: guild.level })}
+            {" · "}
+            {lastSynced
+              ? t("guild.summary.lastSynced", { time: lastSynced })
+              : t("guild.summary.neverSynced")}
+          </p>
         </CardHeader>
         {errorMessage ? (
           <CardContent>

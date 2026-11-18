@@ -347,7 +347,7 @@ export function EventAgendaRow({
         </span>
         {isOccurrenceStart ? (
           <span
-            className="shrink-0 text-xs font-semibold tracking-wide text-primary uppercase"
+            className="shrink-0 text-xs font-semibold text-primary"
             data-testid="event-occurrence-start-badge"
           >
             {t("badges.starts")}
@@ -355,7 +355,7 @@ export function EventAgendaRow({
         ) : null}
         {isOccurrenceEnd ? (
           <span
-            className="shrink-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
+            className="shrink-0 text-xs font-semibold text-muted-foreground"
             data-testid="event-occurrence-end-badge"
           >
             {t("badges.ends")}
