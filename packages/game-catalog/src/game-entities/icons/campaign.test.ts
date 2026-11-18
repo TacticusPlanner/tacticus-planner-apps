@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { campaignDescriptor } from "./campaign"
+import { campaignDescriptor, campaignIcon } from "./campaign"
 
 describe("campaignDescriptor", () => {
   it("describes storyline groups with a standard/elite token, keyed by the storyline name", () => {
@@ -62,6 +62,17 @@ describe("campaignDescriptor", () => {
       isEvent: true,
       challenge: true,
     })
+  })
+
+  it("knows the Blood Angels Campaign Event (eventCampaign7)", () => {
+    expect(campaignDescriptor("eventCampaign7", "Standard")?.nameKey).toBe(
+      "orks-vs-blood-angels"
+    )
+    expect(campaignIcon("eventCampaign7", "Standard")).toContain("blood_angels")
+    expect(campaignIcon("eventCampaign7", "Extremis")).toContain(
+      "campaigns/orks-vs-blood-angels-eventExtremis.webp"
+    )
+    expect(campaignDescriptor("eventCampaign8", "Standard")).toBeUndefined()
   })
 
   it("returns undefined for an unrecognized group or type", () => {

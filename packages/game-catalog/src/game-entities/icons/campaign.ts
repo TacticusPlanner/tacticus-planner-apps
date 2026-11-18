@@ -25,6 +25,7 @@ const eventNames: Record<string, string> = {
   "4": "adepta-sororitas-vs-death-guard",
   "5": "world-eaters-vs-adepta-sororitas",
   "6": "necrons-vs-dark-angels",
+  "7": "orks-vs-blood-angels",
 }
 
 // The faction an event's Standard tier shows: the second side of its name.
@@ -35,10 +36,11 @@ const eventStandardFactions: Record<string, string> = {
   "adepta-sororitas-vs-death-guard": "DeathGuard",
   "world-eaters-vs-adepta-sororitas": "Sisterhood",
   "necrons-vs-dark-angels": "DarkAngels",
+  "orks-vs-blood-angels": "BloodAngels",
 }
 
 const STORYLINE_GROUP_ID = /^(campaign|mirror|elite|eliteMirror)([1-4])$/
-const EVENT_GROUP_ID = /^eventCampaign([1-6])$/
+const EVENT_GROUP_ID = /^eventCampaign([1-7])$/
 
 export type CampaignDifficultyToken =
   "standard" | "elite" | "eventStandard" | "eventExtremis"
