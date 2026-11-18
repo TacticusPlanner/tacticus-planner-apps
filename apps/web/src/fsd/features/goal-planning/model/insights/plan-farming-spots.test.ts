@@ -62,14 +62,18 @@ describe("summarizeFarmingSpots", () => {
         [battleId("B1"), battle(6)],
         [battleId("B2"), battle(10)],
       ]),
-      24
+      24,
+      10
     )
 
     // mat1: B1 = 8 runs × 6 = 48, B2 = 4 runs × 10 = 40 → 40. mat2: 2 runs × 6 = 12.
+    // Items: 4 of mat1 and 1 of mat2, out of 10 the plan farms.
     expect(spots.get("campaign1:Normal")).toEqual({
       resourceCount: 2,
       energy: 52,
       days: 52 / 24,
+      itemCount: 5,
+      coverage: 0.5,
     })
   })
 

@@ -119,6 +119,34 @@ export function availableCampaignBattles<
 }
 
 /**
+ * The battles the player has reached by progress alone: `availableCampaignBattles` without the
+ * running-event check, so an event campaign's reached nodes count while it is not running. Plan >
+ * Insights reads it to rank campaigns and events by the nodes the player has unlocked; raids never
+ * do, since a stopped event cannot be raided.
+ */
+export function progressReachedCampaignBattles<
+  TBattle extends {
+    id: string
+    campaignGroupId: string
+    type: string
+    challenge: boolean
+    nodeNumber: number
+    battleIndex: number
+  },
+>(
+  battles: TBattle[],
+  eventCampaignIds: ReadonlySet<string>,
+  campaignEventProgressByKey: ReadonlyMap<string, CampaignEventProgressEntry>,
+  campaignProgressByKey: ReadonlyMap<string, CampaignProgressEntry> = new Map()
+) {
+  return battles.filter((battle) =>
+    eventCampaignIds.has(battle.campaignGroupId)
+      ? isEventNodeReached(battle, campaignEventProgressByKey)
+      : isStandingTrackBattleReached(battle, campaignProgressByKey)
+  )
+}
+
+/**
  * The battles that must be played rather than raided, since raids need 3 medals: every standing
  * frontier (reached but never beaten) and every battle the player's battle progress overrides record
  * with fewer than 3 medals. They stay farmable by default; Today's "Raidable only" filter drops them.

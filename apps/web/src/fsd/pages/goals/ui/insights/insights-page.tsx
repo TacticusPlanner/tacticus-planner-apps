@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   Card,
@@ -8,17 +8,26 @@ import {
 } from "@workspace/ui/components/card"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
 
 import { useGlobalGoalPlan } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
+import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 import { InsightsCampaignProgression } from "./insights-campaign-progression"
 import { InsightsEvents } from "./insights-events"
 import { InsightsHoldingBack } from "./insights-holding-back"
 import { InsightsMissing } from "./insights-missing"
 import { InsightsOutlook } from "./insights-outlook"
 import type { InsightsGoalInfo } from "./insights-view"
+
+/** Which nodes "Best campaigns/events to farm" rank over. */
+const INSIGHTS_LOCATIONS = ["reached", "all"] as const
+type InsightsLocations = (typeof INSIGHTS_LOCATIONS)[number]
 
 /**
  * The Insights view (plan §16 phase 7): when the plan is done and which goals set that date, what
@@ -33,6 +42,8 @@ export function InsightsPage() {
   const { settings: planningSettings } = usePlanningSettings()
   // No selection means the whole plan; a project only narrows what is reported.
   const [projectId, setProjectId] = useState<string | undefined>(undefined)
+  // Which nodes the farming cards rank: what the player has reached, or every node.
+  const [locations, setLocations] = useState<InsightsLocations>("reached")
 
   const globalPlan = useGlobalGoalPlan()
   // A project only narrows the plan by the goals' `projectIds`; no membership read.
@@ -51,6 +62,13 @@ export function InsightsPage() {
     projectId ? scopedGoals.map((entry) => entry.goal.goalId) : null
   )
 
+  const farming = { reached: result, all: result.allLocations }[locations]
+  // Only "Reached" can leave the events card empty while the plan still has needs.
+  const eventsEmptyText = {
+    reached: t("goals.insights.eventsNoneReached"),
+    all: undefined,
+  }[locations]
+
   const goalInfoById = new Map<string, InsightsGoalInfo>(
     scopedGoals.map((member) => [
       member.goal.goalId,
@@ -64,9 +82,13 @@ export function InsightsPage() {
 
   return (
     <div className="flex flex-col gap-6" data-testid="insights-page">
-      {/* goals-navigation spec: a subpage with a project selector but no tab/status row renders it
-          right-aligned, alone in its own row. */}
-      <div className="flex items-center justify-end gap-4">
+      {/* goals-navigation spec: the project selector right-aligned in its own row, with the
+          Locations switch for the farming cards beside it. */}
+      <div className="flex flex-wrap items-center justify-end gap-4">
+        <InsightsLocationsControl
+          onValueChange={setLocations}
+          value={locations}
+        />
         <ProjectSelect
           allowAll
           onProjectIdChange={setProjectId}
@@ -136,21 +158,22 @@ export function InsightsPage() {
             <div className="flex flex-col gap-6">
               <InsightsEvents
                 benefitingGoalIdsByInsightId={
-                  result.benefitingGoalIdsByInsightId
+                  farming.benefitingGoalIdsByInsightId
                 }
-                farmingSpotsByInsightId={result.farmingSpotsByInsightId}
+                farmingSpotsByInsightId={farming.farmingSpotsByInsightId}
                 goalInfoById={goalInfoById}
-                insights={result.campaignInsights}
+                insights={farming.campaignInsights}
                 title={t("goals.insights.campaignsTitle")}
               />
               <InsightsEvents
                 benefitingGoalIdsByInsightId={
-                  result.benefitingGoalIdsByInsightId
+                  farming.benefitingGoalIdsByInsightId
                 }
-                farmingSpotsByInsightId={result.farmingSpotsByInsightId}
+                farmingSpotsByInsightId={farming.farmingSpotsByInsightId}
                 goalInfoById={goalInfoById}
                 description={t("goals.insights.eventsDescription")}
-                insights={result.eventInsights}
+                emptyText={eventsEmptyText}
+                insights={farming.eventInsights}
                 title={t("goals.insights.eventsTitle")}
               />
               <InsightsCampaignProgression
@@ -161,6 +184,49 @@ export function InsightsPage() {
           <InsightsMissing missing={result.missing} totals={result.totals} />
         </>
       )}
+    </div>
+  )
+}
+
+/** The View slot's Locations switch: rank farming over reached nodes or every node. */
+function InsightsLocationsControl({
+  value,
+  onValueChange,
+}: {
+  value: InsightsLocations
+  onValueChange: (value: InsightsLocations) => void
+}) {
+  const { t } = useTranslation()
+  const labelId = useId()
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-sm text-muted-foreground" id={labelId}>
+        {t("goals.insights.locations.label")}
+      </span>
+      <ToggleGroup
+        aria-labelledby={labelId}
+        data-testid="insights-locations"
+        onValueChange={(next) => {
+          const option = INSIGHTS_LOCATIONS.find((item) => item === next)
+          if (option) onValueChange(option)
+        }}
+        spacing={1}
+        type="single"
+        value={value}
+        variant="outline"
+      >
+        {INSIGHTS_LOCATIONS.map((option) => (
+          <ToggleGroupItem
+            className={FILTER_CHIP_CLASS_NAME}
+            data-testid={`insights-locations-${option}`}
+            key={option}
+            title={t(`goals.insights.locations.${option}Hint`)}
+            value={option}
+          >
+            {t(`goals.insights.locations.${option}`)}
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
     </div>
   )
 }

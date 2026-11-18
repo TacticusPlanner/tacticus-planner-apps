@@ -8,6 +8,7 @@ import { usePlayerChunk } from "@/shared/local-data"
 import {
   availableCampaignBattles,
   buildCampaignProgressByKey,
+  progressReachedCampaignBattles,
   manualBattleIds,
 } from "./campaign-event-eligibility"
 import { useQuery } from "@tanstack/react-query"
@@ -76,6 +77,22 @@ export function useEligibleCampaignBattles(
       campaignProgressByKey,
     ]
   )
+  // Reached by progress, events included while they are not running (Plan > Insights only).
+  const progressReachedBattles = useMemo(
+    () =>
+      progressReachedCampaignBattles(
+        battles ?? [],
+        eventCampaignIds,
+        campaignEventProgressByKey,
+        campaignProgressByKey
+      ),
+    [
+      battles,
+      eventCampaignIds,
+      campaignEventProgressByKey,
+      campaignProgressByKey,
+    ]
+  )
   const battleOverrides = battleOverridesQuery.data?.battles
   const manualIds = useMemo(
     () =>
@@ -89,6 +106,7 @@ export function useEligibleCampaignBattles(
   )
   return {
     availableBattles: reachedBattles,
+    progressReachedBattles,
     manualBattleIds: manualIds,
     campaignProgressByKey,
     liveProgress,

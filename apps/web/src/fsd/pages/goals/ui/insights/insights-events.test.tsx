@@ -34,7 +34,18 @@ describe("InsightsEvents", () => {
       <InsightsEvents
         benefitingGoalIdsByInsightId={new Map([[insight.id, ["g1"]]])}
         farmingSpotsByInsightId={
-          new Map([[insight.id, { resourceCount: 2, energy: 600, days: 2.1 }]])
+          new Map([
+            [
+              insight.id,
+              {
+                resourceCount: 2,
+                energy: 600,
+                days: 2.1,
+                itemCount: 40,
+                coverage: 0.25,
+              },
+            ],
+          ])
         }
         goalInfoById={
           new Map([
@@ -51,7 +62,7 @@ describe("InsightsEvents", () => {
     )
 
     expect(screen.getByTestId("insights-farming-spot")).toHaveTextContent(
-      "2 resources · 3 days"
+      "25% of needs·15/item"
     )
     expect(screen.queryByText("1.23")).not.toBeInTheDocument()
     expect(
@@ -59,6 +70,11 @@ describe("InsightsEvents", () => {
     ).toHaveAttribute("href", "/plan/schedule")
 
     await userEvent.click(screen.getByRole("button", { name: /Campaign One/ }))
+    expect(
+      screen.getByTestId("insights-farming-spot-detail")
+    ).toHaveTextContent(
+      "40 needed items across 2 resources · 600 energy · 3 days"
+    )
     expect(screen.getByRole("link", { name: "unit-a · Rank" })).toHaveAttribute(
       "href",
       "/plan/goals?goal=g1"
@@ -92,5 +108,27 @@ describe("InsightsEvents", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Show less" }))
     expect(screen.queryByText("Campaign Four")).not.toBeInTheDocument()
+  })
+
+  it("says why an empty card is empty when given the text, and hides it otherwise", () => {
+    const props = {
+      benefitingGoalIdsByInsightId: new Map(),
+      farmingSpotsByInsightId: new Map(),
+      goalInfoById: new Map(),
+      insights: [],
+      title: "Best events to farm",
+    }
+    const { unmount } = render(<InsightsEvents {...props} />, {
+      route: "/plan/insights",
+    })
+    expect(screen.queryByText("Best events to farm")).not.toBeInTheDocument()
+    unmount()
+
+    render(<InsightsEvents {...props} emptyText="Nothing reached yet." />, {
+      route: "/plan/insights",
+    })
+    expect(screen.getByTestId("insights-events-empty")).toHaveTextContent(
+      "Nothing reached yet."
+    )
   })
 })

@@ -13,7 +13,9 @@ import type { PlanFarmingSpot } from "./use-plan-insights.domain"
 export function summarizeFarmingSpots(
   insights: readonly CampaignInsight<EstimateResourceId>[],
   battlesById: ReadonlyMap<BattleId, Battle>,
-  dailyEnergy: number
+  dailyEnergy: number,
+  /** Every still-needed item the plan farms, the denominator of `coverage`. */
+  totalItems = 0
 ): Map<string, PlanFarmingSpot> {
   const spots = new Map<string, PlanFarmingSpot>()
   for (const insight of insights) {
@@ -37,17 +39,27 @@ export function summarizeFarmingSpots(
     }
 
     let energy = 0
+    let itemCount = 0
     const runsByBattle: RunsByBattle = new Map()
     for (const nodes of countByNode.values()) {
       const options = [...nodes].flatMap(([battleId, node]) => {
         const battle = battlesById.get(battleId)
         if (!battle || battle.energyCost <= 0) return []
         const runs = Math.ceil(node.count / node.dropRate)
-        return [{ battleId, battle, runs, energy: runs * battle.energyCost }]
+        return [
+          {
+            battleId,
+            battle,
+            runs,
+            count: node.count,
+            energy: runs * battle.energyCost,
+          },
+        ]
       })
       const cheapest = options.sort((a, b) => a.energy - b.energy)[0]
       if (!cheapest) continue
       energy += cheapest.energy
+      itemCount += cheapest.count
       addRuns(
         runsByBattle,
         cheapest.battleId,
@@ -60,6 +72,8 @@ export function summarizeFarmingSpots(
       resourceCount: countByNode.size,
       energy,
       days: farmingDays(energy, runsByBattle, dailyEnergy),
+      itemCount,
+      coverage: totalItems > 0 ? itemCount / totalItems : 0,
     })
   }
   return spots

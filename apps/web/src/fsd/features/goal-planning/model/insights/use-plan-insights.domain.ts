@@ -113,6 +113,18 @@ export interface PlanFarmingSpot {
   energy: number
   /** `energy` at the user's daily energy. */
   days: number
+  /** Still-needed items (upgrades and shards, counted one by one) that drop there. */
+  itemCount: number
+  /** `itemCount` as a share (0-1) of every still-needed item the plan farms. */
+  coverage: number
+}
+
+/** "Best campaigns/events to farm" over one set of nodes (what the player reached, or every node). */
+export interface PlanFarmingInsights {
+  campaignInsights: CampaignInsight<EstimateResourceId>[]
+  eventInsights: CampaignInsight<EstimateResourceId>[]
+  farmingSpotsByInsightId: Map<string, PlanFarmingSpot>
+  benefitingGoalIdsByInsightId: Map<string, string[]>
 }
 
 /** A goal's remaining resources after the plan spends the shared stock in priority order, overriding
@@ -193,6 +205,9 @@ export interface PlanInsightsResult {
    *  "which characters/MoW benefit" list (plan §16 phase 7); resolve goalId -> entity via the
    *  member list itself or `useGoalCatalog().getEntityName`. */
   benefitingGoalIdsByInsightId: Map<string, string[]>
+  /** The same farming insights over every catalog node, reached or not (the Insights "All"
+   *  locations view). The fields above cover the nodes the player has reached. */
+  allLocations: PlanFarmingInsights
   /** "Campaigns to push": uncleared campaign tracks that unblock or cheapen the scoped goals. */
   campaignProgression: PlanCampaignProgression[]
 }
@@ -229,5 +244,11 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   eventInsights: [],
   farmingSpotsByInsightId: new Map(),
   benefitingGoalIdsByInsightId: new Map(),
+  allLocations: {
+    campaignInsights: [],
+    eventInsights: [],
+    farmingSpotsByInsightId: new Map(),
+    benefitingGoalIdsByInsightId: new Map(),
+  },
   campaignProgression: [],
 }
