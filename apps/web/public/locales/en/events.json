@@ -1,5 +1,5 @@
 {
-  "title": "Events Calendar",
+  "title": "Events calendar",
   "navigation": {
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
@@ -125,7 +125,7 @@
           "content": "What starts next. The next Legendary Event always shows here or in Right now, with a button to its project or plan."
         },
         "projects": {
-          "title": "Your Projects",
+          "title": "Your projects",
           "content": "Jump into any project's plan — the Default project always shows first."
         },
         "navigation": {

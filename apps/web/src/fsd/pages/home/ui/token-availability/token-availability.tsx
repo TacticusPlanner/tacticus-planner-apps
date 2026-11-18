@@ -146,7 +146,7 @@ function TokenRow({
           className={cn(
             "text-xs tabular-nums",
             isCapped
-              ? "font-semibold tracking-wide text-destructive uppercase"
+              ? "font-semibold text-destructive"
               : "text-muted-foreground"
           )}
         >
@@ -155,7 +155,7 @@ function TokenRow({
       ) : null}
       {fullInSeconds > 0 ? (
         <span
-          className="text-xs/tight text-muted-foreground uppercase tabular-nums"
+          className="text-xs/tight text-muted-foreground tabular-nums"
           data-testid={`token-full-in-${entry.key}`}
         >
           {t("home.tokens.fullIn", {
