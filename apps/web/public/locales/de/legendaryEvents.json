@@ -144,7 +144,7 @@
     "fullyAscended": "Alle Belohnungsstufen erreicht",
     "beyondChests": "In diesem Event nicht erreichbar (benötigt {{required}} Truhen, das Event hat {{ladder}})",
     "affordableNow": "Genug Währung für diese Truhen vorhanden",
-    "coveredByLaterRuns": "{{currency}} Währung fehlen · spätere Durchläufe decken das",
+    "coveredByLaterRuns": "{{currency}} Währung fehlen · die für spätere Durchläufe geplanten Missionen und Pakete decken das",
     "beyondPoints": "{{currency}} Währung fehlen nach allen Punkte-Meilensteinen",
     "noEntry": "Noch kein synchronisierter Fortschritt",
     "explain": {

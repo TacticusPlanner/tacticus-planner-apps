@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { formatDateRange, formatShortDate } from "./format-date"
+import {
+  formatDateRange,
+  formatDateRangeParts,
+  formatShortDate,
+} from "./format-date"
 
 const now = new Date(2026, 10, 18, 12).getTime()
 
@@ -37,5 +41,27 @@ describe("formatDateRange", () => {
         now
       )
     ).toBe("Dec 28, 2026 – Jan 4, 2027")
+  })
+})
+
+describe("formatDateRangeParts", () => {
+  it("gives both ends the year when one end leaves the current year", () => {
+    expect(
+      formatDateRangeParts(
+        new Date(2026, 11, 28),
+        new Date(2027, 0, 4),
+        "en-US",
+        now
+      )
+    ).toEqual({ start: "Dec 28, 2026", end: "Jan 4, 2027" })
+  })
+})
+
+describe("invalid dates", () => {
+  it("formats as an empty string instead of throwing", () => {
+    expect(formatShortDate("not a date", "en-US", now)).toBe("")
+    expect(
+      formatDateRangeParts(Number.NaN, new Date(2026, 11, 6), "en-US", now)
+    ).toEqual({ start: "", end: "Dec 6" })
   })
 })

@@ -8,6 +8,7 @@ export {
 export { characterDamageTypes } from "./character-damage-types"
 export {
   formatDateRange,
+  formatDateRangeParts,
   formatEstimateDate,
   formatShortDate,
   localIsoDate,

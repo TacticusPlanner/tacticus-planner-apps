@@ -1,5 +1,9 @@
 export { getDeviceFirstDayOfWeek, useDateLocale } from "./date-locale"
-export { formatDateRange, formatShortDate } from "./format-date"
+export {
+  formatDateRange,
+  formatDateRangeParts,
+  formatShortDate,
+} from "./format-date"
 export { formatEstimateDate, localIsoDate } from "./format-estimate-date"
 export { formatEventCountdown } from "./format-event-countdown"
 export { formatRelativeTime } from "./format-relative-time"

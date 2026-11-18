@@ -228,9 +228,11 @@ export function IncursionMowPage() {
             >
               {owned ? t("card.owned") : t("card.notOwned")}
             </Badge>
-            <span className="text-sm text-muted-foreground">
-              {t("card.firstRun", { date: firstRun })}
-            </span>
+            {firstRun ? (
+              <span className="text-sm text-muted-foreground">
+                {t("card.firstRun", { date: firstRun })}
+              </span>
+            ) : null}
           </div>
         </div>
       </header>

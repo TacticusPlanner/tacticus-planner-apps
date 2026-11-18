@@ -143,7 +143,7 @@ describe("LegendaryEventsHubPage", () => {
     expect(synced).toHaveTextContent("3,410 points")
     // Run ends 2026-09-06T00:00Z: 3.5 days away, rounded to whole days.
     expect(active.getByTestId("event-timing-line")).toHaveTextContent(
-      /· in 4 days$/
+      /^Ends Sep 6 · in 4 days$/
     )
   })
 

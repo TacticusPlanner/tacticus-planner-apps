@@ -144,7 +144,7 @@
     "fullyAscended": "Every reward step reached",
     "beyondChests": "Not reachable this event (needs {{required}} chests, the event has {{ladder}})",
     "affordableNow": "Enough currency in hand for these chests",
-    "coveredByLaterRuns": "{{currency}} currency short · later runs cover it",
+    "coveredByLaterRuns": "{{currency}} currency short · the missions and bundles you plan for later runs cover it",
     "beyondPoints": "{{currency}} currency short after every points milestone",
     "noEntry": "No synced progress yet",
     "explain": {

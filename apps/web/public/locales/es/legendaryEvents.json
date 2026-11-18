@@ -144,7 +144,7 @@
     "fullyAscended": "Todas las recompensas alcanzadas",
     "beyondChests": "No alcanzable en este evento (necesita {{required}} cofres y el evento tiene {{ladder}})",
     "affordableNow": "Ya tienes moneda suficiente para estos cofres",
-    "coveredByLaterRuns": "Faltan {{currency}} de moneda · las rondas posteriores lo cubren",
+    "coveredByLaterRuns": "Faltan {{currency}} de moneda · las misiones y paquetes que planeas para rondas posteriores lo cubren",
     "beyondPoints": "Faltan {{currency}} de moneda tras todos los hitos de puntos",
     "noEntry": "Todavía no hay progreso sincronizado",
     "explain": {

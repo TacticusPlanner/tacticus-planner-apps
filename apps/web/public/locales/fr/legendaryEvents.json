@@ -144,7 +144,7 @@
     "fullyAscended": "Toutes les étapes de récompense atteintes",
     "beyondChests": "Hors de portée pour cet événement ({{required}} coffres nécessaires, l'événement en compte {{ladder}})",
     "affordableNow": "Assez de monnaie en main pour ces coffres",
-    "coveredByLaterRuns": "Il manque {{currency}} de monnaie · les manches suivantes le couvrent",
+    "coveredByLaterRuns": "Il manque {{currency}} de monnaie · les missions et packs prévus pour les manches suivantes le couvrent",
     "beyondPoints": "Il manque {{currency}} de monnaie après tous les paliers de points",
     "noEntry": "Aucune progression synchronisée pour l'instant",
     "explain": {

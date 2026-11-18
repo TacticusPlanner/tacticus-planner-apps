@@ -95,8 +95,7 @@ describe("EventStatusLine", () => {
 
     const line = screen.getByTestId("hse-status-past")
     expect(line).toHaveTextContent("Machine Hunt")
-    expect(line).toHaveTextContent("Ended")
-    expect(line).toHaveTextContent("Oct 6, 2026")
+    expect(line).toHaveTextContent("Ended Oct 6, 2026")
     expect(line).not.toHaveTextContent("event points")
   })
 

@@ -374,9 +374,11 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     expect(screen.queryByTestId("legendary-event-title")).toBeNull()
     expect(screen.queryByTestId("legendary-event-lifecycle")).toBeNull()
     expect(screen.queryByTestId("event-timing-line")).toBeNull()
-    expect(screen.getByTestId("legendary-event-header")).toHaveTextContent(
-      /^Ends in \d+ days?/
-    )
+    expect(
+      within(screen.getByTestId("legendary-event-header")).getByTestId(
+        "event-timing"
+      )
+    ).toHaveTextContent(/^Ends in \d+ days?$/)
     expect(selectedTab()).toHaveTextContent("Current run")
     expect(
       within(screen.getByTestId("legendary-event-tab-list"))

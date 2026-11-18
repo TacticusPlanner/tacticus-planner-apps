@@ -686,7 +686,9 @@ describe("RunStatusCard", () => {
       )
       expect(
         screen.getByTestId("reward-outlook-covered-later")
-      ).toHaveTextContent("190 currency short · later runs cover it")
+      ).toHaveTextContent(
+        "190 currency short · the missions and bundles you plan for later runs cover it"
+      )
       expect(screen.queryByTestId("reward-outlook-affordable")).toBeNull()
     })
 

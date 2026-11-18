@@ -11,7 +11,12 @@ import type {
 } from "@/entities/legendary-event"
 import { RunInputsForm } from "@/features/legendary-event-plan"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { formatShortDate, useDateLocale, safeStorage } from "@/shared/lib"
+import {
+  formatDateRangeParts,
+  formatShortDate,
+  useDateLocale,
+  safeStorage,
+} from "@/shared/lib"
 
 import { legendaryEventRunWindow } from "@/entities/legendary-event"
 import { RosterPotentialMap } from "../legendary-event/roster-potential-map"
@@ -140,7 +145,11 @@ export function TargetStep({
             : "planWizard.target.runEnds",
           {
             run: horizon,
-            date: formatShortDate(horizonWindow.endMs, dateLocale),
+            date: formatShortDate(
+              horizonWindow.endMs,
+              dateLocale,
+              source.inputs.nowMs
+            ),
           }
         )
   const runLabel = (run: number) => {
@@ -148,10 +157,15 @@ export function TargetStep({
     if (window === null) return t("runDates.unknown")
     return window.guessed
       ? t("runDates.guessed", { date: month.format(window.startMs) })
-      : t("runDates.window", {
-          start: formatShortDate(window.startMs, dateLocale),
-          end: formatShortDate(window.endMs, dateLocale),
-        })
+      : t(
+          "runDates.window",
+          formatDateRangeParts(
+            window.startMs,
+            window.endMs,
+            dateLocale,
+            source.inputs.nowMs
+          )
+        )
   }
 
   return (

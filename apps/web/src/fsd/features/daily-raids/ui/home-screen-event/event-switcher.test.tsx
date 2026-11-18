@@ -1,10 +1,9 @@
 import userEvent from "@testing-library/user-event"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import type { i18n as I18n } from "i18next"
 
 import { render, screen, within } from "@/test/render"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { formatDateRange } from "@/shared/lib"
 
 import enDailies from "../../../../../../public/locales/en/dailies.json"
 import { listHomeScreenEventInstances } from "../../model/select-active-home-screen-event"
@@ -98,11 +97,15 @@ function renderSwitcher(
 }
 
 describe("EventSwitcher", () => {
+  afterEach(() => vi.useRealTimers())
+
   it("shows the selected instance's localized name and date range", () => {
+    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.setSystemTime(new Date("2026-10-17T00:00:00Z"))
     renderSwitcher("occ-psyker")
 
     expect(screen.getByTestId("hse-event-select")).toHaveTextContent(
-      `Trait Boost: Psyker · ${formatDateRange("2026-10-19T08:00:00Z", "2026-10-23T08:00:00Z", "en")}`
+      "Trait Boost: Psyker · Oct 19 – Oct 23"
     )
     expect(screen.getByTestId("hse-event-select")).toHaveAccessibleName(
       "Choose a Home Screen Event"
