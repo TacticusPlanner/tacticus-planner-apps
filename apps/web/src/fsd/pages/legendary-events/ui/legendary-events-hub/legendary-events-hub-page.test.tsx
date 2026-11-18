@@ -170,7 +170,7 @@ describe("LegendaryEventsHubPage", () => {
     expect(uthar).toHaveTextContent("Ûthar")
     // The card shows the local start date without the time of day.
     expect(within(uthar).getByTestId("event-timing-date")).toHaveTextContent(
-      /^Starts Oct 4, 2026$/
+      /^Starts Oct 4$/
     )
     expect(
       within(uthar).getByTestId("event-timing-countdown")
