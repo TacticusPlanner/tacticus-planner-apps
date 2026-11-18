@@ -721,7 +721,7 @@ describe("TierListPage", () => {
       expect(views).toHaveLength(1)
     })
 
-    it("registers the tour: S row, first tile, filters, each rendered", async () => {
+    it("registers the tour: intro, S row, first tile, filters, each rendered", async () => {
       renderPage()
       await ready()
 
@@ -731,6 +731,7 @@ describe("TierListPage", () => {
       }
       for (const list of [steps.desktop, steps.mobile]) {
         expect(list.map((step) => step.target)).toEqual([
+          '[data-testid="tier-list-kind"]',
           '[data-testid="tier-list-row-S"]',
           '[data-testid="tier-list-first-tile"]',
           '[data-testid="tier-list-filters"]',
@@ -767,6 +768,7 @@ describe("TierListPage", () => {
       }
       for (const list of [steps.desktop, steps.mobile]) {
         expect(list.map((step) => step.target)).toEqual([
+          '[data-testid="tier-list-kind"]',
           '[data-testid="tier-list-filters"]',
         ])
         for (const step of list) {

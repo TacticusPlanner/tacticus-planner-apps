@@ -1,8 +1,6 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
-import { Search } from "lucide-react"
 import { onslaughtAllianceIcon } from "@workspace/game-catalog"
-import { Input } from "@workspace/ui/components/input"
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -12,6 +10,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import type { HordeTierAlliance } from "@/entities/legendary-event"
 import { EntityIcon, FILTER_CHIP_CLASS_NAME, PageToolbar } from "@/shared/ui"
 
+import { TierListSearchField } from "./tier-list-search-field"
 import { TIER_LIST_ALLIANCES } from "./tier-list.view-model"
 import type { TierListUrlFilters } from "./tier-list.view-model"
 
@@ -26,39 +25,13 @@ export interface TierListFiltersProps {
   isMobile: boolean
 }
 
-function SearchField({
-  query,
-  onChange,
-}: {
-  query: string
-  onChange: (query: string) => void
-}) {
-  const { t } = useTranslation("legendaryEvents")
-  return (
-    <div className="relative min-w-0 flex-1 md:max-w-xs">
-      <Search
-        aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-      />
-      <Input
-        aria-label={t("tierList.search")}
-        className="pl-9"
-        data-testid="tier-list-search"
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={t("tierList.search")}
-        type="search"
-        value={query}
-      />
-    </div>
-  )
-}
-
 /**
  * The Hero tier list's toolbar (ui-style-guide rule 2): the search in the Find slot, then one chip
  * row with "Owned only" and a chip per alliance (picking the selected alliance again shows every
  * alliance). The chips scroll sideways on mobile. The toolbar is the tour's filters target.
  */
 export function TierListFilters(props: TierListFiltersProps) {
+  const { t } = useTranslation("legendaryEvents")
   const { filters, onChange, isMobile } = props
   return (
     <PageToolbar
@@ -77,9 +50,11 @@ export function TierListFilters(props: TierListFiltersProps) {
         </div>
       }
       find={
-        <SearchField
+        <TierListSearchField
+          label={t("tierList.search")}
           onChange={(query) => onChange({ query })}
           query={filters.query}
+          testId="tier-list-search"
         />
       }
       testId="tier-list-filters"

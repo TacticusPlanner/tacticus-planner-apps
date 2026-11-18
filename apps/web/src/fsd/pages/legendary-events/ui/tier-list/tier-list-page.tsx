@@ -1,8 +1,7 @@
-import { useEffect, useId, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
-import { ChevronDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
@@ -12,7 +11,6 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
-import { cn } from "@workspace/ui/lib/utils"
 
 import {
   UNTIERED_MULTIPLIER,
@@ -315,7 +313,6 @@ function HeroTierList() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4" data-testid="tier-list-page">
-      <TierListExplainer />
       {built ? <TierListFilters {...filterProps} /> : null}
       {content}
       {isMobile ? (
@@ -328,41 +325,6 @@ function HeroTierList() {
           name={selected ? nameOf(selected.tile.unitId) : ""}
           onClose={() => setSelected(undefined)}
         />
-      ) : null}
-    </div>
-  )
-}
-
-/** The page intro and its "What this means" disclosure. */
-function TierListExplainer() {
-  const { t } = useTranslation("legendaryEvents")
-  const [open, setOpen] = useState(false)
-  const contentId = useId()
-  return (
-    <div className="flex flex-col gap-1">
-      <p className="text-sm text-muted-foreground">{t("tierList.intro")}</p>
-      <button
-        aria-controls={open ? contentId : undefined}
-        aria-expanded={open}
-        className="flex min-h-11 w-fit items-center gap-1 text-sm font-medium text-primary md:min-h-0"
-        data-testid="tier-list-explainer-toggle"
-        onClick={() => setOpen(!open)}
-        type="button"
-      >
-        {t("tierList.whatThisMeans")}
-        <ChevronDown
-          aria-hidden="true"
-          className={cn("size-4 transition-transform", open && "rotate-180")}
-        />
-      </button>
-      {open ? (
-        <p
-          className="text-sm text-muted-foreground"
-          data-testid="tier-list-explainer"
-          id={contentId}
-        >
-          {t("tierList.explainer")}
-        </p>
       ) : null}
     </div>
   )

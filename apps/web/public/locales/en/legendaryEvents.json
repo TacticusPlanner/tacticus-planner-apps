@@ -617,6 +617,9 @@
         "filters": {
           "title": "Filters",
           "content": "Search by name, show only the characters you own, or pick an alliance. The filters apply to every row, Untiered included."
+        },
+        "npcFilters": {
+          "content": "Search enemies by name, or pick one event to see only its enemies."
         }
       }
     },
@@ -1030,7 +1033,6 @@
   },
   "tierList": {
     "intro": "Horde-mode tiers for every character, with the multiplier each one gets.",
-    "whatThisMeans": "What this means",
     "explainer": "A character's multiplier scales its combat power in the Legendary Event clear estimates. Tiered characters use their own multiplier when they have one, otherwise their tier's; untiered characters use 1.0.",
     "search": "Search characters",
     "onlyOwned": "Owned only",

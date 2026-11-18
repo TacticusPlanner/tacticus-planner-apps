@@ -617,6 +617,9 @@
         "filters": {
           "title": "Filter",
           "content": "Suche nach Namen, zeige nur deine eigenen Charaktere oder wähle eine Allianz. Die Filter gelten für jede Zeile, auch für „Ohne Tier“."
+        },
+        "npcFilters": {
+          "content": "Suche Gegner nach Namen oder wähle ein Event, um nur dessen Gegner zu sehen."
         }
       }
     },
@@ -1030,7 +1033,6 @@
   },
   "tierList": {
     "intro": "Die Horde-Modus-Tiers aller Charaktere mit dem Multiplikator, den jeder erhält.",
-    "whatThisMeans": "Was bedeutet das?",
     "explainer": "Der Multiplikator eines Charakters skaliert seine Stärke in den Abschlussschätzungen der Legendären Events. Charaktere mit Tier nutzen ihren eigenen Multiplikator, falls sie einen haben, sonst den ihres Tiers; Charaktere ohne Tier nutzen 1,0.",
     "search": "Charaktere suchen",
     "onlyOwned": "Nur eigene",

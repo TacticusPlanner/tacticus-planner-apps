@@ -617,6 +617,9 @@
         "filters": {
           "title": "Filtres",
           "content": "Recherchez par nom, affichez uniquement vos personnages ou choisissez une alliance. Les filtres s'appliquent à toutes les lignes, Non classés compris."
+        },
+        "npcFilters": {
+          "content": "Recherchez les ennemis par nom ou choisissez un événement pour ne voir que ses ennemis."
         }
       }
     },
@@ -1030,7 +1033,6 @@
   },
   "tierList": {
     "intro": "Les tiers du mode horde de chaque personnage, avec le multiplicateur qu'il reçoit.",
-    "whatThisMeans": "Qu'est-ce que cela signifie ?",
     "explainer": "Le multiplicateur d'un personnage ajuste sa puissance de combat dans les estimations de progression des Événements Légendaires. Les personnages classés utilisent leur propre multiplicateur s'ils en ont un, sinon celui de leur tier ; les personnages non classés utilisent 1,0.",
     "search": "Rechercher des personnages",
     "onlyOwned": "Possédés uniquement",

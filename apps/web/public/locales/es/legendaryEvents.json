@@ -617,6 +617,9 @@
         "filters": {
           "title": "Filtros",
           "content": "Busca por nombre, muestra solo los personajes que tienes o elige una alianza. Los filtros se aplican a todas las filas, también a Sin nivel."
+        },
+        "npcFilters": {
+          "content": "Busca enemigos por nombre o elige un evento para ver solo sus enemigos."
         }
       }
     },
@@ -1030,7 +1033,6 @@
   },
   "tierList": {
     "intro": "Los niveles del modo horda de cada personaje, con el multiplicador que recibe.",
-    "whatThisMeans": "Qué significa",
     "explainer": "El multiplicador de un personaje escala su poder de combate en las estimaciones de avance de los Eventos Legendarios. Los personajes con nivel usan su propio multiplicador si lo tienen y, si no, el de su nivel; los personajes sin nivel usan 1,0.",
     "search": "Buscar personajes",
     "onlyOwned": "Solo los míos",
