@@ -115,9 +115,8 @@ describe("OnslaughtPage", () => {
     expect(screen.getByTestId("imperial-onslaught-yield")).toHaveTextContent(
       "2-3"
     )
-    expect(screen.getByTestId("onslaught-progress-help")).toHaveTextContent(
-      /^Pick the sector and tier you are currently farming/
-    )
+    // How sector and tier work lives in the page tour, not under the cards.
+    expect(screen.queryByTestId("onslaught-progress-help")).toBeNull()
     expect(screen.queryByTestId("imperial-onslaught-not-set")).toBeNull()
 
     await user.click(screen.getByTestId("imperial-onslaught-sector"))
@@ -371,7 +370,12 @@ describe("OnslaughtPage", () => {
         const formSteps =
           (isMobile ? steps?.mobile : undefined) ?? steps?.desktop
         expect(formSteps?.length).toBeGreaterThan(0)
+        // The how-to that used to sit under the cards is now the first step's content.
+        expect(formSteps?.[0]?.content).toMatch(
+          /sector and tier you are currently farming.*Sector complete.*shards one run pays/
+        )
         for (const step of formSteps ?? []) {
+          if (step.target === "body") continue
           expect(
             document.querySelector(step.target as string),
             step.target as string

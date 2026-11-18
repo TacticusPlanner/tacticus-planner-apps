@@ -7,9 +7,10 @@ import { useTourPageSteps } from "@/shared/tour"
 type StepKey = "alliances" | "save"
 
 /**
- * Joyride tour for the Onslaught progress page: the alliance cards, and the help text standing in
- * for the unsaved-changes bar (which only renders once there are edits). On desktop the three cards
- * sit in one row and are highlighted together; on mobile they stack, so the first card stands in.
+ * Joyride tour for the Onslaught progress page: the alliance cards (with how sector and tier work),
+ * then a centred step on saving, since the unsaved-changes bar only renders once there are edits.
+ * On desktop the three cards sit in one row and are highlighted together; on mobile they stack, so
+ * the first card stands in.
  */
 export function useOnslaughtTutorial() {
   const { t } = useTranslation()
@@ -21,15 +22,16 @@ export function useOnslaughtTutorial() {
       content: t(`tour.onslaught.steps.${key}.content`),
     })
 
+    const save: Step = {
+      target: "body",
+      placement: "center",
+      title: t("tour.onslaught.steps.save.title"),
+      content: t("tour.onslaught.steps.save.content"),
+    }
+
     return {
-      desktop: [
-        step("onslaught-alliance-cards", "alliances"),
-        step("onslaught-progress-help", "save"),
-      ],
-      mobile: [
-        step("imperial-onslaught-card", "alliances"),
-        step("onslaught-progress-help", "save"),
-      ],
+      desktop: [step("onslaught-alliance-cards", "alliances"), save],
+      mobile: [step("imperial-onslaught-card", "alliances"), save],
     }
   }, [t])
 

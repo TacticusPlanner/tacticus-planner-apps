@@ -169,7 +169,7 @@ export function CurrentEventCard({
   return (
     <Card data-testid="current-event">
       <CardHeader className="space-y-3">
-        <CardTitle className="text-sm font-medium text-muted-foreground uppercase">
+        <CardTitle className="text-sm font-medium text-muted-foreground">
           {t("progress.events.currentEvent")}
         </CardTitle>
         <EventSummary view={view} />

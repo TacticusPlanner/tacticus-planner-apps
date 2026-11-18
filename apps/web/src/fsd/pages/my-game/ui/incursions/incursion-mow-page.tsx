@@ -80,7 +80,7 @@ function TierCard({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
           <Link
             to={to}
-            className="font-semibold tracking-wide uppercase hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            className="font-semibold hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             data-testid={`${testId}-open`}
           >
             {t("tier.title", { number: tier.index + 1 })}
@@ -130,7 +130,7 @@ function TierCard({
               data-testid={`${testId}-reset`}
             >
               <RotateCcw aria-hidden="true" />
-              <span className="max-sm:sr-only">{t("tier.reset")}</span>
+              {t("tier.reset")}
             </Button>
           ) : (
             <Button
@@ -145,13 +145,13 @@ function TierCard({
               data-testid={`${testId}-mark-cleared`}
             >
               <EntityIcon src={heroStarIcon()} alt="" className="size-4" />
-              <span className="max-sm:sr-only">{t("tier.markCleared")}</span>
+              {t("tier.markCleared")}
             </Button>
           )
         ) : null}
         <Button asChild size="sm" variant="ghost">
           <Link to={to} tabIndex={-1} aria-hidden="true">
-            <span className="max-sm:sr-only">{t("tier.preview")}</span>
+            {t("tier.preview")}
             <ChevronRight aria-hidden="true" />
           </Link>
         </Button>
@@ -273,7 +273,7 @@ export function IncursionMowPage() {
           <div key={group.rarity} className="space-y-2">
             <h3
               className={cn(
-                "flex items-center gap-2 text-sm font-semibold tracking-wide uppercase",
+                "flex items-center gap-2 text-sm font-medium",
                 RARITY_TEXT[group.rarity]
               )}
             >

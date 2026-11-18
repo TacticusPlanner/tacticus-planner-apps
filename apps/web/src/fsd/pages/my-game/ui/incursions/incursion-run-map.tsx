@@ -122,7 +122,7 @@ export function IncursionRunMap({
                     <Fragment key={node.index}>
                       {position > 0 && step.choice ? (
                         <span
-                          className="text-xs text-muted-foreground uppercase"
+                          className="text-xs text-muted-foreground"
                           data-testid="incursion-step-choice"
                         >
                           {t("map.or")}

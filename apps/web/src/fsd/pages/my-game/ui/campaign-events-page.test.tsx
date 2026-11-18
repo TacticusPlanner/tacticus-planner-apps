@@ -446,16 +446,18 @@ describe("CampaignEventsPage", () => {
   })
 
   describe("completed filter", () => {
-    it("hides completed events and remembers the choice across visits", async () => {
+    it("lists only unfinished events from the toolbar chip and remembers the choice across visits", async () => {
       const user = userEvent.setup()
       const { unmount } = await renderPage()
       await screen.findByTestId("campaign-events-list")
-      await user.click(screen.getByRole("switch"))
+      await user.click(screen.getByRole("button", { name: "Unfinished only" }))
       expect(screen.queryByTestId("campaign-event-eventCampaign2")).toBeNull()
       unmount()
       await renderPage()
       await screen.findByTestId("campaign-events-list")
-      expect(screen.getByRole("switch")).toBeChecked()
+      expect(
+        screen.getByRole("button", { name: "Unfinished only" })
+      ).toHaveAttribute("aria-pressed", "true")
       expect(screen.queryByTestId("campaign-event-eventCampaign2")).toBeNull()
       expect(listItem("eventCampaign3")).toBeInTheDocument()
     })
@@ -468,7 +470,7 @@ describe("CampaignEventsPage", () => {
       ]
       await renderPage()
       await screen.findByTestId("campaign-events-list")
-      await user.click(screen.getByRole("switch"))
+      await user.click(screen.getByRole("button", { name: "Unfinished only" }))
       expect(
         screen.getByTestId("campaign-events-all-completed")
       ).toBeInTheDocument()
