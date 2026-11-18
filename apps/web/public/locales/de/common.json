@@ -2330,7 +2330,7 @@
     "collection": {
       "steps": {
         "compare": {
-          "title": "Snapshots",
+          "title": "Snapshots und Vergleich",
           "content": "Speichere nach einer frischen Synchronisierung einen Snapshot deines ganzen Rosters und schalte dann Vergleichen ein, um zu sehen, was sich seit einem Snapshot oder einem Legendary-Event-Lauf geändert hat: die größten Machtzuwächse zuerst."
         },
         "compareOptions": {
