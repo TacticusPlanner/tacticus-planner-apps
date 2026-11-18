@@ -258,6 +258,48 @@ describe("computePlanInsights", () => {
       expect(result.excludedGoals).toEqual([])
     })
 
+    it("counts every tied node's daily attempts in a bottleneck's days, as the estimate does", () => {
+      const capped: Battle = { ...battle, dailyAttempts: 1 }
+      const quarterDrop = {
+        battleId: battleId("B1"),
+        guaranteed: false,
+        numerator: null,
+        denominator: null,
+        effectiveRate: 0.25,
+        isMythic: false,
+      }
+      const result = computePlanInsights({
+        levelRules,
+        ...baseParams,
+        details: [rankGoal()],
+        upgradesById: new Map([
+          [
+            upgrade.id,
+            {
+              ...upgrade,
+              farmLocations: [
+                quarterDrop,
+                { ...quarterDrop, battleId: battleId("B2") },
+              ],
+            },
+          ],
+        ]),
+        battlesById: new Map([
+          [battleId("B1"), capped],
+          [battleId("B2"), { ...capped, nodeNumber: 2 }],
+        ]),
+        dailyEnergy: 1000,
+        priorityByGoalId: new Map([["goal-1", 1]]),
+      })
+
+      // One item at a 1-in-4 drop: 4 raids, 2 at each equally good node at one attempt a day, so
+      // 2 days, not the 4 a single node would report.
+      expect(result.bottlenecks[0]).toMatchObject({
+        energyToClear: 40,
+        days: 2,
+      })
+    })
+
     it("reports a material no node drops as a blocker, not a bottleneck", () => {
       const result = computePlanInsights({
         levelRules,

@@ -11,7 +11,7 @@ import type {
 } from "@/entities/goal-farming"
 import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 
-import { addRuns, farmingDays } from "./plan-farming-days"
+import { addRuns, farmingDays, spreadRuns } from "./plan-farming-days"
 import type { RunsByBattle } from "./plan-farming-days"
 import type {
   PlanInsightsBlocker,
@@ -45,6 +45,32 @@ export function netGoalNeeds(
     else remaining.delete(id)
   }
   return remaining
+}
+
+/** Of several pinned nodes, the most energy-efficient ones bound a bottleneck's cost; nodes tied on
+ *  it (always the case for unpinned nodes) are farmed side by side, as the estimate does, so the
+ *  days count every one of their daily attempts. Ties use `selectFarmNodes`'s two-decimal test. */
+function mostEfficient<T extends { energyCost: number; dropRate: number }>(
+  nodes: readonly T[]
+): T[] {
+  const efficiency = (node: T) =>
+    Number((node.energyCost / node.dropRate).toFixed(2))
+  const usable = nodes.filter((node) => node.dropRate > 0)
+  const best = Math.min(...usable.map(efficiency))
+  return usable.filter((node) => efficiency(node) === best)
+}
+
+/** Tallies `spread`'s raids per node into `runsByBattle` and returns their energy. */
+function recordRuns(
+  runsByBattle: RunsByBattle,
+  spread: ReturnType<typeof spreadRuns>
+): number {
+  let energy = 0
+  for (const { node, runs } of spread) {
+    energy += runs * node.energyCost
+    addRuns(runsByBattle, node.battleId, runs, node.dailyAttempts)
+  }
+  return energy
 }
 
 /** The plan's farmable bottlenecks and its hard blockers, over the scoped goals only.
@@ -131,23 +157,16 @@ export function computeBottlenecks(params: {
         params.battlesById,
         goal.farmingLocationIds
       )
-      // Of several pinned (or tied) nodes, the most energy-efficient one bounds the cost.
-      const energyPerItem = (node: (typeof nodes)[number]) =>
-        node.energyCost / node.dropRate
-      const best = nodes
-        .filter((node) => node.dropRate > 0)
-        .sort((a, b) => energyPerItem(a) - energyPerItem(b))[0]
-      if (!best) continue
+      const spread = spreadRuns(count, mostEfficient(nodes))
+      if (spread.length === 0) continue
       const entry = farmable.get(id) ?? {
         count: 0,
         energyToClear: 0,
         goalIds: new Set<string>(),
         runsByBattle: new Map() as RunsByBattle,
       }
-      const runs = Math.ceil(count / best.dropRate)
       entry.count += count
-      entry.energyToClear += runs * best.energyCost
-      addRuns(entry.runsByBattle, best.battleId, runs, best.dailyAttempts)
+      entry.energyToClear += recordRuns(entry.runsByBattle, spread)
       entry.goalIds.add(goal.goalId)
       farmable.set(id, entry)
     }

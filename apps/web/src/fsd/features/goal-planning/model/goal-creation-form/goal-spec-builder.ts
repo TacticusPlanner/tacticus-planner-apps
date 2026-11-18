@@ -102,7 +102,8 @@ export function computeMissingUpgrades(params: {
     ? appliedUpgradeIds(
         character,
         playerCharacter.rank,
-        playerCharacter.appliedUpgradeSlots
+        playerCharacter.appliedUpgradeSlots,
+        rankStart
       )
     : []
   const owned = aggregateOwnedBaseUpgrades(

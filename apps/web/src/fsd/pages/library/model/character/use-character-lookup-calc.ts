@@ -189,13 +189,14 @@ export function useCharacterLookupCalc({
     if (!effectiveIncludeOwned || !characterForCalc || !playerCharacter) {
       return new Map<string, number>()
     }
-    const applied = appliedUpgradeIds(
+    const appliedIds = appliedUpgradeIds(
       characterForCalc,
       playerCharacter.rank,
-      playerCharacter.appliedUpgradeSlots
+      playerCharacter.appliedUpgradeSlots,
+      applied.rankStart
     )
     const owned = aggregateOwnedBaseUpgrades(
-      applied,
+      appliedIds,
       (inventoryUpgrades ?? []).map((entry) => ({
         id: entry.upgradeId,
         amount: entry.amount,
@@ -207,6 +208,7 @@ export function useCharacterLookupCalc({
     effectiveIncludeOwned,
     characterForCalc,
     playerCharacter,
+    applied.rankStart,
     inventoryUpgrades,
     upgradesById,
   ])

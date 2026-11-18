@@ -263,6 +263,17 @@ describe("appliedUpgradeIds", () => {
   it("returns [] when currentRank is the very first rank with no slots applied", () => {
     expect(appliedUpgradeIds(character, "Stone1", [])).toEqual([])
   })
+
+  it("counts only what was applied from `fromRank` on", () => {
+    expect(appliedUpgradeIds(character, "Stone2", [0, 2], "Stone2")).toEqual([
+      "h3",
+      "d3",
+    ])
+  })
+
+  it("returns [] when the unit is still below `fromRank`", () => {
+    expect(appliedUpgradeIds(character, "Stone1", [0], "Stone2")).toEqual([])
+  })
 })
 
 describe("rankUpReadiness", () => {

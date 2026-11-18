@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest"
 import { upgradeIdSchema } from "@workspace/game-domain"
 
-import { mowAbilityTrackLevel, mowAbilityUpgradeIds } from "./mow-ability-calc"
+import type { MowStorageModel } from "@workspace/game-catalog"
+
+import {
+  computeMowMissingUpgrades,
+  mowAbilityTrackLevel,
+  mowAbilityUpgradeIds,
+} from "./mow-ability-calc"
 
 const upgradeId = upgradeIdSchema.parse
 
@@ -61,5 +67,57 @@ describe("mowAbilityTrackLevel", () => {
 
   it("defaults to level 1 for an unowned (undefined) MoW", () => {
     expect(mowAbilityTrackLevel(undefined, "primary")).toBe(1)
+  })
+})
+
+const atLevel = (level: number) =>
+  ({
+    abilities: [{ abilityId: "raw-ability-a", level }],
+  }) as Parameters<typeof mowAbilityTrackLevel>[0]
+
+describe("computeMowMissingUpgrades", () => {
+  // Every rung needs the same base material, so levels already applied below the start would cover
+  // the range if they were counted.
+  const sameMaterial = [[upgradeId("m")], [upgradeId("m")], [upgradeId("m")]]
+  const mow = {
+    primaryAbility: { recipes: sameMaterial },
+    secondaryAbility: { recipes: [] },
+  } as unknown as MowStorageModel
+  const missing = (start: number, current: number) =>
+    computeMowMissingUpgrades({
+      abilityEnabled: true,
+      mow,
+      playerMow: atLevel(current),
+      activeStart: start,
+      activeEnd: 4,
+      passiveStart: 1,
+      passiveEnd: 1,
+      inventoryUpgrades: [],
+      upgradesById: new Map(),
+      includeCovered: true,
+    })
+
+  it("does not count levels applied below the goal's start as stock", () => {
+    expect(missing(3, 3)).toEqual([
+      {
+        id: "m",
+        label: "m",
+        missing: 1,
+        required: 1,
+        inventoryContribution: 0,
+      },
+    ])
+  })
+
+  it("counts levels applied inside the goal's range", () => {
+    expect(missing(2, 3)).toEqual([
+      {
+        id: "m",
+        label: "m",
+        missing: 1,
+        required: 2,
+        inventoryContribution: 1,
+      },
+    ])
   })
 })

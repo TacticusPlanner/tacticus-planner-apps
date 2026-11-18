@@ -15,6 +15,7 @@ import {
   buildCombinedGoalSpecs,
   buildReviewItems,
   characterRelevantUpgradeQuantities,
+  computeMissingUpgrades,
   computeUpgradeGoalNeed,
   mowRelevantUpgradeQuantities,
 } from "./goal-spec-builder"
@@ -727,5 +728,79 @@ describe("computeUpgradeGoalNeed", () => {
         },
       ]
     )
+  })
+})
+
+describe("computeMissingUpgrades", () => {
+  const character = {
+    id: unitIdSchema.parse("hero1"),
+    name: "Hero One",
+    rankUpUpgrades: [
+      { rank: "Stone1", upgradeIds: upgradeIds(["mat1", "mat1"]) },
+      { rank: "Stone2", upgradeIds: upgradeIds(["mat1"]) },
+      { rank: "Stone3", upgradeIds: upgradeIds(["mat1", "mat2"]) },
+    ],
+  } as Character
+  const missing = (
+    playerCharacter: {
+      rank: "Stone2" | "Stone3"
+      appliedUpgradeSlots: number[]
+    },
+    rankStart: "Stone2" | "Stone3"
+  ) =>
+    computeMissingUpgrades({
+      rankEnabled: true,
+      character,
+      rankStart,
+      rankEnd: "Iron1",
+      rankEndPointFive: false,
+      playerCharacter,
+      inventoryUpgrades: [],
+      upgradesById: new Map(),
+      includeCovered: true,
+    })
+
+  it("does not count upgrades applied below the goal's start rank as stock", () => {
+    // Stone1 and Stone2's mat1 are already used up; Stone3 still needs its own mat1 and mat2.
+    expect(
+      missing({ rank: "Stone3", appliedUpgradeSlots: [] }, "Stone3")
+    ).toEqual([
+      {
+        id: "mat1",
+        label: "mat1",
+        missing: 1,
+        required: 1,
+        inventoryContribution: 0,
+      },
+      {
+        id: "mat2",
+        label: "mat2",
+        missing: 1,
+        required: 1,
+        inventoryContribution: 0,
+      },
+    ])
+  })
+
+  it("counts upgrades applied inside the goal's range", () => {
+    // Started at Stone2: the unit has since reached Stone3 and filled its mat1 slot.
+    expect(
+      missing({ rank: "Stone3", appliedUpgradeSlots: [0] }, "Stone2")
+    ).toEqual([
+      {
+        id: "mat1",
+        label: "mat1",
+        missing: 0,
+        required: 2,
+        inventoryContribution: 2,
+      },
+      {
+        id: "mat2",
+        label: "mat2",
+        missing: 1,
+        required: 1,
+        inventoryContribution: 0,
+      },
+    ])
   })
 })
