@@ -114,6 +114,10 @@ export function HsePage() {
   useHseTutorial({
     hasSwitcher: state.status === "ready",
     hasDetails: shown.details,
+    hasTierRules:
+      points.status === "ready" &&
+      points.details.hasTierChoice &&
+      !!points.details.playerTier,
     hasMilestones: shown.milestones,
     hasProjection: shown.projection,
     hasTeams: teams.status !== "hidden",

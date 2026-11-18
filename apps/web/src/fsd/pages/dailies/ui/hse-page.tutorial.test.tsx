@@ -104,6 +104,7 @@ describe("useHseTutorial", () => {
   const all = {
     hasSwitcher: true,
     hasDetails: true,
+    hasTierRules: true,
     hasMilestones: true,
     hasProjection: true,
     hasTeams: true,
@@ -112,6 +113,7 @@ describe("useHseTutorial", () => {
   const none = {
     hasSwitcher: false,
     hasDetails: false,
+    hasTierRules: false,
     hasMilestones: false,
     hasProjection: false,
     hasTeams: false,
@@ -127,12 +129,15 @@ describe("useHseTutorial", () => {
       '[data-testid="hse-event-switcher"]',
       '[data-testid="hse-status"]',
       '[data-testid="hse-event-details"]',
+      '[data-testid="hse-event-details-tier"]',
       '[data-testid="hse-milestones"]',
       '[data-testid="hse-projection"]',
       '[data-testid="hse-raids"]',
       '[data-testid="hse-teams"]',
     ])
-    for (const step of steps.desktop) {
+    for (const step of steps.desktop.filter(
+      (item) => item.target !== '[data-testid="hse-event-details-tier"]'
+    )) {
       expect(step.title).toContain("localized:tour.hse.steps")
       expect(step.content).toContain("localized:tour.hse.steps")
     }
@@ -144,6 +149,7 @@ describe("useHseTutorial", () => {
       '[data-testid="hse-event-switcher"]',
       '[data-testid="hse-status"]',
       '[data-testid="hse-event-details"]',
+      '[data-testid="hse-event-details-tier"]',
       '[data-testid="hse-milestones"]',
       '[data-testid="hse-projection"]',
       '[data-testid="hse-teams"]',
@@ -187,8 +193,9 @@ describe("HSE tour targets", () => {
 
       const steps = stepsForViewport()
       expect(steps[0]?.target).toBe('[data-testid="hse-event-switcher"]')
-      // Machine Hunt also scores in Arena and Salvage Run, so it gets a projection and teams.
-      expect(steps).toHaveLength(7)
+      // Machine Hunt also scores in Arena and Salvage Run, so it gets a projection and teams, and
+      // its tier choice adds the tier rules step.
+      expect(steps).toHaveLength(8)
       expect(steps.map((step) => step.target)).toContain(
         '[data-testid="hse-teams"]'
       )
@@ -217,6 +224,7 @@ describe("HSE tour targets", () => {
         '[data-testid="hse-event-switcher"]',
         '[data-testid="hse-status"]',
         '[data-testid="hse-event-details"]',
+        '[data-testid="hse-event-details-tier"]',
         '[data-testid="hse-milestones"]',
         '[data-testid="hse-projection"]',
         '[data-testid="hse-teams"]',

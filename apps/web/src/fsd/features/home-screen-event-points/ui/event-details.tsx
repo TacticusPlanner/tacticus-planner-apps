@@ -1,16 +1,9 @@
 import { useState } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Info } from "lucide-react"
-import { PL_MEDIUM } from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -105,7 +98,6 @@ function ReadyDetails({
 
 function TierLine({ details }: { details: HseDetailsView }) {
   const { t } = useTranslation("dailies")
-  const rules = t("hse.details.tierRulesLabel")
   return (
     <div
       className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm"
@@ -114,31 +106,11 @@ function TierLine({ details }: { details: HseDetailsView }) {
       <span className="tabular-nums">
         {t("hse.details.powerLevel", { value: details.powerLevel ?? 0 })}
       </span>
-      <span className="flex items-center gap-1">
+      {/* How the tier is chosen is page help: it lives in the page tour. */}
+      <span>
         {t("hse.details.tier", {
           tier: t(`hse.details.tiers.${details.tier.tier}`),
         })}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              aria-label={rules}
-              className="inline-flex border-0 bg-transparent p-0 text-muted-foreground"
-              data-testid="hse-event-details-tier-rules"
-              type="button"
-            >
-              <Info aria-hidden="true" className="size-3.5" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <ul className="space-y-0.5">
-              {(["low", "mid", "high"] as const).map((rule) => (
-                <li key={rule}>
-                  {t(`hse.details.tierRules.${rule}`, { threshold: PL_MEDIUM })}
-                </li>
-              ))}
-            </ul>
-          </TooltipContent>
-        </Tooltip>
       </span>
     </div>
   )
