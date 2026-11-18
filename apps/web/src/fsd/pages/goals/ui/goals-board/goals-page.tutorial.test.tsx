@@ -31,14 +31,13 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-season-fit"]',
       '[data-testid="goals-view-toggle"]',
       '[data-testid="goal-row-drag-handle"]',
-      '[data-testid="goals-select-all"]',
-      '[data-testid="goals-order-hint"]',
+      '[data-testid="goals-select-toggle"]',
       '[data-testid="goals-create-goal"]',
       '[data-testid="goals-planning-settings"]',
       '[data-testid="goals-page"]',
     ])
     // Mobile points at the toolbar's View button instead of Season fit and Layout (they sit in its
-    // sheet), swaps the reprioritize and select targets for the mode toggles, and has no Create
+    // sheet), swaps the reprioritize target for the Reorder toggle, and has no Create
     // goal step (the bottom nav's Add Goal is the page action there).
     expect(steps.mobile.map((step) => step.target)).toEqual([
       '[data-testid="goals-project-scope"]',
@@ -46,20 +45,19 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-type-filter"]',
       '[data-testid="goals-view-options"]',
       '[data-testid="goals-mobile-reorder-toggle"]',
-      '[data-testid="goals-mobile-select-toggle"]',
-      '[data-testid="goals-order-hint"]',
+      '[data-testid="goals-select-toggle"]',
       '[data-testid="goals-planning-settings"]',
       '[data-testid="goals-page"]',
     ])
     expect(
       steps.desktop.map((step) => `${step.title} ${step.content}`).join(" ")
-    ).toContain("How the order works")
+    ).toContain("account-wide priority order")
     expect(steps.desktop[3]).toMatchObject({
       title: "Season fit",
       content: expect.stringContaining("which goals finish in time"),
     })
     expect(steps.desktop[4]).toMatchObject({
-      title: "Layout and Group by",
+      title: "Layout, Group by and Sort",
       content: expect.stringContaining("saved on this device"),
     })
     expect(steps.mobile[3]).toMatchObject({

@@ -505,7 +505,9 @@
         "clearRarities": "Seltenheiten entfernen",
         "clearDamageTypes": "Schadensarten entfernen",
         "clearTraits": "Eigenschaften entfernen",
-        "clearShardSources": "Scherbenquellen entfernen"
+        "clearShardSources": "Scherbenquellen entfernen",
+        "quickCount_one": "{{count}} Einheit",
+        "quickCount_other": "{{count}} Einheiten"
       },
       "empty": {
         "title": "Keine Einheit passt zu diesen Filtern",
@@ -602,7 +604,8 @@
             "I_Defensive": "Defensiv-Gegenstand"
           }
         },
-        "closeOptions": "Schließen"
+        "closeOptions": "Schließen",
+        "menuItem": "Mit einem Snapshot vergleichen"
       },
       "snapshots": {
         "signIn": "Melde dich an, um Snapshots deines Kaders zu speichern und zu vergleichen.",
@@ -644,7 +647,8 @@
         "autoHint": "Wird nach einer Synchronisierung erstellt, wenn es aus den letzten 30 Tagen keinen Snapshot deines Kaders gibt. Bis zu {{limit}} werden behalten; der älteste wird ersetzt.",
         "keep": "Behalten",
         "keepLimitTooltip": "Lösche einen Snapshot, um diesen zu behalten",
-        "keepFailed": "Der Snapshot konnte nicht behalten werden."
+        "keepFailed": "Der Snapshot konnte nicht behalten werden.",
+        "manageAll": "Snapshots verwalten"
       },
       "select": {
         "start": "Einheiten auswählen",
@@ -1698,7 +1702,6 @@
       "groupByLabel": "Gruppieren nach",
       "groupNone": "Keine Gruppierung",
       "groupByType": "Nach Typ gruppieren",
-      "groupByTypePriority": "Nach Typ gruppieren (Priorität)",
       "groupByUnit": "Nach Einheit gruppieren",
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden",
       "statusFilterLabel": "Zielstatus-Filter",
@@ -1709,11 +1712,16 @@
       "groupOptions": {
         "none": "Keine",
         "unit": "Einheit",
-        "type": "Typ",
-        "typePriority": "Typ nach Priorität"
+        "type": "Typ"
       },
-      "groupOptionHelp": {
-        "typePriority": "Typgruppen nach ihrem wichtigsten Ziel sortiert"
+      "sort": "Sortierung",
+      "sortOptions": {
+        "priority": "Priorität",
+        "finishDate": "Fertigstellung"
+      },
+      "sortHelp": {
+        "priority": "Deine Prioritätsreihenfolge. Ziehe Ziele, um sie umzuordnen.",
+        "finishDate": "Geschätztes Fertigstellungsdatum in deinem Plan, früheste zuerst."
       }
     },
     "seasonFit": {
@@ -1956,9 +1964,6 @@
       "noFarmableDemand": "Deine aktiven Ziele benötigen derzeit nichts, das sich farmen lässt – es gibt also kein Farming zu planen.",
       "estimatesError": "Einige Planschätzungen konnten nicht geladen werden, daher fehlen möglicherweise Farming-Details.",
       "estimatesRetry": "Schätzungen erneut laden",
-      "listNote": "Deine Ziele stehen in Prioritätsreihenfolge. Ziehe ein aktives oder pausiertes Ziel, um es zu verschieben – die Änderung gilt in jedem Projekt, bei Heute, im Raid-Plan und in den Einblicken.",
-      "hintLabel": "Zur Reihenfolge",
-      "scopedNote": "Jede Zahl ist die Position des Ziels in deiner kontoweiten Prioritätsreihenfolge, daher können die Ziele eines Projekts Lücken wie 1, 3, 5 zeigen. Ein Ziel hier zu verschieben verschiebt es auch in dieser Reihenfolge; Ziele anderer Projekte behalten ihre relative Reihenfolge.",
       "projectMove": {
         "menuItem": "Ziele verschieben…",
         "alreadyFirst": "Die Ziele dieses Projekts stehen bereits an erster Stelle.",
@@ -1978,7 +1983,9 @@
         "noReference": "Kein anderes Projekt zum Einordnen",
         "confirm": "Verschieben",
         "cancel": "Abbrechen"
-      }
+      },
+      "sortBlocksReorder": "Die Ziele sind nach Fertigstellung sortiert, daher kannst du sie nicht ziehen, um ihre Priorität zu ändern.",
+      "sortByPriority": "Nach Priorität sortieren"
     },
     "edit": {
       "title": "Ziel bearbeiten",
@@ -2211,7 +2218,7 @@
         },
         "select": {
           "title": "Ziele auswählen",
-          "content": "Markiere Ziele mit ihrem Kontrollkästchen. Das Kästchen in der Kopfzeile wählt alle angezeigten Ziele aus (auf Mobilgeräten zuerst „Auswählen“ aktivieren). Über die dann erscheinende Leiste kannst du sie gemeinsam pausieren, fortsetzen, einem Projekt hinzufügen oder löschen."
+          "content": "Tippe auf Ziele auswählen und hake dann Ziele an oder nutze Alle Ziele auswählen. Pausiere, setze fort, füge sie einem Projekt hinzu oder lösche sie gemeinsam über die Leiste unten, und tippe auf Fertig."
         },
         "createGoal": {
           "title": "Ziel erstellen",
@@ -2223,11 +2230,7 @@
         },
         "reprioritize": {
           "title": "Ziele priorisieren",
-          "content": "Ziehe ein Ziel, um seine Priorität zu ändern (tippe auf Mobilgeräten zuerst auf „Neu anordnen“). Jedes Ablegen wird sofort gespeichert und gilt in jedem Projekt, das das Ziel enthält."
-        },
-        "orderHint": {
-          "title": "So funktioniert die Reihenfolge",
-          "content": "Öffne diesen Hinweis, um zu sehen, wie Priorität hier funktioniert: eine kontoweite Reihenfolge, per Ziehen verändert, gültig in jedem Projekt."
+          "content": "Deine Ziele stehen in einer kontoweiten Prioritätsreihenfolge. Ziehe ein Ziel, um es zu verschieben (auf dem Handy erst auf Neu anordnen tippen): Jede Änderung wird sofort gespeichert und gilt in jedem Projekt, in Heute, im Raid-Plan und in Insights. In einem Projekt zeigt jede Zahl die kontoweite Position, daher können Zahlen fehlen. Ziehen geht nur mit der Sortierung Priorität."
         },
         "list": {
           "title": "Deine Ziele",
@@ -2242,12 +2245,12 @@
           "content": "Dieses Projekt hat ein Ziel, daher misst die Saison-Passung seine Ziele standardmäßig an dieser Frist. Jedes Ziel zeigt „Passt“, „Während des Events“ oder „N T zu spät“, und Linien markieren, ab wo Ziele zu spät fertig werden. Wähle eine andere Option, um zu wechseln."
         },
         "viewToggle": {
-          "title": "Layout und Gruppierung",
-          "content": "Wechsle zwischen Zielkarten und der kompakten Tabelle und gruppiere verwandte Ziele. Deine Wahl wird auf diesem Gerät gespeichert."
+          "title": "Layout, Gruppieren nach und Sortierung",
+          "content": "Wechsle zwischen Zielkarten und der kompakten Tabelle, gruppiere verwandte Ziele und sortiere nach Priorität oder Fertigstellung. Deine Auswahl wird auf diesem Gerät gespeichert."
         },
         "viewOptions": {
           "title": "Ansicht",
-          "content": "Hier findest du Layout (Karten oder Tabelle), Gruppierung und Saison-Passung. Deine Wahl wird auf diesem Gerät gespeichert."
+          "content": "Layout (Karten oder Tabelle), Gruppieren nach, Sortierung und Saison-Passung findest du hier. Deine Auswahl wird auf diesem Gerät gespeichert."
         }
       }
     },
@@ -2327,12 +2330,8 @@
     "collection": {
       "steps": {
         "compare": {
-          "title": "Mit einem Snapshot vergleichen",
-          "content": "Schalte Vergleichen ein, um zu sehen, was sich seit einem Snapshot oder einem Durchlauf eines Legendären Events geändert hat: die größten Machtzuwächse zuerst."
-        },
-        "takeSnapshot": {
-          "title": "Snapshot machen",
-          "content": "Speichert nach einer frischen Synchronisierung deinen ganzen Kader, damit du ihn mit späterem Fortschritt vergleichen kannst."
+          "title": "Snapshots",
+          "content": "Speichere nach einer frischen Synchronisierung einen Snapshot deines ganzen Rosters und schalte dann Vergleichen ein, um zu sehen, was sich seit einem Snapshot oder einem Legendary-Event-Lauf geändert hat: die größten Machtzuwächse zuerst."
         },
         "compareOptions": {
           "title": "Vergleichsoptionen",

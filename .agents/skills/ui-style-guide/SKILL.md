@@ -75,9 +75,9 @@ One row directly under the header, three fixed slots, left to right:
 ## 5. Density and touch
 
 - Touch means a coarse pointer (`pointer-coarse:`), not a screen width.
-- Shared primitives (Button, Input, Select, Toggle/ToggleGroup, Tabs) are 40px
-  visual with a 48px hit area on touch, 32px with a mouse. Size them in
-  `packages/ui`, not per page.
+- Shared primitives are 32px with a mouse. On touch, buttons, toggles and tabs
+  are 40px visual with a 48px hit area; inputs and selects are 40px with no
+  hit-area wrapper. Size them in `packages/ui`, not per page.
 - Toolbar buttons use the default size. `size="sm"` is only for buttons inside
   dense rows (table cells, cards).
 - Body copy and descriptions are `text-sm`; `text-xs` is for captions and

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useId, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { LayoutGrid, List, Search, Funnel, X } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
@@ -56,8 +57,12 @@ export interface CollectionToolbarProps {
   options: CollectionOptions
   rosterAvailable: boolean
   quickFilters: Record<CollectionQuickFilter, QuickFilterAvailability>
+  /** How many units each quick filter would list, shown on its chip. */
+  quickCounts?: Record<CollectionQuickFilter, number>
   /** Reads the quick filters' data again after it failed to load. */
   onRetry: () => void
+  /** The page's other Find controls after Filters: Select units and Snapshots. */
+  findActions?: ReactNode
 }
 
 /**
@@ -65,7 +70,7 @@ export interface CollectionToolbarProps {
  * active count); the chip row below starts with "Owned only", then the quick filters. View: Layout
  * (Cards / Roster), Group by (None / Faction) and Sort, which mobile keeps in the View sheet.
  * Desktop opens the filters inline below the row (already open when one is set, so a short list is
- * never unexplained); mobile opens them in a bottom sheet and scrolls the chips sideways.
+ * never unexplained); mobile opens them in a bottom sheet. The chips scroll sideways in one row.
  */
 export function CollectionToolbar(props: CollectionToolbarProps) {
   const {
@@ -75,7 +80,9 @@ export function CollectionToolbar(props: CollectionToolbarProps) {
     options,
     rosterAvailable,
     quickFilters,
+    quickCounts,
     onRetry,
+    findActions,
   } = props
   const { t } = useTranslation("common")
   const isMobile = useIsMobile()
@@ -111,9 +118,9 @@ export function CollectionToolbar(props: CollectionToolbarProps) {
           <QuickFilterChips
             value={query.quick}
             availability={quickFilters}
+            counts={quickCounts}
             onChange={(quick) => update({ quick })}
             onRetry={onRetry}
-            scroll={isMobile}
             leading={
               <OwnedOnlyChip
                 query={query}
@@ -143,6 +150,7 @@ export function CollectionToolbar(props: CollectionToolbarProps) {
               }
             />
             {active > 0 ? <ClearFiltersButton onClick={clear} /> : null}
+            {findActions}
           </div>
         }
         testId="collection-toolbar"

@@ -45,29 +45,6 @@ describe("groupRows", () => {
     ])
   })
 
-  it("orders type groups by their highest-priority goal under typePriority", () => {
-    const ability = row({ goalId: "goal-1", goalType: "Ability" })
-    const rank = row({ goalId: "goal-2" })
-    const secondAbility = row({
-      goalId: "goal-3",
-      entityId: "hero2",
-      goalType: "Ability",
-    })
-
-    expect(groupRows([ability, rank, secondAbility], "typePriority")).toEqual([
-      {
-        key: "Ability",
-        dimension: "typePriority",
-        rows: [ability, secondAbility],
-      },
-      { key: "Rank", dimension: "typePriority", rows: [rank] },
-    ])
-    // The fixed order still puts Rank first for the same rows.
-    expect(
-      groupRows([ability, rank, secondAbility], "type").map((g) => g.key)
-    ).toEqual(["Rank", "Ability"])
-  })
-
   it("distinguishes a Character from a Mow sharing an entity id", () => {
     const character = row({ goalId: "goal-1" })
     const mow = row({ goalId: "goal-2", entityType: "Mow" })
@@ -82,7 +59,7 @@ describe("groupRows", () => {
     expect(groupRows([], "type")).toEqual([])
   })
 
-  it("lists type groups Rank first, whatever type holds the top-priority goal", () => {
+  it("orders type groups by their first goal in the incoming (sorted) order", () => {
     // Global priority order: an Ability goal leads, then Upgrade, Rank and Ascension.
     const sorted = [
       row({ goalId: "ability-1", goalType: "Ability" }),
@@ -96,18 +73,18 @@ describe("groupRows", () => {
     const groups = groupRows(sorted, "type")
 
     expect(groups.map((group) => group.key)).toEqual([
-      "Rank",
-      "Ascension",
       "Ability",
       "Upgrade",
+      "Rank",
+      "Ascension",
     ])
     expect(groups.flatMap((group) => group.rows.map((r) => r.goalId))).toEqual([
-      "rank-1",
-      "rank-2",
-      "ascension-1",
       "ability-1",
       "ability-2",
       "upgrade-1",
+      "rank-1",
+      "rank-2",
+      "ascension-1",
     ])
   })
 

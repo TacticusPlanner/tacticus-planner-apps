@@ -1,7 +1,5 @@
 import { Fragment, useState } from "react"
-import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import { useGoalCatalog } from "@/features/goal-planning"
 import { SortableList } from "@/shared/ui"
@@ -23,44 +21,11 @@ const EMPTY_SELECTION: ReadonlySet<string> = new Set()
 const GRID_CLASS =
   "grid grid-cols-[repeat(auto-fill,minmax(min(23.75rem,100%),1fr))] items-stretch gap-3"
 
-/** Cards view's select-all, one above every group: it covers every visible goal across groups
- *  (goal-bulk-actions), so under a group heading it would read as that group's. */
-export function GoalsCardsSelectAll({
-  selection,
-  visibleIds,
-  onSelectAll,
-}: {
-  selection: ReadonlySet<string>
-  visibleIds: readonly string[]
-  onSelectAll: () => void
-}) {
-  const { t } = useTranslation()
-  const selectedCount = visibleIds.filter((id) => selection.has(id)).length
-  const allSelected =
-    visibleIds.length > 0 && selectedCount === visibleIds.length
-  return (
-    <label
-      className="flex w-fit items-center gap-2 text-sm text-muted-foreground"
-      data-testid="goals-cards-select-all"
-    >
-      <Checkbox
-        aria-label={t("goals.bulk.selectAll")}
-        checked={
-          allSelected ? true : selectedCount > 0 ? "indeterminate" : false
-        }
-        data-testid="goals-select-all"
-        onCheckedChange={onSelectAll}
-      />
-      {t("goals.bulk.selectAll")}
-    </label>
-  )
-}
-
 /**
  * The goal cards grid, the same component on every platform (goal-list-layout: "Goal cards share one
- * layout on every platform"). Below the mobile breakpoint the grid collapses to one column, checkboxes
- * appear only in select mode, and reordering happens in the separate reorder mode instead of through
- * an inline handle.
+ * layout on every platform"). Checkboxes appear only in select mode (the toolbar's Select goals),
+ * and below the mobile breakpoint the grid collapses to one column and reordering happens in the
+ * separate reorder mode instead of through an inline handle.
  */
 export function GoalsCards({
   isMobile,
@@ -152,7 +117,7 @@ export function GoalsCards({
             seasonFit={seasonFit}
             selected={selection.has(row.goalId)}
             setOpenPopoverGoalId={setOpenPopoverGoalId}
-            showCheckbox={isMobile ? selectActive : true}
+            showCheckbox={selectActive}
             showDragHandle={!isMobile && reorderEnabled}
             xpBook={xpBook}
           />

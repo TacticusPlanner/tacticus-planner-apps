@@ -1,11 +1,20 @@
 import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ClockPlus, ListChecks, Settings2 } from "lucide-react"
+import {
+  ChevronDown,
+  ClockPlus,
+  History,
+  ListChecks,
+  Settings2,
+} from "lucide-react"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { Label } from "@workspace/ui/components/label"
@@ -27,11 +36,6 @@ import {
   SheetTrigger,
 } from "@workspace/ui/components/sheet"
 import { Switch } from "@workspace/ui/components/switch"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
@@ -47,9 +51,12 @@ import { sourceLabel } from "../../../model/compare-labels"
 import { useSourceLabels } from "../../../model/use-source-labels"
 import type { CompareSource } from "../../../model/use-compare-data"
 
-/** The snapshot actions between the toolbar and the list: the Compare switch, Take snapshot and
- *  Manage. Compare's options follow right below while it is on, so the mode reads as one block. */
-export function SnapshotActions({
+/**
+ * Snapshots in the page toolbar's Find slot (ui-style-guide rule 2): one "Snapshots" menu holding
+ * Compare (on/off), Take snapshot and Manage snapshots, so the snapshot feature adds one button
+ * instead of a row of its own. The button says when Compare is on.
+ */
+export function SnapshotsMenu({
   compareOn,
   onCompareChange,
   usage,
@@ -58,79 +65,65 @@ export function SnapshotActions({
 }: {
   compareOn: boolean
   onCompareChange: (on: boolean) => void
-  /** null while the list loads (the buttons stay available). */
+  /** null while the list loads (the items stay available). */
   usage: { count: number; limit: number } | null
   onTake: () => void
   onManage: () => void
 }) {
   const { t } = useTranslation("common")
-  const switchId = useId()
   const atLimit = usage !== null && usage.count >= usage.limit
-  const take = (
-    <Button
-      size="sm"
-      onClick={onTake}
-      disabled={atLimit}
-      data-testid="take-snapshot"
-    >
-      <ClockPlus aria-hidden />
-      {/* Icon only on a phone, so both buttons stay on the Compare row. */}
-      <span className="max-sm:sr-only">
-        {t("myGame.collection.snapshots.take")}
-      </span>
-    </Button>
-  )
   return (
-    <div
-      // Wraps only as a last resort (e.g. enlarged text): the phone labels are hidden to keep one row.
-      className="flex flex-wrap items-center gap-x-4 gap-y-2"
-      data-testid="snapshot-actions"
-    >
-      <div
-        className="flex shrink-0 items-center gap-2"
-        data-testid="compare-toggle"
-      >
-        <Switch
-          id={switchId}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" data-testid="snapshot-actions">
+          <History data-icon="inline-start" />
+          {t("myGame.collection.snapshots.manage")}
+          {compareOn ? (
+            <Badge data-testid="compare-on-badge" variant="secondary">
+              {t("myGame.collection.compare.toggle")}
+            </Badge>
+          ) : null}
+          <ChevronDown data-icon="inline-end" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-60">
+        <DropdownMenuCheckboxItem
           checked={compareOn}
+          data-testid="compare-toggle"
           onCheckedChange={onCompareChange}
-        />
-        <Label htmlFor={switchId}>
-          {t("myGame.collection.compare.toggle")}
-        </Label>
-      </div>
-      <div className="ml-auto flex items-center gap-2">
-        {atLimit ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {/* A disabled button fires no pointer events, so the span carries the tooltip. */}
-              <span data-testid="take-snapshot-limit">{take}</span>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t("myGame.collection.snapshots.limitTooltip")}
-            </TooltipContent>
-          </Tooltip>
-        ) : (
-          take
-        )}
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onManage}
-          data-testid="manage-snapshots"
         >
-          <ListChecks aria-hidden />
-          <span className="max-sm:sr-only">
-            {t("myGame.collection.snapshots.manage")}
+          {t("myGame.collection.compare.menuItem")}
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          data-testid="take-snapshot"
+          disabled={atLimit}
+          onSelect={onTake}
+        >
+          <ClockPlus aria-hidden />
+          <span className="flex flex-col">
+            {t("myGame.collection.snapshots.take")}
+            {atLimit ? (
+              <span
+                className="text-xs text-muted-foreground"
+                data-testid="take-snapshot-limit"
+              >
+                {t("myGame.collection.snapshots.limitTooltip")}
+              </span>
+            ) : null}
           </span>
+        </DropdownMenuItem>
+        <DropdownMenuItem data-testid="manage-snapshots" onSelect={onManage}>
+          <ListChecks aria-hidden />
+          {t("myGame.collection.snapshots.manageAll")}
           {usage ? (
-            <span className="text-muted-foreground tabular-nums">
+            <span className="ml-auto text-muted-foreground tabular-nums">
               {t("myGame.collection.snapshots.usage", usage)}
             </span>
           ) : null}
-        </Button>
-      </div>
-    </div>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 

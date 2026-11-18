@@ -114,6 +114,7 @@ describe("useCollectionView", () => {
           passiveAbilityDamage: [],
           shardLocations: [],
           equipmentSlots: ["I_Crit", "I_Block", "I_Defensive"],
+          rankUpUpgrades: [],
         },
       ],
       mows: [],

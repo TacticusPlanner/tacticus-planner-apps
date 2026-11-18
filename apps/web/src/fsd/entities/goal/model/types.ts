@@ -1,17 +1,21 @@
 import type { ApiSchemas } from "@/shared/api"
 
-import type { GoalGroupValue, GoalTypeFilterValue } from "../ui/goal-filters"
+import type {
+  GoalGroupValue,
+  GoalSortValue,
+  GoalTypeFilterValue,
+} from "../ui/goal-filters"
 import type { GoalStatusFilterValue } from "../ui/status-filter-select"
 
 /** Type guard for a value read back from persisted storage (`usePersistedSelection`) — callers
  *  that remember the user's Group selection across visits use this to validate what they read. */
 export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
-  return (
-    value === "none" ||
-    value === "unit" ||
-    value === "type" ||
-    value === "typePriority"
-  )
+  return value === "none" || value === "unit" || value === "type"
+}
+
+/** Type guard for the remembered Goals sort. */
+export function isGoalSortValue(value: unknown): value is GoalSortValue {
+  return value === "priority" || value === "finishDate"
 }
 
 export const STATUS_VALUES: readonly GoalStatusFilterValue[] = [

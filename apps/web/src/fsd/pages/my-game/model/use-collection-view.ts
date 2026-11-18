@@ -206,12 +206,10 @@ export function useCollectionView(
     inventoryUpgradesRead.status === "ready"
       ? inventoryUpgradesRead.data
       : undefined
+  // Read for every view, not only while the chip is picked: each chip shows its count.
   const rankUpReady = useMemo(
     () =>
-      effectiveQuery.quick === "readyToRankUp" &&
-      characters &&
-      upgradesById &&
-      inventoryUpgrades
+      characters && upgradesById && inventoryUpgrades
         ? readyToRankUp(
             characters,
             playerCharacters ?? [],
@@ -219,13 +217,7 @@ export function useCollectionView(
             upgradesById
           )
         : undefined,
-    [
-      effectiveQuery.quick,
-      characters,
-      playerCharacters,
-      inventoryUpgrades,
-      upgradesById,
-    ]
+    [characters, playerCharacters, inventoryUpgrades, upgradesById]
   )
 
   // Only the Power sort reads power, so other sorts never wait on (or recompute for) it.

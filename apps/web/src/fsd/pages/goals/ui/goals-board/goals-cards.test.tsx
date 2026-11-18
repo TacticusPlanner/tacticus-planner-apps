@@ -18,7 +18,6 @@ import type {
   useGoalActions,
 } from "@/features/goal-planning"
 import { NO_BLOCKERS } from "@/features/goal-planning"
-import { GoalsCardsSelectAll } from "./goals-cards"
 import { GoalsList } from "./goals-list"
 
 const setStatus = vi.fn(() => Promise.resolve(true))
@@ -84,6 +83,7 @@ describe("Goal cards", () => {
         estimates={new Map([["g1", estimate]]) as never}
         metrics={new Map([["g1", rankMetrics]])}
         reorderEnabled
+        selectActive
         rows={[
           row("g1", 3, {
             notes: "farm on Tuesdays",
@@ -641,47 +641,6 @@ describe("Goal cards grid", () => {
     expect(screen.getAllByTestId("goal-row-drag-handle")).toHaveLength(3)
   })
 
-  it("selects every visible goal from the select-all checkbox", async () => {
-    const onSelectAll = vi.fn()
-    const visibleIds = ["a", "b", "c"]
-    const { rerender } = render(
-      <GoalsCardsSelectAll
-        onSelectAll={onSelectAll}
-        selection={new Set()}
-        visibleIds={visibleIds}
-      />
-    )
-
-    const selectAll = await screen.findByTestId("goals-select-all")
-    expect(selectAll).toHaveAttribute("data-state", "unchecked")
-    fireEvent.click(selectAll)
-    expect(onSelectAll).toHaveBeenCalledTimes(1)
-
-    rerender(
-      <GoalsCardsSelectAll
-        onSelectAll={onSelectAll}
-        selection={new Set(["a"])}
-        visibleIds={visibleIds}
-      />
-    )
-    expect(screen.getByTestId("goals-select-all")).toHaveAttribute(
-      "data-state",
-      "indeterminate"
-    )
-
-    rerender(
-      <GoalsCardsSelectAll
-        onSelectAll={onSelectAll}
-        selection={new Set(visibleIds)}
-        visibleIds={visibleIds}
-      />
-    )
-    expect(screen.getByTestId("goals-select-all")).toHaveAttribute(
-      "data-state",
-      "checked"
-    )
-  })
-
   it("mounts no drag wiring on phones, which reorder in their own mode", async () => {
     useIsMobileMock.mockReturnValue(true)
     render(<GoalsList actions={stubActions} rows={rows} view="Cards" />)
@@ -697,6 +656,7 @@ describe("Goal cards grid", () => {
         actions={stubActions}
         onToggleSelected={onToggleSelected}
         rows={rows}
+        selectActive
         selection={new Set()}
         view="Cards"
       />

@@ -456,7 +456,7 @@ describe("GoalsPage", () => {
     expect(localStorage.getItem("goals.overview.group")).toContain("type")
   })
 
-  it("has no Sort control and lists Active and Paused goals in global priority order", async () => {
+  it("sorts by Priority by default, listing Active and Paused goals in global priority order", async () => {
     listGoals.mockResolvedValue({
       goals: [
         { ...activeGoal, goalId: "goal-b", globalPriority: 2 },
@@ -468,7 +468,11 @@ describe("GoalsPage", () => {
 
     await screen.findAllByTestId("goal-row")
 
-    expect(screen.queryByTestId("goals-sort")).not.toBeInTheDocument()
+    expect(
+      within(screen.getByTestId("goals-sort")).getByRole("radio", {
+        name: "Priority",
+      })
+    ).toBeChecked()
     expect(
       screen
         .getAllByTestId("goal-row")
@@ -621,10 +625,7 @@ describe("GoalsPage", () => {
     const row = screen
       .getByTestId("goals-toolbar")
       .querySelector('[data-slot="page-toolbar-find"]') as HTMLElement
-    for (const id of [
-      "goals-mobile-reorder-toggle",
-      "goals-mobile-select-toggle",
-    ]) {
+    for (const id of ["goals-mobile-reorder-toggle", "goals-select-toggle"]) {
       const toggle = within(row).getByTestId(id)
       expect(toggle).toBeDisabled()
       expect(toggle).toHaveAccessibleName()
@@ -837,28 +838,8 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
   })
 
-  it("shows one select-all above the groups in Cards view, not one per group", async () => {
-    window.localStorage.setItem("goals.overview.view", "Cards")
+  it("leads with the type holding the top-priority goal under Group by type", async () => {
     window.localStorage.setItem("goals.overview.group", "type")
-    listGoals.mockResolvedValue({
-      goals: [
-        activeGoal,
-        { ...activeGoal, goalId: "goal-2", goalType: "Ability" },
-      ],
-    })
-    renderPage()
-
-    const heading = await screen.findByRole("heading", { name: /^Rank/ })
-    const selectAll = screen.getByTestId("goals-cards-select-all")
-    expect(screen.getAllByTestId("goals-select-all")).toHaveLength(1)
-    expect(
-      selectAll.compareDocumentPosition(heading) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-  })
-
-  it("leads with the type holding the top-priority goal under Group by type (priority order)", async () => {
-    window.localStorage.setItem("goals.overview.group", "typePriority")
     listGoals.mockResolvedValue({
       goals: [
         { ...activeGoal, goalId: "goal-2", goalType: "Ability" },
@@ -901,8 +882,11 @@ describe("GoalsPage", () => {
       screen.queryByTestId(`goal-row-menu-${activeGoal.goalId}`)
     ).not.toBeInTheDocument()
     // Select-all only reaches the sections still open.
-    await user.click(screen.getByTestId("goals-select-all"))
-    expect(screen.getByTestId("goals-select-all")).toBeChecked()
+    await user.click(screen.getByTestId("goals-select-toggle"))
+    await user.click(screen.getByTestId("goals-select-bar-all"))
+    expect(screen.getByTestId("goals-select-count")).toHaveTextContent(
+      "1 selected"
+    )
 
     unmount()
     renderPage()
@@ -1169,42 +1153,8 @@ describe("GoalsPage", () => {
     }
   )
 
-  it("explains the order from a control-row hint that adds the account-wide note only when scoped", async () => {
+  it("has no order hint on the page: the tour explains the order", async () => {
     twoProjects()
-    const user = userEvent.setup()
-    const view = renderPage()
-
-    await screen.findByTestId("goals-list-table")
-    expect(screen.queryByTestId("goals-order-note")).toBeNull()
-    await user.click(await screen.findByTestId("goals-order-hint"))
-    const content = await screen.findByTestId("goals-order-hint-content")
-    expect(content).toHaveTextContent(
-      "Goals are in your priority order. Drag an active or paused goal to move it"
-    )
-    expect(content).not.toHaveTextContent(
-      "position in your account-wide priority order"
-    )
-    view.unmount()
-
-    renderPage("/plan/goals?project=proj-1")
-    await screen.findByTestId("goals-list-table")
-    await user.click(await screen.findByTestId("goals-order-hint"))
-    expect(
-      await screen.findByTestId("goals-order-hint-content")
-    ).toHaveTextContent("position in your account-wide priority order")
-  })
-
-  it("opens the order hint on keyboard focus and hides it when reordering is unavailable", async () => {
-    twoProjects()
-    const view = renderPage()
-    await screen.findByTestId("goals-list-table")
-    act(() => screen.getByTestId("goals-order-hint").focus())
-    expect(
-      await screen.findByTestId("goals-order-hint-content")
-    ).toBeInTheDocument()
-    view.unmount()
-
-    listGoals.mockResolvedValue({ goals: [activeGoal] })
     renderPage()
     await screen.findByTestId("goals-list-table")
     expect(screen.queryByTestId("goals-order-hint")).toBeNull()
@@ -1751,8 +1701,23 @@ describe("GoalsPage bulk actions", () => {
     })
   })
 
-  const select = (user: ReturnType<typeof userEvent.setup>, id: string) =>
-    user.click(screen.getByTestId(`goal-row-select-${id}`))
+  /** Starts select mode from the toolbar's Select goals when it is not on yet. */
+  const startSelect = async (user: ReturnType<typeof userEvent.setup>) => {
+    const start = screen.queryByTestId("goals-select-toggle")
+    if (start) await user.click(start)
+  }
+  const select = async (
+    user: ReturnType<typeof userEvent.setup>,
+    id: string
+  ) => {
+    await startSelect(user)
+    await user.click(screen.getByTestId(`goal-row-select-${id}`))
+  }
+  /** The table header's select-all, which select mode shows. */
+  const selectAll = async (user: ReturnType<typeof userEvent.setup>) => {
+    await startSelect(user)
+    await user.click(screen.getByTestId("goals-select-all"))
+  }
 
   it("lays out the toolbar slots: Find, View, then Create goal", async () => {
     renderPage()
@@ -1780,15 +1745,17 @@ describe("GoalsPage bulk actions", () => {
     ).toBeTruthy()
   })
 
-  it("shows the bulk actions only while goals are selected, enabling the applicable ones", async () => {
+  it("shows the bulk actions in the select bar only in select mode, enabling the applicable ones", async () => {
     const user = userEvent.setup()
     renderPage()
     await screen.findByTestId("goals-list-table")
 
     expect(screen.queryByTestId("goals-bulk-actions")).toBeNull()
+    expect(screen.queryByTestId("goal-row-select-goal-p")).toBeNull()
 
     await select(user, "goal-p")
-    expect(screen.getByTestId("goals-actions-row")).toContainElement(
+    expect(screen.queryByTestId("goals-select-toggle")).toBeNull()
+    expect(screen.getByTestId("goals-select-bar")).toContainElement(
       screen.getByTestId("goals-bulk-actions")
     )
     expect(screen.getByTestId("goals-bulk-pause")).toBeDisabled()
@@ -1801,7 +1768,7 @@ describe("GoalsPage bulk actions", () => {
     renderPage()
     await screen.findByTestId("goals-list-table")
 
-    await user.click(screen.getByTestId("goals-select-all"))
+    await selectAll(user)
     await user.click(screen.getByTestId("goals-bulk-pause"))
 
     // One atomic request for every selected active goal.
@@ -1834,13 +1801,14 @@ describe("GoalsPage bulk actions", () => {
     )
   })
 
-  it("selects every visible goal from the select-all above the cards grid", async () => {
+  it("selects every visible goal from the select bar's Select all in Cards view", async () => {
     window.localStorage.setItem("goals.overview.view", "Cards")
     const user = userEvent.setup()
     renderPage()
     await screen.findByTestId("goals-list-cards")
 
-    await user.click(screen.getByTestId("goals-select-all"))
+    await startSelect(user)
+    await user.click(screen.getByTestId("goals-select-bar-all"))
 
     for (const id of ["goal-1", "goal-b", "goal-p"])
       expect(screen.getByTestId(`goal-row-select-${id}`)).toBeChecked()
@@ -1858,7 +1826,7 @@ describe("GoalsPage bulk actions", () => {
     await user.click(await screen.findByRole("option", { name: /^Paused/ }))
 
     await vi.waitFor(() =>
-      expect(screen.queryByTestId("goals-bulk-delete")).toBeNull()
+      expect(screen.getByTestId("goals-bulk-delete")).toBeDisabled()
     )
     expect(screen.getByTestId("goal-row-select-goal-p")).not.toBeChecked()
   })
@@ -1868,7 +1836,7 @@ describe("GoalsPage bulk actions", () => {
     const user = userEvent.setup()
     renderPage()
     await screen.findByTestId("goals-list-table")
-    await user.click(screen.getByTestId("goals-select-all"))
+    await selectAll(user)
 
     await user.click(screen.getByTestId("goals-bulk-delete"))
     expect(await screen.findByTestId("delete-goal-dialog")).toBeInTheDocument()
@@ -2099,9 +2067,9 @@ describe("GoalsPage bulk actions", () => {
       renderPage()
       await screen.findByTestId("goals-list-cards")
 
-      await user.click(screen.getByTestId("goals-mobile-select-toggle"))
-      const bar = await screen.findByTestId("mobile-select-bar")
-      expect(within(bar).getByTestId("mobile-select-count")).toHaveTextContent(
+      await user.click(screen.getByTestId("goals-select-toggle"))
+      const bar = await screen.findByTestId("goals-select-bar")
+      expect(within(bar).getByTestId("goals-select-count")).toHaveTextContent(
         "0 selected"
       )
       expect(screen.getByTestId("goals-bulk-delete")).toBeDisabled()
@@ -2109,8 +2077,8 @@ describe("GoalsPage bulk actions", () => {
       await user.click(screen.getByTestId("goal-row-select-goal-1"))
       expect(screen.getByTestId("goals-bulk-delete")).toBeEnabled()
 
-      await user.click(screen.getByTestId("mobile-select-done"))
-      expect(screen.queryByTestId("mobile-select-bar")).toBeNull()
+      await user.click(screen.getByTestId("goals-select-done"))
+      expect(screen.queryByTestId("goals-select-bar")).toBeNull()
       expect(screen.queryByTestId("goal-row-select-goal-1")).toBeNull()
     })
 
@@ -2118,12 +2086,12 @@ describe("GoalsPage bulk actions", () => {
       const user = userEvent.setup()
       renderPage()
       await screen.findByTestId("goals-list-cards")
-      await user.click(screen.getByTestId("goals-mobile-select-toggle"))
-      await screen.findByTestId("mobile-select-bar")
+      await user.click(screen.getByTestId("goals-select-toggle"))
+      await screen.findByTestId("goals-select-bar")
 
       await user.click(screen.getByTestId("goals-mobile-reorder-toggle"))
 
-      expect(screen.queryByTestId("mobile-select-bar")).toBeNull()
+      expect(screen.queryByTestId("goals-select-bar")).toBeNull()
       expect(screen.getByTestId("mobile-reorder-bar")).toBeInTheDocument()
     })
   })
@@ -2174,6 +2142,7 @@ describe("GoalsPage Goals view", () => {
     renderPage()
 
     await screen.findByTestId("goals-list-cards")
+    await user.click(screen.getByTestId("goals-select-toggle"))
     await user.click(
       await screen.findByTestId(`goal-row-select-${activeGoal.goalId}`)
     )
@@ -2210,8 +2179,7 @@ describe("GoalsPage Goals view", () => {
         "goals-type-filter",
         "goals-season-fit",
         "goals-view-toggle",
-        "goals-select-all",
-        "goals-order-hint",
+        "goals-select-toggle",
         "goals-create-goal",
         "goals-planning-settings",
         "goals-page",
@@ -2273,7 +2241,7 @@ describe("GoalsPage Goals view", () => {
         screen.queryByTestId(`goal-row-select-${activeGoal.goalId}`)
       ).not.toBeInTheDocument()
 
-      await user.click(screen.getByTestId("goals-mobile-select-toggle"))
+      await user.click(screen.getByTestId("goals-select-toggle"))
 
       expect(
         await screen.findByTestId(`goal-row-select-${activeGoal.goalId}`)

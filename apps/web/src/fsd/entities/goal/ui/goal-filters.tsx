@@ -9,23 +9,26 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { GroupByControl } from "@/shared/ui"
+import { GroupByControl, SegmentedControl } from "@/shared/ui"
 
 import { GOAL_TYPE_VALUES } from "../model/types"
 import type { GoalKind } from "../model/types"
 
 export type GoalTypeFilterValue = "all" | GoalKind
-/** `type` orders the type groups by the fixed goal-type order (Rank first, as in v1);
- *  `typePriority` orders them by their highest-priority goal, so the group holding the top goal
- *  leads and the groups move as goals are reordered. */
-export type GoalGroupValue = "none" | "unit" | "type" | "typePriority"
+/** Groups come out in the order of their first goal under the current Sort. */
+export type GoalGroupValue = "none" | "unit" | "type"
 
 const DEFAULT_GROUP_OPTIONS: readonly GoalGroupValue[] = [
   "none",
   "unit",
   "type",
-  "typePriority",
 ]
+
+/** `priority`: the account-wide priority order (the only order goals can be dragged in).
+ *  `finishDate`: the estimated finish date in that plan, soonest first; goals without one last. */
+export type GoalSortValue = "priority" | "finishDate"
+
+const GOAL_SORT_VALUES: readonly GoalSortValue[] = ["priority", "finishDate"]
 
 /**
  * The Goals page's Type filter, a Find-slot select (goals-navigation spec, Decision 1). Filter
@@ -81,7 +84,7 @@ export function GoalFilters({
 
 /**
  * Group by for a goal list: the shared labelled segmented control in the page toolbar's View slot
- * (ui-style-guide rule 3). `groupOptions` limits the choices (default: all four).
+ * (ui-style-guide rule 3). `groupOptions` limits the choices (default: all three).
  */
 export function GoalGroupBy({
   group,
@@ -99,14 +102,35 @@ export function GoalGroupBy({
       options={groupOptions.map((value) => ({
         value,
         label: t(`goals.filters.groupOptions.${value}`),
-        title:
-          value === "typePriority"
-            ? t("goals.filters.groupOptionHelp.typePriority")
-            : undefined,
         testId: `goals-group-by-${value}`,
       }))}
       testId="goals-group-by"
       value={group}
+    />
+  )
+}
+
+/** Sort for the Goals list: the shared labelled segmented control in the View slot. */
+export function GoalSort({
+  sort,
+  onSortChange,
+}: {
+  sort: GoalSortValue
+  onSortChange: (value: GoalSortValue) => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <SegmentedControl
+      label={t("goals.filters.sort")}
+      onValueChange={onSortChange}
+      options={GOAL_SORT_VALUES.map((value) => ({
+        value,
+        label: t(`goals.filters.sortOptions.${value}`),
+        title: t(`goals.filters.sortHelp.${value}`),
+        testId: `goals-sort-${value}`,
+      }))}
+      testId="goals-sort"
+      value={sort}
     />
   )
 }

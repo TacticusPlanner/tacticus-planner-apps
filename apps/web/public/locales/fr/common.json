@@ -505,7 +505,9 @@
         "clearRarities": "Effacer les raretés",
         "clearDamageTypes": "Effacer les types de dégâts",
         "clearTraits": "Effacer les traits",
-        "clearShardSources": "Effacer les sources de fragments"
+        "clearShardSources": "Effacer les sources de fragments",
+        "quickCount_one": "{{count}} unité",
+        "quickCount_other": "{{count}} unités"
       },
       "empty": {
         "title": "Aucune unité ne correspond à ces filtres",
@@ -602,7 +604,8 @@
             "I_Defensive": "Objet défensif"
           }
         },
-        "closeOptions": "Fermer"
+        "closeOptions": "Fermer",
+        "menuItem": "Comparer avec un instantané"
       },
       "snapshots": {
         "signIn": "Connectez-vous pour enregistrer des instantanés de votre effectif et les comparer.",
@@ -644,7 +647,8 @@
         "autoHint": "Pris après une synchronisation quand votre roster n'a aucun instantané des 30 derniers jours. Jusqu'à {{limit}} sont conservés ; le plus ancien est remplacé.",
         "keep": "Conserver",
         "keepLimitTooltip": "Supprimez un instantané pour conserver celui-ci",
-        "keepFailed": "L'instantané n'a pas pu être conservé."
+        "keepFailed": "L'instantané n'a pas pu être conservé.",
+        "manageAll": "Gérer les instantanés"
       },
       "select": {
         "start": "Sélectionner des unités",
@@ -1698,7 +1702,6 @@
       "groupByLabel": "Regrouper par",
       "groupNone": "Aucun regroupement",
       "groupByType": "Regrouper par type",
-      "groupByTypePriority": "Regrouper par type (par priorité)",
       "groupByUnit": "Regrouper par unité",
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés",
       "statusFilterLabel": "Filtre de statut des objectifs",
@@ -1709,11 +1712,16 @@
       "groupOptions": {
         "none": "Aucun",
         "unit": "Unité",
-        "type": "Type",
-        "typePriority": "Type par priorité"
+        "type": "Type"
       },
-      "groupOptionHelp": {
-        "typePriority": "Groupes de type triés par leur objectif principal"
+      "sort": "Trier",
+      "sortOptions": {
+        "priority": "Priorité",
+        "finishDate": "Date de fin"
+      },
+      "sortHelp": {
+        "priority": "Votre ordre de priorité. Faites glisser les objectifs pour les réordonner.",
+        "finishDate": "Date de fin estimée dans votre plan, la plus proche d'abord."
       }
     },
     "seasonFit": {
@@ -1956,9 +1964,6 @@
       "noFarmableDemand": "Vos objectifs actifs n'ont actuellement besoin de rien qui puisse être farmé, il n'y a donc aucun farming à planifier.",
       "estimatesError": "Certaines estimations du plan n'ont pas pu être chargées ; des détails de farming peuvent manquer.",
       "estimatesRetry": "Réessayer les estimations",
-      "listNote": "Vos objectifs sont classés par priorité. Faites glisser un objectif actif ou en pause pour le déplacer : le changement s'applique dans tous les projets, dans Aujourd'hui, le plan de raid et les Analyses.",
-      "hintLabel": "À propos de l'ordre",
-      "scopedNote": "Chaque numéro est la position de l'objectif dans l'ordre de priorité de tout votre compte : les objectifs d'un projet peuvent donc afficher des écarts comme 1, 3, 5. Déplacer un objectif ici le déplace aussi dans cet ordre ; les objectifs des autres projets gardent leur ordre relatif.",
       "projectMove": {
         "menuItem": "Déplacer les objectifs…",
         "alreadyFirst": "Les objectifs de ce projet sont déjà en tête.",
@@ -1978,7 +1983,9 @@
         "noReference": "Aucun autre projet par rapport auquel placer",
         "confirm": "Déplacer",
         "cancel": "Annuler"
-      }
+      },
+      "sortBlocksReorder": "Les objectifs sont triés par date de fin, vous ne pouvez donc pas les faire glisser pour changer leur priorité.",
+      "sortByPriority": "Trier par priorité"
     },
     "edit": {
       "title": "Modifier l'objectif",
@@ -2211,7 +2218,7 @@
         },
         "select": {
           "title": "Sélectionner des objectifs",
-          "content": "Cochez des objectifs avec leur case. Celle de l'en-tête sélectionne tous les objectifs affichés (sur mobile, activez d'abord « Sélectionner »). La barre qui apparaît permet de les mettre en pause, les reprendre, les ajouter à un projet ou les supprimer ensemble."
+          "content": "Touchez Sélectionner des objectifs, puis cochez des objectifs ou utilisez Sélectionner tous les objectifs. Mettez en pause, reprenez, ajoutez à un projet ou supprimez-les ensemble depuis la barre du bas, puis touchez Terminé."
         },
         "createGoal": {
           "title": "Créer un objectif",
@@ -2223,11 +2230,7 @@
         },
         "reprioritize": {
           "title": "Priorisez vos objectifs",
-          "content": "Faites glisser un objectif pour modifier sa priorité (sur mobile, appuyez d'abord sur « Réorganiser »). Chaque dépôt est enregistré immédiatement et s'applique dans tous les projets qui contiennent l'objectif."
-        },
-        "orderHint": {
-          "title": "Comment fonctionne l'ordre",
-          "content": "Ouvrez cette aide pour voir comment fonctionne la priorité ici : un seul ordre pour tout le compte, modifié par glisser-déposer et appliqué dans chaque projet."
+          "content": "Vos objectifs suivent un seul ordre de priorité pour tout le compte. Faites glisser un objectif pour le déplacer (sur mobile, touchez d'abord Réorganiser) : chaque déplacement est enregistré aussitôt et s'applique dans chaque projet, Aujourd'hui, le plan de raids et Insights. Dans un projet, chaque numéro est la position dans tout le compte, il peut donc y avoir des sauts. Le glisser-déposer demande le tri par Priorité."
         },
         "list": {
           "title": "Vos objectifs",
@@ -2242,12 +2245,12 @@
           "content": "Ce projet a une cible : le calage sur la saison mesure donc ses objectifs par rapport à cette échéance par défaut. Chaque objectif affiche À temps, Pendant l'événement ou En retard de N j, et des lignes marquent où les objectifs commencent à finir trop tard. Choisissez une autre option pour changer."
         },
         "viewToggle": {
-          "title": "Disposition et groupement",
-          "content": "Passez des cartes d'objectifs au tableau compact et regroupez les objectifs liés. Votre choix est enregistré sur cet appareil."
+          "title": "Disposition, Grouper par et Trier",
+          "content": "Passez des cartes au tableau compact, regroupez les objectifs liés et triez par priorité ou date de fin. Vos choix sont enregistrés sur cet appareil."
         },
         "viewOptions": {
           "title": "Affichage",
-          "content": "La disposition (cartes ou tableau), le groupement et l'ajustement à la saison sont ici. Votre choix est enregistré sur cet appareil."
+          "content": "Disposition (cartes ou tableau), Grouper par, Trier et Calage sur la saison se trouvent ici. Vos choix sont enregistrés sur cet appareil."
         }
       }
     },
@@ -2327,12 +2330,8 @@
     "collection": {
       "steps": {
         "compare": {
-          "title": "Comparer avec un instantané",
-          "content": "Activez Comparer pour voir ce qui a changé depuis un instantané ou une manche d’événement légendaire : les plus gros gains de puissance d’abord."
-        },
-        "takeSnapshot": {
-          "title": "Prendre un instantané",
-          "content": "Enregistre tout votre effectif après une nouvelle synchronisation, pour le comparer à votre progression ultérieure."
+          "title": "Instantanés",
+          "content": "Enregistrez un instantané de tout votre roster après une synchronisation, puis activez Comparer pour voir ce qui a changé depuis un instantané ou une partie d'Événement légendaire : les plus gros gains de puissance d'abord."
         },
         "compareOptions": {
           "title": "Options de comparaison",
