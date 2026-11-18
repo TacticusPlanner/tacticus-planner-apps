@@ -373,7 +373,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     // the countdown, so it shows on every tab without repeating them.
     expect(screen.queryByTestId("legendary-event-title")).toBeNull()
     expect(screen.queryByTestId("legendary-event-lifecycle")).toBeNull()
-    expect(screen.queryByTestId("event-timing-date")).toBeNull()
+    expect(screen.queryByTestId("event-timing-line")).toBeNull()
     expect(screen.getByTestId("legendary-event-header")).toHaveTextContent(
       /^Ends in \d+ days?/
     )

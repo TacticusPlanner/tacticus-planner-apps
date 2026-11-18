@@ -142,8 +142,8 @@ describe("LegendaryEventsHubPage", () => {
     expect(synced).toHaveTextContent("5/12 tokens")
     expect(synced).toHaveTextContent("3,410 points")
     // Run ends 2026-09-06T00:00Z: 3.5 days away, rounded to whole days.
-    expect(active.getByTestId("event-timing-countdown")).toHaveTextContent(
-      "Ends in 4 days"
+    expect(active.getByTestId("event-timing-line")).toHaveTextContent(
+      /· in 4 days$/
     )
   })
 
@@ -168,13 +168,10 @@ describe("LegendaryEventsHubPage", () => {
       screen.getByTestId("legendary-events-group-upcoming")
     ).getAllByTestId("legendary-event-card")[0]!
     expect(uthar).toHaveTextContent("Ûthar")
-    // The card shows the local start date without the time of day.
-    expect(within(uthar).getByTestId("event-timing-date")).toHaveTextContent(
-      /^Starts Oct 4$/
+    // One line: the local start date without the time of day, then the countdown.
+    expect(within(uthar).getByTestId("event-timing-line")).toHaveTextContent(
+      /^Starts Oct 4 · in 14 days$/
     )
-    expect(
-      within(uthar).getByTestId("event-timing-countdown")
-    ).toHaveTextContent("Starts in 14 days")
     // Only run 1 is announced: runs 2 and 3 are guessed 175 days apart.
     // Each run sits on its own line, with its status for screen readers.
     const runs = within(uthar).getAllByRole("listitem")
