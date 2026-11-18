@@ -191,8 +191,8 @@ function IconSelect({
 }
 
 /**
- * The collapsible filter controls. Name search is not here — it is a separate, always-visible input
- * (see `NpcsFilterPanel`): searching by name is how you find a unit you already have in mind, while
+ * The filter controls behind the toolbar's "Filters" button. Name search is not here — it is a separate, always-visible input
+ * (see `NpcsToolbar`): searching by name is how you find a unit you already have in mind, while
  * these narrow a roster you are browsing.
  */
 export function NpcsFilterBar({
@@ -201,6 +201,7 @@ export function NpcsFilterBar({
   activeCount,
   onChange,
   onClear,
+  hideClear = false,
   className,
 }: {
   filters: NpcFilters
@@ -208,6 +209,8 @@ export function NpcsFilterBar({
   activeCount: number
   onChange: (filters: NpcFilters) => void
   onClear: () => void
+  /** The mobile sheet puts "Clear filters" in its footer instead. */
+  hideClear?: boolean
   className?: string
 }) {
   const { t } = useTranslation("library")
@@ -335,16 +338,18 @@ export function NpcsFilterBar({
         onChange={(traits) => onChange({ ...filters, traits })}
         testId="npcs-trait-filter"
       />
-      <Button
-        variant="ghost"
-        onClick={onClear}
-        disabled={activeCount === 0}
-        data-testid="npcs-clear-filters"
-        className="justify-self-start"
-      >
-        <X aria-hidden />
-        {t("npcs.clearFilters")}
-      </Button>
+      {hideClear ? null : (
+        <Button
+          variant="ghost"
+          onClick={onClear}
+          disabled={activeCount === 0}
+          data-testid="npcs-clear-filters"
+          className="justify-self-start"
+        >
+          <X aria-hidden />
+          {t("npcs.clearFilters")}
+        </Button>
+      )}
     </div>
   )
 }

@@ -29,7 +29,6 @@
   "loading": "Loading Library records…",
   "shops": {
     "title": "Daily Shops",
-    "subtitle": "Every slot each daily shop can offer on the selected day",
     "dayLabel": "Day",
     "shopLabel": "Shop",
     "days": {
@@ -196,9 +195,9 @@
     "loading": "Loading Guild Raid Boss data…",
     "unavailable": "Guild Raid Boss data is not available in the catalog yet.",
     "tabs": {
-      "seasons": "Seasons Config",
+      "seasons": "Seasons",
       "meta": "Meta",
-      "details": "Boss / Prime Details"
+      "details": "Bosses and primes"
     },
     "tierSet": "Tier {{tier}} · Set {{set}}",
     "chest": "Chest: {{chest}}",
@@ -240,6 +239,7 @@
     "trait": "Trait",
     "clearFilters": "Clear filters",
     "filtersCount": "Filters ({{count}})",
+    "filtersDone": "Done",
     "filters": "Filters",
     "npc": "NPC",
     "variation": "Variation",
@@ -358,7 +358,7 @@
         },
         "stats": {
           "title": "Stats, power, attacks, and traits",
-          "content": "Health, armour, damage, movement, and estimated power at the selected level, plus the unit’s attacks and traits."
+          "content": "Health, armour, damage, movement, and estimated power at the selected level, plus the unit’s attacks and traits. Power is estimated from the listed stats, so it can differ from the game's figure for units with extra abilities, crit or block."
         },
         "encounters": {
           "title": "Where it is fought",
@@ -388,11 +388,7 @@
     "minCount": "Min. in one battle",
     "meleeOnly": "Melee only",
     "hasRanged": "Has ranged",
-    "clearOne": "Clear {{name}}",
-    "power": {
-      "estimateLabel": "About this estimate",
-      "estimate": "Estimated from the listed stats. It can differ from the game's figure for units with extra abilities, crit or block."
-    }
+    "clearOne": "Clear {{name}}"
   },
   "unit": {
     "nav": {
@@ -589,7 +585,7 @@
         },
         "rankup": {
           "title": "Rank-up materials",
-          "content": "Pick a rank range to see the upgrades needed and where to farm them."
+          "content": "Pick a rank range to see the upgrades needed and where to farm them. “Include point-five upgrades” adds the first upgrade of each stat, which you can apply as soon as you reach the target rank. “Include my upgrades” subtracts what this character already has applied and what is in your inventory."
         }
       }
     },

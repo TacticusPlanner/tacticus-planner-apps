@@ -12,7 +12,8 @@ type NavTarget = { to: To; name: string; state: unknown }
 /**
  * The unit page's top bar: back (labelled by where it goes), the Library breadcrumb, and prev/next
  * with the unit's position. Back goes to the page's list unless the unit was opened from Collection.
- * The page tour button lives in the app header, as on every page.
+ * The page tour button lives in the app header, as on every page. Every control keeps its text
+ * label on mobile too (ui-style-guide: no icon-only controls); only the breadcrumb is dropped there.
  */
 export function UnitNavBar({
   back: listBack,
@@ -35,7 +36,6 @@ export function UnitNavBar({
   isMobile: boolean
 }) {
   const { t } = useTranslation(["library", "common"])
-  const size = isMobile ? "size-11" : "h-10"
   const back =
     origin?.kind === "collection"
       ? {
@@ -55,7 +55,7 @@ export function UnitNavBar({
     const content = (
       <>
         {direction === "previous" && <Icon aria-hidden="true" />}
-        {isMobile ? null : t(`unit.nav.${direction}`)}
+        {t(`unit.nav.${direction}`)}
         {direction === "next" && <Icon aria-hidden="true" />}
       </>
     )
@@ -63,8 +63,6 @@ export function UnitNavBar({
       return (
         <Button
           variant="outline"
-          size={isMobile ? "icon" : "default"}
-          className={size}
           disabled
           aria-label={label}
           data-testid={`unit-nav-${direction}`}
@@ -74,12 +72,7 @@ export function UnitNavBar({
       )
     }
     return (
-      <Button
-        asChild
-        variant="outline"
-        size={isMobile ? "icon" : "default"}
-        className={size}
-      >
+      <Button asChild variant="outline">
         <Link
           to={target.to}
           state={target.state}
@@ -101,19 +94,14 @@ export function UnitNavBar({
       className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b bg-card px-4 py-3 md:px-6"
       data-testid="unit-nav-bar"
     >
-      <Button
-        asChild
-        variant="outline"
-        size={isMobile ? "icon" : "default"}
-        className={size}
-      >
+      <Button asChild variant="outline">
         <Link
           to={back.to}
           aria-label={t("unit.nav.backTo", { label: back.label })}
           data-testid="unit-nav-back"
         >
           <ArrowLeft aria-hidden="true" />
-          {isMobile ? null : back.label}
+          {back.label}
         </Link>
       </Button>
       {isMobile ? null : (

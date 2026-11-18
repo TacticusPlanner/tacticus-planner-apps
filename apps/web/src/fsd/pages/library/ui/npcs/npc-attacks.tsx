@@ -108,9 +108,7 @@ export function NpcAttacks({
   if (!hasMelee && !variation.rangedDamage) {
     return (
       <section className="flex flex-col gap-2" data-testid="npc-attacks">
-        <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-          {t("npcs.attacks.title")}
-        </h3>
+        <h3 className="text-sm font-medium">{t("npcs.attacks.title")}</h3>
         <p
           className="rounded-lg border border-dashed px-3 py-4 text-center text-sm text-muted-foreground"
           data-testid="npc-attacks-empty"
@@ -123,9 +121,7 @@ export function NpcAttacks({
 
   return (
     <section className="flex flex-col gap-2" data-testid="npc-attacks">
-      <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        {t("npcs.attacks.title")}
-      </h3>
+      <h3 className="text-sm font-medium">{t("npcs.attacks.title")}</h3>
       <ul
         className={cn(
           // Same column gap as the ability grid below, so both sections share column origins.

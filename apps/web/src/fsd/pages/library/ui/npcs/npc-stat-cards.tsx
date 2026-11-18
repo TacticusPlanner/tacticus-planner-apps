@@ -1,14 +1,6 @@
-import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Info } from "lucide-react"
 import { powerIcon, statIcon } from "@workspace/game-catalog"
 import type { StatIconKind } from "@workspace/game-catalog"
-import { Button } from "@workspace/ui/components/button"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -20,7 +12,7 @@ import type { PowerFigure } from "../unit/unit-power.model"
 
 const cardClass =
   "flex flex-col items-center justify-center gap-1 rounded-lg border bg-card p-3"
-const labelClass = "text-xs tracking-wide text-muted-foreground uppercase"
+const labelClass = "text-xs text-muted-foreground"
 const valueClass = "text-xl font-semibold tabular-nums"
 
 function StatCard({
@@ -43,66 +35,7 @@ function StatCard({
   )
 }
 
-/** "Estimated" note on the Power card: opens on hover, keyboard focus or tap. */
-function EstimateNote() {
-  const { t } = useTranslation("library")
-  const [open, setOpen] = useState(false)
-  // A press focuses the trigger before its click; opening on that focus would make the click that
-  // follows toggle the note straight back shut.
-  const viaPointer = useRef(false)
-  // While a mouse rests on the trigger the note stays open, so a click after the hover opened it
-  // doesn't toggle it shut.
-  const hovering = useRef(false)
-  return (
-    <Popover
-      open={open}
-      onOpenChange={(next) => {
-        if (next || !hovering.current) setOpen(next)
-      }}
-    >
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          aria-label={t("npcs.power.estimateLabel")}
-          data-testid="npc-stat-power-note"
-          onPointerDown={() => {
-            viaPointer.current = true
-          }}
-          onFocus={() => {
-            if (!viaPointer.current) setOpen(true)
-            viaPointer.current = false
-          }}
-          onPointerEnter={(event) => {
-            if (event.pointerType !== "mouse") return
-            hovering.current = true
-            setOpen(true)
-          }}
-          onPointerLeave={(event) => {
-            if (event.pointerType !== "mouse") return
-            hovering.current = false
-            setOpen(false)
-          }}
-        >
-          <Info />
-        </Button>
-      </PopoverTrigger>
-      {/* A read-only note: focus stays where it is. Moving it in on open (hover would steal focus)
-          or back to the trigger on close would re-fire the trigger's onFocus and reopen the note,
-          so it could never be dismissed. */}
-      <PopoverContent
-        className="w-72 text-sm"
-        data-testid="npc-stat-power-note-content"
-        onOpenAutoFocus={(event) => event.preventDefault()}
-        onCloseAutoFocus={(event) => event.preventDefault()}
-      >
-        {t("npcs.power.estimate")}
-      </PopoverContent>
-    </Popover>
-  )
-}
-
-/** The selected level row's estimated power, with its note; not shown without power data. */
+/** The selected level row's estimated power; not shown without power data. */
 function PowerCard({
   power,
   className,
@@ -118,10 +51,8 @@ function PowerCard({
       data-testid="npc-stat-power"
       data-status={power.status}
     >
-      <span className="flex items-center gap-1">
-        <span className={labelClass}>{t("npcs.stats.power")}</span>
-        <EstimateNote />
-      </span>
+      {/* Power is an estimate; the page tour's stats step says so. */}
+      <span className={labelClass}>{t("npcs.stats.power")}</span>
       {power.status === "loading" ? (
         <Skeleton
           className="h-7 w-16 rounded-md"

@@ -91,7 +91,7 @@ export function ShopSlotCard({
           data-random="true"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            <span className="text-xs font-medium text-muted-foreground">
               {t("shops.randomSlot", { count: slot.rewards.length })}
             </span>
             <Badge className="shrink-0 gap-1" variant="outline">

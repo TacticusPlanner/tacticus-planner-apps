@@ -57,7 +57,6 @@ export function CharactersListPage() {
 
   return (
     <div className="flex flex-col gap-4" data-testid="characters-list-page">
-      <h1 className="sr-only">{t("charactersList.title")}</h1>
       <UnitList
         items={items}
         iconFor={characterIcon}

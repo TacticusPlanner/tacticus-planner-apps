@@ -170,7 +170,7 @@ export function NpcAbilities({
 
   return (
     <section className="flex flex-col gap-2" data-testid="npc-abilities">
-      <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+      <h3 className="text-sm font-medium">
         {t("library:npcs.abilities.title")}
       </h3>
       <div

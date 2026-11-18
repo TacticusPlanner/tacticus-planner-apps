@@ -9,7 +9,7 @@ describe("useNpcsTutorial", () => {
     const { result } = renderHook(() => useNpcsTutorial())
 
     expect(result.current.desktop.map((step) => step.target)).toEqual([
-      '[data-testid="npcs-filter-panel"]',
+      '[data-testid="npcs-toolbar"]',
       '[data-testid="npcs-list"]',
       '[data-testid="npcs-variation-select"]',
       '[data-testid="npcs-level-select"]',
@@ -32,13 +32,14 @@ describe("useNpcsTutorial", () => {
     const { result } = renderHook(() => useNpcsTutorial())
 
     expect(result.current.mobile?.map((step) => step.target)).toEqual([
+      '[data-testid="npcs-toolbar"]',
       '[data-testid="npcs-combobox"]',
       '[data-testid="npcs-variation-select"]',
       '[data-testid="npcs-level-select"]',
       '[data-testid="npcs-stats"]',
       '[data-testid="npc-encounters"]',
     ])
-    expect(result.current.mobile?.[0]?.content).toBe(
+    expect(result.current.mobile?.[1]?.content).toBe(
       "Open the picker and search for a unit. Variations of the same unit are grouped under one entry."
     )
   })

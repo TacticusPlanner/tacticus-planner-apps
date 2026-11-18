@@ -5,9 +5,9 @@ import type { Step } from "react-joyride"
 import type { TourPageSteps } from "@/shared/tour"
 
 /**
- * Desktop steps target the filter panel, the tile list, the two selectors, and the stats; mobile
- * swaps the tile list for the combobox. Both end on where the variation is encountered. The filter step targets the panel rather than the controls,
- * since those are collapsed until the visitor opens them.
+ * Both start on the page toolbar (search and Filters), then desktop targets the tile list and mobile
+ * the combobox, then the two selectors and the stats (whose step also explains that power is an
+ * estimate). Both end on where the variation is encountered.
  */
 export function useNpcsTutorial(): TourPageSteps {
   const { t } = useTranslation("library")
@@ -23,7 +23,7 @@ export function useNpcsTutorial(): TourPageSteps {
 
     return {
       desktop: [
-        step("filters", "npcs-filter-panel", "bottom"),
+        step("filters", "npcs-toolbar", "bottom"),
         step("list", "npcs-list", "right"),
         step("variation", "npcs-variation-select", "bottom"),
         step("level", "npcs-level-select", "bottom"),
@@ -31,6 +31,7 @@ export function useNpcsTutorial(): TourPageSteps {
         step("encounters", "npc-encounters", "top"),
       ],
       mobile: [
+        step("filters", "npcs-toolbar", "bottom"),
         step("picker", "npcs-combobox", "bottom"),
         step("variation", "npcs-variation-select", "bottom"),
         step("level", "npcs-level-select", "bottom"),

@@ -29,7 +29,6 @@
   "loading": "Bibliotheksdaten werden geladen…",
   "shops": {
     "title": "Tages-Shops",
-    "subtitle": "Jeder Platz, den jeder Tages-Shop am gewählten Tag anbieten kann",
     "dayLabel": "Tag",
     "shopLabel": "Shop",
     "days": {
@@ -240,6 +239,7 @@
     "trait": "Eigenschaft",
     "clearFilters": "Filter zurücksetzen",
     "filtersCount": "Filter ({{count}})",
+    "filtersDone": "Fertig",
     "filters": "Filter",
     "npc": "NPC",
     "variation": "Variante",
@@ -358,7 +358,7 @@
         },
         "stats": {
           "title": "Werte, Stärke, Angriffe und Eigenschaften",
-          "content": "Leben, Rüstung, Schaden, Bewegung und geschätzte Stärke auf der gewählten Stufe sowie die Angriffe und Eigenschaften der Einheit."
+          "content": "Leben, Rüstung, Schaden, Bewegung und geschätzte Stärke auf der gewählten Stufe sowie die Angriffe und Eigenschaften der Einheit. Die Stärke ist aus den angezeigten Werten geschätzt und kann bei Einheiten mit zusätzlichen Fähigkeiten, Krit oder Block vom Wert im Spiel abweichen."
         },
         "encounters": {
           "title": "Wo sie kämpft",
@@ -388,11 +388,7 @@
     "minCount": "Min. in einem Kampf",
     "meleeOnly": "Nur Nahkampf",
     "hasRanged": "Mit Fernkampf",
-    "clearOne": "{{name}} zurücksetzen",
-    "power": {
-      "estimateLabel": "Über diese Schätzung",
-      "estimate": "Aus den angezeigten Werten geschätzt. Bei Einheiten mit zusätzlichen Fähigkeiten, Krit oder Block kann sie vom Wert im Spiel abweichen."
-    }
+    "clearOne": "{{name}} zurücksetzen"
   },
   "unit": {
     "nav": {
@@ -589,7 +585,7 @@
         },
         "rankup": {
           "title": "Rangaufstieg-Materialien",
-          "content": "Wähle einen Rangbereich, um die nötigen Verbesserungen und ihre Farm-Orte zu sehen."
+          "content": "Wähle einen Rangbereich, um die nötigen Verbesserungen und ihre Farm-Orte zu sehen. „Point-Five-Verbesserungen einbeziehen“ zählt die erste Verbesserung jedes Werts mit, die du sofort beim Erreichen des Zielrangs anwenden kannst. „Meine Verbesserungen einbeziehen“ zieht ab, was an diesem Charakter schon angewendet ist und was in deinem Inventar liegt."
         }
       }
     },

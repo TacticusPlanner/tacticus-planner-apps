@@ -1,7 +1,7 @@
 import { NpcDetail } from "../npc-detail"
 import { NpcList } from "../npc-list"
-import { NpcsFilterPanel } from "../npcs-filter-panel"
 import type { NpcsPageViewProps } from "../npcs-page.view-model"
+import { NpcsToolbar } from "../npcs-toolbar"
 
 export function NpcsDesktopPage(props: NpcsPageViewProps) {
   const {
@@ -16,23 +16,20 @@ export function NpcsDesktopPage(props: NpcsPageViewProps) {
   } = props
 
   return (
-    <div data-testid="npcs-desktop-page">
+    <div className="flex flex-col gap-4" data-testid="npcs-desktop-page">
+      <NpcsToolbar
+        filters={filters}
+        options={filterOptions}
+        activeCount={activeFilterCount}
+        onChange={onFiltersChange}
+        onClear={onClearFilters}
+      />
       <div
         className="grid gap-6 lg:grid-cols-[minmax(15rem,21.25rem)_1fr]"
         data-testid="npcs-columns"
       >
-        {/* Filters act on the list only, so they sit above it in the same column rather than
-            spanning the page — the placement Character Lookup already uses for its controls. */}
         <div className="flex flex-col gap-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:self-start lg:overflow-hidden">
-          <NpcsFilterPanel
-            filters={filters}
-            options={filterOptions}
-            activeCount={activeFilterCount}
-            onChange={onFiltersChange}
-            onClear={onClearFilters}
-          />
-          {/* Only the tiles scroll: the filters stay put so they are reachable however far down
-              the roster the selected NPC sits. */}
+          {/* Only the tiles scroll, so the selected NPC's detail stays beside them. */}
           <div className="min-h-0 lg:overflow-y-auto">
             <NpcList
               items={items}

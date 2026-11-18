@@ -41,7 +41,6 @@ export function MowsListPage() {
 
   return (
     <div className="flex flex-col gap-4" data-testid="mows-list-page">
-      <h1 className="sr-only">{t("mowsList.title")}</h1>
       <UnitList
         items={items}
         iconFor={mowIcon}

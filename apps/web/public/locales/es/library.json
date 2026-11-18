@@ -29,7 +29,6 @@
   "loading": "Cargando registros de la biblioteca…",
   "shops": {
     "title": "Tiendas diarias",
-    "subtitle": "Cada ranura que cada tienda diaria puede ofrecer el día seleccionado",
     "dayLabel": "Día",
     "shopLabel": "Tienda",
     "days": {
@@ -240,6 +239,7 @@
     "trait": "Rasgo",
     "clearFilters": "Borrar filtros",
     "filtersCount": "Filtros ({{count}})",
+    "filtersDone": "Listo",
     "filters": "Filtros",
     "npc": "PNJ",
     "variation": "Variante",
@@ -358,7 +358,7 @@
         },
         "stats": {
           "title": "Estadísticas, poder, ataques y rasgos",
-          "content": "Salud, armadura, daño, movimiento y poder estimado en el nivel seleccionado, además de los ataques y rasgos de la unidad."
+          "content": "Salud, armadura, daño, movimiento y poder estimado en el nivel seleccionado, además de los ataques y rasgos de la unidad. El poder se estima a partir de las estadísticas mostradas y puede diferir de la cifra del juego en unidades con habilidades adicionales, crítico o bloqueo."
         },
         "encounters": {
           "title": "Dónde se lucha",
@@ -388,11 +388,7 @@
     "minCount": "Mín. en una batalla",
     "meleeOnly": "Solo cuerpo a cuerpo",
     "hasRanged": "Con ataque a distancia",
-    "clearOne": "Borrar {{name}}",
-    "power": {
-      "estimateLabel": "Sobre esta estimación",
-      "estimate": "Estimado a partir de las estadísticas mostradas. Puede diferir de la cifra del juego en unidades con habilidades adicionales, crítico o bloqueo."
-    }
+    "clearOne": "Borrar {{name}}"
   },
   "unit": {
     "nav": {
@@ -589,7 +585,7 @@
         },
         "rankup": {
           "title": "Materiales de rango",
-          "content": "Elige un intervalo de rangos para ver las mejoras necesarias y dónde conseguirlas."
+          "content": "Elige un intervalo de rangos para ver las mejoras necesarias y dónde conseguirlas. «Incluir mejoras de medio rango» suma la primera mejora de cada estadística, que puedes aplicar en cuanto alcanzas el rango objetivo. «Incluir mis mejoras» resta lo que este personaje ya tiene aplicado y lo que hay en tu inventario."
         }
       }
     },

@@ -1,15 +1,10 @@
-import { Info, Share2 } from "lucide-react"
+import { Share2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import { Slider } from "@workspace/ui/components/slider"
 import { Switch } from "@workspace/ui/components/switch"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 
 import { lastRank, rankAt, rankIndex, rankOrder } from "@workspace/game-domain"
 import type { Progression, Rank } from "@workspace/game-domain"
@@ -145,58 +140,50 @@ export function CharacterLookupControls({
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Switch
-          id="point-five"
-          checked={pointFive}
-          disabled={pointFiveDisabled}
-          onCheckedChange={onPointFiveChange}
-        />
-        <Label htmlFor="point-five">{t("unitLookup.pointFive")}</Label>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              aria-label={t("unitLookup.pointFive")}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Info className="size-4" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent className="max-w-xs">
-            {pointFiveDisabled
-              ? t("unitLookup.pointFiveAdamantineDisabled")
-              : t("unitLookup.pointFiveHint")}
-          </TooltipContent>
-        </Tooltip>
+      {/* What each switch does is in the page tour; a switch that can't be used says why. */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <Switch
+            id="point-five"
+            checked={pointFive}
+            disabled={pointFiveDisabled}
+            onCheckedChange={onPointFiveChange}
+            aria-describedby={
+              pointFiveDisabled ? "point-five-disabled" : undefined
+            }
+          />
+          <Label htmlFor="point-five">{t("unitLookup.pointFive")}</Label>
+        </div>
+        {pointFiveDisabled ? (
+          <p className="text-xs text-muted-foreground" id="point-five-disabled">
+            {t("unitLookup.pointFiveAdamantineDisabled")}
+          </p>
+        ) : null}
       </div>
 
-      <div className="flex items-center gap-2">
-        <Switch
-          id="include-owned"
-          checked={includeOwned}
-          disabled={includeOwnedDisabled}
-          onCheckedChange={onIncludeOwnedChange}
-        />
-        <Label htmlFor="include-owned">
-          {t("unitLookup.includeOwnedUpgrades")}
-        </Label>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              aria-label={t("unitLookup.includeOwnedUpgrades")}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Info className="size-4" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent className="max-w-xs">
-            {includeOwnedDisabled
-              ? t("unitLookup.includeOwnedUpgradesSignInRequired")
-              : t("unitLookup.includeOwnedUpgradesHint")}
-          </TooltipContent>
-        </Tooltip>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <Switch
+            id="include-owned"
+            checked={includeOwned}
+            disabled={includeOwnedDisabled}
+            onCheckedChange={onIncludeOwnedChange}
+            aria-describedby={
+              includeOwnedDisabled ? "include-owned-disabled" : undefined
+            }
+          />
+          <Label htmlFor="include-owned">
+            {t("unitLookup.includeOwnedUpgrades")}
+          </Label>
+        </div>
+        {includeOwnedDisabled ? (
+          <p
+            className="text-xs text-muted-foreground"
+            id="include-owned-disabled"
+          >
+            {t("unitLookup.includeOwnedUpgradesSignInRequired")}
+          </p>
+        ) : null}
       </div>
 
       <div className="flex items-center gap-2">
@@ -208,20 +195,14 @@ export function CharacterLookupControls({
         >
           {t("unitLookup.apply")}
         </Button>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              aria-label={t("unitLookup.share.action")}
-              data-testid="lookup-share-button"
-              onClick={handleShare}
-              size="icon"
-              variant="outline"
-            >
-              <Share2 />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{t("unitLookup.share.action")}</TooltipContent>
-        </Tooltip>
+        <Button
+          data-testid="lookup-share-button"
+          onClick={handleShare}
+          variant="outline"
+        >
+          <Share2 data-icon="inline-start" />
+          {t("unitLookup.share.action")}
+        </Button>
       </div>
     </div>
   )
