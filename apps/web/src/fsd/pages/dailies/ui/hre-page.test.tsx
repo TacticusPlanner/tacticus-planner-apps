@@ -246,13 +246,12 @@ beforeEach(() => {
 })
 
 describe("HRE tab", () => {
-  it("renders its title as an h2 under the shell h1", () => {
+  it("does not repeat the page title, which the shell header owns", () => {
     renderHre()
-    // The shell header owns the page h1; the tab starts its hierarchy at h2.
     expect(screen.queryAllByRole("heading", { level: 1 })).toHaveLength(0)
     expect(
-      screen.getByRole("heading", { level: 2, name: "hre:title" })
-    ).toBeInTheDocument()
+      screen.queryByRole("heading", { level: 2, name: "hre:title" })
+    ).toBeNull()
   })
 
   it("loads directly at /dailies/hre with the running event's header", () => {
@@ -314,12 +313,26 @@ describe("HRE tab", () => {
     expect(mocks.raidsArgs.at(-1)?.[0]).toBeUndefined()
   })
 
-  it("shows the project selector and Raids Filters in the raids section", () => {
+  it("puts the event picker, project selector and Filters in the page toolbar, quick filters below", () => {
     renderHre()
-    const raids = screen.getByTestId("hre-raids")
-    expect(within(raids).getByTestId("hre-raids-controls")).toBeInTheDocument()
-    expect(within(raids).getByTestId("hre-project-select")).toBeInTheDocument()
-    expect(within(raids).getByTestId("hre-raids-filters")).toBeInTheDocument()
+    const toolbar = screen.getByTestId("hre-toolbar")
+    const find = toolbar.querySelector(
+      '[data-slot="page-toolbar-find"]'
+    ) as HTMLElement
+    expect(within(find).getByTestId("hre-event-switcher")).toBeInTheDocument()
+    expect(within(find).getByTestId("hre-project-select")).toBeInTheDocument()
+    expect(within(find).getByTestId("hre-raids-filters")).toBeInTheDocument()
+    const chips = toolbar.querySelector(
+      '[data-slot="page-toolbar-chips"]'
+    ) as HTMLElement
+    expect(
+      within(chips).getByTestId("today-quick-filter-combineGoals")
+    ).toBeInTheDocument()
+    expect(
+      within(screen.getByTestId("hre-raids")).queryByTestId(
+        "hre-project-select"
+      )
+    ).toBeNull()
     expect(screen.queryByTestId("hre-planning-settings")).toBeNull()
   })
 

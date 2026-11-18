@@ -1,6 +1,8 @@
+import type { ReactNode } from "react"
 import { MemoryRouter, Outlet, Route, Routes } from "react-router"
 import { renderHook } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { PL_MEDIUM } from "@workspace/game-catalog"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { render } from "@/test/render"
@@ -11,10 +13,8 @@ import type { DailiesOutletContext } from "./dailies-layout"
 import { HsePage } from "./hse-page"
 import { useHseTutorial } from "./hse-page.tutorial"
 
-type Steps = {
-  desktop: { target: string; title: string; content: string }[]
-  mobile?: { target: string; title: string; content: string }[]
-}
+type Step = { target: string; title: string; content: ReactNode }
+type Steps = { desktop: Step[]; mobile?: Step[] }
 
 const { register, mocks } = vi.hoisted(() => ({
   register: vi.fn(),
@@ -25,7 +25,10 @@ vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: vi.fn() },
   useTranslation: () => ({
     i18n: { language: "en" },
-    t: (key: string) => `localized:${key}`,
+    t: (key: string, values?: { threshold?: number }) =>
+      values?.threshold === undefined
+        ? `localized:${key}`
+        : `localized:${key}|threshold=${values.threshold}`,
   }),
 }))
 vi.mock("@/shared/tour", () => ({
@@ -104,6 +107,7 @@ describe("useHseTutorial", () => {
   const all = {
     hasSwitcher: true,
     hasDetails: true,
+    hasTierRules: true,
     hasMilestones: true,
     hasProjection: true,
     hasTeams: true,
@@ -112,6 +116,7 @@ describe("useHseTutorial", () => {
   const none = {
     hasSwitcher: false,
     hasDetails: false,
+    hasTierRules: false,
     hasMilestones: false,
     hasProjection: false,
     hasTeams: false,
@@ -127,15 +132,41 @@ describe("useHseTutorial", () => {
       '[data-testid="hse-event-switcher"]',
       '[data-testid="hse-status"]',
       '[data-testid="hse-event-details"]',
+      '[data-testid="hse-event-details-tier"]',
       '[data-testid="hse-milestones"]',
       '[data-testid="hse-projection"]',
       '[data-testid="hse-raids"]',
       '[data-testid="hse-teams"]',
     ])
-    for (const step of steps.desktop) {
+    for (const step of steps.desktop.filter(
+      (item) => item.target !== '[data-testid="hse-event-details-tier"]'
+    )) {
       expect(step.title).toContain("localized:tour.hse.steps")
       expect(step.content).toContain("localized:tour.hse.steps")
     }
+
+    // The tier rules step: a translated title and every rule with the power-level threshold.
+    const tier = steps.desktop.find(
+      (step) => step.target === '[data-testid="hse-event-details-tier"]'
+    )
+    expect(tier?.title).toBe("localized:hse.details.tierRulesLabel")
+    const { container } = render(<>{tier?.content}</>)
+    const rules = [...container.querySelectorAll("li")].map(
+      (item) => item.textContent
+    )
+    expect(rules).toEqual(
+      (["low", "mid", "high"] as const).map(
+        (rule) =>
+          `localized:hse.details.tierRules.${rule}|threshold=${PL_MEDIUM}`
+      )
+    )
+  })
+
+  it("leaves out the tier rules step without a tier to explain", () => {
+    renderHook(() => useHseTutorial({ ...all, hasTierRules: false }))
+    expect(lastSteps().desktop.map((step) => step.target)).not.toContain(
+      '[data-testid="hse-event-details-tier"]'
+    )
   })
 
   it("drops the steps whose sections are not shown", () => {
@@ -144,6 +175,7 @@ describe("useHseTutorial", () => {
       '[data-testid="hse-event-switcher"]',
       '[data-testid="hse-status"]',
       '[data-testid="hse-event-details"]',
+      '[data-testid="hse-event-details-tier"]',
       '[data-testid="hse-milestones"]',
       '[data-testid="hse-projection"]',
       '[data-testid="hse-teams"]',
@@ -187,8 +219,9 @@ describe("HSE tour targets", () => {
 
       const steps = stepsForViewport()
       expect(steps[0]?.target).toBe('[data-testid="hse-event-switcher"]')
-      // Machine Hunt also scores in Arena and Salvage Run, so it gets a projection and teams.
-      expect(steps).toHaveLength(7)
+      // Machine Hunt also scores in Arena and Salvage Run, so it gets a projection and teams, and
+      // its tier choice adds the tier rules step.
+      expect(steps).toHaveLength(8)
       expect(steps.map((step) => step.target)).toContain(
         '[data-testid="hse-teams"]'
       )
@@ -217,6 +250,7 @@ describe("HSE tour targets", () => {
         '[data-testid="hse-event-switcher"]',
         '[data-testid="hse-status"]',
         '[data-testid="hse-event-details"]',
+        '[data-testid="hse-event-details-tier"]',
         '[data-testid="hse-milestones"]',
         '[data-testid="hse-projection"]',
         '[data-testid="hse-teams"]',

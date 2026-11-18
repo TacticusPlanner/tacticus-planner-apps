@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Step } from "react-joyride"
+import { PL_MEDIUM } from "@workspace/game-catalog"
 
 import { useTourPageSteps } from "@/shared/tour"
 import type { TourPageSteps } from "@/shared/tour"
@@ -21,11 +22,12 @@ type StepKey =
  * failed; no scoring data; a past, Global or rule-less event), since react-joyride cannot recover
  * from a target that never appears. Desktop and mobile share the same targets: below 768px the
  * switcher moves to its own row and the sections stack, in the same order (the event teams switch
- * to a segmented mode control inside the same `hse-teams` target).
+ * to mode tabs inside the same `hse-teams` target).
  */
 export function useHseTutorial({
   hasSwitcher,
   hasDetails,
+  hasTierRules = false,
   hasMilestones,
   hasProjection,
   hasTeams,
@@ -33,6 +35,8 @@ export function useHseTutorial({
 }: {
   hasSwitcher: boolean
   hasDetails: boolean
+  /** The details show the player's tier (an event with a tier choice and a resolved tier). */
+  hasTierRules?: boolean
   hasMilestones: boolean
   hasProjection: boolean
   hasTeams: boolean
@@ -47,10 +51,26 @@ export function useHseTutorial({
       content: t(`tour.hse.steps.${key}.content`),
     })
 
+    // How the tier is chosen: page help, so it lives in the tour rather than behind an "i" button.
+    const tierRules: Step = {
+      target: '[data-testid="hse-event-details-tier"]',
+      title: t("hse.details.tierRulesLabel"),
+      content: (
+        <ul className="space-y-1 text-left">
+          {(["low", "mid", "high"] as const).map((rule) => (
+            <li key={rule}>
+              {t(`hse.details.tierRules.${rule}`, { threshold: PL_MEDIUM })}
+            </li>
+          ))}
+        </ul>
+      ),
+    }
+
     const shared: Step[] = [
       ...(hasSwitcher ? [step("hse-event-switcher", "switcher")] : []),
       step("hse-status", "status"),
       ...(hasDetails ? [step("hse-event-details", "details")] : []),
+      ...(hasTierRules ? [tierRules] : []),
       ...(hasMilestones ? [step("hse-milestones", "milestones")] : []),
       ...(hasProjection ? [step("hse-projection", "projection")] : []),
       ...(hasLists ? [step("hse-raids", "farm")] : []),
@@ -62,6 +82,7 @@ export function useHseTutorial({
     t,
     hasSwitcher,
     hasDetails,
+    hasTierRules,
     hasMilestones,
     hasProjection,
     hasTeams,

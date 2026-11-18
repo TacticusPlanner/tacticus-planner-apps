@@ -442,6 +442,10 @@
     },
     "quest": {
       "steps": {
+        "picker": {
+          "title": "Choisir une quête",
+          "content": "Affiche la quête en cours par défaut. Choisissez une autre quête pour consulter ses combats en lecture seule."
+        },
         "header": {
           "title": "La quête",
           "content": "Le héros vedette, qui doit jouer chaque combat, les factions que vous pouvez déployer et le temps restant. Choisissez une autre quête pour consulter ses combats."

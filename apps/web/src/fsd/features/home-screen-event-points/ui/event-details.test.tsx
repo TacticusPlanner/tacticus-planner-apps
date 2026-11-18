@@ -82,18 +82,13 @@ describe("EventDetails", () => {
     )
   })
 
-  it("shows the power level and resolved tier, with the tier rules in a tooltip", async () => {
+  it("shows the power level and resolved tier, leaving the tier rules to the page tour", () => {
     renderHse(i18n, hseInstance("hse-trait-boost-psyker", "upcoming"))
 
     const tier = screen.getByTestId("hse-event-details-tier")
     expect(tier).toHaveTextContent("Power level: 62")
     expect(tier).toHaveTextContent("Your tier: High")
-    await userEvent.hover(screen.getByTestId("hse-event-details-tier-rules"))
-    const tooltip = await screen.findByRole("tooltip")
-    expect(tooltip).toHaveTextContent("Low: power level below 20")
-    expect(tooltip).toHaveTextContent(
-      "High: power level 20 or more, with a character or Machine of War at Legendary one blue star or above"
-    )
+    expect(screen.queryByTestId("hse-event-details-tier-rules")).toBeNull()
   })
 
   it("resolves Mid for power level 35 without a blue-star unit (final milestone 605)", () => {

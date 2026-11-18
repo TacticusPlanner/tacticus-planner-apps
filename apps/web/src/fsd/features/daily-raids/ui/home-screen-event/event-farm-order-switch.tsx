@@ -1,26 +1,21 @@
-import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 
-import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
+import { FILTER_CHIP_CLASS_NAME, SegmentedControl } from "@/shared/ui"
 
 import type { EventFarmOrder } from "../../model/home-screen-event-farm"
 
 const ORDERS = ["points", "energy"] as const satisfies readonly EventFarmOrder[]
 const IGNORE_GOALS = "ignoreGoals"
 
-/** What the HSE list shows, picked on the list's controls row. */
+/** What the HSE list shows, picked in the page toolbar. */
 export type HseListView = { order: EventFarmOrder; ignoreGoals: boolean }
 
-/**
- * The HSE list's controls: the Sort switch (points per energy or energy per item) and, beside it,
- * the independent "Ignore goals" toggle that lists every point-earning location instead of the
- * goal farm list.
- */
-export function EventFarmOrderSwitch({
+/** The HSE list's Sort (points per energy or energy per item), for the toolbar's View slot. */
+export function HseSortControl({
   view,
   onViewChange,
 }: {
@@ -28,53 +23,52 @@ export function EventFarmOrderSwitch({
   onViewChange: (view: HseListView) => void
 }) {
   const { t } = useTranslation("dailies")
-  const labelId = useId()
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs text-muted-foreground" id={labelId}>
-        {t("hse.raids.order.label")}
-      </span>
-      <ToggleGroup
-        aria-labelledby={labelId}
-        data-testid="hse-raids-order"
-        onValueChange={(value) => {
-          const next = ORDERS.find((item) => item === value)
-          if (next) onViewChange({ ...view, order: next })
-        }}
-        type="single"
-        value={view.order}
+    <SegmentedControl
+      label={t("hse.raids.order.label")}
+      onValueChange={(order) => onViewChange({ ...view, order })}
+      options={ORDERS.map((order) => ({
+        value: order,
+        label: t(`hse.raids.order.${order}`),
+        title: t(`hse.raids.order.help.${order}`),
+        testId: `hse-raids-order-${order}`,
+      }))}
+      testId="hse-raids-order"
+      value={view.order}
+    />
+  )
+}
+
+/** "Ignore goals": a filter chip that lists every point-earning location instead of the goal farm
+ *  list, independent of the Sort. */
+export function HseIgnoreGoalsChip({
+  view,
+  onViewChange,
+}: {
+  view: HseListView
+  onViewChange: (view: HseListView) => void
+}) {
+  const { t } = useTranslation("dailies")
+  return (
+    <ToggleGroup
+      aria-label={t("hse.raids.order.ignoreGoals")}
+      onValueChange={(values) =>
+        onViewChange({ ...view, ignoreGoals: values.includes(IGNORE_GOALS) })
+      }
+      size="sm"
+      spacing={1}
+      type="multiple"
+      value={view.ignoreGoals ? [IGNORE_GOALS] : []}
+      variant="outline"
+    >
+      <ToggleGroupItem
+        className={FILTER_CHIP_CLASS_NAME}
+        data-testid="hse-raids-ignore-goals"
+        title={t("hse.raids.order.help.ignoreGoals")}
+        value={IGNORE_GOALS}
       >
-        {ORDERS.map((item) => (
-          <ToggleGroupItem
-            data-testid={`hse-raids-order-${item}`}
-            key={item}
-            title={t(`hse.raids.order.help.${item}`)}
-            value={item}
-          >
-            {t(`hse.raids.order.${item}`)}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
-      <ToggleGroup
-        aria-label={t("hse.raids.order.ignoreGoals")}
-        onValueChange={(values) =>
-          onViewChange({ ...view, ignoreGoals: values.includes(IGNORE_GOALS) })
-        }
-        size="sm"
-        spacing={1}
-        type="multiple"
-        value={view.ignoreGoals ? [IGNORE_GOALS] : []}
-        variant="outline"
-      >
-        <ToggleGroupItem
-          className={FILTER_CHIP_CLASS_NAME}
-          data-testid="hse-raids-ignore-goals"
-          title={t("hse.raids.order.help.ignoreGoals")}
-          value={IGNORE_GOALS}
-        >
-          {t("hse.raids.order.ignoreGoals")}
-        </ToggleGroupItem>
-      </ToggleGroup>
-    </div>
+        {t("hse.raids.order.ignoreGoals")}
+      </ToggleGroupItem>
+    </ToggleGroup>
   )
 }

@@ -20,22 +20,20 @@ import type { TodayQuickFilter } from "../../model/today-quick-filters/today-qui
  * keeps its own selection until `value` changes: the URL update behind `onChange` commits about a
  * second later on a large account, and a second toggle in that window must start from the first.
  *
- * `layout="inline"` puts the caption on the chips' line and closes the row with `trailing` (Today's
- * other controls), so the notes can take their own full-width lines under the whole row.
+ * `extra` adds a page's own chips on the same line.
  */
 export function TodayQuickFilterChips({
   value,
   onChange,
   hidden = [],
-  layout = "stacked",
-  trailing,
+  extra,
 }: {
   value: readonly TodayQuickFilter[]
   onChange: (next: TodayQuickFilter[]) => void
   /** Chips not offered right now (e.g. "Raidable only" while today's plan has no manual battle). */
   hidden?: readonly TodayQuickFilter[]
-  layout?: "stacked" | "inline"
-  trailing?: ReactNode
+  /** A page's own chips, on the chips' line after Today's (HSE's "Ignore goals"). */
+  extra?: ReactNode
 }) {
   const { t } = useTranslation("dailies")
   const labelId = useId()
@@ -51,7 +49,7 @@ export function TodayQuickFilterChips({
       {t("quickFilters.label")}
     </span>
   )
-  const chips = (
+  const group = (
     <ToggleGroup
       type="multiple"
       variant="outline"
@@ -81,6 +79,14 @@ export function TodayQuickFilterChips({
       )}
     </ToggleGroup>
   )
+  const chips = extra ? (
+    <div className="flex flex-wrap items-center gap-1">
+      {group}
+      {extra}
+    </div>
+  ) : (
+    group
+  )
   const notes = TODAY_QUICK_FILTERS.filter(
     (quick) => selected.includes(quick) && !hidden.includes(quick)
   ).map((quick) => (
@@ -92,24 +98,6 @@ export function TodayQuickFilterChips({
       {t(`quickFilters.note.${quick}`)}
     </p>
   ))
-
-  if (layout === "inline") {
-    return (
-      <div className="flex flex-col gap-1.5">
-        <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
-          <div
-            className="flex flex-wrap items-center gap-x-2 gap-y-1.5"
-            data-testid="today-quick-filters"
-          >
-            {caption}
-            {chips}
-          </div>
-          {trailing}
-        </div>
-        {notes}
-      </div>
-    )
-  }
 
   return (
     <div className="flex flex-col gap-1.5" data-testid="today-quick-filters">

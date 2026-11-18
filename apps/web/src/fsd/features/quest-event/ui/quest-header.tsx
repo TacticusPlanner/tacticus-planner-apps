@@ -1,4 +1,3 @@
-import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { characterIcon, factionIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
@@ -43,7 +42,7 @@ function FactionList({
  * The Quest tab's header: the featured hero (portrait, localized name, owned or not and shards), the
  * allowed and enemy factions, the lineup rule, and for the current quest its window and countdown,
  * a claim-window warning, or a preview label. `browsing` (another quest picked) drops the window and
- * countdown. An unresolved hero id shows the raw id with no portrait. `picker` sits on the title row.
+ * countdown. An unresolved hero id shows the raw id with no portrait. The quest picker sits in the page toolbar.
  */
 export function QuestHeader({
   state,
@@ -53,7 +52,6 @@ export function QuestHeader({
   allowedFactionIds,
   enemyFactionIds,
   browsing,
-  picker,
 }: {
   state: QuestInstanceState
   heroId: string | null
@@ -63,7 +61,6 @@ export function QuestHeader({
   allowedFactionIds: readonly string[]
   enemyFactionIds: readonly string[]
   browsing: boolean
-  picker: ReactNode
 }) {
   const { t, i18n } = useTranslation(["quest", "characters"])
   const dateLocale = useDateLocale()
@@ -88,15 +85,12 @@ export function QuestHeader({
   const instance = state.status === "ready" && !browsing ? state.instance : null
   if (!heroId) {
     return (
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p
-          className="text-sm text-muted-foreground"
-          data-testid="quest-header-none"
-        >
-          {t("quest:status.none")}
-        </p>
-        {picker}
-      </div>
+      <p
+        className="text-sm text-muted-foreground"
+        data-testid="quest-header-none"
+      >
+        {t("quest:status.none")}
+      </p>
     )
   }
 
@@ -180,7 +174,6 @@ export function QuestHeader({
             </p>
           ) : null}
         </div>
-        <div className="shrink-0">{picker}</div>
       </div>
       {instance?.phase === "claim" ? (
         <Alert data-testid="quest-header-claim">

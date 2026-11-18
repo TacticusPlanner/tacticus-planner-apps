@@ -11,11 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Tabs,
@@ -23,7 +18,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs"
-import { InfoIcon } from "lucide-react"
 
 import { ProgressionBadge, RankBadge } from "@/shared/ui"
 import type {
@@ -32,33 +26,6 @@ import type {
 } from "@/entities/guild-raid-meta"
 
 import { GuildRaidExactMetaCard } from "./guild-raid-exact-meta-card"
-
-function ScoringHelp() {
-  const { t } = useTranslation("dailies")
-
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label={t("guildRaids.exactMeta.howScored")}
-        >
-          <InfoIcon />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="flex w-80 flex-col gap-2 text-sm">
-        <p className="font-medium">{t("guildRaids.exactMeta.howScored")}</p>
-        <p className="text-muted-foreground">
-          {t("guildRaids.exactMeta.howScoredPicks")}
-        </p>
-        <p className="text-muted-foreground">
-          {t("guildRaids.exactMeta.howScoredReadiness")}
-        </p>
-      </PopoverContent>
-    </Popover>
-  )
-}
 
 function ThresholdStrip({
   threshold,
@@ -170,7 +137,6 @@ export function GuildRaidExactMetaRegion({
           >
             {t("guildRaids.exactMeta.title")}
           </h2>
-          <ScoringHelp />
         </div>
         <p
           className="text-xs text-muted-foreground"
@@ -201,7 +167,10 @@ export function GuildRaidExactMetaRegion({
         </p>
       )}
       <Tabs defaultValue={recommendations[0]?.id}>
-        <TabsList className="max-w-full justify-start overflow-x-auto">
+        <TabsList
+          className="max-w-full justify-start overflow-x-auto"
+          variant="line"
+        >
           {recommendations.map((recommendation) => (
             <TabsTrigger
               key={recommendation.id}

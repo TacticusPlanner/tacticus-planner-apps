@@ -442,6 +442,10 @@
     },
     "quest": {
       "steps": {
+        "picker": {
+          "title": "Quest wählen",
+          "content": "Zeigt standardmäßig die aktuelle Quest. Wähle eine andere Quest, um ihre Kämpfe schreibgeschützt anzusehen."
+        },
         "header": {
           "title": "Die Quest",
           "content": "Der Held der Quest, der jeden Kampf bestreiten muss, die erlaubten Fraktionen und die verbleibende Zeit. Wähle eine andere Quest, um ihre Kämpfe anzusehen."

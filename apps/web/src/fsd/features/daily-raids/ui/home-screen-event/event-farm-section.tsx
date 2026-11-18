@@ -24,8 +24,6 @@ import type { RaidLocationTarget } from "../raid-location-name"
 import { RaidState } from "../raid-state"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
-import { EventFarmOrderSwitch } from "./event-farm-order-switch"
-import type { HseListView } from "./event-farm-order-switch"
 import { EventGoalIcons } from "./event-goal-icons"
 import { EventLocationRow } from "./event-location-row"
 
@@ -41,7 +39,7 @@ const EMPTY_KEYS = {
 /**
  * The HSE farm list: the point-earning locations that feed the player's goals, chosen over the whole
  * schedule and filled to the energy left today (`planEventFarm`). Each row shows its goals, raids,
- * points, energy and drop. The order switch picks points per energy (point-earning nodes even where
+ * points, energy and drop. The toolbar's Sort picks points per energy (point-earning nodes even where
  * a cheaper node without points exists, so it can cost more energy per item than Today) or energy
  * per item (the cheapest locations for each material first, with their energy per item shown); the
  * note under it says which. Today's quick filters (`quickFilters`) apply as on Today. Memoised: the HSE page re-renders
@@ -53,7 +51,6 @@ export const EventFarmSection = memo(function EventFarmSection({
   pointsIcon,
   quickFilters,
   order = "points",
-  onViewChange,
   onShowLocation,
 }: {
   /** The shown event's raid-point rule. */
@@ -64,8 +61,6 @@ export const EventFarmSection = memo(function EventFarmSection({
   /** Today's quick filters, picked in the raids controls row. */
   quickFilters?: TodayQuickFilterOptions
   order?: EventFarmOrder
-  /** Shows the list controls when set (their "Ignore goals" toggle swaps this list out). */
-  onViewChange?: (view: HseListView) => void
   /** Makes each battle's name open its enemies. */
   onShowLocation?: (target: RaidLocationTarget) => void
 }) {
@@ -106,12 +101,6 @@ export const EventFarmSection = memo(function EventFarmSection({
           </div>
         ) : null}
       </div>
-      {onViewChange ? (
-        <EventFarmOrderSwitch
-          onViewChange={onViewChange}
-          view={{ order, ignoreGoals: false }}
-        />
-      ) : null}
       <p className="text-sm text-muted-foreground" data-testid="hse-raids-note">
         {order === "energy" ? t("hse.raids.noteEnergy") : t("hse.raids.note")}
       </p>

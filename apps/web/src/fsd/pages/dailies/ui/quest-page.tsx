@@ -13,6 +13,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useDailyRaids } from "@/features/daily-raids"
+import { PageToolbar } from "@/shared/ui"
 import { GoalEditDialog } from "@/features/goal-planning"
 import {
   BattleList,
@@ -303,6 +304,7 @@ export function QuestPage() {
       : null
 
   useQuestTutorial({
+    hasPicker: (questsById?.size ?? 0) > 0,
     hasBattles: battles.length > 0,
     editable,
     browsing,
@@ -555,7 +557,23 @@ export function QuestPage() {
 
   return (
     <section className="space-y-5" data-testid="quest-page">
-      <h2 className="text-lg font-semibold">{t("quest:title")}</h2>
+      <PageToolbar
+        find={
+          <>
+            {picker}
+            {browsing && currentHero ? (
+              <Button
+                data-testid="quest-back"
+                onClick={() => pickHero(currentHero)}
+                variant="outline"
+              >
+                {t("quest:picker.back")}
+              </Button>
+            ) : null}
+          </>
+        }
+        testId="quest-toolbar"
+      />
       <div data-testid="quest-status">
         <QuestHeader
           allowedFactionIds={quest?.allowedFactionIds ?? []}
@@ -569,28 +587,16 @@ export function QuestPage() {
           heroId={heroId}
           heroName={heroName(heroId)}
           ownership={ownership}
-          picker={picker}
           state={state}
         />
       </div>
       {browsing ? (
-        <div
-          className="flex flex-wrap items-center gap-3"
+        <p
+          className="text-sm text-muted-foreground"
           data-testid="quest-browsing"
         >
-          <p className="text-sm text-muted-foreground">
-            {t("quest:picker.browsing")}
-          </p>
-          {currentHero ? (
-            <Button
-              onClick={() => pickHero(currentHero)}
-              size="sm"
-              variant="outline"
-            >
-              {t("quest:picker.back")}
-            </Button>
-          ) : null}
-        </div>
+          {t("quest:picker.browsing")}
+        </p>
       ) : instance?.phase === "preview" ? (
         <p
           className="text-sm text-muted-foreground"
