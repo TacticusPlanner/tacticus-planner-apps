@@ -52,7 +52,7 @@ export function formatDateRangeParts(
   return { start: formatOrEmpty(format, from), end: formatOrEmpty(format, to) }
 }
 
-/** "Nov 22 – Dec 6", with the year on both ends when either is outside the current year. */
+/** "Nov 22 – Dec 6", with the year on both ends when either is outside the current year; an invalid end is left out. */
 export function formatDateRange(
   start: DateInput,
   end: DateInput,
@@ -60,5 +60,5 @@ export function formatDateRange(
   nowMs: number = Date.now()
 ): string {
   const parts = formatDateRangeParts(start, end, locale, nowMs)
-  return `${parts.start} – ${parts.end}`
+  return [parts.start, parts.end].filter(Boolean).join(" – ")
 }

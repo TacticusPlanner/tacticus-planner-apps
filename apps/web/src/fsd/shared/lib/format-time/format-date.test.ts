@@ -63,5 +63,9 @@ describe("invalid dates", () => {
     expect(
       formatDateRangeParts(Number.NaN, new Date(2026, 11, 6), "en-US", now)
     ).toEqual({ start: "", end: "Dec 6" })
+    expect(
+      formatDateRange(Number.NaN, new Date(2026, 11, 6), "en-US", now)
+    ).toBe("Dec 6")
+    expect(formatDateRange("", "not a date", "en-US", now)).toBe("")
   })
 })
