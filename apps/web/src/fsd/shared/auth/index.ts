@@ -15,7 +15,7 @@ export { useSignInRedirect } from "./use-sign-in-redirect"
 export { takeAuthJournal, type JournaledAuthStep } from "./auth-journal"
 export {
   getAccountEmail,
-  getAccountObjectId,
+  getPlannerAccountId,
   getSignInMethod,
   type SignInMethod,
 } from "./account-identity"

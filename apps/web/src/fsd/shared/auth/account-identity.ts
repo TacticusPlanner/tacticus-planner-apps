@@ -34,6 +34,15 @@ export function getAccountObjectId(account: AccountInfo): string {
 }
 
 /**
+ * The Tacticus Planner account id shown to the user: the Entra object id with a `tp-` prefix, so it can't
+ * be mixed up with the in-game Tacticus user id (also a bare GUID) when both are pasted into a form. Strip
+ * the prefix to find the user in Entra.
+ */
+export function getPlannerAccountId(account: AccountInfo): string {
+  return `tp-${getAccountObjectId(account)}`
+}
+
+/**
  * The address to show for the account, or null when the token has none. A Google user's `username`
  * (`preferred_username`) is a generated `<oid>@<tenant>.onmicrosoft.com`, so it only stands in for local accounts;
  * the `email` optional claim wins whenever the app registration emits it.

@@ -54,11 +54,11 @@ vi.mock("@azure/msal-react", () => ({
 }))
 
 vi.mock("@/shared/auth", async () => {
-  const { getAccountEmail, getAccountObjectId, getSignInMethod } =
+  const { getAccountEmail, getPlannerAccountId, getSignInMethod } =
     await vi.importActual<typeof import("@/shared/auth")>("@/shared/auth")
   return {
     getAccountEmail,
-    getAccountObjectId,
+    getPlannerAccountId,
     getSignInMethod,
     signOut: (...args: unknown[]) => signOut(...args),
   }
@@ -420,7 +420,7 @@ describe("ManageAccountDialog", () => {
       screen.getByRole("textbox", {
         name: "manageAccount.integration.plannerAccountId",
       })
-    ).toHaveValue("0f8c2c51-6a2e-4b7a-9d3e-1c2b3a4d5e6f")
+    ).toHaveValue("tp-0f8c2c51-6a2e-4b7a-9d3e-1c2b3a4d5e6f")
     expect(
       screen.getByRole("textbox", {
         name: "manageAccount.integration.currentUserId",
@@ -437,7 +437,7 @@ describe("ManageAccountDialog", () => {
       })
     )
     expect(writeText).toHaveBeenCalledWith(
-      "0f8c2c51-6a2e-4b7a-9d3e-1c2b3a4d5e6f"
+      "tp-0f8c2c51-6a2e-4b7a-9d3e-1c2b3a4d5e6f"
     )
     expect(
       screen.getByText("manageAccount.integration.copied")

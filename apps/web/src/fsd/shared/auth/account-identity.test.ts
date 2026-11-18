@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest"
 import {
   getAccountEmail,
   getAccountObjectId,
+  getPlannerAccountId,
   getSignInMethod,
 } from "./account-identity"
 
@@ -75,5 +76,13 @@ describe("getAccountObjectId", () => {
   it("falls back to localAccountId without an ID token or oid", () => {
     expect(getAccountObjectId(account("me@example.com"))).toBe("local")
     expect(getAccountObjectId(account("me@example.com", {}))).toBe("local")
+  })
+})
+
+describe("getPlannerAccountId", () => {
+  it("prefixes the Entra object id with tp-", () => {
+    expect(
+      getPlannerAccountId(account("me@example.com", { oid: "oid-from-token" }))
+    ).toBe("tp-oid-from-token")
   })
 })

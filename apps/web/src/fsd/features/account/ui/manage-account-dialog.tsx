@@ -40,7 +40,7 @@ import type { CurrentUser } from "@/entities/account"
 import { ApiError } from "@/shared/api"
 import {
   getAccountEmail,
-  getAccountObjectId,
+  getPlannerAccountId,
   getSignInMethod,
   signOut,
 } from "@/shared/auth"
@@ -157,7 +157,7 @@ export function ManageAccountDialog({
             </TabsList>
             <TabsContent value="integration">
               <TacticusIntegrationTab
-                accountId={getAccountObjectId(account)}
+                accountId={getPlannerAccountId(account)}
                 user={state.user}
               />
             </TabsContent>
