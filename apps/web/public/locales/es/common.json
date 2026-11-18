@@ -398,13 +398,15 @@
           "shards": "Fragmentos",
           "power": "Poder"
         },
-        "view": "Vista",
         "views": {
           "cards": "Tarjetas",
           "roster": "Lista"
         },
-        "groupByFaction": "Agrupar por facción",
-        "hideUnowned": "Ocultar no desbloqueadas",
+        "groupOptions": {
+          "none": "Ninguno",
+          "faction": "Facción"
+        },
+        "ownedOnly": "Solo desbloqueadas",
         "hideUnownedNeedsRoster": "Para ocultar las unidades no desbloqueadas hace falta una plantilla sincronizada.",
         "filters": "Filtros",
         "filtersCount_one": "Filtros ({{count}})",
@@ -503,13 +505,15 @@
         "clearRarities": "Quitar rarezas",
         "clearDamageTypes": "Quitar tipos de daño",
         "clearTraits": "Quitar rasgos",
-        "clearShardSources": "Quitar orígenes de fragmentos"
+        "clearShardSources": "Quitar orígenes de fragmentos",
+        "quickCount_one": "{{count}} unidad",
+        "quickCount_other": "{{count}} unidades"
       },
       "empty": {
         "title": "Ninguna unidad coincide con estos filtros",
         "body": "Cambia o borra los filtros para ver más unidades.",
         "hiddenTitle": "No hay unidades desbloqueadas aquí",
-        "hiddenBody": "«Ocultar no desbloqueadas» está ocultando todas estas unidades.",
+        "hiddenBody": "«Solo desbloqueadas» oculta todas estas unidades.",
         "showUnowned": "Mostrar unidades no desbloqueadas"
       },
       "compare": {
@@ -600,7 +604,8 @@
             "I_Defensive": "Objeto defensivo"
           }
         },
-        "closeOptions": "Cerrar"
+        "closeOptions": "Cerrar",
+        "menuItem": "Comparar con una instantánea"
       },
       "snapshots": {
         "signIn": "Inicia sesión para guardar instantáneas de tu plantilla y compararlas.",
@@ -642,7 +647,8 @@
         "autoHint": "Se toman tras una sincronización si tu plantilla no tiene ninguna instantánea de los últimos 30 días. Se guardan hasta {{limit}}; la más antigua se reemplaza.",
         "keep": "Conservar",
         "keepLimitTooltip": "Elimina una instantánea para conservar esta",
-        "keepFailed": "No se pudo conservar la instantánea."
+        "keepFailed": "No se pudo conservar la instantánea.",
+        "manageAll": "Gestionar instantáneas"
       },
       "select": {
         "start": "Seleccionar unidades",
@@ -1696,14 +1702,27 @@
       "groupByLabel": "Agrupar por",
       "groupNone": "Sin agrupar",
       "groupByType": "Agrupar por tipo",
-      "groupByTypePriority": "Agrupar por tipo (por prioridad)",
       "groupByUnit": "Agrupar por unidad",
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos",
       "statusFilterLabel": "Filtro de estado de objetivos",
       "groupCount_one": "{{count}} objetivo",
       "groupCount_other": "{{count}} objetivos",
       "collapseAllGroups": "Contraer todo",
-      "expandAllGroups": "Expandir todo"
+      "expandAllGroups": "Expandir todo",
+      "groupOptions": {
+        "none": "Ninguno",
+        "unit": "Unidad",
+        "type": "Tipo"
+      },
+      "sort": "Ordenar",
+      "sortOptions": {
+        "priority": "Prioridad",
+        "finishDate": "Fecha de fin"
+      },
+      "sortHelp": {
+        "priority": "Tu orden de prioridad. Arrastra los objetivos para reordenarlos.",
+        "finishDate": "Fecha estimada de fin en tu plan, la más cercana primero."
+      }
     },
     "seasonFit": {
       "label": "Ajuste a temporada",
@@ -1945,9 +1964,6 @@
       "noFarmableDemand": "Tus objetivos activos no necesitan nada que se pueda farmear ahora mismo, así que no hay farmeo que planificar.",
       "estimatesError": "No se pudieron cargar algunas estimaciones del plan, por lo que pueden faltar detalles de farmeo.",
       "estimatesRetry": "Reintentar estimaciones",
-      "listNote": "Tus objetivos están en orden de prioridad. Arrastra un objetivo activo o pausado para moverlo: el cambio se aplica en todos los proyectos, en Hoy, en el plan de incursiones y en Información.",
-      "hintLabel": "Sobre el orden",
-      "scopedNote": "Cada número es la posición del objetivo en tu orden de prioridad de toda la cuenta, por lo que los objetivos de un proyecto pueden mostrar huecos como 1, 3, 5. Mover un objetivo aquí también lo mueve en ese orden; los objetivos de otros proyectos mantienen su orden relativo.",
       "projectMove": {
         "menuItem": "Mover objetivos…",
         "alreadyFirst": "Los objetivos de este proyecto ya van primero.",
@@ -1967,7 +1983,9 @@
         "noReference": "No hay otro proyecto con el que ordenarlos",
         "confirm": "Mover",
         "cancel": "Cancelar"
-      }
+      },
+      "sortBlocksReorder": "Los objetivos están ordenados por fecha de fin, así que no puedes arrastrarlos para cambiar su prioridad.",
+      "sortByPriority": "Ordenar por prioridad"
     },
     "edit": {
       "title": "Editar objetivo",
@@ -2041,7 +2059,6 @@
       "projectLimitReached": "Ya tienes {{max}} proyectos sin archivar. Archiva uno para hacer sitio."
     },
     "view": {
-      "label": "Vista de objetivos",
       "cards": "Tarjetas",
       "table": "Tabla"
     },
@@ -2196,16 +2213,12 @@
           "content": "Filtra los objetivos por no cumplidos, alcanzados, bloqueados, activos o en pausa."
         },
         "filters": {
-          "title": "Tipo y agrupación",
-          "content": "Filtra por tipo de objetivo o agrupa objetivos relacionados."
+          "title": "Tipo de objetivo",
+          "content": "Limita la lista a un tipo de objetivo."
         },
         "select": {
           "title": "Seleccionar objetivos",
-          "content": "Marca objetivos con su casilla. La casilla del encabezado selecciona todos los que se muestran (en el móvil, activa primero «Seleccionar»)."
-        },
-        "bulkActions": {
-          "title": "Acciones en lote",
-          "content": "Pausa, reanuda, añade a un proyecto o elimina a la vez todos los objetivos seleccionados. Pausar y reanudar en lote solo afectan a los objetivos que elijas."
+          "content": "Toca Seleccionar objetivos y marca objetivos o usa Seleccionar todos los objetivos. Pausa, reanuda, añade a un proyecto o elimina varios a la vez desde la barra inferior y toca Listo."
         },
         "createGoal": {
           "title": "Crear un objetivo",
@@ -2217,11 +2230,7 @@
         },
         "reprioritize": {
           "title": "Prioriza tus objetivos",
-          "content": "Arrastra un objetivo para cambiar su prioridad (en el móvil, toca primero «Reordenar»). Cada cambio se guarda al instante y se aplica en todos los proyectos que contienen el objetivo."
-        },
-        "orderHint": {
-          "title": "Cómo funciona el orden",
-          "content": "Abre esta ayuda para ver cómo funciona la prioridad aquí: un único orden para toda la cuenta, que se cambia arrastrando y se aplica en todos los proyectos."
+          "content": "Tus objetivos siguen un único orden de prioridad para toda la cuenta. Arrastra un objetivo para moverlo (en el móvil, toca Reordenar primero): cada cambio se guarda al momento y se aplica en todos los proyectos, Hoy, el plan de incursiones e Insights. En un proyecto, cada número es la posición en toda la cuenta, así que puede haber saltos. Para arrastrar, ordena por Prioridad."
         },
         "list": {
           "title": "Tus objetivos",
@@ -2236,8 +2245,12 @@
           "content": "Este proyecto tiene un objetivo, así que el ajuste a temporada mide sus objetivos con esa fecha límite por defecto. Cada objetivo muestra A tiempo, Durante el evento o Tarde por N d, y unas líneas marcan dónde empiezan a terminar tarde. Elige otra opción para cambiar."
         },
         "viewToggle": {
-          "title": "Tarjetas o tabla",
-          "content": "Cambia entre las tarjetas de objetivos y la tabla compacta. Tu elección se guarda en este dispositivo."
+          "title": "Diseño, Agrupar por y Ordenar",
+          "content": "Cambia entre tarjetas y la tabla compacta, agrupa objetivos relacionados y ordénalos por prioridad o fecha de fin. Tus elecciones se guardan en este dispositivo."
+        },
+        "viewOptions": {
+          "title": "Vista",
+          "content": "Aquí están Diseño (tarjetas o tabla), Agrupar por, Ordenar y Ajuste a temporada. Tus elecciones se guardan en este dispositivo."
         }
       }
     },
@@ -2317,12 +2330,8 @@
     "collection": {
       "steps": {
         "compare": {
-          "title": "Compara con una instantánea",
-          "content": "Activa Comparar para ver qué cambió desde una instantánea o una ronda de un evento legendario: primero las mayores ganancias de poder."
-        },
-        "takeSnapshot": {
-          "title": "Toma una instantánea",
-          "content": "Guarda toda tu plantilla tras una sincronización nueva, para compararla con tu progreso posterior."
+          "title": "Instantáneas",
+          "content": "Guarda una instantánea de toda tu plantilla tras una sincronización y activa Comparar para ver qué cambió desde una instantánea o una partida de Evento Legendario: primero las mayores ganancias de poder."
         },
         "compareOptions": {
           "title": "Opciones de comparación",
@@ -2349,16 +2358,16 @@
           "content": "Las unidades en gris no están en tu plantilla. La barra muestra lo cerca que estás de desbloquearlas. Selecciona una unidad para abrir sus detalles en la Biblioteca."
         },
         "toolbar": {
-          "title": "Buscar, ordenar y filtrar",
-          "content": "Encuentra una unidad por su nombre, cambia el orden dentro de cada facción y acota la lista con los filtros. Tus elecciones quedan en la dirección de la página, así que puedes recargarla o compartirla."
+          "title": "Buscar y filtrar",
+          "content": "Encuentra una unidad por su nombre, acota la lista con los filtros y pulsa «Solo desbloqueadas» para ver solo las que tienes. Tus elecciones quedan en la dirección de la página, así que puedes recargarla o compartirla."
         },
         "quickFilters": {
           "title": "Filtros rápidos",
           "content": "Con un toque ves las unidades en las que trabajar a continuación: lista para subir de rango, necesita ascender, puede ascender, necesita subir de nivel o lista para la estrella azul. Vuelve a seleccionar un filtro para quitarlo."
         },
         "view": {
-          "title": "Tarjetas o lista",
-          "content": "Cambia entre las tarjetas de facción y la lista, una vista más compacta con una fila por unidad. Tu elección se recuerda. Desactiva «Agrupar por facción» para ver todas las unidades juntas en tu orden, y usa «Ocultar no desbloqueadas» para ver solo las que tienes."
+          "title": "Vista",
+          "content": "Diseño cambia entre las tarjetas de facción y la lista, una vista más compacta con una fila por unidad. «Agrupar por: Ninguno» muestra todas las unidades juntas y el orden cambia la secuencia. En el móvil están tras «Vista»."
         },
         "factionRoster": {
           "title": "Agrupadas por facción",
@@ -2554,5 +2563,13 @@
     "goHome": "Ir a Inicio",
     "browseLibrary": "Explorar la biblioteca",
     "goToStart": "Ir a la página principal"
+  },
+  "pageToolbar": {
+    "view": "Vista",
+    "viewTitle": "Opciones de vista",
+    "groupBy": "Agrupar por",
+    "layout": "Diseño",
+    "done": "Listo",
+    "none": "Ninguno"
   }
 }

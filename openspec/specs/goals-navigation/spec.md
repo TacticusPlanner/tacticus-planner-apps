@@ -75,33 +75,38 @@ When there is at least one goal in the Reached status and the status filter's cu
 
 ### Requirement: Goals controls compress on mobile
 
-Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row first, then keep the status filter (with its reached-indicator) in its own row. The Type/Group filters, the reorder-mode toggle (always present; disabled while goals load or when reordering is unavailable), the select-mode toggle (`goal-bulk-actions`; always present, disabled while goals load or when no row is visible), the order info affordance, the contextual Create Goal action, and the Planning Settings control SHALL render as icon-only triggers in a third row, each retaining an accessible name for its full label. Because every control in this row is present from the first render, the row SHALL NOT shift when goals finish loading. The bulk actions themselves SHALL NOT render in this row; they live in the select-mode bottom bar. When the controls do not fit one line (for example at 360px, and with the density control (`goal-list-layout`)), the row SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
+Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row first, then the page toolbar (`app-page-layout`). The toolbar's Find slot SHALL hold the status filter (with its reached-indicator), the Type filter, the Reorder toggle (always present; disabled while goals load or when reordering is unavailable, including while Sort is not Priority) and the Select goals button (`goal-bulk-actions`); the Type filter SHALL render as an icon-only trigger with an accessible name for its full label, and Reorder and Select goals SHALL show their icon and a text label. The View button SHALL sit at the top right of the toolbar and open a sheet holding Layout, Group by, Sort, Season fit and Collapse all, stacked and full width. Planning Settings SHALL be the page header's Settings icon button. Create Goal SHALL NOT render in the toolbar on mobile; the bottom navigation's Add goal button is the mobile entry point (`goal-creation-entry-points`). Because every control is present from the first render, the toolbar SHALL NOT shift when goals finish loading. The bulk actions themselves SHALL NOT render in the toolbar; they live in the select bar. When the Find controls do not fit one line (for example at 360px), they SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
 
-#### Scenario: Mobile Overview keeps the status filter on its own row
-
-- **WHEN** Goals is viewed below the 768px breakpoint
-- **THEN** the scope chip row renders first, the status filter renders in its own row beneath it, and the Type/Group filters, reorder and select toggles, order info affordance, contextual Create Goal action, and Planning Settings control render in a row beneath that
-
-#### Scenario: Mobile filter and settings controls show icons without text labels
+#### Scenario: Mobile Goals order
 
 - **WHEN** Goals is viewed below the 768px breakpoint
-- **THEN** the Type/Group filters, the select-mode toggle, the contextual Create Goal action, and the Planning Settings control render their icon only, without visible text labels, while each remains identifiable via its accessible name
+- **THEN** the scope chip row renders first, and the toolbar beneath it holds the status filter, Type filter, Reorder and Select goals, with the View button at its top right
 
-#### Scenario: The mobile reorder toggle is a control-row icon
+#### Scenario: Mobile Reorder and Select goals carry text
+
+- **WHEN** Goals is viewed below the 768px breakpoint
+- **THEN** Reorder and Select goals show an icon and a text label, the Type filter shows its icon only and remains identifiable via its accessible name, and the header's Settings button is an icon button named "Settings"
+
+#### Scenario: Mobile View sheet
+
+- **WHEN** the user taps View below the 768px breakpoint
+- **THEN** a sheet titled "View options" opens with Layout, Group by, Sort, Season fit and Collapse all, and Done closes it
+
+#### Scenario: The mobile Reorder toggle is in the toolbar
 
 - **GIVEN** at least two Active or Paused goals are visible and the status filter allows reordering
 - **WHEN** Goals is viewed below the 768px breakpoint
-- **THEN** an icon-only reorder-mode toggle with an accessible name appears enabled in the same control row, and it stays in place but disabled when reordering is unavailable
+- **THEN** a Reorder toggle appears enabled in the toolbar, and it stays in place but disabled when reordering is unavailable
 
-#### Scenario: The mobile control row does not shift while goals load
+#### Scenario: The mobile toolbar does not shift while goals load
 
 - **WHEN** Goals is viewed below the 768px breakpoint and the goal list is still loading
-- **THEN** the reorder-mode and select-mode toggles render disabled in their final positions, and Create Goal and Planning Settings do not move when the list arrives
+- **THEN** Reorder and Select goals render disabled in their final positions, and the View button does not move when the list arrives
 
-#### Scenario: A crowded mobile control row wraps
+#### Scenario: A crowded mobile toolbar wraps
 
 - **WHEN** Goals is viewed at 360px with every control present
-- **THEN** the controls wrap onto a further line and none is clipped, hidden, or reachable only by horizontal scrolling
+- **THEN** the Find controls wrap onto a further line and none is clipped, hidden, or reachable only by horizontal scrolling
 
 ### Requirement: Project-aware browsing defaults to all goals
 
@@ -127,17 +132,17 @@ Insights and every Dailies page that offers the shared project selector (Shops, 
 
 ### Requirement: The Goals page is the single goals list and plan
 
-The Plan section SHALL have one goals page, **Goals** at `/plan/goals`, replacing both the former All Goals page and the former Global Plan page. Goals SHALL list goals in canonical global priority order and SHALL NOT offer a Sort control or any other sort mode. Wherever another requirement in the specs says "Overview", "Goals Overview", "All Goals", or "Global Plan" for this page, it means Goals. The Plan section's child pages are Goals, Projects, Insights, Schedule, and Event shop, in that order.
+The Plan section SHALL have one goals page, **Goals** at `/plan/goals`, replacing both the former All Goals page and the former Global Plan page. Goals SHALL list goals in canonical global priority order by default and SHALL offer only the Sort options in "Goals sorts by priority or finish date". Wherever another requirement in the specs says "Overview", "Goals Overview", "All Goals", or "Global Plan" for this page, it means Goals. The Plan section's child pages are Goals, Projects, Insights, Schedule, and Event shop, in that order.
 
 #### Scenario: Plan tabs
 
 - **WHEN** the Plan section's child-page picker renders
 - **THEN** it lists Goals, Projects, Insights, Schedule, and Event shop, and no Global Plan or All Goals entry
 
-#### Scenario: No sort control
+#### Scenario: Sort offers two orders
 
-- **WHEN** the user opens Goals
-- **THEN** the controls offer status, Type, project-membership filters and Group, and no Sort control
+- **WHEN** the user opens Goals for the first time on a device
+- **THEN** the controls offer status, Type, project-membership filters, Group by and a Sort reading Priority, with Finish date as its only other option
 
 ### Requirement: Goals project filter is independent of the project selection
 
@@ -277,27 +282,6 @@ While a project scope is selected, Goals' contextual Create goal action SHALL la
 - **WHEN** the user selects project B with the status filter set to Reached
 - **THEN** the generic filtered-empty copy renders, not the empty-project copy
 
-### Requirement: Goals explains its priority order compactly
-
-Goals SHALL present its priority-order explanation as an info affordance in the control row (an icon with an accessible name whose content opens on click or tap and on keyboard focus) rather than a full-width paragraph, at both breakpoints. With "All goals" selected the content SHALL state that goals are in the account-wide priority order, that dragging an Active or Paused goal moves it, and that the change applies to every project, Today, Raids Plan, and Insights. With a project selected it SHALL additionally state that each number is the goal's position in the account-wide order, so a project's goals can show gaps such as 1, 3, 5, and that moving a goal here also moves it in that order. The affordance SHALL render only when reordering is available and the list is non-empty.
-
-#### Scenario: Unscoped explanation
-
-- **GIVEN** "All goals" is selected and at least two Active or Paused goals are listed
-- **WHEN** the user opens the order info affordance
-- **THEN** it explains the account-wide order and where a move applies, and no full-width paragraph is rendered above the list
-
-#### Scenario: Scoped explanation adds the gap note
-
-- **GIVEN** a project whose goals hold global positions 1, 3, and 5 is selected
-- **WHEN** the user opens the order info affordance
-- **THEN** it additionally explains that the numbers are positions in the account-wide order and may show gaps
-
-#### Scenario: Reachable by keyboard and touch
-
-- **WHEN** the affordance is focused with the keyboard at or above 768px, or tapped below 768px
-- **THEN** its content is shown
-
 ### Requirement: Project selector is trailing in its row
 
 On any subpage that renders both a tab or status control and a project selector, the project selector SHALL be trailing (right-aligned) in the same row as that tab or status control. On a subpage with a project selector and no tab or status control, the project selector SHALL be right-aligned alone. No subpage is exempt.
@@ -326,20 +310,19 @@ The Goals page's project scope chip row SHALL NOT be treated as a project select
 - **WHEN** the scope chip row lists projects
 - **THEN** it may show them as color-and-name chips without a Default marker without violating the consistent-project-selector requirement
 
-### Requirement: Goals controls form an actions row and a filters row on desktop
+### Requirement: Goals controls form one toolbar on desktop
 
-At or above the 768px desktop breakpoint, Goals SHALL render, directly beneath the project scope chip row, first an actions row and then a filters row, and no other row of controls. The actions row SHALL contain, in order from the left: the contextual Create Goal action, then the bulk actions Pause, Resume, Add to project and Delete (`goal-bulk-actions`: disabled with an empty selection, labelled with the selected count otherwise), and at the far right the Planning Settings control. The filters row SHALL contain, in order: the status filter, the Type and Group filters, and the order info affordance. The bulk actions SHALL remain present, disabled, when nothing is selected rather than appearing only on selection, so the row does not change shape as the selection changes. Neither row SHALL wrap at or above 1024px with every control present.
+At or above the 768px desktop breakpoint, Goals SHALL render, directly beneath the project scope chip row, the page toolbar (`app-page-layout`) and no other row of controls. Its Find slot SHALL hold, in order, the status filter, the Type filter and the Select goals button (`goal-bulk-actions`); its View slot SHALL hold Layout, Group by, Sort, Season fit and Collapse all; its Actions slot, at the far right, SHALL hold the filled Create Goal action. Planning Settings SHALL be the page header's Settings button. The bulk actions SHALL NOT render in the toolbar; they live in the select bar (`goal-bulk-actions`). When the window is too narrow for one line, the View and Actions slots SHALL wrap together under Find, still at the right, so Create Goal is never alone on a line.
 
-#### Scenario: Desktop Goals renders two control rows
+#### Scenario: Desktop Goals renders one toolbar
 
-- **WHEN** Goals is viewed at or above the 768px breakpoint
-- **THEN** an actions row holding Create Goal, Pause, Resume, Add to project, Delete and Planning Settings appears immediately below the scope chip row, a filters row holding the status filter, Type/Group filters and order info affordance appears immediately below it, and no further control row renders
+- **WHEN** Goals is viewed at or above the 768px breakpoint outside select mode
+- **THEN** the toolbar below the scope chip row holds the status filter, Type filter and Select goals on the left, Layout, Group by, Sort, Season fit and Collapse all toward the right, Create Goal at the far right, and no bulk actions; Settings sits at the right end of the page header
 
-#### Scenario: The actions row keeps its shape with nothing selected
+#### Scenario: Select goals opens the select bar
 
-- **GIVEN** no goal is selected
-- **WHEN** the actions row renders
-- **THEN** Pause, Resume, Add to project and Delete are present and disabled, occupying the same positions they occupy with a selection
+- **WHEN** the user presses Select goals
+- **THEN** the select bar with Pause, Resume, Add to project and Delete appears at the bottom of the viewport, Select goals leaves the toolbar, and Done brings it back
 
 ### Requirement: Goals list controls are URL state
 
@@ -371,3 +354,48 @@ The Goals status filter and Type filter SHALL be the `status` and `type` query p
 
 - **WHEN** the user opens `/plan/goals` with no `status` or `type` parameter
 - **THEN** the status filter reads All statuses and the Type filter all types
+
+### Requirement: Goals explains its priority order in the page tour
+
+Goals SHALL NOT show a priority-order explanation in its toolbar or above the list. Its page tour's reorder step SHALL explain that goals are in the account-wide priority order, that dragging an Active or Paused goal moves it (on mobile, after tapping Reorder), that each drop saves at once and applies to every project, Today, Raids Plan and Insights, that in a project each number is the goal's account-wide position so numbers can skip, and that dragging needs Sort set to Priority.
+
+#### Scenario: No info icon in the toolbar
+
+- **WHEN** Goals renders at either breakpoint
+- **THEN** the toolbar has no order info icon and no explanation paragraph renders above the list
+
+#### Scenario: The tour explains the order
+
+- **WHEN** the user runs the Goals page tour
+- **THEN** its reorder step explains the account-wide order, where a move applies, the skipping numbers in a project, and that dragging needs Sort set to Priority
+
+### Requirement: Goals sorts by priority or finish date
+
+Goals SHALL offer **Sort** in the toolbar's View slot after Group by: a labelled segmented control (`app-page-layout`) with Priority (the account-wide priority order, the default) and Finish date (the estimated finish date in the plan, soonest first; goals without an estimate last, in priority order). The choice SHALL be remembered per device.
+
+Group by SHALL follow the sort: groups appear in the order of their first goal in the sorted list, and goals inside a group keep the sorted order. Grouping SHALL NOT reorder goals by goal type.
+
+Goals can be dragged only in priority order. While Sort is not Priority:
+
+- drag handles, the row menu's move items and the mobile Reorder toggle SHALL be unavailable, and leaving Priority SHALL end reorder mode;
+- while goals are listed, a notice above the list SHALL say that goals are sorted by finish date so they cannot be dragged to change their priority, with a **Sort by priority** action that sets Sort to Priority.
+
+A stored grouping value that is no longer offered SHALL fall back to None.
+
+#### Scenario: Finish date order
+
+- **GIVEN** goals A (priority 1, finishing in 30 days), B (priority 2, finishing in 5 days) and C (priority 3, no estimate)
+- **WHEN** the user sets Sort to Finish date
+- **THEN** the list reads B, A, C and the choice is kept on the next visit from this device
+
+#### Scenario: Type groups follow the sort
+
+- **GIVEN** Group by Type and a priority order whose first goal is an Ability goal, then an Upgrade, a Rank and an Ascension goal
+- **WHEN** Goals renders with Sort Priority
+- **THEN** the groups read Ability, Upgrade, Rank, Ascension, each holding its goals in priority order
+
+#### Scenario: The notice restores reordering
+
+- **GIVEN** Sort is Finish date
+- **WHEN** the user presses Sort by priority in the notice above the list
+- **THEN** Sort reads Priority, the notice goes away and drag handles return

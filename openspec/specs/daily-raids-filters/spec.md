@@ -6,7 +6,7 @@ Lets a player narrow the Daily Raids Today, Bonus Raids and Home Screen Event li
 
 ### Requirement: Raids Filters entry point
 
-Dailies > Raids (Today) SHALL provide a keyboard-operable, accessibly named "Raids Filters" action in the same row as the project selector (icon-only on mobile, icon plus label on desktop). The Dailies > HSE tab SHALL provide the same action above its raid lists, and the Dailies > HRE tab in its raids section, both sharing the same applied filter. Plan > Schedule, Goals and the Plan SHALL NOT provide it. When at least one filter is active the action SHALL show a badge with the count of active filter groups, counting each of these as one when set: ally alliances, ally factions, enemy alliances, enemy factions, enemy traits, enemy types, minimum enemies, maximum enemies, campaign types, slots, upgrade rarities.
+Dailies > Raids (Today) SHALL provide a keyboard-operable "Raids Filters" action in the page toolbar's Find slot, after the project selector. At every width it SHALL show the filter icon and the visible label "Filters", the one name every page uses for its filter entry point; the dialog it opens keeps the title "Raids Filters". The Dailies > HSE tab SHALL provide the same action above its raid lists, and the Dailies > HRE tab in its raids section, both sharing the same applied filter. Plan > Schedule, Goals and the Plan SHALL NOT provide it. When at least one filter is active the action SHALL show a badge with the count of active filter groups, counting each of these as one when set: ally alliances, ally factions, enemy alliances, enemy factions, enemy traits, enemy types, minimum enemies, maximum enemies, campaign types, slots, upgrade rarities.
 
 #### Scenario: Badge reflects active groups
 

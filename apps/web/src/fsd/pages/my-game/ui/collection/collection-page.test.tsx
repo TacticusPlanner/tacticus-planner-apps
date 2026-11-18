@@ -143,6 +143,11 @@ vi.mock("@/shared/tour", () => ({
 
 import { CollectionPage } from "./collection-page"
 
+/** Opens a Radix dropdown menu (it opens on pointer down, which jsdom's click does not send). */
+function openMenu(trigger: HTMLElement) {
+  fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
+}
+
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 
 // Every character's combat properties; the toolbar tests only filter on name, alliance and rarity.
@@ -644,7 +649,7 @@ const factionsShown = () =>
     .map((group) => group.getAttribute("data-faction"))
 
 describe("CollectionPage toolbar on desktop", () => {
-  it("keeps search, Sort and Filters on one row with the filters collapsed", () => {
+  it("keeps search and Filters in the Find slot with the filters collapsed", () => {
     ready(synced)
     renderPage(1280)
 
@@ -654,8 +659,9 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(
       within(toolbar).getByRole("searchbox", { name: "Search units" })
     ).toBeInTheDocument()
+    // Sort is a View control, beside the search row.
     expect(
-      within(toolbar).getByRole("combobox", { name: "Sort: Rarity" })
+      screen.getByRole("combobox", { name: "Sort: Rarity" })
     ).toBeInTheDocument()
     const filters = within(toolbar).getByRole("button", { name: "Filters" })
     expect(filters).toHaveAttribute("aria-expanded", "false")
@@ -968,30 +974,40 @@ describe("CollectionPage snapshots and compare", () => {
     expect(screen.queryByTestId("compare-section")).not.toBeInTheDocument()
   })
 
-  it("disables Take snapshot at the limit and tours Compare right after the toolbar", () => {
+  it("keeps snapshots in one toolbar menu, disables Take snapshot at the limit and tours it after the quick filters", () => {
     msal.authenticated = true
     ready(synced)
     renderPage(1280)
 
-    expect(screen.getByTestId("take-snapshot")).toBeDisabled()
+    const menu = screen.getByTestId("snapshot-actions")
+    expect(
+      within(screen.getByTestId("collection-toolbar")).getByTestId(
+        "snapshot-actions"
+      )
+    ).toBe(menu)
+    openMenu(menu)
+    expect(screen.getByTestId("take-snapshot")).toHaveAttribute(
+      "aria-disabled",
+      "true"
+    )
+    expect(screen.getByTestId("take-snapshot-limit")).toBeInTheDocument()
     expect(screen.getByTestId("manage-snapshots")).toHaveTextContent("20/20")
     expect(tour.steps?.desktop.slice(0, 5).map((step) => step.target)).toEqual([
       '[data-testid="collection-toolbar"]',
       '[data-testid="collection-view-switch"]',
       '[data-testid="collection-quick-filters"]',
-      '[data-testid="compare-toggle"]',
-      '[data-testid="take-snapshot"]',
+      '[data-testid="collection-select-toggle"]',
+      '[data-testid="snapshot-actions"]',
     ])
   })
 
-  it("turns compare mode on with compare=latest", () => {
+  it("turns compare mode on with compare=latest from the Snapshots menu", () => {
     msal.authenticated = true
     ready(synced)
     renderPage(1280)
 
-    fireEvent.click(
-      within(screen.getByTestId("compare-toggle")).getByRole("switch")
-    )
+    openMenu(screen.getByTestId("snapshot-actions"))
+    fireEvent.click(screen.getByTestId("compare-toggle"))
     expect(screen.getByTestId("location")).toHaveTextContent("compare=latest")
   })
 
@@ -1131,7 +1147,7 @@ const listedNames = () =>
     ),
   ].map((unit) => unit.getAttribute("title"))
 
-describe("CollectionPage when Hide unowned hides every match", () => {
+describe("CollectionPage when Owned only hides every match", () => {
   it("keeps the summary and offers to show unowned units, not to clear filters", () => {
     ready({ ...synced, characters: [] })
     renderPage(1280, "/my-game/collection?owned=owned")
@@ -1141,9 +1157,7 @@ describe("CollectionPage when Hide unowned hides every match", () => {
       "0 of 4 units owned"
     )
     const hidden = screen.getByTestId("collection-all-hidden")
-    expect(hidden).toHaveTextContent(
-      "Hide unowned is hiding all of these units."
-    )
+    expect(hidden).toHaveTextContent("Owned only is hiding all of these units.")
     expect(
       screen.queryByRole("button", { name: "Clear filters" })
     ).not.toBeInTheDocument()
@@ -1153,9 +1167,10 @@ describe("CollectionPage when Hide unowned hides every match", () => {
     )
 
     expect(listedNames()).toHaveLength(4)
-    expect(
-      screen.getByRole("switch", { name: "Hide unowned" })
-    ).toHaveAttribute("aria-checked", "false")
+    expect(screen.getByRole("button", { name: "Owned only" })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    )
   })
 
   it("also offers Clear filters when a filter is set", () => {
@@ -1168,9 +1183,10 @@ describe("CollectionPage when Hide unowned hides every match", () => {
     )
 
     expect(listedNames()).toEqual(["Titus"])
-    expect(
-      screen.getByRole("switch", { name: "Hide unowned" })
-    ).toHaveAttribute("aria-checked", "true")
+    expect(screen.getByRole("button", { name: "Owned only" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    )
   })
 
   it("keeps the no-match state when the filters match nothing at all", () => {
@@ -1190,7 +1206,7 @@ describe("CollectionPage view switch and Roster on desktop", () => {
     renderPage(1280, "/my-game/collection?alliance=Imperial&sort=rank")
     const cardsOrder = listedNames()
 
-    const views = screen.getByRole("radiogroup", { name: "View" })
+    const views = screen.getByRole("radiogroup", { name: "Layout" })
     expect(within(views).getByRole("radio", { name: "Cards" })).toHaveAttribute(
       "aria-checked",
       "true"
@@ -1267,16 +1283,16 @@ describe("CollectionPage view switch and Roster on desktop", () => {
   })
 })
 
-describe("CollectionPage Unowned toggle", () => {
+describe("CollectionPage Owned only chip", () => {
   it("hides unowned units as a display setting, not a filter", () => {
     ready(synced)
     renderPage(1280)
 
-    const toggle = screen.getByRole("switch", { name: "Hide unowned" })
-    expect(toggle).toHaveAttribute("aria-checked", "false")
+    const toggle = screen.getByRole("button", { name: "Owned only" })
+    expect(toggle).toHaveAttribute("aria-pressed", "false")
     fireEvent.click(toggle)
 
-    expect(toggle).toHaveAttribute("aria-checked", "true")
+    expect(toggle).toHaveAttribute("aria-pressed", "true")
     expect(listedNames()).toEqual(["Titus"])
     expect(factionsShown()).toEqual(["Ultramarines"])
     // The counts keep the hidden units, and nothing counts as a filter.
@@ -1289,7 +1305,7 @@ describe("CollectionPage Unowned toggle", () => {
     expect(
       screen.queryByRole("button", { name: "Clear filters" })
     ).not.toBeInTheDocument()
-    // The switch is the only ownership control: the Filters panel has none.
+    // The chip is the only ownership control: the Filters panel has none.
     fireEvent.click(screen.getByRole("button", { name: "Filters" }))
     expect(screen.queryByLabelText("Ownership")).not.toBeInTheDocument()
   })
@@ -1303,26 +1319,29 @@ describe("CollectionPage Unowned toggle", () => {
     ).toBeInTheDocument()
     fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
 
-    expect(
-      screen.getByRole("switch", { name: "Hide unowned" })
-    ).toHaveAttribute("aria-checked", "true")
+    expect(screen.getByRole("button", { name: "Owned only" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    )
     expect(listedNames()).toEqual(["Titus"])
   })
 
-  it("ignores the removed Not owned value in an old link, and reads Hide unowned from a link", () => {
+  it("ignores the removed Not owned value in an old link, and reads Owned only from a link", () => {
     ready(synced)
     const { unmount } = renderPage(1280, "/my-game/collection?owned=unowned")
-    expect(
-      screen.getByRole("switch", { name: "Hide unowned" })
-    ).toHaveAttribute("aria-checked", "false")
+    expect(screen.getByRole("button", { name: "Owned only" })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    )
     expect(listedNames()).toHaveLength(4)
     expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument()
     unmount()
 
     renderPage(1280, "/my-game/collection?owned=owned")
-    expect(
-      screen.getByRole("switch", { name: "Hide unowned" })
-    ).toHaveAttribute("aria-checked", "true")
+    expect(screen.getByRole("button", { name: "Owned only" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    )
     expect(listedNames()).toEqual(["Titus"])
   })
 
@@ -1330,9 +1349,9 @@ describe("CollectionPage Unowned toggle", () => {
     ready({ state: "anonymous" })
     renderPage(1280)
 
-    const toggle = screen.getByRole("switch", { name: "Hide unowned" })
+    const toggle = screen.getByRole("button", { name: "Owned only" })
     expect(toggle).toBeDisabled()
-    expect(toggle).toHaveAttribute("aria-checked", "false")
+    expect(toggle).toHaveAttribute("aria-pressed", "false")
     expect(toggle).toHaveAccessibleDescription(
       "Hiding unowned units needs a synced roster."
     )
@@ -1341,18 +1360,24 @@ describe("CollectionPage Unowned toggle", () => {
 })
 
 describe("CollectionPage view switch and Roster on mobile", () => {
-  it("offers the views as icon buttons next to Sort, and the toggle below them", () => {
+  it("offers Layout in the View sheet and leads the chip row with Owned only", () => {
     ready(synced)
     renderPage(420)
+
+    expect(screen.queryByRole("radio", { name: "Cards" })).toBeNull()
+    expect(
+      within(screen.getByTestId("collection-quick-filters")).getByRole(
+        "button",
+        { name: "Owned only" }
+      )
+    ).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "View" }))
 
     expect(screen.getByRole("radio", { name: "Cards" })).toBeChecked()
     fireEvent.click(screen.getByRole("radio", { name: "Roster" }))
 
     expect(screen.getByRole("radio", { name: "Roster" })).toBeChecked()
     expect(rosterSections()).toEqual(["Ultramarines", "BlackLegion"])
-    expect(
-      screen.getByRole("switch", { name: "Hide unowned" })
-    ).toBeInTheDocument()
   })
 
   it("closes an expanded row that leaves the list, so it does not come back open", async () => {
@@ -1421,17 +1446,19 @@ describe("CollectionPage faction grouping", () => {
     ],
   }
 
-  it("lists every unit across factions in sort order when switched off", () => {
+  it("lists every unit across factions in sort order with Group by None", () => {
     ready(haarkenAhead)
     renderPage(1280)
 
     expect(factionsShown()).toEqual(["Ultramarines", "BlackLegion"])
-    const toggle = screen.getByRole("switch", { name: "Group by faction" })
-    expect(toggle).toHaveAttribute("aria-checked", "true")
+    const groupBy = screen.getByRole("radiogroup", { name: "Group by" })
+    expect(
+      within(groupBy).getByRole("radio", { name: "Faction" })
+    ).toBeChecked()
 
-    fireEvent.click(toggle)
+    fireEvent.click(within(groupBy).getByRole("radio", { name: "None" }))
 
-    expect(toggle).toHaveAttribute("aria-checked", "false")
+    expect(within(groupBy).getByRole("radio", { name: "None" })).toBeChecked()
     expect(factionsShown()).toEqual([])
     expect(screen.getByTestId("collection-ungrouped")).toBeInTheDocument()
     expect(listedNames()).toEqual([
@@ -1482,9 +1509,7 @@ describe("CollectionPage faction grouping", () => {
 
     expect(listedNames()).toHaveLength(4)
     expect(rosterSections()).toEqual([])
-    expect(
-      screen.getByRole("switch", { name: "Group by faction" })
-    ).toHaveAttribute("aria-checked", "false")
+    expect(screen.getByRole("radio", { name: "None" })).toBeChecked()
   })
 
   it("lists the greyed catalog ungrouped when signed out", () => {
@@ -1514,19 +1539,21 @@ describe("CollectionPage faction grouping", () => {
     ])
   })
 
-  it("offers the toggle on mobile next to the view buttons", () => {
+  it("offers Layout, Group by and Sort together in the mobile View sheet", () => {
     ready(synced)
     renderPage(420)
 
-    const row = screen.getByTestId("collection-view-switch")
+    fireEvent.click(screen.getByTestId("collection-view-switch"))
+
+    const sheet = screen.getByRole("dialog", { name: "View options" })
     expect(
-      within(row).getByRole("radio", { name: "Cards" })
+      within(sheet).getByRole("radiogroup", { name: "Layout" })
     ).toBeInTheDocument()
     expect(
-      within(row).getByRole("switch", { name: "Group by faction" })
+      within(sheet).getByRole("radiogroup", { name: "Group by" })
     ).toBeInTheDocument()
     expect(
-      within(row).getByRole("switch", { name: "Hide unowned" })
+      within(sheet).getByRole("combobox", { name: "Sort: Rarity" })
     ).toBeInTheDocument()
   })
 })

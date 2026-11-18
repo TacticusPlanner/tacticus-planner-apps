@@ -213,8 +213,9 @@ While the game catalog is loading, the page SHALL show placeholder faction cards
 The Collection page SHALL register a page tour, startable from the page's tour control, on both desktop and mobile. The tour SHALL explain:
 
 - the toolbar (search, sort and filters);
-- the view switch and the Group by faction and Hide unowned switches;
+- the View controls (Layout, Group by and Sort) and the Owned only chip;
 - the quick filters;
+- for a signed-in player, Select units and the Snapshots menu (see `collection-snapshot-compare`);
 - the faction groups;
 - an owned unit's progression indicators;
 - greyed-out unowned units;
@@ -237,13 +238,13 @@ Whichever unit steps remain SHALL still tell the player how a unit opens its Lib
 
 - **GIVEN** a desktop viewport showing the Cards view
 - **WHEN** the user starts the page tour
-- **THEN** each step highlights an element visible on the desktop layout, the steps include the toolbar, the view switch and the quick filters, and a tile step says that a tile opens the unit's Library page
+- **THEN** each step highlights an element visible on the desktop layout, the steps include the toolbar, the View controls and the quick filters, and a tile step says that a tile opens the unit's Library page
 
 #### Scenario: Mobile tour
 
 - **GIVEN** a mobile viewport showing the Cards view
 - **WHEN** the user starts the page tour
-- **THEN** each step highlights an element visible on the mobile layout (the toolbar's Filters button, not the closed filter sheet), the steps include the view select and the quick filters, and a tile step says that a tile opens the unit's Library page
+- **THEN** each step highlights an element visible on the mobile layout (the toolbar's Filters button, not the closed filter sheet), the steps include the toolbar's View button and the quick filters, and a tile step says that a tile opens the unit's Library page
 
 #### Scenario: Desktop tour in the Roster view
 
@@ -265,13 +266,13 @@ Whichever unit steps remain SHALL still tell the player how a unit opens its Lib
 
 #### Scenario: Tour with unowned units hidden
 
-- **GIVEN** Hide unowned is on
+- **GIVEN** Owned only is on
 - **WHEN** the user starts the page tour
 - **THEN** the unowned-unit step is left out and the owned-unit step says how a unit opens its Library page
 
 #### Scenario: Tour with grouping off
 
-- **GIVEN** Group by faction is off
+- **GIVEN** Group by is None
 - **WHEN** the user starts the page tour
 - **THEN** the faction step is left out and the unit steps highlight a tile (Cards) or a row (Roster)
 
@@ -279,44 +280,53 @@ Whichever unit steps remain SHALL still tell the player how a unit opens its Lib
 
 - **GIVEN** the active filters match no unit
 - **WHEN** the user starts the page tour
-- **THEN** the tour covers the toolbar, the view switch and the quick filters and leaves out the faction and unit steps
+- **THEN** the tour covers the toolbar, the View controls and the quick filters and leaves out the faction and unit steps
 
 ### Requirement: Collection has a toolbar with search, sort, filters and quick filters
 
-The Collection page SHALL show a toolbar above the faction groups whenever the catalog has loaded. The toolbar SHALL contain:
+The Collection page SHALL show the page toolbar (`app-page-layout`) above the faction groups whenever the catalog has loaded. The toolbar SHALL contain:
 
-- a name search;
-- a Sort control;
-- a Filters control;
-- the view switch;
-- the Hide unowned switch;
-- the Group by faction switch;
-- a row of quick-filter chips.
+- in its Find slot: a name search, a Filters control, while any filter is active a Clear filters action, then for a signed-in player the Select units button (see "Collection has a select mode for creating goals") and the Snapshots menu (`roster-snapshot-management`);
+- in its View slot: the Layout control (see "Collection switches between the Cards and Roster views"), Group by (see "Faction grouping can be switched off") and a Sort control;
+- on its chip row: the Owned only chip, then the quick-filter chips.
 
-The toolbar SHALL show how many filters are active. The search, each standalone filter that is set, and the quick filter each count as one. A range with a lowest and a highest end counts as one. The view, the faction grouping and Hide unowned do not count. While any filter is active, the toolbar SHALL offer a Clear filters action that removes the search, every standalone filter and the quick filter in one step, and leaves the sort, the view, the faction grouping and Hide unowned unchanged.
+The toolbar SHALL show how many filters are active. The search, each standalone filter that is set, and the quick filter each count as one. A range with a lowest and a highest end counts as one. The layout, the grouping and Owned only do not count. Clear filters SHALL remove the search, every standalone filter and the quick filter in one step, and leave the sort, the layout, the grouping and Owned only unchanged.
 
 The quick-filter chips SHALL be a single-select group: selecting a chip selects that quick filter, and selecting the selected chip again clears it.
+
+Each available quick-filter chip SHALL show, after its label, how many units it would list: the units that match the search, the standalone filters and Owned only together with that quick filter. The count SHALL be the chip's accessible description, not part of its name. A disabled chip SHALL show no count.
 
 While the catalog is loading or has failed to load, the toolbar SHALL NOT be shown.
 
 On desktop (at least 768px):
 
-- the search, Sort, Filters, view switch, Group by faction switch and Hide unowned switch SHALL sit on one row, wrapping onto a further row when the window is too narrow, without truncating their labels;
-- the Filters control SHALL expand and collapse the standalone filter controls inline below that row, opening expanded when a standalone filter is already active;
-- the quick-filter chips SHALL sit below, wrapping onto further rows rather than scrolling horizontally.
+- Find SHALL lead the first row and the View controls SHALL sit at its right end; when the window is too narrow the View controls SHALL wrap under Find, still at the right, without truncating their labels;
+- the Filters control SHALL expand and collapse the standalone filter controls inline below the toolbar, opening expanded when a standalone filter is already active;
+- the chip row SHALL stay on one line and scroll sideways when the chips do not fit, as on mobile.
 
 On mobile (below 768px):
 
-- the search SHALL take the full width, with the Sort and Filters controls below it, then the view select at full width, with the Group by faction and Hide unowned switches below it;
+- the search and the Filters control SHALL fill the first row, with the toolbar's View button at its right; the View button SHALL open a "View options" sheet holding Layout, Group by and Sort, stacked and full width, closed by Done;
 - the Filters control SHALL open the standalone filter controls in a bottom sheet with its own Clear filters action and a Done action that closes it;
-- the quick-filter chips SHALL wrap below the toolbar;
+- the chip row SHALL scroll sideways in one line;
 - the page SHALL NOT scroll horizontally at 420px.
+
+#### Scenario: Quick-filter chips show their counts
+
+- **GIVEN** a synced player with the Xenos alliance filter set, of whose listed Xenos units 3 are ready to rank up
+- **WHEN** the toolbar renders
+- **THEN** the Ready to rank up chip shows 3 and is described as "3 units", and selecting it lists those 3 units
+
+#### Scenario: The desktop chip row stays on one line
+
+- **WHEN** Collection is viewed at 1280px with every quick-filter chip shown
+- **THEN** the chips sit on one line that scrolls sideways if needed, and none wraps onto a second line
 
 #### Scenario: Active filter count and clear
 
-- **GIVEN** the user has searched "ti", set the Imperial alliance filter and selected the Need to level quick filter, with sort Rank and the Roster view
+- **GIVEN** the user has searched "ti", set the Imperial alliance filter and selected the Need to level quick filter, with sort Rank and the Roster layout
 - **WHEN** they look at the toolbar
-- **THEN** it reports 3 active filters, and Clear filters empties the search, removes the alliance filter and the quick filter, lists every unit again, and keeps sort Rank and the Roster view
+- **THEN** it reports 3 active filters, and Clear filters empties the search, removes the alliance filter and the quick filter, lists every unit again, and keeps sort Rank and the Roster layout
 
 #### Scenario: Quick filter chips are single-select
 
@@ -328,13 +338,13 @@ On mobile (below 768px):
 
 - **GIVEN** a desktop viewport and no active standalone filter
 - **WHEN** the page renders and the user then activates the Filters control
-- **THEN** search, Sort, Filters, the view switch and the Group by faction and Hide unowned switches share the toolbar row with the standalone filters collapsed, and activating Filters shows them inline below the row without covering the faction groups
+- **THEN** search and Filters lead the toolbar row, Layout, Group by and Sort sit at its right end, Owned only leads the chip row, and activating Filters shows the standalone filters inline below the toolbar without covering the faction groups
 
 #### Scenario: Mobile toolbar
 
 - **GIVEN** a mobile viewport at 420px
-- **WHEN** the user activates the Filters control, sets a rarity filter and selects Done
-- **THEN** a bottom sheet with the standalone filters opens, Done closes it, the list shows only units of that rarity, the Filters control shows 1 active filter, the view select and the Group by faction and Hide unowned switches are visible below Sort and Filters, and the page does not scroll horizontally
+- **WHEN** the user activates the Filters control, sets a rarity filter and selects Done, then taps View
+- **THEN** a bottom sheet with the standalone filters opens, Done closes it, the list shows only units of that rarity, the Filters control shows 1 active filter, the View sheet holds Layout, Group by and Sort, and the page does not scroll horizontally
 
 ### Requirement: Collection sorts units within each faction
 
@@ -390,7 +400,7 @@ The Filters control SHALL offer these standalone filters; every set filter SHALL
 - **Stars range:** a lowest and a highest progression step (rarity and stars, inclusive, either end optional); only owned units, characters and Machines of War, can match while it is set. A range set backwards is read with its ends swapped.
 - **Unit kind:** characters, Machines of War, or all.
 
-There is no Ownership filter: hiding unowned units is the toolbar's Hide unowned switch, a display setting (see "Hide unowned shows or hides units the player does not own"), and listing only unowned units is not offered.
+There is no Ownership filter: hiding unowned units is the toolbar's Owned only chip, a display setting (see "Owned only shows or hides units the player does not own"), and listing only unowned units is not offered.
 
 The Filters control SHALL also offer these combat filters, ported from V1's characters page. They read only the catalog, so they apply to owned and unowned characters alike and work without a roster. A Machine of War, which has none of these properties, SHALL NOT match while any of them is set. Each control offers only the values that occur in the catalog.
 
@@ -560,7 +570,7 @@ Assumptions:
 
 ### Requirement: Roster-dependent controls are disabled without the data they need
 
-While no synced roster is available (signed out, not synced, only part of the roster synced, or roster read failure), the rank range filter, the stars range filter, the Hide unowned switch and every quick filter SHALL be shown disabled with a short explanation that they need a synced roster, and SHALL NOT narrow the list even if their values are present in the URL; the name search, alliance, faction, rarity, unit kind, combat and shard source filters and the Sort control SHALL keep working. While the player's upgrade inventory has not synced or could not be read, the Ready to rank up chip SHALL be disabled with an explanation that it needs the synced inventory. While the player's general inventory (which holds the ascension orbs) has not synced or could not be read, the Can ascend and Blue star ready chips SHALL be disabled with the same explanation. Once the missing data arrives, the controls SHALL become available and any of their values held in the URL SHALL apply without a reload. While the data a quick filter needs (ascension costs, upgrade recipes, inventory) is still loading, its chip SHALL be disabled, so selecting it never replaces the toolbar with loading placeholders. When a quick filter already in the URL is waiting for that data, the page SHALL show the loading placeholders rather than an unfiltered or empty list. If that catalog data fails to load, only the quick filters that need it SHALL be disabled, with an explanation that their data could not be loaded and a control to try loading it again, and the rest of the page SHALL keep working.
+While no synced roster is available (signed out, not synced, only part of the roster synced, or roster read failure), the rank range filter, the stars range filter, the Owned only chip and every quick filter SHALL be shown disabled with a short explanation that they need a synced roster, and SHALL NOT narrow the list even if their values are present in the URL; the name search, alliance, faction, rarity, unit kind, combat and shard source filters and the Sort control SHALL keep working. While the player's upgrade inventory has not synced or could not be read, the Ready to rank up chip SHALL be disabled with an explanation that it needs the synced inventory. While the player's general inventory (which holds the ascension orbs) has not synced or could not be read, the Can ascend and Blue star ready chips SHALL be disabled with the same explanation. Once the missing data arrives, the controls SHALL become available and any of their values held in the URL SHALL apply without a reload. While the data a quick filter needs (ascension costs, upgrade recipes, inventory) is still loading, its chip SHALL be disabled, so selecting it never replaces the toolbar with loading placeholders. When a quick filter already in the URL is waiting for that data, the page SHALL show the loading placeholders rather than an unfiltered or empty list. If that catalog data fails to load, only the quick filters that need it SHALL be disabled, with an explanation that their data could not be loaded and a control to try loading it again, and the rest of the page SHALL keep working.
 
 #### Scenario: Quick-filter catalog data fails to load
 
@@ -572,7 +582,7 @@ While no synced roster is available (signed out, not synced, only part of the ro
 
 - **GIVEN** the user is not signed in
 - **WHEN** they open the toolbar's filters
-- **THEN** rank range, Hide unowned and every quick filter are disabled with an explanation, and search, alliance, faction, rarity and unit kind still narrow the greyed-out list
+- **THEN** rank range, Owned only and every quick filter are disabled with an explanation, and search, alliance, faction, rarity and unit kind still narrow the greyed-out list
 
 #### Scenario: Roster-dependent value in a shared link
 
@@ -609,7 +619,7 @@ The quick filter SHALL be remembered per device (in this browser's storage) inst
 
 Search and filters SHALL NOT be remembered beyond the URL: opening `/my-game/collection` without query parameters shows every unit that matches the remembered quick filter (every unit when none is remembered).
 
-Hide unowned SHALL be held as `owned=owned`. Unlike the sort, view and grouping, it SHALL NOT be remembered in the browser: it applies only while the URL carries it.
+Owned only SHALL be held as `owned=owned`. Unlike the sort, layout and grouping, it SHALL NOT be remembered in the browser: it applies only while the URL carries it.
 
 #### Scenario: Reload keeps the view
 
@@ -639,20 +649,17 @@ Hide unowned SHALL be held as `owned=owned`. Unlike the sort, view and grouping,
 
 - **GIVEN** a signed-in user with a synced roster opens a link carrying `owned=owned`
 - **WHEN** the page renders
-- **THEN** only owned units are listed and Hide unowned is on
+- **THEN** only owned units are listed and Owned only is on
 
 ### Requirement: Collection switches between the Cards and Roster views
 
-The Collection toolbar SHALL offer a view switch with two views: Cards, the default, and Roster.
+The Collection toolbar SHALL offer a Layout control with two views: Cards, the default, and Roster.
 
 - Both views SHALL show the same units in the same order: the same search, filters, quick filter, sort and faction grouping setting.
 - Switching views SHALL keep every other toolbar value unchanged.
-- The view switch SHALL be shown whenever the toolbar is shown, including while no roster is available.
+- The Layout control SHALL be shown whenever the toolbar is shown, including while no roster is available.
 
-The view switch takes a different form per layout:
-
-- On desktop (at least 768px) it SHALL be the site's segmented mode control: one joined, labelled single-choice control with one option per view, exposed to assistive technology as a radio group with the selected view checked.
-- On mobile (below 768px) it SHALL be a select whose accessible name includes the selected view.
+At every width it SHALL be the shared labelled segmented control "Layout", exposed to assistive technology as a radio group with the selected view checked: in the toolbar's View slot on desktop (at least 768px), and in the toolbar's View sheet on mobile (below 768px), where it is full width.
 
 Clear filters SHALL NOT change the view. The selected view SHALL NOT count as an active filter.
 
@@ -668,17 +675,17 @@ Clear filters SHALL NOT change the view. The selected view SHALL NOT count as an
 - **WHEN** the user selects Clear filters
 - **THEN** the search and quick filter are removed and the Roster view is still shown
 
-#### Scenario: Desktop view switch
+#### Scenario: Desktop Layout control
 
 - **GIVEN** a desktop viewport showing the Cards view
 - **WHEN** assistive technology reads the toolbar
-- **THEN** it announces a View radio group with Cards checked and Roster not checked
+- **THEN** it announces a Layout radio group with Cards checked and Roster not checked
 
-#### Scenario: Mobile view switch
+#### Scenario: Mobile Layout control
 
 - **GIVEN** a mobile viewport at 420px
-- **WHEN** the user opens the view select and picks Roster
-- **THEN** the Roster view is shown, the select names Roster as the current view, and the page does not scroll horizontally
+- **WHEN** the user taps View and picks Roster in the Layout control
+- **THEN** the Roster view is shown, Roster is checked in the sheet, and the page does not scroll horizontally
 
 #### Scenario: Signed out
 
@@ -686,78 +693,78 @@ Clear filters SHALL NOT change the view. The selected view SHALL NOT count as an
 - **WHEN** they select Roster
 - **THEN** every catalog unit is shown as a greyed-out roster row grouped by faction, under the sign-in prompt
 
-### Requirement: Hide unowned shows or hides units the player does not own
+### Requirement: Owned only shows or hides units the player does not own
 
-The Collection toolbar SHALL show a Hide unowned switch. It hides units the player does not own and is a display setting, not a filter. It replaces the former Ownership filter, which is removed from the Filters panel, and is held in the URL as `owned=owned`.
+The Collection toolbar SHALL show an **Owned only** chip, leading its chip row. It hides units the player does not own and is a display setting, not a filter. It replaces the former Ownership filter, which is removed from the Filters panel, and is held in the URL as `owned=owned`.
 
 - Turning it on SHALL hide unowned units; turning it off SHALL show them again.
 - A link carrying the former `owned=unowned` value SHALL have that value removed from the URL and ignored.
 - While it is on, only owned units SHALL be listed, and a faction with no owned unit SHALL NOT be shown.
-- Hiding unowned units SHALL NOT count as an active filter:
+- Owned only SHALL NOT count as an active filter:
   - it SHALL NOT bring up the Clear filters action;
   - Clear filters SHALL leave it on;
   - the summary and the faction owned/total counts SHALL still include the hidden units, and the summary SHALL NOT call the units "matching" because of it.
-- When units match but Hide unowned hides all of them, the summary SHALL still be shown and the page SHALL NOT use the no-match empty state. It SHALL say that Hide unowned is hiding the units and offer an action that shows unowned units. Clear filters SHALL be offered there only while a filter is active.
-- Like the site's other on/off toolbar options, it SHALL be a switch with a visible label, exposed to assistive technology as a switch that is on or off.
+- When units match but Owned only hides all of them, the summary SHALL still be shown and the page SHALL NOT use the no-match empty state. It SHALL say that Owned only is hiding the units and offer an action that shows unowned units. Clear filters SHALL be offered there only while a filter is active.
+- It SHALL look like the quick-filter chips but sit apart from their single-select group, and be exposed to assistive technology as a toggle button that is pressed while on.
 
-While no synced roster is available, the switch SHALL be off and disabled, with a short explanation next to it that it needs a synced roster.
+While no synced roster is available, the chip SHALL be off and disabled, with an explanation (its tooltip and accessible description) that it needs a synced roster.
 
 #### Scenario: Hiding unowned units
 
 - **GIVEN** a synced roster with 84 of 131 units owned and no active filter
-- **WHEN** the user turns Hide unowned on
+- **WHEN** the user turns Owned only on
 - **THEN** only owned units are listed, the summary still reads 84 of 131 units owned, the Filters control reports no active filter, and no Clear filters action is shown
 
-#### Scenario: Hide unowned hides every matching unit
+#### Scenario: Owned only hides every matching unit
 
 - **GIVEN** a synced roster with no owned unit and no active filter
-- **WHEN** the user turns Hide unowned on
-- **THEN** the summary still reads 0 of 131 units owned, the page says Hide unowned is hiding these units, no Clear filters action is shown, and selecting Show unowned units turns Hide unowned off and lists every unit
+- **WHEN** the user turns Owned only on
+- **THEN** the summary still reads 0 of 131 units owned, the page says Owned only is hiding these units, no Clear filters action is shown, and selecting Show unowned units turns Owned only off and lists every unit
 
-#### Scenario: Hide unowned hides everything the search finds
+#### Scenario: Owned only hides everything the search finds
 
-- **GIVEN** Hide unowned is on and the search matches only unowned units
+- **GIVEN** Owned only is on and the search matches only unowned units
 - **WHEN** the page renders
 - **THEN** it offers both Show unowned units and Clear filters, not the no-match empty state
 
 #### Scenario: Clear filters keeps unowned units hidden
 
-- **GIVEN** Hide unowned is on and the Imperial alliance filter is set
+- **GIVEN** Owned only is on and the Imperial alliance filter is set
 - **WHEN** the user selects Clear filters
-- **THEN** the alliance filter is removed, Hide unowned stays on, and only owned units are listed
+- **THEN** the alliance filter is removed, Owned only stays on, and only owned units are listed
 
 #### Scenario: Old link with Not owned
 
 - **GIVEN** a link to `/my-game/collection?owned=unowned`
 - **WHEN** the page renders
-- **THEN** `owned` is removed from the URL, every unit is listed, and Hide unowned is off
+- **THEN** `owned` is removed from the URL, every unit is listed, and Owned only is off
 
-#### Scenario: Toggle without a roster
+#### Scenario: Chip without a roster
 
 - **GIVEN** the user is signed out
 - **WHEN** they look at the toolbar
-- **THEN** Hide unowned is off and disabled, with an explanation next to it that it needs a synced roster, and every greyed-out unit is listed
+- **THEN** Owned only is off and disabled, its description says it needs a synced roster, and every greyed-out unit is listed
 
 ### Requirement: Faction grouping can be switched off
 
-The Collection toolbar SHALL offer a Group by faction toggle, on by default, that applies to both views.
+The Collection toolbar SHALL offer Group by, the shared labelled segmented control with the options **None** and **Faction**, Faction by default, that applies to both views.
 
-- While it is on, units SHALL be grouped by faction as specified in "Collection lists every catalog unit in one list grouped by faction".
-- While it is off, the page SHALL list every matching unit in one list with no faction groups or faction headers:
+- While it is Faction, units SHALL be grouped by faction as specified in "Collection lists every catalog unit in one list grouped by faction".
+- While it is None, the page SHALL list every matching unit in one list with no faction groups or faction headers:
   - owned units SHALL come first, ordered by the selected sort across all factions, with ties broken by the Rarity order and then by localized name, as within a faction;
   - unowned units SHALL follow, nearest to unlock first and then by localized name, under every sort;
   - in the Cards view the units SHALL sit in one aligned full-width grid of tiles; in the Roster view they SHALL sit in one list of rows flowing in columns at least 420px wide, in reading order from left to right, then down.
-- While it is off, every tile and row SHALL show the unit's faction icon, and its accessible name SHALL include the localized faction name.
+- While it is None, every tile and row SHALL show the unit's faction icon, and its accessible name SHALL include the localized faction name.
 - The summary, the active filter count, Clear filters and the no-match empty state SHALL behave the same whether grouping is on or off.
-- The toggle SHALL NOT count as an active filter, and Clear filters SHALL NOT change it.
-- Like the site's other on/off toolbar options, it SHALL be a switch with a visible "Group by faction" label, exposed to assistive technology as a switch that is on while grouping is on.
+- Group by SHALL NOT count as an active filter, and Clear filters SHALL NOT change it.
+- It SHALL be labelled "Group by" and be exposed to assistive technology as a radio group with the selected option checked, the same control the Goals and Dailies > Raids toolbars use.
 - It SHALL work without a roster: without one every unit is unowned, so the list is ordered nearest to unlock first, then by localized name.
 - A unit opened from the ungrouped list SHALL carry the Collection origin in the order shown (see "Collection tiles open the unit's Library page").
 
 #### Scenario: Ungrouped by rank across factions
 
 - **GIVEN** the player owns Calgar (Ultramarines) at Diamond 1, Haarken (Black Legion) at Gold 3 and Titus (Ultramarines) at Gold 1, and does not own Bellator (Ultramarines, 200 of 400 shards)
-- **WHEN** they switch Group by faction off with sort Rank
+- **WHEN** they pick Group by None with sort Rank
 - **THEN** the list reads Calgar, Haarken, Titus, then Bellator, with no faction headers, and each tile shows its faction icon
 
 #### Scenario: Ungrouped Roster
@@ -770,7 +777,7 @@ The Collection toolbar SHALL offer a Group by faction toggle, on by default, tha
 
 - **GIVEN** grouping is off with the Imperial alliance filter in the Cards view
 - **WHEN** the user switches to Roster and then selects Clear filters
-- **THEN** the Roster view lists every unit ungrouped, and the Group by faction toggle still reads off
+- **THEN** the Roster view lists every unit ungrouped, and Group by still reads None
 
 #### Scenario: Opening a unit from the ungrouped list
 
@@ -895,7 +902,7 @@ The selected view SHALL be held in the page URL's `view` query parameter, and th
 
 #### Scenario: Remembered grouping on a fresh visit
 
-- **GIVEN** the user last switched Group by faction off and later opens `/my-game/collection` with no query parameters
+- **GIVEN** the user last picked Group by None and later opens `/my-game/collection` with no query parameters
 - **WHEN** the page renders
 - **THEN** the units are listed ungrouped and no filter is active
 
@@ -907,7 +914,7 @@ The selected view SHALL be held in the page URL's `view` query parameter, and th
 
 ### Requirement: Collection has a select mode for creating goals
 
-Collection SHALL show a **Select units** toggle beside the summary line when the player is signed in, the roster is available and Compare is off, at every width. Turning it on SHALL enter select mode:
+Collection SHALL show a **Select units** button in the toolbar's Find slot when the player is signed in, the roster is available, at least one unit is listed and Compare is off, at every width; it SHALL be hidden while select mode is on. Pressing it SHALL enter select mode:
 
 - every listed tile (Cards) and row (Roster, including the mobile expandable rows) SHALL show a checkbox, and activating the tile or row SHALL toggle its selection instead of opening the unit page;
 - each selectable item SHALL be a checkbox with an accessible name naming the unit and its checked state;
@@ -936,4 +943,4 @@ The selection SHALL survive search, sort, filter, quick filter, grouping and vie
 #### Scenario: Not available without a roster
 
 - **WHEN** a signed-out visitor, or a signed-in player without a synced roster, opens Collection
-- **THEN** no Select units toggle is shown
+- **THEN** no Select units button is shown

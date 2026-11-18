@@ -8,7 +8,7 @@ Presents one editable account-wide goal order and makes it the shared execution 
 
 ### Requirement: Goals shows each in-flight goal once in priority order
 
-The Goals page (`/plan/goals`) SHALL list goals in canonical account-wide priority order, with Active and Paused goals leading in that order, including Character and Machine-of-War goals from every project, and SHALL offer no other sort order. A goal in multiple projects SHALL appear once. Paused goals SHALL remain visible with their state but SHALL not enter execution calculations. The view SHALL keep per-goal pause/resume and the Edit action (which opens the Edit goal dialog, where priority is also editable by position select; see `goal-edit-dialog`) available.
+The Goals page (`/plan/goals`) SHALL list goals in canonical account-wide priority order, with Active and Paused goals leading in that order, including Character and Machine-of-War goals from every project, unless Sort is set to Finish date (see `goals-navigation`'s "Goals sorts by priority or finish date"). A goal in multiple projects SHALL appear once. Paused goals SHALL remain visible with their state but SHALL not enter execution calculations. The view SHALL keep per-goal pause/resume and the Edit action (which opens the Edit goal dialog, where priority is also editable by position select; see `goal-edit-dialog`) available.
 
 #### Scenario: Shared membership and mixed units
 
@@ -42,7 +42,7 @@ The view SHALL distinguish initial loading, failed goal/order loading with retry
 
 ### Requirement: Owner can reorder from Goals
 
-At or above 768px, every Active or Paused goal on the Goals page SHALL have an accessible drag handle that commits a completed move to the account-wide order. The handle sits in the row's leading cell in Table view and in the card header in Cards view. In Cards view a goal SHALL be movable to any position in the grid, including across grid rows, and the other cards SHALL shift in reading order (left to right, then top to bottom) to preview the drop.
+Reordering SHALL be available only while Goals is sorted by Priority. At or above 768px, every Active or Paused goal on the Goals page SHALL then have an accessible drag handle that commits a completed move to the account-wide order. The handle sits in the row's leading cell in Table view and in the card header in Cards view. In Cards view a goal SHALL be movable to any position in the grid, including across grid rows, and the other cards SHALL shift in reading order (left to right, then top to bottom) to preview the drop.
 
 Below 768px, a dedicated reorder mode SHALL collapse cards to identity and target and provide touch-sized drag handles. Entering it SHALL bring the reorder list into the visible viewport, and a Done/exit affordance SHALL remain reachable while interacting with lower rows.
 

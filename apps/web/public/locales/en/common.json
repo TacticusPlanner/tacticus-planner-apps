@@ -398,13 +398,15 @@
           "shards": "Shards",
           "power": "Power"
         },
-        "view": "View",
         "views": {
           "cards": "Cards",
           "roster": "Roster"
         },
-        "groupByFaction": "Group by faction",
-        "hideUnowned": "Hide unowned",
+        "groupOptions": {
+          "none": "None",
+          "faction": "Faction"
+        },
+        "ownedOnly": "Owned only",
         "hideUnownedNeedsRoster": "Hiding unowned units needs a synced roster.",
         "filters": "Filters",
         "filtersCount_one": "Filters ({{count}})",
@@ -503,13 +505,15 @@
         "clearRarities": "Clear rarities",
         "clearDamageTypes": "Clear damage types",
         "clearTraits": "Clear traits",
-        "clearShardSources": "Clear shard sources"
+        "clearShardSources": "Clear shard sources",
+        "quickCount_one": "{{count}} unit",
+        "quickCount_other": "{{count}} units"
       },
       "empty": {
         "title": "No unit matches these filters",
         "body": "Change or clear the filters to see more units.",
         "hiddenTitle": "No owned units here",
-        "hiddenBody": "Hide unowned is hiding all of these units.",
+        "hiddenBody": "Owned only is hiding all of these units.",
         "showUnowned": "Show unowned units"
       },
       "compare": {
@@ -600,7 +604,8 @@
             "I_Defensive": "Defensive item"
           }
         },
-        "closeOptions": "Close"
+        "closeOptions": "Close",
+        "menuItem": "Compare with a snapshot"
       },
       "snapshots": {
         "signIn": "Sign in to save snapshots of your roster and compare them.",
@@ -642,7 +647,8 @@
         "autoHint": "Taken after a sync when your roster has no snapshot from the last 30 days. Up to {{limit}} are kept; the oldest is replaced.",
         "keep": "Keep",
         "keepLimitTooltip": "Delete a snapshot to keep this one",
-        "keepFailed": "The snapshot couldn't be kept."
+        "keepFailed": "The snapshot couldn't be kept.",
+        "manageAll": "Manage snapshots"
       },
       "select": {
         "start": "Select units",
@@ -1696,14 +1702,27 @@
       "groupByLabel": "Group by",
       "groupNone": "No grouping",
       "groupByType": "Group by type",
-      "groupByTypePriority": "Group by type (priority order)",
       "groupByUnit": "Group by unit",
       "reachedIndicatorLabel": "Reached goals are waiting to be viewed",
       "statusFilterLabel": "Goal status filter",
       "groupCount_one": "{{count}} goal",
       "groupCount_other": "{{count}} goals",
       "collapseAllGroups": "Collapse all",
-      "expandAllGroups": "Expand all"
+      "expandAllGroups": "Expand all",
+      "groupOptions": {
+        "none": "None",
+        "unit": "Unit",
+        "type": "Type"
+      },
+      "sort": "Sort",
+      "sortOptions": {
+        "priority": "Priority",
+        "finishDate": "Finish date"
+      },
+      "sortHelp": {
+        "priority": "Your priority order. Drag goals to reorder them.",
+        "finishDate": "Estimated finish date in your plan, soonest first."
+      }
     },
     "seasonFit": {
       "label": "Season fit",
@@ -1945,9 +1964,6 @@
       "noFarmableDemand": "Your active goals don't need anything that can be farmed right now, so there is no farming to plan.",
       "estimatesError": "Some plan estimates couldn't be loaded, so farming details may be missing.",
       "estimatesRetry": "Retry estimates",
-      "listNote": "Goals are in your priority order. Drag an active or paused goal to move it — the change applies in every project, Today, Raids Plan, and Insights.",
-      "hintLabel": "About the order",
-      "scopedNote": "Each number is the goal's position in your account-wide priority order, so a project's goals can show gaps such as 1, 3, 5. Moving a goal here also moves it in that order; goals from other projects keep their relative order.",
       "projectMove": {
         "menuItem": "Move goals…",
         "alreadyFirst": "This project's goals are already first.",
@@ -1967,7 +1983,9 @@
         "noReference": "No other project to place against",
         "confirm": "Move",
         "cancel": "Cancel"
-      }
+      },
+      "sortBlocksReorder": "Goals are sorted by finish date, so you can't drag them to change their priority.",
+      "sortByPriority": "Sort by priority"
     },
     "edit": {
       "title": "Edit goal",
@@ -2041,7 +2059,6 @@
       "projectLimitReached": "You already have {{max}} projects that are not archived. Archive one to make room."
     },
     "view": {
-      "label": "Goals view",
       "cards": "Cards",
       "table": "Table"
     },
@@ -2196,16 +2213,12 @@
           "content": "Filter goals by Unfulfilled, Reached, Blocked, Active, or Paused."
         },
         "filters": {
-          "title": "Type and group",
-          "content": "Narrow by goal type or group related goals together."
+          "title": "Goal type",
+          "content": "Narrow the list to one goal type."
         },
         "select": {
           "title": "Select goals",
-          "content": "Tick goals to select them. The checkbox in the header selects every goal shown (on mobile, turn on Select first)."
-        },
-        "bulkActions": {
-          "title": "Bulk actions",
-          "content": "Pause, resume, add to a project or delete every selected goal at once. Bulk pause and resume act only on the goals you selected."
+          "content": "Tap Select goals, then tick goals or use Select all. Pause, resume, add to a project or delete them together from the bar at the bottom, and tap Done to finish."
         },
         "createGoal": {
           "title": "Create a goal",
@@ -2217,11 +2230,7 @@
         },
         "reprioritize": {
           "title": "Prioritize your goals",
-          "content": "Drag a goal to change its priority (on mobile, tap Reorder first). Each drop saves right away and applies in every project that holds the goal."
-        },
-        "orderHint": {
-          "title": "How the order works",
-          "content": "Open this hint for how priority works here: one account-wide order, moved by dragging, applying in every project."
+          "content": "Goals are in your one account-wide priority order. Drag a goal to move it (on mobile, tap Reorder first): each drop saves right away and applies in every project, Today, Raids Plan and Insights. In a project, each number is the goal's account-wide position, so numbers can skip. Dragging needs Sort set to Priority."
         },
         "list": {
           "title": "Your goals",
@@ -2236,8 +2245,12 @@
           "content": "This project has a target, so Season fit measures its goals against that deadline by default. Each goal shows Fits, During event or Misses by N d, and lines mark where goals start finishing late. Pick another option to switch."
         },
         "viewToggle": {
-          "title": "Cards or table",
-          "content": "Switch between goal cards and the compact table. Your choice is saved on this device."
+          "title": "Layout, Group by and Sort",
+          "content": "Switch between goal cards and the compact table, group related goals, and sort by priority or finish date. Your choices are saved on this device."
+        },
+        "viewOptions": {
+          "title": "View",
+          "content": "Layout (cards or table), Group by, Sort and Season fit are here. Your choices are saved on this device."
         }
       }
     },
@@ -2317,12 +2330,8 @@
     "collection": {
       "steps": {
         "compare": {
-          "title": "Compare with a snapshot",
-          "content": "Turn on Compare to see what changed since a snapshot or a Legendary Event run: the biggest power gains come first."
-        },
-        "takeSnapshot": {
-          "title": "Take a snapshot",
-          "content": "Saves your whole roster after a fresh sync, so you can compare it with later progress."
+          "title": "Snapshots",
+          "content": "Take a snapshot of your whole roster after a fresh sync, then turn on Compare to see what changed since a snapshot or a Legendary Event run: the biggest power gains come first."
         },
         "compareOptions": {
           "title": "Compare options",
@@ -2349,16 +2358,16 @@
           "content": "Greyed-out units aren't in your roster. The bar shows how close you are to unlocking them. Select a unit to open its details in the Library."
         },
         "toolbar": {
-          "title": "Search, sort and filter",
-          "content": "Find a unit by name, change the order inside each faction, and narrow the list with Filters. Your choices stay in the page address, so you can reload or share them."
+          "title": "Search and filter",
+          "content": "Find a unit by name, narrow the list with Filters, and tap Owned only to see just the units you own. Your choices stay in the page address, so you can reload or share them."
         },
         "quickFilters": {
           "title": "Quick filters",
           "content": "One tap shows the units to work on next: ready to rank up, need to ascend, can ascend, need to level or blue star ready. Select a chip again to clear it."
         },
         "view": {
-          "title": "Cards or Roster",
-          "content": "Switch between the faction cards and Roster, a denser list with one row per unit. Your choice is remembered. Turn off Group by faction to list every unit together in your sort order, and Hide unowned to see only the units you own."
+          "title": "View",
+          "content": "Layout switches between the faction cards and Roster, a denser list with one row per unit. Group by None lists every unit together, and Sort changes the order. On a phone these are behind View."
         },
         "factionRoster": {
           "title": "Grouped by faction",
@@ -2554,5 +2563,13 @@
     "goHome": "Go to Home",
     "browseLibrary": "Browse the library",
     "goToStart": "Go to the start page"
+  },
+  "pageToolbar": {
+    "view": "View",
+    "viewTitle": "View options",
+    "groupBy": "Group by",
+    "layout": "Layout",
+    "done": "Done",
+    "none": "None"
   }
 }

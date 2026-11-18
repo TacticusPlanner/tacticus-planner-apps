@@ -18,6 +18,7 @@ import { HseLiveProvider } from "./hse-live-provider"
 import { DesktopShell } from "./desktop-layout"
 import { documentTitle } from "./document-title"
 import { PageTourButton } from "@/shared/tour"
+import { PageHeaderSlotProvider } from "@/shared/ui"
 import { MobileShell } from "./mobile-layout"
 import {
   filterVisibleNavItems,
@@ -175,18 +176,21 @@ function ShellContent({
 
   const shell = (
     <CreateGoalLauncherProvider onLaunch={launchCreateGoal}>
-      {isMobile ? (
-        <MobileShell {...shellProps} />
-      ) : (
-        <DesktopShell
-          {...shellProps}
-          getEntryPath={getEntryPath}
-          onPrimaryExpandedChange={setPrimaryExpanded}
-          onSectionExpandedChange={setSectionExpanded}
-          primaryExpanded={primaryExpanded}
-          sectionExpanded={sectionExpanded}
-        />
-      )}
+      {/* Pages put their Settings button in the header the shell draws (PageHeaderSettings). */}
+      <PageHeaderSlotProvider>
+        {isMobile ? (
+          <MobileShell {...shellProps} />
+        ) : (
+          <DesktopShell
+            {...shellProps}
+            getEntryPath={getEntryPath}
+            onPrimaryExpandedChange={setPrimaryExpanded}
+            onSectionExpandedChange={setSectionExpanded}
+            primaryExpanded={primaryExpanded}
+            sectionExpanded={sectionExpanded}
+          />
+        )}
+      </PageHeaderSlotProvider>
       {isAuthenticated ? (
         <Suspense fallback={null}>
           <CreateGoalSheet

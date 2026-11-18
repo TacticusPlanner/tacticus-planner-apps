@@ -147,19 +147,17 @@ describe("Today page Raids Filters", () => {
     expect(document.querySelector('[data-testid^="hse-"]')).toBeNull()
   })
 
-  it("shows the trigger with a label on desktop", () => {
+  it("labels the trigger Filters on desktop", () => {
     renderToday()
-    expect(screen.getByTestId("raids-filters")).toHaveTextContent(
-      "Raids Filters"
-    )
+    expect(screen.getByTestId("raids-filters")).toHaveTextContent("Filters")
   })
 
-  it("shows an icon-only, named trigger on mobile", () => {
+  it("is labelled Filters on mobile too", () => {
     useIsMobileMock.mockReturnValue(true)
     renderToday()
     const trigger = screen.getByTestId("raids-filters")
-    expect(trigger).toHaveAccessibleName("Raids Filters")
-    expect(trigger).not.toHaveTextContent("Raids Filters")
+    expect(trigger).toHaveAccessibleName("Filters")
+    expect(trigger).toHaveTextContent("Filters")
   })
 
   it("changes the rendered raids and offers a Reset when a filter filters everything out", async () => {

@@ -20,7 +20,7 @@ The list SHALL render as the cards or the table according to this device's store
 
 - **GIVEN** the viewport is narrower than 768px and the stored Goals view is `Table`
 - **WHEN** the Goals list renders
-- **THEN** it renders as the table with its full column set, scrolling sideways inside the list while the page itself does not scroll sideways, with no checkboxes or drag handles until a mobile mode asks for them
+- **THEN** it renders as the table with its full column set, scrolling sideways inside the list while the page itself does not scroll sideways, with no checkboxes until select mode and no drag handles until reorder mode
 
 #### Scenario: At or above the mobile breakpoint, Cards view
 
@@ -232,7 +232,7 @@ The Character column SHALL show the unit's avatar (drawn larger than the 40px V2
 
 Each row SHALL render at a fixed height sized to one line of content per column (with the Character column's name-and-notes lines and the "Done by" column's date-and-days lines accommodated within that same fixed height). Two exceptions SHALL exist: a row whose Progress cell carries level-requirement sub-lines, and a row whose Remaining chips wrap beyond two lines (see `goal-remaining-resources`: every chip renders) — such a row SHALL grow only as far as its wrapped content needs, and no other row SHALL change height because of it. The existing alternating row (zebra) striping SHALL be preserved.
 
-Every row SHALL have a leading cell before the Character column holding, in order: the selection checkbox (`goal-bulk-actions`; below the mobile breakpoint, only in select mode), the account-wide priority number for an in-flight row, and — when the table renders on a route where inline reordering is available (the Goals page, with or without a project scope — see `global-goal-priority`'s "Owner can reorder from Goals") and at or above the mobile breakpoint — a drag handle for each Active or Paused row. This cell holds control affordances, not a data column, and does not change the seven static columns above; the handle is present only in a reorderable context and absent elsewhere, which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
+Every row SHALL have a leading cell before the Character column holding, in order: the selection checkbox (only in select mode, see `goal-bulk-actions`), the account-wide priority number for an in-flight row, and — when the table renders on a route where inline reordering is available (the Goals page, with or without a project scope — see `global-goal-priority`'s "Owner can reorder from Goals") and at or above the mobile breakpoint — while Sort is Priority, a drag handle for each Active or Paused row. This cell holds control affordances, not a data column, and does not change the seven static columns above; the handle is present only in a reorderable context and absent elsewhere, which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
 
 Assumptions:
 
@@ -313,7 +313,7 @@ The estimates-failed notice (with its retry) and the "no farmable demand" line S
 
 ### Requirement: Users choose between a Cards view and a Table view, Cards by default
 
-The Goals toolbar SHALL contain a two-option Table/Cards toggle at every width: in the filters row (`goals-navigation`) at or above the mobile breakpoint, and in the mobile control row below it. The toggle SHALL have an accessible group name and an accessible name and pressed state for each option. Selecting an option SHALL switch the Goals list between the cards and the table at once, without reloading goals or estimates, and SHALL keep the current filters, Group, project scope, season-fit mode, selection and scroll context.
+The Goals toolbar SHALL contain a two-option Layout control (Cards, Table) at every width: the shared labelled segmented control in the page toolbar's View slot (`goals-navigation`), behind the View button below the mobile breakpoint. It SHALL be labelled "Layout" and be exposed as a radio group with the selected layout checked. Selecting an option SHALL switch the Goals list between the cards and the table at once, without reloading goals or estimates, and SHALL keep the current filters, Group, project scope, season-fit mode, selection and scroll context.
 
 The choice SHALL be stored per device, in browser storage, so a player can keep Cards on a phone and Table on a desktop. It SHALL NOT be stored in the URL or in the account's user settings, and SHALL NOT follow the account to another browser. The default SHALL be `Cards`. The client SHALL treat a missing or unrecognized stored value as `Cards`. When the browser refuses the write, the choice SHALL still apply for the rest of the visit (`browser-storage-resilience`).
 
@@ -323,7 +323,7 @@ The stored view SHALL be read synchronously, so the list SHALL NOT wait for it a
 
 - **GIVEN** a browser that has never stored a Goals view
 - **WHEN** the Goals page opens at 1280px or 420px wide
-- **THEN** the list renders as cards and the toggle shows Cards as pressed
+- **THEN** the list renders as cards and the Layout control shows Cards as checked
 
 #### Scenario: Switching to Table persists on this device
 
@@ -347,7 +347,7 @@ The stored view SHALL be read synchronously, so the list SHALL NOT wait for it a
 
 - **GIVEN** the Goals page below the mobile breakpoint in Table view
 - **WHEN** the user turns reorder mode on
-- **THEN** the list shows the collapsed reorder cards with the Table/Cards toggle disabled, and leaving reorder mode returns to the table
+- **THEN** the list shows the collapsed reorder cards with the Layout control disabled, and leaving reorder mode returns to the table
 
 ### Requirement: Goal cards share one layout on every platform
 
@@ -356,7 +356,7 @@ Wherever the Goals list renders as cards, each goal SHALL render as one card in 
 Each card SHALL contain, from top to bottom:
 
 1. **A header.** In order:
-   - the selection checkbox (always at or above the mobile breakpoint; below it only while select mode is active, see `goal-bulk-actions`);
+   - the selection checkbox, only while select mode is active (see `goal-bulk-actions`);
    - the account-wide priority number;
    - the drag handle, for an Active or Paused goal at or above the mobile breakpoint where reordering is available;
    - the unit avatar;
@@ -384,7 +384,7 @@ The goal type SHALL lead the goal line as a badge, because a card has no Goal co
 
 - **GIVEN** an Active Rank goal at priority 3, with notes, in project "Neuro", with a completion estimate of Oct 11 (in 22 days)
 - **WHEN** it renders in Cards view at 1280px wide
-- **THEN** its header shows a checkbox, "3", a drag handle, the avatar, the name and a meta line "📅 Oct 11 · 22 days" with the "Neuro" badge, and a "⋯" menu; its body shows the rank emblems with the energy chip at the right end of their row, then the progress bar, then the level line with the gold chip at its right end; a ruled section shows the notes; and its footer shows the "Active" chip with a pause action
+- **THEN** outside select mode its header shows "3", a drag handle, the avatar, the name and a meta line "📅 Oct 11 · 22 days" with the "Neuro" badge, and a "⋯" menu; its body shows the rank emblems with the energy chip at the right end of their row, then the progress bar, then the level line with the gold chip at its right end; a ruled section shows the notes; and its footer shows the "Active" chip with a pause action
 
 #### Scenario: The grid fills the width
 

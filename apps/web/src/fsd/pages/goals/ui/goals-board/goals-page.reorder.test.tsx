@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen, waitFor } from "@/test/render"
+import { fireEvent, render, screen, waitFor, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 
 // Reordering on the Goals page (spec: `global-goal-priority`, `goals-navigation`). Dragging under
@@ -276,10 +276,7 @@ describe("GoalsPage reordering", () => {
   it("keeps a grouped drop inside its own group section", async () => {
     const user = userEvent.setup()
     render(<GoalsPage />, { route: "/plan/goals" })
-    await user.click(screen.getByTestId("goals-group-by"))
-    await user.click(
-      await screen.findByRole("option", { name: "Group by type" })
-    )
+    await user.click(screen.getByTestId("goals-group-by-type"))
 
     expect(screen.getAllByTestId("goals-list")).toHaveLength(2)
     fireEvent.click(screen.getByTestId("move-up-e"))
@@ -293,10 +290,7 @@ describe("GoalsPage reordering", () => {
   it("moves a goal up from its row menu across a group boundary (grouped by type, E's Move up displaces D)", async () => {
     const user = userEvent.setup()
     render(<GoalsPage />, { route: "/plan/goals" })
-    await user.click(screen.getByTestId("goals-group-by"))
-    await user.click(
-      await screen.findByRole("option", { name: "Group by type" })
-    )
+    await user.click(screen.getByTestId("goals-group-by-type"))
 
     fireEvent.click(screen.getByTestId("menu-up-e"))
 
@@ -353,7 +347,7 @@ describe("GoalsPage reordering", () => {
     )
   })
 
-  it("lists goals in priority order, Active and Paused first, with no Sort control", () => {
+  it("lists goals in priority order, Active and Paused first, by default", () => {
     state.goals = [
       goal("done", null, { status: "Completed" }),
       goal("c", 3),
@@ -363,7 +357,41 @@ describe("GoalsPage reordering", () => {
     render(<GoalsPage />, { route: "/plan/goals" })
 
     expect(rowIds()).toEqual(["a", "b", "c", "done"])
-    expect(screen.queryByTestId("goals-sort")).not.toBeInTheDocument()
+    expect(
+      within(screen.getByTestId("goals-sort")).getByRole("radio", {
+        name: "Priority",
+      })
+    ).toBeChecked()
+    expect(
+      screen.queryByTestId("goals-sort-blocks-reorder")
+    ).not.toBeInTheDocument()
+  })
+
+  it("sorts by finish date, turns reordering off with a banner, and its button sorts by priority again", () => {
+    state.goals = [goal("c", 3), goal("b", 2), goal("a", 1)]
+    state.estimates = new Map([
+      ["a", { days: 40 }],
+      ["b", { days: 3 }],
+      ["c", { days: 12 }],
+    ])
+    render(<GoalsPage />, { route: "/plan/goals" })
+
+    fireEvent.click(screen.getByRole("radio", { name: "Finish date" }))
+
+    expect(rowIds()).toEqual(["b", "c", "a"])
+    expect(screen.getByTestId("goals-list")).toHaveAttribute(
+      "data-reorder",
+      "false"
+    )
+    fireEvent.click(screen.getByTestId("goals-sort-reset"))
+    expect(rowIds()).toEqual(["a", "b", "c"])
+    expect(screen.getByTestId("goals-list")).toHaveAttribute(
+      "data-reorder",
+      "true"
+    )
+    expect(
+      screen.queryByTestId("goals-sort-blocks-reorder")
+    ).not.toBeInTheDocument()
   })
 
   it("feeds the list plan-aware estimates from the same plan run Today uses", () => {
@@ -382,7 +410,6 @@ describe("GoalsPage reordering", () => {
       "data-reorder",
       "false"
     )
-    expect(screen.queryByTestId("goals-order-hint")).not.toBeInTheDocument()
   })
 
   it("keeps the mobile reorder toggle in place but disabled when reordering is unavailable", () => {
@@ -390,7 +417,7 @@ describe("GoalsPage reordering", () => {
     state.goals = [goal("a", 1)]
     render(<GoalsPage />, { route: "/plan/goals" })
     expect(screen.getByTestId("goals-mobile-reorder-toggle")).toBeDisabled()
-    expect(screen.getByTestId("goals-mobile-select-toggle")).toBeEnabled()
+    expect(screen.getByTestId("goals-select-toggle")).toBeEnabled()
   })
 
   it("keeps a rejected move for review and retries it only on request", () => {

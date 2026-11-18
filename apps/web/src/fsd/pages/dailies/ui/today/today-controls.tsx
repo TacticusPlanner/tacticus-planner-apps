@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next"
 
-import { PlanningSettingsTrigger } from "@/entities/planning-setting"
 import { ProjectSelect } from "@/entities/project"
 import {
   RaidGroupingSwitch,
@@ -8,14 +7,21 @@ import {
   TodayQuickFilterChips,
 } from "@/features/daily-raids"
 import type { useTodayQuickFilters } from "@/features/daily-raids"
+import {
+  PageHeaderSettings,
+  PageSettingsButton,
+  PageToolbar,
+} from "@/shared/ui"
 
 import type { DailiesOutletContext } from "../dailies-layout"
 
 type QuickFilters = ReturnType<typeof useTodayQuickFilters>[0]
 
 /**
- * Today's one controls row: the quick filter chips, then the raid grouping switch (the only place it
- * is picked; every raid list follows it), the project selector, Raids Filters and Planning settings. It wraps chips first when narrow; a quick filter's note sits under the row.
+ * Today's page toolbar (ui-style-guide rule 2). Find: the project selector and Filters (Raids
+ * Filters); the quick filter chips on the row below, each chip that is on adding its note. View:
+ * Group by (the only place the raid grouping is picked; every raid list follows it). Planning
+ * settings is the page header's Settings button.
  */
 export function TodayControls({
   context,
@@ -33,14 +39,23 @@ export function TodayControls({
   const { t } = useTranslation("dailies")
 
   return (
-    <div data-testid="today-controls">
-      <TodayQuickFilterChips
-        hidden={hiddenQuickFilters}
-        layout="inline"
-        onChange={onQuickFiltersChange}
-        trailing={
-          <div className="flex flex-wrap items-center gap-2">
-            <RaidGroupingSwitch />
+    <>
+      <PageHeaderSettings>
+        <PageSettingsButton
+          onClick={onOpenSettings}
+          testId="raids-planning-settings"
+        />
+      </PageHeaderSettings>
+      <PageToolbar
+        chips={
+          <TodayQuickFilterChips
+            hidden={hiddenQuickFilters}
+            onChange={onQuickFiltersChange}
+            value={quickFilters}
+          />
+        }
+        find={
+          <>
             <ProjectSelect
               allowAll
               onProjectIdChange={context.setProjectId}
@@ -50,14 +65,11 @@ export function TodayControls({
               testId="raids-project-select"
             />
             <RaidsFiltersTrigger />
-            <PlanningSettingsTrigger
-              onClick={onOpenSettings}
-              testId="raids-planning-settings"
-            />
-          </div>
+          </>
         }
-        value={quickFilters}
+        testId="today-controls"
+        view={<RaidGroupingSwitch />}
       />
-    </div>
+    </>
   )
 }

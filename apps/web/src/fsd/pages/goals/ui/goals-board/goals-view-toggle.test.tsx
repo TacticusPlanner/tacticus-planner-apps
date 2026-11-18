@@ -8,10 +8,9 @@ describe("GoalsViewToggle", () => {
   it("names the group and each option, and marks the current view pressed", () => {
     render(<GoalsViewToggle onViewChange={vi.fn()} view="Cards" />)
 
-    expect(screen.getByTestId("goals-view-toggle")).toHaveAttribute(
-      "aria-label",
-      "Goals view"
-    )
+    expect(
+      screen.getByRole("radiogroup", { name: "Layout" })
+    ).toBeInTheDocument()
     expect(screen.getByRole("radio", { name: "Cards" })).toBeChecked()
     expect(screen.getByRole("radio", { name: "Table" })).not.toBeChecked()
     expect(screen.getByTestId("goals-view-cards")).toHaveAttribute(

@@ -4,8 +4,11 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   GoalFilters,
+  GoalGroupBy,
+  GoalSort,
   StatusFilterSelect,
   isGoalGroupValue,
+  isGoalSortValue,
 } from "@/entities/goal"
 import {
   MobileReorderBar,
@@ -13,6 +16,7 @@ import {
   useGoalAttainmentState,
   useGoalsOverviewMetrics,
   usePlanInsights,
+  orderRowsByFinishDate,
   orderRowsByGlobalPriority,
   expandedRows,
   groupRows,
@@ -44,7 +48,6 @@ import { PendingMaterialSteps } from "@/features/v1-import"
 import {
   normalizeXpBookRarity,
   PlanningSettingsDialog,
-  PlanningSettingsTrigger,
   usePlanningSettings,
 } from "@/entities/planning-setting"
 import { usePersistedSelection } from "@/shared/lib"
@@ -53,7 +56,6 @@ import type { GoalRow } from "@/features/goal-planning"
 import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
 import { useProjects } from "@/entities/project"
-import { GoalsCardsSelectAll } from "./goals-cards"
 import { GoalsList } from ".//goals-list"
 import { GoalGroupSection } from "./goal-group-section"
 import { GoalsBulkControls } from "./goals-bulk-controls"
@@ -73,22 +75,23 @@ import { DeadlineFitHeader } from "./deadline-fit-header"
 import type { GoalFitView } from "./season-fit-copy"
 import { useEventTargetName } from "@/features/project-management"
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
-import { GoalsMobileSelectToggle } from "./goals-mobile-select-toggle"
-import { MobileSelectBar } from "./mobile-select-bar"
-import { GoalsOrderHint } from "./goals-order-hint"
+import { GoalsSelectButton } from "./goals-select-button"
+import { GoalsSelectBar } from "./goals-select-bar"
+import { SortBlocksReorderNotice } from "./sort-blocks-reorder-notice"
 import { GoalsProjectScope } from "./goals-project-scope"
 import { GoalsMoveProjectGoalsButton } from "./goals-move-project-goals-button"
 import { useLevelRules } from "@/entities/goal-farming"
 import { buildCascadeContext } from "./goal-row-utils"
 import type { SelectedXpBook } from "./goal-row-utils"
 import { PageTourButton } from "@/shared/tour"
+import { PageSettingsButton } from "@/shared/ui"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 
 /**
  * The Goals page: the one list of every goal and the editable global priority order, as goal cards
  * (the default) or the table — this device's stored Goals view (goal-list-layout). Goals are always
- * in that order (Active/Paused first, by position; then the rest by recency) — there is no other sort — and each Active/Paused
- * row can be dragged (a dedicated mode on mobile). A drop is saved on its own as a single move, so
+ * in that order (Active/Paused first, by position; then the rest by recency) unless Sort picks Finish
+ * date, and while sorted by priority each Active/Paused row can be dragged (a dedicated mode on mobile). A drop is saved on its own as a single move, so
  * it works under any status/type/project filter and Group: the goal takes the global position of the
  * goal it displaces and hidden goals keep their relative order. Estimates come from the same plan
  * run Today uses. Within Goals, Planning Settings lives only here (goals-navigation spec: Projects
@@ -118,6 +121,12 @@ export function GoalsPage() {
     TARGETED_FIT_STORAGE_KEY,
     isTargetedFitChoice,
     "projectDeadline"
+  )
+  // Per browser like Group. Only the priority sort can be reordered by dragging.
+  const [sort, setSort] = usePersistedSelection(
+    "goals.overview.sort",
+    isGoalSortValue,
+    "priority"
   )
   const [settingsOpen, setSettingsOpen] = useState(false)
   const { getEntityName } = useGoalCatalog()
@@ -266,7 +275,11 @@ export function GoalsPage() {
         )
       : candidateRows
 
-  const rows = orderRowsByGlobalPriority(baseRows)
+  const priorityRows = orderRowsByGlobalPriority(baseRows)
+  const rows =
+    sort === "finishDate"
+      ? orderRowsByFinishDate(priorityRows, stableEstimates)
+      : priorityRows
   const tabCounts = {
     all: filteredNonArchivedRows.length,
     toReach: filteredNonArchivedRows.filter((row) => !isReached(row.goalId))
@@ -380,12 +393,19 @@ export function GoalsPage() {
     menuMovePosition,
     priorityOrder,
     highlightedGoalId,
-    reorderAvailable,
+    reorderAvailable: orderHasMovableGoals,
     reorderActive,
     toggleReorder,
     exitReorder,
     listRef,
   } = useGoalsPageReorder(nonArchivedRows)
+  // Dragging changes the priority order, so it only works while the list shows that order.
+  const sortBlocksReorder = sort !== "priority"
+  const reorderAvailable = orderHasMovableGoals && !sortBlocksReorder
+  const changeSort = (next: typeof sort) => {
+    if (next !== "priority") exitReorder()
+    setSort(next)
+  }
   const { selectActive, toggleSelect, exitSelect, toggleReorderExclusive } =
     useGoalsMobileModes({
       clearSelection,
@@ -429,9 +449,8 @@ export function GoalsPage() {
     nonArchivedGoals.fetchState.status === "success" &&
     (scopeCounts.get(scopeId) ?? 0) === 0
 
-  // Always rendered on mobile (disabled when unavailable) so the control row keeps its shape while
-  // goals load instead of shifting Create Goal / Planning Settings once the list arrives.
-  // (`GoalsToolbar` places them only in its mobile layout.)
+  // Always rendered (disabled when unavailable) so the toolbar keeps its shape while goals load
+  // instead of shifting once the list arrives. Reorder is the mobile mode; desktop drags directly.
   const reorderToggle = (
     <GoalsMobileReorderToggle
       active={reorderActive}
@@ -439,28 +458,13 @@ export function GoalsPage() {
       onToggle={toggleReorderExclusive}
     />
   )
-  const selectToggle = (
-    <GoalsMobileSelectToggle
-      active={selectActive}
+  // Select goals, like Collection's Select units: shown until select mode is on, whose bar ends it.
+  const selectToggle = selectActive ? null : (
+    <GoalsSelectButton
       disabled={isLoading || rows.length === 0}
-      onToggle={toggleSelect}
+      onSelect={toggleSelect}
     />
   )
-  const bulkActions = (compact: boolean) => (
-    <GoalsBulkControls
-      actions={goalActions}
-      clearSelection={clearSelection}
-      compact={compact}
-      projectRemoval={projectRemoval}
-      projects={projects.projects}
-      reachedByGoalId={reachedByGoalId}
-      selectedRows={selectedRows}
-    />
-  )
-  const orderHint =
-    reorderAvailable && rows.length > 0 ? (
-      <GoalsOrderHint scoped={!!scopeId} />
-    ) : null
   const statusFilter = (
     <StatusFilterSelect
       counts={tabCounts}
@@ -497,17 +501,12 @@ export function GoalsPage() {
             {deadlineFit.status === "off" ? moveGoalsButton : null}
           </>
         }
-        bulkActions={bulkActions}
         createGoal={<GoalsCreateButton scopeId={scopeId ?? null} />}
         filters={
-          <GoalFilters
-            goalType={goalType}
-            group={group}
-            onGoalTypeChange={setGoalType}
-            onGroupChange={setGroup}
-          />
+          <GoalFilters goalType={goalType} onGoalTypeChange={setGoalType} />
         }
-        orderHint={orderHint}
+        groupBy={<GoalGroupBy group={group} onGroupChange={setGroup} />}
+        sort={<GoalSort onSortChange={changeSort} sort={sort} />}
         seasonFit={
           targeted ? (
             <SeasonFitSelect
@@ -525,7 +524,7 @@ export function GoalsPage() {
           )
         }
         planningSettings={
-          <PlanningSettingsTrigger
+          <PageSettingsButton
             onClick={() => setSettingsOpen(true)}
             testId="goals-planning-settings"
           />
@@ -543,7 +542,7 @@ export function GoalsPage() {
             />
           ) : null
         }
-        viewToggle={
+        layoutToggle={
           <GoalsViewToggle
             disabled={isMobile && reorderActive}
             onViewChange={goalsView.setView}
@@ -575,21 +574,18 @@ export function GoalsPage() {
         showPristineEmptyState={showPristineEmptyState}
       />
 
+      {sortBlocksReorder &&
+      orderHasMovableGoals &&
+      !isLoading &&
+      rows.length > 0 ? (
+        <SortBlocksReorderNotice onReset={() => changeSort("priority")} />
+      ) : null}
+
       <div
         className="flex flex-col gap-6 outline-none"
         ref={listRef}
         tabIndex={-1}
       >
-        {!isLoading &&
-        !isMobile &&
-        goalsView.view === "Cards" &&
-        visibleIds.length > 0 ? (
-          <GoalsCardsSelectAll
-            onSelectAll={selectAllVisible}
-            selection={selection}
-            visibleIds={visibleIds}
-          />
-        ) : null}
         {(isLoading ? [] : rowGroups).map((rowGroup) => {
           if (rowGroup.rows.length === 0) return null
           const list = (
@@ -665,10 +661,22 @@ export function GoalsPage() {
         <MobileReorderBar onDone={exitReorder} pending={orderActions.pending} />
       ) : null}
 
-      {isMobile && selectActive ? (
-        <MobileSelectBar count={selection.size} onDone={exitSelect}>
-          {bulkActions(true)}
-        </MobileSelectBar>
+      {selectActive ? (
+        <GoalsSelectBar
+          count={selection.size}
+          onDone={exitSelect}
+          onSelectAll={selectAllVisible}
+        >
+          <GoalsBulkControls
+            actions={goalActions}
+            clearSelection={clearSelection}
+            compact={isMobile}
+            projectRemoval={projectRemoval}
+            projects={projects.projects}
+            reachedByGoalId={reachedByGoalId}
+            selectedRows={selectedRows}
+          />
+        </GoalsSelectBar>
       ) : null}
 
       {projectRemovalDialogs}

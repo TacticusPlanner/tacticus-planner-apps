@@ -17,6 +17,7 @@ import {
 import { PlayerDataSyncButton } from "@/widgets/account-menu"
 import { isMacPlatform } from "@/shared/lib"
 import { PageTourButton, TourButton } from "@/shared/tour"
+import { PageHeader, PageHeaderSettingsSlot } from "@/shared/ui"
 
 import { DesktopSectionHeader } from "./desktop-section-header"
 import { DesktopSectionNavigation } from "./desktop-section-navigation"
@@ -137,27 +138,26 @@ export function DesktopShell({
               />
             ) : null}
             <div className="flex min-w-0 flex-1 flex-col">
-              <header className="border-b bg-page-header">
-                <div className="flex items-center justify-between gap-2 px-6 pt-4 pb-1">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <DesktopSectionHeader
-                      item={activeSection}
-                      onSectionExpandedChange={changeSectionExpanded}
-                      sectionExpanded={sectionExpanded}
-                      title={sectionTitle}
-                    />
+              <PageHeader
+                description={pageDescription}
+                help={
+                  <>
                     {/* Renders only on a page that registered its own tour - the app-wide navigation
                       tour lives on the sidebar footer's persistent "Show me around" button. */}
                     <PageTourButton className="shrink-0" />
                     <SectionActions item={activeSection} />
-                  </div>
-                </div>
-                {pageDescription ? (
-                  <p className="truncate px-6 pb-3 text-sm text-muted-foreground">
-                    {pageDescription}
-                  </p>
-                ) : null}
-              </header>
+                  </>
+                }
+                settings={<PageHeaderSettingsSlot />}
+                title={
+                  <DesktopSectionHeader
+                    item={activeSection}
+                    onSectionExpandedChange={changeSectionExpanded}
+                    sectionExpanded={sectionExpanded}
+                    title={sectionTitle}
+                  />
+                }
+              />
               <main
                 className="flex flex-1 flex-col outline-hidden"
                 id="main"

@@ -344,7 +344,7 @@ Today's plan and Bonus Raids SHALL group their battles by campaign instead of by
 
 ### Requirement: Raid grouping is picked once and remembered per device
 
-Dailies › Raids SHALL offer a "Group by" switch with **Campaign** (the default: "Today groups raids by campaign", and the HSE, HRE and Home lists in campaign groups) and **Upgrade** (one card per upgrade listing the battles that drop it, as before campaign grouping; the HSE, HRE and Home lists show every battle on its own row naming its location in full, in the list's own order). It SHALL be the only place the grouping is picked, and every raid list (Today's plan, Bonus Raids, HSE, HRE, Home's raids widget) SHALL follow it. The choice SHALL be remembered in that browser (an unknown stored value reads as Campaign) and SHALL apply in other open tabs. Plan › Schedule is unaffected. Each change SHALL report `daily_raids_grouping_changed` with the picked grouping and nothing else; picking the current grouping again reports nothing.
+Dailies › Raids SHALL offer Group by, the shared labelled segmented control in the page toolbar's View slot (behind the View button on mobile), with **Campaign** (the default: "Today groups raids by campaign", and the HSE, HRE and Home lists in campaign groups) and **Upgrade** (one card per upgrade listing the battles that drop it, as before campaign grouping; the HSE, HRE and Home lists show every battle on its own row naming its location in full, in the list's own order). There is no None option: a raid list is always grouped. It SHALL be the only place the grouping is picked, and every raid list (Today's plan, Bonus Raids, HSE, HRE, Home's raids widget) SHALL follow it. The choice SHALL be remembered in that browser (an unknown stored value reads as Campaign) and SHALL apply in other open tabs. Plan › Schedule is unaffected. Each change SHALL report `daily_raids_grouping_changed` with the picked grouping and nothing else; picking the current grouping again reports nothing.
 
 #### Scenario: Switching to upgrade grouping
 
@@ -910,7 +910,7 @@ Campaign names and node labels in Today's schedule rows, and in the shared locat
 
 ### Requirement: Today quick filters
 
-Today SHALL show a quick-filter chip row, captioned "Quick filters", next to the Raids Filters trigger, with two chips: **Fewer raids** and **Combine goals**. Either, both or neither MAY be on. Each chip SHALL carry a tooltip explaining what it does, and while a chip is on Today SHALL show one line under the row stating what it changes. The state SHALL be remembered per device (in this browser's storage, not the URL), so reload and opening Today again from the navigation restore the last chips chosen on this device; the HSE and HRE tabs show the same chips. It SHALL NOT be read from or written to the URL; unknown stored values are ignored.
+Today SHALL show a quick-filter chip row, captioned "Quick filters", on the page toolbar's chip row below the Find and View controls, with two chips: **Fewer raids** and **Combine goals**. Either, both or neither MAY be on. Each chip SHALL carry a tooltip explaining what it does, and while a chip is on Today SHALL show one line under the row stating what it changes. The state SHALL be remembered per device (in this browser's storage, not the URL), so reload and opening Today again from the navigation restore the last chips chosen on this device; the HSE and HRE tabs show the same chips. It SHALL NOT be read from or written to the URL; unknown stored values are ignored.
 
 The chips SHALL change only Today's plan and Bonus Raids (including the raids-left list after the daily energy limit). Plan > Schedule, Goals estimates and dates, Insights, the HSE and HRE tabs and the Home raids widget SHALL be computed as if both chips were off. The chips combine with the applied Raids Filters.
 
@@ -986,9 +986,9 @@ Worked example: goal g1 (priority 1, Bellator) is planned 1.2 runs for 6 expecte
 
 ### Requirement: Today lays out its sections as a dashboard
 
-On Dailies › Raids, Today SHALL show, from top to bottom: one controls row, a row of glance tiles (see "Today shows glance tiles"), and a grid of cards: Today's plan, Bonus raids, Shop recommendations, Onslaught and Today's attempts. Each card SHALL be a named region with its own level-2 heading.
+On Dailies › Raids, Today SHALL show, from top to bottom: the page toolbar, a row of glance tiles (see "Today shows glance tiles"), and a grid of cards: Today's plan, Bonus raids, Shop recommendations, Onslaught and Today's attempts. Each card SHALL be a named region with its own level-2 heading.
 
-The controls row SHALL hold the "Quick filters" caption and its two chips, then the project selector, the Raids Filters trigger and the Planning settings trigger, in that order. When the row is too narrow it SHALL wrap, chips first, without hiding or truncating any control. While a quick filter is on, its one-line note SHALL appear on its own line directly below the row.
+The page toolbar SHALL hold, in its first row, the project selector and the Raids Filters trigger (Find) and Group by (View); the "Quick filters" caption and its two chips SHALL take the row below. Planning settings is the page header's Settings button. When a row is too narrow it SHALL wrap without hiding or truncating any control. While a quick filter is on, its one-line note SHALL appear on its own line directly below the chips.
 
 The card grid SHALL size its tracks from the width of the page content, not the viewport, so an open or collapsed section menu is accounted for:
 
@@ -1043,12 +1043,12 @@ Assumptions:
 
 - **GIVEN** the German UI and a page content width too narrow for the controls on one line
 - **WHEN** Today renders
-- **THEN** the controls wrap onto a second line, the chips first, and every label is shown in full
+- **THEN** Group by wraps under the Find controls, still at the right, and every label is shown in full
 
 #### Scenario: Quick filter note under the row
 
 - **WHEN** the player turns on Combine goals
-- **THEN** its one-line note appears directly below the controls row
+- **THEN** its one-line note appears directly below the chips
 
 #### Scenario: Tour steps point at the cards
 

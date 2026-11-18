@@ -99,8 +99,8 @@ function GoalsTable({
   const scopeIds = visibleIds ?? rows.map((row) => row.goalId)
   const selectedCount = scopeIds.filter((id) => selection.has(id)).length
   const allSelected = scopeIds.length > 0 && selectedCount === scopeIds.length
-  // Mobile matches its cards: bulk actions only exist in select mode, and reorder has its own mode.
-  const showCheckboxes = !isMobile || selectActive
+  // Like the cards: checkboxes only exist in select mode (the toolbar's Select goals).
+  const showCheckboxes = selectActive
   const showLegend = rows.some((row) =>
     drawsPotentialBar(
       row,
