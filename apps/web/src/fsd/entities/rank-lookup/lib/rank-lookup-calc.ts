@@ -211,14 +211,20 @@ export function aggregateOwnedBaseUpgrades(
  * "required" side. `appliedSlotIndices` then selects which of `currentRank`'s own (not-yet-promoted)
  * upgrades are already filled in, by position — mirrors the point-five filter's index convention
  * (each rank's `upgradeIds` is ordered `[Health, Health, Damage, Damage, Armour, Armour]`).
+ *
+ * `fromRank` limits the result to what was applied from that rank on: a goal or lookup that starts
+ * at Gold III must not count the Stone–Gold upgrades already consumed into the unit as stock toward
+ * Gold III → Diamond III (they reduce to the same base materials and would cover the need).
  */
 export function appliedUpgradeIds(
   character: Character,
   currentRank: Rank,
-  appliedSlotIndices: readonly number[]
+  appliedSlotIndices: readonly number[],
+  fromRank: Rank = firstRank
 ): UpgradeId[] {
+  if (rankIndex(currentRank) < rankIndex(fromRank)) return []
   const byRank = rankUpgradeMap(character)
-  const ids = rankUpUpgradeIds(character, firstRank, currentRank, false)
+  const ids = rankUpUpgradeIds(character, fromRank, currentRank, false)
   const currentRankUpgrades = byRank.get(currentRank) ?? []
   ids.push(
     ...currentRankUpgrades.filter((_, index) =>

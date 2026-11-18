@@ -104,15 +104,17 @@ export function computeMowMissingUpgrades(params: {
   ]
   const required = aggregateBaseUpgrades(requiredIds, upgradesById)
 
+  // Only what was applied from each track's start level on: the levels below it are already used up
+  // and must not count as stock toward this range (they share base materials with it).
   const appliedIds = [
     ...mowAbilityUpgradeIds(
       mow.primaryAbility.recipes,
-      1,
+      Math.max(1, params.activeStart),
       mowAbilityTrackLevel(playerMow, "primary")
     ),
     ...mowAbilityUpgradeIds(
       mow.secondaryAbility.recipes,
-      1,
+      Math.max(1, params.passiveStart),
       mowAbilityTrackLevel(playerMow, "secondary")
     ),
   ]
