@@ -168,21 +168,55 @@ describe("LegendaryEventsHubPage", () => {
       screen.getByTestId("legendary-events-group-upcoming")
     ).getAllByTestId("legendary-event-card")[0]!
     expect(uthar).toHaveTextContent("Ûthar")
-    // 2026-10-04T00:00Z is 03:00 in Kyiv (UTC+3 in October).
+    // The card shows the local start date without the time of day.
     expect(within(uthar).getByTestId("event-timing-date")).toHaveTextContent(
-      /Starts Oct 4, 2026, 3:00\sAM/
+      /^Starts Oct 4, 2026$/
     )
     expect(
       within(uthar).getByTestId("event-timing-countdown")
     ).toHaveTextContent("Starts in 14 days")
     // Only run 1 is announced: runs 2 and 3 are guessed 175 days apart.
-    expect(within(uthar).getByTestId("legendary-event-runs")).toHaveTextContent(
-      "Run 1: Oct 4, 2026Run 2: maybe ~Mar 2027Run 3: maybe ~Sep 2027"
-    )
+    // Each run sits on its own line, with its status for screen readers.
+    const runs = within(uthar).getAllByRole("listitem")
+    expect(runs.map((run) => run.textContent)).toEqual([
+      "AnnouncedRun 1: Oct 4, 2026",
+      "Not announcedRun 2: maybe ~Mar 2027",
+      "Not announcedRun 3: maybe ~Sep 2027",
+    ])
     expect(within(uthar).getByTestId("legendary-event-run-2")).toHaveAttribute(
       "data-guessed",
       "true"
     )
+    expect(runs.map((run) => run.dataset.status)).toEqual([
+      "upcoming",
+      "maybe",
+      "maybe",
+    ])
+  })
+
+  it("marks the running run", async () => {
+    renderHub()
+    await ready()
+
+    const lysander = within(
+      screen.getByTestId("legendary-events-group-active")
+    ).getByTestId("legendary-event-card")
+    const current = within(lysander).getByTestId("legendary-event-run-1")
+    expect(current).toHaveAttribute("data-status", "current")
+    expect(current).toHaveTextContent(/^Running now/)
+  })
+
+  it("strikes through a finished run", async () => {
+    // Ûthar's announced run 1 (Oct 4, 2026) is over; runs 2 and 3 are still guesses.
+    vi.setSystemTime(new Date("2026-11-01T00:00:00Z"))
+    renderHub()
+    await ready()
+
+    const uthar = screen.getByRole("link", { name: /Ûthar/ })
+    const past = within(uthar).getByTestId("legendary-event-run-1")
+    expect(past).toHaveAttribute("data-status", "past")
+    expect(past).toHaveTextContent(/^Finished/)
+    expect(within(past).getByText(/^Run 1:/)).toHaveClass("line-through")
   })
 
   it("heads the page with the no-active line when nothing is running", async () => {

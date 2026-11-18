@@ -17,7 +17,13 @@
     "startsTba": "Startdatum folgt",
     "syncedUnavailable": "Synchronisierte Daten nicht verfügbar",
     "runs": "Durchläufe",
-    "run": "Durchlauf {{run}}: {{date}}"
+    "run": "Durchlauf {{run}}: {{date}}",
+    "runStatus": {
+      "past": "Beendet",
+      "current": "Läuft gerade",
+      "upcoming": "Angekündigt",
+      "maybe": "Nicht angekündigt"
+    }
   },
   "lifecycle": {
     "active": "Aktiv",

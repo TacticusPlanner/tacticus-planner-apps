@@ -1,5 +1,12 @@
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
+import {
+  CalendarClock,
+  CircleCheck,
+  CircleDashed,
+  CirclePlay,
+} from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
@@ -7,8 +14,22 @@ import { cn } from "@workspace/ui/lib/utils"
 import { EntityIcon } from "@/shared/ui"
 
 import { EventTimingLines } from "../shared/event-timing-lines"
-import type { HubCardViewModel } from "./legendary-events-hub.view-model"
+import type {
+  HubCardRunStatus,
+  HubCardViewModel,
+} from "./legendary-events-hub.view-model"
 import { useDateLocale } from "@/shared/lib"
+
+/** The icon and text style that set each run's status apart; past runs are struck through. */
+const RUN_STATUS_STYLE: Record<
+  HubCardRunStatus,
+  { icon: LucideIcon; className: string }
+> = {
+  past: { icon: CircleCheck, className: "line-through opacity-70" },
+  current: { icon: CirclePlay, className: "font-medium text-foreground" },
+  upcoming: { icon: CalendarClock, className: "" },
+  maybe: { icon: CircleDashed, className: "italic" },
+}
 
 /** One hub row: portrait, localized name and timing, every run's date (guessed when not
  *  announced) for an unfinished event, plus the synced run, tokens and points for the active
@@ -65,30 +86,43 @@ export function LegendaryEventCard({
         >
           {card.name}
         </p>
-        <EventTimingLines lifecycle={card.lifecycle} nowMs={nowMs} />
+        <EventTimingLines dateOnly lifecycle={card.lifecycle} nowMs={nowMs} />
         {card.runs.length > 0 ? (
           <ul
             aria-label={t("hub.runs")}
-            className="flex flex-wrap gap-x-3 text-xs text-muted-foreground"
+            className="space-y-0.5 text-xs text-muted-foreground"
             data-testid="legendary-event-runs"
           >
-            {card.runs.map(({ run, startMs, guessed }) => (
-              <li
-                data-guessed={guessed}
-                data-testid={`legendary-event-run-${run}`}
-                key={run}
-              >
-                {t("hub.run", {
-                  run,
-                  date:
-                    startMs === null
-                      ? t("runDates.unknown")
-                      : guessed
-                        ? t("runDates.guessed", { date: month.format(startMs) })
-                        : short.format(startMs),
-                })}
-              </li>
-            ))}
+            {card.runs.map(({ run, startMs, guessed, status }) => {
+              const { icon: Icon, className } = RUN_STATUS_STYLE[status]
+              return (
+                <li
+                  className="flex items-center gap-1.5"
+                  data-guessed={guessed}
+                  data-status={status}
+                  data-testid={`legendary-event-run-${run}`}
+                  key={run}
+                >
+                  <Icon aria-hidden="true" className="size-3.5 shrink-0" />
+                  <span className="sr-only">
+                    {t(`hub.runStatus.${status}`)}
+                  </span>
+                  <span className={className}>
+                    {t("hub.run", {
+                      run,
+                      date:
+                        startMs === null
+                          ? t("runDates.unknown")
+                          : guessed
+                            ? t("runDates.guessed", {
+                                date: month.format(startMs),
+                              })
+                            : short.format(startMs),
+                    })}
+                  </span>
+                </li>
+              )
+            })}
           </ul>
         ) : null}
         {synced.kind === "unavailable" ? (

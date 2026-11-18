@@ -17,7 +17,13 @@
     "startsTba": "Fecha de inicio por anunciar",
     "syncedUnavailable": "Datos sincronizados no disponibles",
     "runs": "Rondas",
-    "run": "Ronda {{run}}: {{date}}"
+    "run": "Ronda {{run}}: {{date}}",
+    "runStatus": {
+      "past": "Terminada",
+      "current": "En curso",
+      "upcoming": "Anunciada",
+      "maybe": "Sin anunciar"
+    }
   },
   "lifecycle": {
     "active": "Activo",

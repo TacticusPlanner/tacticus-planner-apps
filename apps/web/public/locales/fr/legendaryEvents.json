@@ -17,7 +17,13 @@
     "startsTba": "Date de début à annoncer",
     "syncedUnavailable": "Données synchronisées indisponibles",
     "runs": "Manches",
-    "run": "Manche {{run}} : {{date}}"
+    "run": "Manche {{run}} : {{date}}",
+    "runStatus": {
+      "past": "Terminée",
+      "current": "En cours",
+      "upcoming": "Annoncée",
+      "maybe": "Non annoncée"
+    }
   },
   "lifecycle": {
     "active": "En cours",

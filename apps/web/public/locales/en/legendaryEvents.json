@@ -17,7 +17,13 @@
     "startsTba": "Start date to be announced",
     "syncedUnavailable": "Synced data unavailable",
     "runs": "Runs",
-    "run": "Run {{run}}: {{date}}"
+    "run": "Run {{run}}: {{date}}",
+    "runStatus": {
+      "past": "Finished",
+      "current": "Running now",
+      "upcoming": "Announced",
+      "maybe": "Not announced"
+    }
   },
   "lifecycle": {
     "active": "Active",
