@@ -849,7 +849,7 @@ describe("computePlanInsights", () => {
     ])
   })
 
-  it("ranks event campaigns that are not running, or not reached, in Best events to farm", () => {
+  it("ranks campaigns and events over reached nodes, and over every node for All locations", () => {
     const eventBattle: Battle = {
       ...battle,
       campaignGroupId: campaignId("eventCampaign1"),
@@ -897,22 +897,30 @@ describe("computePlanInsights", () => {
       priorityByGoalId: new Map([["goal-1", 1]]),
     }
 
-    // EV1 is not eligible (its event is not running), so it is absent from `battlesById`.
-    expect(computePlanInsights(params).eventInsights).toEqual([])
-
+    // EV1 is not reached, so it is in neither `battlesById` nor the reached set.
     const result = computePlanInsights({
       ...params,
-      eventBattlesById: new Map([[battleId("EV1"), eventBattle]]),
+      insightBattles: {
+        reached: new Map([[battleId("B1"), battle]]),
+        all: new Map([
+          [battleId("B1"), battle],
+          [battleId("EV1"), eventBattle],
+        ]),
+      },
     })
-    expect(result.eventInsights.map((insight) => insight.id)).toEqual([
-      "eventCampaign1",
-    ])
+    expect(result.eventInsights).toEqual([])
     expect(result.campaignInsights).toHaveLength(1)
+    expect(
+      result.allLocations.eventInsights.map((insight) => insight.id)
+    ).toEqual(["eventCampaign1"])
+    expect(
+      result.allLocations.farmingSpotsByInsightId.get("eventCampaign1")
+    ).toMatchObject({ itemCount: 1, coverage: 1 })
+    expect(
+      result.allLocations.benefitingGoalIdsByInsightId.get("eventCampaign1")
+    ).toEqual(["goal-1"])
     // Estimates still read only the eligible battles.
     expect(result.energyTotal).toBe(10)
-    expect(result.benefitingGoalIdsByInsightId.get("eventCampaign1")).toEqual([
-      "goal-1",
-    ])
   })
 
   it("uses the entity alliance's saved Onslaught progress for Ascension tokens and duration", () => {

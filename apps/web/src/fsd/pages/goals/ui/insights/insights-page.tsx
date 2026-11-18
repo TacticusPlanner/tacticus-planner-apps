@@ -13,13 +13,17 @@ import { useGlobalGoalPlan } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
-import { PageToolbar } from "@/shared/ui"
+import { PageToolbar, SegmentedControl } from "@/shared/ui"
 import { InsightsCampaignProgression } from "./insights-campaign-progression"
 import { InsightsEvents } from "./insights-events"
 import { InsightsHoldingBack } from "./insights-holding-back"
 import { InsightsMissing } from "./insights-missing"
 import { InsightsOutlook } from "./insights-outlook"
 import type { InsightsGoalInfo } from "./insights-view"
+
+/** Which nodes "Best campaigns/events to farm" rank over. */
+const INSIGHTS_LOCATIONS = ["reached", "all"] as const
+type InsightsLocations = (typeof INSIGHTS_LOCATIONS)[number]
 
 /**
  * The Insights view (plan §16 phase 7): when the plan is done and which goals set that date, what
@@ -34,6 +38,8 @@ export function InsightsPage() {
   const { settings: planningSettings } = usePlanningSettings()
   // No selection means the whole plan; a project only narrows what is reported.
   const [projectId, setProjectId] = useState<string | undefined>(undefined)
+  // Which nodes the farming cards rank: what the player has reached, or every node.
+  const [locations, setLocations] = useState<InsightsLocations>("reached")
 
   const globalPlan = useGlobalGoalPlan()
   // A project only narrows the plan by the goals' `projectIds`; no membership read.
@@ -51,6 +57,13 @@ export function InsightsPage() {
   } = usePlanInsights(
     projectId ? scopedGoals.map((entry) => entry.goal.goalId) : null
   )
+
+  const farming = { reached: result, all: result.allLocations }[locations]
+  // Only "Reached" can leave the events card empty while the plan still has needs.
+  const eventsEmptyText = {
+    reached: t("goals.insights.eventsNoneReached"),
+    all: undefined,
+  }[locations]
 
   const goalInfoById = new Map<string, InsightsGoalInfo>(
     scopedGoals.map((member) => [
@@ -79,6 +92,12 @@ export function InsightsPage() {
           />
         }
         testId="insights-toolbar"
+        view={
+          <InsightsLocationsControl
+            onValueChange={setLocations}
+            value={locations}
+          />
+        }
       />
 
       {globalPlan.isError || insightsError ? (
@@ -141,21 +160,22 @@ export function InsightsPage() {
             <div className="flex flex-col gap-6">
               <InsightsEvents
                 benefitingGoalIdsByInsightId={
-                  result.benefitingGoalIdsByInsightId
+                  farming.benefitingGoalIdsByInsightId
                 }
-                farmingSpotsByInsightId={result.farmingSpotsByInsightId}
+                farmingSpotsByInsightId={farming.farmingSpotsByInsightId}
                 goalInfoById={goalInfoById}
-                insights={result.campaignInsights}
+                insights={farming.campaignInsights}
                 title={t("goals.insights.campaignsTitle")}
               />
               <InsightsEvents
                 benefitingGoalIdsByInsightId={
-                  result.benefitingGoalIdsByInsightId
+                  farming.benefitingGoalIdsByInsightId
                 }
-                farmingSpotsByInsightId={result.farmingSpotsByInsightId}
+                farmingSpotsByInsightId={farming.farmingSpotsByInsightId}
                 goalInfoById={goalInfoById}
                 description={t("goals.insights.eventsDescription")}
-                insights={result.eventInsights}
+                emptyText={eventsEmptyText}
+                insights={farming.eventInsights}
                 title={t("goals.insights.eventsTitle")}
               />
               <InsightsCampaignProgression
@@ -167,5 +187,30 @@ export function InsightsPage() {
         </>
       )}
     </div>
+  )
+}
+
+/** The View slot's Locations switch: rank farming over reached nodes or every node. */
+function InsightsLocationsControl({
+  value,
+  onValueChange,
+}: {
+  value: InsightsLocations
+  onValueChange: (value: InsightsLocations) => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <SegmentedControl
+      label={t("goals.insights.locations.label")}
+      onValueChange={onValueChange}
+      options={INSIGHTS_LOCATIONS.map((option) => ({
+        value: option,
+        label: t(`goals.insights.locations.${option}`),
+        title: t(`goals.insights.locations.${option}Hint`),
+        testId: `insights-locations-${option}`,
+      }))}
+      testId="insights-locations"
+      value={value}
+    />
   )
 }

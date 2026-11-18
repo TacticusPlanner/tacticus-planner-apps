@@ -61,6 +61,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   const {
     upgradesById,
     battlesById,
+    reachedBattlesById,
     allBattlesById,
     campaignProgressByKey,
     campaignDefinitions,
@@ -140,6 +141,14 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     () => [...battlesById.keys()].sort().join(","),
     [battlesById]
   )
+  // The Insights "Reached" farming cards: event progress moves it while no event is running.
+  const reachedBattlesKey = useMemo(
+    () =>
+      [...reachedBattlesById.keys()]
+        .toSorted((a, b) => a.localeCompare(b))
+        .join(","),
+    [reachedBattlesById]
+  )
   // The Onslaught cadence too, so a catalog refresh that changes it recomputes.
   // And the "Campaigns to push" inputs, which can land after the first run.
   const progressionKey = [
@@ -152,7 +161,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     powerLevel,
     eliteCampaignMinPowerLevel,
   ].join("|")
-  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}:${progressionKey}:${eligibleBattlesKey}`
+  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}:${progressionKey}:${eligibleBattlesKey}:${reachedBattlesKey}`
   // A project scope that holds none of the plan's Active goals has nothing to report.
   const hasQuery =
     isAuthenticated &&
@@ -270,14 +279,8 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             levelRules,
             upgradesById,
             battlesById,
-            eventBattlesById: allBattlesById
-              ? new Map(
-                  [...allBattlesById].filter(
-                    ([, battle]) =>
-                      releaseTypeByGroupId.get(battle.campaignGroupId) ===
-                      "event"
-                  )
-                )
+            insightBattles: allBattlesById
+              ? { reached: reachedBattlesById, all: allBattlesById }
               : undefined,
             charactersById: charactersById,
             mowsById: mowsById,

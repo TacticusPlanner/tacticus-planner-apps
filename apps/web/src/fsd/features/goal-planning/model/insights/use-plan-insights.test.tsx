@@ -37,6 +37,7 @@ const stable = vi.hoisted(() => ({
   maps: {
     upgradesById: new Map(),
     allBattlesById: new Map(),
+    reachedBattlesById: new Map(),
     campaignProgressByKey: new Map(),
     campaignDefinitions: [],
     charactersById: new Map(),
