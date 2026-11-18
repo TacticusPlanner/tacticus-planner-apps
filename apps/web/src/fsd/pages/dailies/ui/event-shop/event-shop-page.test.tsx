@@ -649,17 +649,26 @@ describe("shop search", () => {
     ).toBeInTheDocument()
   })
 
-  it("keeps the labelled search field in the toolbar on phone", async () => {
+  it("searches from the toolbar on phone and opens the Shop tab on a result", async () => {
     setViewportWidth(390)
-    renderPage("/plan/event-shop/october-2026")
-    const toolbar = screen.getByTestId("event-shop-toolbar")
-    await userEvent.type(
-      within(toolbar).getByRole("searchbox", { name: "search.title" }),
-      "yarr"
+    renderPage("/plan/event-shop/october-2026?tab=plan")
+    const field = within(screen.getByTestId("event-shop-toolbar")).getByRole(
+      "searchbox",
+      { name: "search.title" }
     )
+    await userEvent.type(field, "zzzz")
     expect(
-      await screen.findByTestId("event-shop-search-results")
+      await screen.findByTestId("event-shop-search-empty")
     ).toBeInTheDocument()
+    await userEvent.clear(field)
+    await userEvent.type(field, "yarr")
+    const results = await screen.findByTestId("event-shop-search-results")
+    await userEvent.click(
+      within(results).getByTestId("event-shop-search-day-shards_astraYarrick-0")
+    )
+    expect(location()).toContain("day=0")
+    expect(location()).toContain("tab=shop")
+    expect(screen.queryByTestId("event-shop-search-results")).toBeNull()
   })
 
   it("says when nothing matches", async () => {

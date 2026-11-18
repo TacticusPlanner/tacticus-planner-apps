@@ -9,6 +9,8 @@ import {
   ready,
 } from "@/test/fixtures/daily-raids"
 
+import { PageHeaderSettingsSlot, PageHeaderSlotProvider } from "@/shared/ui"
+
 import { SchedulePage } from "./schedule-page"
 
 const useDailyRaids = vi.fn()
@@ -129,15 +131,21 @@ describe("Schedule page", () => {
 
   it("puts the project selector in the toolbar and opens Planning Settings from the header's Settings button", async () => {
     const user = userEvent.setup()
-    render(<SchedulePage />)
+    render(
+      <PageHeaderSlotProvider>
+        <PageHeaderSettingsSlot />
+        <SchedulePage />
+      </PageHeaderSlotProvider>
+    )
 
     expect(
       within(screen.getByTestId("schedule-toolbar")).getByTestId(
         "schedule-project-select"
       )
     ).toBeInTheDocument()
-    const trigger = screen.getByTestId("schedule-planning-settings")
-    expect(trigger).toHaveAccessibleName("Settings")
+    const trigger = within(
+      screen.getByTestId("page-header-settings")
+    ).getByRole("button", { name: "Settings" })
 
     await user.click(trigger)
     expect(
