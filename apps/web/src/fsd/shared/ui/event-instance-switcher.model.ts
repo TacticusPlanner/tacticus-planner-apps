@@ -1,4 +1,4 @@
-import { formatDateRange } from "@/shared/lib"
+import { formatDateRange } from "../lib"
 
 /** What the event switcher reads of an event instance: its key and its status at the selection instant. */
 export type SwitcherInstance = {
