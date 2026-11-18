@@ -112,7 +112,9 @@ describe("ShopsBrowsePage", () => {
     render(<ShopsBrowsePage />)
 
     expect(screen.getByTestId("shops-browse-desktop")).toBeInTheDocument()
-    expect(screen.getByTestId("shops-day-select")).toBeInTheDocument()
+    expect(
+      screen.getByRole("combobox", { name: "Day: Monday" })
+    ).toBeInTheDocument()
     expect(screen.getByTestId("shops-shop-toggle")).toBeInTheDocument()
 
     expect(screen.getByTestId("shop-slot-0")).toHaveTextContent(

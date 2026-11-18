@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Funnel, Search, X } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -45,6 +45,8 @@ export function NpcsToolbar({
   const { t } = useTranslation("library")
   const isMobile = useIsMobile()
   const [open, setOpen] = useState(false)
+  // The mobile sheet opens from state, not a Radix trigger, so it hands focus back itself.
+  const filtersButtonRef = useRef<HTMLButtonElement>(null)
   const label =
     activeCount > 0
       ? t("npcs.filtersCount", { count: activeCount })
@@ -52,6 +54,7 @@ export function NpcsToolbar({
 
   const filtersButton = (onClick?: () => void) => (
     <Button
+      ref={onClick ? filtersButtonRef : undefined}
       variant="outline"
       aria-expanded={open}
       onClick={onClick}
@@ -100,6 +103,10 @@ export function NpcsToolbar({
               <ResponsiveDialog
                 open={open}
                 onOpenChange={setOpen}
+                onCloseAutoFocus={(event) => {
+                  event.preventDefault()
+                  filtersButtonRef.current?.focus()
+                }}
                 data-testid="npcs-filter-sheet"
               >
                 <ResponsiveDialogHeader>

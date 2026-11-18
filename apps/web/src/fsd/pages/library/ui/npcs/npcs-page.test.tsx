@@ -583,6 +583,23 @@ describe("NpcsPage", () => {
       isMobileMock.value = true
     })
 
+    it("opens Filters in a sheet and hands focus back to the button on Done", async () => {
+      const user = userEvent.setup()
+      await renderPage("/library/npcs/makhotep")
+      await screen.findByTestId("npc-name")
+
+      const toggle = screen.getByRole("button", { name: "Filters" })
+      await user.click(toggle)
+      const sheet = await screen.findByTestId("npcs-filter-sheet")
+      expect(within(sheet).getByTestId("npcs-filter-bar")).toBeVisible()
+
+      await user.click(within(sheet).getByRole("button", { name: "Done" }))
+      await waitFor(() =>
+        expect(screen.queryByTestId("npcs-filter-sheet")).toBeNull()
+      )
+      expect(toggle).toHaveFocus()
+    })
+
     it("renders the combobox instead of the tile list and navigates on pick", async () => {
       const user = userEvent.setup()
       await renderPage("/library/npcs/makhotep")

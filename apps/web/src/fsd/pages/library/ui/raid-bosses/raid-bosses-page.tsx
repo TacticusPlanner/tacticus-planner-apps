@@ -267,9 +267,10 @@ export function RaidBossesPage() {
     <div className="flex flex-col gap-6" data-testid="raid-bosses-library-page">
       {/* The page header already carries the title and description; the views are underline tabs. */}
       <Tabs value={tab} onValueChange={(value) => updateQuery({ tab: value })}>
-        {/* The bottom padding keeps the active tab's underline inside the scroll box. */}
+        {/* The padding keeps the active tab's underline and the 48px touch hit area inside the scroll
+            box. */}
         <div
-          className="overflow-x-auto pb-1.5"
+          className="overflow-x-auto pt-1 pb-1.5"
           data-testid="raid-boss-tabs-scroll"
         >
           <TabsList

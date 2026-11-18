@@ -1099,10 +1099,12 @@ describe("CharacterUnitPage", () => {
     const back = screen.getByTestId("unit-nav-back")
     expect(back).toHaveTextContent("Collection")
     expect(back).toHaveAccessibleName("Back to Collection")
-    expect(screen.getByTestId("unit-nav-previous")).toHaveTextContent(
+    expect(screen.getByRole("button", { name: "Previous" })).toHaveTextContent(
       "Previous"
     )
-    expect(screen.getByTestId("unit-nav-next")).toHaveTextContent("Next")
+    expect(screen.getByRole("button", { name: "Next" })).toHaveTextContent(
+      "Next"
+    )
     expect(back).toHaveAttribute("href", "/my-game/collection")
   })
 

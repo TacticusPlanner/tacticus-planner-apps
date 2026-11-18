@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, ChevronsUpDown, X } from "lucide-react"
 import { damageTypeIcon, factionIcon, traitIcon } from "@workspace/game-catalog"
@@ -29,7 +29,11 @@ import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { NpcAttackFilter, NpcFilters } from "@/entities/npc"
-import { EntityIcon, useCommandListId } from "@/shared/ui"
+import {
+  closestOverlayContent,
+  EntityIcon,
+  useCommandListId,
+} from "@/shared/ui"
 
 import type { NpcFilterOptions } from "./npcs-page.view-model"
 
@@ -56,6 +60,10 @@ function MultiSelect({
   const { t } = useTranslation("library")
   const [open, setOpen] = useState(false)
   const [listId, listRef] = useCommandListId()
+  // Inside the mobile filter sheet the list must portal into the sheet: Radix's scroll lock blocks
+  // scrolling in a popover portaled to `body`. Elsewhere it keeps the default portal.
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const [portalContainer, setPortalContainer] = useState<HTMLElement>()
   const selectedNames = options
     .filter((option) => value.includes(option.id))
     .map((option) => option.name)
@@ -66,10 +74,17 @@ function MultiSelect({
     )
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        if (next) setPortalContainer(closestOverlayContent(triggerRef.current))
+        setOpen(next)
+      }}
+    >
       <div className="relative flex items-center">
         <PopoverTrigger asChild>
           <Button
+            ref={triggerRef}
             variant="outline"
             role="combobox"
             aria-expanded={open}
@@ -104,7 +119,11 @@ function MultiSelect({
           </button>
         ) : null}
       </div>
-      <PopoverContent className="w-64 p-0" align="start">
+      <PopoverContent
+        className="w-64 p-0"
+        align="start"
+        container={portalContainer}
+      >
         <Command>
           <CommandInput placeholder={label} />
           <CommandList ref={listRef}>
