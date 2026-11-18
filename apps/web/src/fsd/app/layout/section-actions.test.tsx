@@ -51,13 +51,15 @@ describe("SectionActions", () => {
     renderActions("/legendary-events")
 
     fireEvent.click(
-      await screen.findByTestId("legendary-event-settings", undefined, {
-        timeout: 10_000,
-      })
+      await screen.findByRole(
+        "button",
+        { name: "Settings" },
+        { timeout: 10_000 }
+      )
     )
     expect(
-      screen.getByTestId("legendary-event-settings-dialog")
-    ).toHaveTextContent("Legendary Event settings")
+      screen.getByRole("dialog", { name: "Legendary Event settings" })
+    ).toBeInTheDocument()
     fireEvent.click(screen.getByTestId("legendary-event-settings-paid"))
 
     expect(save).toHaveBeenCalledWith(

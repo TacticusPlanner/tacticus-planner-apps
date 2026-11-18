@@ -7,20 +7,17 @@ import { useDateLocale } from "@/shared/lib"
 import { eventTiming } from "./event-timing"
 
 /** "Ends in …" / "Starts in …" with the local date and time; nothing for an archived event.
- *  `inline` puts both on one line ("Starts in 3 days · Nov 8, 2026, 2:00 AM"), for a header.
  *  `dateOnly` drops the time of day ("Starts Nov 8, 2026"), for a hub card.
  *  `countdownOnly` shows just "Starts in 3 days", for the event page, whose page header already
  *  names the date. */
 export function EventTimingLines({
   lifecycle,
   nowMs,
-  inline = false,
   dateOnly = false,
   countdownOnly = false,
 }: {
   lifecycle: LegendaryEventLifecycle
   nowMs: number
-  inline?: boolean
   dateOnly?: boolean
   countdownOnly?: boolean
 }) {
@@ -45,16 +42,6 @@ export function EventTimingLines({
         <span data-testid="event-timing-countdown">
           {t(timing.inKey, { when: timing.when })}
         </span>
-      </p>
-    )
-  if (inline)
-    return (
-      <p className="text-sm text-muted-foreground" data-testid="event-timing">
-        <span data-testid="event-timing-countdown">
-          {t(timing.inKey, { when: timing.when })}
-        </span>
-        <span aria-hidden="true"> · </span>
-        <span data-testid="event-timing-date">{timing.date}</span>
       </p>
     )
   return (
