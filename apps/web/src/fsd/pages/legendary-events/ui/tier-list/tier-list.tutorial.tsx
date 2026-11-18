@@ -29,7 +29,7 @@ export function useTierListTutorial({
   const { t } = useTranslation("legendaryEvents")
   return useMemo(() => {
     const step = (
-      key: keyof typeof TIER_LIST_TOUR_TARGETS,
+      key: Exclude<keyof typeof TIER_LIST_TOUR_TARGETS, "intro">,
       placement: Step["placement"]
     ): Step => ({
       target: TIER_LIST_TOUR_TARGETS[key],
