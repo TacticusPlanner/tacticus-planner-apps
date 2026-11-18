@@ -95,6 +95,9 @@ export type DailyRaidsCalculationInput = {
   /** Today's quick filters (Fewer raids, Combine goals). Like the Raids Filters they change Today and
    *  Bonus Raids only. */
   quickFilters?: TodayQuickFilterOptions
+  /** The battles "CE nodes first" prefers (the active campaign event's reached nodes), set only
+   *  while that quick filter is on. Today and Bonus Raids only, like the quick filters. */
+  preferredBattleIds?: ReadonlySet<BattleId>
   /** The player's real attempts left today per node (none synced: every node is fresh). Today,
    *  Bonus Raids and the Plan's day 1 cap each node at it, so a need whose nodes were raided out
    *  today moves to tomorrow instead of being planned again at an exhausted node. */
@@ -345,6 +348,7 @@ export function calculateDailyRaids(
     ...calculation,
     nodeFilter,
     fewerRaids: params.quickFilters?.fewerRaids,
+    preferredBattleIds: params.preferredBattleIds,
     combineGoals: params.quickFilters?.combineGoals,
   }
   const { today, filteredOut } = estimateTodayRun(filteredCalculation)

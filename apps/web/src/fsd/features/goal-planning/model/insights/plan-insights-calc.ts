@@ -92,6 +92,10 @@ export function computePlanInsights(params: {
   inventoryXpBooks?: readonly { xpBookId: string; amount: number }[]
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
   battlesById: Parameters<typeof estimatePlan>[0]["battlesById"]
+  /** Every event-campaign battle, reached or not and whether or not its event is running: "Best
+   *  events to farm" ranks all event campaigns so a player can pick the next one. Estimates and
+   *  "Best campaigns to farm" keep reading the eligible `battlesById`. */
+  eventBattlesById?: Parameters<typeof estimatePlan>[0]["battlesById"]
   charactersById: ReadonlyMap<string, CharacterStorageModel>
   mowsById: ReadonlyMap<string, MowStorageModel>
   ascensionCostsById: ReadonlyMap<string, AscensionCostStorageModel>
@@ -480,15 +484,20 @@ export function computePlanInsights(params: {
     dailyEnergy: params.dailyEnergy ?? 288,
   })
 
+  const insightBattlesById = params.eventBattlesById
+    ? new Map([...params.battlesById, ...params.eventBattlesById])
+    : params.battlesById
   const { campaignInsights, eventInsights } = computeCampaignInsights(
     campaignNeeds,
     combinedUpgradesById,
-    params.battlesById,
+    insightBattlesById,
     (groupId) => params.releaseTypeByGroupId.get(groupId) === "event",
     (descriptor, isEvent) =>
       isEvent
         ? params.campaignName(descriptor)
-        : params.campaignFullLabel(descriptor)
+        : params.campaignFullLabel(descriptor),
+    // Every campaign and event: the Insights cards show the top 3 and a "Show all" toggle.
+    Number.POSITIVE_INFINITY
   )
 
   const campaignProgression = params.campaignProgression
@@ -508,7 +517,7 @@ export function computePlanInsights(params: {
 
   const farmingSpotsByInsightId = summarizeFarmingSpots(
     [...campaignInsights, ...eventInsights],
-    params.battlesById,
+    insightBattlesById,
     params.dailyEnergy ?? 288
   )
 
