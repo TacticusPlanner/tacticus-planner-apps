@@ -117,6 +117,7 @@ function LegendaryEventPageBody({
     <RankShadingProvider>
       <div
         className="flex min-w-0 flex-col gap-4"
+        data-event-id={props.event.id}
         data-testid="legendary-event-page"
         id="le-event"
       >

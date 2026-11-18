@@ -1,60 +1,24 @@
 import type { ReactNode } from "react"
-import { useTranslation } from "react-i18next"
-import { characterIcon } from "@workspace/game-catalog"
-import type { UnitId } from "@workspace/game-domain"
-import { Badge } from "@workspace/ui/components/badge"
-
-import { EntityIcon } from "@/shared/ui"
 
 import { EventTimingLines } from "../shared/event-timing-lines"
 import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-model"
 
-/** The event's portrait, localized unit name and lifecycle badge, with the run's timing ("Starts in
- *  3 days · Nov 8, …") under the name on every tab, and `actions` (the plan entry) at the end of
- *  the row, wrapping below on narrow screens. */
+/** The row above the event tabs: the run countdown ("Starts in 3 days") on every tab, and
+ *  `actions` (the plan entry) at the end, wrapping below on narrow screens. The event's name,
+ *  lifecycle and date are in the page header, so this row does not repeat them. */
 export function LegendaryEventHeader({
-  event,
   lifecycle,
-  name,
   nowMs,
   actions,
-}: Pick<
-  LegendaryEventPageViewModel,
-  "event" | "lifecycle" | "name" | "nowMs"
-> & {
+}: Pick<LegendaryEventPageViewModel, "lifecycle" | "nowMs"> & {
   actions?: ReactNode
 }) {
-  const { t } = useTranslation("legendaryEvents")
-  const portrait = characterIcon(event.id as UnitId)
   return (
-    <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
-      <div className="flex min-w-0 items-center gap-3">
-        {portrait ? (
-          <EntityIcon
-            alt=""
-            className="size-12 shrink-0 rounded-full object-cover"
-            src={portrait}
-          />
-        ) : null}
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <div className="flex min-w-0 items-center gap-3">
-            <h1
-              className="min-w-0 truncate text-xl font-semibold"
-              data-testid="legendary-event-title"
-            >
-              {name}
-            </h1>
-            <Badge
-              data-state={lifecycle.state}
-              data-testid="legendary-event-lifecycle"
-              variant={lifecycle.state === "active" ? "default" : "secondary"}
-            >
-              {t(`lifecycle.${lifecycle.state}`)}
-            </Badge>
-          </div>
-          <EventTimingLines inline lifecycle={lifecycle} nowMs={nowMs} />
-        </div>
-      </div>
+    <div
+      className="flex min-w-0 flex-wrap items-center justify-between gap-3"
+      data-testid="legendary-event-header"
+    >
+      <EventTimingLines countdownOnly lifecycle={lifecycle} nowMs={nowMs} />
       {actions}
     </div>
   )
