@@ -157,6 +157,7 @@ const confirmedState = {
     hasCompletedOnboarding: true,
     tacticusApiKeyMasked: null,
     tacticusUserIdMasked: null,
+    tacticusUserId: null,
     analyticsId: "analytics-id-1",
   },
 } as const
@@ -621,6 +622,7 @@ describe("AuthControl", () => {
           hasCompletedOnboarding: true,
           tacticusApiKeyMasked: "••••••••abcd",
           tacticusUserIdMasked: "••••••••1234",
+          tacticusUserId: "1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d1234",
           analyticsId: "analytics-id-1",
         },
       },

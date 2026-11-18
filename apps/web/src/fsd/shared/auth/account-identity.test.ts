@@ -1,7 +1,11 @@
 import type { AccountInfo } from "@azure/msal-browser"
 import { describe, expect, it } from "vitest"
 
-import { getAccountEmail, getSignInMethod } from "./account-identity"
+import {
+  getAccountEmail,
+  getAccountObjectId,
+  getSignInMethod,
+} from "./account-identity"
 
 function account(
   username: string,
@@ -58,5 +62,18 @@ describe("getAccountEmail", () => {
     expect(getAccountEmail(account(GENERATED_UPN, { idp: "google.com" }))).toBe(
       null
     )
+  })
+})
+
+describe("getAccountObjectId", () => {
+  it("is the oid claim when the ID token has one", () => {
+    expect(
+      getAccountObjectId(account("me@example.com", { oid: "oid-from-token" }))
+    ).toBe("oid-from-token")
+  })
+
+  it("falls back to localAccountId without an ID token or oid", () => {
+    expect(getAccountObjectId(account("me@example.com"))).toBe("local")
+    expect(getAccountObjectId(account("me@example.com", {}))).toBe("local")
   })
 })

@@ -59,6 +59,7 @@ const unconfiguredState: CurrentUserState = {
     hasCompletedOnboarding: false,
     tacticusApiKeyMasked: null,
     tacticusUserIdMasked: null,
+    tacticusUserId: null,
     analyticsId: "analytics-1",
   },
 }

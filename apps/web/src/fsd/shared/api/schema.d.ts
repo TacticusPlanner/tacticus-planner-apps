@@ -13,7 +13,7 @@ export interface paths {
     }
     /**
      * Gets the authenticated user's planner account, creating it on first access.
-     * @description Every authenticated caller has a planner account: this endpoint creates the profile on first access if they do not exist yet. displayName is the user-confirmed name or null; suggestedDisplayName is a private, editable suggestion that is never public identity. Tacticus integration values are never returned in full — only a masked preview and whether onboarding is complete.
+     * @description Every authenticated caller has a planner account: this endpoint creates the profile on first access if they do not exist yet. displayName is the user-confirmed name or null; suggestedDisplayName is a private, editable suggestion that is never public identity. The Tacticus API key is never returned in full — only a masked preview. The Tacticus user id is the player's own in-game id, so it is returned in full to its owner (tacticusUserId) next to its masked preview.
      */
     get: operations["TacticusPlannerApiFeaturesCurrentUserGetCurrentUserEndpoint"]
     put?: never
@@ -2235,6 +2235,7 @@ export interface components {
       hasCompletedOnboarding: boolean
       tacticusApiKeyMasked: null | string
       tacticusUserIdMasked: null | string
+      tacticusUserId: null | string
       analyticsId: string
     }
     EditGoalPriorityRequest: {
@@ -4918,6 +4919,7 @@ export interface components {
       powerLevel: null | number
       tacticusApiKeyMasked: null | string
       tacticusUserIdMasked: null | string
+      tacticusUserId: null | string
     }
     /** @constant */
     UpdateUserSettingsRequest: {

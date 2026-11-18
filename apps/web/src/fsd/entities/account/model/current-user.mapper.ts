@@ -14,6 +14,7 @@ export function mapCurrentUserDtoToDomain(dto: CurrentUserDto): CurrentUser {
     hasCompletedOnboarding: dto.hasCompletedOnboarding,
     tacticusApiKeyMasked: dto.tacticusApiKeyMasked,
     tacticusUserIdMasked: dto.tacticusUserIdMasked,
+    tacticusUserId: dto.tacticusUserId,
     analyticsId: dto.analyticsId,
   }
 }

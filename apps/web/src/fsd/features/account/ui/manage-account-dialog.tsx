@@ -1,7 +1,7 @@
 import { useId, useState } from "react"
 import type { SubmitEvent } from "react"
 import { useTranslation } from "react-i18next"
-import { ExternalLink } from "lucide-react"
+import { Check, Copy, ExternalLink } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -38,7 +38,12 @@ import {
 } from "@/entities/account"
 import type { CurrentUser } from "@/entities/account"
 import { ApiError } from "@/shared/api"
-import { getAccountEmail, getSignInMethod, signOut } from "@/shared/auth"
+import {
+  getAccountEmail,
+  getAccountObjectId,
+  getSignInMethod,
+  signOut,
+} from "@/shared/auth"
 import { appEnvironment } from "@/shared/config"
 import {
   ResponsiveDialog,
@@ -151,7 +156,10 @@ export function ManageAccountDialog({
               ) : null}
             </TabsList>
             <TabsContent value="integration">
-              <TacticusIntegrationTab user={state.user} />
+              <TacticusIntegrationTab
+                accountId={getAccountObjectId(account)}
+                user={state.user}
+              />
             </TabsContent>
             <TabsContent value="profile">
               <ProfileTab user={state.user} />
@@ -187,8 +195,14 @@ export function ManageAccountDialog({
   )
 }
 
-/** Saving writes the response's masked key/user id into the cached current user (no `GET /account`). */
-function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
+/** Saving writes the response's masked key and full user id into the cached current user (no `GET /account`). */
+function TacticusIntegrationTab({
+  accountId,
+  user,
+}: {
+  accountId: string
+  user: CurrentUser
+}) {
   const { t } = useTranslation()
   const formId = useId()
   const queryClient = useQueryClient()
@@ -238,6 +252,21 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
       id={formId}
       onSubmit={handleSubmit}
     >
+      <CopyableIdField
+        description={t("manageAccount.integration.plannerAccountIdDescription")}
+        id="manage-account-planner-account-id"
+        label={t("manageAccount.integration.plannerAccountId")}
+        value={accountId}
+      />
+      {user.tacticusUserId ? (
+        <CopyableIdField
+          description={t("manageAccount.integration.currentUserIdDescription")}
+          id="manage-account-current-user-id"
+          label={t("manageAccount.integration.currentUserId")}
+          value={user.tacticusUserId}
+        />
+      ) : null}
+
       <div className="grid grid-cols-1 gap-2 rounded-2xl border p-3 text-sm">
         <div className="flex items-center justify-between gap-2">
           <span className="shrink-0 text-muted-foreground">
@@ -251,18 +280,19 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
               t("manageAccount.integration.notConfigured")}
           </span>
         </div>
-        <div className="flex items-center justify-between gap-2">
-          <span className="shrink-0 text-muted-foreground">
-            {t("manageAccount.integration.currentUserId")}
-          </span>
-          <span
-            className="min-w-0 text-right"
-            data-testid="manage-account-current-user-id"
-          >
-            {user.tacticusUserIdMasked ??
-              t("manageAccount.integration.notConfigured")}
-          </span>
-        </div>
+        {user.tacticusUserId ? null : (
+          <div className="flex items-center justify-between gap-2">
+            <span className="shrink-0 text-muted-foreground">
+              {t("manageAccount.integration.currentUserId")}
+            </span>
+            <span
+              className="min-w-0 text-right"
+              data-testid="manage-account-current-user-id-missing"
+            >
+              {t("manageAccount.integration.notConfigured")}
+            </span>
+          </div>
+        )}
       </div>
 
       <Field data-invalid={Boolean(errorMessage)}>
@@ -366,6 +396,66 @@ function TacticusIntegrationTab({ user }: { user: CurrentUser }) {
         </Button>
       </DialogAction>
     </form>
+  )
+}
+
+type CopyState = "idle" | "copied" | "failed"
+
+/** A read-only id the user can copy: for support requests and surveys. Their own ids, so never masked. */
+function CopyableIdField({
+  description,
+  id,
+  label,
+  value,
+}: {
+  description: string
+  id: string
+  label: string
+  value: string
+}) {
+  const { t } = useTranslation()
+  const [copyState, setCopyState] = useState<CopyState>("idle")
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopyState("copied")
+    } catch {
+      setCopyState("failed")
+    }
+  }
+
+  return (
+    <Field>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldContent>
+        <div className="flex gap-2">
+          <Input
+            className="font-mono text-xs"
+            data-testid={id}
+            id={id}
+            readOnly
+            value={value}
+            onFocus={(event) => event.target.select()}
+          />
+          <Button
+            aria-label={t("manageAccount.integration.copyId", { label })}
+            type="button"
+            variant="outline"
+            onClick={() => void copy()}
+          >
+            {copyState === "copied" ? <Check /> : <Copy />}
+            {copyState === "copied"
+              ? t("manageAccount.integration.copied")
+              : t("manageAccount.integration.copy")}
+          </Button>
+        </div>
+        <FieldDescription>{description}</FieldDescription>
+        {copyState === "failed" ? (
+          <FieldError>{t("manageAccount.integration.copyFailed")}</FieldError>
+        ) : null}
+      </FieldContent>
+    </Field>
   )
 }
 

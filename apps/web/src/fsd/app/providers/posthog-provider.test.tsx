@@ -55,6 +55,7 @@ function successState(analyticsId: string | undefined): CurrentUserState {
       hasCompletedOnboarding: true,
       tacticusApiKeyMasked: null,
       tacticusUserIdMasked: null,
+      tacticusUserId: null,
       // Cast past the type to simulate an apps-deployed-before-api response missing the field.
       analyticsId: analyticsId as unknown as string,
     },

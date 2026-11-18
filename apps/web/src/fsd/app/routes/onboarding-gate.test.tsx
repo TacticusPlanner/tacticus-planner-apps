@@ -69,6 +69,7 @@ const configuredUser = {
   hasCompletedOnboarding: true,
   tacticusApiKeyMasked: "••••••••abcd",
   tacticusUserIdMasked: null,
+  tacticusUserId: null,
   analyticsId: "analytics-id-1",
 }
 

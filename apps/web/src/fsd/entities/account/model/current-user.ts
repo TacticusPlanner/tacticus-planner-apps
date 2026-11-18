@@ -8,6 +8,8 @@ export type CurrentUser = {
   hasCompletedOnboarding: boolean
   tacticusApiKeyMasked: string | null
   tacticusUserIdMasked: string | null
+  // The user's own in-game Tacticus user id in full, shown so they can copy it. Null until linked.
+  tacticusUserId: string | null
   // Pseudonymous id the API derives for this account - the identity reported to the analytics
   // destination, never the raw applicationUserId. See specs/product-analytics/spec.md.
   analyticsId: string
