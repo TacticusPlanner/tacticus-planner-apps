@@ -607,6 +607,9 @@ describe("AddGoalsToProjectSheet", () => {
       onCreateGoal: () => void
       projectId?: string
     }) {
+      // Tests swap `members` between renders; without this, React Compiler would keep the
+      // project prop and the sheet would never see the new member.
+      "use no memo"
       const [open, setOpen] = useState(true)
       return (
         <>

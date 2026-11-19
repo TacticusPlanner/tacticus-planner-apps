@@ -15,6 +15,9 @@ export type LegendaryEventsState = ReadState<LegendaryEvent[]> & {
 /** Every catalog Legendary Event. The host re-renders on a minute tick only when some event's
  *  lifecycle flips; a countdown reads its own `useMinuteNow()`. */
 export function useLegendaryEvents(): LegendaryEventsState {
+  // `readMinuteNow()` reads the shared ticker, which React Compiler can't track: it would keep the
+  // first instant and the lifecycle would never flip.
+  "use no memo"
   const state = useCatalogDataset("lres")
   const data = state.status === "ready" ? state.data : undefined
   const signatureAt = useCallback(

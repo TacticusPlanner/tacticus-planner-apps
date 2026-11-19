@@ -26,6 +26,9 @@ export type LegendaryEventState = ReadState<LegendaryEvent | undefined> & {
  *  re-renders on a minute tick only when the event's lifecycle flips; a countdown reads its own
  *  `useMinuteNow()`. */
 export function useLegendaryEvent(eventId: string): LegendaryEventState {
+  // `readMinuteNow()` reads the shared ticker, which React Compiler can't track: it would keep the
+  // first instant and the lifecycle would never flip.
+  "use no memo"
   const select = useCallback(
     (events: LegendaryEvent[]) => events.find((event) => event.id === eventId),
     [eventId]
