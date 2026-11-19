@@ -76,9 +76,8 @@ describe("LegendaryEventPage memo boundaries", () => {
     const count = views.length
 
     rerender(<LegendaryEventPage />)
-    expect(views.length).toBeGreaterThan(count)
-    // The page's own memos hold; the whole view model still follows the plan and annotation
-    // hooks, which return fresh objects per render.
+    // React Compiler keeps the whole view model, so an unrelated re-render skips the view.
+    expect(views.length).toBe(count)
     expect(last().runStatus).toBe(settled.runStatus)
     expect(last().leaderboard.goals.onPreviewChange).toBe(
       settled.leaderboard.goals.onPreviewChange

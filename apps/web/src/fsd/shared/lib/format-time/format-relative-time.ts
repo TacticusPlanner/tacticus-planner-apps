@@ -14,14 +14,17 @@ const UNITS: { unit: Intl.RelativeTimeFormatUnit; seconds: number }[] = [
  */
 export function formatRelativeTime(
   epochMs: number | null,
-  locale: string
+  locale: string,
+  /** Pass the caller's clock tick when it has one: React Compiler re-runs this call only when an
+   *  argument changes, so a defaulted `Date.now()` would freeze the text between them. */
+  nowMs: number = Date.now()
 ): string | null {
   if (epochMs === null || Number.isNaN(epochMs)) {
     return null
   }
 
   const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" })
-  const diffSeconds = Math.round((Date.now() - epochMs) / 1000)
+  const diffSeconds = Math.round((nowMs - epochMs) / 1000)
   const absDiffSeconds = Math.abs(diffSeconds)
 
   if (absDiffSeconds < 60) {

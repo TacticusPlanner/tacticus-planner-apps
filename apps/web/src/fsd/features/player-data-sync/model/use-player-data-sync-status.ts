@@ -43,7 +43,11 @@ export function usePlayerDataSyncStatus() {
   const isSyncing = status === "syncing"
   const statusLabel = t(statusLabelKeys[status])
   const relativeLastSync = lastSyncedAt
-    ? formatRelativeTime(Date.parse(lastSyncedAt), i18n.language)
+    ? formatRelativeTime(
+        Date.parse(lastSyncedAt),
+        i18n.language,
+        relativeTimeTick
+      )
     : null
   const lastSyncText = relativeLastSync
     ? t("manageAccount.playerData.lastSynced", { time: relativeLastSync })
@@ -63,7 +67,11 @@ export function usePlayerDataSyncStatus() {
   // Once overdue the sync fires on the provider's next check, so there is no future time to name.
   const relativeNextAutoSync =
     autoSyncProgress && autoSyncProgress.fraction < 1
-      ? formatRelativeTime(autoSyncProgress.nextSyncAt, i18n.language)
+      ? formatRelativeTime(
+          autoSyncProgress.nextSyncAt,
+          i18n.language,
+          relativeTimeTick
+        )
       : null
   const nextAutoSyncText = relativeNextAutoSync
     ? t("manageAccount.playerData.nextAutoSync", {
@@ -76,7 +84,11 @@ export function usePlayerDataSyncStatus() {
       ? progressText
       : isCoolingDown
         ? t("manageAccount.playerData.rateLimited", {
-            time: formatRelativeTime(syncBlockedUntil, i18n.language),
+            time: formatRelativeTime(
+              syncBlockedUntil,
+              i18n.language,
+              relativeTimeTick
+            ),
           })
         : status === "error"
           ? requiresReauth
