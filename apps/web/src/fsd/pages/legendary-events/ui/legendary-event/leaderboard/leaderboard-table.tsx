@@ -129,6 +129,7 @@ export function LeaderboardTable({
                 <LeaderboardRank row={row} />
               </TableCell>
               {row.objectives.map((met, index) => (
+                // eslint-disable-next-line @eslint-react/no-array-index-key -- objective columns are positional
                 <TableCell className="px-0.5 text-center" key={index}>
                   <ObjectiveIndicator
                     icon={objectives[index]?.icon}

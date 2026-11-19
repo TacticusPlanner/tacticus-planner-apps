@@ -120,6 +120,7 @@ export function CharacterLookupResults({
         {isMobile ? (
           <Accordion type="multiple" className="w-full">
             {groups.map((group, index) => (
+              // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only rank groups; never reorders
               <AccordionItem key={index} value={String(index)}>
                 <AccordionTrigger>
                   <RankGroupHeader group={group} />
@@ -133,6 +134,7 @@ export function CharacterLookupResults({
         ) : (
           <div className="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
             {groups.map((group, index) => (
+              // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only rank groups; never reorders
               <Card key={index} className="gap-3 py-4">
                 <CardHeader className="flex justify-center px-4">
                   <RankGroupHeader group={group} compact />

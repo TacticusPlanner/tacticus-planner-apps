@@ -112,6 +112,7 @@ export function StatRadarCard({
             const { x, y } = point(index, fraction, radius, center)
             return (
               <circle
+                // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed radar axes; the position is the axis
                 key={index}
                 cx={x}
                 cy={y}

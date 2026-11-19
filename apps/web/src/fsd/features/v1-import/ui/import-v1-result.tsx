@@ -186,6 +186,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
                   <OutcomeRow
                     auto={isAutomaticallyAdded(outcome)}
                     subject={subjectFor(outcome)}
+                    // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only import report; never reorders
                     key={index}
                     outcome={outcome}
                     t={t}
@@ -207,6 +208,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
                     {buckets.needsNoImport.map((outcome, index) => (
                       <OutcomeRow
                         subject={subjectFor(outcome)}
+                        // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only import report; never reorders
                         key={index}
                         outcome={outcome}
                         t={t}
@@ -229,6 +231,7 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
                   {buckets[bucket].map((outcome, index) => (
                     <OutcomeRow
                       subject={subjectFor(outcome)}
+                      // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only import report; never reorders
                       key={index}
                       outcome={outcome}
                       t={t}

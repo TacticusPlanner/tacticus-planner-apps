@@ -559,6 +559,7 @@ function TokenMarkerList({
             )
           )}
       {steps.map((step, index) => (
+        // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only ordered steps; a step can repeat
         <li className="text-primary" key={`${step}${index}`}>
           {t("tokenPlan.plan.step", { step: t(`outlook.steps.${step}`) })}
         </li>

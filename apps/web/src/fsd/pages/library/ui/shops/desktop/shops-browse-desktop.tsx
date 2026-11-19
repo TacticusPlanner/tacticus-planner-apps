@@ -64,6 +64,7 @@ export function ShopsBrowseDesktop({
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {slots.map((slot, index) => (
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- shop slots are positional
             <ShopSlotCard key={index} slot={slot} index={index} />
           ))}
         </div>

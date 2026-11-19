@@ -71,6 +71,7 @@ export function MilestoneGrid({
                 points: numbers.format(cell.cumulativePoints),
               })
           return (
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed milestone ladder; the position is the milestone
             <li key={index}>
               <Tooltip>
                 <TooltipTrigger asChild>

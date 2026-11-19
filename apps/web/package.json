@@ -22,6 +22,7 @@
     "lint": "pnpm run lint:eslint && pnpm run lint:knip",
     "lint:eslint": "eslint --cache --cache-strategy content --cache-location node_modules/.cache/eslint/",
     "lint:knip": "knip",
+    "lint:counts": "node --max-old-space-size=8192 scripts/lint-counts.mjs",
     "lint:fsd": "steiger ./src/fsd",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc -b --noEmit",

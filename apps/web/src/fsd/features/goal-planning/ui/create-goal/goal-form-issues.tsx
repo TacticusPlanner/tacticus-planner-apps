@@ -35,6 +35,7 @@ export function FieldIssues({
             : `create-goal-issue-${kind}-${field}`
         }
         id={issueMessageId(kind, field, index)}
+        // eslint-disable-next-line @eslint-react/no-array-index-key -- derived read-only issue list; rebuilt on each change
         key={index}
       >
         {issue.message}
@@ -81,6 +82,7 @@ export function GoalFormIssueSummary({
         </p>
         <ul className="grid gap-0.5">
           {issues.map((issue, index) => (
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- derived read-only issue list; rebuilt on each change
             <li key={index}>
               <button
                 className="w-full rounded-xl px-2 py-1.5 text-left text-sm hover:bg-muted"

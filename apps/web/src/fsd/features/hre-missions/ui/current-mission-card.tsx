@@ -87,6 +87,7 @@ export function CurrentMissionCard({
           const done = value >= objective.target
           const testId = `hre-objective-${index}`
           return (
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- objectives are positional; progress is indexed by position
             <div key={index} className="space-y-1.5" data-testid={testId}>
               <div className="flex items-start justify-between gap-2">
                 <p className="flex items-center gap-2 text-sm font-medium">

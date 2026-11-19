@@ -139,6 +139,7 @@ function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
         <div className="flex flex-col">
           {modifiers.map((modifier, index) => (
             <ModifierRow
+              // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only modifier list; an id can repeat
               key={`${modifier.modifierId}-${index}`}
               modifier={modifier}
             />

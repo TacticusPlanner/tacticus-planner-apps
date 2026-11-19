@@ -104,6 +104,7 @@ function ModifierRows({
         const described = describeModifier(modifier)
         return (
           <li
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only catalog list; never reorders
             key={`${modifier.modifierId}-${index}`}
             className="flex justify-between gap-3"
           >
@@ -185,6 +186,7 @@ export function RaidBossDetail({
                 const label = stepLabels[index]
                 if (!label) return null
                 return (
+                  // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only catalog list; never reorders
                   <SelectItem key={index} value={String(index)}>
                     <span className="inline-flex items-center gap-1.5">
                       <RarityTier
@@ -295,6 +297,7 @@ export function RaidBossDetail({
               </h3>
               <ul className="flex flex-col gap-1 text-sm">
                 {unit.weapons.map((weapon, index) => (
+                  // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only catalog list; never reorders
                   <li key={index} className="flex justify-between gap-2">
                     <span>{humanizeToken(weapon.damageProfile)}</span>
                     <span className="text-muted-foreground">
@@ -330,6 +333,7 @@ export function RaidBossDetail({
           <ul className="flex flex-wrap gap-3">
             {fieldEnemies.map((enemy, index) => (
               <li
+                // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only catalog list; never reorders
                 key={`${enemy.name}-${index}`}
                 className="flex items-center gap-2 text-sm"
               >

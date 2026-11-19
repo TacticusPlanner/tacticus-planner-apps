@@ -113,6 +113,7 @@ export function MilestoneGapSection({ gap }: { gap: MilestoneGap }) {
         {gap.pushes.map((push, index) => (
           <PushRow
             index={index}
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only ordered pushes; never reorders
             key={index}
             push={push}
             showRetry={sharedRetry === null}

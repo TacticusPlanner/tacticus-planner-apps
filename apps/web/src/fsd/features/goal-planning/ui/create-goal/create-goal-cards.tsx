@@ -82,13 +82,6 @@ export function GoalTypeCards({
       },
     }
   }
-  const cards: Record<GoalKind, () => ReactNode> = {
-    Rank: () => <CreateRankCard form={form} mythicHost={mythicHost} />,
-    Ascension: () => <CreateAscensionCard form={form} />,
-    Ability: () => <CreateAbilityCard form={form} mythicHost={mythicHost} />,
-    Upgrade: () => <CreateUpgradeCard form={form} mythicHost={mythicHost} />,
-    Unlock: () => <CreateUnlockCard form={form} />,
-  }
   // One Mythic-material selection serves every enabled Rank/Upgrade/MoW-Ability goal of this unit
   // (add-mythic-material-shop-sources); render it once, in the first such card.
   const mythicHost = goalKinds.find(
@@ -105,7 +98,7 @@ export function GoalTypeCards({
         .filter((kind) => form.enabledTypes.has(kind))
         .map((kind) => (
           <GoalTypeCard key={kind} {...cardProps(kind)}>
-            {cards[kind]()}
+            {goalCard(kind, { form, mythicHost })}
           </GoalTypeCard>
         ))}
     </>
@@ -113,6 +106,27 @@ export function GoalTypeCards({
 }
 
 type CardArgs = { form: GoalForm; mythicHost?: GoalKind }
+
+/** The body of the card for one goal kind. */
+function goalCard(kind: GoalKind, args: CardArgs): ReactNode {
+  switch (kind) {
+    case "Rank": {
+      return <CreateRankCard {...args} />
+    }
+    case "Ascension": {
+      return <CreateAscensionCard form={args.form} />
+    }
+    case "Ability": {
+      return <CreateAbilityCard {...args} />
+    }
+    case "Upgrade": {
+      return <CreateUpgradeCard {...args} />
+    }
+    case "Unlock": {
+      return <CreateUnlockCard form={args.form} />
+    }
+  }
+}
 
 const note = (form: GoalForm, kind: GoalKind) => (
   <GoalNoteDisclosure

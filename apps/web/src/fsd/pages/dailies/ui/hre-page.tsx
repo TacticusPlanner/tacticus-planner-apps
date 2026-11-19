@@ -330,6 +330,7 @@ export function HrePage() {
         alliance={allianceName}
         hero={heroName}
         hseEvent={hse?.name ?? null}
+        // eslint-disable-next-line @eslint-react/no-array-index-key -- falls back to position only for a team with no plan yet
         key={plan?.mode ?? index}
         missions={missions}
         plan={plan}

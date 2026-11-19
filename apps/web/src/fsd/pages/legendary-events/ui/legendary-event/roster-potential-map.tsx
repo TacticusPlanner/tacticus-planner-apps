@@ -70,6 +70,7 @@ export function RosterPotentialMap({
       <div className="flex min-w-0 gap-1">
         <div aria-hidden className="flex shrink-0 flex-col gap-px pt-0">
           {columns.map((column, row) => (
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- objective rows and battle columns are positional
             <span className="flex h-3.5 items-center" key={row}>
               <ObjectiveIcon className="size-3.5" icon={column.icon} />
             </span>
@@ -105,6 +106,7 @@ export function RosterPotentialMap({
                     className={cn("h-3.5 w-full rounded-xs", CELL_CLASS[state])}
                     data-state={state}
                     data-testid="roster-potential-cell"
+                    // eslint-disable-next-line @eslint-react/no-array-index-key -- objective rows and battle columns are positional
                     key={row}
                   />
                 ))}
@@ -117,6 +119,7 @@ export function RosterPotentialMap({
               </button>
             )
             return (
+              // eslint-disable-next-line @eslint-react/no-array-index-key -- objective rows and battle columns are positional
               <li className="min-w-0 flex-1" key={battle}>
                 {isMobile ? (
                   <Popover>

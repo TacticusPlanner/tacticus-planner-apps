@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { raidTicketIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
@@ -31,7 +32,9 @@ export function PlanDayCard({
   const { t } = useTranslation("dailies")
   const dateLocale = useDateLocale()
   const ratio = raids.dailyEnergy > 0 ? day.energyTotal / raids.dailyEnergy : 0
-  const date = new Date()
+  // Today as of mount (render stays pure); the card's date is that many days on.
+  const [today] = useState(() => new Date())
+  const date = new Date(today)
   date.setDate(date.getDate() + day.day - 1)
 
   // Today only: nodes whose real attempts are spent can't be an alternative until tomorrow.

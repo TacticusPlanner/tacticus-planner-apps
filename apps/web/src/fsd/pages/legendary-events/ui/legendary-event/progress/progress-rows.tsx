@@ -79,6 +79,7 @@ export function ProgressRows({
         </span>
       )}
       {battle.cleared.map((cleared, index) => (
+        // eslint-disable-next-line @eslint-react/no-array-index-key -- objective columns are positional
         <span className="flex justify-center" key={index}>
           <ProgressCell
             battleIndex={battle.index}
@@ -135,6 +136,7 @@ export function ProgressRows({
         {columns.map((column, index) => (
           <span
             className="flex flex-col items-center"
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- objective columns are positional
             key={index}
             title={column.label}
           >

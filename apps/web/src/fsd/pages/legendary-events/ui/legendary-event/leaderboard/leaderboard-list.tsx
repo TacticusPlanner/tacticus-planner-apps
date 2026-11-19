@@ -85,6 +85,7 @@ export function LeaderboardList({
               {row.objectives.map((met, index) => (
                 <ObjectiveIndicator
                   icon={objectives[index]?.icon}
+                  // eslint-disable-next-line @eslint-react/no-array-index-key -- objective columns are positional
                   key={index}
                   label={objectives[index]?.label ?? ""}
                   met={met}
