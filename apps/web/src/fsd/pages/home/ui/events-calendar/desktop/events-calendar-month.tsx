@@ -66,7 +66,6 @@ export function EventsCalendarMonth({
             })}
           </div>
           {week.lanes.map((lane, laneIndex) => (
-            // eslint-disable-next-line @eslint-react/no-array-index-key -- lanes are positional rows of the grid
             <EventLaneRow compact key={laneIndex} lane={lane} />
           ))}
         </div>

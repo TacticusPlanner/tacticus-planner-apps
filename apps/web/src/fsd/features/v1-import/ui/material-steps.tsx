@@ -47,7 +47,6 @@ export function MaterialSteps({
             <li
               className="rounded-lg border bg-background p-2 text-xs text-foreground"
               data-testid="v1-import-material-step"
-              // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only import report; ids can repeat
               key={`${step.sourceGoalId ?? ""}:${step.upgradeId ?? ""}:${index}`}
             >
               <p className="font-medium">

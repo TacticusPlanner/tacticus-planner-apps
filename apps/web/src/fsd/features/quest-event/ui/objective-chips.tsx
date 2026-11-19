@@ -63,7 +63,6 @@ export function ObjectiveChips({
             )}
             data-restriction={restriction ? "true" : undefined}
             data-testid="quest-objective-chip"
-            // eslint-disable-next-line @eslint-react/no-array-index-key -- objectives are positional; a type can repeat
             key={`${objective.type}-${index}`}
           >
             <Icon aria-hidden className="size-3.5 shrink-0" />

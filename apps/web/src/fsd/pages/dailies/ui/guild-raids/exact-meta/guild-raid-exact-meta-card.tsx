@@ -403,7 +403,6 @@ export function GuildRaidExactMetaCard({
             {focus}
             {slots.map((slot, index) => (
               <div
-                // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed team slots; the position is the slot
                 key={`${slot.kind}-${index}`}
                 className="flex flex-col gap-2"
               >
@@ -424,7 +423,6 @@ export function GuildRaidExactMetaCard({
             <div className="grid grid-cols-6 gap-2">
               {slots.map((slot, index) => (
                 <SlotTile
-                  // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed team slots; the position is the slot
                   key={`${slot.kind}-${index}`}
                   slot={slot}
                   index={index}

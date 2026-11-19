@@ -80,7 +80,6 @@ export function UnitProfile({ profile }: { profile: UnitProfileViewModel }) {
           <ProfileSection label={t("unitLookup.equipment")}>
             {profile.equipmentSlots.map((slot, index) => (
               <Badge
-                // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed equipment slots; a slot type can repeat
                 key={`${slot}-${index}`}
                 variant="outline"
                 className="gap-1 font-normal"
