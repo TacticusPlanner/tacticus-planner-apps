@@ -1,8 +1,9 @@
 import { execFileSync } from "child_process"
 import path from "path"
 import posthogSourceMaps from "@posthog/rollup-plugin"
+import babel from "@rolldown/plugin-babel"
 import tailwindcss from "@tailwindcss/vite"
-import react from "@vitejs/plugin-react"
+import react, { reactCompilerPreset } from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import type { Plugin } from "vite"
 import { configDefaults, coverageConfigDefaults } from "vitest/config"
@@ -132,6 +133,9 @@ export default defineConfig(({ command }) => {
   return {
     plugins: [
       react(),
+      // React Compiler memoizes components and hooks at build time. The preset's filter covers the
+      // app and the `@workspace/ui` source it resolves through the alias below.
+      babel({ presets: [reactCompilerPreset()] }),
       tailwindcss(),
       chunkPackages(),
       capModulePreloads(),

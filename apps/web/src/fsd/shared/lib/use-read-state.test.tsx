@@ -7,8 +7,9 @@ import { act, render, screen } from "@/test/render"
 import { combineReadStates, useReadState } from "./use-read-state"
 import type { ReadState } from "./use-read-state"
 
-function Probe({ read }: { read: () => ReadState<string> }) {
-  const state = read()
+// The prop is a hook, so it is named like one: React Compiler would otherwise cache the call.
+function Probe({ useRead }: { useRead: () => ReadState<string> }) {
+  const state = useRead()
   return (
     <>
       <p>{state.status === "ready" ? state.data : state.status}</p>
@@ -19,7 +20,9 @@ function Probe({ read }: { read: () => ReadState<string> }) {
 
 describe("useReadState", () => {
   it("goes from loading to ready", async () => {
-    render(<Probe read={() => useReadState("ok", async () => "value", [])} />)
+    render(
+      <Probe useRead={() => useReadState("ok", async () => "value", [])} />
+    )
 
     expect(screen.getByText("loading")).toBeInTheDocument()
     expect(await screen.findByText("value")).toBeInTheDocument()
@@ -32,7 +35,7 @@ describe("useReadState", () => {
       .mockRejectedValueOnce(new Error("boom again"))
       .mockResolvedValue("recovered")
 
-    render(<Probe read={() => useReadState("flaky", querier, [])} />)
+    render(<Probe useRead={() => useReadState("flaky", querier, [])} />)
 
     // One automatic retry for a transient failure, then the error.
     expect(await screen.findByText("error")).toBeInTheDocument()
@@ -91,7 +94,7 @@ describe("useReadState after a sync", () => {
     }
     let value = "first"
     render(
-      <Probe read={() => useReadState("changing", async () => value, [])} />,
+      <Probe useRead={() => useReadState("changing", async () => value, [])} />,
       { wrapper: Wrapper }
     )
     expect(await screen.findByText("first")).toBeInTheDocument()
