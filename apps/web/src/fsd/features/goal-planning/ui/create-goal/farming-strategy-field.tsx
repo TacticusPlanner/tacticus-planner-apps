@@ -186,7 +186,6 @@ function renderStageChain(
       nodes.push(
         <ArrowRight
           className="size-3.5 shrink-0 text-muted-foreground"
-          // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only path of stages; never reorders
           key={`arrow-${index}`}
         />
       )
@@ -195,7 +194,6 @@ function renderStageChain(
       point === null ? (
         <span
           className="px-0.5 text-muted-foreground"
-          // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only path of stages; never reorders
           key={`ellipsis-${index}`}
         >
           ⋯
@@ -204,7 +202,6 @@ function renderStageChain(
         <RankBadge
           className="shrink-0"
           iconClassName="size-6"
-          // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only path of stages; never reorders
           key={`stage-${index}`}
           rank={rankAt(point)}
           showLabel={false}
@@ -212,7 +209,6 @@ function renderStageChain(
       ) : (
         <span
           className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium"
-          // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only path of stages; never reorders
           key={`stage-${index}`}
         >
           {point}

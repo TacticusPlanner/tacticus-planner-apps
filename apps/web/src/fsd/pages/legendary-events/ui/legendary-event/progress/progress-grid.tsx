@@ -57,7 +57,6 @@ export function ProgressGrid({
         ) : null}
       </th>
       {battle.cleared.map((cleared, index) => (
-        // eslint-disable-next-line @eslint-react/no-array-index-key -- objective columns are positional
         <td className="p-0.5 text-center" key={index}>
           <ProgressCell
             battleIndex={battle.index}
@@ -112,7 +111,6 @@ export function ProgressGrid({
               <th
                 className="px-0.5 py-1 font-normal"
                 data-testid="progress-column"
-                // eslint-disable-next-line @eslint-react/no-array-index-key -- objective columns are positional
                 key={index}
                 scope="col"
                 title={label}

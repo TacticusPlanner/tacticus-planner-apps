@@ -289,11 +289,9 @@ function OwnedDetails({
         >
           {slots.map((item, index) =>
             item ? (
-              // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed equipment slots; the position is the slot
               <EquipmentSlot key={index} item={item} />
             ) : (
               <span
-                // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed equipment slots; the position is the slot
                 key={index}
                 className="h-6 rounded-sm border-2 border-dashed"
                 data-testid="unit-tile-empty-slot"

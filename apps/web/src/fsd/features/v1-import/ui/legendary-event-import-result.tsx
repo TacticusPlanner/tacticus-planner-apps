@@ -79,7 +79,6 @@ export function LegendaryEventImportResult({
                       {outcome.issues.map((issue, index) => {
                         const { text, showValue } = issueText(issue, outcome)
                         return (
-                          // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only import report; never reorders
                           <li data-testid="v1-import-le-issue" key={index}>
                             {text}
                             {issue.teamName ? (

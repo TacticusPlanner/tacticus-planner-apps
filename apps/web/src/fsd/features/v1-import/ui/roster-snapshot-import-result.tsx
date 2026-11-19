@@ -46,7 +46,6 @@ export function RosterSnapshotImportResult({
                 <li
                   className="rounded-lg border bg-background p-2 text-xs"
                   data-testid="v1-import-snapshot"
-                  // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only import report; dates can repeat
                   key={`${outcome.takenAt}-${index}`}
                 >
                   <div className="flex flex-wrap items-baseline gap-x-2">

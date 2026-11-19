@@ -65,7 +65,6 @@ function MilestoneList<T>({
           <div
             className="grid gap-1.5 rounded-xl border p-2"
             data-testid={`create-goal-${kind}-milestone-${index}`}
-            // eslint-disable-next-line @eslint-react/no-array-index-key -- milestones are positional and fully controlled; no row-local state
             key={index}
           >
             <div className="flex items-center justify-between gap-2">

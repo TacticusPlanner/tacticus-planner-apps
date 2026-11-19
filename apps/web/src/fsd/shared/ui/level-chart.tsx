@@ -124,7 +124,6 @@ export function LevelChart({
         >
           {[scale.max, scale.mid, scale.min].map((tick, index) => (
             <span
-              // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed chart ticks and columns; the position is the value
               key={index}
               className="absolute right-1 -translate-y-1/2"
               style={{ top: `${(1 - chartY(tick, scale)) * 100}%` }}
@@ -143,7 +142,6 @@ export function LevelChart({
           >
             {[scale.max, scale.mid, scale.min].map((tick, index) => (
               <line
-                // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed chart ticks and columns; the position is the value
                 key={index}
                 x1={0}
                 x2={PLOT_WIDTH}
@@ -219,7 +217,6 @@ export function LevelChart({
             )}
             {points.map((_, index) => (
               <rect
-                // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed chart ticks and columns; the position is the value
                 key={index}
                 x={index * columnWidth}
                 y={0}
