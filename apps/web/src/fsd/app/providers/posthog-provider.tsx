@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useEffectEvent } from "react"
 import type { ReactNode } from "react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { useMatches } from "react-router"
@@ -117,24 +117,24 @@ function PostHogIdentity({
     ? toRoutePattern(leafMatch.pathname, leafMatch.params)
     : undefined
 
-  useEffect(() => {
-    if (!routePattern || !isIdentified || !isReady) {
-      return
-    }
+  // Fires on an actual route-pattern change (specs/product-analytics/spec.md's "Navigation is
+  // reported as declared page-view events") and once when the SDK becomes ready after
+  // identification, reporting the route the user is on at that moment (the SDK is downloaded only
+  // once a user is identified). isIdentified/routeGroup/isMobile/captureEvent are read when it fires
+  // (an effect event) rather than being trigger dependencies, so signing in/out with the SDK already
+  // loaded, a nav-section change, or a viewport resize on the *same* route never fires a spurious
+  // extra page_view.
+  const reportPageView = useEffectEvent((pattern: string) => {
+    if (!isIdentified) return
     captureEvent({
       type: "page_view",
-      routePattern,
+      routePattern: pattern,
       routeGroup: routeGroup ?? "unknown",
       viewMode: isMobile ? "mobile" : "desktop",
     })
-    // Fires on an actual route-pattern change (specs/product-analytics/spec.md's "Navigation is
-    // reported as declared page-view events") and once when the SDK becomes ready after
-    // identification, reporting the route the user is on at that moment (the SDK is downloaded
-    // only once a user is identified). isIdentified/routeGroup/isMobile/captureEvent are read at
-    // the moment the effect runs rather than being trigger dependencies, so signing in/out with the
-    // SDK already loaded, a nav-section change, or a viewport resize on the *same* route never
-    // fires a spurious extra page_view.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  })
+  useEffect(() => {
+    if (routePattern && isReady) reportPageView(routePattern)
   }, [routePattern, isReady])
 
   return <>{children}</>

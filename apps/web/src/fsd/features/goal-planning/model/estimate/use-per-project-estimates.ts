@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useEffectEvent, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { unitIdSchema } from "@workspace/game-domain"
@@ -121,7 +121,8 @@ export function usePerProjectEstimates({
     results: ReadonlyMap<string, PerProjectEstimate>
   }>({ key: "", results: new Map() })
 
-  useEffect(() => {
+  // Reads the latest goals, catalogs and settings when it starts; restarts only when a key below changes.
+  const startEstimate = useEffectEvent(() => {
     if (
       !hasQuery ||
       !projectGoalsReady ||
@@ -230,18 +231,21 @@ export function usePerProjectEstimates({
     return () => {
       active = false
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    hasQuery,
-    projectGoalsReady,
-    detailsReady,
-    catalogReady,
-    memberKey,
-    newDetailsKey,
-    dailyEnergy,
-    onslaughtRunsPerDay,
-    eligibleBattlesKey,
-  ])
+  })
+  useEffect(
+    () => startEstimate(),
+    [
+      hasQuery,
+      projectGoalsReady,
+      detailsReady,
+      catalogReady,
+      memberKey,
+      newDetailsKey,
+      dailyEnergy,
+      onslaughtRunsPerDay,
+      eligibleBattlesKey,
+    ]
+  )
 
   if (!hasQuery || newDetails.length === 0) return new Map()
   // A failed catalog read never becomes ready: say there's no estimate rather than load forever.

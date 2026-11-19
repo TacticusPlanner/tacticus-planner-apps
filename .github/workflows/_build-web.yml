@@ -164,6 +164,10 @@ jobs:
       - name: Lint FSD
         run: pnpm lint:fsd
 
+      # Every hook and component compiles under React Compiler except the allowlisted few.
+      - name: Check React Compiler skips
+        run: pnpm --filter web lint:compiler
+
   bundle:
     name: Typecheck and bundle
     if: ${{ !inputs.skip }}

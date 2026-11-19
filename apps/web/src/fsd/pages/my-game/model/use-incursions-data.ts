@@ -28,7 +28,5 @@ export function useIncursionsData() {
         ownedMowIds: new Set((mows ?? []).map((mow) => mow.unitId as string)),
       },
     }
-    // `retry` is rebuilt per render by combineReadStates; it only matters on failure.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, incursions, npcsById, mows])
+  }, [status, incursions, npcsById, mows, retry])
 }

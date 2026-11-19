@@ -60,7 +60,5 @@ export function useUnitPowerContext(): ReadState<UnitPowerContext | null> {
     if (status === "error") return { status, retry }
     if (context === undefined) return { status: "loading", retry }
     return { status: "ready", data: context, retry }
-    // `retry` is rebuilt per render by combineReadStates; it only matters on error.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, context])
+  }, [status, context, retry])
 }

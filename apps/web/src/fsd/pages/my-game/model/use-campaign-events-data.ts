@@ -34,7 +34,5 @@ export function useCampaignEventsData() {
         liveProgress: liveProgress ?? undefined,
       },
     }
-    // `retry` is rebuilt per render by combineReadStates; it only matters on failure.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, definitions, battles, synced, characters, liveProgress])
+  }, [status, definitions, battles, synced, characters, liveProgress, retry])
 }

@@ -58,7 +58,5 @@ export function useNpcsCatalog(): NpcsCatalog {
       byId: new Map(groups.map((group) => [group.id, group])),
       retry,
     }
-    // `retry` is rebuilt per render by combineReadStates; it only matters on failure.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [failed, npcs])
+  }, [failed, npcs, retry])
 }

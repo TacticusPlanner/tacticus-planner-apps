@@ -55,8 +55,6 @@ export function useSyncedCatalogDataset<K extends GameCatalogDatasetKey>(
       byId: byIdData ?? new Map<string, StorageModel<K>>(),
       retry,
     }),
-    // `retry` is rebuilt per render by combineReadStates; it only matters on failure.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [status, recordsData, byIdData]
+    [status, recordsData, byIdData, retry]
   )
 }

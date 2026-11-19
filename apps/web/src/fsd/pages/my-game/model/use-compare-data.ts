@@ -20,7 +20,7 @@ import type {
   RosterDiffContext,
   RosterSnapshotSource,
 } from "@/entities/roster-snapshot"
-import { useQueryReadState } from "@/shared/lib"
+import { useQueryReadState, useStableByKey } from "@/shared/lib"
 import type { ReadState } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
@@ -97,12 +97,14 @@ export function useCompareSources(enabled: boolean): ReadState<CompareSources> {
     (query) => query.isError && !query.isFetching
   )
   const recordsReady = records.every((query) => query.data !== undefined)
-  const recordPages = records.map((query) => query.data)
   // Stable until a page is fetched again (a sync can replace records at the same count), so the
   // memo below does not rebuild every render.
-  const recordsKey = records
-    .map((query) => (query.data ? String(query.dataUpdatedAt) : "-"))
-    .join("|")
+  const recordPages = useStableByKey(
+    records
+      .map((query) => (query.data ? String(query.dataUpdatedAt) : "-"))
+      .join("|"),
+    records.map((query) => query.data)
+  )
 
   const retry = () => {
     personal.retry()
@@ -139,9 +141,7 @@ export function useCompareSources(enabled: boolean): ReadState<CompareSources> {
     return list.toSorted(
       (a, b) => Date.parse(b.takenAt) - Date.parse(a.takenAt)
     )
-    // recordPages is summarized by recordsKey.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [personalData, plans, recordsReady, recordsKey, eventNames])
+  }, [personalData, plans, recordsReady, recordPages, eventNames])
 
   if (!enabled) return loading(retry)
   if (
