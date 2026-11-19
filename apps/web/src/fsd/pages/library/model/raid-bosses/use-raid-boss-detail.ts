@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { fieldNpcIcon } from "@workspace/game-catalog"
 import type { NpcStorageModel } from "@workspace/game-catalog"
 
@@ -32,19 +32,14 @@ export function useRaidBossDetail(
   const npcs = npcsRead.status === "ready" ? npcsRead.data : NO_NPCS
 
   // Progression step and per-prime HP-lost points are ephemeral exploration state (not URL-backed) —
-  // reset whenever the selected entity changes.
+  // reset while rendering whenever the selected entity (or exact encounter) changes, so the new
+  // boss never paints with the previous one's step.
   const [stepIndex, setStepIndex] = useState(0)
   const [hpLostByPrime, setHpLostByPrime] = useState<Record<string, number>>({})
-  const stepForUnitRef = useRef<string | undefined>(undefined)
-
-  useEffect(() => {
-    if (!selectedUnit || !catalog.payload) return
-    const key = exactLocation
-      ? `${selectedUnit.unitSetId}:${exactLocation.seasonId}:${exactLocation.tier}:${exactLocation.set}:${exactLocation.encounterIndex}`
-      : selectedUnit.unitSetId
-    if (stepForUnitRef.current === key) return
-
-    stepForUnitRef.current = key
+  const [stepForKey, setStepForKey] = useState<string | undefined>(undefined)
+  const stepKey = selectedUnit && stepResetKey(selectedUnit, exactLocation)
+  if (selectedUnit && catalog.payload && stepForKey !== stepKey) {
+    setStepForKey(stepKey)
     setHpLostByPrime({})
     setStepIndex(
       exactLocation
@@ -58,7 +53,7 @@ export function useRaidBossDetail(
             selectedUnit.statProgression.length
           )
     )
-  }, [selectedUnit, catalog.payload, exactLocation])
+  }
 
   const onHpLostChange = useCallback(
     (primeUnitSetId: string, hpLost: number) =>
@@ -147,4 +142,14 @@ export function useRaidBossDetail(
   ])
 
   return { stepIndex, setStepIndex, modifierContext, fieldEnemies, adjusted }
+}
+
+/** The selection whose change resets the progression step: the boss, or its exact encounter. */
+function stepResetKey(
+  unit: RaidBoss,
+  location: ResolvedRaidBossEncounterLocation | undefined
+): string {
+  return location
+    ? `${unit.unitSetId}:${location.seasonId}:${location.tier}:${location.set}:${location.encounterIndex}`
+    : unit.unitSetId
 }

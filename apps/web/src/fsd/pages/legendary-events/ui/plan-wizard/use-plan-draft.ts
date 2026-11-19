@@ -405,6 +405,7 @@ export function usePlanDraft(
   })
   // The rest of the search only settles the other steps' verdicts: it runs in idle time.
   useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-pass-data-to-parent, react-you-might-not-need-an-effect/no-pass-live-state-to-parent -- reprioritizes the search worker, an external system
     if (targetSettled) lowerPriority()
   }, [targetSettled, lowerPriority, recommendations])
   // Each step's verdict from the last search that ended on settled inputs, shown dimmed while

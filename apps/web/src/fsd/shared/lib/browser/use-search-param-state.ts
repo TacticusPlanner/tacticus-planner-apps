@@ -22,6 +22,7 @@ export function useSearchParamState<T extends string>(
   const validity = raw === null ? undefined : isValid(raw)
 
   useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- removes an invalid param from the URL
     if (raw === null || validity !== false) return
     setParams(
       (previous) => {

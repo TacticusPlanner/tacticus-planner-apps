@@ -118,6 +118,7 @@ export function useLaneJump(
   // Every render: a jump's section can appear with its tab, its lane or Plan's Battles lane.
   useEffect(() => {
     const target = jumpTarget.current
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- scrolls to the jump target once its section has rendered
     if (!target || target.tab !== selectedTab) return
     // A section that never renders (no progress grid, say) must not scroll the page later.
     if (Date.now() - target.at > JUMP_TIMEOUT_MS) {

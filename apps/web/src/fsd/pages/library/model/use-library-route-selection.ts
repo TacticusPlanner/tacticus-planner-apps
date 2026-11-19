@@ -38,6 +38,7 @@ export function useLibraryRouteSelection({
         : undefined
 
   useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- canonicalizes the URL once the ids load
     if (loading || entityIds === undefined) return
 
     const firstId = entityIds[0]
@@ -47,6 +48,7 @@ export function useLibraryRouteSelection({
     const hasCanonicalPath = location.pathname === canonicalPath
     const hasCanonicalSearch = location.search === search
 
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- canonicalizes the URL, which can't change during render
     if (!hasCanonicalPath || !hasCanonicalSearch) {
       void navigate({ pathname: canonicalPath, search }, { replace: true })
     }

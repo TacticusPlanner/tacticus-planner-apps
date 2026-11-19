@@ -17,6 +17,7 @@ export function useRequestApiAccessOnce(
   const requested = useRef(false)
 
   useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- starts the re-authentication redirect, a side effect
     if (!handling) {
       requested.current = false
       return
