@@ -231,6 +231,9 @@ function HsePageHarness({
   projectId?: string
   initialEntry?: string
 }) {
+  // Tests swap the mocked event between renders; without this, React Compiler would keep the
+  // page element and a rerender would never read the new event.
+  "use no memo"
   const context: DailiesOutletContext = {
     projects: [],
     projectId,
