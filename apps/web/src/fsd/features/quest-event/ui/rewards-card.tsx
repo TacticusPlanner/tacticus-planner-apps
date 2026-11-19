@@ -83,7 +83,6 @@ function CrateRewards({
         return (
           <li
             className="inline-flex items-center gap-0.5 text-sm"
-            // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only reward list; a type can repeat
             key={`${reward.type}-${index}`}
             title={name}
           >

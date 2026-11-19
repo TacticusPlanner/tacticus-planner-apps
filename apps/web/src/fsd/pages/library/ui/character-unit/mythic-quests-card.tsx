@@ -132,7 +132,6 @@ export function MythicQuestsList({
               const text = template(task.locaKey)
               return text ? (
                 <AbilityText
-                  // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only catalog list; never reorders
                   key={index}
                   text={text}
                   level={1}
@@ -146,7 +145,6 @@ export function MythicQuestsList({
             <ul className="flex flex-wrap gap-1.5">
               {quest.rewards.map((reward, index) => (
                 <RewardChip
-                  // eslint-disable-next-line @eslint-react/no-array-index-key -- read-only catalog list; never reorders
                   key={index}
                   reward={mythicQuestReward(reward)}
                   equipment={equipment}

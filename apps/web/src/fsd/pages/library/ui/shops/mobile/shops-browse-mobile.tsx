@@ -35,7 +35,6 @@ export function ShopsBrowseMobile({
       ) : (
         <div className="flex flex-col gap-2">
           {slots.map((slot, index) => (
-            // eslint-disable-next-line @eslint-react/no-array-index-key -- shop slots are positional
             <ShopSlotCard key={index} slot={slot} index={index} />
           ))}
         </div>

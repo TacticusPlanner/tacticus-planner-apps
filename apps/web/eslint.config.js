@@ -219,7 +219,6 @@ export default defineConfig([
       "unicorn/require-array-sort-compare": "error",
       "unicorn/consistent-function-scoping": "warn",
       "sonarjs/cognitive-complexity": ["warn", 15],
-      "@eslint-react/no-array-index-key": "error",
       "@eslint-react/no-nested-component-definitions": "error",
       "@eslint-react/purity": "error",
     },
