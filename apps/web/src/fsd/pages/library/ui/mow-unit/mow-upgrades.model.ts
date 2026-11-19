@@ -168,7 +168,7 @@ export function calculateMowUpgrades({
         remaining: count - have,
       }
     })
-    .sort(
+    .toSorted(
       (a, b) =>
         rarityOf(b) - rarityOf(a) ||
         b.needed - a.needed ||

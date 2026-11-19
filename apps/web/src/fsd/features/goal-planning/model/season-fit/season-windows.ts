@@ -55,7 +55,7 @@ function authoredOccurrences(
       continue
     byStart.set(occurrence.startUtc, occurrence)
   }
-  return [...byStart.values()].sort(
+  return [...byStart.values()].toSorted(
     (a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc)
   )
 }

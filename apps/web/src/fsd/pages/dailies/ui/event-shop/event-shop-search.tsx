@@ -52,7 +52,7 @@ function useOfferSearch(
       normalizeSearchText(label, i18n.language).startsWith(needle) ? 0 : 1
     return groups
       .filter((entry) => anyNameIncludes(entry.names, needle, i18n.language))
-      .sort(
+      .toSorted(
         (a, b) =>
           starts(a.label) - starts(b.label) || a.label.localeCompare(b.label)
       )

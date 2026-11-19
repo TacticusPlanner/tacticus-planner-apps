@@ -16,6 +16,7 @@ import {
   isSupportedUnitFilterKind,
   isUnitAllowedOnLane,
 } from "./objective-match"
+import { compareCodeUnits } from "@/shared/lib"
 
 // Guards the served `lres` data against the client's matcher, so a new objective kind or a renamed
 // trait / damage-type / faction id fails CI instead of silently emptying an objective.
@@ -123,8 +124,10 @@ describe("served lres against the objective matcher", () => {
         const allowed = legendaryEventCharacters
           .filter((unit) => isUnitAllowedOnLane(unit, lane))
           .map((unit) => unit.id)
-          .sort()
-        expect(allowed, where).toEqual([...lane.availableUnitIds].sort())
+          .toSorted(compareCodeUnits)
+        expect(allowed, where).toEqual(
+          lane.availableUnitIds.toSorted(compareCodeUnits)
+        )
         expect(allowed.length, where).toBeGreaterThan(0)
       }
     }

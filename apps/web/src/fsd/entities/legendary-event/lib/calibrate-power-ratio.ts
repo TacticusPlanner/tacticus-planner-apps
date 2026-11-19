@@ -64,7 +64,7 @@ export function calibrationPoint(
 export function summarizeCalibration(
   points: readonly number[]
 ): PowerRatioCalibration {
-  const values = [...points].sort((a, b) => a - b)
+  const values = points.toSorted((a, b) => a - b)
   if (values.length === 0) {
     return { powerRatio: null, sampleCount: 0, interquartileRange: null }
   }

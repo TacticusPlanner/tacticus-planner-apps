@@ -322,7 +322,7 @@ export function abilityLevelOptionsFor(
   )
   return stored === undefined || options.includes(stored) || stored < 1
     ? options
-    : [...options, stored].sort((a, b) => a - b)
+    : [...options, stored].toSorted((a, b) => a - b)
 }
 
 /** Whether an Upgrade quantity is a whole number from 1 to {@link MAX_UPGRADE_QUANTITY}. A cleared field

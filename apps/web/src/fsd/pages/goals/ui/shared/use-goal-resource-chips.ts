@@ -318,11 +318,11 @@ export function useGoalResourceChips({
   addShopCurrency()
 
   // Same leading order on every goal (energy, gold, tokens); the rest keep their per-kind order
-  // (Array.sort is stable).
+  // (Array#toSorted is stable).
   const leading: GoalResourceChipKind[] = ["energy", "gold", "onslaughtTokens"]
   const rank = (chip: GoalResourceChip) => {
     const index = leading.indexOf(chip.kind)
     return index === -1 ? leading.length : index
   }
-  return chips.sort((a, b) => rank(a) - rank(b))
+  return chips.toSorted((a, b) => rank(a) - rank(b))
 }

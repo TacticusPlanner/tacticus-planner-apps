@@ -8,6 +8,7 @@ import es from "../../../../../public/locales/es/dailies.json"
 import esCommon from "../../../../../public/locales/es/common.json"
 import fr from "../../../../../public/locales/fr/dailies.json"
 import frCommon from "../../../../../public/locales/fr/common.json"
+import { compareCodeUnits } from "@/shared/lib"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
   if (typeof value !== "object" || value === null) return [prefix]
@@ -22,7 +23,9 @@ describe("Dailies translations", () => {
     ["es", es],
     ["fr", fr],
   ])("keeps the %s namespace aligned with English", (_locale, resource) => {
-    expect(leafKeys(resource).sort()).toEqual(leafKeys(en).sort())
+    expect(leafKeys(resource).toSorted(compareCodeUnits)).toEqual(
+      leafKeys(en).toSorted(compareCodeUnits)
+    )
   })
 
   it.each([
@@ -41,8 +44,8 @@ describe("Dailies translations", () => {
   ])(
     "keeps the shared Guild copy aligned in %s/common.json",
     (_locale, common) => {
-      expect(leafKeys(common.guild).sort()).toEqual(
-        leafKeys(enCommon.guild).sort()
+      expect(leafKeys(common.guild).toSorted(compareCodeUnits)).toEqual(
+        leafKeys(enCommon.guild).toSorted(compareCodeUnits)
       )
     }
   )

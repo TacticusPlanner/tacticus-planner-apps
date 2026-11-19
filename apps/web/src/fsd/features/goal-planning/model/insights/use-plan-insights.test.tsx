@@ -67,7 +67,8 @@ vi.mock("@/entities/goal-farming", () => ({
   toOnslaughtRunsPerDay: () => 1,
   useLevelRules: () => stable.levelRules,
 }))
-vi.mock("@/shared/lib", () => ({
+vi.mock("@/shared/lib", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/lib")>()),
   useCampaignDisplay: () => stable.display,
 }))
 vi.mock("@/shared/local-data", () => ({

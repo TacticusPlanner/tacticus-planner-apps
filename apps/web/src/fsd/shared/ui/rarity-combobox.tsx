@@ -107,7 +107,7 @@ export function RarityCombobox<TId extends string>({
         members: [item],
       })
     }
-    return [...byKey.values()].sort((a, b) => b.rank - a.rank)
+    return [...byKey.values()].toSorted((a, b) => b.rank - a.rank)
   }, [items, t])
 
   const selected = useMemo(

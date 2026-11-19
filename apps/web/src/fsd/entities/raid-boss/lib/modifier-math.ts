@@ -13,7 +13,7 @@ export function parseSubtargets(modifier: RaidBossEncounterModifier): string[] {
 export function sortModifiersByHpLost(
   modifiers: RaidBossEncounterModifier[]
 ): RaidBossEncounterModifier[] {
-  return [...modifiers].sort((a, b) => a.hpLost - b.hpLost)
+  return modifiers.toSorted((a, b) => a.hpLost - b.hpLost)
 }
 
 /**

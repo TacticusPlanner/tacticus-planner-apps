@@ -4,6 +4,7 @@ import de from "../../../../../public/locales/de/equipmentItems.json"
 import en from "../../../../../public/locales/en/equipmentItems.json"
 import es from "../../../../../public/locales/es/equipmentItems.json"
 import fr from "../../../../../public/locales/fr/equipmentItems.json"
+import { compareCodeUnits } from "../../lib/compare"
 
 const locales = { de, en, es, fr }
 
@@ -11,11 +12,13 @@ const locales = { de, en, es, fr }
 // game has no term for keep the game config's own name.
 describe("equipment item name translations", () => {
   it("covers the same equipment ids in every locale with no empty names", () => {
-    const enKeys = Object.keys(en).sort()
+    const enKeys = Object.keys(en).toSorted(compareCodeUnits)
     expect(enKeys).toHaveLength(217)
 
     for (const [code, locale] of Object.entries(locales)) {
-      expect(Object.keys(locale).sort(), code).toEqual(enKeys)
+      expect(Object.keys(locale).toSorted(compareCodeUnits), code).toEqual(
+        enKeys
+      )
       for (const [id, name] of Object.entries(locale)) {
         expect(name.trim(), `${code}:${id}`).not.toBe("")
       }

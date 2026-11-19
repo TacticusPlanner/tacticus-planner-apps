@@ -11,6 +11,7 @@ import type {
   GoalNeed,
 } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
+import { compareCodeUnits } from "@/shared/lib"
 
 /** What one battle fought by hand counts toward a manual objective (see hre-campaign-raids). */
 type MissionBattleYield =
@@ -149,7 +150,6 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
   battleYield?: (battleId: BattleId, per: MissionBattleYield) => number
 }
 
-const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 const descending = (a: number, b: number) => b - a
 
 /**
@@ -182,7 +182,7 @@ function compareCandidates(
       descending(rate(a, goalA), rate(b, goalB)) ||
       descending(a.expectedGold, b.expectedGold) ||
       (combineGoals ? 0 : (goalA?.priority ?? 0) - (goalB?.priority ?? 0)) ||
-      compareIds(a.id, b.id)
+      compareCodeUnits(a.id, b.id)
     )
   }
 }
@@ -242,7 +242,7 @@ export function planMissionRaids(
 
   const fillFrom = (candidates: readonly MissionRaidBattle[]) =>
     fill(
-      [...candidates].sort(sort),
+      candidates.toSorted(sort),
       raidBudget,
       [{ left: battlesLeft, weightOf: () => 1 }],
       input,
@@ -315,7 +315,7 @@ function planMissionBattles(
         passes(battle.id) &&
         quantified.every((need) => yieldOf(battle.id, need.per) > 0)
     )
-    .sort(
+    .toSorted(
       (a, b) =>
         (request.preferLightning
           ? Number(a.lightningCondition === false) -
@@ -450,7 +450,7 @@ export function buildMissionGoalNodes(
   upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
   battlesById: ReadonlyMap<BattleId, Battle>
 ): Map<BattleId, MissionGoalNode> {
-  const sorted = [...goals].sort((a, b) => a.priority - b.priority)
+  const sorted = goals.toSorted((a, b) => a.priority - b.priority)
   const allocations = allocatePlanInventory(sorted, inventory)
   const nodes = new Map<BattleId, MissionGoalNode>()
   for (const goal of sorted) {

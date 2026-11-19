@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { characterDamageTypes } from "./character-damage-types"
+import { compareCodeUnits } from "./compare"
 
 describe("characterDamageTypes", () => {
   it("returns the melee type for a melee-only character", () => {
@@ -21,7 +22,7 @@ describe("characterDamageTypes", () => {
         rangedDamage: "Bolter",
         activeAbilityDamage: ["Physical", "Psychic"],
         passiveAbilityDamage: ["Flame"],
-      }).sort()
+      }).toSorted(compareCodeUnits)
     ).toEqual(["Bolter", "Flame", "Physical", "Psychic"])
   })
 

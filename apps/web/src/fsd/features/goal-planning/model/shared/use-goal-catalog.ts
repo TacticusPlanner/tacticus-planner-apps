@@ -248,7 +248,7 @@ function mergeUnitGroups(a: FactionGroup[], b: FactionGroup[]): FactionGroup[] {
       byFaction.set(group.factionId, { ...group, members: [...group.members] })
     }
   }
-  return [...byFaction.values()].sort(
+  return [...byFaction.values()].toSorted(
     (x, y) => factionRank(x.factionId) - factionRank(y.factionId)
   )
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { battleEnemyTraits, listEnemyTraits } from "./battle-enemy-traits"
+import { compareCodeUnits } from "@/shared/lib"
 
 const npcs = new Map([
   ["bot", { traits: ["Mechanical", "Flying"] }],
@@ -13,11 +14,9 @@ const battle = (...ids: string[]) => ({
 
 describe("battleEnemyTraits", () => {
   it("unions and de-duplicates the traits of every enemy", () => {
-    expect(battleEnemyTraits(battle("bot", "imp"), npcs).sort()).toEqual([
-      "Daemon",
-      "Flying",
-      "Mechanical",
-    ])
+    expect(
+      battleEnemyTraits(battle("bot", "imp"), npcs).toSorted(compareCodeUnits)
+    ).toEqual(["Daemon", "Flying", "Mechanical"])
   })
 
   it("ignores an enemy id the dataset cannot resolve", () => {

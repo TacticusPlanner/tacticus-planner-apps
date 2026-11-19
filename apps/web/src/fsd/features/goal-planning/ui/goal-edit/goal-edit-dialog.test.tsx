@@ -178,6 +178,7 @@ import { ApiError } from "@/shared/api"
 import type { GoalDetail } from "@/entities/goal"
 
 import { GoalEditDialog } from "./goal-edit-dialog"
+import { compareCodeUnits } from "@/shared/lib"
 
 const config = {
   rank: null,
@@ -1363,7 +1364,7 @@ describe("GoalEditDialog", () => {
       await vi.waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
       expect(editGoal).toHaveBeenCalledTimes(1)
       const request = editGoal.mock.calls[0]![1]
-      expect(Object.keys(request).sort()).toEqual([
+      expect(Object.keys(request).toSorted(compareCodeUnits)).toEqual([
         "details",
         "priority",
         "target",

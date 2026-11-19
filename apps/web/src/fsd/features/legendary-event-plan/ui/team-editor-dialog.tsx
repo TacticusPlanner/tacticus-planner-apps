@@ -156,7 +156,7 @@ export function TeamEditorDialog({
   const searchInputRef = useRef<HTMLInputElement>(null)
   const isMobile = useIsMobile()
   const [reloaded, setReloaded] = useState(false)
-  const objectives = [...lane.unitsRestrictions].sort(
+  const objectives = lane.unitsRestrictions.toSorted(
     (a, b) => a.index - b.index
   )
   const checked = checkedObjectives(draft)

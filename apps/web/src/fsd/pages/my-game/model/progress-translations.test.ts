@@ -4,6 +4,7 @@ import de from "../../../../../public/locales/de/common.json"
 import en from "../../../../../public/locales/en/common.json"
 import es from "../../../../../public/locales/es/common.json"
 import fr from "../../../../../public/locales/fr/common.json"
+import { compareCodeUnits } from "@/shared/lib"
 
 function leaves(value: unknown, prefix = ""): [string, string][] {
   if (typeof value !== "object" || value === null)
@@ -13,7 +14,9 @@ function leaves(value: unknown, prefix = ""): [string, string][] {
   )
 }
 const placeholders = (text: string) =>
-  [...text.matchAll(/\{\{(\w+)\}\}/g)].map((match) => match[1]).sort()
+  [...text.matchAll(/\{\{(\w+)\}\}/g)]
+    .map((match) => match[1] ?? "")
+    .toSorted(compareCodeUnits)
 
 const sections = {
   "progress.events": (locale: typeof en) => locale.progress.events,
@@ -30,7 +33,9 @@ describe("Campaign Events translations", () => {
       ["fr", fr],
     ])("keeps %s aligned with English keys and placeholders", (_l, locale) => {
       const translated = new Map(leaves(pick(locale)))
-      expect([...translated.keys()].sort()).toEqual([...english.keys()].sort())
+      expect([...translated.keys()].toSorted(compareCodeUnits)).toEqual(
+        [...english.keys()].toSorted(compareCodeUnits)
+      )
       for (const [key, text] of translated) {
         expect(placeholders(text), key).toEqual(placeholders(english.get(key)!))
       }

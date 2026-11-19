@@ -72,11 +72,11 @@ export function useCollectionOptions(): CollectionOptions | undefined {
     const named = (ns: string, ids: Iterable<string>) =>
       [...new Set(ids)]
         .map((id) => ({ id, name: t(`${ns}:${id}`, { defaultValue: id }) }))
-        .sort((a, b) => compare(a.name, b.name))
+        .toSorted((a, b) => compare(a.name, b.name))
     return {
       factions: factionOptions([...characters, ...mows], (id) =>
         t(`factions:${id}`, { defaultValue: id })
-      ).sort(
+      ).toSorted(
         (a, b) =>
           allianceRank(a.alliance) - allianceRank(b.alliance) ||
           compare(a.name, b.name)
@@ -93,7 +93,7 @@ export function useCollectionOptions(): CollectionOptions | undefined {
 
 function combatOptions(characters: readonly OptionCharacter[]) {
   const ascending = (values: Iterable<number>) =>
-    [...new Set(values)].sort((a, b) => a - b)
+    [...new Set(values)].toSorted((a, b) => a - b)
   const sources = new Set(characters.flatMap((c) => [...shardSourcesOf(c)]))
   return {
     hits: ascending(

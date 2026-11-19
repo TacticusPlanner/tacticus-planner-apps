@@ -207,8 +207,8 @@ export function selectQuestTeam(input: {
     : objectives.filter(
         (objective) => passesObjective(featured, objective, summoners) === true
       )
-  const eligible = [
-    ...input.candidates.filter(
+  const eligible = input.candidates
+    .filter(
       ({ character }) =>
         character.id !== featured.id &&
         input.allowedFactionIds.includes(character.faction) &&
@@ -216,8 +216,8 @@ export function selectQuestTeam(input: {
           (objective) =>
             passesObjective(character, objective, summoners) !== false
         )
-    ),
-  ].sort(byStrength)
+    )
+    .toSorted(byStrength)
   const openSlots = Math.max(0, input.deploySlots - 1)
   const picked = eligible.slice(0, openSlots)
 

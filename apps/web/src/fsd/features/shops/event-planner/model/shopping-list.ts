@@ -52,7 +52,7 @@ function groupByDay(entries: readonly ClassifiedEntry[]): DayGroup[] {
     else byDay.set(entry.dayIndex, [entry])
   }
   return [...byDay]
-    .sort(([a], [b]) => a - b)
+    .toSorted(([a], [b]) => a - b)
     .map(([dayIndex, dayEntries]) => ({
       dayIndex,
       entries: dayEntries,
@@ -104,10 +104,10 @@ export function buildShoppingList(
       0
     ),
     all: [...byWeek]
-      .sort(([a], [b]) => a - b)
+      .toSorted(([a], [b]) => a - b)
       .map(([week, weekEntries]) => ({ week, days: groupByDay(weekEntries) })),
     ended: todayIndex >= dayCount,
-    weeks: [...byWeek.keys()].sort((a, b) => a - b),
+    weeks: [...byWeek.keys()].toSorted((a, b) => a - b),
   }
 }
 

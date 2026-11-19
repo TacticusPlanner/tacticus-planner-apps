@@ -26,7 +26,7 @@ export function upgradeRarityGroups(
     group.upgrades.push({ upgradeId, quantity })
     groups.set(rarity, group)
   }
-  return [...groups.values()].sort(
+  return [...groups.values()].toSorted(
     (a, b) => rarityRank(a.rarity) - rarityRank(b.rarity)
   )
 }

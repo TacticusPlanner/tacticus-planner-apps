@@ -59,3 +59,4 @@ export {
   matchesSearch,
   normalizeSearchText,
 } from "./search-text"
+export { compareCodeUnits } from "./compare"

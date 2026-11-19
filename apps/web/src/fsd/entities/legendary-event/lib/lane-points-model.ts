@@ -38,7 +38,7 @@ export function buildLanePointsModel(
     "battleIds" | "battlesPoints" | "defeatAll" | "unitsRestrictions"
   >
 ): LanePointsModel {
-  const objectives = [...lane.unitsRestrictions].sort(
+  const objectives = lane.unitsRestrictions.toSorted(
     (a, b) => a.index - b.index
   )
   const objectiveScores = objectives.map((objective) => objective.points)

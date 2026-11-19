@@ -14,6 +14,7 @@ import type {
 } from "@/entities/legendary-event"
 
 import type { PlanInputs, PlanLane } from "./plan-inputs"
+import { compareCodeUnits } from "@/shared/lib"
 
 /** Teams per lane the plan generates up to (design D5). */
 export const MAX_PLAN_TEAMS_PER_LANE = 6
@@ -46,7 +47,7 @@ export interface DraftTeam {
 
 /** The member set of a team, order-free (equal teams share it). */
 export const memberKey = (memberUnitIds: readonly string[]) =>
-  [...memberUnitIds].sort().join("|")
+  memberUnitIds.toSorted(compareCodeUnits).join("|")
 
 const generatedTeamKey = (
   laneId: LegendaryEventLaneId,
@@ -62,7 +63,7 @@ export function storedDrafts(
   return teams
     .filter((team) => team.laneId === planLane.laneId)
     .filter(isCompleteTeam)
-    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .toSorted((a, b) => a.sortOrder - b.sortOrder)
     .map((team) => {
       const derived = new Set(
         derivedTeamCoverage(team.memberUnitIds, planLane.lane, inputs.units)

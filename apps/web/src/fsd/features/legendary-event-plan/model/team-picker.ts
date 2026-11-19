@@ -88,7 +88,7 @@ export function buildPickerTiles(
         matches: matchesObjectives(potential.satisfied, selectedObjectives),
       }
     })
-    .sort(
+    .toSorted(
       (a, b) =>
         Number(b.matches) - Number(a.matches) ||
         (sort === "power"

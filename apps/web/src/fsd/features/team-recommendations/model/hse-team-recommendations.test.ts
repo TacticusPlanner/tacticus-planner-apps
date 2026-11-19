@@ -17,6 +17,7 @@ import type {
   HseTeamMode,
   HseTeamRecommendations,
 } from "./hse-team-recommendations.types"
+import { compareCodeUnits } from "@/shared/lib"
 
 type Characters = Parameters<typeof hseTeamsFixtureRead>[0]
 
@@ -150,10 +151,9 @@ describe("buildHseTeamRecommendations — Psyker Boost", () => {
       needed: 1,
     })
     if (team.status !== "insufficient") throw new Error("expected shortfall")
-    expect(team.eligible.map((c) => c.unitId).sort()).toEqual([
-      "eldarFarseer",
-      "necroSpyder",
-    ])
+    expect(
+      team.eligible.map((c) => c.unitId).toSorted(compareCodeUnits)
+    ).toEqual(["eldarFarseer", "necroSpyder"])
   })
 
   it("has no enemy hint (only Summons are left out)", () => {
@@ -404,7 +404,10 @@ describe("buildHseTeamRecommendations — Faction Focus", () => {
     const team = ready(teamOf(modeOf(result, "SalvageRun"), "Xenos"))
 
     expect(team.pick).toEqual({ kind: "faction", factionId: "Necrons" })
-    expect(ids(team).slice(0, 2).sort()).toEqual(["necroA", "necroB"])
+    expect(ids(team).slice(0, 2).toSorted(compareCodeUnits)).toEqual([
+      "necroA",
+      "necroB",
+    ])
     // Only two Necrons: the strongest others fill the team.
     expect(team.team.broadened).toBe(true)
   })

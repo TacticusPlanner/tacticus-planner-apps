@@ -1,3 +1,4 @@
+import { compareCodeUnits } from "@/shared/lib"
 /** What the Quest selection reads of a calendar entry (`EventsCalendarStorageModel` satisfies it). */
 export type QuestCalendarEntry = {
   occurrenceId?: string | null
@@ -30,8 +31,6 @@ const HOUR_MS = 3_600_000
 /** The claim window when a definition does not state one (the shipped `quest` definition says 24). */
 const DEFAULT_CLAIM_WINDOW_HOURS = 24
 
-const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
-
 const instanceKey = (entry: QuestCalendarEntry) =>
   entry.occurrenceId ?? `${entry.definitionId}@${entry.startUtc}`
 
@@ -50,7 +49,7 @@ function claimWindowHours(definition: QuestDefinition | undefined) {
 /** Latest start first, then the lowest occurrence key. */
 const latestFirst = (a: QuestCalendarEntry, b: QuestCalendarEntry) =>
   Date.parse(b.startUtc) - Date.parse(a.startUtc) ||
-  compareIds(instanceKey(a), instanceKey(b))
+  compareCodeUnits(instanceKey(a), instanceKey(b))
 
 /**
  * The quest the tab shows (UTC, start inclusive, end exclusive): the running one, else the one in
@@ -88,20 +87,20 @@ export function selectQuestInstance<TEntry extends QuestCalendarEntry>(
       (entry) =>
         Date.parse(entry.startUtc) <= nowMs && nowMs < Date.parse(entry.endUtc)
     )
-    .sort(latestFirst)[0]
+    .toSorted(latestFirst)[0]
   if (running) return toInstance(running, "running")
   const claim = quests
     .filter(
       (entry) => Date.parse(entry.endUtc) <= nowMs && nowMs < claimEnd(entry)
     )
-    .sort(latestFirst)[0]
+    .toSorted(latestFirst)[0]
   if (claim) return toInstance(claim, "claim")
   const next = quests
     .filter((entry) => Date.parse(entry.startUtc) > nowMs)
-    .sort(
+    .toSorted(
       (a, b) =>
         Date.parse(a.startUtc) - Date.parse(b.startUtc) ||
-        compareIds(instanceKey(a), instanceKey(b))
+        compareCodeUnits(instanceKey(a), instanceKey(b))
     )[0]
   return next ? toInstance(next, "preview") : null
 }

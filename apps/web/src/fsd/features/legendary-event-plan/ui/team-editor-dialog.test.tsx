@@ -24,6 +24,7 @@ import type { TeamDraft } from "../model/plan-patches"
 import type { DepthEstimateContext } from "../model/depth-estimate-context"
 import type { PlanMutationOutcome } from "../model/use-legendary-event-plan"
 import { TeamEditorDialog } from "./team-editor-dialog"
+import { compareCodeUnits } from "@/shared/lib"
 
 beforeEach(async () => {
   await seedGameCatalog({ characters: Object.values(teamUnits) })
@@ -106,7 +107,7 @@ const memberTiles = () =>
   screen
     .queryAllByTestId("team-picker-tile")
     .filter((element) => element.dataset.selected === "true")
-    .map((element) => element.dataset.unit)
+    .map((element) => element.dataset.unit ?? "")
 
 describe("TeamEditorDialog", () => {
   beforeAll(async () => {
@@ -588,8 +589,10 @@ describe("TeamEditorDialog", () => {
       })
 
       expect(onOpenChange).not.toHaveBeenCalled()
-      expect(memberTiles().toSorted()).toEqual(
-        [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id].toSorted()
+      expect(memberTiles().toSorted(compareCodeUnits)).toEqual(
+        [teamUnits.a.id, teamUnits.b.id, teamUnits.c.id].toSorted(
+          compareCodeUnits
+        )
       )
       expect(screen.getByTestId("team-editor-not-saved")).toHaveTextContent(
         "this team was not saved"

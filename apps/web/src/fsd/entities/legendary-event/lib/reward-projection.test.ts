@@ -599,7 +599,7 @@ describe("unitNextAscensionStep", () => {
       progressionOrder.indexOf(ASCENSION_STEP_PROGRESSION[step])
     )
     expect(indexes.every((index) => index >= 0)).toBe(true)
-    expect([...indexes].sort((a, b) => a - b)).toEqual(indexes)
+    expect(indexes.toSorted((a, b) => a - b)).toEqual(indexes)
     expect(new Set(indexes).size).toBe(ASCENSION_STEPS.length)
   })
 

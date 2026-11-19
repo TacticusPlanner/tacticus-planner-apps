@@ -4,6 +4,7 @@ import de from "../../../../../public/locales/de/library.json"
 import en from "../../../../../public/locales/en/library.json"
 import es from "../../../../../public/locales/es/library.json"
 import fr from "../../../../../public/locales/fr/library.json"
+import { compareCodeUnits } from "../../lib/compare"
 
 const locales = { de, en, es, fr }
 
@@ -48,11 +49,13 @@ describe("Library translations", () => {
   })
 
   it("provides the NPC Library page copy and tour in every locale", () => {
-    const enLeaves = leafKeys(en.npcs).sort()
+    const enLeaves = leafKeys(en.npcs).toSorted(compareCodeUnits)
     expect(enLeaves.length).toBeGreaterThan(40)
 
     for (const [code, locale] of Object.entries(locales)) {
-      expect(leafKeys(locale.npcs).sort(), code).toEqual(enLeaves)
+      expect(leafKeys(locale.npcs).toSorted(compareCodeUnits), code).toEqual(
+        enLeaves
+      )
       for (const key of enLeaves) {
         const value = key
           .split(".")
@@ -86,10 +89,13 @@ describe("Library translations", () => {
 
   it("provides the Machines of War list and unit page copy in every locale", () => {
     for (const section of ["mowsList", "mowUnit"] as const) {
-      const enLeaves = leafKeys(en[section]).sort()
+      const enLeaves = leafKeys(en[section]).toSorted(compareCodeUnits)
       for (const [code, locale] of Object.entries(locales)) {
         const localeSection = locale[section]
-        expect(leafKeys(localeSection).sort(), code).toEqual(enLeaves)
+        expect(
+          leafKeys(localeSection).toSorted(compareCodeUnits),
+          code
+        ).toEqual(enLeaves)
         for (const key of enLeaves) {
           const value = key
             .split(".")
@@ -122,7 +128,9 @@ describe("Library translations", () => {
     expect(Object.keys(es.collections)).toEqual(Object.keys(en.collections))
     expect(Object.keys(fr.collections)).toEqual(Object.keys(en.collections))
     for (const locale of [de, es, fr]) {
-      expect(leafKeys(locale.shops).sort()).toEqual(leafKeys(en.shops).sort())
+      expect(leafKeys(locale.shops).toSorted(compareCodeUnits)).toEqual(
+        leafKeys(en.shops).toSorted(compareCodeUnits)
+      )
     }
   })
 })

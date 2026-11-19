@@ -57,7 +57,7 @@ export function buildEventBoardLane(
   units: readonly LegendaryEventUnit[],
   progress: LaneProgressView | undefined
 ): EventBoardLane {
-  const ordered = [...lane.unitsRestrictions].sort((a, b) => a.index - b.index)
+  const ordered = lane.unitsRestrictions.toSorted((a, b) => a.index - b.index)
   const boardTeams = teams.map((team): EventBoardTeam => {
     const derived = new Set(
       derivedTeamCoverage(team.memberUnitIds, lane, units)
@@ -132,7 +132,7 @@ export function buildEventBoardTable(
         name: nameOf(unit.id),
       }
     })
-    .sort(
+    .toSorted(
       (a, b) =>
         Number(b.owned) - Number(a.owned) ||
         b.power - a.power ||
@@ -140,7 +140,7 @@ export function buildEventBoardTable(
     )
   const ordered = [...lane.unitsRestrictions]
     .map((objective) => objective.index)
-    .sort((a, b) => a - b)
+    .toSorted((a, b) => a - b)
   const selected = ordered.filter((index) =>
     selectedObjectiveIndexes.has(index)
   )

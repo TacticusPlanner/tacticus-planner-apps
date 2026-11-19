@@ -21,6 +21,6 @@ export function upgradeGroups(
     ])
   })
   return [...byRun]
-    .sort(([a], [b]) => a - b)
+    .toSorted(([a], [b]) => a - b)
     .map(([run, indexes]) => ({ run, indexes }))
 }

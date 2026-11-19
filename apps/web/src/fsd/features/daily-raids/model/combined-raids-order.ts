@@ -29,7 +29,7 @@ export function orderCombinedEntries<Entry extends RaidBreakdownEntry>(
     resourceEntries.push(entry)
     byResource.set(entry.resourceId, resourceEntries)
   }
-  const resources = [...byResource].sort(([left], [right]) => {
+  const resources = [...byResource].toSorted(([left], [right]) => {
     const leftUrgency = urgencyByResource.get(left)
     const rightUrgency = urgencyByResource.get(right)
     const byDays = (rightUrgency?.days ?? -1) - (leftUrgency?.days ?? -1)

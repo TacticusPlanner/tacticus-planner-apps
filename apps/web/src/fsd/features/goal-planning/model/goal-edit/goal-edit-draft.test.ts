@@ -11,6 +11,7 @@ import {
   normalizeAcquisitionSources,
 } from "./goal-edit-draft"
 import type { GoalEditDraft } from "./goal-edit-draft"
+import { compareCodeUnits } from "@/shared/lib"
 
 const emptyConfig: GoalConfig = {
   rank: null,
@@ -174,7 +175,10 @@ describe("buildEditGoalRequest", () => {
       12
     )
 
-    expect(Object.keys(request).sort()).toEqual(["priority", "target"])
+    expect(Object.keys(request).toSorted(compareCodeUnits)).toEqual([
+      "priority",
+      "target",
+    ])
     expect(request.target?.expectedRevision).toBe(7)
     expect(request.priority).toEqual({
       position: 1,

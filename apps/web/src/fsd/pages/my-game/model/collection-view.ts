@@ -368,7 +368,7 @@ export function buildCollectionView(
     a.localeCompare(b, labels.locale)
   const compareOwned = ownedComparator(query.sort)
   const groups = [...groupsById.values()]
-    .sort(
+    .toSorted(
       (a, b) =>
         allianceRank(a.alliance) - allianceRank(b.alliance) ||
         compareNames(a.factionName, b.factionName)
@@ -376,7 +376,7 @@ export function buildCollectionView(
     .map((group) => {
       const units = rowsByFaction
         .get(group.factionId)!
-        .sort((a, b) => compareRows(a, b, compareOwned, compareNames))
+        .toSorted((a, b) => compareRows(a, b, compareOwned, compareNames))
         .map((row) => row.unit)
       return {
         ...group,
@@ -389,7 +389,7 @@ export function buildCollectionView(
   // The ungrouped order: the same comparator as within a faction, across every listed faction.
   const units = [...rowsByFaction.values()]
     .flat()
-    .sort((a, b) => compareRows(a, b, compareOwned, compareNames))
+    .toSorted((a, b) => compareRows(a, b, compareOwned, compareNames))
     .map((row) => ({
       unit: row.unit,
       factionId: row.factionId,

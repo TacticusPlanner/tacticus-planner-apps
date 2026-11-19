@@ -4,6 +4,7 @@ import de from "../../../../../public/locales/de/eventShops.json"
 import en from "../../../../../public/locales/en/eventShops.json"
 import es from "../../../../../public/locales/es/eventShops.json"
 import fr from "../../../../../public/locales/fr/eventShops.json"
+import { compareCodeUnits } from "@/shared/lib"
 
 function leaves(value: unknown, prefix = ""): [string, string][] {
   if (typeof value !== "object" || value === null) {
@@ -75,11 +76,11 @@ describe("Event shop translations", () => {
       expect(
         leaves(resource)
           .map(([key]) => key)
-          .sort()
+          .toSorted(compareCodeUnits)
       ).toEqual(
         leaves(en)
           .map(([key]) => key)
-          .sort()
+          .toSorted(compareCodeUnits)
       )
     }
   )
@@ -103,7 +104,9 @@ describe("Event shop translations", () => {
     ["fr", fr],
   ] as const)("keeps every %s placeholder", (_locale, resource) => {
     const placeholders = (text: string) =>
-      [...text.matchAll(/\{\{(\w+)\}\}/g)].map((match) => match[1]).sort()
+      [...text.matchAll(/\{\{(\w+)\}\}/g)]
+        .map((match) => match[1] ?? "")
+        .toSorted(compareCodeUnits)
     const english = new Map(leaves(en))
     for (const [key, text] of leaves(resource)) {
       expect(placeholders(text), key).toEqual(placeholders(english.get(key)!))

@@ -236,7 +236,7 @@ export function computeCampaignInsights<
             }
           })
       : undefined,
-    contributions: [...chip.contributions].sort((a, b) => b.value - a.value),
+    contributions: chip.contributions.toSorted((a, b) => b.value - a.value),
   }))
 
   const byScoreDesc = (a: { score: number }, b: { score: number }) =>
@@ -260,12 +260,12 @@ export function computeCampaignInsights<
   return {
     campaignInsights: scored
       .filter((c) => !c.isEvent)
-      .sort(byScoreDesc)
+      .toSorted(byScoreDesc)
       .slice(0, topN)
       .map(toInsight),
     eventInsights: scored
       .filter((c) => c.isEvent)
-      .sort(byScoreDesc)
+      .toSorted(byScoreDesc)
       .slice(0, topN)
       .map(toInsight),
   }

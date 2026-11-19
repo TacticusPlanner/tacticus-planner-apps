@@ -119,7 +119,7 @@ export function RaidsFiltersDialog({
   const enemyTypeOptions = useMemo<SelectOption<string>[]>(
     () =>
       [...new Set((battles ?? []).flatMap((battle) => battle.enemiesTypes))]
-        .sort((a, b) => a.localeCompare(b))
+        .toSorted((a, b) => a.localeCompare(b))
         .map((type) => ({ value: type, label: type })),
     [battles]
   )
@@ -133,13 +133,13 @@ export function RaidsFiltersDialog({
           label: t(`traits:${trait}`, { defaultValue: humanizeId(trait) }),
           icon: <EntityIcon alt="" className="size-5" src={traitIcon(trait)} />,
         }))
-        .sort((a, b) => a.label.localeCompare(b.label)),
+        .toSorted((a, b) => a.label.localeCompare(b.label)),
     [battles, npcs, t]
   )
   const enemyTotalOptions = useMemo<SelectOption<number>[]>(
     () =>
       [...new Set((battles ?? []).map((battle) => battle.enemiesTotal))]
-        .sort((a, b) => b - a)
+        .toSorted((a, b) => b - a)
         .map((total) => ({ value: total, label: String(total) })),
     [battles]
   )

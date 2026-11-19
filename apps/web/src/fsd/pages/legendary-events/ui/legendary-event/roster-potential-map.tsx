@@ -187,7 +187,7 @@ function PotentialSummary({
     .filter((objective) =>
       potential.uncoveredObjectiveIndexes.includes(objective.index)
     )
-    .sort((a, b) => a.index - b.index)
+    .toSorted((a, b) => a.index - b.index)
     .map((objective) => objectiveLabel(objective).label)
   const uncoveredText =
     uncovered.length > 0

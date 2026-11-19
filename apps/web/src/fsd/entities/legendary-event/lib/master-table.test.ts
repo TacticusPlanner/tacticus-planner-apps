@@ -20,6 +20,7 @@ import {
   sortMasterTable,
 } from "./master-table"
 import type { MasterTableEventInput, MasterTableInput } from "./master-table"
+import { compareCodeUnits } from "@/shared/lib"
 
 const units = legendaryEventCharacters as unknown as LegendaryEventUnit[]
 const dante = fixtureCharacter("bloodDante") as unknown as LegendaryEventUnit
@@ -215,9 +216,9 @@ describe("buildMasterTable", () => {
     const result = table([{ event: lysanderEvent, plan }], {
       unitSet: "inTeams",
     })
-    expect(result.rows.map((row) => row.unitId).sort()).toEqual(
-      [...DANTE_TEAM].sort()
-    )
+    expect(
+      result.rows.map((row) => row.unitId).toSorted(compareCodeUnits)
+    ).toEqual(DANTE_TEAM.toSorted(compareCodeUnits))
     const cell = danteRow(result)!.cells.astarLysander!
     expect(cell).toMatchObject({
       points: 3078,

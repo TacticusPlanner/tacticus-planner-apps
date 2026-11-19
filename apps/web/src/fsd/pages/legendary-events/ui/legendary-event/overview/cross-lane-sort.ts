@@ -44,7 +44,7 @@ export function sortCrossLaneRows(
       index,
       value: sortValue(row, sort.key, figure),
     }))
-    .sort((a, b) => {
+    .toSorted((a, b) => {
       if (a.value === -1 || b.value === -1)
         return a.value === b.value ? a.index - b.index : a.value === -1 ? 1 : -1
       return sign * (a.value - b.value) || a.index - b.index

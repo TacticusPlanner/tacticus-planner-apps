@@ -69,7 +69,7 @@ export function remainingLanePoints(
   if (!laneProgress) {
     return potential.pointsPerBattle * lane.battleIds.length
   }
-  const objectives = [...lane.unitsRestrictions].sort(
+  const objectives = lane.unitsRestrictions.toSorted(
     (a, b) => a.index - b.index
   )
   return laneProgress.battles.reduce((total, battle) => {
@@ -153,7 +153,7 @@ export function buildLaneLeaderboard(
   laneProgress?: LaneProgressView
 ): LeaderboardRow[] {
   const ownership = ownershipOf(roster)
-  const objectives = [...lane.unitsRestrictions].sort(
+  const objectives = lane.unitsRestrictions.toSorted(
     (a, b) => a.index - b.index
   )
 
@@ -193,7 +193,7 @@ export function sortLeaderboard(
 ): LeaderboardRow[] {
   const figureOf = (row: LeaderboardRow) =>
     figure === "remaining" ? row.remainingPoints : row.pointsPerBattle
-  return [...rows].sort(
+  return rows.toSorted(
     (a, b) =>
       figureOf(b) - figureOf(a) ||
       b.objectivesCount - a.objectivesCount ||
@@ -302,7 +302,7 @@ export function sortCrossLaneLeaderboard(
   locale?: string,
   laneIds: readonly LegendaryEventLaneId[] = LEGENDARY_EVENT_LANE_IDS
 ): CrossLaneLeaderboardRow[] {
-  return [...rows].sort(
+  return rows.toSorted(
     (a, b) =>
       crossLaneTotal(b, figure, laneIds) - crossLaneTotal(a, figure, laneIds) ||
       nameOf(a).localeCompare(nameOf(b), locale)

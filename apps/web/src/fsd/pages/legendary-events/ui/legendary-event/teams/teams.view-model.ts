@@ -140,8 +140,8 @@ export function buildTeamCardViewModel(
   const displayedDepth = incomplete
     ? null
     : teamEffectiveDepth(expectedBattleClears, estimate)
-  const coverage = [...lane.unitsRestrictions]
-    .sort((a, b) => a.index - b.index)
+  const coverage = lane.unitsRestrictions
+    .toSorted((a, b) => a.index - b.index)
     .filter((objective) => stored.has(objective.index))
     .map((objective) => ({
       index: objective.index,

@@ -26,7 +26,7 @@ export function laneTeams(
 ): LegendaryEventTeam[] {
   return plan.teams
     .filter((team) => team.laneId === laneId)
-    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .toSorted((a, b) => a.sortOrder - b.sortOrder)
 }
 
 /** Refuses a new team for a full lane before any request: the API would answer 400
@@ -123,7 +123,7 @@ export function withTeamDepth(
                 expectedBattleClearsSource: "manual" as const,
                 recordedAt,
               },
-            ].sort((a, b) => a.run - b.run)
+            ].toSorted((a, b) => a.run - b.run)
       return { ...team, runDepths }
     }),
   }
@@ -136,7 +136,7 @@ const LANE_ORDER: Record<LegendaryEventLaneId, number> = {
 }
 
 function sortPlanTeams(teams: LegendaryEventTeam[]): LegendaryEventTeam[] {
-  return [...teams].sort(
+  return teams.toSorted(
     (a, b) =>
       LANE_ORDER[a.laneId] - LANE_ORDER[b.laneId] || a.sortOrder - b.sortOrder
   )
@@ -180,7 +180,7 @@ export function teamUpdateRequest(
     name: draft.name.trim(),
     memberUnitIds: draft.memberUnitIds,
     reserveUnitId: draft.reserveUnitId,
-    objectiveIndexes: [...draft.objectiveIndexes].sort((a, b) => a - b),
+    objectiveIndexes: draft.objectiveIndexes.toSorted((a, b) => a - b),
     run,
     expectedBattleClears: depth,
     expectedBattleClearsSource: source,

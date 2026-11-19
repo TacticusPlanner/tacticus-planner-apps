@@ -105,7 +105,7 @@ function candidateUnits(
           id: entry.unit.id,
           power: unitEffectivePower(entry.unit.id, roster, inputs.config) ?? 0,
         }))
-        .sort((a, b) => b.power - a.power)
+        .toSorted((a, b) => b.power - a.power)
         .slice(0, OWNED_PER_OBJECTIVE)
         .forEach((entry) => units.add(entry.id))
       matching
@@ -115,7 +115,7 @@ function candidateUnits(
           perBattle: unitLanePotential(entry.unit, planLane.lane)
             .pointsPerBattle,
         }))
-        .sort((a, b) => b.perBattle - a.perBattle)
+        .toSorted((a, b) => b.perBattle - a.perBattle)
         .slice(0, LOCKED_PER_OBJECTIVE)
         .forEach((entry) => units.add(entry.id))
     }

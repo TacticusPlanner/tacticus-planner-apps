@@ -325,7 +325,7 @@ function CoverageStrip({
   const coverageByIndex = new Map(
     card.coverage.map((entry) => [entry.index, entry])
   )
-  const objectives = [...lane.unitsRestrictions].sort(
+  const objectives = lane.unitsRestrictions.toSorted(
     (a, b) => a.index - b.index
   )
   return (

@@ -4,6 +4,7 @@ import de from "../../../../../public/locales/de/legendaryEvents.json"
 import en from "../../../../../public/locales/en/legendaryEvents.json"
 import es from "../../../../../public/locales/es/legendaryEvents.json"
 import fr from "../../../../../public/locales/fr/legendaryEvents.json"
+import { compareCodeUnits } from "../../lib/compare"
 
 function leaves(value: unknown, prefix = ""): [string, unknown][] {
   if (typeof value !== "object" || value === null) return [[prefix, value]]
@@ -25,7 +26,7 @@ describe("Legendary Events translations", () => {
       const keys = (source: unknown) =>
         leaves(source)
           .map(([key]) => key)
-          .sort()
+          .toSorted(compareCodeUnits)
       expect(keys(resource)).toEqual(keys(en))
     }
   )
@@ -48,7 +49,7 @@ describe("Legendary Events translations", () => {
       const english = new Map(leaves(en))
       for (const [key, value] of leaves(resource)) {
         const placeholders = (text: unknown) =>
-          (String(text).match(/\{\{\w+\}\}/g) ?? []).sort()
+          (String(text).match(/\{\{\w+\}\}/g) ?? []).toSorted(compareCodeUnits)
         expect(placeholders(value), key).toEqual(placeholders(english.get(key)))
       }
     }

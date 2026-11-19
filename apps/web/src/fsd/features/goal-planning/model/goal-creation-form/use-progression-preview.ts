@@ -361,7 +361,7 @@ export function farmNodesDailyShards(
 ): number {
   let energy = dailyEnergy
   let shards = 0
-  for (const node of [...nodes].sort((a, b) => a.energyCost - b.energyCost)) {
+  for (const node of nodes.toSorted((a, b) => a.energyCost - b.energyCost)) {
     if (node.energyCost <= 0 || energy < node.energyCost) continue
     const affordable = Math.floor(energy / node.energyCost)
     const raids =

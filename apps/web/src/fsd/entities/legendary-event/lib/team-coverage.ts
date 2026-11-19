@@ -7,7 +7,7 @@ type CoverageLane = Pick<
 >
 
 const ascending = (indexes: Iterable<number>) =>
-  [...new Set(indexes)].sort((a, b) => a - b)
+  [...new Set(indexes)].toSorted((a, b) => a - b)
 
 /**
  * The objectives a team covers by derivation (design D3): the lane objective `index`es every

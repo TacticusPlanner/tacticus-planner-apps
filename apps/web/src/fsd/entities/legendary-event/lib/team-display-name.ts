@@ -55,8 +55,8 @@ export function teamDisplayName(
 ): string {
   if (!hasLaneDefaultName(team)) return team.name
   const covered = new Set(team.objectiveIndexes)
-  const labels = [...laneObjectives]
-    .sort((a, b) => a.index - b.index)
+  const labels = laneObjectives
+    .toSorted((a, b) => a.index - b.index)
     .filter((objective) => covered.has(objective.index))
     .map((objective) => objective.label)
   if (labels.length > 0) return withLanePrefix(team.laneId, labels.join(" · "))

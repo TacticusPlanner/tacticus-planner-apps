@@ -153,7 +153,7 @@ export function useObjectiveChips(): (
   return useCallback(
     (event, laneIds, progressGrid) =>
       laneIds.map((laneId) => {
-        const objectives = [...event[laneId].unitsRestrictions].sort(
+        const objectives = event[laneId].unitsRestrictions.toSorted(
           (a, b) => a.index - b.index
         )
         const progress =

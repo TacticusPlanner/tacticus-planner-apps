@@ -27,6 +27,7 @@ import { useTeamEditorLauncher } from "./team-editor-launcher"
 import { TeamsSection } from "./teams-section"
 import type { TeamsViewModel } from "./teams-section"
 import type { TeamsSectionState } from "./teams.view-model"
+import { compareCodeUnits } from "@/shared/lib"
 
 beforeEach(async () => {
   await seedGameCatalog({ characters: Object.values(teamUnits) })
@@ -490,7 +491,7 @@ describe("TeamsSection", () => {
     expect(proposals.length).toBeGreaterThan(0)
     const members = within(proposals[0]!)
       .getAllByTestId("team-suggestion-member")
-      .map((element) => element.dataset.unit)
+      .map((element) => element.dataset.unit ?? "")
 
     await user.click(within(proposals[0]!).getByTestId("team-suggestion-use"))
     const editor = await screen.findByTestId("team-editor")
@@ -498,9 +499,9 @@ describe("TeamsSection", () => {
       within(editor)
         .getAllByTestId("team-picker-tile")
         .filter((element) => element.dataset.selected === "true")
-        .map((element) => element.dataset.unit)
-        .toSorted()
-    ).toEqual(members.toSorted())
+        .map((element) => element.dataset.unit ?? "")
+        .toSorted(compareCodeUnits)
+    ).toEqual(members.toSorted(compareCodeUnits))
     // The picker's chips start from the proposal's objective subset (one or two objectives).
     const pressed = within(editor)
       .getAllByTestId("team-picker-objective-chip")
@@ -559,9 +560,9 @@ describe("TeamsSection", () => {
       within(editor)
         .getAllByTestId("team-picker-tile")
         .filter((element) => element.dataset.selected === "true")
-        .map((element) => element.dataset.unit)
-        .toSorted()
-    ).toEqual([teamUnits.a.id, teamUnits.b.id].toSorted())
+        .map((element) => element.dataset.unit ?? "")
+        .toSorted(compareCodeUnits)
+    ).toEqual([teamUnits.a.id, teamUnits.b.id].toSorted(compareCodeUnits))
     expect(within(editor).getByTestId("team-editor-save")).toBeDisabled()
 
     const tile = within(editor)

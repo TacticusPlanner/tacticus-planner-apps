@@ -12,6 +12,7 @@ import { derivedTeamCoverage } from "./team-coverage"
 import { MIN_TEAM_MEMBERS } from "./team-size"
 import { withSupport } from "./team-support"
 import { unitLanePotential } from "./unit-potential"
+import { compareCodeUnits } from "@/shared/lib"
 
 export const SUGGESTION_TEAM_SIZE = 5
 
@@ -78,7 +79,8 @@ function subsetsUpTo(indexes: readonly number[], maxSize: number): number[][] {
   return result
 }
 
-const memberKey = (ids: readonly string[]) => [...ids].sort().join("|")
+const memberKey = (ids: readonly string[]) =>
+  ids.toSorted(compareCodeUnits).join("|")
 
 /**
  * Proposed teams for a lane (spec: team suggestions per lane): for every one- to three-objective
@@ -107,7 +109,7 @@ export function suggestLaneTeams(
       hasGoal: input.goalUnitIds.has(unit.id),
       name: input.nameOf(unit),
     }))
-    .sort(
+    .toSorted(
       (a, b) =>
         (input.preferGoals ? Number(b.hasGoal) - Number(a.hasGoal) : 0) ||
         b.power - a.power ||
@@ -126,7 +128,7 @@ export function suggestLaneTeams(
   const baselineTokens = laneTokensNeeded(model, progress, input.existingTeams)
   const objectiveIndexes = [...lane.unitsRestrictions]
     .map((objective) => objective.index)
-    .sort((a, b) => a - b)
+    .toSorted((a, b) => a - b)
 
   const seen = new Set<string>()
   const suggestions: TeamSuggestion[] = []
@@ -200,7 +202,7 @@ export function suggestLaneTeams(
       tokensSaved: Math.max(0, tokensSaved),
     })
   }
-  return suggestions.sort(
+  return suggestions.toSorted(
     (a, b) =>
       b.gainPoints - a.gainPoints ||
       b.tokensSaved - a.tokensSaved ||

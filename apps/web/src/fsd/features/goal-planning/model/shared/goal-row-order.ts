@@ -8,7 +8,7 @@ import type { GoalRow } from "./types"
  * recently updated first. The Finish date sort (`orderRowsByFinishDate`) reorders this list.
  */
 export function orderRowsByGlobalPriority(rows: readonly GoalRow[]): GoalRow[] {
-  return [...rows].sort((left, right) => {
+  return rows.toSorted((left, right) => {
     const leftHeld = holdsGlobalPosition(left)
     const rightHeld = holdsGlobalPosition(right)
     if (leftHeld !== rightHeld) return leftHeld ? -1 : 1
@@ -34,7 +34,7 @@ export function orderRowsByFinishDate(
   const daysOf = (row: GoalRow) => finishDays.get(row.goalId)?.days
   return rows
     .map((row, index) => ({ row, index, days: daysOf(row) }))
-    .sort((left, right) => {
+    .toSorted((left, right) => {
       if (left.days === undefined || right.days === undefined) {
         if (left.days !== right.days) return left.days === undefined ? 1 : -1
         return left.index - right.index

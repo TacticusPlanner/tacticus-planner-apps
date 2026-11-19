@@ -27,5 +27,5 @@ export function listEnemyTraits(
   for (const battle of battles) {
     for (const trait of battleEnemyTraits(battle, npcsById)) traits.add(trait)
   }
-  return [...traits].sort((a, b) => a.localeCompare(b))
+  return [...traits].toSorted((a, b) => a.localeCompare(b))
 }

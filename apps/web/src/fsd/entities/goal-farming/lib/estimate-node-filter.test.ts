@@ -20,6 +20,7 @@ import {
   estimateTodayRun,
   estimateTodaySchedule,
 } from "./estimate-plan"
+import { compareCodeUnits } from "@/shared/lib"
 
 const upgrade = upgradeIdSchema.parse
 const battle = battleIdSchema.parse
@@ -201,7 +202,7 @@ describe("nodeFilter in the Today/Bonus engine run", () => {
   it("selectFarmNodes drops failing nodes first, then picks the cheapest of the rest", () => {
     const need = { id: upgrade("tied"), count: 1 }
     const ids = (nodes: { battleId: string }[]) =>
-      nodes.map((n) => n.battleId).sort()
+      nodes.map((n) => n.battleId).toSorted(compareCodeUnits)
     expect(ids(selectFarmNodes(need, upgradesById, battlesById))).toEqual([
       "CHEAP",
       "TIED",

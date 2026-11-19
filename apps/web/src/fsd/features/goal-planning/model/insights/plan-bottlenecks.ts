@@ -186,7 +186,7 @@ export function computeBottlenecks(params: {
       goalIds: [...entry.goalIds],
     }))
     .filter((entry) => entry.energyToClear > 0)
-    .sort((a, b) => b.energyToClear - a.energyToClear)
+    .toSorted((a, b) => b.energyToClear - a.energyToClear)
     .slice(0, TOP_BOTTLENECKS)
 
   return { bottlenecks, blockers: [...blockers.values()] }

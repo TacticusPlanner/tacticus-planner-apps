@@ -513,7 +513,7 @@ export function calculateCombinedResourceUrgency(
   dailyEnergy: number,
   referenceDate?: Date
 ): ReadonlyMap<string, DailyRaidResourceUrgency> {
-  const ordered = [...goals].sort((a, b) => a.priority - b.priority)
+  const ordered = goals.toSorted((a, b) => a.priority - b.priority)
   const allocations = allocatePlanInventory(ordered, [...inventory])
   const pooled = new Map<
     EstimateResourceId,

@@ -103,7 +103,7 @@ function pickFarmNodes(
   }
   return {
     candidates,
-    nodes: cheapest.sort(
+    nodes: cheapest.toSorted(
       (a, b) => (b.expectedGold ?? -1) - (a.expectedGold ?? -1)
     ),
   }

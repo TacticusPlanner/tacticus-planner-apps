@@ -13,6 +13,7 @@ import {
   isTokenObjective,
 } from "@/entities/hre-mission"
 import { objectiveTextKey } from "./hre-objective-text"
+import { compareCodeUnits } from "@/shared/lib"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
   if (typeof value !== "object" || value === null) return [prefix]
@@ -48,7 +49,9 @@ describe("HRE translations", () => {
     ["es", es],
     ["fr", fr],
   ])("keeps the %s namespace aligned with English", (_locale, resource) => {
-    expect(leafKeys(resource).sort()).toEqual(leafKeys(en).sort())
+    expect(leafKeys(resource).toSorted(compareCodeUnits)).toEqual(
+      leafKeys(en).toSorted(compareCodeUnits)
+    )
   })
 
   it("words every objective kind and gives every non-token kind a tip", () => {

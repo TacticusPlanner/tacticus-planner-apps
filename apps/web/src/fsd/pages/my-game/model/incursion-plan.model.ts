@@ -35,7 +35,7 @@ export function lightestPath(
 ): PathBattle[] | null {
   const battlesById = new Map(tier.battles.map((battle) => [battle.id, battle]))
   const best = new Map<number, { load: number; path: PathBattle[] }>()
-  for (const node of [...tier.nodes].sort((a, b) => a.depth - b.depth)) {
+  for (const node of tier.nodes.toSorted((a, b) => a.depth - b.depth)) {
     const into = node.unlockedBy
       .map((parent) => best.get(parent))
       .filter((value) => value !== undefined)

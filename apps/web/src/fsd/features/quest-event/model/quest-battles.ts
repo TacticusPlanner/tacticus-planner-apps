@@ -24,7 +24,7 @@ export function battlesByTier(
       tier,
       battles: battles
         .filter((battle) => battle.tier === tier)
-        .sort((a, b) => a.number - b.number),
+        .toSorted((a, b) => a.number - b.number),
     }))
     .filter((group) => group.battles.length > 0)
 }

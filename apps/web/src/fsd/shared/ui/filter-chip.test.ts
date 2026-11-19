@@ -44,7 +44,7 @@ const luminance = ([r, g, b]: Rgb) => {
 }
 
 function contrastRatio(a: Rgb, b: Rgb): number {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  const [hi, lo] = [luminance(a), luminance(b)].toSorted((x, y) => y - x)
   return (hi! + 0.05) / (lo! + 0.05)
 }
 

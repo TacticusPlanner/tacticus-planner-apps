@@ -14,6 +14,7 @@ import type {
 } from "../model/estimate.domain"
 import { estimatePlanSchedule, estimateTodaySchedule } from "./estimate-plan"
 import type { EstimatePlanParams } from "./estimate-plan"
+import { compareCodeUnits } from "@/shared/lib"
 
 const upgrade = upgradeIdSchema.parse
 const battle = battleIdSchema.parse
@@ -84,7 +85,9 @@ describe("Fewer raids quick filter", () => {
     estimateTodaySchedule(params(extra)).entries.map((e) => e.battleId)
 
   it("uses every tied node when off", () => {
-    expect(battles().sort()).toEqual([battle("BIG"), battle("SMALL")].sort())
+    expect(battles().toSorted(compareCodeUnits)).toEqual(
+      [battle("BIG"), battle("SMALL")].toSorted(compareCodeUnits)
+    )
   })
 
   it("keeps only the costliest tied node when on", () => {
@@ -98,9 +101,9 @@ describe("Fewer raids quick filter", () => {
     const pinned = goal("g", 1, [{ id: "mat", count: 2 }], {
       farmingLocationIds: ["SMALL", "BIG"],
     })
-    expect(battles({ fewerRaids: true, goals: [pinned] }).sort()).toEqual(
-      [battle("BIG"), battle("SMALL")].sort()
-    )
+    expect(
+      battles({ fewerRaids: true, goals: [pinned] }).toSorted(compareCodeUnits)
+    ).toEqual([battle("BIG"), battle("SMALL")].toSorted(compareCodeUnits))
   })
 })
 
@@ -240,7 +243,7 @@ describe("Combine goals quick filter", () => {
     const resources = (combineGoals: boolean) =>
       estimateTodaySchedule(params({ goals: [staged], combineGoals }))
         .entries.map((e) => e.resourceId)
-        .sort()
+        .toSorted(compareCodeUnits)
     expect(resources(false)).toEqual(["quick", "slow"])
     expect(resources(true)).toEqual(["slow"])
   })

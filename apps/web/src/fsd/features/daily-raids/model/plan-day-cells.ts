@@ -88,7 +88,7 @@ function buildShopPurchases(
     if (unit.priority < purchase.unit.priority) purchase.unit = unit
     byKey.set(key, purchase)
   }
-  return [...byKey.values()].sort(
+  return [...byKey.values()].toSorted(
     (a, b) =>
       a.unit.priority - b.unit.priority || a.offerId.localeCompare(b.offerId)
   )
@@ -111,7 +111,9 @@ export function buildOnslaughtRuns(
     if (unit.priority < run.unit.priority) run.unit = unit
     byUnit.set(unit.unitId, run)
   }
-  return [...byUnit.values()].sort((a, b) => a.unit.priority - b.unit.priority)
+  return [...byUnit.values()].toSorted(
+    (a, b) => a.unit.priority - b.unit.priority
+  )
 }
 
 export function buildPlanDayCells(
@@ -149,7 +151,7 @@ export function buildPlanDayCells(
         target += value?.target ?? 0
       }
       const units = new Map<string, DailyRaidGoalViewModel>()
-      for (const goalId of [...goalIds].sort(
+      for (const goalId of [...goalIds].toSorted(
         (a, b) => priorityOf(a) - priorityOf(b)
       )) {
         const goal = source.goalsById.get(goalId)
@@ -203,7 +205,7 @@ export function buildPlanDayCells(
     raided,
     shops,
     onslaught,
-    units: [...units.values()].sort((a, b) => a.priority - b.priority),
+    units: [...units.values()].toSorted((a, b) => a.priority - b.priority),
   }
 }
 
@@ -228,5 +230,7 @@ export function buildPlanUnitRanges(days: PlanDayCells[]): PlanUnitRange[] {
       }
     }
   }
-  return [...ranges.values()].sort((a, b) => a.unit.priority - b.unit.priority)
+  return [...ranges.values()].toSorted(
+    (a, b) => a.unit.priority - b.unit.priority
+  )
 }

@@ -203,7 +203,7 @@ function groupContributions<TId extends string>(
     }
     groups.set(contribution.upgradeId, group)
   }
-  return [...groups.values()].sort(
+  return [...groups.values()].toSorted(
     (a, b) =>
       rarityRank(b.resource?.rarity ?? "Common") -
         rarityRank(a.resource?.rarity ?? "Common") || b.value - a.value

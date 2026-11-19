@@ -63,7 +63,7 @@ export function tierGroups(
   tiers: readonly IncursionTier[]
 ): { rarity: string; tiers: IncursionTier[] }[] {
   const groups: { rarity: string; tiers: IncursionTier[] }[] = []
-  for (const tier of [...tiers].sort((a, b) => b.index - a.index)) {
+  for (const tier of tiers.toSorted((a, b) => b.index - a.index)) {
     const last = groups.at(-1)
     if (last?.rarity === tier.rarity) last.tiers.push(tier)
     else groups.push({ rarity: tier.rarity, tiers: [tier] })

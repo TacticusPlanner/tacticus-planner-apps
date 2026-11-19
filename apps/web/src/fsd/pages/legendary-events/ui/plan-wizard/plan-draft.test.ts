@@ -81,7 +81,9 @@ describe("recommendationsFor", () => {
 
 describe("toggleRecommendation", () => {
   it("ticks a unit's earlier recommendations with a later one", () => {
-    expect([...toggleRecommendation(LIST, new Set(), 2)].sort()).toEqual([0, 2])
+    expect(
+      [...toggleRecommendation(LIST, new Set(), 2)].toSorted((a, b) => a - b)
+    ).toEqual([0, 2])
   })
 
   it("unticks a unit's later recommendations with an earlier one", () => {

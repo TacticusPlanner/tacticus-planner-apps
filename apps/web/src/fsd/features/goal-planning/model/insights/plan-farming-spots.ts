@@ -56,7 +56,7 @@ export function summarizeFarmingSpots(
           },
         ]
       })
-      const cheapest = options.sort((a, b) => a.energy - b.energy)[0]
+      const cheapest = options.toSorted((a, b) => a.energy - b.energy)[0]
       if (!cheapest) continue
       energy += cheapest.energy
       itemCount += cheapest.count

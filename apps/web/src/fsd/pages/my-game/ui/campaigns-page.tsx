@@ -192,7 +192,7 @@ function buildModel(data: {
           : undefined
         return { definition, type, max, completed, medals, unclaimed }
       })
-      .sort((a, b) => a.max - b.max),
+      .toSorted((a, b) => a.max - b.max),
     coreCharacters: [
       ...new Set(
         story.definitions.flatMap((definition) => definition.coreCharacters)

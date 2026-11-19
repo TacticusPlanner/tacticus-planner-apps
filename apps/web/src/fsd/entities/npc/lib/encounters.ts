@@ -157,5 +157,5 @@ export function sortEncountersBySource(
 ): NpcEncounter[] {
   const rank = (source: NpcEncounterSource) =>
     NPC_ENCOUNTER_SOURCES.indexOf(source)
-  return [...encounters].sort((a, b) => rank(a.source) - rank(b.source))
+  return encounters.toSorted((a, b) => rank(a.source) - rank(b.source))
 }

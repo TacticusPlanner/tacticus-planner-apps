@@ -35,7 +35,7 @@ export function buildRaidBossRosterGroups(
 
           const crystalEncounters = set.encounters
             .filter((encounter) => encounter.encounterType === "Crystal")
-            .sort((a, b) => a.encounterIndex - b.encounterIndex)
+            .toSorted((a, b) => a.encounterIndex - b.encounterIndex)
 
           for (const encounter of crystalEncounters) {
             if (seen.has(encounter.unitSetId)) continue

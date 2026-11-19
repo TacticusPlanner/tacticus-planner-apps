@@ -223,7 +223,7 @@ describe("scoreQuest", () => {
       scoring
     )
     const left = score.pointsLeft.map((battle) => battle.left)
-    expect(left).toEqual([...left].sort((a, b) => b - a))
+    expect(left).toEqual(left.toSorted((a, b) => b - a))
     expect(score.pointsLeft).toHaveLength(17)
   })
 })

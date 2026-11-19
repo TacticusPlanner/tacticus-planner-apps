@@ -131,10 +131,10 @@ export function forecastRuns({
   runs,
   showPaidOptions,
 }: ForecastInput): Forecast {
-  const chests = [...rewards.chestsMilestones].sort(
+  const chests = rewards.chestsMilestones.toSorted(
     (a, b) => a.chestLevel - b.chestLevel
   )
-  const milestones = [...rewards.pointsMilestones].sort(
+  const milestones = rewards.pointsMilestones.toSorted(
     (a, b) => a.cumulativePoints - b.cumulativePoints
   )
   const stepOrder = ASCENSION_STEPS

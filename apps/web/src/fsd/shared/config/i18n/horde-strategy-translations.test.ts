@@ -6,6 +6,7 @@ import de from "../../../../../public/locales/de/hordeStrategy.json"
 import en from "../../../../../public/locales/en/hordeStrategy.json"
 import es from "../../../../../public/locales/es/hordeStrategy.json"
 import fr from "../../../../../public/locales/fr/hordeStrategy.json"
+import { compareCodeUnits } from "../../lib/compare"
 
 const locales = { de, en, es, fr }
 
@@ -14,12 +15,14 @@ const fields = (resource: Record<string, Record<string, string>>) =>
     .flatMap(([unitId, entry]) =>
       Object.keys(entry).map((field) => `${unitId}.${field}`)
     )
-    .sort()
+    .toSorted(compareCodeUnits)
 
 describe("horde-mode strategy translations", () => {
   it("covers every tiered character", () => {
-    expect(Object.keys(en).sort()).toEqual(
-      hordeModeTiers.characters.map((character) => character.unitId).sort()
+    expect(Object.keys(en).toSorted(compareCodeUnits)).toEqual(
+      hordeModeTiers.characters
+        .map((character) => character.unitId)
+        .toSorted(compareCodeUnits)
     )
   })
 

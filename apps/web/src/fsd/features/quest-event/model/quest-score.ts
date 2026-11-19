@@ -113,7 +113,7 @@ export function scoreQuest(
     }
   })
   const total = scores.reduce((sum, score) => sum + score.points, 0)
-  const ordered = [...crates].sort((a, b) => a.points - b.points)
+  const ordered = crates.toSorted((a, b) => a.points - b.points)
   const next = ordered.find((crate) => crate.points > total)
   return {
     battles: scores,
@@ -130,6 +130,6 @@ export function scoreQuest(
       : null,
     pointsLeft: scores
       .filter((score) => score.left > 0)
-      .sort((a, b) => b.left - a.left || a.number - b.number),
+      .toSorted((a, b) => b.left - a.left || a.number - b.number),
   }
 }

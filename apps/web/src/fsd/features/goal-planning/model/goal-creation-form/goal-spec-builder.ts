@@ -358,7 +358,7 @@ export function buildCombinedGoalSpecs(params: {
   const withUnlock = (indexes: (number | null)[]) =>
     [...new Set([unlockIndex, ...indexes])]
       .filter((index): index is number => index !== null)
-      .sort((a, b) => a - b)
+      .toSorted((a, b) => a - b)
 
   if (includesUnlock) {
     specs.push({

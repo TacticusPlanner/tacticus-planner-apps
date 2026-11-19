@@ -115,7 +115,7 @@ describe("buildHordeTierList", () => {
     const { untiered } = build()
     // 47 of the catalog's characters are tiered.
     expect(untiered).toHaveLength(legendaryEventCharacters.length - 47)
-    const sorted = [...untiered].sort((a, b) =>
+    const sorted = untiered.toSorted((a, b) =>
       nameOf(a.unitId).localeCompare(nameOf(b.unitId), "en")
     )
     expect(untiered).toEqual(sorted)

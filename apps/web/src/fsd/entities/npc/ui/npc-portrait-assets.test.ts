@@ -5,6 +5,7 @@ import { abilityIcon, factionIcon, npcPortrait } from "@workspace/game-catalog"
 // The raw override map is not part of the package's public API; reach it directly for the audit.
 import { npcPortraitOverrides } from "../../../../../../../packages/game-catalog/src/game-entities/npc-portrait-overrides"
 import npcAbilityIds from "@/test/fixtures/npc-ability-ids.json"
+import { compareCodeUnits } from "@/shared/lib"
 
 // Vite's glob lists the shipped assets at build time, so the audit runs without node's fs. Each entry
 // is the asset's URL path (`/game_catalog/...`), the form the icon helpers return in tests.
@@ -84,7 +85,7 @@ describe("ability icon assets", () => {
 
     const missing = npcAbilityIds
       .filter((id) => !shippedCatalogImages.has(abilityIcon(id)))
-      .sort()
+      .toSorted(compareCodeUnits)
 
     expect(missing).toEqual(knownAbsent)
   })

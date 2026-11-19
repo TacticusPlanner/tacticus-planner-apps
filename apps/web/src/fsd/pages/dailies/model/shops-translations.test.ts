@@ -4,6 +4,7 @@ import de from "../../../../../public/locales/de/shops.json"
 import en from "../../../../../public/locales/en/shops.json"
 import es from "../../../../../public/locales/es/shops.json"
 import fr from "../../../../../public/locales/fr/shops.json"
+import { compareCodeUnits } from "@/shared/lib"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
   if (typeof value !== "object" || value === null) return [prefix]
@@ -18,7 +19,9 @@ describe("Shops translations", () => {
     ["es", es],
     ["fr", fr],
   ])("keeps the %s namespace aligned with English", (_locale, resource) => {
-    expect(leafKeys(resource).sort()).toEqual(leafKeys(en).sort())
+    expect(leafKeys(resource).toSorted(compareCodeUnits)).toEqual(
+      leafKeys(en).toSorted(compareCodeUnits)
+    )
   })
 
   it("provides the recommendations-page essentials in every locale", () => {

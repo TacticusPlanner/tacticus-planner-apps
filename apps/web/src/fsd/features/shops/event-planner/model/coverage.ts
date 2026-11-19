@@ -256,7 +256,7 @@ export function buildCoverage({
         best && stillNeeded > 0 ? { packs, cost: packs * best.cost } : null,
     })
   }
-  return rows.sort(
+  return rows.toSorted(
     (a, b) =>
       GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group) ||
       a.resource.localeCompare(b.resource)

@@ -280,7 +280,7 @@ export function useCharacterLookupCalc({
         // "Adeptus Mechanicus Ext 13B" (event "Challenge" tiers suffix each node with "B").
         const locations = [...locationsByKey.values()].map((entry) => {
           const nodes = [...entry.nodeNumbers]
-            .sort((a, b) => a - b)
+            .toSorted((a, b) => a - b)
             .map((n) => (entry.challenge ? `${n}B` : `${n}`))
             .join(", ")
           return {
@@ -311,7 +311,7 @@ export function useCharacterLookupCalc({
             .map(({ id, label, icon }) => ({ id, label, icon })),
         }
       })
-      .sort(
+      .toSorted(
         (a, b) =>
           rarityRank(b.rarity) - rarityRank(a.rarity) || b.missing - a.missing
       )

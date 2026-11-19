@@ -446,7 +446,7 @@ export function useCreateGoalForm({
   const goalKinds = goalKindsForEntity(entityType)
   const issues = [...formIssues, slotConflictIssue, goalLimitIssue]
     .filter((issue) => issue !== null)
-    .sort((a, b) => goalKinds.indexOf(a.kind) - goalKinds.indexOf(b.kind))
+    .toSorted((a, b) => goalKinds.indexOf(a.kind) - goalKinds.indexOf(b.kind))
 
   return {
     charactersById,

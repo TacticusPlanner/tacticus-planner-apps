@@ -1,6 +1,7 @@
 // Type-only: the rule lookup parses `config.hse` with zod, which must stay out of the app shell's
 // startup graph (it reads the active event too), so callers that need rules pass the lookup in.
 import type { HseRaidRule } from "./home-screen-event-rules"
+import { compareCodeUnits } from "@/shared/lib"
 
 /** What the selection reads of a calendar entry (`EventsCalendarStorageModel` satisfies it). */
 export type HomeScreenEventEntry = {
@@ -27,8 +28,6 @@ export type HomeScreenEventRuleOf = (
 
 /** No rule lookup: every event reads as earning no raid points. */
 const noRules: HomeScreenEventRuleOf = () => null
-
-const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
 export type HomeScreenEventSelection<TEntry extends HomeScreenEventEntry> = {
   /** The one running event (see the ranking below), or null when none is. */
@@ -65,18 +64,18 @@ export function selectActiveHomeScreenEvent<
       (entry) =>
         Date.parse(entry.startUtc) <= nowMs && nowMs < Date.parse(entry.endUtc)
     )
-    .sort(
+    .toSorted(
       (a, b) =>
         hasRule(b) - hasRule(a) ||
         Date.parse(b.startUtc) - Date.parse(a.startUtc) ||
-        compareIds(a.definitionId, b.definitionId)
+        compareCodeUnits(a.definitionId, b.definitionId)
     )[0]
   const upcoming = events
     .filter((entry) => Date.parse(entry.startUtc) > nowMs)
-    .sort(
+    .toSorted(
       (a, b) =>
         Date.parse(a.startUtc) - Date.parse(b.startUtc) ||
-        compareIds(a.definitionId, b.definitionId)
+        compareCodeUnits(a.definitionId, b.definitionId)
     )
   return { active: active ?? null, next: upcoming[0] ?? null, upcoming }
 }
@@ -135,10 +134,10 @@ export function listHomeScreenEventInstances<
         raidRule: ruleOf(entry, definitionsById),
       })
   }
-  return [...byKey.values()].sort(
+  return [...byKey.values()].toSorted(
     (a, b) =>
       Date.parse(a.entry.startUtc) - Date.parse(b.entry.startUtc) ||
-      compareIds(a.entry.definitionId, b.entry.definitionId)
+      compareCodeUnits(a.entry.definitionId, b.entry.definitionId)
   )
 }
 

@@ -31,8 +31,8 @@ export function useProgressColumns(lane: LegendaryEventLane): ProgressColumn[] {
           ? number.format(low)
           : `${number.format(low)}–${number.format(high)}`,
     },
-    ...[...lane.unitsRestrictions]
-      .sort((a, b) => a.index - b.index)
+    ...lane.unitsRestrictions
+      .toSorted((a, b) => a.index - b.index)
       .map((objective) => {
         const { label, icon } = objectiveLabel(objective)
         return { label, icon, points: number.format(objective.points) }

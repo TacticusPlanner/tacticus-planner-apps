@@ -41,6 +41,7 @@ vi.mock("@/shared/unit-power", async (importOriginal) => ({
 }))
 
 import { NpcsPage } from "./npcs-page"
+import { compareCodeUnits } from "@/shared/lib"
 
 function Location() {
   const location = useLocation()
@@ -449,7 +450,9 @@ describe("NpcsPage", () => {
       ).toBeNull()
     )
     expect(
-      requestedNamespaces.filter((key) => key.includes("AbilityText/")).sort()
+      requestedNamespaces
+        .filter((key) => key.includes("AbilityText/"))
+        .toSorted(compareCodeUnits)
     ).toEqual([
       "en/npcAbilityText/AdaptiveStrategy",
       "en/npcAbilityText/RelentlessMarch",

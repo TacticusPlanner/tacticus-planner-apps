@@ -102,7 +102,7 @@ const add = (a: ShardYield, b: ShardYield): ShardYield => ({
 export function bestPathShards(mowId: string, tier: IncursionTier): ShardYield {
   const battlesById = new Map(tier.battles.map((battle) => [battle.id, battle]))
   const best = new Map<number, ShardYield>()
-  const byDepth = [...tier.nodes].sort((a, b) => a.depth - b.depth)
+  const byDepth = tier.nodes.toSorted((a, b) => a.depth - b.depth)
   for (const node of byDepth) {
     const into = node.unlockedBy
       .map((parent) => best.get(parent))
@@ -132,7 +132,7 @@ export function runSteps(tier: IncursionTier): RunStep[] {
     byDepth.set(node.depth, [...(byDepth.get(node.depth) ?? []), node])
   }
   return [...byDepth]
-    .sort(([a], [b]) => a - b)
+    .toSorted(([a], [b]) => a - b)
     .map(([depth, nodes]) => ({
       depth,
       nodes,
@@ -168,7 +168,7 @@ export function tierSummary(mowId: string, tier: IncursionTier): TierSummary {
 
 /** Newest first: the latest debut or revamp leads, then by MoW id. */
 export function orderIncursions(incursions: readonly Incursion[]): Incursion[] {
-  return [...incursions].sort(
+  return incursions.toSorted(
     (a, b) =>
       b.availableFromUtc.localeCompare(a.availableFromUtc) ||
       a.mowId.localeCompare(b.mowId)

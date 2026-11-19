@@ -76,7 +76,7 @@ export function selectEventLocations({
   }
   const efficiency = (location: EventLocation) =>
     dropByBattleId.get(location.battleId)?.efficiency ?? Infinity
-  return ranked.sort(
+  return ranked.toSorted(
     (a, b) =>
       (order === "energy"
         ? compareEfficiency(efficiency(a), efficiency(b)) ||

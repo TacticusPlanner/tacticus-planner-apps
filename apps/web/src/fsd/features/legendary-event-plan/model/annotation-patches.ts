@@ -63,7 +63,7 @@ export function withAnnotations(
         }))
   return {
     ...plan,
-    annotations: [...kept, ...added].sort(
+    annotations: [...kept, ...added].toSorted(
       (a, b) =>
         laneOrder(a.laneId) - laneOrder(b.laneId) ||
         a.battleIndex - b.battleIndex ||

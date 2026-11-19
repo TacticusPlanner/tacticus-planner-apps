@@ -252,6 +252,7 @@ import { buildUnitPowerContext, characterPowerAt } from "@/shared/unit-power"
 import { unitPowerCatalog } from "@/test/fixtures/unit-power"
 
 import { CharacterUnitPage } from "./character-unit-page"
+import { compareCodeUnits } from "@/shared/lib"
 
 // The real power data, plus a stand-in for the page's Tigurius relic (a relic the fixture holds,
 // under the page catalog's id) so an owned unit wearing it has a power figure.
@@ -1149,7 +1150,9 @@ describe("CharacterUnitPage", () => {
     ).toBeInTheDocument()
     expect(targets()).toContain('[data-testid="unit-ability-active"]')
     expect(
-      requestedNamespaces.filter((key) => key.includes("AbilityText/")).sort()
+      requestedNamespaces
+        .filter((key) => key.includes("AbilityText/"))
+        .toSorted(compareCodeUnits)
     ).toEqual([
       // The relic's ability (`RunsAway`) is a known gap, so it is never requested.
       "en/npcAbilityText/PsychicFortress",

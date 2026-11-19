@@ -1,3 +1,4 @@
+import { compareCodeUnits } from "@/shared/lib"
 /** What the HRE selection reads of a calendar entry (`EventsCalendarStorageModel` satisfies it). */
 export type HreCalendarEntry = {
   occurrenceId?: string | null
@@ -17,8 +18,6 @@ export type HreInstance<TEntry extends HreCalendarEntry = HreCalendarEntry> = {
 }
 
 const HRE_DEFINITION_TYPE = "NewCharacterEvent"
-
-const compareIds = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
 const instanceKey = (entry: HreCalendarEntry) =>
   entry.occurrenceId ?? `${entry.definitionId}@${entry.startUtc}`
@@ -54,18 +53,18 @@ export function selectHreInstance<TEntry extends HreCalendarEntry>(
       (entry) =>
         Date.parse(entry.startUtc) <= nowMs && nowMs < Date.parse(entry.endUtc)
     )
-    .sort(
+    .toSorted(
       (a, b) =>
         Date.parse(b.startUtc) - Date.parse(a.startUtc) ||
-        compareIds(instanceKey(a), instanceKey(b))
+        compareCodeUnits(instanceKey(a), instanceKey(b))
     )[0]
   if (running) return toInstance(running, "running")
   const next = events
     .filter((entry) => Date.parse(entry.startUtc) > nowMs)
-    .sort(
+    .toSorted(
       (a, b) =>
         Date.parse(a.startUtc) - Date.parse(b.startUtc) ||
-        compareIds(instanceKey(a), instanceKey(b))
+        compareCodeUnits(instanceKey(a), instanceKey(b))
     )[0]
   return next ? toInstance(next, "upcoming") : null
 }
@@ -97,10 +96,10 @@ export function listHreInstances<TEntry extends HreCalendarEntry>(
     if (!byKey.has(key))
       byKey.set(key, toInstance(entry, statusAt(entry, nowMs)))
   }
-  return [...byKey.values()].sort(
+  return [...byKey.values()].toSorted(
     (a, b) =>
       Date.parse(a.entry.startUtc) - Date.parse(b.entry.startUtc) ||
-      compareIds(a.key, b.key)
+      compareCodeUnits(a.key, b.key)
   )
 }
 

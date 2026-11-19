@@ -30,6 +30,7 @@ import { setViewportWidth } from "@/test/viewport"
 import { sortMasterTable } from "@/entities/legendary-event"
 
 import { MasterTablePage } from "./master-table-page"
+import { compareCodeUnits } from "@/shared/lib"
 
 const UNIT_IDS = [
   "bloodDante",
@@ -203,7 +204,7 @@ const rowIds = () =>
     ...screen.queryAllByTestId("master-table-row"),
   ]
     .filter((row): row is HTMLElement => row !== null)
-    .map((row) => row.dataset.unit)
+    .map((row) => row.dataset.unit ?? "")
 const rowOf = (unitId: string) =>
   [
     screen.getByTestId("master-table-first-row"),
@@ -493,7 +494,7 @@ describe("MasterTablePage", () => {
       "on"
     )
     await waitFor(() =>
-      expect([...rowIds()].sort()).toEqual([
+      expect(rowIds().toSorted(compareCodeUnits)).toEqual([
         "bloodDante",
         "bloodDeathCompany",
         "bloodTerminator",

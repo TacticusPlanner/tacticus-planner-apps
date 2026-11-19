@@ -202,7 +202,7 @@ export function buildNpcTierList(
           overridden: multiplier !== tier.multiplier,
         }
       })
-      .sort((a, b) => b.multiplier - a.multiplier || byName(a, b)),
+      .toSorted((a, b) => b.multiplier - a.multiplier || byName(a, b)),
   }))
   const untiered = npcIds
     .filter((npcId) => !tierOf.get(npcId)?.tier)
@@ -214,6 +214,6 @@ export function buildNpcTierList(
         overridden: multiplier !== undefined,
       }
     })
-    .sort(byName)
+    .toSorted(byName)
   return { rows, untiered }
 }

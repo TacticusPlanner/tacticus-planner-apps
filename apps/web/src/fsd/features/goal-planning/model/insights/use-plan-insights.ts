@@ -12,7 +12,7 @@ import { useGlobalGoalPlan } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { toOnslaughtRunsPerDay, useLevelRules } from "@/entities/goal-farming"
-import { useCampaignDisplay } from "@/shared/lib"
+import { useCampaignDisplay, compareCodeUnits } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { computePlanInsights } from "./plan-insights-calc"
@@ -106,7 +106,9 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
 
   const activeMembers = globalPlan.entries
   const scopeIds = scopeGoalIds ? new Set(scopeGoalIds) : undefined
-  const scopeKey = scopeGoalIds ? [...scopeGoalIds].sort().join(",") : "all"
+  const scopeKey = scopeGoalIds
+    ? scopeGoalIds.toSorted(compareCodeUnits).join(",")
+    : "all"
   const memberKey = activeMembers
     .map((member) => `${member.goal.goalId}:${member.goal.globalPriority}`)
     .join(",")
@@ -114,7 +116,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   // which would otherwise blank the whole display on every drag while `calculationKey` recomputes.
   const idSetKey = `${scopeKey}:${activeMembers
     .map((member) => member.goal.goalId)
-    .sort()
+    .toSorted(compareCodeUnits)
     .join(",")}`
   // By content, so a sync that rewrites identical inventory does not recompute the plan; memoised on
   // the (memoised) reads so an unrelated re-render does not re-serialise the whole inventory.
@@ -138,7 +140,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   // Which nodes are farmable: event progress, battle overrides and the active event change it
   // without touching `campaignProgressByKey`.
   const eligibleBattlesKey = useMemo(
-    () => [...battlesById.keys()].sort().join(","),
+    () => [...battlesById.keys()].toSorted(compareCodeUnits).join(","),
     [battlesById]
   )
   // The Insights "Reached" farming cards: event progress moves it while no event is running.

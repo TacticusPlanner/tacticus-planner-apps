@@ -8,6 +8,7 @@ import {
   availableCampaignBattles,
   manualBattleIds,
 } from "./campaign-event-eligibility"
+import { compareCodeUnits } from "@/shared/lib"
 
 // daily-raids-today, "Only the active campaign event is farmable": event node eligibility reads the
 // effective progress (manual override, else synced, else none), not the synced chunk alone.
@@ -163,7 +164,7 @@ describe("manualBattleIds", () => {
         { battleId: "FoCE2", medals: 3 },
       ]
     )
-    expect([...ids].toSorted()).toEqual(["FoCE1", "FoCE3"])
+    expect([...ids].toSorted(compareCodeUnits)).toEqual(["FoCE1", "FoCE3"])
   })
 
   it("never treats an event battle as a standing frontier", () => {
