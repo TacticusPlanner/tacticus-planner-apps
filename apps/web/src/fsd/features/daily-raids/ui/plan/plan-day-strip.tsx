@@ -67,22 +67,18 @@ export function PlanDayStrip({
     }
   }, [])
 
+  const canObserveCards = typeof IntersectionObserver !== "undefined"
   const visibleDays = showAllDays
     ? raids.planDays
     : raids.planDays.slice(0, PLAN_DAY_LIMIT)
   const visibleCount = visibleDays.length
 
-  // Grids mount when their card comes within about one card width of the strip and then stay.
+  // Grids mount when their card comes within about one card width of the strip and then stay;
+  // without IntersectionObserver every grid mounts.
   useEffect(() => {
     const strip = stripRef.current
-    if (!strip) return
+    if (!strip || !canObserveCards) return
     const cards = strip.querySelectorAll<HTMLElement>("[data-plan-day]")
-    if (typeof IntersectionObserver === "undefined") {
-      setMountedDays(
-        new Set(Array.from(cards, (c) => Number(c.dataset.planDay)))
-      )
-      return
-    }
     const observer = new IntersectionObserver(
       (entries) => {
         const seen = entries
@@ -99,10 +95,12 @@ export function PlanDayStrip({
     )
     cards.forEach((card) => observer.observe(card))
     return () => observer.disconnect()
-  }, [visibleCount])
+  }, [visibleCount, canObserveCards])
 
   // The page reveals every day before jumping to an unrevealed one, so the card exists by now.
+  // An effect, not the page's click handler: the revealed card only exists once this render commits.
   useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- scrolls the committed DOM to the requested day
     if (!jumpTo) return
     stripRef.current
       ?.querySelector(`[data-plan-day="${jumpTo.day}"]`)
@@ -125,7 +123,7 @@ export function PlanDayStrip({
           key={day.day}
           cells={cellsByDay[index]!}
           day={day}
-          mounted={mountedDays.has(day.day)}
+          mounted={!canObserveCards || mountedDays.has(day.day)}
           raids={raids}
           selectedUnitId={selectedUnitId}
         />

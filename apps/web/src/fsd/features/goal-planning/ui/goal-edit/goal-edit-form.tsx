@@ -210,6 +210,9 @@ export function GoalEditForm({
 
   const changes = goalEditChanges(baseline, draft)
   const dirty = isGoalEditDirty(changes)
+  // Dirtiness also follows the acquisition and Mythic-material sub-hooks' own state, so it is
+  // reported once it settles rather than from each edit handler.
+  // eslint-disable-next-line react-you-might-not-need-an-effect/no-pass-data-to-parent -- the dialog guards closing on it
   useEffect(() => onDirtyChange(dirty), [dirty, onDirtyChange])
   const canSave =
     dirty &&

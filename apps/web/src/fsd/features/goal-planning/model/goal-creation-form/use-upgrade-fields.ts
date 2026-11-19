@@ -218,7 +218,7 @@ export function useUpgradeFields({
   }
 
   // Applies the synced current-rank prefill once per entity selection — called from the parent's
-  // single ref-guarded prefill effect (see use-create-goal-form.ts), not on every render.
+  // once-per-unit entity prefill (see use-entity-prefill.ts), not on every render.
   const prefillFrom = (rank: Rank | undefined) => {
     setUpgradeRankStart((current) => rank ?? current)
     setUpgradeRankEnd((current) => {

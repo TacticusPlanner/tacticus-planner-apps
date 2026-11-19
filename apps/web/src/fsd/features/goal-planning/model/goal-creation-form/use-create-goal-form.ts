@@ -27,7 +27,7 @@ import { chunkOrUndefined, readyData, toXpBooks } from "../shared/read-data"
 import { goalKindsForEntity } from "../shared/goal-validation"
 import { useGoalFormReset } from "./use-goal-form-reset"
 import { useGoalPrefill } from "./use-goal-prefill"
-import { useEntityPrefillEffect } from "./use-entity-prefill-effect"
+import { useEntityPrefill } from "./use-entity-prefill"
 import { useGoalPrerequisitesAndReview } from "./use-goal-prerequisites-and-review"
 import { useGoalSubmission } from "./use-goal-submission"
 import { useGoalValidationState } from "./use-goal-validation-state"
@@ -178,7 +178,7 @@ export function useCreateGoalForm({
   })
   const { upgradeTargets, upgradeSpec } = upgradeFields.state
 
-  const { resetPrefillGuard } = useEntityPrefillEffect({
+  const { resetPrefillGuard } = useEntityPrefill({
     entityId,
     playerEntity,
     rank: playerCharacter?.rank,
@@ -576,7 +576,7 @@ export function useAbilityFields(
   }
 
   // Applies the synced current-ability-level prefill once per entity selection — called from the
-  // parent's single ref-guarded prefill effect (see use-create-goal-form.ts), not on every render.
+  // once-per-unit entity prefill (see use-entity-prefill.ts), not on every render.
   const prefillFrom = (activeLevel: number, passiveLevel: number) => {
     setAbilityActiveStart(activeLevel)
     setAbilityPassiveStart(passiveLevel)
@@ -643,7 +643,7 @@ export function useRankFields(taken: ReadonlySet<string> = NO_TAKEN_TARGETS) {
   }
 
   // Applies the synced current-rank prefill once per entity selection — called from the parent's
-  // single ref-guarded prefill effect (see use-create-goal-form.ts), not on every render. Uses
+  // once-per-unit entity prefill (see use-entity-prefill.ts), not on every render. Uses
   // functional no-op updaters when `rank` is undefined (a Mow) so the caller can call this
   // unconditionally, matching that effect's own set-state-in-effect lint idiom. `rankStart` is
   // never otherwise settable — the "From" field always reflects this synced value.

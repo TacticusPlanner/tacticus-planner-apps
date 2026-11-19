@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useEffectEvent } from "react"
 
 import type { PlannedToken } from "../lib/token-plan"
 
@@ -12,9 +12,9 @@ export function useTokenShown(
   const key = onShown
     ? `${run}:${token.laneId}:${token.battleIndex}:${token.teamId}`
     : null
+  // Reads the latest token and handler: both change with every re-plan, the shown token does not.
+  const reportShown = useEffectEvent(() => onShown?.(token))
   useEffect(() => {
-    if (key !== null) onShown?.(token)
-    // Once per shown run, battle and team: the token object and handler change with every re-plan.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    reportShown()
   }, [key])
 }

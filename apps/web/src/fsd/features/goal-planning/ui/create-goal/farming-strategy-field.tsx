@@ -91,11 +91,12 @@ export function FarmingStrategyField({
   // The option list is recalculated from `start`/`end`/`rankAdditionalTarget` on every render (all
   // plain props, no memoization needed) — if that leaves the current selection disabled, fall back
   // to the one option that's always available rather than leave an unselectable value selected.
+  // An effect because the strategy is the parent's state, shared by the Rank and Ability cards.
+  const selectionUnavailable = availability[farmingStrategy] !== null
   useEffect(() => {
-    if (availability[farmingStrategy] === null) return
-    onFarmingStrategyChange("TotalUpgrades")
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [availability[farmingStrategy]])
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- corrects the parent's shared strategy for this card's range
+    if (selectionUnavailable) onFarmingStrategyChange("TotalUpgrades")
+  }, [selectionUnavailable, onFarmingStrategyChange])
 
   const targets = farmingStageTargets(context, start, end, farmingStrategy)
   const chain = targets.length > 0 ? [start, ...targets] : []

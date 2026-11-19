@@ -40,7 +40,7 @@ export function useAscensionFields(
   }
 
   // Applies the synced current-progression prefill once per entity selection — called from the
-  // parent's single ref-guarded prefill effect (see use-create-goal-form.ts), not on every render.
+  // once-per-unit entity prefill (see use-entity-prefill.ts), not on every render.
   // `progressionStart` is never otherwise settable — the "From" field always reflects this synced
   // value. A target picked (or prefilled) before it arrived stays while it is above the start.
   const prefillFrom = (progression: Progression) => {

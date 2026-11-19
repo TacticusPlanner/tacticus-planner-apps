@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest"
 import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 
 import { useRankFields } from "./use-create-goal-form"
-import { useEntityPrefillEffect } from "./use-entity-prefill-effect"
+import { useEntityPrefill } from "./use-entity-prefill"
 
 const incisus = "spaceIncisus" as UnitId
 const synced = {
@@ -17,7 +17,7 @@ function renderPrefill() {
   const abilityPrefill = vi.fn()
   const hook = renderHook(() => {
     const rankFields = useRankFields()
-    const { resetPrefillGuard } = useEntityPrefillEffect({
+    const { resetPrefillGuard } = useEntityPrefill({
       entityId: incisus,
       playerEntity: synced,
       rank: "Bronze2" as Rank,
@@ -32,7 +32,7 @@ function renderPrefill() {
   return { ...hook, ascensionPrefill, abilityPrefill }
 }
 
-describe("useEntityPrefillEffect", () => {
+describe("useEntityPrefill", () => {
   it("prefills the start fields from the synced unit", () => {
     const { result, ascensionPrefill, abilityPrefill } = renderPrefill()
 
