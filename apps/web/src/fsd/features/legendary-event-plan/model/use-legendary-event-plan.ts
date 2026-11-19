@@ -159,9 +159,11 @@ export function useLegendaryEventPlan({
       },
     })
 
-  /** `name` is the team's display name for the toast; the stored name by default. */
-  const deleteTeam = (team: LegendaryEventTeam, name = team.name) =>
-    enqueue({
+  /** `displayName` is the team's name for the toast; the stored name by default. (Not a
+   *  `name = team.name` default parameter: React Compiler can't reorder one.) */
+  const deleteTeam = (team: LegendaryEventTeam, displayName?: string) => {
+    const name = displayName ?? team.name
+    return enqueue({
       patch: (plan) => withoutTeam(plan, team.id),
       send: (base) => deleteLegendaryEventTeam(eventId, team.id, base.revision),
       onSaved: () => {
@@ -169,6 +171,7 @@ export function useLegendaryEventPlan({
         toast.success(t("teams.toasts.deleted", { name }))
       },
     })
+  }
 
   const reorderLane = (laneId: LegendaryEventLaneId, teamIds: string[]) => {
     const cached = queryClient.getQueryData<LegendaryEventPlan>(queryKey)

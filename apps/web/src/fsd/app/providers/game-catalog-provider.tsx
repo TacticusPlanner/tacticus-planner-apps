@@ -96,26 +96,29 @@ export function GameCatalogProvider({
       setStatus("syncing")
       setError(null)
 
-      try {
-        const result = await fetchCatalogSync(queryClient, baseUrl, attempt > 0)
+      // Settled without `try`: React Compiler can't lower the conditionals below inside one.
+      const outcome = await fetchCatalogSync(
+        queryClient,
+        baseUrl,
+        attempt > 0
+      ).then(
+        (result) => ({ ok: true as const, result }),
+        (caught: unknown) => ({ ok: false as const, caught })
+      )
 
-        if (!active) {
-          return
-        }
-
-        setGameVersion(result.gameVersion || null)
-        setFirstTime(result.firstTime)
-        setStatus(result.status)
-      } catch (caught) {
-        const canUseStaleCache = await hasCompleteGameCatalogCache()
-
-        if (!active) {
-          return
-        }
-
-        setError(caught instanceof Error ? caught.message : String(caught))
-        setStatus(canUseStaleCache ? "stale" : "error")
+      if (outcome.ok) {
+        if (!active) return
+        setGameVersion(outcome.result.gameVersion || null)
+        setFirstTime(outcome.result.firstTime)
+        setStatus(outcome.result.status)
+        return
       }
+
+      const canUseStaleCache = await hasCompleteGameCatalogCache()
+      if (!active) return
+      const { caught } = outcome
+      setError(caught instanceof Error ? caught.message : String(caught))
+      setStatus(canUseStaleCache ? "stale" : "error")
     }
 
     // Expected failures are handled inside; this only catches what escapes (e.g. a failing cache read).

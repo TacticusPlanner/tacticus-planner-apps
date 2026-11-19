@@ -398,7 +398,20 @@ function useComputedGoalsOverviewMetrics(
 const emptyById = new Map<string, never>()
 
 export function useGoalsOverviewMetrics(
-  ...args: Parameters<typeof useComputedGoalsOverviewMetrics>
+  requestedGoalIds: readonly string[],
+  estimatesByGoalId?: ReadonlyMap<string, EstimateOutcome>,
+  rankSlotsByGoalId?: ReadonlyMap<string, RankSlotAllocation>,
+  abilityMaterialsByGoalId?: ReadonlyMap<string, AbilityMaterials | null>,
+  planNetByGoalId?: ReadonlyMap<string, PlanNetResources>
 ): ReadonlyMap<string, GoalOverviewMetrics> {
-  return useStableMap(useComputedGoalsOverviewMetrics(...args))
+  // Named parameters, not a rest spread: React Compiler can't lower spread hook arguments.
+  return useStableMap(
+    useComputedGoalsOverviewMetrics(
+      requestedGoalIds,
+      estimatesByGoalId,
+      rankSlotsByGoalId,
+      abilityMaterialsByGoalId,
+      planNetByGoalId
+    )
+  )
 }

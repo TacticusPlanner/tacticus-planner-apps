@@ -140,7 +140,10 @@ export function useCharacterLookupCalc({
           recipe: resolveRecipe(up?.recipe ?? []),
           owned: isSlotOwned(group.fromRank, index),
         }
-        ;(byStat[up?.stat ?? "Health"] ??= []).push(view)
+        const stat = up?.stat ?? "Health"
+        const list = byStat[stat] ?? []
+        list.push(view)
+        byStat[stat] = list
       })
       return {
         fromRank: group.fromRank,

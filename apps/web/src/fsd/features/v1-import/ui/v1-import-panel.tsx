@@ -173,6 +173,52 @@ export function V1ImportPanel({
 
   const summary = result ? <ImportSummaryCard result={result} /> : null
 
+  const partRows = () =>
+    V1_IMPORT_PARTS.map((part) => {
+      const { key } = part
+      const locked = lockedParts?.includes(key) ?? false
+      return (
+        <label className="flex items-start gap-3 text-sm" key={key}>
+          <Checkbox
+            className="mt-0.5"
+            data-testid={`v1-import-${key}`}
+            checked={selection[key]}
+            disabled={locked}
+            onCheckedChange={(checked) =>
+              setSelection((current) => ({
+                ...current,
+                [key]: checked === true,
+              }))
+            }
+          />
+          <span className="flex flex-col gap-0.5">
+            <span className="flex items-center gap-1.5">
+              {t(part.label)}
+              {locked ? (
+                <Lock aria-hidden className="size-3.5 text-muted-foreground" />
+              ) : null}
+            </span>
+            {locked ? (
+              <span
+                className="text-xs text-muted-foreground"
+                data-testid={`v1-import-${key}-locked`}
+              >
+                {t("goals.v1Import.lockedPart")}
+              </span>
+            ) : null}
+            {"description" in part ? (
+              <span
+                className="text-xs text-muted-foreground"
+                data-testid={`v1-import-${key}-description`}
+              >
+                {t(part.description)}
+              </span>
+            ) : null}
+          </span>
+        </label>
+      )
+    })
+
   if (collapsed) {
     return (
       <div className="flex flex-col gap-4" data-testid="v1-import-panel">
@@ -312,53 +358,6 @@ export function V1ImportPanel({
       </div>
     </form>
   )
-
-  function partRows() {
-    return V1_IMPORT_PARTS.map((part) => {
-      const { key } = part
-      const locked = lockedParts?.includes(key) ?? false
-      return (
-        <label className="flex items-start gap-3 text-sm" key={key}>
-          <Checkbox
-            className="mt-0.5"
-            data-testid={`v1-import-${key}`}
-            checked={selection[key]}
-            disabled={locked}
-            onCheckedChange={(checked) =>
-              setSelection((current) => ({
-                ...current,
-                [key]: checked === true,
-              }))
-            }
-          />
-          <span className="flex flex-col gap-0.5">
-            <span className="flex items-center gap-1.5">
-              {t(part.label)}
-              {locked ? (
-                <Lock aria-hidden className="size-3.5 text-muted-foreground" />
-              ) : null}
-            </span>
-            {locked ? (
-              <span
-                className="text-xs text-muted-foreground"
-                data-testid={`v1-import-${key}-locked`}
-              >
-                {t("goals.v1Import.lockedPart")}
-              </span>
-            ) : null}
-            {"description" in part ? (
-              <span
-                className="text-xs text-muted-foreground"
-                data-testid={`v1-import-${key}-description`}
-              >
-                {t(part.description)}
-              </span>
-            ) : null}
-          </span>
-        </label>
-      )
-    })
-  }
 }
 
 /**

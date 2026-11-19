@@ -60,3 +60,4 @@ export {
   normalizeSearchText,
 } from "./search-text"
 export { compareCodeUnits } from "./compare"
+export { runCatching, runWithCleanup } from "./async"

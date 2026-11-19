@@ -16,6 +16,7 @@ import {
 import type { GoalListResponse, GoalOrderResponse } from "@/entities/goal"
 import { moveProjectGoal } from "@/entities/project"
 import { ApiError } from "@/shared/api"
+import { runCatching, runWithCleanup } from "@/shared/lib"
 
 /** One reorder gesture: `goalId` takes the global position `displacedGoalId` holds. With a
  * `projectId` it was made on that project's projection (any hidden goals in between keep their
@@ -183,31 +184,39 @@ export function useGoalOrderActions() {
     outstanding.current += 1
 
     const outcome = queue.current.then(async () => {
-      try {
-        await send(move, revision, movedIds)
-        if (outstanding.current === 1) await refresh()
-        return true
-      } catch (error) {
-        for (const snapshot of snapshots) {
-          queryClient.setQueryData(snapshot.queryKey, snapshot.data)
-        }
-        const stale = goalOrderConflict(error)
-        if (stale) {
-          // Adopt the order as it stands; the attempted move waits for an explicit retry.
-          adoptOrder(queryClient, stale.current)
-          setConflict({ move, message: (error as ApiError).message })
-        } else {
-          toast.error(
-            error instanceof ApiError
-              ? error.message
-              : t("goals.toasts.actionError")
+      return runWithCleanup(
+        async () => {
+          return runCatching(
+            async () => {
+              await send(move, revision, movedIds)
+              if (outstanding.current === 1) await refresh()
+              return true
+            },
+            (error) => {
+              for (const snapshot of snapshots) {
+                queryClient.setQueryData(snapshot.queryKey, snapshot.data)
+              }
+              const stale = goalOrderConflict(error)
+              if (stale) {
+                // Adopt the order as it stands; the attempted move waits for an explicit retry.
+                adoptOrder(queryClient, stale.current)
+                setConflict({ move, message: (error as ApiError).message })
+              } else {
+                toast.error(
+                  error instanceof ApiError
+                    ? error.message
+                    : t("goals.toasts.actionError")
+                )
+              }
+              return false
+            }
           )
+        },
+        () => {
+          outstanding.current -= 1
+          setPendingCount((count) => Math.max(0, count - 1))
         }
-        return false
-      } finally {
-        outstanding.current -= 1
-        setPendingCount((count) => Math.max(0, count - 1))
-      }
+      )
     })
     queue.current = outcome
     return outcome

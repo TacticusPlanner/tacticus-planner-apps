@@ -80,8 +80,10 @@ export function IncursionsPage() {
     }
     return {
       starsOf: (mowId) => starsFor(draft, mowId),
-      setBattleStars: (mowId, tierIndex, battleId, stars) =>
-        patch({ [battleKey(mowId, tierIndex, battleId)]: stars }),
+      setBattleStars: (mowId, tierIndex, battleId, stars) => {
+        const key = battleKey(mowId, tierIndex, battleId)
+        patch({ [key]: stars })
+      },
       setTierStars: (mowId, tier, stars) =>
         patch(tierStarsPatch(mowId, tier, stars)),
     }

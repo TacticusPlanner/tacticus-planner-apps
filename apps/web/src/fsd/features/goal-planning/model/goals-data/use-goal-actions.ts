@@ -29,6 +29,7 @@ import type { GoalRow } from "../shared/types"
 import { applyOptimisticGoalRemoval } from "./optimistic-goal-removal"
 import { applyOptimisticGoalStatus } from "./optimistic-goal-status"
 import type { GoalFieldPatch } from "./optimistic-goal-status"
+import { runCatching, runWithCleanup } from "@/shared/lib"
 
 /** A prerequisite cascade target: the id to also transition, and its status immediately before the
  *  transition, needed to revert its row if the transition is rejected. */
@@ -227,32 +228,40 @@ export function useGoalActions() {
       : undefined
     goalIds.forEach(addPending)
     if (optimistic) goalIds.forEach((goalId) => patchGoal(goalId, status))
-    try {
-      const response = await mutation.mutateAsync(() =>
-        updateGoalsStatus({
-          goalIds,
-          status,
-          ...(expectedOrderRevision !== undefined
-            ? { expectedOrderRevision }
-            : {}),
-        })
-      )
-      const { goals, orderRevision } = response as Awaited<
-        ReturnType<typeof updateGoalsStatus>
-      >
-      goals.forEach(writeGoal)
-      writeOrderRevision(orderRevision)
-      if (touchesOrder) void refreshGoalLists()
-    } catch (error) {
-      if (optimistic) {
-        targets.forEach((target) =>
-          patchGoal(target.goalId, target.previousStatus)
+    return runWithCleanup(
+      async () => {
+        return runCatching(
+          async () => {
+            const response = await mutation.mutateAsync(() =>
+              updateGoalsStatus({
+                goalIds,
+                status,
+                ...(expectedOrderRevision !== undefined
+                  ? { expectedOrderRevision }
+                  : {}),
+              })
+            )
+            const { goals, orderRevision } = response as Awaited<
+              ReturnType<typeof updateGoalsStatus>
+            >
+            goals.forEach(writeGoal)
+            writeOrderRevision(orderRevision)
+            if (touchesOrder) void refreshGoalLists()
+          },
+          (error) => {
+            if (optimistic) {
+              targets.forEach((target) =>
+                patchGoal(target.goalId, target.previousStatus)
+              )
+            }
+            reportStatusFailure(goalIds[0]!, error)
+          }
         )
+      },
+      () => {
+        goalIds.forEach(removePending)
       }
-      reportStatusFailure(goalIds[0]!, error)
-    } finally {
-      goalIds.forEach(removePending)
-    }
+    )
   }
 
   /**
@@ -278,20 +287,28 @@ export function useGoalActions() {
     if (!isAuthenticated) return false
     addPending(goalId)
     patchRemovalCache(goalId)
-    try {
-      await mutation.mutateAsync(() => deleteGoal(goalId))
-      return true
-    } catch (error) {
-      toast.error(
-        error instanceof ApiError
-          ? error.message
-          : t("goals.toasts.actionError")
-      )
-      return false
-    } finally {
-      void refreshGoalLists()
-      removePending(goalId)
-    }
+    return runWithCleanup(
+      async () => {
+        return runCatching(
+          async () => {
+            await mutation.mutateAsync(() => deleteGoal(goalId))
+            return true
+          },
+          (error) => {
+            toast.error(
+              error instanceof ApiError
+                ? error.message
+                : t("goals.toasts.actionError")
+            )
+            return false
+          }
+        )
+      },
+      () => {
+        void refreshGoalLists()
+        removePending(goalId)
+      }
+    )
   }
 
   /** Bulk delete: every row leaves the caches immediately, then one delete per goal runs sequentially.
@@ -301,28 +318,31 @@ export function useGoalActions() {
     if (!isAuthenticated || goalIds.length === 0) return
     goalIds.forEach(addPending)
     goalIds.forEach(patchRemovalCache)
-    let succeeded = 0
-    try {
-      for (const goalId of goalIds) {
-        try {
-          await mutation.mutateAsync(() => deleteGoal(goalId))
-          succeeded++
-        } catch {
-          // Counted below; the refetch restores the row.
+    return runWithCleanup(
+      async () => {
+        let succeeded = 0
+        for (const goalId of goalIds) {
+          try {
+            await mutation.mutateAsync(() => deleteGoal(goalId))
+            succeeded++
+          } catch {
+            // Counted below; the refetch restores the row.
+          }
         }
+        void refreshGoalLists()
+        if (succeeded < goalIds.length) {
+          toast.error(
+            t("goals.toasts.bulkPartial", {
+              succeeded,
+              total: goalIds.length,
+            })
+          )
+        }
+      },
+      () => {
+        goalIds.forEach(removePending)
       }
-      void refreshGoalLists()
-      if (succeeded < goalIds.length) {
-        toast.error(
-          t("goals.toasts.bulkPartial", {
-            succeeded,
-            total: goalIds.length,
-          })
-        )
-      }
-    } finally {
-      goalIds.forEach(removePending)
-    }
+    )
   }
 
   /**
@@ -345,30 +365,33 @@ export function useGoalActions() {
     const addedTo: ProjectSummary[] = []
     const failed: ProjectSummary[] = []
     let lastError: unknown
-    try {
-      for (const project of projects) {
-        try {
-          const { before, after } = await changeProjectMembership(
-            project.projectId,
-            project.goalIds,
-            (current) => [...current, ...goalIds]
-          )
-          succeeded.push(project)
-          const newIds = after.filter((goalId) => !before.includes(goalId))
-          if (newIds.length > 0) {
-            newIds.forEach((goalId) => added.add(goalId))
-            addedTo.push(project)
-            patchGoalProjects(goalIds, project.projectId, true)
+    await runWithCleanup(
+      async () => {
+        for (const project of projects) {
+          try {
+            const { before, after } = await changeProjectMembership(
+              project.projectId,
+              project.goalIds,
+              (current) => [...current, ...goalIds]
+            )
+            succeeded.push(project)
+            const newIds = after.filter((goalId) => !before.includes(goalId))
+            if (newIds.length > 0) {
+              newIds.forEach((goalId) => added.add(goalId))
+              addedTo.push(project)
+              patchGoalProjects(goalIds, project.projectId, true)
+            }
+          } catch (error) {
+            failed.push(project)
+            lastError = error
           }
-        } catch (error) {
-          failed.push(project)
-          lastError = error
         }
+      },
+      () => {
+        void refreshProjects()
+        goalIds.forEach(removePending)
       }
-    } finally {
-      void refreshProjects()
-      goalIds.forEach(removePending)
-    }
+    )
 
     const names = (list: readonly ProjectSummary[]) =>
       new Intl.ListFormat(i18n.language, { type: "conjunction" }).format(
@@ -433,74 +456,82 @@ export function useGoalActions() {
       : []
     goalIds.forEach(addPending)
     let movedToDestination = false
-    try {
-      if (destination && relocating.length > 0) {
-        await changeProjectMembership(
-          destination.projectId,
-          destination.goalIds,
-          (current) => [...current, ...relocating]
+    return runWithCleanup(
+      async () => {
+        return runCatching(
+          async () => {
+            if (destination && relocating.length > 0) {
+              await changeProjectMembership(
+                destination.projectId,
+                destination.goalIds,
+                (current) => [...current, ...relocating]
+              )
+              movedToDestination = true
+              patchGoalProjects(relocating, destination.projectId, true)
+            }
+            const { before, after } = await changeProjectMembership(
+              project.projectId,
+              project.goalIds,
+              (current) => current.filter((goalId) => !goalIds.includes(goalId))
+            )
+            patchGoalProjects(goalIds, project.projectId, false)
+            const removed = before.length - after.length
+            const single = rows.length === 1 ? rows[0] : undefined
+            if (single && destination && relocating.length > 0) {
+              toast.success(
+                t("goals.toasts.goalRelocated", {
+                  goal: goalLabel(single),
+                  project: destination.name,
+                })
+              )
+            } else if (single) {
+              toast.success(
+                t("goals.toasts.goalRemovedFromProject", {
+                  goal: goalLabel(single),
+                  project: project.name,
+                })
+              )
+            } else if (destination && relocating.length > 0) {
+              toast.success(
+                t("goals.toasts.goalsRemovedAndMoved", {
+                  count: removed,
+                  project: project.name,
+                  moved: relocating.length,
+                  destination: destination.name,
+                })
+              )
+            } else {
+              toast.success(
+                t("goals.toasts.goalsRemovedFromProject", {
+                  count: removed,
+                  project: project.name,
+                })
+              )
+            }
+            return true
+          },
+          (error) => {
+            // The two requests are separate, so a failed removal can leave the moved goals in both projects;
+            // say so rather than report only the error.
+            toast.error(
+              movedToDestination && destination
+                ? t("goals.toasts.movedButNotRemoved", {
+                    count: relocating.length,
+                    project: project.name,
+                    destination: destination.name,
+                    error: membershipErrorText(t, error),
+                  })
+                : membershipErrorText(t, error)
+            )
+            return false
+          }
         )
-        movedToDestination = true
-        patchGoalProjects(relocating, destination.projectId, true)
+      },
+      () => {
+        void refreshProjects()
+        goalIds.forEach(removePending)
       }
-      const { before, after } = await changeProjectMembership(
-        project.projectId,
-        project.goalIds,
-        (current) => current.filter((goalId) => !goalIds.includes(goalId))
-      )
-      patchGoalProjects(goalIds, project.projectId, false)
-      const removed = before.length - after.length
-      const single = rows.length === 1 ? rows[0] : undefined
-      if (single && destination && relocating.length > 0) {
-        toast.success(
-          t("goals.toasts.goalRelocated", {
-            goal: goalLabel(single),
-            project: destination.name,
-          })
-        )
-      } else if (single) {
-        toast.success(
-          t("goals.toasts.goalRemovedFromProject", {
-            goal: goalLabel(single),
-            project: project.name,
-          })
-        )
-      } else if (destination && relocating.length > 0) {
-        toast.success(
-          t("goals.toasts.goalsRemovedAndMoved", {
-            count: removed,
-            project: project.name,
-            moved: relocating.length,
-            destination: destination.name,
-          })
-        )
-      } else {
-        toast.success(
-          t("goals.toasts.goalsRemovedFromProject", {
-            count: removed,
-            project: project.name,
-          })
-        )
-      }
-      return true
-    } catch (error) {
-      // The two requests are separate, so a failed removal can leave the moved goals in both projects;
-      // say so rather than report only the error.
-      toast.error(
-        movedToDestination && destination
-          ? t("goals.toasts.movedButNotRemoved", {
-              count: relocating.length,
-              project: project.name,
-              destination: destination.name,
-              error: membershipErrorText(t, error),
-            })
-          : membershipErrorText(t, error)
-      )
-      return false
-    } finally {
-      void refreshProjects()
-      goalIds.forEach(removePending)
-    }
+    )
   }
 
   return {
