@@ -172,7 +172,8 @@ export function UpgradesStep({ draft }: { draft: PlanDraft }) {
               </h3>
               <ol className="flex flex-col gap-2">
                 {group.indexes.map((index) => {
-                  const recommendation = list[index]!
+                  const recommendation = list[index]
+                  if (!recommendation) return null
                   const checked = draft.ticked.has(index)
                   const id = `plan-upgrade-${index}`
                   return (

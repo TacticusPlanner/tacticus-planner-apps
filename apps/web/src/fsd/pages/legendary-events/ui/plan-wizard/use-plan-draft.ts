@@ -346,14 +346,15 @@ export function usePlanDraft(
   const searchOver =
     recommendations.status === "done" ||
     recommendations.status === "unavailable"
+  const firstTarget = targets[0]
   if (
     target === null &&
     defaultStep === null &&
     searchOver &&
     !settling &&
-    targets.length > 0
+    firstTarget
   ) {
-    setDefaultStep(options.best ?? targets[0]!.step)
+    setDefaultStep(options.best ?? firstTarget.step)
   }
   // A step no longer offered falls back to the next step.
   const chosenTarget =
@@ -373,6 +374,13 @@ export function usePlanDraft(
     [recommendations]
   )
   const keys = useMemo(() => list.map(recommendationKey), [list])
+  const keysAt = (indexes: ReadonlySet<number>) =>
+    new Set(
+      [...indexes].flatMap((index) => {
+        const key = keys[index]
+        return key === undefined ? [] : [key]
+      })
+    )
   // Until the user ticks something, the target's prefix is ticked.
   const defaultCount = recommendationsFor(
     list,
@@ -502,8 +510,7 @@ export function usePlanDraft(
       markDirty()
     },
     toggle: (index: number) => {
-      const next = toggleRecommendation(list, tickedSet, index)
-      tickManually(new Set([...next].map((entry) => keys[entry]!)))
+      tickManually(keysAt(toggleRecommendation(list, tickedSet, index)))
     },
     /** Just enough: back to the target's prefix, which follows new finds. */
     tickJustEnough: () => {
@@ -521,7 +528,7 @@ export function usePlanDraft(
           next = toggleRecommendation(list, next, index)
         }
       })
-      tickManually(new Set([...next].map((entry) => keys[entry]!)))
+      tickManually(keysAt(next))
     },
     skippedSwaps,
     skipSwap: (key: string) =>

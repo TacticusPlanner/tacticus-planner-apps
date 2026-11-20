@@ -83,7 +83,8 @@ export function CurrentMissionCard({
       </CardHeader>
       <CardContent className="space-y-4">
         {mission.objectives.map((objective, index) => {
-          const value = state.progress[index]!
+          // An objective with no recorded progress yet reads as 0.
+          const value = state.progress[index] ?? 0
           const done = value >= objective.target
           const testId = `hre-objective-${index}`
           return (

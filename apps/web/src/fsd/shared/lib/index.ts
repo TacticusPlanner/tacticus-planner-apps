@@ -63,3 +63,4 @@ export {
 export { compareCodeUnits, firstDifference } from "./compare"
 export { runCatching, runWithCleanup } from "./async"
 export { useStableByKey } from "./use-stable-by-key"
+export { required } from "./assert"

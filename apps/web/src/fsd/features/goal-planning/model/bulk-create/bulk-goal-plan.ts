@@ -164,8 +164,9 @@ export function buildUnitPlan(
     : null
   const plansRank =
     rankEnd !== null &&
+    rankConfig !== null &&
     rankIndex(rankEnd) > rankIndex(rankStart) &&
-    !taken("Rank", rankConfig!)
+    !taken("Rank", rankConfig)
 
   const level =
     targets.ability === null
@@ -185,8 +186,9 @@ export function buildUnitPlan(
         }
   const plansAbility =
     level !== null &&
+    abilityConfig !== null &&
     (level > activeStart || level > passiveStart) &&
-    !taken("Ability", abilityConfig!)
+    !taken("Ability", abilityConfig)
 
   const needs = [
     plansRank ? minProgressionForRank(rankEnd) : null,
@@ -199,7 +201,7 @@ export function buildUnitPlan(
 
   // This request's Ascension goals, in order: the chosen one, then one added for Rank/Abilities.
   const ascensions: { index: number; end: Progression }[] = []
-  const pushAscension = (end: Progression, added: boolean) => {
+  const pushAscension = (end: Progression, added: boolean): number => {
     const previous = ascensions.at(-1)?.index ?? null
     specs.push({
       goalType: "Ascension",
@@ -208,7 +210,9 @@ export function buildUnitPlan(
       ...(unlockGoalIds.length > 0 ? { dependsOnGoalIds: unlockGoalIds } : {}),
     })
     goals.push({ goalType: "Ascension", start: base, end, added })
-    ascensions.push({ index: specs.length - 1, end })
+    const index = specs.length - 1
+    ascensions.push({ index, end })
+    return index
   }
   if (targets.ascension) {
     const config = { progression: { start: base, end: targets.ascension } }
@@ -239,8 +243,7 @@ export function buildUnitPlan(
     if (inRequest) return { index: inRequest.index, goalIds: [] }
     const inFlight = inFlightAscensions.find(reaches)
     if (inFlight) return { index: null, goalIds: [inFlight.goalId] }
-    pushAscension(highestNeed ?? need, true)
-    return { index: ascensions.at(-1)!.index, goalIds: [] }
+    return { index: pushAscension(highestNeed ?? need, true), goalIds: [] }
   }
   const dependsOnGoalIds = (goalIds: string[]) => {
     const all = [...new Set([...unlockGoalIds, ...goalIds])]
@@ -258,7 +261,7 @@ export function buildUnitPlan(
       const dependency = dependencyFor(minProgressionForRank(rankEnd))
       specs.push({
         goalType: "Rank",
-        config: rankConfig!,
+        config: rankConfig,
         dependsOnIndex: withUnlock([dependency.index]),
         ...dependsOnGoalIds(dependency.goalIds),
       })
@@ -275,11 +278,11 @@ export function buildUnitPlan(
       const dependency = dependencyFor(minProgressionForAbilityLevel(level))
       specs.push({
         goalType: "Ability",
-        config: abilityConfig!,
+        config: abilityConfig,
         dependsOnIndex: withUnlock([dependency.index]),
         ...dependsOnGoalIds(dependency.goalIds),
       })
-      goals.push({ goalType: "Ability", ...abilityConfig!.ability })
+      goals.push({ goalType: "Ability", ...abilityConfig.ability })
     }
   }
 

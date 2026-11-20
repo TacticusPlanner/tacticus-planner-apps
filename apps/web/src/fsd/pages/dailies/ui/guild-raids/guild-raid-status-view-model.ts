@@ -212,21 +212,24 @@ export function buildGuildRaidStatusView(params: {
         isUpcoming: season.boss.isUpcoming,
         progressionIndex: season.boss.progressionIndex,
       },
-      primes: season.primes.map((prime, index) => ({
-        encounterIndex: prime.encounterIndex,
-        unitSetId: prime.unitSetId,
-        name: primeDisplays[index]!.name,
-        portraitSrc: primeDisplays[index]!.portraitSrc,
-        hp:
-          prime.remainingHp !== null && prime.maximumHp !== null
-            ? {
-                kind: "known",
-                remaining: prime.remainingHp,
-                max: prime.maximumHp,
-              }
-            : { kind: "unavailable" },
-        modifiers: prime.modifiers.map(toModifierView),
-      })),
+      primes: season.primes.map((prime) => {
+        const display = resolveDisplay(catalog, prime.unitSetId)
+        return {
+          encounterIndex: prime.encounterIndex,
+          unitSetId: prime.unitSetId,
+          name: display.name,
+          portraitSrc: display.portraitSrc,
+          hp:
+            prime.remainingHp !== null && prime.maximumHp !== null
+              ? {
+                  kind: "known" as const,
+                  remaining: prime.remainingHp,
+                  max: prime.maximumHp,
+                }
+              : { kind: "unavailable" as const },
+          modifiers: prime.modifiers.map(toModifierView),
+        }
+      }),
     },
   }
 }

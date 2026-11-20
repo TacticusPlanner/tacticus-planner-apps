@@ -124,18 +124,20 @@ export function useCompareSources(enabled: boolean): ReadState<CompareSources> {
         takenAt: snapshot.takenAt,
       })),
       ...recordPages.flatMap((page) =>
-        (page?.records ?? []).map((record): CompareSource => ({
-          kind: "runRecord",
-          id: formatRosterSourceId({
-            kind: "runRecord",
-            eventId: page!.eventId,
-            recordId: record.id,
-          }),
-          eventId: page!.eventId,
-          eventName: eventNames.get(page!.eventId) ?? page!.eventId,
-          run: record.run,
-          takenAt: record.progressAt,
-        }))
+        page
+          ? page.records.map((record): CompareSource => ({
+              kind: "runRecord",
+              id: formatRosterSourceId({
+                kind: "runRecord",
+                eventId: page.eventId,
+                recordId: record.id,
+              }),
+              eventId: page.eventId,
+              eventName: eventNames.get(page.eventId) ?? page.eventId,
+              run: record.run,
+              takenAt: record.progressAt,
+            }))
+          : []
       ),
     ]
     return list.toSorted(

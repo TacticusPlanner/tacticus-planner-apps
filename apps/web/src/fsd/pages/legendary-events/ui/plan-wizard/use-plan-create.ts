@@ -276,14 +276,15 @@ export function usePlanCreate(eventId: string) {
       })
       projectId.current = project.projectId
     })
-    if (projectOk && projectId.current) {
+    const createdProjectId = projectId.current
+    if (projectOk && createdProjectId) {
       for (const chain of writes.goals) {
         const first = chain.steps[0]
         await attempt(`goals:${chain.unitId}`, () =>
           createCombinedGoals({
             entityType: "Character",
             entityId: chain.unitId,
-            projects: [{ projectId: projectId.current! }],
+            projects: [{ projectId: createdProjectId }],
             goals: upgradeChainGoalSpecs(
               chain.request,
               first?.kind === "unlock" ? first.unit.progressionIndex : undefined

@@ -21,11 +21,12 @@ export function LeaderboardLanePicker({
   onToggle: (laneId: LegendaryEventLaneId, shown: boolean) => void
 }) {
   const { t } = useTranslation("legendaryEvents")
+  const [onlyLane] = laneIds
   const summary =
     laneIds.length === LEGENDARY_EVENT_LANE_IDS.length
       ? t("leaderboard.lanesAll")
-      : laneIds.length === 1
-        ? t(`lanes.${laneIds[0]!}`)
+      : laneIds.length === 1 && onlyLane
+        ? t(`lanes.${onlyLane}`)
         : t("leaderboard.lanesCount", { count: laneIds.length })
   return (
     <DropdownMenu>

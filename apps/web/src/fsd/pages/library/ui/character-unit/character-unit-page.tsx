@@ -3,12 +3,12 @@ import { Link, useLocation, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { abilityIcon } from "@workspace/game-catalog"
+import type { CharacterStorageModel } from "@workspace/game-catalog"
 import {
   maxAbilityLevel,
   maxRankForProgression,
   progressionRarity,
 } from "@workspace/game-domain"
-import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -94,16 +94,16 @@ export function CharacterUnitPage() {
   }
   // Keyed by unit, so page state (custom values, ability levels, the calculator) starts afresh.
   return (
-    <CharacterUnit key={character.id} catalog={catalog} unitId={character.id} />
+    <CharacterUnit key={character.id} catalog={catalog} character={character} />
   )
 }
 
 function CharacterUnit({
   catalog,
-  unitId,
+  character,
 }: {
   catalog: ReturnType<typeof useCharactersCatalog>
-  unitId: UnitId
+  character: CharacterStorageModel
 }) {
   const { t } = useTranslation([
     "library",
@@ -116,7 +116,7 @@ function CharacterUnit({
   const isAuthenticated = useIsAuthenticated()
   const location = useLocation()
   const panelId = useId()
-  const character = catalog.byId.get(unitId)!
+  const unitId = character.id
   const name = t(`characters:${unitId}`, { defaultValue: character.name })
   const [tab, setTab] = useUnitTab(TABS)
 

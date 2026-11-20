@@ -17,6 +17,7 @@ export type LadderStep = {
 
 type StepState = {
   index: number
+  step: LadderStep
   current: boolean
   /** The goal's start, when the unit has since moved past it (else the start is the current step). */
   start: boolean
@@ -82,6 +83,7 @@ export function TargetLadder({
     const taken = step.key !== valueKey && takenKeys.has(step.key)
     return {
       index,
+      step,
       current: index === currentIndex,
       start: index === startIndex && index !== currentIndex,
       taken,
@@ -125,7 +127,7 @@ export function TargetLadder({
 
   const tiers: { tier: string; label?: string; states: StepState[] }[] = []
   for (const state of states.slice(collapsed)) {
-    const step = steps[state.index]!
+    const { step } = state
     const last = tiers.at(-1)
     if (last?.tier === step.tier) last.states.push(state)
     else tiers.push({ tier: step.tier, label: step.tierLabel, states: [state] })
@@ -174,7 +176,7 @@ export function TargetLadder({
           ) : null}
           <div className="flex flex-wrap gap-1">
             {tier.states.map((state) => {
-              const step = steps[state.index]!
+              const { step } = state
               const note = state.current
                 ? t("goals.card.ladder.current")
                 : state.start

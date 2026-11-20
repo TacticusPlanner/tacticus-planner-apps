@@ -405,12 +405,13 @@ function fill(
   usedAttempts: ReadonlyMap<BattleId, number> = new Map()
 ): { rows: MissionRaidRow[]; attemptsBlocked: boolean; left: number[] } {
   let budget = energyBudget
-  const left = needs.map((need) => need.left)
+  // Each need's remaining amount, updated as battles are taken.
+  const open = needs.map((need) => ({ ...need }))
   // An affordable node with no attempts left: an empty fill then means attempts ran out, not energy.
   let attemptsBlocked = false
   const rows: MissionRaidRow[] = []
   for (const battle of candidates) {
-    if (left.every((value) => value <= 0)) break
+    if (open.every((need) => need.left <= 0)) break
     const cap =
       input.attemptsLeftByBattle.get(battle.id) ??
       (battle.dailyAttempts > 0 ? battle.dailyAttempts : Infinity)
@@ -418,11 +419,9 @@ function fill(
     if (attempts <= 0 && budget >= battle.energyCost) attemptsBlocked = true
     const wanted = Math.max(
       0,
-      ...needs.map((need, index) => {
+      ...open.map((need) => {
         const weight = need.weightOf(battle.id)
-        return left[index]! > 0 && weight > 0
-          ? Math.ceil(left[index]! / weight)
-          : 0
+        return need.left > 0 && weight > 0 ? Math.ceil(need.left / weight) : 0
       })
     )
     const raids = Math.min(
@@ -432,12 +431,10 @@ function fill(
     )
     if (raids <= 0) continue
     budget -= raids * battle.energyCost
-    needs.forEach((need, index) => {
-      left[index] = left[index]! - raids * need.weightOf(battle.id)
-    })
+    for (const need of open) need.left -= raids * need.weightOf(battle.id)
     rows.push(row(battle, raids, input))
   }
-  return { rows, attemptsBlocked, left }
+  return { rows, attemptsBlocked, left: open.map((need) => need.left) }
 }
 
 /**

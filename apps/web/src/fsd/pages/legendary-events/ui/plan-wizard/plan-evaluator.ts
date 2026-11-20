@@ -9,6 +9,7 @@ import { planRuns, projectedRosters, rosterKey } from "./plan-inputs"
 import type { ChosenUpgrade, PlanEconomy, PlanInputs } from "./plan-inputs"
 import { generateLaneTeams, memberKey, storedDrafts } from "./plan-teams"
 import type { DraftTeam } from "./plan-teams"
+import { required } from "@/shared/lib"
 
 /** The user's Teams-step changes the generation keeps (spec: keep the user's edits where they
  *  still apply). */
@@ -46,10 +47,10 @@ export interface PlanEvaluator {
  *  and additions applied. */
 function laneStart(
   inputs: PlanInputs,
-  laneId: LegendaryEventLaneId,
+  planLane: PlanInputs["lanes"][number],
   adjustments: TeamAdjustments
 ): DraftTeam[] {
-  const planLane = inputs.lanes.find((lane) => lane.laneId === laneId)!
+  const { laneId } = planLane
   const stored = adjustments.replace
     ? []
     : storedDrafts(inputs, planLane, inputs.plan.teams)
@@ -85,7 +86,7 @@ export function createPlanEvaluator(
   const starts = new Map(
     inputs.lanes.map((lane) => [
       lane.laneId,
-      laneStart(inputs, lane.laneId, adjustments),
+      laneStart(inputs, lane, adjustments),
     ])
   )
   const cache = new Map<string, DraftTeam[]>()
@@ -95,7 +96,11 @@ export function createPlanEvaluator(
     const teams = inputs.lanes.flatMap((planLane) => {
       const key = `${planLane.laneId}#${runs
         .map((run) =>
-          rosterKey(rosters.get(run)!, base, allowed.get(planLane.laneId))
+          rosterKey(
+            required(rosters.get(run), `run ${run}'s roster`),
+            base,
+            allowed.get(planLane.laneId)
+          )
         )
         .join("#")}`
       let laneTeams = cache.get(key)
@@ -181,12 +186,15 @@ export function teamSwaps(
   const present = new Set(evaluation.teams.map((team) => team.key))
   return evaluation.teams.flatMap((team) => {
     if (team.storedId === null || team.edited) return []
-    const planLane = inputs.lanes.find((lane) => lane.laneId === team.laneId)!
+    const planLane = required(
+      inputs.lanes.find((lane) => lane.laneId === team.laneId),
+      `lane ${team.laneId}`
+    )
     const removed = new Set([...adjustments.removed, team.key])
     const laneTeams = generateLaneTeams({
       inputs,
       planLane,
-      start: laneStart(inputs, team.laneId, { ...adjustments, removed }),
+      start: laneStart(inputs, planLane, { ...adjustments, removed }),
       rosters: evaluation.rosters,
       runs,
       excluded: removed,

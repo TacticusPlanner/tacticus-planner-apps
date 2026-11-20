@@ -106,9 +106,10 @@ export function RaidBossesPage() {
   const selectedSeasonId = seasonId
   const requestedComp = search.get("comp")
   const compId =
+    requestedComp !== null &&
     metaCatalog.status === "ready" &&
     metaCatalog.meta.comps.some((comp) => comp.id === requestedComp)
-      ? requestedComp!
+      ? requestedComp
       : undefined
   const firstEntityId =
     catalog.bosses[0]?.unitSetId ?? catalog.primes[0]?.unitSetId

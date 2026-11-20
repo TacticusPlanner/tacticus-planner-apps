@@ -91,6 +91,7 @@ export function useSeasonFit(
 
   if (read.status === "error") return { status: "error", retry: read.retry }
   if (!windows) return { status: "loading" }
+  const deadlineMs = chosen?.boundariesMs[0]
   return {
     status: "ready",
     available: {
@@ -99,11 +100,11 @@ export function useSeasonFit(
       guildWar: windows.guildWar !== null,
     },
     active:
-      mode !== "off" && chosen && fits
+      mode !== "off" && chosen && fits && deadlineMs !== undefined
         ? {
             season: mode,
             seasonNumber: chosen.seasonNumber,
-            deadlineMs: chosen.boundariesMs[0]!,
+            deadlineMs,
             fits,
           }
         : null,

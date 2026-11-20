@@ -54,6 +54,7 @@ import type { PlanByRun } from "./token-runs"
 import { missionOrder } from "./mission-order"
 import type { MissionOrder } from "./mission-order"
 import type { TokenMarker, Forecast } from "./run-forecast"
+import { required } from "@/shared/lib"
 
 /** A lane's team estimator, as the page builds it from the Stage 5 clear estimates. */
 type LaneTeamEstimator = {
@@ -224,6 +225,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     return { kind: "loading" }
   }
   const entry = progress
+  const planData = plan.data
   // An incomplete team (fewer than three members) is never played: a lane holding only such
   // teams reads as having no team.
   const teams = plan.data.teams
@@ -266,11 +268,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
               }
             : {}),
         })),
-      annotations: applicableAnnotations(
-        plan.data!.annotations,
-        laneId,
-        synced
-      ),
+      annotations: applicableAnnotations(planData.annotations, laneId, synced),
     }
   })
 
@@ -380,9 +378,9 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
     source
       ? openMissions({
           event: source.event,
-          runs: plan.data!.runs,
+          runs: planData.runs,
           currentRun: run,
-          showPaidOptions: plan.data!.showPaidOptions,
+          showPaidOptions: planData.showPaidOptions,
         })
       : []
   // Before run 1 (or between runs) the next run's missions are the ones to plan for.
@@ -414,9 +412,9 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
           completedOf: (run) =>
             completedMissions({
               event: source.event,
-              runs: plan.data!.runs,
+              runs: planData.runs,
               currentRun: run,
-              showPaidOptions: plan.data!.showPaidOptions,
+              showPaidOptions: planData.showPaidOptions,
             }),
           membersOf,
           enemiesOf: source.enemiesOf,
@@ -464,7 +462,10 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
                   membersOf,
                   enemiesOf: source.enemiesOf,
                 },
-                ordered.tokens[firstPlayableIndex(ordered.tokens)]!
+                required(
+                  ordered.tokens[firstPlayableIndex(ordered.tokens)],
+                  "next playable token"
+                )
               )
             : [],
         }
@@ -518,7 +519,7 @@ function emptyReason(
   if (lanes.every((lane) => lane.teams.length === 0)) {
     return {
       kind: "noTeams",
-      laneId: withPoints[0]?.laneId ?? LEGENDARY_EVENT_LANE_IDS[0]!,
+      laneId: withPoints[0]?.laneId ?? LEGENDARY_EVENT_LANE_IDS[0],
     }
   }
   if (
@@ -545,7 +546,7 @@ function emptyReason(
   )
   return {
     kind: "nothingLeft",
-    laneId: most?.laneId ?? LEGENDARY_EVENT_LANE_IDS[0]!,
+    laneId: most?.laneId ?? LEGENDARY_EVENT_LANE_IDS[0],
     points: most?.pointsLeftAfterPlan ?? 0,
   }
 }
@@ -602,7 +603,11 @@ export function missionsNextToken(view: Pick<TokenPlanReady, "missionOrder">): {
     index === 0
       ? gainsFromSteps(order.steps[0] ?? [])
       : gainsFromProgress(order.nextProgress)
-  return { token: order.tokens[index]!, index, gains }
+  return {
+    token: required(order.tokens[index], "next token"),
+    index,
+    gains,
+  }
 }
 
 /** The first token that could be played next, else the first. */

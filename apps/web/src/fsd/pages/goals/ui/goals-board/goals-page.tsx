@@ -628,7 +628,8 @@ export function GoalsPage() {
               </section>
             )
           }
-          const firstRow = rowGroup.rows[0]!
+          const [firstRow] = rowGroup.rows
+          if (!firstRow) return null
           const groupId = rowGroupId(rowGroup)
           return (
             <GoalGroupSection

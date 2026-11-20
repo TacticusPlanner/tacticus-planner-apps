@@ -21,11 +21,11 @@ export type LegendaryEventBattle = LegendaryEventBattleStorageModel
 
 export type LegendaryEventLaneId = "alpha" | "beta" | "gamma"
 
-export const LEGENDARY_EVENT_LANE_IDS: readonly LegendaryEventLaneId[] = [
+export const LEGENDARY_EVENT_LANE_IDS = [
   "alpha",
   "beta",
   "gamma",
-]
+] as const satisfies readonly LegendaryEventLaneId[]
 
 /** One lane of an event (the catalog's track view). */
 export type LegendaryEventLane = GameCatalogLreTrackView

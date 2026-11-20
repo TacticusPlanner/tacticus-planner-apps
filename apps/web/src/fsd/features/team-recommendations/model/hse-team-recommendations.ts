@@ -36,6 +36,7 @@ import type {
   TeamPoolSpec,
   TeamRosterCharacter,
 } from "./team-recommendations.types"
+import { required } from "@/shared/lib"
 
 /** Tracker kinds that count a kill, wave or line-up by the player's units in a token mode. */
 const SCORING_KINDS = new Set([
@@ -347,7 +348,10 @@ function buildTeam(
     leadWithPools: true,
     unitPower,
   })
-  const team = recommendations.categories.find((c) => c.id === "plan")!
+  const team = required(
+    recommendations.categories.find((c) => c.id === "plan"),
+    "the plan team"
+  )
   return { status: "ready", alliance, pick, team }
 }
 

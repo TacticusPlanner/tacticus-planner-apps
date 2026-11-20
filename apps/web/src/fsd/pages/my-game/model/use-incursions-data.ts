@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { combineReadStates } from "@/shared/lib"
+import { combineReadStates, required } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 /**
@@ -23,8 +23,8 @@ export function useIncursionsData() {
       status,
       retry,
       data: {
-        incursions: incursions!,
-        npcsById: npcsById!,
+        incursions: required(incursions, "incursions"),
+        npcsById: required(npcsById, "NPCs"),
         ownedMowIds: new Set((mows ?? []).map((mow) => mow.unitId as string)),
       },
     }

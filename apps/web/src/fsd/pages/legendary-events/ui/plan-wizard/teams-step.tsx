@@ -103,10 +103,10 @@ export function TeamsStep({
   const onTabKey = (event: KeyboardEvent<HTMLButtonElement>, at: number) => {
     const delta =
       event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0
-    if (delta === 0) return
-    event.preventDefault()
     const next =
-      PLAN_LANE_IDS[(at + delta + PLAN_LANE_IDS.length) % PLAN_LANE_IDS.length]!
+      PLAN_LANE_IDS[(at + delta + PLAN_LANE_IDS.length) % PLAN_LANE_IDS.length]
+    if (delta === 0 || next === undefined) return
+    event.preventDefault()
     onLaneChange(next)
     document.getElementById(`plan-wizard-tab-${next}`)?.focus()
   }

@@ -441,17 +441,20 @@ function ChainCard({
     >
       <p className="text-sm font-semibold">{taskNames.join(" · ")}</p>
       <div aria-hidden="true" className="flex h-12 items-end gap-0.5">
-        {targets.map((target, index) => (
-          <span
-            key={missions[index]!.id}
-            className={cn(
-              "min-h-1.5 flex-1 rounded-t-sm",
-              kind === "premium" ? "bg-amber-500" : "bg-primary"
-            )}
-            style={{ height: `${Math.round((target / highest) * 100)}%` }}
-            title={`${index + 1}: ${format.number(target)}`}
-          />
-        ))}
+        {missions.map((mission, index) => {
+          const target = mission.tasks[0]?.target ?? 0
+          return (
+            <span
+              key={mission.id}
+              className={cn(
+                "min-h-1.5 flex-1 rounded-t-sm",
+                kind === "premium" ? "bg-amber-500" : "bg-primary"
+              )}
+              style={{ height: `${Math.round((target / highest) * 100)}%` }}
+              title={`${index + 1}: ${format.number(target)}`}
+            />
+          )
+        })}
       </div>
       <div className="flex justify-between text-xs text-muted-foreground tabular-nums">
         <span>

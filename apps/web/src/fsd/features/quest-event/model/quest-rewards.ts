@@ -176,12 +176,8 @@ export function shardMeaning(params: {
   const walk = (available: number) => {
     const steps: Progression[] = []
     let left = available
-    for (
-      let index = progressionOrder.indexOf(owned.progression) + 1;
-      index < progressionOrder.length;
-      index++
-    ) {
-      const step = progressionOrder[index]!
+    const after = progressionOrder.indexOf(owned.progression) + 1
+    for (const step of progressionOrder.slice(after)) {
       const cost = costs.get(step)
       if (!cost || cost.mythicShards > 0 || cost.shards > left) break
       left -= cost.shards

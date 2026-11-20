@@ -282,23 +282,32 @@ function FocusCallout({
   const { emptySlotIndexes, weakestSlotIndex } =
     resolveGuildRaidLineupFocus(slots)
 
+  const weakest =
+    weakestSlotIndex === null ? undefined : slots[weakestSlotIndex]
   const lines = [
-    ...emptySlotIndexes.map((index) => ({
-      index,
-      text: t("guildRaids.exactMeta.focus.empty", {
-        slot: slotLabel(slots[index]!),
-        name: slots[index]!.ideal.name,
-      }),
-    })),
-    ...(weakestSlotIndex === null
+    ...emptySlotIndexes.flatMap((index) => {
+      const slot = slots[index]
+      return slot
+        ? [
+            {
+              index,
+              text: t("guildRaids.exactMeta.focus.empty", {
+                slot: slotLabel(slot),
+                name: slot.ideal.name,
+              }),
+            },
+          ]
+        : []
+    }),
+    ...(weakestSlotIndex === null || !weakest
       ? []
       : [
           {
             index: weakestSlotIndex,
             text: t("guildRaids.exactMeta.focus.weakest", {
-              slot: slotLabel(slots[weakestSlotIndex]!),
-              name: slots[weakestSlotIndex]!.picked?.name ?? "",
-              percent: slots[weakestSlotIndex]!.readiness,
+              slot: slotLabel(weakest),
+              name: weakest.picked?.name ?? "",
+              percent: weakest.readiness,
             }),
           },
         ]),

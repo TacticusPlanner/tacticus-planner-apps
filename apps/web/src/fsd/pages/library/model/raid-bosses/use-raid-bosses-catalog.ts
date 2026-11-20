@@ -13,6 +13,7 @@ import type {
   RaidBossListItem,
 } from "@/entities/raid-boss"
 import { toById, useCatalogDataset } from "@/shared/local-data"
+import { required } from "@/shared/lib"
 
 type RaidBossesCatalogStatus = "loading" | "absent" | "failed" | "ready"
 
@@ -105,11 +106,11 @@ export function useRaidBossesCatalog(): RaidBossesCatalog {
     const itemByUnitSetId = new Map(
       [...bosses, ...primes].map((item) => [item.unitSetId, item])
     )
+    const itemOf = (unitSetId: string) =>
+      required(itemByUnitSetId.get(unitSetId), `raid unit set ${unitSetId}`)
     const rosterGroups = buildRaidBossRosterGroups(result).map((group) => ({
-      boss: itemByUnitSetId.get(group.boss.unitSetId)!,
-      primes: group.primes.map((prime) =>
-        itemByUnitSetId.get(prime.unitSetId)!
-      ),
+      boss: itemOf(group.boss.unitSetId),
+      primes: group.primes.map((prime) => itemOf(prime.unitSetId)),
     }))
 
     return {

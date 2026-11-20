@@ -102,6 +102,7 @@ function LegendaryEventPageBody({
   }, [syncedRoster])
   const laneSelector = <LaneSelector isMobile={isMobile} lanes={lanes} />
   const leaderboardLayout = isMobile ? "list" : "table"
+  const laneBattles = props.battles[props.battlesLane.laneId]
   // Before run 1 (or between runs) the next run's missions are the ones to tick.
   const missionRun =
     props.runInputs.runs.currentRun ?? props.runInputs.runs.nextRun
@@ -301,9 +302,9 @@ function LegendaryEventPageBody({
               openKey={PLAN_TOKEN_PLAN_OPEN_KEY}
               view={tokens.view}
             />
-            {props.battles[props.battlesLane.laneId] ? (
+            {laneBattles ? (
               <BattlesSection
-                battles={props.battles[props.battlesLane.laneId]!}
+                battles={laneBattles}
                 isMobile={isMobile}
                 laneId={props.battlesLane.laneId}
                 lanePicker={

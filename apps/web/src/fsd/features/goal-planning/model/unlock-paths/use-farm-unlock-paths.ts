@@ -2,7 +2,7 @@ import { useCallback } from "react"
 import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 import type { BattleId, UpgradeId } from "@workspace/game-domain"
 
-import { useCampaignDisplay } from "@/shared/lib"
+import { useCampaignDisplay, required } from "@/shared/lib"
 import type { FarmLocation } from "@/shared/lib"
 
 import { useGoalCatalog } from "../shared/use-goal-catalog"
@@ -51,7 +51,10 @@ export function useFarmUnlockPaths(): (
         gate,
       })
       return paths.map((path) => {
-        const battle = battles.get(path.battleId)!
+        const battle = required(
+          battles.get(path.battleId),
+          `battle ${path.battleId}`
+        )
         const descriptor = campaignDescriptor(
           battle.campaignGroupId,
           battle.type,

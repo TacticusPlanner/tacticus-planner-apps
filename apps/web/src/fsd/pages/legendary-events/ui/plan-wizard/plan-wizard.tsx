@@ -85,7 +85,7 @@ export function PlanWizard({
   // draft is not saved, so a reload starts at Target.
   const [visited, setVisited] = useState(0)
   const index = Math.min(Math.max(stepIndex(params.get("step")), 0), visited)
-  const step = PLAN_WIZARD_STEPS[index]!
+  const step = PLAN_WIZARD_STEPS[index] ?? PLAN_WIZARD_STEPS[0]
   useEffect(() => {
     if (params.get("step") === step) return
     setParams(
@@ -219,7 +219,8 @@ export function PlanWizard({
   const locked = create.running || snapshot !== null
   // Create waits until the chosen target's recommendations are final, or it would file a partial list.
   const exploring = !draft.targetSettled
-  const last = index === PLAN_WIZARD_STEPS.length - 1
+  const previousStep = PLAN_WIZARD_STEPS[index - 1]
+  const nextStep = PLAN_WIZARD_STEPS[index + 1]
   const shownWrites = snapshot?.writes ?? writes
   const counts = writeCounts(shownWrites)
   let createLabel: string
@@ -379,13 +380,15 @@ export function PlanWizard({
         data-testid="plan-wizard-footer"
       >
         <Button
-          disabled={index === 0 || locked}
-          onClick={() => setStep(PLAN_WIZARD_STEPS[index - 1]!)}
+          disabled={!previousStep || locked}
+          onClick={() => {
+            if (previousStep) setStep(previousStep)
+          }}
           variant="outline"
         >
           {t("planWizard.back")}
         </Button>
-        {last ? (
+        {nextStep === undefined ? (
           <Button
             data-testid="plan-wizard-create"
             disabled={
@@ -407,7 +410,7 @@ export function PlanWizard({
           <Button
             data-testid="plan-wizard-next"
             disabled={draft.target === null}
-            onClick={() => setStep(PLAN_WIZARD_STEPS[index + 1]!)}
+            onClick={() => setStep(nextStep)}
           >
             {t("planWizard.next")}
           </Button>

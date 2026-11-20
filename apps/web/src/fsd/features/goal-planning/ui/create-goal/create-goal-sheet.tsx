@@ -72,6 +72,9 @@ export function CreateGoalSheet({
     if (shownEntityId && !form.entityId) setMobileStep("unit")
   }
   const stepIndex = MOBILE_CREATE_STEPS.indexOf(mobileStep)
+  // Index -1 (on the first step) reads as no step.
+  const previousStep = MOBILE_CREATE_STEPS[stepIndex - 1]
+  const nextStep = MOBILE_CREATE_STEPS[stepIndex + 1]
   const nextBlocked =
     mobileStep === "unit"
       ? !form.entityId
@@ -124,11 +127,11 @@ export function CreateGoalSheet({
             portalContainer={portalContainer}
           />
         )}
-        {isMobile && stepIndex > 0 ? (
+        {isMobile && previousStep ? (
           <Button
             className="flex-1"
             data-testid="create-goal-back"
-            onClick={() => setMobileStep(MOBILE_CREATE_STEPS[stepIndex - 1]!)}
+            onClick={() => setMobileStep(previousStep)}
             type="button"
             variant="outline"
           >
@@ -156,13 +159,13 @@ export function CreateGoalSheet({
             portalContainer={portalContainer}
           />
         )}
-        {isMobile && mobileStep !== "review" ? (
+        {isMobile && nextStep ? (
           <Button
             className="flex-1"
             data-testid="create-goal-next"
             key="next"
             disabled={nextBlocked}
-            onClick={() => setMobileStep(MOBILE_CREATE_STEPS[stepIndex + 1]!)}
+            onClick={() => setMobileStep(nextStep)}
             type="button"
           >
             {t("goals.create.steps.next")}

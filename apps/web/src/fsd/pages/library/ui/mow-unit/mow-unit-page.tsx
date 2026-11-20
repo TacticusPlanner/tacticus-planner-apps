@@ -3,8 +3,9 @@ import { Link, useLocation, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { abilityIcon, mowIcon } from "@workspace/game-catalog"
+import type { MowStorageModel } from "@workspace/game-catalog"
 import { progressionOrder, progressionRarity } from "@workspace/game-domain"
-import type { Progression, UnitId } from "@workspace/game-domain"
+import type { Progression } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -102,22 +103,17 @@ export function MowUnitPage() {
   }
   // Keyed by unit, so page state (custom values, ability levels, ranges) starts afresh.
   return (
-    <MowUnit
-      key={mow.id}
-      catalog={catalog}
-      unitId={mow.id}
-      costs={costs.records}
-    />
+    <MowUnit key={mow.id} catalog={catalog} mow={mow} costs={costs.records} />
   )
 }
 
 function MowUnit({
   catalog,
-  unitId,
+  mow,
   costs,
 }: {
   catalog: ReturnType<typeof useMowsCatalog>
-  unitId: UnitId
+  mow: MowStorageModel
   costs: readonly MowCostRung[]
 }) {
   const { t } = useTranslation(["library", "mows", "abilities", "progression"])
@@ -125,7 +121,7 @@ function MowUnit({
   const isAuthenticated = useIsAuthenticated()
   const location = useLocation()
   const panelId = useId()
-  const mow = catalog.byId.get(unitId)!
+  const unitId = mow.id
   const name = t(`mows:${unitId}`, { defaultValue: mow.name })
   const [tab, setTab] = useUnitTab(TABS)
 

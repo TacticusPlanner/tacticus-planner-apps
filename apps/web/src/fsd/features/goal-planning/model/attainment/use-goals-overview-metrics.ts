@@ -140,7 +140,7 @@ function useComputedGoalsOverviewMetrics(
   // does check the underlying query) closes that gap.
   const catalogReady =
     !catalogLoading &&
-    !!(mowsById && ascensionCostsById && unlockShardCostsById)
+    !!(charactersById && mowsById && ascensionCostsById && unlockShardCostsById)
 
   const levelRules = useLevelRules()
 
@@ -265,7 +265,7 @@ function useComputedGoalsOverviewMetrics(
         ? calculateGoalResourceNeed({
             detail,
             character: getCharacter(unitId),
-            characterView: charactersById!.get(detail.entityId),
+            characterView: charactersById.get(detail.entityId),
             mow: mowsById.get(detail.entityId),
             playerCharacter,
             playerMow,

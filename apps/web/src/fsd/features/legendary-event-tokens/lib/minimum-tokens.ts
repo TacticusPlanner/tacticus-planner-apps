@@ -1,4 +1,5 @@
 import type { TokenPlanTeam } from "./token-plan"
+import { required } from "@/shared/lib"
 
 /** A lane's fewest tokens to fully clear a battle, or the objectives no team covers. */
 export type FullClearFigure =
@@ -46,12 +47,15 @@ export function fewestTokensForFullClear(
   const fewest = Array.from({ length: full + 1 }, () => Infinity)
   fewest[0] = 0
   for (let mask = 0; mask <= full; mask++) {
-    const count = fewest[mask]!
+    const count = fewest[mask] ?? Infinity
     if (count === Infinity) continue
     for (const team of masks) {
       const next = mask | team
-      if (count + 1 < fewest[next]!) fewest[next] = count + 1
+      if (count + 1 < (fewest[next] ?? Infinity)) fewest[next] = count + 1
     }
   }
-  return { kind: "tokensPerBattle", tokens: fewest[full]! }
+  return {
+    kind: "tokensPerBattle",
+    tokens: required(fewest[full], "the full objective cover"),
+  }
 }
