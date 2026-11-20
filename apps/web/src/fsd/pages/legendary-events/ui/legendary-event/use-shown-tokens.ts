@@ -45,7 +45,6 @@ export function useShownTokens(
 ) {
   const { captureEvent, isReady } = useAnalyticsActions()
   useEffect(() => {
-    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- settles stored tokens and sends analytics once progress loads
     if (progress === "loading" || progress === "error") return
     const tokens = load(eventId)
     if (tokens.length === 0) return
