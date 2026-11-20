@@ -327,8 +327,9 @@ function BattleProgressEditor({
               <SelectItem key={campaign.key} value={campaign.key}>
                 <span className="inline-flex items-center gap-2">
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-4"
+
                     src={campaignIcon(campaign.groupId, campaign.type)}
                   />
                   {campaign.label}
@@ -384,7 +385,7 @@ function BattleProgressEditor({
                       ) : null}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <EntityIcon alt="" src={medalIcon} className="size-5" />
+                      <EntityIcon size="inline" alt="" src={medalIcon} />
                       <ToggleGroup
                         type="single"
                         variant="outline"
@@ -494,11 +495,7 @@ function ExtraControls({
               className="data-[state=off]:opacity-40 data-[state=off]:grayscale"
               data-testid={`battle-progress-${battleId}-lightning`}
             >
-              <EntityIcon
-                alt=""
-                src={lightningVictoryIcon}
-                className="size-5"
-              />
+              <EntityIcon size="inline" alt="" src={lightningVictoryIcon} />
             </ToggleGroupItem>
           </ToggleGroup>
         ) : null}
@@ -533,11 +530,7 @@ function ExtraControls({
                 className="data-[state=off]:opacity-40 data-[state=off]:grayscale"
                 data-testid={`battle-progress-${battleId}-milestone-${tier}`}
               >
-                <EntityIcon
-                  alt=""
-                  src={milestoneIcons[tier]}
-                  className="size-5"
-                />
+                <EntityIcon size="inline" alt="" src={milestoneIcons[tier]} />
               </ToggleGroupItem>
             ))}
           </ToggleGroup>

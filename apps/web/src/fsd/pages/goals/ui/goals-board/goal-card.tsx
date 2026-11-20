@@ -178,7 +178,7 @@ export const GoalCard = memo(
             ) : null}
           </div>
           <GoalUnitIcon
-            className="size-10 shrink-0"
+            className="shrink-0"
             entityId={row.entityId}
             entityType={row.entityType}
             name={name}

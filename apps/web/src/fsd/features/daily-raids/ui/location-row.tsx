@@ -61,7 +61,7 @@ export function LocationRow({
       />
       <span className="flex shrink-0 items-center gap-1">
         <ResourceIconWithTooltip
-          className="size-8"
+          size="row"
           label={resourceLabel}
           visual={resourceVisual}
         />

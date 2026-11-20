@@ -175,9 +175,10 @@ function TeamHistory({ entry }: { entry: RunHistoryTeam }) {
           return (
             <li data-unit={unitId} key={unitId} title={name}>
               <EntityIcon
+                size="portrait-sm"
                 alt={name}
                 className={cn(
-                  "size-7 rounded-full",
+                  "rounded-full",
                   unitId === team.reserveUnitId && "border border-dashed"
                 )}
                 src={characterIcon(unitId as UnitId)}

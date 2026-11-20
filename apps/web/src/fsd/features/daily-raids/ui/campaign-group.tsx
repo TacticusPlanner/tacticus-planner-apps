@@ -39,8 +39,9 @@ export function CampaignGroup({
         <div className="flex items-center gap-2 border-b pb-1.5">
           {location.icon ? (
             <EntityIcon
+              size="tile"
               alt=""
-              className="size-10 shrink-0"
+              className="shrink-0"
               src={location.icon}
             />
           ) : null}

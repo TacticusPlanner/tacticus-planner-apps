@@ -157,8 +157,9 @@ function MobileList({
               data-changed={item.diff.changed}
             >
               <EntityIcon
+                size="portrait-sm"
                 alt=""
-                className="size-10 shrink-0 rounded-full bg-portrait"
+                className="shrink-0 rounded-full bg-portrait"
                 src={portraitOf(item)}
               />
               <span className="flex min-w-0 flex-1 flex-col gap-1">
@@ -237,8 +238,6 @@ function ChipList({
     </span>
   )
 }
-
-const chipIconClassName = "size-3.5 shrink-0"
 
 /** An icon and a signed count, with the full text for screen readers. */
 function IconCount({
@@ -327,7 +326,8 @@ function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
               <EntityIcon
                 alt=""
                 src={shardIcon(chip.kind === "shards" ? "Regular" : "Mythic")}
-                className={chipIconClassName}
+                size="inline"
+                className="shrink-0"
               />
             }
             value={signed(chip.count)}
@@ -342,7 +342,8 @@ function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
               <EntityIcon
                 alt=""
                 src={powerIcon()}
-                className={chipIconClassName}
+                size="inline"
+                className="shrink-0"
               />
             }
             value={signed(chip.count)}
@@ -402,8 +403,8 @@ function UnitDiffDetails({
           label: t("myGame.collection.compare.details.rank"),
           value: (
             <FromToMarks
-              from={<RankMark rank={row.from} large />}
-              to={<RankMark rank={row.to} large />}
+              from={<RankMark rank={row.from} />}
+              to={<RankMark rank={row.to} />}
               label={labels.rank(row.from, row.to)}
             />
           ),
@@ -425,7 +426,7 @@ function UnitDiffDetails({
       case "ability": {
         return {
           key: `${row.kind}-${row.slot}`,
-          icon: <AbilityMark abilityId={row.abilityId} large />,
+          icon: <AbilityMark abilityId={row.abilityId} />,
           label: t(abilityLabelKey(unit.kind, row.slot)),
           value: fromTo(String(row.from), String(row.to)),
         }
@@ -440,7 +441,12 @@ function UnitDiffDetails({
         return {
           key: `${row.kind}-${row.slotId}`,
           icon: slotIcon ? (
-            <EntityIcon alt="" src={slotIcon} className="size-5 shrink-0" />
+            <EntityIcon
+              size="inline"
+              alt=""
+              src={slotIcon}
+              className="shrink-0"
+            />
           ) : undefined,
           label: t(
             type
@@ -474,9 +480,10 @@ function UnitDiffDetails({
           key: row.kind,
           icon: (
             <EntityIcon
+              size="inline"
               alt=""
               src={shardIcon(row.kind === "shards" ? "Regular" : "Mythic")}
-              className="size-5 shrink-0"
+              className="shrink-0"
             />
           ),
           label: t(`myGame.collection.compare.details.${row.kind}`),
@@ -500,9 +507,10 @@ function UnitDiffDetails({
           icon:
             row.kind === "power" ? (
               <EntityIcon
+                size="inline"
                 alt=""
                 src={powerIcon()}
-                className="size-5 shrink-0"
+                className="shrink-0"
               />
             ) : undefined,
           label: t(`myGame.collection.compare.details.${row.kind}`),

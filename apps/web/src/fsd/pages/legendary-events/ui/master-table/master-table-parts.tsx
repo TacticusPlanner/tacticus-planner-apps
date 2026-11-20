@@ -19,9 +19,10 @@ export function MasterTableUnit({
   return (
     <span className="flex min-w-0 items-center gap-2">
       <EntityIcon
+        size="portrait-sm"
         alt=""
         className={cn(
-          "size-8 shrink-0 rounded-full",
+          "shrink-0 rounded-full",
           row.owned === false && "opacity-50 grayscale"
         )}
         src={characterIcon(row.unit.id)}

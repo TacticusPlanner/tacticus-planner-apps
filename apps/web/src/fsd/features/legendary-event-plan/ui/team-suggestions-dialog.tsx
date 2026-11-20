@@ -244,9 +244,10 @@ export function TeamSuggestionsDialog({
                           key={unitId}
                         >
                           <EntityIcon
+                            size="portrait-sm"
                             alt=""
                             className={cn(
-                              "size-7 rounded-full",
+                              "rounded-full",
                               locked && "opacity-50 grayscale"
                             )}
                             src={characterIcon(unitId as UnitId)}
@@ -261,9 +262,9 @@ export function TeamSuggestionsDialog({
                           ) : null}
                           {locked ? (
                             <EntityIcon
+                              size="inline"
                               src={lockIcon()}
                               alt={t("teams.picker.locked")}
-                              className="size-3.5"
                             />
                           ) : null}
                           <UnitGoalBadge

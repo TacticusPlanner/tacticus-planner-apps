@@ -42,7 +42,6 @@ const ReorderCardBody = memo(function ReorderCardBody({
       <GoalDragHandle dragHandle={dragHandle} entityName={name} size="touch" />
       <GoalPriorityNumber row={row} />
       <GoalUnitIcon
-        className="size-8"
         entityId={row.entityId}
         entityType={row.entityType}
         name={name}

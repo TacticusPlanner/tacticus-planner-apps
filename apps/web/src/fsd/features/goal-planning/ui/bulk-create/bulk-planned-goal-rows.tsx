@@ -119,7 +119,7 @@ function ProgressionIcons({ progression }: { progression: Progression }) {
 }
 
 function RankIcon({ rank }: { rank: Rank }) {
-  return <EntityIcon alt="" className="size-6" src={rankIcon(rank)} />
+  return <EntityIcon size="inline" alt="" src={rankIcon(rank)} />
 }
 
 function Level({ value }: { value: number }) {

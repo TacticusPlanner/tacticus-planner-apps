@@ -145,7 +145,7 @@ export function UpgradeGoalCard({
               const upgrade = upgradesById.get(id)
               return (
                 <UpgradeIcon
-                  className="size-6 shrink-0"
+                  className="shrink-0"
                   crafted={upgrade?.crafted}
                   id={id}
                   rarity={upgrade?.rarity}

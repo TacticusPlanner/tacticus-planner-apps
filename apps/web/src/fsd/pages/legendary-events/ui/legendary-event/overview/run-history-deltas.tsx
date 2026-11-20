@@ -123,8 +123,9 @@ function DeltaRow({ delta }: { delta: RosterDelta }) {
       data-unit={delta.unitId}
     >
       <EntityIcon
+        size="portrait-sm"
         alt={name}
-        className="size-8 shrink-0 rounded-full"
+        className="shrink-0 rounded-full"
         src={characterIcon(delta.unitId as UnitId)}
       />
       <div className="flex min-w-0 flex-col">

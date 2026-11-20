@@ -87,7 +87,7 @@ export function EventLocationsSection({
                   {resource ? (
                     <span className="flex items-center gap-1">
                       <ResourceIconWithTooltip
-                        className="size-8"
+                        size="row"
                         label={resource.label}
                         visual={resource.visual}
                       />
@@ -106,8 +106,9 @@ export function EventLocationsSection({
                     <Badge className="tabular-nums" variant="secondary">
                       {pointsIcon ? (
                         <EntityIcon
+                          size="inline"
                           alt=""
-                          className="size-3.5"
+
                           src={pointsIcon}
                         />
                       ) : null}
@@ -132,8 +133,9 @@ export function EventLocationsSection({
                   </Badge>
                   <Badge className="tabular-nums" variant="outline">
                     <EntityIcon
+                      size="inline"
                       alt=""
-                      className="size-3.5"
+
                       src={energyIcon()}
                     />
                     {t("hse.raids.perEnergy", {

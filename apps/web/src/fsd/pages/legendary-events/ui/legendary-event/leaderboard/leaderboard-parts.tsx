@@ -50,9 +50,10 @@ export function LeaderboardUnit({
   return (
     <span className="flex min-w-0 items-center gap-2">
       <EntityIcon
+        size="portrait-sm"
         alt=""
         className={cn(
-          "size-8 shrink-0 rounded-full",
+          "shrink-0 rounded-full",
           row.ownership === "locked" && "opacity-50 grayscale"
         )}
         src={characterIcon(row.unit.id)}
@@ -74,7 +75,7 @@ export function LeaderboardUnit({
             key={trait}
             title={label}
           >
-            <EntityIcon alt="" className="size-4" src={traitIcon(trait)} />
+            <EntityIcon size="inline" alt="" src={traitIcon(trait)} />
             <span className="sr-only">{label}</span>
           </span>
         )
@@ -203,7 +204,7 @@ export function LeaderboardRankTile({ row }: { row: LeaderboardUnitRow }) {
       style={rankTone(row.rank)}
       title={label}
     >
-      <EntityIcon alt="" className="size-5" src={rankIcon(row.rank)} />
+      <EntityIcon size="inline" alt="" src={rankIcon(row.rank)} />
       <span className="sr-only">{label}</span>
     </span>
   )

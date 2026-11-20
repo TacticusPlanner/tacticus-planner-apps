@@ -193,8 +193,9 @@ export function UpgradesStep({ draft }: { draft: PlanDraft }) {
                         onCheckedChange={() => draft.toggle(index)}
                       />
                       <EntityIcon
+                        size="portrait-sm"
                         alt=""
-                        className="size-9 shrink-0 rounded-full"
+                        className="shrink-0 rounded-full"
                         src={characterIcon(recommendation.unitId as UnitId)}
                       />
                       <label

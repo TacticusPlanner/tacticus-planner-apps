@@ -2,7 +2,12 @@ export { CompactStarLevel, CompactStars } from "./compact-stars"
 export { CompactProgression } from "./compact-progression"
 export { progressionText } from "./progression-text"
 export { EntityIcon } from "./entity-icon"
-export { portraitClassName, type PortraitSize } from "./game-icon-size"
+export {
+  entityIconClassName,
+  portraitClassName,
+  type EntityIconSize,
+  type PortraitSize,
+} from "./game-icon-size"
 export { CampaignLocationName } from "./campaign-location-name"
 export { IconLine } from "./icon-line"
 export { energyIconUrl } from "./energy-icon"

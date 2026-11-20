@@ -52,7 +52,7 @@ export function TeamPickerTileMarkers({
             key={trait}
             title={label}
           >
-            <EntityIcon alt="" className="size-4" src={traitIcon(trait)} />
+            <EntityIcon size="inline" alt="" src={traitIcon(trait)} />
             <span className="sr-only">{label}</span>
           </span>
         )

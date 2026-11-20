@@ -88,12 +88,13 @@ export function PlanShopPurchases({
               data-dimmed={dimmed || undefined}
               data-testid={`plan-shop-${day}-${purchase.offerId}-${purchase.unit.unitId}`}
             >
-              <UnitIcon className="size-8 rounded-full" goal={purchase.unit} />
+              <UnitIcon className="rounded-full" goal={purchase.unit} />
               <div className="min-w-0 flex-1 text-xs">
                 <div className="flex items-center gap-1 font-medium">
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-4 shrink-0"
+                    className="shrink-0"
                     src={shopIcon(purchase.shopId)}
                   />
                   <span className="truncate">{shop}</span>
@@ -101,7 +102,8 @@ export function PlanShopPurchases({
                 <div className="flex items-center gap-1 truncate text-muted-foreground tabular-nums">
                   {material ? (
                     <UpgradeIcon
-                      className="size-4 shrink-0"
+                      size="inline"
+                      className="shrink-0"
                       id={purchase.rewardType as UpgradeId}
                       rarity="Mythic"
                     />
@@ -121,8 +123,9 @@ export function PlanShopPurchases({
                 title={currency}
               >
                 <EntityIcon
+                  size="inline"
                   alt=""
-                  className="size-4"
+
                   src={shopCurrencyIcon(purchase.currency)}
                 />
                 {number.format(spend)}

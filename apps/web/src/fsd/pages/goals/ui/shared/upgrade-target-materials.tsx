@@ -43,7 +43,7 @@ export function UpgradeTargetMaterials({
               title={label}
             >
               <UpgradeIcon
-                className="size-6 shrink-0"
+                className="shrink-0"
                 crafted={material.crafted}
                 id={material.upgradeId}
                 rarity={material.rarity}

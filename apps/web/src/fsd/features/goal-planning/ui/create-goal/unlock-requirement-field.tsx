@@ -50,8 +50,9 @@ export function UnlockRequirementField({
             <>
               <span className="text-muted-foreground">·</span>
               <EntityIcon
+                size="inline"
                 alt=""
-                className="size-4 shrink-0"
+                className="shrink-0"
                 src={energyIconUrl}
               />
               <span className="text-muted-foreground">

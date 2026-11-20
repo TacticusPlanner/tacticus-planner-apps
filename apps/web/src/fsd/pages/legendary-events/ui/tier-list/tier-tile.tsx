@@ -97,12 +97,9 @@ function TierTileButton({
       {...props}
     >
       <EntityIcon
+        size="portrait-sm"
         alt=""
-        className={cn(
-          "shrink-0 rounded-full",
-          isMobile ? "size-10" : "size-9",
-          muted && "opacity-50 grayscale"
-        )}
+        className={cn("shrink-0 rounded-full", muted && "opacity-50 grayscale")}
         src={characterIcon(tile.unitId as UnitId)}
       />
       {isMobile ? (
