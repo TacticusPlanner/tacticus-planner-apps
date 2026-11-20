@@ -103,7 +103,7 @@ export function useEventShopCart(
           setLocal(null)
           setNotice({ kind: "reloaded" })
         } else {
-          pending.current ??= cart
+          requeue(pending, cart)
           failed = true
           setSaveFailed(true)
         }
@@ -164,10 +164,18 @@ export function useEventShopCart(
     saving,
     saveFailed,
     retrySave: () => {
-      pending.current ??= entries
+      requeue(pending, entries)
       void flush()
     },
     notice,
     dismissNotice: () => setNotice(null),
   }
+}
+
+/** Queues `entries` to save unless a newer edit is already waiting. */
+function requeue(
+  pending: { current: readonly EventShopCartEntry[] | null },
+  entries: readonly EventShopCartEntry[]
+) {
+  if (pending.current === null) pending.current = entries
 }

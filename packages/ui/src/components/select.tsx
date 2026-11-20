@@ -59,7 +59,7 @@ function SelectTrigger({
 function SelectContent({
   className,
   children,
-  position,
+  position: positionProp,
   align = "center",
   container,
   ...props
@@ -78,7 +78,7 @@ function SelectContent({
   // from its trigger. Popper (Floating UI) accounts for the containing block.
   container?: React.ComponentProps<typeof SelectPrimitive.Portal>["container"]
 }) {
-  position ??= container ? "popper" : "item-aligned"
+  const position = positionProp ?? (container ? "popper" : "item-aligned")
   // No scroll buttons on touch: the list scrolls natively by swiping, and Radix's scroll button
   // scrolls the focused option into view whenever it mounts. On open the selected option has focus
   // and a swipe never moves it (only a mouse hover does), so each time a button appeared mid-swipe

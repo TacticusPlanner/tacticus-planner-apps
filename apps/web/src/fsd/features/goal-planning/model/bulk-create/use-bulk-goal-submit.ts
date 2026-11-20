@@ -12,6 +12,7 @@ import { bulkUnitKey } from "./bulk-goal-plan"
 import type { BulkUnitPlan } from "./bulk-goal-plan"
 import { sendBulkPlans } from "./bulk-goal-submit"
 import type { BulkUnitStatus } from "./bulk-goal-submit"
+import { runWithCleanup } from "@/shared/lib"
 
 /**
  * Creates the plans' goals one unit at a time, keeping each unit's status for the dialog. Retry
@@ -36,30 +37,33 @@ export function useBulkGoalSubmit() {
     only?: ReadonlySet<string>
   ) => {
     setRunning(true)
-    try {
-      const { sent, failed } = await sendBulkPlans({
-        plans,
-        projectIds,
-        only,
-        send: createCombinedGoals,
-        describeError,
-        onStatus: (key, status) =>
-          setStatuses((previous) => new Map(previous).set(key, status)),
-      })
-      captureEvent({
-        type: "collection_bulk_goals_created",
-        unitCount: sent.length,
-        goalCount: sent.reduce((sum, plan) => sum + plan.specs.length, 0),
-        failedUnitCount: failed,
-      })
-      return failed === 0
-    } finally {
-      void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
-      void queryClient.invalidateQueries({
-        queryKey: projectQueries.list().queryKey,
-      })
-      setRunning(false)
-    }
+    return runWithCleanup(
+      async () => {
+        const { sent, failed } = await sendBulkPlans({
+          plans,
+          projectIds,
+          only,
+          send: createCombinedGoals,
+          describeError,
+          onStatus: (key, status) =>
+            setStatuses((previous) => new Map(previous).set(key, status)),
+        })
+        captureEvent({
+          type: "collection_bulk_goals_created",
+          unitCount: sent.length,
+          goalCount: sent.reduce((sum, plan) => sum + plan.specs.length, 0),
+          failedUnitCount: failed,
+        })
+        return failed === 0
+      },
+      () => {
+        void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
+        void queryClient.invalidateQueries({
+          queryKey: projectQueries.list().queryKey,
+        })
+        setRunning(false)
+      }
+    )
   }
 
   const failedKeys = new Set(

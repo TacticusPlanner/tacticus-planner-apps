@@ -33,6 +33,25 @@ export function CampaignLockReasons({
       (goal) => goal.goalType === "Unlock" && goal.entityId === unitId
     )
 
+  const lockReasonText = (reason: PlanCampaignLockReason): string => {
+    switch (reason.kind) {
+      case "MissingCoreCharacters":
+        return t("goals.insights.lockMissingCore", {
+          units: listFormat.format(reason.unitIds.map(unitName)),
+        })
+      case "RequiredCampaignNotCleared":
+        return t("goals.insights.lockRequiredCampaign", {
+          campaign: label(reason.campaignGroupId, reason.type),
+          count: reason.battlesLeft,
+        })
+      case "PowerLevelTooLow":
+        return t("goals.insights.lockPowerLevel", {
+          required: reason.required,
+          current: reason.current,
+        })
+    }
+  }
+
   return (
     <ul
       className={cn(
@@ -75,23 +94,4 @@ export function CampaignLockReasons({
       ))}
     </ul>
   )
-
-  function lockReasonText(reason: PlanCampaignLockReason): string {
-    switch (reason.kind) {
-      case "MissingCoreCharacters":
-        return t("goals.insights.lockMissingCore", {
-          units: listFormat.format(reason.unitIds.map(unitName)),
-        })
-      case "RequiredCampaignNotCleared":
-        return t("goals.insights.lockRequiredCampaign", {
-          campaign: label(reason.campaignGroupId, reason.type),
-          count: reason.battlesLeft,
-        })
-      case "PowerLevelTooLow":
-        return t("goals.insights.lockPowerLevel", {
-          required: reason.required,
-          current: reason.current,
-        })
-    }
-  }
 }

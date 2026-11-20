@@ -16,6 +16,7 @@ import {
 import type { ProjectSummary, ProjectTarget } from "@/entities/project"
 import { goalQueries } from "@/entities/goal"
 import { ApiError, apiIssue } from "@/shared/api"
+import { runCatching, runWithCleanup } from "@/shared/lib"
 
 /**
  * Project-level mutations: create, save (name/description/color/status/target) and delete. Reordering goals is a
@@ -57,34 +58,42 @@ export function useProjectActions() {
     }
 
     setPendingCount((count) => count + 1)
-    try {
-      writeProject((await mutation.mutateAsync(action)) as ProjectSummary)
-      return true
-    } catch (error) {
-      // A stale project revision carries the project as it stands: adopt it; refetch otherwise.
-      const stale = apiIssue(
-        error,
-        "projectRevisionStale",
-        "defaultProjectCannotBeArchived"
-      )
-      if (stale?.current && typeof stale.current === "object") {
-        writeProject(stale.current as ProjectSummary)
-      } else if (error instanceof ApiError && error.status === 409) {
-        void queryClient.invalidateQueries({
-          queryKey: projectQueries.list().queryKey,
-        })
+    return runWithCleanup(
+      async () => {
+        return runCatching(
+          async () => {
+            writeProject((await mutation.mutateAsync(action)) as ProjectSummary)
+            return true
+          },
+          (error) => {
+            // A stale project revision carries the project as it stands: adopt it; refetch otherwise.
+            const stale = apiIssue(
+              error,
+              "projectRevisionStale",
+              "defaultProjectCannotBeArchived"
+            )
+            if (stale?.current && typeof stale.current === "object") {
+              writeProject(stale.current as ProjectSummary)
+            } else if (error instanceof ApiError && error.status === 409) {
+              void queryClient.invalidateQueries({
+                queryKey: projectQueries.list().queryKey,
+              })
+            }
+            toast.error(
+              isProjectLimitError(error)
+                ? t("goals.limits.projectLimitReached", { max: MAX_PROJECTS })
+                : error instanceof ApiError
+                  ? error.message
+                  : t("goals.toasts.actionError")
+            )
+            return false
+          }
+        )
+      },
+      () => {
+        setPendingCount((count) => Math.max(0, count - 1))
       }
-      toast.error(
-        isProjectLimitError(error)
-          ? t("goals.limits.projectLimitReached", { max: MAX_PROJECTS })
-          : error instanceof ApiError
-            ? error.message
-            : t("goals.toasts.actionError")
-      )
-      return false
-    } finally {
-      setPendingCount((count) => Math.max(0, count - 1))
-    }
+    )
   }
 
   const create = async (
@@ -139,36 +148,44 @@ export function useProjectActions() {
   const remove = async (project: ProjectSummary, deleteGoals = false) => {
     if (!isAuthenticated) return false
     setPendingCount((count) => count + 1)
-    try {
-      await mutation.mutateAsync(() =>
-        deleteProject(project.projectId, deleteGoals)
-      )
-      queryClient.setQueryData(
-        projectQueries.list().queryKey,
-        (current: { projects: ProjectSummary[] } | undefined) =>
-          current && {
-            ...current,
-            projects: current.projects.filter(
-              (entry) => entry.projectId !== project.projectId
-            ),
+    return runWithCleanup(
+      async () => {
+        return runCatching(
+          async () => {
+            await mutation.mutateAsync(() =>
+              deleteProject(project.projectId, deleteGoals)
+            )
+            queryClient.setQueryData(
+              projectQueries.list().queryKey,
+              (current: { projects: ProjectSummary[] } | undefined) =>
+                current && {
+                  ...current,
+                  projects: current.projects.filter(
+                    (entry) => entry.projectId !== project.projectId
+                  ),
+                }
+            )
+            toast.success(t("goals.toasts.projectDeleted"))
+            return true
+          },
+          (error) => {
+            toast.error(
+              error instanceof ApiError
+                ? error.message
+                : t("goals.toasts.actionError")
+            )
+            return false
           }
-      )
-      toast.success(t("goals.toasts.projectDeleted"))
-      return true
-    } catch (error) {
-      toast.error(
-        error instanceof ApiError
-          ? error.message
-          : t("goals.toasts.actionError")
-      )
-      return false
-    } finally {
-      void queryClient.invalidateQueries({
-        queryKey: projectQueries.all(),
-      })
-      void queryClient.invalidateQueries({ queryKey: goalQueries.all() })
-      setPendingCount((count) => Math.max(0, count - 1))
-    }
+        )
+      },
+      () => {
+        void queryClient.invalidateQueries({
+          queryKey: projectQueries.all(),
+        })
+        void queryClient.invalidateQueries({ queryKey: goalQueries.all() })
+        setPendingCount((count) => Math.max(0, count - 1))
+      }
+    )
   }
 
   return { create, save, remove, pending }

@@ -11,6 +11,7 @@ import { legendaryEventPlanQueries } from "../api/legendary-event-plan.queries"
 import { MAX_TEAMS_PER_LANE } from "../lib/team-size"
 import { legendaryEventPlanConflict } from "./plan.types"
 import type { LegendaryEventPlan } from "./plan.types"
+import { runWithCleanup } from "@/shared/lib"
 
 /** How a plan mutation ended: `saved` (the returned plan is adopted), `conflict` (the plan changed
  *  elsewhere and was reloaded — from this write's 409 body, or from an earlier queued write's,
@@ -141,42 +142,55 @@ export function usePlanWriteQueue(eventId: string) {
     const queuedIn = state.generation
     setOutstanding(state, 1)
 
-    const outcome = state.tail.then(async (): Promise<PlanMutationOutcome> => {
-      try {
-        // An earlier write's conflict reloaded the plan and discarded this one unsent.
-        if (queuedIn !== state.generation) return "conflict"
-        if (!state.confirmed) return "skipped"
-        const plan = await operation.send(state.confirmed)
-        state.confirmed = plan
-        dropPatch()
-        show(plan)
+    // Outside the write's `try`: React Compiler can't lower conditionals inside one.
+    const settleFailedWrite = (
+      error: unknown,
+      errorMessage: string | undefined
+    ): PlanMutationOutcome => {
+      dropPatch()
+      // A plan 409 carries the plan as it stands: adopt it at once (no reload request).
+      const conflict = legendaryEventPlanConflict(error)
+      if (conflict) {
+        state.generation += 1
+        state.patches = []
+        state.confirmed = conflict.current
+        show(conflict.current)
         invalidateList()
-        operation.onSaved?.(plan)
-        return "saved"
-      } catch (error) {
-        dropPatch()
-        // A plan 409 carries the plan as it stands: adopt it at once (no reload request).
-        const conflict = legendaryEventPlanConflict(error)
-        if (conflict) {
-          state.generation += 1
-          state.patches = []
-          state.confirmed = conflict.current
-          show(conflict.current)
-          invalidateList()
-          toast(t("teams.toasts.reloaded"))
-          return "conflict"
-        }
-        if (state.confirmed) show(state.confirmed)
-        // The server's message is English and technical: the toast stays translated.
-        toast.error(
-          isTeamLimitError(error)
-            ? t("teams.toasts.teamLimitReached", { max: MAX_TEAMS_PER_LANE })
-            : (operation.errorMessage ?? t("teams.toasts.error"))
-        )
-        return "error"
-      } finally {
-        setOutstanding(state, -1)
+        toast(t("teams.toasts.reloaded"))
+        return "conflict"
       }
+      if (state.confirmed) show(state.confirmed)
+      // The server's message is English and technical: the toast stays translated.
+      toast.error(
+        isTeamLimitError(error)
+          ? t("teams.toasts.teamLimitReached", { max: MAX_TEAMS_PER_LANE })
+          : (errorMessage ?? t("teams.toasts.error"))
+      )
+      return "error"
+    }
+
+    const outcome = state.tail.then(async (): Promise<PlanMutationOutcome> => {
+      return runWithCleanup(
+        async () => {
+          try {
+            // An earlier write's conflict reloaded the plan and discarded this one unsent.
+            if (queuedIn !== state.generation) return "conflict"
+            if (!state.confirmed) return "skipped"
+            const plan = await operation.send(state.confirmed)
+            state.confirmed = plan
+            dropPatch()
+            show(plan)
+            invalidateList()
+            if (operation.onSaved) operation.onSaved(plan)
+            return "saved"
+          } catch (error) {
+            return settleFailedWrite(error, operation.errorMessage)
+          }
+        },
+        () => {
+          setOutstanding(state, -1)
+        }
+      )
     })
     state.tail = outcome
     return outcome

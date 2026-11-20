@@ -16,6 +16,7 @@ import { ApiError } from "@/shared/api"
 import { moveProjectGoals } from "./project-moves"
 import type { ProjectGoalsPlacement } from "./project-moves"
 import { adoptOrder } from "./use-goal-order-actions"
+import { runCatching, runWithCleanup } from "@/shared/lib"
 
 /** How long the Undo toast stays (project-goal-moves: "a toast SHALL offer Undo for 10 seconds"). */
 const PROJECT_MOVE_UNDO_MS = 10_000
@@ -42,21 +43,29 @@ export function useMoveProjectGoals() {
     void queryClient.invalidateQueries({ queryKey: goalQueries.lists() })
 
   const undo = async (previous: string[], revision: number) => {
-    try {
-      const order = await updateGoalOrder(previous, revision)
-      adoptOrder(queryClient, order)
-      toast.success(t("goals.order.projectMove.undone"))
-    } catch (error) {
-      const stale = goalOrderConflict(error)
-      if (stale) {
-        adoptOrder(queryClient, stale.current)
-        toast.error(t("goals.order.projectMove.staleUndo"))
-      } else {
-        toast.error(errorText(error))
+    return runWithCleanup(
+      async () => {
+        return runCatching(
+          async () => {
+            const order = await updateGoalOrder(previous, revision)
+            adoptOrder(queryClient, order)
+            toast.success(t("goals.order.projectMove.undone"))
+          },
+          (error) => {
+            const stale = goalOrderConflict(error)
+            if (stale) {
+              adoptOrder(queryClient, stale.current)
+              toast.error(t("goals.order.projectMove.staleUndo"))
+            } else {
+              toast.error(errorText(error))
+            }
+          }
+        )
+      },
+      () => {
+        settle()
       }
-    } finally {
-      settle()
-    }
+    )
   }
 
   /** Moves the in-flight goals among `goalIds` as one block to `placement`. Resolves true once the
@@ -87,31 +96,42 @@ export function useMoveProjectGoals() {
     const priority = next.indexOf(first) + 1
 
     setPending(true)
-    try {
-      const order = await updateGoalOrder(next, list.orderRevision)
-      adoptOrder(queryClient, order)
-      toast.success(
-        t("goals.order.projectMove.moved", { count: moved.length, priority }),
-        {
-          duration: PROJECT_MOVE_UNDO_MS,
-          action: {
-            label: t("goals.order.projectMove.undo"),
-            onClick: () => void undo(previous, order.revision),
+    return runWithCleanup(
+      async () => {
+        return runCatching(
+          async () => {
+            const order = await updateGoalOrder(next, list.orderRevision)
+            adoptOrder(queryClient, order)
+            toast.success(
+              t("goals.order.projectMove.moved", {
+                count: moved.length,
+                priority,
+              }),
+              {
+                duration: PROJECT_MOVE_UNDO_MS,
+                action: {
+                  label: t("goals.order.projectMove.undo"),
+                  onClick: () => void undo(previous, order.revision),
+                },
+              }
+            )
+            return true
           },
-        }
-      )
-      return true
-    } catch (error) {
-      const stale = goalOrderConflict(error)
-      if (stale) adoptOrder(queryClient, stale.current)
-      toast.error(
-        stale ? t("goals.order.projectMove.staleMove") : errorText(error)
-      )
-      return false
-    } finally {
-      setPending(false)
-      settle()
-    }
+          (error) => {
+            const stale = goalOrderConflict(error)
+            if (stale) adoptOrder(queryClient, stale.current)
+            toast.error(
+              stale ? t("goals.order.projectMove.staleMove") : errorText(error)
+            )
+            return false
+          }
+        )
+      },
+      () => {
+        setPending(false)
+        settle()
+      }
+    )
   }
 
   /** Move goals to top, kept for callers that only offer the top. */
