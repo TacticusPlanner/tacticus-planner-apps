@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 
 import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
 import type {
@@ -27,7 +27,8 @@ export function EventsCalendarDesktop({
     () => new Intl.DateTimeFormat(dateLocale, { day: "numeric" }),
     [dateLocale]
   )
-  const todayIso = toIsoDate(new Date())
+  // The day the calendar was opened: render stays pure, and a reload picks up a new day.
+  const [todayIso] = useState(() => toIsoDate(new Date()))
 
   return (
     <div className="flex flex-col gap-1" data-testid="events-calendar-desktop">

@@ -16,13 +16,14 @@ export function isBetaPromoActive(now: Date): boolean {
 }
 
 /** Home's beta promo code: shown until the code expires, unless dismissed on this device. */
-export function useBetaPromo(now: Date = new Date()) {
+export function useBetaPromo(now?: Date) {
+  const [mountedAt] = useState(() => new Date())
   const [dismissed, setDismissed] = useState(
     () => safeStorage.get(DISMISSED_KEY) !== null
   )
 
   return {
-    show: !dismissed && isBetaPromoActive(now),
+    show: !dismissed && isBetaPromoActive(now ?? mountedAt),
     dismiss: () => {
       safeStorage.set(DISMISSED_KEY, new Date().toISOString())
       setDismissed(true)
