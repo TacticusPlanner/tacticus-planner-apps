@@ -86,6 +86,7 @@ export function CharacterRankUpTab({
   // in the synced chunk at all.
   const prefilledCharacterIdRef = useRef<UnitId | undefined>(undefined)
 
+  // An effect, not render-time: the prefill writes the URL-backed lookup selection.
   useEffect(() => {
     if (
       !isAuthenticated ||

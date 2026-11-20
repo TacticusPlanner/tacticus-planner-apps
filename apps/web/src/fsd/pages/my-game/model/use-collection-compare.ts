@@ -65,6 +65,7 @@ export function useCollectionCompare(compare: CompareQueryState): {
       ? JSON.stringify(resolved.fixes)
       : ""
   useEffect(() => {
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-pass-data-to-parent -- rewrites invalid compare params in the URL
     if (fixesKey) applyFixes(JSON.parse(fixesKey) as Record<string, string>)
   }, [fixesKey, applyFixes])
 

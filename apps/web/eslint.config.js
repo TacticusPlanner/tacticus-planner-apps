@@ -232,14 +232,15 @@ export default defineConfig([
   },
   {
     // Effects that should be event handlers or derived values (react.dev "You Might Not Need an
-    // Effect"). Warn while the existing hits are refactored one by one; raise to error at zero.
+    // Effect"). The rules are heuristic: an effect that really syncs with the DOM, the URL or
+    // another external system keeps a disable that says which.
     files: ["**/*.{ts,tsx}"],
     plugins: { "react-you-might-not-need-an-effect": noUseEffect },
     rules: {
       ...Object.fromEntries(
         Object.keys(noUseEffect.configs.recommended.rules).map((rule) => [
           rule,
-          "warn",
+          "error",
         ])
       ),
       // Flags any guarded effect, so most hits were real DOM, URL or storage syncs kept with a

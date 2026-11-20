@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useState, useSyncExternalStore } from "react"
 
 export interface ScrollOverflow {
   /** Content is hidden past the left edge. */
@@ -16,38 +16,46 @@ export function useScrollOverflow(): [
   (element: HTMLElement | null) => void,
 ] {
   const [element, setElement] = useState<HTMLElement | null>(null)
-  const [overflow, setOverflow] = useState<ScrollOverflow>(none)
-
-  useEffect(() => {
-    if (!element) return
-    const measure = () => {
-      const { scrollLeft, scrollWidth, clientWidth } = element
-      // A pixel of slack absorbs fractional widths.
-      const next = {
-        start: scrollLeft > 1,
-        end: scrollLeft + clientWidth < scrollWidth - 1,
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      if (!element) return () => {}
+      element.addEventListener("scroll", onChange, { passive: true })
+      const observer =
+        typeof ResizeObserver === "undefined"
+          ? undefined
+          : new ResizeObserver(onChange)
+      observer?.observe(element)
+      for (const child of element.children) observer?.observe(child)
+      return () => {
+        element.removeEventListener("scroll", onChange)
+        observer?.disconnect()
       }
-      setOverflow((current) =>
-        current.start === next.start && current.end === next.end
-          ? current
-          : next
-      )
-    }
-    measure()
-    element.addEventListener("scroll", measure, { passive: true })
-    const observer =
-      typeof ResizeObserver === "undefined"
-        ? undefined
-        : new ResizeObserver(measure)
-    observer?.observe(element)
-    for (const child of element.children) observer?.observe(child)
-    return () => {
-      element.removeEventListener("scroll", measure)
-      observer?.disconnect()
-    }
-  }, [element])
+    },
+    [element]
+  )
+  const overflow = useSyncExternalStore(
+    subscribe,
+    () => (element ? readOverflow(element) : none),
+    () => none
+  )
 
   return [overflow, setElement]
+}
+
+// One object per combination, so the snapshot is stable while nothing changes.
+const overflowStates: Record<`${boolean}:${boolean}`, ScrollOverflow> = {
+  "false:false": none,
+  "true:false": { start: true, end: false },
+  "false:true": { start: false, end: true },
+  "true:true": { start: true, end: true },
+}
+
+function readOverflow(element: HTMLElement): ScrollOverflow {
+  const { scrollLeft, scrollWidth, clientWidth } = element
+  // A pixel of slack absorbs fractional widths.
+  const start = scrollLeft > 1
+  const end = scrollLeft + clientWidth < scrollWidth - 1
+  return overflowStates[`${start}:${end}`]
 }
 
 /** A CSS mask that fades the edges hiding content, so a cut-off row reads as scrollable. */

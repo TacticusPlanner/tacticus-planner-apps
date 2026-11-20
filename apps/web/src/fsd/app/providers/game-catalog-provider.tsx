@@ -119,6 +119,7 @@ export function GameCatalogProvider({
     }
 
     // Expected failures are handled inside; this only catches what escapes (e.g. a failing cache read).
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-external-store-subscription -- a cancellable catalog sync, not a store subscription
     runSync().catch((error: unknown) => reportError(error, "catalog sync"))
 
     return () => {
