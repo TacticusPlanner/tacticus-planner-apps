@@ -19,6 +19,7 @@ export {
 } from "./format-time"
 export {
   combineReadStates,
+  hasNode,
   localReadQueryOptions,
   localReadTimeoutMs,
   useCampaignDisplay,
@@ -62,4 +63,3 @@ export {
 export { compareCodeUnits, firstDifference } from "./compare"
 export { runCatching, runWithCleanup } from "./async"
 export { useStableByKey } from "./use-stable-by-key"
-export { hasNode } from "./has-node"
