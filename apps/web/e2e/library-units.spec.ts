@@ -60,7 +60,7 @@ for (const section of sections) {
 
     const rendered = page.locator('[data-testid^="unit-ability-"]').first()
     const errorPage = page.getByTestId("app-error-page")
-    const unitName = page.getByTestId("unit-header").locator("h1")
+    const unitName = page.getByTestId("unit-header").locator("h2")
     // Rules text arrives after the first paint and is parsed only then, so a page is not done until
     // no ability or trait text is still loading.
     const textLoading = page.locator('[data-testid$="-text-loading"]')
