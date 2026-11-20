@@ -14,7 +14,7 @@ import type { LadderStep } from "./target-ladder"
 export function rankLadderSteps(t: TFunction): LadderStep[] {
   return rankOrder.map((rank) => ({
     key: rank,
-    label: <RankBadge className="gap-1" iconClassName="size-5" rank={rank} />,
+    label: <RankBadge className="gap-1" rank={rank} />,
     name: t(`ranks.${rank}`, { ns: "progression", defaultValue: rank }),
     tier: rank.replace(/\d+$/, ""),
   }))

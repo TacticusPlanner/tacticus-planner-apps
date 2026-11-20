@@ -144,7 +144,7 @@ function TierCard({
               })}
               data-testid={`${testId}-mark-cleared`}
             >
-              <EntityIcon src={heroStarIcon()} alt="" className="size-4" />
+              <EntityIcon size="inline" src={heroStarIcon()} alt="" />
               {t("tier.markCleared")}
             </Button>
           )
@@ -210,9 +210,10 @@ export function IncursionMowPage() {
 
       <header className="flex items-center gap-3">
         <EntityIcon
+          size="portrait-md"
           src={mowIcon(incursion.mowId as UnitId)}
           alt=""
-          className="size-16 shrink-0 rounded-sm"
+          className="shrink-0 rounded-sm"
         />
         <div className="min-w-0 flex-1 space-y-1">
           <h2 className="text-xl font-semibold">{name}</h2>
@@ -247,11 +248,7 @@ export function IncursionMowPage() {
             const label = t(`factions:${faction}`, { defaultValue: faction })
             return (
               <li key={faction} title={label}>
-                <EntityIcon
-                  src={factionIcon(faction)}
-                  alt={label}
-                  className="size-8"
-                />
+                <EntityIcon size="row" src={factionIcon(faction)} alt={label} />
               </li>
             )
           })}
@@ -277,9 +274,9 @@ export function IncursionMowPage() {
               )}
             >
               <EntityIcon
+                size="inline"
                 src={rarityIcon(group.rarity as Rarity)}
                 alt=""
-                className="size-5"
               />
               {t(`progression:rarities.${group.rarity}` as never, {
                 defaultValue: group.rarity,

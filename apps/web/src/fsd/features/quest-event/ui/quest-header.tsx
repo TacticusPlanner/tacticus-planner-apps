@@ -117,7 +117,8 @@ export function QuestHeader({
           />
         ) : (
           <EventIcon
-            className="size-14 shrink-0"
+            size="tile"
+            className="shrink-0"
             definitionId={instance?.entry.definitionId ?? ""}
             definitionType="Quest"
           />

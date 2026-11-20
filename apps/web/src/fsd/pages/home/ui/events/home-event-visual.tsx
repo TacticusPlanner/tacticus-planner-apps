@@ -9,6 +9,7 @@ import type { CampaignId, UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, EventIcon } from "@/shared/ui"
+import type { EntityIconSize } from "@/shared/ui"
 
 import type { HomeEventRow } from "../../model/select-home-events"
 
@@ -19,19 +20,17 @@ import type { HomeEventRow } from "../../model/select-home-events"
  *  the Home Screen Event's game medallion. Decorative; the row names the event. */
 export function HomeEventVisual({
   row,
-  className,
+  size,
 }: {
   row: HomeEventRow
-  className?: string
+  size: EntityIconSize
 }) {
   if (row.type === "legendaryEvent") {
     return (
       <EntityIcon
         alt=""
-        className={cn(
-          "shrink-0 rounded-full ring-2 ring-(--event-family-heroes)",
-          className
-        )}
+        size={size}
+        className="shrink-0 rounded-full ring-2 ring-(--event-family-heroes)"
         src={characterIcon(row.unitId as UnitId)}
       />
     )
@@ -40,7 +39,8 @@ export function HomeEventVisual({
     return (
       <EntityIcon
         alt=""
-        className={cn("shrink-0", className)}
+        size={size}
+        className="shrink-0"
         src={
           row.campaignId
             ? campaignIcon(row.campaignId as CampaignId, "Standard")
@@ -53,16 +53,15 @@ export function HomeEventVisual({
     return row.featuredCharacterId ? (
       <EntityIcon
         alt=""
-        className={cn(
-          "shrink-0 rounded-full ring-2 ring-(--event-family-campaigns)",
-          className
-        )}
+        size={size}
+        className="shrink-0 rounded-full ring-2 ring-(--event-family-campaigns)"
         src={characterIcon(row.featuredCharacterId as UnitId)}
       />
     ) : (
       <EntityIcon
         alt=""
-        className={cn("shrink-0", className)}
+        size={size}
+        className="shrink-0"
         src={gameMenuIcon("quests")}
       />
     )
@@ -71,15 +70,14 @@ export function HomeEventVisual({
     return row.featuredCharacterId ? (
       <EntityIcon
         alt=""
-        className={cn(
-          "shrink-0 rounded-full ring-2 ring-(--event-family-heroes)",
-          className
-        )}
+        size={size}
+        className="shrink-0 rounded-full ring-2 ring-(--event-family-heroes)"
         src={characterIcon(row.featuredCharacterId as UnitId)}
       />
     ) : (
       <EventIcon
-        className={cn("shrink-0", className)}
+        size={size}
+        className="shrink-0"
         definitionId="new-character-event"
         definitionType="NewCharacterEvent"
       />
@@ -88,7 +86,8 @@ export function HomeEventVisual({
   if (row.type === "eventShop") {
     return (
       <EventIcon
-        className={cn("shrink-0", className)}
+        size={size}
+        className="shrink-0"
         definitionId={row.definitionId ?? ""}
         definitionType="ShopEvent"
       />
@@ -98,14 +97,16 @@ export function HomeEventVisual({
     return (
       <EntityIcon
         alt=""
-        className={cn("shrink-0", className)}
+        size={size}
+        className="shrink-0"
         src={eventIcon("incursion", "Incursion")}
       />
     )
   }
   return (
     <EventIcon
-      className={cn("shrink-0", className)}
+      size={size}
+      className="shrink-0"
       definitionId={row.definitionId}
       definitionType="HomeScreenEvent"
       parameters={row.parameters}
@@ -128,7 +129,7 @@ export function CountdownChip({
         className
       )}
     >
-      <EntityIcon alt="" className="size-4" src={countdownIcon()} />
+      <EntityIcon size="inline" alt="" src={countdownIcon()} />
       {text}
     </span>
   )

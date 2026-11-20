@@ -241,12 +241,7 @@ function CharacterUnit({
         value={player.progressionIndex}
       />
       <span aria-hidden="true">·</span>
-      <RankBadge
-        iconClassName="size-4"
-        rank={player.rank}
-        showLabel={false}
-        tooltip
-      />
+      <RankBadge rank={player.rank} showLabel={false} tooltip />
       <span aria-hidden="true">·</span>
       <span>
         {[

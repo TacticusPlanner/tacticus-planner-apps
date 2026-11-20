@@ -129,8 +129,9 @@ function TokenRow({
       >
         <div className="grid size-11 place-items-center rounded-full bg-card">
           <EntityIcon
+            size="row"
             alt=""
-            className="size-8"
+
             src={gameModeTokenIcon(entry.labelKey)}
           />
         </div>

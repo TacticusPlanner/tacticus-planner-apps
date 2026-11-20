@@ -26,7 +26,7 @@ export function EnemyDetail({ tile }: { tile: EnemyTileViewModel }) {
       ) : (
         <div className="flex min-w-0 items-center gap-3">
           <NpcPortrait
-            className="size-12"
+            size="portrait-sm"
             name={name}
             variationId={tile.npcId}
           />

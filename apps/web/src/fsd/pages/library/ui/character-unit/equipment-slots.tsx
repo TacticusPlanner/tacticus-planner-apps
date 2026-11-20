@@ -144,9 +144,9 @@ export function EquipmentSlots({
                   data-testid={`unit-glance-slot-${slot}-toggle`}
                 >
                   <EntityIcon
+                    size="inline"
                     src={equipmentSlotIcon(slot)}
                     alt=""
-                    className="size-5"
                   />
                   {slotName(slot)}
                   <span className="text-xs text-muted-foreground tabular-nums">

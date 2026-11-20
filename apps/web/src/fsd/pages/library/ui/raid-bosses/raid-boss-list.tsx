@@ -40,7 +40,7 @@ function Section({
             <RaidBossPortrait
               name={item.name}
               src={item.portraitSrc}
-              className="size-14"
+              size="portrait-md"
             />
             <span className="line-clamp-2 text-xs font-medium">
               {item.name}

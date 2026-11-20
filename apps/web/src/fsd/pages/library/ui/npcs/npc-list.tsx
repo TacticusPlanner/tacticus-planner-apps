@@ -76,13 +76,14 @@ export function NpcList({
               <NpcPortrait
                 variationId={item.portraitVariationId}
                 name={item.name}
-                className="size-14"
+                size="portrait-md"
               />
               {emblem ? (
                 <EntityIcon
+                  size="badge-md"
                   src={emblem}
                   alt={item.factionName}
-                  className="absolute -right-1 -bottom-1 size-5 rounded-full bg-background p-0.5"
+                  className="absolute -right-1 -bottom-1 rounded-full bg-background p-0.5"
                 />
               ) : null}
             </span>

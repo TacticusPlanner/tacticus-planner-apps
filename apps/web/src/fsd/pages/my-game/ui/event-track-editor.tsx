@@ -86,9 +86,9 @@ export function EventTrackEditor({
     >
       <div className="flex items-center gap-2">
         <EntityIcon
+          size="row"
           src={campaignIcon(groupId as CampaignId, type)}
           alt=""
-          className="size-8"
         />
         <h3 className="flex-1 font-semibold">{typeLabel}</h3>
         {empty ? null : (

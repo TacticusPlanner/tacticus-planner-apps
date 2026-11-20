@@ -410,7 +410,7 @@ function PlaceNpcs({
             )
             const content: ReactNode = (
               <>
-                <NpcPortrait variationId={id} name={name} className="size-6" />
+                <NpcPortrait variationId={id} name={name} size="inline" />
                 <span className="min-w-0 truncate">{name}</span>
                 {row ? (
                   <NpcLevelBadge row={row} className="shrink-0 gap-1" />

@@ -17,7 +17,7 @@ function CheckpointLabel({ row }: { row: CheckpointRow }) {
   const { t } = useTranslation()
   if (!row.label) return <span>{row.target}</span>
   if (row.label.kind === "Rank") {
-    return <RankBadge iconClassName="size-5" rank={row.label.rank} />
+    return <RankBadge rank={row.label.rank} />
   }
   return (
     <span>

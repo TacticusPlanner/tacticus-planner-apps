@@ -39,9 +39,10 @@ export function IncursionTierStrip({
       data-cleared-count={cleared}
     >
       <EntityIcon
+        size="inline"
         src={incursionTokenIcon()}
         alt=""
-        className="size-4 shrink-0"
+        className="shrink-0"
       />
       <div className="flex h-3 min-w-0 flex-1 gap-0.5" aria-hidden="true">
         {tiers.map((tier) => (

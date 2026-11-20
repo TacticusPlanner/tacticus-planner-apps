@@ -200,6 +200,7 @@ export function OnslaughtPage() {
                         <div className="flex gap-1">
                           {active.map((alliance) => (
                             <EntityIcon
+                              size="row"
                               key={alliance}
                               src={onslaughtAllianceIcon(alliance)}
                               alt={
@@ -207,7 +208,6 @@ export function OnslaughtPage() {
                                   ? `${t(`alliances.${alliance}`)} · ${t("onslaught.tierComplete")}`
                                   : t(`alliances.${alliance}`)
                               }
-                              className="size-8"
                             />
                           ))}
                         </div>

@@ -35,12 +35,12 @@ export function NpcLevelBadge({
       data-rarity={rarity}
       data-testid="npc-level-badge"
     >
-      <EntityIcon src={rankIcon(rank)} alt={rankLabel} className="size-5" />
+      <EntityIcon size="inline" src={rankIcon(rank)} alt={rankLabel} />
       {rarity ? (
         <EntityIcon
+          size="inline"
           src={rarityIcon(rarity)}
           alt={t(`progression:rarities.${rarity}`, { defaultValue: rarity })}
-          className="size-4"
         />
       ) : null}
       <CompactStarLevel data-testid="npc-level-stars" starLevel={row.stars} />

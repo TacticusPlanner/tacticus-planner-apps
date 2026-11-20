@@ -1,6 +1,7 @@
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon } from "@/shared/ui/entity-icon"
+import { EntityIcon, entityIconClassName } from "@/shared/ui"
+import type { EntityIconSize } from "@/shared/ui"
 
 /** Initials for the text-badge fallback (up to two words). */
 function initials(name: string): string {
@@ -21,11 +22,13 @@ function initials(name: string): string {
 export function RaidBossPortrait({
   name,
   src,
+  size,
   className,
   rounded = "full",
 }: {
   name: string
   src?: string
+  size: EntityIconSize
   className?: string
   rounded?: "full" | "lg"
 }) {
@@ -36,6 +39,7 @@ export function RaidBossPortrait({
       className={cn(
         "flex shrink-0 items-center justify-center overflow-hidden bg-muted text-muted-foreground",
         shape,
+        entityIconClassName(size),
         className
       )}
       aria-hidden={src ? undefined : true}

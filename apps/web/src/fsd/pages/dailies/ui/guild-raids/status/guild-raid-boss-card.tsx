@@ -106,7 +106,8 @@ export function GuildRaidBossCard({
       <Card data-testid="guild-raid-boss-card">
         <CardContent className="flex items-center gap-3 p-3">
           <RaidBossPortrait
-            className="size-10 shrink-0"
+            size="portrait-sm"
+            className="shrink-0"
             name={boss.name}
             src={boss.portraitSrc}
           />
@@ -142,7 +143,7 @@ export function GuildRaidBossCard({
         <RaidBossPortrait
           name={boss.name}
           src={boss.portraitSrc}
-          className="size-14"
+          size="portrait-md"
         />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <CardDescription>{t("guildRaids.status.bossLabel")}</CardDescription>

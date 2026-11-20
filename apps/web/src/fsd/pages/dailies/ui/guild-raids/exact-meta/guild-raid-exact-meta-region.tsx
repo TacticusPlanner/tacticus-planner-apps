@@ -41,7 +41,7 @@ function ThresholdStrip({
     >
       <span>{t("guildRaids.exactMeta.target")}</span>
       <ProgressionBadge value={threshold.progression} />
-      <RankBadge rank={threshold.requiredRank} iconClassName="size-4" />
+      <RankBadge rank={threshold.requiredRank} />
       <span className="font-medium text-foreground">
         {t("guildRaids.exactMeta.targetAbilities", {
           level: threshold.requiredAbilityLevel,

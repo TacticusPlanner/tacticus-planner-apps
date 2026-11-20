@@ -96,11 +96,7 @@ export function UnitHeader({
           </h1>
           <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1 rounded-sm bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
-              <EntityIcon
-                src={factionIcon(factionId)}
-                alt=""
-                className="size-4"
-              />
+              <EntityIcon size="inline" src={factionIcon(factionId)} alt="" />
               {t(`factions:${factionId}`, { defaultValue: factionId })}
             </span>
             {kindLine}

@@ -174,7 +174,7 @@ function UpcomingEventRow({
         data-type={row.type}
         to={row.destination}
       >
-        <HomeEventVisual className="size-10" row={row} />
+        <HomeEventVisual size="tile" row={row} />
         <span className="min-w-0">
           <span className="block truncate font-semibold">{eventName(row)}</span>
           <span

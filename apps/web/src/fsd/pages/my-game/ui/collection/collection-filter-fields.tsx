@@ -82,7 +82,7 @@ export function CollectionFilterFields({
   const rankOptions: SelectOption<Rank>[] = rankOrder.map((rank) => ({
     value: rank,
     label: t(`progression:ranks.${rank}`, { defaultValue: rank }),
-    icon: <RankBadge rank={rank} showLabel={false} iconClassName="size-5" />,
+    icon: <RankBadge rank={rank} showLabel={false} />,
   }))
   const starOptions: SelectOption<Progression>[] = starSteps.map((step) => ({
     value: step,

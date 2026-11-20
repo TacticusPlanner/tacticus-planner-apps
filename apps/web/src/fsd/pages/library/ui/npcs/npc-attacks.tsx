@@ -24,7 +24,12 @@ function AttackKindIcon({
 }) {
   if (kind === "melee" || range == null) {
     return (
-      <EntityIcon src={statIcon(kind)} alt="" className="size-6 shrink-0" />
+      <EntityIcon
+        size="inline"
+        src={statIcon(kind)}
+        alt=""
+        className="shrink-0"
+      />
     )
   }
 
@@ -72,15 +77,16 @@ function AttackChip({
       />
       <span className="font-medium">{t(`library:npcs.attacks.${kind}`)}</span>
       <EntityIcon
+        size="inline"
         src={damageTypeIcon(damageType)}
         alt=""
-        className="size-5 shrink-0"
+        className="shrink-0"
       />
       <span className="truncate">
         {t(`damageTypes:${damageType}`, { defaultValue: damageType })}
       </span>
       <span className="ml-auto flex shrink-0 items-center gap-1 text-muted-foreground">
-        <EntityIcon src={statIcon("hits")} alt="" className="size-4" />
+        <EntityIcon size="inline" src={statIcon("hits")} alt="" />
         {t("library:npcs.attacks.hits", { count: hits })}
       </span>
     </li>

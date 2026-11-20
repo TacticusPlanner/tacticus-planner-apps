@@ -39,16 +39,14 @@ export function IncursionNodeMarker({
     return (
       <span className="flex shrink-0 flex-col items-center" aria-hidden="true">
         {stars === undefined ? null : (
-          <span className="flex h-3 items-end">
+          <span className="flex h-4 items-end">
             {STARS.map((count) => (
               <EntityIcon
+                size="badge-sm"
                 key={count}
                 src={medalIcon}
                 alt=""
-                className={cn(
-                  "size-3",
-                  count > stars && "opacity-25 grayscale"
-                )}
+                className={cn(count > stars && "opacity-25 grayscale")}
               />
             ))}
           </span>
@@ -71,5 +69,5 @@ export function IncursionNodeMarker({
       : incursionEnhancementIcon(
           incursion.enhancements[node.enhancementId ?? ""]?.type ?? ""
         )
-  return <EntityIcon src={src} alt="" className={cn("shrink-0", box)} />
+  return <EntityIcon src={src} alt="" size="row" className="shrink-0" />
 }

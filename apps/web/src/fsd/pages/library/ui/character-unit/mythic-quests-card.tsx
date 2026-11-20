@@ -79,7 +79,7 @@ function RewardChip({
   return (
     <li className="inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-semibold">
       {icon === undefined ? null : (
-        <EntityIcon src={icon} alt="" className="size-4" />
+        <EntityIcon size="inline" src={icon} alt="" />
       )}
       {`${format.format(reward.quantity)} × ${label}`}
     </li>

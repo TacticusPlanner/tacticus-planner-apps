@@ -71,7 +71,7 @@ function StarsPicker({
             className="gap-1 tabular-nums"
           >
             {count}
-            <EntityIcon src={medalIcon} alt="" className="size-4" />
+            <EntityIcon size="inline" src={medalIcon} alt="" />
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
@@ -84,7 +84,7 @@ function Medals({ count }: { count: number }) {
   return (
     <span className="flex" aria-hidden="true">
       {Array.from({ length: count }, (_, at) => (
-        <EntityIcon key={at} src={medalIcon} alt="" className="size-4" />
+        <EntityIcon size="inline" key={at} src={medalIcon} alt="" />
       ))}
     </span>
   )
@@ -149,7 +149,7 @@ function BattleBody({
               <NpcPortrait
                 variationId={enemy.npcId}
                 name={name}
-                className="size-7"
+                size="portrait-sm"
               />
               <span className="tabular-nums">×{enemy.count}</span>
               {row ? <NpcLevelBadge row={row} /> : null}

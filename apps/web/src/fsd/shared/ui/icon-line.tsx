@@ -27,7 +27,8 @@ export function IconLine({
       {icon !== undefined && icon !== "" ? (
         <EntityIcon
           alt=""
-          className={cn("size-4 shrink-0", iconClassName)}
+          size="inline"
+          className={cn("shrink-0", iconClassName)}
           src={icon}
         />
       ) : null}

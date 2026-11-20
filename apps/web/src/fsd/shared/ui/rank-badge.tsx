@@ -9,18 +9,22 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "./entity-icon"
+import type { EntityIconSize } from "./game-icon-size"
 
 /** Rank icon + localized label. With `showLabel={false}` the label is dropped; pass `tooltip` to
  * surface it on hover instead (mirrors `RarityIcon`). */
 export function RankBadge({
   rank,
   className,
+  size = "inline",
   iconClassName,
   showLabel = true,
   tooltip = false,
 }: {
   rank: Rank
   className?: string
+  /** The icon's role on the style guide's scale. */
+  size?: EntityIconSize
   iconClassName?: string
   showLabel?: boolean
   tooltip?: boolean
@@ -35,7 +39,8 @@ export function RankBadge({
       <EntityIcon
         src={rankIcon(rank)}
         alt={showLabel ? "" : label}
-        className={cn("size-5 shrink-0", iconClassName)}
+        size={size}
+        className={cn("shrink-0", iconClassName)}
       />
       {showLabel ? (
         <span className="text-sm font-medium whitespace-nowrap">{label}</span>

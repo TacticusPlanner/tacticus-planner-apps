@@ -29,11 +29,7 @@ export function RankGroupHeader({
   const { t } = useTranslation()
   return (
     <div className="flex items-center gap-2">
-      <RankBadge
-        rank={group.fromRank}
-        iconClassName="size-8"
-        showLabel={!compact}
-      />
+      <RankBadge rank={group.fromRank} size="row" showLabel={!compact} />
       {group.pointFive ? (
         <Badge variant="secondary">{t("unitLookup.pointFiveShort")}</Badge>
       ) : (
@@ -41,11 +37,7 @@ export function RankGroupHeader({
           <span aria-hidden className="text-muted-foreground">
             →
           </span>
-          <RankBadge
-            rank={group.toRank}
-            iconClassName="size-8"
-            showLabel={!compact}
-          />
+          <RankBadge rank={group.toRank} size="row" showLabel={!compact} />
         </>
       )}
     </div>
@@ -73,9 +65,10 @@ function StatColumn({
   return (
     <div className="flex flex-col items-center gap-1.5">
       <EntityIcon
+        size="row"
         src={statIcon(stat)}
         alt={stat}
-        className="size-8 opacity-80"
+        className="opacity-80"
       />
       {upgrades.map((upgrade) => (
         <UpgradeCell key={upgrade.id} upgrade={upgrade} />
@@ -104,7 +97,8 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeViewModel }) {
             id={upgrade.id}
             rarity={upgrade.rarity}
             crafted={upgrade.crafted}
-            className={cn("size-12", upgrade.owned && "opacity-50")}
+            size="tile"
+            className={cn(upgrade.owned && "opacity-50")}
           />
           {upgrade.owned ? (
             <CheckCircle2
@@ -158,7 +152,6 @@ function RecipeTree({
               id={item.id}
               rarity={item.rarity}
               crafted={item.crafted}
-              className="size-9"
             />
             <span className={rarityClass(item.rarity)}>{item.label}</span>
             <span className="text-muted-foreground tabular-nums">

@@ -146,9 +146,10 @@ function MultiSelect({
                   />
                   {option.icon ? (
                     <EntityIcon
+                      size="inline"
                       src={option.icon}
                       alt=""
-                      className="size-5 shrink-0"
+                      className="shrink-0"
                     />
                   ) : null}
                   <span className="truncate">{option.name}</span>
@@ -194,9 +195,10 @@ function IconSelect({
               <span className="flex items-center gap-2">
                 {option.icon ? (
                   <EntityIcon
+                    size="inline"
                     src={option.icon}
                     alt=""
-                    className="size-5 shrink-0"
+                    className="shrink-0"
                   />
                 ) : null}
                 {option.name}
