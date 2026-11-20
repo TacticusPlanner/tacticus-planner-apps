@@ -374,13 +374,6 @@ export function RaidsFiltersDialog({
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter className="border-t">
         <Button
-          data-testid="raids-filters-close"
-          onClick={close}
-          variant="outline"
-        >
-          {t("dailies:raidsFilters.actions.close")}
-        </Button>
-        <Button
           className="md:mr-auto"
           data-testid="raids-filters-reset"
           onClick={() => {
@@ -390,6 +383,13 @@ export function RaidsFiltersDialog({
           variant="ghost"
         >
           {t("dailies:raidsFilters.actions.reset")}
+        </Button>
+        <Button
+          data-testid="raids-filters-close"
+          onClick={close}
+          variant="outline"
+        >
+          {t("dailies:raidsFilters.actions.close")}
         </Button>
         <Button
           data-testid="raids-filters-apply"
