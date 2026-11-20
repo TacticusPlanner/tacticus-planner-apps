@@ -12,7 +12,7 @@ import {
 import { progressionRarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, entityIconClassName } from "@/shared/ui"
 
 import type {
   OwnedUnitTileData,
@@ -93,18 +93,14 @@ export function UnitTile({
             data-testid="unit-tile-faction"
             data-faction={faction.id}
           >
-            <EntityIcon
-              src={factionIcon(faction.id)}
-              alt=""
-              className="size-4"
-            />
+            <EntityIcon size="badge-sm" src={factionIcon(faction.id)} alt="" />
           </span>
         ) : null}
         {owned ? (
           <PortraitOverlays kind={unit.kind} data={owned} />
         ) : (
           <span className="absolute -top-1 -right-1 grid size-5.5 place-items-center rounded-full bg-overlay text-overlay-foreground">
-            <EntityIcon src={lockIcon()} alt="" className="size-3.5" />
+            <EntityIcon size="badge-sm" src={lockIcon()} alt="" />
           </span>
         )}
       </div>
@@ -173,10 +169,10 @@ function PortraitOverlays({
           {visual.kind === "stars" ? (
             Array.from({ length: visual.count }, (_, index) => (
               <EntityIcon
+                size="badge-sm"
                 key={index}
                 src={visual.icon}
                 alt=""
-                className="size-3.5"
               />
             ))
           ) : (
@@ -192,7 +188,10 @@ function PortraitOverlays({
       )}
       {kind === "character" && data.rank ? (
         <span
-          className="absolute -bottom-1.5 -left-1.5 size-6 drop-shadow-[0_1px_2px_rgb(0_0_0/0.7)]"
+          className={cn(
+            "absolute -bottom-1.5 -left-1.5 drop-shadow-[0_1px_2px_rgb(0_0_0/0.7)]",
+            entityIconClassName("badge-md")
+          )}
           data-testid="unit-tile-rank"
         >
           <EntityIcon src={rankIcon(data.rank)} alt="" className="size-full" />

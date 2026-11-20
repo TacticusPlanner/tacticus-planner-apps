@@ -33,7 +33,7 @@ export function EventUnitChipDetails({
       ) : null}
       {unit.owned && rarity ? (
         <span className="flex items-center gap-1.5">
-          <RarityBadge rarity={rarity} />
+          <RarityBadge rarity={rarity} size="inline" />
           <span>{t(`progression:rarities.${rarity}`)}</span>
           {unit.progression && visual && visual.kind !== "none" ? (
             // The short form ("Legendary 5★") for screen readers: the art is decorative.
@@ -46,7 +46,7 @@ export function EventUnitChipDetails({
               {Array.from({ length: visual.count }, (_, index) => (
                 <EntityIcon
                   alt=""
-                  className="size-3"
+                  size="inline"
                   key={index}
                   src={visual.icon}
                 />
@@ -66,7 +66,7 @@ export function EventUnitChipDetails({
       ) : null}
       {unit.owned && unit.rank ? (
         <span className="flex items-center gap-1.5">
-          <EntityIcon alt="" className="size-5" src={rankIcon(unit.rank)} />
+          <EntityIcon alt="" size="inline" src={rankIcon(unit.rank)} />
           <span>{t(`progression:ranks.${unit.rank}`)}</span>
         </span>
       ) : null}

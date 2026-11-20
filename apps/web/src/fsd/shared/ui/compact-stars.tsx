@@ -32,7 +32,7 @@ function StarsMark({
     >
       {visual.kind === "stars" ? (
         <>
-          <EntityIcon src={visual.icon} alt="" className="size-3.5" />
+          <EntityIcon size="inline" src={visual.icon} alt="" />
           {visual.count}
         </>
       ) : (
